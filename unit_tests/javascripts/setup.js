@@ -125,18 +125,20 @@ testCapitalize = function(str) {
 
 var objectEqual = function(one, two) {
   var onep = 0, twop = 0, key;
-  for(key in one) {
-    if(!one.hasOwnProperty(key)) continue;
-    onep++;
-    if(!testIsEqual(one[key], two[key])) {
-      return false;
+  if(one && two) {
+    for(key in one) {
+      if(!one.hasOwnProperty(key)) continue;
+      onep++;
+      if(!testIsEqual(one[key], two[key])) {
+        return false;
+      }
+    }
+    for(key in two) {
+      if(!two.hasOwnProperty(key)) continue;
+      twop++;
     }
   }
-  for(key in two) {
-    if(!two.hasOwnProperty(key)) continue;
-    twop++;
-  }
-  return onep === twop && one.toString() === two.toString();
+  return onep === twop && String(one) === String(two);
 }
 
 var testIsEqual = function(one, two) {

@@ -1103,6 +1103,7 @@ test('String', function () {
   equal('{{1} {2}}'.assign(5,6), '{5 6}', 'String#assign | nested braces');
   equal('{one {1} {2} two}'.assign(5,6), '{one 5 6 two}', 'String#assign | nested braces with strings outside');
 
+  equal('Hello, {first} {last}'.assign([obj1, obj2]), 'Hello, Harry Potter', 'String#assign | passing 2 objects in an array');
 
 
 });
