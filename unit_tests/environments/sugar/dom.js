@@ -43,7 +43,6 @@ test('DOM', function () {
   });
 
   if(Object.isObject) {
-    equal(Object.isObject(window), false, 'Object.isObject | window');
     equal(Object.isObject(document), false, 'Object.isObject | document');
   }
 
