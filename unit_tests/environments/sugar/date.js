@@ -2705,5 +2705,22 @@ test('Date', function () {
   equal(Date.create('5am in a minute').isValid(), false, 'Date#create | 5am in a minute is invalid');
 
 
+  // ISO weekday
+
+  d = Date.create(2000, 00, 08);
+
+  equal(d.getISOWeekday(), 6, 'Date#getISOWeekday | saturday');
+
+  d.setISOWeekday(1);
+  equal(d.getDate(), 3, 'Date#setISOWeekday | monday');
+
+  d = Date.create(2000, 00, 09);
+
+  d.beginningOfISOWeek();
+  equal(d.getDate(), 3, 'Date#begginninOfISOWeek | monday');
+
+  d.endOfISOWeek();
+  equal(d.getDate(), 9, 'Date#endOfISOWeek | sunday');
+
 });
 
