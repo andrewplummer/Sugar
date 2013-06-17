@@ -16,6 +16,7 @@ v1.4.0
 - `Object.clone` now only works on known object types and does not work on instances of user-created classes.
 - `String#assign` now can be passed an array as well as enumerated arguments.
 - Fixed global variable leak #328
+- Optimization for `Array#removeAt` #324
 
 
 v1.3.9
