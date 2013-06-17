@@ -140,4 +140,7 @@ test('Dates | French', function () {
 
   dateEqual(Date.create('mardi 11 decembre 2012','fr'), new Date(2012, 11, 11), 'Date#create | French | mardi 11 decembre 2012');
 
+  // Issue #326
+  equal(Date.create().isThisWeek(), true, 'Date#isThisWeek | French');
+
 });
