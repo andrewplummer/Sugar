@@ -15,6 +15,7 @@ v1.4.0
 - Instances of classes are now entirely matched by reference only, as originally intended. This means that any equality checking inside Sugar will consider them equal only if they are `===`.
 - `Object.clone` now only works on known object types and does not work on instances of user-created classes.
 - `String#assign` now can be passed an array as well as enumerated arguments.
+- Fixed global variable leak #328
 
 
 v1.3.9
