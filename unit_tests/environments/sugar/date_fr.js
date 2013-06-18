@@ -140,4 +140,8 @@ test('Dates | French', function () {
 
   dateEqual(Date.create('mardi 11 decembre 2012','fr'), new Date(2012, 11, 11), 'Date#create | French | mardi 11 decembre 2012');
 
+  equal(Date.create().isThisWeek(), true, 'Date#isThisWeek | should be true for today in other locales');
+  equal(Date.create('1 week ago', 'en').isLastWeek(), true, 'Date#isLastWeek | should be true for last week in other locales');
+  equal(Date.create('1 week from now', 'en').isNextWeek(), true, 'Date#isNextWeek | should be true for next week in other locales');
+
 });
