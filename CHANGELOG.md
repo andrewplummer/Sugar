@@ -17,6 +17,7 @@ v1.4.0
 - `String#assign` now can be passed an array as well as enumerated arguments.
 - Fixed global variable leak #328
 - Optimization for `Array#removeAt` #324
+- Fix for `isThisWeek` being false when not "en" locale.
 
 
 v1.3.9
