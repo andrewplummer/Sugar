@@ -4,7 +4,8 @@
     <title>Sugar Performance</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <script type="text/javascript" src="../unit_tests/javascripts/jquery-1.7.1.js"></script>
-    <script type="text/javascript" src="javascripts/test.js"></script>
+    <script type="text/javascript" src="javascripts/benchmark.js"></script>
+    <script type="text/javascript" src="javascripts/vendor/moment.js"></script>
     <!-- sugar -->
     <script type="text/javascript" src="../lib/core.js"></script>
     <script type="text/javascript" src="../lib/es5.js"></script>
@@ -18,16 +19,39 @@
     <script type="text/javascript" src="../lib/regexp.js"></script>
   </head>
   <body>
-    <button>Start!</button>
+    <button id="sugar">Sugar</button>
+    <button id="moment">Moment</button>
+    <button id="sugar2">Sugar 2</button>
+    <button id="moment2">Moment 2</button>
+    <div id="output"></div>
   </body>
   <script>
 
-    $('button').click(function() {
+    var d = new Date();
+    var m = moment();
+
+    function runTest(obj, format) {
+      console.info(obj);
+      $('#output').html(obj.format(format));
       runPerformanceTest(function() {
-        [1,2,3].find(function(el) {
-          return 3 === el;
-        });
+        obj.format(format);
       });
+    }
+
+    $('#sugar').click(function() {
+      runTest(d, '{yyyy}');
+    });
+
+    $('#moment').click(function() {
+      runTest(m, 'YYYY');
+    });
+
+    $('#sugar2').click(function() {
+      runTest(d, Date.ISO8601_DATETIME);
+    });
+
+    $('#moment2').click(function() {
+      runTest(m);
     });
 
   </script>
