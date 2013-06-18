@@ -210,7 +210,6 @@
     // === on the constructor is not safe across iframes
     // 'hasOwnProperty' ensures that the object also inherits
     // from Object, which is false for DOMElements in IE.
-    // AP: CAN THIS NOW BE REMOVED WITH THE CODE ABOVE IN PLACE???
     return !!obj && klass === '[object Object]' && 'hasOwnProperty' in obj;
   }
 
@@ -358,8 +357,8 @@
     if(type === 'string') return thing;
 
     klass         = internalToString.call(thing)
-    thingIsArray  = klass === '[object Array]';
-    thingIsObject = isObjectPrimitive(thing) && !thingIsArray;
+    thingIsObject = isPlainObject(thing, klass);
+    thingIsArray  = isArray(thing, klass);
 
     if(thing != null && thingIsObject || thingIsArray) {
       // This method for checking for cyclic structures was egregiously stolen from
@@ -1346,12 +1345,9 @@
      *
      ***/
     'removeAt': function(start, end) {
-      var i, len;
       if(isUndefined(start)) return this;
-      if(isUndefined(end)) end = start;
-      for(i = 0, len = end - start; i <= len; i++) {
-        this.splice(start, 1);
-      }
+      if(isUndefined(end))   end = start;
+      this.splice(start, end - start + 1);
       return this;
     },
 
@@ -2658,7 +2654,7 @@
   }
 
   function getDateParamsFromString(str, num) {
-    var params = {};
+    var match, params = {};
     match = str.match(/^(\d+)?\s?(\w+?)s?$/i);
     if(match) {
       if(isUndefined(num)) {
@@ -3084,6 +3080,9 @@
   function compareDate(d, find, buffer, forceUTC) {
     var p, t, min, max, minOffset, maxOffset, override, capitalized, accuracy = 0, loBuffer = 0, hiBuffer = 0;
     p = getExtendedDate(find, null, null, forceUTC);
+    if(CurrentLocalization['code'] !== 'en' && !p.date.isValid()) {
+      p = getExtendedDate(find, 'en', null, forceUTC);
+    }
     if(buffer > 0) {
       loBuffer = hiBuffer = buffer;
       override = true;
@@ -3287,7 +3286,7 @@
   }
 
   function invalidateDate(d) {
-    d.setTime();
+    d.setTime(NaN);
   }
 
   function buildDateUnits() {
@@ -5793,7 +5792,7 @@
      *
      ***/
     'clone': function(obj, deep) {
-      var target;
+      var target, klass;
       if(!isObjectPrimitive(obj)) {
         return obj;
       }
@@ -5810,7 +5809,7 @@
       } else if(isPlainObject(obj, klass)) {
         target = {};
       } else {
-        throw new TypeError('Invalid target.');
+        throw new TypeError('Clone must be a basic data type.');
       }
       return object.merge(target, obj, deep);
     },
@@ -6935,7 +6934,6 @@
 
   buildBase64('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=');
 
-
   /***
    *
    * @package Inflections
@@ -7225,7 +7223,6 @@
   Inflector.irregular('child', 'children');
   Inflector.irregular('sex', 'sexes');
   Inflector.irregular('move', 'moves');
-  Inflector.irregular('save', 'saves');
   Inflector.irregular('save', 'saves');
   Inflector.irregular('cow', 'kine');
   Inflector.irregular('goose', 'geese');
