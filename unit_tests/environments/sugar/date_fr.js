@@ -144,4 +144,13 @@ test('Dates | French', function () {
   equal(Date.create('1 week ago', 'en').isLastWeek(), true, 'Date#isLastWeek | should be true for last week in other locales');
   equal(Date.create('1 week from now', 'en').isNextWeek(), true, 'Date#isNextWeek | should be true for next week in other locales');
 
+  equal(Date.create().isThisMonth(), true, 'Date#isThisMonth | should be true for today in other locales');
+  equal(Date.create('1 month ago', 'en').isLastMonth(), true, 'Date#isLastMonth | should be true for last month in other locales');
+  equal(Date.create('1 month from now', 'en').isNextMonth(), true, 'Date#isNextMonth | should be true for next month in other locales');
+
+  equal(Date.create().isThisYear(), true, 'Date#isThisYear | should be true for today in other locales');
+  equal(Date.create('1 year ago', 'en').isLastYear(), true, 'Date#isLastYear | should be true for last year in other locales');
+  equal(Date.create('1 year from now', 'en').isNextYear(), true, 'Date#isNextYear | should be true for next year in other locales');
+
+
 });
