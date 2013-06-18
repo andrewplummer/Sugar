@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Sugar Performance</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <script type="text/javascript" src="../unit_tests/javascripts/jquery-1.7.1.js"></script>
+    <script type="text/javascript" src="javascripts/test.js"></script>
+    <!-- sugar -->
+    <script type="text/javascript" src="../lib/core.js"></script>
+    <script type="text/javascript" src="../lib/es5.js"></script>
+    <script type="text/javascript" src="../lib/object.js"></script>
+    <script type="text/javascript" src="../lib/array.js"></script>
+    <script type="text/javascript" src="../lib/string.js"></script>
+    <script type="text/javascript" src="../lib/number.js"></script>
+    <script type="text/javascript" src="../lib/function.js"></script>
+    <script type="text/javascript" src="../lib/date.js"></script>
+    <script type="text/javascript" src="../lib/range.js"></script>
+    <script type="text/javascript" src="../lib/regexp.js"></script>
+  </head>
+  <body>
+    <button>Start!</button>
+  </body>
+  <script>
+
+    $('button').click(function() {
+      runPerformanceTest(function() {
+        [1,2,3].findAll(3);
+      });
+    });
+
+  </script>
+</html>
