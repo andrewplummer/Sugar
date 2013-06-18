@@ -24,7 +24,9 @@
 
     $('button').click(function() {
       runPerformanceTest(function() {
-        [1,2,3].findAll(3);
+        [1,2,3].find(function(el) {
+          return 3 === el;
+        });
       });
     });
 
