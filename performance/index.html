@@ -23,6 +23,7 @@
     <button id="moment">Moment</button>
     <button id="sugar2">Sugar 2</button>
     <button id="moment2">Moment 2</button>
+    <button id="repeat">Repeat</button>
     <div id="output"></div>
   </body>
   <script>
@@ -52,6 +53,12 @@
 
     $('#moment2').click(function() {
       runTest(m, 'YYYY-MM-DDTHH:mm:ss.SSS');
+    });
+
+    $('#repeat').click(function() {
+      runPerformanceTest(1, function() {
+        repeatString(3000000, 'sss');
+      });
     });
 
   </script>
