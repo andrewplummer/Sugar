@@ -525,7 +525,6 @@
     function makeFormatFunction(format) {
         var array = format.match(formattingTokens), i, length;
 
-        console.info('wait whaa', array);
         for (i = 0, length = array.length; i < length; i++) {
             if (formatTokenFunctions[array[i]]) {
                 array[i] = formatTokenFunctions[array[i]];
