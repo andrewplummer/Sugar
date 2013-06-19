@@ -19,6 +19,7 @@ v1.4.0
 - Optimization for `Array#removeAt` #324
 - Fix for `isThisWeek` being false when not "en" locale.
 - Timezone formatting tokens changed to align with Moment.js better.
+- Major performance optimization for date formatting and more.
 
 
 v1.3.9
