@@ -18,6 +18,7 @@ v1.4.0
 - Fixed global variable leak #328
 - Optimization for `Array#removeAt` #324
 - Fix for `isThisWeek` being false when not "en" locale.
+- Timezone formatting tokens changed to align with Moment.js better.
 
 
 v1.3.9
