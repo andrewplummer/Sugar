@@ -1540,6 +1540,7 @@ test('Array', function () {
   equal(Array.create({a:1}, 'b'), [{a:1}, 'b'], 'Array.create | object and string');
 
   equal((function(){ return Array.create(arguments); })('one','two'), ['one','two'], 'Array.create | works on an arguments object');
+  equal((function(){ return Array.create(arguments); })(), [], 'Array.create | works on a zero length arguments object');
   equal((function(){ return Array.create(arguments); })('one').slice, Array.prototype.slice, 'Array.create | converted arguments object is a true array');
   equal((function(){ return Array.create(arguments); })('one','two').slice, Array.prototype.slice, 'Array.create | two | converted arguments object is a true array');
 
