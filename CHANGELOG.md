@@ -336,6 +336,7 @@ v1.2
 - Added support for JSON date format Date(xxxxxxxxxx).
 - Fixed issues with Date#getWeek.
 - Fixed issues with traversing months before January.
+- String#titleize added to inflections module.
 
 
 ### Internal Changes ###
