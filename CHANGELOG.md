@@ -21,6 +21,7 @@ v1.4.0
 - Timezone formatting tokens changed to align with Moment.js better.
 - Major performance optimization for date formatting and more.
 - Added `Date#beginningOfISOWeek` and `Date#endOfISOWeek`
+- Fix for `Array#create` not working on argument objects of zero-length (Issue #299).
 
 
 v1.3.9
