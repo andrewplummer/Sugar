@@ -25,6 +25,7 @@ v1.4.0
 - Fix for `Array#create` not working on argument objects of zero-length (Issue #299).
 - Fix for `String#capitalize` capitalizing after apostrophes (Issue #325).
 - Fix for extended objects `select` and `reject` returning plain objects.
+- Fix for `Object.merge` not merging certain deep objects.
 
 
 v1.3.9
