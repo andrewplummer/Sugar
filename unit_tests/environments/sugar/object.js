@@ -260,6 +260,12 @@ test('Object', function () {
 
   equal(Object.merge({ a:1 }, { a:2 }, false, fn), { a:3 }, 'Object.merge | function resolves');
 
+
+  // Issue #335
+
+  equal(Object.merge({a:{b:1}}, {a:{b:2,c:3} },true,false), {a:{b:1,c:3}}, 'Object.merge | two deep properties');
+
+
   var fn1 = function() { return 'joe' };
   var fn2 = function() { return 'moe' };
   var date1 = new Date(2001, 1, 6);
