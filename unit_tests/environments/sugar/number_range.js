@@ -156,6 +156,33 @@ test('Number Ranges', function () {
   equal((0).clamp(10, 5), 5, 'Number#clamp | inverted | 0');
   equal((-1).clamp(10, 5), 5, 'Number#clamp | inverted | -1');
 
+  equal((5).cap(6), 5, 'Number#cap | 5 capped to 6');
+  equal((5).cap(5), 5, 'Number#cap | 5 capped to 5');
+  equal((5).cap(4), 4, 'Number#cap | 5 capped to 4');
+  equal((5).cap(1), 1, 'Number#cap | 5 capped to 1');
+  equal((5).cap(0), 0, 'Number#cap | 5 capped to 0');
+  equal((5).cap(-1), -1, 'Number#cap | 5 capped to -1');
+  equal((5).cap(-5), -5, 'Number#cap | 5 capped to -5');
+  equal((5).cap(-10), -10, 'Number#cap | 5 capped to -10');
+
+  equal((0).cap(6), 0, 'Number#cap | 0 capped to 6');
+  equal((0).cap(5), 0, 'Number#cap | 0 capped to 5');
+  equal((0).cap(4), 0, 'Number#cap | 0 capped to 4');
+  equal((0).cap(1), 0, 'Number#cap | 0 capped to 1');
+  equal((0).cap(0), 0, 'Number#cap | 0 capped to 0');
+  equal((0).cap(-1), -1, 'Number#cap | 0 capped to -1');
+  equal((0).cap(-5), -5, 'Number#cap | 0 capped to -5');
+  equal((0).cap(-10), -10, 'Number#cap | 0 capped to -10');
+
+  equal((-5).cap(6), -5, 'Number#cap | -5 capped to 6');
+  equal((-5).cap(5), -5, 'Number#cap | -5 capped to 5');
+  equal((-5).cap(4), -5, 'Number#cap | -5 capped to 4');
+  equal((-5).cap(1), -5, 'Number#cap | -5 capped to 1');
+  equal((-5).cap(0), -5, 'Number#cap | -5 capped to 0');
+  equal((-5).cap(-1), -5, 'Number#cap | -5 capped to -1');
+  equal((-5).cap(-5), -5, 'Number#cap | -5 capped to -5');
+  equal((-5).cap(-10), -10, 'Number#cap | -5 capped to -10');
+
   range = Number.range(4, 1);
 
   equal(range.toString(), '4..1', 'Number | Range | inverse | toString');
