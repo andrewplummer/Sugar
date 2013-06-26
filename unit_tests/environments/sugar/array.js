@@ -1517,6 +1517,8 @@ test('Array', function () {
 
   equal(Array.create(), [], 'Array.create | no args');
   equal(Array.create('one'), ['one'], 'Array.create | string');
+  equal(Array.create(new String('one')), ['one'], 'Array.create | string object');
+  equal(Array.create({length: 2}), [{length: 2}], "Array.create | can't trick array-like coercion");
   equal(Array.create(2), [2], 'Array.create | number');
   equal(Array.create([2]), [2], 'Array.create | in array | number');
   equal(Array.create(true), [true], 'Array.create | boolean');
@@ -1543,9 +1545,16 @@ test('Array', function () {
   equal((function(){ return Array.create(arguments); })(), [], 'Array.create | works on a zero length arguments object');
   equal((function(){ return Array.create(arguments); })('one').slice, Array.prototype.slice, 'Array.create | converted arguments object is a true array');
   equal((function(){ return Array.create(arguments); })('one','two').slice, Array.prototype.slice, 'Array.create | two | converted arguments object is a true array');
+  equal((function(){ return Array.create.apply(null, arguments); })('one','two'), ['one','two'], 'Array.create | arguments using apply');
 
   var args = (function() { return arguments; })(true, 1, 'two');
   equal(Array.create([args]), [args], 'Array.create | nested arguments is a nested array');
+
+  if(typeof document !== 'undefined' && document.createElement) {
+    var el = document.createElement('div');
+    equal(Array.create(el), [el], 'Array#create | DOM element');
+    equal(Array.create([el]), [el], 'Array#create | DOM element in array');
+  }
 
   // Array#zip
 
