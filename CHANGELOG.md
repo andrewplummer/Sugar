@@ -22,6 +22,7 @@ v1.4.0
 - Major performance optimization for date formatting and more.
 - Added `Date#beginningOfISOWeek` and `Date#endOfISOWeek`
 - Fix for `Array#create` not working on argument objects of zero-length (Issue #299).
+- Fix for `String#capitalize` capitalizing after apostrophes (Issue #325).
 
 
 v1.3.9
