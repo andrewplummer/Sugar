@@ -5649,7 +5649,7 @@
   }
 
   function selectFromObject(obj, args, select) {
-    var result = {}, match;
+    var match, result = obj instanceof Hash ? new Hash : {};
     iterateOverObject(obj, function(key, value) {
       match = false;
       flattenedArgs(args, function(arg) {
@@ -6042,7 +6042,6 @@
   buildTypeMethods();
   buildObjectExtend();
   buildObjectInstanceMethods(ObjectHashMethods, Hash);
-
 
   /***
    * @package RegExp
