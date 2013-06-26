@@ -36,6 +36,9 @@ v1.4.0+
 - Level: Minor
   - Removed `Number#upto` and `Number#downto` will now work on inverse ranges. In other words (1).downto(5) if represented as an array will now produce [1,2,3,4,5] even though 1 is less than 5 and the operator was "downto". It will also step through the range accordingly.
 
+- Level: Minor
+  - `String#capitalize` passing the `all` flag now will not capitalize after an apostrophe.
+
 - Level: Very Minor
   - Passing a regex to array matching methods like `findAll` will now match it directly against the element in the array, regardless of whether or not the matched element is a string or not. This makes the logic more straightforward but it also means that it will stringify the element before attempting to match. If, for example, you have instances of classes in the array and the regex is /t/, the /t/ will return true for that element as it will match the stringified "[object Object]" of the instance, which is likely not what you want, so caution is needed here.
 

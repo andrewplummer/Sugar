@@ -125,6 +125,8 @@ test('String', function () {
   equal('reuben;sandwich'.capitalize(true), 'Reuben;Sandwich', 'String#capitalize | all | semicolon');
   equal('reuben.sandwich'.capitalize(true), 'Reuben.Sandwich', 'String#capitalize | all | period');
   equal('reuben_sandwich'.capitalize(true), 'Reuben_Sandwich', 'String#capitalize | all | underscore');
+  equal('reuben\nsandwich'.capitalize(true), 'Reuben\nSandwich', 'String#capitalize | all | new line');
+  equal("reuben's sandwich".capitalize(true), "Reuben's Sandwich", 'String#capitalize | all | apostrophe should not trigger capitalize');
   equal('фыва-йцук'.capitalize(true), 'Фыва-Йцук', 'String#capitalize | all | Russian with hyphens');
   equal('фыва,йцук'.capitalize(true), 'Фыва,Йцук', 'String#capitalize | all | Russian with comma');
   equal('фыва;йцук'.capitalize(true), 'Фыва;Йцук', 'String#capitalize | all | Russian with semicolon');
