@@ -133,22 +133,26 @@
   };
 
   function getStringified(p) {
+    var str, arr, isArray;
     if(p && p.length > 5000) return 'One BIG ass array of length ' + p.length;
     if(typeof p === 'function') return 'function';
-    if(typeof JSON !== 'undefined' && JSON.stringify) return JSON.stringify(p);
+    if(typeof JSON !== 'undefined' && JSON.stringify) {
+      try {
+        return str = JSON.stringify(p);
+      } catch(e) {}
+    }
     if(typeof p !== 'object') return String(p);
-    var isArray = p.join;
-    var str = isArray ? '[' : '{';
-    var arr;
-      arr = [];
-      for(var key in p){
-        if(!p.hasOwnProperty(key)) continue;
-        if(p[key] === undefined) {
-          arr.push('undefined');
-        } else {
-          arr.push(p[key]);
-        }
+    isArray = p.join;
+    str = isArray ? '[' : '{';
+    arr = [];
+    for(var key in p){
+      if(!p.hasOwnProperty(key)) continue;
+      if(p[key] === undefined) {
+        arr.push('undefined');
+      } else {
+        arr.push(p[key]);
       }
+    }
     str += arr.join(',');
     str += isArray ? ']' : '}';
     return str;
