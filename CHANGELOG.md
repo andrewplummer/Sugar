@@ -6,6 +6,7 @@ v1.4.0
 - Adding generalized ranges for Numbers and Strings in addition to Dates.
 - Date ranges are now part of the Range package and are no longer dependent on the Date package.
 - Adding `clamp` for ranges and an alias for Number.
+- Adding `cap` for ranges and an alias for Number.
 - `Array.create` will understand ranges and can build an array from one.
 - `DateRange#duration` is deprecated in favor of `Range#span`.
 - Fix for relative times with "4 weeks" that are actually past the single month threshold.
@@ -23,6 +24,7 @@ v1.4.0
 - Added `Date#beginningOfISOWeek` and `Date#endOfISOWeek`
 - Fix for `Array#create` not working on argument objects of zero-length (Issue #299).
 - Fix for `String#capitalize` capitalizing after apostrophes (Issue #325).
+- Fix for extended objects `select` and `reject` returning plain objects.
 
 
 v1.3.9
