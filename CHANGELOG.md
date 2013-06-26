@@ -20,6 +20,7 @@ v1.4.0
 - Fix for `isThisWeek` being false when not "en" locale.
 - Timezone formatting tokens changed to align with Moment.js better.
 - Major performance optimization for date formatting and more.
+- Added `Date#beginningOfISOWeek` and `Date#endOfISOWeek`
 
 
 v1.3.9

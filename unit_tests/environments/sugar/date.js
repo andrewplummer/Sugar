@@ -2701,5 +2701,29 @@ test('Date', function () {
   equal(Date.create('5am in a minute').isValid(), false, 'Date#create | 5am in a minute is invalid');
 
 
+  // Issue #326 begining/endOfISOWeek
+
+
+  dateEqual(new Date(2013, 6, 8).beginningOfISOWeek(),  new Date(2013, 6, 8), 'Date#beginningOfISOWeek  | Mon');
+  dateEqual(new Date(2013, 6, 9).beginningOfISOWeek(),  new Date(2013, 6, 8), 'Date#beginningOfISOWeek  | Tue');
+  dateEqual(new Date(2013, 6, 10).beginningOfISOWeek(), new Date(2013, 6, 8), 'Date#beginningOfISOWeek  | Wed');
+  dateEqual(new Date(2013, 6, 11).beginningOfISOWeek(), new Date(2013, 6, 8), 'Date#beginningOfISOWeek  | Thu');
+  dateEqual(new Date(2013, 6, 12).beginningOfISOWeek(), new Date(2013, 6, 8), 'Date#beginningOfISOWeek  | Fri');
+  dateEqual(new Date(2013, 6, 13).beginningOfISOWeek(), new Date(2013, 6, 8), 'Date#beginningOfISOWeek  | Sat');
+  dateEqual(new Date(2013, 6, 14).beginningOfISOWeek(), new Date(2013, 6, 8), 'Date#beginningOfISOWeek  | Sun');
+  dateEqual(new Date(2013, 6, 15).beginningOfISOWeek(), new Date(2013, 6, 15), 'Date#beginningOfISOWeek | next Mon');
+
+  dateEqual(new Date(2013, 6, 8).endOfISOWeek(),  new Date(2013, 6, 14, 23, 59, 59, 999), 'Date#endOfISOWeek  | Mon');
+  dateEqual(new Date(2013, 6, 9).endOfISOWeek(),  new Date(2013, 6, 14, 23, 59, 59, 999), 'Date#endOfISOWeek  | Tue');
+  dateEqual(new Date(2013, 6, 10).endOfISOWeek(), new Date(2013, 6, 14, 23, 59, 59, 999), 'Date#endOfISOWeek  | Wed');
+  dateEqual(new Date(2013, 6, 11).endOfISOWeek(), new Date(2013, 6, 14, 23, 59, 59, 999), 'Date#endOfISOWeek  | Thu');
+  dateEqual(new Date(2013, 6, 12).endOfISOWeek(), new Date(2013, 6, 14, 23, 59, 59, 999), 'Date#endOfISOWeek  | Fri');
+  dateEqual(new Date(2013, 6, 13).endOfISOWeek(), new Date(2013, 6, 14, 23, 59, 59, 999), 'Date#endOfISOWeek  | Sat');
+  dateEqual(new Date(2013, 6, 14).endOfISOWeek(), new Date(2013, 6, 14, 23, 59, 59, 999), 'Date#endOfISOWeek  | Sun');
+  dateEqual(new Date(2013, 6, 15).endOfISOWeek(), new Date(2013, 6, 21, 23, 59, 59, 999), 'Date#endOfISOWeek | next Mon');
+
+  dateEqual(new Date(2013, 6, 10, 8, 30).beginningOfISOWeek(), new Date(2013, 6, 8), 'Date#beginningOfISOWeek  | resets time');
+  dateEqual(new Date(2013, 6, 12, 8, 30).endOfISOWeek(), new Date(2013, 6, 14, 23, 59, 59, 999), 'Date#endOfISOWeek  | resets time');
+
 });
 
