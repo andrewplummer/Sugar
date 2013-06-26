@@ -4876,7 +4876,7 @@
    *
    ***/
 
-  number.extend({
+  extend(number, true, false, {
 
     /***
      * @method upto(<num>, [fn], [step] = 1)
@@ -4897,7 +4897,7 @@
     },
 
      /***
-     * @method clamp([start], [end])
+     * @method clamp([start] = Infinity, [end] = Infinity)
      * @returns Number
      * @short Constrains the number so that it is between [start] and [end].
      * @extra This alias will build a range object that can be accessed directly using %Number.range% and has an equivalent %clamp% method.
@@ -4905,6 +4905,17 @@
      ***/
     'clamp': function(start, end) {
       return new Range(start, end).clamp(this);
+    },
+
+     /***
+     * @method cap([max] = Infinity)
+     * @returns Number
+     * @short Constrains the number so that it is between [start] and [end].
+     * @extra This alias will build a range object that can be accessed directly using %Number.range% and has an equivalent %clamp% method.
+     *
+     ***/
+    'cap': function(max) {
+      return this.clamp(Undefined, max);
     }
 
   });
@@ -6979,7 +6990,7 @@
      ***/
     'capitalize': function(all) {
       var lastResponded;
-      return this.toLowerCase().replace(all ? /[\s\S]/g : /^\S/, function(lower) {
+      return this.toLowerCase().replace(all ? /[^']/g : /^\S/, function(lower) {
         var upper = lower.toUpperCase(), result;
         result = lastResponded ? lower : upper;
         lastResponded = upper !== lower;
@@ -6990,8 +7001,8 @@
     /***
      * @method assign(<obj1>, <obj2>, ...)
      * @returns String
-     * @short Assigns variables to tokens in a string.
-     * @extra If an object is passed, it's properties can be assigned using the object's keys. If a non-object (string, number, etc.) is passed it can be accessed by the argument number beginning with 1 (as with regex tokens). Multiple objects can be passed and will be merged together (original objects are unaffected).
+     * @short Assigns variables to tokens in a string, demarcated with `{}`.
+     * @extra If an object is passed, it's properties can be assigned using the object's keys (i.e. {name}). If a non-object (string, number, etc.) is passed it can be accessed by the argument number beginning with {1} (as with regex tokens). Multiple objects can be passed and will be merged together (original objects are unaffected).
      * @example
      *
      *   'Welcome, Mr. {name}.'.assign({ name: 'Franklin' })   -> 'Welcome, Mr. Franklin.'
