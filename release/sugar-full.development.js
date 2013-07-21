@@ -8043,12 +8043,12 @@ Date.addLocale('es', {
   'weekdays': 'domingo,lunes,martes,miércoles|miercoles,jueves,viernes,sábado|sabado',
   'units': 'milisegundo:|s,segundo:|s,minuto:|s,hora:|s,día|días|dia|dias,semana:|s,mes:|es,año|años|ano|anos',
   'numbers': 'uno,dos,tres,cuatro,cinco,seis,siete,ocho,nueve,diez',
-  'tokens': 'el,de',
+  'tokens': 'el,la,de',
   'short':'{d} {month} {yyyy}',
   'long': '{d} {month} {yyyy} {H}:{mm}',
   'full': '{Weekday} {d} {month} {yyyy} {H}:{mm}:{ss}',
   'past': '{sign} {num} {unit}',
-  'future': '{num} {unit} {sign}',
+  'future': '{sign} {num} {unit}',
   'duration': '{num} {unit}',
   'timeMarker': 'a las',
   'ampm': 'am,pm',
@@ -8058,20 +8058,20 @@ Date.addLocale('es', {
     { 'name': 'day', 'src': 'hoy', 'value': 0 },
     { 'name': 'day', 'src': 'mañana|manana', 'value': 1 },
     { 'name': 'sign', 'src': 'hace', 'value': -1 },
-    { 'name': 'sign', 'src': 'de ahora', 'value': 1 },
+    { 'name': 'sign', 'src': 'dentro de', 'value': 1 },
     { 'name': 'shift', 'src': 'pasad:o|a', 'value': -1 },
     { 'name': 'shift', 'src': 'próximo|próxima|proximo|proxima', 'value': 1 }
   ],
   'dateParse': [
     '{sign} {num} {unit}',
     '{num} {unit} {sign}',
-    '{0?} {unit=5-7} {shift}',
-    '{0?} {shift} {unit=5-7}'
+    '{0?}{1?} {unit=5-7} {shift}',
+    '{0?}{1?} {shift} {unit=5-7}'
   ],
   'timeParse': [
     '{shift} {weekday}',
     '{weekday} {shift}',
-    '{date?} {1?} {month} {1?} {year?}'
+    '{date?} {2?} {month} {2?} {year?}'
   ]
 });
 Date.addLocale('fi', {
@@ -8179,7 +8179,7 @@ Date.addLocale('fr', {
   'weekdays': 'dimanche,lundi,mardi,mercredi,jeudi,vendredi,samedi',
   'units': 'milliseconde:|s,seconde:|s,minute:|s,heure:|s,jour:|s,semaine:|s,mois,an:|s|née|nee',
   'numbers': 'un:|e,deux,trois,quatre,cinq,six,sept,huit,neuf,dix',
-  'tokens': ["l'|la|le"],
+  'tokens': "l'|la|le",
   'short':'{d} {month} {yyyy}',
   'long': '{d} {month} {yyyy} {H}:{mm}',
   'full': '{Weekday} {d} {month} {yyyy} {H}:{mm}:{ss}',
