@@ -26,6 +26,7 @@ v1.4.0
 - Fix for `String#capitalize` capitalizing after apostrophes (Issue #325).
 - Fix for extended objects `select` and `reject` returning plain objects.
 - Fix for `Object.merge` not merging certain deep objects.
+- Added Date.SugarTimezoneOffset to handle better comparison of internally created dates.
 
 
 v1.3.9
