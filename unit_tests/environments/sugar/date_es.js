@@ -62,7 +62,7 @@ test('Dates | Spanish', function () {
   // no accents
   dateEqual(Date.create('hace 1 dia'), getRelativeDate(null, null, -1), 'Date#create | Spanish | one day ago');
   dateEqual(Date.create('proximo mes'), getRelativeDate(null, 1), 'Date#create | Spanish | Next month');
-  dateEqual(Date.create('oroxima semana'), getRelativeDate(null, null, 7), 'Date#create | Spanish | Next week');
+  dateEqual(Date.create('proxima semana'), getRelativeDate(null, null, 7), 'Date#create | Spanish | Next week');
   dateEqual(Date.create('manana'), getRelativeDate(null, null, 1).reset(), 'Date#create | Spanish | tomorrow');
   dateEqual(Date.create('hace 1 ano'), getRelativeDate(-1), 'Date#create | Spanish | one year ago');
 
