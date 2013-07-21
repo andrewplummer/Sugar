@@ -191,13 +191,22 @@
 
   // Object helpers
 
+  function hasProperty(obj, prop) {
+    return !isPrimitiveType(obj) && prop in obj;
+  }
+
   function hasOwnProperty(obj, prop) {
     return !!obj && internalHasOwnProperty.call(obj, prop);
   }
 
-  function isObjectPrimitive(obj) {
+  function isObjectType(obj) {
     // Check for null
     return !!obj && typeof obj === 'object';
+  }
+
+  function isPrimitiveType(obj) {
+    var type = typeof obj;
+    return obj == null || type === 'string' || type === 'number' || type === 'boolean';
   }
 
   function isPlainObject(obj, klass) {
@@ -467,7 +476,7 @@
 
     'keys': function(obj) {
       var keys = [];
-      if(!isObjectPrimitive(obj) && !isRegExp(obj) && !isFunction(obj)) {
+      if(!isObjectType(obj) && !isRegExp(obj) && !isFunction(obj)) {
         throw new TypeError('Object required');
       }
       iterateOverObject(obj, function(key, value) {
@@ -948,7 +957,7 @@
     } else if(isFunction(match)) {
       // Match against a filtering function
       return match.apply(scope, params);
-    } else if(isPlainObject(match) && isObjectPrimitive(el)) {
+    } else if(isPlainObject(match) && isObjectType(el)) {
       // Match against a hash or array.
       iterateOverObject(match, function(key, value) {
         if(!multiMatch(el[key], match[key], scope, [el[key], el])) {
@@ -1069,7 +1078,12 @@
   }
 
   function isArrayLike(obj) {
-    return hasOwnProperty(obj, 'length') && !isArray(obj) && !isString(obj) && !isPlainObject(obj);
+    return hasProperty(obj, 'length') && !isString(obj) && !isPlainObject(obj);
+  }
+
+  function isArgumentsObject(obj) {
+    // .callee exists on Arguments objects in < IE8
+    return hasProperty(obj, 'length') && (className(obj) === '[object Arguments]' || !!obj.callee);
   }
 
   function flatArguments(args) {
@@ -1252,7 +1266,7 @@
     'create': function() {
       var result = [];
       multiArgs(arguments, function(a) {
-        if(isArrayLike(a)) {
+        if(isArgumentsObject(a) || isArrayLike(a)) {
           a = array.prototype.slice.call(a, 0);
         }
         result = result.concat(a);
@@ -2574,11 +2588,24 @@
     }).join('|');
   }
 
+  function getNewDate() {
+    var d = new date, globalOffset = Date.SugarTimezoneOffset, minutes;
+    if(isNumber(globalOffset)) {
+      minutes = globalOffset - d.getTimezoneOffset();
+      if(minutes) {
+        // Doing this directly here to improve performance
+        // and avoid some nasty recursion issues.
+        d.setTime(d.getTime() - (minutes * 60 * 1000));
+      }
+    }
+    return d;
+  }
+
   // Date argument helpers
 
   function collectDateArguments(args, allowDuration) {
     var obj;
-    if(isObjectPrimitive(args[0])) {
+    if(isObjectType(args[0])) {
       return args;
     } else if (isNumber(args[0]) && !isNumber(args[1])) {
       return [args[0]];
@@ -2664,7 +2691,7 @@
   function getExtendedDate(f, localeCode, prefer, forceUTC) {
     var d, relative, baseLocalization, afterCallbacks, loc, set, unit, unitIndex, weekday, num, tmp;
 
-    d = new date();
+    d = getNewDate();
     afterCallbacks = [];
 
     function afterDateSet(fn) {
@@ -2731,7 +2758,7 @@
       d.utc(f.isUTC()).setTime(f.getTime());
     } else if(isNumber(f)) {
       d.setTime(f);
-    } else if(isObjectPrimitive(f)) {
+    } else if(isObjectType(f)) {
       d.set(f, true);
       set = f;
     } else if(isString(f)) {
@@ -2922,7 +2949,7 @@
 
   // If the year is two digits, add the most appropriate century prefix.
   function getYearFromAbbreviation(year) {
-    return round(callDateGet(new date(), 'FullYear') / 100) * 100 - round(year / 100) * 100 + year;
+    return round(callDateGet(getNewDate(), 'FullYear') / 100) * 100 - round(year / 100) * 100 + year;
   }
 
   function getShortHour(d) {
@@ -2969,7 +2996,7 @@
     // Allow falling back to monthsFromNow if the unit is in months...
     return adu[1] === 6 ||
     // ...or if it's === 4 weeks and there are more days than in the given month
-    (adu[1] === 5 && adu[0] === 4 && date.daysFromNow() >= new Date().daysInMonth());
+    (adu[1] === 5 && adu[0] === 4 && date.daysFromNow() >= getNewDate().daysInMonth());
   }
 
 
@@ -3134,8 +3161,8 @@
 
   function compensateForTimezoneTraversal(d, min, max) {
     var dMin, dMax, minOffset, maxOffset;
-    dMin = new Date(min);
-    dMax = new Date(max).utc(d.isUTC());
+    dMin = new date(min);
+    dMax = new date(max).utc(d.isUTC());
     if(callDateGet(dMax, 'Hours') !== 23) {
       minOffset = dMin.getTimezoneOffset();
       maxOffset = dMax.getTimezoneOffset();
@@ -3162,7 +3189,7 @@
     }
 
     function canDisambiguate() {
-      var now = new date;
+      var now = getNewDate();
       return (prefer === -1 && d > now) || (prefer === 1 && d < now);
     }
 
@@ -4236,8 +4263,8 @@
         d = d.trim().toLowerCase();
         comp = this.clone().utc(utc);
         switch(true) {
-          case d === 'future':  return this.getTime() > new date().getTime();
-          case d === 'past':    return this.getTime() < new date().getTime();
+          case d === 'future':  return this.getTime() > getNewDate().getTime();
+          case d === 'past':    return this.getTime() < getNewDate().getTime();
           case d === 'weekday': return callDateGet(comp, 'Day') > 0 && callDateGet(comp, 'Day') < 6;
           case d === 'weekend': return callDateGet(comp, 'Day') === 0 || callDateGet(comp, 'Day') === 6;
           case (tmp = English['weekdays'].indexOf(d) % 7) > -1: return callDateGet(comp, 'Day') === tmp;
@@ -5617,7 +5644,7 @@
   function objectToQueryString(base, obj) {
     var tmp;
     // If a custom toString exists bail here and use that instead
-    if(isArray(obj) || (isObjectPrimitive(obj) && obj.toString === internalToString)) {
+    if(isArray(obj) || (isObjectType(obj) && obj.toString === internalToString)) {
       tmp = [];
       iterateOverObject(obj, function(key, value) {
         if(base) {
@@ -5641,7 +5668,7 @@
   function matchKey(key, match) {
     if(isRegExp(match)) {
       return match.test(key);
-    } else if(isObjectPrimitive(match)) {
+    } else if(isObjectType(match)) {
       return hasOwnProperty(match, key);
     } else {
       return key === string(match);
@@ -5834,7 +5861,7 @@
         for(key in source) {
           if(!hasOwnProperty(source, key) || !target) continue;
           val    = source[key];
-          goDeep = deep && isObjectPrimitive(val);
+          goDeep = deep && isObjectType(val);
           // Conflict!
           if(isDefined(target[key])) {
             // Do not merge.
@@ -5901,7 +5928,7 @@
      ***/
     'clone': function(obj, deep) {
       var target, klass;
-      if(!isObjectPrimitive(obj)) {
+      if(!isObjectType(obj)) {
         return obj;
       }
       klass = className(obj);
@@ -7013,7 +7040,7 @@
     'assign': function() {
       var assign = {};
       flattenedArgs(arguments, function(a, i) {
-        if(isObjectPrimitive(a)) {
+        if(isObjectType(a)) {
           simpleMerge(assign, a);
         } else {
           assign[i + 1] = a;
