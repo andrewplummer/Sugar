@@ -4,6 +4,7 @@ test('Dates | Spanish', function () {
   var then = new Date(2011, 7, 25, 15, 45, 50);
   Date.setLocale('es');
 
+  dateEqual(Date.create('la semana pasada'), getRelativeDate(null, null, -7), 'Date#create | Spanish | Last week');
 
   dateEqual(Date.create('15 de mayo 2011'), new Date(2011, 4, 15), 'Date#create | basic Spanish date');
   dateEqual(Date.create('5 de enero de 2012'), new Date(2012, 0, 5), 'Date#create | Spanish | 2012-01-05');
@@ -107,7 +108,7 @@ test('Dates | Spanish', function () {
   equal(Date.create('5 minute from now', 'en').relative(), 'dentro de 5 minutos',  'Date#create | Spanish | relative format future');
   equal(Date.create('5 hour from now', 'en').relative(),   'dentro de 5 horas',     'Date#create | Spanish | relative format future');
   equal(Date.create('5 day from now', 'en').relative(),    'dentro de 5 días',    'Date#create | Spanish | relative format future');
-  equal(Date.create('5 week from now', 'en').relative(),   'dentro de 5 semanas',  'Date#create | Spanish | relative format future');
+  equal(Date.create('5 week from now', 'en').relative(),   'dentro de 1 mes',  'Date#create | Spanish | relative format future');
   equal(Date.create('5 month from now', 'en').relative(),  'dentro de 5 meses',   'Date#create | Spanish | relative format future');
   equal(Date.create('5 year from now', 'en').relative(),   'dentro de 5 años',     'Date#create | Spanish | relative format future');
 
