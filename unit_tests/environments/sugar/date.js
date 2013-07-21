@@ -2726,5 +2726,25 @@ test('Date', function () {
   dateEqual(new Date(2013, 6, 10, 8, 30).beginningOfISOWeek(), new Date(2013, 6, 8), 'Date#beginningOfISOWeek  | resets time');
   dateEqual(new Date(2013, 6, 12, 8, 30).endOfISOWeek(), new Date(2013, 6, 14, 23, 59, 59, 999), 'Date#endOfISOWeek  | resets time');
 
+
+  // Issue #342 handling offsets for comparison
+
+  // Honolulu time zone
+  Date.SugarTimezoneOffset = 600;
+
+  var offset = 600 - new Date().getTimezoneOffset();
+  dateEqual(Date.create(), getRelativeDate(null, null, null, null, -offset), 'Date.create | simple create should respect global offset');
+  dateEqual(Date.create('1 day ago'), getRelativeDate(null, null, -1, null, -offset), 'Date.create | relative date should respect global offset');
+  equal(Date.past('4pm').getTime() < (new Date().getTime() + (-offset * 60 * 1000)), true, 'Date.past | repsects global offset');
+  equal(Date.future('4pm').getTime() > (new Date().getTime() + (-offset * 60 * 1000)), true, 'Date.future | repsects global offset');
+
+  d = new Date;
+  d.addMinutes(d.getTimezoneOffset() + 60);
+
+  equal(d.isFuture(), true, 'Date#isFuture | should respect global offset');
+  equal(d.isPast(), false, 'Date#isPast | should respect global offset');
+
+  Date.SugarTimezoneOffset = null;
+
 });
 
