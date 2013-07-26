@@ -34,7 +34,7 @@ Be careful about removing dependencies, however, especially methods in `core.js`
 Unit Tests Node
 ===============
 
-Unit tests can be run through the shell script at `./unit_tests/node.sh`
+Use the `npm test` command to run unit tests.
 
 
 Date Localizations
