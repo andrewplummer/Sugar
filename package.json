@@ -9,5 +9,5 @@
   "directories" : {"lib" : "./lib"},
   "repository" : {"type" : "git", "url": "https://github.com/andrewplummer/Sugar.git"},
   "engines" : {"node" : ">= 0.4.0"},
-  "scripts": {"test": "./unit_tests/node.sh"}
+  "scripts": {"test": "node unit_tests/environments/node/test.js"}
 }
