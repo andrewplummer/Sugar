@@ -19,47 +19,13 @@
     <script type="text/javascript" src="../lib/regexp.js"></script>
   </head>
   <body>
-    <button id="sugar">Sugar</button>
-    <button id="moment">Moment</button>
-    <button id="sugar2">Sugar 2</button>
-    <button id="moment2">Moment 2</button>
-    <button id="repeat">Repeat</button>
-    <div id="output"></div>
   </body>
   <script>
 
-    var d = new Date();
-    var m = moment();
-
-    function runTest(obj, format) {
-      console.info(obj);
-      $('#output').html(obj.format(format));
-      runPerformanceTest(function() {
-        obj.format(format);
-      });
-    }
-
-    $('#sugar').click(function() {
-      runTest(d, '{yyyy}');
+    runPerformanceTest(100000, function() {
+      Object.map({foo:3}, function(k,v){ return v * 3; });
     });
 
-    $('#moment').click(function() {
-      runTest(m, 'YYYY');
-    });
-
-    $('#sugar2').click(function() {
-      runTest(d, Date.ISO8601_DATETIME);
-    });
-
-    $('#moment2').click(function() {
-      runTest(m, 'YYYY-MM-DDTHH:mm:ss.SSS');
-    });
-
-    $('#repeat').click(function() {
-      runPerformanceTest(50, function() {
-        repeatString(100000, 'sss');
-      });
-    });
 
   </script>
 </html>
