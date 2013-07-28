@@ -30,7 +30,7 @@ v1.4.0
 
 ### Performance Tweaks ###
 
-- Object.map is 17-86% faster
+- Object.map is now 17-86% faster
 
 
 v1.3.9
