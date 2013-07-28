@@ -36,6 +36,9 @@ var runtime;
 // will report false.
 var arrayEqual = function(one, two) {
   var i, result = true;
+  if(!one || !two) {
+    return false;
+  }
   testArrayEach(one, function(a, i) {
     if(!testIsEqual(one[i], two[i])) {
       result = false;
