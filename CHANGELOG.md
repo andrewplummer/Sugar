@@ -28,9 +28,10 @@ v1.4.0
 - Fix for `Object.merge` not merging certain deep objects.
 - Added Date.SugarTimezoneOffset to handle better comparison of internally created dates.
 
-### Performance Tweaks ###
+### Performance Enhancements ###
 
-- Object.map is now 17-86% faster
+- Object.map:  120-700% faster
+- Date#format: 5700-15700% faster
 
 
 v1.3.9
