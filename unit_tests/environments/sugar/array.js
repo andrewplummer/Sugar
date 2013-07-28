@@ -236,7 +236,7 @@ test('Array', function () {
   raisesError(function(){ [1,2,3].map() }, 'Array#map | raises an error if no argument', { prototype: false });
 
   equal([1,2,3].map(undefined), [1,2,3], 'Array#map | undefined');
-  equal([1,2,3].map(null), [undefined, undefined, undefined], 'Array#map | null');
+  equal([1,2,3].map(null), [1,2,3], 'Array#map | null');
   equal([1,2,3].map(4), [undefined, undefined, undefined], 'Array#map | number');
 
 
@@ -766,6 +766,7 @@ test('Array', function () {
 
   equal([12,87,55].min(), 12, 'Array#min | no argument', { prototype: 12 });
   equal([12,87,55].min(undefined), 12, 'Array#min | undefined', { prototype: 12 });
+  equal([12,87,55].min(null), 12, 'Array#min | null', { prototype: 12 });
   equal([-12,-87,-55].min(), -87, 'Array#min | -87', { prototype: -87 });
   equal([5,5,5].min(), 5, 'Array#min | 5 is uniqued', { prototype: 5 });
   equal(['a','b','c'].min(), 'a', 'Array#min | strings are not counted', { prototype: 'a' });
@@ -796,11 +797,11 @@ test('Array', function () {
   raisesError(function() { arrayOfUndefined.min(); }, 'Array#min | should raise an error when comparing undefined');
   raisesError(function() { arrayOfUndefinedWith1.min(); }, 'Array#min | should raise an error when comparing 1 to undefined');
   raisesError(function() { [87,12,55].min(4); }, 'Array#min | number not found in number, so undefined');
-  raisesError(function() { [12,87,55].min(null); }, 'Array#min | null not found in number, so undefined');
 
 
   equal([12,87,55].max(), 87, 'Array#max | no argument', { prototype: 87 });
   equal([12,87,55].max(undefined), 87, 'Array#max | undefined', { prototype: 87 });
+  equal([12,87,55].max(null), 87, 'Array#max | null', { prototype: 87 });
   equal([-12,-87,-55].max(), -12, 'Array#max | -12', { prototype: -12 });
   equal([5,5,128].max(), 128, 'Array#max | 128', { prototype: 128 });
   equal([128,128,128].max(), 128, 'Array#max | 128 is uniqued', { prototype: 128 });
@@ -831,7 +832,6 @@ test('Array', function () {
   raisesError(function() { arrayOfUndefined.max(); }, 'Array#max | should raise an error when comparing undefined');
   raisesError(function() { arrayOfUndefinedWith1.max(); }, 'Array#max | should raise an error when comparing 1 to undefined');
   raisesError(function() { [87,12,55].max(4); }, 'Array#max | number not found in number, so undefined');
-  raisesError(function() { [12,87,55].max(null); }, 'Array#max | null not found in number, so undefined');
 
 
 
@@ -938,7 +938,7 @@ test('Array', function () {
   equal(people.groupBy(function(p) { return p.age; }), {27: [{name:'edmund',age:27,hair:'blonde'},{name:'jim',age:27,hair:'brown'}],52:[{name:'mary',age:52,hair:'blonde'}],13:[{name:'ronnie',age:13,hair:'brown'}]}, 'Array#groupBy | grouping people by age');
 
   equal([1,2,3].groupBy(undefined), { 1: [1], 2: [2], 3: [3] }, 'Array#groupBy | undefined');
-  equal([1,2,3].groupBy(null), { 'undefined': [1,2,3] }, 'Array#groupBy | null');
+  equal([1,2,3].groupBy(null), { 1: [1], 2: [2], 3: [3] }, 'Array#groupBy | null');
   equal([1,2,3].groupBy(4), { 'undefined': [1,2,3] }, 'Array#groupBy | number');
   equal(['one','two','three'].groupBy('length').keys, undefined, 'Array#groupBy | result should not be an extended object');
 
@@ -2732,15 +2732,15 @@ test('Array', function () {
   testClassAndInstance('isEmpty', { foo: undefined }, [], false, 'Object.isEmpty | undefined is still counted');
   testClassAndInstance('isEmpty', { foo: NaN }, [], false, 'Object.isEmpty | undefined is still counted');
   testClassAndInstance('isEmpty', [], [], true, 'Object.isEmpty | empty array is empty');
-
-  raisesError(function(){ Object.isEmpty(null); }, 'Object.isEmpty | null is empty');
-  raisesError(function(){ Object.isEmpty(undefined); }, 'Object.isEmpty | undefined is empty');
-  raisesError(function(){ Object.isEmpty(''); }, 'Object.isEmpty | empty string is empty');
-  raisesError(function(){ Object.isEmpty('wasabi'); }, 'Object.isEmpty | non-empty string is not empty');
-  raisesError(function(){ Object.isEmpty(NaN); }, 'Object.isEmpty | NaN is empty');
-  raisesError(function(){ Object.isEmpty(8); }, 'Object.isEmpty | 8 is empty');
-  raisesError(function(){ Object.isEmpty((function(){ return this; }).call('wasabi')); }, 'Object.isEmpty | non-primitive string still errors');
-  raisesError(function(){ Object.isEmpty((function(){ return this; }).call(8)); }, 'Object.isEmpty | non-primitive number still errors');
+  testClassAndInstance('isEmpty', null, [], true, 'Object.isEmpty | null is empty');
+  testClassAndInstance('isEmpty', undefined, [], true, 'Object.isEmpty | undefined is empty');
+  testClassAndInstance('isEmpty', '', [], true, 'Object.isEmpty | empty string is empty');
+  testClassAndInstance('isEmpty', new String(''), [], true, 'Object.isEmpty | empty string object is empty');
+  testClassAndInstance('isEmpty', 'wasabi', [], false, 'Object.isEmpty | non-empty string is not empty');
+  testClassAndInstance('isEmpty', new String('wasabi'), [], false, 'Object.isEmpty | non-empty string object is not empty');
+  testClassAndInstance('isEmpty', NaN, [], true, 'Object.isEmpty | NaN is empty');
+  testClassAndInstance('isEmpty', 8, [], true, 'Object.isEmpty | 8 is empty');
+  testClassAndInstance('isEmpty', new Number(8), [], true, 'Object.isEmpty | 8 object is empty');
 
 
   // Object.size
@@ -2756,15 +2756,14 @@ test('Array', function () {
   testClassAndInstance('size', ['a'], [], 1, 'Object.size | array');
   testClassAndInstance('size', ['a','b'], [], 2, 'Object.size | array 2 elements');
   testClassAndInstance('size', ['a','b','c'], [], 3, 'Object.size | array 3 elements');
-
-  raisesError(function(){ Object.size('foo') }, 'Object.size | string primitive');
-  raisesError(function(){ Object.size(1) }, 'Object.size | number primitive');
-  raisesError(function(){ Object.size(true) }, 'Object.size | boolean primitive');
-  raisesError(function(){ Object.size(null) }, 'Object.size | null');
-  raisesError(function(){ Object.size(undefined) }, 'Object.size | undefined');
-  raisesError(function(){ Object.size((function(){ return this; }).call('foo')) }, 'Object.size | non-primitive string still errors');
-  raisesError(function(){ Object.size((function(){ return this; }).call(1)) }, 'Object.size | non-primitive number still errors');
-  raisesError(function(){ Object.size((function(){ return this; }).call(true)) }, 'Object.size | non-primitive boolean still errors');
+  testClassAndInstance('size', 'foo', [], 3, 'Object.size | string primitive');
+  testClassAndInstance('size', new String('foo'), [], 3, 'Object.size | string object');
+  testClassAndInstance('size', 1, [], 0, 'Object.size | number primitive');
+  testClassAndInstance('size', new Number(1), [], 0, 'Object.size | number object');
+  testClassAndInstance('size', true, [], 0, 'Object.size | boolean primitive');
+  testClassAndInstance('size', new Boolean(true), [], 0, 'Object.size | boolean object');
+  testClassAndInstance('size', null, [], 0, 'Object.size | null');
+  testClassAndInstance('size', undefined, [], 0, 'Object.size | undefined');
 
   var Foo = function(){};
   testClassAndInstance('size', new Foo, [], 0, 'Object.size | class instances');

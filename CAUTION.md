@@ -31,6 +31,9 @@ v1.4.0+
   - `Object.isObject` will now no longer return true for class instances for the same reasons listed above. This also was intended behavior but was defective.
 
 - Level: Minor
+  - Enumerable methods on object will now coerce primitive types. This means that `Object.findAll('foo')` will now treat `'foo'` as `new String('foo')`. This is reversed from the previous behavior which would error on primitive types and coerce objects to primitive types where possible.
+
+- Level: Minor
   - Date ranges that have an end that is less than the start are now no longer considered invalid, and can be iterated across in exactly the same manner. This means that ranges can now be iterated in reverse and .start and .end are no longer equivalent to .min and .max.
 
 - Level: Minor
@@ -41,6 +44,9 @@ v1.4.0+
 
 - Level: Very Minor
   - Passing a regex to array matching methods like `findAll` will now match it directly against the element in the array, regardless of whether or not the matched element is a string or not. This makes the logic more straightforward but it also means that it will stringify the element before attempting to match. If, for example, you have instances of classes in the array and the regex is /t/, the /t/ will return true for that element as it will match the stringified "[object Object]" of the instance, which is likely not what you want, so caution is needed here.
+
+- Level: Very Minor
+  - Passing `null` to `.map` will now have the same effect as `undefined` (or no arguments), that is, no mapping will occur. This will apply to any method making use of the internal `transformArgument`, so `Array#min`, `Array#max`, and `Array#groupBy` are affected as well.
 
 
 v1.3.9+
