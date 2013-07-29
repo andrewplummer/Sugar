@@ -32,6 +32,7 @@ v1.4.0
 
 - Object.map:  120-700% faster
 - Date#format: 5700-15700% faster
+- Array#min/max/less/more 160-180% faster
 
 
 v1.3.9
