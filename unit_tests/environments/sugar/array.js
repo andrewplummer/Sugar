@@ -585,6 +585,11 @@ test('Array', function () {
   equal(arr.findAll(function(n) { return n % 3 == 0; }, 4, true), [6,9,3], 'Array#findAll | looping | n % 3 from index 4', { prototype: [3,6,9] });
   equal(arr.reverse().findAll(function(n) { return n % 3 == 0; }, 4, true), [3,9,6], 'Array#findAll | looping | reversed | n % 3 from index 4 reversed', { prototype: [9,6,3] });
 
+  var fn = function() {
+    return false;
+  }
+
+  equal([fn].findAll(fn), [fn], 'Array#findAll | should find functions by reference');
 
   equal([1,1,3].unique(), [1,3], 'Array#unique | 1,1,3');
   equal([0,0,0].unique(), [0], 'Array#unique | 0,0,0');
@@ -1634,7 +1639,7 @@ test('Array', function () {
     { name: 'mary',   age: 52, hair: 'blonde' },
     { name: 'ronnie', age: 13, hair: 'brown'  },
     { name: 'edmund', age: 27, hair: 'blonde' },
-    { name: 'buddy', age: 82, hair: { color: 'red', type: 'long', cost: 15, last_cut: new Date(2010, 4, 18) } }
+    { name: 'buddy',  age: 82, hair: { color: 'red', type: 'long', cost: 15, last_cut: new Date(2010, 4, 18) } }
   ];
 
 
@@ -1654,6 +1659,7 @@ test('Array', function () {
   equal(people.findAll({ hair: { cost: 15 }}), [people[4]], 'Array#findAll | complex | nested number');
   equal(people.findAll({ hair: { cost: 23 }}), [], 'Array#findAll | complex | nested non-matching number');
   equal(people.findAll({ hair: { cost: undefined }}), [], 'Array#findAll | complex | nested undefined property');
+  equal(people.findAll({ hair: { post: undefined }}), [people[4]], 'Array#findAll | complex | nested undefined property non-existent');
   equal(people.findAll({ hair: { cost: NaN }}), [], 'Array#findAll | complex | nested property is NaN');
   equal(people.findAll({ hair: { color: function(c){ return c == 'red'; } }}), [people[4]], 'Array#findAll | complex | nested function');
   equal(people.findAll({ some: { random: { shit: {}}}}), [], 'Array#findAll | complex | totally unrelated properties');
@@ -2561,6 +2567,8 @@ test('Array', function () {
   equal([one, two, three, four].findAll({ a: new Date(2001, 3, 16) }), [], 'Array#findAll | matches class instances | object with incorrect date');
   equal([one, two, three, four].findAll({ a: new Date(2001, 3, 15, 0, 0, 0, 1) }), [], 'Array#findAll | matches class instances | object with date off by 1ms');
 
+  equal([{ a: { getTime: 'fooled you!' }}].findAll({ a: new Date(2001, 3, 15) }), [], 'Array#findAll | trying to fool getTime check');
+
   var five = new Foo(one);
 
   equal([five].findAll({ a: 'one' }), [], 'Array#findAll | nested instances | object with string');
@@ -2591,9 +2599,9 @@ test('Array', function () {
 
   testClassAndInstance('any', obj1, function(key, value, o) {
     equal(typeof key, 'string', 'Object enumerable methods | first argument is always the key');
-    equal(value, obj1[key],      'Object enumerable methods | second argument is always the value');
-    equal(o, obj1,               'Object enumerable methods | third argument is always the original object');
-    equal(this, obj1,            'Object enumerable methods | "this" is always the original object');
+    equal(value, obj1[key],     'Object enumerable methods | second argument is always the value');
+    equal(o, obj1,              'Object enumerable methods | third argument is always the original object');
+    equal(this, obj1,           'Object enumerable methods | "this" is always the original object');
     return true;
   }, true, 'Object.any | placeholder for callback arguments');
 

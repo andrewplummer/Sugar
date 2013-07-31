@@ -27,6 +27,7 @@ v1.4.0
 - Fix for extended objects `select` and `reject` returning plain objects.
 - Fix for `Object.merge` not merging certain deep objects.
 - Added Date.SugarTimezoneOffset to handle better comparison of internally created dates.
+- Removed `multiMatch` in favor of a cached matcher system.
 
 ### Performance Enhancements ###
 
