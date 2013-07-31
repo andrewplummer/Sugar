@@ -31,9 +31,9 @@ v1.4.0
 
 ### Performance Enhancements ###
 
-- Object.map:  120-700% faster
-- Date#format: 5700-15700% faster
-- Array#min/max/less/more 160-180% faster
+- Object.map:  20-600% faster
+- Date#format: 5600-15600% faster
+- Array#min/max/less/more 60-80% faster
 
 
 v1.3.9
