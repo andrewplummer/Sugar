@@ -137,14 +137,9 @@ background-color: teal;
     <button id="run">Run Tests!</button>
     <button id="test">Test once</button>
     <div id="output"></div>
+    <script src="tests.js"></script>
   </body>
   <script>
-
-    tests = [
-      function(arg) {
-        return Object.isString(arg);
-      }
-    ];
 
     function runTestAndOutput(testNumber, test, argName, iterations, times) {
       var ms = runMultipleTestsWithArgumentAndAverage(test, window[argName], iterations, 10);
@@ -195,12 +190,13 @@ background-color: teal;
       tests.forEach(function(test, i) {
         active.forEach(function(obj) {
           var result = test(window[obj.name]);
-          $('#output').append('<p>Test #' + (i + 1) + ' ran using <code>' + obj.name + '</code> and returned ' + result + '</p>')
+          $('#output').append('<p>Test #' + (i + 1) + ' ran using <code>' + obj.name + '</code> and returned ' + JSON.stringify(result) + '</p>')
         });
       });
     });
 
     $('#run').click(function() {
+        $('#output').empty();
         var active = getActive();
         if(active.length === 0 || tests.length === 0) {
           $('#output').html('Nothing to run!');
