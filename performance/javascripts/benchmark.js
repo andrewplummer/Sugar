@@ -1,7 +1,7 @@
 
 runPerformanceTest = function() {
   var iterations, fn, start, i = 0, ms;
-  var passedArg = arguments[3];
+  var passedArg = arguments[2];
   if(arguments.length == 1) {
     iterations = 10000;
     fn = arguments[0];
