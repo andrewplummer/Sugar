@@ -18,14 +18,199 @@
     <script type="text/javascript" src="../lib/range.js"></script>
     <script type="text/javascript" src="../lib/regexp.js"></script>
   </head>
+  <style type="text/css">
+
+    table {
+      border-collapse: separate;
+    }
+
+    p {
+      margin: 0;
+    }
+
+    td {
+      background-color: #f6f6f6;
+      padding: 10px;
+    }
+
+    td[data-iterations] {
+      cursor: pointer;
+    }
+
+    th {
+      cursor: pointer;
+      text-align: left;
+    }
+
+    .active {
+background-color: teal;
+    }
+
+    #output {
+      margin-top: 15px;
+    }
+
+  </style>
   <body>
+    <h3>Code to test:</h3>
+    <pre>
+      <ol id="code"></ol>
+    </pre>
+    <table>
+      <thead>
+        <tr>
+          <th id="all">Type</th>
+          <th colspan="6">Objects</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>
+            Arrays
+          </th>
+          <td data-iterations="100000">
+            emptyArray
+          </td>
+          <td data-iterations="100000">
+            smallNumberArray
+          </td>
+          <td data-iterations="100000">
+            smallStringArray
+          </td>
+          <td data-iterations="10">
+            bigNumberArray
+          </td>
+          <td data-iterations="10">
+            bigStringArray
+          </td>
+          <td data-iterations="10">
+            bigDateArray
+          </td>
+          <td data-iterations="100">
+            jsonArray
+          </td>
+        </tr>
+        <tr>
+          <th>
+            Strings
+          </th>
+          <td data-iterations="100000">
+            emptyString
+          </td>
+          <td data-iterations="100000">
+            normalString
+          </td>
+          <td data-iterations="100000">
+            hugeString
+          </td>
+          <td colspan="4" class="empty"></td>
+        </tr>
+        <tr>
+          <th>
+            Numbers
+          </th>
+          <td data-iterations="100000">
+            zero
+          </td>
+          <td data-iterations="100000">
+            smallInteger
+          </td>
+          <td data-iterations="100000">
+            hugeNumber
+          </td>
+          <td data-iterations="100000">
+            floatingNumber
+          </td>
+          <td colspan="3" class="empty"></td>
+        </tr>
+        <tr>
+          <th>
+            Dates
+          </th>
+          <td data-iterations="100000">
+            normalDate
+          </td>
+          <td colspan="6" class="empty"></td>
+        </tr>
+      </tbody>
+    </table>
+    <button id="run">Run Tests!</button>
+    <button id="test">Test once</button>
+    <div id="output"></div>
   </body>
   <script>
 
-    runPerformanceTest(100000, function() {
-      Object.map({foo:3}, function(k,v){ return v * 3; });
+    tests = [
+      function(arg) {
+        return Object.isString(arg);
+      }
+    ];
+
+    function runTestAndOutput(testNumber, test, argName, iterations, times) {
+      var ms = runMultipleTestsWithArgumentAndAverage(test, window[argName], iterations, 10);
+      $('#output').append('<p>Test ' + testNumber + ' ran using <code>' + argName + '</code> and had an average of ' + ms + 'ms</p>')
+    }
+
+    function getActive() {
+      var els = $('td.active');
+      return els.toArray().map(function(el) {
+        el = $(el);
+        return { name: el.text().replace(/\s/g, ''), iterations: el.data('iterations') };
+      });
+    }
+
+    tests.forEach(function(fn) {
+        $('#code').append('<li>' + fn.toString() + '</li>');
     });
 
+    $('table td:not(.empty)').click(function() {
+       $(this).toggleClass('active');
+    });
+
+    $('#all').click(function() {
+      var all = $('td[data-iterations]');
+      if(all.length === all.filter('td.active').length) {
+        all.removeClass('active');
+      } else {
+        all.addClass('active');
+      }
+    });
+
+    $('tbody th').click(function() {
+        var el  = $(this);
+        var tds = el.siblings('td[data-iterations]');
+        if(tds.length === tds.filter('td.active').length) {
+          tds.removeClass('active');
+        } else {
+          tds.addClass('active');
+        }
+    });
+
+    $('#test').click(function() {
+      $('#output').empty();
+      var active = getActive();
+      if(active.length === 0 || tests.length === 0) {
+        $('#output').html('Nothing to run!');
+      }
+      tests.forEach(function(test, i) {
+        active.forEach(function(obj) {
+          var result = test(window[obj.name]);
+          $('#output').append('<p>Test #' + (i + 1) + ' ran using <code>' + obj.name + '</code> and returned ' + result + '</p>')
+        });
+      });
+    });
+
+    $('#run').click(function() {
+        var active = getActive();
+        if(active.length === 0 || tests.length === 0) {
+          $('#output').html('Nothing to run!');
+        }
+        tests.forEach(function(test, i) {
+          active.forEach(function(obj) {
+            runTestAndOutput(i + 1, test, obj.name, obj.iterations, 10);
+          });
+        });
+    });
 
   </script>
 </html>
