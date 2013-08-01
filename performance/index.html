@@ -196,16 +196,20 @@ background-color: teal;
     });
 
     $('#run').click(function() {
-        $('#output').empty();
-        var active = getActive();
-        if(active.length === 0 || tests.length === 0) {
-          $('#output').html('Nothing to run!');
-        }
-        tests.forEach(function(test, i) {
-          active.forEach(function(obj) {
-            runTestAndOutput(i + 1, test, obj.name, obj.iterations, 10);
+        $('#output').html('Running...');
+        // Delay to show it's running
+        setTimeout(function() {
+          $('#output').empty();
+          var active = getActive();
+          if(active.length === 0 || tests.length === 0) {
+            $('#output').html('Nothing to run!');
+          }
+          tests.forEach(function(test, i) {
+            active.forEach(function(obj) {
+              runTestAndOutput(i + 1, test, obj.name, obj.iterations, 10);
+            });
           });
-        });
+        }, 1);
     });
 
   </script>
