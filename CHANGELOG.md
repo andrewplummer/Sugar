@@ -38,6 +38,7 @@ v1.4.0
 - Enumerable methods like findAll/findIndex/map/any/count/sum/etc.: up to 11,270% faster
 - isString/isNumber/isBoolean: up to 77% faster
 - Object.isFunction: up to 336% faster
+- isEqual returns up front when === (can be *much* faster). Many methods use this internally as well.
 
 
 v1.3.9
