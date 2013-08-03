@@ -31,8 +31,8 @@ v1.4.0
 
 ### Performance Enhancements ###
 
-- Object.map:  up to 682% faster
-- Date#format: 5600-15600% faster
+- Object.map: up to 682% faster
+- Date#format: up to 20,000% faster
 - Array#min/max/less/more up to 83% faster
 - Enumerable methods like findAll/findIndex/map/any/count/sum/etc.: up to 11,270% faster
 - isString/isNumber/isBoolean: up to 77% faster
