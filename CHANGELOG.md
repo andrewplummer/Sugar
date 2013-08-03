@@ -29,6 +29,7 @@ v1.4.0
 - Added Date.SugarTimezoneOffset to handle better comparison of internally created dates.
 - Removed `multiMatch` in favor of a cached matcher system.
 - Fix for environments where regexes are functions.
+- Fix for `Function#cancel` not properly clearing all timers (Issue #346).
 
 ### Performance Enhancements ###
 
