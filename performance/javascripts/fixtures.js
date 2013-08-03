@@ -419,3 +419,69 @@ jsonArray = [
   }
 ];
 
+
+simpleObject = { id:14 };
+deepObject = {
+  foo: {
+    foo: {
+      foo: {
+        foo: {
+          foo: {
+            foo: {
+              foo: {
+                foo: {
+                  foo: {
+                    foo: {
+                      foo: {
+                        foo: {
+                          foo: {
+                            foo: {
+                              foo: {
+                                foo: {
+                                  foo: {
+                                    foo: {
+                                      foo: {
+                                        foo: {
+                                          foo: {
+                                            foo: {
+                                              foo: {
+                                                foo: {
+                                                  foo: {
+                                                    foo: {
+                                                      foo: {
+                                                        foo: {
+                                                          foo: {
+                                                            foo: {
+                                                              foo: 'bar'
+                                                            }
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+};
+jsonObject   = jsonArray[0];
