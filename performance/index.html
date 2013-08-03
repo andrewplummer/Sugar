@@ -3,20 +3,6 @@
   <head>
     <title>Sugar Performance</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <script type="text/javascript" src="../unit_tests/javascripts/jquery-1.7.1.js"></script>
-    <script type="text/javascript" src="javascripts/benchmark.js"></script>
-    <script type="text/javascript" src="javascripts/vendor/moment.js"></script>
-    <!-- sugar -->
-    <script type="text/javascript" src="../lib/core.js"></script>
-    <script type="text/javascript" src="../lib/es5.js"></script>
-    <script type="text/javascript" src="../lib/object.js"></script>
-    <script type="text/javascript" src="../lib/array.js"></script>
-    <script type="text/javascript" src="../lib/string.js"></script>
-    <script type="text/javascript" src="../lib/number.js"></script>
-    <script type="text/javascript" src="../lib/function.js"></script>
-    <script type="text/javascript" src="../lib/date.js"></script>
-    <script type="text/javascript" src="../lib/range.js"></script>
-    <script type="text/javascript" src="../lib/regexp.js"></script>
   </head>
   <style type="text/css">
 
@@ -53,164 +39,80 @@ background-color: teal;
   </style>
   <body>
     <h3>Code to test:</h3>
-    <pre>
-      <ol id="code"></ol>
-    </pre>
-    <table>
-      <thead>
-        <tr>
-          <th id="all">Type</th>
-          <th colspan="6">Objects</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <th>
-            Arrays
-          </th>
-          <td data-iterations="100000">
-            emptyArray
-          </td>
-          <td data-iterations="10000">
-            smallNumberArray
-          </td>
-          <td data-iterations="10000">
-            smallStringArray
-          </td>
-          <td data-iterations="10">
-            bigNumberArray
-          </td>
-          <td data-iterations="10">
-            bigStringArray
-          </td>
-          <td data-iterations="10">
-            bigDateArray
-          </td>
-          <td data-iterations="100">
-            jsonArray
-          </td>
-        </tr>
-        <tr>
-          <th>
-            Strings
-          </th>
-          <td data-iterations="100000">
-            emptyString
-          </td>
-          <td data-iterations="100000">
-            normalString
-          </td>
-          <td data-iterations="100000">
-            hugeString
-          </td>
-          <td colspan="4" class="empty"></td>
-        </tr>
-        <tr>
-          <th>
-            Numbers
-          </th>
-          <td data-iterations="100000">
-            zero
-          </td>
-          <td data-iterations="100000">
-            smallInteger
-          </td>
-          <td data-iterations="100000">
-            hugeNumber
-          </td>
-          <td data-iterations="100000">
-            floatingNumber
-          </td>
-          <td colspan="3" class="empty"></td>
-        </tr>
-        <tr>
-          <th>
-            Dates
-          </th>
-          <td data-iterations="100000">
-            normalDate
-          </td>
-          <td colspan="6" class="empty"></td>
-        </tr>
-      </tbody>
-    </table>
-    <button id="run">Run Tests!</button>
-    <button id="test">Test once</button>
+    <ol id="code"></ol>
     <div id="output"></div>
-    <script src="tests.js"></script>
+    <!-- jQuery -->
+    <script type="text/javascript" src="../unit_tests/javascripts/jquery-1.7.1.js"></script>
+    <!-- Sugar -->
+    <script type="text/javascript" src="../lib/core.js"></script>
+    <script type="text/javascript" src="../lib/es5.js"></script>
+    <script type="text/javascript" src="../lib/object.js"></script>
+    <script type="text/javascript" src="../lib/array.js"></script>
+    <script type="text/javascript" src="../lib/string.js"></script>
+    <script type="text/javascript" src="../lib/number.js"></script>
+    <script type="text/javascript" src="../lib/function.js"></script>
+    <script type="text/javascript" src="../lib/date.js"></script>
+    <script type="text/javascript" src="../lib/range.js"></script>
+    <script type="text/javascript" src="../lib/regexp.js"></script>
+    <!-- testing -->
+    <script type="text/javascript" src="javascripts/benchmark.js"></script>
+    <script type="text/javascript" src="javascripts/fixtures.js"></script>
+    <script src="javascripts/tests.js"></script>
   </body>
   <script>
 
-    function runTestAndOutput(testNumber, test, argName, iterations, times) {
-      var ms = runMultipleTestsWithArgumentAndAverage(test, window[argName], iterations, 10);
-      $('#output').append('<p>Test ' + testNumber + ' ran using <code>' + argName + '</code> and had an average of ' + ms + 'ms</p>')
+    tests.forEach(function(test) {
+        var html = 
+        '<li>' +
+          '<pre>'+ test.fn.toString() +'</pre>' +
+          '<div class="targets">' +
+            test.targets.map(function(target) {
+              return '<p>' + target + '</p>';
+            }).join('') +
+          '</div>' +
+        '</li>';
+        var runButton = $('<button>Run!</button>').click(function() {
+          runTest(test);
+        });
+        var onceButton = $('<button>Test once</button>').click(function() {
+          testOnce(test);
+        });
+        $('#code').append($(html).append(runButton).append(onceButton));
+    });
+
+    function getTarget(t) {
+      var s = t.split(' * ');
+      return {
+        name: s[0],
+        count: s[1]
+      };
     }
 
-    function getActive() {
-      var els = $('td.active');
-      return els.toArray().map(function(el) {
-        el = $(el);
-        return { name: el.text().replace(/\s/g, ''), iterations: el.data('iterations') };
-      });
+    function runTest(test) {
+      $('#output').html('Running...');
+      // Delay to show it's running
+      setTimeout(function() {
+        $('#output').empty();
+        tests.forEach(function(test, i) {
+          test.targets.forEach(function(t) {
+            var target = getTarget(t);
+            var ms = runMultipleTestsWithArgumentAndAverage(test.fn, window[target.name], target.count, 10);
+            $('#output').append('<p>Test ' + (i + 1) + ' ran using <code>' + target.name + '</code> and had an average of ' + ms + 'ms</p>')
+          });
+        });
+      }, 1);
     }
 
-    tests.forEach(function(fn) {
-        $('#code').append('<li>' + fn.toString() + '</li>');
-    });
-
-    $('table td:not(.empty)').click(function() {
-       $(this).toggleClass('active');
-    });
-
-    $('#all').click(function() {
-      var all = $('td[data-iterations]');
-      if(all.length === all.filter('td.active').length) {
-        all.removeClass('active');
-      } else {
-        all.addClass('active');
-      }
-    });
-
-    $('tbody th').click(function() {
-        var el  = $(this);
-        var tds = el.siblings('td[data-iterations]');
-        if(tds.length === tds.filter('td.active').length) {
-          tds.removeClass('active');
-        } else {
-          tds.addClass('active');
-        }
-    });
-
-    $('#test').click(function() {
+    function testOnce(test) {
       $('#output').empty();
-      var active = getActive();
-      if(active.length === 0 || tests.length === 0) {
-        $('#output').html('Nothing to run!');
-      }
       tests.forEach(function(test, i) {
-        active.forEach(function(obj) {
-          var result = test(window[obj.name]);
-          $('#output').append('<p>Test #' + (i + 1) + ' ran using <code>' + obj.name + '</code> and returned ' + JSON.stringify(result) + '</p>')
+        test.targets.forEach(function(t) {
+          var target = getTarget(t);
+          var result = test.fn(window[target.name]);
+          $('#output').append('<p>Test #' + (i + 1) + ' ran using <code>' + target.name + '</code> and returned ' + JSON.stringify(result) + '</p>')
         });
       });
-    });
-
-    $('#run').click(function() {
-        $('#output').html('Running...');
-        // Delay to show it's running
-        setTimeout(function() {
-          $('#output').empty();
-          var active = getActive();
-          if(active.length === 0 || tests.length === 0) {
-            $('#output').html('Nothing to run!');
-          }
-          tests.forEach(function(test, i) {
-            active.forEach(function(obj) {
-              runTestAndOutput(i + 1, test, obj.name, obj.iterations, 10);
-            });
-          });
-        }, 1);
-    });
+    }
 
   </script>
 </html>
