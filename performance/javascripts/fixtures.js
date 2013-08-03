@@ -1,5 +1,8 @@
 
 normalDate = new Date();
+normalFunction = function() {
+  return 'foo';
+}
 
 zero           = 0;
 smallInteger   = 85;
