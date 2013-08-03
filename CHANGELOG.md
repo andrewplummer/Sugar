@@ -35,7 +35,7 @@ v1.4.0
 - Date#format: 5600-15600% faster
 - Array#min/max/less/more up to 83% faster
 - Enumerable methods like findAll/findIndex/map/any/count/sum/etc.: up to 11,270% faster
-- isString/isNumber/isBoolean: 77% faster
+- isString/isNumber/isBoolean: up to 77% faster
 
 
 v1.3.9
