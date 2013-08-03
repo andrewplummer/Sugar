@@ -360,3 +360,16 @@ async = function(fn) {
   setTimeout(fn, 200);
 }
 
+if(typeof console === 'undefined') {
+  var consoleFn = function() {
+    var messages = Array.prototype.slice.call(arguments);
+    messages = messages.map(function(arg) {
+      return String(arg);
+    })
+    $('<p/>').text(messages.join(',')).appendTo(document.body);
+  }
+  console = {
+    log: consoleFn,
+    info: consoleFn
+  }
+}
