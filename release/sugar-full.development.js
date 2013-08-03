@@ -5082,16 +5082,13 @@
    ***/
 
   function setDelay(fn, ms, after, scope, args) {
-    var index;
     // Delay of infinity is never called of course...
     if(ms === Infinity) return;
     if(!fn.timers) fn.timers = [];
     if(!isNumber(ms)) ms = 0;
     fn.timers.push(setTimeout(function(){
-      fn.timers.splice(index, 1);
       after.apply(scope, args || []);
     }, ms));
-    index = fn.timers.length;
   }
 
   extend(Function, true, false, {
@@ -5217,9 +5214,10 @@
      *
      ***/
     'cancel': function() {
-      if(isArray(this.timers)) {
-        while(this.timers.length > 0) {
-          clearTimeout(this.timers.shift());
+      var timers = this.timers, timer;
+      if(isArray(timers)) {
+        while(timer = timers.shift()) {
+          clearTimeout(timer);
         }
       }
       return this;
