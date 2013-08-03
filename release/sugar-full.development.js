@@ -19,6 +19,9 @@
   // Internal toString
   var internalToString = object.prototype.toString;
 
+  // Are regexes type function?
+  var regexIsFunction = typeof /x/ === 'function';
+
   // Internal hasOwnProperty
   var internalHasOwnProperty = object.prototype.hasOwnProperty;
 
@@ -35,29 +38,44 @@
 
   // Class initializers and class helpers
 
-  var ClassNames = 'Array,Boolean,Date,Function,Number,String,RegExp'.split(',');
+  var ClassNames = 'Boolean,Number,String,Array,Date,RegExp,Function'.split(',');
 
-  var isArray    = buildClassCheck(ClassNames[0]);
-  var isBoolean  = buildClassCheck(ClassNames[1]);
-  var isDate     = buildClassCheck(ClassNames[2]);
-  var isFunction = buildClassCheck(ClassNames[3]);
-  var isNumber   = buildClassCheck(ClassNames[4]);
-  var isString   = buildClassCheck(ClassNames[5]);
-  var isRegExp   = buildClassCheck(ClassNames[6]);
+  var isBoolean  = buildPrimitiveClassCheck('boolean', ClassNames[0]);
+  var isNumber   = buildPrimitiveClassCheck('number',  ClassNames[1]);
+  var isString   = buildPrimitiveClassCheck('string',  ClassNames[2]);
 
-  function buildClassCheck(name) {
-    var type, fn;
-    if(/String|Number|Boolean/.test(name)) {
-      type = name.toLowerCase();
-    }
-    fn = (name === 'Array' && array.isArray) || function(obj, klass) {
-      if(type && typeof obj === type) {
-        return true;
+  var isArray    = buildClassCheck(ClassNames[3]);
+  var isDate     = buildClassCheck(ClassNames[4]);
+  var isRegExp   = buildClassCheck(ClassNames[5]);
+
+  var isFunction = function(obj) {
+    // Extra check for environments where regexes are type "function".
+    return typeof obj === 'function' && (!regexIsFunction || !isRegExp(obj));
+  };
+
+  typeChecks[ClassNames[6]] = isFunction;
+
+  function isClass(obj, klass, cached) {
+    var k = cached || className(obj);
+    return k === '[object '+klass+']';
+  }
+
+  function buildClassCheck(klass) {
+    var fn = (name === 'Array' && array.isArray) || function(obj, cached) {
+      return isClass(obj, klass, cached);
+    };
+    typeChecks[klass] = fn;
+    return fn;
+  }
+
+  function buildPrimitiveClassCheck(type, klass) {
+    var fn = function(obj) {
+      if(isObjectType(obj)) {
+        return isClass(obj, klass);
       }
-      klass = klass || className(obj);
-      return klass === '[object '+name+']';
+      return typeof obj === type;
     }
-    typeChecks[name] = fn;
+    typeChecks[klass] = fn;
     return fn;
   }
 
@@ -200,8 +218,9 @@
   }
 
   function isObjectType(obj) {
-    // Check for null
-    return !!obj && typeof obj === 'object';
+    // 1. Check for null
+    // 2. Check for regexes in environments where they are "functions".
+    return !!obj && (typeof obj === 'object' || (regexIsFunction && isRegExp(obj)));
   }
 
   function isPrimitiveType(obj) {
@@ -413,11 +432,14 @@
   }
 
   function isEqual(a, b) {
-    if(objectIsMatchedByValue(a) && objectIsMatchedByValue(b)) {
+    if(a === b) {
+      // Return quickly up front when matching by reference,
+      // but be careful about 0 !== -0.
+      return a !== 0 || 1 / a === 1 / b;
+    } else if(objectIsMatchedByValue(a) && objectIsMatchedByValue(b)) {
       return stringify(a) === stringify(b);
-    } else {
-      return a === b;
     }
+    return false;
   }
 
   function objectIsMatchedByValue(obj) {
@@ -942,31 +964,80 @@
    ***/
 
 
-  function multiMatch(el, match, scope, params) {
-    var result = true;
-    if(el === match) {
-      // Match strictly equal values up front.
+  function regexMatcher(reg) {
+    reg = regexp(reg);
+    return function (el) {
+      return reg.test(el);
+    }
+  }
+
+  function dateMatcher(d) {
+    var ms = d.getTime();
+    return function (el) {
+      // TODO: Better performance for this??
+      return isDate(el) && el.getTime() === ms;
+    }
+  }
+
+  function functionMatcher(fn) {
+    return function (el, i, arr) {
+      // Return true up front if match by reference
+      return el === fn || fn.call(arr, el, i, arr);
+    }
+  }
+
+  function invertedArgsFunctionMatcher(fn) {
+    return function (value, key, obj) {
+      // Return true up front if match by reference
+      return value === fn || fn.call(obj, key, value, obj);
+    }
+  }
+
+  function fuzzyMatcher(obj, isObject) {
+    var matchers = object.map(obj, function(key, value) {
+      return getMatcher(value, isObject);
+    });
+    return function (el, i, arr) {
+      var key;
+      if(!isObjectType(el)) {
+        return false;
+      }
+      for(key in matchers) {
+        if(matchers[key].call(arr, el[key], i, arr) === false) {
+          return false;
+        }
+      }
       return true;
-    } else if(isRegExp(match)) {
+    }
+  }
+
+  function defaultMatcher(f) {
+    return function (el) {
+      return el === f || isEqual(el, f);
+    }
+  }
+
+  function getMatcher(f, isObject) {
+    if(isRegExp(f)) {
       // Match against a regexp
-      return regexp(match).test(el);
-    } else if(isDate(match)) {
+      return regexMatcher(f);
+    } else if(isDate(f)) {
       // Match against a date. isEqual below should also
       // catch this but matching directly up front for speed.
-      return isDate(el) && match.getTime() === el.getTime();
-    } else if(isFunction(match)) {
+      return dateMatcher(f);
+    } else if(isFunction(f)) {
       // Match against a filtering function
-      return match.apply(scope, params);
-    } else if(isPlainObject(match) && isObjectType(el)) {
-      // Match against a hash or array.
-      iterateOverObject(match, function(key, value) {
-        if(!multiMatch(el[key], match[key], scope, [el[key], el])) {
-          result = false;
-        }
-      });
-      return result;
+      if(isObject) {
+        return invertedArgsFunctionMatcher(f);
+      } else {
+        return functionMatcher(f);
+      }
+    } else if(isPlainObject(f)) {
+      // Match against a fuzzy hash or array.
+      return fuzzyMatcher(f, isObject);
     } else {
-      return isEqual(el, match);
+      // Default is standard isEqual
+      return defaultMatcher(f);
     }
   }
 
@@ -1022,14 +1093,17 @@
   }
 
   function arrayFind(arr, f, startIndex, loop, returnIndex) {
-    var result, index;
-    arrayEach(arr, function(el, i, arr) {
-      if(multiMatch(el, f, arr, [el, i, arr])) {
-        result = el;
-        index = i;
-        return false;
-      }
-    }, startIndex, loop);
+    var result, index, matcher;
+    if(arr.length > 0) {
+      matcher = getMatcher(f);
+      arrayEach(arr, function(el, i) {
+        if(matcher(el, i, arr)) {
+          result = el;
+          index = i;
+          return false;
+        }
+      }, startIndex, loop);
+    }
     return returnIndex ? index : result;
   }
 
@@ -1136,14 +1210,18 @@
   // Support methods
 
   function getMinOrMax(obj, map, which, all) {
-    var edge,
+    var el,
+        key,
+        edge,
+        test,
         result = [],
         max = which === 'max',
         min = which === 'min',
-        isArray = Array.isArray(obj);
-    iterateOverObject(obj, function(key) {
-      var el   = obj[key],
-          test = transformArgument(el, map, obj, isArray ? [el, parseInt(key), obj] : []);
+        isArray = array.isArray(obj);
+    for(key in obj) {
+      if(!obj.hasOwnProperty(key)) continue;
+      el   = obj[key];
+      test = transformArgument(el, map, obj, isArray ? [el, parseInt(key), obj] : []);
       if(isUndefined(test)) {
         throw new TypeError('Cannot compare with undefined');
       }
@@ -1153,7 +1231,7 @@
         result = [el];
         edge = test;
       }
-    });
+    }
     if(!isArray) result = arrayFlatten(result, 1);
     return all ? result : result[0];
   }
@@ -1215,14 +1293,18 @@
 
   function buildEnhancements() {
     var callbackCheck = function() { var a = arguments; return a.length > 0 && !isFunction(a[0]); };
-    extendSimilar(array, true, callbackCheck, 'map,every,all,some,any,none,filter', function(methods, name) {
+    extendSimilar(array, true, callbackCheck, 'every,all,some,any,none,filter', function(methods, name) {
       methods[name] = function(f) {
+        var matcher = getMatcher(f);
         return this[name](function(el, index) {
-          if(name === 'map') {
-            return transformArgument(el, f, this, [el, index, this]);
-          } else {
-            return multiMatch(el, f, this, [el, index, this]);
-          }
+          return matcher(el, index, this);
+        });
+      }
+    });
+    extend(array, true, callbackCheck, {
+      'map': function(f) {
+        return this.map(function(el, index) {
+          return transformArgument(el, f, this, [el, index, this]);
         });
       }
     });
@@ -1310,12 +1392,15 @@
      *
      ***/
     'findAll': function(f, index, loop) {
-      var result = [];
-      arrayEach(this, function(el, i, arr) {
-        if(multiMatch(el, f, arr, [el, i, arr])) {
-          result.push(el);
-        }
-      }, index, loop);
+      var result = [], matcher;
+      if(this.length > 0) {
+        matcher = getMatcher(f);
+        arrayEach(this, function(el, i, arr) {
+          if(matcher(el, i, arr)) {
+            result.push(el);
+          }
+        }, index, loop);
+      }
       return result;
     },
 
@@ -1912,11 +1997,11 @@
      *
      ***/
     'remove': function() {
-      var i, arr = this;
+      var arr = this;
       multiArgs(arguments, function(f) {
-        i = 0;
+        var i = 0, matcher = getMatcher(f);
         while(i < arr.length) {
-          if(multiMatch(arr[i], f, arr, [arr[i], i, arr])) {
+          if(matcher(arr[i], i, arr)) {
             arr.splice(i, 1);
           } else {
             i++;
@@ -2074,12 +2159,16 @@
   function buildEnumerableMethods(names, mapping) {
     extendSimilar(object, false, false, names, function(methods, name) {
       methods[name] = function(obj, arg1, arg2) {
-        var result, coerced = keysWithCoercion(obj);
+        var result, coerced = keysWithCoercion(obj), matcher;
+        if(!mapping) {
+          matcher = getMatcher(arg1, true);
+        }
         result = array.prototype[name].call(coerced, function(key) {
+          var value = obj[key];
           if(mapping) {
-            return transformArgument(obj[key], arg1, obj, [key, obj[key], obj]);
+            return transformArgument(value, arg1, obj, [key, value, obj]);
           } else {
-            return multiMatch(obj[key], arg1, obj, [key, obj[key], obj]);
+            return matcher(value, key, obj);
           }
         }, arg2);
         if(isArray(result)) {
