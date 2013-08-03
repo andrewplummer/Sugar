@@ -351,11 +351,30 @@ test('Function', function () {
     fn.delay(5);
     fn.delay(5);
     fn.delay(5);
-    equal(counter, 0, 'Function#delay | counter should be 0');
     setTimeout(function() {
-      equal(counter, 1, 'Function#delay | counter should still be 0');
+      equal(counter, 1, 'Function#cancel | delays should have been canceled after 1');
     }, 50);
   });
+
+  async(function() {
+    var counter = 0;
+    var fn = function() {
+      counter++;
+      if (counter === 2) {
+        fn.cancel();
+      }
+    };
+    fn.delay(10);
+    fn.delay(10);
+    fn.delay(2);
+    fn.delay(5);
+    fn.delay(10);
+    fn.delay(10);
+    setTimeout(function() {
+      equal(counter, 2, 'function#cancel | delays should have been canceled after 2');
+    }, 50);
+  });
+
 
 });
 
