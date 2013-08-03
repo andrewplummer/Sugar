@@ -61,7 +61,7 @@
   }
 
   function buildClassCheck(klass) {
-    var fn = (name === 'Array' && array.isArray) || function(obj, cached) {
+    var fn = (klass === 'Array' && array.isArray) || function(obj, cached) {
       return isClass(obj, klass, cached);
     };
     typeChecks[klass] = fn;
