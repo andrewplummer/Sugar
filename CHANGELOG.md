@@ -33,7 +33,7 @@ v1.4.0
 
 - Object.map:  20-600% faster
 - Date#format: 5600-15600% faster
-- Array#min/max/less/more 60-80% faster
+- Array#min/max/less/more up to 83% faster
 - Enumerable methods like findAll/findIndex/map/any/count/sum/etc.: up to 11,270% faster
 - isString/isNumber/isBoolean: 77% faster
 
