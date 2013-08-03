@@ -61,7 +61,7 @@ background-color: teal;
   </body>
   <script>
 
-    tests.forEach(function(test) {
+    tests.forEach(function(test, i) {
         var html = 
         '<li>' +
           '<pre>'+ test.fn.toString() +'</pre>' +
@@ -72,10 +72,10 @@ background-color: teal;
           '</div>' +
         '</li>';
         var runButton = $('<button>Run!</button>').click(function() {
-          runTest(test);
+          runTest(test, i + 1);
         });
         var onceButton = $('<button>Test once</button>').click(function() {
-          testOnce(test);
+          testOnce(test, i + 1);
         });
         $('#code').append($(html).append(runButton).append(onceButton));
     });
@@ -88,29 +88,25 @@ background-color: teal;
       };
     }
 
-    function runTest(test) {
+    function runTest(test, testNum) {
       $('#output').html('Running...');
       // Delay to show it's running
       setTimeout(function() {
         $('#output').empty();
-        tests.forEach(function(test, i) {
-          test.targets.forEach(function(t) {
-            var target = getTarget(t);
-            var ms = runMultipleTestsWithArgumentAndAverage(test.fn, window[target.name], target.count, 10);
-            $('#output').append('<p>Test ' + (i + 1) + ' ran using <code>' + target.name + '</code> and had an average of ' + ms + 'ms</p>')
-          });
+        test.targets.forEach(function(t) {
+          var target = getTarget(t);
+          var ms = runMultipleTestsWithArgumentAndAverage(test.fn, window[target.name], target.count, 10);
+          $('#output').append('<p>Test ' + testNum + ' ran using <code>' + target.name + '</code> and had an average of ' + ms + 'ms</p>')
         });
       }, 1);
     }
 
-    function testOnce(test) {
+    function testOnce(test, testNum) {
       $('#output').empty();
-      tests.forEach(function(test, i) {
-        test.targets.forEach(function(t) {
-          var target = getTarget(t);
-          var result = test.fn(window[target.name]);
-          $('#output').append('<p>Test #' + (i + 1) + ' ran using <code>' + target.name + '</code> and returned ' + JSON.stringify(result) + '</p>')
-        });
+      test.targets.forEach(function(t) {
+        var target = getTarget(t);
+        var result = test.fn(window[target.name]);
+        $('#output').append('<p>Test #' + testNum + ' ran using <code>' + target.name + '</code> and returned ' + JSON.stringify(result) + '</p>')
       });
     }
 
