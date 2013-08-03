@@ -7,6 +7,14 @@ A Javascript library for working with native objects.
 http://sugarjs.com/
 
 
+Upgrading
+===============
+
+If you are upgrading from an older version, please have a look at `CAUTION.md` which is a vetted changelog
+that details the severity of what has changed, and (sometimes) strategies for migrating.
+Going through this before you upgrade can make the process a lot less painful!
+
+
 Edge Build
 ===============
 
