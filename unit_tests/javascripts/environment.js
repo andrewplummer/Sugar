@@ -37,12 +37,25 @@ var modulesFinished = function() {
 var loadScripts = function(module) {
   var loaded = 0, i;
   for(i = 0; i < module.tests.length; i++){
+    var script = document.createElement('script');
+    script.src = (module.path || '') + module.tests[i];
+    script.type = 'text/javascript';
+    script.async = true;
+    script.onload = function(){
+      loaded++;
+      if(loaded == module.tests.length){
+        syncTestsFinished();
+      }
+    };
+    document.getElementsByTagName('head')[0].appendChild(script);
+    /* DUNNO why but this doesn't work in FF2
     jQuery.getScript((module.path || '') + module.tests[i], function(){
       loaded++;
       if(loaded == module.tests.length){
         syncTestsFinished();
       }
     });
+    */
   }
 }
 
