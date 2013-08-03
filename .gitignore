@@ -25,4 +25,4 @@ release/utf8/sugar-test.min.js
 release/precompiled
 
 ## Want to test these across branches/tags
-performance/tests.js
+performance/javascripts/tests.js
