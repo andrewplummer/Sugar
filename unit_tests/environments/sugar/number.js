@@ -12,7 +12,7 @@ test('Number', function () {
   equal(rand % 1, 0, 'Number.random | number is whole', { mootools: NaN });
 
   rand = Number.random(536224, 536280);
- equal(rand >= 536224 && rand <= 536280, true, 'Number.random | min and max defined');
+  equal(rand >= 536224 && rand <= 536280, true, 'Number.random | min and max defined');
 
   rand = Number.random(6, -5);
   equal(rand >= -5 && rand <= 6, true, 'Number.random | min and max can be reversed');
