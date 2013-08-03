@@ -262,7 +262,7 @@ test = function(name, fn) {
   try {
     fn.call();
   } catch(e) {
-    console.info(e);
+    console.info(e.stack);
   }
   results.push(currentTest);
   if(moduleTeardownMethod) {
