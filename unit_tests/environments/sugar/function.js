@@ -336,5 +336,26 @@ test('Function', function () {
 
   equal((function(){ return Array.prototype.slice.call(arguments); }).fill(0)('a'), [0, 'a'], 'Function#fill | falsy values can be passed');
 
+
+  // Issue #346
+
+  async(function() {
+    var counter = 0;
+    var fn = function() {
+      counter++;
+      fn.cancel();
+    };
+    fn.delay(5);
+    fn.delay(5);
+    fn.delay(5);
+    fn.delay(5);
+    fn.delay(5);
+    fn.delay(5);
+    equal(counter, 0, 'Function#delay | counter should be 0');
+    setTimeout(function() {
+      equal(counter, 1, 'Function#delay | counter should still be 0');
+    }, 50);
+  });
+
 });
 
