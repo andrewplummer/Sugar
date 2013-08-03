@@ -28,6 +28,7 @@ v1.4.0
 - Fix for `Object.merge` not merging certain deep objects.
 - Added Date.SugarTimezoneOffset to handle better comparison of internally created dates.
 - Removed `multiMatch` in favor of a cached matcher system.
+- Fix for environments where regexes are functions.
 
 ### Performance Enhancements ###
 
@@ -36,6 +37,7 @@ v1.4.0
 - Array#min/max/less/more up to 83% faster
 - Enumerable methods like findAll/findIndex/map/any/count/sum/etc.: up to 11,270% faster
 - isString/isNumber/isBoolean: up to 77% faster
+- Object.isFunction: up to 336% faster
 
 
 v1.3.9
