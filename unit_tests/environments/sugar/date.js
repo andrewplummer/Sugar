@@ -2746,5 +2746,23 @@ test('Date', function () {
 
   Date.SugarTimezoneOffset = null;
 
+  // Issue #342 internal constructor override
+
+
+  var AwesomeDate = function() {};
+  AwesomeDate.prototype = new Date();
+  AwesomeDate.prototype.getMinutes = function() {
+  }
+
+  Date.SugarNewDate = function() {
+    return new AwesomeDate();
+  }
+
+  console.info(Date.create().getMinutes());
+  equal(Date.create() instanceof AwesomeDate, true, 'Date.SugarNewDate | Result should be use in Date.create');
+
+  Date.SugarNewDate = null;
+
+
 });
 
