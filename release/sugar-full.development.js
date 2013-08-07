@@ -3217,7 +3217,7 @@
   // Date comparison helpers
 
   function compareDate(d, find, localeCode, buffer, forceUTC) {
-    var p, t, min, max, minOffset, maxOffset, override, capitalized, accuracy = 0, loBuffer = 0, hiBuffer = 0;
+    var p, t, min, max, override, capitalized, accuracy = 0, loBuffer = 0, hiBuffer = 0;
     p = getExtendedDate(find, localeCode, null, forceUTC);
     if(buffer > 0) {
       loBuffer = hiBuffer = buffer;
@@ -5094,10 +5094,10 @@
   extend(Function, true, false, {
 
      /***
-     * @method lazy([ms] = 1, [limit] = Infinity)
+     * @method lazy([ms] = 1, [immediate] = false, [limit] = Infinity)
      * @returns Function
-     * @short Creates a lazy function that, when called repeatedly, will queue execution and wait [ms] milliseconds to execute again.
-     * @extra Lazy functions will always execute as many times as they are called up to [limit], after which point subsequent calls will be ignored (if it is set to a finite number). Compare this to %throttle%, which will execute only once per [ms] milliseconds. %lazy% is useful when you need to be sure that every call to a function is executed, but in a non-blocking manner. Calling %cancel% on a lazy function will clear the entire queue. Note that [ms] can also be a fraction.
+     * @short Creates a lazy function that, when called repeatedly, will queue execution and wait [ms] milliseconds to execute.
+     * @extra If [immediate] is %true%, first execution will happen immediately, then lock. If [limit] is a fininte number, calls past [limit] will be ignored while execution is locked. Compare this to %throttle%, which will execute only once per [ms] milliseconds. Note that [ms] can also be a fraction. Calling %cancel% on a lazy function will clear the entire queue. For more see @functions.
      * @example
      *
      *   (function() {
@@ -5108,36 +5108,44 @@
      *   }.lazy(20));
      *   (100).times(function() {
      *     // Executes 50 times, with each execution 20ms later than the last.
-     *   }.lazy(20, 50));
+     *   }.lazy(20, false, 50));
      *
      ***/
-    'lazy': function(ms, limit) {
+    'lazy': function(ms, immediate, limit) {
       var fn = this, queue = [], lock = false, execute, rounded, perExecution, result;
       ms = ms || 1;
       limit = limit || Infinity;
       rounded = ceil(ms);
       perExecution = round(rounded / ms) || 1;
       execute = function() {
-        if(lock || queue.length == 0) return;
+        var queueLength = queue.length, max;
+        if(queueLength == 0) return;
         // Allow fractions of a millisecond by calling
         // multiple times per actual timeout execution
-        var max = math.max(queue.length - perExecution, 0);
-        while(queue.length > max) {
+        max = math.max(queueLength - perExecution, 0);
+        while(queueLength > max) {
           // Getting uber-meta here...
           result = Function.prototype.apply.apply(fn, queue.shift());
+          queueLength--;
         }
         setDelay(lazy, rounded, function() {
           lock = false;
           execute();
         });
-        lock = true;
       }
       function lazy() {
-        // The first call is immediate, so having 1 in the queue
-        // implies two calls have already taken place.
-        if(!lock || queue.length < limit - 1) {
+        // If the execution has locked and it's immediate, then
+        // allow 1 less in the queue as 1 call has already taken place.
+        if(queue.length < limit - (lock && immediate ? 1 : 0)) {
           queue.push([this, arguments]);
-          execute();
+        }
+        if(!lock) {
+          lock = true;
+          if(immediate) {
+            execute();
+          } else {
+            setDelay(lazy, rounded, execute);
+          }
         }
         // Return the memoized result
         return result;
@@ -5168,7 +5176,7 @@
      * @method throttle(<ms>)
      * @returns Function
      * @short Creates a "throttled" version of the function that will only be executed once per <ms> milliseconds.
-     * @extra This is functionally equivalent to calling %lazy% with a [limit] of %1%. %throttle% is appropriate when you want to make sure a function is only executed at most once for a given duration. Compare this to %lazy%, which will queue rapid calls and execute them later.
+     * @extra This is functionally equivalent to calling %lazy% with a [limit] of %1% and [immediate] as %true%. %throttle% is appropriate when you want to make sure a function is only executed at most once for a given duration. For more see @functions.
      * @example
      *
      *   (3).times(function() {
@@ -5177,7 +5185,7 @@
      *
      ***/
     'throttle': function(ms) {
-      return this.lazy(ms, 1);
+      return this.lazy(ms, true, 1);
     },
 
      /***
@@ -5269,7 +5277,7 @@
      *
      ***/
     'once': function() {
-      return this.throttle(Infinity);
+      return this.throttle(Infinity, true);
     },
 
      /***
