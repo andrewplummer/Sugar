@@ -77,6 +77,8 @@ test('Function', function () {
     });
   });
 
+  // Function#lazy
+
   async(function() {
     var counter = 0;
     var expected = [['maybe','a',1],['baby','b',2],['you lazy','c',3],['biotch','d',4]];
@@ -84,6 +86,28 @@ test('Function', function () {
       equal([this.toString(), one, two], expected[counter], 'Function#lazy | scope and arguments are correct');
       counter++;
     }).lazy();
+    fn.call('maybe', 'a', 1);
+    fn.call('baby', 'b', 2);
+    fn.call('you lazy', 'c', 3);
+    equal(counter, 0, 'Function#lazy | not immediate by default');
+    setTimeout(function() {
+      equal(counter, 3, 'Function#lazy | was executed by 10ms');
+      fn.call('biotch', 'd', 4);
+      equal(counter, 3, 'Function#lazy | counter should still be 3');
+      setTimeout(function() {
+        equal(counter, 4, 'Function#lazy | final call');
+      }, 10);
+    }, 100);
+  });
+
+
+  async(function() {
+    var counter = 0;
+    var expected = [['maybe','a',1],['baby','b',2],['you lazy','c',3],['biotch','d',4]];
+    var fn = (function(one, two) {
+      equal([this.toString(), one, two], expected[counter], 'Function#lazy | scope and arguments are correct');
+      counter++;
+    }).lazy(1, true);
     fn.call('maybe', 'a', 1);
     fn.call('baby', 'b', 2);
     fn.call('you lazy', 'c', 3);
@@ -95,7 +119,6 @@ test('Function', function () {
     }, 100);
   });
 
-
   async(function() {
     var counter = 0;
     var fn = (function() { counter++; }).lazy();
@@ -104,10 +127,21 @@ test('Function', function () {
     fn();
     fn.cancel();
     setTimeout(function() {
-      equal(counter, 1, 'Function#lazy | lazy functions can also be canceled');
+      equal(counter, 0, 'Function#lazy | lazy functions can also be canceled');
     }, 10);
   });
 
+  async(function() {
+    var counter = 0;
+    var fn = (function() { counter++; }).lazy(1, true);
+    fn();
+    fn();
+    fn();
+    fn.cancel();
+    setTimeout(function() {
+      equal(counter, 1, 'Function#lazy | immediate | lazy functions can also be canceled');
+    }, 10);
+  });
 
 
   async(function() {
@@ -122,10 +156,9 @@ test('Function', function () {
   });
 
 
-
   async(function() {
     var counter = 0;
-    var fn = (function() { counter++; }).lazy(0.1, 10);
+    var fn = (function() { counter++; }).lazy(0.1, false, 10);
     for(var i = 0; i < 50; i++) {
       fn();
     }
@@ -134,15 +167,37 @@ test('Function', function () {
     }, 50);
   });
 
+  async(function() {
+    var counter = 0;
+    var fn = (function() { counter++; }).lazy(0.1, true, 10);
+    for(var i = 0; i < 50; i++) {
+      fn();
+    }
+    setTimeout(function() {
+      equal(counter, 10, 'Function#lazy | immediate | should have same upper threshold as non-immediate');
+    }, 50);
+  });
+
 
   async(function() {
     var counter = 0;
-    var fn = (function() { counter++; }).lazy(0.1, 1);
+    var fn = (function() { counter++; }).lazy(0.1, false, 1);
     for(var i = 0; i < 50; i++) {
       fn();
     }
     setTimeout(function() {
       equal(counter, 1, 'Function#lazy | lazy functions with a limit of 1 WILL still execute');
+    }, 50);
+  });
+
+  async(function() {
+    var counter = 0;
+    var fn = (function() { counter++; }).lazy(0.1, true, 1);
+    for(var i = 0; i < 50; i++) {
+      fn();
+    }
+    setTimeout(function() {
+      equal(counter, 1, 'Function#lazy | immediate | lazy functions with a limit of 1 WILL still execute');
     }, 50);
   });
 
@@ -200,25 +255,26 @@ test('Function', function () {
     fn = (function(one){
       equal([this.toString(), one], expected[counter], 'Function#throttle | immediate execution | scope and arguments are correct');
       counter++;
+      return counter;
     }).throttle(50);
 
-    fn.call('3p0', 1);
-    fn.call('r2d2', 2);
-    fn.call('chewie', 3);
+    equal(fn.call('3p0', 1), 1, 'Function#throttle | first run, gets value');
+    equal(fn.call('r2d2', 2), 1, 'Function#thrttle | second run, return value is caching');
+    equal(fn.call('chewie', 3), 1, 'Function#throttle | third run, return value is caching');
 
     setTimeout(function() {
-      fn.call('leia', 5);
+      equal(fn.call('leia', 5), 1, 'Function#throttle | fifth run, return value is caching');
     }, 10);
 
     setTimeout(function() {
-      fn.call('luke', 6);
-      fn.call('han solo', 7);
+      equal(fn.call('luke', 6), 2, 'Function#throttle | sixth run, gets value');
+      equal(fn.call('han solo', 7), 2, 'Function#throttle | seventh run, return value is caching');
     }, 100);
 
-    ret = fn.call('vader', 4);
+    equal(fn.call('vader', 4), 1, 'Function#throttle | fourth run, return value is caching');
 
     setTimeout(function() {
-      equal(counter, 2, 'Function#throttle | immediate execution | counter is correct');
+      equal(counter, 2, 'Function#throttle | counter is correct');
     }, 200);
   });
 
@@ -233,7 +289,7 @@ test('Function', function () {
     equal(fn(), 2, 'Function#throttle | memoize | iteration 3');
 
     setTimeout(function() {
-      equal(fn(), 3, 'Function#throttle | memoize | cache expires after 200 ms');
+      equal(fn(), 3, 'Function#throttle | memoize | result expires after 200 ms');
     }, 200);
   });
 

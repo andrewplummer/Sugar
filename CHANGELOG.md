@@ -31,6 +31,7 @@ v1.4.0
 - Fix for environments where regexes are functions.
 - Fix for `Function#cancel` not properly clearing all timers (Issue #346).
 - Fix for lazy functions not being able to recursively call themselves.
+- Added option `immediate` to `Function#lazy`, which is now false by default.
 
 ### Performance Enhancements ###
 
