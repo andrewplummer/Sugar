@@ -5085,7 +5085,7 @@
     // Delay of infinity is never called of course...
     if(ms === Infinity) return;
     if(!fn.timers) fn.timers = [];
-    if(!isNumber(ms)) ms = 0;
+    if(!isNumber(ms)) ms = 1;
     fn.timers.push(setTimeout(function(){
       after.apply(scope, args || []);
     }, ms));
@@ -5112,7 +5112,7 @@
      *
      ***/
     'lazy': function(ms, immediate, limit) {
-      var fn = this, queue = [], lock = false, execute, rounded, perExecution, result;
+      var fn = this, queue = [], locked = false, execute, rounded, perExecution, result;
       ms = ms || 1;
       limit = limit || Infinity;
       rounded = ceil(ms);
@@ -5129,18 +5129,18 @@
           queueLength--;
         }
         setDelay(lazy, rounded, function() {
-          lock = false;
+          locked = false;
           execute();
         });
       }
       function lazy() {
         // If the execution has locked and it's immediate, then
         // allow 1 less in the queue as 1 call has already taken place.
-        if(queue.length < limit - (lock && immediate ? 1 : 0)) {
+        if(queue.length < limit - (locked && immediate ? 1 : 0)) {
           queue.push([this, arguments]);
         }
-        if(!lock) {
-          lock = true;
+        if(!locked) {
+          locked = true;
           if(immediate) {
             execute();
           } else {
@@ -5154,7 +5154,44 @@
     },
 
      /***
-     * @method delay([ms] = 0, [arg1], ...)
+     * @method throttle([ms] = 1)
+     * @returns Function
+     * @short Creates a "throttled" version of the function that will only be executed once per <ms> milliseconds.
+     * @extra This is functionally equivalent to calling %lazy% with a [limit] of %1% and [immediate] as %true%. %throttle% is appropriate when you want to make sure a function is only executed at most once for a given duration. For more see @functions.
+     * @example
+     *
+     *   (3).times(function() {
+     *     // called only once. will wait 50ms until it responds again
+     *   }.throttle(50));
+     *
+     ***/
+    'throttle': function(ms) {
+      return this.lazy(ms, true, 1);
+    },
+
+     /***
+     * @method debounce([ms] = 1)
+     * @returns Function
+     * @short Creates a "debounced" function that postpones its execution until after <ms> milliseconds have passed.
+     * @extra This method is useful to execute a function after things have "settled down". A good example of this is when a user tabs quickly through form fields, execution of a heavy operation should happen after a few milliseconds when they have "settled" on a field. For more see @functions.
+     * @example
+     *
+     *   var fn = (function(arg1) {
+     *     // called once 50ms later
+     *   }).debounce(50); fn() fn() fn();
+     *
+     ***/
+    'debounce': function(ms) {
+      var fn = this;
+      function debounced() {
+        debounced.cancel();
+        setDelay(debounced, ms, fn, this, arguments);
+      };
+      return debounced;
+    },
+
+     /***
+     * @method delay([ms] = 1, [arg1], ...)
      * @returns Function
      * @short Executes the function after <ms> milliseconds.
      * @extra Returns a reference to itself. %delay% is also a way to execute non-blocking operations that will wait until the CPU is free. Delayed functions can be canceled using the %cancel% method. Can also curry arguments passed in after <ms>.
@@ -5173,40 +5210,26 @@
     },
 
      /***
-     * @method throttle(<ms>)
+     * @method every([ms] = 1, [arg1], ...)
      * @returns Function
-     * @short Creates a "throttled" version of the function that will only be executed once per <ms> milliseconds.
-     * @extra This is functionally equivalent to calling %lazy% with a [limit] of %1% and [immediate] as %true%. %throttle% is appropriate when you want to make sure a function is only executed at most once for a given duration. For more see @functions.
+     * @short Executes the function every <ms> milliseconds.
+     * @extra Returns a reference to itself. Repeating functions with %every% can be canceled using the %cancel% method. Can also curry arguments passed in after <ms>.
      * @example
      *
-     *   (3).times(function() {
-     *     // called only once. will wait 50ms until it responds again
-     *   }.throttle(50));
+     *   (function(arg1) {
+     *     // called every 1s
+     *   }).every(1000, 'arg1');
      *
      ***/
-    'throttle': function(ms) {
-      return this.lazy(ms, true, 1);
-    },
-
-     /***
-     * @method debounce(<ms>)
-     * @returns Function
-     * @short Creates a "debounced" function that postpones its execution until after <ms> milliseconds have passed.
-     * @extra This method is useful to execute a function after things have "settled down". A good example of this is when a user tabs quickly through form fields, execution of a heavy operation should happen after a few milliseconds when they have "settled" on a field.
-     * @example
-     *
-     *   var fn = (function(arg1) {
-     *     // called once 50ms later
-     *   }).debounce(50); fn() fn() fn();
-     *
-     ***/
-    'debounce': function(ms) {
-      var fn = this;
-      function debounced() {
-        debounced.cancel();
-        setDelay(debounced, ms, fn, this, arguments);
-      };
-      return debounced;
+    'every': function(ms) {
+      var fn = this, args;
+      args = multiArgs(arguments).slice(1);
+      function execute () {
+        fn.apply(fn, args);
+        setDelay(fn, ms, execute);
+      }
+      setDelay(fn, ms, execute);
+      return fn;
     },
 
      /***
