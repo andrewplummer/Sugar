@@ -33,6 +33,7 @@ test('Function', function () {
   async(function(){
     var fn, ref;
     fn = function(one, two) {
+      equal(this, fn, 'Function#delay | this object should be the function');
       equal(one, 'one', 'Function#delay | first parameter', { mootools: 'two' });
       equal(two, 'two', 'Function#delay | second parameter', { mootools: undefined });
     };
@@ -431,6 +432,22 @@ test('Function', function () {
     }, 50);
   });
 
+  // Issue #348
+
+  async(function() {
+    var counter = 0;
+    var fn = function(one, two) {
+      equal(this, fn, 'Function#every | this object should be the function');
+      equal(one, 'one', 'function#every | first argument should be curried');
+      equal(two, 'two', 'function#every | second argument should be curried');
+      counter++;
+    };
+    fn.every(10, 'one', 'two');
+    setTimeout(function() {
+      fn.cancel();
+      equal(counter > 7, true, 'function#every | should have been called at least 7 times');
+    }, 100);
+  });
 
 });
 
