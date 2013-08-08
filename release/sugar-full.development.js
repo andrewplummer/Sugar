@@ -98,12 +98,12 @@
         extend(klass, instance !== false, override, methods);
       },
       'sugarRestore': function() {
-        return batchMethodExecute(klass, arguments, function(target, name, m) {
+        return batchMethodExecute(this, klass, arguments, function(target, name, m) {
           defineProperty(target, name, m.method);
         });
       },
       'sugarRevert': function() {
-        return batchMethodExecute(klass, arguments, function(target, name, m) {
+        return batchMethodExecute(this, klass, arguments, function(target, name, m) {
           if(m.existed) {
             defineProperty(target, name, m.original);
           } else {
@@ -122,7 +122,7 @@
     iterateOverObject(methods, function(name, method) {
       var original = extendee[name];
       var existed  = hasOwnProperty(extendee, name);
-      if(typeof override === 'function') {
+      if(isFunction(override)) {
         method = wrapNative(extendee[name], method, override);
       }
       if(override !== false || !extendee[name]) {
@@ -142,12 +142,12 @@
     extend(klass, instance, override, methods);
   }
 
-  function batchMethodExecute(klass, args, fn) {
+  function batchMethodExecute(target, klass, args, fn) {
     var all = args.length === 0, methods = multiArgs(args), changed = false;
     iterateOverObject(klass['SugarMethods'], function(name, m) {
       if(all || methods.indexOf(name) !== -1) {
         changed = true;
-        fn(m.instance ? klass.prototype : klass, name, m);
+        fn(m.instance ? target.prototype : target, name, m);
       }
     });
     return changed;
