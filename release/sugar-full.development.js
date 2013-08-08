@@ -104,8 +104,8 @@
       },
       'sugarRevert': function() {
         return batchMethodExecute(this, klass, arguments, function(target, name, m) {
-          if(m.existed) {
-            defineProperty(target, name, m.original);
+          if(m['existed']) {
+            defineProperty(target, name, m['original']);
           } else {
             delete target[name];
           }
@@ -129,7 +129,7 @@
         defineProperty(extendee, name, method);
       }
       // If the method is internal to Sugar, then store a reference so it can be restored later.
-      klass['SugarMethods'][name] = { instance: instance, method: method, original: original, existed: existed };
+      klass['SugarMethods'][name] = { 'instance': instance, 'method': method, 'original': original, 'existed': existed };
     });
   }
 
@@ -147,7 +147,7 @@
     iterateOverObject(klass['SugarMethods'], function(name, m) {
       if(all || methods.indexOf(name) !== -1) {
         changed = true;
-        fn(m.instance ? target.prototype : target, name, m);
+        fn(m['instance'] ? target.prototype : target, name, m);
       }
     });
     return changed;
