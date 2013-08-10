@@ -269,10 +269,32 @@
     return target;
   }
 
+   var noKeysInStringObjects = !('0' in new string('a'));
+
+   // Make primtives types like strings into objects.
+   function coercePrimitiveToObject(obj) {
+     if(isPrimitiveType(obj)) {
+       obj = object(obj);
+     }
+     if(noKeysInStringObjects && isString(obj)) {
+       forceStringCoercion(obj);
+     }
+     return obj;
+   }
+
+   // Force strings to have their indexes set in
+   // environments that don't do this automatically.
+   function forceStringCoercion(obj) {
+     var i = 0, chr;
+     while(chr = obj.charAt(i)) {
+       obj[i++] = chr;
+     }
+   }
+
   // Hash definition
 
   function Hash(obj) {
-    simpleMerge(this, obj);
+    simpleMerge(this, coercePrimitiveToObject(obj));
   };
 
   Hash.prototype.constructor = object;
@@ -363,7 +385,7 @@
       }
       return replacement;
     });
-    return isDecimal ? parseFloat(sanitized) : parseInt(sanitized, base);
+    return isDecimal ? parseFloat(sanitized) : parseInt(sanitized, base || 10);
   }
 
 
@@ -2190,11 +2212,8 @@
    *
    ***/
 
-   function keysWithCoercion(obj) {
-     if(isPrimitiveType(obj)) {
-       obj = object(obj);
-     }
-     return object.keys(obj);
+   function keysWithObjectCoercion(obj) {
+     return object.keys(coercePrimitiveToObject(obj));
    }
 
   /***
@@ -2233,7 +2252,7 @@
   function buildEnumerableMethods(names, mapping) {
     extendSimilar(object, false, false, names, function(methods, name) {
       methods[name] = function(obj, arg1, arg2) {
-        var result, coerced = keysWithCoercion(obj), matcher;
+        var result, coerced = keysWithObjectCoercion(obj), matcher;
         if(!mapping) {
           matcher = getMatcher(arg1, true);
         }
@@ -2276,7 +2295,7 @@
     },
 
     'reduce': function(obj) {
-      var values = keysWithCoercion(obj).map(function(key) {
+      var values = keysWithObjectCoercion(obj).map(function(key) {
         return obj[key];
       });
       return values.reduce.apply(values, multiArgs(arguments).slice(1));
@@ -2299,7 +2318,7 @@
      *
      ***/
     'size': function (obj) {
-      return keysWithCoercion(obj).length;
+      return keysWithObjectCoercion(obj).length;
     }
 
   });
@@ -5158,8 +5177,14 @@
     if(ms === Infinity) return;
     if(!fn.timers) fn.timers = [];
     if(!isNumber(ms)) ms = 1;
+    // This is a workaround for <= IE8, which apparently has the
+    // ability to call timeouts in the queue on the same tick (ms?)
+    // even if functionally they have already been cleared.
+    fn._canceled = false;
     fn.timers.push(setTimeout(function(){
-      after.apply(scope, args || []);
+      if(!fn._canceled) {
+        after.apply(scope, args || []);
+      }
     }, ms));
   }
 
@@ -5323,6 +5348,7 @@
           clearTimeout(timer);
         }
       }
+      this._canceled = true;
       return this;
     },
 
