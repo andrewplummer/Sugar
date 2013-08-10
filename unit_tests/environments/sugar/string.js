@@ -497,6 +497,8 @@ test('String', function () {
   equal('99'.toNumber(16), 153, 'String#toNumber | hex | 99');
   equal('bb'.toNumber(16), 187, 'String#toNumber | hex | bb');
 
+  equal(('２００').toNumber(), 200, 'String#toNumber | full-width | should work on full-width integers');
+  equal(('５．２３４５').toNumber(), 5.2345, 'String#toNumber | full-width | should work on full-width decimals');
 
 
 
