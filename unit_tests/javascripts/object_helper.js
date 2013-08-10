@@ -42,7 +42,7 @@ testClassAndInstance = function(name, obj, args, expected, message) {
   }
   equal(Object[name].apply(obj, [obj].concat(args)), expected, message);
   if(Object.extended) {
-    extended = Object.extended(testCloneObject(obj));
+    extended = Object.extended(obj);
     equal(extended[name].apply(extended, args), expected, message + ' | On extended object');
   }
 }
