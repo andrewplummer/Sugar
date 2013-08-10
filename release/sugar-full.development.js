@@ -2681,16 +2681,8 @@
   }
 
   function getNewDate() {
-    var d = new date, globalOffset = Date.SugarTimezoneOffset, minutes;
-    if(isNumber(globalOffset)) {
-      minutes = globalOffset - d.getTimezoneOffset();
-      if(minutes) {
-        // Doing this directly here to improve performance
-        // and avoid some nasty recursion issues.
-        d.setTime(d.getTime() - (minutes * 60 * 1000));
-      }
-    }
-    return d;
+    var fn = date.SugarNewDate;
+    return fn ? fn() : new date;
   }
 
   // Date argument helpers
@@ -3281,8 +3273,10 @@
     }
 
     function canDisambiguate() {
-      var now = getNewDate();
-      return (prefer === -1 && d > now) || (prefer === 1 && d < now);
+      switch(prefer) {
+        case -1: return d > getNewDate();
+        case  1: return d < getNewDate();
+      }
     }
 
     if(isNumber(params) && advance) {
@@ -3358,6 +3352,8 @@
       d.setWeekday(weekday);
     }
 
+    // If past or future is preferred, then the process of "disambiguation" will ensure that an
+    // ambiguous time/date ("4pm", "thursday", "June", etc.) will be in the past or future.
     if(canDisambiguate()) {
       iterateOverDateUnits(function(name, unit) {
         var ambiguous = unit.ambiguous || (name === 'week' && paramExists('weekday'));
@@ -3851,8 +3847,10 @@
   }
 
   function buildUTCAliases() {
-    date.extend({
-      'utc': {
+    // Don't want to use extend here as it will override
+    // the actual "utc" method on the prototype.
+    if(date['utc']) return;
+    date['utc'] = {
 
         'create': function() {
           return createDate(arguments, 0, true);
@@ -3865,9 +3863,7 @@
         'future': function() {
           return createDate(arguments, 1, true);
         }
-
-      }
-    }, false, false);
+    };
   }
 
   function setDateProperties() {
@@ -5222,8 +5218,8 @@
      *
      ***/
     'every': function(ms) {
-      var fn = this, args;
-      args = multiArgs(arguments).slice(1);
+      var fn = this, args = arguments;
+      args = args.length > 1 ? multiArgs(args).slice(1) : [];
       function execute () {
         fn.apply(fn, args);
         setDelay(fn, ms, execute);
