@@ -98,14 +98,14 @@
         extend(klass, instance !== false, override, methods);
       },
       'sugarRestore': function() {
-        return batchMethodExecute(klass, arguments, function(target, name, m) {
+        return batchMethodExecute(this, klass, arguments, function(target, name, m) {
           defineProperty(target, name, m.method);
         });
       },
       'sugarRevert': function() {
-        return batchMethodExecute(klass, arguments, function(target, name, m) {
-          if(m.existed) {
-            defineProperty(target, name, m.original);
+        return batchMethodExecute(this, klass, arguments, function(target, name, m) {
+          if(m['existed']) {
+            defineProperty(target, name, m['original']);
           } else {
             delete target[name];
           }
@@ -122,14 +122,14 @@
     iterateOverObject(methods, function(name, method) {
       var original = extendee[name];
       var existed  = hasOwnProperty(extendee, name);
-      if(typeof override === 'function') {
+      if(isFunction(override)) {
         method = wrapNative(extendee[name], method, override);
       }
       if(override !== false || !extendee[name]) {
         defineProperty(extendee, name, method);
       }
       // If the method is internal to Sugar, then store a reference so it can be restored later.
-      klass['SugarMethods'][name] = { instance: instance, method: method, original: original, existed: existed };
+      klass['SugarMethods'][name] = { 'instance': instance, 'method': method, 'original': original, 'existed': existed };
     });
   }
 
@@ -142,12 +142,12 @@
     extend(klass, instance, override, methods);
   }
 
-  function batchMethodExecute(klass, args, fn) {
+  function batchMethodExecute(target, klass, args, fn) {
     var all = args.length === 0, methods = multiArgs(args), changed = false;
     iterateOverObject(klass['SugarMethods'], function(name, m) {
       if(all || methods.indexOf(name) !== -1) {
         changed = true;
-        fn(m.instance ? klass.prototype : klass, name, m);
+        fn(m['instance'] ? target.prototype : target, name, m);
       }
     });
     return changed;
@@ -3217,7 +3217,7 @@
   // Date comparison helpers
 
   function compareDate(d, find, localeCode, buffer, forceUTC) {
-    var p, t, min, max, minOffset, maxOffset, override, capitalized, accuracy = 0, loBuffer = 0, hiBuffer = 0;
+    var p, t, min, max, override, capitalized, accuracy = 0, loBuffer = 0, hiBuffer = 0;
     p = getExtendedDate(find, localeCode, null, forceUTC);
     if(buffer > 0) {
       loBuffer = hiBuffer = buffer;
@@ -5085,7 +5085,7 @@
     // Delay of infinity is never called of course...
     if(ms === Infinity) return;
     if(!fn.timers) fn.timers = [];
-    if(!isNumber(ms)) ms = 0;
+    if(!isNumber(ms)) ms = 1;
     fn.timers.push(setTimeout(function(){
       after.apply(scope, args || []);
     }, ms));
@@ -5094,10 +5094,10 @@
   extend(Function, true, false, {
 
      /***
-     * @method lazy([ms] = 1, [limit] = Infinity)
+     * @method lazy([ms] = 1, [immediate] = false, [limit] = Infinity)
      * @returns Function
-     * @short Creates a lazy function that, when called repeatedly, will queue execution and wait [ms] milliseconds to execute again.
-     * @extra Lazy functions will always execute as many times as they are called up to [limit], after which point subsequent calls will be ignored (if it is set to a finite number). Compare this to %throttle%, which will execute only once per [ms] milliseconds. %lazy% is useful when you need to be sure that every call to a function is executed, but in a non-blocking manner. Calling %cancel% on a lazy function will clear the entire queue. Note that [ms] can also be a fraction.
+     * @short Creates a lazy function that, when called repeatedly, will queue execution and wait [ms] milliseconds to execute.
+     * @extra If [immediate] is %true%, first execution will happen immediately, then lock. If [limit] is a fininte number, calls past [limit] will be ignored while execution is locked. Compare this to %throttle%, which will execute only once per [ms] milliseconds. Note that [ms] can also be a fraction. Calling %cancel% on a lazy function will clear the entire queue. For more see @functions.
      * @example
      *
      *   (function() {
@@ -5108,36 +5108,44 @@
      *   }.lazy(20));
      *   (100).times(function() {
      *     // Executes 50 times, with each execution 20ms later than the last.
-     *   }.lazy(20, 50));
+     *   }.lazy(20, false, 50));
      *
      ***/
-    'lazy': function(ms, limit) {
-      var fn = this, queue = [], lock = false, execute, rounded, perExecution, result;
+    'lazy': function(ms, immediate, limit) {
+      var fn = this, queue = [], locked = false, execute, rounded, perExecution, result;
       ms = ms || 1;
       limit = limit || Infinity;
       rounded = ceil(ms);
       perExecution = round(rounded / ms) || 1;
       execute = function() {
-        if(lock || queue.length == 0) return;
+        var queueLength = queue.length, max;
+        if(queueLength == 0) return;
         // Allow fractions of a millisecond by calling
         // multiple times per actual timeout execution
-        var max = math.max(queue.length - perExecution, 0);
-        while(queue.length > max) {
+        max = math.max(queueLength - perExecution, 0);
+        while(queueLength > max) {
           // Getting uber-meta here...
           result = Function.prototype.apply.apply(fn, queue.shift());
+          queueLength--;
         }
         setDelay(lazy, rounded, function() {
-          lock = false;
+          locked = false;
           execute();
         });
-        lock = true;
       }
       function lazy() {
-        // The first call is immediate, so having 1 in the queue
-        // implies two calls have already taken place.
-        if(!lock || queue.length < limit - 1) {
+        // If the execution has locked and it's immediate, then
+        // allow 1 less in the queue as 1 call has already taken place.
+        if(queue.length < limit - (locked && immediate ? 1 : 0)) {
           queue.push([this, arguments]);
-          execute();
+        }
+        if(!locked) {
+          locked = true;
+          if(immediate) {
+            execute();
+          } else {
+            setDelay(lazy, rounded, execute);
+          }
         }
         // Return the memoized result
         return result;
@@ -5146,7 +5154,44 @@
     },
 
      /***
-     * @method delay([ms] = 0, [arg1], ...)
+     * @method throttle([ms] = 1)
+     * @returns Function
+     * @short Creates a "throttled" version of the function that will only be executed once per <ms> milliseconds.
+     * @extra This is functionally equivalent to calling %lazy% with a [limit] of %1% and [immediate] as %true%. %throttle% is appropriate when you want to make sure a function is only executed at most once for a given duration. For more see @functions.
+     * @example
+     *
+     *   (3).times(function() {
+     *     // called only once. will wait 50ms until it responds again
+     *   }.throttle(50));
+     *
+     ***/
+    'throttle': function(ms) {
+      return this.lazy(ms, true, 1);
+    },
+
+     /***
+     * @method debounce([ms] = 1)
+     * @returns Function
+     * @short Creates a "debounced" function that postpones its execution until after <ms> milliseconds have passed.
+     * @extra This method is useful to execute a function after things have "settled down". A good example of this is when a user tabs quickly through form fields, execution of a heavy operation should happen after a few milliseconds when they have "settled" on a field. For more see @functions.
+     * @example
+     *
+     *   var fn = (function(arg1) {
+     *     // called once 50ms later
+     *   }).debounce(50); fn() fn() fn();
+     *
+     ***/
+    'debounce': function(ms) {
+      var fn = this;
+      function debounced() {
+        debounced.cancel();
+        setDelay(debounced, ms, fn, this, arguments);
+      };
+      return debounced;
+    },
+
+     /***
+     * @method delay([ms] = 1, [arg1], ...)
      * @returns Function
      * @short Executes the function after <ms> milliseconds.
      * @extra Returns a reference to itself. %delay% is also a way to execute non-blocking operations that will wait until the CPU is free. Delayed functions can be canceled using the %cancel% method. Can also curry arguments passed in after <ms>.
@@ -5165,40 +5210,26 @@
     },
 
      /***
-     * @method throttle(<ms>)
+     * @method every([ms] = 1, [arg1], ...)
      * @returns Function
-     * @short Creates a "throttled" version of the function that will only be executed once per <ms> milliseconds.
-     * @extra This is functionally equivalent to calling %lazy% with a [limit] of %1%. %throttle% is appropriate when you want to make sure a function is only executed at most once for a given duration. Compare this to %lazy%, which will queue rapid calls and execute them later.
+     * @short Executes the function every <ms> milliseconds.
+     * @extra Returns a reference to itself. Repeating functions with %every% can be canceled using the %cancel% method. Can also curry arguments passed in after <ms>.
      * @example
      *
-     *   (3).times(function() {
-     *     // called only once. will wait 50ms until it responds again
-     *   }.throttle(50));
+     *   (function(arg1) {
+     *     // called every 1s
+     *   }).every(1000, 'arg1');
      *
      ***/
-    'throttle': function(ms) {
-      return this.lazy(ms, 1);
-    },
-
-     /***
-     * @method debounce(<ms>)
-     * @returns Function
-     * @short Creates a "debounced" function that postpones its execution until after <ms> milliseconds have passed.
-     * @extra This method is useful to execute a function after things have "settled down". A good example of this is when a user tabs quickly through form fields, execution of a heavy operation should happen after a few milliseconds when they have "settled" on a field.
-     * @example
-     *
-     *   var fn = (function(arg1) {
-     *     // called once 50ms later
-     *   }).debounce(50); fn() fn() fn();
-     *
-     ***/
-    'debounce': function(ms) {
-      var fn = this;
-      function debounced() {
-        debounced.cancel();
-        setDelay(debounced, ms, fn, this, arguments);
-      };
-      return debounced;
+    'every': function(ms) {
+      var fn = this, args;
+      args = multiArgs(arguments).slice(1);
+      function execute () {
+        fn.apply(fn, args);
+        setDelay(fn, ms, execute);
+      }
+      setDelay(fn, ms, execute);
+      return fn;
     },
 
      /***
@@ -5269,7 +5300,7 @@
      *
      ***/
     'once': function() {
-      return this.throttle(Infinity);
+      return this.throttle(Infinity, true);
     },
 
      /***
