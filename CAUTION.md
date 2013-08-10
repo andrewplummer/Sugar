@@ -36,6 +36,9 @@ v1.4.0+
 - Level: Moderate
   - `Object.isObject` will now no longer return true for class instances for the same reasons listed above. This also was intended behavior but was defective.
 
+- Level: Moderate
+  - `Array.sortBy` now performs a natural sort by default. This means numbers (any consecutive numbers, so this will include currency formatting, etc.) will sort as numbers, (2 before 100). If you don't want this behavior, set the flag `Array.AlphanumericSortNatural` to `false`.
+
 - Level: Minor
   - Enumerable methods on object will now coerce primitive types. This means that `Object.findAll('foo')` will now treat `'foo'` as `new String('foo')`. This is reversed from the previous behavior which would error on primitive types and coerce objects to primitive types where possible.
 
