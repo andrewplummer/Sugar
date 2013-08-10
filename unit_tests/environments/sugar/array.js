@@ -2834,6 +2834,14 @@ test('Array', function () {
 
   testClassAndInstance('each', obj, [function () {}], obj, 'Object.size | each returns itself');
 
+  // Issue #273 - exposing collateString
+
+  var arr = ['c','b','a','à','å','ä','ö'];
+
+  var viaSort   = arr.sort(Array.AlphanumericSort);
+  var viaSortBy = arr.sortBy();
+
+  equal(viaSort, viaSortBy, 'Array.SugarCollateStrings | should be exposed to allow sorting via native Array#sort');
 
 });
 
