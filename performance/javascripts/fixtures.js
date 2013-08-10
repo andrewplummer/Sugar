@@ -16,6 +16,8 @@ emptyString  = '';
 normalString = 'abcdefg';
 hugeString   = '';
 stringObject = new String('wasabi');
+hugeNumberAsString = '893249283429';
+hugeNumberAsStringWithTrailingLetters = '893249283429alkdf';
 
 
 emptyArray       = [];
@@ -75,6 +77,18 @@ biggerStringArray = [
   'zysk',
   'Žal',
   'Žena'
+];
+
+smallStringArrayWithNumbersMixedIn = [
+  'file 2',
+  'file 200',
+  'file 15',
+  'file 153',
+  'file 1',
+  'file 25225',
+  'file 252',
+  'file 95',
+  'file 932'
 ];
 
 
