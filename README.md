@@ -78,6 +78,13 @@ Date.addLocale(LOCALE_CODE, LOCALIZATION_OBJECT)
 Documentation for this available [here](http://sugarjs.com/dates). Also refer to `lib/locales` for examples of what kind of data and formats are required in localization objects. All localizations, including those not found in the main package will be kept here.
 
 
+
+Timezones
+==================
+
+Dealing with timezones in Javascript can be tricky. Although timezones are outside the scope of Sugar, it does provide a hook that can allow timezone shifted dates to be used internally in place of normal ones. See [the date reference](http://sugarjs.com/dates#timezones) for more.
+
+
 Contributing Locales
 ====================
 
