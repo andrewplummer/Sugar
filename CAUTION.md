@@ -13,13 +13,16 @@ v1.4.0+
 =======
 
 - Level: Major
+  - `pad`, `padLeft`, and `padRight` now pad to the exact character. This means that `padLeft(20)` will produce a string exactly 20 characters long, instead of adding 20 characters worth of padding to the left side of the string as before. You can use `String#repeat` for the same effect as the old functionality.
+
+- Level: Major
+  - `Function#lazy` now has different arguments. `limit` is now the third argument with `immediate` taking its place as second. Additionally `immediate` -- which determines whether lazy functions are executed immediately then lock or lock then execute after a timeout -- is now false by default.
+
+- Level: Major
   - Date range methods `eachDay`, `eachMonth`, etc. are deprecated in favor of the syntax `every("day")`, etc.
 
 - Level: Major
   - Date range method `duration` is deprecated in favor of `span`. Additionally it will add 1 to the duration to include the starting number itself. In effect for date ranges this means that `duration` will be 1 ms longer.
-
-- Level: Major
-  - `pad`, `padLeft`, and `padRight` now pad to the exact character. This means that `padLeft(20)` will produce a string exactly 20 characters long, instead of adding 20 characters worth of padding to the left side of the string as before. You can use `String#repeat` for the same effect as the old functionality.
 
 - Level: Major
   - `Object.clone` now will error if being called on a user-created class instance or host object (DOM Elements, Events, etc). A number of complex issues tie in here, but in the end it is unreliable to call `clone` on an object that is not a standard data types as 1) hidden properties cannot be cloned 2) the original arguments to the constructor cannot be known 3) even if they could be known the issue of whether or not the constructor should actually be called again is not clear.
