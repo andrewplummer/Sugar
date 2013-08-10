@@ -33,6 +33,7 @@ v1.4.0
 - Fix for lazy functions not being able to recursively call themselves.
 - Added option `immediate` to `Function#lazy`, which is now false by default.
 - Added `Function#every`.
+- Exposed `Array.AlphanumericSort` to allow its use in native `Array#sort`.
 
 ### Performance Enhancements ###
 
