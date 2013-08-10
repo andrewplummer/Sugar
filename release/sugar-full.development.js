@@ -294,6 +294,79 @@
     return round(val, precision, 'floor');
   }
 
+  // Full width number helpers
+
+  var HalfWidthZeroCode = 48;
+  var HalfWidthNineCode = 57;
+  var FullWidthZeroCode = 65296;
+  var FullWidthNineCode = 65305;
+
+  var HalfWidthPeriod = '.';
+  var FullWidthPeriod = '．';
+  var HalfWidthComma  = ',';
+
+  // Used here and later in the Date package.
+  var FullWidthDigits   = '';
+
+  var NumberNormalizeMap = {};
+  var NumberNormalizeReg;
+
+  function codeIsNumeral(code) {
+    return (code >= HalfWidthZeroCode && code <= HalfWidthNineCode) ||
+           (code >= FullWidthZeroCode && code <= FullWidthNineCode);
+  }
+
+  function buildNumberHelpers() {
+    var digit, i;
+    for(i = 0; i <= 9; i++) {
+      digit = chr(i + FullWidthZeroCode);
+      FullWidthDigits += digit;
+      NumberNormalizeMap[digit] = chr(i + HalfWidthZeroCode);
+    }
+    NumberNormalizeMap[HalfWidthComma] = '';
+    NumberNormalizeMap[FullWidthPeriod] = HalfWidthPeriod;
+    // Mapping this to itself to easily be able to easily
+    // capture it in stringToNumber to detect decimals later.
+    NumberNormalizeMap[HalfWidthPeriod] = HalfWidthPeriod;
+    NumberNormalizeReg = regexp('[' + FullWidthDigits + FullWidthPeriod + HalfWidthComma + HalfWidthPeriod + ']', 'g');
+  }
+
+  // String helpers
+
+  function chr(num) {
+    return string.fromCharCode(num);
+  }
+
+  // WhiteSpace/LineTerminator as defined in ES5.1 plus Unicode characters in the Space, Separator category.
+  function getTrimmableCharacters() {
+    return '\u0009\u000A\u000B\u000C\u000D\u0020\u00A0\u1680\u180E\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u202F\u205F\u2028\u2029\u3000\uFEFF';
+  }
+
+  function repeatString(times, str) {
+    var result = '';
+    if(isUndefined(times)) {
+      times = 1;
+    }
+    while(times-- > 0) {
+      result += str;
+    }
+    return result;
+  }
+
+  // Returns taking into account full-width characters, commas, and decimals.
+  function stringToNumber(str, base) {
+    var sanitized, isDecimal;
+    sanitized = str.replace(NumberNormalizeReg, function(chr) {
+      var replacement = NumberNormalizeMap[chr];
+      if(replacement === HalfWidthPeriod) {
+        isDecimal = true;
+      }
+      return replacement;
+    });
+    return isDecimal ? parseFloat(sanitized) : parseInt(sanitized, base);
+  }
+
+
   // Used by Number and Date
 
   function padNumber(num, place, sign, base) {
@@ -316,25 +389,6 @@
         default: return 'th';
       }
     }
-  }
-
-
-  // String helpers
-
-  // WhiteSpace/LineTerminator as defined in ES5.1 plus Unicode characters in the Space, Separator category.
-  function getTrimmableCharacters() {
-    return '\u0009\u000A\u000B\u000C\u000D\u0020\u00A0\u1680\u180E\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u202F\u205F\u2028\u2029\u3000\uFEFF';
-  }
-
-  function repeatString(times, str) {
-    var result = '';
-    if(isUndefined(times)) {
-      times = 1;
-    }
-    while(times-- > 0) {
-      result += str;
-    }
-    return result;
   }
 
 
@@ -479,6 +533,7 @@
   }
 
   initializeClasses();
+  buildNumberHelpers();
 
 
 
@@ -1241,53 +1296,71 @@
 
   function collateStrings(a, b) {
     var aValue, bValue, aChar, bChar, aEquiv, bEquiv, index = 0, tiebreaker = 0;
-    a = getCollationReadyString(a);
-    b = getCollationReadyString(b);
+
+    var sortIgnore      = array[AlphanumericSortIgnore];
+    var sortIgnoreCase  = array[AlphanumericSortIgnoreCase];
+    var sortEquivalents = array[AlphanumericSortEquivalents];
+    var sortOrder       = array[AlphanumericSortOrder];
+    var naturalSort     = array[AlphanumericSortNatural];
+
+    a = getCollationReadyString(a, sortIgnore, sortIgnoreCase);
+    b = getCollationReadyString(b, sortIgnore, sortIgnoreCase);
+
     do {
-      aChar  = getCollationCharacter(a, index);
-      bChar  = getCollationCharacter(b, index);
-      aValue = getCollationValue(aChar);
-      bValue = getCollationValue(bChar);
+      aChar  = getCollationCharacter(a, index, sortEquivalents);
+      bChar  = getCollationCharacter(b, index, sortEquivalents);
+      aValue = getSortOrderIndex(aChar, sortOrder);
+      bValue = getSortOrderIndex(bChar, sortOrder);
       if(aValue === -1 || bValue === -1) {
         aValue = a.charCodeAt(index) || null;
         bValue = b.charCodeAt(index) || null;
-      }
-      aEquiv = aChar !== a.charAt(index);
-      bEquiv = bChar !== b.charAt(index);
-      if(aEquiv !== bEquiv && tiebreaker === 0) {
-        tiebreaker = aEquiv - bEquiv;
+        if(naturalSort && codeIsNumeral(aValue) && codeIsNumeral(bValue)) {
+          aValue = stringToNumber(a.slice(index));
+          bValue = stringToNumber(b.slice(index));
+        }
+      } else {
+        aEquiv = aChar !== a.charAt(index);
+        bEquiv = bChar !== b.charAt(index);
+        if(aEquiv !== bEquiv && tiebreaker === 0) {
+          tiebreaker = aEquiv - bEquiv;
+        }
       }
       index += 1;
     } while(aValue != null && bValue != null && aValue === bValue);
     if(aValue === bValue) return tiebreaker;
-    return aValue < bValue ? -1 : 1;
+    return aValue - bValue;
   }
 
-  function getCollationReadyString(str) {
-    if(array[AlphanumericSortIgnoreCase]) {
+  function getCollationReadyString(str, sortIgnore, sortIgnoreCase) {
+    if(!isString(str)) str = string(str);
+    if(sortIgnoreCase) {
       str = str.toLowerCase();
     }
-    return str.replace(array[AlphanumericSortIgnore], '');
+    if(sortIgnore) {
+      str = str.replace(sortIgnore, '');
+    }
+    return str;
   }
 
-  function getCollationCharacter(str, index) {
-    var chr = str.charAt(index), eq = array[AlphanumericSortEquivalents] || {};
-    return eq[chr] || chr;
+  function getCollationCharacter(str, index, sortEquivalents) {
+    var chr = str.charAt(index);
+    return sortEquivalents[chr] || chr;
   }
 
-  function getCollationValue(chr) {
-    var order = array[AlphanumericSortOrder];
+  function getSortOrderIndex(chr, sortOrder) {
     if(!chr) {
       return null;
     } else {
-      return order.indexOf(chr);
+      return sortOrder.indexOf(chr);
     }
   }
 
+  var AlphanumericSort            = 'AlphanumericSort';
   var AlphanumericSortOrder       = 'AlphanumericSortOrder';
   var AlphanumericSortIgnore      = 'AlphanumericSortIgnore';
   var AlphanumericSortIgnoreCase  = 'AlphanumericSortIgnoreCase';
   var AlphanumericSortEquivalents = 'AlphanumericSortEquivalents';
+  var AlphanumericSortNatural     = 'AlphanumericSortNatural';
 
 
 
@@ -1324,6 +1397,7 @@
         equivalents[chr.toLowerCase()] = equivalent.toLowerCase();
       });
     });
+    array[AlphanumericSortNatural] = true;
     array[AlphanumericSortIgnoreCase] = true;
     array[AlphanumericSortEquivalents] = equivalents;
   }
@@ -2185,6 +2259,10 @@
     buildObjectInstanceMethods(names, Hash);
   }
 
+  function exportSortAlgorithms() {
+    array[AlphanumericSort] = collateStrings;
+  }
+
   extend(object, false, false, {
 
     'map': function(obj, map) {
@@ -2236,6 +2314,7 @@
   buildEnumerableMethods(EnumerableFindingMethods);
   buildEnumerableMethods(EnumerableMappingMethods, true);
   buildObjectInstanceMethods(EnumerableOtherMethods, Hash);
+  exportSortAlgorithms();
 
 
   /***
@@ -2255,7 +2334,6 @@
   var RequiredTime = '({t})?\\s*('+HoursReg+')(?:{h}('+SixtyReg+')?{m}(?::?('+SixtyReg+'){s})?\\s*(?:({t})|(Z)|(?:([+-])(\\d{2,2})(?::?(\\d{2,2}))?)?)?|\\s*({t}))';
 
   var KanjiDigits = '〇一二三四五六七八九十百千万';
-  var FullWidthDigits = '０１２３４５６７８９';
   var AsianDigitMap = {};
   var AsianDigitReg;
 
@@ -3780,9 +3858,7 @@
       }
       AsianDigitMap[digit] = value;
     });
-    FullWidthDigits.split('').forEach(function(digit, value) {
-      AsianDigitMap[digit] = value;
-    });
+    simpleMerge(AsianDigitMap, NumberNormalizeMap);
     // Kanji numerals may also be included in phrases which are text-based rather
     // than actual numbers such as Chinese weekdays (上周三), and "the day before
     // yesterday" (一昨日) in Japanese, so don't match these.
@@ -6336,10 +6412,6 @@
     }).join('');
   }
 
-  function chr(num) {
-    return string.fromCharCode(num);
-  }
-
   function numberOrIndex(str, n, from) {
     if(isString(n)) {
       n = str.indexOf(n);
@@ -7115,8 +7187,7 @@
      *
      ***/
     'toNumber': function(base) {
-      var str = this.replace(/,/g, '');
-      return str.match(/\./) ? parseFloat(str) : parseInt(str, base || 10);
+      return stringToNumber(this, base);
     },
 
     /***
