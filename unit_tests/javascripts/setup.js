@@ -9,24 +9,12 @@ var moduleName;
 var moduleSetupMethod;
 var moduleTeardownMethod;
 
-var syncTestsRunning = true;
+var syncTestsRunning;
+var asyncTestsRunning;
 
 // Capturing the timers here b/c Mootools (and maybe other frameworks) may clear a timeout that
 // it kicked off after this script is loaded, which would throw off a simple incrementing mechanism.
 var capturedTimers = [];
-
-// This declaration has the effect of pulling setTimeout/clearTimeout off the window's prototype
-// object and setting it directly on the window itself. From here it can be globally reset while
-// retaining the reference to the native setTimeout method. More about this here:
-//
-// http://www.adequatelygood.com/2011/4/Replacing-setTimeout-Globally
-
-nullScope.setTimeout = nullScope.setTimeout;
-nullScope.clearTimeout = nullScope.clearTimeout;
-
-var nativeSetTimeout = nullScope.setTimeout;
-var nativeClearTimeout = nullScope.clearTimeout;
-
 var testStartTime;
 var runtime;
 
@@ -198,9 +186,8 @@ var getMeta = function(stack) {
 }
 
 var checkCanFinish = function() {
-  if(!syncTestsRunning && capturedTimers.length == 0) {
+  if(!syncTestsRunning && asyncTestsRunning === 0) {
     testsFinished();
-    restoreNativeTimeout();
   }
 }
 
@@ -252,6 +239,8 @@ test = function(name, fn) {
   }
   if(!results) {
     results = [];
+    syncTestsRunning = true;
+    asyncTestsRunning = 0;
     testsStarted();
   }
   currentTest = {
@@ -270,30 +259,15 @@ test = function(name, fn) {
   }
 }
 
-setTimeout = function(fn, delay) {
-  var timer = nativeSetTimeout(function() {
-    fn.apply(this, arguments);
-    removeCapturedTimer(timer);
-    checkCanFinish();
-  }, delay);
-  capturedTimers.push(timer);
-  return timer;
-}
-
-clearTimeout = function(timer) {
-  removeCapturedTimer(timer);
-  return nativeClearTimeout(timer);
-}
-
-restoreNativeTimeout = function() {
-  setTimeout = nativeSetTimeout;
-}
-
-var removeCapturedTimer = function(timer) {
-  var index = testArrayIndexOf(capturedTimers, timer);
-  if(index !== -1) {
-    capturedTimers.splice(index, 1);
-  }
+var removeCapturedTimer = function(remove) {
+  var result = [], timer;
+  for (var i = 0, len = capturedTimers.length; i < len; i++) {
+    timer = capturedTimers[i];
+    if(timer !== remove) {
+      result.push(timer);
+    }
+  };
+  capturedTimers = result;
 };
 
 testModule = function(name, options) {
@@ -357,7 +331,15 @@ syncTestsFinished = function() {
 // 1. It gives asynchronous functions their own scope so vars can't be overwritten later by other asynchronous functions
 // 2. It runs the tests after the CPU is free decreasing the chance of timing based errors.
 async = function(fn) {
-  setTimeout(fn, 200);
+  asyncTestsRunning++;
+  setTimeout(function() {
+    fn();
+  }, 100);
+}
+
+asyncFinished = function() {
+  asyncTestsRunning--;
+  checkCanFinish();
 }
 
 if(typeof console === 'undefined') {
