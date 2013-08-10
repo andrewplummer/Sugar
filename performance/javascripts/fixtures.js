@@ -8,20 +8,78 @@ zero           = 0;
 smallInteger   = 85;
 hugeNumber     = 893249283429;
 floatingNumber = 463.34534533;
+numberObject   = new Number(53);
 
 
 
 emptyString  = '';
 normalString = 'abcdefg';
 hugeString   = '';
+stringObject = new String('wasabi');
 
 
 emptyArray       = [];
 smallNumberArray = [1,2,3];
 smallStringArray = ['a','b','c'];
 
+
+biggerStringArray = [
+  'andere',
+  'ändere',
+  'chaque',
+  'chemin',
+  'cote',
+  'cotÉ',
+  'cÔte',
+  'cÔtÉ',
+  'Czech',
+  'ČuČet',
+  'hiŠa',
+  'irdisch',
+  'lävi',
+  'lie',
+  'lire',
+  'llama',
+  'LÖwen',
+  'lÒza',
+  'LÜbeck',
+  'luck',
+  'luČ',
+  'lye',
+  'Männer',
+  'mÀŠta',
+  'mÎr',
+  'mÖchten',
+  'myndig',
+  'pint',
+  'piÑa',
+  'pylon',
+  'sämtlich',
+  'savoir',
+  'Sietla',
+  'subtle',
+  'symbol',
+  'Ślub',
+  'ŠÀran',
+  'väga',
+  'verkehrt',
+  'vox',
+  'waffle',
+  'wood',
+  'yen',
+  'yuan',
+  'yucca',
+  'zoo',
+  'ZÜrich',
+  'Zviedrija',
+  'zysk',
+  'Žal',
+  'Žena'
+];
+
+
 bigNumberArray = [];
-bigStringArray = [];
+bigCharacterArray = [];
 bigDateArray   = [];
 
 (function() {
@@ -31,7 +89,7 @@ bigDateArray   = [];
     var char = String.fromCharCode(rand);
     bigNumberArray.push(rand);
     bigDateArray.push(new Date(rand));
-    bigStringArray.push(char);
+    bigCharacterArray.push(char);
     hugeString += char;
   }
 
