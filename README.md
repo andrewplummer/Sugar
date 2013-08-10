@@ -48,7 +48,7 @@ Use the `npm test` command to run unit tests.
 Date Localizations
 ==================
 
-Sugar includes 11 localizations in the main package:
+Sugar has the following localizations available:
 
 - English (en)
 - French (fr)
@@ -56,13 +56,19 @@ Sugar includes 11 localizations in the main package:
 - Spanish (es)
 - Italian (it)
 - Russian (ru)
-- Korean (ko)
+- Finnish (fi)
+- Swedish (sv)
+- Danish (da)
+- Dutch (nl)
+- Polish (pl)
 - Portuguese (pt)
+- Korean (ko)
 - Japanese (ja)
 - Simplified Chinese (zh-CN)
 - Traditional Chinese (zh-TW)
 
 
+These files can be added separately or built into the main package on the [customize page](http://sugarjs.com/customize).
 In addition to these major locales, custom locales can be added using:
 
 ```
