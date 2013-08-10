@@ -19,6 +19,9 @@ v1.4.0+
   - `Function#lazy` now has different arguments. `limit` is now the third argument with `immediate` taking its place as second. Additionally `immediate` -- which determines whether lazy functions are executed immediately then lock or lock then execute after a timeout -- is now false by default.
 
 - Level: Major
+  - Date ranges are now their own package (the "range" package), are not dependent on the Date package, and work on numbers and strings as well.
+
+- Level: Major
   - Date range methods `eachDay`, `eachMonth`, etc. are deprecated in favor of the syntax `every("day")`, etc.
 
 - Level: Major
