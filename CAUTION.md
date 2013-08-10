@@ -45,6 +45,9 @@ v1.4.0+
 - Level: Minor
   - `String#capitalize` passing the `all` flag now will not capitalize after an apostrophe.
 
+- Level: Minor
+  - Date formatting tokens `z` and `zz` are now `Z` and `ZZ`. Additionally `zzz` was removed.
+
 - Level: Very Minor
   - Passing a regex to array matching methods like `findAll` will now match it directly against the element in the array, regardless of whether or not the matched element is a string or not. This makes the logic more straightforward but it also means that it will stringify the element before attempting to match. If, for example, you have instances of classes in the array and the regex is /t/, the /t/ will return true for that element as it will match the stringified "[object Object]" of the instance, which is likely not what you want, so caution is needed here.
 
