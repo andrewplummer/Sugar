@@ -445,7 +445,7 @@ test('Function', function () {
     fn.every(10, 'one', 'two');
     setTimeout(function() {
       fn.cancel();
-      equal(counter > 7, true, 'function#every | should have been called at least 7 times');
+      equal(counter > 6, true, 'function#every | should have been called at least 7 times');
     }, 100);
   });
 
