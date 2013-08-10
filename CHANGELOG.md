@@ -34,6 +34,7 @@ v1.4.0
 - Added option `immediate` to `Function#lazy`, which is now false by default.
 - Added `Function#every`.
 - Exposed `Array.AlphanumericSort` to allow its use in native `Array#sort`.
+- Added `Array.AlphanumericSortNatural` that is on by default and triggers a natural sort.
 
 ### Performance Enhancements ###
 
