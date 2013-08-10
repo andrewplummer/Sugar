@@ -2191,6 +2191,46 @@ test('Array', function () {
   Array.AlphanumericSortEquivalents = CapturedSortEquivalents;
 
 
+  // Issue #282
+
+
+  equal(['2','100','3'].sortBy(), ['2','3','100'], 'Array#sortBy | natural sort by default');
+  equal(['a2','a100','a3'].sortBy(), ['a2','a3','a100'], 'Array#sortBy | natural sort | leading char');
+  equal(['a2.5','a2.54','a2.4'].sortBy(), ['a2.4','a2.5','a2.54'], 'Array#sortBy | natural sort | floating number');
+  equal(['a100b', 'a100c', 'a100a'].sortBy(), ['a100a', 'a100b', 'a100c'], 'Array#sortBy | natural sort | number in middle');
+  equal(['a10.25b', 'a10.42c', 'a10.15a'].sortBy(), ['a10.15a', 'a10.25b', 'a10.42c'], 'Array#sortBy | natural sort | decimals in middle');
+  equal(['a10.15b', 'a10.15c', 'a10.15a'].sortBy(), ['a10.15a', 'a10.15b', 'a10.15c'], 'Array#sortBy | natural sort | middle decimal same, trailing char different');
+
+  equal(['a１０．２５b', 'a１０．４２c', 'a１０．１５a'].sortBy(), ['a１０．１５a', 'a１０．２５b', 'a１０．４２c'], 'Array#sortBy | natural sort | decimals in middle');
+  equal(['a１０．１５b', 'a１０．１５c', 'a１０．１５a'].sortBy(), ['a１０．１５a', 'a１０．１５b', 'a１０．１５c'], 'Array#sortBy | natural sort | full-width | middle decimal same, trailing char different');
+  equal(['２','１００','３'].sortBy(), ['２','３','１００'], 'Array#sortBy | natural sort | full width');
+  equal(['a２','a１００','a３'].sortBy(), ['a２','a３','a１００'], 'Array#sortBy | natural sort | full width | leading char');
+
+
+  equal(['title 1-300', 'title 1-1', 'title 1-5'].sortBy(), ['title 1-1', 'title 1-5', 'title 1-300'], 'Array#sortBy | natural sort | hyphenated');
+
+
+  // The following tests were taken from http://www.overset.com/2008/09/01/javascript-natural-sort-algorithm/
+
+  equal(['10',9,2,'1','4'].sortBy(), ['1',2,'4',9,'10'], 'Array.sortBy | other | simple');
+  equal(['10.0401',10.022,10.042,'10.021999'].sortBy(), ['10.021999',10.022,'10.0401',10.042], 'Array.sortBy | other | floats');
+  equal(['10.04f','10.039F','10.038d','10.037D'].sortBy(), ['10.037D','10.038d','10.039F','10.04f'], 'Array.sortBy | other | float & decimal notation');
+  equal(['1.528535047e5','1.528535047e7','1.528535047e3'].sortBy(), ['1.528535047e3','1.528535047e5','1.528535047e7'], 'Array.sortBy | scientific notation');
+  equal(['192.168.0.100','192.168.0.1','192.168.1.1'].sortBy(), ['192.168.0.1','192.168.0.100','192.168.1.1'], 'Array.sortBy | other | IP addresses');
+  equal(['car.mov','01alpha.sgi','001alpha.sgi','my.string_41299.tif'].sortBy(), ['001alpha.sgi','01alpha.sgi','car.mov','my.string_41299.tif'], 'Array.sortBy | other | filenames');
+  equal(['$10002.00','$10001.02','$10001.01'].sortBy(), ['$10001.01','$10001.02','$10002.00'], 'Array.sortBy | other | money');
+  equal(['1 Title - The Big Lebowski','1 Title - Gattaca','1 Title - Last Picture Show'].sortBy(), ['1 Title - Gattaca','1 Title - Last Picture Show','1 Title - The Big Lebowski'], 'Array.sortBy | stolen | movie titles');
+
+
+  Array.AlphanumericSortNatural = false;
+
+  equal(['2','100','3'].sortBy(), ['100','2','3'], 'Array#sortBy | natural sort off');
+  equal(['a2','a100','a3'].sortBy(), ['a100','a2','a3'], 'Array#sortBy | natural sort off | leading char');
+  equal(['a2.5','a2.54','a2.4'].sortBy(), ['a2.4','a2.5','a2.54'], 'Array#sortBy | natural sort off | with floating number');
+  equal(['２','１００','３'].sortBy(), ['１００','２','３'], 'Array#sortBy | natural sort off | full width');
+  equal(['a２','a１００','a３'].sortBy(), ['a１００','a２','a３'], 'Array#sortBy | natural sort off | full width leading char');
+
+  Array.AlphanumericSortNatural = true;
 
   // Testing Array#union and Array#intersect on complex elements as found http://ermouth.com/fastArray/
   // Thanks to @ermouth!
