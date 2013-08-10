@@ -2729,8 +2729,12 @@ test('Date', function () {
 
   // Issue #342 handling offsets for comparison
 
-  // Honolulu time zone
-  Date.SugarTimezoneOffset = 600;
+  Date.SugarNewDate = function() {
+    var d = new Date();
+    d.addMinutes(d.getTimezoneOffset() - 600);
+    // Honolulu time zone
+    return d;
+  };
 
   var offset = 600 - new Date().getTimezoneOffset();
   dateEqual(Date.create(), getRelativeDate(null, null, null, null, -offset), 'Date.create | simple create should respect global offset');
@@ -2744,10 +2748,7 @@ test('Date', function () {
   equal(d.isFuture(), true, 'Date#isFuture | should respect global offset');
   equal(d.isPast(), false, 'Date#isPast | should respect global offset');
 
-  Date.SugarTimezoneOffset = null;
-
   // Issue #342 internal constructor override
-
 
   var AwesomeDate = function() {};
   AwesomeDate.prototype = new Date();
@@ -2758,7 +2759,6 @@ test('Date', function () {
     return new AwesomeDate();
   }
 
-  console.info(Date.create().getMinutes());
   equal(Date.create() instanceof AwesomeDate, true, 'Date.SugarNewDate | Result should be use in Date.create');
 
   Date.SugarNewDate = null;
