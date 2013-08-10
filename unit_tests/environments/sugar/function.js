@@ -1,6 +1,5 @@
 test('Function', function () {
 
-
   var bound,obj,result;
 
   obj = { foo: 'bar' };
@@ -36,6 +35,7 @@ test('Function', function () {
       equal(this, fn, 'Function#delay | this object should be the function');
       equal(one, 'one', 'Function#delay | first parameter', { mootools: 'two' });
       equal(two, 'two', 'Function#delay | second parameter', { mootools: undefined });
+      asyncFinished();
     };
     ref = fn.delay(delayTime, 'one', 'two');
     equal(typeof ref, 'function', 'Function#delay | returns the function', { prototype: 'number', mootools: 'number' });
@@ -54,6 +54,7 @@ test('Function', function () {
     equal(ref, fn, 'Function#cancel | returns a reference to the function');
     setTimeout(function() {
       equal(shouldBeFalse, false, 'Function#delay | cancel is working', { prototype: true, mootools: true });
+      asyncFinished();
     }, 60);
   });
 
@@ -73,6 +74,7 @@ test('Function', function () {
       setTimeout(function() {
         equal(counter, 1, 'Function#cancel | should be able to find the correct timers', { prototype: 0 });
         fn.cancel();
+        asyncFinished();
       }, 60);
 
     });
@@ -97,6 +99,7 @@ test('Function', function () {
       equal(counter, 3, 'Function#lazy | counter should still be 3');
       setTimeout(function() {
         equal(counter, 4, 'Function#lazy | final call');
+        asyncFinished();
       }, 10);
     }, 100);
   });
@@ -117,6 +120,7 @@ test('Function', function () {
       equal(counter, 3, 'Function#lazy | was executed by 10ms');
       fn.call('biotch', 'd', 4);
       equal(counter, 4, 'Function#lazy | next execution should be immediate');
+      asyncFinished();
     }, 100);
   });
 
@@ -129,6 +133,7 @@ test('Function', function () {
     fn.cancel();
     setTimeout(function() {
       equal(counter, 0, 'Function#lazy | lazy functions can also be canceled');
+      asyncFinished();
     }, 10);
   });
 
@@ -141,6 +146,7 @@ test('Function', function () {
     fn.cancel();
     setTimeout(function() {
       equal(counter, 1, 'Function#lazy | immediate | lazy functions can also be canceled');
+      asyncFinished();
     }, 10);
   });
 
@@ -153,6 +159,7 @@ test('Function', function () {
     }
     setTimeout(function() {
       equal(counter, 20, 'Function#lazy | lazy (throttled) functions can have a [wait] value of < 1ms');
+      asyncFinished();
     }, 100);
   });
 
@@ -165,6 +172,7 @@ test('Function', function () {
     }
     setTimeout(function() {
       equal(counter, 10, 'Function#lazy | lazy functions have an upper threshold');
+      asyncFinished();
     }, 50);
   });
 
@@ -176,6 +184,7 @@ test('Function', function () {
     }
     setTimeout(function() {
       equal(counter, 10, 'Function#lazy | immediate | should have same upper threshold as non-immediate');
+      asyncFinished();
     }, 50);
   });
 
@@ -188,6 +197,7 @@ test('Function', function () {
     }
     setTimeout(function() {
       equal(counter, 1, 'Function#lazy | lazy functions with a limit of 1 WILL still execute');
+      asyncFinished();
     }, 50);
   });
 
@@ -199,6 +209,7 @@ test('Function', function () {
     }
     setTimeout(function() {
       equal(counter, 1, 'Function#lazy | immediate | lazy functions with a limit of 1 WILL still execute');
+      asyncFinished();
     }, 50);
   });
 
@@ -232,6 +243,7 @@ test('Function', function () {
 
     setTimeout(function() {
       equal(counter, 2, 'Function#debounce | counter is correct');
+      asyncFinished();
     }, 500);
   });
 
@@ -246,6 +258,7 @@ test('Function', function () {
     equal(counter, 0, 'Function#debounce | debounced functions can also be canceled | immediate');
     setTimeout(function() {
       equal(counter, 0, 'Function#debounce | debounced functions can also be canceled | after delay');
+      asyncFinished();
     }, 100);
   });
 
@@ -276,6 +289,7 @@ test('Function', function () {
 
     setTimeout(function() {
       equal(counter, 2, 'Function#throttle | counter is correct');
+      asyncFinished();
     }, 200);
   });
 
@@ -291,6 +305,7 @@ test('Function', function () {
 
     setTimeout(function() {
       equal(fn(), 3, 'Function#throttle | memoize | result expires after 200 ms');
+      asyncFinished();
     }, 200);
   });
 
@@ -313,6 +328,7 @@ test('Function', function () {
       i++;
     }
     equal(counter, 2, 'Function#after | calls a function only after a certain number of calls');
+    asyncFinished();
   });
 
   async(function() {
@@ -320,6 +336,7 @@ test('Function', function () {
     var fn = (function(args) { counter++; }).after(0);
     equal(counter, 1, 'Function#after | 0 should fire the function immediately');
     equal(typeof fn, 'function', 'Function#after | 0 should still return a function');
+    asyncFinished();
   });
 
 
@@ -342,6 +359,7 @@ test('Function', function () {
     equal(fn.call(obj, 'one', 'two'), 30, 'Function#once | fifth call memoizes the result');
 
     equal(counter, 1, 'Function#once | counter is only incremented once');
+    asyncFinished();
   });
 
 
@@ -356,6 +374,7 @@ test('Function', function () {
     fn.call();
 
     equal(counter, 1, 'Function#once | returning undefined will not affect the number of calls');
+    asyncFinished();
   });
 
 
@@ -403,13 +422,14 @@ test('Function', function () {
       fn.cancel();
     };
     fn.delay(5);
-    fn.delay(5);
-    fn.delay(5);
-    fn.delay(5);
-    fn.delay(5);
-    fn.delay(5);
+    fn.delay(20);
+    fn.delay(20);
+    fn.delay(20);
+    fn.delay(20);
+    fn.delay(20);
     setTimeout(function() {
       equal(counter, 1, 'Function#cancel | delays should have been canceled after 1');
+      asyncFinished();
     }, 50);
   });
 
@@ -421,14 +441,17 @@ test('Function', function () {
         fn.cancel();
       }
     };
-    fn.delay(10);
-    fn.delay(10);
+    // Note that IE seems unable to clear timeouts that are too close
+    // together, so spacing them out a bit.
+    fn.delay(20);
+    fn.delay(20);
     fn.delay(2);
     fn.delay(5);
-    fn.delay(10);
-    fn.delay(10);
+    fn.delay(20);
+    fn.delay(20);
     setTimeout(function() {
       equal(counter, 2, 'function#cancel | delays should have been canceled after 2');
+      asyncFinished();
     }, 50);
   });
 
@@ -446,6 +469,7 @@ test('Function', function () {
     setTimeout(function() {
       fn.cancel();
       equal(counter > 6, true, 'function#every | should have been called at least 7 times');
+      asyncFinished();
     }, 100);
   });
 
