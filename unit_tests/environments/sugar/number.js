@@ -29,8 +29,6 @@ test('Number', function () {
   equal((4).toNumber(), 4, 'Number#toNumber | 4 is 4');
   equal((10000).toNumber(), 10000, 'Number#toNumber | 10000 is 10000');
   equal((5.2345).toNumber(), 5.2345, 'Number#toNumber | 5.2345 is 5.2345');
-  equal(('２００').toNumber(), 200, 'Number#toNumber | should work on full-width integers');
-  equal(('５．２３４５').toNumber(), 5.2345, 'Number#toNumber | should work on full-width decimals');
 
 
 
