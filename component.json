@@ -6,7 +6,7 @@
     "/docs",
     "/lib",
     "/script",
-    "/unit_tests",
+    "/test",
     "/performance",
     ".gitignore",
     ".npmignore",
