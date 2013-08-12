@@ -453,7 +453,6 @@ test('Array', function () {
   expectedIndexes = [2,5,9];
   arr.each(function(el, i) {
     equal(el, expected[count], 'Array#each | sparse arrays | elements are in expected order');
-    // TODO REWORK THIS AS IT SHOULD BE STRICT!!
     equal(i, expectedIndexes[count], 'Array#each | sparse arrays | index is in expected order', { prototype: count });
     count++;
   });
