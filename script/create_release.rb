@@ -63,6 +63,7 @@ def create_development
   end
   packages.each do |p|
     content = get_content(p)
+    content.gsub!(/^\s*'use strict';\n/, '')
     # don't think I need to store this
     File.open(PRECOMPILED_DEV_DIR + "/#{p}.js", 'w').write(content)
     full_content << content
@@ -93,13 +94,22 @@ def create_package(name, arr)
   arr.each do |s|
     contents << File.open(PRECOMPILED_MIN_DIR + "/#{s}.js").read
   end
-  contents = @copyright + wrap(contents.sub(/\n+\Z/m, ''))
+  contents = @copyright + wrap_minified(contents.sub(/\n+\Z/m, ''))
   ext = name == 'default' ? '' : '-' + name
   File.open(PARENT_DIR + "/sugar#{ext}.min.js", 'w').write(contents)
 end
 
-def wrap(js)
+def wrap_minified(js)
   "(function(){#{js}})();"
+end
+
+def wrap(js)
+  <<-EOT
+(function(){
+  'use strict';
+#{js}
+})();
+  EOT
 end
 
 def cleanup
