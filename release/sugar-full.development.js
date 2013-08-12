@@ -37,6 +37,9 @@
   // native objects. IE8 does not have defineProperies, however, so this check saves a try/catch block.
   var definePropertySupport = object.defineProperty && object.defineProperties;
 
+  // Classes that can be matched by value
+  var matchedByValueReg = /^\[object Date|Array|String|Number|RegExp|Boolean|Arguments\]$/;
+
 
   // Class initializers and class helpers
 
@@ -459,7 +462,6 @@
 
   // Specialized helpers
 
-
   // Used by Array#unique and Object.equal
 
   function stringify(thing, stack) {
@@ -525,7 +527,7 @@
     // user-created classes. The latter can arguably be matched by value, but distinguishing between these and
     // host objects -- which should never be compared by value -- is very tricky so not dealing with it here.
     var klass = className(obj);
-    return /^\[object Date|Array|String|Number|RegExp|Boolean|Arguments\]$/.test(klass) || isPlainObject(obj, klass);
+    return matchedByValueReg.test(klass) || isPlainObject(obj, klass);
   }
 
 
