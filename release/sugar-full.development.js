@@ -7,6 +7,8 @@
  *
  * ---------------------------- */
 (function(){
+  'use strict';
+
   /***
    * @package Core
    * @description Internal utility and common methods.
@@ -558,7 +560,6 @@
   buildNumberHelpers();
 
 
-
   /***
    * @package ES5
    * @description Shim methods that provide ES5 compatible functionality. This package can be excluded if you do not require legacy browser support (IE8 and below).
@@ -1030,7 +1031,6 @@
   // Initialize
   buildTrim();
   buildISOString();
-
 
 
   /***
@@ -2285,7 +2285,7 @@
   extend(object, false, false, {
 
     'map': function(obj, map) {
-      var result = {}, value;
+      var result = {}, key, value;
       for(key in obj) {
         if(!hasOwnProperty(obj, key)) continue;
         value = obj[key];
@@ -4779,7 +4779,6 @@
   setDateProperties();
 
 
-
   /***
    * @package Range
    * @dependency core
@@ -4879,7 +4878,7 @@
     /***
      * @method span()
      * @returns Number
-     * @short Return the span of the range. If the range is a date range, the value is in milliseconds.
+     * @short Returns the span of the range. If the range is a date range, the value is in milliseconds.
      * @extra The span includes both the start and the end.
      * @example
      *
@@ -4916,7 +4915,7 @@
      * @method every(<increment>, [fn])
      * @returns Array
      * @short Iterates through the range for every <increment>, calling [fn] if it is passed. Returns an array of each increment visited.
-     * @extra When <increment> is a number, increments will be to the exact millisecond. In the case of date ranges, <increment> can also be a string in the format %{number} {unit}s%, in which case it will increment in the unit specified. Note that a discrepancy exists in the case of months, as %(2).months()% is an approximation. Stepping through the actual months by passing %"2 months"% is usually preferable in this case.
+     * @extra In the case of date ranges, <increment> can also be a string, in which case it will increment a number of  units. Note that %(2).months()% first resolves to a number, which will be interpreted as milliseconds and is an approximation, so stepping through the actual months by passing %"2 months"% is usually preferable.
      * @example
      *
      *   Number.range(2, 8).every(2)                                       -> [2,4,6,8]
@@ -4956,7 +4955,7 @@
      * @short Returns a new range with the earliest starting point as its start, and the latest ending point as its end. If the two ranges do not intersect this will effectively remove the "gap" between them.
      * @example
      *
-     *   Number.range(1, 3).union(Number.range(2, 5) -> 1..5
+     *   Number.range(1, 3).union(Number.range(2, 5)) -> 1..5
      *   Date.range(new Date(2003, 1), new Date(2005, 1)).union(Date.range(new Date(2004, 1), new Date(2006, 1))) -> Jan 1, 2003..Jan 1, 2006
      *
      ***/
@@ -4973,7 +4972,7 @@
      * @short Returns a new range with the latest starting point as its start, and the earliest ending point as its end. If the two ranges do not intersect this will effectively produce an invalid range.
      * @example
      *
-     *   Number.range(1, 5).intersect(Number.range(4, 8) -> 4..5
+     *   Number.range(1, 5).intersect(Number.range(4, 8)) -> 4..5
      *   Date.range(new Date(2003, 1), new Date(2005, 1)).intersect(Date.range(new Date(2004, 1), new Date(2006, 1))) -> Jan 1, 2004..Jan 1, 2005
      *
      ***/
@@ -5034,12 +5033,7 @@
      /***
      * @method step()
      * @returns Array
-     * @short Alias for %every%.
-     *
-     * @example
-     *
-     +   range.step(fn);    -> iterates over every step
-     +   range.step(2, fn); -> iterates over every 2 steps
+     * @alias every
      *
      ***/
     'step': Range.prototype.every
@@ -5820,6 +5814,7 @@
 
   buildNumber();
 
+
   /***
    * @package Object
    * @dependency core
@@ -6451,9 +6446,9 @@
   var btoa, atob;
 
   function buildBase64(key) {
-    if(this.btoa) {
-      btoa = this.btoa;
-      atob = this.atob;
+    if(globalContext.btoa) {
+      btoa = globalContext.btoa;
+      atob = globalContext.atob;
       return;
     }
     var base64reg = /[^A-Za-z0-9\+\/\=]/g;
@@ -7281,6 +7276,7 @@
   });
 
   buildBase64('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=');
+
 
   /***
    *
@@ -8971,7 +8967,7 @@ Date.addLocale('ru', {
   'long': '{d} {month} {yyyy} года {H}:{mm}',
   'full': '{Weekday} {d} {month} {yyyy} года {H}:{mm}:{ss}',
   'relative': function(num, unit, ms, format) {
-    var numberWithUnit, last = num.toString().slice(-1);
+    var numberWithUnit, last = num.toString().slice(-1), mult;
     switch(true) {
       case num >= 11 && num <= 15: mult = 3; break;
       case last == 1: mult = 1; break;
@@ -9252,5 +9248,6 @@ Date.addLocale('zh-TW', {
     '{date}[日號]'
   ]
 });
+
 
 })();
