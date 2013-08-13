@@ -46,6 +46,7 @@ v1.4.0
 - isString/isNumber/isBoolean: up to 77% faster
 - Object.isFunction: up to 336% faster
 - isEqual returns up front when === (can be *much* faster). Many methods use this internally as well.
+- Math related functions (and internals that use them): up to 16% faster.
 
 
 v1.3.9
