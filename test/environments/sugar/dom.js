@@ -52,6 +52,10 @@ test('DOM', function () {
     raisesError(function(){ Object.clone(new MouseEvent('click')); }, 'Object.clone | raises an error if trying to a browser event');
   }
 
+  if(Object.isFunction) {
+    equal(Object.isFunction(document.createElement('embed')), false, 'Object.isFunction | not true for embed objects');
+  }
+
 
 
 });

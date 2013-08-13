@@ -44,7 +44,6 @@ v1.4.0
 - Array#min/max/less/more up to 83% faster
 - Enumerable methods like findAll/findIndex/map/any/count/sum/etc.: up to 11,270% faster
 - isString/isNumber/isBoolean: up to 77% faster
-- Object.isFunction: up to 336% faster
 - isEqual returns up front when === (can be *much* faster). Many methods use this internally as well.
 - Math related functions (and internals that use them): up to 16% faster.
 
