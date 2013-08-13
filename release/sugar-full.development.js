@@ -18,31 +18,29 @@
   // A few optimizations for Google Closure Compiler will save us a couple kb in the release script.
   var object = Object, array = Array, regexp = RegExp, date = Date, string = String, number = Number, math = Math, Undefined;
 
-  // Internal toString
-  var internalToString = object.prototype.toString;
-
-  // Are regexes type function?
-  var regexIsFunction = typeof /x/ === 'function';
-
-  // Internal hasOwnProperty
-  var internalHasOwnProperty = object.prototype.hasOwnProperty;
-
   // The global context
   var globalContext = typeof global !== 'undefined' ? global : this;
 
-  // Type check methods need a way to be accessed dynamically outside global context.
-  var typeChecks = {};
+  // Internal toString
+  var internalToString = object.prototype.toString;
+
+  // Internal hasOwnProperty
+  var internalHasOwnProperty = object.prototype.hasOwnProperty;
 
   // defineProperty exists in IE8 but will error when trying to define a property on
   // native objects. IE8 does not have defineProperies, however, so this check saves a try/catch block.
   var definePropertySupport = object.defineProperty && object.defineProperties;
 
+  // Are regexes type function?
+  var regexIsFunction = typeof /x/ === 'function';
+
+  // Type check methods need a way to be accessed dynamically.
+  var typeChecks = {};
+
   // Classes that can be matched by value
   var matchedByValueReg = /^\[object Date|Array|String|Number|RegExp|Boolean|Arguments\]$/;
 
-
   // Class initializers and class helpers
-
   var ClassNames = 'Boolean,Number,String,Array,Date,RegExp,Function'.split(',');
 
   var isBoolean  = buildPrimitiveClassCheck('boolean', ClassNames[0]);
@@ -161,7 +159,7 @@
   function wrapNative(nativeFn, extendedFn, condition) {
     return function() {
       var fn;
-      if(nativeFn && (condition === true || !condition.apply(this, arguments))) {
+      if(nativeFn && !condition.apply(this, arguments)) {
         fn = nativeFn;
       } else {
         fn = extendedFn;
