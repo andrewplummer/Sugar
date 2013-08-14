@@ -32,7 +32,10 @@
   var definePropertySupport = object.defineProperty && object.defineProperties;
 
   // Are regexes type function?
-  var regexIsFunction = typeof /x/ === 'function';
+  var regexIsFunction = typeof regexp() === 'function';
+
+  // Do strings have no keys?
+  var noKeysInStringObjects = !('0' in new string('a'));
 
   // Type check methods need a way to be accessed dynamically.
   var typeChecks = {};
@@ -51,12 +54,20 @@
   var isDate     = buildClassCheck(ClassNames[4]);
   var isRegExp   = buildClassCheck(ClassNames[5]);
 
-  var isFunction = function(obj) {
-    // Extra check for environments where regexes are type "function".
-    return typeof obj === 'function' && (!regexIsFunction || !isRegExp(obj));
-  };
 
-  typeChecks[ClassNames[6]] = isFunction;
+  // Wanted to enhance performance here by using simply "typeof"
+  // but Firefox has two major issues that make this impossible,
+  // one fixed, the other not. Despite being typeof "function"
+  // the objects below still report in as [object Function], so
+  // we need to perform a full class check here.
+  //
+  // 1. Regexes can be typeof "function" in FF < 3
+  //    https://bugzilla.mozilla.org/show_bug.cgi?id=61911 (fixed)
+  //
+  // 2. HTMLEmbedElement and HTMLObjectElement are be typeof "function"
+  //    https://bugzilla.mozilla.org/show_bug.cgi?id=268945 (won't fix)
+  //
+  var isFunction = buildClassCheck(ClassNames[6]);
 
   function isClass(obj, klass, cached) {
     var k = cached || className(obj);
@@ -122,17 +133,23 @@
   function extend(klass, instance, override, methods) {
     var extendee = instance ? klass.prototype : klass;
     initializeClass(klass);
-    iterateOverObject(methods, function(name, method) {
-      var original = extendee[name];
-      var existed  = hasOwnProperty(extendee, name);
-      if(isFunction(override)) {
-        method = wrapNative(extendee[name], method, override);
+    iterateOverObject(methods, function(name, extendedFn) {
+      var nativeFn = extendee[name],
+          existed  = hasOwnProperty(extendee, name);
+      if(isFunction(override) && nativeFn) {
+        extendedFn = wrapNative(nativeFn, extendedFn, override);
       }
-      if(override !== false || !extendee[name]) {
-        defineProperty(extendee, name, method);
+      if(override !== false || !nativeFn) {
+        defineProperty(extendee, name, extendedFn);
       }
-      // If the method is internal to Sugar, then store a reference so it can be restored later.
-      klass['SugarMethods'][name] = { 'instance': instance, 'method': method, 'original': original, 'existed': existed };
+      // If the method is internal to Sugar, then
+      // store a reference so it can be restored later.
+      klass['SugarMethods'][name] = {
+        'method':   extendedFn,
+        'existed':  existed,
+        'original': nativeFn,
+        'instance': instance
+      };
     });
   }
 
@@ -158,19 +175,20 @@
 
   function wrapNative(nativeFn, extendedFn, condition) {
     return function() {
-      var fn;
-      if(nativeFn && !condition.apply(this, arguments)) {
-        fn = nativeFn;
-      } else {
-        fn = extendedFn;
-      }
-      return fn.apply(this, arguments);
+      return condition.apply(this, arguments) ?
+             extendedFn.apply(this, arguments) :
+             nativeFn.apply(this, arguments);
     }
   }
 
   function defineProperty(target, name, method) {
     if(definePropertySupport) {
-      object.defineProperty(target, name, { 'value': method, 'configurable': true, 'enumerable': false, 'writable': true });
+      object.defineProperty(target, name, {
+        'value': method,
+        'configurable': true,
+        'enumerable': false,
+        'writable': true
+      });
     } else {
       target[name] = method;
     }
@@ -272,8 +290,6 @@
     return target;
   }
 
-   var noKeysInStringObjects = !('0' in new string('a'));
-
    // Make primtives types like strings into objects.
    function coercePrimitiveToObject(obj) {
      if(isPrimitiveType(obj)) {
@@ -302,21 +318,19 @@
 
   Hash.prototype.constructor = object;
 
-  // Number helpers
+  // Math helpers
 
-  function round(val, precision, method) {
-    var fn = math[method || 'round'];
-    var multiplier = math.pow(10, math.abs(precision || 0));
+  var abs   = math.abs;
+  var pow   = math.pow;
+  var ceil  = math.ceil;
+  var floor = math.floor;
+  var round = math.round;
+
+  function withPrecision(val, precision, fn) {
+    var multiplier = pow(10, abs(precision || 0));
+    fn = fn || round;
     if(precision < 0) multiplier = 1 / multiplier;
     return fn(val * multiplier) / multiplier;
-  }
-
-  function ceil(val, precision) {
-    return round(val, precision, 'ceil');
-  }
-
-  function floor(val, precision) {
-    return round(val, precision, 'floor');
   }
 
   // Full width number helpers
@@ -395,7 +409,7 @@
   // Used by Number and Date
 
   function padNumber(num, place, sign, base) {
-    var str = math.abs(num).toString(base || 10);
+    var str = abs(num).toString(base || 10);
     str = repeatString(place - str.replace(/\.\d+/, '').length, '0') + str;
     if(sign || num < 0) {
       str = (num < 0 ? '-' : '+') + str;
@@ -1059,7 +1073,7 @@
   function functionMatcher(fn) {
     return function (el, i, arr) {
       // Return true up front if match by reference
-      return el === fn || fn.call(arr, el, i, arr);
+      return el === fn || fn.call(this, el, i, arr);
     }
   }
 
@@ -1169,12 +1183,12 @@
     return i >>> 0;
   }
 
-  function arrayFind(arr, f, startIndex, loop, returnIndex) {
+  function arrayFind(arr, f, startIndex, loop, returnIndex, context) {
     var result, index, matcher;
     if(arr.length > 0) {
       matcher = getMatcher(f);
       arrayEach(arr, function(el, i) {
-        if(matcher(el, i, arr)) {
+        if(matcher.call(context, el, i, arr)) {
           result = el;
           index = i;
           return false;
@@ -1387,8 +1401,11 @@
 
 
   function buildEnhancements() {
-    var callbackCheck = function() { var a = arguments; return a.length > 0 && !isFunction(a[0]); };
-    extendSimilar(array, true, callbackCheck, 'every,all,some,any,none,filter', function(methods, name) {
+    var callbackCheck = function() {
+      var args = arguments;
+      return args.length > 0 && !isFunction(args[0]);
+    };
+    extendSimilar(array, true, callbackCheck, 'every,all,some,any,none,filter,find', function(methods, name) {
       methods[name] = function(f) {
         var matcher = getMatcher(f);
         return this[name](function(el, index) {
@@ -1469,8 +1486,9 @@
      *   ['cuba','japan','canada'].find(/^c/, 2) -> 'canada'
      *
      ***/
-    'find': function(f, index, loop) {
-      return arrayFind(this, f, index, loop);
+    'find': function(f, context) {
+      checkCallback(f);
+      return arrayFind(this, f, 0, false, context);
     },
 
     /***
@@ -3147,9 +3165,9 @@
   }
 
   function getAdjustedUnit(ms) {
-    var next, ams = math.abs(ms), value = ams, unitIndex = 0;
+    var next, ams = abs(ms), value = ams, unitIndex = 0;
     iterateOverDateUnits(function(name, unit, i) {
-      next = floor(round(ams / unit.multiplier() * 10) / 10);
+      next = floor(withPrecision(ams / unit.multiplier(), 1));
       if(next >= 1) {
         value = next;
         unitIndex = i;
@@ -3167,7 +3185,7 @@
       // 2 months apart (when using a strict numeric definition).
       // The third "ms" element in the array will handle the sign
       // (past or future), so simply take the absolute value here.
-      adu[0] = math.abs(date.monthsFromNow());
+      adu[0] = abs(date.monthsFromNow());
       adu[1] = 6;
     }
     return adu;
@@ -3742,7 +3760,7 @@
         var num      = ms / multiplier,
             fraction = num % 1,
             error    = u.error || 0.999;
-        if(fraction && math.abs(fraction % 1) > error) {
+        if(fraction && abs(fraction % 1) > error) {
           num = round(num);
         }
         return num < 0 ? ceil(num) : floor(num);
@@ -3873,7 +3891,7 @@
     KanjiDigits.split('').forEach(function(digit, value) {
       var holder;
       if(value > 9) {
-        value = math.pow(10, value - 9);
+        value = pow(10, value - 9);
       }
       AsianDigitMap[digit] = value;
     });
@@ -4210,7 +4228,7 @@
       var offset = this._utc ? 0 : this.getTimezoneOffset();
       var colon  = iso === true ? ':' : '';
       if(!offset && iso) return 'Z';
-      return padNumber(floor(-offset / 60), 2, true) + colon + padNumber(math.abs(offset % 60), 2);
+      return padNumber(floor(-offset / 60), 2, true) + colon + padNumber(abs(offset % 60), 2);
     },
 
      /***
@@ -4887,7 +4905,7 @@
      *
      ***/
     'span': function() {
-      return this.isValid() ? math.abs(
+      return this.isValid() ? abs(
         getRangeMemberNumericValue(this.end) - getRangeMemberNumericValue(this.start)
       ) + 1 : NaN;
     },
@@ -5440,15 +5458,15 @@
     if(significant > 0) {
       significant -= 1;
     }
-    i = math.max(math.min((significant / 3).floor(), limit === false ? str.length : limit), -mid);
+    i = math.max(math.min(floor(significant / 3), limit === false ? str.length : limit), -mid);
     unit = str.charAt(i + mid - 1);
     if(significant < -9) {
       i = -3;
-      roundTo = significant.abs() - 9;
+      roundTo = abs(significant) - 9;
       unit = str.slice(0,1);
     }
-    divisor = bytes ? (2).pow(10 * i) : (10).pow(i * 3);
-    return (num / divisor).round(roundTo || 0).format() + unit.trim();
+    divisor = bytes ? pow(2, 10 * i) : pow(10, i * 3);
+    return withPrecision(num / divisor, roundTo || 0).format() + unit.trim();
   }
 
 
@@ -5625,7 +5643,7 @@
       if(isUndefined(decimal)) {
         decimal = '.';
       }
-      str      = (isNumber(place) ? round(this, place || 0).toFixed(math.max(place, 0)) : this.toString()).replace(/^-/, '');
+      str      = (isNumber(place) ? withPrecision(this, place || 0).toFixed(math.max(place, 0)) : this.toString()).replace(/^-/, '');
       split    = str.split('.');
       integer  = split[0];
       fraction = split[1];
@@ -5719,7 +5737,7 @@
      *
      ***/
     'ordinalize': function() {
-      var suffix, num = this.abs(), last = parseInt(num.toString().slice(-2));
+      var suffix, num = abs(this), last = parseInt(num.toString().slice(-2));
       return this + getOrdinalizedSuffix(last);
     },
 
@@ -5800,10 +5818,15 @@
    ***/
 
   function buildNumber() {
-    extendSimilar(number, true, false, 'round,floor,ceil', function(methods, name) {
-      methods[name] = function(precision) {
-        return round(this, precision, name);
+    function createRoundingFunction(fn) {
+      return function (precision) {
+        return precision ? withPrecision(this, precision, fn) : fn(this);
       }
+    }
+    extend(number, true, false, {
+      'ceil':   createRoundingFunction(ceil),
+      'round':  createRoundingFunction(round),
+      'floor':  createRoundingFunction(floor)
     });
     extendSimilar(number, true, false, 'abs,pow,sin,asin,cos,acos,tan,atan,exp,pow,sqrt', function(methods, name) {
       methods[name] = function(a, b) {
