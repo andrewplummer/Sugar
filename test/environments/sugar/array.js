@@ -482,27 +482,10 @@ test('Array', function () {
   equal([[1,2],[2,3],[2,3]].find([2,3]), [2,3], 'Array#find | first 2,3', { prototype: undefined });
   equal(['foo','bar'].find(/f+/), 'foo', 'Array#find | /f+/', { prototype: undefined });
   equal(['foo','bar'].find(/[a-f]/), 'foo', 'Array#find | /a-f/', { prototype: undefined });
-  equal(['foo','bar'].find(/[a-f]/, 1), 'bar', 'Array#find | /a-f/ from index 1', { prototype: undefined });
   equal(['foo','bar'].find(/q+/), undefined, 'Array#find | /q+/');
-  equal([1,2,3].find(function(e) { return e > 0; }, 0), 1, 'Array#find | greater than 0 from index 0');
-  equal([1,2,3].find(function(e) { return e > 0; }, 1), 2, 'Array#find | greater than 0 from index 1', { prototype: 1 });
-  equal([1,2,3].find(function(e) { return e > 0; }, 2), 3, 'Array#find | greater than 0 from index 2', { prototype: 1 });
-  equal([1,2,3].find(function(e) { return e > 0; }, 3), undefined, 'Array#find | greater than 0 from index 3', { prototype: 1 });
-  equal([1,2,3].find(function(e) { return e > 1; }, 0), 2, 'Array#find | greater than 1 from index 0');
-  equal([1,2,3].find(function(e) { return e > 1; }, 1), 2, 'Array#find | greater than 1 from index 1');
-  equal([1,2,3].find(function(e) { return e > 1; }, 2), 3, 'Array#find | greater than 1 from index 2', { prototype: 2 });
-  equal([1,2,3].find(function(e) { return e > 2; }, 0), 3, 'Array#find | greater than 2 from index 0');
-  equal([1,2,3].find(function(e) { return e > 3; }, 0), undefined, 'Array#find | greater than 3 from index 0');
-
-  equal([{a:10},{a:8},{a:3}].find(function(e) { return e['a'] > 5; }, 0), {a:10}, 'Array#find | key "a" greater than 5');
-  equal([{a:10},{a:8},{a:3}].find(function(e) { return e['a'] > 5; }, 1), {a:8}, 'Array#find | key "a" greater than 5 from index 1', { prototype: {a:10} });
-  equal([{a:10},{a:8},{a:3}].find(function(e) { return e['a'] > 5; }, 2), undefined, 'Array#find | key "a" greater than 5 from index 2', { prototype: {a:10} });
   equal([function() {}].find(function(e) {}, 0), undefined, 'Array#find | undefined function');
-  equal([function() {}].find(function(e) {}, 1), undefined, 'Array#find | null function from index 1');
   equal([null, null].find(null, 0), null, 'Array#find | null');
-  equal([null, null].find(null, 1), null, 'Array#find | null from index 1');
   equal([undefined, undefined].find(undefined, 0), undefined, 'Array#find | undefined');
-  equal([undefined, undefined].find(undefined, 1), undefined, 'Array#find | undefined from index 1');
   equal([undefined, 'a'].find(undefined, 1), undefined, 'Array#find | undefined can be found');
 
 
@@ -589,6 +572,11 @@ test('Array', function () {
   }
 
   equal([fn].findAll(fn), [fn], 'Array#findAll | should find functions by reference');
+
+  var undefinedContextObj = (function(){ return this; }).call(undefined);
+  [1].findAll(function() {
+    equal(this, undefinedContextObj, 'Array#findAll | this argument should be undefined context');
+  });
 
   equal([1,1,3].unique(), [1,3], 'Array#unique | 1,1,3');
   equal([0,0,0].unique(), [0], 'Array#unique | 0,0,0');

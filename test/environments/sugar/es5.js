@@ -1,5 +1,5 @@
 
-test('ECMAScript', function () {
+test('ES5', function () {
 
   var arr, count, expected, result, previous, current, fn, reg, obj, Person;
 
