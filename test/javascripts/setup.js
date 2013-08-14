@@ -154,7 +154,7 @@ var testIsEqual = function(one, two) {
     return arrayEqual(one, two);
   } else if((klass === '[object Object]' || klass === '[object Arguments]') && ('hasOwnProperty' in one) && type === 'object') {
     return objectEqual(one, two);
-  } else if(isNaN(one) && isNaN(two)) {
+  } else if(klass === '[object Number]' && isNaN(one) && isNaN(two)) {
     return true;
   }
 
