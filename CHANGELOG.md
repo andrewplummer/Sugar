@@ -36,6 +36,7 @@ v1.4.0
 - Exposed `Array.AlphanumericSort` to allow its use in native `Array#sort`.
 - Added `Array.AlphanumericSortNatural` that is on by default and triggers a natural sort.
 - Fixed strings not being coerced into objects in < IE8.
+- `Array.find` now aligns with ES6 spec.
 
 ### Performance Enhancements ###
 
