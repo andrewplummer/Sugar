@@ -1566,16 +1566,10 @@ test('Array', function () {
   equal(['a','b','c'].findIndex('f'), -1, 'Array#findIndex | f in a,b,c');
 
   equal(['a','b','c','b'].findIndex('b'), 1, 'Array#findIndex | finds first instance');
-  equal(['a','b','c','b'].findIndex('b', 2), 3, 'Array#findIndex | finds first instance from index');
 
   equal([5,2,4].findIndex(5), 0, 'Array#findIndex | 5 in 5,2,4');
   equal([5,2,4].findIndex(2), 1, 'Array#findIndex | 2 in 5,2,4');
   equal([5,2,4].findIndex(4), 2, 'Array#findIndex | 4 in 5,2,4');
-  equal([5,2,4,4].findIndex(4, 3), 3, 'Array#findIndex | 4 in 5,2,4,4 from index 3');
-
-  equal([5,2,4,4].findIndex(4, 10), -1, 'Array#findIndex | 4 in 5,2,4,4 from index 10');
-  equal([5,2,4,4].findIndex(4, -10), 2, 'Array#findIndex | 4 in 5,2,4,4 from index -10');
-  equal([5,2,4,4].findIndex(4, -1), 3, 'Array#findIndex | 4 in 5,2,4,4 from index -1');
 
   equal([{ foo: 'bar' }].findIndex({ foo: 'bar' }), 0, 'Array#findIndex | will find deep objects');
   equal([{ foo: 'bar' }].findIndex(function(a) { return a.foo === 'bar'; }), 0, 'Array#findIndex | will run against a function');
