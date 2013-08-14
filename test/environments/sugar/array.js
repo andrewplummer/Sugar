@@ -3,6 +3,7 @@ test('Array', function () {
 
   var arr, expected, expectedIndexes, count, f1 = function(){}, f2 = function(){};
   var sparseArraySupport = 0 in [undefined];
+  var stringObj = new String('foo');
 
   // Using [] or the constructor "new Array" will cause this test to fail in IE7/8. Evidently passing undefined to the
   // constructor will not push undefined as expected, however the length property will still appear as if it was pushed.
@@ -1509,7 +1510,7 @@ test('Array', function () {
 
   equal(Array.create(), [], 'Array.create | no args');
   equal(Array.create('one'), ['one'], 'Array.create | string');
-  equal(Array.create(new String('one')), ['one'], 'Array.create | string object');
+  equal(Array.create(stringObj), [stringObj], 'Array.create | string object');
   equal(Array.create({length: 2}), [{length: 2}], "Array.create | can't trick array-like coercion");
   equal(Array.create(2), [2], 'Array.create | number');
   equal(Array.create([2]), [2], 'Array.create | in array | number');
