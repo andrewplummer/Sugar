@@ -140,11 +140,14 @@ test('String', function () {
   equal('   wasabi   '.trimRight(), '   wasabi', 'String#trim | should trim right whitespace only');
 
 
-  raisesError(function(){ 'wasabi'.pad(); }, 'String#pad | no arguments raises error');
-  raisesError(function(){ 'wasabi'.pad(undefined); }, 'String#pad | undefined');
-  raisesError(function(){ 'wasabi'.pad(NaN); }, 'String#pad | NaN raises error');
+  raisesError(function(){ 'wasabi'.pad(-1); }, 'String#pad | -1 raises error');
+  raisesError(function(){ 'wasabi'.pad(Infinity); }, 'String#pad | Infinity raises error');
 
-  equal('wasabi'.pad(-1), 'wasabi', 'String#pad | -1');
+  equal('wasabi'.pad(), 'wasabi', 'String#pad | no arguments default to 0');
+  equal('wasabi'.pad(undefined), 'wasabi', 'String#pad | undefined defaults to 0');
+  equal('wasabi'.pad(null), 'wasabi', 'String#pad | null defaults to 0');
+  equal('wasabi'.pad(NaN), 'wasabi', 'String#pad | NaN defaults to 0');
+
   equal('wasabi'.pad(0), 'wasabi', 'String#pad | 0');
   equal('wasabi'.pad(1), 'wasabi', 'String#pad | 1');
   equal('wasabi'.pad(2), 'wasabi', 'String#pad | 2');
@@ -160,13 +163,15 @@ test('String', function () {
   equal('wasabi'.pad(20), '       wasabi       ', 'String#pad | 12');
 
   equal('wasabi'.pad(8, '"'), '"wasabi"', 'String#pad | padding with quotes');
+  equal('wasabi'.pad(8, ''), 'wasabi', 'String#pad | empty string should have no padding');
   equal('wasabi'.pad(8, 's'), 'swasabis', 'String#pad | padding with s');
   equal('wasabi'.pad(8, 5), '5wasabi5', 'String#pad | padding with a number');
   equal('wasabi'.pad(12, '-'), '---wasabi---', 'String#pad | should pad the string with 6 hyphens');
-  equal('wasabi'.pad(null), 'wasabi', 'String#pad | padding with a null');
 
 
-  equal('wasabi'.padLeft(-1), 'wasabi', 'String#padLeft | -1');
+  raisesError(function() { 'wasabi'.padLeft(-1) }, 'String#padLeft | -1 raises error');
+  raisesError(function() { 'wasabi'.padLeft(Infinity) }, 'String#padLeft | Infinity raises error');
+
   equal('wasabi'.padLeft(0), 'wasabi', 'String#padLeft | 0');
   equal('wasabi'.padLeft(1), 'wasabi', 'String#padLeft | 1');
   equal('wasabi'.padLeft(2), 'wasabi', 'String#padLeft | 2');
@@ -184,7 +189,9 @@ test('String', function () {
   equal('wasabi'.padLeft(12, '+'), '++++++wasabi', 'String#padLeft | 12 with plusses');
 
 
-  equal('wasabi'.padRight(-1), 'wasabi', 'String#padRight | -1');
+  raisesError(function() { 'wasabi'.padRight(-1) }, 'String#padRight | -1 raises error');
+  raisesError(function() { 'wasabi'.padRight(Infinity) }, 'String#padRight | Infinity raises error');
+
   equal('wasabi'.padRight(0), 'wasabi', 'String#padRight | 0');
   equal('wasabi'.padRight(1), 'wasabi', 'String#padRight | 1');
   equal('wasabi'.padRight(2), 'wasabi', 'String#padRight | 2');
@@ -204,8 +211,22 @@ test('String', function () {
 
 
   equal('wasabi'.repeat(0), '', 'String#repeat | 0 should repeat the string 0 times');
-  equal('wasabi'.repeat(-1), '', 'String#repeat | -1 should repeat the string 0 times');
   equal('wasabi'.repeat(2), 'wasabiwasabi', 'String#repeat | 2 should repeat the string 2 times');
+  equal('wasabi'.repeat(2.5), 'wasabiwasabi', 'String#repeat | 2.5 should floor to 2 times');
+
+
+  equal(String.prototype.repeat.call(true, 3), 'truetruetrue', 'String#repeat | boolean coerced to string');
+  equal(String.prototype.repeat.call({}, 3), '[object Object][object Object][object Object]', 'String#repeat | object coerced to string');
+  equal(String.prototype.repeat.call(1, 3), '111', 'String#repeat | number coerced to string');
+  equal('a'.repeat('3'), 'aaa', 'String#repeat | count should be coerced to number');
+  equal('a'.repeat('a'), '', 'String#repeat | NaN coercions should be 0');
+
+  raisesError(function(){ String.prototype.repeat.call(undefined) }, 'String#repeat | raises error on undefined');
+  raisesError(function(){ String.prototype.repeat.call(null) }, 'String#repeat | raises error on null');
+  raisesError(function(){ 'a'.repeat(-1) }, 'String#repeat | negative number raises error');
+  raisesError(function(){ 'a'.repeat(Infinity) }, 'String#repeat | Infinity raises error');
+  raisesError(function(){ 'a'.repeat(-Infinity) }, 'String#repeat | -Infinity raises error');
+
 
   // "each" will return an array of everything that was matched, defaulting to individual characters
   equal('g'.each(), ['g'], 'String#each | each should return an array of each char');
