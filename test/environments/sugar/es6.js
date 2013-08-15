@@ -45,6 +45,12 @@ test('ES6', function () {
   });
   equal(result, 'a', 'Array#find | should work on array-like objects');
 
+  arr = { 0:'a',1:'b',2:'c',length: '3' };
+  result = Array.prototype.find.call(arr, function(el) {
+    return el === 'a';
+  });
+  equal(result, 'a', 'Array#find | should work on array-like objects with length of type string');
+
 
   arr = ['a'];
   arr[2] = 'b';
@@ -105,6 +111,12 @@ test('ES6', function () {
     return el === 'a';
   });
   equal(result, 0, 'Array#findIndex | should work on array-like objects');
+
+  arr = { 0:'a',1:'b',2:'c',length: '3' };
+  result = Array.prototype.findIndex.call(arr, function(el) {
+    return el === 'a';
+  });
+  equal(result, 0, 'Array#findIndex | should work on array-like objects with length of type string');
 
 
   arr = ['a'];
