@@ -325,6 +325,8 @@
   var ceil  = math.ceil;
   var floor = math.floor;
   var round = math.round;
+  var min   = math.min;
+  var max   = math.max;
 
   function withPrecision(val, precision, fn) {
     var multiplier = pow(10, abs(precision || 0));
@@ -381,13 +383,15 @@
     return '\u0009\u000A\u000B\u000C\u000D\u0020\u00A0\u1680\u180E\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u202F\u205F\u2028\u2029\u3000\uFEFF';
   }
 
-  function repeatString(times, str) {
-    var result = '';
-    if(isUndefined(times)) {
-      times = 1;
-    }
-    while(times-- > 0) {
-      result += str;
+  function repeatString(str, num) {
+    var result = '', str = str.toString();
+    while (num > 0) {
+      if (num & 1) {
+        result += str;
+      }
+      if (num >>= 1) {
+        str += str;
+      }
     }
     return result;
   }
@@ -410,7 +414,7 @@
 
   function padNumber(num, place, sign, base) {
     var str = abs(num).toString(base || 10);
-    str = repeatString(place - str.replace(/\.\d+/, '').length, '0') + str;
+    str = repeatString('0', place - str.replace(/\.\d+/, '').length) + str;
     if(sign || num < 0) {
       str = (num < 0 ? '-' : '+') + str;
     }
@@ -4364,8 +4368,8 @@
       var t  = this.getTime();
       var t1 = date.create(d1).getTime();
       var t2 = date.create(d2).getTime();
-      var lo = math.min(t1, t2);
-      var hi = math.max(t1, t2);
+      var lo = min(t1, t2);
+      var hi = max(t1, t2);
       margin = margin || 0;
       return (lo - margin < t) && (hi + margin > t);
     },
@@ -5235,12 +5239,12 @@
       rounded = ceil(ms);
       perExecution = round(rounded / ms) || 1;
       execute = function() {
-        var queueLength = queue.length, max;
+        var queueLength = queue.length, maxPerRound;
         if(queueLength == 0) return;
         // Allow fractions of a millisecond by calling
         // multiple times per actual timeout execution
-        max = math.max(queueLength - perExecution, 0);
-        while(queueLength > max) {
+        maxPerRound = max(queueLength - perExecution, 0);
+        while(queueLength > maxPerRound) {
           // Getting uber-meta here...
           result = Function.prototype.apply.apply(fn, queue.shift());
           queueLength--;
@@ -5466,7 +5470,7 @@
     if(significant > 0) {
       significant -= 1;
     }
-    i = math.max(math.min(floor(significant / 3), limit === false ? str.length : limit), -mid);
+    i = max(min(floor(significant / 3), limit === false ? str.length : limit), -mid);
     unit = str.charAt(i + mid - 1);
     if(significant < -9) {
       i = -3;
@@ -5493,11 +5497,11 @@
      *
      ***/
     'random': function(n1, n2) {
-      var min, max;
+      var minNum, maxNum;
       if(arguments.length == 1) n2 = n1, n1 = 0;
-      min = math.min(n1 || 0, isUndefined(n2) ? 1 : n2);
-      max = math.max(n1 || 0, isUndefined(n2) ? 1 : n2) + 1;
-      return floor((math.random() * (max - min)) + min);
+      minNum = min(n1 || 0, isUndefined(n2) ? 1 : n2);
+      maxNum = max(n1 || 0, isUndefined(n2) ? 1 : n2) + 1;
+      return floor((math.random() * (maxNum - minNum)) + minNum);
     }
 
   });
@@ -5651,7 +5655,7 @@
       if(isUndefined(decimal)) {
         decimal = '.';
       }
-      str      = (isNumber(place) ? withPrecision(this, place || 0).toFixed(math.max(place, 0)) : this.toString()).replace(/^-/, '');
+      str      = (isNumber(place) ? withPrecision(this, place || 0).toFixed(max(place, 0)) : this.toString()).replace(/^-/, '');
       split    = str.split('.');
       integer  = split[0];
       fraction = split[1];
@@ -5659,10 +5663,10 @@
         if(i < integer.length) {
           result = thousands + result;
         }
-        result = integer.slice(math.max(0, i - 3), i) + result;
+        result = integer.slice(max(0, i - 3), i) + result;
       }
       if(fraction) {
-        result += decimal + repeatString((place || 0) - fraction.length, '0') + fraction;
+        result += decimal + repeatString('0', (place || 0) - fraction.length) + fraction;
       }
       return (this < 0 ? '-' : '') + result;
     },
@@ -6419,14 +6423,16 @@
     }
   }
 
+  function checkRepeatRange(num) {
+    num = +num;
+    if(num < 0 || num === Infinity) {
+      throw new RangeError('Invalid number');
+    }
+    return num;
+  }
+
   function padString(num, padding) {
-    if(isNaN(num)) {
-      throw new TypeError('Invalid Number.');
-    }
-    if(isUndefined(padding)) {
-      padding = ' ';
-    }
-    return repeatString(num, padding);
+    return repeatString(isDefined(padding) ? padding : ' ', num);
   }
 
   function truncateString(str, length, from, ellipsis, split) {
@@ -7155,18 +7161,21 @@
      ***/
     'pad': function(num, padding) {
       var half, front, back;
-      half  = (num - this.length) / 2;
+      num   = checkRepeatRange(num);
+      half  = max(0, num - this.length) / 2;
       front = floor(half);
       back  = ceil(half);
       return padString(front, padding) + this + padString(back, padding);
     },
 
     'padLeft': function(num, padding) {
-      return padString(num - this.length, padding) + this;
+      num = checkRepeatRange(num);
+      return padString(max(0, num - this.length), padding) + this;
     },
 
     'padRight': function(num, padding) {
-      return this + padString(num - this.length, padding);
+      num = checkRepeatRange(num);
+      return this + padString(max(0, num - this.length), padding);
     },
 
     /***
@@ -7212,17 +7221,8 @@
      *
      ***/
     'repeat': function(num) {
-      var result = '', str = this;
-      if(!isNumber(num) || num < 1) return '';
-      while (num) {
-        if (num & 1) {
-          result += str;
-        }
-        if (num >>= 1) {
-          str += str;
-        }
-      }
-      return result;
+      num = checkRepeatRange(num);
+      return repeatString(this, num);
     },
 
     /***
