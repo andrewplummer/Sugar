@@ -221,8 +221,15 @@ test('String', function () {
   equal('a'.repeat('3'), 'aaa', 'String#repeat | count should be coerced to number');
   equal('a'.repeat('a'), '', 'String#repeat | NaN coercions should be 0');
 
-  raisesError(function(){ String.prototype.repeat.call(undefined) }, 'String#repeat | raises error on undefined');
-  raisesError(function(){ String.prototype.repeat.call(null) }, 'String#repeat | raises error on null');
+  var undefinedContext = (function(){ return this; }).call(undefined);
+
+  // Can't test this in IE etc where calling with null
+  // context reverts back to the global object.
+  if(undefinedContext === undefined) {
+    raisesError(function(){ String.prototype.repeat.call(undefined) }, 'String#repeat | raises error on undefined');
+    raisesError(function(){ String.prototype.repeat.call(null) }, 'String#repeat | raises error on null');
+  }
+
   raisesError(function(){ 'a'.repeat(-1) }, 'String#repeat | negative number raises error');
   raisesError(function(){ 'a'.repeat(Infinity) }, 'String#repeat | Infinity raises error');
   raisesError(function(){ 'a'.repeat(-Infinity) }, 'String#repeat | -Infinity raises error');
