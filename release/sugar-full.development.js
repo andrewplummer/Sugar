@@ -174,7 +174,7 @@
   }
 
   function wrapNative(nativeFn, extendedFn, condition) {
-    return function() {
+    return function(a) {
       return condition.apply(this, arguments) ?
              extendedFn.apply(this, arguments) :
              nativeFn.apply(this, arguments);
@@ -761,7 +761,7 @@
      *   ['one','two','three'].map('length')  -> [3,3,5]
      ***/
     'map': function(fn, scope) {
-      var length = this.length, index = 0, result = new Array(length);
+      var scope = arguments[1], length = this.length, index = 0, result = new Array(length);
       checkFirstArgumentExists(arguments);
       while(index < length) {
         if(index in this) {
@@ -785,7 +785,8 @@
      *   [1,2,2,4].filter(2) -> 2
      *
      ***/
-    'filter': function(fn, scope) {
+    'filter': function(fn) {
+      var scope = arguments[1];
       var length = this.length, index = 0, result = [];
       checkFirstArgumentExists(arguments);
       while(index < length) {
@@ -808,7 +809,8 @@
      *   [1,2,3].indexOf(7)           -> -1
      *
      ***/
-    'indexOf': function(search, fromIndex) {
+    'indexOf': function(search) {
+      var fromIndex = arguments[1];
       if(isString(this)) return this.indexOf(search, fromIndex);
       return arrayIndexOf(this, search, fromIndex, 1);
     },
@@ -824,7 +826,8 @@
      *   [1,2,1].lastIndexOf(7)                 -> -1
      *
      ***/
-    'lastIndexOf': function(search, fromIndex) {
+    'lastIndexOf': function(search) {
+      var fromIndex = arguments[1];
       if(isString(this)) return this.lastIndexOf(search, fromIndex);
       return arrayIndexOf(this, search, fromIndex, -1);
     },
@@ -841,8 +844,8 @@
      *   });
      *
      ***/
-    'forEach': function(fn, scope) {
-      var length = this.length, index = 0;
+    'forEach': function(fn) {
+      var length = this.length, index = 0, scope = arguments[1];
       checkCallback(fn);
       while(index < length) {
         if(index in this) {
@@ -868,8 +871,8 @@
      *   }, 100);
      *
      ***/
-    'reduce': function(fn, init) {
-      return arrayReduce(this, fn, init);
+    'reduce': function(fn) {
+      return arrayReduce(this, fn, arguments[1]);
     },
 
     /***
@@ -888,8 +891,8 @@
      *   });
      *
      ***/
-    'reduceRight': function(fn, init) {
-      return arrayReduce(this, fn, init, true);
+    'reduceRight': function(fn) {
+      return arrayReduce(this, fn, arguments[1], true);
     }
 
 
@@ -1147,10 +1150,12 @@
   // Basic array internal methods
 
   function arrayEach(arr, fn, startIndex, loop) {
-    var length, index, i;
+    var index, i, length = +arr.length;
     if(startIndex < 0) startIndex = arr.length + startIndex;
     i = isNaN(startIndex) ? 0 : startIndex;
-    length = loop === true ? arr.length + i : arr.length;
+    if(loop === true) {
+      length += i;
+    }
     while(i < length) {
       index = i % arr.length;
       if(!(index in arr)) {
@@ -1405,7 +1410,7 @@
       var args = arguments;
       return args.length > 0 && !isFunction(args[0]);
     };
-    extendSimilar(array, true, callbackCheck, 'every,all,some,any,none,filter,find', function(methods, name) {
+    extendSimilar(array, true, callbackCheck, 'every,all,some,any,none,filter,find,findIndex', function(methods, name) {
       methods[name] = function(f) {
         var matcher = getMatcher(f);
         return this[name](function(el, index) {
@@ -1474,21 +1479,43 @@
   extend(array, true, false, {
 
     /***
-     * @method find(<f>, [index] = 0, [loop] = false)
+     * @method find(<f>, [context] = undefined)
      * @returns Mixed
      * @short Returns the first element that matches <f>.
-     * @extra <f> will match a string, number, array, object, or alternately test against a function or regex. Starts at [index], and will continue once from index = 0 if [loop] is true. This method implements @array_matching.
+     * @extra [context] is the %this% object if passed. When <f> is a function, will use native implementation if it exists. <f> will also match a string, number, array, object, or alternately test against a function or regex. This method implements @array_matching.
      * @example
      *
      +   [{a:1,b:2},{a:1,b:3},{a:1,b:4}].find(function(n) {
      *     return n['a'] == 1;
-     *   });                                     -> {a:1,b:3}
-     *   ['cuba','japan','canada'].find(/^c/, 2) -> 'canada'
+     *   });                                  -> {a:1,b:3}
+     *   ['cuba','japan','canada'].find(/^c/) -> 'cuba'
      *
      ***/
     'find': function(f, context) {
       checkCallback(f);
-      return arrayFind(this, f, 0, false, context);
+      return arrayFind(this, f, 0, false, false, context);
+    },
+
+    /***
+     * @method findIndex(<f>, [context] = undefined)
+     * @returns Number
+     * @short Returns the index of the first element that matches <f> or -1 if not found.
+     * @extra [context] is the %this% object if passed. When <f> is a function, will use native implementation if it exists. <f> will also match a string, number, array, object, or alternately test against a function or regex. This method implements @array_matching.
+     *
+     * @example
+     *
+     +   [1,2,3,4].findIndex(function(n) {
+     *     return n % 2 == 0;
+     *   }); -> 1
+     +   [1,2,3,4].findIndex(3);               -> 2
+     +   ['one','two','three'].findIndex(/t/); -> 1
+     *
+     ***/
+    'findIndex': function(f, context) {
+      var index;
+      checkCallback(f);
+      index = arrayFind(this, f, 0, false, true, context);
+      return isUndefined(index) ? -1 : index;
     },
 
     /***
@@ -1516,25 +1543,6 @@
         }, index, loop);
       }
       return result;
-    },
-
-    /***
-     * @method findIndex(<f>, [startIndex] = 0, [loop] = false)
-     * @returns Number
-     * @short Returns the index of the first element that matches <f> or -1 if not found.
-     * @extra This method has a few notable differences to native %indexOf%. Although <f> will similarly match a primitive such as a string or number, it will also match deep objects and arrays that are not equal by reference (%===%). Additionally, if a function is passed it will be run as a matching function (similar to the behavior of %Array#filter%) rather than attempting to find that function itself by reference in the array. Starts at [index], and will continue once from index = 0 if [loop] is true. This method implements @array_matching.
-     * @example
-     *
-     +   [1,2,3,4].findIndex(3);  -> 2
-     +   [1,2,3,4].findIndex(function(n) {
-     *     return n % 2 == 0;
-     *   }); -> 1
-     +   ['one','two','three'].findIndex(/th/); -> 2
-     *
-     ***/
-    'findIndex': function(f, startIndex, loop) {
-      var index = arrayFind(this, f, startIndex, loop, true);
-      return isUndefined(index) ? -1 : index;
     },
 
     /***
@@ -6424,7 +6432,7 @@
   function truncateString(str, length, from, ellipsis, split) {
     var str1, str2, len1, len2;
     if(str.length <= length) {
-      return str;
+      return str.toString();
     }
     ellipsis = isUndefined(ellipsis) ? '...' : ellipsis;
     switch(from) {
@@ -6547,8 +6555,8 @@
      *   'hello'.startsWith('HELL', 0, false) -> true
      *
      ***/
-    'startsWith': function(reg, pos, c) {
-      var str = this, source;
+    'startsWith': function(reg) {
+      var args = arguments, pos = args[1], c = args[2], str = this, source;
       if(pos) str = str.slice(pos);
       if(isUndefined(c)) c = true;
       source = isRegExp(reg) ? reg.source.replace('^', '') : escapeRegExp(reg);
@@ -6569,8 +6577,8 @@
      *   'jumpy'.endsWith('MPY', 5, false) -> true
      *
      ***/
-    'endsWith': function(reg, pos, c) {
-      var str = this, source;
+    'endsWith': function(reg) {
+      var args = arguments, pos = args[1], c = args[2], str = this, source;
       if(isDefined(pos)) str = str.slice(0, pos);
       if(isUndefined(c)) c = true;
       source = isRegExp(reg) ? reg.source.replace('$', '') : escapeRegExp(reg);
