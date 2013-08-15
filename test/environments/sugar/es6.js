@@ -138,4 +138,9 @@ test('ES6', function () {
 
   equal(visited, ['a'], 'Array#findIndex | does not visit elements mutated after being called');
 
+  equal(Array.prototype.find.length,        1, 'Array#find | should have argument length of 1');
+  equal(Array.prototype.findIndex.length,   1, 'Array#findIndex | should have argument length of 1');
+  equal(String.prototype.startsWith.length, 1, 'String#startsWith | arg length should be 1');
+  equal(String.prototype.endsWith.length,   1, 'String#startsWith | arg length should be 1');
+
 });
