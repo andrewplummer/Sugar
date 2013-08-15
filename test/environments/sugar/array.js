@@ -211,7 +211,9 @@ test('Array', function () {
     equal(this, a, 'Array#each | scope is also the array', { prototype: (function(){ return this; }).call('this'), mootools: 'this' });
   }, 'this');
 
-
+  count = 0;
+  Array.prototype.each.call({'0':'a','length':'1'}, function() { count++; }, 0, true);
+  equal(count, 1, 'Array#each | looping over array-like objects with string lengths');
 
   equal(['foot','goose','moose'].map(function(el) { return el.replace(/o/g, 'e'); }), ['feet', 'geese', 'meese'], 'Array#map | with regexp');
   // cool!
