@@ -39,6 +39,7 @@ v1.4.0
 - `Array.find` now aligns with ES6 spec.
 - Fixed bug with array like objects iterated over with loop = true.
 - Fixed `String#truncate` not returning primitives.
+- `String#repeat` is now aligned more with spec. `String#pad` follows suit.
 
 ### Performance Enhancements ###
 
