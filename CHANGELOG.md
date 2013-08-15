@@ -38,6 +38,7 @@ v1.4.0
 - Fixed strings not being coerced into objects in < IE8.
 - `Array.find` now aligns with ES6 spec.
 - Fixed bug with array like objects iterated over with loop = true.
+- Fixed `String#truncate` not returning primitives.
 
 ### Performance Enhancements ###
 
