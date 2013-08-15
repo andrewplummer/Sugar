@@ -63,6 +63,9 @@ v1.4.0+
 - Level: Very Minor
   - Passing `null` to `.map` will now have the same effect as `undefined` (or no arguments), that is, no mapping will occur. This will apply to any method making use of the internal `transformArgument`, so `Array#min`, `Array#max`, and `Array#groupBy` are affected as well.
 
+- Level: Very Minor
+  - `String#pad/padLeft/padRight` will now raise an error on padding to a negative number. Conversely, they will no longer raise an error on undefined/null/NaN.
+
 
 v1.3.9+
 =======
