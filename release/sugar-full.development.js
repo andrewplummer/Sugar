@@ -438,10 +438,17 @@
   // RegExp helpers
 
   function getRegExpFlags(reg, add) {
-    var flags = reg.toString().match(/[^/]*$/)[0];
-    if(add) {
-      flags = (flags + add).split('').sort().join('').replace(/([gimy])\1+/g, '$1');
+    var flags = '';
+    add = add || '';
+    function checkFlag(prop, flag) {
+      if(prop || add.indexOf(flag) > -1) {
+        flags += flag;
+      }
     }
+    checkFlag(reg.multiline, 'm');
+    checkFlag(reg.ignoreCase, 'i');
+    checkFlag(reg.global, 'g');
+    checkFlag(reg.sticky, 'y');
     return flags;
   }
 
@@ -460,23 +467,6 @@
   function callDateSet(d, method, value) {
     return d['set' + (d._utc && method != 'ISOWeek' ? 'UTC' : '') + method](value);
   }
-
-  function extractDurationFromString(str) {
-    var match, val, unit;
-    match = str.toLowerCase().match(/^(\d+)?\s?(\w+?)s?$/i);
-    val = parseInt(match[1]) || 1;
-    unit = match[2].slice(0,1).toUpperCase() + match[2].slice(1);
-    if(unit.match(/hour|minute|second/i)) {
-      unit += 's';
-    } else if(unit === 'Year') {
-      unit = 'FullYear';
-    } else if(unit === 'Day') {
-      unit = 'Date';
-    }
-    return [val, unit];
-  }
-
-  // Specialized helpers
 
   // Used by Array#unique and Object.equal
 
@@ -549,18 +539,29 @@
 
   // Used by Array#at and String#at
 
-  function entryAtIndex(arr, args, str) {
-    var result = [], length = arr.length, loop = args[args.length - 1] !== false, r;
+  function getEntriesForIndexes(obj, args, isString) {
+    var result,
+        length    = obj.length,
+        argsLen   = args.length,
+        overshoot = args[argsLen - 1] !== false,
+        multiple  = argsLen > (overshoot ? 1 : 2);
+    if(!multiple) {
+      return entryAtIndex(obj, length, args[0], overshoot, isString);
+    }
+    result = [];
     multiArgs(args, function(index) {
       if(isBoolean(index)) return false;
-      if(loop) {
-        index = index % length;
-        if(index < 0) index = length + index;
-      }
-      r = str ? arr.charAt(index) || '' : arr[index];
-      result.push(r);
+      result.push(entryAtIndex(obj, length, index, overshoot, isString));
     });
-    return result.length < 2 ? result[0] : result;
+    return result;
+  }
+
+  function entryAtIndex(obj, length, index, overshoot, isString) {
+    if(overshoot) {
+      index = index % length;
+      if(index < 0) index = length + index;
+    }
+    return isString ? obj.charAt(index) : obj[index];
   }
 
 
@@ -1728,7 +1729,7 @@
      *
      ***/
     'at': function() {
-      return entryAtIndex(this, arguments);
+      return getEntriesForIndexes(this, arguments);
     },
 
     /***
@@ -4843,29 +4844,35 @@
     return !!val || val === 0;
   }
 
-  function incrementRangeMember(obj, increment) {
-    if(isDate(obj)) {
-      return advanceDate(obj, increment);
-    } else if(isString(obj)) {
-      return string.fromCharCode(m.charCodeAt(0) + increment);
-    } else if(isNumber(obj)) {
-      return obj + increment;
+  function advanceDate(current, amount) {
+    var num, unit, val, d;
+    if(isNumber(amount)) {
+      return new date(current.getTime() + amount);
     }
+    num  = amount[0];
+    unit = amount[1];
+    val  = callDateGet(current, unit);
+    d    = new date(current.getTime());
+    callDateSet(d, unit, val + num);
+    return d;
   }
 
-  function advanceDate(current, increment) {
-    var unit, amt = increment, tmp, val, d;
-    if(isString(increment)) {
-      tmp  = extractDurationFromString(increment);
-      amt  = tmp[0];
-      unit = tmp[1];
-      val  = callDateGet(current, unit);
-      d    = new date(current.getTime());
-      callDateSet(d, unit, val + amt);
-      return d;
-    } else {
-      return new date(current.getTime() + increment);
+  function getDateIncrement(amt) {
+    var match, val, unit;
+    if(isNumber(amt)) {
+      return amt;
     }
+    match = amt.toLowerCase().match(/^(\d+)?\s?(\w+?)s?$/i);
+    val = parseInt(match[1]) || 1;
+    unit = match[2].slice(0,1).toUpperCase() + match[2].slice(1);
+    if(unit.match(/hour|minute|second/i)) {
+      unit += 's';
+    } else if(unit === 'Year') {
+      unit = 'FullYear';
+    } else if(unit === 'Day') {
+      unit = 'Date';
+    }
+    return [val, unit];
   }
 
   /***
@@ -4942,38 +4949,43 @@
     },
 
     /***
-     * @method every(<increment>, [fn])
+     * @method every(<amount>, [fn])
      * @returns Array
-     * @short Iterates through the range for every <increment>, calling [fn] if it is passed. Returns an array of each increment visited.
-     * @extra In the case of date ranges, <increment> can also be a string, in which case it will increment a number of  units. Note that %(2).months()% first resolves to a number, which will be interpreted as milliseconds and is an approximation, so stepping through the actual months by passing %"2 months"% is usually preferable.
+     * @short Iterates through the range for every <amount>, calling [fn] if it is passed. Returns an array of each increment visited.
+     * @extra In the case of date ranges, <amount> can also be a string, in which case it will increment a number of  units. Note that %(2).months()% first resolves to a number, which will be interpreted as milliseconds and is an approximation, so stepping through the actual months by passing %"2 months"% is usually preferable.
      * @example
      *
      *   Number.range(2, 8).every(2)                                       -> [2,4,6,8]
      *   Date.range(new Date(2003, 1), new Date(2003,3)).every("2 months") -> [...]
      *
      ***/
-    'every': function(increment, fn) {
+    'every': function(amount, fn) {
       var start   = this.start,
           end     = this.end,
           inverse = end < start,
           current = start,
           index   = 0,
-          result  = [];
-      if(isFunction(increment)) {
-        fn = increment;
-        increment = null;
+          result  = [],
+          incrementingDate;
+      if(isDate(start)) {
+        incrementingDate = true;
+        amount = getDateIncrement(amount);
       }
-      increment = increment || 1;
+      if(isFunction(amount)) {
+        fn = amount;
+        amount = null;
+      }
+      amount = amount || 1;
       // Avoiding infinite loops
-      if(inverse && increment > 0) {
-        increment *= -1;
+      if(inverse && amount > 0) {
+        amount *= -1;
       }
       while(inverse ? current >= end : current <= end) {
         result.push(current);
         if(fn) {
           fn(current, index);
         }
-        current = incrementRangeMember(current, increment);
+        current = incrementingDate ? advanceDate(current, amount) : current + amount;
         index++;
       }
       return result;
@@ -6966,7 +6978,7 @@
      *
      ***/
     'at': function() {
-      return entryAtIndex(this, arguments, true);
+      return getEntriesForIndexes(this, arguments, true);
     },
 
     /***
