@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Sugar and Dates (Array Package)</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" href="stylesheets/custom.css" type="text/css" />
+    <link rel="stylesheet" href="stylesheets/tooltip.css" type="text/css" />
+    <!-- setup -->
+    <script type="text/javascript" src="javascripts/setup.js"></script>
+    <script type="text/javascript" src="../performance/javascripts/benchmark.js"></script>
+    <!-- jquery -->
+    <!--<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>-->
+    <script type="text/javascript" src="javascripts/jquery-1.7.1.js"></script>
+    <!-- test suite -->
+    <script type="text/javascript" src="javascripts/date_helper.js"></script>
+    <script type="text/javascript" src="javascripts/object_helper.js"></script>
+    <script type="text/javascript" src="javascripts/environment.js"></script>
+    <script type="text/javascript" src="javascripts/suite.js"></script>
+    <script type="text/javascript" src="javascripts/tooltip.js"></script>
+    <!-- sugar -->
+    <script type="text/javascript" src="../lib/core.js"></script>
+    <script type="text/javascript" src="../lib/es5.js"></script>
+    <script type="text/javascript" src="../lib/range.js"></script>
+    <script type="text/javascript" src="../lib/date.js"></script>
+    <!--<script type="text/javascript" src="../release/1.2.5/minified/sugar-1.2.5.min.js"></script>-->
+    <script type="text/javascript">
+      registerEnvironment('core', [
+        {
+          name: 'core',
+          path: 'environments/sugar/',
+          tests: [
+            'date_range.js',
+            'number_range.js',
+            'string_range.js'
+          ]
+        }
+      ]);
+
+    </script>
+  </head>
+  <body>
+  </body>
+</html>
