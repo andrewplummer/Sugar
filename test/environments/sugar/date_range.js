@@ -1,6 +1,8 @@
 test('Date Ranges', function () {
 
-  Date.setLocale('en');
+  if(Date.setLocale) {
+    Date.setLocale('en');
+  }
 
   var d1, d2;
   var range, expected, result, count, range1, range2, tzOffset;
