@@ -51,6 +51,7 @@ v1.4.0
 - isEqual returns up front when === (can be *much* faster). Many methods use this internally as well.
 - Math related functions (and internals that use them): up to 16% faster.
 - getRegExpFlags is up to 1000% faster.
+- Range#every up to 52% faster for dates, 1500% faster for numbers/strings.
 
 
 v1.3.9
