@@ -41,6 +41,7 @@ test('RegExp', function () {
   equal(r.ignoreCase, false, 'RegExp#addFlag | initial regex is untouched');
   equal(r.multiline, false, 'RegExp#addFlag | initial regex is untouched');
 
+  equal(/foobar/gim.addFlag('d').getFlags().length, 3, 'RegExp#addFlag | unknown flag is ignored');
 
   r = /foobar/gim;
   n = r.removeFlag('g');
@@ -53,7 +54,6 @@ test('RegExp', function () {
   equal(r.ignoreCase, true, 'RegExp#removeFlag | initial regex is untouched | ignoreCase');
   equal(r.multiline, true, 'RegExp#removeFlag | initial regex is untouched | multiline');
 
-  raisesError(function(){ /foobar/gim.addFlag('d'); }, 'RegExp#addFlags | d');
 
   // RegExp#getFlags
 
