@@ -141,7 +141,7 @@ var testIsEqual = function(one, two) {
   if(type === 'string' || type === 'boolean' || one == null) {
     return one === two;
   } else if(type === 'number') {
-    return (isNaN(one) && isNaN(two)) || one === two;
+    return typeof two === 'number' && ((isNaN(one) && isNaN(two)) || one === two);
   }
 
   klass = Object.prototype.toString.call(one);
