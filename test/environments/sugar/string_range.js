@@ -4,7 +4,7 @@ test('String Ranges', function () {
   var range;
   var mergedRange;
   var clonedRange;
-  var stepResult;
+  var result;
   var count;
 
   range = String.range('k', 'o');
@@ -97,30 +97,30 @@ test('String Ranges', function () {
 
   count = 0;
 
-  stepResult = range.step(1, function() {
+  result = range.every(1, function() {
     count++;
   });
 
-  equal(stepResult, [5,6,7,8,9,10], 'String | Range | result should be an array');
-  equal(count, 6, 'String | Range | step 1');
+  equal(result, [5,6,7,8,9,10], 'String | Range | result should be an array');
+  equal(count, 6, 'String | Range | every 1');
 
   count = 0;
 
-  stepResult = range.step(2, function() {
+  result = range.every(2, function() {
     count++;
   });
 
-  equal(stepResult, [5,7,9], 'String | Range step 2 | result should be an array');
-  equal(count, 3, 'String | Range step 2 | count');
+  equal(result, [5,7,9], 'String | Range every 2 | result should be an array');
+  equal(count, 3, 'String | Range every 2 | count');
 
   count = 0;
 
-  stepResult = range.step(function() {
+  result = range.every(function() {
     count++;
   });
 
-  equal(stepResult, [5,6,7,8,9,10], 'String | Range | result should be an array');
-  equal(count, 6, 'String | Range | step 1');
+  equal(result, [5,6,7,8,9,10], 'String | Range | result should be an array');
+  equal(count, 6, 'String | Range | every 1');
 
 
   equal(range.clamp(25), 10, 'String | Range#clamp | 25');
