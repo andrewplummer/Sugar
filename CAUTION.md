@@ -13,7 +13,7 @@ v1.4.0+
 =======
 
 - Level: Major
-  - `Array#find` now works according to the ES6 spec. This means that it will no longer take a `fromIndex` or `loop` arguments. Instead, the second argument is the context in which the function matcher will be run. If you need the previous use `Array#findAll` for now.
+  - `Array#find` now works according to the ES6 spec. This means that it will no longer take a `fromIndex` or `loop` arguments. Instead, the second argument is the context in which the function matcher will be run. If you need the previous functionality, use `Array#findFrom` and `Array#findIndexFrom` instead.
 
 - Level: Major
   - `pad`, `padLeft`, and `padRight` now pad to the exact character. This means that `padLeft(20)` will produce a string exactly 20 characters long, instead of adding 20 characters worth of padding to the left side of the string as before. You can use `String#repeat` for the same effect as the old functionality.
