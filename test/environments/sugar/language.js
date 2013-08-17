@@ -2,24 +2,6 @@ test('Language', function () {
 
 
 
-  // String#normalize
-
-  equal('ō'.normalize(), 'o', 'String#normalize | ō is o');
-  equal('o'.normalize(), 'o', 'String#normalize | o is o');
-  equal('kyōto'.normalize(), 'kyoto', 'String#normalize | kyōto is kyoto ');
-  equal(''.normalize(), '', 'String#normalize | empty string');
-  equal('äěìøůŷñ'.normalize(), 'aeiouyn', 'String#normalize | äěìøůŷñ is aeiouyn');
-
-  equal('Ō'.normalize(), 'O', 'String#normalize | Ō is O');
-  equal('KYŌTO'.normalize(), 'KYOTO', 'String#normalize | KYŌTO is KYOTO');
-  equal('ÄĚÌØŮŶÑ'.normalize(), 'AEIOUYN', 'String#normalize | ÄĚÌØŮŶÑ is AEIOUYN');
-
-  equal('ÀÁÂÃÄÅ'.normalize(), 'AAAAAA', 'String#normalize | test basic main chars');
-  equal('òóôõöø'.normalize(), 'oooooo', 'String#normalize | test basic o');
-  equal('ĆćĈĉĊċČč'.normalize(), 'CcCcCcCc', 'String#normalize | test basic o');
-  equal('ǖ'.normalize(), 'u', 'String#normalize | test basic o');
-  equal('ＦＵＬＬＷＩＤＴＨ'.normalize(), 'FULLWIDTH', 'String#normalize | fullwidth characters');
-
 
   // String#is/has[Script]
 

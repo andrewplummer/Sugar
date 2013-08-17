@@ -42,6 +42,7 @@ v1.4.0
 - Fixed `String#truncate` not returning primitives.
 - `String#repeat` is now aligned more with spec. `String#pad` follows suit.
 - Added `Array#findFrom` and `Array#findIndexFrom`.
+- Removed `String#normalize`.
 
 ### Performance Enhancements ###
 
