@@ -5021,6 +5021,7 @@
         fn = amount;
         amount = null;
       }
+      amount = amount || 1;
       if(isNumber(start)) {
         increment = incrementNumber;
       } else if(isString(start)) {
@@ -5029,7 +5030,6 @@
         amount    = getDuration(amount);
         increment = incrementDate;
       }
-      amount = amount || 1;
       // Avoiding infinite loops
       if(inverse && amount > 0) {
         amount *= -1;
