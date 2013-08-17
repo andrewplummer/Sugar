@@ -1534,6 +1534,35 @@
   extend(array, true, true, {
 
     /***
+     * @method findFrom(<f>, [index] = 0, [loop] = false)
+     * @returns Array
+     * @short Returns any element that matches <f>, beginning from [index].
+     * @extra <f> will match a string, number, array, object, or alternately test against a function or regex. Will continue from index = 0 if [loop] is true. This method implements @array_matching.
+     * @example
+     *
+     *   ['cuba','japan','canada'].findFrom(/^c/, 2) -> 'canada'
+     *
+     ***/
+    'findFrom': function(f, index, loop) {
+      return arrayFind(this, f, index, loop);
+    },
+
+    /***
+     * @method findIndexFrom(<f>, [index] = 0, [loop] = false)
+     * @returns Array
+     * @short Returns the index of any element that matches <f>, beginning from [index].
+     * @extra <f> will match a string, number, array, object, or alternately test against a function or regex. Will continue from index = 0 if [loop] is true. This method implements @array_matching.
+     * @example
+     *
+     *   ['cuba','japan','canada'].findIndexFrom(/^c/, 2) -> 2
+     *
+     ***/
+    'findIndexFrom': function(f, index, loop) {
+      var index = arrayFind(this, f, index, loop, true);
+      return isUndefined(index) ? -1 : index;
+    },
+
+    /***
      * @method findAll(<f>, [index] = 0, [loop] = false)
      * @returns Array
      * @short Returns all elements that match <f>.
@@ -7746,7 +7775,7 @@
    *
    * @package Language
    * @dependency string
-   * @description Normalizing accented characters, character width conversion, Hiragana and Katakana conversions.
+   * @description Detecting language by character block. Full-width <-> half-width character conversion. Hiragana and Katakana conversions.
    *
    ***/
 
@@ -7754,12 +7783,6 @@
    * String module
    *
    ***/
-
-
-
-  var NormalizeMap,
-      NormalizeReg = '',
-      NormalizeSource;
 
 
   /***
@@ -7918,128 +7941,7 @@
   }
 
 
-
-
-  function buildNormalizeMap() {
-    NormalizeMap = {};
-    iterateOverObject(NormalizeSource, function(normalized, str) {
-      str.split('').forEach(function(character) {
-        NormalizeMap[character] = normalized;
-      });
-      NormalizeReg += str;
-    });
-    NormalizeReg = regexp('[' + NormalizeReg + ']', 'g');
-  }
-
-  NormalizeSource = {
-    'A':  'AⒶＡÀÁÂẦẤẪẨÃĀĂẰẮẴẲȦǠÄǞẢÅǺǍȀȂẠẬẶḀĄȺⱯ',
-    'B':  'BⒷＢḂḄḆɃƂƁ',
-    'C':  'CⒸＣĆĈĊČÇḈƇȻꜾ',
-    'D':  'DⒹＤḊĎḌḐḒḎĐƋƊƉꝹ',
-    'E':  'EⒺＥÈÉÊỀẾỄỂẼĒḔḖĔĖËẺĚȄȆẸỆȨḜĘḘḚƐƎ',
-    'F':  'FⒻＦḞƑꝻ',
-    'G':  'GⒼＧǴĜḠĞĠǦĢǤƓꞠꝽꝾ',
-    'H':  'HⒽＨĤḢḦȞḤḨḪĦⱧⱵꞍ',
-    'I':  'IⒾＩÌÍÎĨĪĬİÏḮỈǏȈȊỊĮḬƗ',
-    'J':  'JⒿＪĴɈ',
-    'K':  'KⓀＫḰǨḲĶḴƘⱩꝀꝂꝄꞢ',
-    'L':  'LⓁＬĿĹĽḶḸĻḼḺŁȽⱢⱠꝈꝆꞀ',
-    'M':  'MⓂＭḾṀṂⱮƜ',
-    'N':  'NⓃＮǸŃÑṄŇṆŅṊṈȠƝꞐꞤ',
-    'O':  'OⓄＯÒÓÔỒỐỖỔÕṌȬṎŌṐṒŎȮȰÖȪỎŐǑȌȎƠỜỚỠỞỢỌỘǪǬØǾƆƟꝊꝌ',
-    'P':  'PⓅＰṔṖƤⱣꝐꝒꝔ',
-    'Q':  'QⓆＱꝖꝘɊ',
-    'R':  'RⓇＲŔṘŘȐȒṚṜŖṞɌⱤꝚꞦꞂ',
-    'S':  'SⓈＳẞŚṤŜṠŠṦṢṨȘŞⱾꞨꞄ',
-    'T':  'TⓉＴṪŤṬȚŢṰṮŦƬƮȾꞆ',
-    'U':  'UⓊＵÙÚÛŨṸŪṺŬÜǛǗǕǙỦŮŰǓȔȖƯỪỨỮỬỰỤṲŲṶṴɄ',
-    'V':  'VⓋＶṼṾƲꝞɅ',
-    'W':  'WⓌＷẀẂŴẆẄẈⱲ',
-    'X':  'XⓍＸẊẌ',
-    'Y':  'YⓎＹỲÝŶỸȲẎŸỶỴƳɎỾ',
-    'Z':  'ZⓏＺŹẐŻŽẒẔƵȤⱿⱫꝢ',
-    'a':  'aⓐａẚàáâầấẫẩãāăằắẵẳȧǡäǟảåǻǎȁȃạậặḁąⱥɐ',
-    'b':  'bⓑｂḃḅḇƀƃɓ',
-    'c':  'cⓒｃćĉċčçḉƈȼꜿↄ',
-    'd':  'dⓓｄḋďḍḑḓḏđƌɖɗꝺ',
-    'e':  'eⓔｅèéêềếễểẽēḕḗĕėëẻěȅȇẹệȩḝęḙḛɇɛǝ',
-    'f':  'fⓕｆḟƒꝼ',
-    'g':  'gⓖｇǵĝḡğġǧģǥɠꞡᵹꝿ',
-    'h':  'hⓗｈĥḣḧȟḥḩḫẖħⱨⱶɥ',
-    'i':  'iⓘｉìíîĩīĭïḯỉǐȉȋịįḭɨı',
-    'j':  'jⓙｊĵǰɉ',
-    'k':  'kⓚｋḱǩḳķḵƙⱪꝁꝃꝅꞣ',
-    'l':  'lⓛｌŀĺľḷḹļḽḻſłƚɫⱡꝉꞁꝇ',
-    'm':  'mⓜｍḿṁṃɱɯ',
-    'n':  'nⓝｎǹńñṅňṇņṋṉƞɲŉꞑꞥ',
-    'o':  'oⓞｏòóôồốỗổõṍȭṏōṑṓŏȯȱöȫỏőǒȍȏơờớỡởợọộǫǭøǿɔꝋꝍɵ',
-    'p':  'pⓟｐṕṗƥᵽꝑꝓꝕ',
-    'q':  'qⓠｑɋꝗꝙ',
-    'r':  'rⓡｒŕṙřȑȓṛṝŗṟɍɽꝛꞧꞃ',
-    's':  'sⓢｓśṥŝṡšṧṣṩșşȿꞩꞅẛ',
-    't':  'tⓣｔṫẗťṭțţṱṯŧƭʈⱦꞇ',
-    'u':  'uⓤｕùúûũṹūṻŭüǜǘǖǚủůűǔȕȗưừứữửựụṳųṷṵʉ',
-    'v':  'vⓥｖṽṿʋꝟʌ',
-    'w':  'wⓦｗẁẃŵẇẅẘẉⱳ',
-    'x':  'xⓧｘẋẍ',
-    'y':  'yⓨｙỳýŷỹȳẏÿỷẙỵƴɏỿ',
-    'z':  'zⓩｚźẑżžẓẕƶȥɀⱬꝣ',
-    'AA': 'Ꜳ',
-    'AE': 'ÆǼǢ',
-    'AO': 'Ꜵ',
-    'AU': 'Ꜷ',
-    'AV': 'ꜸꜺ',
-    'AY': 'Ꜽ',
-    'DZ': 'ǱǄ',
-    'Dz': 'ǲǅ',
-    'LJ': 'Ǉ',
-    'Lj': 'ǈ',
-    'NJ': 'Ǌ',
-    'Nj': 'ǋ',
-    'OI': 'Ƣ',
-    'OO': 'Ꝏ',
-    'OU': 'Ȣ',
-    'TZ': 'Ꜩ',
-    'VY': 'Ꝡ',
-    'aa': 'ꜳ',
-    'ae': 'æǽǣ',
-    'ao': 'ꜵ',
-    'au': 'ꜷ',
-    'av': 'ꜹꜻ',
-    'ay': 'ꜽ',
-    'dz': 'ǳǆ',
-    'hv': 'ƕ',
-    'lj': 'ǉ',
-    'nj': 'ǌ',
-    'oi': 'ƣ',
-    'ou': 'ȣ',
-    'oo': 'ꝏ',
-    'ss': 'ß',
-    'tz': 'ꜩ',
-    'vy': 'ꝡ'
-  };
-
   extend(string, true, true, {
-    /***
-     * @method normalize()
-     * @returns String
-     * @short Returns the string with accented and non-standard Latin-based characters converted into ASCII approximate equivalents.
-     * @example
-     *
-     *   'á'.normalize()                  -> 'a'
-     *   'Ménage à trois'.normalize()     -> 'Menage a trois'
-     *   'Volkswagen'.normalize()         -> 'Volkswagen'
-     *   'ＦＵＬＬＷＩＤＴＨ'.normalize() -> 'FULLWIDTH'
-     *
-     ***/
-    'normalize': function() {
-      if(!NormalizeMap) {
-        buildNormalizeMap();
-      }
-      return this.replace(NormalizeReg, function(character) {
-        return NormalizeMap[character];
-      });
-    },
 
     /***
      * @method hankaku([mode] = 'all')
