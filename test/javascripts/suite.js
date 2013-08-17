@@ -122,7 +122,7 @@
   }
 
   function escapeHTML(str) {
-    return str.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    return str ? str.replace(/</g, '&lt;').replace(/>/g, '&gt;') : '';
   }
 
   function getFailureHTML(f) {
