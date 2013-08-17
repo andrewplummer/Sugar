@@ -33,6 +33,9 @@ v1.4.0+
 - Level: Major
   - `Object.clone` now will error if being called on a user-created class instance or host object (DOM Elements, Events, etc). A number of complex issues tie in here, but in the end it is unreliable to call `clone` on an object that is not a standard data types as 1) hidden properties cannot be cloned 2) the original arguments to the constructor cannot be known 3) even if they could be known the issue of whether or not the constructor should actually be called again is not clear.
 
+- Level: Major
+  - `String#normalize` is now deprecated, but still available as a separate script in the `lib/plugins` directory.
+
 - Level: Moderate
   - The `split` argument was removed from `String#truncate`. For truncating without splitting words, use `String#truncateOnWords` instead. Argument position is adjusted accordingly.
 
