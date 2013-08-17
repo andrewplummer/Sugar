@@ -107,7 +107,7 @@
   function initializeClass(klass) {
     if(klass['SugarMethods']) return;
     defineProperty(klass, 'SugarMethods', {});
-    extend(klass, false, false, {
+    extend(klass, false, true, {
       'extend': function(methods, override, instance) {
         extend(klass, instance !== false, override, methods);
       },
@@ -197,17 +197,22 @@
 
   // Argument helpers
 
-  function multiArgs(args, fn) {
-    var result = [], i, len;
-    for(i = 0, len = args.length; i < len; i++) {
+  function multiArgs(args, fn, from) {
+    var result = [], i = from || 0, len;
+    for(len = args.length; i < len; i++) {
       result.push(args[i]);
       if(fn) fn.call(args, args[i], i);
     }
     return result;
   }
 
-  function flattenedArgs(obj, fn, from) {
-    multiArgs(array.prototype.concat.apply([], array.prototype.slice.call(obj, from || 0)), fn);
+  function flattenedArgs(args, fn, from) {
+    var arg = args[from || 0];
+    if(isArray(arg)) {
+      args = arg;
+      from = 0;
+    }
+    return multiArgs(args, fn, from);
   }
 
   function checkCallback(fn) {
@@ -978,7 +983,7 @@
      *
      ***/
     'bind': function(scope) {
-      var fn = this, args = multiArgs(arguments).slice(1), bound;
+      var fn = this, args = multiArgs(arguments, null, 1), bound;
       if(!isFunction(this)) {
         throw new TypeError('Function.prototype.bind called on a non-function');
       }
@@ -1073,8 +1078,7 @@
   function dateMatcher(d) {
     var ms = d.getTime();
     return function (el) {
-      // TODO: Better performance for this??
-      return isDate(el) && el.getTime() === ms;
+      return !!(el && el.getTime) && el.getTime() === ms;
     }
   }
 
@@ -1230,7 +1234,7 @@
       // Add the result to the array if:
       // 1. We're subtracting intersections or it doesn't already exist in the result and
       // 2. It exists in the compared array and we're adding, or it doesn't exist and we're removing.
-      if(elementExistsInHash(o, stringified, el, isReference) != subtract) {
+      if(elementExistsInHash(o, stringified, el, isReference) !== subtract) {
         discardElementFromHash(o, stringified, el, isReference);
         result.push(el);
       }
@@ -1283,7 +1287,7 @@
   function checkForElementInHashAndSet(hash, element) {
     var stringified = stringify(element),
         isReference = !objectIsMatchedByValue(element),
-        exists = elementExistsInHash(hash, stringified, element, isReference);
+        exists      = elementExistsInHash(hash, stringified, element, isReference);
     if(isReference) {
       hash[stringified].push(element);
     } else {
@@ -1353,10 +1357,12 @@
     b = getCollationReadyString(b, sortIgnore, sortIgnoreCase);
 
     do {
+
       aChar  = getCollationCharacter(a, index, sortEquivalents);
       bChar  = getCollationCharacter(b, index, sortEquivalents);
       aValue = getSortOrderIndex(aChar, sortOrder);
       bValue = getSortOrderIndex(bChar, sortOrder);
+
       if(aValue === -1 || bValue === -1) {
         aValue = a.charCodeAt(index) || null;
         bValue = b.charCodeAt(index) || null;
@@ -1451,7 +1457,7 @@
     array[AlphanumericSortEquivalents] = equivalents;
   }
 
-  extend(array, false, false, {
+  extend(array, false, true, {
 
     /***
      *
@@ -1521,7 +1527,11 @@
       checkCallback(f);
       index = arrayFind(this, f, 0, false, true, context);
       return isUndefined(index) ? -1 : index;
-    },
+    }
+
+  });
+
+  extend(array, true, true, {
 
     /***
      * @method findAll(<f>, [index] = 0, [loop] = false)
@@ -2211,8 +2221,10 @@
 
   });
 
+
   // Aliases
-  extend(array, true, false, {
+
+  extend(array, true, true, {
 
     /***
      * @method all()
@@ -2281,7 +2293,7 @@
    ***/
 
   function buildEnumerableMethods(names, mapping) {
-    extendSimilar(object, false, false, names, function(methods, name) {
+    extendSimilar(object, false, true, names, function(methods, name) {
       methods[name] = function(obj, arg1, arg2) {
         var result, coerced = keysWithObjectCoercion(obj), matcher;
         if(!mapping) {
@@ -2309,11 +2321,11 @@
     buildObjectInstanceMethods(names, Hash);
   }
 
-  function exportSortAlgorithms() {
+  function exportSortAlgorithm() {
     array[AlphanumericSort] = collateStrings;
   }
 
-  extend(object, false, false, {
+  extend(object, false, true, {
 
     'map': function(obj, map) {
       var result = {}, key, value;
@@ -2329,7 +2341,7 @@
       var values = keysWithObjectCoercion(obj).map(function(key) {
         return obj[key];
       });
-      return values.reduce.apply(values, multiArgs(arguments).slice(1));
+      return values.reduce.apply(values, multiArgs(arguments, null, 1));
     },
 
     'each': function(obj, fn) {
@@ -2364,7 +2376,7 @@
   buildEnumerableMethods(EnumerableFindingMethods);
   buildEnumerableMethods(EnumerableMappingMethods, true);
   buildObjectInstanceMethods(EnumerableOtherMethods, Hash);
-  exportSortAlgorithms();
+  exportSortAlgorithm();
 
 
   /***
@@ -3753,7 +3765,7 @@
    ***/
 
   function buildDateMethods() {
-    extendSimilar(date, true, false, DateUnits, function(methods, u, i) {
+    extendSimilar(date, true, true, DateUnits, function(methods, u, i) {
       var name = u.name, caps = simpleCapitalize(name), multiplier = u.multiplier(), since, until;
       u.addMethod = 'add' + caps + 's';
       // "since/until now" only count "past" an integer, i.e. "2 days ago" is
@@ -3893,7 +3905,7 @@
   }
 
   function buildFormatShortcuts() {
-    extendSimilar(date, true, false, 'short,long,full', function(methods, name) {
+    extendSimilar(date, true, true, 'short,long,full', function(methods, name) {
       methods[name] = function(localeCode) {
         return formatDate(this, name, false, localeCode);
       }
@@ -3965,7 +3977,7 @@
     var special  = 'today,yesterday,tomorrow,weekday,weekend,future,past'.split(',');
     var weekdays = English['weekdays'].slice(0,7);
     var months   = English['months'].slice(0,12);
-    extendSimilar(date, true, false, special.concat(weekdays).concat(months), function(methods, name) {
+    extendSimilar(date, true, true, special.concat(weekdays).concat(months), function(methods, name) {
       methods['is'+ simpleCapitalize(name)] = function(utc) {
        return this.is(name, 0, utc);
       };
@@ -3993,16 +4005,16 @@
   }
 
   function setDateProperties() {
-    date.extend({
+    extend(date, false , true, {
       'RFC1123': '{Dow}, {dd} {Mon} {yyyy} {HH}:{mm}:{ss} {tz}',
       'RFC1036': '{Weekday}, {dd}-{Mon}-{yy} {HH}:{mm}:{ss} {tz}',
       'ISO8601_DATE': '{yyyy}-{MM}-{dd}',
       'ISO8601_DATETIME': '{yyyy}-{MM}-{dd}T{HH}:{mm}:{ss}.{fff}{isotz}'
-    }, false, false);
+    });
   }
 
 
-  date.extend({
+  extend(date, false, true, {
 
      /***
      * @method Date.create(<d>, [locale] = currentLocale)
@@ -4117,9 +4129,9 @@
       addDateInputFormat(getLocalization(localeCode), format, match);
     }
 
-  }, false, false);
+  });
 
-  date.extend({
+  extend(date, true, true, {
 
      /***
      * @method set(<set>, [reset] = false)
@@ -4528,7 +4540,7 @@
 
 
   // Instance aliases
-  date.extend({
+  extend(date, true, true, {
 
      /***
      * @method iso()
@@ -4729,7 +4741,7 @@
     number.extend(methods);
   }
 
-  number.extend({
+  extend(number, true, true, {
 
      /***
      * @method duration([locale] = currentLocale)
@@ -4896,7 +4908,7 @@
     return this.isValid() ? this.start + ".." + this.end : 'Invalid Range';
   };
 
-  extend(Range, true, false, {
+  extend(Range, true, true, {
 
     /***
      * @method isValid()
@@ -5070,7 +5082,7 @@
 
   });
 
-  extend(Range, true, false, {
+  extend(Range, true, true, {
 
      /***
      * @method step()
@@ -5103,7 +5115,7 @@
    * @extra If either [start] or [end] are null, they will default to the current date.
    ***/
   [number, string, date].forEach(function(klass) {
-     extend(klass, false, false, {
+     extend(klass, false, true, {
 
       'range': function(start, end) {
         if(klass.create) {
@@ -5122,7 +5134,7 @@
    *
    ***/
 
-  extend(number, true, false, {
+  extend(number, true, true, {
 
     /***
      * @method upto(<num>, [fn], [step] = 1)
@@ -5166,7 +5178,7 @@
 
   });
 
-  extend(number, true, false, {
+  extend(number, true, true, {
 
     /***
      * @method downto(<num>, [fn], [step] = 1)
@@ -5224,7 +5236,7 @@
     }, ms));
   }
 
-  extend(Function, true, false, {
+  extend(Function, true, true, {
 
      /***
      * @method lazy([ms] = 1, [immediate] = false, [limit] = Infinity)
@@ -5337,7 +5349,7 @@
      ***/
     'delay': function(ms) {
       var fn = this;
-      var args = multiArgs(arguments).slice(1);
+      var args = multiArgs(arguments, null, 1);
       setDelay(fn, ms, fn, fn, args);
       return fn;
     },
@@ -5356,7 +5368,7 @@
      ***/
     'every': function(ms) {
       var fn = this, args = arguments;
-      args = args.length > 1 ? multiArgs(args).slice(1) : [];
+      args = args.length > 1 ? multiArgs(args, null, 1) : [];
       function execute () {
         fn.apply(fn, args);
         setDelay(fn, ms, execute);
@@ -5494,7 +5506,7 @@
   }
 
 
-  extend(number, false, false, {
+  extend(number, false, true, {
 
     /***
      * @method Number.random([n1], [n2])
@@ -5518,7 +5530,7 @@
 
   });
 
-  extend(number, true, false, {
+  extend(number, true, true, {
 
     /***
      * @method log(<base> = Math.E)
@@ -5847,12 +5859,12 @@
         return precision ? withPrecision(this, precision, fn) : fn(this);
       }
     }
-    extend(number, true, false, {
+    extend(number, true, true, {
       'ceil':   createRoundingFunction(ceil),
       'round':  createRoundingFunction(round),
       'floor':  createRoundingFunction(floor)
     });
-    extendSimilar(number, true, false, 'abs,pow,sin,asin,cos,acos,tan,atan,exp,pow,sqrt', function(methods, name) {
+    extendSimilar(number, true, true, 'abs,pow,sin,asin,cos,acos,tan,atan,exp,pow,sqrt', function(methods, name) {
       methods[name] = function(a, b) {
         return math[name](this, a, b);
       }
@@ -5979,7 +5991,7 @@
    *
    ***/
   function buildTypeMethods() {
-    extendSimilar(object, false, false, ClassNames, function(methods, name) {
+    extendSimilar(object, false, true, ClassNames, function(methods, name) {
       var method = 'is' + name;
       ObjectTypeMethods.push(method);
       methods[method] = typeChecks[name];
@@ -6056,7 +6068,7 @@
 
   });
 
-  extend(object, false, false, {
+  extend(object, false, true, {
 
     'isObject': function(obj) {
       return isPlainObject(obj);
@@ -6343,7 +6355,7 @@
    *
    ***/
 
-  extend(regexp, false, false, {
+  extend(regexp, false, true, {
 
    /***
     * @method RegExp.escape(<str> = '')
@@ -6362,7 +6374,7 @@
 
   });
 
-  extend(regexp, true, false, {
+  extend(regexp, true, true, {
 
    /***
     * @method getFlags()
@@ -6606,7 +6618,7 @@
   });
 
 
-  extend(string, true, false, {
+  extend(string, true, true, {
 
      /***
       * @method escapeRegExp()
@@ -7123,13 +7135,13 @@
      * @method truncate(<length>, [from] = 'right', [ellipsis] = '...')
      * @returns String
      * @short Truncates a string.
-     * @extra If [split] is %false%, will not split words up, and instead discard the word where the truncation occurred. [from] can also be %"middle"% or %"left"%.
+     * @extra [from] can be %'right'%, %'left'%, or %'middle'%. If the string is shorter than <length>, [ellipsis] will not be added.
      * @example
      *
-     *   'just sittin on the dock of the bay'.truncate(20)                 -> 'just sittin on the do...'
-     *   'just sittin on the dock of the bay'.truncate(20, false)          -> 'just sittin on the...'
-     *   'just sittin on the dock of the bay'.truncate(20, true, 'middle') -> 'just sitt...of the bay'
-     *   'just sittin on the dock of the bay'.truncate(20, true, 'left')   -> '...the dock of the bay'
+     *   'just sittin on the dock of the bay'.truncate(20)           -> 'just sittin on the do...'
+     *   'just sittin on the dock of the bay'.truncate(20)           -> 'just sittin on the...'
+     *   'just sittin on the dock of the bay'.truncate(20, 'middle') -> 'just sitt...of the bay'
+     *   'just sittin on the dock of the bay'.truncate(20, 'left')   -> '...the dock of the bay'
      *
      ***/
     'truncate': function(length, from, ellipsis) {
@@ -7139,8 +7151,8 @@
     /***
      * @method truncateOnWord(<length>, [from] = 'right', [ellipsis] = '...')
      * @returns String
-     * @short Truncates a string.
-     * @extra If [split] is %false%, will not split words up, and instead discard the word where the truncation occurred. [from] can also be %"middle"% or %"left"%.
+     * @short Truncates a string without splitting up words.
+     * @extra [from] can be %'right'%, %'left'%, or %'middle'%. If the string is shorter than <length>, [ellipsis] will not be added.
      * @example
      *
      *   'just sittin on the dock of the bay'.truncate(20)                 -> 'just sittin on the do...'
@@ -7308,7 +7320,7 @@
 
   // Aliases
 
-  extend(string, true, false, {
+  extend(string, true, true, {
 
     /***
      * @method insert()
@@ -7618,7 +7630,7 @@
   Inflector.uncountable('equipment,information,rice,money,species,series,fish,sheep,jeans'.split(','));
 
 
-  extend(string, true, false, {
+  extend(string, true, true, {
 
     /***
      * @method pluralize()
@@ -8007,7 +8019,7 @@
     'vy': 'ꝡ'
   };
 
-  extend(string, true, false, {
+  extend(string, true, true, {
     /***
      * @method normalize()
      * @returns String
