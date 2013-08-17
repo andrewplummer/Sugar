@@ -4885,20 +4885,7 @@
     return !!val || val === 0;
   }
 
-  function advanceDate(current, amount) {
-    var num, unit, val, d;
-    if(isNumber(amount)) {
-      return new date(current.getTime() + amount);
-    }
-    num  = amount[0];
-    unit = amount[1];
-    val  = callDateGet(current, unit);
-    d    = new date(current.getTime());
-    callDateSet(d, unit, val + num);
-    return d;
-  }
-
-  function getDateIncrement(amt) {
+  function getDuration(amt) {
     var match, val, unit;
     if(isNumber(amt)) {
       return amt;
@@ -4914,6 +4901,27 @@
       unit = 'Date';
     }
     return [val, unit];
+  }
+
+  function incrementDate(current, amount) {
+    var num, unit, val, d;
+    if(isNumber(amount)) {
+      return new date(current.getTime() + amount);
+    }
+    num  = amount[0];
+    unit = amount[1];
+    val  = callDateGet(current, unit);
+    d    = new date(current.getTime());
+    callDateSet(d, unit, val + num);
+    return d;
+  }
+
+  function incrementString(current, amount) {
+    return string.fromCharCode(current.charCodeAt(0) + amount);
+  }
+
+  function incrementNumber(current, amount) {
+    return current + amount;
   }
 
   /***
@@ -5001,20 +5009,25 @@
      *
      ***/
     'every': function(amount, fn) {
-      var start   = this.start,
+      var increment,
+          start   = this.start,
           end     = this.end,
           inverse = end < start,
           current = start,
           index   = 0,
-          result  = [],
-          incrementingDate;
-      if(isDate(start)) {
-        incrementingDate = true;
-        amount = getDateIncrement(amount);
-      }
+          result  = [];
+
       if(isFunction(amount)) {
         fn = amount;
         amount = null;
+      }
+      if(isNumber(start)) {
+        increment = incrementNumber;
+      } else if(isString(start)) {
+        increment = incrementString;
+      } else if(isDate(start)) {
+        amount    = getDuration(amount);
+        increment = incrementDate;
       }
       amount = amount || 1;
       // Avoiding infinite loops
@@ -5026,7 +5039,7 @@
         if(fn) {
           fn(current, index);
         }
-        current = incrementingDate ? advanceDate(current, amount) : current + amount;
+        current = increment(current, amount);
         index++;
       }
       return result;
