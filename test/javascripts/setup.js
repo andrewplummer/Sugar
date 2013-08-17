@@ -167,7 +167,15 @@ var testIsClass = function(obj, klass) {
 
 var addFailure = function(actual, expected, message, stack, warning) {
   var meta = getMeta(stack);
-  currentTest.failures.push({ actual: actual, expected: expected, message: message, file: meta.file, line: meta.line, col: meta.col, warning: !!warning });
+  currentTest.failures.push({
+    actual: actual,
+    expected: expected,
+    message: message,
+    file: meta.file,
+    line: meta.line,
+    col: meta.col,
+    warning: !!warning
+  });
 }
 
 var getMeta = function(stack) {

@@ -121,14 +121,18 @@
     }
   }
 
+  function escapeHTML(str) {
+    return str.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
   function getFailureHTML(f) {
-    var expected, actual;
+    var expected, actual, message = escapeHTML(f.message);
     if(f.warning) {
-      return '<p class="warning">Warning: ' + f.message + '</p>';
+      return '<p class="warning">Warning: ' + message + '</p>';
     } else {
       expected = getStringified(f.expected);
       actual = getStringified(f.actual);
-      return '<p class="fail">' + f.message + ', expected: ' + expected + ' actual: ' + actual + '</p>';
+      return '<p class="fail">' + message + ', expected: ' + escapeHTML(expected) + ' actual: ' + escapeHTML(actual) + '</p>';
     }
   };
 
