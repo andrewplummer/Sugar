@@ -2869,5 +2869,57 @@ test('Array', function () {
 
   equal(viaSort, viaSortBy, 'Array.SugarCollateStrings | should be exposed to allow sorting via native Array#sort');
 
+
+
+  // Array#findFrom
+
+  equal(['foo','bar'].findFrom(/^[a-f]/, 1), 'bar', 'Array#findFrom | /a-f/ from index 1', { prototype: undefined });
+  equal(['foo','bar','zak'].findFrom(/^[a-f]/, 2, true), 'foo', 'Array#findFrom | /a-f/ from index 1 looping', { prototype: undefined });
+
+  equal([1,2,3].findFrom(function(e) { return e > 0; }, 0), 1, 'Array#findFrom | greater than 0 from index 0');
+  equal([1,2,3].findFrom(function(e) { return e > 0; }, 1), 2, 'Array#findFrom | greater than 0 from index 1', { prototype: 1 });
+  equal([1,2,3].findFrom(function(e) { return e > 0; }, 2), 3, 'Array#findFrom | greater than 0 from index 2', { prototype: 1 });
+  equal([1,2,3].findFrom(function(e) { return e > 0; }, 3), undefined, 'Array#findFrom | greater than 0 from index 3', { prototype: 1 });
+  equal([1,2,3].findFrom(function(e) { return e > 1; }, 0), 2, 'Array#findFrom | greater than 1 from index 0');
+  equal([1,2,3].findFrom(function(e) { return e > 1; }, 1), 2, 'Array#findFrom | greater than 1 from index 1');
+  equal([1,2,3].findFrom(function(e) { return e > 1; }, 2), 3, 'Array#findFrom | greater than 1 from index 2', { prototype: 2 });
+  equal([1,2,3].findFrom(function(e) { return e > 2; }, 0), 3, 'Array#findFrom | greater than 2 from index 0');
+  equal([1,2,3].findFrom(function(e) { return e > 3; }, 0), undefined, 'Array#findFrom | greater than 3 from index 0');
+
+  equal([1,2,3].findFrom(function(e) { return e > 0; }, 0, true), 1, 'Array#findFrom | loop | greater than 0 from index 0');
+  equal([1,2,3].findFrom(function(e) { return e > 0; }, 1, true), 2, 'Array#findFrom | loop | greater than 0 from index 1', { prototype: 1 });
+  equal([1,2,3].findFrom(function(e) { return e > 0; }, 2, true), 3, 'Array#findFrom | loop | greater than 0 from index 2', { prototype: 1 });
+  equal([1,2,3].findFrom(function(e) { return e > 0; }, 3, true), 1, 'Array#findFrom | loop | greater than 0 from index 3', { prototype: 1 });
+  equal([1,2,3].findFrom(function(e) { return e > 1; }, 0, true), 2, 'Array#findFrom | loop | greater than 1 from index 0');
+  equal([1,2,3].findFrom(function(e) { return e > 1; }, 1, true), 2, 'Array#findFrom | loop | greater than 1 from index 1');
+  equal([1,2,3].findFrom(function(e) { return e > 1; }, 2, true), 3, 'Array#findFrom | loop | greater than 1 from index 2', { prototype: 2 });
+  equal([1,2,3].findFrom(function(e) { return e > 2; }, 0, true), 3, 'Array#findFrom | loop | greater than 2 from index 0');
+  equal([1,2,3].findFrom(function(e) { return e > 3; }, 0, true), undefined, 'Array#findFrom | loop | greater than 3 from index 0');
+
+  equal([{a:10},{a:8},{a:3}].findFrom(function(e) { return e['a'] > 5; }, 0), {a:10}, 'Array#findFrom | key "a" greater than 5');
+  equal([{a:10},{a:8},{a:3}].findFrom(function(e) { return e['a'] > 5; }, 1), {a:8}, 'Array#findFrom | key "a" greater than 5 from index 1', { prototype: {a:10} });
+  equal([{a:10},{a:8},{a:3}].findFrom(function(e) { return e['a'] > 5; }, 2), undefined, 'Array#findFrom | key "a" greater than 5 from index 2', { prototype: {a:10} });
+  equal([function() {}].findFrom(function(e) {}, 1), undefined, 'Array#findFrom | null function from index 1');
+  equal([null, null].findFrom(null, 1), null, 'Array#findFrom | null from index 1');
+  equal([undefined, undefined].findFrom(undefined, 1), undefined, 'Array#findFrom | undefined from index 1');
+
+
+  // Array#findIndexFrom
+
+  equal(['a','b','c','b'].findIndexFrom('b', 2), 3, 'Array#findIndexFrom | finds first instance from index');
+  equal([5,2,4,4].findIndexFrom(4, 3), 3, 'Array#findIndexFrom | 4 in 5,2,4,4 from index 3');
+  equal([5,2,4,4].findIndexFrom(4, 10), -1, 'Array#findIndexFrom | 4 in 5,2,4,4 from index 10');
+  equal([5,2,4,4].findIndexFrom(4, -10), 2, 'Array#findIndexFrom | 4 in 5,2,4,4 from index -10');
+  equal([5,2,4,4].findIndexFrom(4, -1), 3, 'Array#findIndexFrom | 4 in 5,2,4,4 from index -1');
+
+  equal(['a','b','c','b'].findIndexFrom('b', 1, true), 1, 'Array#findIndexFrom | finds first instance from index');
+  equal([5,2,4,4,7,0].findIndexFrom(4, 4, true), 2, 'Array#findIndexFrom | 4 in 5,2,4,4 from index 3');
+  equal([5,2,4,4,7,0].findIndexFrom(4, 10, true), 2, 'Array#findIndexFrom | 4 in 5,2,4,4 from index 10');
+  equal([5,2,4,4,7,0].findIndexFrom(8, 10, true), -1, 'Array#findIndexFrom | 8 in 5,2,4,4 from index 10');
+  equal([5,2,4,4,7,0].findIndexFrom(4, -10, true), 2, 'Array#findIndexFrom | 4 in 5,2,4,4 from index -10');
+  equal([5,2,4,4,7,0].findIndexFrom(4, -1, true), 2, 'Array#findIndexFrom | 4 in 5,2,4,4 from index -1');
+
+
+
 });
 
