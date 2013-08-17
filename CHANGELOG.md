@@ -53,6 +53,7 @@ v1.4.0
 - getRegExpFlags is up to 1000% faster.
 - Range#every up to 52% faster for dates, 1500% faster for numbers/strings.
 - Array#at and String#at up to 242% faster for single index lookups.
+- String#assign up to 30% faster.
 
 
 v1.3.9
