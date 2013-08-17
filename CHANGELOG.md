@@ -43,6 +43,7 @@ v1.4.0
 - `String#repeat` is now aligned more with spec. `String#pad` follows suit.
 - Added `Array#findFrom` and `Array#findIndexFrom`.
 - Removed `String#normalize`.
+- Removed `Range#step` alias.
 
 ### Performance Enhancements ###
 

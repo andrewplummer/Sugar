@@ -4,7 +4,7 @@ test('Number Ranges', function () {
   var range;
   var mergedRange;
   var clonedRange;
-  var stepResult;
+  var result;
   var count;
 
   range = Number.range(5, 10);
@@ -94,30 +94,30 @@ test('Number Ranges', function () {
 
   count = 0;
 
-  stepResult = range.step(1, function() {
+  result = range.every(1, function() {
     count++;
   });
 
-  equal(stepResult, [5,6,7,8,9,10], 'Number | Range | result should be an array');
-  equal(count, 6, 'Number | Range | step 1');
+  equal(result, [5,6,7,8,9,10], 'Number | Range | result should be an array');
+  equal(count, 6, 'Number | Range | every 1');
 
   count = 0;
 
-  stepResult = range.step(2, function() {
+  result = range.every(2, function() {
     count++;
   });
 
-  equal(stepResult, [5,7,9], 'Number | Range step 2 | result should be an array');
-  equal(count, 3, 'Number | Range step 2 | count');
+  equal(result, [5,7,9], 'Number | Range every 2 | result should be an array');
+  equal(count, 3, 'Number | Range every 2 | count');
 
   count = 0;
 
-  stepResult = range.step(function() {
+  result = range.every(function() {
     count++;
   });
 
-  equal(stepResult, [5,6,7,8,9,10], 'Number | Range | result should be an array');
-  equal(count, 6, 'Number | Range | step 1');
+  equal(result, [5,6,7,8,9,10], 'Number | Range | result should be an array');
+  equal(count, 6, 'Number | Range | every 1');
 
 
   equal(range.clamp(25), 10, 'Number | Range#clamp | 25');
@@ -187,7 +187,7 @@ test('Number Ranges', function () {
 
   equal(range.toString(), '4..1', 'Number | Range | inverse | toString');
   equal(range.isValid(), true, 'Number | Range | inverse | isValid');
-  equal(range.step(), [4,3,2,1], 'Number | Range | inverse | step');
+  equal(range.every(), [4,3,2,1], 'Number | Range | inverse | every');
 
   equal(Number.range(NaN, NaN).toString(), 'Invalid Range', 'Number | Range | invalid | toString');
 
@@ -247,7 +247,7 @@ test('Number Ranges', function () {
   equal(Number.range(new Date(2010, 0).getTime(), new Date(2010, 2).getTime()).contains(new Date(2010, 0)), true, 'Number | range | contains different type');
 
 
-  equal(Number.range(1, 5).step(null, function(){}), [1,2,3,4,5], 'Number | 1..5 | null increment defaults to 1');
+  equal(Number.range(1, 5).every(null, function(){}), [1,2,3,4,5], 'Number | 1..5 | null increment defaults to 1');
 
   if(Array.create) {
     equal(Array.create(Number.range(1, 5)), [1,2,3,4,5], 'Array.create | should work on number ranges');
