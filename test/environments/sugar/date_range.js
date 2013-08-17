@@ -252,4 +252,12 @@ test('Date Ranges', function () {
   equal(range1.end.getFullYear(), 2010, 'Date Range | members should be cloned when range is cloned | start');
 
 
+  // every()
+
+  var t = 1275318000000;
+  var d1 = new Date(t);
+  var d2 = new Date(t + 2);
+
+  equal(Date.range(d1, d2).every(), [new Date(t), new Date(t + 1), new Date(t + 2)], 'Date Range | every should work without arguments');
+
 });
