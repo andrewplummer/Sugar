@@ -5111,17 +5111,6 @@
 
   });
 
-  extend(Range, true, true, {
-
-     /***
-     * @method step()
-     * @returns Array
-     * @alias every
-     *
-     ***/
-    'step': Range.prototype.every
-
-  });
 
   /***
    * Number module
@@ -5180,7 +5169,7 @@
      *
      ***/
     'upto': function(num, fn, step) {
-      return number.range(this, num).step(step, fn);
+      return number.range(this, num).every(step, fn);
     },
 
      /***
@@ -5236,7 +5225,7 @@
   extend(array, false, function(a) { return a instanceof Range; }, {
 
     'create': function(range) {
-      return range.step();
+      return range.every();
     }
 
   });
