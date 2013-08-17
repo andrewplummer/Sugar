@@ -41,6 +41,7 @@ v1.4.0
 - Fixed bug with array like objects iterated over with loop = true.
 - Fixed `String#truncate` not returning primitives.
 - `String#repeat` is now aligned more with spec. `String#pad` follows suit.
+- Added `Array#findFrom` and `Array#findIndexFrom`.
 
 ### Performance Enhancements ###
 
