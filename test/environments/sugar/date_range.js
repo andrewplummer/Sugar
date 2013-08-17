@@ -33,12 +33,12 @@ test('Date Ranges', function () {
   equal(range.span(), new Date(2010,8,10,9) - new Date(2010,6,10,9) + (tzOffset * 60 * 1000) + 1, 'Date Range | duration');
   equal(range.isValid(), true, 'Date Range | valid range');
 
-  equal(range.step('year'), [new Date(2010,6,10,9)], 'Range#step | 2010-9 - 2010-11');
+  equal(range.every('year'), [new Date(2010,6,10,9)], 'Range#every | 2010-9 - 2010-11');
 
 
   count = 0;
   expected = [new Date(2010,6,10,9), new Date(2010,7,10,9), new Date(2010,8,10,9)]
-  result = range.step('month', function(d, index) {
+  result = range.every('month', function(d, index) {
     dateEqual(d, expected[count], 'Date Range | date is first argument');
     equal(index, count, 'Date Range | index is second argument');
     count++;
