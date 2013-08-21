@@ -687,6 +687,7 @@ test('Object', function () {
 
   equal(Object.fromQueryString('foo=3.14156'), { foo: 3.14156 }, 'Object.fromQueryString | can handle float values');
   equal(Object.fromQueryString('foo=127.0.0.1'), { foo: '127.0.0.1' }, 'Object.fromQueryString | IP addresses not treated as numbers');
+  equal(Object.fromQueryString('zip=00123'), { zip: '00123' }, 'Object.fromQueryString | zip codes with leading zeros not treated as numbers');
 
 
 
