@@ -4991,10 +4991,12 @@
     'contains': function(obj) {
       var self = this, arr;
       if(obj == null) return false;
-      arr = obj.start && obj.end ? [obj.start, obj.end] : [obj];
-      return arr.every(function(d) {
-        return d >= self.start && d <= self.end;
-      });
+      if(obj.start && obj.end) {
+        return obj.start >= this.start && obj.start <= this.end &&
+               obj.end   >= this.start && obj.end   <= this.end;
+      } else {
+        return obj >= this.start && obj <= this.end;
+      }
     },
 
     /***
@@ -5130,20 +5132,20 @@
    ***
    * @method Number.range([start], [end])
    * @returns Range
-   * @short Creates a new range between [start] and [end].
+   * @short Creates a new range between [start] and [end]. See @ranges for more.
    ***
    * String module
    ***
    * @method String.range([start], [end])
    * @returns Range
-   * @short Creates a new range between [start] and [end].
+   * @short Creates a new range between [start] and [end]. See @ranges for more.
    ***
    * Date module
    ***
    * @method Date.range([start], [end])
    * @returns Range
    * @short Creates a new range between [start] and [end].
-   * @extra If either [start] or [end] are null, they will default to the current date.
+   * @extra If either [start] or [end] are null, they will default to the current date. See @ranges for more.
    ***/
   [number, string, date].forEach(function(klass) {
      extend(klass, false, true, {
@@ -5918,9 +5920,9 @@
   var ObjectTypeMethods = 'isObject,isNaN'.split(',');
   var ObjectHashMethods = 'keys,values,select,reject,each,merge,clone,equal,watch,tap,has,toQueryString'.split(',');
 
-  function setParamsObject(obj, param, value, deep) {
+  function setParamsObject(obj, param, value, castBoolean) {
     var reg = /^(.+?)(\[.*\])$/, paramIsArray, match, allKeys, key;
-    if(deep !== false && (match = param.match(reg))) {
+    if(match = param.match(reg)) {
       key = match[1];
       allKeys = match[2].replace(/^\[|\]$/g, '').split('][');
       allKeys.forEach(function(k) {
@@ -5933,12 +5935,10 @@
         key = k;
       });
       if(!key && paramIsArray) key = obj.length.toString();
-      setParamsObject(obj, key, value);
-    } else if(value.match(/^[+-]?\d+(\.\d+)?$/)) {
-      obj[param] = parseFloat(value);
-    } else if(value === 'true') {
+      setParamsObject(obj, key, value, castBoolean);
+    } else if(castBoolean && value === 'true') {
       obj[param] = true;
-    } else if(value === 'false') {
+    } else if(castBoolean && value === 'false') {
       obj[param] = false;
     } else {
       obj[param] = value;
@@ -6254,23 +6254,24 @@
     },
 
     /***
-     * @method Object.fromQueryString(<str>, [deep] = true)
+     * @method Object.fromQueryString(<str>, [castBoolean] = false)
      * @returns Object
      * @short Converts the query string of a URL into an object.
-     * @extra If [deep] is %false%, conversion will only accept shallow params (ie. no object or arrays with %[]% syntax) as these are not universally supported.
+     * @extra If [castBoolean] is true, then %"true"% and %"false"% will be cast into booleans. All other values, including numbers will remain their string values.
      * @example
      *
      *   Object.fromQueryString('foo=bar&broken=wear') -> { foo: 'bar', broken: 'wear' }
-     *   Object.fromQueryString('foo[]=1&foo[]=2')     -> { foo: [1,2] }
+     *   Object.fromQueryString('foo[]=1&foo[]=2')     -> { foo: ['1','2'] }
+     *   Object.fromQueryString('foo=true', true)      -> { foo: true }
      *
      ***/
-    'fromQueryString': function(str, deep) {
+    'fromQueryString': function(str, castBoolean) {
       var result = object.extended(), split;
       str = str && str.toString ? str.toString() : '';
       str.replace(/^.*?\?/, '').split('&').forEach(function(p) {
         var split = p.split('=');
         if(split.length !== 2) return;
-        setParamsObject(result, split[0], decodeURIComponent(split[1]), deep);
+        setParamsObject(result, split[0], decodeURIComponent(split[1]), castBoolean);
       });
       return result;
     },
