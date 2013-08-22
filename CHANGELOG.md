@@ -44,6 +44,7 @@ v1.4.0
 - Added `Array#findFrom` and `Array#findIndexFrom`.
 - Removed `String#normalize`.
 - Removed `Range#step` alias.
+- Removed `deep` argument from `Object.fromQueryString` and replaced with optional boolean casting.
 
 ### Performance Enhancements ###
 
