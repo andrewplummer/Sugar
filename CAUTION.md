@@ -13,9 +13,6 @@ v1.4.0+
 =======
 
 - Level: Major
-  - `Array#find` now works according to the ES6 spec. This means that it will no longer take a `fromIndex` or `loop` arguments. Instead, the second argument is the context in which the function matcher will be run. If you need the previous functionality, use `Array#findFrom` and `Array#findIndexFrom` instead.
-
-- Level: Major
   - `pad`, `padLeft`, and `padRight` now pad to the exact character. This means that `padLeft(20)` will produce a string exactly 20 characters long, instead of adding 20 characters worth of padding to the left side of the string as before. You can use `String#repeat` for the same effect as the old functionality.
 
 - Level: Major
@@ -25,19 +22,25 @@ v1.4.0+
   - `Function#lazy` now has different arguments. `limit` is now the third argument with `immediate` taking its place as second. Additionally `immediate` -- which determines whether lazy functions are executed immediately then lock or lock then execute after a timeout -- is now false by default.
 
 - Level: Major
-  - Date ranges are now their own package (the "range" package), are not dependent on the Date package, and work on numbers and strings as well.
-
-- Level: Major
   - Date range methods `eachDay`, `eachMonth`, etc. are deprecated in favor of the syntax `every("day")`, etc.
 
 - Level: Major
   - Date range method `duration` is deprecated in favor of `span`. Additionally it will add 1 to the duration to include the starting number itself. In effect for date ranges this means that `duration` will be 1 ms longer.
 
 - Level: Major
-  - `Object.clone` now will error if being called on a user-created class instance or host object (DOM Elements, Events, etc). A number of complex issues tie in here, but in the end it is unreliable to call `clone` on an object that is not a standard data types as 1) hidden properties cannot be cloned 2) the original arguments to the constructor cannot be known 3) even if they could be known the issue of whether or not the constructor should actually be called again is not clear.
+  - `Range#step` alias was removed. Use `Range#every` instead.
 
 - Level: Major
-  - `String#normalize` is now deprecated, but still available as a separate script in the `lib/plugins` directory.
+  - Date formatting tokens `z` and `zz` are now `Z` and `ZZ`. Additionally `zzz` was removed.
+
+- Level: Moderate
+  - `Array#find` now works according to the ES6 spec. This means that it will no longer take a `fromIndex` or `loop` arguments. Instead, the second argument is the context in which the function matcher will be run. If you need the previous functionality, use `Array#findFrom` and `Array#findIndexFrom` instead.
+
+- Level: Moderate
+  - `Array.sortBy` now performs a natural sort by default. This means numbers (any consecutive numbers, so this will include currency formatting, etc.) will sort as numbers, (2 before 100). If you do not want this behavior, set the flag `Array.AlphanumericSortNatural` to `false`.
+
+- Level: Moderate
+  - `Object.clone` now will error if being called on a user-created class instance or host object (DOM Elements, Events, etc). A number of complex issues tie in here, but in the end it is unreliable to call `clone` on an object that is not a standard data types as 1) hidden properties cannot be cloned 2) the original arguments to the constructor cannot be known 3) even if they could be known the issue of whether or not the constructor should actually be called again is not clear.
 
 - Level: Moderate
   - The `split` argument was removed from `String#truncate`. For truncating without splitting words, use `String#truncateOnWords` instead. Argument position is adjusted accordingly.
@@ -49,25 +52,22 @@ v1.4.0+
   - `Object.isObject` will now no longer return true for class instances for the same reasons listed above. This also was intended behavior but was defective.
 
 - Level: Moderate
-  - `Array.sortBy` now performs a natural sort by default. This means numbers (any consecutive numbers, so this will include currency formatting, etc.) will sort as numbers, (2 before 100). If you don't want this behavior, set the flag `Array.AlphanumericSortNatural` to `false`.
+  - `String#normalize` is now deprecated, but still available as a separate script in the `lib/plugins` directory.
+
+- Level: Moderate
+  - Date ranges are now their own package (the "range" package), are not dependent on the Date package, and work on numbers and strings as well.
 
 - Level: Minor
   - Enumerable methods on object will now coerce primitive types. This means that `Object.findAll('foo')` will now treat `'foo'` as `new String('foo')`. This is reversed from the previous behavior which would error on primitive types and coerce objects to primitive types where possible.
 
 - Level: Minor
-  - Date ranges that have an end that is less than the start are now no longer considered invalid, and can be iterated across in exactly the same manner. This means that ranges can now be iterated in reverse and .start and .end are no longer equivalent to .min and .max.
-
-- Level: Minor
-  - Removed `Number#upto` and `Number#downto` will now work on inverse ranges. In other words (1).downto(5) if represented as an array will now produce [1,2,3,4,5] even though 1 is less than 5 and the operator was "downto". It will also step through the range accordingly.
-
-- Level: Minor
   - `String#capitalize` passing the `all` flag now will not capitalize after an apostrophe.
 
-- Level: Minor
-  - Date formatting tokens `z` and `zz` are now `Z` and `ZZ`. Additionally `zzz` was removed.
+- Level: Very Minor
+  - Date ranges that have an end that is less than the start are now no longer considered invalid, and can be iterated across in exactly the same manner. This means that ranges can now be iterated in reverse and .start and .end are no longer equivalent to .min and .max.
 
-- Level: Minor
-  - `Range#step` alias was removed. Use `Range#every` instead.
+- Level: Very Minor
+  - Removed `Number#upto` and `Number#downto` will now work on inverse ranges. In other words (1).downto(5) if represented as an array will now produce [1,2,3,4,5] even though 1 is less than 5 and the operator was "downto". It will also step through the range accordingly.
 
 - Level: Very Minor
   - Passing a regex to array matching methods like `findAll` will now match it directly against the element in the array, regardless of whether or not the matched element is a string or not. This makes the logic more straightforward but it also means that it will stringify the element before attempting to match. If, for example, you have instances of classes in the array and the regex is /t/, the /t/ will return true for that element as it will match the stringified "[object Object]" of the instance, which is likely not what you want, so caution is needed here.
