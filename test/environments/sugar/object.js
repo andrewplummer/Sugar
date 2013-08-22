@@ -647,25 +647,35 @@ test('Object', function () {
   // Object.fromQueryString
 
   equal(Object.fromQueryString('foo=bar&moo=car'), {foo:'bar',moo:'car'}, 'Object.fromQueryString | basic');
-  equal(Object.fromQueryString('foo=bar&moo=3'), {foo:'bar',moo:3}, 'Object.fromQueryString | with numbers');
-  equal(Object.fromQueryString('foo=bar&moo=true'), {foo:'bar',moo:true}, 'Object.fromQueryString | with true');
-  equal(Object.fromQueryString('foo=bar&moo=false'), {foo:'bar',moo:false}, 'Object.fromQueryString | with false');
+  equal(Object.fromQueryString('foo=bar&moo=3'), {foo:'bar',moo:'3'}, 'Object.fromQueryString | with numbers');
+
+  equal(Object.fromQueryString('foo=bar&moo=true'), {foo:'bar',moo:'true'}, 'Object.fromQueryString | with true');
+  equal(Object.fromQueryString('foo=bar&moo=false'), {foo:'bar',moo:'false'}, 'Object.fromQueryString | with false');
+
+  equal(Object.fromQueryString('foo=bar&moo=true', true), {foo:'bar',moo:true}, 'Object.fromQueryString | coerced | with true');
+  equal(Object.fromQueryString('foo=bar&moo=false', true), {foo:'bar',moo:false}, 'Object.fromQueryString | coerced | with false');
+
   equal(Object.fromQueryString('foo=bar3'), { foo: 'bar3' }, 'Object.fromQueryString | number in back');
   equal(Object.fromQueryString('foo=3bar'), { foo: '3bar' }, 'Object.fromQueryString | number up front');
-  equal(Object.fromQueryString('foo=345'), { foo: 345 }, 'Object.fromQueryString | numbers only');
+  equal(Object.fromQueryString('foo=345'), { foo: '345' }, 'Object.fromQueryString | numbers only');
   equal(Object.fromQueryString('foo=&bar='), { foo: '', bar: '' }, 'Object.fromQueryString | undefined params');
   equal(Object.fromQueryString('foo[]=bar&foo[]=car'), { foo: ['bar','car'] }, 'Object.fromQueryString | handles array params');
   equal(Object.fromQueryString('foo[bar]=tee&foo[car]=hee'), { foo: { bar: 'tee', car: 'hee' } }, 'Object.fromQueryString | handles hash params');
   equal(Object.fromQueryString('foo[0]=a&foo[1]=b&foo[2]=c'), { foo: ['a','b','c'] }, 'Object.fromQueryString | handles array indexes');
-  equal(Object.fromQueryString('foo[cap][map]=3'), { foo: { cap: { map: 3 } } }, 'Object.fromQueryString | handles array indexes');
-  equal(Object.fromQueryString('foo[cap][map][]=3'), { foo: { cap: { map: [3] } } }, 'Object.fromQueryString | nested with trailing array');
-  equal(Object.fromQueryString('foo[moo]=1&bar[far]=2'), { foo: { moo: 1 }, bar: { far: 2 }}, 'Object.fromQueryString | sister objects');
+
+  equal(Object.fromQueryString('foo[cap][map]=3'), { foo: { cap: { map: '3' } } }, 'Object.fromQueryString | handles array indexes');
+  equal(Object.fromQueryString('foo[cap][map][]=3'), { foo: { cap: { map: ['3'] } } }, 'Object.fromQueryString | nested with trailing array');
+  equal(Object.fromQueryString('foo[moo]=1&bar[far]=2'), { foo: { moo: '1' }, bar: { far: '2' }}, 'Object.fromQueryString | sister objects');
+
   equal(Object.fromQueryString('f[]=a&f[]=b&f[]=c&f[]=d&f[]=e&f[]=f'), { f: ['a','b','c','d','e','f'] }, 'Object.fromQueryString | large array');
   equal(Object.fromQueryString('foo[0][]=a&foo[1][]=b'), { foo: [['a'],['b']] }, 'Object.fromQueryString | nested arrays separate');
-  equal(Object.fromQueryString('foo[0][0]=3&foo[0][1]=4'), { foo: [[3,4]] }, 'Object.fromQueryString | nested arrays together');
-  equal(Object.fromQueryString('foo[][]=3&foo[][]=4'), { foo: [[3],[4]] }, 'Object.fromQueryString | nested arrays');
+  equal(Object.fromQueryString('foo[0][0]=3&foo[0][1]=4'), { foo: [['3','4']] }, 'Object.fromQueryString | nested arrays together');
+  equal(Object.fromQueryString('foo[][]=3&foo[][]=4'), { foo: [['3'],['4']] }, 'Object.fromQueryString | nested arrays');
 
-  equal(Object.fromQueryString('foo[]=bar&foo[]=car', false), { 'foo[]': 'car' }, 'Object.fromQueryString | disallows nested params');
+  var qs = 'foo[cap][map]=true&foo[cap][pap]=false';
+  equal(Object.fromQueryString(qs), {foo:{cap:{ map:'true',pap:'false'}}}, 'Object.fromQueryString | nested boolean without coercion');
+  equal(Object.fromQueryString(qs, true), {foo:{cap:{map:true,pap:false}}}, 'Object.fromQueryString | nested boolean with coercion');
+
 
   var sparse = [];
   sparse[3] = 'hardy';
@@ -685,8 +695,10 @@ test('Object', function () {
     equal(Object.isArray(Object.fromQueryString(window.location).keys()), true, 'Object.fromQueryString | can handle just window.location');
   }
 
-  equal(Object.fromQueryString('foo=3.14156'), { foo: 3.14156 }, 'Object.fromQueryString | can handle float values');
+  equal(Object.fromQueryString('foo=3.14156'), { foo: '3.14156' }, 'Object.fromQueryString | float values are not coerced');
   equal(Object.fromQueryString('foo=127.0.0.1'), { foo: '127.0.0.1' }, 'Object.fromQueryString | IP addresses not treated as numbers');
+  equal(Object.fromQueryString('zip=00165'), { zip: '00165' }, 'Object.fromQueryString | zipcodes are not treated as numbers');
+  equal(Object.fromQueryString('foo[=bar'), { 'foo[': 'bar' }, 'Object.fromQueryString | opening bracket does not trigger deep parameters');
 
 
 
