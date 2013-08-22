@@ -19,6 +19,9 @@ v1.4.0+
   - `pad`, `padLeft`, and `padRight` now pad to the exact character. This means that `padLeft(20)` will produce a string exactly 20 characters long, instead of adding 20 characters worth of padding to the left side of the string as before. You can use `String#repeat` for the same effect as the old functionality.
 
 - Level: Major
+  - `Object.fromQueryString` now does not cast values by default. This means that all values in the resulting object are strings, unless `castBoolean` is true, which will cast boolean values of "true" and "false" only. Digits are no longer cast to numbers at all. Additionally, the "deep" argument is now removed. Deep parameters will always be parsed if they can be.
+
+- Level: Major
   - `Function#lazy` now has different arguments. `limit` is now the third argument with `immediate` taking its place as second. Additionally `immediate` -- which determines whether lazy functions are executed immediately then lock or lock then execute after a timeout -- is now false by default.
 
 - Level: Major
