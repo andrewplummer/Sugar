@@ -30,7 +30,8 @@ var SugarPythonMethods = [
         sugar_compatibility: 0,
         original_code: "str.center(8, '-');",
         js_code: "while(str.length < 8) { str = str.length % 2 == 0 ? '-' + str : str + '-'; }",
-        sugar_code: "str.pad('-', (8 - str.length) / 2);",
+        sugar_code: "str.pad(8, '-');",
+        sugar_notes: 'String#pad exist in Sugar and is identical.',
         ref: 'String/pad'
       },
       {
@@ -164,7 +165,7 @@ var SugarPythonMethods = [
         sugar_compatibility: 1,
         original_code:  "str.ljust(50, '-')",
         js_code: "var padded = str; while(padded.length < 50) { str += '-' }",
-        sugar_code: "str.padRight('-', 50 - str.length)"
+        sugar_code: "str.padRight(50, '-')"
       },
       {
         name: 'lower',
@@ -218,7 +219,7 @@ var SugarPythonMethods = [
         sugar_compatibility: 1,
         original_code:  "str.rjust(50, '-')",
         js_code: "var padded = str; while(padded.length < 50) { str = '-' + str }",
-        sugar_code: "str.padLeft('-', 50 - str.length)"
+        sugar_code: "str.padLeft(50, '-')"
       },
       {
         name: 'rstrip',
@@ -240,7 +241,7 @@ var SugarPythonMethods = [
         sugar_compatibility: 2,
         original_code:  "str.split(','); str.split()",
         js_code: "str.split(','); str.split(/\s+/)",
-        sugar_notes: "String#split is known to have some inconsistent behavior when splitting on a regex, which Sugar fixes.",
+        sugar_notes: "String#split is known to have some inconsistent behavior when splitting on a regex.",
         ref: 'String/split'
 
       },
@@ -252,7 +253,7 @@ var SugarPythonMethods = [
         sugar_compatibility: 1,
         original_code:  "str.splitlines();",
         js_code: "str.split(/\\n/);",
-        sugar_notes: "String#split is known to have some inconsistent behavior when splitting on a regex, which Sugar fixes.",
+        sugar_notes: "String#split is known to have some inconsistent behavior when splitting on a regex.",
         ref: 'String/split'
 
       },
@@ -311,7 +312,7 @@ var SugarPythonMethods = [
         sugar_compatibility: 0,
         original_code:  "str.zfill(50)",
         js_code: "var padded = str; while(padded.length < 50) { str = '0' + str; }",
-        sugar_code: "str.padLeft('0', 50 - str.length)"
+        sugar_code: "str.padLeft(50, '0')"
       }
     ]
   },
@@ -506,8 +507,8 @@ var SugarPythonMethods = [
         original_code:  "max(len(l) for l in ['one','two','three'])",
         js_code: "var result; for(var i = 0; i < arr.length; i++) { if(arr[i].length > result) result = arr[i].length; } return result;",
         es5_code: "arr.reduce(function(a, b){ return a.length > b.length ? a.length : b.length; })",
-        sugar_code: "arr.max('length').first().length;",
-        sugar_notes: "Sugar's %max% method allows a function to transform the property to be checked, as well as a string shortcut to that property. Additionally, it returns the original array element, not the mapped property. Finally, it returns an array as there may be more than one max value.",
+        sugar_code: "arr.max('length').length;",
+        sugar_notes: "Sugar's %max% method allows a function to transform the property to be checked, as well as a string shortcut to that property. Additionally, it returns the original array element, not the mapped property.",
         ref: 'Array/max'
       },
       {
@@ -518,8 +519,8 @@ var SugarPythonMethods = [
         original_code:  "min(len(l) for l in ['one','two','three'])",
         js_code: "var result; for(var i = 0; i < arr.length; i++) { if(arr[i].length < result) result = arr[i].length; } return result;",
         es5_code: "arr.reduce(function(a, b){ return a.length < b.length ? a.length : b.length; })",
-        sugar_code: "arr.min('length').first().length;",
-        sugar_notes: "Sugar's %min% method allows a function to transform the property to be checked, as well as a string shortcut to that property. Additionally, it returns the original array element, not the mapped property. Finally, it returns an array as there may be more than one min value.",
+        sugar_code: "arr.min('length').length;",
+        sugar_notes: "Sugar's %min% method allows a function to transform the property to be checked, as well as a string shortcut to that property. Additionally, it returns the original array element, not the mapped property.",
         ref: 'Array/min'
       },
       {
@@ -558,9 +559,9 @@ var SugarPythonMethods = [
         sugar_compatibility: 3,
         original_code:  "range(2, 10, 2)",
         js_code: "var result = [], i = 2, step = 2; while(i < 5) { result.push(i); i += 2; } return result;",
-        sugar_code: "(2).upto(5, null, 2);",
-        sugar_notes: "Sugar also has a method %downto% that works in reverse. The second parameter is a callback that will be called on each method in the array if passed.",
-        ref: 'Number/upto'
+        sugar_code: "Number.range(2, 10);",
+        sugar_notes: 'Sugar has ranges that can be accessed with %Number.range%',
+        ref: 'Range'
       },
       {
         name: 'reduce',
@@ -730,9 +731,8 @@ var SugarPythonMethods = [
         js_compatibility: 0,
         sugar_compatibility: 0,
         original_code:  "takewhile(lambda x: x % 3 == 0, arr)",
-        js_code: "var result = []; for(var i = 0; i < arr.length; i++) { if(arr[i] % 3 == 0) { result.push(arr[i]); } else { break; } } return result;",
-        sugar_code: "var result = []; arr.each(function(el) { result.push(el); return el % 3 == 0; });",
-        ref: 'Array/each'
+        js_code: "arr.filter(function(x) { return x % 3 === 0; });",
+        ref: 'Array/filter'
       },
       {
         name: 'izip',
