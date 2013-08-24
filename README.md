@@ -1,5 +1,4 @@
-Sugar
-=====
+# Sugar
 
 [![Build Status](https://secure.travis-ci.org/andrewplummer/Sugar.png)](http://travis-ci.org/andrewplummer/Sugar)
 
@@ -7,24 +6,21 @@ A Javascript library for working with native objects.
 http://sugarjs.com/
 
 
-Upgrading
-===============
+## Upgrading
 
 If you are upgrading from an older version, please have a look at `CAUTION.md` which is a vetted changelog
 that details the severity of what has changed, and (sometimes) strategies for migrating.
 Going through this before you upgrade can make the process a lot less painful!
 
 
-Edge Build
-===============
+## Edge Build
 
 Public stable releases will be made available on the site and also exist in `release/`.
 Any push made to `master` branch *should* have its unit tests passing, although maybe not
 in all browsing environments (IE, etc) to ensure that it is stable, at least to a certain degree.
 
 
-Custom Builds
-===============
+## Custom Builds
 
 Sugar now allows custom builds that let you opt in or out packages. This can be done [here](http://sugarjs.com/customize).
 Custom builds can also be created with `script/build_custom.rb`. With ruby installed, simply call:
@@ -39,14 +35,12 @@ manipulate the source code in `lib/` before building. If you want to remove spec
 Be careful about removing dependencies, however, especially methods in `core.js`, the extending methods of which are required.
 
 
-Unit Tests Node
-===============
+## Unit Tests Node
 
 Use the `npm test` command to run unit tests.
 
 
-Date Localizations
-==================
+## Date Localizations
 
 Sugar has the following localizations available:
 
@@ -79,26 +73,22 @@ Documentation for this available [here](http://sugarjs.com/dates). Also refer to
 
 
 
-Timezones
-==================
+## Timezones
 
 Dealing with timezones in Javascript can be tricky. Although timezones are outside the scope of Sugar, it does provide a hook that can allow timezone shifted dates to be used internally in place of normal ones. See [the date reference](http://sugarjs.com/dates#timezones) for more.
 
 
-Contributing Locales
-====================
+## Contributing Locales
 
 If you do add a custom format for your locale, please consider forking and adding it to the repo! This especially includes the addition of new locales, but also new formats or tweaks to existing locales. Not everything can be added to the main package, but I would like to have as many languages/formats as possible available. When adding a locale contribution, the most important thing is to add unit tests that assert the correct format. These unit tests are found at `test/environments/sugar/date_LOCALE.js`. Simply add or adjust the formats for the locale (the more tests, the better!) and issue me a pull request -- I will update the code to add these locales/formats. Have a look at other unit tests files for an example of the unit testing format.
 
 
-Contributing Lib Comparisons
-============================
+## Contributing Lib Comparisons
 
-Lib comparisons to various other libraries can be seen at http://sugarjs.com/libs. This is one of the areas where contributions are most welcome, as I don't have extensive knowledge of many different libraries, and there is so much to cover. To contribute simply find or create the appropriate lib name in `docs/libs`, and follow the format provided. This will be an ongoing process, and I will push changes here out to the site every so often.
+Lib comparisons to various other libraries can be seen at http://sugarjs.com/libs. This is one of the areas where contributions are most welcome, as I don't have extensive knowledge of many different libraries, and there is much to cover. To contribute simply find or create the appropriate lib name in `docs/libs`, and follow the format provided. This will be an ongoing process, and I will push changes here out to the site every so often.
 
 
-Other Contributions
-===================
+## Other Contributions
 
 For other contributions, please add well formed unit tests in the Sugar environment at `test/environments/sugar/MODULE.js`. Unit tests can be run directly in the browser from `test/default.html`, and should all be passing in all major browsers (Webkit,Mozilla,Opera, and IE6+). Node.js unit tests should also be passing and can be run in the console with `npm test`.
 
