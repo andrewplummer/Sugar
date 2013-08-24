@@ -259,7 +259,7 @@
     try {
       // Not own constructor property must be Object
       // This code was borrowed from jQuery.isPlainObject
-      if (obj.constructor &&
+      if (obj && obj.constructor &&
             !hasOwnProperty(obj, 'constructor') &&
             !hasOwnProperty(obj.constructor.prototype, 'isPrototypeOf')) {
         return false;
@@ -1097,15 +1097,14 @@
   }
 
   function fuzzyMatcher(obj, isObject) {
-    var matchers = object.map(obj, function(key, value) {
-      return getMatcher(value, isObject);
-    });
+    var matchers = {};
     return function (el, i, arr) {
       var key;
       if(!isObjectType(el)) {
         return false;
       }
-      for(key in matchers) {
+      for(key in obj) {
+        matchers[key] = matchers[key] || getMatcher(obj[key], isObject);
         if(matchers[key].call(arr, el[key], i, arr) === false) {
           return false;
         }
@@ -1121,7 +1120,10 @@
   }
 
   function getMatcher(f, isObject) {
-    if(isRegExp(f)) {
+    if(isPrimitiveType(f)) {
+      // Do nothing and fall through to the
+      // default matcher below.
+    } else if(isRegExp(f)) {
       // Match against a regexp
       return regexMatcher(f);
     } else if(isDate(f)) {
@@ -1138,10 +1140,9 @@
     } else if(isPlainObject(f)) {
       // Match against a fuzzy hash or array.
       return fuzzyMatcher(f, isObject);
-    } else {
-      // Default is standard isEqual
-      return defaultMatcher(f);
     }
+    // Default is standard isEqual
+    return defaultMatcher(f);
   }
 
   function transformArgument(el, map, context, mapArgs) {
@@ -1417,21 +1418,23 @@
 
 
   function buildEnhancements() {
+    var nativeMap = array.prototype.map;
     var callbackCheck = function() {
       var args = arguments;
       return args.length > 0 && !isFunction(args[0]);
     };
-    extendSimilar(array, true, callbackCheck, 'every,all,some,any,none,filter,find,findIndex', function(methods, name) {
+    extendSimilar(array, true, callbackCheck, 'every,all,some,filter,any,none,find,findIndex', function(methods, name) {
+      var nativeFn = array.prototype[name]
       methods[name] = function(f) {
         var matcher = getMatcher(f);
-        return this[name](function(el, index) {
+        return nativeFn.call(this, function(el, index) {
           return matcher(el, index, this);
         });
       }
     });
     extend(array, true, callbackCheck, {
       'map': function(f) {
-        return this.map(function(el, index) {
+        return nativeMap.call(this, function(el, index) {
           return transformArgument(el, f, this, [el, index, this]);
         });
       }
@@ -6073,7 +6076,7 @@
     }
   });
 
-  extend(object, false, function(arg1, arg2) { return isFunction(arg2); }, {
+  extend(object, false, function() { return arguments.length > 1; }, {
 
     /***
      * @method keys(<obj>, [fn])
