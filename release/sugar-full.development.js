@@ -1,5 +1,5 @@
 /*
- *  Sugar Library vedge
+ *  Sugar Library v1.4.0
  *
  *  Freely distributable and licensed under the MIT-style license.
  *  Copyright (c) 2013 Andrew Plummer
@@ -762,13 +762,14 @@
      * @extra [scope] is the %this% object. When <map> is a function, it receives three arguments: the current element, the current index, and a reference to the array. In addition to providing this method for browsers that don't support it natively, this enhanced method also directly accepts a string, which is a shortcut for a function that gets that property (or invokes a function) on each element.
      * @example
      *
-     +   [1,2,3].map(function(n) {
+     *   [1,2,3].map(function(n) {
      *     return n * 3;
      *   });                                  -> [3,6,9]
      *   ['one','two','three'].map(function(n) {
      *     return n.length;
      *   });                                  -> [3,3,5]
      *   ['one','two','three'].map('length')  -> [3,3,5]
+     *
      ***/
     'map': function(fn, scope) {
       var scope = arguments[1], length = this.length, index = 0, result = new Array(length);
@@ -1936,7 +1937,7 @@
     /***
      * @method average([map])
      * @returns Number
-     * @short Averages all values in the array.
+     * @short Gets the mean average for all values in the array.
      * @extra [map] may be a function mapping the value to be averaged or a string acting as a shortcut.
      * @example
      *
@@ -4246,7 +4247,11 @@
      * @returns Date
      * @short Set the date to the beginning of week as defined by this ISO-8601 standard.
      * @extra Note that this standard places Monday at the start of the week.
-     */
+     * @example
+     *
+     *   Date.create().beginningOfISOWeek() -> Monday
+     *
+     ***/
     'beginningOfISOWeek': function() {
       var day = this.getDay();
       if(day === 0) {
@@ -4263,7 +4268,11 @@
      * @returns Date
      * @short Set the date to the end of week as defined by this ISO-8601 standard.
      * @extra Note that this standard places Sunday at the end of the week.
-     */
+     * @example
+     *
+     *   Date.create().endOfISOWeek() -> Sunday
+     *
+     ***/
     'endOfISOWeek': function() {
       if(this.getDay() !== 0) {
         this.setWeekday(7);
@@ -4612,7 +4621,7 @@
    * @method [unit]()
    * @returns Number
    * @short Takes the number as a corresponding unit of time and converts to milliseconds.
-   * @extra Method names can be both singular and plural.  Note that as "a month" is ambiguous as a unit of time, %months% will be equivalent to 30.4375 days, the average number in a month. Be careful using %months% if you need exact precision.
+   * @extra Method names can be singular or plural.  Note that as "a month" is ambiguous as a unit of time, %months% will be equivalent to 30.4375 days, the average number in a month. Be careful using %months% if you need exact precision.
    *
    * @set
    *   millisecond
@@ -5136,12 +5145,20 @@
    * @method Number.range([start], [end])
    * @returns Range
    * @short Creates a new range between [start] and [end]. See @ranges for more.
+   * @example
+   *
+   *   Number.range(5, 10)
+   *
    ***
    * String module
    ***
    * @method String.range([start], [end])
    * @returns Range
    * @short Creates a new range between [start] and [end]. See @ranges for more.
+   * @example
+   *
+   *   String.range('a', 'z')
+   *
    ***
    * Date module
    ***
@@ -5149,6 +5166,10 @@
    * @returns Range
    * @short Creates a new range between [start] and [end].
    * @extra If either [start] or [end] are null, they will default to the current date. See @ranges for more.
+   * @example
+   *
+   *   Date.range('today', 'tomorrow')
+   *
    ***/
   [number, string, date].forEach(function(klass) {
      extend(klass, false, true, {
@@ -5194,7 +5215,11 @@
      * @method clamp([start] = Infinity, [end] = Infinity)
      * @returns Number
      * @short Constrains the number so that it is between [start] and [end].
-     * @extra This alias will build a range object that can be accessed directly using %Number.range% and has an equivalent %clamp% method.
+     * @extra This will build a range object that has an equivalent %clamp% method.
+     * @example
+     *
+     *   (3).clamp(50, 100)  -> 50
+     *   (85).clamp(50, 100) -> 85
      *
      ***/
     'clamp': function(start, end) {
@@ -5204,8 +5229,11 @@
      /***
      * @method cap([max] = Infinity)
      * @returns Number
-     * @short Constrains the number so that it is between [start] and [end].
-     * @extra This alias will build a range object that can be accessed directly using %Number.range% and has an equivalent %clamp% method.
+     * @short Constrains the number so that it is no greater than [max].
+     * @extra This will build a range object that has an equivalent %cap% method.
+     * @example
+     *
+     *   (100).cap(80) -> 80
      *
      ***/
     'cap': function(max) {
@@ -6049,7 +6077,7 @@
        * @method watch(<obj>, <prop>, <fn>)
        * @returns Nothing
        * @short Watches a property of <obj> and runs <fn> when it changes.
-       * @extra <fn> is passed three arguments: the property <prop>, the old value, and the new value. The return value of [fn] will be set as the new value. This method is useful for things such as validating or cleaning the value when it is set. Warning: this method WILL NOT work in browsers that don't support %Object.defineProperty%. This notably includes IE 8 and below, and Opera. This is the only method in Sugar that is not fully compatible with all browsers. %watch% is available as an instance method on extended objects.
+       * @extra <fn> is passed three arguments: the property <prop>, the old value, and the new value. The return value of [fn] will be set as the new value. This method is useful for things such as validating or cleaning the value when it is set. Warning: this method WILL NOT work in browsers that don't support %Object.defineProperty% (IE 8 and below). This is the only method in Sugar that is not fully compatible with all browsers. %watch% is available as an instance method on extended objects.
        * @example
        *
        *   Object.watch({ foo: 'bar' }, 'foo', function(prop, oldVal, newVal) {
@@ -6257,10 +6285,10 @@
     },
 
     /***
-     * @method Object.fromQueryString(<str>, [castBoolean] = false)
+     * @method Object.fromQueryString(<str>, [booleans] = false)
      * @returns Object
      * @short Converts the query string of a URL into an object.
-     * @extra If [castBoolean] is true, then %"true"% and %"false"% will be cast into booleans. All other values, including numbers will remain their string values.
+     * @extra If [booleans] is true, then %"true"% and %"false"% will be cast into booleans. All other values, including numbers will remain their string values.
      * @example
      *
      *   Object.fromQueryString('foo=bar&broken=wear') -> { foo: 'bar', broken: 'wear' }
@@ -7173,10 +7201,9 @@
      * @extra [from] can be %'right'%, %'left'%, or %'middle'%. If the string is shorter than <length>, [ellipsis] will not be added.
      * @example
      *
-     *   'just sittin on the dock of the bay'.truncate(20)           -> 'just sittin on the do...'
-     *   'just sittin on the dock of the bay'.truncate(20)           -> 'just sittin on the...'
-     *   'just sittin on the dock of the bay'.truncate(20, 'middle') -> 'just sitt...of the bay'
-     *   'just sittin on the dock of the bay'.truncate(20, 'left')   -> '...the dock of the bay'
+     *   'sittin on the dock of the bay'.truncate(18)           -> 'just sittin on the do...'
+     *   'sittin on the dock of the bay'.truncate(18, 'left')   -> '...the dock of the bay'
+     *   'sittin on the dock of the bay'.truncate(18, 'middle') -> 'just sitt...of the bay'
      *
      ***/
     'truncate': function(length, from, ellipsis) {
@@ -7190,10 +7217,8 @@
      * @extra [from] can be %'right'%, %'left'%, or %'middle'%. If the string is shorter than <length>, [ellipsis] will not be added.
      * @example
      *
-     *   'just sittin on the dock of the bay'.truncate(20)                 -> 'just sittin on the do...'
-     *   'just sittin on the dock of the bay'.truncate(20, false)          -> 'just sittin on the...'
-     *   'just sittin on the dock of the bay'.truncate(20, true, 'middle') -> 'just sitt...of the bay'
-     *   'just sittin on the dock of the bay'.truncate(20, true, 'left')   -> '...the dock of the bay'
+     *   'here we go'.truncateOnWord(5)               -> 'here...'
+     *   'here we go'.truncateOnWord(5, 'left')       -> '...we go'
      *
      ***/
     'truncateOnWord': function(length, from, ellipsis) {
