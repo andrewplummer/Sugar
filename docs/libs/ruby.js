@@ -592,9 +592,10 @@ var SugarRubyMethods = [
         name: 'parameterize',
         description: 'Swaps out special characters in a string so that it maybe used in a pretty URL.',
         js_compatibility: 0,
-        sugar_compatibility: 0,
+        sugar_compatibility: 2,
         original_code: "str.parameterize",
-        js_code: "str.replace(/\W+/, function(match, index, str) { return index + match.length == str.length ? '' : '-';  });"
+        js_code: "str.replace(/\W+/, function(match, index, str) { return index + match.length == str.length ? '' : '-';  });",
+        sugar_code: "str.parameterize()"
       },
       {
         name: 'squish',
