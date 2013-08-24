@@ -2592,8 +2592,10 @@ test('Array', function () {
   equal([one, two, three, four].findAll({ a: new Date(2001, 3, 15, 0, 0, 0, 1) }), [], 'Array#findAll | matches class instances | object with date off by 1ms');
 
 
-  var obj = { a: { getTime: function () { return 987260400000; } }};
-  equal([obj].findAll({ a: new Date(2001, 3, 15) }), [obj], 'Array#findAll | duck typing for date matching');
+  var date = new Date(2001, 3, 15);
+  var timestamp = date.getTime();
+  var obj = { a: { getTime: function () { return timestamp; } }};
+  equal([obj].findAll({ a: date }), [obj], 'Array#findAll | duck typing for date matching');
 
   var five = new Foo(one);
 
