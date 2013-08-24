@@ -835,15 +835,4 @@ test('ES5', function () {
   equal(a.each, 'OH PLEASE', 'Sugar methods can ALL be overwritten!');
   Array.prototype.each = storedEach;
 
-  equal(Array.prototype.indexOf.length,     1, 'Array#indexOf | arg length should be 1');
-  equal(Array.prototype.lastIndexOf.length, 1, 'Array#lastIndexOf | arg length should be 1');
-  equal(Array.prototype.every.length,       1, 'Array#every | arg length should be 1');
-  equal(Array.prototype.some.length,        1, 'Array#some | arg length should be 1');
-  equal(Array.prototype.map.length,         1, 'Array#map | arg length should be 1');
-  equal(Array.prototype.filter.length,      1, 'Array#filter | arg length should be 1');
-  equal(Array.prototype.reduce.length,      1, 'Array#reduce | arg length should be 1');
-  equal(Array.prototype.reduceRight.length, 1, 'Array#reduceRight | arg length should be 1');
-  equal(Array.prototype.forEach.length,     1, 'Array#forEach | arg length should be 1');
-  equal(Function.prototype.bind.length,     1, 'Function#bind | arg length should be 1');
-
 });
