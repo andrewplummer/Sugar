@@ -784,7 +784,7 @@ var SugarRubyMethods = [
         sugar_compatibility: 2,
         original_code: "num1.multiple_of?(num2)",
         js_code: "num1 % num2 == 0;",
-        sugar_code: "num1.multipleOf(num2);"
+        sugar_code: "num1.isMultipleOf(num2);"
       },
       {
         name: 'nan?',
