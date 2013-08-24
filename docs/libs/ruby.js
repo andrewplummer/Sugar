@@ -42,7 +42,7 @@ var SugarRubyMethods = [
         sugar_compatibility: 1,
         original_code: "str[2]; str[1..2]; str[/[aeiou]+/]; str['lo'];",
         js_code: "str.charAt(2); str.slice(1,2); str.match(/[aeiou]/); str.match('lo');",
-        js_notes: "Note that although Javascript does allow array-style access to strings (%[]%), this will break in IE8 and below, so it's best to use %charAt% instead. Sugar patches this method this and more with %at%. For a range of indexes, use %slice%. Javascript native %match% will return an array of matches instead of a substring, but will be %null% if there is no match, which can cause problems. Sugar's %each% method is essentially the same but will guarantee an empty array when no match occurs.",
+        js_notes: "Note that although Javascript does allow array-style access to strings (%[]%), this will break in IE8 and below, so it's best to use %charAt% instead. Sugar addresses this and more with %at%. For a range of indexes, use %slice%. Javascript native %match% will return an array of matches instead of a substring, but will be %null% if there is no match, which can cause problems. Sugar's %each% method is essentially the same but will guarantee an empty array when no match occurs.",
         ref: 'String/at'
       },
       {
@@ -110,7 +110,7 @@ var SugarRubyMethods = [
         js_compatibility: 0,
         sugar_compatibility: 1,
         js_code: "while(str.length < 8) { str = str.length % 2 == 0 ? '-' + str : str + '-'; }",
-        sugar_code: "str.pad('-', (8 - str.length) / 2);",
+        sugar_code: "str.pad(8, '-');",
         original_code: "str.center(8, '-');",
         ref: 'String/pad'
       },
@@ -277,7 +277,7 @@ var SugarRubyMethods = [
         sugar_compatibility: 1,
         original_code:  "str.ljust(50, '-')",
         js_code: "var padded = str; while(padded.length < 50) { str += '-' }",
-        sugar_code: "str.padRight('-', 50 - str.length)"
+        sugar_code: "str.padRight(50, '-')"
       },
       {
         name: 'lstrip',
@@ -355,7 +355,7 @@ var SugarRubyMethods = [
         sugar_compatibility: 1,
         original_code:  "str.rjust(50, '-')",
         js_code: "var padded = str; while(padded.length < 50) { str += '-' }",
-        sugar_code: "str.padLeft('-', 50 - str.length)"
+        sugar_code: "str.padLeft(50, '-')"
       },
       {
         name: 'rpartition',
@@ -407,7 +407,7 @@ var SugarRubyMethods = [
         original_code:  "str.split(','); str.split(/(?=f)/);",
         js_code: "str.split(',');",
         sugar_code: "str.split(/(?=f)/);",
-        sugar_notes: "Although Javascript can split on RegExps natively the results can be unpredictable across browsers. Sugar patches this method to provide consistent results here."
+        sugar_notes: "Although Javascript can split on RegExps natively the results can be unpredictable across browsers."
       },
       {
         name: 'squeeze',
@@ -446,7 +446,7 @@ var SugarRubyMethods = [
         js_compatibility: 2,
         original_code: "str.sub(/foo/, 'bar'); str.sub!(/foo/, 'bar');",
         js_code: "str.replace(/foo/, 'bar'); str = str.replace(/foo/, 'bar');",
-        js_notes: "For non-global substitutions in Javascript, simply do not set the global flat. Javascript strings are never passed by reference so there is no %sub!% method, simply set the reference."
+        js_notes: "For non-global substitutions in Javascript, simply do not set the global flag. Javascript strings are never passed by reference so there is no %sub!% method, simply set the reference."
       },
       {
         name: 'swapcase',
@@ -634,9 +634,9 @@ var SugarRubyMethods = [
         description: 'Truncates the string if it is longer than a given length.',
         js_compatibility: 0,
         sugar_compatibility: 2,
-        original_code: "str.truncate",
-        sugar_code: "str.truncate();",
-        sugar_notes: "Sugar will not split words by default."
+        original_code: "str.truncate(30)",
+        sugar_code: "str.truncate(30);",
+        sugar_notes: "Sugar also has %String#truncateOnWord% which will not split words apart."
       },
       {
         name: 'underscore',
@@ -1023,8 +1023,8 @@ var SugarRubyMethods = [
         original_code:  "arr.max { |a,b| a.length <=> b.length }",
         js_code: "var result; for(var i = 0; i < arr.length; i++) { if(arr[i].length > result || result === undefined) { result = arr[i].length; } } return result;",
         es5_code: "arr.reduce(function(a, b){ return a.length > b.length ? a.length : b.length; })",
-        sugar_code: "arr.max('length').first().length;",
-        sugar_notes: "Sugar's %max% method allows a function to transform the property to be checked, as well as a string shortcut to that property. Additionally, it returns the original array element, not the mapped property. Finally, it returns an array as there may be more than one max value.",
+        sugar_code: "arr.max('length').length;",
+        sugar_notes: "Sugar's %max% method allows a function to transform the property to be checked, as well as a string shortcut to that property. Additionally, it returns the original array element, not the mapped property.",
         ref: 'Array/max'
       },
       {
@@ -1034,8 +1034,8 @@ var SugarRubyMethods = [
         sugar_compatibility: 3,
         original_code:  "arr.max_by { |el| el.length }",
         js_code: "var result; for(var i = 0; i < arr.length; i++) { if(arr[i].length > result || result === undefined) { result = arr[i]; } } return result;",
-        sugar_code: "arr.max('length').first();",
-        sugar_notes: "Sugar's %max% method allows a function to transform the property to be checked, as well as a string shortcut to that property. Additionally, it returns the original array element, not the mapped property. Finally, it returns an array as there may be more than one max value.",
+        sugar_code: "arr.max('length');",
+        sugar_notes: "Sugar's %max% method allows a function to transform the property to be checked, as well as a string shortcut to that property. Additionally, it returns the original array element, not the mapped property.",
         ref: 'Array/max'
       },
       {
@@ -1057,8 +1057,8 @@ var SugarRubyMethods = [
         original_code:  "arr.min { |a,b| a.length <=> b.length }",
         js_code: "var result; for(var i = 0; i < arr.length; i++) { if(arr[i].length < result || result === undefined) { result = arr[i].length; } } return result;",
         es5_code: "arr.reduce(function(a, b){ return a.length < b.length ? a.length : b.length; })",
-        sugar_code: "arr.min('length').first().length;",
-        sugar_notes: "Sugar's %min% method allows a function to transform the property to be checked, as well as a string shortcut to that property. Additionally, it returns the original array element, not the mapped property. Finally, it returns an array as there may be more than one min value.",
+        sugar_code: "arr.min('length').length;",
+        sugar_notes: "Sugar's %min% method allows a function to transform the property to be checked, as well as a string shortcut to that property. Additionally, it returns the original array element, not the mapped property.",
         ref: 'Array/min'
       },
       {
@@ -1068,8 +1068,8 @@ var SugarRubyMethods = [
         sugar_compatibility: 3,
         original_code:  "arr.min_by { |el| el.length }",
         js_code: "var result; for(var i = 0; i < arr.length; i++) { if(arr[i].length > result || result === undefined) { result = arr[i]; } } return result;",
-        sugar_code: "arr.min('length').first();",
-        sugar_notes: "Sugar's %min% method allows a function to transform the property to be checked, as well as a string shortcut to that property. Additionally, it returns the original array element, not the mapped property. Finally, it returns an array as there may be more than one min value.",
+        sugar_code: "arr.min('length');",
+        sugar_notes: "Sugar's %min% method allows a function to transform the property to be checked, as well as a string shortcut to that property. Additionally, it returns the original array element, not the mapped property.",
         ref: 'Array/min'
       },
       {
@@ -1079,8 +1079,8 @@ var SugarRubyMethods = [
         sugar_compatibility: 0,
         original_code:  "arr.minmax { |a,b| a.length <=> b.length }",
         js_code: "var min, max; for(var i = 0; i < arr.length; i++) { if(arr[i].length > max || max === undefined) { max = arr[i]; } if(arr[i].length < min || min === undefined) { min = arr[i]; } } return [min, max];",
-        sugar_code: "var min = arr.min('length').first().length; var max = arr.max('length').first().length; return [min, max];",
-        sugar_notes: "Sugar's %min% and %max% methods allow a function to transform the property to be checked, as well as a string shortcut to that property. Additionally, it returns the original array element, not the mapped property. Finally, it returns an array as there may be more than one min value.",
+        sugar_code: "var min = arr.min('length').length; var max = arr.max('length').length; return [min, max];",
+        sugar_notes: "Sugar's %min% and %max% methods allow a function to transform the property to be checked, as well as a string shortcut to that property. Additionally, it returns the original array element, not the mapped property.",
         ref: 'Array/min'
       },
       {
@@ -1090,8 +1090,8 @@ var SugarRubyMethods = [
         sugar_compatibility: 0,
         original_code:  "arr.minmax { |a,b| a.length <=> b.length }",
         js_code: "var min, max; for(var i = 0; i < arr.length; i++) { if(arr[i].length > max || max === undefined) { max = arr[i]; } if(arr[i].length < min || min === undefined) { min = arr[i]; } } return [min, max];",
-        sugar_code: "var min = arr.min('length').first(); var max = arr.max('length').first(); return [min, max];",
-        sugar_notes: "Sugar's %min% and %max% methods allow a function to transform the property to be checked, as well as a string shortcut to that property. Additionally, it returns the original array element, not the mapped property. Finally, it returns an array as there may be more than one min value.",
+        sugar_code: "var min = arr.min('length'); var max = arr.max('length'); return [min, max];",
+        sugar_notes: "Sugar's %min% and %max% methods allow a function to transform the property to be checked, as well as a string shortcut to that property. Additionally, it returns the original array element, not the mapped property.",
         ref: 'Array/min'
       },
       {
