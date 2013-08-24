@@ -42,7 +42,7 @@ var SugarPrototypeMethods = [
       name: '$R',
       description: 'Creates an ObjectRange object that represents a range of consecutive values.',
       sugar_compatibility: 0,
-      sugar_notes: '$R (ObjectRanges) do not exist in Sugar. However, Number#upto or Number#downto achieve a very similar effect by directly creating arrays that contain that range.',
+      sugar_notes: '$R exists in Sugar as ranges, which can be created via Number.range, Date.range, or String.range. Additionally Number#upto or Number#downto will return an array of numbers in that range.',
       original_code: "$R(0, 10)",
       sugar_code: "(0).upto(10)",
       ref: 'Number/upto'
@@ -206,7 +206,7 @@ var SugarPrototypeMethods = [
     sugar_compatibility: 0,
     sugar_notes: "String#evalScripts does not exist in Sugar. It's highly unlikely that you should be doing something like this anyway, (and even if you are, libraries like jQuery should perform this automatically), but if you really need to in a pinch, something like this may work:",
     original_code: "str.evalScripts()",
-    sugar_code: "str.match(/<script.*?>.+?<\/script>/g).map(function(m){ return eval(m.replace(/<\/?script.*?>/g, '')); })"
+    sugar_code: "str.match(/<script.*?>.+?<\/script>/g).map(function(m){\n  return eval(m.replace(/<\\/?script.*?>/g, ''));\n})"
   },
   {
     name: 'extractScripts',
@@ -214,15 +214,15 @@ var SugarPrototypeMethods = [
     sugar_compatibility: 0,
     sugar_notes: 'String#extractScripts does not exist in Sugar. If you really need to do this, then in a pinch something like this may work.',
     original_code: "str.extractScripts()",
-    sugar_code: "str.match(/<script.*?>.+?<\/script>/g).map(function(m){ return m.replace(/<\/?script.*?>/g, ''); })"
+    sugar_code: "str.match(/<script.*?>.+?<\/script>/g).map(function(m){\n  return m.replace(/<\\/?script.*?>/g, '');\n})"
   },
   {
     name: 'gsub',
     description: 'Returns the string with every occurrence of the passed regex replaced.',
     sugar_compatibility: 0,
     sugar_notes: 'String#gsub does not exist in Sugar. Just use the native .replace function instead. Note that Javascript allows functions to be passed to .replace just like gsub.',
-    original_code: "'Image: (img.png)'.gsub(/Image: \(.+\)/, function(match, src){ return '<img src=\"' + src + '\" />'; })",
-    sugar_code: "'Image: (img.png)'.replace(/Image: \(.+\)/, function(match, src){ return '<img src=\"' + src + '\" />'; })"
+    original_code: "'Image: (img.png)'.gsub(/Image: \(.+\)/, function(match, src) {\n  return '<img src=\"' + src + '\" />';\n})",
+    sugar_code: "'Image: (img.png)'.replace(/Image: \(.+\)/, function(match, src) {\n  return '<img src=\"' + src + '\" />';\n})"
   },
   {
     name: 'include',
@@ -344,9 +344,9 @@ var SugarPrototypeMethods = [
     name: 'truncate',
     description: 'Truncates a string to the given length and adds a suffix to it.',
     sugar_compatibility: 3,
-    sugar_notes: 'String#truncate exists in Sugar but will not split words by default. If you want words to be split, pass true as the last argument.',
-    original_code: "longString.truncate(10, '...')",
-    sugar_code: "longString.truncate(10, '...', true)",
+    sugar_notes: 'String#truncate exists in Sugar and additionally allows truncating from the left or middle. Also, String#truncateOnWord will do the same as truncate but not split words.',
+    original_code: "longString.truncate(10)",
+    sugar_code: "longString.truncate(10)",
     ref: 'String/truncate'
   },
   {
@@ -378,7 +378,7 @@ var SugarPrototypeMethods = [
     name: 'startsWith',
     description: 'Checks if the string starts with the passed substring.',
     sugar_compatibility: 3,
-    sugar_notes: 'String#startsWith exists in Sugar and will not break. Sugar additionally accepts an argument for case sensitivity (default is true).',
+    sugar_notes: 'String#startsWith exists in Sugar and additionally accepts an argument for case sensitivity (default is true).',
     conflict: false,
     ref: 'String/startsWith'
   },
@@ -386,7 +386,7 @@ var SugarPrototypeMethods = [
     name: 'endsWith',
     description: 'Checks if the string ends with the passed substring.',
     sugar_compatibility: 3,
-    sugar_notes: 'String#endsWith exists in Sugar and will not break. Sugar additionally accepts an argument for case sensitivity (default is true).',
+    sugar_notes: 'String#endsWith exists in Sugar and additionally accepts an argument for case sensitivity (default is true).',
     conflict: false,
     ref: 'String/endsWith'
   },
@@ -542,9 +542,9 @@ var SugarPrototypeMethods = [
     name: 'toQueryString',
     description: 'Returns a URL-encoded string representing the contents of the hash.',
     sugar_compatibility: 0,
-    sugar_notes: 'Hash#toQueryString does not exist in Sugar, and requires a workaround when using extended objects.',
+    sugar_notes: 'Hash#toQueryString exists in Sugar as Object.toQueryString.',
     original_code: "hash.toQueryString()",
-    sugar_code: "obj.keys().map(function(key){ return key + '=' + obj[key]; }).join('&').escapeURL();"
+    sugar_code: "Object.toQueryString(obj);"
   }
   ]
 },
@@ -676,9 +676,9 @@ var SugarPrototypeMethods = [
     name: 'toQueryString',
     description: 'Returns a URL-encoded string representing the contents of the object.',
     sugar_compatibility: 0,
-    sugar_notes: 'Object.toQueryString does not exist in Sugar, and requires a workaround.',
+    sugar_notes: 'Object.toQueryString exists in Sugar and additionally allows a parameter to namespace deep params.',
     original_code: "Object.toQueryString(obj)",
-    sugar_code: "Object.keys(obj).map(function(key){ return key + '=' + obj[key]; }).join('&').escapeURL();"
+    sugar_code: "Object.toQueryString(obj);"
   }
   ]
 },
@@ -714,7 +714,7 @@ var SugarPrototypeMethods = [
     name: 'detect',
     description: 'Returns the first element for which the iterator returns a truthy value.',
     sugar_compatibility: 3,
-    sugar_notes: 'Enumerable#detect exists in Sugar as Array#find. Some semantic differences exist including the ability to pass a starting index in the place of in-line context binding.',
+    sugar_notes: 'Enumerable#detect exists in Sugar as Array#find, and is identical.',
     original_code: "[1,2,3].detect(function(n){ return n > 1; })",
     sugar_code: "[1,2,3].find(function(n){ return n > 1; })",
     ref: 'Array/find'
@@ -754,7 +754,7 @@ var SugarPrototypeMethods = [
   {
     name: 'find',
     description: 'Returns the first element for which the iterator returns a truthy value.',
-    sugar_notes: 'Array#find also exists in Sugar. Some semantic differences exist including the ability to pass a starting index in the place of in-line context binding.',
+    sugar_notes: 'Array#find also exists in Sugar and is identical.',
     sugar_compatibility: 3,
     conflict: function() {
       var type = typeof arguments[1];
@@ -792,12 +792,12 @@ var SugarPrototypeMethods = [
     name: 'include',
     description: 'Returns true if the array contains the given element.',
     sugar_compatibility: 3,
-    sugar_notes: 'Enumerable#include exists in Sugar as Array#has. Array#include in Sugar instead the passed argument to the array without modifying it. Array#include is a reciprocal of Array#exclude, and a non-destructive version of Array#add. Use Array#has instead for equivalent functionality.',
+    sugar_notes: 'Enumerable#include exists in Javascript as native Array#some, or the Sugar alias Array#any. Array#include in Sugar instead the passed argument to the array without modifying it. Array#include is a reciprocal of Array#exclude, and a non-destructive version of Array#add.',
     conflict: function(f) {
       return typeof f !== 'object' && arguments.length == 1;
     },
     original_code: "[1,2,3].include(1)",
-    sugar_code: "[1,2,3].has(1)",
+    sugar_code: "[1,2,3].any(1)",
     ref: 'Array/has'
   },
   {
@@ -821,7 +821,7 @@ var SugarPrototypeMethods = [
     name: 'max',
     description: 'Returns the element of the array with the highest value.',
     sugar_compatibility: 2,
-    sugar_notes: 'Array#max exists in Sugar but returns an array, as more than one maximum value may exist. Sugar also returns the actual array element instead of the return value of the iterator. Sugar also does not allow a context parameter, use Function#bind instead.',
+    sugar_notes: 'Array#max exists in Sugar and additionally has the ability to return all the maximum values, as more than one may exist. Sugar also returns the actual array element instead of the return value of the iterator. Sugar also does not allow a context parameter, use Function#bind instead.',
     live_notes: 'Use caution when using Enumerable#max:  (1) Sugar will return an array of maximum values (as there can be more than one), where Prototype only returns the first value. (2) When using iterators, Prototype will return the value compared, where Sugar will return the actual array element itself. (3) Finally, Sugar does not allow a context to be passed. Use Function#bind instead to bind context.',
     original_code: "[{ a: 5 },{ a: 10 }].max(function(el){ return el['a']; }, 'context')",
     sugar_code: "[{ a: 5 },{ a: 10 }].max(function(el){ return el['a']; }.bind('context')).first().a",
@@ -831,16 +831,16 @@ var SugarPrototypeMethods = [
     name: 'member',
     description: 'Returns true if the array contains the given element. Alias of Enumerable#include.',
     sugar_compatibility: 2,
-    sugar_notes: 'Enumerable#member exists in Sugar as Array#has.',
+    sugar_notes: 'Enumerable#member exists in Javascript as Array#some or the Sugar alias Array#any.',
     original_code: "[1,2,3].member(1)",
-    sugar_code: "[1,2,3].has(1)",
+    sugar_code: "[1,2,3].any(1)",
     ref: 'Array/has'
   },
   {
     name: 'min',
     description: 'Returns the element of the array with the lowest value.',
     sugar_compatibility: 2,
-    sugar_notes: 'Array#min exists in Sugar but returns an array, as more than one minimum value may exist. Sugar also returns the actual array element instead of the return value of the iterator. Sugar also does not allow a context parameter, use Function#bind instead.',
+    sugar_notes: 'Array#min exists in Sugar and additionally has the ability to return all the minimum values, as more than one may exist. Sugar also returns the actual array element instead of the return value of the iterator. Sugar also does not allow a context parameter, use Function#bind instead.',
     live_notes: 'Use caution when using Enumerable#min:  (1) Sugar will return an array of minimum values (as there can be more than one), where Prototype only returns the first value. (2) When using iterators, Prototype will return the value compared, where Sugar will return the actual array element itself. (3) Finally, Sugar does not allow a context to be passed.',
     original_code: "[{ a: 5 },{ a: 10 }].min(function(el){ return el['a']; }, 'context')",
     sugar_code: "[{ a: 5 },{ a: 10 }].min(function(el){ return el['a']; }.bind('context')).first().a",
