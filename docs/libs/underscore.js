@@ -123,18 +123,18 @@ var SugarUnderscoreMethods = [
     name: 'max',
     description: 'Returns the maximum value in the list.',
     sugar_compatibility: 2,
-    sugar_notes: '_.max exists in Sugar as Array#max. It is nearly identical, except that it always returns an array, as there may be more than one max value.',
+    sugar_notes: '_.max exists in Sugar as Array#max, and can additionally return an array when more than one max values exist.',
     original_code: '_.max([1,2,3])',
-    sugar_code: '[1,2,3].max().first()',
+    sugar_code: '[1,2,3].max()',
     ref: 'Array/max'
   },
   {
     name: 'min',
     description: 'Returns the minimum value in the list.',
     sugar_compatibility: 2,
-    sugar_notes: '_.min exists in Sugar as Array#min. It is nearly identical, except that it always returns an array, as there may be more than one min value.',
+    sugar_notes: '_.min exists in Sugar as Array#min, and can additionally return an array when more than one max values exist.',
     original_code: '_.min([1,2,3])',
-    sugar_code: '[1,2,3].min().first()',
+    sugar_code: '[1,2,3].min()',
     ref: 'Array/min'
   },
   {
@@ -321,9 +321,9 @@ var SugarUnderscoreMethods = [
     name: 'range',
     description: 'Shortcut to quickly create lists of integers.',
     sugar_compatibility: 3,
-    sugar_notes: '_.range exists in Sugar on numbers as Number#upto and Number#downto. Sugar additionally accepts a second argument which is a callback that will be run for each number in the range. The [step] parameter becomes the 3rd argument.',
+    sugar_notes: 'Ranges exist in Sugar and are created with Number.range. They can then be iterated over with the method "every".',
     original_code: '_.range(0, 30, 5)',
-    sugar_code: '(0).upto(30, null, 5)',
+    sugar_code: 'Number.range(0, 30)',
     ref: 'Number/upto'
   },
   {
@@ -375,16 +375,16 @@ var SugarUnderscoreMethods = [
     name: 'throttle',
     description: 'Creates a throttled version of the function that when invoked will only call the function at most once per n milliseconds. Useful for rate-limiting events.',
     sugar_compatibility: 3,
-    sugar_notes: '_.throttle exists in Sugar as Function#lazy. In addition to basic throttling, Function#lazy can also accepts an upper limit to the queue of functions waiting to execute.',
+    sugar_notes: '_.throttle exists in Sugar as Function#throttle. In addition, Function#lazy has other options like accepting an upper limit to the queue of functions waiting to execute or execute the first time immediately.',
     original_code: '_.throttle(fn, 100)',
-    sugar_code: 'fn.lazy(100)',
+    sugar_code: 'fn.throttle(100)',
     ref: 'Function/lazy'
   },
   {
     name: 'debounce',
     description: 'Returns a "debounced" version of the function that will only execute once after n milliseconds have passed.',
     sugar_compatibility: 3,
-    sugar_notes: '_.debounce exists in Sugar as Function#debounce. In addition to the standard functionality of waiting then firing, Function#debounce also has an option to do the opposite: fire then wait.',
+    sugar_notes: '_.debounce exists in Sugar as Function#debounce.',
     original_code: '_.debounce(fn, 100)',
     sugar_code: 'fn.debounce(100)',
     ref: 'Function/debounce'
