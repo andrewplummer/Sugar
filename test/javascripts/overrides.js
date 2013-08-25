@@ -11,11 +11,11 @@ Object.isObject = overridingFunction;
 Object.isNumber = overridingFunction;
 Object.extend   = overridingFunction;
 
-Array.create            = overridingFunction;
-Array.prototype.findAll = overridingFunction;
-Array.prototype.all     = overridingFunction;
-Array.prototype.add     = overridingFunction;
-Array.prototype.groupBy = overridingFunction;
+Array.create              = overridingFunction;
+Array.prototype.findAll   = overridingFunction;
+Array.prototype.all       = overridingFunction;
+Array.prototype.add       = overridingFunction;
+Array.prototype.groupBy   = overridingFunction;
 
 String.extend              = overridingFunction;
 String.range               = overridingFunction;
@@ -57,3 +57,12 @@ Date.prototype.long       = overridingFunction;
 Date.prototype.isToday    = overridingFunction;
 Date.prototype.addMinutes = overridingFunction;
 
+
+
+
+// ES6
+
+// Array.prototype.find       = overridingFunction;
+// Array.prototype.findIndex  = overridingFunction;
+// String.prototype.repeat    = overridingFunction;
+// String.prototype.normalize = overridingFunction;
