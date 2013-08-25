@@ -1,5 +1,5 @@
 /*
- *  Sugar Library vedge
+ *  Sugar Library v1.4.0
  *
  *  Freely distributable and licensed under the MIT-style license.
  *  Copyright (c) 2013 Andrew Plummer
@@ -6631,6 +6631,24 @@
     }
   }
 
+  extend(string, true, false, {
+    /***
+     * @method repeat([num] = 0)
+     * @returns String
+     * @short Returns the string repeated [num] times.
+     * @example
+     *
+     *   'jumpy'.repeat(2) -> 'jumpyjumpy'
+     *   'a'.repeat(5)     -> 'aaaaa'
+     *   'a'.repeat(0)     -> ''
+     *
+     ***/
+    'repeat': function(num) {
+      num = checkRepeatRange(num);
+      return repeatString(this, num);
+    }
+
+  });
 
   extend(string, true, function(reg) { return isRegExp(reg) || arguments.length > 2; }, {
 
@@ -6679,7 +6697,6 @@
     }
 
   });
-
 
   extend(string, true, true, {
 
@@ -7294,22 +7311,6 @@
     },
 
     /***
-     * @method repeat([num] = 0)
-     * @returns String
-     * @short Returns the string repeated [num] times.
-     * @example
-     *
-     *   'jumpy'.repeat(2) -> 'jumpyjumpy'
-     *   'a'.repeat(5)     -> 'aaaaa'
-     *   'a'.repeat(0)     -> ''
-     *
-     ***/
-    'repeat': function(num) {
-      num = checkRepeatRange(num);
-      return repeatString(this, num);
-    },
-
-    /***
      * @method toNumber([base] = 10)
      * @returns Number
      * @short Converts the string into a number.
@@ -7901,14 +7902,16 @@
 
   // Support for converting character widths and katakana to hiragana.
 
+  var HALF_WIDTH_TO_FULL_WIDTH_TRAVERSAL = 65248;
+
   var widthConversionRanges = [
-    { type: 'a', shift: 65248, start: 65,  end: 90  },
-    { type: 'a', shift: 65248, start: 97,  end: 122 },
-    { type: 'n', shift: 65248, start: 48,  end: 57  },
-    { type: 'p', shift: 65248, start: 33,  end: 47  },
-    { type: 'p', shift: 65248, start: 58,  end: 64  },
-    { type: 'p', shift: 65248, start: 91,  end: 96  },
-    { type: 'p', shift: 65248, start: 123, end: 126 }
+    { type: 'a', start: 65,  end: 90  },
+    { type: 'a', start: 97,  end: 122 },
+    { type: 'n', start: 48,  end: 57  },
+    { type: 'p', start: 33,  end: 47  },
+    { type: 'p', start: 58,  end: 64  },
+    { type: 'p', start: 91,  end: 96  },
+    { type: 'p', start: 123, end: 126 }
   ];
 
   var WidthConversionTable;
@@ -7945,7 +7948,7 @@
     widthConversionRanges.forEach(function(r) {
       simpleRepeat(r.end - r.start + 1, function(n) {
         n += r.start;
-        setWidthConversion(r.type, chr(n), chr(n + r.shift));
+        setWidthConversion(r.type, chr(n), chr(n + HALF_WIDTH_TO_FULL_WIDTH_TRAVERSAL));
       });
     });
     zenkakuKatakana.each(function(c, i) {
