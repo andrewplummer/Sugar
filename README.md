@@ -11,6 +11,7 @@ http://sugarjs.com/
 If you are upgrading from an older version, please have a look at `CAUTION.md` which is a vetted changelog
 that details the severity of what has changed, and (sometimes) strategies for migrating.
 Going through this before you upgrade can make the process a lot less painful!
+Also please refer there for notes about a patch that applies to versions prior to v1.3.9.
 
 
 ## Edge Build
