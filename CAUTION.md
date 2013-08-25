@@ -2,10 +2,11 @@
 
 Here you will find points of caution when updating Sugar to a new version.
 Think of it as a pruned Changelog with the most front-facing changes surfaced.
-If your code breaks on update check here first!
+If your code breaks on update check here first! Read all the ones that are greater than the version you are migrating from.
 
+### Note about versions < 1.3.9
 
-Read all the ones that are greater than the version you are migrating from.
+Version 1.4.0 improves future-compatibility by ensuring that browser updates do not cause breakages going forward. Upgrading is highly recommended, however as there are also many API changes, [this patch](https://raw.github.com/andrewplummer/Sugar/master/lib/patches/sugar-es6-patch.min.js) was created for older versions. Just drop it in after the main script.
 
 
 
