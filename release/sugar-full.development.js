@@ -1,5 +1,5 @@
 /*
- *  Sugar Library v1.4.0
+ *  Sugar Library vedge
  *
  *  Freely distributable and licensed under the MIT-style license.
  *  Copyright (c) 2013 Andrew Plummer
@@ -342,10 +342,10 @@
 
   // Full width number helpers
 
-  var HalfWidthZeroCode = 48;
-  var HalfWidthNineCode = 57;
-  var FullWidthZeroCode = 65296;
-  var FullWidthNineCode = 65305;
+  var HalfWidthZeroCode = 0x30;
+  var HalfWidthNineCode = 0x39;
+  var FullWidthZeroCode = 0xff10;
+  var FullWidthNineCode = 0xff19;
 
   var HalfWidthPeriod = '.';
   var FullWidthPeriod = '．';
