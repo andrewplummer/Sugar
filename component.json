@@ -1,7 +1,7 @@
 {
   "name": "sugar",
   "version": "1.4.0",
-  "main": "./release/sugar.min.js"
+  "main": "./release/sugar.min.js",
   "ignore": [
     "/docs",
     "/lib",
