@@ -10,6 +10,13 @@ Version 1.4.0 improves future-compatibility by ensuring that browser updates do 
 
 
 
+v1.4.1+
+=======
+
+- Level: Minor
+  - `Object.select` and `Object.reject` now will match values when passed an object. This means that if you pass `{foo:'bar'}`, it will no longer match if the value of `foo` in your object is not `bar`. Previously it would match simply if the key existed.
+
+
 v1.4.0+
 =======
 
