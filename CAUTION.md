@@ -51,7 +51,7 @@ v1.4.0+
   - `Object.clone` now will error if being called on a user-created class instance or host object (DOM Elements, Events, etc). A number of complex issues tie in here, but in the end it is unreliable to call `clone` on an object that is not a standard data types as 1) hidden properties cannot be cloned 2) the original arguments to the constructor cannot be known 3) even if they could be known the issue of whether or not the constructor should actually be called again is not clear.
 
 - Level: Moderate
-  - The `split` argument was removed from `String#truncate`. For truncating without splitting words, use `String#truncateOnWords` instead. Argument position is adjusted accordingly.
+  - The `split` argument was removed from `String#truncate`. For truncating without splitting words, use `String#truncateOnWord` instead. Argument position is adjusted accordingly.
 
 - Level: Moderate
   - Class instances are now internally matched by reference only. This means that `Object.equal(new Person, new Person)` will now be `false`. This was in fact the original intended behavior but a bug had not been closed here leading to it not actually being `false`. Although a case can be made for matching class instances by value, in the end it is too expensive and tricky to distinguish them from host objects, which should never be matched by value. Instead it is better to check for equality of class instances on a unique identifier or the like.
