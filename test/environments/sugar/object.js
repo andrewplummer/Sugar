@@ -869,7 +869,7 @@ test('Object', function () {
   testClassAndInstance('select', obj, [/^o/], { one: 1 }, 'Object.select | ^ regex');
   testClassAndInstance('select', obj, [/z/], {}, 'Object.select | non-matching regex');
   testClassAndInstance('select', obj, [{ one: 1 }], { one: 1 }, 'Object.select | comparing object');
-  testClassAndInstance('select', obj, [{ one: 'foobar' }], { one: 1 }, 'Object.select | comparing object with different values');
+  testClassAndInstance('select', obj, [{ one: 'foobar' }], {}, 'Object.select | should not match with different values');
   testClassAndInstance('select', obj, [{}], {}, 'Object.select | empty object');
   testClassAndInstance('select', obj, [[/^o/, /^f/]], { one: 1, four: 4, five: 5 }, 'Object.select | complex nested array of regexes');
 
@@ -893,7 +893,7 @@ test('Object', function () {
   testClassAndInstance('reject', obj, [/^o/], { two: 2, three: 3, four: 4, five: 5 }, 'Object.reject | ^ regex');
   testClassAndInstance('reject', obj, [/z/], obj, 'Object.reject | non-matching regex');
   testClassAndInstance('reject', obj, [{ one: 1 }], { two: 2, three: 3, four: 4, five: 5 }, 'Object.reject | comparing object');
-  testClassAndInstance('reject', obj, [{ one: 'foobar' }], { two: 2, three: 3, four: 4, five: 5 }, 'Object.reject | comparing object with different values');
+  testClassAndInstance('reject', obj, [{ one: 'foobar' }], obj, 'Object.reject | comparing object with different values');
   testClassAndInstance('reject', obj, [{}], obj, 'Object.reject | empty object');
   testClassAndInstance('reject', obj, [[/^o/, /^f/]], { two: 2, three: 3 }, 'Object.reject | complex nested array of regexes');
 

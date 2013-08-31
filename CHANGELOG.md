@@ -1,3 +1,11 @@
+v1.4.1
+======
+
+### API Changes ###
+
+- Fix for Object.select/reject not performing value match. (Issue #362)
+
+
 v1.4.0
 ======
 
