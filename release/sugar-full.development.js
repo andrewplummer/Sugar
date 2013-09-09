@@ -6189,38 +6189,39 @@
      *
      ***/
     'merge': function(target, source, deep, resolve) {
-      var key, val, goDeep;
+      var key, sourceIsObject, targetIsObject, sourceVal, targetVal, conflict, result;
       // Strings cannot be reliably merged thanks to
       // their properties not being enumerable in < IE8.
       if(target && typeof source !== 'string') {
         for(key in source) {
           if(!hasOwnProperty(source, key) || !target) continue;
-          val    = source[key];
-          goDeep = deep && isObjectType(val);
-          // Conflict!
-          if(isDefined(target[key])) {
-            // Do not merge.
-            if(resolve === false && !goDeep) {
-              continue;
-            }
-            // Use the result of the callback as the result.
+          sourceVal      = source[key];
+          targetVal      = target[key];
+          conflict       = isDefined(targetVal);
+          sourceIsObject = isObjectType(sourceVal);
+          targetIsObject = isObjectType(targetVal);
+          result         = conflict && resolve === false ? targetVal : sourceVal;
+
+          if(conflict) {
             if(isFunction(resolve)) {
-              val = resolve.call(source, key, target[key], source[key])
+              // Use the result of the callback as the result.
+              result = resolve.call(source, key, targetVal, sourceVal)
             }
           }
-          // Deep merging.
-          if(goDeep) {
-            if(isDate(val)) {
-              val = new date(val.getTime());
-            } else if(isRegExp(val)) {
-              val = new regexp(val.source, getRegExpFlags(val));
+
+          // Going deep
+          if(deep && (sourceIsObject || targetIsObject)) {
+            if(isDate(sourceVal)) {
+              result = new date(sourceVal.getTime());
+            } else if(isRegExp(sourceVal)) {
+              result = new regexp(sourceVal.source, getRegExpFlags(sourceVal));
             } else {
-              if(!target[key]) target[key] = array.isArray(val) ? [] : {};
-              object.merge(target[key], source[key], deep, resolve);
+              if(!targetIsObject) target[key] = array.isArray(sourceVal) ? [] : {};
+              object.merge(target[key], sourceVal, deep, resolve);
               continue;
             }
           }
-          target[key] = val;
+          target[key] = result;
         }
       }
       return target;
