@@ -242,7 +242,7 @@ test('Object', function () {
   equal(Object.merge({ a:1 }, { a:2 }, false, false), { a:1 }, 'Object.merge | target wins');
   equal(Object.merge({ a:undefined }, { a:2 }), { a:2 }, 'Object.merge | existing but undefined properties are overwritten');
   equal(Object.merge({ a:null }, { a:2 }), { a:2 }, 'Object.merge | null properties are not overwritten');
-  equal(Object.merge({ a:undefined }, { a:2 }, false, false), { a:2 }, 'Object.merge | false |existing but undefined properties are overwritten');
+  equal(Object.merge({ a:undefined }, { a:2 }, false, false), { a:2 }, 'Object.merge | false | existing but undefined properties are overwritten');
   equal(Object.merge({ a:null }, { a:2 }, false, false), { a:null }, 'Object.merge | false | null properties are not overwritten');
   equal(Object.merge([{ foo:'bar' }], [{ moo:'car' }], true, true), [{ foo:'bar',moo:'car' }], 'Object.merge | can merge arrays as well');
 
@@ -980,5 +980,11 @@ test('Object', function () {
   }
 
   assertQueryStringGenerated({foo: new Foo}, [], 'foo=custom', 'Object.toQueryString | toString inherited method');
+
+
+  // Issue #365 Object.merge can skip when source is object and target is not.
+
+  equal(Object.merge({a:''}, {a:{b:1}}, true), {a:{b:1}}, 'Object.merge | source object wins with empty string');
+  equal(Object.merge({a:'1'}, {a:{b:1}}, true), {a:{b:1}}, 'Object.merge | source object wins with number as string');
 
 });
