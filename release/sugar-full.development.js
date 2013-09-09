@@ -1,5 +1,5 @@
 /*
- *  Sugar Library v1.4.0
+ *  Sugar Library vedge
  *
  *  Freely distributable and licensed under the MIT-style license.
  *  Copyright (c) 2013 Andrew Plummer
@@ -6000,11 +6000,11 @@
     return !obj && obj !== false && obj !== 0 ? '' : encodeURIComponent(obj).replace(/%20/g, '+');
   }
 
-  function matchKey(key, match) {
+  function matchInObject(match, key, value) {
     if(isRegExp(match)) {
       return match.test(key);
     } else if(isObjectType(match)) {
-      return hasOwnProperty(match, key);
+      return match[key] === value;
     } else {
       return key === string(match);
     }
@@ -6015,7 +6015,7 @@
     iterateOverObject(obj, function(key, value) {
       match = false;
       flattenedArgs(args, function(arg) {
-        if(matchKey(key, arg)) {
+        if(matchInObject(arg, key, value)) {
           match = true;
         }
       }, 1);
