@@ -9242,4 +9242,4 @@ Date.addLocale('zh-TW', {
 });
 
 
-})();
+}).call(this);
