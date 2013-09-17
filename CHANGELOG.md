@@ -5,6 +5,7 @@ v1.4.1
 
 - Fix for Object.select/reject not performing value match. (Issue #362)
 - Fix for Object.merge not properly merging when target object isn't an object (Issue #365)
+- Fix for development script not running properly in meteor (Issue #361)
 
 
 v1.4.0
