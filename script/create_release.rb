@@ -100,7 +100,7 @@ def create_package(name, arr)
 end
 
 def wrap_minified(js)
-  "(function(){#{js}})();"
+  "(function(){#{js}}).call(this);"
 end
 
 def wrap(js)
