@@ -1,6 +1,5 @@
 
 dateEqual = function(a, b, message) {
-  var format = '{yyyy}-{MM}-{dd} {HH}:{mm}:{ss}{tz}'
   var buffer = 50; // Number of milliseconds of "play" to make sure these tests pass.
   if(typeof b == 'number') {
     var d = new Date();
@@ -8,7 +7,7 @@ dateEqual = function(a, b, message) {
     b = d;
   }
   var offset = Math.abs(a.getTime() - b.getTime());
-  equal(offset < buffer, true, message + ' | expected: ' + b.format(format) + ' got: ' + a.format(format), null, 1);
+  equal(offset < buffer, true, message + ' | expected: ' + testFormatDate(b) + ' got: ' + testFormatDate(a), null, 1);
 }
 
 dateRangeEqual = function(a, b, message) {
@@ -84,3 +83,27 @@ getHours = function(num) {
 toUTC = function(d) {
   return d.addMinutes(-d.getTimezoneOffset());
 }
+
+testFormatDate = function(d) {
+  var format = '{yyyy}-{MM}-{dd} {HH}:{mm}:{ss}{tz}'
+  var tzOffset = d.getTimezoneOffset();
+  var tzSign   = tzOffset > 0 ? '+' : '-';
+  var tzHr     = tzOffset / 60;
+  var tzMin    = tzOffset % 60;
+  return d.getFullYear() + '-' +
+         d.getMonth() + '-' +
+         d.getDate() + ' ' +
+         d.getHours() + ':' +
+         d.getMinutes() + ':' +
+         d.getSeconds() +
+         tzSign +
+         tzHr + ':' +
+         tzMin;
+}
+
+getDate = function(year) {
+  var d = new Date(year, 0);
+  d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+  return d;
+}
+
