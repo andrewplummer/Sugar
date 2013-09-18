@@ -1,3 +1,10 @@
+v1.4.2
+======
+
+### API Changes ###
+
+- Added ability to pass a single string to `Date.range`
+
 v1.4.1
 ======
 

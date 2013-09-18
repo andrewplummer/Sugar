@@ -1,5 +1,5 @@
 /*
- *  Sugar Library v1.4.1
+ *  Sugar Library vedge
  *
  *  Freely distributable and licensed under the MIT-style license.
  *  Copyright (c) 2013 Andrew Plummer
@@ -4870,6 +4870,14 @@
    *
    ***/
 
+   var DATE_UNITS               = 'year|month|week|day|hour|minute|(?:milli)?second';
+   var FULL_CAPTURED_DURATION   = '((?:\\d+)?\\s*(?:' + DATE_UNITS + '))s?';
+   var RANGE_REG                = /(?:from)?\s*(.+)\s+(?:to|until)\s+(.+)$/i;
+   var DURATION_REG             = regexp('(\\d+)?\\s*('+ DATE_UNITS +')s?', 'i');
+   var RANGE_REG_FRONT_DURATION = regexp('(?:for)?\\s*'+ FULL_CAPTURED_DURATION +'\\s*(?:starting)?\\s*at\\s*(.+)', 'i');
+   var RANGE_REG_REAR_DURATION  = regexp('(.+)\\s*for\\s*' + FULL_CAPTURED_DURATION, 'i');
+
+
   function Range(start, end) {
     this.start = cloneRangeMember(start);
     this.end   = cloneRangeMember(end);
@@ -4882,6 +4890,31 @@
   function getRangeMemberPrimitiveValue(m) {
     if(m == null) return m;
     return isDate(m) ? m.getTime() : m.valueOf();
+  }
+
+  function getSimpleDate(str) {
+    // Needed as argument numbers are checked internally here.
+    return str == null ? new date() : new date(str);
+  }
+
+  function createRangeFromString(str) {
+    var match, datetime, duration, start, end;
+    if(match = str.match(RANGE_REG)) {
+      return date.range(match[1], match[2]);
+    }
+    if(match = str.match(RANGE_REG_FRONT_DURATION)) {
+      duration = match[1];
+      datetime = match[2];
+    }
+    if(match = str.match(RANGE_REG_REAR_DURATION)) {
+      datetime = match[1];
+      duration = match[2];
+    }
+    if(datetime && duration) {
+      start = date.create(datetime);
+      end = incrementDate(start, getDuration(duration));
+    }
+    return date.range(start, end);
   }
 
   function cloneRangeMember(m) {
@@ -4902,9 +4935,9 @@
     if(isNumber(amt)) {
       return amt;
     }
-    match = amt.toLowerCase().match(/^(\d+)?\s?(\w+?)s?$/i);
+    match = amt.match(DURATION_REG);
     val = parseInt(match[1]) || 1;
-    unit = match[2].slice(0,1).toUpperCase() + match[2].slice(1);
+    unit = match[2].slice(0,1).toUpperCase() + match[2].slice(1).toLowerCase();
     if(unit.match(/hour|minute|second/i)) {
       unit += 's';
     } else if(unit === 'Year') {
@@ -5171,20 +5204,32 @@
    *   Date.range('today', 'tomorrow')
    *
    ***/
-  [number, string, date].forEach(function(klass) {
-     extend(klass, false, true, {
 
-      'range': function(start, end) {
-        if(klass.create) {
-          start = klass.create(start);
-          end   = klass.create(end);
-        }
-        return new Range(start, end);
-      }
+   function extendRangeConstructor(klass, constructor) {
+     extend(klass, false, true, { 'range': constructor });
+   }
 
-    });
+   var PrimitiveRangeConstructor = function(start, end) {
+     return new Range(start, end);
+   };
 
-  });
+   var DateRangeConstructor = function(start, end) {
+     if(date.create) {
+       if(arguments.length === 1 && isString(start)) {
+         return createRangeFromString(start);
+       }
+       start = date.create(start);
+       end   = date.create(end);
+     } else {
+       start = getSimpleDate(start);
+       end   = getSimpleDate(end);
+     }
+     return new Range(start, end);
+   };
+
+   extendRangeConstructor(number, PrimitiveRangeConstructor);
+   extendRangeConstructor(string, PrimitiveRangeConstructor);
+   extendRangeConstructor(date, DateRangeConstructor);
 
   /***
    * Number module
