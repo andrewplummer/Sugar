@@ -1,20 +1,33 @@
 #! /usr/bin/env ruby
 
 require 'pp'
-
 require_relative 'compile'
 
-@version  = ARGV[0]
-@custom_packages = ARGV[1..-1]
+
+# Default
+
+@packages = ['core','es5','array','date','range','function','number','object','regexp','string','inflections','language','date_locales']
+@default_packages = @packages.values_at(0,1,2,3,4,5,6,7,8,9)
+@delimiter = 'console.info("-----BREAK-----");'
+
+if @packages.include?(ARGV[0])
+  @version = 'custom'
+  @custom_packages = ARGV[0..-1]
+else
+  @version  = ARGV[0]
+  @custom_packages = ARGV[1..-1]
+
+end
+
+if @custom_packages.length > 0
+  @custom_packages.unshift('core').uniq!
+end
 
 if !@version
   $stderr.puts "No version specified!"
   exit false
 end
 
-@packages = ['core','es5','array','date','range','function','number','object','regexp','string','inflections','language','date_locales']
-@default_packages = @packages.values_at(0,1,2,3,4,5,6,7,8,9)
-@delimiter = 'console.info("-----BREAK-----");'
 @copyright = File.open('release/copyright.txt').read.gsub(/VERSION/, @version)
 
 @precompiled_notice = <<NOTICE
