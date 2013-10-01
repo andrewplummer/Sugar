@@ -2764,5 +2764,14 @@ test('Date', function () {
   Date.SugarNewDate = null;
 
 
+  // Issue #375 "end of yesterday"
+
+  dateEqual(Date.create('beginning of yesterday'), Date.create('yesterday').beginningOfDay(), 'Date.create | beginning of yesterday');
+  dateEqual(Date.create('end of yesterday'), Date.create('yesterday').endOfDay(), 'Date.create | end of yesterday');
+  dateEqual(Date.create('beginning of today'), Date.create('today').beginningOfDay(), 'Date.create | beginning of today');
+  dateEqual(Date.create('end of today'), Date.create('today').endOfDay(), 'Date.create | end of today');
+  dateEqual(Date.create('beginning of tomorrow'), Date.create('tomorrow').beginningOfDay(), 'Date.create | beginning of tomorrow');
+  dateEqual(Date.create('end of tomorrow'), Date.create('tomorrow').endOfDay(), 'Date.create | end of tomorrow');
+
 });
 
