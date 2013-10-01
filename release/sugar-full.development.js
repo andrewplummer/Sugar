@@ -4848,7 +4848,8 @@
       '{weekday} {2?} {shift} week',
       '{num} {unit=4-5} {sign} {day}',
       '{0?} {date}{1} of {month}',
-      '{0?}{month?} {date?}{1?} of {shift} {unit=6-7}'
+      '{0?}{month?} {date?}{1?} of {shift} {unit=6-7}',
+      '{edge} of {day}'
     ]
   });
 
