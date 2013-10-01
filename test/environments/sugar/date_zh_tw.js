@@ -12,6 +12,7 @@ test('Dates | Traditional Chinese', function () {
   dateEqual(Date.create('5月'), new Date(now.getFullYear(), 4), 'Date#create | Traditional Chinese | month');
   dateEqual(Date.create('15日'), new Date(now.getFullYear(), now.getMonth(), 15), 'Date#create | Traditional Chinese | date');
   dateEqual(Date.create('星期一'), getDateWithWeekdayAndOffset(1), 'Date#create | Traditional Chinese | Monday');
+  dateEqual(Date.create('星期天'), getDateWithWeekdayAndOffset(0), 'Date#create | Traditional Chinese | Sunday');
   dateEqual(Date.create('九日'), new Date(now.getFullYear(), now.getMonth(), 9), 'Date#create | Traditional Chinese | the 9th');
   dateEqual(Date.create('二十五日'), new Date(now.getFullYear(), now.getMonth(), 25), 'Date#create | Traditional Chinese | the 25th');
   dateEqual(Date.create('二十五號'), new Date(now.getFullYear(), now.getMonth(), 25), 'Date#create | Traditional Chinese | 號 should be understood as well');
@@ -43,11 +44,13 @@ test('Dates | Traditional Chinese', function () {
 
   dateEqual(Date.create('２０１１年'), new Date(2011, 0), 'Date#create | Traditional Chinese | full-width year');
 
-  dateEqual(Date.create('前天'), getRelativeDate(null, null, -2).reset(), 'Date#create | Traditional Chinese | 一昨日');
+  dateEqual(Date.create('大前天'), getRelativeDate(null, null, -3).reset(), 'Date#create | Traditional Chinese | day before day before yesterday');
+  dateEqual(Date.create('前天'), getRelativeDate(null, null, -2).reset(), 'Date#create | Traditional Chinese | day before yesterday');
   dateEqual(Date.create('昨天'), getRelativeDate(null, null, -1).reset(), 'Date#create | Traditional Chinese | yesterday');
   dateEqual(Date.create('今天'), getRelativeDate(null, null, 0).reset(), 'Date#create | Traditional Chinese | today');
   dateEqual(Date.create('明天'), getRelativeDate(null, null, 1).reset(), 'Date#create | Traditional Chinese | tomorrow');
-  dateEqual(Date.create('後天'), getRelativeDate(null, null, 2).reset(), 'Date#create | Traditional Chinese | 明後日');
+  dateEqual(Date.create('後天'), getRelativeDate(null, null, 2).reset(), 'Date#create | Traditional Chinese | day after tomorrow');
+  dateEqual(Date.create('大後天'), getRelativeDate(null, null, 3).reset(), 'Date#create | Traditional Chinese | day after day after tomorrow');
 
   dateEqual(Date.create('上週'), getRelativeDate(null, null, -7), 'Date#create | Traditional Chinese | Last week');
   dateEqual(Date.create('這週'), getRelativeDate(null, null, 0), 'Date#create | Traditional Chinese | This week');
