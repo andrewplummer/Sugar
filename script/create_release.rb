@@ -95,10 +95,11 @@ def split_compiled
 end
 
 def create_packages
-  create_package('full', @packages)
-  create_package('default', @default_packages)
   if @custom_packages.length > 0
     create_package('custom', @custom_packages)
+  else
+    create_package('full', @packages)
+    create_package('default', @default_packages)
   end
 end
 
