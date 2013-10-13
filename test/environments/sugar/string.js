@@ -396,6 +396,8 @@ test('String', function () {
   equal('HELLO'.startsWith('hell', 0, true), false, 'String#startsWith | case sensitive | HELLO starts with hell');
   equal('hello'.startsWith(/hell/, 0, true), true, 'String#startsWith | accepts regex', { prototype: false });
   equal('hello'.startsWith(/[a-h]/, 0, true), true, 'String#startsWith | accepts regex alternates', { prototype: false });
+  equal('^ello'.startsWith(/\^/, 0, false), true, 'String#startsWith | accepts regex with ^', { prototype: false });
+  equal('hello'.startsWith(/[^h]/, 0, false), false, 'String#startsWith | accept regex with negated alternates', { prototype: false });
   equal('HELLO'.startsWith('hell', 0, false), true, 'String#startsWith | case insensitive | HELLO starts with hell', { prototype: false });
   equal('HELLO'.startsWith(), false, 'String#startsWith | undefined produces false');
   equal('hello'.startsWith('hell', -20, true), true, 'String#startsWith | from pos -20');
@@ -416,6 +418,7 @@ test('String', function () {
   equal('VADER'.endsWith('DER', 5, false), true, 'String#endsWith | case insensitive | VADER ends with DER');
   equal('vader'.endsWith(/der/, 5, true), true, 'String#endsWith | accepts regex', { prototype: false });
   equal('vader'.endsWith(/[q-z]/, 5, true), true, 'String#endsWith | accepts regex alternates', { prototype: false });
+  equal('vade$'.endsWith(/\$/, 5, true), true, 'String#endsWith | accepts regex with $', { prototype: false });
   equal('VADER'.endsWith('der', 5, false), true, 'String#endsWith | case insensitive |  VADER ends with der', { prototype: false });
   equal('VADER'.endsWith('DER', 5, true), true, 'String#endsWith | case sensitive | VADER ends with DER');
   equal('VADER'.endsWith('der', 5, true), false, 'String#endsWith | case sensitive |  VADER ends with der');
