@@ -231,6 +231,7 @@ test('Array', function () {
   equal(['foot','goose','moose'].map('length'), [4,5,5], 'Array#map | length');
   equal([{name:'john',age:25},{name:'fred',age:85}].map('age'), [25,85], 'Array#map | age');
   equal([{name:'john',age:25},{name:'fred',age:85}].map('name'), ['john','fred'], 'Array#map | name');
+  equal([{name:'john',age:25},{name:'fred',age:85}].map(['name', 'age']), [['john', 25], ['fred', 85]], 'Array#map | name, age');
   equal([{name:'john',age:25},{name:'fred',age:85}].map('cupsize'), [undefined, undefined], 'Array#map | (nonexistent) cupsize');
   equal([].map('name'), [], 'Array#map');
 
@@ -1424,6 +1425,11 @@ test('Array', function () {
   arr = [{a:'foo'},{a:'bar'},{a:'skittles'}];
   equal(arr.sortBy('a'), [{a:'bar'},{a:'foo'},{a:'skittles'}], 'Array#sortBy | sort by key "a"');
   equal(arr.sortBy('a', true), [{a:'skittles'},{a:'foo'},{a:'bar'}], 'Array#sortBy | desc | sort by key "a"', { prototype: [{a:'bar'},{a:'foo'},{a:'skittles'}] });
+
+  arr = [{a:'foo', b: 1},{a:'bar', b: 2},{a:'skittles', b: 1}];
+  equal(arr.sortBy(['b', 'a']), [{a:'foo',b:1},{a:'skittles',b:1},{a:'bar', b:2}], 'Array#sortBy | sort by key "b" then "a"');
+
+  equal([[1, 2], [1, 1], [0, 1], [0, 2]].sortBy(), [[0, 1], [0, 2], [1, 1], [1, 2]], 'Array#sortBy | sorting elements which are arrays');
 
   arr = [1,2,3];
   arr.sortBy(function(n){ return 3 - n; });
