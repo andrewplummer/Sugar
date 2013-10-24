@@ -459,7 +459,7 @@
 
   function escapeRegExp(str) {
     if(!isString(str)) str = string(str);
-    return str.replace(/([\\/\'*+?|()\[\]{}.^$])/g,'\\$1');
+    return str.replace(/([\/\'*+?|()\[\]{}.^$])/g,'\\$1');
   }
 
 
