@@ -5,6 +5,7 @@ v1.4.2
 
 - Added ability to pass a single string to `Date.range`
 - Bower.json now points to unminified script (#388)
+- Date.create(null) is now interpeted as a time stamp (#387)
 
 v1.4.1
 ======
