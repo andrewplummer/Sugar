@@ -4,6 +4,7 @@ v1.4.2
 ### API Changes ###
 
 - Added ability to pass a single string to `Date.range`
+- Bower.json now points to unminified script (#388)
 
 v1.4.1
 ======
