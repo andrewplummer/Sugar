@@ -65,15 +65,22 @@ def get_content(package)
   end
 end
 
-def create_development
-  full_content = ''
+def create_all_development
   if @custom_packages.length > 0
-    packages = @custom_packages
-    type = 'custom'
+    create_development(@custom_packages, 'custom')
   else
-    packages = @packages
-    type = 'full'
+    create_development(@packages, 'full')
+    create_development(@default_packages, 'default')
   end
+end
+
+def create_development(packages, type)
+  filename = if type == 'default'
+    "/sugar.development.js"
+  else
+    "/sugar-#{type}.development.js"
+  end
+  full_content = ''
   packages.each do |p|
     content = get_content(p)
     content.gsub!(/^\s*'use strict';\n/, '')
@@ -81,7 +88,7 @@ def create_development
     File.open(PRECOMPILED_DEV_DIR + "/#{p}.js", 'w').write(content)
     full_content << content
   end
-  File.open(PARENT_DIR + "/sugar-#{type}.development.js", 'w').write(@copyright + wrap(full_content))
+  File.open(PARENT_DIR + filename, 'w').write(@copyright + wrap(full_content))
 end
 
 def split_compiled
@@ -94,7 +101,7 @@ def split_compiled
   `echo "#{@precompiled_notice}" > #{PRECOMPILED_MIN_DIR}/readme.txt`
 end
 
-def create_packages
+def create_all_packages
   if @custom_packages.length > 0
     create_package('custom', @custom_packages)
   else
@@ -134,7 +141,7 @@ end
 concat
 compile(TMP_UNCOMPILED_FILE, TMP_COMPILED_FILE)
 split_compiled
-create_packages
-create_development
+create_all_packages
+create_all_development
 cleanup
 
