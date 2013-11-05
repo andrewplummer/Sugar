@@ -97,7 +97,7 @@ test('Date Ranges', function () {
   dateEqual(range.end, new Date(), 'Date Range | null end is current time');
 
   range = Date.range(null, new Date(2010,3,25));
-  dateEqual(range.start, new Date(), 'Date Range | null defaults to current time');
+  dateEqual(range.start, new Date(0), 'Date Range | null starts at epoch');
   dateEqual(range.end, new Date(2010,3,25), 'Date Range | start is reversed when null is current');
 
   range = Date.range();

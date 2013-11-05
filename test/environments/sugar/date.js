@@ -2773,5 +2773,9 @@ test('Date', function () {
   dateEqual(Date.create('beginning of tomorrow'), Date.create('tomorrow').beginningOfDay(), 'Date.create | beginning of tomorrow');
   dateEqual(Date.create('end of tomorrow'), Date.create('tomorrow').endOfDay(), 'Date.create | end of tomorrow');
 
+  // Issue #387 null
+
+  dateEqual(new Date(null), Date.create(null), 'Date.create | null');
+
 });
 
