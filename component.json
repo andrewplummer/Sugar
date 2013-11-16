@@ -1,0 +1,7 @@
+{
+  "name": "sugar",
+  "version": "1.4.1",
+  "main": "release/sugar.development.js",
+  "scripts":["release/sugar.development.js"],
+  "dependencies": {}
+}
