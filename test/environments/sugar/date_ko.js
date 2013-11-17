@@ -58,7 +58,10 @@ test('Dates | Korean', function () {
   dateEqual(Date.create('다음 달'), getRelativeDate(null, 1), 'Date#create | Korean | Next month');
 
   dateEqual(Date.create('작년'), getRelativeDate(-1), 'Date#create | Korean | Last year');
+  dateEqual(Date.create('지난 해'), getRelativeDate(-1), 'Date#create | Korean | Last year');
+  dateEqual(Date.create('올해'), getRelativeDate(0), 'Date#create | Korean | this year');
   dateEqual(Date.create('내년'), getRelativeDate(1), 'Date#create | Korean | Next year');
+  dateEqual(Date.create('다음 해'), getRelativeDate(1), 'Date#create | Korean | Next year');
 
 
   dateEqual(Date.create('지난 주 수요일'), getDateWithWeekdayAndOffset(3, -7), 'Date#create | Korean | Last wednesday');
