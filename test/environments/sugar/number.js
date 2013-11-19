@@ -214,6 +214,8 @@ test('Number', function () {
   equal((24).isOdd(), false, 'Number#isOdd | 24');
   equal((200).isOdd(), false, 'Number#isOdd | 200');
   equal((NaN).isOdd(), false, 'Number#isOdd | NaN');
+  equal((0.1).isOdd(), false, 'Number#isOdd | 0.1');
+  equal((Infinity).isOdd(), false, 'Number#isOdd | Infinity')
 
 
 
@@ -224,6 +226,8 @@ test('Number', function () {
   equal((24).isEven(), true, 'Number#isEven | 24');
   equal((200).isEven(), true, 'Number#isEven | 200');
   equal((NaN).isEven(), false, 'Number#isEven | NaN');
+  equal((0.1).isEven(), false, 'Number#isEven | 0.1');
+  equal((Infinity).isEven(), false, 'Number#isEven | Infinity')
 
 
 
