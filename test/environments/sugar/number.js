@@ -185,10 +185,16 @@ test('Number', function () {
 
   counter = 0;
   (5).times(function(first) {
-    equal(first, counter, 'Number#times | first parameter is the index');
+    equal(first, counter, 'Number#times | function first parameter is the index');
     counter++;
   }, 'wasabi');
-  equal(counter, 5, 'Number#times | iterated 5 times');
+  equal(counter, 5, 'Number#times | function iterated 5 times');
+  equal((3).times("Ho"), "HoHoHo", 'Number#times | string argument');
+  equal((0).times("Ho"), "", 'Number#times | string argument for number 0');
+  equal((3).times(""), "", 'Number#times | empty string argument');
+  equal((3).times([1,2,3]), [1,2,3,1,2,3,1,2,3], 'Number#times | array argument');
+  equal((0).times([1,2,3]), [], 'Number#times | array argument for number 0');
+  equal((3).times([]), [], 'Number#times | empty array argument');
 
 
 
