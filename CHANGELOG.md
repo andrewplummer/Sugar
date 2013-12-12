@@ -7,6 +7,7 @@ v1.4.2
 - Bower.json now points to unminified script (#388)
 - Date.create(null) is now interpeted as a time stamp (#387)
 - Fix for ambiguous years not working with `Date#past/future` (#383)
+- Fix for odd iOS7 bug with `Number#abs` (#400)
 
 v1.4.1
 ======
