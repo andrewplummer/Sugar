@@ -2773,9 +2773,12 @@ test('Date', function () {
   dateEqual(Date.create('beginning of tomorrow'), Date.create('tomorrow').beginningOfDay(), 'Date.create | beginning of tomorrow');
   dateEqual(Date.create('end of tomorrow'), Date.create('tomorrow').endOfDay(), 'Date.create | end of tomorrow');
 
-  // Issue #387 null
+  // Issue #387 null in date constructor
 
   dateEqual(new Date(null), Date.create(null), 'Date.create | null');
+
+  // Issue #383 Date.past in 2-digit years
+  dateEqual(Date.past('12/20/23'), new Date(1923,11,20), 'Date.past | 1923-12-20');
 
 });
 
