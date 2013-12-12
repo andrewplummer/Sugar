@@ -459,7 +459,7 @@
 
   function escapeRegExp(str) {
     if(!isString(str)) str = string(str);
-    return str.replace(/([\\/\'*+?|()\[\]{}.^$])/g,'\\$1');
+    return str.replace(/([\\\/\'*+?|()\[\]{}.^$])/g,'\\$1');
   }
 
 
@@ -3054,7 +3054,7 @@
             }
 
             // If the year is 2 digits then get the implied century.
-            if(set['year'] && set.yearAsString.length === 2) {
+            if(hasAbbreviatedYear(set)) {
               set['year'] = getYearFromAbbreviation(set['year']);
             }
 
@@ -3202,6 +3202,10 @@
       date: d,
       set: set
     }
+  }
+
+  function hasAbbreviatedYear(obj) {
+    return obj.yearAsString && obj.yearAsString.length === 2;
   }
 
   // If the year is two digits, add the most appropriate century prefix.
@@ -3533,6 +3537,8 @@
         if(ambiguous && !uniqueParamExists(name, name === 'day')) {
           d[unit.addMethod](prefer);
           return false;
+        } else if(name === 'year' && hasAbbreviatedYear(params)) {
+          d.addYears(100 * prefer);
         }
       }, specificityIndex + 1);
     }
