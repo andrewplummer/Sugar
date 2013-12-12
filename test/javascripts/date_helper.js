@@ -87,18 +87,34 @@ toUTC = function(d) {
 testFormatDate = function(d) {
   var format = '{yyyy}-{MM}-{dd} {HH}:{mm}:{ss}{tz}'
   var tzOffset = d.getTimezoneOffset();
-  var tzSign   = tzOffset > 0 ? '+' : '-';
-  var tzHr     = tzOffset / 60;
-  var tzMin    = tzOffset % 60;
+  var tzSign   = tzOffset > 0 ? '+' : '';
+  var tzHr     = testPadDigits(tzOffset / 60);
+  var tzMin    = testPadDigits(tzOffset % 60);
   return d.getFullYear() + '-' +
-         d.getMonth() + '-' +
-         d.getDate() + ' ' +
-         d.getHours() + ':' +
-         d.getMinutes() + ':' +
-         d.getSeconds() +
+         testPadDigits(d.getMonth()) + '-' +
+         testPadDigits(d.getDate()) + ' ' +
+         testPadDigits(d.getHours()) + ':' +
+         testPadDigits(d.getMinutes()) + ':' +
+         testPadDigits(d.getSeconds()) +
          tzSign +
          tzHr + ':' +
          tzMin;
+}
+
+testPadDigits = function(d, place) {
+  var str = d.toString(), negative;
+  if(!place) place = 2;
+  if(str.slice(0, 1) === '-') {
+    str = str.slice(1);
+    negative = true;
+  }
+  while(str.length < place) {
+    str = '0' + str;
+  }
+  if(negative) {
+    str = '-' + str;
+  }
+  return str;
 }
 
 getDate = function(year) {
