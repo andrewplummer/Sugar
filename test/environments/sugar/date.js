@@ -2779,6 +2779,7 @@ test('Date', function () {
 
   // Issue #383 Date.past in 2-digit years
   dateEqual(Date.past('12/20/23'), new Date(1923,11,20), 'Date.past | 1923-12-20');
+  dateEqual(Date.future('12/20/99'), new Date(2099,11,20), 'Date.future | 2099-12-20');
 
 });
 
