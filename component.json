@@ -1,7 +1,7 @@
 {
   "name": "sugar",
   "version": "1.4.1",
+  "repo": "milaniliev/sugar",
   "main": "release/sugar.development.js",
-  "scripts":["release/sugar.development.js"],
-  "dependencies": {}
+  "scripts":["release/sugar.development.js"]
 }
