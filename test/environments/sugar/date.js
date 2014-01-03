@@ -2428,7 +2428,7 @@ test('Date', function () {
   var firstFridayOfFeb = new Date(thisYear, 1);
   firstFridayOfFeb.setWeekday(5);
   if(firstFridayOfFeb.getMonth() < 1) {
-    firstFridayOfFeb.add({ weeks: 1 });
+    firstFridayOfFeb.addWeeks(1);
   }
 
   equal(Date.create('the 1st Friday of February').getFullYear(), thisYear, 'Date#create | 1st friday of February should be this year');
