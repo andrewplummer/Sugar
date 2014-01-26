@@ -20,7 +20,9 @@ else
 end
 
 if @custom_packages.length > 0
-  @custom_packages.unshift('core').uniq!
+  @custom_packages.unshift('common')
+  @custom_packages.unshift('core')
+  @custom_packages.uniq!
 end
 
 if !@version
@@ -61,8 +63,17 @@ def get_content(package)
   if package == 'date_locales'
     `cat lib/locales/*`
   else
-    File.open("lib/#{package}.js").read
+    File.open(get_file_path(package)).read
   end
+end
+
+def get_file_path(package)
+  if (package == 'core')
+    path = 'core/' + package
+  else
+    path = package
+  end
+  "lib/#{path}.js"
 end
 
 def create_all_development
