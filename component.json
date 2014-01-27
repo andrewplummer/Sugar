@@ -4,7 +4,9 @@
   "description": "A Javascript library for working with native objects.",
   "version": "1.4.1",
   "keywords": ["functional", "utility", "ender"],
-  "dependencies": {},
+  "dependencies": {
+    "sugar-test-core-separation": "1.4.1"
+  },
   "development": {},
   "license": "MIT",
   "main": "release/sugar.development.js",
