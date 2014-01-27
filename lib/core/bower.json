@@ -1,0 +1,11 @@
+{
+  "name": "sugar-test-core-separation",
+  "version": "1.4.3",
+  "description": "Core for Sugar.",
+  "homepage": "http://sugarjs.com/",
+  "author": "Andrew Plummer",
+  "main": "core.js",
+  "directories" : {"lib" : "./lib"},
+  "engines" : {"node" : ">= 0.4.0"},
+  "license": "MIT"
+}
