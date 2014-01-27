@@ -5,7 +5,7 @@
   "version": "1.4.1",
   "keywords": ["functional", "utility", "ender"],
   "dependencies": {
-    "sugar-test-core-separation": "1.4.1"
+    "andrewplummer/Sugar@testing-bower/lib/core": ""
   },
   "development": {},
   "license": "MIT",
