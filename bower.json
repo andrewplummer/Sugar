@@ -3,15 +3,16 @@
   "version": "1.4.1",
   "main": "./release/sugar.development.js",
   "ignore": [
-    "/docs",
-    "/lib",
-    "/script",
-    "/test",
-    "/performance",
+    "package.json",
     ".gitignore",
     ".npmignore",
     ".travis.yml",
-    "package.json"
+    "/docs",
+    "/lib",
+    "/performance",
+    "/script",
+    "/test",
+    "/tmp"
   ],
   "dependencies": {}
 }
