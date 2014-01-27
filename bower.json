@@ -1,17 +1,21 @@
 {
   "name": "sugar",
   "version": "1.4.1",
-  "main": "./release/sugar.development.js",
+  "description": "A Javascript library for working with native objects.",
+  "homepage": "http://sugarjs.com/",
+  "author": "Andrew Plummer",
+  "main": "release/sugar.development.js",
   "ignore": [
-    "/docs",
-    "/lib",
-    "/script",
-    "/test",
-    "/performance",
-    ".gitignore",
-    ".npmignore",
-    ".travis.yml",
-    "package.json"
+    "**/.*",
+    "bower_components",
+    "docs",
+    "lib",
+    "node_modules",
+    "performance",
+    "script",
+    "test",
+    "tmp"
   ],
-  "dependencies": {}
+  "dependencies": {},
+  "license": "MIT"
 }
