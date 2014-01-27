@@ -5,7 +5,7 @@
   "version": "1.4.1",
   "keywords": ["functional", "utility", "ender"],
   "dependencies": {
-    "andrewplummer/Sugar/lib/core": "testing-bower"
+    "andrewplummer/Sugar/testing-bower/lib/core": "1.4.1"
   },
   "development": {},
   "license": "MIT",
