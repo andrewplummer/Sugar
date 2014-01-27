@@ -4,7 +4,7 @@
   "description": "A Javascript library for working with native objects.",
   "homepage": "http://sugarjs.com/",
   "author": "Andrew Plummer",
-  "main": "./release/sugar.development.js",
+  "main": "release/sugar.development.js",
   "ignore": [
     "**/.*",
     "bower_components",
