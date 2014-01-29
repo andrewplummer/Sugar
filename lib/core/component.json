@@ -1,0 +1,12 @@
+{
+  "name": "sugar-test-core-separation",
+  "author": "Andrew Plummer",
+  "description": "A Javascript library for working with native objects.",
+  "version": "1.4.1",
+  "keywords": ["functional", "utility", "ender"],
+  "dependencies": {},
+  "development": {},
+  "license": "MIT",
+  "main": "core.js",
+  "scripts": ["core.js"]
+}
