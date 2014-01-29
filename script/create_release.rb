@@ -140,7 +140,7 @@ def wrap(js)
 (function(){
   'use strict';
 #{js}
-}).call(this);
+})();
   EOT
 end
 
