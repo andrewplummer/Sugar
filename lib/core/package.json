@@ -1,0 +1,19 @@
+{
+  "name": "sugar-core-test",
+  "version": "0.0.2",
+  "description": "Sugar core.",
+  "keywords": ["functional", "utility"],
+  "homepage": "http://sugarjs.com/",
+  "author": "Andrew Plummer",
+  "main": "core.js",
+  "directories" : {},
+  "files" : [
+    "core.js"
+  ],
+  "repository" : {
+    "type" : "git",
+    "url": "https://github.com/andrewplummer/sugar-core"
+  },
+  "engines" : {"node" : ">= 0.4.0"},
+  "license": "MIT"
+}
