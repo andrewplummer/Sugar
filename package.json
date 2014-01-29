@@ -22,7 +22,7 @@
     "url": "https://github.com/andrewplummer/Sugar.git"
   },
   "dependencies": {
-    "sugar-core-test": "0.0.1"
+    "sugar-core-test": ">= 0.0.1"
   },
   "engines" : {
     "node" : ">= 0.4.0"
