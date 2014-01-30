@@ -1,3 +1,11 @@
+v1.4.3
+======
+
+### API Changes ###
+
+- Removed String#escapeRegExp. Use RegExp.escape instead.
+
+
 v1.4.2
 ======
 
