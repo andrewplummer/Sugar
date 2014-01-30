@@ -626,21 +626,6 @@ test('Object', function () {
   equal('foo'.extended, undefined, 'Object.extended should not be mapped');
   equal('foo'.equal, undefined, 'Object.equal should not be mapped (should be "equals" instead)');
 
-
-
-  // Issue #248
-  // Ensure that methods can be reverted
-
-  Object.sugarRevert('isObject');
-  equal('isObject' in {}, false, 'Object.sugarRevert | isObject should be removed');
-
-  Object.prototype.tap = undefined;
-  Object.extend();
-  Object.sugarRevert('tap');
-  equal('tap' in {}, true, 'Object.sugarRevert | previously undefined property should not be deleted');
-  equal(({}).tap === undefined, true, 'Object.sugarRevert | previously undefined property is still undefined');
-  delete Object.prototype.tap;
-
   restoreObjectPrototypeMethods();
 
 
@@ -748,38 +733,6 @@ test('Object', function () {
   var obj = { foo: 'bar' };
   equal(Object.tap(obj), obj, 'Object.tap | return value is strictly equal');
 
-  // Class.extend functionality
-
-
-  String.extend({
-    foo: function() {
-      return 'bar';
-    }
-  });
-
-
-  equal('s'.foo(), 'bar', 'Class.extend | basic functionality');
-
-  Number.extend({
-    plus: function(a, b) {
-      return this + a + b;
-    },
-    chr: function() {
-      return String.fromCharCode(this);
-    }
-  });
-
-
-  equal((1).plus(2, 3), 6, 'Class.extend | arguments and scope are correct');
-
-  Number.prototype.chr = function() { return 'F'; };
-
-  equal((69).chr(), 'F', 'Class.extend | should overwrite existing methods');
-
-  Number.sugarRestore('chr');
-
-  equal((69).chr(), 'E', 'Class.extend | simple array of strings should restore Sugar methods');
-  equal((1).plus(2, 3), 6, 'Class.extend | restoring Sugar methods should not override other custom extended methods');
 
 
   // Object.extended hasOwnProperty issue #97
