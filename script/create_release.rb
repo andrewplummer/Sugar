@@ -6,8 +6,8 @@ require_relative 'compile'
 
 # Default
 
-@packages = ['core','es5','array','date','range','function','number','object','regexp','string','inflections','language','date_locales']
-@default_packages = @packages.values_at(0,1,2,3,4,5,6,7,8,9)
+@packages = ['core','common','es5','array','date','range','function','number','object','regexp','string','inflections','language','date_locales']
+@default_packages = @packages.values_at(0,1,2,3,4,5,6,7,8,9,10)
 @delimiter = 'console.info("-----BREAK-----");'
 
 if @packages.include?(ARGV[0])
@@ -63,7 +63,8 @@ def get_content(package)
   if package == 'date_locales'
     `cat lib/locales/*`
   else
-    File.open(get_file_path(package)).read
+    content = File.open(get_file_path(package)).read
+    content.gsub(/^\s*\/\*\*\*COMPILER REMOVE\*\*\*.*\*\*\*END\*\*\*\/\n/m, '')
   end
 end
 
@@ -154,5 +155,5 @@ compile(TMP_UNCOMPILED_FILE, TMP_COMPILED_FILE)
 split_compiled
 create_all_packages
 create_all_development
-cleanup
+#cleanup
 
