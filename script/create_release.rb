@@ -155,5 +155,5 @@ compile(TMP_UNCOMPILED_FILE, TMP_COMPILED_FILE)
 split_compiled
 create_all_packages
 create_all_development
-#cleanup
+cleanup
 
