@@ -1,21 +1,5 @@
 test('String', function () {
 
-  equal('test regexp'.escapeRegExp(), 'test regexp', 'String#escapeRegExp | nothing to escape');
-  equal('test reg|exp'.escapeRegExp(), 'test reg\\|exp', 'String#escapeRegExp | should escape pipe');
-  equal('hey there (budday)'.escapeRegExp(), 'hey there \\(budday\\)', 'String#escapeRegExp | should escape parentheses');
-  equal('.'.escapeRegExp(), '\\.', 'String#escapeRegExp | should escape period');
-  equal('what a day...'.escapeRegExp(), 'what a day\\.\\.\\.', 'String#escapeRegExp | should escape many period');
-  equal('*.+[]{}()?|/'.escapeRegExp(), '\\*\\.\\+\\[\\]\\{\\}\\(\\)\\?\\|\\/', 'String#escapeRegExp | complex regex tokens');
-
-  /* Leaving these tests but this method seems all but totally useless
-   equal('test regexp'.unescapeRegExp(), 'test regexp', 'String#unescapeRegExp | nothing to unescape');
-   equal('test reg\\|exp'.unescapeRegExp(), 'test reg|exp', 'String#unescapeRegExp | should unescape pipe');
-   equal('hey there \\(budday\\)'.unescapeRegExp(), 'hey there (budday)', 'String#unescapeRegExp | should unescape parentheses');
-   equal('\\.'.unescapeRegExp(), '.', 'String#unescapeRegExp | should unescape period');
-   equal('what a day\\.\\.\\.'.unescapeRegExp(), 'what a day...', 'String#unescapeRegExp | should unescape many period');
-   equal('\\*\\.\\+\\[\\]\\{\\}\\(\\)\\?\\|\\/'.unescapeRegExp(), '*.+[]{}()?|/', 'String#unescapeRegExp | complex regex tokens');
-   */
-
 
   equal('what a day...'.escapeURL(), 'what%20a%20day...', 'String#escapeURL | ...');
   equal('/?:@&=+$#'.escapeURL(), '/?:@&=+$#', 'String#escapeURL | url chars');
@@ -858,8 +842,6 @@ test('String', function () {
 
 
 
-  equal(''.escapeRegExp(), '', 'String#escapeRegExp | blank');
-  equal('|'.escapeRegExp(), '\\|', 'String#escapeRegExp | pipe');
   equal(''.capitalize(), '', 'String#capitalize | blank');
   equal('wasabi'.capitalize(), 'Wasabi', 'String#capitalize | wasabi');
   equal(''.trim(), '', 'String#trim | blank');
