@@ -1,266 +1,288 @@
-test('Language', function () {
-
-
-
+package('String', function () {
 
   // String#is/has[Script]
 
-  equal('ア'.isKatakana(), true, 'String#isKatakana | ア');
-  equal('ｱ'.isKatakana(), true, 'String#isKatakana | ｱ');
-  equal('ァ'.isKatakana(), true, 'String#isKatakana | ァ');
-  equal('ah'.isKatakana(), false, 'String#isKatakana | ah');
-  equal('アイカムインピース'.isKatakana(), true, 'String#isKatakana | full katakana');
-  equal('アイカムinピース'.isKatakana(), false, 'String#isKatakana | full katakana with romaji');
-  equal('アイカム イン ピース'.isKatakana(), true, 'String#isKatakana | full katakana with spaces');
+  method('isKatakana', function() {
+    test('ア', true);
+    test('ｱ', true);
+    test('ァ', true);
+    test('ah', false);
+    test('アイカムインピース', true);
+    test('アイカムinピース', false);
+    test('アイカム イン ピース', true);
+  });
 
-  equal('ア'.hasKatakana(), true, 'String#hasKatakana | ア');
-  equal('ｱ'.hasKatakana(), true, 'String#hasKatakana | ｱ');
-  equal('ah'.hasKatakana(), false, 'String#hasKatakana | ah');
-  equal('aアh'.hasKatakana(), true, 'String#hasKatakana | aアh');
-  equal('aｱh'.hasKatakana(), true, 'String#hasKatakana | aｱh');
-  equal('アイカムインピース'.hasKatakana(), true, 'String#hasKatakana | full katakana');
-  equal('アイカムinピース'.hasKatakana(), true, 'String#hasKatakana | full katakana with romaji');
-
-
-  equal('あ'.isHiragana(), true, 'String#isHiragana | あ');
-  equal('ぁ'.isHiragana(), true, 'String#isHiragana | ぁ');
-  equal('ah'.isHiragana(), false, 'String#isHiragana | ah');
-  equal('あいかむいんぴーす'.isHiragana(), true, 'String#isHiragana | full hiragana');
-  equal('あいかむinぴーす'.isHiragana(), false, 'String#isHiragana | full hiragana with romaji');
-  equal('あいかむ in ぴーす'.isHiragana(), false, 'String#isHiragana | full hiragana with romaji and spaces');
-  equal('アイカム イン ピース'.isHiragana(), false, 'String#isHiragana | full hiragana with spaces');
+  method('hasKatakana', function() {
+    test('ア', true);
+    test('ｱ', true);
+    test('ah', false);
+    test('aアh', true);
+    test('aｱh', true);
+    test('アイカムインピース', true);
+    test('アイカムinピース', true);
+  });
 
 
-  equal('あ'.hasHiragana(), true, 'String#hasHiragana | あ');
-  equal('ぁ'.hasHiragana(), true, 'String#hasHiragana | ぁ');
-  equal('ah'.hasHiragana(), false, 'String#hasHiragana | ah');
-  equal('aあh'.hasHiragana(), true, 'String#hasHiragana | aあh');
-  equal('aぁh'.hasHiragana(), true, 'String#hasHiragana | aぁh');
-  equal('あいかむいんぴーす'.hasHiragana(), true, 'String#hasHiragana | full hiragana');
-  equal('あいかむinぴーす'.hasHiragana(), true, 'String#hasHiragana | full hiragana with romaji');
+  method('isHiragana', function() {
+    test('あ', true);
+    test('ぁ', true);
+    test('ah', false);
+    test('あいかむいんぴーす', true);
+    test('あいかむinぴーす', false);
+    test('あいかむ in ぴーす', false);
+    test('アイカム イン ピース', false);
+  });
 
 
+  method('hasHiragana', function() {
+    test('あ', true);
+    test('ぁ', true);
+    test('ah', false);
+    test('aあh', true);
+    test('aぁh', true);
+    test('あいかむいんぴーす', true);
+    test('あいかむinぴーす', true);
+  });
 
 
-  equal(''.isKana(), false, 'String#isKana | blank');
-  equal('あいうえお'.isKana(), true, 'String#isKana | hiragana');
-  equal('アイウエオ'.isKana(), true, 'String#isKana | katakana');
-  equal('あうえおアイウエオ'.isKana(), true, 'String#isKana | hiragana and katakan');
-  equal('あうえおaeiouアイウエオ'.isKana(), false, 'String#isKana | hiragana, katakana, and romaji');
-  equal('  あいうえお  '.isKana(), true, 'String#isKana | hiragana with whitespace');
-  equal('  アイウエオ \n '.isKana(), true, 'String#isKana | katakana with whitespace and a newline');
+  method('isKana', function() {
+    test('', false, 'blank');
+    test('あいうえお', true, 'hiragana');
+    test('アイウエオ', true, 'katakana');
+    test('あうえおアイウエオ', true, 'hiragana and katakan');
+    test('あうえおaeiouアイウエオ', false, 'hiragana, katakana, and romaji');
+    test('  あいうえお  ', true, 'hiragana with whitespace');
+    test('  アイウエオ \n ', true, 'katakana with whitespace and a newline');
+  });
+
+  method('hasKana', function() {
+    test('', false, 'blank');
+    test('aeiou', false, 'romaji');
+    test('あいうえお', true, 'hiragana');
+    test('アイウエオ', true, 'katakana');
+    test('あうえおアイウエオ', true, 'hiragana and katakana');
+    test('あうえおaeiouアイウエオ', true, 'hiragana, katakana, and romaji');
+    test('aeiouアaeiou', true, 'katakana with romaji outside');
+    test('aeiouaeiou', false, 'romaji all the way');
+  });
+
+  method('isHan', function() {
+    test('', false, 'blank');
+    test('aeiou', false, 'romaji');
+    test('あいうえお', false, 'hiragana');
+    test('アイウエオ', false, 'katakana');
+    test('あうえおaeiouアイウエオ', false, 'hiragana, katakana, and romaji');
+    test('合コン', false, 'mixed kanji and katakana');
+    test('語学', true, 'kango');
+    test('庭には二羽鶏がいる。', false, 'full sentence');
+    test(' 語学 ', true, 'kango with whitespace');
+    test(' 語学\t ', true, 'kango with whitespace and tabs');
+  });
+
+  method('hasHan', function() {
+    test('', false, 'blank');
+    test('aeiou', false, 'romaji');
+    test('あいうえお', false, 'hiragana');
+    test('アイウエオ', false, 'katakana');
+    test('あうえおaeiouアイウエオ', false, 'hiragana, katakana, and romaji');
+    test('合コン', true, 'mixed kanji and katakana');
+    test('語学', true, 'kango');
+    test('庭には二羽鶏がいる。', true, 'full sentence');
+    test(' 語学 ', true, 'kango with whitespace');
+    test(' 語学\t ', true, 'kango with whitespace and tabs');
+  });
 
 
+  method('isKanji', function() {
+    test('', false, 'blank');
+    test('aeiou', false, 'romaji');
+    test('あいうえお', false, 'hiragana');
+    test('アイウエオ', false, 'katakana');
+    test('あうえおaeiouアイウエオ', false, 'hiragana, katakana, and romaji');
+    test('合コン', false, 'mixed kanji and katakana');
+    test('語学', true, 'kango');
+    test('庭には二羽鶏がいる。', false, 'full sentence');
+    test(' 語学 ', true, 'kango with whitespace');
+    test(' 語学\t ', true, 'kango with whitespace and tabs');
+    test(' 語 学\t ', true, 'middle whitespace is also not counted');
+  });
+
+  method('hasKanji', function() {
+    test('', false, ' blank');
+    test('aeiou', false, ' romaji');
+    test('あいうえお', false, ' hiragana');
+    test('アイウエオ', false, ' katakana');
+    test('あうえおaeiouアイウエオ', false, ' hiragana, katakana, and romaji');
+    test('合コン', true, ' mixed kanji and katakana');
+    test('語学', true, ' kango');
+    test('庭には二羽鶏がいる。', true, ' full sentence');
+    test(' 語学 ', true, ' kango with whitespace');
+    test(' 語学\t ', true, ' kango with whitespace and tabs');
+  });
+
+  method('isHangul', function() {
+    test('모', true, 'character');
+    test('난 뻔데기를 싫어 한 사람 이다...너는?', false, 'full sentence');
+    test('안녕 하세요', true, 'how are you?');
+    test('ㅠブラじゃない！', false, 'mixed with kana');
+    test('이것도 한굴이야', true, 'spaces do not count');
+  });
+
+  method('hasHangul', function() {
+    test('모', true, 'character');
+    test('난 뻔데기를 싫어 한 사람 이다...너는?', true, 'full sentence');
+    test('안녕 하세요.', true, 'how are you?');
+    test('ㅠブラじゃない！', false, 'mixed with kana');
+  });
+
+  method('isHebrew', function() {
+    test('שְׂרָאֵל', true, 'basic');
+  });
+
+  method('hasHebrew', function() {
+    test('שְׂרָאֵל', true, 'basic');
+  });
+
+  method('isDevanagari', function() {
+    test('सभी मनुष्यों', true, 'basic');
+  });
+
+  method('hasDevanagari', function() {
+    test('सभी मनुष्यों', true, 'basic');
+  });
+
+  method('isLatin', function() {
+    test('ā', true, 'Extended set A');
+    test('Ɖ', true, 'Extended set B');
+    test('これはミックスですよね。', false, 'Katakana hiragana mix');
+    test("l'année dernière", true, 'French');
+    test('これは one big mix ですよね。', false, 'Hiragana romaji mix');
+  });
+
+  method('hasLatin', function() {
+    test("l'année dernière", true, 'French');
+    test('これは one big mix ですよね。', true, 'Hiragana romaji mix');
+    test('ā', true, 'Extended set A');
+    test('Ɖ', true, 'Extended set B');
+    test('これはミックスですよね。', false, 'Katakana hiragana mix');
+  });
 
 
-
-  equal(''.hasKana(), false, 'String#hasKana | blank');
-  equal('aeiou'.hasKana(), false, 'String#hasKana | romaji');
-  equal('あいうえお'.hasKana(), true, 'String#hasKana | hiragana');
-  equal('アイウエオ'.hasKana(), true, 'String#hasKana | katakana');
-  equal('あうえおアイウエオ'.hasKana(), true, 'String#hasKana | hiragana and katakana');
-  equal('あうえおaeiouアイウエオ'.hasKana(), true, 'String#hasKana | hiragana, katakana, and romaji');
-  equal('aeiouアaeiou'.hasKana(), true, 'String#hasKana | katakana with romaji outside');
-  equal('aeiouaeiou'.hasKana(), false, 'String#hasKana | romaji all the way');
-
-
-
-  equal(''.isHan(), false, 'String#isHan | blank');
-  equal('aeiou'.isHan(), false, 'String#isHan | romaji');
-  equal('あいうえお'.isHan(), false, 'String#isHan | hiragana');
-  equal('アイウエオ'.isHan(), false, 'String#isHan | katakana');
-  equal('あうえおaeiouアイウエオ'.isHan(), false, 'String#isHan | hiragana, katakana, and romaji');
-  equal('合コン'.isHan(), false, 'String#isHan | mixed kanji and katakana');
-  equal('語学'.isHan(), true, 'String#isHan | kango');
-  equal('庭には二羽鶏がいる。'.isHan(), false, 'String#isHan | full sentence');
-  equal(' 語学 '.isHan(), true, 'String#isHan | kango with whitespace');
-  equal(' 語学\t '.isHan(), true, 'String#isHan | kango with whitespace and tabs');
-
-
-
-  equal(''.hasHan(), false, 'String#hasHan | blank');
-  equal('aeiou'.hasHan(), false, 'String#hasHan | romaji');
-  equal('あいうえお'.hasHan(), false, 'String#hasHan | hiragana');
-  equal('アイウエオ'.hasHan(), false, 'String#hasHan | katakana');
-  equal('あうえおaeiouアイウエオ'.hasHan(), false, 'String#hasHan | hiragana, katakana, and romaji');
-  equal('合コン'.hasHan(), true, 'String#hasHan | mixed kanji and katakana');
-  equal('語学'.hasHan(), true, 'String#hasHan | kango');
-  equal('庭には二羽鶏がいる。'.hasHan(), true, 'String#hasHan | full sentence');
-  equal(' 語学 '.hasHan(), true, 'String#hasHan | kango with whitespace');
-  equal(' 語学\t '.hasHan(), true, 'String#hasHan | kango with whitespace and tabs');
-
-
-
-
-
-  equal(''.isKanji(), false, 'String#isKanji | blank');
-  equal('aeiou'.isKanji(), false, 'String#isKanji | romaji');
-  equal('あいうえお'.isKanji(), false, 'String#isKanji | hiragana');
-  equal('アイウエオ'.isKanji(), false, 'String#isKanji | katakana');
-  equal('あうえおaeiouアイウエオ'.isKanji(), false, 'String#isKanji | hiragana, katakana, and romaji');
-  equal('合コン'.isKanji(), false, 'String#isKanji | mixed kanji and katakana');
-  equal('語学'.isKanji(), true, 'String#isKanji | kango');
-  equal('庭には二羽鶏がいる。'.isKanji(), false, 'String#isKanji | full sentence');
-  equal(' 語学 '.isKanji(), true, 'String#isKanji | kango with whitespace');
-  equal(' 語学\t '.isKanji(), true, 'String#isKanji | kango with whitespace and tabs');
-  equal(' 語 学\t '.isKanji(), true, 'String#isKanji | middle whitespace is also not counted');
-
-
-
-
-
-  equal(''.hasKanji(), false, 'String#hasKanji | blank');
-  equal('aeiou'.hasKanji(), false, 'String#hasKanji | romaji');
-  equal('あいうえお'.hasKanji(), false, 'String#hasKanji | hiragana');
-  equal('アイウエオ'.hasKanji(), false, 'String#hasKanji | katakana');
-  equal('あうえおaeiouアイウエオ'.hasKanji(), false, 'String#hasKanji | hiragana, katakana, and romaji');
-  equal('合コン'.hasKanji(), true, 'String#hasKanji | mixed kanji and katakana');
-  equal('語学'.hasKanji(), true, 'String#hasKanji | kango');
-  equal('庭には二羽鶏がいる。'.hasKanji(), true, 'String#hasKanji | full sentence');
-  equal(' 語学 '.hasKanji(), true, 'String#hasKanji | kango with whitespace');
-  equal(' 語学\t '.hasKanji(), true, 'String#hasKanji | kango with whitespace and tabs');
-
-
-  equal('모'.isHangul(), true, 'String#isHangul | character');
-  equal('난 뻔데기를 싫어 한 사람 이다...너는?'.isHangul(), false, 'String#isHangul | full sentence');
-  equal('안녕 하세요'.isHangul(), true, 'String#isHangul | how are you?');
-  equal('ㅠブラじゃない！'.isHangul(), false, 'String#isHangul | mixed with kana');
-  equal('이것도 한굴이야'.isHangul(), true, 'String#isHangul | spaces do not count');
-
-  equal('모'.hasHangul(), true, 'String#hasHangul | character');
-  equal('난 뻔데기를 싫어 한 사람 이다...너는?'.hasHangul(), true, 'String#hasHangul | full sentence');
-  equal('안녕 하세요.'.hasHangul(), true, 'String#hasHangul | how are you?');
-  equal('ㅠブラじゃない！'.hasHangul(), false, 'String#hasHangul | mixed with kana');
-
-  equal('שְׂרָאֵל'.isHebrew(), true, 'String#isHebrew');
-  equal('שְׂרָאֵל'.hasHebrew(), true, 'String#hasHebrew');
-
-  equal('सभी मनुष्यों'.hasDevanagari(), true, 'String#hasDevanagari');
-  equal('सभी मनुष्यों'.isDevanagari(), true, 'String#isDevanagari');
-
-  equal("l'année dernière".hasLatin(), true, 'String#hasLatin | French');
-  equal("l'année dernière".isLatin(), true, 'String#isLatin | French');
-  equal('これは one big mix ですよね。'.isLatin(), false, 'String#isLatin | Hiragana romaji mix');
-  equal('これは one big mix ですよね。'.hasLatin(), true, 'String#isLatin | Hiragana romaji mix');
-  equal('ā'.isLatin(), true, 'String#isLatin | Extended set A');
-  equal('ā'.hasLatin(), true, 'String#isLatin | Extended set A');
-  equal('Ɖ'.isLatin(), true, 'String#isLatin | Extended set B');
-  equal('Ɖ'.hasLatin(), true, 'String#isLatin | Extended set B');
-  equal('これはミックスですよね。'.isLatin(), false, 'String#isLatin | Katakana hiragana mix');
-  equal('これはミックスですよね。'.hasLatin(), false, 'String#hasLatin | Katakana hiragana mix');
-
-
-
-
-
-  equal('カタカナ'.hankaku(), 'ｶﾀｶﾅ', 'String#hankaku | katakana');
-  equal('こんにちは。ヤマダタロウです。'.hankaku(), 'こんにちは｡ﾔﾏﾀﾞﾀﾛｳです｡', 'String#hankaku |  hankaku katakana inside a string');
-  equal('こんにちは。ＴＡＲＯ　ＹＡＭＡＤＡです。'.hankaku(), 'こんにちは｡TARO YAMADAです｡', 'String#hankaku | hankaku romaji inside a string');
-  equal('　'.hankaku(), ' ', 'String#hankaku | spaces');
-  equal('　'.hankaku('p'), '　', 'String#hankaku | punctuation | spaces');
-  equal('　'.hankaku('s'), ' ', 'String#hankaku | spaces');
-
-
-  var barabara = 'こんにちは。タロウ　ＹＡＭＡＤＡです。１８才です！（笑）';
-  equal(barabara.hankaku(), 'こんにちは｡ﾀﾛｳ YAMADAです｡18才です!(笑)', 'String#hankaku | modes | full conversion');
-  equal(barabara.hankaku('all'), 'こんにちは｡ﾀﾛｳ YAMADAです｡18才です!(笑)', 'String#hankaku | modes all | full conversion');
-  equal(barabara.hankaku('a'), 'こんにちは。タロウ　YAMADAです。１８才です！（笑）', 'String#hankaku | modes | romaji only');
-  equal(barabara.hankaku('n'), 'こんにちは。タロウ　ＹＡＭＡＤＡです。18才です！（笑）', 'String#hankaku | modes | numbers only');
-  equal(barabara.hankaku('k'), 'こんにちは。ﾀﾛｳ　ＹＡＭＡＤＡです。１８才です！（笑）', 'String#hankaku | modes | katakana only');
-  equal(barabara.hankaku('p'), 'こんにちは｡タロウ　ＹＡＭＡＤＡです｡１８才です!(笑)', 'String#hankaku | modes | punctuation only');
-  equal(barabara.hankaku('s'), 'こんにちは。タロウ ＹＡＭＡＤＡです。１８才です！（笑）', 'String#hankaku | modes | spaces only');
-
-  equal(barabara.hankaku('an'), 'こんにちは。タロウ　YAMADAです。18才です！（笑）', 'String#hankaku | modes | alphabet and numbers');
-  equal(barabara.hankaku('ak'), 'こんにちは。ﾀﾛｳ　YAMADAです。１８才です！（笑）', 'String#hankaku | modes | alphabet and katakana');
-  equal(barabara.hankaku('as'), 'こんにちは。タロウ YAMADAです。１８才です！（笑）', 'String#hankaku | modes | alphabet and spaces');
-  equal(barabara.hankaku('ap'), 'こんにちは｡タロウ　YAMADAです｡１８才です!(笑)', 'String#hankaku | modes | alphabet and punctuation');
-
-  equal(barabara.hankaku('na'), 'こんにちは。タロウ　YAMADAです。18才です！（笑）', 'String#hankaku | modes reverse | alphabet and numbers');
-  equal(barabara.hankaku('ka'), 'こんにちは。ﾀﾛｳ　YAMADAです。１８才です！（笑）', 'String#hankaku | modes reverse | alphabet and katakana');
-  equal(barabara.hankaku('sa'), 'こんにちは。タロウ YAMADAです。１８才です！（笑）', 'String#hankaku | modes reverse | alphabet and spaces');
-  equal(barabara.hankaku('pa'), 'こんにちは｡タロウ　YAMADAです｡１８才です!(笑)', 'String#hankaku | modes reverse | alphabet and punctuation');
-
-  equal(barabara.hankaku('alphabet'), 'こんにちは。タロウ　YAMADAです。１８才です！（笑）', 'String#hankaku | modes full | alphabet');
-  equal(barabara.hankaku('numbers'), 'こんにちは。タロウ　ＹＡＭＡＤＡです。18才です！（笑）', 'String#hankaku | modes full | numbers');
-  equal(barabara.hankaku('katakana'), 'こんにちは。ﾀﾛｳ　ＹＡＭＡＤＡです。１８才です！（笑）', 'String#hankaku | modes full | katakana');
-  equal(barabara.hankaku('punctuation'), 'こんにちは｡タロウ　ＹＡＭＡＤＡです｡１８才です!(笑)', 'String#hankaku | modes full | punctuation');
-  equal(barabara.hankaku('spaces'), 'こんにちは。タロウ ＹＡＭＡＤＡです。１８才です！（笑）', 'String#hankaku | modes full | spaces');
 
   var allZenkakuChars = '　、。，．・：；？！ー～／｜（）［］｛｝「」＋－＝＜＞￥＄￠￡％＃＆＊＠０１２３４５６７８９ＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯＰＱＲＳＴＵＶＷＸＹＺａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚァアィイゥウェエォオカガキギクグケゲコゴサザシジスズセゼソゾタダチヂッツヅテデトドナニヌネノハバパヒビピフブプヘベペホボポマミムメモャヤュユョヨラリルレロワヲン';
   var allHankakuChars = ' ､｡,.･:;?!ｰ~/|()[]{}｢｣+-=<>¥$¢£%#&*@0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyzｧｱｨｲｩｳｪｴｫｵｶｶﾞｷｷﾞｸｸﾞｹｹﾞｺｺﾞｻｻﾞｼｼﾞｽｽﾞｾｾﾞｿｿﾞﾀﾀﾞﾁﾁﾞｯﾂﾂﾞﾃﾃﾞﾄﾄﾞﾅﾆﾇﾈﾉﾊﾊﾞﾊﾟﾋﾋﾞﾋﾟﾌﾌﾞﾌﾟﾍﾍﾞﾍﾟﾎﾎﾞﾎﾟﾏﾐﾑﾒﾓｬﾔｭﾕｮﾖﾗﾘﾙﾚﾛﾜｦﾝ';
 
 
-  equal(allZenkakuChars.hankaku(), allHankakuChars, 'String#hankaku | everything');
-  equal(allHankakuChars.zenkaku(), allZenkakuChars, 'String#zenkaku | everything');
+  method('hankaku', function() {
+
+    test('カ', 'ｶ', 'カ');
+    test('ガ', 'ｶﾞ', 'dakuten | ガ');
+    test('', '', 'blank');
+    test('カタカナ', 'ｶﾀｶﾅ', 'katakana');
+    test('こんにちは。ヤマダタロウです。', 'こんにちは｡ﾔﾏﾀﾞﾀﾛｳです｡', ' hankaku katakana inside a string');
+    test('こんにちは。ＴＡＲＯ　ＹＡＭＡＤＡです。', 'こんにちは｡TARO YAMADAです｡', 'hankaku romaji inside a string');
+    test('　', ' ', 'spaces');
+    test('　', ['p'], '　', 'punctuation | spaces');
+    test('　', ['s'], ' ', 'spaces');
+
+    var barabara = 'こんにちは。タロウ　ＹＡＭＡＤＡです。１８才です！（笑）';
+
+    test(barabara, 'こんにちは｡ﾀﾛｳ YAMADAです｡18才です!(笑)', 'modes | full conversion');
+    test(barabara, ['all'], 'こんにちは｡ﾀﾛｳ YAMADAです｡18才です!(笑)', 'modes all | full conversion');
+    test(barabara, ['a'], 'こんにちは。タロウ　YAMADAです。１８才です！（笑）', 'modes | romaji only');
+    test(barabara, ['n'], 'こんにちは。タロウ　ＹＡＭＡＤＡです。18才です！（笑）', 'modes | numbers only');
+    test(barabara, ['k'], 'こんにちは。ﾀﾛｳ　ＹＡＭＡＤＡです。１８才です！（笑）', 'modes | katakana only');
+    test(barabara, ['p'], 'こんにちは｡タロウ　ＹＡＭＡＤＡです｡１８才です!(笑)', 'modes | punctuation only');
+    test(barabara, ['s'], 'こんにちは。タロウ ＹＡＭＡＤＡです。１８才です！（笑）', 'modes | spaces only');
+
+    test(barabara, ['an'], 'こんにちは。タロウ　YAMADAです。18才です！（笑）', 'modes | alphabet and numbers');
+    test(barabara, ['ak'], 'こんにちは。ﾀﾛｳ　YAMADAです。１８才です！（笑）', 'modes | alphabet and katakana');
+    test(barabara, ['as'], 'こんにちは。タロウ YAMADAです。１８才です！（笑）', 'modes | alphabet and spaces');
+    test(barabara, ['ap'], 'こんにちは｡タロウ　YAMADAです｡１８才です!(笑)', 'modes | alphabet and punctuation');
+
+    test(barabara, ['na'], 'こんにちは。タロウ　YAMADAです。18才です！（笑）', 'modes reverse | alphabet and numbers');
+    test(barabara, ['ka'], 'こんにちは。ﾀﾛｳ　YAMADAです。１８才です！（笑）', 'modes reverse | alphabet and katakana');
+    test(barabara, ['sa'], 'こんにちは。タロウ YAMADAです。１８才です！（笑）', 'modes reverse | alphabet and spaces');
+    test(barabara, ['pa'], 'こんにちは｡タロウ　YAMADAです｡１８才です!(笑)', 'modes reverse | alphabet and punctuation');
+
+    test(barabara, ['alphabet'], 'こんにちは。タロウ　YAMADAです。１８才です！（笑）', 'modes full | alphabet');
+    test(barabara, ['numbers'], 'こんにちは。タロウ　ＹＡＭＡＤＡです。18才です！（笑）', 'modes full | numbers');
+    test(barabara, ['katakana'], 'こんにちは。ﾀﾛｳ　ＹＡＭＡＤＡです。１８才です！（笑）', 'modes full | katakana');
+    test(barabara, ['punctuation'], 'こんにちは｡タロウ　ＹＡＭＡＤＡです｡１８才です!(笑)', 'modes full | punctuation');
+    test(barabara, ['spaces'], 'こんにちは。タロウ ＹＡＭＡＤＡです。１８才です！（笑）', 'modes full | spaces');
+
+    test(allZenkakuChars, allHankakuChars, 'everything');
+  });
+
+  method('zenkaku', function() {
+
+    test('', '', 'blank');
+    test('ｶ', 'カ', 'ｶ');
+    test('ｶﾞ', 'ガ', 'dakuten | ｶ');
+    test('ｶﾀｶﾅ', 'カタカナ', 'katakana');
+    test(' ', '　', 'spaces | all');
+    test(' ', ['s'], '　', 'spaces | s');
+    test(' ', ['p'], ' ', 'spaces | p');
+
+    var barabara = 'こんにちは｡ﾀﾛｳ YAMADAです｡18才です!(笑)';
+
+    test(barabara, 'こんにちは。タロウ　ＹＡＭＡＤＡです。１８才です！（笑）', 'modes | full conversion');
+    test(barabara, ['a'], 'こんにちは｡ﾀﾛｳ ＹＡＭＡＤＡです｡18才です!(笑)', 'modes | alphabet');
+    test(barabara, ['n'], 'こんにちは｡ﾀﾛｳ YAMADAです｡１８才です!(笑)', 'modes | number');
+    test(barabara, ['k'], 'こんにちは｡タロウ YAMADAです｡18才です!(笑)', 'modes | katakana');
+    test(barabara, ['p'], 'こんにちは。ﾀﾛｳ YAMADAです。18才です！（笑）', 'modes | punctuation');
+    test(barabara, ['s'], 'こんにちは｡ﾀﾛｳ　YAMADAです｡18才です!(笑)', 'modes | spaces');
+
+    test(barabara, ['an'], 'こんにちは｡ﾀﾛｳ ＹＡＭＡＤＡです｡１８才です!(笑)', 'modes | alphabet and numbers');
+    test(barabara, ['ak'], 'こんにちは｡タロウ ＹＡＭＡＤＡです｡18才です!(笑)', 'modes | alphabet and katakana');
+    test(barabara, ['as'], 'こんにちは｡ﾀﾛｳ　ＹＡＭＡＤＡです｡18才です!(笑)', 'modes | alphabet and spaces');
+    test(barabara, ['ap'], 'こんにちは。ﾀﾛｳ ＹＡＭＡＤＡです。18才です！（笑）', 'modes | alphabet and punctuation');
+
+    test(barabara, ['na'], 'こんにちは｡ﾀﾛｳ ＹＡＭＡＤＡです｡１８才です!(笑)', 'modes reverse | alphabet and numbers');
+    test(barabara, ['ka'], 'こんにちは｡タロウ ＹＡＭＡＤＡです｡18才です!(笑)', 'modes reverse | alphabet and katakana');
+    test(barabara, ['sa'], 'こんにちは｡ﾀﾛｳ　ＹＡＭＡＤＡです｡18才です!(笑)', 'modes reverse | alphabet and spaces');
+    test(barabara, ['pa'], 'こんにちは。ﾀﾛｳ ＹＡＭＡＤＡです。18才です！（笑）', 'modes reverse | alphabet and punctuation');
+
+    test(barabara, ['alphabet'], 'こんにちは｡ﾀﾛｳ ＹＡＭＡＤＡです｡18才です!(笑)', 'modes full | alphabet');
+    test(barabara, ['numbers'], 'こんにちは｡ﾀﾛｳ YAMADAです｡１８才です!(笑)', 'modes full | numbers');
+    test(barabara, ['katakana'], 'こんにちは｡タロウ YAMADAです｡18才です!(笑)', 'modes full | katakana');
+    test(barabara, ['spaces'], 'こんにちは｡ﾀﾛｳ　YAMADAです｡18才です!(笑)', 'modes full | spaces');
+    test(barabara, ['punctuation'], 'こんにちは。ﾀﾛｳ YAMADAです。18才です！（笑）', 'modes full | punctuation');
+
+    test(allHankakuChars, allZenkakuChars, 'everything');
+  });
 
 
-  equal('ｶﾀｶﾅ'.zenkaku(), 'カタカナ', 'String#zenkaku | katakana');
-  equal(' '.zenkaku(), '　', 'String#zenkaku | spaces | all');
-  equal(' '.zenkaku('s'), '　', 'String#zenkaku | spaces | s');
-  equal(' '.zenkaku('p'), ' ', 'String#zenkaku | spaces | p');
-
-
-  barabara = 'こんにちは｡ﾀﾛｳ YAMADAです｡18才です!(笑)';
-
-  equal(barabara.zenkaku(), 'こんにちは。タロウ　ＹＡＭＡＤＡです。１８才です！（笑）', 'String#zenkaku | modes | full conversion');
-  equal(barabara.zenkaku('a'), 'こんにちは｡ﾀﾛｳ ＹＡＭＡＤＡです｡18才です!(笑)', 'String#zenkaku | modes | alphabet');
-  equal(barabara.zenkaku('n'), 'こんにちは｡ﾀﾛｳ YAMADAです｡１８才です!(笑)', 'String#zenkaku | modes | number');
-  equal(barabara.zenkaku('k'), 'こんにちは｡タロウ YAMADAです｡18才です!(笑)', 'String#zenkaku | modes | katakana');
-  equal(barabara.zenkaku('p'), 'こんにちは。ﾀﾛｳ YAMADAです。18才です！（笑）', 'String#zenkaku | modes | punctuation');
-  equal(barabara.zenkaku('s'), 'こんにちは｡ﾀﾛｳ　YAMADAです｡18才です!(笑)', 'String#zenkaku | modes | spaces');
-
-  equal(barabara.zenkaku('an'), 'こんにちは｡ﾀﾛｳ ＹＡＭＡＤＡです｡１８才です!(笑)', 'String#zenkaku | modes | alphabet and numbers');
-  equal(barabara.zenkaku('ak'), 'こんにちは｡タロウ ＹＡＭＡＤＡです｡18才です!(笑)', 'String#zenkaku | modes | alphabet and katakana');
-  equal(barabara.zenkaku('as'), 'こんにちは｡ﾀﾛｳ　ＹＡＭＡＤＡです｡18才です!(笑)', 'String#zenkaku | modes | alphabet and spaces');
-  equal(barabara.zenkaku('ap'), 'こんにちは。ﾀﾛｳ ＹＡＭＡＤＡです。18才です！（笑）', 'String#zenkaku | modes | alphabet and punctuation');
-
-  equal(barabara.zenkaku('na'), 'こんにちは｡ﾀﾛｳ ＹＡＭＡＤＡです｡１８才です!(笑)', 'String#zenkaku | modes reverse | alphabet and numbers');
-  equal(barabara.zenkaku('ka'), 'こんにちは｡タロウ ＹＡＭＡＤＡです｡18才です!(笑)', 'String#zenkaku | modes reverse | alphabet and katakana');
-  equal(barabara.zenkaku('sa'), 'こんにちは｡ﾀﾛｳ　ＹＡＭＡＤＡです｡18才です!(笑)', 'String#zenkaku | modes reverse | alphabet and spaces');
-  equal(barabara.zenkaku('pa'), 'こんにちは。ﾀﾛｳ ＹＡＭＡＤＡです。18才です！（笑）', 'String#zenkaku | modes reverse | alphabet and punctuation');
-
-  equal(barabara.zenkaku('alphabet'), 'こんにちは｡ﾀﾛｳ ＹＡＭＡＤＡです｡18才です!(笑)', 'String#zenkaku | modes full | alphabet');
-  equal(barabara.zenkaku('numbers'), 'こんにちは｡ﾀﾛｳ YAMADAです｡１８才です!(笑)', 'String#zenkaku | modes full | numbers');
-  equal(barabara.zenkaku('katakana'), 'こんにちは｡タロウ YAMADAです｡18才です!(笑)', 'String#zenkaku | modes full | katakana');
-  equal(barabara.zenkaku('spaces'), 'こんにちは｡ﾀﾛｳ　YAMADAです｡18才です!(笑)', 'String#zenkaku | modes full | spaces');
-  equal(barabara.zenkaku('punctuation'), 'こんにちは。ﾀﾛｳ YAMADAです。18才です！（笑）', 'String#zenkaku | modes full | punctuation');
-
-
-  equal('ガ'.hankaku(), 'ｶﾞ', 'String#hankaku | dakuten | ガ');
-  equal('ｶﾞ'.zenkaku(), 'ガ', 'String#zenkaku | dakuten | ｶ');
-  equal('ｶﾞ'.hiragana(), 'が', 'String#hiragana | dakuten | ｶ');
-
-
-  equal('カタカナ'.hiragana(), 'かたかな', 'String#hiragana | from katakana');
-  equal('ｶﾀｶﾅ'.hiragana(), 'かたかな', 'String#hiragana | convert from hankaku katakana');
-  equal('ｶﾀｶﾅ'.hiragana(false), 'ｶﾀｶﾅ', 'String#hiragana | no widths |convert from hankaku katakana');
-  equal(barabara.hiragana(), 'こんにちは｡たろう YAMADAです｡18才です!(笑)', 'String#hiragana | full string');
-  equal(barabara.zenkaku().hiragana(), 'こんにちは。たろう　ＹＡＭＡＤＡです。１８才です！（笑）', 'String#hiragana | full string to zenkaku');
-  equal(barabara.hiragana(false), 'こんにちは｡ﾀﾛｳ YAMADAです｡18才です!(笑)', 'String#hiragana | no widths | full string');
-
-
-  equal('ひらがな'.katakana(), 'ヒラガナ', 'String#katakana | from hiragana');
-  equal(barabara.katakana(), 'コンニチハ｡ﾀﾛｳ YAMADAデス｡18才デス!(笑)', 'String#katakana | full string');
-  equal(barabara.zenkaku().katakana(), 'コンニチハ。タロウ　ＹＡＭＡＤＡデス。１８才デス！（笑）', 'String#katakana full string to zenkaku');
-
-
-  equal('こんにちは。タロウ　ＹＡＭＡＤＡです。１８才です！（笑）'.katakana().hankaku(), 'ｺﾝﾆﾁﾊ｡ﾀﾛｳ YAMADAﾃﾞｽ｡18才ﾃﾞｽ!(笑)', 'String#katakana | full string to katakana and hankaku');
 
   var allHiragana = 'ぁあぃいぅうぇえぉおかがきぎくぐけげこごさざしじすずせぜそぞただちぢっつづてでとどなにぬねのはばぱひびぴふぶぷへべぺほぼぽまみむめもゃやゅゆょよらりるれろゎわゐゑをんゔゕゖ';
   var allKatakana = 'ァアィイゥウェエォオカガキギクグケゲコゴサザシジスズセゼソゾタダチヂッツヅテデトドナニヌネノハバパヒビピフブプヘベペホボポマミムメモャヤュユョヨラリルレロヮワヰヱヲンヴヵヶ';
 
-  equal(allKatakana.hiragana(), allHiragana, 'String#hiragana | all');
-  equal(allHiragana.katakana(), allKatakana, 'String#katakana | all');
+  method('hiragana', function() {
+    var barabara = 'こんにちは｡ﾀﾛｳ YAMADAです｡18才です!(笑)';
 
+    test('', '', 'blank');
+    test('カ', 'か', 'カ');
+    test('ｶﾞ', 'が', 'dakuten | ｶ');
+    test('カタカナ', 'かたかな', 'from katakana');
+    test('ｶﾀｶﾅ', 'かたかな', 'convert from hankaku katakana');
+    test(barabara, 'こんにちは｡たろう YAMADAです｡18才です!(笑)', 'full string');
+    test('ｶﾀｶﾅ', [false], 'ｶﾀｶﾅ', 'no widths |convert from hankaku katakana');
+    test(barabara, [false], 'こんにちは｡ﾀﾛｳ YAMADAです｡18才です!(笑)', 'no widths | full string');
+    test(run(barabara, 'zenkaku'), 'こんにちは。たろう　ＹＡＭＡＤＡです。１８才です！（笑）', 'full string to zenkaku');
+    test(allKatakana, allHiragana, 'all');
+  });
 
-  equal(''.hankaku(), '', 'String#hankaku | blank');
-  equal('カ'.hankaku(), 'ｶ', 'String#hankaku | カ');
-  equal(''.zenkaku(), '', 'String#zenkaku | blank');
-  equal('ｶ'.zenkaku(), 'カ', 'String#zenkaku | ｶ');
-  equal(''.hiragana(), '', 'String#hiragana | blank');
-  equal('カ'.hiragana(), 'か', 'String#hiragana | カ');
-  equal(''.katakana(), '', 'String#katakana | blank');
-  equal('か'.katakana(), 'カ', 'String#katakana | か');
+  method('katakana', function() {
+    var barabara = 'こんにちは｡ﾀﾛｳ YAMADAです｡18才です!(笑)';
 
+    test('', '', 'blank');
+    test('か', 'カ', 'か');
+    test('ひらがな', 'ヒラガナ', 'from hiragana');
+    test(barabara, 'コンニチハ｡ﾀﾛｳ YAMADAデス｡18才デス!(笑)', 'full string');
+    test(run(barabara, 'zenkaku'), 'コンニチハ。タロウ　ＹＡＭＡＤＡデス。１８才デス！（笑）', 'full string to zenkaku');
+    test(allHiragana, allKatakana, 'all');
+  });
+
+  equal(run(run('こんにちは。タロウ　ＹＡＭＡＤＡです。１８才です！（笑）', 'katakana'), 'hankaku'), 'ｺﾝﾆﾁﾊ｡ﾀﾛｳ YAMADAﾃﾞｽ｡18才ﾃﾞｽ!(笑)', 'full string to katakana and hankaku');
 
 });

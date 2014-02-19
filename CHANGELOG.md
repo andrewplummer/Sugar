@@ -4,6 +4,7 @@ v1.4.3
 ### API Changes ###
 
 - Removed String#escapeRegExp. Use RegExp.escape instead.
+- Changed String#escapeHTML to double-escape entities.
 
 
 v1.4.2
