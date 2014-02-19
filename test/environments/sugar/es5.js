@@ -1,5 +1,4 @@
-
-test('ES5', function () {
+package('ES5', function () {
 
   var arr, count, expected, result, previous, current, fn, reg, obj, Person;
 
@@ -809,7 +808,8 @@ test('ES5', function () {
   // any case on anything else) with no prototype is through the bind method. All other
   // environments properly have an undefined prototype, but do not raise an error on instanceof.
 
-  skipEnvironments(['node'], function() {
+  // SEEMS LIKE THIS CAN BE REMOVED
+  //skipEnvironments(['node'], function() {
 
     equal(instance instanceof BoundPerson, true, 'Function#bind | instance of the bound class');
 
@@ -818,7 +818,7 @@ test('ES5', function () {
     // Changing this test to assert true as native implementations all function this way.
     equal(new Person() instanceof BoundPerson, true, 'Function#bind | instance of unbound class is not an instance of the bound class');
 
-  });
+  //});
 
 
 
@@ -834,5 +834,140 @@ test('ES5', function () {
   a.each = 'OH PLEASE';
   equal(a.each, 'OH PLEASE', 'Sugar methods can ALL be overwritten!');
   Array.prototype.each = storedEach;
+
+
+
+  // Bind tests brought over from Function unit tests.
+
+  var bound, obj, result;
+
+  obj = { foo: 'bar' };
+
+  bound = (function(num, bool, str, fourth, fifth) {
+    equal(this === obj, true, 'Function#bind | Bound object is strictly equal');
+    equal(num, 1, 'Function#bind | first parameter');
+    equal(bool, true, 'Function#bind | second parameter');
+    equal(str, 'wasabi', 'Function#bind | third parameter');
+    equal(fourth, 'fourth', 'Function#bind | fourth parameter');
+    equal(fifth, 'fifth', 'Function#bind | fifth parameter');
+    return 'howdy';
+  }).bind(obj, 1, true, 'wasabi');
+
+  result = bound('fourth','fifth');
+  equal(result, 'howdy', 'Function#bind | result is correctly returned');
+
+  (function(first) {
+    equal(Array.prototype.slice.call(arguments), [], 'Function#bind | arguments array is empty');
+    equal(first, undefined, 'Function#bind | first argument is undefined');
+  }).bind('foo')();
+
+
+
+
+
+  // Ported from array.js
+
+  equal(['a','b','c'].indexOf('b'), 1, 'Array#indexOf | b in a,b,c');
+  equal(['a','b','c'].indexOf('b', 0), 1, 'Array#indexOf | b in a,b,c from 0');
+  equal(['a','b','c'].indexOf('a'), 0, 'Array#indexOf | a in a,b,c');
+  equal(['a','b','c'].indexOf('f'), -1, 'Array#indexOf | f in a,b,c');
+
+  equal(['a','b','c','b'].indexOf('b'), 1, 'Array#indexOf | finds first instance');
+  equal(['a','b','c','b'].indexOf('b', 2), 3, 'Array#indexOf | finds first instance from index');
+
+  equal([5,2,4].indexOf(5), 0, 'Array#indexOf | 5 in 5,2,4');
+  equal([5,2,4].indexOf(2), 1, 'Array#indexOf | 2 in 5,2,4');
+  equal([5,2,4].indexOf(4), 2, 'Array#indexOf | 4 in 5,2,4');
+  equal([5,2,4,4].indexOf(4, 3), 3, 'Array#indexOf | 4 in 5,2,4,4 from index 3');
+
+  equal([5,2,4,4].indexOf(4, 10), -1, 'Array#indexOf | 4 in 5,2,4,4 from index 10');
+  equal([5,2,4,4].indexOf(4, -10), 2, 'Array#indexOf | 4 in 5,2,4,4 from index -10');
+  equal([5,2,4,4].indexOf(4, -1), 3, 'Array#indexOf | 4 in 5,2,4,4 from index -1');
+
+  equal([{ foo: 'bar' }].indexOf({ foo: 'bar' }), -1, 'Array#indexOf | will not find deep objects (use findIndex)');
+  equal([{ foo: 'bar' }].indexOf(function(a) { return a.foo === 'bar'; }), -1, 'Array#indexOf | will not run against a function (use findIndex)');
+
+  equal(['a','b','c','d','a','b'].lastIndexOf('b'), 5, 'Array#lastIndexOf | b');
+  equal(['a','b','c','d','a','b'].lastIndexOf('b', 4), 1, 'Array#lastIndexOf | b from index 4');
+  equal(['a','b','c','d','a','b'].lastIndexOf('z'), -1, 'Array#lastIndexOf | z');
+
+  equal([1,5,6,8,8,2,5,3].lastIndexOf(3), 7, 'Array#lastIndexOf | 1,5,6,8,8,2,5,3 | 3');
+  equal([1,5,6,8,8,2,5,3].lastIndexOf(3, 0), -1, 'Array#lastIndexOf | 1,5,6,8,8,2,5,3 | 3 from index 0');
+  equal([1,5,6,8,8,2,5,3].lastIndexOf(8), 4, 'Array#lastIndexOf | 1,5,6,8,8,2,5,3 | 8');
+  equal([1,5,6,8,8,2,5,3].lastIndexOf(8, 3), 3, 'Array#lastIndexOf | 1,5,6,8,8,2,5,3 | 8 from index 3');
+  equal([1,5,6,8,8,2,5,3].lastIndexOf(1), 0, 'Array#lastIndexOf | 1,5,6,8,8,2,5,3 | 1');
+  equal([1,5,6,8,8,2,5,3].lastIndexOf(42), -1, 'Array#lastIndexOf | 1,5,6,8,8,2,5,3 | 42');
+
+  equal([2,5,9,2].lastIndexOf(2), 3, 'Array#lastIndexOf | 2,5,9,2 | 2');
+  equal([2,5,9,2].lastIndexOf(7), -1, 'Array#lastIndexOf | 2,5,9,2 | 7');
+  equal([2,5,9,2].lastIndexOf(2, 3), 3, 'Array#lastIndexOf | 2,5,9,2 | 2 from index 3');
+  equal([2,5,9,2].lastIndexOf(2, 2), 0, 'Array#lastIndexOf | 2,5,9,2 | 2 from index 2');
+  equal([2,5,9,2].lastIndexOf(2, -2), 0, 'Array#lastIndexOf | 2,5,9,2 | 2 from index -2');
+  equal([2,5,9,2].lastIndexOf(2, -1), 3, 'Array#lastIndexOf | 2,5,9,2 | 2 from index -1');
+  equal([2,5,9,2].lastIndexOf(2, -10), -1, 'Array#lastIndexOf | 2,5,9,2 | 2 from index -10');
+
+  equal([2,5,9,2].lastIndexOf(2, 10), 3, 'Array#lastIndexOf | 2,5,9,2 | 2 from index 10');
+  equal([{ foo: 'bar' }].lastIndexOf({ foo: 'bar' }), -1, 'Array#lastIndexOf | will not find deep objects (use findIndex)');
+  equal([{ foo: 'bar' }].lastIndexOf(function(a) { return a.foo === 'bar'; }), -1, 'Array#lastIndexOf | will not run against a function (use findIndex)');
+
+  var arr = [2, 5, 9];
+  arr.forEach(function(el, i, a) {
+    equal(el, a[i], 'Array#forEach | looping successfully');
+  });
+
+  var arr = ['a', [1], { foo: 'bar' }, 352];
+  count = 0;
+  arr.forEach(function(el, i, a) {
+      count++;
+  });
+  equal(count, 4, 'Array#forEach | complex array | should have looped 4 times');
+
+  ['a'].forEach(function(el, i, a) {
+    equal(el, 'a', 'Array#forEach | first parameter is the element');
+    equal(i, 0, 'Array#forEach | second parameter is the index');
+    equal(this.toString(), 'this', 'Array#forEach | scope is passed properly');
+  }, 'this');
+
+  equal([0,1,2,3,4].reduce(function(a,b) { return a + b; }), 10, 'Array#reduce | a + b');
+  equal([[0,1],[2,3],[4,5]].reduce(function(a,b) { return a.concat(b); }, []), [0,1,2,3,4,5], 'Array#reduce | concat');
+  ['a'].reduce(function(p, c, i, a) {
+    equal(p, 'c', 'Array#reduce | a | first parameter is the lhs');
+    equal(c, 'a', 'Array#reduce | a | second parameter is the rhs');
+    equal(i, 0, 'Array#reduce | a | third parameter is the index');
+    equal(a, ['a'], 'Array#reduce | a | fourth parameter is the array');
+  }, 'c');
+  [55,66].reduce(function(p, c, i, a) {
+    equal(p, 55, 'Array#reduce | 55,66 | first parameter is the lhs');
+    equal(c, 66, 'Array#reduce | 55,66 | second parameter is the rhs');
+    equal(i, 1, 'Array#reduce | 55,66 | third parameter is the index');
+    equal(a, [55,66], 'Array#reduce | 55,66 | fourth parameter is the array');
+  });
+  [1].reduce(function(p, c, i, a) {
+    // This assertion should never be called.
+    equal(true, false, 'Array#reduce | one element array with no rhs passed in does not iterate');
+  });
+  equal([1].reduce(function() {}), 1, 'Array#reduce | [1] reduces to 1');
+
+
+  equal([0,1,2,3,4].reduceRight(function(a,b) { return a + b; }), 10, 'Array#reduceRight | a + b');
+  equal([[0,1],[2,3],[4,5]].reduceRight(function(a,b) { return a.concat(b); }, []), [4,5,2,3,0,1], 'Array#reduceRight | concat');
+  ['a'].reduceRight(function(p, c, i, a) {
+    equal(p, 'c', 'Array#reduceRight | a | first parameter is the lhs');
+    equal(c, 'a', 'Array#reduceRight | a | second parameter is the rhs');
+    equal(i, 0, 'Array#reduceRight | a | third parameter is the index');
+    equal(a, ['a'], 'Array#reduceRight | a | fourth parameter is the array');
+  }, 'c');
+  [55,66].reduceRight(function(p, c, i, a) {
+    equal(p, 66, 'Array#reduceRight | 55,66 | first parameter is the lhs');
+    equal(c, 55, 'Array#reduceRight | 55,66 | second parameter is the rhs');
+    equal(i, 0, 'Array#reduceRight | 55,66 | third parameter is the index');
+    equal(a, [55,66], 'Array#reduceRight | 55,66 | fourth parameter is the array');
+  });
+  [1].reduceRight(function(p, c, i, a) {
+    // This assertion should never be called.
+    equal(true, false, 'Array#reduceRight | one element array with no rhs passed in does not iterate');
+  });
+  equal([1].reduceRight(function() {}), 1, 'Array#reduceRight | [1] reduces to 1');
+
 
 });

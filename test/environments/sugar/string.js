@@ -1,78 +1,84 @@
-test('String', function () {
+package('String', function () {
+
+  var arr;
+
+  method('escapeURL', function() {
+
+    test('what a day...', 'what%20a%20day...', '...');
+    test('/?:@&=+$#', '/?:@&=+$#', 'url chars');
+    test('!%^*()[]{}\\:', '!%25%5E*()%5B%5D%7B%7D%5C:', 'non url special chars');
+
+    test('http://www.amazon.com/Kindle-Special-Offers-Wireless-Reader/dp/B004HFS6Z0/ref=amb_link_356652042_2?pf_rd_m=ATVPDKIKX0DER&pf_rd_s=center-1&pf_rd_r=1RKN5V41WJ23AXKFSQ56&pf_rd_t=101&pf_rd_p=1306249942&pf_rd_i=507846', 'http://www.amazon.com/Kindle-Special-Offers-Wireless-Reader/dp/B004HFS6Z0/ref=amb_link_356652042_2?pf_rd_m=ATVPDKIKX0DER&pf_rd_s=center-1&pf_rd_r=1RKN5V41WJ23AXKFSQ56&pf_rd_t=101&pf_rd_p=1306249942&pf_rd_i=507846', 'amazon link');
+    test('http://twitter.com/#!/nov/status/85613699410296833', 'http://twitter.com/#!/nov/status/85613699410296833', 'twitter link');
+    test('http://cgi.ebay.com/T-Shirt-Tee-NEW-Naruto-Shippuuden-Kakashi-Adult-Men-XL-/350233503515?_trksid=p5197.m263&_trkparms=algo=SIC&itu=UCI%2BIA%2BUA%2BFICS%2 fBUFI%2BDDSIC&otn=10&pmod=260625794431%2B370476659389&po=LVI&ps=63&clkid=962675460977455716#ht_3216wt_1141', 'http://cgi.ebay.com/T-Shirt-Tee-NEW-Naruto-Shippuuden-Kakashi-Adult-Men-XL-/350233503515?_trksid=p5197.m263&_trkparms=algo=SIC&itu=UCI%252BIA%252BUA%252BFICS%252%20fBUFI%252BDDSIC&otn=10&pmod=260625794431%252B370476659389&po=LVI&ps=63&clkid=962675460977455716#ht_3216wt_1141', 'ebay link');
+
+  });
+
+  method('escapeURL', [true], function() {
+    test('what a day...', 'what%20a%20day...', '...');
+    test('/?:@&=+$#', '%2F%3F%3A%40%26%3D%2B%24%23', 'url chars');
+    test('!%^*()[]{}\\:', '!%25%5E*()%5B%5D%7B%7D%5C%3A', 'non url special chars');
+    test('http://www.amazon.com/Kindle-Special-Offers-Wireless-Reader/dp/B004HFS6Z0/ref=amb_link_356652042_2?pf_rd_m=ATVPDKIKX0DER&pf_rd_s=center-1&pf_rd_r=1RKN5V41WJ23AXKFSQ56&pf_rd_t=101&pf_rd_p=1306249942&pf_rd_i=507846', 'http%3A%2F%2Fwww.amazon.com%2FKindle-Special-Offers-Wireless-Reader%2Fdp%2FB004HFS6Z0%2Fref%3Damb_link_356652042_2%3Fpf_rd_m%3DATVPDKIKX0DER%26pf_rd_s%3Dcenter-1%26pf_rd_r%3D1RKN5V41WJ23AXKFSQ56%26pf_rd_t%3D101%26pf_rd_p%3D1306249942%26pf_rd_i%3D507846', 'amazon link');
+    test('http://cgi.ebay.com/T-Shirt-Tee-NEW-Naruto-Shippuuden-Kakashi-Adult-Men-XL-/350233503515?_trksid=p5197.m263&_trkparms=algo=SIC&itu=UCI%2BIA%2BUA%2BFICS%2 fBUFI%2BDDSIC&otn=10&pmod=260625794431%2B370476659389&po=LVI&ps=63&clkid=962675460977455716#ht_3216wt_1141', 'http%3A%2F%2Fcgi.ebay.com%2FT-Shirt-Tee-NEW-Naruto-Shippuuden-Kakashi-Adult-Men-XL-%2F350233503515%3F_trksid%3Dp5197.m263%26_trkparms%3Dalgo%3DSIC%26itu%3DUCI%252BIA%252BUA%252BFICS%252%20fBUFI%252BDDSIC%26otn%3D10%26pmod%3D260625794431%252B370476659389%26po%3DLVI%26ps%3D63%26clkid%3D962675460977455716%23ht_3216wt_1141', 'ebay link');
+
+  });
+
+  method('unescapeURL', function() {
+
+    test('what%20a%20day...', 'what a day...', '...');
+    test('%2F%3F%3A%40%26%3D%2B%24%23', '/?:@&=+$#', 'url chars');
+    test('!%25%5E*()%5B%5D%7B%7D%5C%3A', '!%^*()[]{}\\:', 'non url special chars');
+    test('http%3A%2F%2Fsomedomain.com%3Fparam%3D%22this%3A%20isn\'t%20an%20easy%20URL%20to%20escape%22', 'http://somedomain.com?param="this: isn\'t an easy URL to escape"', 'fake url')
+    test('http%3A%2F%2Fwww.amazon.com%2FKindle-Special-Offers-Wireless-Reader%2Fdp%2FB004HFS6Z0%2Fref%3Damb_link_356652042_2%3Fpf_rd_m%3DATVPDKIKX0DER%26pf_rd_s%3Dcenter-1%26pf_rd_r%3D1RKN5V41WJ23AXKFSQ56%26pf_rd_t%3D101%26pf_rd_p%3D1306249942%26pf_rd_i%3D507846', 'http://www.amazon.com/Kindle-Special-Offers-Wireless-Reader/dp/B004HFS6Z0/ref=amb_link_356652042_2?pf_rd_m=ATVPDKIKX0DER&pf_rd_s=center-1&pf_rd_r=1RKN5V41WJ23AXKFSQ56&pf_rd_t=101&pf_rd_p=1306249942&pf_rd_i=507846', 'amazon link');
+    test('http://cgi.ebay.com/T-Shirt-Tee-NEW-Naruto-Shippuuden-Kakashi-Adult-Men-XL-/350233503515?_trksid=p5197.m263&_trkparms=algo%3DSIC%26itu%3DUCI%252BIA%252BUA%252BFICS%252BUFI%252BDDSIC%26otn%3D10%26pmod%3D260625794431%252B370476659389%26po%3DLVI%26ps%3D63%26clkid%3D962675460977455716', 'http://cgi.ebay.com/T-Shirt-Tee-NEW-Naruto-Shippuuden-Kakashi-Adult-Men-XL-/350233503515?_trksid=p5197.m263&_trkparms=algo=SIC&itu=UCI%2BIA%2BUA%2BFICS%2BUFI%2BDDSIC&otn=10&pmod=260625794431%2B370476659389&po=LVI&ps=63&clkid=962675460977455716', 'ebay link');
+
+    raisesError(function() { run('% 23'); }, 'should raise an error for malformed urls');
+  });
+
+  method('unescapeURL', [true], function() {
+
+    test('what%20a%20day...', 'what a day...', '...');
+    test('%2F%3F%3A%40%26%3D%2B%24%23', '%2F%3F%3A%40%26%3D%2B%24%23', 'url chars');
+    test('!%25%5E*()%5B%5D%7B%7D%5C:', '!%^*()[]{}\\:', 'non url special chars');
+    test('http%3A%2F%2Fsomedomain.com%3Fparam%3D%22this%3A%20isn\'t%20an%20easy%20URL%20to%20escape%22', 'http%3A%2F%2Fsomedomain.com%3Fparam%3D"this%3A isn\'t an easy URL to escape"', 'fake url')
+    test('http%3A%2F%2Fwww.amazon.com%2FKindle-Special-Offers-Wireless-Reader%2Fdp%2FB004HFS6Z0%2Fref%3Damb_link_356652042_2%3Fpf_rd_m%3DATVPDKIKX0DER%26pf_rd_s%3Dcenter-1%26pf_rd_r%3D1RKN5V41WJ23AXKFSQ56%26pf_rd_t%3D101%26pf_rd_p%3D1306249942%26pf_rd_i%3D507846', 'http%3A%2F%2Fwww.amazon.com%2FKindle-Special-Offers-Wireless-Reader%2Fdp%2FB004HFS6Z0%2Fref%3Damb_link_356652042_2%3Fpf_rd_m%3DATVPDKIKX0DER%26pf_rd_s%3Dcenter-1%26pf_rd_r%3D1RKN5V41WJ23AXKFSQ56%26pf_rd_t%3D101%26pf_rd_p%3D1306249942%26pf_rd_i%3D507846', 'amazon link');
+    test('http://twitter.com/#!/nov/status/85613699410296833', 'http://twitter.com/#!/nov/status/85613699410296833', 'twitter link');
+    test('http://cgi.ebay.com/T-Shirt-Tee-NEW-Naruto-Shippuuden-Kakashi-Adult-Men-XL-/350233503515?_trksid=p5197.m263&_trkparms=algo=SIC&itu=UCI%2BIA%2BUA%2BFICS%2fBUFI%2BDDSIC&otn=10&pmod=260625794431%2B370476659389&po=LVI&ps=63&clkid=962675460977455716#ht_3216wt_1141', 'http://cgi.ebay.com/T-Shirt-Tee-NEW-Naruto-Shippuuden-Kakashi-Adult-Men-XL-/350233503515?_trksid=p5197.m263&_trkparms=algo=SIC&itu=UCI%2BIA%2BUA%2BFICS%2fBUFI%2BDDSIC&otn=10&pmod=260625794431%2B370476659389&po=LVI&ps=63&clkid=962675460977455716#ht_3216wt_1141', 'ebay link');
+
+    raisesError(function() { run('% 23'); }, 'should raise an error for malformed urls');
+
+  });
 
 
-  equal('what a day...'.escapeURL(), 'what%20a%20day...', 'String#escapeURL | ...');
-  equal('/?:@&=+$#'.escapeURL(), '/?:@&=+$#', 'String#escapeURL | url chars');
-  equal('!%^*()[]{}\\:'.escapeURL(), '!%25%5E*()%5B%5D%7B%7D%5C:', 'String#escapeURL | non url special chars');
-  equal('http://www.amazon.com/Kindle-Special-Offers-Wireless-Reader/dp/B004HFS6Z0/ref=amb_link_356652042_2?pf_rd_m=ATVPDKIKX0DER&pf_rd_s=center-1&pf_rd_r=1RKN5V41WJ23AXKFSQ56&pf_rd_t=101&pf_rd_p=1306249942&pf_rd_i=507846'.escapeURL(), 'http://www.amazon.com/Kindle-Special-Offers-Wireless-Reader/dp/B004HFS6Z0/ref=amb_link_356652042_2?pf_rd_m=ATVPDKIKX0DER&pf_rd_s=center-1&pf_rd_r=1RKN5V41WJ23AXKFSQ56&pf_rd_t=101&pf_rd_p=1306249942&pf_rd_i=507846', 'String#escapeURL | amazon link');
-  equal('http://twitter.com/#!/nov/status/85613699410296833'.escapeURL(), 'http://twitter.com/#!/nov/status/85613699410296833', 'String#escapeURL | twitter link');
-  equal('http://cgi.ebay.com/T-Shirt-Tee-NEW-Naruto-Shippuuden-Kakashi-Adult-Men-XL-/350233503515?_trksid=p5197.m263&_trkparms=algo=SIC&itu=UCI%2BIA%2BUA%2BFICS%2 fBUFI%2BDDSIC&otn=10&pmod=260625794431%2B370476659389&po=LVI&ps=63&clkid=962675460977455716#ht_3216wt_1141'.escapeURL(), 'http://cgi.ebay.com/T-Shirt-Tee-NEW-Naruto-Shippuuden-Kakashi-Adult-Men-XL-/350233503515?_trksid=p5197.m263&_trkparms=algo=SIC&itu=UCI%252BIA%252BUA%252BFICS%252%20fBUFI%252BDDSIC&otn=10&pmod=260625794431%252B370476659389&po=LVI&ps=63&clkid=962675460977455716#ht_3216wt_1141', 'String#escapeURL | ebay link');
 
+  method('escapeHTML', function() {
 
-  equal('what a day...'.escapeURL(true), 'what%20a%20day...', 'String#escapeURL | full | ...');
-  equal('/?:@&=+$#'.escapeURL(true), '%2F%3F%3A%40%26%3D%2B%24%23', 'String#escapeURL | full | url chars');
-  equal('!%^*()[]{}\\:'.escapeURL(true), '!%25%5E*()%5B%5D%7B%7D%5C%3A', 'String#escapeURL | full | non url special chars');
-  equal('http://www.amazon.com/Kindle-Special-Offers-Wireless-Reader/dp/B004HFS6Z0/ref=amb_link_356652042_2?pf_rd_m=ATVPDKIKX0DER&pf_rd_s=center-1&pf_rd_r=1RKN5V41WJ23AXKFSQ56&pf_rd_t=101&pf_rd_p=1306249942&pf_rd_i=507846'.escapeURL(true), 'http%3A%2F%2Fwww.amazon.com%2FKindle-Special-Offers-Wireless-Reader%2Fdp%2FB004HFS6Z0%2Fref%3Damb_link_356652042_2%3Fpf_rd_m%3DATVPDKIKX0DER%26pf_rd_s%3Dcenter-1%26pf_rd_r%3D1RKN5V41WJ23AXKFSQ56%26pf_rd_t%3D101%26pf_rd_p%3D1306249942%26pf_rd_i%3D507846', 'String#escapeURL | full | amazon link');
-  equal('http://cgi.ebay.com/T-Shirt-Tee-NEW-Naruto-Shippuuden-Kakashi-Adult-Men-XL-/350233503515?_trksid=p5197.m263&_trkparms=algo=SIC&itu=UCI%2BIA%2BUA%2BFICS%2 fBUFI%2BDDSIC&otn=10&pmod=260625794431%2B370476659389&po=LVI&ps=63&clkid=962675460977455716#ht_3216wt_1141'.escapeURL(true), 'http%3A%2F%2Fcgi.ebay.com%2FT-Shirt-Tee-NEW-Naruto-Shippuuden-Kakashi-Adult-Men-XL-%2F350233503515%3F_trksid%3Dp5197.m263%26_trkparms%3Dalgo%3DSIC%26itu%3DUCI%252BIA%252BUA%252BFICS%252%20fBUFI%252BDDSIC%26otn%3D10%26pmod%3D260625794431%252B370476659389%26po%3DLVI%26ps%3D63%26clkid%3D962675460977455716%23ht_3216wt_1141', 'String#escapeURL | full | ebay link');
+    test('<p>some text</p>', '&lt;p&gt;some text&lt;&#x2f;p&gt;', '<p>some text</p>');
+    test('war & peace & food', 'war &amp; peace &amp; food', 'war & peace');
+    test('&amp;', '&amp;amp;', 'double escapes &amp;');
+    test('&lt;span&gt;already escaped, yo&lt;&#x2f;span&gt;', '&amp;lt;span&amp;gt;already escaped, yo&amp;lt;&amp;#x2f;span&amp;gt;', 'already escaped will be double-escaped');
 
-  equal('what%20a%20day...'.unescapeURL(), 'what a day...', 'String#unescapeURL | full | ...');
-  equal('%2F%3F%3A%40%26%3D%2B%24%23'.unescapeURL(), '/?:@&=+$#', 'String#unescapeURL | full | url chars');
-  equal('!%25%5E*()%5B%5D%7B%7D%5C%3A'.unescapeURL(), '!%^*()[]{}\\:', 'String#unescapeURL | full | non url special chars');
-  equal('http%3A%2F%2Fsomedomain.com%3Fparam%3D%22this%3A%20isn\'t%20an%20easy%20URL%20to%20escape%22'.unescapeURL(), 'http://somedomain.com?param="this: isn\'t an easy URL to escape"', 'String#unescapeURL | full | fake url')
-  equal('http%3A%2F%2Fwww.amazon.com%2FKindle-Special-Offers-Wireless-Reader%2Fdp%2FB004HFS6Z0%2Fref%3Damb_link_356652042_2%3Fpf_rd_m%3DATVPDKIKX0DER%26pf_rd_s%3Dcenter-1%26pf_rd_r%3D1RKN5V41WJ23AXKFSQ56%26pf_rd_t%3D101%26pf_rd_p%3D1306249942%26pf_rd_i%3D507846'.unescapeURL(), 'http://www.amazon.com/Kindle-Special-Offers-Wireless-Reader/dp/B004HFS6Z0/ref=amb_link_356652042_2?pf_rd_m=ATVPDKIKX0DER&pf_rd_s=center-1&pf_rd_r=1RKN5V41WJ23AXKFSQ56&pf_rd_t=101&pf_rd_p=1306249942&pf_rd_i=507846', 'String#unescapeURL | full | amazon link');
-  equal('http://cgi.ebay.com/T-Shirt-Tee-NEW-Naruto-Shippuuden-Kakashi-Adult-Men-XL-/350233503515?_trksid=p5197.m263&_trkparms=algo%3DSIC%26itu%3DUCI%252BIA%252BUA%252BFICS%252BUFI%252BDDSIC%26otn%3D10%26pmod%3D260625794431%252B370476659389%26po%3DLVI%26ps%3D63%26clkid%3D962675460977455716'.unescapeURL(), 'http://cgi.ebay.com/T-Shirt-Tee-NEW-Naruto-Shippuuden-Kakashi-Adult-Men-XL-/350233503515?_trksid=p5197.m263&_trkparms=algo=SIC&itu=UCI%2BIA%2BUA%2BFICS%2BUFI%2BDDSIC&otn=10&pmod=260625794431%2B370476659389&po=LVI&ps=63&clkid=962675460977455716', 'String#unescapeURL | full | ebay link');
+    test("hell's", 'hell&apos;s', "works on '");
+    test('I know that "feel" bro', 'I know that &quot;feel&quot; bro', 'works on "');
+    test('feel the /', 'feel the &#x2f;', 'works on /');
 
+  });
 
-  equal('what%20a%20day...'.unescapeURL(true), 'what a day...', 'String#unescapeURL | ...');
-  equal('%2F%3F%3A%40%26%3D%2B%24%23'.unescapeURL(true), '%2F%3F%3A%40%26%3D%2B%24%23', 'String#unescapeURL | url chars');
-  equal('!%25%5E*()%5B%5D%7B%7D%5C:'.unescapeURL(true), '!%^*()[]{}\\:', 'String#unescapeURL | non url special chars');
-  equal('http%3A%2F%2Fsomedomain.com%3Fparam%3D%22this%3A%20isn\'t%20an%20easy%20URL%20to%20escape%22'.unescapeURL(true), 'http%3A%2F%2Fsomedomain.com%3Fparam%3D"this%3A isn\'t an easy URL to escape"', 'String#unescapeURL | fake url')
-  equal('http%3A%2F%2Fwww.amazon.com%2FKindle-Special-Offers-Wireless-Reader%2Fdp%2FB004HFS6Z0%2Fref%3Damb_link_356652042_2%3Fpf_rd_m%3DATVPDKIKX0DER%26pf_rd_s%3Dcenter-1%26pf_rd_r%3D1RKN5V41WJ23AXKFSQ56%26pf_rd_t%3D101%26pf_rd_p%3D1306249942%26pf_rd_i%3D507846'.unescapeURL(true), 'http%3A%2F%2Fwww.amazon.com%2FKindle-Special-Offers-Wireless-Reader%2Fdp%2FB004HFS6Z0%2Fref%3Damb_link_356652042_2%3Fpf_rd_m%3DATVPDKIKX0DER%26pf_rd_s%3Dcenter-1%26pf_rd_r%3D1RKN5V41WJ23AXKFSQ56%26pf_rd_t%3D101%26pf_rd_p%3D1306249942%26pf_rd_i%3D507846', 'String#unescapeURL | amazon link');
-  equal('http://twitter.com/#!/nov/status/85613699410296833'.unescapeURL(true), 'http://twitter.com/#!/nov/status/85613699410296833', 'String#unescapeURL | twitter link');
-  equal('http://cgi.ebay.com/T-Shirt-Tee-NEW-Naruto-Shippuuden-Kakashi-Adult-Men-XL-/350233503515?_trksid=p5197.m263&_trkparms=algo=SIC&itu=UCI%2BIA%2BUA%2BFICS%2fBUFI%2BDDSIC&otn=10&pmod=260625794431%2B370476659389&po=LVI&ps=63&clkid=962675460977455716#ht_3216wt_1141'.unescapeURL(true), 'http://cgi.ebay.com/T-Shirt-Tee-NEW-Naruto-Shippuuden-Kakashi-Adult-Men-XL-/350233503515?_trksid=p5197.m263&_trkparms=algo=SIC&itu=UCI%2BIA%2BUA%2BFICS%2fBUFI%2BDDSIC&otn=10&pmod=260625794431%2B370476659389&po=LVI&ps=63&clkid=962675460977455716#ht_3216wt_1141', 'String#unescapeURL | ebay link');
+  method('unescapeHTML', function() {
 
+    test('&lt;p&gt;some text&lt;/p&gt;', '<p>some text</p>', '<p>some text</p>');
+    test('war &amp; peace &amp; food', 'war & peace & food', 'war & peace');
+    test('<span>already unescaped, yo</span>', '<span>already unescaped, yo</span>', 'already unescaped will stay unescaped');
 
+    test('hell&apos;s', "hell's", "works on '");
+    test('I know that &quot;feel&quot; bro', 'I know that "feel" bro', 'works on "');
+    test('feel the &#x2f;', 'feel the /', 'works on /');
 
-  raisesError(function() { '% 23'.unescapeURL(); }, 'String#unescapeURL | partial | should raise an error for malformed urls');
-  raisesError(function() { '% 23'.unescapeURL(true); }, 'String#unescapeURL | full | should raise an error for malformed urls');
+    test('&amp;lt;', '&lt;', 'unescapes a single level of HTML escaping');
 
+    test(run('&gt;', 'escapeHTML'), '&gt;', 'is the inverse of escapeHTML');
 
-
-
-  equal('<p>some text</p>'.escapeHTML(), '&lt;p&gt;some text&lt;&#x2f;p&gt;', 'String#escapeHTML | <p>some text</p>');
-  equal('war & peace & food'.escapeHTML(), 'war &amp; peace &amp; food', 'String#escapeHTML | war & peace');
-  equal('&lt;span&gt;already escaped, yo&lt;/span&gt;', '&lt;span&gt;already escaped, yo&lt;/span&gt;', 'String#escapeHTML | already escaped will stay escaped');
-
-  equal("hell's".escapeHTML(), 'hell&apos;s', "String#escapeHTML | works on '");
-  equal('I know that "feel" bro'.escapeHTML(), 'I know that &quot;feel&quot; bro', 'String#escapeHTML | works on "');
-  equal('feel the /'.escapeHTML(), 'feel the &#x2f;', 'String#escapeHTML | works on /');
-
-  equal('&lt;p&gt;some text&lt;/p&gt;'.unescapeHTML(), '<p>some text</p>', 'String#unescapeHTML | <p>some text</p>');
-  equal('war &amp; peace &amp; food'.unescapeHTML(), 'war & peace & food', 'String#unescapeHTML | war & peace');
-  equal('<span>already escaped, yo</span>', '<span>already escaped, yo</span>', 'String#escapeHTML | already escaped will stay escaped');
-
-  equal('hell&apos;s'.unescapeHTML(), "hell's", "String#unescapeHTML | works on '");
-  equal('I know that &quot;feel&quot; bro'.unescapeHTML(), 'I know that "feel" bro', 'String#unescapeHTML | works on "');
-  equal('feel the &#x2f;'.unescapeHTML(), 'feel the /', 'String#unescapeHTML | works on /');
-
-  equal('&gt;'.escapeHTML().unescapeHTML(), '&gt;', 'String#unescapeHTML | is the reverse of escapeHTML');
-  equal('&amp;lt;'.unescapeHTML(), '&lt;', 'String#unescapeHTML | unescapes a single level of HTML escaping');
-
-  equal('This webpage is not available'.encodeBase64(), 'VGhpcyB3ZWJwYWdlIGlzIG5vdCBhdmFpbGFibGU=', 'String#encodeBase64 | webpage');
-  equal('I grow, I prosper; Now, gods, stand up for bastards!'.encodeBase64(), 'SSBncm93LCBJIHByb3NwZXI7IE5vdywgZ29kcywgc3RhbmQgdXAgZm9yIGJhc3RhcmRzIQ==', 'String#encodeBase64 | gods');
-  equal('räksmörgås'.encodeBase64(), 'csOka3Ntw7ZyZ8Olcw==', 'String#encodeBase64 | shrimp sandwich');
-  equal('rÃ¤ksmÃ¶rgÃ¥s'.encodeBase64(), 'csODwqRrc23Dg8K2cmfDg8Klcw==', 'String#encodeBase64 | shrimp sandwich encoded');
-
-
-  equal('АБВ'.encodeBase64(), '0JDQkdCS', 'String#encodeBase64 | Russian');
-  equal('日本語'.encodeBase64(), '5pel5pys6Kqe', 'String#encodeBase64 | Japanese');
-  equal('にほんご'.encodeBase64(), '44Gr44G744KT44GU', 'String#encodeBase64 | Hiragana');
-  equal('한국어'.encodeBase64(), '7ZWc6rWt7Ja0', 'String#encodeBase64 | Korean');
-
-  equal('АБВ'.encodeBase64().decodeBase64(), 'АБВ', 'String#encodeBase64 | reverse | Russian');
-  equal('日本語'.encodeBase64().decodeBase64(), '日本語', 'String#encodeBase64 | reverse | Japanese');
-  equal('にほんご'.encodeBase64().decodeBase64(), 'にほんご', 'String#encodeBase64 | reverse | Hiragana');
-  equal('한국어'.encodeBase64().decodeBase64(), '한국어', 'String#encodeBase64 | reverse | Korean');
+  });
 
 
   // Ensure that btoa and atob don't leak in node
@@ -81,1043 +87,1075 @@ test('String', function () {
     equal(typeof atob, 'undefined', 'atob global does not exist in node');
   }
 
-  equal('L2hvd2FyZHNmaXJld29ya3MvYXBpL29yZGVyLzc1TU0lMjBNSVg='.decodeBase64(), '/howardsfireworks/api/order/75MM%20MIX', 'String#decodeBase64 | %20')
+  method('encodeBase64', function() {
 
-  equal('VGhpcyB3ZWJwYWdlIGlzIG5vdCBhdmFpbGFibGU='.decodeBase64(), 'This webpage is not available', 'String#decodeBase64 | webpage');
-  equal('SSBncm93LCBJIHByb3NwZXI7IE5vdywgZ29kcywgc3RhbmQgdXAgZm9yIGJhc3RhcmRzIQ=='.decodeBase64(), 'I grow, I prosper; Now, gods, stand up for bastards!', 'String#decodeBase64 | gods');
+    test('This webpage is not available', 'VGhpcyB3ZWJwYWdlIGlzIG5vdCBhdmFpbGFibGU=', 'webpage');
+    test('I grow, I prosper; Now, gods, stand up for bastards!', 'SSBncm93LCBJIHByb3NwZXI7IE5vdywgZ29kcywgc3RhbmQgdXAgZm9yIGJhc3RhcmRzIQ==', 'gods');
+    test('räksmörgås', 'csOka3Ntw7ZyZ8Olcw==', 'shrimp sandwich');
+    test('rÃ¤ksmÃ¶rgÃ¥s', 'csODwqRrc23Dg8K2cmfDg8Klcw==', 'shrimp sandwich encoded');
 
-  raisesError(function() { '@#$^#$^#@$^'.decodeBase64(); }, 'String#decodeBase64 | should throw an error on non-base64 chars');
-
-  var test;
-
-  equal('reuben sandwich'.capitalize(), 'Reuben sandwich', 'String#capitalize | should capitalize first letter of first word only.', { mootools: 'Reuben Sandwich' });
-  equal('Reuben sandwich'.capitalize(), 'Reuben sandwich', 'String#capitalize | should leave the string alone', { mootools: 'Reuben Sandwich' });
-  equal('REUBEN SANDWICH'.capitalize(), 'Reuben sandwich', 'String#capitalize | should uncapitalize all other letters', { mootools: 'REUBEN SANDWICH' });
-  equal('фыва йцук'.capitalize(), 'Фыва йцук', 'String#capitalize | should capitalize unicode letters', { mootools: 'Фыва йцук' });
-
-  equal('reuben sandwich'.capitalize(true), 'Reuben Sandwich', 'String#capitalize | all | should capitalize all first letters', { prototype: 'Reuben sandwich' });
-  equal('Reuben sandwich'.capitalize(true), 'Reuben Sandwich', 'String#capitalize | all | should capitalize the second letter only', { prototype: 'Reuben sandwich' });
-  equal('REUBEN SANDWICH'.capitalize(true), 'Reuben Sandwich', 'String#capitalize | all | should uncapitalize all other letters', { prototype: 'Reuben sandwich', mootools: 'REUBEN SANDWICH' });
-  equal('фыва йцук'.capitalize(true), 'Фыва Йцук', 'String#capitalize | all | should capitalize unicode letters', { prototype: 'Фыва йцук' });
-  equal('what a shame of a title'.capitalize(true), 'What A Shame Of A Title', 'String#capitalize | all | all lower-case', { prototype: 'What a shame of a title' });
-  equal('What A Shame Of A Title'.capitalize(true), 'What A Shame Of A Title', 'String#capitalize | all | already capitalized', { prototype: 'What a shame of a title' });
-  equal(' what a shame of a title    '.capitalize(true), ' What A Shame Of A Title    ', 'String#capitalize | all | preserves whitespace', { prototype: ' what a shame of a title    ' });
-  equal(' what a shame of\n a title    '.capitalize(true), ' What A Shame Of\n A Title    ', 'String#capitalize | all | preserves new lines', { prototype: ' what a shame of\n a title    ' });
-
-  equal('reuben-sandwich'.capitalize(true), 'Reuben-Sandwich', 'String#capitalize | all | hyphen');
-  equal('reuben,sandwich'.capitalize(true), 'Reuben,Sandwich', 'String#capitalize | all | comma');
-  equal('reuben;sandwich'.capitalize(true), 'Reuben;Sandwich', 'String#capitalize | all | semicolon');
-  equal('reuben.sandwich'.capitalize(true), 'Reuben.Sandwich', 'String#capitalize | all | period');
-  equal('reuben_sandwich'.capitalize(true), 'Reuben_Sandwich', 'String#capitalize | all | underscore');
-  equal('reuben\nsandwich'.capitalize(true), 'Reuben\nSandwich', 'String#capitalize | all | new line');
-  equal("reuben's sandwich".capitalize(true), "Reuben's Sandwich", 'String#capitalize | all | apostrophe should not trigger capitalize');
-  equal('фыва-йцук'.capitalize(true), 'Фыва-Йцук', 'String#capitalize | all | Russian with hyphens');
-  equal('фыва,йцук'.capitalize(true), 'Фыва,Йцук', 'String#capitalize | all | Russian with comma');
-  equal('фыва;йцук'.capitalize(true), 'Фыва;Йцук', 'String#capitalize | all | Russian with semicolon');
-  equal('фыва7йцук'.capitalize(true), 'Фыва7Йцук', 'String#capitalize | all | Russian with 7');
-
-  equal('wasabi'.chars(), ['w','a','s','a','b','i'], 'String#chars | splits string into constituent chars');
-  equal(' wasabi \n'.chars(), [' ','w','a','s','a','b','i',' ','\n'], 'String#chars | should not trim whitespace');
-
-  equal('   wasabi   '.trim(), 'wasabi', 'String#trim | should trim both left and right whitespace');
-  equal('   wasabi   '.trimLeft(), 'wasabi   ', 'String#trim | should trim left whitespace only');
-  equal('   wasabi   '.trimRight(), '   wasabi', 'String#trim | should trim right whitespace only');
+    test('АБВ', '0JDQkdCS', 'Russian');
+    test('日本語', '5pel5pys6Kqe', 'Japanese');
+    test('にほんご', '44Gr44G744KT44GU', 'Hiragana');
+    test('한국어', '7ZWc6rWt7Ja0', 'Korean');
 
 
-  raisesError(function(){ 'wasabi'.pad(-1); }, 'String#pad | -1 raises error');
-  raisesError(function(){ 'wasabi'.pad(Infinity); }, 'String#pad | Infinity raises error');
-
-  equal('wasabi'.pad(), 'wasabi', 'String#pad | no arguments default to 0');
-  equal('wasabi'.pad(undefined), 'wasabi', 'String#pad | undefined defaults to 0');
-  equal('wasabi'.pad(null), 'wasabi', 'String#pad | null defaults to 0');
-  equal('wasabi'.pad(NaN), 'wasabi', 'String#pad | NaN defaults to 0');
-
-  equal('wasabi'.pad(0), 'wasabi', 'String#pad | 0');
-  equal('wasabi'.pad(1), 'wasabi', 'String#pad | 1');
-  equal('wasabi'.pad(2), 'wasabi', 'String#pad | 2');
-  equal('wasabi'.pad(3), 'wasabi', 'String#pad | 3');
-  equal('wasabi'.pad(4), 'wasabi', 'String#pad | 4');
-  equal('wasabi'.pad(5), 'wasabi', 'String#pad | 5');
-  equal('wasabi'.pad(6), 'wasabi', 'String#pad | 6');
-  equal('wasabi'.pad(7), 'wasabi ', 'String#pad | 7');
-  equal('wasabi'.pad(8), ' wasabi ', 'String#pad | 8');
-  equal('wasabi'.pad(9), ' wasabi  ', 'String#pad | 9');
-  equal('wasabi'.pad(10), '  wasabi  ', 'String#pad | 10');
-  equal('wasabi'.pad(12), '   wasabi   ', 'String#pad | 12');
-  equal('wasabi'.pad(20), '       wasabi       ', 'String#pad | 12');
-
-  equal('wasabi'.pad(8, '"'), '"wasabi"', 'String#pad | padding with quotes');
-  equal('wasabi'.pad(8, ''), 'wasabi', 'String#pad | empty string should have no padding');
-  equal('wasabi'.pad(8, 's'), 'swasabis', 'String#pad | padding with s');
-  equal('wasabi'.pad(8, 5), '5wasabi5', 'String#pad | padding with a number');
-  equal('wasabi'.pad(12, '-'), '---wasabi---', 'String#pad | should pad the string with 6 hyphens');
-
-
-  raisesError(function() { 'wasabi'.padLeft(-1) }, 'String#padLeft | -1 raises error');
-  raisesError(function() { 'wasabi'.padLeft(Infinity) }, 'String#padLeft | Infinity raises error');
-
-  equal('wasabi'.padLeft(0), 'wasabi', 'String#padLeft | 0');
-  equal('wasabi'.padLeft(1), 'wasabi', 'String#padLeft | 1');
-  equal('wasabi'.padLeft(2), 'wasabi', 'String#padLeft | 2');
-  equal('wasabi'.padLeft(3), 'wasabi', 'String#padLeft | 3');
-  equal('wasabi'.padLeft(4), 'wasabi', 'String#padLeft | 4');
-  equal('wasabi'.padLeft(5), 'wasabi', 'String#padLeft | 5');
-  equal('wasabi'.padLeft(6), 'wasabi', 'String#padLeft | 6');
-  equal('wasabi'.padLeft(7), ' wasabi', 'String#padLeft | 7');
-  equal('wasabi'.padLeft(8), '  wasabi', 'String#padLeft | 8');
-  equal('wasabi'.padLeft(9), '   wasabi', 'String#padLeft | 9');
-  equal('wasabi'.padLeft(10), '    wasabi', 'String#padLeft | 10');
-  equal('wasabi'.padLeft(12), '      wasabi', 'String#padLeft | 12');
-  equal('wasabi'.padLeft(20), '              wasabi', 'String#padLeft | 20');
-  equal('wasabi'.padLeft(12, '-'), '------wasabi', 'String#padLeft | 12 with hyphens');
-  equal('wasabi'.padLeft(12, '+'), '++++++wasabi', 'String#padLeft | 12 with plusses');
-
-
-  raisesError(function() { 'wasabi'.padRight(-1) }, 'String#padRight | -1 raises error');
-  raisesError(function() { 'wasabi'.padRight(Infinity) }, 'String#padRight | Infinity raises error');
-
-  equal('wasabi'.padRight(0), 'wasabi', 'String#padRight | 0');
-  equal('wasabi'.padRight(1), 'wasabi', 'String#padRight | 1');
-  equal('wasabi'.padRight(2), 'wasabi', 'String#padRight | 2');
-  equal('wasabi'.padRight(3), 'wasabi', 'String#padRight | 3');
-  equal('wasabi'.padRight(4), 'wasabi', 'String#padRight | 4');
-  equal('wasabi'.padRight(5), 'wasabi', 'String#padRight | 5');
-  equal('wasabi'.padRight(6), 'wasabi', 'String#padRight | 6');
-  equal('wasabi'.padRight(7), 'wasabi ', 'String#padRight | 7');
-  equal('wasabi'.padRight(8), 'wasabi  ', 'String#padRight | 8');
-  equal('wasabi'.padRight(9), 'wasabi   ', 'String#padRight | 9');
-  equal('wasabi'.padRight(10), 'wasabi    ', 'String#padRight | 10');
-  equal('wasabi'.padRight(12), 'wasabi      ', 'String#padRight | 12');
-  equal('wasabi'.padRight(20), 'wasabi              ', 'String#padRight | 20');
-  equal('wasabi'.padRight(12, '-'), 'wasabi------', 'String#padRight | 12 with hyphens');
-  equal('wasabi'.padRight(12, '+'), 'wasabi++++++', 'String#padRight | 12 with plusses');
-
-
-
-  equal('wasabi'.repeat(0), '', 'String#repeat | 0 should repeat the string 0 times');
-  equal('wasabi'.repeat(2), 'wasabiwasabi', 'String#repeat | 2 should repeat the string 2 times');
-  equal('wasabi'.repeat(2.5), 'wasabiwasabi', 'String#repeat | 2.5 should floor to 2 times');
-
-
-  equal(String.prototype.repeat.call(true, 3), 'truetruetrue', 'String#repeat | boolean coerced to string');
-  equal(String.prototype.repeat.call({}, 3), '[object Object][object Object][object Object]', 'String#repeat | object coerced to string');
-  equal(String.prototype.repeat.call(1, 3), '111', 'String#repeat | number coerced to string');
-  equal('a'.repeat('3'), 'aaa', 'String#repeat | count should be coerced to number');
-  equal('a'.repeat('a'), '', 'String#repeat | NaN coercions should be 0');
-
-  var undefinedContext = (function(){ return this; }).call(undefined);
-
-  // Can't test this in IE etc where calling with null
-  // context reverts back to the global object.
-  if(undefinedContext === undefined) {
-    raisesError(function(){ String.prototype.repeat.call(undefined) }, 'String#repeat | raises error on undefined');
-    raisesError(function(){ String.prototype.repeat.call(null) }, 'String#repeat | raises error on null');
-  }
-
-  raisesError(function(){ 'a'.repeat(-1) }, 'String#repeat | negative number raises error');
-  raisesError(function(){ 'a'.repeat(Infinity) }, 'String#repeat | Infinity raises error');
-  raisesError(function(){ 'a'.repeat(-Infinity) }, 'String#repeat | -Infinity raises error');
-
-
-  // "each" will return an array of everything that was matched, defaulting to individual characters
-  equal('g'.each(), ['g'], 'String#each | each should return an array of each char');
-
-  // Each without a first parameter assumes "each character"
-  var result = 'g'.each(function(str, i) {
-    equal(str, 'g', 'String#each | char should be passed as the first argument');
   });
 
-  equal(result, ['g'], "String#each | ['g'] should be the resulting value");
+  method('decodeBase64', function() {
 
-  var counter = 0;
-  result = 'ginger'.each(function(str, i) {
-    equal(str, 'ginger'.charAt(counter), 'String#each | ginger | char should be passed as the first argument');
-    equal(i, counter, 'String#each | ginger | index should be passed as the second argument');
-    counter++;
+    test(run('АБВ', 'encodeBase64'), 'АБВ', 'inverse | Russian');
+    test(run('日本語', 'encodeBase64'), '日本語', 'inverse | Japanese');
+    test(run('にほんご', 'encodeBase64'), 'にほんご', 'inverse | Hiragana');
+    test(run('한국어', 'encodeBase64'), '한국어', 'inverse | Korean');
+
+    test('L2hvd2FyZHNmaXJld29ya3MvYXBpL29yZGVyLzc1TU0lMjBNSVg=', '/howardsfireworks/api/order/75MM%20MIX', '%20')
+
+    test('VGhpcyB3ZWJwYWdlIGlzIG5vdCBhdmFpbGFibGU=', 'This webpage is not available', 'webpage');
+    test('SSBncm93LCBJIHByb3NwZXI7IE5vdywgZ29kcywgc3RhbmQgdXAgZm9yIGJhc3RhcmRzIQ==', 'I grow, I prosper; Now, gods, stand up for bastards!', 'gods');
+
+    raisesError(function() { run('@#$^#$^#@$^') }, 'should throw an error on non-base64 chars');
+
   });
-  equal(counter, 6, 'String#each | ginger | should have ran 6 times');
-  equal(result, ['g','i','n','g','e','r'], 'String#each | ginger | resulting array should contain all the characters');
 
-  counter = 0;
-  result = 'ginger'.each('g', function(str, i) {
-    equal(str, 'g', 'String#each | string argument | match should be passed as the first argument to the block');
-    counter++;
+  method('capitalize', function() {
+
+    test('reuben sandwich', 'Reuben sandwich', 'should capitalize first letter of first word only.');
+    test('Reuben sandwich', 'Reuben sandwich', 'should leave the string alone');
+    test('REUBEN SANDWICH', 'Reuben sandwich', 'should uncapitalize all other letters');
+    test('фыва йцук', 'Фыва йцук', 'should capitalize unicode letters');
+
+    test('', '', 'blank');
+    test('wasabi', 'Wasabi', 'wasabi');
   });
-  equal(counter, 2, 'String#each | string argument | should have ran 2 times');
-  equal(result, ['g','g'], "String#each | string argument | resulting array should be ['g','g']");
 
-  counter = 0;
-  test = ['g','i','g','e'];
-  result = 'ginger'.each(/[a-i]/g, function(str, i) {
-    equal(str, test[i], 'String#each | regexp argument | match should be passed as the first argument to the block');
-    counter++;
+  method('capitalize', [true], function() {
+
+    test('reuben sandwich', 'Reuben Sandwich', 'should capitalize all first letters');
+    test('Reuben sandwich', 'Reuben Sandwich', 'should capitalize the second letter only');
+    test('REUBEN SANDWICH', 'Reuben Sandwich', 'should uncapitalize all other letters');
+    test('фыва йцук', 'Фыва Йцук', 'should capitalize unicode letters');
+    test('what a shame of a title', 'What A Shame Of A Title', 'all lower-case');
+    test('What A Shame Of A Title', 'What A Shame Of A Title', 'already capitalized');
+    test(' what a shame of a title    ', ' What A Shame Of A Title    ', 'preserves whitespace');
+    test(' what a shame of\n a title    ', ' What A Shame Of\n A Title    ', 'preserves new lines');
+
+    test('reuben-sandwich', 'Reuben-Sandwich', 'hyphen');
+    test('reuben,sandwich', 'Reuben,Sandwich', 'comma');
+    test('reuben;sandwich', 'Reuben;Sandwich', 'semicolon');
+    test('reuben.sandwich', 'Reuben.Sandwich', 'period');
+    test('reuben_sandwich', 'Reuben_Sandwich', 'underscore');
+    test('reuben\nsandwich', 'Reuben\nSandwich', 'new line');
+    test("reuben's sandwich", "Reuben's Sandwich", 'apostrophe should not trigger capitalize');
+    test('фыва-йцук', 'Фыва-Йцук', 'Russian with hyphens');
+    test('фыва,йцук', 'Фыва,Йцук', 'Russian with comma');
+    test('фыва;йцук', 'Фыва;Йцук', 'Russian with semicolon');
+    test('фыва7йцук', 'Фыва7Йцук', 'Russian with 7');
+
   });
-  equal(counter, 4, 'String#each | regexp argument | should have ran 4 times');
-  equal(result, ['g','i','g','e'], "String#each | regexp argument | resulting array should have been ['g','i','g','e']");
 
+  method('chars', function() {
 
-  // .each should do the same thing as String#scan in ruby except that .each doesn't respect capturing groups
-  var testString = 'cruel world';
+    test('wasabi', ['w','a','s','a','b','i'], 'splits string into constituent chars');
+    test(' wasabi \n', [' ','w','a','s','a','b','i',' ','\n'], 'should not trim whitespace');
 
-  result = testString.each(/\w+/g);
-  equal(result, ['cruel', 'world'], 'String#each | complex regexp | /\\w+/g');
-
-  result = testString.each(/.../g);
-  equal(result, ['cru', 'el ', 'wor'], 'String#each | complex regexp | /.../');
-
-  result = testString.each(/(..)(..)/g);
-  equal(result, ['crue', 'l wo'], 'String#each | complex regexp | /(..)(..)/');
-
-
-  result = testString.each(/\w+/);
-  equal(result, ['cruel', 'world'], 'String#each non-global regexes should still be global');
-
-
-  // #shift
-
-
-  equal('ク'.shift(1), 'グ', 'String#shift | should shift 1 code up');
-  equal('グ'.shift(-1), 'ク', 'String#shift | should shift 1 code down');
-  equal('ヘ'.shift(2), 'ペ', 'String#shift | should shift 2 codes');
-  equal('ペ'.shift(-2), 'ヘ', 'String#shift | should shift -2 codes');
-  equal('ク'.shift(0), 'ク', 'String#shift | should shift 0 codes');
-  equal('ク'.shift(), 'ク', 'String#shift | no params simply returns the string');
-  equal('カキクケコ'.shift(1), 'ガギグゲゴ', 'String#shift | multiple characters up one');
-  equal('ガギグゲゴ'.shift(-1), 'カキクケコ', 'String#shift | multiple characters down one');
-
-
-
-  // test each char code
-
-  equal('jumpy'.codes(), [106,117,109,112,121], 'String#codes | jumpy');
-
-  counter = 0;
-  test = [103,105,110,103,101,114];
-  result = 'ginger'.codes(function(str, i) {
-    equal(str, test[i], 'String#codes | ginger codes | char code should have been passed into the block');
-    counter++;
   });
-  equal(counter, 6, 'String#codes | ginger codes | should have ran 6 times');
-  equal(result, test, 'String#codes | ginger codes | result should be an array');
 
-  // test each char
-  counter = 0;
-  result = 'ginger'.chars(function(str, i) {
-    equal(str, 'ginger'.charAt(counter), 'String#chars | ginger | char code should be the first argument in the block');
-    equal(i, counter, 'String#chars | ginger | index should be the second argument in the block');
-    counter++;
+  method('trim', function() {
+    // String#trim is ES5 and should always exist on the prototype.
+    equal('   wasabi   '.trim(), 'wasabi', 'should trim both left and right whitespace');
+    equal(''.trim(), '', 'blank');
+    equal(' wasabi '.trim(), 'wasabi', 'wasabi with whitespace');
   });
-  equal(counter, 6, 'String#chars | ginger | should have run 6 times');
-  equal(result, ['g','i','n','g','e','r'], 'String#chars | result should be an array');
 
-  // test each char collects when properly returned
-  counter = 0;
-  result = 'ginger'.chars(function(str, i) {
-    counter++;
-    return str.toUpperCase();
+  method('trimLeft', function() {
+    test('   wasabi   ', 'wasabi   ', 'should trim left whitespace only');
+    test('', '', 'blank');
+    test(' wasabi ', 'wasabi ', 'wasabi with whitespace');
   });
-  equal(result, ['G','I','N','G','E','R'], 'String#chars | ginger | resulting array is properly collected');
 
-  counter = 0;
-  var sentence = 'these pretzels are \n\n making me         thirsty!\n\n';
-  test = ['these', 'pretzels', 'are', 'making', 'me', 'thirsty!'];
-  result = sentence.words(function(str, i) {
-    equal(str, test[i], 'String#words | match is the first argument');
-    counter++;
+  method('trimRight', function() {
+    test('   wasabi   ', '   wasabi', 'should trim right whitespace only');
+    test('', '', 'blank');
+    test(' wasabi ', ' wasabi', 'wasabi with whitespace');
   });
-  equal(counter, 6, 'String#words | should have run 6 times');
-  equal(result, test, 'String#words | result should be an array of matches');
 
-  counter = 0;
-  var paragraph = 'these\npretzels\nare\n\nmaking\nme\n         thirsty!\n\n\n\n';
-  test = ['these', 'pretzels', 'are', '', 'making', 'me', '         thirsty!'];
-  result = paragraph.lines(function(str, i) {
-    equal(str, test[i], 'String#lines | match is the first argument');
-    counter++;
+  method('pad', function() {
+
+    raisesError(function(){ run('wasabi', 'pad', [-1]); }, 'String#pad | -1 raises error');
+    raisesError(function(){ run('wasabi', 'pad', [Infinity]); }, 'String#pad | Infinity raises error');
+
+    test('wasabi', 'wasabi', 'no arguments default to 0');
+    test('wasabi', [undefined], 'wasabi', 'undefined defaults to 0');
+    test('wasabi', [null], 'wasabi', 'null defaults to 0');
+    test('wasabi', [NaN], 'wasabi', 'NaN defaults to 0');
+
+    test('wasabi', [0], 'wasabi', '0');
+    test('wasabi', [1], 'wasabi', '1');
+    test('wasabi', [2], 'wasabi', '2');
+    test('wasabi', [3], 'wasabi', '3');
+    test('wasabi', [4], 'wasabi', '4');
+    test('wasabi', [5], 'wasabi', '5');
+    test('wasabi', [6], 'wasabi', '6');
+    test('wasabi', [7], 'wasabi ', '7');
+    test('wasabi', [8], ' wasabi ', '8');
+    test('wasabi', [9], ' wasabi  ', '9');
+    test('wasabi', [10], '  wasabi  ', '10');
+    test('wasabi', [12], '   wasabi   ', '12');
+    test('wasabi', [20], '       wasabi       ', '12');
+
+    test('wasabi', [8, '"'], '"wasabi"', 'padding with quotes');
+    test('wasabi', [8, ''], 'wasabi', 'empty string should have no padding');
+    test('wasabi', [8, 's'], 'swasabis', 'padding with s');
+    test('wasabi', [8, 5], '5wasabi5', 'padding with a number');
+    test('wasabi', [12, '-'], '---wasabi---', 'should pad the string with 6 hyphens');
+
   });
-  equal(counter, 7, 'String#lines | should have run 7 times');
-  equal(result, test, 'String#lines | result should be an array of matches');
 
-  result = 'one\ntwo'.lines(function(str, i) {
-    return str.capitalize();
+  method('padLeft', function() {
+
+    raisesError(function() { run('wasabi', 'padLeft', [-1]); }, '-1 raises error');
+    raisesError(function() { run('wasabi', 'padLeft', [Infinity]); }, 'Infinity raises error');
+
+    test('wasabi', [0], 'wasabi', '0');
+    test('wasabi', [1], 'wasabi', '1');
+    test('wasabi', [2], 'wasabi', '2');
+    test('wasabi', [3], 'wasabi', '3');
+    test('wasabi', [4], 'wasabi', '4');
+    test('wasabi', [5], 'wasabi', '5');
+    test('wasabi', [6], 'wasabi', '6');
+    test('wasabi', [7], ' wasabi', '7');
+    test('wasabi', [8], '  wasabi', '8');
+    test('wasabi', [9], '   wasabi', '9');
+    test('wasabi', [10], '    wasabi', '10');
+    test('wasabi', [12], '      wasabi', '12');
+    test('wasabi', [20], '              wasabi', '20');
+    test('wasabi', [12, '-'], '------wasabi', '12 with hyphens');
+    test('wasabi', [12, '+'], '++++++wasabi', '12 with pluses');
+
   });
-  equal(['One','Two'], result, 'String#lines | lines can be modified');
 
-  counter = 0;
-  var essay = 'the history of the united states\n\n';
-  essay +=    'it all began back in 1776 when someone declared something from someone.\n';
-  essay +=    'it was at this point that we had to get our rears in gear\n\n';
-  essay +=    'The British got their revenge in the late 60s with the British Invasion,\n';
-  essay +=    'which claimed the lives of over 32,352 young women across the nation.\n\n\n\n\n';
-  essay +=    'The End\n\n\n\n\n\n\n';
-  test = ['the history of the united states', 'it all began back in 1776 when someone declared something from someone.\nit was at this point that we had to get our rears in gear', 'The British got their revenge in the late 60s with the British Invasion,\nwhich claimed the lives of over 32,352 young women across the nation.', 'The End'];
-  result = essay.paragraphs(function(str, i) {
-    equal(str, test[i], 'String#paragraphs | match is the first argument');
-    counter ++;
+  method('padRight', function() {
+
+    raisesError(function() { run('wasabi', 'padRight', [-1]); }, '-1 raises error');
+    raisesError(function() { run('wasabi', 'padRight', [Infinity]); }, 'Infinity raises error');
+
+    test('wasabi', [0], 'wasabi', '0');
+    test('wasabi', [1], 'wasabi', '1');
+    test('wasabi', [2], 'wasabi', '2');
+    test('wasabi', [3], 'wasabi', '3');
+    test('wasabi', [4], 'wasabi', '4');
+    test('wasabi', [5], 'wasabi', '5');
+    test('wasabi', [6], 'wasabi', '6');
+    test('wasabi', [7], 'wasabi ', '7');
+    test('wasabi', [8], 'wasabi  ', '8');
+    test('wasabi', [9], 'wasabi   ', '9');
+    test('wasabi', [10], 'wasabi    ', '10');
+    test('wasabi', [12], 'wasabi      ', '12');
+    test('wasabi', [20], 'wasabi              ', '20');
+    test('wasabi', [12, '-'], 'wasabi------', '12 with hyphens');
+    test('wasabi', [12, '+'], 'wasabi++++++', '12 with pluses');
+
   });
-  equal(counter, 4, 'String#paragraphs | should have run 4 times');
-  equal(result, test, 'String#paragraphs | result should be an array of matches');
-
-
-  equal(''.codes(), [], 'String#codes | empty string');
-  equal(''.chars(), [], 'String#chars | empty string');
-  equal(''.words(), [], 'String#words | empty string');
-  equal(''.lines(), [''], 'String#lines | empty string');
-  equal(''.paragraphs(), [''], 'String#paragraphs | empty string');
-  equal(''.each('f'), [], 'String#each | empty string | each f');
-  equal(''.each(/foo/), [], 'String#each | empty string | each /foo/');
-  equal(''.each(function() {}), [], 'String#each | empty string | passing a block');
-
-
-
-
-  // startsWith/endsWith is defined in Harmony, so only passing a regex or
-  // 3 arguments will actually test this code.
-
-  equal('hello'.startsWith('hell', 0, true), true, 'String#startsWith | hello starts with hell');
-  equal('HELLO'.startsWith('HELL', 0, true), true, 'String#startsWith | HELLO starts with HELL');
-  equal('HELLO'.startsWith('hell', 0, true), false, 'String#startsWith | HELLO starts with hell');
-  equal('HELLO'.startsWith('hell', 0, true), false, 'String#startsWith | case sensitive | HELLO starts with hell');
-  equal('hello'.startsWith(/hell/, 0, true), true, 'String#startsWith | accepts regex', { prototype: false });
-  equal('hello'.startsWith(/[a-h]/, 0, true), true, 'String#startsWith | accepts regex alternates', { prototype: false });
-  equal('HELLO'.startsWith('hell', 0, false), true, 'String#startsWith | case insensitive | HELLO starts with hell', { prototype: false });
-  equal('HELLO'.startsWith(), false, 'String#startsWith | undefined produces false');
-  equal('hello'.startsWith('hell', -20, true), true, 'String#startsWith | from pos -20');
-  equal('hello'.startsWith('hell', 1, true), false, 'String#startsWith | from pos 1');
-  equal('hello'.startsWith('hell', 2, true), false, 'String#startsWith | from pos 2');
-  equal('hello'.startsWith('hell', 3, true), false, 'String#startsWith | from pos 3');
-  equal('hello'.startsWith('hell', 4, true), false, 'String#startsWith | from pos 4');
-  equal('hello'.startsWith('hell', 5, true), false, 'String#startsWith | from pos 5');
-  equal('hello'.startsWith('hell', 20, true), false, 'String#startsWith | from pos 20');
-  equal('10'.startsWith(10), true, 'String#startsWith | Numbers will be converted');
-  equal('valley girls\nrock'.startsWith('valley girls', 0, true), true, 'String#startsWith | valley girls rock starts with valley girls');
-  equal('valley girls\nrock'.startsWith('valley girls r', 0, true), false, 'String#startsWith | valley girls rock starts with valley girls r');
-
-
-  equal('vader'.endsWith('der', 5, true), true, 'String#endsWith | vader ends with der');
-  equal('VADER'.endsWith('DER', 5, true), true, 'String#endsWith | VADER ends with DER');
-  equal('VADER'.endsWith('der', 5, true), false, 'String#endsWith | VADER ends with der');
-  equal('VADER'.endsWith('DER', 5, false), true, 'String#endsWith | case insensitive | VADER ends with DER');
-  equal('vader'.endsWith(/der/, 5, true), true, 'String#endsWith | accepts regex', { prototype: false });
-  equal('vader'.endsWith(/[q-z]/, 5, true), true, 'String#endsWith | accepts regex alternates', { prototype: false });
-  equal('VADER'.endsWith('der', 5, false), true, 'String#endsWith | case insensitive |  VADER ends with der', { prototype: false });
-  equal('VADER'.endsWith('DER', 5, true), true, 'String#endsWith | case sensitive | VADER ends with DER');
-  equal('VADER'.endsWith('der', 5, true), false, 'String#endsWith | case sensitive |  VADER ends with der');
-  equal('vader'.endsWith('der', -20, true), false, 'String#startsWith | from pos -20');
-  equal('vader'.endsWith('der', 0, true), false, 'String#startsWith | from pos 0');
-  equal('vader'.endsWith('der', 1, true), false, 'String#startsWith | from pos 1');
-  equal('vader'.endsWith('der', 2, true), false, 'String#startsWith | from pos 2');
-  equal('vader'.endsWith('der', 3, true), false, 'String#startsWith | from pos 3');
-  equal('vader'.endsWith('der', 4, true), false, 'String#startsWith | from pos 4');
-  equal('vader'.endsWith('der', 20, true), true, 'String#startsWith | from pos 20');
-  equal('HELLO'.endsWith(), false, 'String#endsWith | undefined produces false');
-  equal('10'.endsWith(10), true, 'String#endsWith | Numbers will be converted');
-  equal('i aint your\nfather'.endsWith('father', 18, true), true, 'String#endsWith | vader ends with der');
-  equal('i aint your\nfather'.endsWith('r father', 18, false), false, 'String#endsWith | vader ends with der');
-
-
-  equal(''.isBlank(), true, 'String#blank | blank string');
-  equal('0'.isBlank(), false, 'String#blank | 0');
-  equal('            '.isBlank(), true, 'String#blank | successive blanks');
-  equal('\n'.isBlank(), true, 'String#blank | new line');
-  equal('\t\t\t\t'.isBlank(), true, 'String#blank | tabs');
-  equal('日本語では　「マス」　というの知ってた？'.isBlank(), false, 'String#blank | japanese');
-  equal('mayonnaise'.isBlank(), false, 'String#blank | mayonnaise');
-
-
-  equal('foo'.has('f'), true, 'String#has | foo has f');
-  equal('foo'.has('oo'), true, 'String#has | foo has oo');
-  equal('foo'.has(/f/), true, 'String#has | foo has /f/');
-  equal('foo'.has(/[a-g]/), true, 'String#has | foo has /[a-g]/');
-  equal('foo'.has(/[p-z]/), false, 'String#has | foo has /[p-z]/');
-  equal('flu?ffy'.has('?'), true, 'String#has | flu?ffy has ?');
-  equal('flu?ffy'.has('\?'), true, 'String#has | flu?ffy has one slash and ?');
-  equal('flu?ffy'.has('\\?'), false, 'String#has | flu?ffy has two slashes and ?');
-  equal('flu?ffy'.has('\\\?'), false, 'String#has | flu?ffy has three slashes and ?');
-  equal('flu?ffy'.has(/\?/), true, 'String#has | flu?ffy has one slash and ? in a regex');
-  equal('flu?ffy'.has(/\\?/), true, 'String#has | flu?ffy has two slashes and ? in a regex');
-  equal('flu?ffy'.has(/\\\?/), false, 'String#has | flu?ffy has three slashes and ? in a regex');
-  equal('flu\\?ffy'.has(/\\\?/), true, 'String#has | flu\\?ffy has three slashes and ? in a regex');
-
-  equal('schfifty'.add(' five'), 'schfifty five', 'String#add | schfifty five');
-  equal('dopamine'.add('e', 3), 'dopeamine', 'String#add | dopeamine');
-  equal('spelling eror'.add('r', -3), 'spelling error', 'String#add | add from the end');
-  equal('flack'.add('a', 0), 'aflack', 'String#add | add at 0');
-  equal('five'.add('schfifty', 20), 'fiveschfifty', 'String#add | adds out of positive range');
-  equal('five'.add('schfifty ', -20), 'schfifty five', 'String#add | adds out of negative range');
-  equal('five'.add('schfifty', 4), 'fiveschfifty', 'String#add | add at position 4');
-  equal('five'.add('schfifty', 5), 'fiveschfifty', 'String#add | add at position 5');
-  equal(''.add(['schfifty', ' five']), 'schfifty, five', 'String#add | arrays are stringified');
-
-  equal('schfifty five'.remove('five'), 'schfifty ', 'String#remove | five');
-  equal('schfifty five'.remove(/five/), 'schfifty ', 'String#remove | /five/');
-  equal('schfifty five'.remove(/f/), 'schifty five', 'String#remove | /f/');
-  equal('schfifty five'.remove(/f/g), 'schity ive', 'String#remove | /f/g');
-  equal('schfifty five'.remove(/[a-f]/g), 'shity iv', 'String#remove | /[a-f]/');
-  equal('?'.remove('?'), '', 'String#remove | strings have tokens escaped');
-  equal('?('.remove('?('), '', 'String#remove | strings have all tokens escaped');
-
-  equal('schfifty'.insert(' five'), 'schfifty five', 'String#insert | schfifty five');
-  equal('dopamine'.insert('e', 3), 'dopeamine', 'String#insert | dopeamine');
-  equal('spelling eror'.insert('r', -3), 'spelling error', 'String#insert | inserts from the end');
-  equal('flack'.insert('a', 0), 'aflack', 'String#insert | inserts at 0');
-  equal('five'.insert('schfifty', 20), 'fiveschfifty', 'String#insert | adds out of positive range');
-  equal('five'.insert('schfifty', -20), 'schfiftyfive', 'String#insert | adds out of negative range');
-  equal('five'.insert('schfifty', 4), 'fiveschfifty', 'String#insert | inserts at position 4');
-  equal('five'.insert('schfifty', 5), 'fiveschfifty', 'String#insert | inserts at position 5');
-
-  equal('abcd'.insert('X', 2), 'abXcd', 'String#insert | X | 2');
-  equal('abcd'.insert('X', 1), 'aXbcd', 'String#insert | X | 1');
-  equal('abcd'.insert('X', 0), 'Xabcd', 'String#insert | X | 0');
-  equal('abcd'.insert('X', -1), 'abcXd', 'String#insert | X | -1');
-  equal('abcd'.insert('X', -2), 'abXcd', 'String#insert | X | -2');
-
-
-  equal('4em'.toNumber(), 4, 'String#toNumber | 4em');
-  equal('10px'.toNumber(), 10, 'String#toNumber | 10px');
-  equal('10,000'.toNumber(), 10000, 'String#toNumber | 10,000');
-  equal('5,322,144,444'.toNumber(), 5322144444, 'String#toNumber | 5,322,144,444');
-  equal('10.532'.toNumber(), 10.532, 'String#toNumber | 10.532');
-  equal('10'.toNumber(), 10, 'String#toNumber | 10');
-  equal('95.25%'.toNumber(), 95.25, 'String#toNumber | 95.25%');
-  equal('10.848'.toNumber(), 10.848, 'String#toNumber | 10.848');
-
-  equal('1234blue'.toNumber(), 1234, 'String#toNumber | 1234blue');
-  equal(isNaN('0xA'.toNumber()), false, 'String#toNumber | "0xA" should not be NaN');
-  equal('22.5'.toNumber(), 22.5, 'String#toNumber | 22.5');
-  equal(isNaN('blue'.toNumber()), true, 'String#toNumber | "blue" should not be NaN');
-
-  equal('010'.toNumber(), 10, 'String#toNumber | "010" should be 10');
-  equal('0908'.toNumber(), 908, 'String#toNumber | "0908" should be 908');
-  equal('22.34.5'.toNumber(), 22.34, 'String#toNumber | "22.34.5" should be 22.34');
-
-  equal(isNaN('........'.toNumber()), true, 'String#toNumber | "......." should be NaN');
-
-  equal('1.45kg'.toNumber(), 1.45, 'String#toNumber | "1.45kg"');
-  equal('77.3'.toNumber(), 77.3, 'String#toNumber | 77.3');
-  equal('077.3'.toNumber(), 77.3, 'String#toNumber | "077.3" should be 77.3');
-  equal(isNaN('0x77.3'.toNumber()), false, 'String#toNumber | "0x77.3" is not NaN');
-  equal('.3'.toNumber(), 0.3, 'String#toNumber | ".3" should be 0.3');
-  equal('0.1e6'.toNumber(), 100000, 'String#toNumber | "0.1e6" should be 100000');
-
-
-  // This should handle hexadecimal, etc
-  equal('ff'.toNumber(16), 255, 'String#toNumber | hex | ff');
-  equal('00'.toNumber(16), 0, 'String#toNumber | hex | 00');
-  equal('33'.toNumber(16), 51, 'String#toNumber | hex | 33');
-  equal('66'.toNumber(16), 102, 'String#toNumber | hex | 66');
-  equal('99'.toNumber(16), 153, 'String#toNumber | hex | 99');
-  equal('bb'.toNumber(16), 187, 'String#toNumber | hex | bb');
-
-  equal(('２００').toNumber(), 200, 'String#toNumber | full-width | should work on full-width integers');
-  equal(('５．２３４５').toNumber(), 5.2345, 'String#toNumber | full-width | should work on full-width decimals');
-
-
-
-  equal('spoon'.reverse(), 'noops', 'String#reverse | spoon');
-  equal('amanaplanacanalpanama'.reverse(), 'amanaplanacanalpanama', 'String#reverse | amanaplanacanalpanama');
-
-
-  equal('the rain in     spain    falls mainly   on     the        plain'.compact(), 'the rain in spain falls mainly on the plain', 'String#compact | basic');
-  equal('\n\n\nthe \n\n\nrain in     spain    falls mainly   on     the        plain\n\n'.compact(), 'the rain in spain falls mainly on the plain', 'String#compact | with newlines');
-  equal('\n\n\n\n           \t\t\t\t          \n\n      \t'.compact(), '', 'String#compact | with newlines and tabs');
-
-  var largeJapaneseSpaces = '　　　日本語　　　　　の　　　　　スペース　　　　　も　　';
-  var compactedWithoutJapaneseSpaces = '日本語　の　スペース　も';
-  var compactedWithTrailingJapaneseSpaces = '　日本語　の　スペース　も　';
-
-  equal('moo\tmoo'.compact(), 'moo moo', 'String#compact | moo moo tab');
-  equal('moo \tmoo'.compact(), 'moo moo', 'String#compact | moo moo space tab');
-  equal('moo \t moo'.compact(), 'moo moo', 'String#compact | moo moo space tab space');
-
-
-  equal('foop'.at(0), 'f', 'String#at | pos 0');
-  equal('foop'.at(1), 'o', 'String#at | pos 1');
-  equal('foop'.at(2), 'o', 'String#at | pos 2');
-  equal('foop'.at(3), 'p', 'String#at | pos 3');
-  equal('foop'.at(4), 'f', 'String#at | pos 4');
-  equal('foop'.at(5), 'o', 'String#at | pos 5');
-  equal('foop'.at(1224), 'f', 'String#at | out of bounds');
-  equal('foop'.at(-1), 'p', 'String#at | negative | pos -1');
-  equal('foop'.at(-2), 'o', 'String#at | negative | pos -2');
-  equal('foop'.at(-3), 'o', 'String#at | negative | pos -3');
-  equal('foop'.at(-4), 'f', 'String#at | negative | pos -4');
-  equal('foop'.at(-5), 'p', 'String#at | negative | pos -5');
-  equal('foop'.at(-1224), 'f', 'String#at | negative | out of bounds');
-
-  equal('foop'.at(0, false), 'f', 'String#at | pos 0');
-  equal('foop'.at(1, false), 'o', 'String#at | pos 1');
-  equal('foop'.at(2, false), 'o', 'String#at | pos 2');
-  equal('foop'.at(3, false), 'p', 'String#at | pos 3');
-  equal('foop'.at(4, false), '', 'String#at | pos 4');
-  equal('foop'.at(1224, false), '', 'String#at | out of bounds');
-  equal('foop'.at(-1, false), '', 'String#at | negative | pos -1');
-  equal('foop'.at(-2, false), '', 'String#at | negative | pos -2');
-  equal('foop'.at(-3, false), '', 'String#at | negative | pos -3');
-  equal('foop'.at(-4, false), '', 'String#at | negative | pos -4');
-  equal('foop'.at(-5, false), '', 'String#at | negative | pos -5');
-  equal('foop'.at(-1224, false), '', 'String#at | negative | out of bounds');
-
-  equal('wowzers'.at(0,2,4,6), ['w','w','e','s'], 'String#at | handles enumerated params');
-  equal('wowzers'.at(0,2,4,6,18), ['w','w','e','s','e'], 'String#at | handles enumerated params');
-  equal('wowzers'.at(0,2,4,6,18,false), ['w','w','e','s',''], 'String#at | handles enumerated params');
-
-
-  equal('quack'.first(), 'q', 'String#first | first character');
-  equal('quack'.first(2), 'qu', 'String#first | first 2 characters');
-  equal('quack'.first(3), 'qua', 'String#first | first 3 characters');
-  equal('quack'.first(4), 'quac', 'String#first | first 4 characters');
-  equal('quack'.first(20), 'quack', 'String#first | first 20 characters');
-  equal('quack'.first(0), '', 'String#first | first 0 characters');
-  equal('quack'.first(-1), '', 'String#first | first -1 characters');
-  equal('quack'.first(-5), '', 'String#first | first -5 characters');
-  equal('quack'.first(-10), '', 'String#first | first -10 characters');
-
-
-
-  equal('quack'.last(), 'k', 'String#last | last character');
-  equal('quack'.last(2), 'ck', 'String#last | last 2 characters');
-  equal('quack'.last(3), 'ack', 'String#last | last 3 characters');
-  equal('quack'.last(4), 'uack', 'String#last | last 4 characters');
-  equal('quack'.last(10), 'quack', 'String#last | last 10 characters');
-  equal('quack'.last(-1), '', 'String#last | last -1 characters');
-  equal('quack'.last(-5), '', 'String#last | last -5 characters');
-  equal('quack'.last(-10), '', 'String#last | last -10 characters');
-  equal('fa'.last(3), 'fa', 'String#last | last 3 characters');
-
-
-  equal('quack'.from(), 'quack', 'String#from | no params');
-  equal('quack'.from(0), 'quack', 'String#from | from 0');
-  equal('quack'.from(2), 'ack', 'String#from | from 2');
-  equal('quack'.from(4), 'k', 'String#from | from 4');
-  equal('quack'.from(-1), 'k', 'String#from | from -1');
-  equal('quack'.from(-3), 'ack', 'String#from | from -3');
-  equal('quack'.from(-4), 'uack', 'String#from | from -4');
-
-  equal('quack'.from('q'), 'quack', 'String#from | strings | q');
-  equal('quack'.from('u'), 'uack', 'String#from | strings | u');
-  equal('quack'.from('a'), 'ack', 'String#from | strings | a');
-  equal('quack'.from('k'), 'k', 'String#from | strings | k');
-  equal('quack'.from(''), 'quack', 'String#from | strings | empty string');
-  equal('quack'.from('ua'), 'uack', 'String#from | strings | 2 characters');
-  equal('quack'.from('uo'), '', 'String#from | strings | 2 non-existent characters');
-  equal('quack'.from('quack'), 'quack', 'String#from | strings | full string');
-
-
-  equal('quack'.to(), 'quack', 'String#to | no params');
-  equal('quack'.to(0), '', 'String#to | to 0');
-  equal('quack'.to(1), 'q', 'String#to | to 1');
-  equal('quack'.to(2), 'qu', 'String#to | to 2');
-  equal('quack'.to(4), 'quac', 'String#to | to 4');
-  equal('quack'.to(-1), 'quac', 'String#to | to -1');
-  equal('quack'.to(-3), 'qu', 'String#to | to -3');
-  equal('quack'.to(-4), 'q', 'String#to | to -4');
-
-  equal('quack'.to('q'), '', 'String#to | strings | q');
-  equal('quack'.to('u'), 'q', 'String#to | strings | u');
-  equal('quack'.to('a'), 'qu', 'String#to | strings | a');
-  equal('quack'.to('k'), 'quac', 'String#to | strings | k');
-  equal('quack'.to(''), '', 'String#to | strings | empty string');
-  equal('quack'.to('ua'), 'q', 'String#to | strings | 2 characters');
-  equal('quack'.to('uo'), '', 'String#to | strings | 2 non-existent characters');
-  equal('quack'.to('quack'), '', 'String#to | strings | full string');
-
-  equal('hop_on_pop'.dasherize(), 'hop-on-pop', 'String#dasherize | underscores');
-  equal('HOP_ON_POP'.dasherize(), 'hop-on-pop', 'String#dasherize | capitals and underscores', { prototype: 'HOP-ON-POP' });
-  equal('hopOnPop'.dasherize(), 'hop-on-pop', 'String#dasherize | camel-case', { prototype: 'hopOnPop' });
-  equal('watch me fail'.dasherize(), 'watch-me-fail', 'String#dasherize | whitespace', { prototype: 'watch me fail' });
-  equal('watch me fail_sad_face'.dasherize(), 'watch-me-fail-sad-face', 'String#dasherize | whitespace sad face', { prototype: 'watch me fail-sad-face' });
-  equal('waTch me su_cCeed'.dasherize(), 'wa-tch-me-su-c-ceed', 'String#dasherize | complex whitespace', { prototype: 'waTch me su-cCeed' });
-
-  equal('aManAPlanACanalPanama'.dasherize(), 'a-man-a-plan-a-canal-panama', 'String#dasherize | single characters', { prototype: 'aManAPlanACanalPanama' });
-
-
-
-  equal('hop-on-pop'.camelize(), 'HopOnPop', 'String#camelize | dashes', { prototype: 'hopOnPop' });
-  equal('HOP-ON-POP'.camelize(), 'HopOnPop', 'String#camelize | capital dashes', { prototype: 'HOPONPOP' });
-  equal('hop_on_pop'.camelize(), 'HopOnPop', 'String#camelize | underscores', { prototype: 'hop_on_pop' });
-  equal('hop-on-pop'.camelize(false), 'hopOnPop', 'String#camelize | first false | dashes');
-  equal('HOP-ON-POP'.camelize(false), 'hopOnPop', 'String#camelize | first false | capital dashes', { prototype: 'HOPONPOP' });
-  equal('hop_on_pop'.camelize(false), 'hopOnPop', 'String#camelize | first false | underscores', { prototype: 'hop_on_pop' });
-  equal('hop-on-pop'.camelize(true), 'HopOnPop', 'String#camelize | first true | dashes', { prototype: 'hopOnPop' });
-  equal('HOP-ON-POP'.camelize(true), 'HopOnPop', 'String#camelize | first true | capital dashes', { prototype: 'HOPONPOP' });
-  equal('hop_on_pop'.camelize(true), 'HopOnPop', 'String#camelize | first true | underscores', { prototype: 'hop_on_pop' });
 
-  equal('watch me fail'.camelize(), 'WatchMeFail', 'String#camelize | whitespace', { prototype: 'watch me fail' });
-  equal('watch   me   fail'.camelize(), 'WatchMeFail', 'String#camelize | long whitespace', { prototype: 'watch   me   fail' });
-  equal('watch me fail-sad-face'.camelize(), 'WatchMeFailSadFace', 'String#camelize | whitespace sad face', { prototype: 'watch me failSadFace' });
-  equal('waTch me su-cCeed'.camelize(), 'WaTchMeSuCCeed', 'String#camelize | complex whitespace', { prototype: 'waTch me suCCeed' });
+  method('repeat', function() {
 
-  equal('watch me fail'.camelize(false), 'watchMeFail', 'String#camelize | first false | whitespace', { prototype: 'watch me fail' });
-  equal('watch me fail-sad-face'.camelize(false), 'watchMeFailSadFace', 'String#camelize | first false | whitespace sad face', { prototype: 'watch me failSadFace' });
-  equal('waTch me su-cCeed'.camelize(false), 'waTchMeSuCCeed', 'String#camelize | first false | complex whitespace', { prototype: 'waTch me suCCeed' });
+    test('wasabi', [0], '', '0 should repeat the string 0 times');
+    test('wasabi', [1], 'wasabi', 'repeating 1 time');
+    test('wasabi', [2], 'wasabiwasabi', '2 should repeat the string 2 times');
+    test('wasabi', [2.5], 'wasabiwasabi', '2.5 should floor to 2 times');
 
-
 
+    test(true, [3], 'truetruetrue', 'boolean coerced to string');
+    test({}, [3], '[object Object][object Object][object Object]', 'object coerced to string');
+    test(1, [3], '111', 'number coerced to string');
+    test('a', ['3'], 'aaa', 'count should be coerced to number');
+    test('a', ['a'], '', 'NaN coercions should be 0');
 
-  equal('hopOnPop'.underscore(), 'hop_on_pop', 'String#underscore | camel-case');
-  equal('HopOnPop'.underscore(), 'hop_on_pop', 'String#underscore | camel-case capital first');
-  equal('HOPONPOP'.underscore(), 'hoponpop', 'String#underscore | all caps', { prototype: 'hoponpop' });
-  equal('HOP-ON-POP'.underscore(), 'hop_on_pop', 'String#underscore | caps and dashes', { prototype: 'hop_on_pop' });
-  equal('hop-on-pop'.underscore(), 'hop_on_pop', 'String#underscore | lower-case and dashes');
-
-  equal('watch me fail'.underscore(), 'watch_me_fail', 'String#underscore | whitespace', { prototype: 'watch me fail' });
-  equal('watch   me   fail'.underscore(), 'watch_me_fail', 'String#underscore | long whitespace', { prototype: 'watch   me   fail' });
-  equal('watch me fail-sad-face'.underscore(), 'watch_me_fail_sad_face', 'String#underscore | whitespace sad face', { prototype: 'watch me fail_sad_face' });
-  equal('waTch me su-cCeed'.underscore(), 'wa_tch_me_su_c_ceed', 'String#underscore | complex whitespace', { prototype: 'wa_tch me su_c_ceed' });
+    var undefinedContext = (function(){ return this; }).call(undefined);
 
+    // Can't test this in IE etc where calling with null
+    // context reverts back to the global object.
+    if(undefinedContext === undefined) {
+      raisesError(function(){ run(undefined, 'repeat'); }, 'raises error on undefined');
+      raisesError(function(){ run(null, 'repeat'); }, 'raises error on null');
+    }
 
-  equal('hopOnPop'.spacify(), 'hop on pop', 'String#spacify | camel-case');
-  equal('HopOnPop'.spacify(), 'hop on pop', 'String#spacify | camel-case capital first');
-  equal('HOPONPOP'.spacify(), 'hoponpop', 'String#spacify | all caps', { prototype: 'hoponpop' });
-  equal('HOP-ON-POP'.spacify(), 'hop on pop', 'String#spacify | caps and dashes', { prototype: 'hop on pop' });
-  equal('hop-on-pop'.spacify(), 'hop on pop', 'String#spacify | lower-case and dashes');
+    raisesError(function(){ run('a', 'run', [-1]); }, 'negative number raises error');
+    raisesError(function(){ run('a', 'run', [Infinity]); }, 'Infinity raises error');
+    raisesError(function(){ run('a', 'run', [-Infinity]); }, '-Infinity raises error');
 
-  equal('watch_me_fail'.spacify(), 'watch me fail', 'String#spacify | whitespace');
-  equal('watch-meFail-sad-face'.spacify(), 'watch me fail sad face', 'String#spacify | whitespace sad face');
-  equal('waTch me su-cCeed'.spacify(), 'wa tch me su c ceed', 'String#spacify | complex whitespace');
+  });
 
+  method('each', function() {
 
-  var stripped;
-  var html =
-  '<div class="outer">' +
-  '<p>text with <a href="http://foobar.com/">links</a>, &quot;entities&quot; and <b>bold</b> tags</p>' +
-  '</div>';
-  var allStripped = 'text with links, &quot;entities&quot; and bold tags';
+    var callbackTest, result;
 
-  var malformed_html = '<div class="outer"><p>paragraph';
+    // "each" will return an array of everything that was matched, defaulting to individual characters
+    test('g', ['g'], 'each should return an array of each char');
 
 
-  stripped =
-  '<div class="outer">' +
-  '<p>text with links, &quot;entities&quot; and <b>bold</b> tags</p>' +
-  '</div>';
+    callbackTest = function(str, i) {
+      equal(str, 'g', 'char should be passed as the first argument');
+    }
 
-  equal(html.stripTags('a'), stripped, 'String#stripTags | stripped a tags', { prototype: allStripped });
-  equal(html.stripTags('a') == html, false, 'String#stripTags | stripped <a> tags was changed');
+    // Each without a first parameter assumes "each character"
+    result = run('g', 'each', [callbackTest]);
+    equal(result, ['g'], "['g'] should be the resulting value");
 
 
-  stripped =
-  '<div class="outer">' +
-  '<p>text with links, &quot;entities&quot; and bold tags</p>' +
-  '</div>';
-  equal(html.stripTags('a', 'b'), stripped, 'String#stripTags | stripped <a> and <b> tags', { prototype: allStripped });
-  equal(html.stripTags(['a', 'b']), stripped, 'String#stripTags | array | stripped <a> and <b> tags', { prototype: allStripped });
+  });
 
+  method('each', function() {
 
-  stripped =
-  '<div class="outer">' +
-  'text with links, &quot;entities&quot; and <b>bold</b> tags' +
-  '</div>';
-  equal(html.stripTags('p', 'a'), stripped, 'String#stripTags | stripped <p> and <a> tags', { prototype: allStripped });
-  equal(html.stripTags(['p', 'a']), stripped, 'String#stripTags | array | stripped <p> and <a> tags', { prototype: allStripped });
+    var counter = 0, result, callback;
+    callback = function(str, i) {
+      equal(str, 'ginger'.charAt(counter), 'char should be passed as the first argument');
+      equal(i, counter, 'index should be passed as the second argument');
+      counter++;
+    }
+    result = run('ginger', 'each', [callback]);
+    equal(counter, 6, 'should have ran 6 times');
+    equal(result, ['g','i','n','g','e','r'], 'resulting array should contain all the characters');
 
+  });
 
-  stripped = '<p>text with <a href="http://foobar.com/">links</a>, &quot;entities&quot; and <b>bold</b> tags</p>';
-  equal(html.stripTags('div'), stripped, 'String#stripTags | stripped <div> tags', { prototype: allStripped});
+  method('each', function() {
 
+    var counter = 0, result, callback;
 
-  stripped = 'text with links, &quot;entities&quot; and bold tags';
-  equal(html.stripTags(), stripped, 'String#stripTags | all tags stripped');
+    callback = function(str, i) {
+      equal(str, 'g', 'string argument | match should be passed as the first argument to the block');
+      counter++;
+    }
 
+    result = run('ginger', 'each', ['g', callback]);
+    equal(counter, 2, 'string argument | should have ran 2 times');
+    equal(result, ['g','g'], "string argument | resulting array should be ['g','g']");
 
-  stripped = '<p>paragraph';
-  equal(malformed_html.stripTags('div'), stripped, 'String#stripTags | malformed | div tag stripped', { prototype: 'paragraph' });
+  });
 
-  stripped = '<div class="outer">paragraph';
-  equal(malformed_html.stripTags('p'), stripped, 'String#stripTags | malformed | p tags stripped', { prototype: 'paragraph' });
+  method('each', function() {
 
-  stripped = 'paragraph';
-  equal(malformed_html.stripTags(), stripped, 'String#stripTags | malformed | all tags stripped');
+    var counter = 0, result, callback, arr;
+    arr = ['g','i','g','e'];
 
+    callback = function(str, i) {
+      equal(str, arr[i], 'regexp argument | match should be passed as the first argument to the block');
+      counter++;
+    }
 
+    result = run('ginger', 'each', [/[a-i]/g, callback]);
+    equal(counter, 4, 'regexp argument | should have ran 4 times');
+    equal(result, ['g','i','g','e'], "regexp argument | resulting array should have been ['g','i','g','e']");
 
-  equal('<b NOT BOLD</b>'.stripTags(), '<b NOT BOLD', "String#stripTags | does not strip tags that aren't properly closed", { prototype: '' });
-  equal('a < b'.stripTags(), 'a < b', 'String#stripTags | does not strip less than');
-  equal('a > b'.stripTags(), 'a > b', 'String#stripTags | does not strip greater than');
-  equal('</foo  >>'.stripTags(), '>', 'String#stripTags | strips closing tags with white space', { prototype: '</foo  >>' });
+  });
 
 
+  method('each', function() {
 
-  /* Stipping self-closing tags */
-  equal('<input type="text" class="blech" />'.stripTags(), '', 'String#stripTags | full input stripped');
+    // .each should do the same thing as String#scan in ruby except that .each doesn't respect capturing groups
+    var testString = 'cruel world';
 
-  equal('<b>bold<b> and <i>italic</i> and <a>link</a>'.stripTags('b','i'), 'bold and italic and <a>link</a>', 'String#stripTags | handles multi args', { prototype: 'bold and italic and link' });
-
-  html =
-  '<form action="poo.php" method="post">' +
-  '<p>' +
-  '<label>label for text:</label>' +
-  '<input type="text" value="brabra" />' +
-  '<input type="submit" value="submit" />' +
-  '</p>' +
-  '</form>';
-
-  equal(html.stripTags(), 'label for text:', 'String#stripTags | form | all tags removed');
-  equal(html.stripTags('input'), '<form action="poo.php" method="post"><p><label>label for text:</label></p></form>', 'String#stripTags | form | input tags stripped', { prototype: 'label for text:' });
-  equal(html.stripTags('input', 'p', 'form'), '<label>label for text:</label>', 'String#stripTags | form | input, p, and form tags stripped', { prototype: 'label for text:' });
-
-  /* Stripping namespaced tags */
-  equal('<xsl:template>foobar</xsl:template>'.stripTags(), 'foobar', 'String#stripTags | strips tags with xml namespaces', { prototype: '<xsl:template>foobar</xsl:template>' });
-  equal('<xsl:template>foobar</xsl:template>'.stripTags('xsl:template'), 'foobar', 'String#stripTags | strips xsl:template', { prototype: '<xsl:template>foobar</xsl:template>' });
-  equal('<xsl/template>foobar</xsl/template>'.stripTags('xsl/template'), 'foobar', 'String#stripTags | strips xsl/template', { prototype: '<xsl/template>foobar</xsl/template>' });
-
-
-  /* No errors on RegExp */
-  equal('<xsl(template>foobar</xsl(template>'.stripTags('xsl(template'), 'foobar', 'String#stripTags | no regexp errors on tokens', { prototype: '<xsl(template>foobar</xsl(template>' });
-
-
-
-
-  html =
-  '<div class="outer">' +
-  '<p>text with <a href="http://foobar.com/">links</a>, &quot;entities&quot; and <b>bold</b> tags</p>' +
-  '</div>';
-  var removed;
-
-  removed =
-  '<div class="outer">' +
-  '<p>text with , &quot;entities&quot; and <b>bold</b> tags</p>' +
-  '</div>';
-  equal(html.removeTags('a'), removed, 'String#removeTags | <a> tag removed');
-  equal(html.removeTags('a') == html, false, 'String#removeTags | html was changed');
-
-
-  removed =
-  '<div class="outer">' +
-  '<p>text with , &quot;entities&quot; and  tags</p>' +
-  '</div>';
-  equal(html.removeTags('a', 'b'), removed, 'String#removeTags | <a> and <b> tags removed');
-  equal(html.removeTags(['a', 'b']), removed, 'String#removeTags | array | <a> and <b> tags removed');
-
-
-  removed =
-  '<div class="outer"></div>';
-  equal(html.removeTags('p', 'a'), removed, 'String#removeTags | <p> and <a> tags removed');
-  equal(html.removeTags(['p', 'a']), removed, 'String#removeTags | array | <p> and <a> tags removed');
-
-
-  equal(html.removeTags('div'), '', 'String#removeTags | <div> tags removed');
-  equal(html.removeTags(), '', 'String#removeTags | removing all tags');
-
-  equal(malformed_html.removeTags('div'), malformed_html, 'String#removeTags | malformed | <div> tags removed');
-  equal(malformed_html.removeTags('p'), malformed_html, 'String#removeTags | malformed | <p> tags removed');
-  equal(malformed_html.removeTags(), malformed_html, 'String#removeTags | malformed | all tags removed');
-
-
-
-  equal('<b NOT BOLD</b>'.removeTags(), '<b NOT BOLD</b>', 'String#removeTags | unclosed opening tag untouched');
-  equal('a < b'.removeTags(), 'a < b', 'String#removeTags | less than unaffected');
-  equal('a > b'.removeTags(), 'a > b', 'String#removeTags | greater than unaffected');
-  equal('</foo  >>'.removeTags(), '</foo  >>', 'String#removeTags | malformed closing tag unaffected');
-
-
-
-  /* Stipping self-closing tags */
-  equal('<input type="text" class="blech" />'.removeTags(), '', 'String#removeTags');
-
-  html =
-  '<form action="poo.php" method="post">' +
-  '<p>' +
-  '<label>label for text:</label>' +
-  '<input type="text" value="brabra" />' +
-  '<input type="submit" value="submit" />' +
-  '</p>' +
-  '</form>';
-
-  equal(html.removeTags(), '', 'String#removeTags | form | removing all tags');
-  equal(html.removeTags('input'), '<form action="poo.php" method="post"><p><label>label for text:</label></p></form>', 'String#removeTags | form | removing input tags');
-  equal(html.removeTags('input', 'p', 'form'), '', 'String#removeTags | form | removing input, p, and form tags');
-
-  /* Stripping namespaced tags */
-  equal('<xsl:template>foobar</xsl:template>'.removeTags(), '', 'String#removeTags | form | xml namespaced tags removed');
-  equal('<xsl:template>foobar</xsl:template>'.removeTags('xsl:template'), '', 'String#removeTags | form | xsl:template removed');
-  equal('<xsl/template>foobar</xsl/template>'.removeTags('xsl/template'), '', 'String#removeTags | form | xsl/template removed');
-
-
-  /* No errors on RegExp */
-  raisesError(function(){ '<xsl(template>foobar</xsl(template>'.removeTags('xsl(template') }, 'String#removeTags | form | you now have the power to cause your own regex pain');
-
-  equal('<b>bold</b> and <i>italic</i> and <a>link</a>'.removeTags('b','i'), ' and  and <a>link</a>', 'String#removeTags | handles multi args');
-
-
-
-  equal(''.capitalize(), '', 'String#capitalize | blank');
-  equal('wasabi'.capitalize(), 'Wasabi', 'String#capitalize | wasabi');
-  equal(''.trim(), '', 'String#trim | blank');
-  equal(' wasabi '.trim(), 'wasabi', 'String#trim | wasabi with whitespace');
-  equal(''.trimLeft(), '', 'String#trimLeft | blank');
-  equal(' wasabi '.trimLeft(), 'wasabi ', 'String#trimLeft | wasabi with whitespace');
-  equal(''.trimRight(), '', 'String#trimRight | blank');
-  equal(' wasabi '.trimRight(), ' wasabi', 'String#trimRight | wasabi with whitespace');
-  equal('wasabi'.repeat(0), '', 'String#repeat | repeating 0 times');
-  equal('wasabi'.repeat(1), 'wasabi', 'String#repeat | repeating 1 time');
-  equal('wasabi'.repeat(2), 'wasabiwasabi', 'String#repeat | repeating 2 time');
-  equal(''.insert('-', 0), '-', 'String#insert | - inserted at 0');
-  equal('b'.insert('-', 0), '-b', 'String#insert | b inserted at 0');
-  equal('b'.insert('-', 1), 'b-', 'String#insert | b inserted at 1');
-  equal(''.reverse(), '', 'String#reverse | blank');
-  equal('wasabi'.reverse(), 'ibasaw', 'String#reverse | wasabi');
-  equal(''.compact(), '', 'String#compact | blank');
-  equal('run   tell    dat'.compact(), 'run tell dat', 'String#compact | with extra whitespace');
-  equal(''.at(3), '', 'String#at | blank');
-  equal('wasabi'.at(0), 'w', 'String#at | wasabi at pos 0');
-  equal(''.first(), '', 'String#first | blank');
-  equal('wasabi'.first(), 'w', 'String#first | no params');
-  equal(''.last(), '', 'String#last | blank');
-  equal('wasabi'.last(), 'i', 'String#last | no params');
-  equal(''.from(0), '', 'String#from | blank');
-  equal('wasabi'.from(3), 'abi', 'String#from | from pos 3');
-  equal(''.to(0), '', 'String#to | blank');
-  equal('wasabi'.to(3), 'was', 'String#to | to pos 3');
-  equal(''.dasherize(), '', 'String#dasherize | blank');
-  equal('noFingWay'.dasherize(), 'no-fing-way', 'String#dasherize | noFingWay', { prototype: 'noFingWay' });
-  equal(''.underscore(), '', 'String#underscore | blank');
-  equal('noFingWay'.underscore(), 'no_fing_way', 'String#underscore | noFingWay');
-  equal(''.camelize(), '', 'String#camelize | blank');
-  equal('no-fing-way'.camelize(), 'NoFingWay', 'String#camelize | no-fing-way', { prototype: 'noFingWay' });
-  equal(''.stripTags(), '', 'String#stripTags | blank');
-  equal('chilled <b>monkey</b> brains'.stripTags(), 'chilled monkey brains', 'String#stripTags | chilled <b>monkey</b> brains');
-  equal(''.removeTags(), '', 'String#removeTags | blank');
-  equal('chilled <b>monkey</b> brains'.removeTags(), 'chilled  brains', 'String#removeTags | chilled <b>monkey</b> brains');
-
-
-  // Thanks to Steven Levitah (http://stevenlevithan.com/demo/split.cfm) for inspiration and information here.
-
-
-  // String#split is now removed from the main packages and is in /lib/extra...
-  // keeping the unit tests as they are valuable.
-  //equal('a,b,c,d,e'.split(',') , ['a','b','c','d','e'] , 'Array#split | splits on standard commas');
-  //equal('a|b|c|d|e'.split(',') , ['a|b|c|d|e'] , "Array#split | doesn't split on standard commas");
-  //equal('a|b|c|d|e'.split('|') , ['a','b','c','d','e'] , 'Array#split | splits on pipes');
-  //equal('a,b,c,d,e'.split(/,/) , ['a','b','c','d','e'] , 'Array#split | splits on standard regexp commas');
-  //equal('a|b|c|d|e'.split(/\|/) , ['a','b','c','d','e'] , 'Array#split | splits on standard regexp pipes');
-  //equal('a|b|c|d|e'.split(/[,|]/) , ['a','b','c','d','e'] , 'Array#split | splits on classes');
-  //equal('a|b|c|d|e'.split(/[a-z]/) , ['','|','|','|','|',''] , 'Array#split | splits on classes with ranges');
-  //equal('a|b|c|d|e'.split(/\|*/) , ['a','b','c','d','e'] , 'Array#split | splits on star');
-  //equal('a|b|c|d|e'.split(/\|?/) , ['a','b','c','d','e'] , 'Array#split | splits on optionals');
-
-  //equal('a,b,c,d,e'.split(',', 2) , ['a','b'] , 'Array#split | handles limits');
-
-  //equal('a|||b|c|d|e'.split('|') , ['a', '', '', 'b','c','d','e'] , 'Array#split | splits back-to-back separators on a string');
-  //equal('a|||b|c|d|e'.split(/\|/) , ['a', '', '', 'b','c','d','e'] , 'Array#split | splits back-to-back separators on a regexp');
-
-  //equal('paragraph one\n\nparagraph two\n\n\n'.split(/\n/) , ['paragraph one', '', 'paragraph two','','',''] , 'Array#split | splits on new lines');
-  //equal(''.split() , [''] , 'Array#split | has a single null string for null separators on null strings');
-  //equal(''.split(/./) , [''] , 'Array#split | has a single null string for separators on null strings');
-
-  //equal(''.split(/.?/) , [] , 'Array#split | has a single null string for optionals on null strings');
-  //equal(''.split(/.??/) , [] , 'Array#split | has a single null string for double optionals on null strings');
-
-  //equal('a'.split(/./) , ['',''] , 'Array#split | has two entries when splitting on the only character in the string');
-  //equal('a'.split(/-/) , ['a'] , 'Array#split | has one entry when only one character and no match');
-  //equal('a-b'.split(/-/) , ['a', 'b'] , 'Array#split | properly splits hyphens');
-  //equal('a-b'.split(/-?/) , ['a', 'b'] , 'Array#split | properly splits optional hyphens');
-
-
-  //equal('a:b:c'.split(/(:)/) , ['a',':','b',':','c'] , 'Array#split | respects capturing groups');
-
-
-  //equal('ab'.split(/a*/) , ['', 'b'] , 'Array#split | complex regex splitting | /a*/');
-  //equal('ab'.split(/a*?/) , ['a', 'b'] , 'Array#split | complex regex splitting | /a*?/');
-  //equal('ab'.split(/(?:ab)/) , ['', ''] , 'Array#split | complex regex splitting | /(?:ab)/');
-  //equal('ab'.split(/(?:ab)*/) , ['', ''] , 'Array#split | complex regex splitting | /(?:ab)*/');
-  //equal('ab'.split(/(?:ab)*?/) , ['a', 'b'] , 'Array#split | complex regex splitting | /(?:ab)*?/');
-  //equal('test'.split('') , ['t', 'e', 's', 't'] , 'Array#split | complex regex splitting | empty string');
-  //equal('test'.split() , ['test'] , 'Array#split | complex regex splitting | no argument');
-  //equal('111'.split(1) , ['', '', '', ''] , 'Array#split | complex regex splitting | 1');
-  //equal('test'.split(/(?:)/, 2) , ['t', 'e'] , 'Array#split | complex regex splitting | index is 2');
-  //equal('test'.split(/(?:)/, -1) , ['t', 'e', 's', 't'] , 'Array#split | complex regex splitting | index is -1');
-  //equal('test'.split(/(?:)/, undefined) , ['t', 'e', 's', 't'] , 'Array#split | complex regex splitting | index is undefined');
-  //equal('test'.split(/(?:)/, null) , [] , 'Array#split | complex regex splitting | index is undefined');
-  //equal('test'.split(/(?:)/, NaN) , [] , 'Array#split | complex regex splitting | index is NaN');
-  //equal('test'.split(/(?:)/, true) , ['t'] , 'Array#split | complex regex splitting | index is true');
-  //equal('test'.split(/(?:)/, '2') , ['t', 'e'] , 'Array#split | complex regex splitting | index is "2"');
-  //equal('test'.split(/(?:)/, 'two') , [] , 'Array#split | complex regex splitting | index is two');
-  //equal('a'.split(/-/) , ['a'] , 'Array#split | complex regex splitting | a | /-/');
-  //equal('a'.split(/-?/) , ['a'] , 'Array#split | complex regex splitting | a | /-?/');
-  //equal('a'.split(/-??/) , ['a'] , 'Array#split | complex regex splitting | a | /-??/');
-  //equal('a'.split(/a/) , ['', ''] , 'Array#split | complex regex splitting | a | /a/');
-  //equal('a'.split(/a?/) , ['', ''] , 'Array#split | complex regex splitting | a | /a?/');
-  //equal('a'.split(/a??/) , ['a'] , 'Array#split | complex regex splitting | a | /a??/');
-  //equal('ab'.split(/-/) , ['ab'] , 'Array#split | complex regex splitting | ab | /-/');
-  //equal('ab'.split(/-?/) , ['a', 'b'] , 'Array#split | complex regex splitting | ab | /-?/');
-  //equal('ab'.split(/-??/) , ['a', 'b'] , 'Array#split | complex regex splitting | ab | /-??/');
-  //equal('a-b'.split(/-/) , ['a', 'b'] , 'Array#split | complex regex splitting | a-b | /-/');
-  //equal('a-b'.split(/-?/) , ['a', 'b'] , 'Array#split | complex regex splitting | a-b | /-?/');
-  //equal('a-b'.split(/-??/) , ['a', '-', 'b'] , 'Array#split | complex regex splitting | a-b | /-??/');
-  //equal('a--b'.split(/-/) , ['a', '', 'b'] , 'Array#split | complex regex splitting | a--b | /-/');
-  //equal('a--b'.split(/-?/) , ['a', '', 'b'] , 'Array#split | complex regex splitting | a--b | /-?/');
-  //equal('a--b'.split(/-??/) , ['a', '-', '-', 'b'] , 'Array#split | complex regex splitting | a--b | /-??/');
-  //equal(''.split(/()()/) , [] , 'Array#split | complex regex splitting | empty string | /()()/');
-  //equal('.'.split(/()()/) , ['.'] , 'Array#split | complex regex splitting | . | /()()/');
-  //equal('.'.split(/(.?)(.?)/) , ['', '.', '', ''] , 'Array#split | complex regex splitting | . | /(.?)(.?)/');
-  //equal('.'.split(/(.??)(.??)/) , ['.'] , 'Array#split | complex regex splitting | . | /(.??)(.??)/');
-  //equal('.'.split(/(.)?(.)?/) , ['', '.', undefined, ''] , 'Array#split | complex regex splitting | . | /(.)?(.)?/');
-  //equal('tesst'.split(/(s)*/) , ['t', undefined, 'e', 's', 't'] , 'Array#split | complex regex splitting | tesst | /(s)*/');
-  //equal('tesst'.split(/(s)*?/) , ['t', undefined, 'e', undefined, 's', undefined, 's', undefined, 't'] , 'Array#split | complex regex splitting | tesst | /(s)*?/');
-  //equal('tesst'.split(/(s*)/) , ['t', '', 'e', 'ss', 't'] , 'Array#split | complex regex splitting | tesst | /(s*)/');
-  //equal('tesst'.split(/(s*?)/) , ['t', '', 'e', '', 's', '', 's', '', 't'] , 'Array#split | complex regex splitting | tesst | /(s*?)/');
-  //equal('tesst'.split(/(?:s)*/) , ['t', 'e', 't'] , 'Array#split | complex regex splitting | tesst | /(?:s)*/');
-  //equal('tesst'.split(/(?=s+)/) , ['te', 's', 'st'] , 'Array#split | complex regex splitting | tesst | /(?=s+)/');
-  //equal('test'.split('t') , ['', 'es', ''] , 'Array#split | complex regex splitting | test | t');
-  //equal('test'.split('es') , ['t', 't'] , 'Array#split | complex regex splitting | test | es');
-  //equal('test'.split(/t/) , ['', 'es', ''] , 'Array#split | complex regex splitting | test | /t/');
-  //equal('test'.split(/es/) , ['t', 't'] , 'Array#split | complex regex splitting | test | /es/');
-  //equal('test'.split(/(t)/) , ['', 't', 'es', 't', ''] , 'Array#split | complex regex splitting | test | /(t)/');
-  //equal('test'.split(/(es)/) , ['t', 'es', 't'] , 'Array#split | complex regex splitting | test | /(es)/');
-  //equal('test'.split(/(t)(e)(s)(t)/) , ['', 't', 'e', 's', 't', ''] , 'Array#split | complex regex splitting | test | /(t)(e)(s)(t)/');
-  //equal('.'.split(/(((.((.??)))))/) , ['', '.', '.', '.', '', '', ''] , 'Array#split | complex regex splitting | . | /(((.((.??)))))/');
-  //equal('.'.split(/(((((.??)))))/) , ['.'] , 'Array#split | complex regex splitting | . | /(((((.??)))))/');
-
-
-  /*
-   * Patching the String#match method broke Prototype in IE in a very specific way:
-   *
-   *  var names = this.toString().match(/^[\s\(]*function[^(]*\(([^)]*)\)/)[1]
-   *    .replace(/\/\/.*?[\r\n]|\/\*(?:.|[\r\n])*?\*\//g, '')
-   *    .replace(/\s+/g, '').split(',');
-   *
-   * Very unlikely that this would cause problems but after much debate I've decided not to
-   * patch the method, as it's simply too far-reaching with too few benefits, and too few unit tests
-   * to justify it. Will reconsider if the demand arises.
-   *
-   var match = 'on'.match(/on(e)?/);
-   equal(match[1], undefined, 'String#match | capturing group should be undefined');
-
-   var match = 'on'.match(/\b/g);
-   equal(match[0], '', 'String#match | first match should be empty string');
-   equal(match[1], '', 'String#match | second match should be empty string');
-   */
-
-  var str = 'Gotta be an entire sentence.';
-
-  equal(str.truncate(29), 'Gotta be an entire sentence.', 'String#truncate | no arguments | 29');
-  equal(str.truncate(28), 'Gotta be an entire sentence.', 'String#truncate | no arguments | 28');
-  equal(str.truncate(21), 'Gotta be an entire se...', 'String#truncate | split words | 21');
-  equal(str.truncate(20), 'Gotta be an entire s...', 'String#truncate | split words | 20');
-  equal(str.truncate(14), 'Gotta be an en...', 'String#truncate | split words | 14');
-  equal(str.truncate(13), 'Gotta be an e...', 'String#truncate | split words | 13');
-  equal(str.truncate(11), 'Gotta be an...', 'String#truncate | split words | 11');
-  equal(str.truncate(10), 'Gotta be a...', 'String#truncate | split words | 10');
-  equal(str.truncate(4), 'Gott...', 'String#truncate | split words | 4');
-  equal(str.truncate(3), 'Got...', 'String#truncate | split words | 3', { prototype: '...' });
-  equal(str.truncate(2), 'Go...', 'String#truncate | split words | 2', { prototype: '...' });
-  equal(str.truncate(1), 'G...', 'String#truncate | split words | 1', { prototype: '...' });
-  equal(str.truncate(0), '...', 'String#truncate | split words | 0', { prototype: '...' });
-
-  equal(str.truncateOnWord(21), 'Gotta be an entire...', 'String#truncate | no split | 21');
-  equal(str.truncateOnWord(20), 'Gotta be an entire...', 'String#truncate | no split | 20');
-  equal(str.truncateOnWord(19), 'Gotta be an entire...', 'String#truncate | no split | 19');
-  equal(str.truncateOnWord(18), 'Gotta be an entire...', 'String#truncate | no split | 18');
-  equal(str.truncateOnWord(17), 'Gotta be an...', 'String#truncate | no split | 17');
-  equal(str.truncateOnWord(14), 'Gotta be an...', 'String#truncate | no split | 14');
-  equal(str.truncateOnWord(13), 'Gotta be an...', 'String#truncate | no split | 13', { prototype: 'Gotta be a...' });
-  equal(str.truncateOnWord(11), 'Gotta be an...', 'String#truncate | no split | 11');
-  equal(str.truncateOnWord(10), 'Gotta be...', 'String#truncate | no split | 10', { prototype: 'Gotta b...' });
-  equal(str.truncateOnWord(4), '...', 'String#truncate | no split | 4', { prototype: 'G...' });
-  equal(str.truncateOnWord(3), '...', 'String#truncate | no split | 3', { prototype: '...' });
-  equal(str.truncateOnWord(2), '...', 'String#truncate | no split | 2', { prototype: '...' });
-  equal(str.truncateOnWord(1), '...', 'String#truncate | no split | 1', { prototype: '...' });
-  equal(str.truncateOnWord(0), '...', 'String#truncate | no split | 0', { prototype: '...' });
-
-  equal('GOTTA BE AN ENTIRE SENTENCE.'.truncateOnWord(21), 'GOTTA BE AN ENTIRE...', 'String#truncate | caps too | 21');
-  equal('GOTTA BE AN ENTIRE SENTENCE.'.truncateOnWord(17), 'GOTTA BE AN...', 'String#truncate | caps too | 20', { prototype: 'GOTTA BE AN ENTIR...' });
-
-  equal('gotta. be. an. entire. sentence.'.truncateOnWord(17), 'gotta. be. an....', 'String#truncate | no special punctuation treatment | 17');
-  equal('too short!'.truncate(30), 'too short!', 'String#truncate | will not add ellipsis if the string is too short');
-  equal('almost there'.truncateOnWord(11), 'almost...', 'String#truncate | will not add more than the original string', { prototype: 'almost t...' });
-
-  equal('Gotta be an entire sentence.'.truncateOnWord(22, 'right', 'hooha'), 'Gotta be an entirehooha', 'String#truncate | different ellipsis', { prototype: 'Gotta be an entirhooha' });
-  equal('Gotta be an entire sentence.'.truncate(22, 'right', 'hooha'), 'Gotta be an entire senhooha', 'String#truncate | different ellipsis');
-
-  equal('booh pooh mooh'.truncate(7, 'right', 455), 'booh po455', 'String#truncate | converts numbers to strings', { prototype: '455' });
-
-  equal('こんな　ストリングは　あまり　ない　と　思う　けど。。。'.truncateOnWord(6), 'こんな...', 'String#truncate | correctly finds spaces in Japanese');
-  equal('한국어 도 이렇게 할 수 있어요?'.truncateOnWord(9), '한국어 도 이렇게...', 'String#truncate | correctly finds spaces in Korean', { prototype: '한국어 도 ...' });
-
-
-  // String#truncate
-
-  equal(str.truncate(21, 'middle'), 'Gotta be an... sentence.', 'String#truncate | middle | no arguments | 21');
-  equal(str.truncate(11, 'middle'), 'Gotta ...ence.', 'String#truncate | middle | no arguments | 11');
-  equal(str.truncate(4, 'middle'), 'Go...e.', 'String#truncate | middle | no arguments | 4');
-  equal(str.truncate(3, 'middle'), 'Go....', 'String#truncate | middle | no arguments | 3');
-  equal(str.truncate(2, 'middle'), 'G....', 'String#truncate | middle | no arguments | 2');
-  equal(str.truncate(0, 'middle'), '...', 'String#truncate | middle | no arguments | 0');
-  equal(str.truncate(-100, 'middle'), '...', 'String#truncate | middle | no arguments | -100');
-
-  equal(str.truncateOnWord(21, 'middle'), 'Gotta be an...sentence.', 'String#truncate | middle | no split | 21');
-  equal(str.truncateOnWord(11, 'middle'), 'Gotta...', 'String#truncate | middle | no split | 11');
-  equal(str.truncateOnWord(4, 'middle'), '...', 'String#truncate | middle | no split | 4');
-  equal(str.truncateOnWord(3, 'middle'), '...', 'String#truncate | middle | no split | 3');
-  equal(str.truncateOnWord(2, 'middle'), '...', 'String#truncate | middle | no split | 2');
-  equal(str.truncateOnWord(0, 'middle'), '...', 'String#truncate | middle | no split | 0');
-  equal(str.truncateOnWord(-100, 'middle'), '...', 'String#truncate | middle | no split | -100');
-
-  equal(str.truncate(21, 'left'), '...e an entire sentence.', 'String#truncate | left | no arguments | 21');
-  equal(str.truncate(11, 'left'), '...e sentence.', 'String#truncate | left | no arguments | 11');
-  equal(str.truncate(9, 'left'), '...sentence.', 'String#truncate | left | no arguments | 9');
-  equal(str.truncate(4, 'left'), '...nce.', 'String#truncate | left | no arguments | 4');
-  equal(str.truncate(3, 'left'), '...ce.', 'String#truncate | left | no arguments | 3');
-  equal(str.truncate(2, 'left'), '...e.', 'String#truncate | left | no arguments | 2');
-  equal(str.truncate(0, 'left'), '...', 'String#truncate | left | no arguments | 0');
-  equal(str.truncate(-100, 'left'), '...', 'String#truncate | left | no arguments | -100');
-
-  equal(str.truncateOnWord(21, 'left'), '...an entire sentence.', 'String#truncate | left | no split | 21');
-  equal(str.truncateOnWord(11, 'left'), '...sentence.', 'String#truncate | left | no split | 11');
-  equal(str.truncateOnWord(9, 'left'), '...sentence.', 'String#truncate | left | no split | 9');
-  equal(str.truncateOnWord(4, 'left'), '...', 'String#truncate | left | no split | 4');
-  equal(str.truncateOnWord(3, 'left'), '...', 'String#truncate | left | no split | 3');
-  equal(str.truncateOnWord(2, 'left'), '...', 'String#truncate | left | no split | 2');
-  equal(str.truncateOnWord(0, 'left'), '...', 'String#truncate | left | no split | 0');
-  equal(str.truncateOnWord(-100, 'left'), '...', 'String#truncate | left | no split | -100');
-
-
-  equal('123456'.truncate(2, 'left'), '...56', 'String#truncate | split | splitter not included left | 2');
-  equal('123456'.truncate(2, 'middle'), '1...6', 'String#truncate | split | splitter not included center | 2');
-  equal('123456'.truncate(2), '12...', 'String#truncate | split | splitter not included right | 2');
-
-  equal('123456'.truncateOnWord(2, 'left'), '...', 'String#truncate | splitter not included left | 2');
-  equal('123456'.truncateOnWord(2, 'middle'), '...', 'String#truncate | splitter not included center | 2');
-  equal('123456'.truncateOnWord(2), '...', 'String#truncate | splitter not included right | 2');
-
-  equal(str.truncate(28, 'left', '>>> '), 'Gotta be an entire sentence.', 'String#truncate | custom [splitter] | 28');
-  equal(str.truncate(23, 'left', '>>> '), '>>>  be an entire sentence.', 'String#truncate | custom [splitter] | 23');
-  equal(str.truncate(5, 'left', '>>> '), '>>> ence.', 'String#truncate | custom [splitter] | 5');
-  equal(str.truncate(4, 'left', '>>> '), '>>> nce.', 'String#truncate | split | custom [splitter] | 4');
-  equal(str.truncateOnWord(3, 'left', '>>> '), '>>> ', 'String#truncate | custom [splitter] | 4 | >>>');
-
-  equal(str.truncate(3, 'middle', '-'), 'Go-.', 'String#truncate | custom [splitter] | 4 | -');
-  equal(str.truncateOnWord(10, 'right', ''), 'Gotta be', 'String#truncate | empty [splitter]  | 10');
-
-  equal('Alpha Beta Gamma Delta Epsilon'.truncateOnWord(20, 'middle', ''), 'Alpha BetaEpsilon', 'String#truncate | Issue 311');
-
-  // String#assign
-
-  var obj1 = { first: 'Harry' };
-  var obj2 = { last: 'Potter' };
-
-  equal('Welcome, {name}.'.assign({ name: 'program' }), 'Welcome, program.', 'String#assign | basic functionality');
-  equal('Welcome, {1}.'.assign('program'), 'Welcome, program.', 'String#assign | numeric params');
-  equal('Welcome, {1}.'.assign({ name: 'program' }), 'Welcome, {1}.', 'String#assign | numeric params will be untouched if object passed');
-  equal('Welcome, {name}. You are {age} years old and have {points} points left.'.assign({ name: 'program', age: 21, points: 345 }), 'Welcome, program. You are 21 years old and have 345 points left.', 'String#assign | 1 hash');
-  equal('Welcome, {1}. You are {2} years old and have {3} points left.'.assign('program', 21, 345), 'Welcome, program. You are 21 years old and have 345 points left.', 'String#assign | 3 arguments');
-  equal('Welcome, {name}. You are {age} years old and have {3} points left.'.assign({ name: 'program' }, { age: 21 }, 345), 'Welcome, program. You are 21 years old and have 345 points left.', 'String#assign | complex');
-
-  equal('Hello, {first} {last}'.assign(obj1, obj2), 'Hello, Harry Potter', 'String#assign | passing 2 objects');
-  equal(obj1.first, 'Harry', 'String#assign | obj1 retains its properties');
-  equal(obj1.last, undefined, 'String#assign | obj1 is untampered');
-  equal(obj2.last, 'Potter', 'String#assign | obj2 retains its properties');
-  equal(obj2.first, undefined, 'String#assign | obj2 is untampered');
-
-  equal('Hello, {1}'.assign(''), 'Hello, ', 'String#assign | empty string as argument');
-  equal('Hello, {empty}'.assign({ empty: '' }), 'Hello, ', 'String#assign | empty string as object');
-
-  equal('{{1} {2}}'.assign(5,6), '{5 6}', 'String#assign | nested braces');
-  equal('{one {1} {2} two}'.assign(5,6), '{one 5 6 two}', 'String#assign | nested braces with strings outside');
-
-  equal('Hello, {first} {last}'.assign([obj1, obj2]), 'Hello, Harry Potter', 'String#assign | passing 2 objects in an array');
+    test(testString, [/\w+/g], ['cruel', 'world'], 'complex regexp | /\\w+/g');
+    test(testString, [/.../g], ['cru', 'el ', 'wor'], 'complex regexp | /.../g');
+    test(testString, [/(..)(..)/g], ['crue', 'l wo'], 'complex regexp | /(..)(..)/g');
+    test(testString, [/\w+/], ['cruel', 'world'], 'non-global regexes should still be global');
+
+    test('', ['f'], [], 'empty string | each f');
+    test('', [/foo/], [], 'empty string | each /foo/');
+    test('', [function() {}], [], 'empty string | passing a block');
+
+  });
+
+  method('shift', function() {
+
+    test('ク', [1], 'グ', 'should shift 1 code up');
+    test('グ', [-1], 'ク', 'should shift 1 code down');
+    test('ヘ', [2], 'ペ', 'should shift 2 codes');
+    test('ペ', [-2], 'ヘ', 'should shift -2 codes');
+    test('ク', [0], 'ク', 'should shift 0 codes');
+    test('ク', 'ク', 'no params simply returns the string');
+    test('カキクケコ', [1], 'ガギグゲゴ', 'multiple characters up one');
+    test('ガギグゲゴ', [-1], 'カキクケコ', 'multiple characters down one');
+
+  });
+
+
+  method('codes', function() {
+
+    var counter = 0, result;
+    var arr = [103,105,110,103,101,114];
+    var callback = function(str, i) {
+      equal(str, arr[i], 'char code should have been passed into the block');
+      counter++;
+    }
+
+    test('jumpy', [106,117,109,112,121], 'jumpy');
+
+    result = run('ginger', 'codes', [callback]);
+    equal(counter, 6, 'should have ran 6 times');
+    equal(result, arr, 'result should be an array');
+
+    test('', [], 'empty string');
+  });
+
+  method('chars', function() {
+
+    var counter = 0, result;
+    var callback = function(str, i) {
+      equal(str, 'ginger'.charAt(counter), 'char code should be the first argument in the block');
+      equal(i, counter, 'index should be the second argument in the block');
+      counter++;
+    };
+
+    result = run('ginger', 'chars', [callback]);
+    equal(counter, 6, 'should have run 6 times');
+    equal(result, ['g','i','n','g','e','r'], 'result should be an array');
+
+    // test each char collects when properly returned
+    counter = 0;
+    callback = function(str, i) {
+      counter++;
+      return str.toUpperCase();
+    }
+    result = run('ginger', 'chars', [callback]);
+    equal(result, ['G','I','N','G','E','R'], 'resulting array is properly collected');
+
+    test('', [], 'empty string');
+  });
+
+  method('words', function() {
+    var counter = 0, result, callback;
+    var sentence = 'these pretzels are \n\n making me         thirsty!\n\n';
+    var arr = ['these', 'pretzels', 'are', 'making', 'me', 'thirsty!'];
+    var callback = function(str, i) {
+      equal(str, arr[i], 'match is the first argument');
+      counter++;
+    };
+
+    result = run(sentence, 'words', [callback]);
+    equal(counter, 6, 'should have run 6 times');
+    equal(result, arr, 'result should be an array of matches');
+
+    test('', [], 'empty string');
+  });
+
+  method('lines', function() {
+    var counter = 0, result, callback;
+    var paragraph = 'these\npretzels\nare\n\nmaking\nme\n         thirsty!\n\n\n\n';
+    var arr = ['these', 'pretzels', 'are', '', 'making', 'me', '         thirsty!'];
+    var callback = function(str, i) {
+      equal(str, arr[i], 'match is the first argument');
+      counter++;
+    };
+
+    result = run(paragraph, 'lines', [callback]);
+    equal(counter, 7, 'should have run 7 times');
+    equal(result, arr, 'result should be an array of matches');
+
+    callback = function(str, i) {
+      return run(str, 'capitalize');
+    }
+    result = run('one\ntwo', 'lines', [callback]);
+    equal(['One','Two'], result, 'lines can be modified');
+
+    test('', [''], 'empty string');
+  });
+
+  method('paragraphs', function() {
+    var counter = 0;
+    var essay = 'the history of the united states\n\n';
+    essay +=    'it all began back in 1776 when someone declared something from someone.\n';
+    essay +=    'it was at this point that we had to get our rears in gear\n\n';
+    essay +=    'The British got their revenge in the late 60s with the British Invasion,\n';
+    essay +=    'which claimed the lives of over 32,352 young women across the nation.\n\n\n\n\n';
+    essay +=    'The End\n\n\n\n\n\n\n';
+    var arr = ['the history of the united states', 'it all began back in 1776 when someone declared something from someone.\nit was at this point that we had to get our rears in gear', 'The British got their revenge in the late 60s with the British Invasion,\nwhich claimed the lives of over 32,352 young women across the nation.', 'The End'];
+    var callback = function(str, i) {
+      equal(str, arr[i], 'match is the first argument');
+      counter ++;
+    };
+    result = run(essay, 'paragraphs', [callback]);
+    equal(counter, 4, 'should have run 4 times');
+    equal(result, arr, 'result should be an array of matches');
+
+    test('', [''], 'empty string');
+  });
+
+
+  method('startsWith', function() {
+
+    // startsWith/endsWith is defined in Harmony, so only passing a regex or
+    // 3 arguments will actually test this code.
+
+    test('HELLO', false, 'undefined produces false');
+    test('hello', ['hell', 0, true], true, 'hello starts with hell');
+    test('HELLO', ['HELL', 0, true], true, 'HELLO starts with HELL');
+    test('HELLO', ['hell', 0, true], false, 'HELLO starts with hell');
+    test('HELLO', ['hell', 0, true], false, 'case sensitive | HELLO starts with hell');
+    test('hello', [/hell/, 0, true], true, 'accepts regex');
+    test('hello', [/[a-h]/, 0, true], true, 'accepts regex alternates');
+    test('HELLO', ['hell', 0, false], true, 'case insensitive | HELLO starts with hell');
+    test('hello', ['hell', -20, true], true, 'from pos -20');
+    test('hello', ['hell', 1, true], false, 'from pos 1');
+    test('hello', ['hell', 2, true], false, 'from pos 2');
+    test('hello', ['hell', 3, true], false, 'from pos 3');
+    test('hello', ['hell', 4, true], false, 'from pos 4');
+    test('hello', ['hell', 5, true], false, 'from pos 5');
+    test('hello', ['hell', 20, true], false, 'from pos 20');
+    test('10', [10], true, 'Numbers will be converted');
+    test('valley girls\nrock', ['valley girls', 0, true], true, 'valley girls rock starts with valley girls');
+    test('valley girls\nrock', ['valley girls r', 0, true], false, 'valley girls rock starts with valley girls r');
+
+  });
+
+
+  method('endsWith', function() {
+
+    test('HELLO', false, 'undefined produces false');
+    test('vader', ['der', 5, true], true, 'vader ends with der');
+    test('VADER', ['DER', 5, true], true, 'VADER ends with DER');
+    test('VADER', ['der', 5, true], false, 'VADER ends with der');
+    test('VADER', ['DER', 5, false], true, 'case insensitive | VADER ends with DER');
+    test('vader', [/der/, 5, true], true, 'accepts regex');
+    test('vader', [/[q-z]/, 5, true], true, 'accepts regex alternates');
+    test('VADER', ['der', 5, false], true, 'case insensitive |  VADER ends with der');
+    test('VADER', ['DER', 5, true], true, 'case sensitive | VADER ends with DER');
+    test('VADER', ['der', 5, true], false, 'case sensitive |  VADER ends with der');
+    test('vader', ['der', -20, true], false, '| from pos -20');
+    test('vader', ['der', 0, true], false, '| from pos 0');
+    test('vader', ['der', 1, true], false, '| from pos 1');
+    test('vader', ['der', 2, true], false, '| from pos 2');
+    test('vader', ['der', 3, true], false, '| from pos 3');
+    test('vader', ['der', 4, true], false, '| from pos 4');
+    test('vader', ['der', 20, true], true, '| from pos 20');
+    test('10', [10], true, 'Numbers will be converted');
+    test('i aint your\nfather', ['father', 18, true], true, 'vader ends with der');
+    test('i aint your\nfather', ['r father', 18, false], false, 'vader ends with der');
+  });
+
+
+  method('isBlank', function() {
+
+    test('', true, 'blank string');
+    test('0', false, '0');
+    test('            ', true, 'successive blanks');
+    test('\n', true, 'new line');
+    test('\t\t\t\t', true, 'tabs');
+    test('日本語では　「マス」　というの知ってた？', false, 'japanese');
+    test('mayonnaise', false, 'mayonnaise');
+  });
+
+
+  method('has', function() {
+
+    test('foo', ['f'], true, 'foo has f');
+    test('foo', ['oo'], true, 'foo has oo');
+    test('foo', [/f/], true, 'foo has /f/');
+    test('foo', [/[a-g]/], true, 'foo has /[a-g]/');
+    test('foo', [/[p-z]/], false, 'foo has /[p-z]/');
+    test('flu?ffy', ['?'], true, 'flu?ffy has ?');
+    test('flu?ffy', ['\?'], true, 'flu?ffy has one slash and ?');
+    test('flu?ffy', ['\\?'], false, 'flu?ffy has two slashes and ?');
+    test('flu?ffy', ['\\\?'], false, 'flu?ffy has three slashes and ?');
+    test('flu?ffy', [/\?/], true, 'flu?ffy has one slash and ? in a regex');
+    test('flu?ffy', [/\\?/], true, 'flu?ffy has two slashes and ? in a regex');
+    test('flu?ffy', [/\\\?/], false, 'flu?ffy has three slashes and ? in a regex');
+    test('flu\\?ffy', [/\\\?/], true, 'flu\\?ffy has three slashes and ? in a regex');
+  });
+
+  method('add', function() {
+    test('schfifty', [' five'], 'schfifty five', 'schfifty five');
+    test('dopamine', ['e', 3], 'dopeamine', 'dopeamine');
+    test('spelling eror', ['r', -3], 'spelling error', 'add from the end');
+    test('flack', ['a', 0], 'aflack', 'add at 0');
+    test('five', ['schfifty', 20], 'fiveschfifty', 'adds out of positive range');
+    test('five', ['schfifty ', -20], 'schfifty five', 'adds out of negative range');
+    test('five', ['schfifty', 4], 'fiveschfifty', 'add at position 4');
+    test('five', ['schfifty', 5], 'fiveschfifty', 'add at position 5');
+    test('', [['schfifty', ' five']], 'schfifty, five', 'arrays are stringified');
+  });
+
+  method('remove', function() {
+    test('schfifty five', ['five'], 'schfifty ', 'five');
+    test('schfifty five', [/five/], 'schfifty ', '/five/');
+    test('schfifty five', [/f/], 'schifty five', '/f/');
+    test('schfifty five', [/f/g], 'schity ive', '/f/g');
+    test('schfifty five', [/[a-f]/g], 'shity iv', '/[a-f]/');
+    test('?', ['?'], '', 'strings have tokens escaped');
+    test('?(', ['?('], '', 'strings have all tokens escaped');
+  });
+
+  method('insert', function() {
+    test('schfifty', [' five'], 'schfifty five', 'schfifty five');
+    test('dopamine', ['e', 3], 'dopeamine', 'dopeamine');
+    test('spelling eror', ['r', -3], 'spelling error', 'inserts from the end');
+    test('flack', ['a', 0], 'aflack', 'inserts at 0');
+    test('five', ['schfifty', 20], 'fiveschfifty', 'adds out of positive range');
+    test('five', ['schfifty', -20], 'schfiftyfive', 'adds out of negative range');
+    test('five', ['schfifty', 4], 'fiveschfifty', 'inserts at position 4');
+    test('five', ['schfifty', 5], 'fiveschfifty', 'inserts at position 5');
+    test('abcd', ['X', 2], 'abXcd', 'X | 2');
+    test('abcd', ['X', 1], 'aXbcd', 'X | 1');
+    test('abcd', ['X', 0], 'Xabcd', 'X | 0');
+    test('abcd', ['X', -1], 'abcXd', 'X | -1');
+    test('abcd', ['X', -2], 'abXcd', 'X | -2');
+
+    test('', ['-', 0], '-', '- inserted at 0');
+    test('b', ['-', 0], '-b', 'b inserted at 0');
+    test('b', ['-', 1], 'b-', 'b inserted at 1');
+  });
+
+  method('toNumber', function() {
+
+    test('4em', 4, '4em');
+    test('10px', 10, '10px');
+    test('10,000', 10000, '10,000');
+    test('5,322,144,444', 5322144444, '5,322,144,444');
+    test('10.532', 10.532, '10.532');
+    test('10', 10, '10');
+    test('95.25%', 95.25, '95.25%');
+    test('10.848', 10.848, '10.848');
+
+    test('1234blue', 1234, '1234blue');
+    test('22.5', 22.5, '22.5');
+
+    test('010', 10, '"010" should be 10');
+    test('0908', 908, '"0908" should be 908');
+    test('22.34.5', 22.34, '"22.34.5" should be 22.34');
+
+    test('1.45kg', 1.45, '"1.45kg"');
+    test('77.3', 77.3, '77.3');
+    test('077.3', 77.3, '"077.3" should be 77.3');
+    test('.3', 0.3, '".3" should be 0.3');
+    test('0.1e6', 100000, '"0.1e6" should be 100000');
+
+    test('２００', 200, 'full-width | should work on full-width integers');
+    test('５．２３４５', 5.2345, 'full-width | should work on full-width decimals');
+
+    equal(isNaN(run('0xA')), false, '"0xA" should not be NaN');
+    equal(isNaN(run('blue')), true, '"blue" should not be NaN');
+    equal(isNaN(run('........')), true, '"......." should be NaN');
+    equal(isNaN(run('0x77.3')), false, '"0x77.3" is not NaN');
+
+  });
+
+  // Hexadecimal
+  method('toNumber', [16], function() {
+    test('ff', 255, 'ff');
+    test('00', 0, '00');
+    test('33', 51, '33');
+    test('66', 102, '66');
+    test('99', 153, '99');
+    test('bb', 187, 'bb');
+  });
+
+
+  method('reverse', function() {
+    test('spoon', 'noops', 'spoon');
+    test('amanaplanacanalpanama', 'amanaplanacanalpanama', 'amanaplanacanalpanama');
+    test('', '', 'blank');
+    test('wasabi', 'ibasaw', 'wasabi');
+  });
+
+
+  method('compact', function() {
+    var largeJapaneseSpaces = '　　　日本語　　　　　の　　　　　スペース　　　　　も　　';
+    var compactedWithoutJapaneseSpaces = '日本語　の　スペース　も';
+    var compactedWithTrailingJapaneseSpaces = '　日本語　の　スペース　も　';
+
+    test('the rain in     spain    falls mainly   on     the        plain', 'the rain in spain falls mainly on the plain', 'basic');
+    test('\n\n\nthe \n\n\nrain in     spain    falls mainly   on     the        plain\n\n', 'the rain in spain falls mainly on the plain', 'with newlines');
+    test('\n\n\n\n           \t\t\t\t          \n\n      \t', '', 'with newlines and tabs');
+
+    test('moo\tmoo', 'moo moo', 'moo moo tab');
+    test('moo \tmoo', 'moo moo', 'moo moo space tab');
+    test('moo \t moo', 'moo moo', 'moo moo space tab space');
+
+    test('', '', 'blank');
+    test('run   tell    dat', 'run tell dat', 'with extra whitespace');
+  });
+
+
+  method('at', function() {
+    test('foop', [0], 'f', 'pos 0');
+    test('foop', [1], 'o', 'pos 1');
+    test('foop', [2], 'o', 'pos 2');
+    test('foop', [3], 'p', 'pos 3');
+    test('foop', [4], 'f', 'pos 4');
+    test('foop', [5], 'o', 'pos 5');
+    test('foop', [1224], 'f', 'out of bounds');
+    test('foop', [-1], 'p', 'negative | pos -1');
+    test('foop', [-2], 'o', 'negative | pos -2');
+    test('foop', [-3], 'o', 'negative | pos -3');
+    test('foop', [-4], 'f', 'negative | pos -4');
+    test('foop', [-5], 'p', 'negative | pos -5');
+    test('foop', [-1224], 'f', 'negative | out of bounds');
+
+    test('foop', [0, false], 'f', 'pos 0');
+    test('foop', [1, false], 'o', 'pos 1');
+    test('foop', [2, false], 'o', 'pos 2');
+    test('foop', [3, false], 'p', 'pos 3');
+    test('foop', [4, false], '', 'pos 4');
+    test('foop', [1224, false], '', 'out of bounds');
+    test('foop', [-1, false], '', 'negative | pos -1');
+    test('foop', [-2, false], '', 'negative | pos -2');
+    test('foop', [-3, false], '', 'negative | pos -3');
+    test('foop', [-4, false], '', 'negative | pos -4');
+    test('foop', [-5, false], '', 'negative | pos -5');
+    test('foop', [-1224, false], '', 'negative | out of bounds');
+
+    test('wowzers', [0,2,4,6], ['w','w','e','s'], 'handles enumerated params');
+    test('wowzers', [0,2,4,6,18], ['w','w','e','s','e'], 'handles enumerated params');
+    test('wowzers', [0,2,4,6,18,false], ['w','w','e','s',''], 'handles enumerated params');
+
+    test('', [3], '', 'blank');
+    test('wasabi', [0], 'w', 'wasabi at pos 0');
+  });
+
+
+  method('first', function() {
+    test('quack', 'q', 'first character');
+    test('quack', [2], 'qu', 'first 2 characters');
+    test('quack', [3], 'qua', 'first 3 characters');
+    test('quack', [4], 'quac', 'first 4 characters');
+    test('quack', [20], 'quack', 'first 20 characters');
+    test('quack', [0], '', 'first 0 characters');
+    test('quack', [-1], '', 'first -1 characters');
+    test('quack', [-5], '', 'first -5 characters');
+    test('quack', [-10], '', 'first -10 characters');
+    test('', '', 'blank');
+    test('wasabi', 'w', 'no params');
+  });
+
+
+  method('last', function() {
+    test('quack', 'k', 'last character');
+    test('quack', [2], 'ck', 'last 2 characters');
+    test('quack', [3], 'ack', 'last 3 characters');
+    test('quack', [4], 'uack', 'last 4 characters');
+    test('quack', [10], 'quack', 'last 10 characters');
+    test('quack', [-1], '', 'last -1 characters');
+    test('quack', [-5], '', 'last -5 characters');
+    test('quack', [-10], '', 'last -10 characters');
+
+    test('fa', [3], 'fa', 'last 3 characters');
+    test('', '', 'lank');
+    test('wasabi', 'i', 'o params');
+  });
+
+
+  method('from', function() {
+    test('quack', 'quack', 'no params');
+    test('quack', [0], 'quack', 'from 0');
+    test('quack', [2], 'ack', 'from 2');
+    test('quack', [4], 'k', 'from 4');
+    test('quack', [-1], 'k', 'from -1');
+    test('quack', [-3], 'ack', 'from -3');
+    test('quack', [-4], 'uack', 'from -4');
+    test('quack', ['q'], 'quack', 'strings | q');
+    test('quack', ['u'], 'uack', 'strings | u');
+    test('quack', ['a'], 'ack', 'strings | a');
+    test('quack', ['k'], 'k', 'strings | k');
+    test('quack', [''], 'quack', 'strings | empty string');
+    test('quack', ['ua'], 'uack', 'strings | 2 characters');
+    test('quack', ['uo'], '', 'strings | 2 non-existent characters');
+    test('quack', ['quack'], 'quack', 'strings | full string');
+
+    test('', [0], '', 'lank');
+    test('wasabi', [3], 'abi', 'rom pos 3');
+  });
+
+
+  method('to', function() {
+    test('quack', 'quack', 'no params');
+    test('quack', [0], '', 'to 0');
+    test('quack', [1], 'q', 'to 1');
+    test('quack', [2], 'qu', 'to 2');
+    test('quack', [4], 'quac', 'to 4');
+    test('quack', [-1], 'quac', 'to -1');
+    test('quack', [-3], 'qu', 'to -3');
+    test('quack', [-4], 'q', 'to -4');
+    test('quack', ['q'], '', 'strings | q');
+    test('quack', ['u'], 'q', 'strings | u');
+    test('quack', ['a'], 'qu', 'strings | a');
+    test('quack', ['k'], 'quac', 'strings | k');
+    test('quack', [''], '', 'strings | empty string');
+    test('quack', ['ua'], 'q', 'strings | 2 characters');
+    test('quack', ['uo'], '', 'strings | 2 non-existent characters');
+    test('quack', ['quack'], '', 'strings | full string');
+
+    test('', [0], '', 'nk');
+    test('wasabi', [3], 'was', 'pos 3');
+  });
+
+  method('dasherize', function() {
+    test('hop_on_pop', 'hop-on-pop', 'underscores');
+    test('HOP_ON_POP', 'hop-on-pop', 'capitals and underscores');
+    test('hopOnPop', 'hop-on-pop', 'camel-case');
+    test('watch me fail', 'watch-me-fail', 'whitespace');
+    test('watch me fail_sad_face', 'watch-me-fail-sad-face', 'whitespace sad face');
+    test('waTch me su_cCeed', 'wa-tch-me-su-c-ceed', 'complex whitespace');
+    test('aManAPlanACanalPanama', 'a-man-a-plan-a-canal-panama', 'single characters');
+    test('', '', 'blank');
+    test('noFingWay', 'no-fing-way', 'noFingWay');
+  });
+
+
+  method('camelize', function() {
+    test('hop-on-pop', 'HopOnPop', 'dashes');
+    test('HOP-ON-POP', 'HopOnPop', 'capital dashes');
+    test('hop_on_pop', 'HopOnPop', 'underscores');
+    test('watch me fail', 'WatchMeFail', 'whitespace');
+    test('watch   me   fail', 'WatchMeFail', 'long whitespace');
+    test('watch me fail-sad-face', 'WatchMeFailSadFace', 'whitespace sad face');
+    test('waTch me su-cCeed', 'WaTchMeSuCCeed', 'complex whitespace');
+
+    test('', '', 'blank');
+    test('no-fing-way', 'NoFingWay', 'no-fing-way');
+  });
+
+  method('camelize', [false], function() {
+    test('hop-on-pop', 'hopOnPop', 'first false | dashes');
+    test('HOP-ON-POP', 'hopOnPop', 'first false | capital dashes');
+    test('hop_on_pop', 'hopOnPop', 'first false | underscores');
+    test('watch me fail', 'watchMeFail', 'first false | whitespace');
+    test('watch me fail-sad-face', 'watchMeFailSadFace', 'first false | whitespace sad face');
+    test('waTch me su-cCeed', 'waTchMeSuCCeed', 'first false | complex whitespace');
+
+  });
+
+  method('camelize', [true], function() {
+    test('hop-on-pop', 'HopOnPop', 'first true | dashes');
+    test('HOP-ON-POP', 'HopOnPop', 'first true | capital dashes');
+    test('hop_on_pop', 'HopOnPop', 'first true | underscores');
+  });
+
+
+  method('underscore', function() {
+    test('hopOnPop', 'hop_on_pop', 'camel-case');
+    test('HopOnPop', 'hop_on_pop', 'camel-case capital first');
+    test('HOPONPOP', 'hoponpop', 'all caps');
+    test('HOP-ON-POP', 'hop_on_pop', 'caps and dashes');
+    test('hop-on-pop', 'hop_on_pop', 'lower-case and dashes');
+    test('watch me fail', 'watch_me_fail', 'whitespace');
+    test('watch   me   fail', 'watch_me_fail', 'long whitespace');
+    test('watch me fail-sad-face', 'watch_me_fail_sad_face', 'whitespace sad face');
+    test('waTch me su-cCeed', 'wa_tch_me_su_c_ceed', 'complex whitespace');
+
+    test('', '', 'blank');
+    test('noFingWay', 'no_fing_way', 'noFingWay');
+  });
+
+
+  method('spacify', function() {
+    test('hopOnPop', 'hop on pop', 'camel-case');
+    test('HopOnPop', 'hop on pop', 'camel-case capital first');
+    test('HOPONPOP', 'hoponpop', 'all caps');
+    test('HOP-ON-POP', 'hop on pop', 'caps and dashes');
+    test('hop-on-pop', 'hop on pop', 'lower-case and dashes');
+    test('watch_me_fail', 'watch me fail', 'whitespace');
+    test('watch-meFail-sad-face', 'watch me fail sad face', 'whitespace sad face');
+    test('waTch me su-cCeed', 'wa tch me su c ceed', 'complex whitespace');
+  });
+
+  method('stripTags', function() {
+    var stripped, html, allStripped, malformed;
+
+    html =
+    '<div class="outer">' +
+    '<p>text with <a href="http://foobar.com/">links</a>, &quot;entities&quot; and <b>bold</b> tags</p>' +
+    '</div>';
+    allStripped = 'text with links, &quot;entities&quot; and bold tags';
+    malformed = '<div class="outer"><p>paragraph';
+    stripped =
+    '<div class="outer">' +
+    '<p>text with links, &quot;entities&quot; and <b>bold</b> tags</p>' +
+    '</div>';
+
+    test(html, ['a'], stripped, 'stripped a tags');
+    equal(run(html, 'stripTags', ['a']) == html, false, 'stripped <a> tags was changed');
+
+
+    stripped =
+    '<div class="outer">' +
+    '<p>text with links, &quot;entities&quot; and bold tags</p>' +
+    '</div>';
+    test(html, ['a', 'b'], stripped, 'stripped <a> and <b> tags');
+    test(html, [['a', 'b']], stripped, 'array | stripped <a> and <b> tags');
+
+
+    stripped =
+    '<div class="outer">' +
+    'text with links, &quot;entities&quot; and <b>bold</b> tags' +
+    '</div>';
+    test(html, ['p', 'a'], stripped, 'stripped <p> and <a> tags');
+    test(html, [['p', 'a']], stripped, 'array | stripped <p> and <a> tags');
+
+
+    stripped = '<p>text with <a href="http://foobar.com/">links</a>, &quot;entities&quot; and <b>bold</b> tags</p>';
+    test(html, ['div'], stripped, 'stripped <div> tags');
+
+
+    stripped = 'text with links, &quot;entities&quot; and bold tags';
+    test(html, stripped, 'all tags stripped');
+
+
+    stripped = '<p>paragraph';
+    test(malformed, ['div'], stripped, 'malformed | div tag stripped');
+
+    stripped = '<div class="outer">paragraph';
+    test(malformed, ['p'], stripped, 'malformed | p tags stripped');
+
+    stripped = 'paragraph';
+    test(malformed, stripped, 'malformed | all tags stripped');
+
+    test('<b NOT BOLD</b>', '<b NOT BOLD', "does not strip tags that aren't properly closed");
+    test('a < b', 'a < b', 'does not strip less than');
+    test('a > b', 'a > b', 'does not strip greater than');
+    test('</foo  >>', '>', 'strips closing tags with white space');
+
+
+    // Stipping self-closing tags
+    test('<input type="text" class="blech" />', '', 'full input stripped');
+
+    test('<b>bold<b> and <i>italic</i> and <a>link</a>', ['b','i'], 'bold and italic and <a>link</a>', 'handles multi args');
+
+    html =
+    '<form action="poo.php" method="post">' +
+    '<p>' +
+    '<label>label for text:</label>' +
+    '<input type="text" value="brabra" />' +
+    '<input type="submit" value="submit" />' +
+    '</p>' +
+    '</form>';
+
+    test(html, 'label for text:', 'form | all tags removed');
+    test(html, ['input'], '<form action="poo.php" method="post"><p><label>label for text:</label></p></form>', 'form | input tags stripped');
+    test(html, ['input', 'p', 'form'], '<label>label for text:</label>', 'form | input, p, and form tags stripped');
+
+    // Stripping namespaced tags
+    test('<xsl:template>foobar</xsl:template>', 'foobar', 'strips tags with xml namespaces');
+    test('<xsl:template>foobar</xsl:template>', ['xsl:template'], 'foobar', 'strips xsl:template');
+    test('<xsl/template>foobar</xsl/template>', ['xsl/template'], 'foobar', 'strips xsl/template');
+
+    // No errors on RegExp
+    test('<xsl(template>foobar</xsl(template>', ['xsl(template'], 'foobar', 'no regexp errors on tokens');
+
+    test('', '', 'String#stripTags | blank');
+    test('chilled <b>monkey</b> brains', 'chilled monkey brains', 'chilled <b>monkey</b> brains');
+
+  });
+
+
+  method('removeTags', function() {
+    var html, malformed, removed;
+    malformed = '<div class="outer"><p>paragraph';
+
+    html =
+    '<div class="outer">' +
+    '<p>text with <a href="http://foobar.com/">links</a>, &quot;entities&quot; and <b>bold</b> tags</p>' +
+    '</div>';
+
+    removed =
+    '<div class="outer">' +
+    '<p>text with , &quot;entities&quot; and <b>bold</b> tags</p>' +
+    '</div>';
+    test(html, ['a'], removed, '<a> tag removed');
+    equal(run(html, 'removeTags', ['a']) == html, false, 'html was changed');
+
+
+    removed =
+    '<div class="outer">' +
+    '<p>text with , &quot;entities&quot; and  tags</p>' +
+    '</div>';
+    test(html, ['a', 'b'], removed, '<a> and <b> tags removed');
+    test(html, [['a', 'b']], removed, 'array | <a> and <b> tags removed');
+
+
+    removed =
+    '<div class="outer"></div>';
+    test(html, ['p', 'a'], removed, '<p> and <a> tags removed');
+    test(html, [['p', 'a']], removed, 'array | <p> and <a> tags removed');
+
+
+    test(html, ['div'], '', '<div> tags removed');
+    test(html, '', 'removing all tags');
+
+    test(malformed, ['div'], malformed, 'malformed | <div> tags removed');
+    test(malformed, ['p'], malformed, 'malformed | <p> tags removed');
+    test(malformed, malformed, 'malformed | all tags removed');
+
+
+
+    test('<b NOT BOLD</b>', '<b NOT BOLD</b>', 'unclosed opening tag untouched');
+    test('a < b', 'a < b', 'less than unaffected');
+    test('a > b', 'a > b', 'greater than unaffected');
+    test('</foo  >>', '</foo  >>', 'malformed closing tag unaffected');
+
+    // Stipping self-closing tags
+    test('<input type="text" class="blech" />', '', 'self-closing');
+
+    html =
+    '<form action="poo.php" method="post">' +
+    '<p>' +
+    '<label>label for text:</label>' +
+    '<input type="text" value="brabra" />' +
+    '<input type="submit" value="submit" />' +
+    '</p>' +
+    '</form>';
+
+    test(html, '', 'form | removing all tags');
+    test(html, ['input'], '<form action="poo.php" method="post"><p><label>label for text:</label></p></form>', 'form | removing input tags');
+    test(html, ['input', 'p', 'form'], '', 'form | removing input, p, and form tags');
+
+    // Stripping namespaced tags
+    test('<xsl:template>foobar</xsl:template>', '', 'form | xml namespaced tags removed');
+    test('<xsl:template>foobar</xsl:template>', ['xsl:template'], '', 'form | xsl:template removed');
+    test('<xsl/template>foobar</xsl/template>', ['xsl/template'], '', 'form | xsl/template removed');
+
+
+    // Errors on xsl regex.
+    raisesError(function(){ run('<xsl(template>foobar</xsl(template>', 'removeTags', 'xsl(template'); }, 'form | you now have the power to cause your own regex pain');
+
+    test('<b>bold</b> and <i>italic</i> and <a>link</a>', ['b','i'], ' and  and <a>link</a>', 'handles multi args');
+    test('', '', 'blank');
+    test('chilled <b>monkey</b> brains', 'chilled  brains', 'chilled <b>monkey</b> brains');
+  });
+
+
+
+  method('truncate', function() {
+    var str = 'Gotta be an entire sentence.';
+
+    test(str, [29], 'Gotta be an entire sentence.', 'no arguments | 29');
+    test(str, [28], 'Gotta be an entire sentence.', 'no arguments | 28');
+    test(str, [21], 'Gotta be an entire se...', 'split words | 21');
+    test(str, [20], 'Gotta be an entire s...', 'split words | 20');
+    test(str, [14], 'Gotta be an en...', 'split words | 14');
+    test(str, [13], 'Gotta be an e...', 'split words | 13');
+    test(str, [11], 'Gotta be an...', 'split words | 11');
+    test(str, [10], 'Gotta be a...', 'split words | 10');
+    test(str, [4], 'Gott...', 'split words | 4');
+    test(str, [3], 'Got...', 'split words | 3');
+    test(str, [2], 'Go...', 'split words | 2');
+    test(str, [1], 'G...', 'split words | 1');
+    test(str, [0], '...', 'split words | 0');
+
+    test('too short!', [30], 'too short!', 'will not add ellipsis if the string is too short');
+    test('Gotta be an entire sentence.', [22, 'right', 'hooha'], 'Gotta be an entire senhooha', 'different ellipsis');
+    test('booh pooh mooh', [7, 'right', 455], 'booh po455', 'converts numbers to strings');
+
+    test(str, [21, 'middle'], 'Gotta be an... sentence.', 'middle | no arguments | 21');
+    test(str, [11, 'middle'], 'Gotta ...ence.', 'middle | no arguments | 11');
+    test(str, [4, 'middle'], 'Go...e.', 'middle | no arguments | 4');
+    test(str, [3, 'middle'], 'Go....', 'middle | no arguments | 3');
+    test(str, [2, 'middle'], 'G....', 'middle | no arguments | 2');
+    test(str, [0, 'middle'], '...', 'middle | no arguments | 0');
+    test(str, [-100, 'middle'], '...', 'middle | no arguments | -100');
+
+    test(str, [21, 'left'], '...e an entire sentence.', 'left | no arguments | 21');
+    test(str, [11, 'left'], '...e sentence.', 'left | no arguments | 11');
+    test(str, [9, 'left'], '...sentence.', 'left | no arguments | 9');
+    test(str, [4, 'left'], '...nce.', 'left | no arguments | 4');
+    test(str, [3, 'left'], '...ce.', 'left | no arguments | 3');
+    test(str, [2, 'left'], '...e.', 'left | no arguments | 2');
+    test(str, [0, 'left'], '...', 'left | no arguments | 0');
+    test(str, [-100, 'left'], '...', 'left | no arguments | -100');
+
+    test(str, [28, 'left', '>>> '], 'Gotta be an entire sentence.', 'custom [splitter] | 28');
+    test(str, [23, 'left', '>>> '], '>>>  be an entire sentence.', 'custom [splitter] | 23');
+    test(str, [5, 'left', '>>> '], '>>> ence.', 'custom [splitter] | 5');
+    test(str, [4, 'left', '>>> '], '>>> nce.', 'split | custom [splitter] | 4');
+    test(str, [3, 'middle', '-'], 'Go-.', 'custom [splitter] | 4 | -');
+
+    test('123456', [2, 'left'], '...56', 'split | splitter not included left | 2');
+    test('123456', [2, 'middle'], '1...6', 'split | splitter not included center | 2');
+    test('123456', [2], '12...', 'split | splitter not included right | 2');
+
+  });
+
+
+  method('truncateOnWord', function() {
+    var str = 'Gotta be an entire sentence.';
+
+    test(str, [21], 'Gotta be an entire...', '21');
+    test(str, [20], 'Gotta be an entire...', '20');
+    test(str, [19], 'Gotta be an entire...', '19');
+    test(str, [18], 'Gotta be an entire...', '18');
+    test(str, [17], 'Gotta be an...', '17');
+    test(str, [14], 'Gotta be an...', '14');
+    test(str, [13], 'Gotta be an...', '13');
+    test(str, [11], 'Gotta be an...', '11');
+    test(str, [10], 'Gotta be...', '10');
+    test(str, [4], '...', '4');
+    test(str, [3], '...', '3');
+    test(str, [2], '...', '2');
+    test(str, [1], '...', '1');
+    test(str, [0], '...', '0');
+
+    test('GOTTA BE AN ENTIRE SENTENCE.', [21], 'GOTTA BE AN ENTIRE...', 'caps too | 21');
+    test('GOTTA BE AN ENTIRE SENTENCE.', [17], 'GOTTA BE AN...', 'caps too | 20');
+    test('gotta. be. an. entire. sentence.', [17], 'gotta. be. an....', 'no special punctuation treatment | 17');
+    test('almost there', [11], 'almost...', 'will not add more than the original string');
+    test('Gotta be an entire sentence.', [22, 'right', 'hooha'], 'Gotta be an entirehooha', 'different ellipsis');
+    test('こんな　ストリングは　あまり　ない　と　思う　けど。。。', [6], 'こんな...', 'correctly finds spaces in Japanese');
+    test('한국어 도 이렇게 할 수 있어요?', [9], '한국어 도 이렇게...', 'correctly finds spaces in Korean');
+
+    test(str, [21, 'middle'], 'Gotta be an...sentence.', 'middle | no split | 21');
+    test(str, [11, 'middle'], 'Gotta...', 'middle | no split | 11');
+    test(str, [4, 'middle'], '...', 'middle | no split | 4');
+    test(str, [3, 'middle'], '...', 'middle | no split | 3');
+    test(str, [2, 'middle'], '...', 'middle | no split | 2');
+    test(str, [0, 'middle'], '...', 'middle | no split | 0');
+    test(str, [-100, 'middle'], '...', 'middle | no split | -100');
+
+    test(str, [21, 'left'], '...an entire sentence.', 'left | no split | 21');
+    test(str, [11, 'left'], '...sentence.', 'left | no split | 11');
+    test(str, [9, 'left'], '...sentence.', 'left | no split | 9');
+    test(str, [4, 'left'], '...', 'left | no split | 4');
+    test(str, [3, 'left'], '...', 'left | no split | 3');
+    test(str, [2, 'left'], '...', 'left | no split | 2');
+    test(str, [0, 'left'], '...', 'left | no split | 0');
+    test(str, [-100, 'left'], '...', 'left | no split | -100');
+
+    test('123456', [2, 'left'], '...', 'splitter not included left | 2');
+    test('123456', [2, 'middle'], '...', 'splitter not included center | 2');
+    test('123456', [2], '...', 'splitter not included right | 2');
+    test(str, [3, 'left', '>>> '], '>>> ', 'custom [splitter] | 4 | >>>');
+
+    test(str, [10, 'right', ''], 'Gotta be', 'empty [splitter]  | 10');
+    test('Alpha Beta Gamma Delta Epsilon', [20, 'middle', ''], 'Alpha BetaEpsilon', 'Issue 311');
+  });
+
+  method('assign', function() {
+    var obj1 = { first: 'Harry' };
+    var obj2 = { last: 'Potter' };
+
+    test('Welcome, {name}.', [{ name: 'program' }], 'Welcome, program.', 'basic functionality');
+    test('Welcome, {1}.', ['program'], 'Welcome, program.', 'numeric params');
+    test('Welcome, {1}.', [{ name: 'program' }], 'Welcome, {1}.', 'numeric params will be untouched if object passed');
+    test('Welcome, {name}. You are {age} years old and have {points} points left.', [{ name: 'program', age: 21, points: 345 }], 'Welcome, program. You are 21 years old and have 345 points left.', '1 hash');
+    test('Welcome, {1}. You are {2} years old and have {3} points left.', ['program', 21, 345], 'Welcome, program. You are 21 years old and have 345 points left.', '3 arguments');
+    test('Welcome, {name}. You are {age} years old and have {3} points left.', [{ name: 'program' }, { age: 21 }, 345], 'Welcome, program. You are 21 years old and have 345 points left.', 'complex');
+
+    test('Hello, {first} {last}', [obj1, obj2], 'Hello, Harry Potter', 'passing 2 objects');
+    test(obj1.first, 'Harry', 'obj1 retains its properties');
+    equal(obj1.last, undefined, 'obj1 is untampered');
+
+    test(obj2.last, 'Potter', 'obj2 retains its properties');
+    equal(obj2.first, undefined, 'obj2 is untampered');
+
+    test('Hello, {1}', [''], 'Hello, ', 'empty string as argument');
+    test('Hello, {empty}', [{ empty: '' }], 'Hello, ', 'empty string as object');
+
+    test('{{1} {2}}', [5,6], '{5 6}', 'nested braces');
+    test('{one {1} {2} two}', [5,6], '{one 5 6 two}', 'nested braces with strings outside');
+
+    test('Hello, {first} {last}', [[obj1, obj2]], 'Hello, Harry Potter', 'passing 2 objects in an array');
+
+  });
 
 
 });

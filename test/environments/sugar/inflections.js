@@ -1,4 +1,4 @@
-test('Inflections', function () {
+package('String', function () {
 
   /* Note that the following methods are not implemented now and may not be:
    *
@@ -331,104 +331,109 @@ test('Inflections', function () {
     "person_street_address" : "person-street-address"
   }
 
-
-  // Test pluralize plurals
-  equal("plurals".pluralize(), "plurals", "String#pluralize | plurals")
-  equal("Plurals".pluralize(), "Plurals", "String#pluralize | Plurals")
-
-
-  // Test pluralize empty string
-  equal("".pluralize(), "", 'String#pluralize | ""');
+  method('pluralize', function() {
+    // Test pluralize plurals
+    test('plurals', 'plurals', 'plurals')
+    test('Plurals', 'Plurals', 'Plurals')
+    test('', '', 'empty string');
+  });
 
 
   // Test uncountability of words
   Uncountables.forEach(function(word) {
-    equal(word.singularize(), word, 'String#singularize | uncountables');
-    equal(word.pluralize(), word, 'String#pluralize | uncountables');
-    equal(word.singularize(), word.pluralize(), 'String#singularize | uncountables | same as pluralize');
+    equal(run(word, 'singularize'), word, 'singularize | uncountables');
+    equal(run(word, 'pluralize'), word, 'pluralize | uncountables');
+    equal(run(word, 'singularize'), run(word, 'pluralize'), 'singularize | uncountables | same as pluralize');
   });
 
 
   // Test uncountable word is not greedy
-  var uncountable_word = "ors";
-  var countable_word = "sponsor";
+  var uncountable = 'ors';
+  var countable = 'sponsor';
 
-  String.Inflector.uncountable(uncountable_word);
+  String.Inflector.uncountable(uncountable);
 
-  equal(uncountable_word.singularize(), uncountable_word, 'String#singularize | uncountable | ors');
-  equal(uncountable_word.pluralize(), uncountable_word, 'String#pluralize | uncountable | ors');
-  equal(uncountable_word.pluralize(), uncountable_word.singularize(), 'String#singularize | uncountable | both are same');
-  equal(countable_word.singularize(), 'sponsor', 'String#singularize | countable | sponsor');
-  equal(countable_word.pluralize(), 'sponsors', 'String#pluralize | countable | sponsors');
-  equal(countable_word.pluralize().singularize(), 'sponsor', 'String#pluralize | countable | both are same');
+  method('singularize', function() {
+    test(uncountable, uncountable, 'singularize | uncountable | ors');
+    test(countable, 'sponsor', 'singularize | countable | sponsor');
+
+    // Test singularize plural
+    testIterateOverObject(SingularToPlural, function(singular, plural) {
+      test(plural, singular, 'singularize | plural > singular');
+      test(run(plural, 'capitalize'), run(singular, 'capitalize'), 'singularize | plural > capitalize > singular == singular > capitalize');
+    });
+
+    // Test singularize singular
+    testIterateOverObject(SingularToPlural, function(singular, plural) {
+      equal(singular, singular, 'singular > singular');
+      equal(run(singular, 'capitalize'), run(singular, 'capitalize'), 'singular > capitalize > singular == singular > capitalize');
+    });
 
 
-  // Test pluralize singular
-  testIterateOverObject(SingularToPlural, function(singular, plural) {
-    equal(singular.pluralize(), plural, 'String#pluralize | singular > plural');
-    equal(singular.capitalize().pluralize(), plural.capitalize(), 'String#pluralize | singular > capitalize > plural == plural > capitalize');
   });
 
-  // Test singularize plural
-  testIterateOverObject(SingularToPlural, function(singular, plural) {
-    equal(plural.singularize(), singular, 'String#singularize | plural > singular');
-    equal(plural.capitalize().singularize(), singular.capitalize(), 'String#singularize | plural > capitalize > singular == singular > capitalize');
+  method('pluralize', function() {
+    test(uncountable, uncountable, 'pluralize | uncountable | ors');
+    test(uncountable, run(uncountable, 'singularize'), 'singularize | uncountable | both are same');
+
+    test(countable, 'sponsors', 'pluralize | countable | sponsors');
+    equal(run(run(countable, 'pluralize'), 'singularize'), 'sponsor', 'pluralize | countable | both are same');
+
+    // Test pluralize singular
+    testIterateOverObject(SingularToPlural, function(singular, plural) {
+      test(singular, plural, 'pluralize | singular > plural');
+      test(run(singular, 'capitalize'), run(plural, 'capitalize'), 'pluralize | singular > capitalize > plural == plural > capitalize');
+    });
+
+    // Test pluralize plural
+    testIterateOverObject(SingularToPlural, function(singular, plural) {
+      test(plural, plural, 'plural > plural');
+      test(run(plural, 'capitalize'), run(plural, 'capitalize'), 'plural > capitalize > plural == plural > capitalize');
+    });
+
   });
 
-  // Test singularize singular
-  testIterateOverObject(SingularToPlural, function(singular, plural) {
-    equal(singular.singularize(), singular, 'String#singularize | singular > singular');
-    equal(singular.capitalize().singularize(), singular.capitalize(), 'String#singularize | singular > capitalize > singular == singular > capitalize');
-  });
-
-  // Test pluralize plural
-  testIterateOverObject(SingularToPlural, function(singular, plural) {
-    equal(plural.pluralize(), plural, 'String#pluralize | plural > plural');
-    equal(plural.capitalize().pluralize(), plural.capitalize(), 'String#singularize | plural > capitalize > plural == plural > capitalize');
-  });
 
 
   // Test overwrite previous inflectors
-  equal('series'.singularize(), 'series', 'String#singularize | series');
+  equal(run('series', 'singularize'), 'series', 'singularize | series');
   String.Inflector.singular('series', 'serie');
-  equal('series'.singularize(), 'serie', 'String#singularize | serie');
+  equal(run('series', 'singularize'), 'serie', 'singularize | serie');
   String.Inflector.singular('series'); // Return to normal
 
 
   // Test irregulars
 
   testIterateOverObject(Irregulars, function(singular, plural) {
-    equal(plural.singularize(), singular, 'String#singularize | irregulars');
-    equal(singular.pluralize(), plural, 'String#pluralize | irregulars | pluralized singular is plural');
+    equal(run(plural, 'singularize'), singular, 'singularize | irregulars');
+    equal(run(singular, 'pluralize'), plural, 'pluralize | irregulars | pluralized singular is plural');
   });
 
   testIterateOverObject(Irregulars, function(singular, plural) {
-    equal(plural.pluralize(), plural, 'String#singularize | irregulars | pluralized plural id pluralized');
+    equal(run(plural, 'pluralize'), plural, 'singularize | irregulars | pluralized plural id pluralized');
   });
 
-
-  // Test titleize
-  testIterateOverObject(MixtureToTitleCase, function(before, titleized) {
-    equal(before.titleize(), titleized, 'String#titleize | mixed cases')
+  method('titleize', function() {
+    testIterateOverObject(MixtureToTitleCase, function(before, titleized) {
+      test(before, titleized, 'mixed cases')
+    });
   });
 
-
-  // Test camelize
-  testIterateOverObject(CamelToUnderscore, function(camel, underscore) {
-    equal(underscore.camelize(), camel, 'String#camelize | mixed cases')
+  method('camelize', function() {
+    testIterateOverObject(CamelToUnderscore, function(camel, underscore) {
+      test(underscore, camel, 'mixed cases')
+    });
+    test('Camel_Case', 'CamelCase', 'handles underscores');
   });
 
-  testIterateOverObject(UnderscoreToLowerCamel, function(under, lowerCamel) {
-    // Sugar differs from ActiveSupport here in that the first character is upcased by default
-    equal(under.camelize(false), lowerCamel, 'String#camelize | lower camel')
+  method('camelize', [false], function() {
+    testIterateOverObject(UnderscoreToLowerCamel, function(under, lowerCamel) {
+      // Sugar differs from ActiveSupport here in that the first character is upcased by default
+      test(under, lowerCamel, 'lower camel')
+    });
+    test('Capital', 'capital', 'downcases the first letter');
+
   });
-
-  // Test with lower downcases the first letter
-  equal('Capital'.camelize(false), 'capital', 'String#camelize | downcases the first letter');
-
-  // Test camelize with underscores
-  equal('Camel_Case'.camelize(), 'CamelCase', 'String#camelize | handles underscores');
-
 
   // Test acronyms
 
@@ -469,118 +474,131 @@ test('Inflections', function () {
     // ["RoRails",           "ro_rails",           "Ro rails",         "Ro Rails"]
   ].forEach(function(set) {
     var camel = set[0], under = set[1], human = set[2], title = set[3];
-    equal(under.camelize(), camel, 'String#camelize | under.camelize()')
-    equal(camel.camelize(), camel, 'String#camelize | camel.camelize()')
-    equal(under.underscore(), under, 'String#underscore | under.underscore()')
-    equal(camel.underscore(), under, 'String#underscore | camel.underscore()')
-    equal(under.titleize(), title, 'String#titleize | under.titleize()')
-    equal(camel.titleize(), title, 'String#titleize | camel.titleize()')
-    equal(under.humanize(), human, 'String#humanize | under.humanize()')
+    equal(run(under, 'camelize'), camel, 'camelize | under.camelize()')
+    equal(run(camel, 'camelize'), camel, 'camelize | camel.camelize()')
+    equal(run(under, 'underscore'), under, 'underscore | under.underscore()')
+    equal(run(camel, 'underscore'), under, 'underscore | camel.underscore()')
+    equal(run(under, 'titleize'), title, 'titleize | under.titleize()')
+    equal(run(camel, 'titleize'), title, 'titleize | camel.titleize()')
+    equal(run(under, 'humanize'), human, 'humanize | under.humanize()')
   });
-
 
 
   // Test acronym override
   String.Inflector.acronym("LegacyApi")
 
-  equal('legacyapi'.camelize(), "LegacyApi", 'String#camelize | LegacyApi')
-  equal('legacy_api'.camelize(), "LegacyAPI", 'String#camelize | LegacyAPI')
-  equal('some_legacyapi'.camelize(), "SomeLegacyApi", 'String#camelize | SomeLegacyApi')
-  equal('nonlegacyapi'.camelize(), "Nonlegacyapi", 'String#camelize | Nonlegacyapi')
+  method('camelize', function() {
+    test('legacyapi', "LegacyApi", 'LegacyApi')
+    test('legacy_api', "LegacyAPI", 'LegacyAPI')
+    test('some_legacyapi', "SomeLegacyApi", 'SomeLegacyApi')
+    test('nonlegacyapi', "Nonlegacyapi", 'Nonlegacyapi')
+  });
 
 
-  // Test acronyms camelize lower
-
-  equal('html_api'.camelize(false), 'htmlAPI', 'String#camelize | html_api')
-  equal('htmlAPI'.camelize(false), 'htmlAPI', 'String#camelize | htmlAPI')
-  equal('HTMLAPI'.camelize(false), 'htmlAPI', 'String#camelize | HTMLAPI')
-
+  method('camelize', [false], function() {
+    test('html_api', 'htmlAPI', 'html_api')
+    test('htmlAPI', 'htmlAPI', 'htmlAPI')
+    test('HTMLAPI', 'htmlAPI', 'HTMLAPI')
+  });
 
   // Test underscore acronym sequence
 
   String.Inflector.acronym("HTML5");
 
-  equal('HTML5HTMLAPI'.underscore(), 'html5_html_api', 'String#underscore | HTML5HTMLAPI')
 
+  method('underscore', function() {
 
+    test('HTML5HTMLAPI', 'html5_html_api', 'HTML5HTMLAPI')
 
+    testIterateOverObject(CamelToUnderscore, function(camel, underscore) {
+        test(camel, underscore, 'mixed cases')
+    });
 
-  // Test underscore
-  testIterateOverObject(CamelToUnderscore, function(camel, underscore) {
-      equal(camel.underscore(), underscore, 'String#underscore | mixed cases')
-  });
-
-  testIterateOverObject(CamelToUnderscoreWithoutReverse, function(camel, underscore) {
-      equal(camel.underscore(), underscore, 'String#underscore | mixed cases')
-  });
-
-
-  // Test parameterize
-
-  testIterateOverObject(StringToParameterized, function(str, parameterized) {
-      equal(str.parameterize(), parameterized, 'String#parameterized')
-  });
-
-  testIterateOverObject(StringToParameterizedAndNormalized, function(str, parameterized) {
-      equal(str.parameterize(), parameterized, 'String#parameterized | and normalized')
-  });
-
-  testIterateOverObject(StringToParameterizeWithUnderscore, function(str, parameterized) {
-      equal(str.parameterize('_'), parameterized, 'String#parameterized | with underscore')
-  });
-
-  testIterateOverObject(StringToParameterized, function(str, parameterized) {
-      equal(str.parameterize('__sep__'), parameterized.replace(/-/g, '__sep__'), 'String#parameterized | with underscore')
+    testIterateOverObject(CamelToUnderscoreWithoutReverse, function(camel, underscore) {
+        test(camel, underscore, 'mixed cases without reverse')
+    });
   });
 
 
+  method('parameterize', function() {
 
+    testIterateOverObject(StringToParameterized, function(str, parameterized) {
+        test(str, parameterized, 'basic');
+    });
 
+    testIterateOverObject(StringToParameterizedAndNormalized, function(str, parameterized) {
+        test(str, parameterized, 'normalized');
+    });
 
-  // Test humanize
+    testIterateOverObject(StringToParameterizeWithUnderscore, function(str, parameterized) {
+        test(str, ['_'], parameterized, 'with underscore');
+    });
 
-  testIterateOverObject(UnderscoreToHuman, function(under, human) {
-      equal(under.humanize(), human, 'String#humanize | underscore')
+    testIterateOverObject(StringToParameterized, function(str, parameterized) {
+        test(str, ['__sep__'], parameterized.replace(/-/g, '__sep__'), 'with separator');
+    });
   });
 
-  String.Inflector.human(/_cnt$/i, '_count');
-  String.Inflector.human(/^prefx_/i, '')
+  method('normalize', function() {
 
-  equal('jargon_cnt'.humanize(), 'Jargon count', 'String#humanize | Jargon count')
-  equal('prefx_request'.humanize(), 'Request', 'String#humanize | Request')
-
-  String.Inflector.human("col_rpted_bugs", "Reported bugs")
-
-  equal('col_rpted_bugs'.humanize(), 'Reported bugs', 'String#humanize | Reported bugs')
-  equal('COL_rpted_bugs'.humanize(), 'Col rpted bugs', 'String#humanize | Col rpted bugs')
-
-
-
-  // Test dasherize
-  testIterateOverObject(UnderscoresToDashes, function(under, dasherized) {
-      equal(under.dasherize(), dasherized, 'String#dasherize')
+    test('à', 'a', 'a');
+    test('cañon', 'canon', 'cañon');
+    test('Jørgen Kastholm', 'Jorgen Kastholm', 'Jørgen Kastholm');
+    test('Bodil Kjær', 'Bodil Kjaer', 'Bodil Kjær');
   });
 
-  testIterateOverObject(UnderscoresToDashes, function(under, dasherized) {
-      equal(under.dasherize().underscore(), under, 'String#dasherize | reverse')
+
+
+  method('humanize', function() {
+
+    testIterateOverObject(UnderscoreToHuman, function(under, human) {
+        test(under, human, 'underscore')
+    });
+
+    String.Inflector.human(/_cnt$/i, '_count');
+    String.Inflector.human(/^prefx_/i, '')
+
+    test('jargon_cnt', 'Jargon count', 'Jargon count')
+    test('prefx_request', 'Request', 'Request')
+
+    String.Inflector.human("col_rpted_bugs", "Reported bugs")
+
+    test('col_rpted_bugs', 'Reported bugs', 'Reported bugs')
+    test('COL_rpted_bugs', 'Col rpted bugs', 'Col rpted bugs')
+
   });
 
-  // More irregulars
-  equal('street'.pluralize(), 'streets', 'String.Inflector | street > streets');
+  method('dasherize', function() {
 
-  // Test clearing inflectors KEEP ME AT THE BOTTOM
-  equal('foo'.pluralize(), 'foos', 'String.Inflector.clear | foo is foos');
-  String.Inflector.clear('plurals');
-  equal('foo'.pluralize(), 'foo', 'String.Inflector.clear | clear purals');
-  equal('foos'.singularize(), 'foo', 'String.Inflector.clear | singulars are not cleared');
-  String.Inflector.plural(/$/, 's');
-  equal('foo'.pluralize(), 'foos', 'String.Inflector.plural | re-add');
-  String.Inflector.clear('all');
-  equal('foo'.pluralize(), 'foo', 'String.Inflector.plural | clear all with "all"');
-  String.Inflector.plural(/$/, 's');
-  equal('foo'.pluralize(), 'foos', 'String.Inflector.plural | re-add again');
-  String.Inflector.clear();
-  equal('foo'.pluralize(), 'foo', 'String.Inflector.plural | clear all with undefined');
+    testIterateOverObject(UnderscoresToDashes, function(under, dasherized) {
+        test(under, dasherized, 'basic')
+    });
 
+    testIterateOverObject(UnderscoresToDashes, function(under, dasherized) {
+        equal(run(run(under, 'dasherize'), 'underscore'), under, 'reverse')
+    });
+
+  });
+
+  method('pluralize', function() {
+
+    // More irregulars
+    test('street', 'streets', 'String.Inflector | street > streets');
+
+    // Test clearing inflectors KEEP ME AT THE BOTTOM
+    test('foo', 'foos', 'String.Inflector.clear | foo is foos');
+    String.Inflector.clear('plurals');
+    test('foo', 'foo', 'String.Inflector.clear | clear purals');
+    equal(run('foos', 'singularize'), 'foo', 'String.Inflector.clear | singulars are not cleared');
+    String.Inflector.plural(/$/, 's');
+    test('foo', 'foos', 'String.Inflector.plural | re-add');
+    String.Inflector.clear('all');
+    test('foo', 'foo', 'String.Inflector.plural | clear all with "all"');
+    String.Inflector.plural(/$/, 's');
+    test('foo', 'foos', 'String.Inflector.plural | re-add again');
+    String.Inflector.clear();
+    test('foo', 'foo', 'String.Inflector.plural | clear all with undefined');
+
+  });
 
 });

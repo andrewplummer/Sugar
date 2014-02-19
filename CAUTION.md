@@ -10,6 +10,12 @@ Version 1.4.0 improves future-compatibility by ensuring that browser updates do 
 
 
 
+v1.4.3+
+=======
+
+- Level: Minor
+  - `String#escapeHTML` now double escapes entities, meaning '&amp;' will become '&amp;amp;', etc.
+
 v1.4.1+
 =======
 

@@ -28,21 +28,17 @@ restoreObjectPrototypeMethods = function() {
   });
 }
 
-testIterateOverObject = function(obj, fn) {
-  var key;
-  for(key in obj) {
-    if(!Object.hasOwnProperty(key)) continue;
-    fn.call(obj, key, obj[key]);
-  }
+testIsArray = function(obj) {
+  return Object.prototype.toString.call(obj) === '[object Array]';
 }
 
 testClassAndInstance = function(name, obj, args, expected, message) {
   if(!testIsArray(args)) {
     args = [args];
   }
-  equal(Object[name].apply(obj, [obj].concat(args)), expected, message);
+  equal(run(Object, name, [obj].concat(args)), expected, message);
   if(Object.extended) {
-    extended = Object.extended(obj);
+    var extended = Object.extended(obj);
     equal(extended[name].apply(extended, args), expected, message + ' | On extended object');
   }
 }
