@@ -37,11 +37,13 @@ var modulesFinished = function() {
 var loadScripts = function(module) {
   var loaded = 0, i;
   for(i = 0; i < module.tests.length; i++){
-    jQuery.getScript((module.path || '') + module.tests[i], function(){
+    jQuery.getScript((module.path || '') + module.tests[i], function() {
       loaded++;
       if(loaded == module.tests.length){
         syncTestsFinished();
       }
+    }).fail(function(jqxhr, state, err) {
+      throw err;
     });
   }
 }

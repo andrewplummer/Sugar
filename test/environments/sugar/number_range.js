@@ -1,257 +1,286 @@
 
-test('Number Ranges', function () {
+package('Number', function () {
 
-  var range;
-  var mergedRange;
-  var clonedRange;
-  var result;
-  var count;
-
-  range = Number.range(5, 10);
-
-  equal(range.toString(), '5..10', 'Number | Range | toString');
-  equal(range.isValid(), true, 'Number | Range | isValid');
-  equal(range.span(), 6, 'Number | Range | span');
-  equal(range.contains(), false, 'Number | Range | contains undefined');
-  equal(range.contains(1), false, 'Number | Range | contains 1');
-  equal(range.contains(4), false, 'Number | Range | contains 4');
-  equal(range.contains(5), true, 'Number | Range | contains 5');
-  equal(range.contains(6), true, 'Number | Range | contains 6');
-  equal(range.contains(7), true, 'Number | Range | contains 7');
-  equal(range.contains(8), true, 'Number | Range | contains 8');
-  equal(range.contains(9), true, 'Number | Range | contains 9');
-  equal(range.contains(10), true, 'Number | Range | contains 10');
-  equal(range.contains(11), false, 'Number | Range | contains 11');
-
-  mergedRange = range.union(Number.range(1, 5));
-  equal(mergedRange.start, 1, 'Number | 1..5 | 5..10 | start');
-  equal(mergedRange.end, 10, 'Number | 1..5 | 5..10 | end');
-
-  mergedRange = range.union(Number.range(1, 4));
-  equal(mergedRange.start, 1, 'Number | 1..4 | 5..10 | start');
-  equal(mergedRange.end, 10, 'Number | 1..4 | 5..10 | end');
-
-  mergedRange = range.union(Number.range(1, 3));
-  equal(mergedRange.start, 1, 'Number | 1..3 | 5..10 | start');
-  equal(mergedRange.end, 10, 'Number | 1..3 | 5..10 | end');
-
-  mergedRange = range.union(Number.range(1, 1));
-  equal(mergedRange.start, 1, 'Number | 1..1 | 5..10 | start');
-  equal(mergedRange.end, 10, 'Number | 1..1 | 5..10 | end');
-
-  mergedRange = range.union(Number.range(1, 20));
-  equal(mergedRange.start, 1, 'Number | 1..20 | 5..10 | start');
-  equal(mergedRange.end, 20, 'Number | 1..20 | 5..10 | end');
-
-  mergedRange = range.union(Number.range(-5, 7));
-  equal(mergedRange.start, -5, 'Number | -5..7 | 5..10 | start');
-  equal(mergedRange.end, 10, 'Number | -5..7 | 5..10 | end');
-
-  mergedRange = range.union(Number.range(-5, 50));
-  equal(mergedRange.start, -5, 'Number | -5..50 | 5..10 | start');
-  equal(mergedRange.end, 50, 'Number | -5..50 | 5..10 | end');
-
-  mergedRange = range.intersect(Number.range(1, 5));
-  equal(mergedRange.start, 5, 'Number | 1..5 & 5..10 | start');
-  equal(mergedRange.end, 5, 'Number | 1..5 & 5..10 | end');
-
-  mergedRange = range.intersect(Number.range(7, 8));
-  equal(mergedRange.start, 7, 'Number | 7..8 & 5..10 | start');
-  equal(mergedRange.end, 8, 'Number | 7..8 & 5..10 | end');
-
-  mergedRange = range.intersect(Number.range(1, 4));
-  equal(mergedRange.isValid(), false, 'Number | 1..4 & 5..10 | isValid');
-
-  mergedRange = range.intersect(Number.range(1, 3));
-  equal(mergedRange.isValid(), false, 'Number | 1..3 & 5..10 | isValid');
-
-  mergedRange = range.intersect(Number.range(1, 1));
-  equal(mergedRange.isValid(), false, 'Number | 1..1 & 5..10 | isValid');
-
-  mergedRange = range.intersect(Number.range(1, 20));
-  equal(mergedRange.start, 5, 'Number | 1..20 & 5..10 | start');
-  equal(mergedRange.end, 10, 'Number | 1..20 & 5..10 | end');
-
-  mergedRange = range.intersect(Number.range(-5, 7));
-  equal(mergedRange.start, 5, 'Number | -5..7 & 5..10 | start');
-  equal(mergedRange.end, 7, 'Number | -5..7 & 5..10 | end');
-
-  mergedRange = range.intersect(Number.range(-5, 50));
-  equal(mergedRange.start, 5, 'Number | -5..50 & 5..10 | start');
-  equal(mergedRange.end, 10, 'Number | -5..50 & 5..10 | end');
-
-  mergedRange = Number.range(-5, 5).intersect(Number.range(-20, 0));
-  equal(mergedRange.start, -5, 'Number | -5..5 & -20..0 | start');
-  equal(mergedRange.end, 0, 'Number | -5..5 & -20..0 | end');
-
-
-  clonedRange = range.clone();
-
-  equal(clonedRange.start, 5, 'Number | Range | cloned range start');
-  equal(clonedRange.end, 10, 'Number | Range | cloned range end');
-  equal(clonedRange === range, false, 'Number | Range | cloned range should not be strictly equal');
-
-
-  count = 0;
-
-  result = range.every(1, function() {
-    count++;
-  });
-
-  equal(result, [5,6,7,8,9,10], 'Number | Range | result should be an array');
-  equal(count, 6, 'Number | Range | every 1');
-
-  count = 0;
-
-  result = range.every(2, function() {
-    count++;
-  });
-
-  equal(result, [5,7,9], 'Number | Range every 2 | result should be an array');
-  equal(count, 3, 'Number | Range every 2 | count');
-
-  count = 0;
-
-  result = range.every(function() {
-    count++;
-  });
-
-  equal(result, [5,6,7,8,9,10], 'Number | Range | result should be an array');
-  equal(count, 6, 'Number | Range | every 1');
-
-
-  equal(range.clamp(25), 10, 'Number | Range#clamp | 25');
-  equal(range.clamp(10), 10, 'Number | Range#clamp | 10');
-  equal(range.clamp(9),   9, 'Number | Range#clamp |  9');
-  equal(range.clamp(8),   8, 'Number | Range#clamp |  8');
-  equal(range.clamp(7),   7, 'Number | Range#clamp |  7');
-  equal(range.clamp(6),   6, 'Number | Range#clamp |  6');
-  equal(range.clamp(5),   5, 'Number | Range#clamp |  5');
-  equal(range.clamp(4),   5, 'Number | Range#clamp |  4');
-  equal(range.clamp(1),   5, 'Number | Range#clamp |  1');
-  equal(range.clamp(0),   5, 'Number | Range#clamp |  0');
-  equal(range.clamp(-1),  5, 'Number | Range#clamp | -1');
-
-  equal((25).clamp(5, 10), 10, 'Number#clamp | 25');
-  equal((10).clamp(5, 10), 10, 'Number#clamp | 10');
-  equal((9).clamp(5, 10), 9, 'Number#clamp | 9');
-  equal((8).clamp(5, 10), 8, 'Number#clamp | 8');
-  equal((7).clamp(5, 10), 7, 'Number#clamp | 7');
-  equal((6).clamp(5, 10), 6, 'Number#clamp | 6');
-  equal((5).clamp(5, 10), 5, 'Number#clamp | 5');
-  equal((4).clamp(5, 10), 5, 'Number#clamp | 4');
-  equal((1).clamp(5, 10), 5, 'Number#clamp | 1');
-  equal((0).clamp(5, 10), 5, 'Number#clamp | 0');
-  equal((-1).clamp(5, 10), 5, 'Number#clamp | -1');
-
-  equal((25).clamp(10, 5), 10, 'Number#clamp | inverted | 25');
-  equal((10).clamp(10, 5), 10, 'Number#clamp | inverted | 10');
-  equal((9).clamp(10, 5), 9, 'Number#clamp | inverted | 9');
-  equal((8).clamp(10, 5), 8, 'Number#clamp | inverted | 8');
-  equal((7).clamp(10, 5), 7, 'Number#clamp | inverted | 7');
-  equal((6).clamp(10, 5), 6, 'Number#clamp | inverted | 6');
-  equal((5).clamp(10, 5), 5, 'Number#clamp | inverted | 5');
-  equal((4).clamp(10, 5), 5, 'Number#clamp | inverted | 4');
-  equal((1).clamp(10, 5), 5, 'Number#clamp | inverted | 1');
-  equal((0).clamp(10, 5), 5, 'Number#clamp | inverted | 0');
-  equal((-1).clamp(10, 5), 5, 'Number#clamp | inverted | -1');
-
-  equal((5).cap(6), 5, 'Number#cap | 5 capped to 6');
-  equal((5).cap(5), 5, 'Number#cap | 5 capped to 5');
-  equal((5).cap(4), 4, 'Number#cap | 5 capped to 4');
-  equal((5).cap(1), 1, 'Number#cap | 5 capped to 1');
-  equal((5).cap(0), 0, 'Number#cap | 5 capped to 0');
-  equal((5).cap(-1), -1, 'Number#cap | 5 capped to -1');
-  equal((5).cap(-5), -5, 'Number#cap | 5 capped to -5');
-  equal((5).cap(-10), -10, 'Number#cap | 5 capped to -10');
-
-  equal((0).cap(6), 0, 'Number#cap | 0 capped to 6');
-  equal((0).cap(5), 0, 'Number#cap | 0 capped to 5');
-  equal((0).cap(4), 0, 'Number#cap | 0 capped to 4');
-  equal((0).cap(1), 0, 'Number#cap | 0 capped to 1');
-  equal((0).cap(0), 0, 'Number#cap | 0 capped to 0');
-  equal((0).cap(-1), -1, 'Number#cap | 0 capped to -1');
-  equal((0).cap(-5), -5, 'Number#cap | 0 capped to -5');
-  equal((0).cap(-10), -10, 'Number#cap | 0 capped to -10');
-
-  equal((-5).cap(6), -5, 'Number#cap | -5 capped to 6');
-  equal((-5).cap(5), -5, 'Number#cap | -5 capped to 5');
-  equal((-5).cap(4), -5, 'Number#cap | -5 capped to 4');
-  equal((-5).cap(1), -5, 'Number#cap | -5 capped to 1');
-  equal((-5).cap(0), -5, 'Number#cap | -5 capped to 0');
-  equal((-5).cap(-1), -5, 'Number#cap | -5 capped to -1');
-  equal((-5).cap(-5), -5, 'Number#cap | -5 capped to -5');
-  equal((-5).cap(-10), -10, 'Number#cap | -5 capped to -10');
-
-  range = Number.range(4, 1);
-
-  equal(range.toString(), '4..1', 'Number | Range | inverse | toString');
-  equal(range.isValid(), true, 'Number | Range | inverse | isValid');
-  equal(range.every(), [4,3,2,1], 'Number | Range | inverse | every');
-
-  equal(Number.range(NaN, NaN).toString(), 'Invalid Range', 'Number | Range | invalid | toString');
-
-
-  range = Number.range(1, Infinity);
-  equal(range.contains(1), true, 'Number | 1..Infinity | contains 1');
-  equal(range.contains(10), true, 'Number | 1..Infinity | contains 10');
-  equal(range.contains(100), true, 'Number | 1..Infinity | contains 100');
-  equal(range.contains(Infinity), true, 'Number | 1..Infinity | contains 100');
-  equal(range.contains(0), false, 'Number | 1..Infinity | contains 0');
-  equal(range.contains(-1), false, 'Number | 1..Infinity | contains -1');
-  equal(range.contains(-10), false, 'Number | 1..Infinity | contains -10');
-  equal(range.contains(-100), false, 'Number | 1..Infinity | contains -100');
-  equal(range.contains(-Infinity), false, 'Number | 1..Infinity | contains -Infinity');
-
-  range = Number.range(-Infinity, 1);
-  equal(range.contains(1), true, 'Number | -Infinity..1 | contains 1');
-  equal(range.contains(10), false, 'Number | -Infinity..1 | contains 10');
-  equal(range.contains(100), false, 'Number | -Infinity..1 | contains 100');
-  equal(range.contains(Infinity), false, 'Number | -Infinity..1 | contains 100');
-  equal(range.contains(0), true, 'Number | -Infinity..1 | contains 0');
-  equal(range.contains(-1), true, 'Number | -Infinity..1 | contains -1');
-  equal(range.contains(-10), true, 'Number | -Infinity..1 | contains -10');
-  equal(range.contains(-100), true, 'Number | -Infinity..1 | contains -100');
-  equal(range.contains(-Infinity), true, 'Number | -Infinity..1 | contains -Infinity');
-
-  range = Number.range(-Infinity, Infinity);
-  equal(range.contains(1), true, 'Number | -Infinity..Infinity | contains 1');
-  equal(range.contains(10), true, 'Number | -Infinity..Infinity | contains 10');
-  equal(range.contains(100), true, 'Number | -Infinity..Infinity | contains 100');
-  equal(range.contains(Infinity), true, 'Number | -Infinity..Infinity | contains 100');
-  equal(range.contains(0), true, 'Number | -Infinity..Infinity | contains 0');
-  equal(range.contains(-1), true, 'Number | -Infinity..Infinity | contains -1');
-  equal(range.contains(-10), true, 'Number | -Infinity..Infinity | contains -10');
-  equal(range.contains(-100), true, 'Number | -Infinity..Infinity | contains -100');
-  equal(range.contains(-Infinity), true, 'Number | -Infinity..Infinity | contains -Infinity');
-
-  range = Number.range(0, 0);
-  equal(range.contains(-1), false, 'Number | 0..0 | contains -1');
-  equal(range.contains(0), true, 'Number | 0..0 | contains 0');
-  equal(range.contains(1), false, 'Number | 0..0 | contains 1');
-
-
-  range = Number.range(null, null);
-  equal(range.contains(-1), false, 'Number | null..null | contains -1');
-  equal(range.contains(0), true, 'Number | null..null | contains 0');
-  equal(range.contains(1), false, 'Number | null..null | contains 1');
-  equal(range.isValid(), false, 'Number | null..null | isValid');
-
-
-  range = Number.range(undefined, undefined);
-  equal(range.contains(-1), false, 'Number | undefined..undefined | contains -1');
-  equal(range.contains(0), false, 'Number | undefined..undefined | contains 0');
-  equal(range.contains(1), false, 'Number | undefined..undefined | contains 1');
-  equal(range.isValid(), false, 'Number | undefined..undefined | isValid');
-
-  equal(Number.range(new Date(2010, 0).getTime(), new Date(2010, 2).getTime()).contains(new Date(2010, 0)), true, 'Number | range | contains different type');
-
-
-  equal(Number.range(1, 5).every(null, function(){}), [1,2,3,4,5], 'Number | 1..5 | null increment defaults to 1');
-
-  if(Array.create) {
-    equal(Array.create(Number.range(1, 5)), [1,2,3,4,5], 'Array.create | should work on number ranges');
-    equal(Array.create(Number.range(5, 1)), [5,4,3,2,1], 'Array.create | should work on inverse number ranges');
+  function getRange(from, to) {
+    return run(Number, 'range', [from, to]);
   }
+
+  method('range', function() {
+    var range = getRange(5, 10);
+
+    equal(range.toString(), '5..10', 'toString');
+    equal(range.isValid(), true, 'isValid');
+    equal(range.span(), 6, 'span');
+    equal(range.contains(), false, 'contains undefined');
+    equal(range.contains(1), false, 'contains 1');
+    equal(range.contains(4), false, 'contains 4');
+    equal(range.contains(5), true, 'contains 5');
+    equal(range.contains(6), true, 'contains 6');
+    equal(range.contains(7), true, 'contains 7');
+    equal(range.contains(8), true, 'contains 8');
+    equal(range.contains(9), true, 'contains 9');
+    equal(range.contains(10), true, 'contains 10');
+    equal(range.contains(11), false, 'contains 11');
+  });
+
+  method('union', function() {
+    var range = getRange(5, 10), mergedRange;
+
+    mergedRange = range.union(getRange(1, 5));
+    equal(mergedRange.start, 1, '1..5 | 5..10 | start');
+    equal(mergedRange.end, 10, '1..5 | 5..10 | end');
+
+    mergedRange = range.union(getRange(1, 4));
+    equal(mergedRange.start, 1, '1..4 | 5..10 | start');
+    equal(mergedRange.end, 10, '1..4 | 5..10 | end');
+
+    mergedRange = range.union(getRange(1, 3));
+    equal(mergedRange.start, 1, '1..3 | 5..10 | start');
+    equal(mergedRange.end, 10, '1..3 | 5..10 | end');
+
+    mergedRange = range.union(getRange(1, 1));
+    equal(mergedRange.start, 1, '1..1 | 5..10 | start');
+    equal(mergedRange.end, 10, '1..1 | 5..10 | end');
+
+    mergedRange = range.union(getRange(1, 20));
+    equal(mergedRange.start, 1, '1..20 | 5..10 | start');
+    equal(mergedRange.end, 20, '1..20 | 5..10 | end');
+
+    mergedRange = range.union(getRange(-5, 7));
+    equal(mergedRange.start, -5, '-5..7 | 5..10 | start');
+    equal(mergedRange.end, 10, '-5..7 | 5..10 | end');
+
+    mergedRange = range.union(getRange(-5, 50));
+    equal(mergedRange.start, -5, '-5..50 | 5..10 | start');
+    equal(mergedRange.end, 50, '-5..50 | 5..10 | end');
+  });
+
+  method('intersect', function() {
+    var range = getRange(5, 10), mergedRange;
+
+    mergedRange = range.intersect(getRange(1, 5));
+    equal(mergedRange.start, 5, '1..5 & 5..10 | start');
+    equal(mergedRange.end, 5, '1..5 & 5..10 | end');
+
+    mergedRange = range.intersect(getRange(7, 8));
+    equal(mergedRange.start, 7, '7..8 & 5..10 | start');
+    equal(mergedRange.end, 8, '7..8 & 5..10 | end');
+
+    mergedRange = range.intersect(getRange(1, 4));
+    equal(mergedRange.isValid(), false, '1..4 & 5..10 | isValid');
+
+    mergedRange = range.intersect(getRange(1, 3));
+    equal(mergedRange.isValid(), false, '1..3 & 5..10 | isValid');
+
+    mergedRange = range.intersect(getRange(1, 1));
+    equal(mergedRange.isValid(), false, '1..1 & 5..10 | isValid');
+
+    mergedRange = range.intersect(getRange(1, 20));
+    equal(mergedRange.start, 5, '1..20 & 5..10 | start');
+    equal(mergedRange.end, 10, '1..20 & 5..10 | end');
+
+    mergedRange = range.intersect(getRange(-5, 7));
+    equal(mergedRange.start, 5, '-5..7 & 5..10 | start');
+    equal(mergedRange.end, 7, '-5..7 & 5..10 | end');
+
+    mergedRange = range.intersect(getRange(-5, 50));
+    equal(mergedRange.start, 5, '-5..50 & 5..10 | start');
+    equal(mergedRange.end, 10, '-5..50 & 5..10 | end');
+
+    mergedRange = getRange(-5, 5).intersect(getRange(-20, 0));
+    equal(mergedRange.start, -5, '-5..5 & -20..0 | start');
+    equal(mergedRange.end, 0, '-5..5 & -20..0 | end');
+  });
+
+  method('clone', function() {
+    var range = getRange(5, 10);
+    var clonedRange = range.clone();
+
+    equal(clonedRange.start, 5, 'cloned range start');
+    equal(clonedRange.end, 10, 'cloned range end');
+    equal(clonedRange === range, false, 'cloned range should not be strictly equal');
+  });
+
+
+  method('every', function() {
+    var count, callback, result;
+    var range = getRange(5, 10);
+
+    count = 0;
+    result = range.every(1, function() {
+      count++;
+    });
+
+    equal(result, [5,6,7,8,9,10], 'result should be an array');
+    equal(count, 6, 'every 1');
+
+    count = 0;
+
+    result = range.every(2, function() {
+      count++;
+    });
+
+    equal(result, [5,7,9], 'every 2 | result should be an array');
+    equal(count, 3, 'every 2 | count');
+
+    count = 0;
+
+    result = range.every(function() {
+      count++;
+    });
+
+    equal(result, [5,6,7,8,9,10], 'result should be an array');
+    equal(count, 6, 'every 1');
+
+    equal(getRange(1, 5).every(null, function(){}), [1,2,3,4,5], 'Number | 1..5 | null increment defaults to 1');
+
+  });
+
+  method('clamp', function() {
+    var range = getRange(5, 10);
+
+    equal(range.clamp(25), 10, '25');
+    equal(range.clamp(10), 10, '10');
+    equal(range.clamp(9),   9, '9');
+    equal(range.clamp(8),   8, '8');
+    equal(range.clamp(7),   7, '7');
+    equal(range.clamp(6),   6, '6');
+    equal(range.clamp(5),   5, '5');
+    equal(range.clamp(4),   5, '4');
+    equal(range.clamp(1),   5, '1');
+    equal(range.clamp(0),   5, '0');
+    equal(range.clamp(-1),  5, '-1');
+  });
+
+  method('inverse', function() {
+    var range = getRange(4, 1);
+
+    equal(range.toString(), '4..1', 'toString');
+    equal(range.isValid(), true, 'isValid');
+    equal(range.every(), [4,3,2,1], 'every');
+
+    equal(getRange(NaN, NaN).toString(), 'Invalid Range', 'toString');
+  });
+
+
+  method('contains', function() {
+    var range;
+
+    range = getRange(1, Infinity);
+    equal(range.contains(1), true, '1..Infinity | contains 1');
+    equal(range.contains(10), true, '1..Infinity | contains 10');
+    equal(range.contains(100), true, '1..Infinity | contains 100');
+    equal(range.contains(Infinity), true, '1..Infinity | contains 100');
+    equal(range.contains(0), false, '1..Infinity | contains 0');
+    equal(range.contains(-1), false, '1..Infinity | contains -1');
+    equal(range.contains(-10), false, '1..Infinity | contains -10');
+    equal(range.contains(-100), false, '1..Infinity | contains -100');
+    equal(range.contains(-Infinity), false, '1..Infinity | contains -Infinity');
+
+    range = getRange(-Infinity, 1);
+    equal(range.contains(1), true, '-Infinity..1 | contains 1');
+    equal(range.contains(10), false, '-Infinity..1 | contains 10');
+    equal(range.contains(100), false, '-Infinity..1 | contains 100');
+    equal(range.contains(Infinity), false, '-Infinity..1 | contains 100');
+    equal(range.contains(0), true, '-Infinity..1 | contains 0');
+    equal(range.contains(-1), true, '-Infinity..1 | contains -1');
+    equal(range.contains(-10), true, '-Infinity..1 | contains -10');
+    equal(range.contains(-100), true, '-Infinity..1 | contains -100');
+    equal(range.contains(-Infinity), true, '-Infinity..1 | contains -Infinity');
+
+    range = getRange(-Infinity, Infinity);
+    equal(range.contains(1), true, '-Infinity..Infinity | contains 1');
+    equal(range.contains(10), true, '-Infinity..Infinity | contains 10');
+    equal(range.contains(100), true, '-Infinity..Infinity | contains 100');
+    equal(range.contains(Infinity), true, '-Infinity..Infinity | contains 100');
+    equal(range.contains(0), true, '-Infinity..Infinity | contains 0');
+    equal(range.contains(-1), true, '-Infinity..Infinity | contains -1');
+    equal(range.contains(-10), true, '-Infinity..Infinity | contains -10');
+    equal(range.contains(-100), true, '-Infinity..Infinity | contains -100');
+    equal(range.contains(-Infinity), true, '-Infinity..Infinity | contains -Infinity');
+
+    range = getRange(0, 0);
+    equal(range.contains(-1), false, '0..0 | contains -1');
+    equal(range.contains(0), true, '0..0 | contains 0');
+    equal(range.contains(1), false, '0..0 | contains 1');
+
+    range = getRange(null, null);
+    equal(range.contains(-1), false, 'null..null | contains -1');
+    equal(range.contains(0), true, 'null..null | contains 0');
+    equal(range.contains(1), false, 'null..null | contains 1');
+    equal(range.isValid(), false, 'null..null | isValid');
+
+    range = getRange(undefined, undefined);
+    equal(range.contains(-1), false, 'undefined..undefined | contains -1');
+    equal(range.contains(0), false, 'undefined..undefined | contains 0');
+    equal(range.contains(1), false, 'undefined..undefined | contains 1');
+    equal(range.isValid(), false, 'undefined..undefined | isValid');
+
+    equal(getRange(new Date(2010, 0).getTime(), new Date(2010, 2).getTime()).contains(new Date(2010, 0)), true, 'contains different type');
+  });
+
+  if(Sugar.Array.create) {
+    equal(Sugar.Array.create(getRange(1, 5)), [1,2,3,4,5], 'Array.create | should work on number ranges');
+    equal(Sugar.Array.create(getRange(5, 1)), [5,4,3,2,1], 'Array.create | should work on inverse number ranges');
+  }
+
+});
+
+package('Number', function() {
+
+  method('clamp', function() {
+    test(25, [5, 10], 10, '25');
+    test(10, [5, 10], 10, '10');
+    test(9,  [5, 10], 9, '9');
+    test(8,  [5, 10], 8, '8');
+    test(7,  [5, 10], 7, '7');
+    test(6,  [5, 10], 6, '6');
+    test(5,  [5, 10], 5, '5');
+    test(4,  [5, 10], 5, '4');
+    test(1,  [5, 10], 5, '1');
+    test(0,  [5, 10], 5, '0');
+    test(-1, [5, 10], 5, '-1');
+
+    test(25, [10, 5], 10, 'inverted | 25');
+    test(10, [10, 5], 10, 'inverted | 10');
+    test(9,  [10, 5], 9, 'inverted | 9');
+    test(8,  [10, 5], 8, 'inverted | 8');
+    test(7,  [10, 5], 7, 'inverted | 7');
+    test(6,  [10, 5], 6, 'inverted | 6');
+    test(5,  [10, 5], 5, 'inverted | 5');
+    test(4,  [10, 5], 5, 'inverted | 4');
+    test(1,  [10, 5], 5, 'inverted | 1');
+    test(0,  [10, 5], 5, 'inverted | 0');
+    test(-1, [10, 5], 5, 'inverted | -1');
+  });
+
+  method('cap', function() {
+    test(5, [6], 5, '5 capped to 6');
+    test(5, [5], 5, '5 capped to 5');
+    test(5, [4], 4, '5 capped to 4');
+    test(5, [1], 1, '5 capped to 1');
+    test(5, [0], 0, '5 capped to 0');
+    test(5, [-1], -1, '5 capped to -1');
+    test(5, [-5], -5, '5 capped to -5');
+    test(5, [-10], -10, '5 capped to -10');
+
+    test(0, [6], 0, '0 capped to 6');
+    test(0, [5], 0, '0 capped to 5');
+    test(0, [4], 0, '0 capped to 4');
+    test(0, [1], 0, '0 capped to 1');
+    test(0, [0], 0, '0 capped to 0');
+    test(0, [-1], -1, '0 capped to -1');
+    test(0, [-5], -5, '0 capped to -5');
+    test(0, [-10], -10, '0 capped to -10');
+
+    test(-5, [6], -5, '-5 capped to 6');
+    test(-5, [5], -5, '-5 capped to 5');
+    test(-5, [4], -5, '-5 capped to 4');
+    test(-5, [1], -5, '-5 capped to 1');
+    test(-5, [0], -5, '-5 capped to 0');
+    test(-5, [-1], -5, '-5 capped to -1');
+    test(-5, [-5], -5, '-5 capped to -5');
+    test(-5, [-10], -10, '-5 capped to -10');
+  });
 
 });
