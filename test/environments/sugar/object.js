@@ -343,30 +343,28 @@ package('Object', function () {
 
   method('clone', function() {
 
-    test(Object, ['hardy'], 'hardy', 'Object.clone | clone on a string');
-    test(Object, [undefined], undefined, 'Object.clone | clone on undefined');
-    test(Object, [null], null, 'Object.clone | clone on null');
-    test(Object, [{ foo: 'bar' }], { foo: 'bar' }, 'Object.clone | basic clone');
-    test(Object, [{ foo: 'bar', broken: 1, wear: null }], { foo: 'bar', broken: 1, wear: null }, 'Object.clone | complex clone');
-    test(Object, [{ foo: { broken: 'wear' }}], { foo: { broken: 'wear' }}, 'Object.clone | deep clone');
-    test(Object, [[1,2,3]], [1,2,3], 'Object.clone | clone on arrays');
-    test(Object, [['a','b','c']], ['a','b','c'], 'Object.clone | clone on array of strings');
-    // PICK UP HERE
-    return;
+    test(Object, ['hardy'], 'hardy', 'clone on a string');
+    test(Object, [undefined], undefined, 'clone on undefined');
+    test(Object, [null], null, 'clone on null');
+    test(Object, [{ foo: 'bar' }], { foo: 'bar' }, 'basic clone');
+    test(Object, [{ foo: 'bar', broken: 1, wear: null }], { foo: 'bar', broken: 1, wear: null }, 'complex clone');
+    test(Object, [{ foo: { broken: 'wear' }}], { foo: { broken: 'wear' }}, 'deep clone');
+    test(Object, [[1,2,3]], [1,2,3], 'clone on arrays');
+    test(Object, [['a','b','c']], ['a','b','c'], 'clone on array of strings');
 
     var arr1    = [1];
     var arr2    = [2];
     var arr3    = [3];
-    var shallow = Object.clone([arr1,arr2,arr3]);
-    var deep    = Object.clone([arr1,arr2,arr3], true);
+    var shallow = run(Object, 'clone', [[arr1,arr2,arr3]]);
+    var deep    = run(Object, 'clone', [[arr1,arr2,arr3], true]);
 
-    equal(shallow[0] === arr1, true, 'Object.clone | shallow clone | index 0 is strictly equal');
-    equal(shallow[1] === arr2, true, 'Object.clone | shallow clone | index 1 is strictly equal');
-    equal(shallow[2] === arr3, true, 'Object.clone | shallow clone | index 2 is strictly equal');
+    equal(shallow[0], arr1, 'shallow clone | index 0 is strictly equal');
+    equal(shallow[1], arr2, 'shallow clone | index 1 is strictly equal');
+    equal(shallow[2], arr3, 'shallow clone | index 2 is strictly equal');
 
-    equal(deep[0] === arr1, false, 'Object.clone | deep clone | index 0 is not strictly equal');
-    equal(deep[1] === arr2, false, 'Object.clone | deep clone | index 1 is not strictly equal');
-    equal(deep[2] === arr3, false, 'Object.clone | deep clone | index 2 is not strictly equal');
+    equal(deep[0], arr1, 'deep clone | index 0 is not strictly equal');
+    equal(deep[1], arr2, 'deep clone | index 1 is not strictly equal');
+    equal(deep[2], arr3, 'deep clone | index 2 is not strictly equal');
 
     var obj1, obj2, obj3;
 
@@ -379,19 +377,19 @@ package('Object', function () {
         }
       }
     }
-    obj2 = Object.clone(obj1);
-    equal(obj1.foo.jumpy, 'jump', 'Object.clone | cloned object has nested attribute');
+    obj2 = run(Object, 'clone', [obj1]);
+    equal(obj1.foo.jumpy, 'jump', 'cloned object has nested attribute');
     obj1.foo.jumpy = 'hump';
-    equal(obj1.foo.jumpy, 'hump', 'Object.clone | original object is modified');
-    equal(obj2.foo.jumpy, 'hump', 'Object.clone | clone is shallow');
+    equal(obj1.foo.jumpy, 'hump', 'original object is modified');
+    equal(obj2.foo.jumpy, 'hump', 'clone is shallow');
 
     obj1 = {
       foo: {
         bar: [1,2,3]
       }
     };
-    obj2 = Object.clone(obj1);
-    obj3 = Object.clone(obj1, true);
+    obj2 = run(Object, 'clone', [obj1]);
+    obj3 = run(Object, 'clone', [obj1, true]);
 
     obj1.foo.bar = ['a','b','c'];
     equal(obj1.foo.bar, ['a','b','c'], 'Object#clone | original object is modified');
@@ -402,25 +400,21 @@ package('Object', function () {
     equal(obj3.foo.bar, [1,2,3], 'Object#clone | clone is deep');
 
     var arr1 = [obj1, obj1, obj1];
-    var arr2 = Object.clone(arr1, true);
+    var arr2 = run(Object, 'clone', [arr1, true]);
 
-    equal(arr1.length, arr2.length, 'Object.clone | array deep | lengths should be equal');
-    equal(arr2[0] === obj1, false, 'Object.clone | array deep | obj1 is not equal');
-    equal(arr2[1] === obj2, false, 'Object.clone | array deep | obj2 is not equal');
-    equal(arr2[2] === obj3, false, 'Object.clone | array deep | obj3 is not equal');
+    equal(arr1.length, arr2.length, 'array deep | lengths should be equal');
+    notEqual(arr2[0], obj1, 'array deep | obj1 is not equal');
+    notEqual(arr2[1], obj2, 'array deep | obj2 is not equal');
+    notEqual(arr2[2], obj3, 'array deep | obj3 is not equal');
 
-
-    // Note here that the need for these complicated syntaxes is that both Prototype and Mootools' Object.clone is incorrectly
-    // cloning properties in the prototype chain directly into the object itself.
-    equal(Object.extended({ foo: 'bar' }).clone(), { foo: 'bar' }, 'Object#clone | basic clone');
-    equal(Object.extended({ foo: 'bar', broken: 1, wear: null }).clone(), { foo: 'bar', broken: 1, wear: null }, 'Object#clone | complex clone');
-    equal(Object.extended({ foo: { broken: 'wear' }}).clone(), { foo: { broken: 'wear' }}, 'Object#clone | deep clone');
-
-    equal(Object.extended({ foo: 'bar', broken: 1, wear: /foo/ }).clone() == { foo: 'bar', broken: 1, wear: /foo/ }, false, 'Object#clone | fully cloned');
+    equal(run(Object, 'extended', [{ foo: 'bar' }]).clone(), { foo: 'bar' }, 'extended | basic clone');
+    equal(run(Object, 'extended', [{ foo: 'bar', broken: 1, wear: null }]).clone(), { foo: 'bar', broken: 1, wear: null }, 'extended | complex clone');
+    equal(run(Object, 'extended', [{ foo: { broken: 'wear' }}]).clone(), { foo: { broken: 'wear' }}, 'extended | deep clone');
+    equal(run(Object, 'extended', [{ foo: 'bar', broken: 1, wear: /foo/ }]).clone() == { foo: 'bar', broken: 1, wear: /foo/ }, false, 'extended | fully cloned');
 
     var obj1, obj2, obj3;
 
-    obj1 = Object.extended({
+    obj1 = run(Object, 'extended', [{
       broken: 'wear',
       foo: {
         jumpy: 'jump',
@@ -428,265 +422,272 @@ package('Object', function () {
           reverse: true
         }
       }
-    });
+    }]);
     obj2 = obj1.clone();
     obj3 = obj1.clone(true);
 
-    equal(obj1.foo.jumpy, 'jump', 'Object#clone | cloned object has nested attribute');
+    equal(obj1.foo.jumpy, 'jump', 'extended | cloned object has nested attribute');
     obj1.foo.jumpy = 'hump';
-    equal(obj1.foo.jumpy, 'hump', 'Object#clone | original object is modified');
-    equal(obj2.foo.jumpy, 'hump', 'Object#clone | clone is shallow');
-    equal(obj3.foo.jumpy, 'jump', 'Object#clone | clone is deep');
+    equal(obj1.foo.jumpy, 'hump', 'extended | original object is modified');
+    equal(obj2.foo.jumpy, 'hump', 'extended | clone is shallow');
+    equal(obj3.foo.jumpy, 'jump', 'extended | clone is deep');
+    equal(obj2.keys().sort(), ['broken','foo'], 'extended | cloned objects are themselves extended');
 
-    skipEnvironments(['prototype','mootools'], function() {
-      equal(obj2.keys().sort(), ['broken','foo'], 'Object#clone | cloned objects are themselves extended');
-    });
-
-    obj1 = Object.extended({
+    obj1 = run(Object, 'extended', [{
       foo: {
         bar: [1,2,3]
       }
-    });
+    }]);
     obj2 = obj1.clone();
     obj3 = obj1.clone(true);
 
     obj1.foo.bar[1] = 'b';
-    equal(obj1.foo.bar, [1,'b',3], 'Object#clone | original object is modified');
-    equal(obj3.foo.bar, [1,2,3], 'Object#clone | cloned object is not modified');
+    equal(obj1.foo.bar, [1,'b',3], 'extended | original object is modified');
+    equal(obj3.foo.bar, [1,2,3], 'extended | cloned object is not modified');
+  });
+
+  method('equal', function() {
+
+    test(Object, [{ broken: 'wear' }, { broken: 'wear' }], true, 'objects are equal');
+    test(Object, [{ broken: 'wear' }, { broken: 'jumpy' }], false, 'objects are not equal');
+    test(Object, [{}, {}], true, 'empty objects are equal');
+    test(Object, [{}, { broken: 'wear' }], false, '1st empty');
+    test(Object, [{ broken: 'wear' }, {}], false, '2nd empty');
+
+    test(Object, [{x: 1, y: undefined}, {x: 1, z: 2}], false, 'undefined keys');
+
+    equal(run(Object, 'extended', [{ broken: 'wear' }]).equals({ broken: 'wear' }), true, 'extended | are equal to plain objects');
+    equal(run(Object, 'extended', [{ broken: 'wear' }]).equals({ broken: 'jumpy' }), false, 'extended | objects are not equal');
+    equal(run(Object, 'extended', [{}]).equals({}), true, 'extended | empty extended objects are equal to empty plain objects');
+    equal(run(Object, 'extended', [{}]).equals({ broken: 'wear' }), false, 'extended | 1st empty');
+    equal(run(Object, 'extended', [{ broken: 'wear' }]).equals({}), false, 'extended | 2nd empty');
+
+    var obj1 = { foo: 'bar' };
+    test(Object, [{ a: obj1, b: obj1 }, { a: obj1, b: obj1 }], true, 'multiple references will not choke');
+
+    var obj1 = { foo: 'bar' };
+    obj1.moo = obj1;
+    test(Object, [obj1, { foo: 'bar', moo: obj1 }], true, 'cyclical references handled');
+    test(Object, [undefined, 'one'], false, 'string to undefined');
+
+  });
+
+  method('Extend All', function() {
+
+    Sugar.extendObject();
+
+    var count = 0;
+
+    equal(({ foo: 'bar' }).keys(function() { count++; }), ['foo'], 'Object#keys | Object.prototype');
+    equal(({ foo: 'bar' }).values(function() { count++; }).sort(), ['bar'], 'Object#values | Object.prototype');
+
+    equal(count, 2, 'Object | Object.prototype should have correctly called all functions');
+
+    equal(({ foo: 'bar' }).equals({ foo: 'bar' }), true, 'Object#equals | Object.prototype');
+    equal(({ foo: 'bar' }).merge({ moo: 'car' }), { foo: 'bar', moo: 'car' }, 'Object#merge | Object.prototype');
+
+    obj1 = { foo: 'bar' };
+    obj2 = obj1.clone();
+    obj1.foo = 'mar';
+
+    equal(obj2, { foo: 'bar' }, 'Object#clone | Object.prototype');
+
+    equal(([1,2,3]).isArray(), true, 'Object#isArray | Object.prototype');
+    equal(([1,2,3]).isBoolean(), false, 'Object#isBoolean | Object.prototype');
+    equal(([1,2,3]).isDate(), false, 'Object#isDate | Object.prototype');
+    equal(([1,2,3]).isFunction(), false, 'Object#isFunction | Object.prototype');
+    equal(([1,2,3]).isNumber(), false, 'Object#isNumber | Object.prototype');
+    equal(([1,2,3]).isString(), false, 'Object#isString | Object.prototype');
+    equal(([1,2,3]).isRegExp(), false, 'Object#isRegExp | Object.prototype');
+    equal(([1,2,3]).isNaN(), false, 'Object#isNaN | Object.prototype');
+    equal((true).isArray(), false, 'Object#isArray | Object.prototype');
+    equal((true).isBoolean(), true, 'Object#isBoolean | Object.prototype');
+    equal((true).isDate(), false, 'Object#isDate | Object.prototype');
+    equal((true).isFunction(), false, 'Object#isFunction | Object.prototype');
+    equal((true).isNumber(), false, 'Object#isNumber | Object.prototype');
+    equal((true).isString(), false, 'Object#isString | Object.prototype');
+    equal((true).isRegExp(), false, 'Object#isRegExp | Object.prototype');
+    equal((true).isNaN(), false, 'Object#isNaN | Object.prototype');
+    equal((new Date()).isArray(), false, 'Object#isArray | Object.prototype');
+    equal((new Date()).isBoolean(), false, 'Object#isBoolean | Object.prototype');
+    equal((new Date()).isDate(), true, 'Object#isDate | Object.prototype');
+    equal((new Date()).isFunction(), false, 'Object#isFunction | Object.prototype');
+    equal((new Date()).isNumber(), false, 'Object#isNumber | Object.prototype');
+    equal((new Date()).isString(), false, 'Object#isString | Object.prototype');
+    equal((new Date()).isRegExp(), false, 'Object#isRegExp | Object.prototype');
+    equal((new Date()).isNaN(), false, 'Object#isNaN | Object.prototype');
+    equal((function() {}).isArray(), false, 'Object#isArray | Object.prototype');
+    equal((function() {}).isBoolean(), false, 'Object#isBoolean | Object.prototype');
+    equal((function() {}).isDate(), false, 'Object#isDate | Object.prototype');
+    equal((function() {}).isFunction(), true, 'Object#isFunction | Object.prototype');
+    equal((function() {}).isNumber(), false, 'Object#isNumber | Object.prototype');
+    equal((function() {}).isString(), false, 'Object#isString | Object.prototype');
+    equal((function() {}).isRegExp(), false, 'Object#isRegExp | Object.prototype');
+    equal((function() {}).isNaN(), false, 'Object#isNaN | Object.prototype');
+    equal((3).isArray(), false, 'Object#isArray | Object.prototype');
+    equal((3).isBoolean(), false, 'Object#isBoolean | Object.prototype');
+    equal((3).isDate(), false, 'Object#isDate | Object.prototype');
+    equal((3).isFunction(), false, 'Object#isFunction | Object.prototype');
+    equal((3).isNumber(), true, 'Object#isNumber | Object.prototype');
+    equal((3).isString(), false, 'Object#isString | Object.prototype');
+    equal((3).isRegExp(), false, 'Object#isRegExp | Object.prototype');
+    equal((3).isNaN(), false, 'Object#isNaN | Object.prototype');
+    equal(('wasabi').isArray(), false, 'Object#isArray | Object.prototype');
+    equal(('wasabi').isBoolean(), false, 'Object#isBoolean | Object.prototype');
+    equal(('wasabi').isDate(), false, 'Object#isDate | Object.prototype');
+    equal(('wasabi').isFunction(), false, 'Object#isFunction | Object.prototype');
+    equal(('wasabi').isNumber(), false, 'Object#isNumber | Object.prototype');
+    equal(('wasabi').isString(), true, 'Object#isString | Object.prototype');
+    equal(('wasabi').isRegExp(), false, 'Object#isRegExp | Object.prototype');
+    equal(('wasabi').isNaN(), false, 'Object#isNaN | Object.prototype');
+    equal((/wasabi/).isArray(), false, 'Object#isArray | Object.prototype');
+    equal((/wasabi/).isBoolean(), false, 'Object#isBoolean | Object.prototype');
+    equal((/wasabi/).isDate(), false, 'Object#isDate | Object.prototype');
+    equal((/wasabi/).isFunction(), false, 'Object#isFunction | Object.prototype');
+    equal((/wasabi/).isNumber(), false, 'Object#isNumber | Object.prototype');
+    equal((/wasabi/).isString(), false, 'Object#isString | Object.prototype');
+    equal((/wasabi/).isRegExp(), true, 'Object#isRegExp | Object.prototype');
+    equal((/wasabi/).isNaN(), false, 'Object#isNaN | Object.prototype');
+    equal((NaN).isArray(), false, 'Object#isArray | Object.prototype');
+    equal((NaN).isBoolean(), false, 'Object#isBoolean | Object.prototype');
+    equal((NaN).isDate(), false, 'Object#isDate | Object.prototype');
+    equal((NaN).isFunction(), false, 'Object#isFunction | Object.prototype');
+    equal((NaN).isNumber(), true, 'Object#isNumber | Object.prototype');
+    equal((NaN).isString(), false, 'Object#isString | Object.prototype');
+    equal((NaN).isRegExp(), false, 'Object#isRegExp | Object.prototype');
+    equal((NaN).isNaN(), true, 'Object#isNaN | Object.prototype');
+
+
+    // Object#watch
+
+    var obj = { foo: 'bar' }, ran = false, counter = 0, key;
+
+    obj.watch('foo', function(prop, oldVal, newVal) {
+      equal(this, obj, 'Object#watch | scope is the object');
+      equal(prop, 'foo', 'Object#watch | first argument is the propety');
+      equal(oldVal, 'bar', 'Object#watch | second argument is the old value');
+      equal(newVal, 'howdy', 'Object#watch | third argument is the new value');
+      ran = true;
+      return newVal;
+    });
+
+    equal(obj.foo, 'bar', 'Object#watch | old property is retained');
+    obj.foo = 'howdy';
+    equal(obj.foo, 'howdy', 'Object#watch | property was set');
+    equal(ran, true, 'Object#watch | setter ran');
+    for(key in obj) counter++;
+    equal(counter, 1, 'Object#watch | property should be enumerable');
+
+
+
+    // Object#tap
+
+    var fn = function(first) {
+      equal(this, [1,2,3,4,5], 'Object#tap | context is the object');
+      equal(first, [1,2,3,4,5], 'Object#tap | first argument is also the object');
+      this.pop();
+    }
+
+    var map = function(n) {
+      return n * 2;
+    }
+
+    var expected = [2,4,6,8];
+
+    equal([1,2,3,4,5].tap(fn).map(map), expected, 'Object#tap | pop the array');
+    equal([1,2,3,4,5].tap('pop').map(map), expected, 'Object#tap | string shortcut | pop the array');
+    equal([1,2].tap(function() { this.push(3, 4); }).map(map), expected, 'Object#tap | push to the array');
+    equal([1,2].tap('push', 3, 4).map(map), [2,4], 'Object#tap | string shortcut | passing arguments is not supported');
+    equal([1,2,3,4].tap(function(){ if(this[this.length - 1] === 5) this.pop(); }).map(map), expected, 'Object#tap | checking last');
+
+
+    var obj = { foo: 'bar' };
+    equal(obj.tap(), obj, 'Object#tap | return value is strictly equal');
+
+
+    equal(!!'foo'.fromQueryString, true, 'Object.fromQueryString should be mapped');
+    equal(!!'foo'.extended, true, 'Object.extended should be mapped');
+    equal('foo'.equal, undefined, 'Object.equal should not be mapped (should be "equals" instead)');
+
+    Sugar.extendObject(false);
+
+    equal(({foo:'bar'}).keys, undefined, 'keys no longer mapped');
+    equal(({foo:'bar'}).values, undefined, 'values no longer mapped');
+    equal(({foo:'bar'}).equals, undefined, 'equals no longer mapped');
+    equal(({foo:'bar'}).merge, undefined, 'merge no longer mapped');
+    equal(({foo:'bar'}).clone, undefined, 'clone no longer mapped');
+    equal(({foo:'bar'}).isArray, undefined, 'isArray no longer mapped');
+    equal(({foo:'bar'}).isBoolean, undefined, 'isBoolean no longer mapped');
+    equal(({foo:'bar'}).isDate, undefined, 'isDate no longer mapped');
+    equal(({foo:'bar'}).isFunction, undefined, 'isFunction no longer mapped');
+    equal(({foo:'bar'}).isString, undefined, 'isString no longer mapped');
+    equal(({foo:'bar'}).isRegExp, undefined, 'isRegExp no longer mapped');
+    equal(({foo:'bar'}).isNaN, undefined, 'isNaN no longer mapped');
+    equal(({foo:'bar'}).watch, undefined, 'watch no longer mapped');
+    equal(({foo:'bar'}).tap, undefined, 'tap no longer mapped');
+    equal(({foo:'bar'}).fromQueryString, undefined, 'fromQueryString no longer mapped');
+    equal(({foo:'bar'}).extended, undefined, 'extended no longer mapped');
+
+  });
+
+  method('fromQueryString', function() {
+
+    test(Object, ['foo=bar&moo=car'], {foo:'bar',moo:'car'}, 'basic');
+    test(Object, ['foo=bar&moo=3'], {foo:'bar',moo:'3'}, 'with numbers');
+
+    test(Object, ['foo=bar&moo=true'], {foo:'bar',moo:'true'}, 'with true');
+    test(Object, ['foo=bar&moo=false'], {foo:'bar',moo:'false'}, 'with false');
+
+    test(Object, ['foo=bar&moo=true', true], {foo:'bar',moo:true}, 'coerced | with true');
+    test(Object, ['foo=bar&moo=false', true], {foo:'bar',moo:false}, 'coerced | with false');
+
+    test(Object, ['foo=bar3'], { foo: 'bar3' }, 'number in back');
+    test(Object, ['foo=3bar'], { foo: '3bar' }, 'number up front');
+    test(Object, ['foo=345'], { foo: '345' }, 'numbers only');
+    test(Object, ['foo=&bar='], { foo: '', bar: '' }, 'undefined params');
+    test(Object, ['foo[]=bar&foo[]=car'], { foo: ['bar','car'] }, 'handles array params');
+    test(Object, ['foo[bar]=tee&foo[car]=hee'], { foo: { bar: 'tee', car: 'hee' } }, 'handles hash params');
+    test(Object, ['foo[0]=a&foo[1]=b&foo[2]=c'], { foo: ['a','b','c'] }, 'handles array indexes');
+
+    test(Object, ['foo[cap][map]=3'], { foo: { cap: { map: '3' } } }, 'handles array indexes');
+    test(Object, ['foo[cap][map][]=3'], { foo: { cap: { map: ['3'] } } }, 'nested with trailing array');
+    test(Object, ['foo[moo]=1&bar[far]=2'], { foo: { moo: '1' }, bar: { far: '2' }}, 'sister objects');
+
+    test(Object, ['f[]=a&f[]=b&f[]=c&f[]=d&f[]=e&f[]=f'], { f: ['a','b','c','d','e','f'] }, 'large array');
+    test(Object, ['foo[0][]=a&foo[1][]=b'], { foo: [['a'],['b']] }, 'nested arrays separate');
+    test(Object, ['foo[0][0]=3&foo[0][1]=4'], { foo: [['3','4']] }, 'nested arrays together');
+    test(Object, ['foo[][]=3&foo[][]=4'], { foo: [['3'],['4']] }, 'nested arrays');
+
+    var qs = 'foo[cap][map]=true&foo[cap][pap]=false';
+    test(Object, [qs], {foo:{cap:{ map:'true',pap:'false'}}}, 'Object.fromQueryString | nested boolean without coercion');
+    test(Object, [qs, true], {foo:{cap:{map:true,pap:false}}}, 'Object.fromQueryString | nested boolean with coercion');
+
+    var sparse = [];
+    sparse[3] = 'hardy';
+    sparse[10] = 'har har';
+    test(Object, ['foo[3]=hardy&foo[10]=har har'], { foo: sparse }, 'Object.fromQueryString | constructed arrays can be sparse');
+
+    test(Object, ['text=What%20is%20going%20on%20here%3f%3f&url=http://animalsbeingdicks.com/page/2'], { text: 'What is going on here??', url: 'http://animalsbeingdicks.com/page/2' }, 'Object.fromQueryString | handles partially escaped params');
+    test(Object, ['text=What%20is%20going%20on%20here%3f%3f&url=http%3A%2F%2Fanimalsbeingdicks.com%2Fpage%2F2'], { text: 'What is going on here??', url: 'http://animalsbeingdicks.com/page/2' }, 'Object.fromQueryString | handles fully escaped params');
+
+    test(Object, ['url=http%3A%2F%2Fwww.site.com%2Fslug%3Fin%3D%2Fuser%2Fjoeyblake'], { url: 'http://www.site.com/slug?in=/user/joeyblake' }, 'Object.fromQueryString | equal must be escaped as well');
+
+    test(Object, ['http://fake.com?foo=bar'], { foo: 'bar' }, 'Object.fromQueryString | handles whole URLs');
+    test(Object, {}, 'Object.fromQueryString | will not die if no arguments');
+    equal(run(Object, 'fromQueryString', ['foo=bar&moo=car']).keys(), ['foo', 'moo'], 'Object.fromQueryString | should be extended');
+
+    if(typeof window !== 'undefined') {
+      equal(Array.isArray(run(Object, 'fromQueryString', [window.location]).keys()), true, 'Object.fromQueryString | can handle just window.location');
+    }
+
+    test(Object, ['foo=3.14156'], { foo: '3.14156' }, 'Object.fromQueryString | float values are not coerced');
+    test(Object, ['foo=127.0.0.1'], { foo: '127.0.0.1' }, 'Object.fromQueryString | IP addresses not treated as numbers');
+    test(Object, ['zip=00165'], { zip: '00165' }, 'Object.fromQueryString | zipcodes are not treated as numbers');
+    test(Object, ['foo[=bar'], { 'foo[': 'bar' }, 'Object.fromQueryString | opening bracket does not trigger deep parameters');
   });
   return;
 
-
-
-  equal(Object.equal({ broken: 'wear' }, { broken: 'wear' }), true, 'Object.equal | objects are equal');
-  equal(Object.equal({ broken: 'wear' }, { broken: 'jumpy' }), false, 'Object.equal | objects are not equal');
-  equal(Object.equal({}, {}), true, 'Object.equal | empty objects are equal');
-  equal(Object.equal({}, { broken: 'wear' }), false, 'Object.equal | 1st empty');
-  equal(Object.equal({ broken: 'wear' }, {}), false, 'Object.equal | 2nd empty');
-
-  equal(Object.equal({x: 1, y: undefined}, {x: 1, z: 2}), false, 'Object.equal | undefined keys');
-
-
-  equal(Object.extended({ broken: 'wear' }).equals({ broken: 'wear' }), true, 'Object#equals | extended objects are equal to plain objects');
-  equal(Object.extended({ broken: 'wear' }).equals({ broken: 'jumpy' }), false, 'Object#equals | objects are not equal');
-  equal(Object.extended({}).equals({}), true, 'Object#equals | empty extended objects are equal to empty plain objects');
-  equal(Object.extended({}).equals({ broken: 'wear' }), false, 'Object#equals | 1st empty');
-  equal(Object.extended({ broken: 'wear' }).equals({}), false, 'Object#equals | 2nd empty');
-
-
-  var obj1 = { foo: 'bar' };
-  equal(Object.equal({ a: obj1, b: obj1 }, { a: obj1, b: obj1 }), true, 'Object.equal | multiple references will not choke');
-
-  var obj1 = { foo: 'bar' };
-  obj1.moo = obj1;
-  equal(Object.equal(obj1, { foo: 'bar', moo: obj1 }), true, 'Object.equal | cyclical references handled');
-
-  equal(Object.equal(undefined, 'one'), false, 'Object.equal | string to undefined');
-  // Enabling native object methods
-
-
-  rememberObjectProtoypeMethods();
-
-  Object.extend();
-
-  var prototypeBaseValues = ({}).values().sort();
-
-  count = 0;
-  equal(({ foo: 'bar' }).keys(function() { count++; }), ['foo'], 'Object#keys | Object.prototype');
-  equal(({ foo: 'bar' }).values(function() { count++; }).sort(), ['bar'], 'Object#values | Object.prototype');
-
-  equal(count, 2, 'Object | Object.prototype should have correctly called all functions');
-
-  equal(({ foo: 'bar' }).equals({ foo: 'bar' }), true, 'Object#equals | Object.prototype');
-  equal(({ foo: 'bar' }).merge({ moo: 'car' }), { foo: 'bar', moo: 'car' }, 'Object#merge | Object.prototype');
-
-  obj1 = { foo: 'bar' };
-  obj2 = obj1.clone();
-  obj1.foo = 'mar';
-
-  equal(obj2, { foo: 'bar' }, 'Object#clone | Object.prototype');
-
-  equal(([1,2,3]).isArray(), true, 'Object#isArray | Object.prototype');
-  equal(([1,2,3]).isBoolean(), false, 'Object#isBoolean | Object.prototype');
-  equal(([1,2,3]).isDate(), false, 'Object#isDate | Object.prototype');
-  equal(([1,2,3]).isFunction(), false, 'Object#isFunction | Object.prototype');
-  equal(([1,2,3]).isNumber(), false, 'Object#isNumber | Object.prototype');
-  equal(([1,2,3]).isString(), false, 'Object#isString | Object.prototype');
-  equal(([1,2,3]).isRegExp(), false, 'Object#isRegExp | Object.prototype');
-  equal(([1,2,3]).isNaN(), false, 'Object#isNaN | Object.prototype');
-  equal((true).isArray(), false, 'Object#isArray | Object.prototype');
-  equal((true).isBoolean(), true, 'Object#isBoolean | Object.prototype');
-  equal((true).isDate(), false, 'Object#isDate | Object.prototype');
-  equal((true).isFunction(), false, 'Object#isFunction | Object.prototype');
-  equal((true).isNumber(), false, 'Object#isNumber | Object.prototype');
-  equal((true).isString(), false, 'Object#isString | Object.prototype');
-  equal((true).isRegExp(), false, 'Object#isRegExp | Object.prototype');
-  equal((true).isNaN(), false, 'Object#isNaN | Object.prototype');
-  equal((new Date()).isArray(), false, 'Object#isArray | Object.prototype');
-  equal((new Date()).isBoolean(), false, 'Object#isBoolean | Object.prototype');
-  equal((new Date()).isDate(), true, 'Object#isDate | Object.prototype');
-  equal((new Date()).isFunction(), false, 'Object#isFunction | Object.prototype');
-  equal((new Date()).isNumber(), false, 'Object#isNumber | Object.prototype');
-  equal((new Date()).isString(), false, 'Object#isString | Object.prototype');
-  equal((new Date()).isRegExp(), false, 'Object#isRegExp | Object.prototype');
-  equal((new Date()).isNaN(), false, 'Object#isNaN | Object.prototype');
-  equal((function() {}).isArray(), false, 'Object#isArray | Object.prototype');
-  equal((function() {}).isBoolean(), false, 'Object#isBoolean | Object.prototype');
-  equal((function() {}).isDate(), false, 'Object#isDate | Object.prototype');
-  equal((function() {}).isFunction(), true, 'Object#isFunction | Object.prototype');
-  equal((function() {}).isNumber(), false, 'Object#isNumber | Object.prototype');
-  equal((function() {}).isString(), false, 'Object#isString | Object.prototype');
-  equal((function() {}).isRegExp(), false, 'Object#isRegExp | Object.prototype');
-  equal((function() {}).isNaN(), false, 'Object#isNaN | Object.prototype');
-  equal((3).isArray(), false, 'Object#isArray | Object.prototype');
-  equal((3).isBoolean(), false, 'Object#isBoolean | Object.prototype');
-  equal((3).isDate(), false, 'Object#isDate | Object.prototype');
-  equal((3).isFunction(), false, 'Object#isFunction | Object.prototype');
-  equal((3).isNumber(), true, 'Object#isNumber | Object.prototype');
-  equal((3).isString(), false, 'Object#isString | Object.prototype');
-  equal((3).isRegExp(), false, 'Object#isRegExp | Object.prototype');
-  equal((3).isNaN(), false, 'Object#isNaN | Object.prototype');
-  equal(('wasabi').isArray(), false, 'Object#isArray | Object.prototype');
-  equal(('wasabi').isBoolean(), false, 'Object#isBoolean | Object.prototype');
-  equal(('wasabi').isDate(), false, 'Object#isDate | Object.prototype');
-  equal(('wasabi').isFunction(), false, 'Object#isFunction | Object.prototype');
-  equal(('wasabi').isNumber(), false, 'Object#isNumber | Object.prototype');
-  equal(('wasabi').isString(), true, 'Object#isString | Object.prototype');
-  equal(('wasabi').isRegExp(), false, 'Object#isRegExp | Object.prototype');
-  equal(('wasabi').isNaN(), false, 'Object#isNaN | Object.prototype');
-  equal((/wasabi/).isArray(), false, 'Object#isArray | Object.prototype');
-  equal((/wasabi/).isBoolean(), false, 'Object#isBoolean | Object.prototype');
-  equal((/wasabi/).isDate(), false, 'Object#isDate | Object.prototype');
-  equal((/wasabi/).isFunction(), false, 'Object#isFunction | Object.prototype');
-  equal((/wasabi/).isNumber(), false, 'Object#isNumber | Object.prototype');
-  equal((/wasabi/).isString(), false, 'Object#isString | Object.prototype');
-  equal((/wasabi/).isRegExp(), true, 'Object#isRegExp | Object.prototype');
-  equal((/wasabi/).isNaN(), false, 'Object#isNaN | Object.prototype');
-  equal((NaN).isArray(), false, 'Object#isArray | Object.prototype');
-  equal((NaN).isBoolean(), false, 'Object#isBoolean | Object.prototype');
-  equal((NaN).isDate(), false, 'Object#isDate | Object.prototype');
-  equal((NaN).isFunction(), false, 'Object#isFunction | Object.prototype');
-  equal((NaN).isNumber(), true, 'Object#isNumber | Object.prototype');
-  equal((NaN).isString(), false, 'Object#isString | Object.prototype');
-  equal((NaN).isRegExp(), false, 'Object#isRegExp | Object.prototype');
-  equal((NaN).isNaN(), true, 'Object#isNaN | Object.prototype');
-
-
-
-
-  // Object#watch
-
-  var obj = Object.extended({ foo: 'bar' }), ran = false, counter = 0, key;
-
-  obj.watch('foo', function(prop, oldVal, newVal) {
-    equal(this, obj, 'Object#watch | scope is the object');
-    equal(prop, 'foo', 'Object#watch | first argument is the propety');
-    equal(oldVal, 'bar', 'Object#watch | second argument is the old value');
-    equal(newVal, 'howdy', 'Object#watch | third argument is the new value');
-    ran = true;
-    return newVal;
-  });
-
-  equal(obj.foo, 'bar', 'Object#watch | old property is retained');
-  obj.foo = 'howdy';
-  equal(obj.foo, 'howdy', 'Object#watch | property was set');
-  equal(ran, true, 'Object#watch | setter ran');
-  for(key in obj) counter++;
-  equal(counter, 1, 'Object#watch | property should be enumerable');
-
-
-
-  // Object#tap
-
-  var fn = function(first) {
-    equal(this, [1,2,3,4,5], 'Object#tap | context is the object');
-    equal(first, [1,2,3,4,5], 'Object#tap | first argument is also the object');
-    this.pop();
-  }
-
-  var map = function(n) {
-    return n * 2;
-  }
-
-  var expected = [2,4,6,8];
-
-  equal([1,2,3,4,5].tap(fn).map(map), expected, 'Object#tap | pop the array');
-  equal([1,2,3,4,5].tap('pop').map(map), expected, 'Object#tap | string shortcut | pop the array');
-  equal([1,2].tap(function() { this.push(3, 4); }).map(map), expected, 'Object#tap | push to the array');
-  equal([1,2].tap('push', 3, 4).map(map), [2,4], 'Object#tap | string shortcut | passing arguments is not supported');
-  equal([1,2,3,4].tap(function(){ if(this[this.length - 1] === 5) this.pop(); }).map(map), expected, 'Object#tap | checking last');
-
-
-  var obj = { foo: 'bar' };
-  equal(obj.tap(), obj, 'Object#tap | return value is strictly equal');
-
-
-
-  equal('foo'.fromQueryString, undefined, 'Object.fromQueryString should not be mapped');
-  equal('foo'.extended, undefined, 'Object.extended should not be mapped');
-  equal('foo'.equal, undefined, 'Object.equal should not be mapped (should be "equals" instead)');
-
-  restoreObjectPrototypeMethods();
-
-
-  // Object.fromQueryString
-
-  equal(Object.fromQueryString('foo=bar&moo=car'), {foo:'bar',moo:'car'}, 'Object.fromQueryString | basic');
-  equal(Object.fromQueryString('foo=bar&moo=3'), {foo:'bar',moo:'3'}, 'Object.fromQueryString | with numbers');
-
-  equal(Object.fromQueryString('foo=bar&moo=true'), {foo:'bar',moo:'true'}, 'Object.fromQueryString | with true');
-  equal(Object.fromQueryString('foo=bar&moo=false'), {foo:'bar',moo:'false'}, 'Object.fromQueryString | with false');
-
-  equal(Object.fromQueryString('foo=bar&moo=true', true), {foo:'bar',moo:true}, 'Object.fromQueryString | coerced | with true');
-  equal(Object.fromQueryString('foo=bar&moo=false', true), {foo:'bar',moo:false}, 'Object.fromQueryString | coerced | with false');
-
-  equal(Object.fromQueryString('foo=bar3'), { foo: 'bar3' }, 'Object.fromQueryString | number in back');
-  equal(Object.fromQueryString('foo=3bar'), { foo: '3bar' }, 'Object.fromQueryString | number up front');
-  equal(Object.fromQueryString('foo=345'), { foo: '345' }, 'Object.fromQueryString | numbers only');
-  equal(Object.fromQueryString('foo=&bar='), { foo: '', bar: '' }, 'Object.fromQueryString | undefined params');
-  equal(Object.fromQueryString('foo[]=bar&foo[]=car'), { foo: ['bar','car'] }, 'Object.fromQueryString | handles array params');
-  equal(Object.fromQueryString('foo[bar]=tee&foo[car]=hee'), { foo: { bar: 'tee', car: 'hee' } }, 'Object.fromQueryString | handles hash params');
-  equal(Object.fromQueryString('foo[0]=a&foo[1]=b&foo[2]=c'), { foo: ['a','b','c'] }, 'Object.fromQueryString | handles array indexes');
-
-  equal(Object.fromQueryString('foo[cap][map]=3'), { foo: { cap: { map: '3' } } }, 'Object.fromQueryString | handles array indexes');
-  equal(Object.fromQueryString('foo[cap][map][]=3'), { foo: { cap: { map: ['3'] } } }, 'Object.fromQueryString | nested with trailing array');
-  equal(Object.fromQueryString('foo[moo]=1&bar[far]=2'), { foo: { moo: '1' }, bar: { far: '2' }}, 'Object.fromQueryString | sister objects');
-
-  equal(Object.fromQueryString('f[]=a&f[]=b&f[]=c&f[]=d&f[]=e&f[]=f'), { f: ['a','b','c','d','e','f'] }, 'Object.fromQueryString | large array');
-  equal(Object.fromQueryString('foo[0][]=a&foo[1][]=b'), { foo: [['a'],['b']] }, 'Object.fromQueryString | nested arrays separate');
-  equal(Object.fromQueryString('foo[0][0]=3&foo[0][1]=4'), { foo: [['3','4']] }, 'Object.fromQueryString | nested arrays together');
-  equal(Object.fromQueryString('foo[][]=3&foo[][]=4'), { foo: [['3'],['4']] }, 'Object.fromQueryString | nested arrays');
-
-  var qs = 'foo[cap][map]=true&foo[cap][pap]=false';
-  equal(Object.fromQueryString(qs), {foo:{cap:{ map:'true',pap:'false'}}}, 'Object.fromQueryString | nested boolean without coercion');
-  equal(Object.fromQueryString(qs, true), {foo:{cap:{map:true,pap:false}}}, 'Object.fromQueryString | nested boolean with coercion');
-
-
-  var sparse = [];
-  sparse[3] = 'hardy';
-  sparse[10] = 'har har';
-  equal(Object.fromQueryString('foo[3]=hardy&foo[10]=har har'), { foo: sparse }, 'Object.fromQueryString | constructed arrays can be sparse');
-
-  equal(Object.fromQueryString('text=What%20is%20going%20on%20here%3f%3f&url=http://animalsbeingdicks.com/page/2'), { text: 'What is going on here??', url: 'http://animalsbeingdicks.com/page/2' }, 'Object.fromQueryString | handles partially escaped params');
-  equal(Object.fromQueryString('text=What%20is%20going%20on%20here%3f%3f&url=http%3A%2F%2Fanimalsbeingdicks.com%2Fpage%2F2'), { text: 'What is going on here??', url: 'http://animalsbeingdicks.com/page/2' }, 'Object.fromQueryString | handles fully escaped params');
-
-  equal(Object.fromQueryString('url=http%3A%2F%2Fwww.site.com%2Fslug%3Fin%3D%2Fuser%2Fjoeyblake'), { url: 'http://www.site.com/slug?in=/user/joeyblake' }, 'Object.fromQueryString | equal must be escaped as well');
-
-  equal(Object.fromQueryString('http://fake.com?foo=bar'), { foo: 'bar' }, 'Object.fromQueryString | handles whole URLs');
-  equal(Object.fromQueryString('foo=bar&moo=car').keys(), ['foo', 'moo'], 'Object.fromQueryString | should be extended');
-  equal(Object.fromQueryString(), {}, 'Object.fromQueryString | will not die if no arguments');
-
-  if(typeof window !== 'undefined') {
-    equal(Object.isArray(Object.fromQueryString(window.location).keys()), true, 'Object.fromQueryString | can handle just window.location');
-  }
-
-  equal(Object.fromQueryString('foo=3.14156'), { foo: '3.14156' }, 'Object.fromQueryString | float values are not coerced');
-  equal(Object.fromQueryString('foo=127.0.0.1'), { foo: '127.0.0.1' }, 'Object.fromQueryString | IP addresses not treated as numbers');
-  equal(Object.fromQueryString('zip=00165'), { zip: '00165' }, 'Object.fromQueryString | zipcodes are not treated as numbers');
-  equal(Object.fromQueryString('foo[=bar'), { 'foo[': 'bar' }, 'Object.fromQueryString | opening bracket does not trigger deep parameters');
-
-
-
+  // TODO: PICK UP FROM HERE
   // Object.watch
 
   var obj = { foo: 'bar' }, ran = false, counter = 0, key;

@@ -249,7 +249,10 @@ skipEnvironments = function(environments, test) {
       return Sugar[currentPackage.name][method].apply(null, args);
     } else {
       // Sometimes testing on other objects via .call, so access through the global context.
-      return globalContext[currentPackage.name].prototype[method].apply(subject, args);
+      var globalObject = globalContext[currentPackage.name];
+      // Use the global object for reason above, but test if method exists on prototype.
+      var target = subject.prototype[method] ? globalObject.prototype : globalObject;
+      return target[method].apply(subject, args);
     }
   }
 
