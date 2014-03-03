@@ -1,8 +1,6 @@
 package('Array', function () {
 
-  var arr, expected, expectedIndexes, count, f1 = function(){}, f2 = function(){};
   var sparseArraySupport = 0 in [undefined];
-  var stringObj = new String('foo');
 
   // Using [] or the constructor "new Array" will cause this test to fail in IE7/8. Evidently passing undefined to the
   // constructor will not push undefined as expected, however the length property will still appear as if it was pushed.
@@ -984,6 +982,9 @@ package('Array', function () {
 
 
   method('compact', function() {
+    var f1 = function() {};
+    var f2 = function() {};
+
     test([1,2,3], [1,2,3], '1,2,3');
     test([1,2,null,3], [1,2,3], '1,2,null,3');
     test([1,2,undefined,3], [1,2,3], '1,2,undefined,3');
@@ -1484,6 +1485,8 @@ package('Array', function () {
 
 
   method('create', function() {
+    var stringObj = new String('foo');
+
     test(Array, [], 'no args');
     test(Array, ['one'], ['one'], 'string');
     test(Array, [stringObj], [stringObj], 'string object');
