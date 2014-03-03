@@ -15,6 +15,9 @@ v1.4.3+
 
 - Level: Minor
   - `String#escapeHTML` now double escapes entities, meaning '&amp;' will become '&amp;amp;', etc.
+- Level: Moderate
+  - `Object.extend()` is now `Sugar.extendObject`.
+
 
 v1.4.1+
 =======
