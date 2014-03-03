@@ -5,6 +5,7 @@ v1.4.3
 
 - Removed String#escapeRegExp. Use RegExp.escape instead.
 - Changed String#escapeHTML to double-escape entities.
+- Object.extend() is now Sugar.extendObject().
 
 
 v1.4.2
