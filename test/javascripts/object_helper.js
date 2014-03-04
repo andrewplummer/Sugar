@@ -32,19 +32,9 @@ testIsArray = function(obj) {
   return Object.prototype.toString.call(obj) === '[object Array]';
 }
 
-testClassAndInstance = function(name, obj, args, expected, message) {
-  if(!testIsArray(args)) {
-    args = [args];
-  }
-  equal(run(Object, name, [obj].concat(args)), expected, message);
-  if(Object.extended) {
-    var extended = Object.extended(obj);
-    equal(extended[name].apply(extended, args), expected, message + ' | On extended object');
-  }
-}
-
-assertQueryStringGenerated = function(obj, args, expected, message) {
-  expected = expected.replace(/\[/g, '%5B').replace(/\]/g, '%5D');
-  testClassAndInstance('toQueryString', obj, args, expected, message);
+testClassAndInstance = function(subject, args, expected, message) {
+  var ext = run(Object, 'extended', [subject]);
+  test(ext, args, expected, message);
+  test(Object, [ext].concat(args), expected, message);
 }
 
