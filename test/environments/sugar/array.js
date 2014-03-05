@@ -1694,14 +1694,14 @@ package('Array', function () {
     var arr2 = run(testClone(arr), 'remove', [match]);
     equal(arr2.length, 0, 'remove');
 
-    equal(run([arr], 'intersect', [[match]]), [], 'Array#intersect is NOT fuzzy');
-    equal(run([match], 'intersect', [[arr]]), [], 'Array#intersect reverse is NOT fuzzy');
+    equal(run([arr], 'intersect', [[match]]), [], 'intersect is NOT fuzzy');
+    equal(run([match], 'intersect', [[arr]]), [], 'intersect reverse is NOT fuzzy');
 
-    equal(run(arr, 'subtract', [[match]]), arr, 'Array#subtract is NOT fuzzy');
-    equal(run([match], 'subtract', [[arr]]), [match], 'Array#subtract reverse is NOT fuzzy');
+    equal(run(arr, 'subtract', [[match]]), arr, 'subtract is NOT fuzzy');
+    equal(run([match], 'subtract', [[arr]]), [match], 'subtract reverse is NOT fuzzy');
 
-    equal(run(arr, 'unique', [match]), arr, 'Array#unique is NOT fuzzy');
-    equal(run([match], 'unique', [arr]), [match], 'Array#unique reverse is NOT fuzzy');
+    equal(run(arr, 'unique', [match]), arr, 'unique is NOT fuzzy');
+    equal(run([match], 'unique', [arr]), [match], 'unique reverse is NOT fuzzy');
   });
 
   method('sortBy', function() {
@@ -2618,13 +2618,15 @@ package('Array', function () {
 
     var fn1 = function() {};
     var fn2 = function() {};
+
     if(Sugar.Object && Sugar.Object.equal) {
-      equal(run([fn1, fn1, fn1], 'all', [function(el) { return Sugar.Object.equal(el, fn1); }]), true, 'Array#all | functions can be matched inside the callback');
-      equal(run([fn1, fn1, fn2], 'all', [function(el) { return Sugar.Object.equal(el, fn1); }]), false, 'Array#all | functions can be matched inside the callback');
-      equal(run([fn1, fn1, fn2], 'any', [function(el) { return Sugar.Object.equal(el, fn1); }]), true, 'Array#any | functions can be matched inside the callback');
-      equal(run([fn1, fn2, fn1], 'findall', [function(el) { return Sugar.Object.equal(el, fn1); }]), [fn1, fn1], 'Array#findAll | functions can be matched inside the callback');
-      equal(run([fn1, fn2, fn1], 'findall', [function(el) { return Sugar.Object.equal(el, fn2); }]), [fn2], 'Array#findAll | fn2 | functions can be matched inside the callback');
+      equal(run([fn1, fn1, fn1], 'all', [function(el) { return Sugar.Object.equal(el, fn1); }]), true, 'functions can be matched inside the callback');
+      equal(run([fn1, fn1, fn2], 'all', [function(el) { return Sugar.Object.equal(el, fn1); }]), false, 'functions can be matched inside the callback');
+      equal(run([fn1, fn1, fn2], 'any', [function(el) { return Sugar.Object.equal(el, fn1); }]), true, 'functions can be matched inside the callback');
+      equal(run([fn1, fn2, fn1], 'findAll', [function(el) { return Sugar.Object.equal(el, fn1); }]), [fn1, fn1], 'functions can be matched inside the callback');
+      equal(run([fn1, fn2, fn1], 'findAll', [function(el) { return Sugar.Object.equal(el, fn2); }]), [fn2], 'fn2 | functions can be matched inside the callback');
     }
+
   });
 
   method('sortBy', function() {
