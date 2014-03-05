@@ -149,6 +149,7 @@ skipEnvironments = function(environments, test) {
 
   var currentPackage;
   var currentMethod;
+  var currentGroup;
   var currentArgs;
 
   var syncTestsRunning;
@@ -221,6 +222,12 @@ skipEnvironments = function(environments, test) {
     currentArgs   = [];
   }
 
+  function group(name, fn) {
+    currentGroup = name;
+    fn();
+    currentGroup = null;
+  }
+
   function test(subject) {
     var args, expected, message;
     switch(arguments.length) {
@@ -283,8 +290,9 @@ skipEnvironments = function(environments, test) {
 
   function getFullMessage(tail) {
     var msg = '';
-    if(currentMethod) {
-      msg += currentMethod;
+    var title = currentMethod || currentGroup;
+    if(title) {
+      msg += title;
       if(currentArgs && currentArgs.length > 0) {
         msg += '('+ currentArgs.join(',') +')';
       }
@@ -534,6 +542,7 @@ skipEnvironments = function(environments, test) {
   this.notEqual = notEqual;
   this.package = package;
   this.method = method;
+  this.group = group;
   this.equal = equal;
   this.test = test;
   this.run = run;

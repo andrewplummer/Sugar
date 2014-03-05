@@ -1439,7 +1439,7 @@ package('Array', function () {
 
   });
 
-  method('Array Inheritance', function() {
+  group('Array Inheritance', function() {
 
     // Inherits from array...
 
@@ -2191,7 +2191,7 @@ package('Array', function () {
   });
 
 
-  method('complex union/intersect', function() {
+  group('Complex Union/Intersect', function() {
 
     // Testing Array#union and Array#intersect on complex elements as found http://ermouth.com/fastArray/
     // Thanks to @ermouth!
