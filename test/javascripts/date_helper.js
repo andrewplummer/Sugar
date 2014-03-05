@@ -1,4 +1,8 @@
 
+sugarDate = function() {
+  return run(Date, 'create', arguments);
+}
+
 dateEqual = function(a, b, message) {
   var buffer = 50; // Number of milliseconds of "play" to make sure these tests pass.
   if(typeof b == 'number') {
