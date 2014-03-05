@@ -252,7 +252,9 @@ skipEnvironments = function(environments, test) {
     method = method || currentMethod;
     args = args || currentArgs;
     if(Sugar.noConflict) {
-      args = includeSelfIfInstance(subject).concat(args);
+      if(!subjectIsClass(subject)) {
+        args = [subject].concat(Array.prototype.slice.call(args));
+      }
       return Sugar[currentPackage.name][method].apply(null, args);
     } else {
       // Sometimes testing on other objects via .call, so access through the global context.
@@ -263,7 +265,7 @@ skipEnvironments = function(environments, test) {
     }
   }
 
-  function includeSelfIfInstance(subject) {
+  function subjectIsClass(subject) {
     switch(subject) {
       case Boolean:
       case Number:
@@ -273,9 +275,9 @@ skipEnvironments = function(environments, test) {
       case Date:
       case RegExp:
       case Function:
-        return [];
+        return true;
     }
-    return [subject];
+    return false;
   }
 
   function raisesError(fn, message) {

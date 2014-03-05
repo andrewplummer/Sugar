@@ -89,7 +89,6 @@ toUTC = function(d) {
 }
 
 testFormatDate = function(d) {
-  var format = '{yyyy}-{MM}-{dd} {HH}:{mm}:{ss}{tz}'
   var tzOffset = d.getTimezoneOffset();
   var tzSign   = tzOffset > 0 ? '+' : '';
   var tzHr     = testPadDigits(tzOffset / 60);
