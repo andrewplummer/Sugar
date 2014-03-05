@@ -1,61 +1,58 @@
-test('Date', function () {
+package('Date', function () {
 
-  equal(Date.getLocale().code !== undefined, true, 'Current locale must be something... other libs may overwrite this');
-
-  // Imaginary local to test locale switching
-  Date.addLocale('fo', {
-    units: 'do,re,mi,fa,so,la,ti,do',
-    months: 'do,re,mi,fa,so,la,ti,do',
-    dateParse: '{year}kupo',
-    duration: '{num}{unit}momoney',
-    long: 'yeehaw'
+  method('getLocale', function() {
+    notEqual(Sugar.Date.getLocale().code, undefined, 'Current locale must be something... other libs may overwrite this');
   });
 
-  Date.setLocale('en');
+  method('setLocale', function() {
+    // Imaginary locale to test locale switching
+    Sugar.Date.addLocale('fo', {
+      units: 'do,re,mi,fa,so,la,ti,do',
+      months: 'do,re,mi,fa,so,la,ti,do',
+      dateParse: '{year}kupo',
+      duration: '{num}{unit}momoney',
+      long: 'yeehaw'
+    });
+  });
 
-  // Mootools over-stepping itself here with the "create" method implemented as a Function instance method,
-  // which interferes with class methods as classes themselves are functions. Taking back this class method
-  // for the sake of the tests.
-  if(typeof Date.create() === 'function') {
-    Date.restore('create');
-  };
+  Sugar.Date.setLocale('en');
 
-  var day, d, date1, date2, dst, o;
-  var isCurrentlyGMT = new Date(2011, 0, 1).getTimezoneOffset() === 0;
-  var now = new Date();
-  var thisYear = now.getFullYear();
-
-  // Invalid date
-  equal(new Date('a fridge too far').isValid(), false, 'Date#isValid | new Date invalid');
-  equal(new Date().isValid(), true, 'Date#isValid | new Date valid');
-
-  equal(Date.create().isValid(), true, 'Date#isValid | created date is valid');
-  equal(Date.create('a fridge too far').isValid(), false, 'Date#isValid | Date#create invalid');
+  //var day, d, date1, date2, dst, o;
+  //var isCurrentlyGMT = new Date(2011, 0, 1).getTimezoneOffset() === 0;
+  //var now = new Date();
+  //var thisYear = now.getFullYear();
 
 
-  d = new Date(1998, 0);
+  method('isValid', function() {
+    test(new Date('a fridge too far'), false, 'Date#isValid | new Date invalid');
+    test(new Date(), true, 'Date#isValid | new Date valid');
+  });
 
-  equal(d.isUTC(), d.getTimezoneOffset() === 0, 'Date#isUTC | UTC is true if the current timezone has no offset');
+  method('isUTC', function() {
+    var d = new Date(1998, 0);
+    test(d, d.getTimezoneOffset() === 0, 'Date#isUTC | UTC is true if the current timezone has no offset');
 
-  // UTC is still false even if the time is reset to the intended utc equivalent, as timezones can never be changed
-  equal(d.clone().addMinutes(d.getTimezoneOffset()).isUTC(), d.getTimezoneOffset() === 0, 'Date#isUTC | UTC cannot be forced');
+    d = run(d, 'clone');
+    d = run(d, 'addMinutes', [d.getTimezoneOffset()]);
+    test(d, d.getTimezoneOffset() === 0, 'Date#isUTC | UTC cannot be forced');
 
-  dateEqual(Date.create(), new Date(), 'Date#create | empty');
+    // UTC is still false even if the time is reset to the intended utc equivalent, as timezones can never be changed
+    dateEqual(run(Date, 'create'), new Date(), 'Date#create | empty');
+  });
 
+  group('Enumerated Parameters', function() {
+    dateEqual(sugarDate(1998), new Date(1998), 'Date#create | enumerated | 1998');
+    dateEqual(sugarDate(1998,1), new Date(1998,1), 'Date#create | enumerated | January, 1998');
+    dateEqual(sugarDate(1998,1,23), new Date(1998,1,23), 'Date#create | enumerated | January 23, 1998');
+    dateEqual(sugarDate(1998,1,23,11), new Date(1998,1,23,11), 'Date#create | enumerated | January 23, 1998 11am');
+    dateEqual(sugarDate(1998,1,23,11,54), new Date(1998,1,23,11,54), 'Date#create | enumerated | January 23, 1998 11:54am');
+    dateEqual(sugarDate(1998,1,23,11,54,32), new Date(1998,1,23,11,54,32), 'Date#create | enumerated | January 23, 1998 11:54:32');
+    dateEqual(sugarDate(1998,1,23,11,54,32,454), new Date(1998,1,23,11,54,32,454), 'Date#create | enumerated | January 23, 1998 11:54:32.454');
+    dateEqual(sugarDate('1998', true), new Date(1998, 0), 'Date#create | will not choke on a boolean as second param');
+    dateEqual(sugarDate('1998', ''), new Date(1998, 0), 'Date#create | will not choke on an empty string as second param');
+  });
+  return;
 
-
-  // Date constructor accepts enumerated parameters
-
-  dateEqual(Date.create(1998), new Date(1998), 'Date#create | enumerated | 1998');
-  dateEqual(Date.create(1998,1), new Date(1998,1), 'Date#create | enumerated | January, 1998');
-  dateEqual(Date.create(1998,1,23), new Date(1998,1,23), 'Date#create | enumerated | January 23, 1998');
-  dateEqual(Date.create(1998,1,23,11), new Date(1998,1,23,11), 'Date#create | enumerated | January 23, 1998 11am');
-  dateEqual(Date.create(1998,1,23,11,54), new Date(1998,1,23,11,54), 'Date#create | enumerated | January 23, 1998 11:54am');
-  dateEqual(Date.create(1998,1,23,11,54,32), new Date(1998,1,23,11,54,32), 'Date#create | enumerated | January 23, 1998 11:54:32');
-  dateEqual(Date.create(1998,1,23,11,54,32,454), new Date(1998,1,23,11,54,32,454), 'Date#create | enumerated | January 23, 1998 11:54:32.454');
-
-  dateEqual(Date.create('1998', true), new Date(1998, 0), 'Date#create | will not choke on a boolean as second param');
-  dateEqual(Date.create('1998', ''), new Date(1998, 0), 'Date#create | will not choke on an empty string as second param');
 
 
   // Date constructor accepts an object
@@ -1052,62 +1049,58 @@ test('Date', function () {
   // relative time formatting
 
 
-  skipEnvironments(['mootools'], function() {
-
-    var dyn = function(value, unit, ms, loc) {
-      if(ms < -(1).year()) {
-        return '{Month} {date}, {year}';
-      }
+  var dyn = function(value, unit, ms, loc) {
+    if(ms < -(1).year()) {
+      return '{Month} {date}, {year}';
     }
+  }
 
-    equal(Date.create('5 minutes ago').format(dyn), getRelativeDate(null, null, null, null, -5).format(), 'Date#format | relative fn | 5 minutes should stay relative');
-    equal(Date.create('13 months ago').format(dyn), Date.create('13 months ago').format('{Month} {date}, {year}'), 'Date#format | relative fn | higher reverts to absolute');
+  equal(Date.create('5 minutes ago').format(dyn), getRelativeDate(null, null, null, null, -5).format(), 'Date#format | relative fn | 5 minutes should stay relative');
+  equal(Date.create('13 months ago').format(dyn), Date.create('13 months ago').format('{Month} {date}, {year}'), 'Date#format | relative fn | higher reverts to absolute');
 
-    // globalize system with plurals
+  // globalize system with plurals
 
-    var strings = ['ミリ秒','秒','分','時間','日','週間','月','年'];
+  var strings = ['ミリ秒','秒','分','時間','日','週間','月','年'];
 
-    dyn = function(value, unit, ms, loc) {
-      equal(value, 5, 'Date#format | relative fn | 5 minutes ago | value is the closest relevant value');
-      equal(unit, 2, 'Date#format | relative fn | 5 minutes ago | unit is the closest relevant unit');
-      equalWithMargin(ms, -300000, 10, 'Date#format | relative fn | 5 minutes ago | ms is the offset in ms');
-      equal(loc.code, 'en', 'Date#format | relative fn | 4 hours ago | 4th argument is the locale object');
-      return value + strings[unit] + (ms < 0 ? '前' : '後');
-    }
+  dyn = function(value, unit, ms, loc) {
+    equal(value, 5, 'Date#format | relative fn | 5 minutes ago | value is the closest relevant value');
+    equal(unit, 2, 'Date#format | relative fn | 5 minutes ago | unit is the closest relevant unit');
+    equalWithMargin(ms, -300000, 10, 'Date#format | relative fn | 5 minutes ago | ms is the offset in ms');
+    equal(loc.code, 'en', 'Date#format | relative fn | 4 hours ago | 4th argument is the locale object');
+    return value + strings[unit] + (ms < 0 ? '前' : '後');
+  }
 
-    equal(Date.create('5 minutes ago').format(dyn), '5分前', 'Date#format | relative fn | 5 minutes ago');
-
-
-    dyn = function(value, unit, ms, loc) {
-      equal(value, 1, 'Date#format | relative fn | 1 minute from now | value is the closest relevant value');
-      equal(unit, 2, 'Date#format | relative fn | 1 minute from now | unit is the closest relevant unit');
-      equalWithMargin(ms, 61000, 5, 'Date#format | relative fn | 1 minute from now | ms is the offset in ms');
-      equal(loc.code, 'en', 'Date#format | relative fn | 4 hours ago | 4th argument is the locale object');
-      return value + strings[unit] + (ms < 0 ? '前' : '後');
-    }
-
-    equal(Date.create('61 seconds from now').format(dyn), '1分後', 'Date#format | relative fn | 1 minute from now');
+  equal(Date.create('5 minutes ago').format(dyn), '5分前', 'Date#format | relative fn | 5 minutes ago');
 
 
+  dyn = function(value, unit, ms, loc) {
+    equal(value, 1, 'Date#format | relative fn | 1 minute from now | value is the closest relevant value');
+    equal(unit, 2, 'Date#format | relative fn | 1 minute from now | unit is the closest relevant unit');
+    equalWithMargin(ms, 61000, 5, 'Date#format | relative fn | 1 minute from now | ms is the offset in ms');
+    equal(loc.code, 'en', 'Date#format | relative fn | 4 hours ago | 4th argument is the locale object');
+    return value + strings[unit] + (ms < 0 ? '前' : '後');
+  }
 
-    dyn = function(value, unit, ms, loc) {
-      equal(value, 4, 'Date#format | relative fn | 4 hours ago | value is the closest relevant value');
-      equal(unit, 3, 'Date#format | relative fn | 4 hours ago | unit is the closest relevant unit');
-      equalWithMargin(ms, -14400000, 10, 'Date#format | relative fn | 4 hours ago | ms is the offset in ms');
-      equal(loc.code, 'en', 'Date#format | relative fn | 4 hours ago | 4th argument is the locale object');
-      return value + strings[unit] + (ms < 0 ? '前' : '後');
-    }
+  equal(Date.create('61 seconds from now').format(dyn), '1分後', 'Date#format | relative fn | 1 minute from now');
 
-    equal(Date.create('240 minutes ago').format(dyn), '4時間前', 'Date#format | relative fn | 4 hours ago');
 
-    Date.create('223 milliseconds ago').format(function(value, unit) {
-      equalWithMargin(value, 223, 10, 'Date format | relative fn | still passes < 1 second');
-      equal(unit, 0, 'Date format | relative fn | still passes millisecond is zero');
-    });
 
-    equal(Date.create('2002-02-17').format(function() {}), 'February 17, 2002 12:00am', 'Date#format | function that returns undefined defaults to standard format');
+  dyn = function(value, unit, ms, loc) {
+    equal(value, 4, 'Date#format | relative fn | 4 hours ago | value is the closest relevant value');
+    equal(unit, 3, 'Date#format | relative fn | 4 hours ago | unit is the closest relevant unit');
+    equalWithMargin(ms, -14400000, 10, 'Date#format | relative fn | 4 hours ago | ms is the offset in ms');
+    equal(loc.code, 'en', 'Date#format | relative fn | 4 hours ago | 4th argument is the locale object');
+    return value + strings[unit] + (ms < 0 ? '前' : '後');
+  }
 
+  equal(Date.create('240 minutes ago').format(dyn), '4時間前', 'Date#format | relative fn | 4 hours ago');
+
+  Date.create('223 milliseconds ago').format(function(value, unit) {
+    equalWithMargin(value, 223, 10, 'Date format | relative fn | still passes < 1 second');
+    equal(unit, 0, 'Date format | relative fn | still passes millisecond is zero');
   });
+
+  equal(Date.create('2002-02-17').format(function() {}), 'February 17, 2002 12:00am', 'Date#format | function that returns undefined defaults to standard format');
 
   equal(Date.create().relative(), '1 second ago', 'Date#relative | relative | 6 milliseconds');
   equal(Date.create('6234 milliseconds ago').relative(), '6 seconds ago', 'Date#relative | relative | 6 milliseconds');
