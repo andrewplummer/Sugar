@@ -13,8 +13,12 @@ Version 1.4.0 improves future-compatibility by ensuring that browser updates do 
 v1.4.3+
 =======
 
+- Level: Major
+  - `Date#utc` is now `Date#setUTC`, and now requires explicitly passing `true` as the first argument to set the flag to true.
+
 - Level: Minor
   - `String#escapeHTML` now double escapes entities, meaning '&amp;' will become '&amp;amp;', etc.
+
 - Level: Moderate
   - `Object.extend()` is now `Sugar.extendObject`.
 

@@ -1,5 +1,5 @@
 
-sugarDate = function() {
+testCreateDate = function() {
   return run(Date, 'create', arguments);
 }
 
@@ -28,7 +28,7 @@ getRelativeDate = function(year, month, day, hours, minutes, seconds, millisecon
   // the bounds of months, they can't traverse into a new month if the
   // target month doesn't have the same number of days.
   if(day === undefined && month !== undefined) {
-    setDate = Math.min(setDate, new Date(setYear, setMonth).daysInMonth());
+    setDate = Math.min(setDate, testGetDaysInMonth(setYear, setMonth));
     d.setDate(setDate);
   }
   d.setFullYear(setYear);
@@ -65,7 +65,7 @@ getDateWithWeekdayAndOffset = function(weekday, offset, hours, minutes, seconds,
   return d;
 }
 
-getDaysInMonth = function(year, month) {
+testGetDaysInMonth = function(year, month) {
   return 32 - new Date(year, month, 32).getDate();
 }
 
@@ -83,10 +83,6 @@ getHours = function(num) {
   return Math.floor(num < 0 ? 24 + num : num);
 }
 
-
-toUTC = function(d) {
-  return d.addMinutes(-d.getTimezoneOffset());
-}
 
 testFormatDate = function(d) {
   var tzOffset = d.getTimezoneOffset();
@@ -138,5 +134,14 @@ testPadNumber = function(val, place, sign) {
 
 testCapitalize = function(str) {
   return str.slice(0,1).toUpperCase() + str.slice(1);
+}
+
+testGetTimezoneHours = function(d) {
+  return Math.floor(Math.abs(d.getTimezoneOffset()) / 60);
+}
+
+runUTC = function(name, args) {
+  var target = Sugar.noConflict ? Sugar.Date.utc : Date.utc;
+  return target[name].apply(null, args);
 }
 
