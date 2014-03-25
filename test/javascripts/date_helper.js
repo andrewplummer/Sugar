@@ -3,6 +3,10 @@ testCreateDate = function() {
   return run(Date, 'create', arguments);
 }
 
+dateRun = function(d, name, arguments) {
+  return run(Sugar.Date.clone(d), name, arguments);
+}
+
 dateEqual = function(a, b, message) {
   var buffer = 50; // Number of milliseconds of "play" to make sure these tests pass.
   if(typeof b == 'number') {

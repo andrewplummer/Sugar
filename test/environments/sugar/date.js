@@ -491,6 +491,16 @@ package('Date', function () {
   });
 
 
+  group('Create | UTC', function() {
+    dateEqual(runUTC('create', ['February 29, 2012 22:15:42', 'en']), new Date(Date.UTC(2012, 1, 29, 22, 15, 42)), 'full text');
+    dateEqual(runUTC('create', ['2012-05-31', 'en']), new Date(Date.UTC(2012, 4, 31)), 'dashed');
+    dateEqual(runUTC('create', ['1998-02-23 11:54:32', 'en']), new Date(Date.UTC(1998,1,23,11,54,32)), 'dashed with time');
+    dateEqual(runUTC('create', [{ year: 1998, month: 1, day: 23, hour: 11 }, 'en']), new Date(Date.UTC(1998,1,23,11)), 'params');
+    dateEqual(runUTC('create', ['08-25-1978 11:42:32.488am', 'en']), new Date(Date.UTC(1978, 7, 25, 11, 42, 32, 488)), 'full with ms');
+    dateEqual(runUTC('create', ['1994-11-05T13:15:30Z', 'en']), new Date(Date.UTC(1994, 10, 5, 13, 15, 30)), '"Z" is still utc');
+    dateEqual(runUTC('create', ['two days ago', 'en']), getRelativeDate(null, null, -2), 'relative dates are not UTC');
+  });
+
   method('set', function() {
 
     // Just the time
@@ -1382,391 +1392,415 @@ package('Date', function () {
     equal(run(d, 'yearsSince', ['the last day of 2011']), -1, 'years since the last day of 2011');
     equal(run(d, 'yearsUntil', ['the last day of 2011']), 1, 'years until the last day of 2011');
 
+    var d = new Date();
+    var offset = d.getTime() - getRelativeDate(null, null, -7).getTime();
+    var since, until;
+
+    // I'm occasionally seeing some REALLY big lags with IE here (up to 500ms), so giving a 1s buffer here.
+    //
+    var msSince = run(d, 'millisecondsSince', ['last week']);
+    var msUntil = run(d, 'millisecondsUntil', ['last week']);
+    var actualMsSince = Math.round(offset);
+    var actualMsUntil = Math.round(-offset);
+
+    equal((msSince <= actualMsSince + 1000) && (msSince >= actualMsSince - 1000), true, 'milliseconds since last week');
+    equal((msUntil <= actualMsUntil + 1000) && (msUntil >= actualMsUntil - 1000), true, 'milliseconds until last week');
+
+    var secSince = run(d, 'secondsSince', ['last week']);
+    var secUntil = run(d, 'secondsUntil', ['last week']);
+    var actualSecSince = Math.round(offset / 1000);
+    var actualSecUntil = Math.round(-offset / 1000);
+
+    equal((secSince <= actualSecSince + 5) && (secSince >= actualSecSince - 5), true, 'seconds since last week');
+    equal((secUntil <= actualSecUntil + 5) && (secUntil >= actualSecUntil - 5), true, 'seconds until last week');
+
+    equal(run(d, 'minutesSince', ['last week']), Math.round(offset / 1000 / 60), 'minutes since last week');
+    equal(run(d, 'minutesUntil', ['last week']), Math.round(-offset / 1000 / 60), 'minutes until last week');
+    equal(run(d, 'hoursSince', ['last week']), Math.round(offset / 1000 / 60 / 60), 'hours since last week');
+    equal(run(d, 'hoursUntil', ['last week']), Math.round(-offset / 1000 / 60 / 60), 'hours until last week');
+    equal(run(d, 'daysSince', ['last week']), Math.round(offset / 1000 / 60 / 60 / 24), 'days since last week');
+    equal(run(d, 'daysUntil', ['last week']), Math.round(-offset / 1000 / 60 / 60 / 24), 'days until last week');
+    equal(run(d, 'weeksSince', ['last week']), Math.round(offset / 1000 / 60 / 60 / 24 / 7), 'weeks since last week');
+    equal(run(d, 'weeksUntil', ['last week']), Math.round(-offset / 1000 / 60 / 60 / 24 / 7), 'weeks until last week');
+    equal(run(d, 'monthsSince', ['last week']), Math.round(offset / 1000 / 60 / 60 / 24 / 30.4375), 'months since last week');
+    equal(run(d, 'monthsUntil', ['last week']), Math.round(-offset / 1000 / 60 / 60 / 24 / 30.4375), 'months until last week');
+    equal(run(d, 'yearsSince', ['last week']), Math.round(offset / 1000 / 60 / 60 / 24 / 365.25), 'years since last week');
+    equal(run(d, 'yearsUntil', ['last week']), Math.round(-offset / 1000 / 60 / 60 / 24 / 365.25), 'years until the last day of 2011');
+
   });
+
+
+  group('Beginning/End', function() {
+
+    var d = new Date('August 5, 2010 13:45:02');
+
+    dateEqual(dateRun(d, 'beginningOfDay'), new Date(2010, 7, 5), 'beginningOfDay');
+    dateEqual(dateRun(d, 'beginningOfWeek'), new Date(2010, 7, 1), 'beginningOfWeek');
+    dateEqual(dateRun(d, 'beginningOfMonth'), new Date(2010, 7), 'beginningOfMonth');
+    dateEqual(dateRun(d, 'beginningOfYear'), new Date(2010, 0), 'beginningOfYear');
+
+    dateEqual(dateRun(d, 'endOfDay'), new Date(2010, 7, 5, 23, 59, 59, 999), 'endOfDay');
+    dateEqual(dateRun(d, 'endOfWeek'), new Date(2010, 7, 7, 23, 59, 59, 999), 'endOfWeek');
+    dateEqual(dateRun(d, 'endOfMonth'), new Date(2010, 7, 31, 23, 59, 59, 999), 'endOfMonth');
+    dateEqual(dateRun(d, 'endOfYear'), new Date(2010, 11, 31, 23, 59, 59, 999), 'endOfYear');
+
+    var d = new Date('January 1, 1979 01:33:42');
+
+    dateEqual(dateRun(d, 'beginningOfDay'), new Date(1979, 0, 1), 'beginningOfDay | January 1, 1979');
+    dateEqual(dateRun(d, 'beginningOfWeek'), new Date(1978, 11, 31), 'beginningOfWeek | January 1, 1979');
+    dateEqual(dateRun(d, 'beginningOfMonth'), new Date(1979, 0), 'beginningOfMonth | January 1, 1979');
+    dateEqual(dateRun(d, 'beginningOfYear'), new Date(1979, 0), 'beginningOfYear | January 1, 1979');
+
+    dateEqual(dateRun(d, 'endOfDay'), new Date(1979, 0, 1, 23, 59, 59, 999), 'endOfDay | January 1, 1979');
+    dateEqual(dateRun(d, 'endOfWeek'), new Date(1979, 0, 6, 23, 59, 59, 999), 'endOfWeek | January 1, 1979');
+    dateEqual(dateRun(d, 'endOfMonth'), new Date(1979, 0, 31, 23, 59, 59, 999), 'endOfMonth | January 1, 1979');
+    dateEqual(dateRun(d, 'endOfYear'), new Date(1979, 11, 31, 23, 59, 59, 999), 'endOfYear | January 1, 1979');
+
+    var d = new Date('December 31, 1945 01:33:42');
+
+    dateEqual(dateRun(d, 'beginningOfDay'), new Date(1945, 11, 31), 'beginningOfDay | January 1, 1945');
+    dateEqual(dateRun(d, 'beginningOfWeek'), new Date(1945, 11, 30), 'beginningOfWeek | January 1, 1945');
+    dateEqual(dateRun(d, 'beginningOfMonth'), new Date(1945, 11), 'beginningOfMonth | January 1, 1945');
+    dateEqual(dateRun(d, 'beginningOfYear'), new Date(1945, 0), 'beginningOfYear | January 1, 1945');
+
+    dateEqual(dateRun(d, 'endOfDay'), new Date(1945, 11, 31, 23, 59, 59, 999), 'endOfDay | January 1, 1945');
+    dateEqual(dateRun(d, 'endOfWeek'), new Date(1946, 0, 5, 23, 59, 59, 999), 'endOfWeek | January 1, 1945');
+    dateEqual(dateRun(d, 'endOfMonth'), new Date(1945, 11, 31, 23, 59, 59, 999), 'endOfMonth | January 1, 1945');
+    dateEqual(dateRun(d, 'endOfYear'), new Date(1945, 11, 31, 23, 59, 59, 999), 'endOfYear | January 1, 1945');
+
+    var d = new Date('February 29, 2012 22:15:42');
+
+    dateEqual(dateRun(d, 'beginningOfDay'), new Date(2012, 1, 29), 'beginningOfDay | February 29, 2012');
+    dateEqual(dateRun(d, 'beginningOfWeek'), new Date(2012, 1, 26), 'beginningOfWeek | February 29, 2012');
+    dateEqual(dateRun(d, 'beginningOfMonth'), new Date(2012, 1), 'beginningOfMonth | February 29, 2012');
+    dateEqual(dateRun(d, 'beginningOfYear'), new Date(2012, 0), 'beginningOfYear | February 29, 2012');
+
+    dateEqual(dateRun(d, 'endOfDay'), new Date(2012, 1, 29, 23, 59, 59, 999), 'endOfDay | February 29, 2012');
+    dateEqual(dateRun(d, 'endOfWeek'), new Date(2012, 2, 3, 23, 59, 59, 999), 'endOfWeek | February 29, 2012');
+    dateEqual(dateRun(d, 'endOfMonth'), new Date(2012, 1, 29, 23, 59, 59, 999), 'endOfMonth | February 29, 2012');
+    dateEqual(dateRun(d, 'endOfYear'), new Date(2012, 11, 31, 23, 59, 59, 999), 'endOfYear | February 29, 2012');
+
+    dateEqual(dateRun(d, 'beginningOfDay', [true]), new Date(2012, 1, 29), 'beginningOfDay | reset if true | February 29, 2012');
+    dateEqual(dateRun(d, 'beginningOfWeek', [true]), new Date(2012, 1, 26), 'beginningOfWeek | reset if true | February 29, 2012');
+    dateEqual(dateRun(d, 'beginningOfMonth', [true]), new Date(2012, 1), 'beginningOfMonth | reset if true | February 29, 2012');
+    dateEqual(dateRun(d, 'beginningOfYear', [true]), new Date(2012, 0), 'beginningOfYear | reset if true | February 29, 2012');
+
+    dateEqual(dateRun(d, 'endOfDay', [true]), new Date(2012, 1, 29, 23, 59, 59, 999), 'endOfDay | reset if true | February 29, 2012');
+    dateEqual(dateRun(d, 'endOfWeek', [true]), new Date(2012, 2, 3, 23, 59, 59, 999), 'endOfWeek | reset if true | February 29, 2012');
+    dateEqual(dateRun(d, 'endOfMonth', [true]), new Date(2012, 1, 29, 23, 59, 59, 999), 'endOfMonth | reset if true | February 29, 2012');
+    dateEqual(dateRun(d, 'endOfYear', [true]), new Date(2012, 11, 31, 23, 59, 59, 999), 'endOfYear | reset if true | February 29, 2012');
+
+    var d = run(runUTC('create', ['January 1, 2010 02:00:00', 'en']), 'setUTC', [true]);
+
+    dateEqual(dateRun(d, 'beginningOfDay'), new Date(Date.UTC(2010, 0)), 'beginningOfDay | utc');
+    dateEqual(dateRun(d, 'beginningOfWeek'), new Date(Date.UTC(2009, 11, 27)), 'beginningOfWeek | utc');
+    dateEqual(dateRun(d, 'beginningOfMonth'), new Date(Date.UTC(2010, 0)), 'beginningOfMonth | utc');
+    dateEqual(dateRun(d, 'beginningOfYear'), new Date(Date.UTC(2010, 0)), 'beginningOfYear | utc');
+
+    dateEqual(dateRun(d, 'endOfDay'), new Date(Date.UTC(2010, 0, 1, 23, 59, 59, 999)), 'endOfDay | utc');
+    dateEqual(dateRun(d, 'endOfWeek'), new Date(Date.UTC(2010, 0, 2, 23, 59, 59, 999)), 'endOfWeek | utc');
+    dateEqual(dateRun(d, 'endOfMonth'), new Date(Date.UTC(2010, 0, 31, 23, 59, 59, 999)), 'endOfMonth | utc');
+    dateEqual(dateRun(d, 'endOfYear'), new Date(Date.UTC(2010, 11, 31, 23, 59, 59, 999)), 'endOfYear | utc');
+
+  });
+
+  group('addUnit', function() {
+
+    var d = new Date('February 29, 2012 22:15:42');
+
+    dateEqual(dateRun(d, 'addMilliseconds', [12]), new Date(2012, 1, 29, 22, 15, 42, 12), 'addMilliseconds');
+    dateEqual(dateRun(d, 'addSeconds', [12]), new Date(2012, 1, 29, 22, 15, 54), 'addSeconds');
+    dateEqual(dateRun(d, 'addMinutes', [12]), new Date(2012, 1, 29, 22, 27, 42), 'addMinutes');
+    dateEqual(dateRun(d, 'addHours', [12]), new Date(2012, 2, 1, 10, 15, 42), 'addHours');
+    dateEqual(dateRun(d, 'addDays', [12]), new Date(2012, 2, 12, 22, 15, 42), 'addDays');
+    dateEqual(dateRun(d, 'addWeeks', [12]), new Date(2012, 4, 23, 22, 15, 42), 'addWeeks');
+    dateEqual(dateRun(d, 'addMonths', [12]), new Date(2013, 1, 28, 22, 15, 42), 'addMonths');
+    dateEqual(dateRun(d, 'addYears', [12]), new Date(2024, 1, 29, 22, 15, 42), 'addYears');
+
+    dateEqual(dateRun(d, 'addMilliseconds', [-12]), new Date(2012, 1, 29, 22, 15, 41, 988), 'addMilliseconds | negative');
+    dateEqual(dateRun(d, 'addSeconds', [-12]), new Date(2012, 1, 29, 22, 15, 30), 'addSeconds | negative');
+    dateEqual(dateRun(d, 'addMinutes', [-12]), new Date(2012, 1, 29, 22, 3, 42), 'addMinutes | negative');
+    dateEqual(dateRun(d, 'addHours', [-12]), new Date(2012, 1, 29, 10, 15, 42), 'addHours | negative');
+    dateEqual(dateRun(d, 'addDays', [-12]), new Date(2012, 1, 17, 22, 15, 42), 'addDays | negative');
+    dateEqual(dateRun(d, 'addWeeks', [-12]), new Date(2011, 11, 7, 22, 15, 42), 'addWeeks | negative');
+    dateEqual(dateRun(d, 'addMonths', [-12]), new Date(2011, 1, 28, 22, 15, 42), 'addMonths | negative');
+    dateEqual(dateRun(d, 'addYears', [-12]), new Date(2000, 1, 29, 22, 15, 42), 'addYears | negative');
+
+  });
+
+  method('reset', function() {
+    var d = new Date('February 29, 2012 22:15:42');
+    var yearZero = new Date(2000, 0);
+    yearZero.setFullYear(0);
+
+    dateEqual(dateRun(d, 'reset'),                   new Date(2012, 1, 29), 'Clears time');
+    dateEqual(dateRun(d, 'reset', ['years']),        yearZero, 'years');
+    dateEqual(dateRun(d, 'reset', ['months']),       new Date(2012, 0), 'months');
+    dateEqual(dateRun(d, 'reset', ['weeks']),        new Date(2012, 0, 4), 'weeks | ISO8601');
+    dateEqual(dateRun(d, 'reset', ['days']),         new Date(2012, 1, 1), 'days');
+    dateEqual(dateRun(d, 'reset', ['hours']),        new Date(2012, 1, 29), 'hours');
+    dateEqual(dateRun(d, 'reset', ['minutes']),      new Date(2012, 1, 29, 22), 'minutes');
+    dateEqual(dateRun(d, 'reset', ['seconds']),      new Date(2012, 1, 29, 22, 15), 'seconds');
+    dateEqual(dateRun(d, 'reset', ['milliseconds']), new Date(2012, 1, 29, 22, 15, 42), 'milliseconds');
+
+    dateEqual(dateRun(d, 'reset', ['year']),        yearZero, 'year');
+    dateEqual(dateRun(d, 'reset', ['month']),       new Date(2012, 0), 'month');
+    dateEqual(dateRun(d, 'reset', ['week']),        new Date(2012, 0, 4), 'weeks | ISO8601');
+    dateEqual(dateRun(d, 'reset', ['day']),         new Date(2012, 1, 1), 'day');
+    dateEqual(dateRun(d, 'reset', ['hour']),        new Date(2012, 1, 29), 'hour');
+    dateEqual(dateRun(d, 'reset', ['minute']),      new Date(2012, 1, 29, 22), 'minute');
+    dateEqual(dateRun(d, 'reset', ['second']),      new Date(2012, 1, 29, 22, 15), 'second');
+    dateEqual(dateRun(d, 'reset', ['millisecond']), new Date(2012, 1, 29, 22, 15, 42), 'millisecond');
+
+    dateEqual(dateRun(d, 'reset', ['date']),         new Date(2012, 1, 1), 'date');
+    dateEqual(dateRun(d, 'reset', ['flegh']), new Date(2012, 1, 29, 22, 15, 42), 'an unknown string will do nothing');
+
+    dateEqual(dateRun(d, 'addDays', [5, true]), new Date(2012, 2, 5), 'can also reset the time');
+  });
+
+  group('isMethods', function() {
+
+    equal(run(now, 'isYesterday'), false, 'isYesterday');
+    equal(run(now, 'isToday'), true, 'isToday');
+    equal(run(now, 'isTomorrow'), false, 'isTomorrow');
+    equal(run(now, 'isWeekday'), now.getDay() !== 0 && now.getDay() !== 6, 'isWeekday');
+    equal(run(now, 'isWeekend'), now.getDay() === 0 || now.getDay() === 6, 'isWeekend');
+    equal(run(now, 'isFuture'), false, 'isFuture');
+    equal(run(now, 'isPast'), true, 'isPast');
+
+    var d = new Date('February 29, 2008 22:15:42');
+
+    equal(run(d, 'isYesterday'), false, 'isYesterday | February 29, 2008');
+    equal(run(d, 'isToday'), false, 'isToday | February 29, 2008');
+    equal(run(d, 'isTomorrow'), false, 'isTomorrow | February 29, 2008');
+    equal(run(d, 'isWeekday'), true, 'isWeekday | February 29, 2008');
+    equal(run(d, 'isWeekend'), false, 'isWeekend | February 29, 2008');
+    equal(run(d, 'isFuture'), false, 'isFuture | February 29, 2008');
+    equal(run(d, 'isPast'), true, 'isPast | February 29, 2008');
+
+    d.setFullYear(thisYear + 2);
+
+    equal(run(d, 'isYesterday'), false, 'isYesterday | 2 years from now');
+    equal(run(d, 'isToday'), false, 'isToday | 2 years from now');
+    equal(run(d, 'isTomorrow'), false, 'isTomorrow | 2 years from now');
+    equal(run(d, 'isFuture'), true, 'isFuture | 2 years from now');
+    equal(run(d, 'isPast'), false, 'isPast | 2 years from now');
+
+    equal(run(now, 'isLastWeek'), false, 'isLastWeek | now');
+    equal(run(now, 'isThisWeek'), true, 'isThisWeek | now');
+    equal(run(now, 'isNextWeek'), false, 'isNextWeek | now');
+    equal(run(now, 'isLastMonth'), false, 'isLastMonth | now');
+    equal(run(now, 'isThisMonth'), true, 'isThisMonth | now');
+    equal(run(now, 'isNextMonth'), false, 'isNextMonth | now');
+    equal(run(now, 'isLastYear'), false, 'isLastYear | now');
+    equal(run(now, 'isThisYear'), true, 'isThisYear | now');
+    equal(run(now, 'isNextYear'), false, 'isNextYear | now');
+
+    equal(run(getRelativeDate(null, null, -7), 'isLastWeek'), true, 'isLastWeek | last week');
+    equal(run(getRelativeDate(null, null, -7), 'isThisWeek'), false, 'isThisWeek | last week');
+    equal(run(getRelativeDate(null, null, -7), 'isNextWeek'), false, 'isNextWeek | last week');
+
+    equal(run(getRelativeDate(null, null, 7), 'isLastWeek'), false, 'isLastWeek | next week');
+    equal(run(getRelativeDate(null, null, 7), 'isThisWeek'), false, 'isThisWeek | next week');
+    equal(run(getRelativeDate(null, null, 7), 'isNextWeek'), true, 'isNextWeek | next week');
+
+    equal(run(getDateWithWeekdayAndOffset(0), 'isLastWeek'), false, 'isLastWeek | this week sunday is last week');
+    equal(run(getDateWithWeekdayAndOffset(0), 'isThisWeek'), true, 'isThisWeek | this week sunday is this week');
+    equal(run(getDateWithWeekdayAndOffset(0), 'isNextWeek'), false, 'isNextWeek | this week sunday is next week');
+
+    equal(run(getDateWithWeekdayAndOffset(5), 'isLastWeek'), false, 'isLastWeek | friday is last week');
+    equal(run(getDateWithWeekdayAndOffset(5), 'isThisWeek'), true, 'isThisWeek | friday is this week');
+    equal(run(getDateWithWeekdayAndOffset(5), 'isNextWeek'), false, 'isNextWeek | friday is next week');
+
+    equal(run(getDateWithWeekdayAndOffset(6), 'isLastWeek'), false, 'isLastWeek | satuday is last week');
+    equal(run(getDateWithWeekdayAndOffset(6), 'isThisWeek'), true, 'isThisWeek | satuday is this week');
+    equal(run(getDateWithWeekdayAndOffset(6), 'isNextWeek'), false, 'isNextWeek | satuday is next week');
+
+    equal(run(testCreateDate('last sunday'), 'isLastWeek'), true, 'isLastWeek | last sunday');
+    equal(run(testCreateDate('last sunday'), 'isThisWeek'), false, 'isThisWeek | last sunday');
+    equal(run(testCreateDate('last sunday'), 'isNextWeek'), false, 'isNextWeek | last sunday');
+
+    equal(run(testCreateDate('next sunday'), 'isLastWeek'), false, 'isLastWeek | next sunday');
+    equal(run(testCreateDate('next sunday'), 'isThisWeek'), false, 'isThisWeek | next sunday');
+    equal(run(testCreateDate('next sunday'), 'isNextWeek'), true, 'isNextWeek | next sunday');
+
+    equal(run(testCreateDate('last monday'), 'isLastWeek'), true, 'isLastWeek | last monday');
+    equal(run(testCreateDate('last monday'), 'isThisWeek'), false, 'isThisWeek | last monday');
+    equal(run(testCreateDate('last monday'), 'isNextWeek'), false, 'isNextWeek | last monday');
+
+    equal(run(testCreateDate('next monday'), 'isLastWeek'), false, 'isLastWeek | next monday');
+    equal(run(testCreateDate('next monday'), 'isThisWeek'), false, 'isThisWeek | next monday');
+    equal(run(testCreateDate('next monday'), 'isNextWeek'), true, 'isNextWeek | next monday');
+
+    equal(run(testCreateDate('last friday'), 'isLastWeek'), true, 'isLastWeek | last friday');
+    equal(run(testCreateDate('last friday'), 'isThisWeek'), false, 'isThisWeek | last friday');
+    equal(run(testCreateDate('last friday'), 'isNextWeek'), false, 'isNextWeek | last friday');
+
+    equal(run(testCreateDate('next friday'), 'isLastWeek'), false, 'isLastWeek | next friday');
+    equal(run(testCreateDate('next friday'), 'isThisWeek'), false, 'isThisWeek | next friday');
+    equal(run(testCreateDate('next friday'), 'isNextWeek'), true, 'isNextWeek | next friday');
+
+    equal(run(testCreateDate('last saturday'), 'isLastWeek'), true, 'isLastWeek | last saturday');
+    equal(run(testCreateDate('last saturday'), 'isThisWeek'), false, 'isThisWeek | last saturday');
+    equal(run(testCreateDate('last saturday'), 'isNextWeek'), false, 'isNextWeek | last saturday');
+
+    equal(run(testCreateDate('next saturday'), 'isLastWeek'), false, 'isLastWeek | next saturday');
+    equal(run(testCreateDate('next saturday'), 'isThisWeek'), false, 'isThisWeek | next saturday');
+    equal(run(testCreateDate('next saturday'), 'isNextWeek'), true, 'isNextWeek | next saturday');
+
+    equal(run(testCreateDate('the beginning of the week'), 'isLastWeek'), false, 'isLastWeek | the beginning of the week');
+    equal(run(testCreateDate('the beginning of the week'), 'isThisWeek'), true, 'isThisWeek | the beginning of the week');
+    equal(run(testCreateDate('the beginning of the week'), 'isNextWeek'), false, 'isNextWeek | the beginning of the week');
+
+
+    var d = testCreateDate('the beginning of the week');
+    run(d, 'addMinutes', [-1]);
+
+    equal(run(d, 'isLastWeek'), true, 'isLastWeek | the beginning of the week - 1 minute');
+    equal(run(d, 'isThisWeek'), false, 'isThisWeek | the beginning of the week - 1 minute');
+    equal(run(d, 'isNextWeek'), false, 'isNextWeek | the beginning of the week - 1 minute');
+
+
+    var d = testCreateDate('the end of the week');
+
+    equal(run(d, 'isLastWeek'), false, 'isLastWeek | the end of the week');
+    equal(run(d, 'isThisWeek'), true, 'isThisWeek | the end of the week');
+    equal(run(d, 'isNextWeek'), false, 'isNextWeek | the end of the week');
+
+
+    var d = testCreateDate('the end of the week');
+    run(d, 'addMinutes', [1]);
+
+    equal(run(d, 'isLastWeek'), false, 'isLastWeek | the end of the week + 1 minute');
+    equal(run(d, 'isThisWeek'), false, 'isThisWeek | the end of the week + 1 minute');
+    equal(run(d, 'isNextWeek'), true, 'isNextWeek | the end of the week + 1 minute');
+
+
+    var d = testCreateDate('the beginning of last week');
+
+    equal(run(d, 'isLastWeek'), true, 'isLastWeek | the beginning of last week');
+    equal(run(d, 'isThisWeek'), false, 'isThisWeek | the beginning of last week');
+    equal(run(d, 'isNextWeek'), false, 'isNextWeek | the beginning of last week');
+
+
+    var d = testCreateDate('the beginning of last week');
+    run(d, 'addMinutes', [-1]);
+
+    equal(run(d, 'isLastWeek'), false, 'isLastWeek | the beginning of last week - 1 minute');
+    equal(run(d, 'isThisWeek'), false, 'isThisWeek | the beginning of last week - 1 minute');
+    equal(run(d, 'isNextWeek'), false, 'isNextWeek | the beginning of last week - 1 minute');
+
+
+    var d = testCreateDate('the end of next week');
+
+    equal(run(d, 'isLastWeek'), false, 'isLastWeek | the end of next week');
+    equal(run(d, 'isThisWeek'), false, 'isThisWeek | the end of next week');
+    equal(run(d, 'isNextWeek'), true, 'isNextWeek | the end of next week');
+
+
+    var d = testCreateDate('the end of next week');
+    run(d, 'addMinutes', [1]);
+
+    equal(run(d, 'isLastWeek'), false, 'isLastWeek | the end of next week + 1 minute');
+    equal(run(d, 'isThisWeek'), false, 'isThisWeek | the end of next week + 1 minute');
+    equal(run(d, 'isNextWeek'), false, 'isNextWeek | the end of next week + 1 minute');
+
+
+    var d = testCreateDate('the end of last week');
+
+    equal(run(d, 'isLastWeek'), true, 'isLastWeek | the end of last week');
+    equal(run(d, 'isThisWeek'), false, 'isThisWeek | the end of last week');
+    equal(run(d, 'isNextWeek'), false, 'isNextWeek | the end of last week');
+
+
+    var d = testCreateDate('the end of last week');
+    run(d, 'addMinutes', [1]);
+
+    equal(run(d, 'isLastWeek'), false, 'isLastWeek | the end of last week + 1 minute');
+    equal(run(d, 'isThisWeek'), true, 'isThisWeek | the end of last week + 1 minute');
+    equal(run(d, 'isNextWeek'), false, 'isNextWeek | the end of last week + 1 minute');
+
+
+    var d = testCreateDate('the beginning of next week');
+
+    equal(run(d, 'isLastWeek'), false, 'isLastWeek | the beginning of next week');
+    equal(run(d, 'isThisWeek'), false, 'isThisWeek | the beginning of next week');
+    equal(run(d, 'isNextWeek'), true, 'isNextWeek | the beginning of next week');
+
+
+    var d = testCreateDate('the beginning of next week');
+    run(d, 'addMinutes', [-1]);
+
+    equal(run(d, 'isLastWeek'), false, 'isLastWeek | the beginning of next week - 1 minute');
+    equal(run(d, 'isThisWeek'), true, 'isThisWeek | the beginning of next week - 1 minute');
+    equal(run(d, 'isNextWeek'), false, 'isNextWeek | the beginning of next week - 1 minute');
+
+
+    equal(run(getRelativeDate(null, -1), 'isLastWeek'), false, 'isLastWeek | last month');
+    equal(run(getRelativeDate(null, -1), 'isThisWeek'), false, 'isThisWeek | last month');
+    equal(run(getRelativeDate(null, -1), 'isNextWeek'), false, 'isNextWeek | last month');
+    equal(run(getRelativeDate(null, -1), 'isLastMonth'), true, 'isLastMonth | last month');
+    equal(run(getRelativeDate(null, -1), 'isThisMonth'), false, 'isThisMonth | last month');
+    equal(run(getRelativeDate(null, -1), 'isNextMonth'), false, 'isNextMonth | last month');
+
+    equal(run(getRelativeDate(null, 1), 'isLastWeek'), false, 'isLastWeek | next month');
+    equal(run(getRelativeDate(null, 1), 'isThisWeek'), false, 'isThisWeek | next month');
+    equal(run(getRelativeDate(null, 1), 'isNextWeek'), false, 'isNextWeek | next month');
+    equal(run(getRelativeDate(null, 1), 'isLastMonth'), false, 'isLastMonth | next month');
+    equal(run(getRelativeDate(null, 1), 'isThisMonth'), false, 'isThisMonth | next month');
+    equal(run(getRelativeDate(null, 1), 'isNextMonth'), true, 'isNextMonth | next month');
+
+    equal(run(getRelativeDate(-1), 'isLastWeek'), false, 'isLastWeek | last year');
+    equal(run(getRelativeDate(-1), 'isThisWeek'), false, 'isThisWeek | last year');
+    equal(run(getRelativeDate(-1), 'isNextWeek'), false, 'isNextWeek | last year');
+    equal(run(getRelativeDate(-1), 'isLastMonth'), false, 'isLastMonth | last year');
+    equal(run(getRelativeDate(-1), 'isThisMonth'), false, 'isThisMonth | last year');
+    equal(run(getRelativeDate(-1), 'isNextMonth'), false, 'isNextMonth | last year');
+    equal(run(getRelativeDate(-1), 'isLastYear'), true, 'isLastYear | last year');
+    equal(run(getRelativeDate(-1), 'isThisYear'), false, 'isThisYear | last year');
+    equal(run(getRelativeDate(-1), 'isNextYear'), false, 'isNextYear | last year');
+
+    equal(run(getRelativeDate(1), 'isLastWeek'), false, 'isLastWeek | next year');
+    equal(run(getRelativeDate(1), 'isThisWeek'), false, 'isThisWeek | next year');
+    equal(run(getRelativeDate(1), 'isNextWeek'), false, 'isNextWeek | next year');
+    equal(run(getRelativeDate(1), 'isLastMonth'), false, 'isLastMonth | next year');
+    equal(run(getRelativeDate(1), 'isThisMonth'), false, 'isThisMonth | next year');
+    equal(run(getRelativeDate(1), 'isNextMonth'), false, 'isNextMonth | next year');
+    equal(run(getRelativeDate(1), 'isLastYear'), false, 'isLastYear | next year');
+    equal(run(getRelativeDate(1), 'isThisYear'), false, 'isThisYear | next year');
+    equal(run(getRelativeDate(1), 'isNextYear'), true, 'isNextYear | next year');
+
+  });
+
+  group('isDateOfWeek', function() {
+
+    equal(run(new Date(2001, 11, 28), 'isSunday'), false, 'isSunday');
+    equal(run(new Date(2001, 11, 28), 'isMonday'), false, 'isMonday');
+    equal(run(new Date(2001, 11, 28), 'isTuesday'), false, 'isTuesday');
+    equal(run(new Date(2001, 11, 28), 'isWednesday'), false, 'isWednesday');
+    equal(run(new Date(2001, 11, 28), 'isThursday'), false, 'isThursday');
+    equal(run(new Date(2001, 11, 28), 'isFriday'), true, 'isFriday');
+    equal(run(new Date(2001, 11, 28), 'isSaturday'), false, 'isSaturday');
+
+    equal(run(new Date(2001, 11, 28), 'isJanuary'), false, 'isJanuary');
+    equal(run(new Date(2001, 11, 28), 'isFebruary'), false, 'isFebruary');
+    equal(run(new Date(2001, 11, 28), 'isMarch'), false, 'isMarch');
+    equal(run(new Date(2001, 11, 28), 'isApril'), false, 'isApril');
+    equal(run(new Date(2001, 11, 28), 'isMay'), false, 'isMay');
+    equal(run(new Date(2001, 11, 28), 'isJune'), false, 'isJune');
+    equal(run(new Date(2001, 11, 28), 'isJuly'), false, 'isJuly');
+    equal(run(new Date(2001, 11, 28), 'isAugust'), false, 'isAugust');
+    equal(run(new Date(2001, 11, 28), 'isSeptember'), false, 'isSeptember');
+    equal(run(new Date(2001, 11, 28), 'isOctober'), false, 'isOctober');
+    equal(run(new Date(2001, 11, 28), 'isNovember'), false, 'isNovember');
+    equal(run(new Date(2001, 11, 28), 'isDecember'), true, 'isDecember');
+
+  });
+
   return;
 
 
 
-  d = new Date();
-  var offset = d.getTime() - new Date(d).advance({ week: -1 });
-  var since, until;
-
-  // I'm occasionally seeing some REALLY big lags with IE here (up to 500ms), so giving a 1s buffer here.
-  //
-  var msSince = d.millisecondsSince('last week');
-  var msUntil = d.millisecondsUntil('last week');
-  var actualMsSince = Math.round(offset);
-  var actualMsUntil = Math.round(-offset);
-
-  equal((msSince <= actualMsSince + 1000) && (msSince >= actualMsSince - 1000), true, 'Date#millisecondsSince | milliseconds since last week');
-  equal((msUntil <= actualMsUntil + 1000) && (msUntil >= actualMsUntil - 1000), true, 'Date#millisecondsUntil | milliseconds until last week');
-
-  var secSince = d.secondsSince('last week');
-  var secUntil = d.secondsUntil('last week');
-  var actualSecSince = Math.round(offset / 1000);
-  var actualSecUntil = Math.round(-offset / 1000);
-
-  equal((secSince <= actualSecSince + 5) && (secSince >= actualSecSince - 5), true, 'Date#secondsSince | seconds since last week');
-  equal((secUntil <= actualSecUntil + 5) && (secUntil >= actualSecUntil - 5), true, 'Date#secondsUntil | seconds until last week');
-
-  equal(d.minutesSince('last week'), Math.round(offset / 1000 / 60), 'Date#minutesSince | minutes since last week');
-  equal(d.minutesUntil('last week'), Math.round(-offset / 1000 / 60), 'Date#minutesUntil | minutes until last week');
-  equal(d.hoursSince('last week'), Math.round(offset / 1000 / 60 / 60), 'Date#hoursSince | hours since last week');
-  equal(d.hoursUntil('last week'), Math.round(-offset / 1000 / 60 / 60), 'Date#hoursUntil | hours until last week');
-  equal(d.daysSince('last week'), Math.round(offset / 1000 / 60 / 60 / 24), 'Date#daysSince | days since last week');
-  equal(d.daysUntil('last week'), Math.round(-offset / 1000 / 60 / 60 / 24), 'Date#daysUntil | days until last week');
-  equal(d.weeksSince('last week'), Math.round(offset / 1000 / 60 / 60 / 24 / 7), 'Date#weeksSince | weeks since last week');
-  equal(d.weeksUntil('last week'), Math.round(-offset / 1000 / 60 / 60 / 24 / 7), 'Date#weeksUntil | weeks until last week');
-  equal(d.monthsSince('last week'), Math.round(offset / 1000 / 60 / 60 / 24 / 30.4375), 'Date#monthsSince | months since last week');
-  equal(d.monthsUntil('last week'), Math.round(-offset / 1000 / 60 / 60 / 24 / 30.4375), 'Date#monthsUntil | months until last week');
-  equal(d.yearsSince('last week'), Math.round(offset / 1000 / 60 / 60 / 24 / 365.25), 'Date#yearsSince | years since last week');
-  equal(d.yearsUntil('last week'), Math.round(-offset / 1000 / 60 / 60 / 24 / 365.25), 'Date#yearsUntil | years until the last day of 2011');
-
-
-
-  d = new Date('August 5, 2010 13:45:02');
-
-  dateEqual(new Date(d).beginningOfDay(), new Date(2010, 7, 5), 'Date#beginningOfDay');
-  dateEqual(new Date(d).beginningOfWeek(), new Date(2010, 7, 1), 'Date#beginningOfWeek');
-  dateEqual(new Date(d).beginningOfMonth(), new Date(2010, 7), 'Date#beginningOfMonth');
-  dateEqual(new Date(d).beginningOfYear(), new Date(2010, 0), 'Date#beginningOfYear');
-
-  dateEqual(new Date(d).endOfDay(), new Date(2010, 7, 5, 23, 59, 59, 999), 'Date#endOfDay');
-  dateEqual(new Date(d).endOfWeek(), new Date(2010, 7, 7, 23, 59, 59, 999), 'Date#endOfWeek');
-  dateEqual(new Date(d).endOfMonth(), new Date(2010, 7, 31, 23, 59, 59, 999), 'Date#endOfMonth');
-  dateEqual(new Date(d).endOfYear(), new Date(2010, 11, 31, 23, 59, 59, 999), 'Date#endOfYear');
-
-
-  d = new Date('January 1, 1979 01:33:42');
-
-  dateEqual(new Date(d).beginningOfDay(), new Date(1979, 0, 1), 'Date#beginningOfDay | January 1, 1979');
-  dateEqual(new Date(d).beginningOfWeek(), new Date(1978, 11, 31), 'Date#beginningOfWeek | January 1, 1979');
-  dateEqual(new Date(d).beginningOfMonth(), new Date(1979, 0), 'Date#beginningOfMonth | January 1, 1979');
-  dateEqual(new Date(d).beginningOfYear(), new Date(1979, 0), 'Date#beginningOfYear | January 1, 1979');
-
-  dateEqual(new Date(d).endOfDay(), new Date(1979, 0, 1, 23, 59, 59, 999), 'Date#endOfDay | January 1, 1979');
-  dateEqual(new Date(d).endOfWeek(), new Date(1979, 0, 6, 23, 59, 59, 999), 'Date#endOfWeek | January 1, 1979');
-  dateEqual(new Date(d).endOfMonth(), new Date(1979, 0, 31, 23, 59, 59, 999), 'Date#endOfMonth | January 1, 1979');
-  dateEqual(new Date(d).endOfYear(), new Date(1979, 11, 31, 23, 59, 59, 999), 'Date#endOfYear | January 1, 1979');
-
-
-  d = new Date('December 31, 1945 01:33:42');
-
-  dateEqual(new Date(d).beginningOfDay(), new Date(1945, 11, 31), 'Date#beginningOfDay | January 1, 1945');
-  dateEqual(new Date(d).beginningOfWeek(), new Date(1945, 11, 30), 'Date#beginningOfWeek | January 1, 1945');
-  dateEqual(new Date(d).beginningOfMonth(), new Date(1945, 11), 'Date#beginningOfMonth | January 1, 1945');
-  dateEqual(new Date(d).beginningOfYear(), new Date(1945, 0), 'Date#beginningOfYear | January 1, 1945');
-
-  dateEqual(new Date(d).endOfDay(), new Date(1945, 11, 31, 23, 59, 59, 999), 'Date#endOfDay | January 1, 1945');
-  dateEqual(new Date(d).endOfWeek(), new Date(1946, 0, 5, 23, 59, 59, 999), 'Date#endOfWeek | January 1, 1945');
-  dateEqual(new Date(d).endOfMonth(), new Date(1945, 11, 31, 23, 59, 59, 999), 'Date#endOfMonth | January 1, 1945');
-  dateEqual(new Date(d).endOfYear(), new Date(1945, 11, 31, 23, 59, 59, 999), 'Date#endOfYear | January 1, 1945');
-
-
-  d = new Date('February 29, 2012 22:15:42');
-
-  dateEqual(new Date(d).beginningOfDay(), new Date(2012, 1, 29), 'Date#beginningOfDay | February 29, 2012');
-  dateEqual(new Date(d).beginningOfWeek(), new Date(2012, 1, 26), 'Date#beginningOfWeek | February 29, 2012');
-  dateEqual(new Date(d).beginningOfMonth(), new Date(2012, 1), 'Date#beginningOfMonth | February 29, 2012');
-  dateEqual(new Date(d).beginningOfYear(), new Date(2012, 0), 'Date#beginningOfYear | February 29, 2012');
-
-  dateEqual(new Date(d).endOfDay(), new Date(2012, 1, 29, 23, 59, 59, 999), 'Date#endOfDay | February 29, 2012');
-  dateEqual(new Date(d).endOfWeek(), new Date(2012, 2, 3, 23, 59, 59, 999), 'Date#endOfWeek | February 29, 2012');
-  dateEqual(new Date(d).endOfMonth(), new Date(2012, 1, 29, 23, 59, 59, 999), 'Date#endOfMonth | February 29, 2012');
-  dateEqual(new Date(d).endOfYear(), new Date(2012, 11, 31, 23, 59, 59, 999), 'Date#endOfYear | February 29, 2012');
-
-  dateEqual(new Date(d).beginningOfDay(true), new Date(2012, 1, 29), 'Date#beginningOfDay | reset if true | February 29, 2012');
-  dateEqual(new Date(d).beginningOfWeek(true), new Date(2012, 1, 26), 'Date#beginningOfWeek | reset if true | February 29, 2012');
-  dateEqual(new Date(d).beginningOfMonth(true), new Date(2012, 1), 'Date#beginningOfMonth | reset if true | February 29, 2012');
-  dateEqual(new Date(d).beginningOfYear(true), new Date(2012, 0), 'Date#beginningOfYear | reset if true | February 29, 2012');
-
-  dateEqual(new Date(d).endOfDay(true), new Date(2012, 1, 29, 23, 59, 59, 999), 'Date#endOfDay | reset if true | February 29, 2012');
-  dateEqual(new Date(d).endOfWeek(true), new Date(2012, 2, 3, 23, 59, 59, 999), 'Date#endOfWeek | reset if true | February 29, 2012');
-  dateEqual(new Date(d).endOfMonth(true), new Date(2012, 1, 29, 23, 59, 59, 999), 'Date#endOfMonth | reset if true | February 29, 2012');
-  dateEqual(new Date(d).endOfYear(true), new Date(2012, 11, 31, 23, 59, 59, 999), 'Date#endOfYear | reset if true | February 29, 2012');
-
-
-  d = Date.utc.create('January 1, 2010 02:00:00', 'en').utc(true);
-
-  dateEqual(d.clone().beginningOfDay(), new Date(Date.UTC(2010, 0)), 'Date#beginningOfDay | utc');
-  dateEqual(d.clone().beginningOfWeek(), new Date(Date.UTC(2009, 11, 27)), 'Date#beginningOfWeek | utc');
-  dateEqual(d.clone().beginningOfMonth(), new Date(Date.UTC(2010, 0)), 'Date#beginningOfMonth | utc');
-  dateEqual(d.clone().beginningOfYear(), new Date(Date.UTC(2010, 0)), 'Date#beginningOfYear | utc');
-
-  dateEqual(d.clone().endOfDay(), new Date(Date.UTC(2010, 0, 1, 23, 59, 59, 999)), 'Date#endOfDay | utc');
-  dateEqual(d.clone().endOfWeek(), new Date(Date.UTC(2010, 0, 2, 23, 59, 59, 999)), 'Date#endOfWeek | utc');
-  dateEqual(d.clone().endOfMonth(), new Date(Date.UTC(2010, 0, 31, 23, 59, 59, 999)), 'Date#endOfMonth | utc');
-  dateEqual(d.clone().endOfYear(), new Date(Date.UTC(2010, 11, 31, 23, 59, 59, 999)), 'Date#endOfYear | utc');
-
-
-
-  d = new Date('February 29, 2012 22:15:42');
-
-
-  dateEqual(new Date(d).addMilliseconds(12), new Date(2012, 1, 29, 22, 15, 42, 12), 'Date#addMilliseconds | 12');
-  dateEqual(new Date(d).addSeconds(12), new Date(2012, 1, 29, 22, 15, 54), 'Date#addSeconds | 12');
-  dateEqual(new Date(d).addMinutes(12), new Date(2012, 1, 29, 22, 27, 42), 'Date#addMinutes | 12');
-  dateEqual(new Date(d).addHours(12), new Date(2012, 2, 1, 10, 15, 42), 'Date#addHours | 12');
-  dateEqual(new Date(d).addDays(12), new Date(2012, 2, 12, 22, 15, 42), 'Date#addDays | 12');
-  dateEqual(new Date(d).addWeeks(12), new Date(2012, 4, 23, 22, 15, 42), 'Date#addWeeks | 12');
-  dateEqual(new Date(d).addMonths(12), new Date(2013, 1, 28, 22, 15, 42), 'Date#addMonths | 12');
-  dateEqual(new Date(d).addYears(12), new Date(2024, 1, 29, 22, 15, 42), 'Date#addYears | 12');
-
-
-  dateEqual(new Date(d).addMilliseconds(-12), new Date(2012, 1, 29, 22, 15, 41, 988), 'Date#addMilliseconds | negative | 12');
-  dateEqual(new Date(d).addSeconds(-12), new Date(2012, 1, 29, 22, 15, 30), 'Date#addSeconds | negative | 12');
-  dateEqual(new Date(d).addMinutes(-12), new Date(2012, 1, 29, 22, 3, 42), 'Date#addMinutes | negative | 12');
-  dateEqual(new Date(d).addHours(-12), new Date(2012, 1, 29, 10, 15, 42), 'Date#addHours | negative | 12');
-  dateEqual(new Date(d).addDays(-12), new Date(2012, 1, 17, 22, 15, 42), 'Date#addDays | negative | 12');
-  dateEqual(new Date(d).addWeeks(-12), new Date(2011, 11, 7, 22, 15, 42), 'Date#addWeeks | negative | 12');
-  dateEqual(new Date(d).addMonths(-12), new Date(2011, 1, 28, 22, 15, 42), 'Date#addMonths | negative | 12');
-  dateEqual(new Date(d).addYears(-12), new Date(2000, 1, 29, 22, 15, 42), 'Date#addYears | negative | 12');
-
-
-  dateEqual(Date.utc.create('February 29, 2012 22:15:42', 'en'), new Date(Date.UTC(2012, 1, 29, 22, 15, 42)), 'Date#create | utc');
-  dateEqual(Date.utc.create('2012-05-31', 'en'), new Date(Date.UTC(2012, 4, 31)), 'Date#create | utc | 2012-05-31');
-  dateEqual(Date.utc.create('1998-02-23 11:54:32', 'en'), new Date(Date.UTC(1998,1,23,11,54,32)), 'Date#create | utc | enumerated params');
-  dateEqual(Date.utc.create({ year: 1998, month: 1, day: 23, hour: 11 }, 'en'), new Date(Date.UTC(1998,1,23,11)), 'Date#create | object');
-  dateEqual(Date.utc.create('08-25-1978 11:42:32.488am', 'en'), new Date(Date.UTC(1978, 7, 25, 11, 42, 32, 488)), 'Date#create | full with ms');
-  dateEqual(Date.utc.create('1994-11-05T13:15:30Z', 'en'), new Date(Date.UTC(1994, 10, 5, 13, 15, 30)), 'Date#create | utc | "Z" is still utc');
-  dateEqual(Date.utc.create('two days ago', 'en'), Date.create('two days ago'), 'Date#create | utc | relative dates are not UTC');
-
-
-
-  d = new Date('February 29, 2012 22:15:42');
-
-  var yearZero = new Date(2000, 0);
-  yearZero.setFullYear(0);
-
-  dateEqual(d.clone().reset(),               new Date(2012, 1, 29), 'Date#resetTime | Clears time');
-
-  dateEqual(d.clone().reset('years'),        yearZero, 'Date#reset | years');
-  dateEqual(d.clone().reset('months'),       new Date(2012, 0), 'Date#reset | months');
-  dateEqual(d.clone().reset('weeks'),        new Date(2012, 0, 4), 'Date#reset | weeks | ISO8601');
-  dateEqual(d.clone().reset('days'),         new Date(2012, 1, 1), 'Date#reset | days');
-  dateEqual(d.clone().reset('hours'),        new Date(2012, 1, 29), 'Date#reset | hours');
-  dateEqual(d.clone().reset('minutes'),      new Date(2012, 1, 29, 22), 'Date#reset | minutes');
-  dateEqual(d.clone().reset('seconds'),      new Date(2012, 1, 29, 22, 15), 'Date#reset | seconds');
-  dateEqual(d.clone().reset('milliseconds'), new Date(2012, 1, 29, 22, 15, 42), 'Date#reset | milliseconds');
-
-  dateEqual(d.clone().reset('year'),        yearZero, 'Date#reset | year');
-  dateEqual(d.clone().reset('month'),       new Date(2012, 0), 'Date#reset | month');
-  dateEqual(d.clone().reset('week'),        new Date(2012, 0, 4), 'Date#reset | weeks | ISO8601');
-  dateEqual(d.clone().reset('day'),         new Date(2012, 1, 1), 'Date#reset | day');
-  dateEqual(d.clone().reset('hour'),        new Date(2012, 1, 29), 'Date#reset | hour');
-  dateEqual(d.clone().reset('minute'),      new Date(2012, 1, 29, 22), 'Date#reset | minute');
-  dateEqual(d.clone().reset('second'),      new Date(2012, 1, 29, 22, 15), 'Date#reset | second');
-  dateEqual(d.clone().reset('millisecond'), new Date(2012, 1, 29, 22, 15, 42), 'Date#reset | millisecond');
-
-  dateEqual(d.clone().reset('date'),         new Date(2012, 1, 1), 'Date#reset | date');
-  dateEqual(d.clone().reset('flegh'), new Date(2012, 1, 29, 22, 15, 42), 'Date#reset | an unknown string will do nothing');
-
-  dateEqual(d.clone().addDays(5, true), new Date(2012, 2, 5), 'Date#addDays | can also reset the time');
-
-
-  equal(now.isYesterday(), false, 'Date#isYesterday');
-  equal(now.isToday(), true, 'Date#isToday');
-  equal(now.isTomorrow(), false, 'Date#isTomorrow');
-  equal(now.isWeekday(), now.getDay() !== 0 && now.getDay() !== 6, 'Date#isWeekday');
-  equal(now.isWeekend(), now.getDay() === 0 || now.getDay() === 6, 'Date#isWeekend');
-  equal(now.isFuture(), false, 'Date#isFuture');
-  equal(now.isPast(), true, 'Date#isPast');
-
-
-  d = new Date('February 29, 2008 22:15:42');
-
-  equal(d.isYesterday(), false, 'Date#isYesterday | February 29, 2008');
-  equal(d.isToday(), false, 'Date#isToday | February 29, 2008');
-  equal(d.isTomorrow(), false, 'Date#isTomorrow | February 29, 2008');
-  equal(d.isWeekday(), true, 'Date#isWeekday | February 29, 2008');
-  equal(d.isWeekend(), false, 'Date#isWeekend | February 29, 2008');
-  equal(d.isFuture(), false, 'Date#isFuture | February 29, 2008');
-  equal(d.isPast(), true, 'Date#isPast | February 29, 2008');
-
-
-  d.setFullYear(thisYear + 2);
-
-  equal(d.isYesterday(), false, 'Date#isYesterday | 2 years from now');
-  equal(d.isToday(), false, 'Date#isToday | 2 years from now');
-  equal(d.isTomorrow(), false, 'Date#isTomorrow | 2 years from now');
-  equal(d.isFuture(), true, 'Date#isFuture | 2 years from now');
-  equal(d.isPast(), false, 'Date#isPast | 2 years from now');
-
-
-
-
-  equal(new Date().isLastWeek(), false, 'Date#isLastWeek | now');
-  equal(new Date().isThisWeek(), true, 'Date#isThisWeek | now');
-  equal(new Date().isNextWeek(), false, 'Date#isNextWeek | now');
-  equal(new Date().isLastMonth(), false, 'Date#isLastMonth | now');
-  equal(new Date().isThisMonth(), true, 'Date#isThisMonth | now');
-  equal(new Date().isNextMonth(), false, 'Date#isNextMonth | now');
-  equal(new Date().isLastYear(), false, 'Date#isLastYear | now');
-  equal(new Date().isThisYear(), true, 'Date#isThisYear | now');
-  equal(new Date().isNextYear(), false, 'Date#isNextYear | now');
-
-  equal(getRelativeDate(null, null, -7).isLastWeek(), true, 'Date#isLastWeek | last week');
-  equal(getRelativeDate(null, null, -7).isThisWeek(), false, 'Date#isThisWeek | last week');
-  equal(getRelativeDate(null, null, -7).isNextWeek(), false, 'Date#isNextWeek | last week');
-
-  equal(getRelativeDate(null, null, 7).isLastWeek(), false, 'Date#isLastWeek | next week');
-  equal(getRelativeDate(null, null, 7).isThisWeek(), false, 'Date#isThisWeek | next week');
-  equal(getRelativeDate(null, null, 7).isNextWeek(), true, 'Date#isNextWeek | next week');
-
-  equal(getDateWithWeekdayAndOffset(0).isLastWeek(), false, 'Date#isLastWeek | this week sunday is last week');
-  equal(getDateWithWeekdayAndOffset(0).isThisWeek(), true, 'Date#isThisWeek | this week sunday is this week');
-  equal(getDateWithWeekdayAndOffset(0).isNextWeek(), false, 'Date#isNextWeek | this week sunday is next week');
-
-  equal(getDateWithWeekdayAndOffset(5).isLastWeek(), false, 'Date#isLastWeek | friday is last week');
-  equal(getDateWithWeekdayAndOffset(5).isThisWeek(), true, 'Date#isThisWeek | friday is this week');
-  equal(getDateWithWeekdayAndOffset(5).isNextWeek(), false, 'Date#isNextWeek | friday is next week');
-
-  equal(getDateWithWeekdayAndOffset(6).isLastWeek(), false, 'Date#isLastWeek | satuday is last week');
-  equal(getDateWithWeekdayAndOffset(6).isThisWeek(), true, 'Date#isThisWeek | satuday is this week');
-  equal(getDateWithWeekdayAndOffset(6).isNextWeek(), false, 'Date#isNextWeek | satuday is next week');
-
-  equal(Date.create('last sunday').isLastWeek(), true, 'Date#isLastWeek | last sunday');
-  equal(Date.create('last sunday').isThisWeek(), false, 'Date#isThisWeek | last sunday');
-  equal(Date.create('last sunday').isNextWeek(), false, 'Date#isNextWeek | last sunday');
-
-  equal(Date.create('next sunday').isLastWeek(), false, 'Date#isLastWeek | next sunday');
-  equal(Date.create('next sunday').isThisWeek(), false, 'Date#isThisWeek | next sunday');
-  equal(Date.create('next sunday').isNextWeek(), true, 'Date#isNextWeek | next sunday');
-
-  equal(Date.create('last monday').isLastWeek(), true, 'Date#isLastWeek | last monday');
-  equal(Date.create('last monday').isThisWeek(), false, 'Date#isThisWeek | last monday');
-  equal(Date.create('last monday').isNextWeek(), false, 'Date#isNextWeek | last monday');
-
-  equal(Date.create('next monday').isLastWeek(), false, 'Date#isLastWeek | next monday');
-  equal(Date.create('next monday').isThisWeek(), false, 'Date#isThisWeek | next monday');
-  equal(Date.create('next monday').isNextWeek(), true, 'Date#isNextWeek | next monday');
-
-  equal(Date.create('last friday').isLastWeek(), true, 'Date#isLastWeek | last friday');
-  equal(Date.create('last friday').isThisWeek(), false, 'Date#isThisWeek | last friday');
-  equal(Date.create('last friday').isNextWeek(), false, 'Date#isNextWeek | last friday');
-
-  equal(Date.create('next friday').isLastWeek(), false, 'Date#isLastWeek | next friday');
-  equal(Date.create('next friday').isThisWeek(), false, 'Date#isThisWeek | next friday');
-  equal(Date.create('next friday').isNextWeek(), true, 'Date#isNextWeek | next friday');
-
-  equal(Date.create('last saturday').isLastWeek(), true, 'Date#isLastWeek | last saturday');
-  equal(Date.create('last saturday').isThisWeek(), false, 'Date#isThisWeek | last saturday');
-  equal(Date.create('last saturday').isNextWeek(), false, 'Date#isNextWeek | last saturday');
-
-  equal(Date.create('next saturday').isLastWeek(), false, 'Date#isLastWeek | next saturday');
-  equal(Date.create('next saturday').isThisWeek(), false, 'Date#isThisWeek | next saturday');
-  equal(Date.create('next saturday').isNextWeek(), true, 'Date#isNextWeek | next saturday');
-
-  equal(Date.create('the beginning of the week').isLastWeek(), false, 'Date#isLastWeek | the beginning of the week');
-  equal(Date.create('the beginning of the week').isThisWeek(), true, 'Date#isThisWeek | the beginning of the week');
-  equal(Date.create('the beginning of the week').isNextWeek(), false, 'Date#isNextWeek | the beginning of the week');
-
-  equal(Date.create('the beginning of the week').addMinutes(-1).isLastWeek(), true, 'Date#isLastWeek | the beginning of the week - 1 minute');
-  equal(Date.create('the beginning of the week').addMinutes(-1).isThisWeek(), false, 'Date#isThisWeek | the beginning of the week - 1 minute');
-  equal(Date.create('the beginning of the week').addMinutes(-1).isNextWeek(), false, 'Date#isNextWeek | the beginning of the week - 1 minute');
-
-  equal(Date.create('the end of the week').isLastWeek(), false, 'Date#isLastWeek | the end of the week');
-  equal(Date.create('the end of the week').isThisWeek(), true, 'Date#isThisWeek | the end of the week');
-  equal(Date.create('the end of the week').isNextWeek(), false, 'Date#isNextWeek | the end of the week');
-
-  equal(Date.create('the end of the week').addMinutes(1).isLastWeek(), false, 'Date#isLastWeek | the end of the week + 1 minute');
-  equal(Date.create('the end of the week').addMinutes(1).isThisWeek(), false, 'Date#isThisWeek | the end of the week + 1 minute');
-  equal(Date.create('the end of the week').addMinutes(1).isNextWeek(), true, 'Date#isNextWeek | the end of the week + 1 minute');
-
-
-  equal(Date.create('the beginning of last week').isLastWeek(), true, 'Date#isLastWeek | the beginning of last week');
-  equal(Date.create('the beginning of last week').isThisWeek(), false, 'Date#isThisWeek | the beginning of last week');
-  equal(Date.create('the beginning of last week').isNextWeek(), false, 'Date#isNextWeek | the beginning of last week');
-
-  equal(Date.create('the beginning of last week').addMinutes(-1).isLastWeek(), false, 'Date#isLastWeek | the beginning of last week - 1 minute');
-  equal(Date.create('the beginning of last week').addMinutes(-1).isThisWeek(), false, 'Date#isThisWeek | the beginning of last week - 1 minute');
-  equal(Date.create('the beginning of last week').addMinutes(-1).isNextWeek(), false, 'Date#isNextWeek | the beginning of last week - 1 minute');
-
-  equal(Date.create('the end of next week').isLastWeek(), false, 'Date#isLastWeek | the end of next week');
-  equal(Date.create('the end of next week').isThisWeek(), false, 'Date#isThisWeek | the end of next week');
-  equal(Date.create('the end of next week').isNextWeek(), true, 'Date#isNextWeek | the end of next week');
-
-  equal(Date.create('the end of next week').addMinutes(1).isLastWeek(), false, 'Date#isLastWeek | the end of next week + 1 minute');
-  equal(Date.create('the end of next week').addMinutes(1).isThisWeek(), false, 'Date#isThisWeek | the end of next week + 1 minute');
-  equal(Date.create('the end of next week').addMinutes(1).isNextWeek(), false, 'Date#isNextWeek | the end of next week + 1 minute');
-
-  equal(Date.create('the end of last week').isLastWeek(), true, 'Date#isLastWeek | the end of last week');
-  equal(Date.create('the end of last week').isThisWeek(), false, 'Date#isThisWeek | the end of last week');
-  equal(Date.create('the end of last week').isNextWeek(), false, 'Date#isNextWeek | the end of last week');
-
-  equal(Date.create('the end of last week').addMinutes(1).isLastWeek(), false, 'Date#isLastWeek | the end of last week + 1 minute');
-  equal(Date.create('the end of last week').addMinutes(1).isThisWeek(), true, 'Date#isThisWeek | the end of last week + 1 minute');
-  equal(Date.create('the end of last week').addMinutes(1).isNextWeek(), false, 'Date#isNextWeek | the end of last week + 1 minute');
-
-  equal(Date.create('the beginning of next week').isLastWeek(), false, 'Date#isLastWeek | the beginning of next week');
-  equal(Date.create('the beginning of next week').isThisWeek(), false, 'Date#isThisWeek | the beginning of next week');
-  equal(Date.create('the beginning of next week').isNextWeek(), true, 'Date#isNextWeek | the beginning of next week');
-
-  equal(Date.create('the beginning of next week').addMinutes(-1).isLastWeek(), false, 'Date#isLastWeek | the beginning of next week - 1 minute');
-  equal(Date.create('the beginning of next week').addMinutes(-1).isThisWeek(), true, 'Date#isThisWeek | the beginning of next week - 1 minute');
-  equal(Date.create('the beginning of next week').addMinutes(-1).isNextWeek(), false, 'Date#isNextWeek | the beginning of next week - 1 minute');
-
-
-
-
-  equal(new Date(2001, 11, 28).isSunday(), false, 'Date#isSunday');
-  equal(new Date(2001, 11, 28).isMonday(), false, 'Date#isMonday');
-  equal(new Date(2001, 11, 28).isTuesday(), false, 'Date#isTuesday');
-  equal(new Date(2001, 11, 28).isWednesday(), false, 'Date#isWednesday');
-  equal(new Date(2001, 11, 28).isThursday(), false, 'Date#isThursday');
-  equal(new Date(2001, 11, 28).isFriday(), true, 'Date#isFriday');
-  equal(new Date(2001, 11, 28).isSaturday(), false, 'Date#isSaturday');
-
-  equal(new Date(2001, 11, 28).isJanuary(), false, 'Date#isJanuary');
-  equal(new Date(2001, 11, 28).isFebruary(), false, 'Date#isFebruary');
-  equal(new Date(2001, 11, 28).isMarch(), false, 'Date#isMarch');
-  equal(new Date(2001, 11, 28).isApril(), false, 'Date#isApril');
-  equal(new Date(2001, 11, 28).isMay(), false, 'Date#isMay');
-  equal(new Date(2001, 11, 28).isJune(), false, 'Date#isJune');
-  equal(new Date(2001, 11, 28).isJuly(), false, 'Date#isJuly');
-  equal(new Date(2001, 11, 28).isAugust(), false, 'Date#isAugust');
-  equal(new Date(2001, 11, 28).isSeptember(), false, 'Date#isSeptember');
-  equal(new Date(2001, 11, 28).isOctober(), false, 'Date#isOctober');
-  equal(new Date(2001, 11, 28).isNovember(), false, 'Date#isNovember');
-  equal(new Date(2001, 11, 28).isDecember(), true, 'Date#isDecember');
-
-
-
-
-  equal(getRelativeDate(null, -1).isLastWeek(), false, 'Date#isLastWeek | last month');
-  equal(getRelativeDate(null, -1).isThisWeek(), false, 'Date#isThisWeek | last month');
-  equal(getRelativeDate(null, -1).isNextWeek(), false, 'Date#isNextWeek | last month');
-  equal(getRelativeDate(null, -1).isLastMonth(), true, 'Date#isLastMonth | last month');
-  equal(getRelativeDate(null, -1).isThisMonth(), false, 'Date#isThisMonth | last month');
-  equal(getRelativeDate(null, -1).isNextMonth(), false, 'Date#isNextMonth | last month');
-
-  equal(getRelativeDate(null, 1).isLastWeek(), false, 'Date#isLastWeek | next month');
-  equal(getRelativeDate(null, 1).isThisWeek(), false, 'Date#isThisWeek | next month');
-  equal(getRelativeDate(null, 1).isNextWeek(), false, 'Date#isNextWeek | next month');
-  equal(getRelativeDate(null, 1).isLastMonth(), false, 'Date#isLastMonth | next month');
-  equal(getRelativeDate(null, 1).isThisMonth(), false, 'Date#isThisMonth | next month');
-  equal(getRelativeDate(null, 1).isNextMonth(), true, 'Date#isNextMonth | next month');
-
-
-  equal(getRelativeDate(-1).isLastWeek(), false, 'Date#isLastWeek | last year');
-  equal(getRelativeDate(-1).isThisWeek(), false, 'Date#isThisWeek | last year');
-  equal(getRelativeDate(-1).isNextWeek(), false, 'Date#isNextWeek | last year');
-  equal(getRelativeDate(-1).isLastMonth(), false, 'Date#isLastMonth | last year');
-  equal(getRelativeDate(-1).isThisMonth(), false, 'Date#isThisMonth | last year');
-  equal(getRelativeDate(-1).isNextMonth(), false, 'Date#isNextMonth | last year');
-  equal(getRelativeDate(-1).isLastYear(), true, 'Date#isLastYear | last year');
-  equal(getRelativeDate(-1).isThisYear(), false, 'Date#isThisYear | last year');
-  equal(getRelativeDate(-1).isNextYear(), false, 'Date#isNextYear | last year');
-
-  equal(getRelativeDate(1).isLastWeek(), false, 'Date#isLastWeek | next year');
-  equal(getRelativeDate(1).isThisWeek(), false, 'Date#isThisWeek | next year');
-  equal(getRelativeDate(1).isNextWeek(), false, 'Date#isNextWeek | next year');
-  equal(getRelativeDate(1).isLastMonth(), false, 'Date#isLastMonth | next year');
-  equal(getRelativeDate(1).isThisMonth(), false, 'Date#isThisMonth | next year');
-  equal(getRelativeDate(1).isNextMonth(), false, 'Date#isNextMonth | next year');
-  equal(getRelativeDate(1).isLastYear(), false, 'Date#isLastYear | next year');
-  equal(getRelativeDate(1).isThisYear(), false, 'Date#isThisYear | next year');
-  equal(getRelativeDate(1).isNextYear(), true, 'Date#isNextYear | next year');
 
 
 
