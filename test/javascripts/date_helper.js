@@ -7,6 +7,11 @@ dateRun = function(d, name, arguments) {
   return run(Sugar.Date.clone(d), name, arguments);
 }
 
+dateTest = function(d) {
+  var args = Array.prototype.slice.call(arguments, 1);
+  return test.apply(null, [Sugar.Date.clone(d)].concat(args));
+}
+
 dateEqual = function(a, b, message) {
   var buffer = 50; // Number of milliseconds of "play" to make sure these tests pass.
   if(typeof b == 'number') {

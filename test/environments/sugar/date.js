@@ -645,6 +645,8 @@ package('Date', function () {
     d = run(new Date(2010, 0, 31), 'advance', [{ month: 1 }]);
     dateEqual(d, new Date(2010,1,28), 'reset dates will not accidentally traverse into a different month');
 
+    dateEqual(run(new Date, 'set', [0]), new Date(0), 'handles timestamps');
+
   });
 
   group('Get/Set Weekday', function() {
@@ -801,6 +803,11 @@ package('Date', function () {
 
     test(new Date(2014, 3, 11), ['0 days'], new Date(2014, 3, 11), 'advancing 0 days should be a noop');
     test(new Date(2014, 3, 11), ['-1 days'], new Date(2014, 3, 10), 'advancing -1 days');
+
+    var d = new Date();
+    var dayInMs = 24 * 60 * 60 * 1000;
+    test(d, [dayInMs], new Date(d.getTime() + dayInMs), 'can advance milliseconds');
+
   });
 
   method('rewind', function() {
@@ -834,6 +841,10 @@ package('Date', function () {
     dateEqual(d, new Date(2010, 7, 25, 11, 45, 20), 'negative weeks supported');
 
     dateEqual(run(new Date(), 'rewind', [{ years: 1 }]), testCreateDate('one year ago'), 'rewinding 1 year');
+
+    var d = new Date();
+    var dayInMs = 24 * 60 * 60 * 1000;
+    test(d, [dayInMs], new Date(d.getTime() - dayInMs), 'can rewind milliseconds');
 
   });
 
@@ -1533,27 +1544,28 @@ package('Date', function () {
     var yearZero = new Date(2000, 0);
     yearZero.setFullYear(0);
 
-    dateEqual(dateRun(d, 'reset'),                   new Date(2012, 1, 29), 'Clears time');
-    dateEqual(dateRun(d, 'reset', ['years']),        yearZero, 'years');
-    dateEqual(dateRun(d, 'reset', ['months']),       new Date(2012, 0), 'months');
-    dateEqual(dateRun(d, 'reset', ['weeks']),        new Date(2012, 0, 4), 'weeks | ISO8601');
-    dateEqual(dateRun(d, 'reset', ['days']),         new Date(2012, 1, 1), 'days');
-    dateEqual(dateRun(d, 'reset', ['hours']),        new Date(2012, 1, 29), 'hours');
-    dateEqual(dateRun(d, 'reset', ['minutes']),      new Date(2012, 1, 29, 22), 'minutes');
-    dateEqual(dateRun(d, 'reset', ['seconds']),      new Date(2012, 1, 29, 22, 15), 'seconds');
-    dateEqual(dateRun(d, 'reset', ['milliseconds']), new Date(2012, 1, 29, 22, 15, 42), 'milliseconds');
+    dateTest(d, new Date(2012, 1, 29), 'Clears time');
 
-    dateEqual(dateRun(d, 'reset', ['year']),        yearZero, 'year');
-    dateEqual(dateRun(d, 'reset', ['month']),       new Date(2012, 0), 'month');
-    dateEqual(dateRun(d, 'reset', ['week']),        new Date(2012, 0, 4), 'weeks | ISO8601');
-    dateEqual(dateRun(d, 'reset', ['day']),         new Date(2012, 1, 1), 'day');
-    dateEqual(dateRun(d, 'reset', ['hour']),        new Date(2012, 1, 29), 'hour');
-    dateEqual(dateRun(d, 'reset', ['minute']),      new Date(2012, 1, 29, 22), 'minute');
-    dateEqual(dateRun(d, 'reset', ['second']),      new Date(2012, 1, 29, 22, 15), 'second');
-    dateEqual(dateRun(d, 'reset', ['millisecond']), new Date(2012, 1, 29, 22, 15, 42), 'millisecond');
+    dateTest(d, ['years'],        yearZero, 'years');
+    dateTest(d, ['months'],       new Date(2012, 0), 'months');
+    dateTest(d, ['weeks'],        new Date(2012, 0, 4), 'weeks | ISO8601');
+    dateTest(d, ['days'],         new Date(2012, 1, 1), 'days');
+    dateTest(d, ['hours'],        new Date(2012, 1, 29), 'hours');
+    dateTest(d, ['minutes'],      new Date(2012, 1, 29, 22), 'minutes');
+    dateTest(d, ['seconds'],      new Date(2012, 1, 29, 22, 15), 'seconds');
+    dateTest(d, ['milliseconds'], new Date(2012, 1, 29, 22, 15, 42), 'milliseconds');
 
-    dateEqual(dateRun(d, 'reset', ['date']),         new Date(2012, 1, 1), 'date');
-    dateEqual(dateRun(d, 'reset', ['flegh']), new Date(2012, 1, 29, 22, 15, 42), 'an unknown string will do nothing');
+    dateTest(d, ['year'],        yearZero, 'year');
+    dateTest(d, ['month'],       new Date(2012, 0), 'month');
+    dateTest(d, ['week'],        new Date(2012, 0, 4), 'weeks | ISO8601');
+    dateTest(d, ['day'],         new Date(2012, 1, 1), 'day');
+    dateTest(d, ['hour'],        new Date(2012, 1, 29), 'hour');
+    dateTest(d, ['minute'],      new Date(2012, 1, 29, 22), 'minute');
+    dateTest(d, ['second'],      new Date(2012, 1, 29, 22, 15), 'second');
+    dateTest(d, ['millisecond'], new Date(2012, 1, 29, 22, 15, 42), 'millisecond');
+
+    dateTest(d, ['date'],  new Date(2012, 1, 1), 'date');
+    dateTest(d, ['flegh'], new Date(2012, 1, 29, 22, 15, 42), 'an unknown string will do nothing');
 
     dateEqual(dateRun(d, 'addDays', [5, true]), new Date(2012, 2, 5), 'can also reset the time');
   });
@@ -1770,6 +1782,8 @@ package('Date', function () {
     equal(run(getRelativeDate(1), 'isThisYear'), false, 'isThisYear | next year');
     equal(run(getRelativeDate(1), 'isNextYear'), true, 'isNextYear | next year');
 
+    equal(run(run(new Date, 'beginningOfWeek'), 'isLastWeek'), false, 'the beginning of this week is not last week');
+
   });
 
   group('isDateOfWeek', function() {
@@ -1797,224 +1811,222 @@ package('Date', function () {
 
   });
 
+
+  method('isAfter', function() {
+
+    dateTest(new Date(2001,1,23), [new Date(2000,1,23)], true, 'January 23, 2000');
+    dateTest(new Date(2001,1,23), [new Date(2002,1,23)], false, 'January 23, 2002');
+
+    dateTest(new Date(1999,0), [new Date(1998)], true, '1999');
+    dateTest(new Date(1998,2), [new Date(1998,1)], true, 'March, 1998');
+    dateTest(new Date(1998,1,24), [new Date(1998,1,23)], true, 'February 24, 1998');
+    dateTest(new Date(1998,1,23,12), [new Date(1998,1,23,11)], true, 'February 23, 1998 12pm');
+    dateTest(new Date(1998,1,23,11,55), [new Date(1998,1,23,11,54)], true, 'February 23, 1998 11:55am');
+    dateTest(new Date(1998,1,23,11,54,33), [new Date(1998,1,23,11,54,32)], true, 'February 23, 1998 11:54:33am');
+    dateTest(new Date(1998,1,23,11,54,32,455), [new Date(1998,1,23,11,54,32,454)], true, 'February 23, 1998 11:54:32.455am');
+
+    dateTest(new Date(1999,1), [{ year: 1998 }], true, 'object | 1999');
+    dateTest(new Date(1998,2), [{ year: 1998, month: 1 }], true, 'object | March, 1998');
+    dateTest(new Date(1998,1,24), [{ year: 1998, month: 1, day: 23 }], true, 'object | February 24, 1998');
+    dateTest(new Date(1998,1,23,12), [{ year: 1998, month: 1, day: 23, hour: 11 }], true, 'object | February 23, 1998 12pm');
+    dateTest(new Date(1998,1,23,11,55), [{ year: 1998, month: 1, day: 23, hour: 11, minutes: 54 }], true, 'object | February 23, 1998 11:55am');
+    dateTest(new Date(1998,1,23,11,54,33), [{ year: 1998, month: 1, day: 23, hour: 11, minutes: 54, seconds: 32 }], true, 'object | February 23, 1998 11:54:33am');
+    dateTest(new Date(1998,1,23,11,54,32,455), [{ year: 1998, month: 1, day: 23, hour: 11, minutes: 54, seconds: 32, milliseconds: 454 }], true, 'object | February 23, 1998 11:54:32.455am');
+
+    dateTest(new Date(1999,1), ['1998'], true, 'string | 1998');
+    dateTest(new Date(1998,2), ['February, 1998'], true, 'string | February, 1998');
+    dateTest(new Date(1998,1,24), ['February 23, 1998'], true, 'string | February 23, 1998');
+    dateTest(new Date(1998,1,23,12), ['February 23, 1998 11am'], true, 'string | February 23, 1998 11pm');
+    dateTest(new Date(1998,1,23,11,55), ['February 23, 1998 11:54am'], true, 'string | February 23, 1998 11:54am');
+    dateTest(new Date(1998,1,23,11,54,33), ['February 23, 1998 11:54:32am'], true, 'string | February 23, 1998 11:54:32am');
+    dateTest(new Date(1998,1,23,11,54,32,455), ['February 23, 1998 11:54:32.454am'], true, 'string | February 23, 1998 11:54:32.454am');
+
+    dateTest(new Date(1999,5), ['1999'], true, 'June 1999 is after implied January 1999');
+    dateTest(getRelativeDate(1), ['tomorrow'], true, 'relative | next year');
+    dateTest(getRelativeDate(null, 1), ['tomorrow'], true, 'relative | next month');
+    dateTest(getRelativeDate(null, null, 1), ['tomorrow'], true, 'relative | tomorrow');
+
+    dateTest(getDateWithWeekdayAndOffset(0), ['monday'], false, 'relative | sunday');
+    dateTest(getDateWithWeekdayAndOffset(2), ['monday'], true, 'relative | tuesday');
+    dateTest(getDateWithWeekdayAndOffset(0,7), ['monday'], true, 'relative | next week sunday');
+    dateTest(getDateWithWeekdayAndOffset(0,-7), ['monday'], false, 'relative | last week sunday');
+    dateTest(getDateWithWeekdayAndOffset(0), ['the beginning of this week'], false, 'relative | the beginning of this week');
+    dateTest(getDateWithWeekdayAndOffset(0), ['the beginning of last week'], true, 'relative | the beginning of last week');
+    dateTest(getDateWithWeekdayAndOffset(0), ['the end of this week'], false, 'relative | the end of this week');
+
+    dateTest(new Date(2001,1,23), [new Date(2000,1,24), 24 * 60 * 60 * 1000], true, 'buffers work');
+    dateTest(new Date(1999,1), [{ year: 1999 }], true, 'February 1999 is after implied January 1999');
+    dateTest(new Date(1998,10), [{ year: 1999 }, 90 * 24 * 60 * 60 * 1000], true, 'November 1998 is after implied January 1999 with 90 days of margin');
+
+  });
+
+  method('isBefore', function() {
+
+    dateTest(new Date(2001,1,23), [new Date(2000,1,23)], false, 'January 23, 2000');
+    dateTest(new Date(2001,1,23), [new Date(2002,1,23)], true, 'January 23, 2002');
+
+    dateTest(new Date(1999,0), [new Date(1998)], false, '1999');
+    dateTest(new Date(1998,2), [new Date(1998,1)], false, 'March, 1998');
+    dateTest(new Date(1998,1,24), [new Date(1998,1,23)], false, 'February 24, 1998');
+    dateTest(new Date(1998,1,23,12), [new Date(1998,1,23,11)], false, 'February 23, 1998 12pm');
+    dateTest(new Date(1998,1,23,11,55), [new Date(1998,1,23,11,54)], false, 'February 23, 1998 11:55am');
+    dateTest(new Date(1998,1,23,11,54,33), [new Date(1998,1,23,11,54,34)], true, 'February 23, 1998 11:54:34am');
+    dateTest(new Date(1998,1,23,11,54,32,455), [new Date(1998,1,23,11,54,32,454)], false, 'February 23, 1998 11:54:32.455am');
+
+    dateTest(new Date(1999,1), [{ year: 1998 }], false, 'object | 1999');
+    dateTest(new Date(1998,2), [{ year: 1998, month: 1 }], false, 'object | March, 1998');
+    dateTest(new Date(1998,1,24), [{ year: 1998, month: 1, day: 23 }], false, 'object | February 24, 1998');
+    dateTest(new Date(1998,1,23,12), [{ year: 1998, month: 1, day: 23, hour: 11 }], false, 'object | February 23, 1998 12pm');
+    dateTest(new Date(1998,1,23,11,55), [{ year: 1998, month: 1, day: 23, hour: 11, minutes: 54 }], false, 'object | February 23, 1998 11:55am');
+    dateTest(new Date(1998,1,23,11,54,33), [{ year: 1998, month: 1, day: 23, hour: 11, minutes: 54, seconds: 32 }], false, 'object | February 23, 1998 11:54:33am');
+    dateTest(new Date(1998,1,23,11,54,32,455), [{ year: 1998, month: 1, day: 23, hour: 11, minutes: 54, seconds: 32, milliseconds: 454 }], false, 'object | February 23, 1998 11:54:32.455am');
+
+    dateTest(new Date(1997,11,31,23,59,59,999), [{ year: 1998 }], true, 'object | 1999');
+    dateTest(new Date(1998,0), [{ year: 1998, month: 1 }], true, 'object | March, 1998');
+    dateTest(new Date(1998,1,22), [{ year: 1998, month: 1, day: 23 }], true, 'object | February 24, 1998');
+    dateTest(new Date(1998,1,23,10), [{ year: 1998, month: 1, day: 23, hour: 11 }], true, 'object | February 23, 1998 12pm');
+    dateTest(new Date(1998,1,23,11,53), [{ year: 1998, month: 1, day: 23, hour: 11, minutes: 54 }], true, 'object | February 23, 1998 11:55am');
+    dateTest(new Date(1998,1,23,11,54,31), [{ year: 1998, month: 1, day: 23, hour: 11, minutes: 54, seconds: 32 }], true, 'object | February 23, 1998 11:54:33am');
+    dateTest(new Date(1998,1,23,11,54,32,453), [{ year: 1998, month: 1, day: 23, hour: 11, minutes: 54, seconds: 32, milliseconds: 454 }], true, 'object | February 23, 1998 11:54:32.455am');
+
+    dateTest(new Date(1999,1), ['1998'], false, 'string | 1998');
+    dateTest(new Date(1998,2), ['February, 1998'], false, 'string | February, 1998');
+    dateTest(new Date(1998,1,24), ['February 23, 1998'], false, 'string | February 23, 1998');
+    dateTest(new Date(1998,1,23,12), ['February 23, 1998 11am'], false, 'string | February 23, 1998 11pm');
+    dateTest(new Date(1998,1,23,11,55), ['February 23, 1998 11:54am'], false, 'string | February 23, 1998 11:54am');
+    dateTest(new Date(1998,1,23,11,54,33), ['February 23, 1998 11:54:32am'], false, 'string | February 23, 1998 11:54:32am');
+    dateTest(new Date(1998,1,23,11,54,32,455), ['February 23, 1998 11:54:32.454am'], false, 'string | February 23, 1998 11:54:32.454am');
+
+    dateTest(new Date(1999,5), ['1999'], false, 'June 1999 is not after 1999 in general');
+    dateTest(getRelativeDate(1), ['tomorrow'], false, 'relative | next year');
+    dateTest(getRelativeDate(null, 1), ['tomorrow'], false, 'relative | next month');
+    dateTest(getRelativeDate(null, null, 1), ['tomorrow'], false, 'relative | tomorrow');
+
+    dateTest(getDateWithWeekdayAndOffset(0), ['monday'], true, 'relative | sunday');
+    dateTest(getDateWithWeekdayAndOffset(2), ['monday'], false, 'relative | tuesday');
+    dateTest(getDateWithWeekdayAndOffset(0,7), ['monday'], false, 'relative | next week sunday');
+    dateTest(getDateWithWeekdayAndOffset(0,-7), ['monday'], true, 'relative | last week sunday');
+    dateTest(getDateWithWeekdayAndOffset(0), ['the beginning of this week'], false, 'relative | the beginning of this week');
+    dateTest(getDateWithWeekdayAndOffset(0), ['the beginning of last week'], false, 'relative | the beginning of last week');
+    dateTest(getDateWithWeekdayAndOffset(0), ['the end of this week'], true, 'relative | the end of this week');
+
+    dateTest(new Date(2001,1,25), [new Date(2001,1,24), 48 * 60 * 60 * 1000], true, 'buffers work');
+
+  });
+
+  method('isBetween', function() {
+
+    dateTest(new Date(2001,1,23), [new Date(2000,1,23), new Date(2002,1,23)], true, 'January 23, 2001 is between January 23, 2000 and January 23, 2002');
+    dateTest(new Date(2001,1,23), [new Date(2002,1,23), new Date(2000,1,23)], true, 'January 23, 2001 is between January 23, 2002 and January 23, 2000');
+    dateTest(new Date(1999,1,23), [new Date(2002,1,23), new Date(2000,1,23)], false, 'January 23, 1999 is between January 23, 2002 and January 23, 2000');
+    dateTest(new Date(2003,1,23), [new Date(2002,1,23), new Date(2000,1,23)], false, 'January 23, 2003 is between January 23, 2002 and January 23, 2000');
+
+    dateTest(new Date(1998,2), [new Date(1998,1), new Date(1998, 3)], true, 'February, 1998 - April, 1998');
+    dateTest(new Date(1998,2), [new Date(1998,1), new Date(1998, 0)], false, 'February, 1998 - January, 1998');
+    dateTest(new Date(1998,2), [new Date(1998,5), new Date(1998, 3)], false, 'June, 1998 - April, 1998');
+
+    dateTest(new Date(1998,1,23,11,54,32,455), [new Date(1998,1,23,11,54,32,454), new Date(1998,1,23,11,54,32,456)], true, 'February 23, 1998 11:54:32.454am - February 23, 1998 11:54:32:456am');
+    dateTest(new Date(1998,1,23,11,54,32,455), [new Date(1998,1,23,11,54,32,456), new Date(1998,1,23,11,54,32,454)], true, 'February 23, 1998 11:54:32.456am - February 23, 1998 11:54:32:454am');
+    dateTest(new Date(1998,1,23,11,54,32,455), [new Date(1998,1,23,11,54,32,454), new Date(1998,1,23,11,54,32,452)], false, 'February 23, 1998 11:54:32.454am - February 23, 1998 11:54:32:452am');
+    dateTest(new Date(1998,1,23,11,54,32,455), [new Date(1998,1,23,11,54,32,456), new Date(1998,1,23,11,54,32,458)], false, 'February 23, 1998 11:54:32.456am - February 23, 1998 11:54:32:458am');
+
+    dateTest(new Date(1998,1), [{ year: 1998 }, { year: 1999 }], true, 'object | Feb 1998 is between 1998 - 1999');
+    dateTest(new Date(1999,1), [{ year: 1998 }, { year: 1999 }], false, 'object | Feb 1999 is between 1998 - 1999');
+    dateTest(new Date(1999,1), [{ year: 1998 }, { year: 1997 }], false, 'object | Feb 1999 is between 1998 - 1997');
+    dateTest(new Date(1998,2), [{ year: 1998, month: 1 }, { year: 1998, month: 3 }], true, 'object | March, 1998 is between February, 1998 and April, 1998');
+    dateTest(new Date(1998,2), [{ year: 1998, month: 0 }, { year: 1998, month: 1 }], false, 'object | March, 1998 is between January, 1998 and February, 1998');
+
+    dateTest(new Date(1998,1), ['1998', '1999'], true, 'string | Feb 1998 is between 1998 - 1999');
+    dateTest(new Date(1999,1), ['1998', '1999'], false, 'string | Feb 1999 is between 1998 - 1999');
+    dateTest(new Date(1999,1), ['1998', '1997'], false, 'string | Feb 1998 is between 1998 - 1997');
+    dateTest(new Date(1998,2), ['February, 1998', 'April, 1998'], true, 'string | March, 1998 is between February, 1998 and April, 1998');
+    dateTest(new Date(1998,2), ['January, 1998', 'February, 1998'], false, 'string | March, 1998 is not between January, 1998 and February, 1998');
+
+    dateTest(new Date(1999,5), ['1998','1999'], false, 'Ambiguous periods are hard coded to the ms, there is no "implied specificity" as with Date#is');
+    dateTest(new Date(), ['yesterday','tomorrow'], true, 'relative | now is between today and tomorrow');
+    dateTest(getRelativeDate(1), ['yesterday','tomorrow'], false, 'relative | last year is between today and tomorrow');
+    dateTest(getRelativeDate(null, 1), ['yesterday','tomorrow'], false, 'relative | last month is between today and tomorrow');
+    dateTest(getRelativeDate(null, null, 0), ['today','tomorrow'], true, 'relative | right now is between today and tomorrow');
+    dateTest(getRelativeDate(null, null, 1), ['today','tomorrow'], false, 'relative | tomorrow is between today and tomorrow');
+
+    dateTest(getDateWithWeekdayAndOffset(0), ['monday', 'friday'], false, 'relative | sunday is between monday and friday');
+    dateTest(getDateWithWeekdayAndOffset(2), ['monday', 'friday'], true, 'relative | tuesday is between monday and friday');
+    dateTest(getDateWithWeekdayAndOffset(0,7), ['monday', 'friday'], false, 'relative | next week sunday is between monday and friday');
+    dateTest(getDateWithWeekdayAndOffset(0,-7), ['monday', 'friday'], false, 'relative | last week sunday is between monday and friday');
+    dateTest(getDateWithWeekdayAndOffset(0), ['the beginning of this week','the beginning of last week'], false, 'relative | sunday is between the beginning of this week and the beginning of last week');
+    dateTest(getDateWithWeekdayAndOffset(0), ['the beginning of this week','the beginning of next week'], false, 'relative | sunday is between the beginning of this week and the beginning of next week');
+    dateTest(getDateWithWeekdayAndOffset(0), ['the beginning of last week','the beginning of next week'], true, 'relative | sunday is between the beginning of last week and the beginning of next week');
+    dateTest(getDateWithWeekdayAndOffset(0), ['the beginning of last week','the end of this week'], true, 'relative | sunday is between the beginning of last week and the end of this week');
+
+
+    dateTest(testCreateDate('yesterday'), ['yesterday', 'today'], false, 'today is between yesterday and today');
+    dateTest(testCreateDate('yesterday'), ['yesterday', 'today', 5], true, 'today is between yesterday and today with a 5ms margin');
+    dateTest(testCreateDate('tomorrow'), ['today', 'tomorrow'], false, 'tomrrow is between today and tomorrow');
+    dateTest(testCreateDate('tomorrow'), ['today', 'tomorrow', 5], true, 'tomrrow is between today and tomorrow with a 5ms margin');
+
+  });
+
+  method('clone', function() {
+
+    var date1 = testCreateDate('July 4th, 1776');
+    var date2 = run(run(date1, 'clone'), 'beginningOfYear');
+
+    equal(date2.getMonth(), 0, 'Date#clone | cloned element is reset to January');
+    equal(date1.getMonth(), 6, 'Date#clone | source element is reset to unchanged');
+
+    var date1 = new Date('invalid');
+    var date2 = run(date1, 'clone');
+
+    equal(run(date1, 'isValid'), false, 'Date#clone | source element is invalid');
+    equal(run(date2, 'isValid'), false, 'Date#clone | cloned element is also invalid');
+
+  });
+
+
+  method('addFormat', function() {
+
+    run(Date, 'addFormat', ['(\\d+)\\^\\^(\\d+)%%(\\d+), but at the (beginning|end)', ['date','year','month','edge']]);
+    dateEqual(testCreateDate('25^^2008%%02, but at the end'), new Date(2008, 1, 25, 23, 59, 59, 999), 'Date.addFormat | make your own crazy format!');
+
+    run(Date, 'addFormat', ['on ze (\\d+)th of (january|february|march|april|may) lavigne', ['date','month'], 'en']);
+    dateEqual(testCreateDate('on ze 18th of april lavigne', 'en'), new Date(thisYear, 3, 18), 'handles other formats');
+
+    equal(typeof run(Date, 'getLocale'), 'object', 'current localization object is exposed in case needed');
+    equal(run(Date, 'getLocale').code, 'en', 'adding the format did not change the current locale');
+
+  });
+
+  group('Date Locales', function() {
+
+    equal(run(new Date(2011, 5, 18), 'format', ['{Month} {date}, {yyyy}']), 'June 18, 2011', 'Non-initialized defaults to English formatting');
+    equal(run(getRelativeDate(null, null, null, -1), 'relative'), '1 hour ago', 'Non-initialized relative formatting is also English');
+    equal(run(testCreateDate('June 18, 2011'), 'isValid'), true, 'English dates will also be properly parsed without being initialized or passing a locale code');
+
+
+    run(Date, 'setLocale', ['fo']);
+
+    equal(run(testCreateDate('2011kupo', 'fo'), 'isValid'), true, 'dates will parse if their locale is passed');
+    equal(run(testCreateDate('２０１１年０６月１８日'), 'isValid'), false, 'dates will not parse thereafter as the current locale is still en');
+
+    equal(run(new Date(2011, 5, 6), 'format', ['{Month}']), 'La', 'june is La');
+
+    raisesError(function(){ run(Date, 'setLocale'); }, 'no arguments raises error');
+    equal(run(Date, 'getLocale').code, 'fo', 'setting locale with no arguments had no effect');
+    equal(run(new Date(2011, 5, 6), 'format', ['{Month}']), 'La', 'will not change the locale if no argument passed');
+    equal(run(new Date(2011, 5, 6), 'format', ['', 'en']), 'June 6, 2011 12:00am', 'local locale should override global');
+    equal(run(testCreateDate('5 months ago', 'en'), 'relative', ['en']), '5 months ago', 'local locale should override global');
+
+    raisesError(function(){ run(Date, 'setLocale', ['']); }, '"" raises an invalid locale error');
+    equal(run(new Date(2011, 5, 6), 'format', ['{Month}']), 'La', 'will not change the locale if blank string passed');
+    dateEqual(testCreateDate('2010-Jan-25', 'fo'), new Date(2010, 0, 25), 'Static input format always matches English months');
+
+    raisesError(function(){ run(Date, 'setLocale', ['pink']) }, 'Non-existent locales will raise an error');
+    equal(run(testCreateDate('2010-Jan-25'), 'format'), 'yeehaw', 'will not set the current locale to an invalid locale');
+
+  });
+
+  run(Date, 'setLocale', ['en']);
   return;
-
-
-
-
-
-
-  equal(new Date(2001,1,23).isAfter(new Date(2000,1,23)), true, 'Date#isAfter | January 23, 2000');
-  equal(new Date(2001,1,23).isAfter(new Date(2002,1,23)), false, 'Date#isAfter | January 23, 2002');
-
-  equal(new Date(1999,0).isAfter(new Date(1998)), true, 'Date#isAfter | 1999');
-  equal(new Date(1998,2).isAfter(new Date(1998,1)), true, 'Date#isAfter | March, 1998');
-  equal(new Date(1998,1,24).isAfter(new Date(1998,1,23)), true, 'Date#isAfter | February 24, 1998');
-  equal(new Date(1998,1,23,12).isAfter(new Date(1998,1,23,11)), true, 'Date#isAfter | February 23, 1998 12pm');
-  equal(new Date(1998,1,23,11,55).isAfter(new Date(1998,1,23,11,54)), true, 'Date#isAfter | February 23, 1998 11:55am');
-  equal(new Date(1998,1,23,11,54,33).isAfter(new Date(1998,1,23,11,54,32)), true, 'Date#isAfter | February 23, 1998 11:54:33am');
-  equal(new Date(1998,1,23,11,54,32,455).isAfter(new Date(1998,1,23,11,54,32,454)), true, 'Date#isAfter | February 23, 1998 11:54:32.455am');
-
-  equal(new Date(1999,1).isAfter({ year: 1998 }), true, 'Date#isAfter | object | 1999');
-  equal(new Date(1998,2).isAfter({ year: 1998, month: 1 }), true, 'Date#isAfter | object | March, 1998');
-  equal(new Date(1998,1,24).isAfter({ year: 1998, month: 1, day: 23 }), true, 'Date#isAfter | object | February 24, 1998');
-  equal(new Date(1998,1,23,12).isAfter({ year: 1998, month: 1, day: 23, hour: 11 }), true, 'Date#isAfter | object | February 23, 1998 12pm');
-  equal(new Date(1998,1,23,11,55).isAfter({ year: 1998, month: 1, day: 23, hour: 11, minutes: 54 }), true, 'Date#isAfter | object | February 23, 1998 11:55am');
-  equal(new Date(1998,1,23,11,54,33).isAfter({ year: 1998, month: 1, day: 23, hour: 11, minutes: 54, seconds: 32 }), true, 'Date#isAfter | object | February 23, 1998 11:54:33am');
-  equal(new Date(1998,1,23,11,54,32,455).isAfter({ year: 1998, month: 1, day: 23, hour: 11, minutes: 54, seconds: 32, milliseconds: 454 }), true, 'Date#isAfter | object | February 23, 1998 11:54:32.455am');
-
-  equal(new Date(1999,1).isAfter('1998'), true, 'Date#isAfter | string | 1998');
-  equal(new Date(1998,2).isAfter('February, 1998'), true, 'Date#isAfter | string | February, 1998');
-  equal(new Date(1998,1,24).isAfter('February 23, 1998'), true, 'Date#isAfter | string | February 23, 1998');
-  equal(new Date(1998,1,23,12).isAfter('February 23, 1998 11am'), true, 'Date#isAfter | string | February 23, 1998 11pm');
-  equal(new Date(1998,1,23,11,55).isAfter('February 23, 1998 11:54am'), true, 'Date#isAfter | string | February 23, 1998 11:54am');
-  equal(new Date(1998,1,23,11,54,33).isAfter('February 23, 1998 11:54:32am'), true, 'Date#isAfter | string | February 23, 1998 11:54:32am');
-  equal(new Date(1998,1,23,11,54,32,455).isAfter('February 23, 1998 11:54:32.454am'), true, 'Date#isAfter | string | February 23, 1998 11:54:32.454am');
-
-  equal(new Date(1999,5).isAfter('1999'), true, 'Date#isAfter | June 1999 is after implied January 1999');
-  equal(getRelativeDate(1).isAfter('tomorrow'), true, 'Date#isAfter | relative | next year');
-  equal(getRelativeDate(null, 1).isAfter('tomorrow'), true, 'Date#isAfter | relative | next month');
-  equal(getRelativeDate(null, null, 1).isAfter('tomorrow'), true, 'Date#isAfter | relative | tomorrow');
-
-  equal(getDateWithWeekdayAndOffset(0).isAfter('monday'), false, 'Date#isAfter | relative | sunday');
-  equal(getDateWithWeekdayAndOffset(2).isAfter('monday'), true, 'Date#isAfter | relative | tuesday');
-  equal(getDateWithWeekdayAndOffset(0,7).isAfter('monday'), true, 'Date#isAfter | relative | next week sunday');
-  equal(getDateWithWeekdayAndOffset(0,-7).isAfter('monday'), false, 'Date#isAfter | relative | last week sunday');
-  equal(getDateWithWeekdayAndOffset(0).isAfter('the beginning of this week'), false, 'Date#isAfter | relative | the beginning of this week');
-  equal(getDateWithWeekdayAndOffset(0).isAfter('the beginning of last week'), true, 'Date#isAfter | relative | the beginning of last week');
-  equal(getDateWithWeekdayAndOffset(0).isAfter('the end of this week'), false, 'Date#isAfter | relative | the end of this week');
-
-  equal(new Date(2001,1,23).isAfter(new Date(2000,1,24), 24 * 60 * 60 * 1000), true, 'Date#isAfter | buffers work');
-  equal(new Date(1999,1).isAfter({ year: 1999 }), true, 'Date#isAfter | February 1999 is after implied January 1999');
-  equal(new Date(1998,10).isAfter({ year: 1999 }, 90 * 24 * 60 * 60 * 1000), true, 'Date#isAfter | November 1998 is after implied January 1999 with 90 days of margin');
-
-
-
-  equal(new Date(2001,1,23).isBefore(new Date(2000,1,23)), false, 'Date#isBefore | January 23, 2000');
-  equal(new Date(2001,1,23).isBefore(new Date(2002,1,23)), true, 'Date#isBefore | January 23, 2002');
-
-  equal(new Date(1999,0).isBefore(new Date(1998)), false, 'Date#isBefore | 1999');
-  equal(new Date(1998,2).isBefore(new Date(1998,1)), false, 'Date#isBefore | March, 1998');
-  equal(new Date(1998,1,24).isBefore(new Date(1998,1,23)), false, 'Date#isBefore | February 24, 1998');
-  equal(new Date(1998,1,23,12).isBefore(new Date(1998,1,23,11)), false, 'Date#isBefore | February 23, 1998 12pm');
-  equal(new Date(1998,1,23,11,55).isBefore(new Date(1998,1,23,11,54)), false, 'Date#isBefore | February 23, 1998 11:55am');
-  equal(new Date(1998,1,23,11,54,33).isBefore(new Date(1998,1,23,11,54,34)), true, 'Date#isBefore | February 23, 1998 11:54:34am');
-  equal(new Date(1998,1,23,11,54,32,455).isBefore(new Date(1998,1,23,11,54,32,454)), false, 'Date#isBefore | February 23, 1998 11:54:32.455am');
-
-  equal(new Date(1999,1).isBefore({ year: 1998 }), false, 'Date#isBefore | object | 1999');
-  equal(new Date(1998,2).isBefore({ year: 1998, month: 1 }), false, 'Date#isBefore | object | March, 1998');
-  equal(new Date(1998,1,24).isBefore({ year: 1998, month: 1, day: 23 }), false, 'Date#isBefore | object | February 24, 1998');
-  equal(new Date(1998,1,23,12).isBefore({ year: 1998, month: 1, day: 23, hour: 11 }), false, 'Date#isBefore | object | February 23, 1998 12pm');
-  equal(new Date(1998,1,23,11,55).isBefore({ year: 1998, month: 1, day: 23, hour: 11, minutes: 54 }), false, 'Date#isBefore | object | February 23, 1998 11:55am');
-  equal(new Date(1998,1,23,11,54,33).isBefore({ year: 1998, month: 1, day: 23, hour: 11, minutes: 54, seconds: 32 }), false, 'Date#isBefore | object | February 23, 1998 11:54:33am');
-  equal(new Date(1998,1,23,11,54,32,455).isBefore({ year: 1998, month: 1, day: 23, hour: 11, minutes: 54, seconds: 32, milliseconds: 454 }), false, 'Date#isBefore | object | February 23, 1998 11:54:32.455am');
-
-  equal(new Date(1997,11,31,23,59,59,999).isBefore({ year: 1998 }), true, 'Date#isBefore | object | 1999');
-  equal(new Date(1998,0).isBefore({ year: 1998, month: 1 }), true, 'Date#isBefore | object | March, 1998');
-  equal(new Date(1998,1,22).isBefore({ year: 1998, month: 1, day: 23 }), true, 'Date#isBefore | object | February 24, 1998');
-  equal(new Date(1998,1,23,10).isBefore({ year: 1998, month: 1, day: 23, hour: 11 }), true, 'Date#isBefore | object | February 23, 1998 12pm');
-  equal(new Date(1998,1,23,11,53).isBefore({ year: 1998, month: 1, day: 23, hour: 11, minutes: 54 }), true, 'Date#isBefore | object | February 23, 1998 11:55am');
-  equal(new Date(1998,1,23,11,54,31).isBefore({ year: 1998, month: 1, day: 23, hour: 11, minutes: 54, seconds: 32 }), true, 'Date#isBefore | object | February 23, 1998 11:54:33am');
-  equal(new Date(1998,1,23,11,54,32,453).isBefore({ year: 1998, month: 1, day: 23, hour: 11, minutes: 54, seconds: 32, milliseconds: 454 }), true, 'Date#isBefore | object | February 23, 1998 11:54:32.455am');
-
-  equal(new Date(1999,1).isBefore('1998'), false, 'Date#isBefore | string | 1998');
-  equal(new Date(1998,2).isBefore('February, 1998'), false, 'Date#isBefore | string | February, 1998');
-  equal(new Date(1998,1,24).isBefore('February 23, 1998'), false, 'Date#isBefore | string | February 23, 1998');
-  equal(new Date(1998,1,23,12).isBefore('February 23, 1998 11am'), false, 'Date#isBefore | string | February 23, 1998 11pm');
-  equal(new Date(1998,1,23,11,55).isBefore('February 23, 1998 11:54am'), false, 'Date#isBefore | string | February 23, 1998 11:54am');
-  equal(new Date(1998,1,23,11,54,33).isBefore('February 23, 1998 11:54:32am'), false, 'Date#isBefore | string | February 23, 1998 11:54:32am');
-  equal(new Date(1998,1,23,11,54,32,455).isBefore('February 23, 1998 11:54:32.454am'), false, 'Date#isBefore | string | February 23, 1998 11:54:32.454am');
-
-  equal(new Date(1999,5).isBefore('1999'), false, 'Date#isBefore | June 1999 is not after 1999 in general');
-  equal(getRelativeDate(1).isBefore('tomorrow'), false, 'Date#isBefore | relative | next year');
-  equal(getRelativeDate(null, 1).isBefore('tomorrow'), false, 'Date#isBefore | relative | next month');
-  equal(getRelativeDate(null, null, 1).isBefore('tomorrow'), false, 'Date#isBefore | relative | tomorrow');
-
-  equal(getDateWithWeekdayAndOffset(0).isBefore('monday'), true, 'Date#isBefore | relative | sunday');
-  equal(getDateWithWeekdayAndOffset(2).isBefore('monday'), false, 'Date#isBefore | relative | tuesday');
-  equal(getDateWithWeekdayAndOffset(0,7).isBefore('monday'), false, 'Date#isBefore | relative | next week sunday');
-  equal(getDateWithWeekdayAndOffset(0,-7).isBefore('monday'), true, 'Date#isBefore | relative | last week sunday');
-  equal(getDateWithWeekdayAndOffset(0).isBefore('the beginning of this week'), false, 'Date#isBefore | relative | the beginning of this week');
-  equal(getDateWithWeekdayAndOffset(0).isBefore('the beginning of last week'), false, 'Date#isBefore | relative | the beginning of last week');
-  equal(getDateWithWeekdayAndOffset(0).isBefore('the end of this week'), true, 'Date#isBefore | relative | the end of this week');
-
-  equal(new Date(2001,1,25).isBefore(new Date(2001,1,24), 48 * 60 * 60 * 1000), true, 'Date#isBefore | buffers work');
-
-
-
-
-
-
-  equal(new Date(2001,1,23).isBetween(new Date(2000,1,23), new Date(2002,1,23)), true, 'Date#isBetween | January 23, 2001 is between January 23, 2000 and January 23, 2002');
-  equal(new Date(2001,1,23).isBetween(new Date(2002,1,23), new Date(2000,1,23)), true, 'Date#isBetween | January 23, 2001 is between January 23, 2002 and January 23, 2000');
-  equal(new Date(1999,1,23).isBetween(new Date(2002,1,23), new Date(2000,1,23)), false, 'Date#isBetween | January 23, 1999 is between January 23, 2002 and January 23, 2000');
-  equal(new Date(2003,1,23).isBetween(new Date(2002,1,23), new Date(2000,1,23)), false, 'Date#isBetween | January 23, 2003 is between January 23, 2002 and January 23, 2000');
-
-  equal(new Date(1998,2).isBetween(new Date(1998,1), new Date(1998, 3)), true, 'Date#isBetween | February, 1998 - April, 1998');
-  equal(new Date(1998,2).isBetween(new Date(1998,1), new Date(1998, 0)), false, 'Date#isBetween | February, 1998 - January, 1998');
-  equal(new Date(1998,2).isBetween(new Date(1998,5), new Date(1998, 3)), false, 'Date#isBetween | June, 1998 - April, 1998');
-
-  equal(new Date(1998,1,23,11,54,32,455).isBetween(new Date(1998,1,23,11,54,32,454), new Date(1998,1,23,11,54,32,456)), true, 'Date#isBetween | February 23, 1998 11:54:32.454am - February 23, 1998 11:54:32:456am');
-  equal(new Date(1998,1,23,11,54,32,455).isBetween(new Date(1998,1,23,11,54,32,456), new Date(1998,1,23,11,54,32,454)), true, 'Date#isBetween | February 23, 1998 11:54:32.456am - February 23, 1998 11:54:32:454am');
-  equal(new Date(1998,1,23,11,54,32,455).isBetween(new Date(1998,1,23,11,54,32,454), new Date(1998,1,23,11,54,32,452)), false, 'Date#isBetween | February 23, 1998 11:54:32.454am - February 23, 1998 11:54:32:452am');
-  equal(new Date(1998,1,23,11,54,32,455).isBetween(new Date(1998,1,23,11,54,32,456), new Date(1998,1,23,11,54,32,458)), false, 'Date#isBetween | February 23, 1998 11:54:32.456am - February 23, 1998 11:54:32:458am');
-
-  equal(new Date(1998,1).isBetween({ year: 1998 }, { year: 1999 }), true, 'Date#isBetween | object | Feb 1998 is between 1998 - 1999');
-  equal(new Date(1999,1).isBetween({ year: 1998 }, { year: 1999 }), false, 'Date#isBetween | object | Feb 1999 is between 1998 - 1999');
-  equal(new Date(1999,1).isBetween({ year: 1998 }, { year: 1997 }), false, 'Date#isBetween | object | Feb 1999 is between 1998 - 1997');
-  equal(new Date(1998,2).isBetween({ year: 1998, month: 1 }, { year: 1998, month: 3 }), true, 'Date#isBetween | object | March, 1998 is between February, 1998 and April, 1998');
-  equal(new Date(1998,2).isBetween({ year: 1998, month: 0 }, { year: 1998, month: 1 }), false, 'Date#isBetween | object | March, 1998 is between January, 1998 and February, 1998');
-
-  equal(new Date(1998,1).isBetween('1998', '1999'), true, 'Date#isBetween | string | Feb 1998 is between 1998 - 1999');
-  equal(new Date(1999,1).isBetween('1998', '1999'), false, 'Date#isBetween | string | Feb 1999 is between 1998 - 1999');
-  equal(new Date(1999,1).isBetween('1998', '1997'), false, 'Date#isBetween | string | Feb 1998 is between 1998 - 1997');
-  equal(new Date(1998,2).isBetween('February, 1998', 'April, 1998'), true, 'Date#isBetween | string | March, 1998 is between February, 1998 and April, 1998');
-  equal(new Date(1998,2).isBetween('January, 1998', 'February, 1998'), false, 'Date#isBetween | string | March, 1998 is not between January, 1998 and February, 1998');
-
-  equal(new Date(1999,5).isBetween('1998','1999'), false, 'Date#isBetween | Ambiguous periods are hard coded to the ms, there is no "implied specificity" as with Date#is');
-  equal(new Date().isBetween('yesterday','tomorrow'), true, 'Date#isBetween | relative | now is between today and tomorrow');
-  equal(getRelativeDate(1).isBetween('yesterday','tomorrow'), false, 'Date#isBetween | relative | last year is between today and tomorrow');
-  equal(getRelativeDate(null, 1).isBetween('yesterday','tomorrow'), false, 'Date#isBetween | relative | last month is between today and tomorrow');
-  equal(getRelativeDate(null, null, 0).isBetween('today','tomorrow'), true, 'Date#isBetween | relative | right now is between today and tomorrow');
-  equal(getRelativeDate(null, null, 1).isBetween('today','tomorrow'), false, 'Date#isBetween | relative | tomorrow is between today and tomorrow');
-
-  equal(getDateWithWeekdayAndOffset(0).isBetween('monday', 'friday'), false, 'Date#isBetween | relative | sunday is between monday and friday');
-  equal(getDateWithWeekdayAndOffset(2).isBetween('monday', 'friday'), true, 'Date#isBetween | relative | tuesday is between monday and friday');
-  equal(getDateWithWeekdayAndOffset(0,7).isBetween('monday', 'friday'), false, 'Date#isBetween | relative | next week sunday is between monday and friday');
-  equal(getDateWithWeekdayAndOffset(0,-7).isBetween('monday', 'friday'), false, 'Date#isBetween | relative | last week sunday is between monday and friday');
-  equal(getDateWithWeekdayAndOffset(0).isBetween('the beginning of this week','the beginning of last week'), false, 'Date#isBetween | relative | sunday is between the beginning of this week and the beginning of last week');
-  equal(getDateWithWeekdayAndOffset(0).isBetween('the beginning of this week','the beginning of next week'), false, 'Date#isBetween | relative | sunday is between the beginning of this week and the beginning of next week');
-  equal(getDateWithWeekdayAndOffset(0).isBetween('the beginning of last week','the beginning of next week'), true, 'Date#isBetween | relative | sunday is between the beginning of last week and the beginning of next week');
-  equal(getDateWithWeekdayAndOffset(0).isBetween('the beginning of last week','the end of this week'), true, 'Date#isBetween | relative | sunday is between the beginning of last week and the end of this week');
-
-
-  equal(Date.create('yesterday').isBetween('yesterday', 'today'), false, 'Date#isBetween | today is between yesterday and today');
-  equal(Date.create('yesterday').isBetween('yesterday', 'today', 5), true, 'Date#isBetween | today is between yesterday and today with a 5ms margin');
-  equal(Date.create('tomorrow').isBetween('today', 'tomorrow'), false, 'Date#isBetween | tomrrow is between today and tomorrow');
-  equal(Date.create('tomorrow').isBetween('today', 'tomorrow', 5), true, 'Date#isBetween | tomrrow is between today and tomorrow with a 5ms margin');
-
-  dateEqual(Date.create().rewind((1).day()), new Date(new Date().getTime() - 86400000), 'Date#rewind | can rewind milliseconds');
-  dateEqual(Date.create().advance((1).day()), new Date(new Date().getTime() + 86400000), 'Date#advance | can advance milliseconds');
-
-  equal(Date.create().beginningOfWeek().isLastWeek(), false, 'Date#isLastWeek | the beginning of this week is not last week');
-
-  dateEqual(Date.create().set(0), new Date(0), 'Date#set | handles timestamps');
-
-
-
-  date1 = Date.create('July 4th, 1776');
-  date2 = date1.clone().beginningOfYear();
-
-  equal(date2.getMonth(), 0, 'Date#clone | cloned element is reset to January');
-  equal(date1.getMonth(), 6, 'Date#clone | source element is reset to unchanged');
-
-  date1 = Date.create('invalid');
-  date2 = date1.clone();
-
-  equal(date1.isValid(), false, 'Date#clone | source element is invalid');
-  equal(date2.isValid(), false, 'Date#clone | cloned element is also invalid');
-
-
-  // Date.addFormat
-  Date.addFormat('(\\d+)\\^\\^(\\d+)%%(\\d+), but at the (beginning|end)', ['date','year','month','edge']);
-  dateEqual(Date.create('25^^2008%%02, but at the end'), new Date(2008, 1, 25, 23, 59, 59, 999), 'Date.addFormat | make your own crazy format!');
-
-  Date.addFormat('on ze (\\d+)th of (january|february|march|april|may) lavigne', ['date','month'], 'en');
-  dateEqual(Date.create('on ze 18th of april lavigne', 'en'), new Date(thisYear, 3, 18), 'Date.addFormat | handles other formats');
-
-  equal(typeof Date.getLocale(), 'object', 'Date Locale | current localization object is exposed in case needed');
-  equal(Date.getLocale().code, 'en', 'Date Locale | adding the format did not change the current locale');
-
-
-
-
-  // Date locale setup
-  equal(new Date(2011, 5, 18).format('{Month} {date}, {yyyy}'), 'June 18, 2011', 'Date Locales | Non-initialized defaults to English formatting');
-  equal(getRelativeDate(null, null, null, -1).relative(), '1 hour ago', 'Date Locales | Non-initialized relative formatting is also English');
-  equal(Date.create('June 18, 2011').isValid(), true, 'Date Locales | English dates will also be properly parsed without being initialized or passing a locale code');
-
-
-  Date.setLocale('fo');
-
-  equal(Date.create('2011kupo', 'fo').isValid(), true, 'Date Locales | dates will parse if their locale is passed');
-  equal(Date.create('２０１１年０６月１８日').isValid(), false, 'Date Locales | dates will not parse thereafter as the current locale is still en');
-
-  equal(new Date(2011, 5, 6).format('{Month}'), 'La', 'Date.setLocale | june is La');
-
-  raisesError(function(){ Date.setLocale(); }, 'Date.setLocale | no arguments raises error');
-  equal(Date.getLocale().code, 'fo', 'Date.setLocale | setting locale with no arguments had no effect');
-  equal(new Date(2011, 5, 6).format('{Month}'), 'La', 'Date.setLocale | will not change the locale if no argument passed');
-  equal(new Date(2011, 5, 6).format('', 'en'), 'June 6, 2011 12:00am', 'Date#format | local locale should override global');
-  equal(Date.create('5 months ago', 'en').relative('en'), '5 months ago', 'Date#relative | local locale should override global');
-
-  raisesError(function(){ Date.setLocale(''); }, 'Date.setLocale | "" raises an invalid locale error');
-  equal(new Date(2011, 5, 6).format('{Month}'), 'La', 'Date.setLocale | will not change the locale if blank string passed');
-  dateEqual(Date.create('2010-Jan-25', 'fo'), new Date(2010, 0, 25), 'Date#create | Static input format always matches English months');
-
-  raisesError(function(){ Date.setLocale('pink') }, 'Date.setLocale | Non-existent locales will raise an error');
-  equal(Date.create('2010-Jan-25').format(), 'yeehaw', 'Date#create | will not set the current locale to an invalid locale');
-
-  Date.setLocale('en');
 
   // If traversing into a new month don't reset the date if the date was also advanced
 
