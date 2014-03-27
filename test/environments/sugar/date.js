@@ -501,6 +501,15 @@ package('Date', function () {
     dateEqual(runUTC('create', ['two days ago', 'en']), getRelativeDate(null, null, -2), 'relative dates are not UTC');
   });
 
+
+  group('Create | Other', function() {
+
+    // Issue #98: System time set to January 31st
+    dateEqual(testCreateDate('2011-09-01T05:00:00Z'), getUTCDate(2011, 9, 1, 5), 'text format');
+
+  });
+
+
   method('set', function() {
 
     // Just the time
@@ -807,6 +816,38 @@ package('Date', function () {
     var d = new Date();
     var dayInMs = 24 * 60 * 60 * 1000;
     test(d, [dayInMs], new Date(d.getTime() + dayInMs), 'can advance milliseconds');
+
+
+    // If traversing into a new month don't reset the date if the date was also advanced
+
+    dateTest(new Date(2011, 0, 31), [{ month: 1 }], new Date(2011, 1, 28), 'basic month traversal will reset the date to the last day');
+    dateTest(new Date(2011, 0, 31), [{ month: 1, day: 3 }], new Date(2011, 2, 3), 'when the day is specified date reset will not happen');
+    dateEqual(run(new Date(2011, 0, 31), 'set', [{ month: 1, day: 3 }]), new Date(2011, 1, 3), 'set will also not cause date traversal');
+
+
+    // Advance also allows resetting.
+
+    d = new Date(2011, 0, 31, 23, 40, 28, 500);
+    dateTest(d, [{ year: 1 }, true], new Date(2012, 0), 'with reset | year');
+    dateTest(d, [{ month: 1 }, true], new Date(2011, 1), 'with reset | month');
+    dateTest(d, [{ week: 1 }, true], new Date(2011, 1, 7), 'with reset | week');
+    dateTest(d, [{ date: 1 }, true], new Date(2011, 1, 1), 'with reset | date');
+    dateTest(d, [{ hour: 1 }, true], new Date(2011, 1, 1, 0), 'with reset | hour');
+    dateTest(d, [{ minute: 1 }, true], new Date(2011, 0, 31, 23, 41), 'with reset | minute');
+    dateTest(d, [{ second: 1 }, true], new Date(2011, 0, 31, 23, 40, 29), 'with reset | second');
+    dateTest(d, [{ millisecond: 1 }, true], new Date(2011, 0, 31, 23, 40, 28, 501), 'with reset | millisecond');
+
+    // Advance also allows string methods
+
+    d = new Date(2011, 0, 31, 23, 40, 28, 500);
+    dateTest(d, ['3 years'], new Date(2014, 0, 31, 23, 40, 28, 500), 'string input | year');
+    dateTest(d, ['3 months'], new Date(2011, 3, 30, 23, 40, 28, 500), 'string input | month');
+    dateTest(d, ['3 weeks'], new Date(2011, 1, 21, 23, 40, 28, 500), 'string input | week');
+    dateTest(d, ['3 days'], new Date(2011, 1, 3, 23, 40, 28, 500), 'string input | date');
+    dateTest(d, ['3 hours'], new Date(2011, 1, 1, 2, 40, 28, 500), 'string input | hour');
+    dateTest(d, ['3 minutes'], new Date(2011, 0, 31, 23, 43, 28, 500), 'string input | minute');
+    dateTest(d, ['3 seconds'], new Date(2011, 0, 31, 23, 40, 31, 500), 'string input | second');
+    dateTest(d, ['3 milliseconds'], new Date(2011, 0, 31, 23, 40, 28, 503), 'string input | millisecond');
 
   });
 
@@ -2026,267 +2067,33 @@ package('Date', function () {
   });
 
   run(Date, 'setLocale', ['en']);
+
+  method('getISOWeek', function() {
+
+    test(new Date(2011, 0, 1), 52, 'January 1, 2011');
+    test(new Date(2011, 0, 2), 52, 'January 2, 2011');
+    test(new Date(2011, 0, 3),  1, 'January 3, 2011');
+    test(new Date(2011, 0, 4),  1, 'January 4, 2011');
+
+    test(new Date(2011, 11, 25), 51, 'December 25, 2011');
+    test(new Date(2011, 11, 26), 52, 'December 26, 2011');
+    test(new Date(2011, 11, 27), 52, 'December 27, 2011');
+
+    test(new Date(2011, 11, 31), 52, 'December 31, 2011');
+    test(new Date(2012, 0, 1),   52, 'January 1, 2012');
+    test(new Date(2012, 0, 2),    1, 'January 2, 2012');
+
+    test(new Date(2013, 11, 28), 52, 'December 28, 2013');
+    test(new Date(2013, 11, 29), 52, 'December 29, 2013');
+    test(new Date(2013, 11, 30),  1, 'December 30, 2013');
+    test(new Date(2013, 11, 31),  1, 'December 31, 2013');
+    test(new Date(2014,  0,  1),  1, 'January 01, 2014');
+    test(new Date(2014,  0,  2),  1, 'January 02, 2014');
+    test(new Date(2014,  0,  5),  1, 'January 05, 2014');
+    test(new Date(2014,  0,  6),  2, 'January 06, 2014');
+
+  });
   return;
-
-  // If traversing into a new month don't reset the date if the date was also advanced
-
-  d = new Date(2011, 0, 31);
-  dateEqual(d.advance({ month: 1 }), new Date(2011, 1, 28), 'Date#create | basic month traversal will reset the date to the last day');
-
-  d = new Date(2011, 0, 31);
-  dateEqual(d.advance({ month: 1, day: 3 }), new Date(2011, 2, 3), 'Date#create | when the day is specified date reset will not happen');
-
-  d = new Date(2011, 0, 31);
-  dateEqual(d.set({ month: 1, day: 3 }), new Date(2011, 1, 3), 'Date#create | set will also not cause date traversal');
-
-
-
-  // Advance also allows resetting.
-
-  d = new Date(2011, 0, 31, 23, 40, 28, 500);
-  dateEqual(d.clone().advance({ year: 1 }, true), new Date(2012, 0), 'Date#advance | with reset | year');
-  dateEqual(d.clone().advance({ month: 1 }, true), new Date(2011, 1), 'Date#advance | with reset | month');
-  dateEqual(d.clone().advance({ week: 1 }, true), new Date(2011, 1, 7), 'Date#advance | with reset | week');
-  dateEqual(d.clone().advance({ date: 1 }, true), new Date(2011, 1, 1), 'Date#advance | with reset | date');
-  dateEqual(d.clone().advance({ hour: 1 }, true), new Date(2011, 1, 1, 0), 'Date#advance | with reset | hour');
-  dateEqual(d.clone().advance({ minute: 1 }, true), new Date(2011, 0, 31, 23, 41), 'Date#advance | with reset | minute');
-  dateEqual(d.clone().advance({ second: 1 }, true), new Date(2011, 0, 31, 23, 40, 29), 'Date#advance | with reset | second');
-  dateEqual(d.clone().advance({ millisecond: 1 }, true), new Date(2011, 0, 31, 23, 40, 28, 501), 'Date#advance | with reset | millisecond');
-
-  // Advance also allows string methods
-
-  d = new Date(2011, 0, 31, 23, 40, 28, 500);
-  dateEqual(d.clone().advance('3 years'), new Date(2014, 0, 31, 23, 40, 28, 500), 'Date#advance | string input | year');
-  dateEqual(d.clone().advance('3 months'), new Date(2011, 3, 30, 23, 40, 28, 500), 'Date#advance | string input | month');
-  dateEqual(d.clone().advance('3 weeks'), new Date(2011, 1, 21, 23, 40, 28, 500), 'Date#advance | string input | week');
-  dateEqual(d.clone().advance('3 days'), new Date(2011, 1, 3, 23, 40, 28, 500), 'Date#advance | string input | date');
-  dateEqual(d.clone().advance('3 hours'), new Date(2011, 1, 1, 2, 40, 28, 500), 'Date#advance | string input | hour');
-  dateEqual(d.clone().advance('3 minutes'), new Date(2011, 0, 31, 23, 43, 28, 500), 'Date#advance | string input | minute');
-  dateEqual(d.clone().advance('3 seconds'), new Date(2011, 0, 31, 23, 40, 31, 500), 'Date#advance | string input | second');
-  dateEqual(d.clone().advance('3 milliseconds'), new Date(2011, 0, 31, 23, 40, 28, 503), 'Date#advance | string input | millisecond');
-
-  // Number methods
-
-  equal((4).milliseconds(), 4, 'Number#milliseconds | 4');
-  equal((3.25).milliseconds(), 3, 'Number#milliseconds | rounded');
-
-  equal((0).seconds(), 0, 'Number#seconds | 0');
-  equal((1).seconds(), 1000, 'Number#seconds | 1');
-  equal((30).seconds(), 30000, 'Number#seconds | 30');
-  equal((60).seconds(), 60000, 'Number#seconds | 60');
-
-
-  equal((1).minutes(), 60000, 'Number#minutes | 1');
-  equal((10).minutes(), 600000, 'Number#minutes | 10');
-  equal((100).minutes(), 6000000, 'Number#minutes | 100');
-  equal((0).minutes(), 0, 'Number#minutes | 0');
-  equal((0.5).minutes(), 30000, 'Number#minutes | 0.5');
-  equal((1).minutes(), (60).seconds(), 'Number#minutes | 1 minute is 60 seconds');
-
-  equal((1).hours(), 3600000, 'Number#hours | 1');
-  equal((10).hours(), 36000000, 'Number#hours | 10');
-  equal((100).hours(), 360000000, 'Number#hours | 100');
-  equal((0).hours(), 0, 'Number#hours | 0');
-  equal((0.5).hours(), 1800000, 'Number#hours | 0.5');
-  equal((1).hours(), (60).minutes(), 'Number#hours | 1 hour is 60 minutes');
-  equal((1).hours(), (3600).seconds(), 'Number#hours | 1 hour is 3600 seconds');
-
-
-  equal((1).days(), 86400000, 'Number#days | 1');
-  equal((10).days(), 864000000, 'Number#days | 10');
-  equal((100).days(), 8640000000, 'Number#days | 100');
-  equal((0).days(), 0, 'Number#days | 0');
-  equal((0.5).days(), 43200000, 'Number#days | 0.5');
-  equal((1).days(), (24).hours(), 'Number#days | 1 day is 24 hours');
-  equal((1).days(), (1440).minutes(), 'Number#days | 1 day is 1440 minutes');
-  equal((1).days(), (86400).seconds(), 'Number#days | 1 day is 86400 seconds');
-
-
-  equal((1).weeks(), 604800000, 'Number#weeks | 1');
-  equal((0.5).weeks(), 302400000, 'Number#weeks | 0.5');
-  equal((10).weeks(), 6048000000, 'Number#weeks | 10');
-  equal((0).weeks(), 0, 'Number#weeks | 0');
-  equal((1).weeks(), (7).days(), 'Number#weeks | 1 week is 7 days');
-  equal((1).weeks(), (24 * 7).hours(), 'Number#weeks | 1 week is 24 * 7 hours');
-  equal((1).weeks(), (60 * 24 * 7).minutes(), 'Number#weeks | 1 week is 60 * 24 * 7 minutes');
-  equal((1).weeks(), (60 * 60 * 24 * 7).seconds(), 'Number#weeks | 1 week is 60 * 60 * 24 * 7 seconds');
-
-  equal((1).months(), 2629800000, 'Number#months | 1 month');
-  equal((0.5).months(), 1314900000, 'Number#months | 0.5 month');
-  equal((10).months(), 26298000000, 'Number#months | 10 month');
-  equal((0).months(), 0, 'Number#months | 0 months');
-  equal((1).months(), (30.4375).days(), 'Number#months | 1 month is 30.4375 days');
-  equal((1).months(), (24 * 30.4375).hours(), 'Number#months | 1 month is 24 * 30.4375 hours');
-  equal((1).months(), (60 * 24 * 30.4375).minutes(), 'Number#months | 1 month is 60 * 24 * 30.4375 minutes');
-  equal((1).months(), (60 * 60 * 24 * 30.4375).seconds(), 'Number#months | 1 month is 60 * 60 * 24 * 30.4375 seconds');
-
-  equal((1).years(), 31557600000, 'Number#years | 1');
-  equal((0.5).years(), 15778800000, 'Number#years | 0.5');
-  equal((10).years(), 315576000000, 'Number#years | 10');
-  equal((0).years(), 0, 'Number#years | 0');
-  equal((1).years(), (365.25).days(), 'Number#years | 1 year is 365.25 days');
-  equal((1).years(), (24 * 365.25).hours(), 'Number#years | 1 year is 24 * 365.25 hours');
-  equal((1).years(), (60 * 24 * 365.25).minutes(), 'Number#years | 1 year is 60 * 24 * 365.25 minutes');
-  equal((1).years(), (60 * 60 * 24 * 365.25).seconds(), 'Number#years | 1 year is 60 * 60 * 24 * 365.25 seconds');
-
-
-
-  /* compatibility */
-
-  equal((1).second(), 1000, 'Number#second | 1 second');
-  equal((1).minute(), 60000, 'Number#minute | 1 minute');
-  equal((1).hour(), 3600000, 'Number#hour | 1 hour');
-  equal((1).day(), 86400000, 'Number#day | 1 day');
-  equal((1).week(), 604800000, 'Number#week | 1 week');
-  equal((1).month(), 2629800000, 'Number#month | 1 month');
-  equal((1).year(), 31557600000, 'Number#year | 1 year');
-
-
-  dateEqual((1).secondAfter(), 1000, 'Number#secondAfter | 1');
-  dateEqual((5).secondsAfter(), 5000, 'Number#secondsAfter | 5');
-  dateEqual((10).minutesAfter(), 600000, 'Number#minutesAfter | 10');
-
-  dateEqual((1).secondFromNow(), 1000, 'Number#secondFromNow | 1');
-  dateEqual((5).secondsFromNow(), 5000, 'Number#secondsFromNow | 5');
-  dateEqual((10).minutesFromNow(), 600000, 'Number#minutesFromNow | 10');
-
-  dateEqual((1).secondAgo(), -1000, 'Number#secondAgo | 1');
-  dateEqual((5).secondsAgo(), -5000, 'Number#secondAgo | 5');
-  dateEqual((10).secondsAgo(), -10000, 'Number#secondAgo | 10');
-
-  dateEqual((1).secondBefore(), -1000, 'Number#secondBefore | 1');
-  dateEqual((5).secondsBefore(), -5000, 'Number#secondBefore | 5');
-  dateEqual((10).secondsBefore(), -10000, 'Number#secondBefore | 10');
-
-
-  dateEqual((5).minutesAfter((5).minutesAgo()), 0, 'Number#minutesAfter | 5 minutes after 5 minutes ago');
-  dateEqual((10).minutesAfter((5).minutesAgo()), 1000 * 60 * 5, 'Number#minutesAfter | 10 minutes after 5 minutes ago');
-
-  dateEqual((5).minutesFromNow((5).minutesAgo()), 0, 'Number#minutesFromNow | 5 minutes from now 5 minutes ago');
-  dateEqual((10).minutesFromNow((5).minutesAgo()), 1000 * 60 * 5, 'Number#minutesFromNow | 10 minutes from now 5 minutes ago');
-
-  dateEqual((5).minutesAgo((5).minutesFromNow()), 0, 'Number#minutesAgo | 5 minutes ago 5 minutes from now');
-  dateEqual((10).minutesAgo((5).minutesFromNow()), -(1000 * 60 * 5), 'Number#minutesAgo | 10 minutes ago 5 minutes from now');
-
-  dateEqual((5).minutesBefore((5).minutesFromNow()), 0, 'Number#minutesBefore | 5 minutes before 5 minutes from now');
-  dateEqual((10).minutesBefore((5).minutesFromNow()), -(1000 * 60 * 5), 'Number#minutesBefore | 10 minutes before 5 minutes from now');
-
-
-  var christmas = new Date('December 25, 1972');
-
-  dateEqual((5).minutesBefore(christmas), getRelativeDate.call(christmas, null, null, null, null, -5), 'Number#minutesBefore | 5 minutes before christmas');
-  dateEqual((5).minutesAfter(christmas), getRelativeDate.call(christmas, null, null, null, null, 5), 'Number#minutesAfter | 5 minutes after christmas');
-
-  dateEqual((5).hoursBefore(christmas), getRelativeDate.call(christmas, null, null, null, -5), 'Number#hoursBefore | 5 hours before christmas');
-  dateEqual((5).hoursAfter(christmas), getRelativeDate.call(christmas, null, null, null, 5), 'Number#hoursAfter | 5 hours after christmas');
-
-  dateEqual((5).daysBefore(christmas), getRelativeDate.call(christmas, null, null, -5), 'Number#daysBefore | 5 days before christmas');
-  dateEqual((5).daysAfter(christmas), getRelativeDate.call(christmas, null, null, 5), 'Number#daysAfter | 5 days after christmas');
-
-  dateEqual((5).weeksBefore(christmas), getRelativeDate.call(christmas, null, null, -35), 'Number#weeksBefore | 5 weeks before christmas');
-  dateEqual((5).weeksAfter(christmas), getRelativeDate.call(christmas, null, null, 35), 'Number#weeksAfter | 5 weeks after christmas');
-
-  dateEqual((5).monthsBefore(christmas), getRelativeDate.call(christmas, null, -5), 'Number#monthsBefore | 5 months before christmas');
-  dateEqual((5).monthsAfter(christmas), getRelativeDate.call(christmas, null, 5), 'Number#monthsAfter | 5 months after christmas');
-
-  dateEqual((5).yearsBefore(christmas), getRelativeDate.call(christmas, -5), 'Number#yearsBefore | 5 years before christmas');
-  dateEqual((5).yearsAfter(christmas), getRelativeDate.call(christmas, 5), 'Number#yearsAfter | 5 years after christmas');
-
-  dateEqual((5).hoursBefore(1972, 11, 25), getRelativeDate.call(christmas, null, null, null, -5), 'Number#hoursBefore | accepts numbers');
-
-  // Hooking it all up!!
-
-  // Try this in WinXP:
-  // 1. Set timezone to Damascus
-  // 2. var d = new Date(1998, 3, 3, 17); d.setHours(0); d.getHours();
-  // 3. hours = 23
-  // 4. PROFIT $$$
-
-  dateEqual((5).minutesBefore('April 2rd, 1998'), new Date(1998, 3, 1, 23, 55), 'Number#minutesBefore | 5 minutes before April 3rd, 1998');
-  dateEqual((5).minutesAfter('January 2nd, 2005'), new Date(2005, 0, 2, 0, 5), 'Number#minutesAfter | 5 minutes after January 2nd, 2005');
-  dateEqual((5).hoursBefore('the first day of 2005'), new Date(2004, 11, 31, 19), 'Number#hoursBefore | 5 hours before the first day of 2005');
-  dateEqual((5).hoursAfter('the last day of 2006'), new Date(2006, 11, 31, 5), 'Number#hoursAfter | 5 hours after the last day of 2006');
-  dateEqual((5).hoursAfter('the end of 2006'), new Date(2007, 0, 1, 4, 59, 59, 999), 'Number#hoursAfter | 5 hours after the end of 2006');
-  dateEqual((5).daysBefore('last week monday'), getDateWithWeekdayAndOffset(1, -7).rewind({ days: 5 }), 'Number#daysBefore | 5 days before last week monday');
-  dateEqual((5).daysAfter('next tuesday'), getDateWithWeekdayAndOffset(2, 7).advance({ days: 5 }), 'Number#daysAfter | 5 days after next week tuesday');
-  dateEqual((5).weeksBefore('today'), getRelativeDate(null, null, -35).set({ hours: 0, minutes: 0, seconds: 0, milliseconds: 0 }), 'Number#weeksBefore | 5 weeks before today');
-  dateEqual((5).weeksAfter('now'), getRelativeDate(null, null, 35), 'Number#weeksAfter | 5 weeks after now');
-  dateEqual((5).monthsBefore('today'), getRelativeDate(null, -5).set({ hours: 0, minutes: 0, seconds: 0, milliseconds: 0 }), 'Number#monthsBefore | 5 months before today');
-  dateEqual((5).monthsAfter('now'), getRelativeDate(null, 5), 'Number#monthsAfter | 5 months after now');
-
-
-
-  // Date#getISOWeek
-
-  equal(new Date(2011, 0, 1).getISOWeek(), 52, 'String#getISOWeek | January 1, 2011');
-  equal(new Date(2011, 0, 2).getISOWeek(), 52, 'String#getISOWeek | January 2, 2011');
-  equal(new Date(2011, 0, 3).getISOWeek(),  1, 'String#getISOWeek | January 3, 2011');
-  equal(new Date(2011, 0, 4).getISOWeek(),  1, 'String#getISOWeek | January 4, 2011');
-
-  equal(new Date(2011, 11, 25).getISOWeek(), 51, 'String#getISOWeek | December 25, 2011');
-  equal(new Date(2011, 11, 26).getISOWeek(), 52, 'String#getISOWeek | December 26, 2011');
-  equal(new Date(2011, 11, 27).getISOWeek(), 52, 'String#getISOWeek | December 27, 2011');
-
-  equal(new Date(2011, 11, 31).getISOWeek(), 52, 'String#getISOWeek | December 31, 2011');
-  equal(new Date(2012, 0, 1).getISOWeek(),   52, 'String#getISOWeek | January 1, 2012');
-  equal(new Date(2012, 0, 2).getISOWeek(),    1, 'String#getISOWeek | January 2, 2012');
-
-  equal(new Date(2013, 11, 28).getISOWeek(), 52, 'String#getISOWeek | December 28, 2013');
-  equal(new Date(2013, 11, 29).getISOWeek(), 52, 'String#getISOWeek | December 29, 2013');
-  equal(new Date(2013, 11, 30).getISOWeek(),  1, 'String#getISOWeek | December 30, 2013');
-  equal(new Date(2013, 11, 31).getISOWeek(),  1, 'String#getISOWeek | December 31, 2013');
-  equal(new Date(2014,  0,  1).getISOWeek(),  1, 'String#getISOWeek | January 01, 2014');
-  equal(new Date(2014,  0,  2).getISOWeek(),  1, 'String#getISOWeek | January 02, 2014');
-  equal(new Date(2014,  0,  5).getISOWeek(),  1, 'String#getISOWeek | January 05, 2014');
-  equal(new Date(2014,  0,  6).getISOWeek(),  2, 'String#getISOWeek | January 06, 2014');
-
-
-  // Date.restore may not exist in dates-only build.
-
-  if(Date.restore) {
-    Date.prototype.advance = undefined;
-    equal(typeof Date.prototype.advance,  'undefined', 'Date#advance was removed');
-    Date.restore('advance');
-    equal(typeof Date.prototype.advance,  'function', 'Date#advance was restored');
-  }
-
-
-  // Issue #98: System time set to January 31st
-
-  dateEqual(Date.create('2011-09-01T05:00:00Z'), getUTCDate(2011, 9, 1, 5), 'String#toDate | text format');
-
-
-  // Number#duration
-
-  Date.setLocale('en');
-
-  equal((1).duration(), '1 millisecond', 'Number#duration | 1 millisecond');
-  equal((2).duration(), '2 milliseconds', 'Number#duration | 2 milliseconds');
-  equal((100).duration(), '100 milliseconds', 'Number#duration | 100 milliseconds');
-  equal((500).duration(), '500 milliseconds', 'Number#duration | 500 milliseconds');
-  equal((949).duration(), '949 milliseconds', 'Number#duration | 949 milliseconds');
-  equal((950).duration(), '1 second', 'Number#duration | 950 milliseconds');
-  equal((999).duration(), '1 second', 'Number#duration | 999 milliseconds');
-  equal((1000).duration(), '1 second', 'Number#duration | 1 second');
-  equal((1999).duration(), '2 seconds', 'Number#duration | 2 seconds');
-  equal((5000).duration(), '5 seconds', 'Number#duration | 5 seconds');
-  equal((55000).duration(), '55 seconds', 'Number#duration | 55 seconds');
-  equal((56000).duration(), '56 seconds', 'Number#duration | 56 seconds');
-  equal((57000).duration(), '1 minute', 'Number#duration | 57 seconds');
-  equal((60000).duration(), '1 minute', 'Number#duration | 60 seconds');
-  equal((3600000).duration(), '1 hour', 'Number#duration | 360000 seconds');
-  equal((5).hours().duration(), '5 hours', 'Number#duration | 5 hours');
-  equal((22).hours().duration(), '22 hours', 'Number#duration | 22 hours');
-  equal((23).hours().duration(), '1 day', 'Number#duration | 23 hours');
-  equal((6).days().duration(), '6 days', 'Number#duration | 6 days');
-  equal((7).days().duration(), '1 week', 'Number#duration | 1 week');
-  equal((28).days().duration(), '4 weeks', 'Number#duration | 30 days');
-  equal((29).days().duration(), '1 month', 'Number#duration | 1 months');
-  equal((11).months().duration(), '11 months', 'Number#duration | 11 months');
-  equal((12).months().duration(), '1 year', 'Number#duration | 1 year');
-  equal((2).years().duration(), '2 years', 'Number#duration | 2 years');
-  equal((15).years().duration(), '15 years', 'Number#duration | 15 years');
-  equal((1500).years().duration(), '1500 years', 'Number#duration | 1500 years');
 
   Date.setLocale('fo');
 
@@ -2789,3 +2596,213 @@ package('Date', function () {
 
 });
 
+package('Number', function () {
+
+  group('Unit Aliases', function() {
+
+    equal(run(4, 'milliseconds'), 4, 'milliseconds | 4');
+    equal(run(3.25, 'milliseconds'), 3, 'milliseconds | rounded');
+
+    equal(run(0, 'seconds'), 0, 'seconds | 0');
+    equal(run(1, 'seconds'), 1000, 'seconds | 1');
+    equal(run(30, 'seconds'), 30000, 'seconds | 30');
+    equal(run(60, 'seconds'), 60000, 'seconds | 60');
+
+
+    equal(run(1, 'minutes'), 60000, 'minutes | 1');
+    equal(run(10, 'minutes'), 600000, 'minutes | 10');
+    equal(run(100, 'minutes'), 6000000, 'minutes | 100');
+    equal(run(0, 'minutes'), 0, 'minutes | 0');
+    equal(run(0.5, 'minutes'), 30000, 'minutes | 0.5');
+    equal(run(1, 'minutes'), run(60, 'seconds'), 'minutes | 1 minute is 60 seconds');
+
+    equal(run(1, 'hours'), 3600000, 'hours | 1');
+    equal(run(10, 'hours'), 36000000, 'hours | 10');
+    equal(run(100, 'hours'), 360000000, 'hours | 100');
+    equal(run(0, 'hours'), 0, 'hours | 0');
+    equal(run(0.5, 'hours'), 1800000, 'hours | 0.5');
+    equal(run(1, 'hours'), run(60, 'minutes'), 'hours | 1 hour is 60 minutes');
+    equal(run(1, 'hours'), run(3600, 'seconds'), 'hours | 1 hour is 3600 seconds');
+
+
+    equal(run(1, 'days'), 86400000, 'days | 1');
+    equal(run(10, 'days'), 864000000, 'days | 10');
+    equal(run(100, 'days'), 8640000000, 'days | 100');
+    equal(run(0, 'days'), 0, 'days | 0');
+    equal(run(0.5, 'days'), 43200000, 'days | 0.5');
+    equal(run(1, 'days'), run(24, 'hours'), 'days | 1 day is 24 hours');
+    equal(run(1, 'days'), run(1440, 'minutes'), 'days | 1 day is 1440 minutes');
+    equal(run(1, 'days'), run(86400, 'seconds'), 'days | 1 day is 86400 seconds');
+
+
+    equal(run(1, 'weeks'), 604800000, 'weeks | 1');
+    equal(run(0.5, 'weeks'), 302400000, 'weeks | 0.5');
+    equal(run(10, 'weeks'), 6048000000, 'weeks | 10');
+    equal(run(0, 'weeks'), 0, 'weeks | 0');
+    equal(run(1, 'weeks'), run(7, 'days'), 'weeks | 1 week is 7 days');
+    equal(run(1, 'weeks'), run(24 * 7, 'hours'), 'weeks | 1 week is 24 * 7 hours');
+    equal(run(1, 'weeks'), run(60 * 24 * 7, 'minutes'), 'weeks | 1 week is 60 * 24 * 7 minutes');
+    equal(run(1, 'weeks'), run(60 * 60 * 24 * 7, 'seconds'), 'weeks | 1 week is 60 * 60 * 24 * 7 seconds');
+
+    equal(run(1, 'months'), 2629800000, 'months | 1 month');
+    equal(run(0.5, 'months'), 1314900000, 'months | 0.5 month');
+    equal(run(10, 'months'), 26298000000, 'months | 10 month');
+    equal(run(0, 'months'), 0, 'months | 0 months');
+    equal(run(1, 'months'), run(30.4375, 'days'), 'months | 1 month is 30.4375 days');
+    equal(run(1, 'months'), run(24 * 30.4375, 'hours'), 'months | 1 month is 24 * 30.4375 hours');
+    equal(run(1, 'months'), run(60 * 24 * 30.4375, 'minutes'), 'months | 1 month is 60 * 24 * 30.4375 minutes');
+    equal(run(1, 'months'), run(60 * 60 * 24 * 30.4375, 'seconds'), 'months | 1 month is 60 * 60 * 24 * 30.4375 seconds');
+
+    equal(run(1, 'years'), 31557600000, 'years | 1');
+    equal(run(0.5, 'years'), 15778800000, 'years | 0.5');
+    equal(run(10, 'years'), 315576000000, 'years | 10');
+    equal(run(0, 'years'), 0, 'years | 0');
+    equal(run(1, 'years'), run(365.25, 'days'), 'years | 1 year is 365.25 days');
+    equal(run(1, 'years'), run(24 * 365.25, 'hours'), 'years | 1 year is 24 * 365.25 hours');
+    equal(run(1, 'years'), run(60 * 24 * 365.25, 'minutes'), 'years | 1 year is 60 * 24 * 365.25 minutes');
+    equal(run(1, 'years'), run(60 * 60 * 24 * 365.25, 'seconds'), 'years | 1 year is 60 * 60 * 24 * 365.25 seconds');
+
+
+    // Compatibility
+
+    equal(run(1, 'second'), 1000, 'second | 1 second');
+    equal(run(1, 'minute'), 60000, 'minute | 1 minute');
+    equal(run(1, 'hour'), 3600000, 'hour | 1 hour');
+    equal(run(1, 'day'), 86400000, 'day | 1 day');
+    equal(run(1, 'week'), 604800000, 'week | 1 week');
+    equal(run(1, 'month'), 2629800000, 'month | 1 month');
+    equal(run(1, 'year'), 31557600000, 'year | 1 year');
+
+  });
+
+  group('Unit Before/After', function () {
+
+    dateEqual(run(1, 'secondAfter'), 1000, 'secondAfter | 1');
+    dateEqual(run(5, 'secondsAfter'), 5000, 'secondsAfter | 5');
+    dateEqual(run(10, 'minutesAfter'), 600000, 'minutesAfter | 10');
+
+    dateEqual(run(1, 'secondFromNow'), 1000, 'secondFromNow | 1');
+    dateEqual(run(5, 'secondsFromNow'), 5000, 'secondsFromNow | 5');
+    dateEqual(run(10, 'minutesFromNow'), 600000, 'minutesFromNow | 10');
+
+    dateEqual(run(1, 'secondAgo'), -1000, 'secondAgo | 1');
+    dateEqual(run(5, 'secondsAgo'), -5000, 'secondAgo | 5');
+    dateEqual(run(10, 'secondsAgo'), -10000, 'secondAgo | 10');
+
+    dateEqual(run(1, 'secondBefore'), -1000, 'secondBefore | 1');
+    dateEqual(run(5, 'secondsBefore'), -5000, 'secondBefore | 5');
+    dateEqual(run(10, 'secondsBefore'), -10000, 'secondBefore | 10');
+
+    dateEqual(run(5, 'minutesAfter', [run(5, 'minutesAgo')]), 0, 'minutesAfter | 5 minutes after 5 minutes ago');
+    dateEqual(run(10, 'minutesAfter', [run(5, 'minutesAgo')]), 1000 * 60 * 5, 'minutesAfter | 10 minutes after 5 minutes ago');
+
+    dateEqual(run(5, 'minutesFromNow', [run(5, 'minutesAgo')]), 0, 'minutesFromNow | 5 minutes from now 5 minutes ago');
+    dateEqual(run(10, 'minutesFromNow', [run(5, 'minutesAgo')]), 1000 * 60 * 5, 'minutesFromNow | 10 minutes from now 5 minutes ago');
+
+    dateEqual(run(5, 'minutesAgo', [run(5, 'minutesFromNow')]), 0, 'minutesAgo | 5 minutes ago 5 minutes from now');
+    dateEqual(run(10, 'minutesAgo', [run(5, 'minutesFromNow')]), -(1000 * 60 * 5), 'minutesAgo | 10 minutes ago 5 minutes from now');
+
+    dateEqual(run(5, 'minutesBefore', [run(5, 'minutesFromNow')]), 0, 'minutesBefore | 5 minutes before 5 minutes from now');
+    dateEqual(run(10, 'minutesBefore', [run(5, 'minutesFromNow')]), -(1000 * 60 * 5), 'minutesBefore | 10 minutes before 5 minutes from now');
+
+
+    var christmas = new Date('December 25, 1972');
+
+    dateEqual(run(5, 'minutesBefore', [christmas]), getRelativeDate.call(christmas, null, null, null, null, -5), 'minutesBefore | 5 minutes before christmas');
+    dateEqual(run(5, 'minutesAfter', [christmas]), getRelativeDate.call(christmas, null, null, null, null, 5), 'minutesAfter | 5 minutes after christmas');
+
+    dateEqual(run(5, 'hoursBefore', [christmas]), getRelativeDate.call(christmas, null, null, null, -5), 'hoursBefore | 5 hours before christmas');
+    dateEqual(run(5, 'hoursAfter', [christmas]), getRelativeDate.call(christmas, null, null, null, 5), 'hoursAfter | 5 hours after christmas');
+
+    dateEqual(run(5, 'daysBefore', [christmas]), getRelativeDate.call(christmas, null, null, -5), 'daysBefore | 5 days before christmas');
+    dateEqual(run(5, 'daysAfter', [christmas]), getRelativeDate.call(christmas, null, null, 5), 'daysAfter | 5 days after christmas');
+
+    dateEqual(run(5, 'weeksBefore', [christmas]), getRelativeDate.call(christmas, null, null, -35), 'weeksBefore | 5 weeks before christmas');
+    dateEqual(run(5, 'weeksAfter', [christmas]), getRelativeDate.call(christmas, null, null, 35), 'weeksAfter | 5 weeks after christmas');
+
+    dateEqual(run(5, 'monthsBefore', [christmas]), getRelativeDate.call(christmas, null, -5), 'monthsBefore | 5 months before christmas');
+    dateEqual(run(5, 'monthsAfter', [christmas]), getRelativeDate.call(christmas, null, 5), 'monthsAfter | 5 months after christmas');
+
+    dateEqual(run(5, 'yearsBefore', [christmas]), getRelativeDate.call(christmas, -5), 'yearsBefore | 5 years before christmas');
+    dateEqual(run(5, 'yearsAfter', [christmas]), getRelativeDate.call(christmas, 5), 'yearsAfter | 5 years after christmas');
+
+    dateEqual(run(5, 'hoursBefore', [1972, 11, 25]), getRelativeDate.call(christmas, null, null, null, -5), 'hoursBefore | accepts numbers');
+
+
+    // Hooking it all up!!
+
+    // Try this in WinXP:
+    // 1. Set timezone to Damascus
+    // 2. var d = new Date(1998, 3, 3, 17); d.setHours(0); d.getHours();
+    // 3. hours = 23
+    // 4. PROFIT $$$
+
+    dateEqual(run(5, 'minutesBefore', ['April 2rd, 1998']), new Date(1998, 3, 1, 23, 55), 'minutesBefore | 5 minutes before April 3rd, 1998');
+    dateEqual(run(5, 'minutesAfter', ['January 2nd, 2005']), new Date(2005, 0, 2, 0, 5), 'minutesAfter | 5 minutes after January 2nd, 2005');
+    dateEqual(run(5, 'hoursBefore', ['the first day of 2005']), new Date(2004, 11, 31, 19), 'hoursBefore | 5 hours before the first day of 2005');
+    dateEqual(run(5, 'hoursAfter', ['the last day of 2006']), new Date(2006, 11, 31, 5), 'hoursAfter | 5 hours after the last day of 2006');
+    dateEqual(run(5, 'hoursAfter', ['the end of 2006']), new Date(2007, 0, 1, 4, 59, 59, 999), 'hoursAfter | 5 hours after the end of 2006');
+
+
+    var expected = new Date(getDateWithWeekdayAndOffset(1, -7).getTime() - run(5, 'days'));
+    dateEqual(run(5, 'daysBefore', ['last week monday']), expected, 'daysBefore | 5 days before last week monday');
+    var expected = new Date(getDateWithWeekdayAndOffset(2, 7).getTime() + run(5, 'days'));
+    dateEqual(run(5, 'daysAfter', ['next tuesday']), expected, 'daysAfter | 5 days after next week tuesday');
+    var expected = getRelativeDate(null, null, -35);
+    expected.setHours(0);
+    expected.setMinutes(0);
+    expected.setSeconds(0);
+    expected.setMilliseconds(0);
+    dateEqual(run(5, 'weeksBefore', ['today']), expected, 'weeksBefore | 5 weeks before today');
+
+    var expected = getRelativeDate(null, null, 35);
+    dateEqual(run(5, 'weeksAfter', ['now']), expected, 'weeksAfter | 5 weeks after now');
+
+    var expected = getRelativeDate(null, -5);
+    expected.setHours(0);
+    expected.setMinutes(0);
+    expected.setSeconds(0);
+    expected.setMilliseconds(0);
+    dateEqual(run(5, 'monthsBefore', ['today']), expected, 'monthsBefore | 5 months before today');
+
+    var expected = getRelativeDate(null, 5);
+    dateEqual(run(5, 'monthsAfter', ['now']), expected, 'monthsAfter | 5 months after now');
+
+  });
+
+  method('duration', function() {
+
+    Sugar.Date.setLocale('en');
+
+    equal(run(1, 'duration'), '1 millisecond', 'Number#duration | 1 millisecond');
+    equal(run(2, 'duration'), '2 milliseconds', 'Number#duration | 2 milliseconds');
+    equal(run(100, 'duration'), '100 milliseconds', 'Number#duration | 100 milliseconds');
+    equal(run(500, 'duration'), '500 milliseconds', 'Number#duration | 500 milliseconds');
+    equal(run(949, 'duration'), '949 milliseconds', 'Number#duration | 949 milliseconds');
+    equal(run(950, 'duration'), '1 second', 'Number#duration | 950 milliseconds');
+    equal(run(999, 'duration'), '1 second', 'Number#duration | 999 milliseconds');
+    equal(run(1000, 'duration'), '1 second', 'Number#duration | 1 second');
+    equal(run(1999, 'duration'), '2 seconds', 'Number#duration | 2 seconds');
+    equal(run(5000, 'duration'), '5 seconds', 'Number#duration | 5 seconds');
+    equal(run(55000, 'duration'), '55 seconds', 'Number#duration | 55 seconds');
+    equal(run(56000, 'duration'), '56 seconds', 'Number#duration | 56 seconds');
+    equal(run(57000, 'duration'), '1 minute', 'Number#duration | 57 seconds');
+    equal(run(60000, 'duration'), '1 minute', 'Number#duration | 60 seconds');
+    equal(run(3600000, 'duration'), '1 hour', 'Number#duration | 360000 seconds');
+
+    equal(run(run(5, 'hours', 'duration')), '5 hours', 'Number#duration | 5 hours');
+    equal(run(run(22, 'hours', 'duration')), '22 hours', 'Number#duration | 22 hours');
+    equal(run(run(23, 'hours', 'duration')), '1 day', 'Number#duration | 23 hours');
+    equal(run(run(6, 'days', 'duration')), '6 days', 'Number#duration | 6 days');
+    equal(run(run(7, 'days', 'duration')), '1 week', 'Number#duration | 1 week');
+    equal(run(run(28, 'days', 'duration')), '4 weeks', 'Number#duration | 30 days');
+    equal(run(run(29, 'days', 'duration')), '1 month', 'Number#duration | 1 months');
+    equal(run(run(11, 'months', 'duration')), '11 months', 'Number#duration | 11 months');
+    equal(run(run(12, 'months', 'duration')), '1 year', 'Number#duration | 1 year');
+    equal(run(run(2, 'years', 'duration')), '2 years', 'Number#duration | 2 years');
+    equal(run(run(15, 'years', 'duration')), '15 years', 'Number#duration | 15 years');
+    equal(run(run(1500, 'years', 'duration')), '1500 years', 'Number#duration | 1500 years');
+
+  });
+
+});
