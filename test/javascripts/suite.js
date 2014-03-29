@@ -32,7 +32,7 @@
         totalAssertions += r.assertions;
         totalFailed += r.failures.length;
         var li = $('<li class="test" />');
-        var title = '<h5>' + r.name + '</h5>';
+        var title = '<h5>' + r.name + (r.subname ? ' | ' + r.subname : '') + '</h5>';
         if(r.failures.length > 0) {
           arrayEach(r.failures, function(f) {
             title += getFailureHTML(f);
