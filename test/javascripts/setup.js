@@ -170,8 +170,10 @@ skipEnvironments = function(environments, test) {
       asyncTestsRunning = 0;
       testsStarted();
     }
+    var split = name.split(' | ');
     currentPackage = {
-      name: name,
+      name: split[0],
+      subname: split[1],
       assertions: 0,
       failures: []
     };
