@@ -7,6 +7,7 @@ v1.4.3
 - Changed String#escapeHTML to double-escape entities.
 - Object.extend() is now Sugar.extendObject().
 - `Date#utc` is now `Date#setUTC`.
+- Renamed `Date.SugarNewDate` to `Sugar.Date.newDateInternal`.
 
 
 v1.4.2

@@ -16,11 +16,14 @@ v1.4.3+
 - Level: Major
   - `Date#utc` is now `Date#setUTC`, and now requires explicitly passing `true` as the first argument to set the flag to true.
 
+- Level: Moderate
+  - `Object.extend()` is now `Sugar.extendObject`.
+
 - Level: Minor
   - `String#escapeHTML` now double escapes entities, meaning '&amp;' will become '&amp;amp;', etc.
 
-- Level: Moderate
-  - `Object.extend()` is now `Sugar.extendObject`.
+- Level: Minor
+  - `Date.SugarNewDate` is now `Sugar.Date.newDateInternal`. This method is always on the `Sugar` global (not `Date`).
 
 
 v1.4.1+
