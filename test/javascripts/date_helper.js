@@ -3,6 +3,14 @@ testCreateDate = function() {
   return run(Date, 'create', arguments);
 }
 
+testCreateFutureDate = function() {
+  return run(Date, 'future', arguments);
+}
+
+testCreatePastDate = function() {
+  return run(Date, 'past', arguments);
+}
+
 dateRun = function(d, name, arguments) {
   return run(Sugar.Date.clone(d), name, arguments);
 }
@@ -152,5 +160,32 @@ testGetTimezoneHours = function(d) {
 runUTC = function(name, args) {
   var target = Sugar.noConflict ? Sugar.Date.utc : Date.utc;
   return target[name].apply(null, args);
+}
+
+// These helper methods are necessary because setting/getting
+// the locale is sometimes performed outside the Date package,
+// giving no context for run().
+testSetLocale = function(code) {
+  if(Sugar.noConflict) {
+    return Sugar.Date.setLocale(code);
+  } else {
+    return Date.setLocale(code);
+  }
+}
+
+testGetLocale = function(code) {
+  if(Sugar.noConflict) {
+    return Sugar.Date.getLocale(code);
+  } else {
+    return Date.getLocale(code);
+  }
+}
+
+testAddLocale = function(code, set) {
+  if(Sugar.noConflict) {
+    return Sugar.Date.addLocale(code, set);
+  } else {
+    return Date.addLocale(code, set);
+  }
 }
 

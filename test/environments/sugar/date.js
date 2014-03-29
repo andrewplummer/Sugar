@@ -18,31 +18,38 @@ package('Date', function () {
     tzd = '+0000';
   }
 
-
-  method('getLocale', function() {
-    notEqual(Sugar.Date.getLocale().code, undefined, 'Current locale must be something... other libs may overwrite this');
+  // Imaginary locale to test locale switching
+  testAddLocale('fo', {
+    units: 'do,re,mi,fa,so,la,ti,do',
+    months: 'do,re,mi,fa,so,la,ti,do',
+    dateParse: '{year}kupo',
+    duration: '{num}{unit}momoney',
+    long: 'yeehaw'
   });
 
-  method('setLocale', function() {
-    // Imaginary locale to test locale switching
-    Sugar.Date.addLocale('fo', {
-      units: 'do,re,mi,fa,so,la,ti,do',
-      months: 'do,re,mi,fa,so,la,ti,do',
-      dateParse: '{year}kupo',
-      duration: '{num}{unit}momoney',
-      long: 'yeehaw'
-    });
-  });
+  notEqual(testGetLocale().code, undefined, 'Current locale must be something... other libs may overwrite this');
 
-  Sugar.Date.setLocale('en');
+  testSetLocale('en');
 
   //var day, d, date1, date2, dst, o;
-  //var isCurrentlyGMT = new Date(2011, 0, 1).getTimezoneOffset() === 0;
 
 
   method('isValid', function() {
+
     test(new Date('a fridge too far'), false, 'new Date invalid');
     test(new Date(), true, 'new Date valid');
+
+    // Issue #219
+
+    test(testCreateDate('28:00'),  true,  'hours may fall outside range');
+    test(testCreateDate('59:00'),  true,  'no hours allowed outside range');
+    test(testCreateDate('139:00'), false, '3 digits not supported');
+
+    // These dates actually will parse out natively in V8
+    // equal(Date.create('05:75').isValid(), false, 'no minutes allowed outside range');
+    // equal(Date.create('05:59:60').isValid(), false, 'no seconds allowed outside range');
+    test(testCreateDate('05:59:59'), true, 'seconds within range');
+
   });
 
   method('isUTC', function() {
@@ -157,9 +164,9 @@ package('Date', function () {
     dateEqual(testCreateDate('08-05-05', 'en-GB'), new Date(2005, 4, 8), 'dd-dd-dd is NOT an ISO8601 format');
     dateEqual(testCreateDate('8/10/85'), new Date(1985, 7, 10), 'American format will now revert back');
 
-    run(Date, 'setLocale', ['en-GB']);
+    testSetLocale('en-GB');
     dateEqual(testCreateDate('8/10/85'), new Date(1985, 9, 8), 'after global set');
-    run(Date, 'setLocale', ['en']);
+    testSetLocale('en');
     dateEqual(testCreateDate('8/10/85'), new Date(1985, 7, 10), 'before global reset');
   });
 
@@ -488,6 +495,97 @@ package('Date', function () {
     dateEqual(testCreateDate('the first day of next January'), new Date(now.getFullYear() + 1, 0, 1), 'the first day of next january');
 
     dateEqual(testCreateDate('Next week'), getRelativeDate(null, null, 7), 'Next week');
+
+    dateEqual(testCreateDate('Thursday of next week, 3:30pm'), getDateWithWeekdayAndOffset(4, 7, 15, 30), 'thursday of next week, 3:30pm');
+
+
+    dateEqual(testCreateDate('the 2nd Tuesday of June, 2012'), new Date(2012, 5, 12), 'the 2nd tuesday of June');
+
+    dateEqual(testCreateDate('the 1st Tuesday of November, 2012'), new Date(2012, 10, 6), 'the 1st tuesday of November');
+    dateEqual(testCreateDate('the 2nd Tuesday of November, 2012'), new Date(2012, 10, 13), 'the 2nd tuesday of November');
+    dateEqual(testCreateDate('the 3rd Tuesday of November, 2012'), new Date(2012, 10, 20), 'the 3rd tuesday of November');
+    dateEqual(testCreateDate('the 4th Tuesday of November, 2012'), new Date(2012, 10, 27), 'the 4th tuesday of November');
+    dateEqual(testCreateDate('the 5th Tuesday of November, 2012'), new Date(2012, 11, 4), 'the 5th tuesday of November');
+    dateEqual(testCreateDate('the 6th Tuesday of November, 2012'), new Date(2012, 11, 11), 'the 6th tuesday of November');
+
+    dateEqual(testCreateDate('the 1st Friday of February, 2012'), new Date(2012, 1, 3), 'the 1st Friday of February');
+    dateEqual(testCreateDate('the 2nd Friday of February, 2012'), new Date(2012, 1, 10), 'the 2nd Friday of February');
+    dateEqual(testCreateDate('the 3rd Friday of February, 2012'), new Date(2012, 1, 17), 'the 3rd Friday of February');
+    dateEqual(testCreateDate('the 4th Friday of February, 2012'), new Date(2012, 1, 24), 'the 4th Friday of February');
+    dateEqual(testCreateDate('the 5th Friday of February, 2012'), new Date(2012, 2, 2), 'the 5th Friday of February');
+    dateEqual(testCreateDate('the 6th Friday of February, 2012'), new Date(2012, 2, 9), 'the 6th Friday of February');
+
+    var d = new Date(thisYear, 1);
+    while(d.getDay() !== 5) {
+      d.setDate(d.getDate() + 1);
+    }
+
+    equal(testCreateDate('the 1st Friday of February').getFullYear(), thisYear, '1st friday of February should be this year');
+    equal(testCreateFutureDate('the 1st Friday of February').getFullYear(), now > d ? thisYear + 1 : thisYear, '1st friday of February should be this year or next');
+    equal(testCreatePastDate('the 1st Friday of February').getFullYear(), now < d ? thisYear - 1 : thisYear, '1st friday of February should be this year or last');
+
+    dateEqual(testCreateDate('in 60 seconds'), getRelativeDate(null, null, null, null, 1), 'in 60 seconds');
+    dateEqual(testCreateDate('in 45 minutes'), getRelativeDate(null, null, null, null, 45), 'in 45 minutes');
+    dateEqual(testCreateDate('in 5 hours'), getRelativeDate(null, null, null, 5), 'in 5 hours');
+    dateEqual(testCreateDate('in 5 days'), getRelativeDate(null, null, 5), 'in 5 days');
+    dateEqual(testCreateDate('in 5 weeks'), getRelativeDate(null, null, 35), 'in 5 weeks');
+    dateEqual(testCreateDate('in 5 months'), getRelativeDate(null, 5), 'in 5 months');
+    dateEqual(testCreateDate('in 5 years'), getRelativeDate(5), 'in 5 years');
+
+
+    // Issue #203
+
+    dateEqual(testCreateDate('The day after tomorrow 3:45pm', 'en'), new Date(now.getFullYear(), now.getMonth(), now.getDate() + 2, 15, 45), 'The day after tomorrow at 3:45pm');
+    dateEqual(testCreateDate('The day before yesterday at 11:15am', 'en'), new Date(now.getFullYear(), now.getMonth(), now.getDate() - 2, 11, 15), 'the day before yesterday at 11:15am');
+
+
+    var d = new Date();
+    d.setDate(28);
+    d.setHours(0);
+    d.setMinutes(0);
+    d.setSeconds(0);
+    d.setMilliseconds(0);
+
+    dateEqual(testCreateDate('the 28th'), d, 'the 28th');
+    dateEqual(testCreateDate('28th'), d, '28th');
+
+
+    var d = new Date();
+    d.setMonth(0);
+    d.setDate(28);
+    d.setHours(0);
+    d.setMinutes(0);
+    d.setSeconds(0);
+    d.setMilliseconds(0);
+    dateEqual(testCreateDate('the 28th of January'), d, 'the 28th of January');
+    dateEqual(testCreateDate('28th of January'), d, '28th of January');
+
+
+    // Issue #310
+
+    dateEqual(testCreateDate('6:30pm in 1 day'), run(getRelativeDate(null, null, 1), 'set', [{hours:18,minutes:30}, true]), '6:30pm in 1 day');
+    dateEqual(testCreateDate('6:30pm in 3 days'), run(getRelativeDate(null, null, 3), 'set', [{hours:18,minutes:30}, true]), '6:30pm in 3 days');
+    dateEqual(testCreateDate('6:30pm in -3 days'), run(getRelativeDate(null, null, -3), 'set', [{hours:18,minutes:30}, true]), '6:30pm in -3 days');
+
+    dateEqual(testCreateDate('6:30pm 2 days ago'), run(getRelativeDate(null, null, -2), 'set', [{hours:18,minutes:30}, true]), '6:30pm in 2 days ago');
+
+    dateEqual(testCreateDate('21:00 in 2 weeks'), run(getRelativeDate(null, null, 14), 'set', [{hours:21}, true]), '21:00pm in 2 weeks');
+    dateEqual(testCreateDate('5:00am in a month'), run(getRelativeDate(null, 1), 'set', [{hours:5}, true]), '5:00am in a month');
+    dateEqual(testCreateDate('5am in a month'), run(getRelativeDate(null, 1), 'set', [{hours:5}, true]), '5am in a month');
+    dateEqual(testCreateDate('5:01am in a month'), run(getRelativeDate(null, 1), 'set', [{hours:5,minutes:1}, true]), '5:01am in a month');
+
+    equal(run(testCreateDate('5am in an hour'), 'isValid'), false, '5am in an hour is invalid');
+    equal(run(testCreateDate('5am in a minute'), 'isValid'), false, '5am in a minute is invalid');
+
+    // Issue #375 "end of yesterday"
+
+    dateEqual(testCreateDate('beginning of yesterday'), run(testCreateDate('yesterday'), 'beginningOfDay'), 'beginning of yesterday');
+    dateEqual(testCreateDate('end of yesterday'), run(testCreateDate('yesterday'), 'endOfDay'), 'end of yesterday');
+    dateEqual(testCreateDate('beginning of today'), run(testCreateDate('today'), 'beginningOfDay'), 'beginning of today');
+    dateEqual(testCreateDate('end of today'), run(testCreateDate('today'), 'endOfDay'), 'end of today');
+    dateEqual(testCreateDate('beginning of tomorrow'), run(testCreateDate('tomorrow'), 'beginningOfDay'), 'beginning of tomorrow');
+    dateEqual(testCreateDate('end of tomorrow'), run(testCreateDate('tomorrow'), 'endOfDay'), 'end of tomorrow');
+
   });
 
 
@@ -499,6 +597,80 @@ package('Date', function () {
     dateEqual(runUTC('create', ['08-25-1978 11:42:32.488am', 'en']), new Date(Date.UTC(1978, 7, 25, 11, 42, 32, 488)), 'full with ms');
     dateEqual(runUTC('create', ['1994-11-05T13:15:30Z', 'en']), new Date(Date.UTC(1994, 10, 5, 13, 15, 30)), '"Z" is still utc');
     dateEqual(runUTC('create', ['two days ago', 'en']), getRelativeDate(null, null, -2), 'relative dates are not UTC');
+
+    // New handling of UTC dates
+
+    var date1 = runUTC('create', ['2001-06-15', 'en']);
+    var date2 = new Date(2001, 5, 15);
+    date2.setTime(date2.getTime() - (date2.getTimezoneOffset() * 60 * 1000));
+
+    dateEqual(date1, date2, 'is equal to date with timezone subtracted');
+    equal(date1._utc, false, 'does not set internal flag');
+
+    var d = run(new Date(2001, 5, 15), 'setUTC', [true]);
+
+    equal(d._utc, true, 'sets internal flag');
+    dateEqual(d, new Date(2001, 5, 15), 'does not change date');
+    dateEqual(dateRun(d, 'beginningOfMonth'), new Date(Date.UTC(2001, 5, 1)), 'the beginning of the month');
+    dateEqual(dateRun(d, 'endOfMonth'), new Date(Date.UTC(2001, 5, 30, 23, 59, 59, 999)), 'the end of the month');
+    equal(run(d, 'minutesSince', [runUTC('create', ['2001-06-15', 'en'])]), d.getTimezoneOffset(), 'minutesSince is equal to the timezone offset');
+    equal(run(d, 'hoursSince', ['2001-6-14']), 24, 'hoursSince | does not actually shift time');
+
+    var d = run(testCreateDate('1 month ago'), 'setUTC', [true])
+    equal(run(d, 'isLastMonth'), true, 'isLastMonth');
+
+    var d = run(runUTC('create', ['2001-06-15', 'en']), 'setUTC', [true]);
+
+    equal(run(d, 'iso'), '2001-06-15T00:00:00.000Z', 'will properly be output in UTC');
+    equal(run(d, 'format', ['{tz}']), '+0000', 'format UTC date will have +0000 offset');
+    equal(run(d, 'getUTCOffset'), '+0000', 'getUTCOffset');
+    dateEqual(dateRun(d, 'advance', ['1 month']), new Date(Date.UTC(2001, 6, 15)), 'advancing');
+
+    equal(run(run(runUTC('create', ['2010-02-01', 'en']), 'setUTC', [true]), 'daysInMonth'), 28, 'should find correct days in month');
+    equal(run(run(runUTC('create', ['2000-01', 'en']), 'setUTC', [true]), 'isLeapYear'), true, 'isLeapYear accounts for utc dates');
+
+    var d = run(runUTC('create', ['2000-02-18 11:00pm', 'en']), 'setUTC', [true]);
+
+    equal(run(d, 'is', ['Friday', null, true]), true, 'is friday');
+    equal(run(d, 'isWeekday', [true]), true, 'friday isWeekday');
+    equal(run(d, 'is', ['2000-02-18', null, true]), true, 'friday full date');
+    equal(run(d, 'isAfter', [runUTC('create', ['2000-02-18 10:00pm', 'en'])]), true, 'isAfter');
+    equal(dateRun(d, 'reset'), new Date(Date.UTC(2000, 1, 18)), 'resetting');
+
+
+    var d = run(runUTC('create', ['2000-02-14', 'en']), 'setUTC', [true]);
+
+    equal(run(d, 'is', ['Monday', null, true]), true, 'is monday');
+    equal(run(d, 'isWeekday', [true]), true, 'monday is a weekday');
+    equal(run(d, 'is', ['2000-02-14', null, true]), true, 'monday full date');
+    equal(run(d, 'format'), 'February 14, 2000 12:00am', 'fomratting monday');
+    equal(run(d, 'full'), 'Monday February 14, 2000 12:00:00am', 'full format');
+    equal(run(d, 'long'), 'February 14, 2000 12:00am', 'long format');
+    equal(run(d, 'short'), 'February 14, 2000', 'short format');
+
+    equal(run(runUTC('create', ['1 minute ago', 'en']), 'relative'), '1 minute ago', 'relative dates are unaffected');
+
+    var d = run(run(new Date(2001, 5, 15), 'setUTC', [true]), 'setUTC', [false]);
+    equal(d._utc, false, 'utc flag can be set off');
+
+    // Issue #235
+
+    equal(run(run(run(testCreateDate(), 'setUTC', [true]), 'clone'), 'isUTC'), true, 'clone should preserve UTC');
+    equal(run(new Date(), 'clone')._utc, false, 'clone should never be UTC if flag not set');
+    equal(run(testCreateDate(run(new Date(), 'setUTC', [true])), 'isUTC'), true, 'create should preserve UTC');
+
+    var isCurrentlyGMT = new Date(2011, 0, 1).getTimezoneOffset() === 0;
+    equal(run(testCreateDate(new Date()), 'isUTC'), isCurrentlyGMT, 'non utc date should not have UTC flag');
+
+    // Issue #244
+
+    dateEqual(runUTC('create', ['0999']), new Date(Date.UTC(999, 0)), '3 digit year 999 should be equal to ISO8601');
+    dateEqual(runUTC('create', ['0123']), new Date(Date.UTC(123, 0)), '3 digit year 123 should be equal to ISO8601');
+
+    var d = run(runUTC('create', [2013, 0, 14]), 'setUTC', [true]);
+    run(d, 'set', [{week:1}]);
+    dateEqual(d, runUTC('create', [2012, 11, 31]), 'utc dates should not throw errors on week set');
+
   });
 
 
@@ -507,8 +679,185 @@ package('Date', function () {
     // Issue #98: System time set to January 31st
     dateEqual(testCreateDate('2011-09-01T05:00:00Z'), getUTCDate(2011, 9, 1, 5), 'text format');
 
+    // Issue #152 times should be allowed in front
+    dateEqual(testCreateDate('3:45 2012-3-15'), new Date(2012, 2, 15, 3, 45), 'time in the front');
+    dateEqual(testCreateDate('3:45pm 2012-3-15'), new Date(2012, 2, 15, 15, 45), 'big endian with time');
+    dateEqual(testCreateDate('3:45pm 3/15/2012'), new Date(2012, 2, 15, 15, 45), 'crazy endian slashes with time');
+    dateEqual(testCreateDate('3:45pm 3/4/2012', 'en-GB'), new Date(2012, 3, 3, 15, 45), 'little endian slashes with time');
+
+
+    // Issue #144 various time/date formats
+    var d = getDateWithWeekdayAndOffset(4);
+    d.setHours(15);
+    dateEqual(testCreateDate('6/30/2012 3:00 PM'), new Date(2012, 5, 30, 15), '6/30/2012 3:00 PM');
+    dateEqual(testCreateDate('Thursday at 3:00 PM'), d, 'Thursday at 3:00 PM');
+    dateEqual(testCreateDate('Thursday at 3:00PM'), d, 'Thursday at 3:00PM (no space)');
+
+
+    // Date.create should clone a date
+
+    var date1 = new Date(5000);
+    var date2 = testCreateDate(date1);
+    date1.setTime(10000);
+
+    notEqual(date1.getTime(), date2.getTime(), 'created date should not be affected');
+
+
+    // Simple 12:00am
+
+    equal(testCreateDate('12:00am').getHours(), 0, '12:00am hours should be 0');
+    equal(testCreateDate('12am').getHours(), 0, '12am hours should be 0');
+
+    // Issue #227
+
+    dateEqual(testCreateDate('0 January'), new Date(now.getFullYear() - 1, 11, 31), 'Date#addMonths | 0 January');
+    dateEqual(testCreateDate('1 January'), new Date(now.getFullYear(), 0, 1), 'Date#addMonths | 1 January');
+    dateEqual(testCreateDate('01 January'), new Date(now.getFullYear(), 0, 1), 'Date#addMonths | 01 January');
+    dateEqual(testCreateDate('15 January'), new Date(now.getFullYear(), 0, 15), 'Date#addMonths | 15 January');
+    dateEqual(testCreateDate('31 January'), new Date(now.getFullYear(), 0, 31), 'Date#addMonths | 31 January');
+
+    dateEqual(testCreateDate('1 Jan'), new Date(now.getFullYear(), 0, 1), 'Date#addMonths | 1 Jan');
+    dateEqual(testCreateDate('01 Jan'), new Date(now.getFullYear(), 0, 1), 'Date#addMonths | 01 Jan');
+    dateEqual(testCreateDate('15 Jan'), new Date(now.getFullYear(), 0, 15), 'Date#addMonths | 15 Jan');
+    dateEqual(testCreateDate('31 Jan'), new Date(now.getFullYear(), 0, 31), 'Date#addMonths | 31 Jan');
+
+    dateEqual(testCreateDate('0 July'), new Date(now.getFullYear(), 5, 30), 'Date#addMonths | 0 July');
+    dateEqual(testCreateDate('1 July'), new Date(now.getFullYear(), 6, 1), 'Date#addMonths | 1 July');
+    dateEqual(testCreateDate('01 July'), new Date(now.getFullYear(), 6, 1), 'Date#addMonths | 01 July');
+    dateEqual(testCreateDate('15 July'), new Date(now.getFullYear(), 6, 15), 'Date#addMonths | 15 July');
+    dateEqual(testCreateDate('31 July'), new Date(now.getFullYear(), 6, 31), 'Date#addMonths | 31 July');
+    dateEqual(testCreateDate('32 July'), new Date(now.getFullYear(), 7, 1), 'Date#addMonths | 32 July');
+
+    dateEqual(testCreateDate('1 Dec'), new Date(now.getFullYear(), 11, 1), 'Date#addMonths | 1 Dec');
+    dateEqual(testCreateDate('01 Dec'), new Date(now.getFullYear(), 11, 1), 'Date#addMonths | 01 Dec');
+    dateEqual(testCreateDate('15 Dec'), new Date(now.getFullYear(), 11, 15), 'Date#addMonths | 15 Dec');
+    dateEqual(testCreateDate('31 Dec'), new Date(now.getFullYear(), 11, 31), 'Date#addMonths | 31 Dec');
+
+    dateEqual(testCreateDate('1 December'), new Date(now.getFullYear(), 11, 1), 'Date#addMonths | 1 December');
+    dateEqual(testCreateDate('01 December'), new Date(now.getFullYear(), 11, 1), 'Date#addMonths | 01 December');
+    dateEqual(testCreateDate('15 December'), new Date(now.getFullYear(), 11, 15), 'Date#addMonths | 15 December');
+    dateEqual(testCreateDate('31 December'), new Date(now.getFullYear(), 11, 31), 'Date#addMonths | 31 December');
+    dateEqual(testCreateDate('32 December'), new Date(now.getFullYear() + 1, 0, 1), 'Date#addMonths | 32 December');
+
+    dateEqual(testCreateDate('1 January 3pm'), new Date(now.getFullYear(), 0, 1, 15), 'Date#addMonths | 1 January 3pm');
+    dateEqual(testCreateDate('1 January 3:45pm'), new Date(now.getFullYear(), 0, 1, 15, 45), 'Date#addMonths | 1 January 3:45pm');
+
+    dateEqual(testCreateDate("'87"), new Date(1987, 0), "Date#create | '87");
+    dateEqual(testCreateDate("May '87"), new Date(1987, 4), "Date#create | May '87");
+    dateEqual(testCreateDate("14 May '87"), new Date(1987, 4, 14), "Date#create | 14 May '87");
+
+    // Issue #224
+    equal(run(testCreateDate(''), 'isValid'), false, 'empty strings are not valid');
+
+    // Issue #387 null in date constructor
+    dateEqual(new Date(null), testCreateDate(null), 'null');
+
   });
 
+
+  method('isPast', function() {
+
+    // Issue #141 future/past preference
+
+    test(testCreatePastDate('Sunday'),    true, 'weekdays | Sunday');
+    test(testCreatePastDate('Monday'),    true, 'weekdays | Monday');
+    test(testCreatePastDate('Tuesday'),   true, 'weekdays | Tuesday');
+    test(testCreatePastDate('Wednesday'), true, 'weekdays | Wednesday');
+    test(testCreatePastDate('Thursday'),  true, 'weekdays | Thursday');
+    test(testCreatePastDate('Friday'),    true, 'weekdays | Friday');
+    test(testCreatePastDate('Saturday'),  true, 'weekdays | Saturday');
+
+    test(testCreatePastDate('January'),   true, 'months | January');
+    test(testCreatePastDate('February'),  true, 'months | February');
+    test(testCreatePastDate('March'),     true, 'months | March');
+    test(testCreatePastDate('April'),     true, 'months | April');
+    test(testCreatePastDate('May'),       true, 'months | May');
+    test(testCreatePastDate('June'),      true, 'months | June');
+    test(testCreatePastDate('July'),      true, 'months | July');
+    test(testCreatePastDate('August'),    true, 'months | August');
+    test(testCreatePastDate('September'), true, 'months | September');
+    test(testCreatePastDate('October'),   true, 'months | October');
+    test(testCreatePastDate('November'),  true, 'months | November');
+    test(testCreatePastDate('December'),  true, 'months | December');
+
+  });
+
+  method('isFuture', function() {
+
+    test(testCreateFutureDate('Sunday'),    true, 'weekdays | Sunday');
+    test(testCreateFutureDate('Monday'),    true, 'weekdays | Monday');
+    test(testCreateFutureDate('Tuesday'),   true, 'weekdays | Tuesday');
+    test(testCreateFutureDate('Wednesday'), true, 'weekdays | Wednesday');
+    test(testCreateFutureDate('Thursday'),  true, 'weekdays | Thursday');
+    test(testCreateFutureDate('Friday'),    true, 'weekdays | Friday');
+    test(testCreateFutureDate('Saturday'),  true, 'weekdays | Saturday');
+
+    test(testCreateFutureDate('January'),   true, 'months | January');
+    test(testCreateFutureDate('February'),  true, 'months | February');
+    test(testCreateFutureDate('March'),     true, 'months | March');
+    test(testCreateFutureDate('April'),     true, 'months | April');
+    test(testCreateFutureDate('May'),       true, 'months | May');
+    test(testCreateFutureDate('June'),      true, 'months | June');
+    test(testCreateFutureDate('July'),      true, 'months | July');
+    test(testCreateFutureDate('August'),    true, 'months | August');
+    test(testCreateFutureDate('September'), true, 'months | September');
+    test(testCreateFutureDate('October'),   true, 'months | October');
+    test(testCreateFutureDate('November'),  true, 'months | November');
+    test(testCreateFutureDate('December'),  true, 'months | December');
+
+
+    test(testCreateFutureDate('1:00am'), true, '1am should be the future');
+    test(testCreateFutureDate('11:00pm'), true, '11pm should be the future');
+
+    equal(testCreateFutureDate('1:00am') < testCreateDate('1 day from now'), true, '1am should be the future');
+    equal(testCreateFutureDate('11:00pm') < testCreateDate('1 day from now'), true, '11pm should be the future');
+
+  });
+
+  group('Future Dates', function() {
+
+    // Ensure that dates don't traverse TOO far into the past/future
+    equal(run(testCreateFutureDate('January'), 'monthsFromNow') > 12, false, 'no more than 12 months from now');
+    equal(run(testCreateFutureDate('December'), 'monthsFromNow') > 12, false, 'no more than 12 months from now');
+
+    // Issue #210
+
+    equal(testCreateFutureDate('Sunday at 3:00').getDay(), 0, 'Date.future | weekday should never be ambiguous');
+  });
+
+  group('2-digit years', function() {
+
+    // Issue #383 Date.past in 2-digit years
+    dateEqual(testCreatePastDate('12/20/23'), new Date(1923,11,20), 'Date.past | 1923-12-20');
+    dateEqual(testCreateFutureDate('12/20/99'), new Date(2099,11,20), 'Date.future | 2099-12-20');
+
+  });
+
+  group('Invalid Dates', function() {
+    equal(run(testCreateDate('my pants'), 'isPast'), undefined, 'isPast | invalid dates should return false');
+    equal(run(testCreateDate('my pants'), 'isFuture'), undefined, 'isFuture | invalid dates should return false');
+    equal(run(testCreateDate('my pants'), 'isToday'), undefined, 'isToday | invalid dates should return false');
+    equal(run(testCreateDate('my pants'), 'isTomorrow'), undefined, 'isTomorrow | invalid dates should return false');
+    equal(run(testCreateDate('my pants'), 'is', ['today']), undefined, 'is | invalid dates should return false');
+
+    // Issue #264
+
+    testSetLocale('fo');
+    equal(run(testCreateDate(), 'isToday'), true, 'isToday should always work regardless of locale');
+    equal(run(testCreateDate('yesterday', 'en'), 'isYesterday'), true, 'isYesterday should always work regardless of locale');
+    equal(run(testCreateDate('tomorrow', 'en'), 'isTomorrow'), true, 'isTomorrow should always work regardless of locale');
+    equal(run(testCreateDate('monday', 'en'), 'isMonday'), true, 'isMonday should always work regardless of locale');
+    equal(run(testCreateDate('tuesday', 'en'), 'isTuesday'), true, 'isTuesday should always work regardless of locale');
+    equal(run(testCreateDate('wednesday', 'en'), 'isWednesday'), true, 'isWednesday should always work regardless of locale');
+    equal(run(testCreateDate('thursday', 'en'), 'isThursday'), true, 'isThursday should always work regardless of locale');
+    equal(run(testCreateDate('friday', 'en'), 'isFriday'), true, 'isFriday should always work regardless of locale');
+    equal(run(testCreateDate('saturday', 'en'), 'isSaturday'), true, 'isSaturday should always work regardless of locale');
+    equal(run(testCreateDate('sunday', 'en'), 'isSunday'), true, 'isSunday should always work regardless of locale');
+    equal(run(testCreateDate('1 day ago', 'en'), 'isPast'), true, 'isPast should always work regardless of locale');
+    equal(run(testCreateDate('1 day from now', 'en'), 'isFuture'), true, 'isFuture should always work regardless of locale');
+    testSetLocale('en');
+
+  });
 
   method('set', function() {
 
@@ -953,6 +1302,14 @@ package('Date', function () {
     run(d, 'setISOWeek');
     dateEqual(d, new Date(Date.UTC(2010,11,31,2,15,20)), 'utc | week stays set');
 
+    // Issue #251
+
+    test(new Date(2013, 0), [1], new Date(2013, 0, 1).getTime(), 'Should follow ISO8601');
+    test(new Date(2013, 0, 6), [1], new Date(2013, 0, 6).getTime(), 'Sunday should remain at the end of the week as per ISO8601 standard');
+    test(new Date(2013, 0, 13), [1], new Date(2013, 0, 6).getTime(), 'Sunday one week ahead');
+    test(new Date(2013, 0, 7), [1], new Date(2012, 11, 31).getTime(), 'Monday should remain at the beginning of the week as per ISO8601 standard');
+    test(new Date(2013, 0, 14), [2], new Date(2013, 0, 7).getTime(), 'Monday one week ahead');
+
   });
 
   method('format', function() {
@@ -1020,8 +1377,8 @@ package('Date', function () {
     test(d, ['{yyyy}-{MM}-{dd} {hh}:{mm}:{ss}Z'], '2010-08-05 04:03:02Z', 'ISO8601 UTC');
     test(d, ['{Month}, {yyyy}'], 'August, 2010', 'month and year');
 
-    test(d, [Sugar.Date.ISO8601_DATE], '2010-08-05', 'ISO8601_DATE | constant');
-    test(d, [Sugar.Date.ISO8601_DATETIME], '2010-08-05T04:03:02.000'+isotzd, 'ISO8601_DATETIME | constant');
+    test(d, [getProperty(Date, 'ISO8601_DATE')], '2010-08-05', 'ISO8601_DATE | constant');
+    test(d, [getProperty(Date, 'ISO8601_DATETIME')], '2010-08-05T04:03:02.000'+isotzd, 'ISO8601_DATETIME | constant');
 
     test(d, ['ISO8601_DATE'], '2010-08-05', 'ISO8601_DATE | string');
     test(d, ['ISO8601_DATETIME'], '2010-08-05T04:03:02.000'+isotzd, 'ISO8601_DATETIME | string');
@@ -1030,8 +1387,8 @@ package('Date', function () {
     var d = new Date('August 5, 2010 04:03:02');
     var rfc1123 = testCapitalize(getWeekdayFromDate(d).slice(0,3))+', '+testPadNumber(d.getDate(), 2)+' '+testCapitalize(getMonthFromDate(d).slice(0,3))+' '+d.getFullYear()+' '+testPadNumber(d.getHours(), 2)+':'+testPadNumber(d.getMinutes(), 2)+':'+testPadNumber(d.getSeconds(), 2)+' '+ run(d, 'getUTCOffset');
     var rfc1036 = testCapitalize(getWeekdayFromDate(d))+', '+testPadNumber(d.getDate(), 2)+'-'+testCapitalize(getMonthFromDate(d).slice(0,3))+'-'+d.getFullYear().toString().slice(2)+' '+testPadNumber(d.getHours(), 2)+':'+testPadNumber(d.getMinutes(), 2)+':'+testPadNumber(d.getSeconds(), 2)+' '+run(d, 'getUTCOffset');
-    test(d, [Sugar.Date.RFC1123], rfc1123, 'RFC1123 | constant');
-    test(d, [Sugar.Date.RFC1036], rfc1036, 'RFC1036 | constant');
+    test(d, [getProperty(Date, 'RFC1123')], rfc1123, 'RFC1123 | constant');
+    test(d, [getProperty(Date, 'RFC1036')], rfc1036, 'RFC1036 | constant');
     test(d, ['RFC1123'], rfc1123, 'RFC1123 | string');
     test(d, ['RFC1036'], rfc1036, 'RFC1036 | string');
 
@@ -1045,10 +1402,13 @@ package('Date', function () {
     // ISO8601 - UTC
     var d = run(new Date('August 5, 2010 04:03:02'), 'setUTC', [true]);
     var iso = d.getUTCFullYear()+'-'+testPadNumber(d.getUTCMonth()+1, 2)+'-'+testPadNumber(d.getUTCDate(), 2)+'T'+testPadNumber(d.getUTCHours(), 2)+':'+testPadNumber(d.getUTCMinutes(), 2)+':'+testPadNumber(d.getUTCSeconds(), 2)+'.'+testPadNumber(d.getUTCMilliseconds(), 3)+'Z';
-    test(d, [Sugar.Date.ISO8601_DATETIME], iso, 'ISO8601_DATETIME UTC | constant');
+    test(d, [getProperty(Date, 'ISO8601_DATETIME')], iso, 'ISO8601_DATETIME UTC | constant');
     test(d, ['ISO8601_DATETIME'], iso, 'ISO8601_DATETIME UTC');
 
-    test(new Date(NaN), [Sugar.Date.ISO8601_DATETIME], 'Invalid Date', 'Date#format | invalid');
+    test(new Date(NaN), [getProperty(Date, 'ISO8601_DATETIME')], 'Invalid Date', 'invalid');
+
+    // Issue #262
+    equal(/\d+-/.test(run(new Date(), 'format', ['{timezone}'])), false, 'Timezone format should not include hyphens')
 
   });
 
@@ -1071,7 +1431,7 @@ package('Date', function () {
 
   method('iso', function() {
     var d = new Date('August 5, 2010 04:03:02');
-    var expected = run(run(d, 'setUTC', [true], 'format', [Sugar.Date.ISO8601_DATETIME]));
+    var expected = run(run(d, 'setUTC', [true], 'format', [getProperty(Date, 'ISO8601_DATETIME')]));
     test(d, expected, 'Date#iso is an alias for the ISO8601_DATETIME format in UTC');
   });
 
@@ -1323,6 +1683,10 @@ package('Date', function () {
 
     test(testCreateDate('3 hours ago'), ['now', 'bloopie'], false, 'does not die on string-based precision');
 
+
+    // Issue #160
+    test(testCreateDate('12/01/2013'), ['November 2013'], false, 'December 2013 is not November 2013');
+
   });
 
   method('isLeapYear', function() {
@@ -1479,6 +1843,14 @@ package('Date', function () {
     equal(run(d, 'yearsSince', ['last week']), Math.round(offset / 1000 / 60 / 60 / 24 / 365.25), 'years since last week');
     equal(run(d, 'yearsUntil', ['last week']), Math.round(-offset / 1000 / 60 / 60 / 24 / 365.25), 'years until the last day of 2011');
 
+    // Issue #236
+    var d = getRelativeDate(null, null, null, 14);
+    equal(run(d, 'daysFromNow'), 0, 'should floor the number rather than round');
+
+    // Issue #267
+    equal(run(new Date('Mar 01, 2013'), 'daysUntil', [new Date('Mar 28, 2013')]), 27, 'should not be phased by DST traversal');
+    equal(run(new Date('Mar 10, 2013'), 'daysUntil', [new Date('Mar 11, 2013')]), 1, 'exact DST traversal point for CST/CDT');
+
   });
 
 
@@ -1577,6 +1949,10 @@ package('Date', function () {
     dateEqual(dateRun(d, 'addWeeks', [-12]), new Date(2011, 11, 7, 22, 15, 42), 'addWeeks | negative');
     dateEqual(dateRun(d, 'addMonths', [-12]), new Date(2011, 1, 28, 22, 15, 42), 'addMonths | negative');
     dateEqual(dateRun(d, 'addYears', [-12]), new Date(2000, 1, 29, 22, 15, 42), 'addYears | negative');
+
+    // Issue #221
+
+    dateEqual(dateRun(new Date(2012, 0), 'addMonths', [-13]), new Date(2010, 11), 'Date#addMonths | Month traversal should not kick in when n < -12');
 
   });
 
@@ -2032,8 +2408,8 @@ package('Date', function () {
     run(Date, 'addFormat', ['on ze (\\d+)th of (january|february|march|april|may) lavigne', ['date','month'], 'en']);
     dateEqual(testCreateDate('on ze 18th of april lavigne', 'en'), new Date(thisYear, 3, 18), 'handles other formats');
 
-    equal(typeof run(Date, 'getLocale'), 'object', 'current localization object is exposed in case needed');
-    equal(run(Date, 'getLocale').code, 'en', 'adding the format did not change the current locale');
+    equal(typeof testGetLocale(), 'object', 'current localization object is exposed in case needed');
+    equal(testGetLocale().code, 'en', 'adding the format did not change the current locale');
 
   });
 
@@ -2044,29 +2420,29 @@ package('Date', function () {
     equal(run(testCreateDate('June 18, 2011'), 'isValid'), true, 'English dates will also be properly parsed without being initialized or passing a locale code');
 
 
-    run(Date, 'setLocale', ['fo']);
+    testSetLocale('fo');
 
     equal(run(testCreateDate('2011kupo', 'fo'), 'isValid'), true, 'dates will parse if their locale is passed');
     equal(run(testCreateDate('２０１１年０６月１８日'), 'isValid'), false, 'dates will not parse thereafter as the current locale is still en');
 
     equal(run(new Date(2011, 5, 6), 'format', ['{Month}']), 'La', 'june is La');
 
-    raisesError(function(){ run(Date, 'setLocale'); }, 'no arguments raises error');
-    equal(run(Date, 'getLocale').code, 'fo', 'setting locale with no arguments had no effect');
+    raisesError(function(){ testSetLocale(); }, 'no arguments raises error');
+    equal(testGetLocale().code, 'fo', 'setting locale with no arguments had no effect');
     equal(run(new Date(2011, 5, 6), 'format', ['{Month}']), 'La', 'will not change the locale if no argument passed');
     equal(run(new Date(2011, 5, 6), 'format', ['', 'en']), 'June 6, 2011 12:00am', 'local locale should override global');
     equal(run(testCreateDate('5 months ago', 'en'), 'relative', ['en']), '5 months ago', 'local locale should override global');
 
-    raisesError(function(){ run(Date, 'setLocale', ['']); }, '"" raises an invalid locale error');
+    raisesError(function(){ testSetLocale(''); }, '"" raises an invalid locale error');
     equal(run(new Date(2011, 5, 6), 'format', ['{Month}']), 'La', 'will not change the locale if blank string passed');
     dateEqual(testCreateDate('2010-Jan-25', 'fo'), new Date(2010, 0, 25), 'Static input format always matches English months');
 
-    raisesError(function(){ run(Date, 'setLocale', ['pink']) }, 'Non-existent locales will raise an error');
+    raisesError(function(){ testSetLocale('pink'); }, 'Non-existent locales will raise an error');
     equal(run(testCreateDate('2010-Jan-25'), 'format'), 'yeehaw', 'will not set the current locale to an invalid locale');
 
   });
 
-  run(Date, 'setLocale', ['en']);
+  testSetLocale('en');
 
   method('getISOWeek', function() {
 
@@ -2093,506 +2469,130 @@ package('Date', function () {
     test(new Date(2014,  0,  6),  2, 'January 06, 2014');
 
   });
-  return;
 
-  Date.setLocale('fo');
-
-  equal((5).days().duration(), '5somomoney', 'Number#duration | Fake locale | 5 days');
-  equal((150).days().duration(), '4timomoney', 'Number#duration | Fake locale | 150 days');
-  equal((38000).seconds().duration(), '10famomoney', 'Number#duration | Fake locale | 38000 seconds');
-  equal((38000).minutes().duration(), '3lamomoney', 'Number#duration | Fake locale | 38000 minutes');
-  equal((38000).hours().duration(), '4domomoney', 'Number#duration | Fake locale | 38000 hours');
-
-
-  // Duration without setting the locale code
-
-  equal((5).days().duration('en'), '5 days', 'Number#duration | English | 5 days');
-  equal((150).days().duration('en'), '4 months', 'Number#duration | English | 150 days');
-  equal((38000).seconds().duration('en'), '10 hours', 'Number#duration | English | 38000 seconds');
-  equal((38000).minutes().duration('en'), '3 weeks', 'Number#duration | English | 38000 minutes');
-  equal((38000).hours().duration('en'), '4 years', 'Number#duration | English | 38000 hours');
-
-  Date.setLocale('en');
-
-
-  // Custom date formats
-  // https://github.com/andrewplummer/Sugar/issues/119#issuecomment-4520966
-
-  Date.addFormat('(\\d{2})(\\d{2})',['hour','minute']);
-  dateEqual(Date.create('0615'), new Date().set({ hours: 6, minutes: 15 }, true), 'Date.addFormat | Overrides defined formats');
-
-  // Not sure how nuts I want to get with this so for the sake of the tests just push the proper format back over the top...
-  Date.addFormat('(\\d{4})', ['year']);
-
-  // Issue #146 - These tests were failing when system time was set to Friday, June 1, 2012 PDT
-
-  equal(Date.create('2010-01-20T20:00:00.000Z').iso(), '2010-01-20T20:00:00.000Z');
-  equal(Date.create('2010-02-20T20:00:00.000Z').iso(), '2010-02-20T20:00:00.000Z');
-  equal(Date.create('2010-03-20T20:00:00.000Z').iso(), '2010-03-20T20:00:00.000Z');
-  equal(Date.create('2010-04-20T20:00:00.000Z').iso(), '2010-04-20T20:00:00.000Z');
-  equal(Date.create('2010-05-20T20:00:00.000Z').iso(), '2010-05-20T20:00:00.000Z');
-  equal(Date.create('2010-05-20T20:00:00.000Z').iso(), '2010-05-20T20:00:00.000Z');
-  equal(Date.create('2010-06-20T20:00:00.000Z').iso(), '2010-06-20T20:00:00.000Z');
-  equal(Date.create('2010-07-20T20:00:00.000Z').iso(), '2010-07-20T20:00:00.000Z');
-  equal(Date.create('2010-08-20T20:00:00.000Z').iso(), '2010-08-20T20:00:00.000Z');
-  equal(Date.create('2010-09-20T20:00:00.000Z').iso(), '2010-09-20T20:00:00.000Z');
-  equal(Date.create('2010-10-20T20:00:00.000Z').iso(), '2010-10-20T20:00:00.000Z');
-  equal(Date.create('2010-11-20T20:00:00.000Z').iso(), '2010-11-20T20:00:00.000Z');
-  equal(Date.create('2010-12-20T20:00:00.000Z').iso(), '2010-12-20T20:00:00.000Z');
-
-  equal(Date.create('Jan 20 2010 12:00:00 GMT-0800 (PST)').iso(), '2010-01-20T20:00:00.000Z');
-  equal(Date.create('Feb 20 2010 12:00:00 GMT-0800 (PST)').iso(), '2010-02-20T20:00:00.000Z');
-  equal(Date.create('Mar 20 2010 12:00:00 GMT-0800 (PST)').iso(), '2010-03-20T20:00:00.000Z');
-  equal(Date.create('Apr 20 2010 12:00:00 GMT-0800 (PST)').iso(), '2010-04-20T20:00:00.000Z');
-  equal(Date.create('May 20 2010 12:00:00 GMT-0800 (PST)').iso(), '2010-05-20T20:00:00.000Z');
-  equal(Date.create('Jun 20 2010 12:00:00 GMT-0800 (PST)').iso(), '2010-06-20T20:00:00.000Z');
-  equal(Date.create('Jul 20 2010 12:00:00 GMT-0800 (PST)').iso(), '2010-07-20T20:00:00.000Z');
-  equal(Date.create('Aug 20 2010 12:00:00 GMT-0800 (PST)').iso(), '2010-08-20T20:00:00.000Z');
-  equal(Date.create('Sep 20 2010 12:00:00 GMT-0800 (PST)').iso(), '2010-09-20T20:00:00.000Z');
-  equal(Date.create('Oct 20 2010 12:00:00 GMT-0800 (PST)').iso(), '2010-10-20T20:00:00.000Z');
-  equal(Date.create('Nov 20 2010 12:00:00 GMT-0800 (PST)').iso(), '2010-11-20T20:00:00.000Z');
-  equal(Date.create('Dec 20 2010 12:00:00 GMT-0800 (PST)').iso(), '2010-12-20T20:00:00.000Z');
-
-  dateEqual(Date.create('Thursday of next week, 3:30pm'), getDateWithWeekdayAndOffset(4, 7, 15, 30), 'Date#create | Fuzzy Dates | thursday of next week, 3:30pm');
-
-
-  // Issue #152 times should be allowed in front
-  dateEqual(Date.create('3:45 2012-3-15'), new Date(2012, 2, 15, 3, 45), 'Date#create | time in the front');
-  dateEqual(Date.create('3:45pm 2012-3-15'), new Date(2012, 2, 15, 15, 45), 'Date#create | big endian with time');
-  dateEqual(Date.create('3:45pm 3/15/2012'), new Date(2012, 2, 15, 15, 45), 'Date#create | crazy endian slashes with time');
-  dateEqual(Date.create('3:45pm 3/4/2012', 'en-GB'), new Date(2012, 3, 3, 15, 45), 'Date#create | little endian slashes with time');
-
-
-
-  // Issue #144 various time/date formats
-  dateEqual(Date.create('6/30/2012 3:00 PM'), new Date(2012, 5, 30, 15), 'Date#create | 6/30/2012 3:00 PM');
-  dateEqual(Date.create('Thursday at 3:00 PM'), getDateWithWeekdayAndOffset(4).set({ hour: 15 }), 'Date#create | Thursday at 3:00 PM');
-  dateEqual(Date.create('Thursday at 3:00PM'), getDateWithWeekdayAndOffset(4).set({ hour: 15 }), 'Date#create | Thursday at 3:00PM (no space)');
-
-
-
-  // Issue #141 future/past preference
-
-  var weekdayOffset = now.getWeekday();
-
-  equal(Date.past('Sunday').isPast(),    true, 'Date#past | weekdays | Sunday');
-  equal(Date.past('Monday').isPast(),    true, 'Date#past | weekdays | Monday');
-  equal(Date.past('Tuesday').isPast(),   true, 'Date#past | weekdays | Tuesday');
-  equal(Date.past('Wednesday').isPast(), true, 'Date#past | weekdays | Wednesday');
-  equal(Date.past('Thursday').isPast(),  true, 'Date#past | weekdays | Thursday');
-  equal(Date.past('Friday').isPast(),    true, 'Date#past | weekdays | Friday');
-  equal(Date.past('Saturday').isPast(),  true, 'Date#past | weekdays | Saturday');
-
-  equal(Date.future('Sunday').isFuture(),    true, 'Date#future | weekdays | Sunday');
-  equal(Date.future('Monday').isFuture(),    true, 'Date#future | weekdays | Monday');
-  equal(Date.future('Tuesday').isFuture(),   true, 'Date#future | weekdays | Tuesday');
-  equal(Date.future('Wednesday').isFuture(), true, 'Date#future | weekdays | Wednesday');
-  equal(Date.future('Thursday').isFuture(),  true, 'Date#future | weekdays | Thursday');
-  equal(Date.future('Friday').isFuture(),    true, 'Date#future | weekdays | Friday');
-  equal(Date.future('Saturday').isFuture(),  true, 'Date#future | weekdays | Saturday');
-
-  equal(Date.past('January').isPast(),   true, 'Date#past | months | January');
-  equal(Date.past('February').isPast(),  true, 'Date#past | months | February');
-  equal(Date.past('March').isPast(),     true, 'Date#past | months | March');
-  equal(Date.past('April').isPast(),     true, 'Date#past | months | April');
-  equal(Date.past('May').isPast(),       true, 'Date#past | months | May');
-  equal(Date.past('June').isPast(),      true, 'Date#past | months | June');
-  equal(Date.past('July').isPast(),      true, 'Date#past | months | July');
-  equal(Date.past('August').isPast(),    true, 'Date#past | months | August');
-  equal(Date.past('September').isPast(), true, 'Date#past | months | September');
-  equal(Date.past('October').isPast(),   true, 'Date#past | months | October');
-  equal(Date.past('November').isPast(),  true, 'Date#past | months | November');
-  equal(Date.past('December').isPast(),  true, 'Date#past | months | December');
-
-  equal(Date.future('January').isFuture(),   true, 'Date#future | months | January');
-  equal(Date.future('February').isFuture(),  true, 'Date#future | months | February');
-  equal(Date.future('March').isFuture(),     true, 'Date#future | months | March');
-  equal(Date.future('April').isFuture(),     true, 'Date#future | months | April');
-  equal(Date.future('May').isFuture(),       true, 'Date#future | months | May');
-  equal(Date.future('June').isFuture(),      true, 'Date#future | months | June');
-  equal(Date.future('July').isFuture(),      true, 'Date#future | months | July');
-  equal(Date.future('August').isFuture(),    true, 'Date#future | months | August');
-  equal(Date.future('September').isFuture(), true, 'Date#future | months | September');
-  equal(Date.future('October').isFuture(),   true, 'Date#future | months | October');
-  equal(Date.future('November').isFuture(),  true, 'Date#future | months | November');
-  equal(Date.future('December').isFuture(),  true, 'Date#future | months | December');
-
-  // Ensure that dates don't traverse TOO far into the past/future
-  equal(Date.future('January').monthsFromNow() > 12, false, 'Date#future | months | no more than 12 months from now');
-  equal(Date.future('December').monthsFromNow() > 12, false, 'Date#future | months | no more than 12 months from now');
-
-
-  dateEqual(Date.create('the 2nd Tuesday of June, 2012'), new Date(2012, 5, 12), 'Date#create | the 2nd tuesday of June');
-
-  dateEqual(Date.create('the 1st Tuesday of November, 2012'), new Date(2012, 10, 6), 'Date#create | the 1st tuesday of November');
-  dateEqual(Date.create('the 2nd Tuesday of November, 2012'), new Date(2012, 10, 13), 'Date#create | the 2nd tuesday of November');
-  dateEqual(Date.create('the 3rd Tuesday of November, 2012'), new Date(2012, 10, 20), 'Date#create | the 3rd tuesday of November');
-  dateEqual(Date.create('the 4th Tuesday of November, 2012'), new Date(2012, 10, 27), 'Date#create | the 4th tuesday of November');
-  dateEqual(Date.create('the 5th Tuesday of November, 2012'), new Date(2012, 11, 4), 'Date#create | the 5th tuesday of November');
-  dateEqual(Date.create('the 6th Tuesday of November, 2012'), new Date(2012, 11, 11), 'Date#create | the 6th tuesday of November');
-
-  dateEqual(Date.create('the 1st Friday of February, 2012'), new Date(2012, 1, 3), 'Date#create | the 1st Friday of February');
-  dateEqual(Date.create('the 2nd Friday of February, 2012'), new Date(2012, 1, 10), 'Date#create | the 2nd Friday of February');
-  dateEqual(Date.create('the 3rd Friday of February, 2012'), new Date(2012, 1, 17), 'Date#create | the 3rd Friday of February');
-  dateEqual(Date.create('the 4th Friday of February, 2012'), new Date(2012, 1, 24), 'Date#create | the 4th Friday of February');
-  dateEqual(Date.create('the 5th Friday of February, 2012'), new Date(2012, 2, 2), 'Date#create | the 5th Friday of February');
-  dateEqual(Date.create('the 6th Friday of February, 2012'), new Date(2012, 2, 9), 'Date#create | the 6th Friday of February');
-
-  var firstFridayOfFeb = new Date(thisYear, 1);
-  firstFridayOfFeb.setWeekday(5);
-  if(firstFridayOfFeb.getMonth() < 1) {
-    firstFridayOfFeb.addWeeks(1);
-  }
-
-  equal(Date.create('the 1st Friday of February').getFullYear(), thisYear, 'Date#create | 1st friday of February should be this year');
-  equal(Date.future('the 1st Friday of February').getFullYear(), now > firstFridayOfFeb ? thisYear + 1 : thisYear, 'Date#future | 1st friday of February should be this year or next');
-  equal(Date.past('the 1st Friday of February').getFullYear(), now < firstFridayOfFeb ? thisYear - 1 : thisYear, 'Date#past | 1st friday of February should be this year or last');
-
-
-  equal(Date.future('1:00am').isFuture(), true, 'Date#future | 1am should be the future');
-  equal(Date.future('11:00pm').isFuture(), true, 'Date#future | 11pm should be the future');
-
-  equal(Date.future('1:00am') < Date.create('1 day from now'), true, 'Date#future | 1am should be the future');
-  equal(Date.future('11:00pm') < Date.create('1 day from now'), true, 'Date#future | 11pm should be the future');
-
-  dateEqual(Date.create('in 60 seconds'), new Date().addMinutes(1), 'Date#create | in 60 seconds');
-  dateEqual(Date.create('in 45 minutes'), new Date().addMinutes(45), 'Date#create | in 45 minutes');
-  dateEqual(Date.create('in 5 hours'), new Date().addHours(5), 'Date#create | in 5 hours');
-  dateEqual(Date.create('in 5 days'), new Date().addDays(5), 'Date#create | in 5 days');
-  dateEqual(Date.create('in 5 weeks'), new Date().addWeeks(5), 'Date#create | in 5 weeks');
-  dateEqual(Date.create('in 5 months'), new Date().addMonths(5), 'Date#create | in 5 months');
-  dateEqual(Date.create('in 5 years'), new Date().addYears(5), 'Date#create | in 5 years');
-
-
-
-  // Invalid dates should not return true or false
-
-  equal(Date.create('my pants').isPast(), undefined, 'Date#isPast | invalid dates should return false');
-  equal(Date.create('my pants').isFuture(), undefined, 'Date#isFuture | invalid dates should return false');
-  equal(Date.create('my pants').isToday(), undefined, 'Date#isToday | invalid dates should return false');
-  equal(Date.create('my pants').isTomorrow(), undefined, 'Date#isTomorrow | invalid dates should return false');
-  equal(Date.create('my pants').is('today'), undefined, 'Date#is | invalid dates should return false');
-
-  // Issue #160
-  equal(Date.create('12/01/2013').is('November 2013'), false, 'Date#is | December 2013 is not November 2013');
-
-
-  // Adding a locale
-
-  Date.setLocale('en');
-  Date.addLocale('foobar', { months: ['a','b','c'] });
-
-  equal(Date.getLocale().code, Date.getLocale('en').code, 'Date.addLocale | adding a locale does not affect the current locale');
-  equal(Date.getLocale('foobar').months[0], 'a', 'Date.addLocale | new locale has been added');
-  dateEqual(Date.create('a', 'foobar'), Date.create('January'), 'Date.addLocale | formats have been recognized');
-
-
-
-  // Date.create should clone a date
-
-  date1 = new Date(5000);
-  date2 = Date.create(date1);
-  date1.setTime(10000);
-
-  equal(date1.getTime() === date2.getTime(), false, 'Date.create | created date should not be affected');
-
-  // Simple 12:00am
-
-  equal(Date.create('12:00am').getHours(), 0, 'Date.create| 12:00am hours should be 0');
-  equal(Date.create('12am').getHours(), 0, 'Date.create| 12am hours should be 0');
-
-
-  // New handling of UTC dates
-
-  date1 = Date.utc.create('2001-06-15', 'en');
-  date2 = new Date(2001, 5, 15);
-
-  dateEqual(date1, date2.addMinutes(-date2.getTimezoneOffset()), 'Date#create | utc | is equal to date with timezone subtracted');
-  equal(date1._utc, false, 'Date#create | utc | does not set internal flag');
-
-
-  d = new Date(2001, 5, 15).utc();
-
-  equal(d._utc, true, 'Date#utc | sets internal flag');
-  dateEqual(d, new Date(2001, 5, 15), 'Date#utc | does not change date');
-  dateEqual(d.clone().beginningOfMonth(), new Date(Date.UTC(2001, 5, 1)), 'Date#beginningOfMonth | utc');
-  dateEqual(d.clone().endOfMonth(), new Date(Date.UTC(2001, 5, 30, 23, 59, 59, 999)), 'Date#endOfMonth | utc');
-
-  equal(Date.create('1 month ago').utc().isLastMonth(), true, 'Date#utc | isLastMonth');
-  equal(d.minutesSince(Date.utc.create('2001-06-15', 'en')), d.getTimezoneOffset(), 'Date#utc | minutesSince is equal to the timezone offset');
-  equal(d.hoursSince('2001-6-14'), 24, 'Date#utc | hoursSince | does not actually shift time');
-
-  d = Date.utc.create('2001-06-15', 'en').utc(true);
-
-  equal(d.iso(), '2001-06-15T00:00:00.000Z', 'Date#create | utc | will properly be output in UTC');
-  equal(d.format('{tz}'), '+0000', 'Date#format | UTC date will have +0000 offset');
-  equal(d.getUTCOffset(), '+0000', 'Date#getUTCOffset | utc');
-  dateEqual(d.clone().advance('1 month'), new Date(Date.UTC(2001, 6, 15)), 'Date#advance | utc');
-
-  equal(Date.utc.create('2010-02-01', 'en').utc().daysInMonth(), 28, 'Date#daysInMonth | utc | should find correct days in month');
-  equal(Date.utc.create('2000-01', 'en').utc().isLeapYear(), true, 'Date#isLeapYear | accounts for utc dates');
-
-
-  d = Date.utc.create('2000-02-18 11:00pm', 'en').utc(true);
-
-  equal(d.is('Friday', null, true), true, 'Date#is | utc | friday');
-  equal(d.isWeekday(true), true, 'Date#isWeekday | utc | friday');
-  equal(d.is('2000-02-18', null, true), true, 'Date#is | utc | friday | full date');
-  equal(d.isAfter(Date.utc.create('2000-02-18 10:00pm', 'en')), true, 'Date#isAfter | utc | friday | full date');
-  equal(d.clone().reset(), new Date(Date.UTC(2000, 1, 18)), 'Date#reset | utc');
-
-
-  d = Date.utc.create('2000-02-14', 'en').utc(true);
-
-  equal(d.is('Monday', null, true), true, 'Date#is | utc | monday');
-  equal(d.isWeekday(true), true, 'Date#isWeekday | utc | monday');
-  equal(d.is('2000-02-14', null, true), true, 'Date#is | utc | monday | full date');
-
-
-  equal(d.format(), 'February 14, 2000 12:00am', 'Date#format | from UTC time');
-  equal(d.full(), 'Monday February 14, 2000 12:00:00am', 'Date#full | from UTC time');
-  equal(d.long(), 'February 14, 2000 12:00am', 'Date#long | from UTC time');
-  equal(d.short(), 'February 14, 2000', 'Date#short | from UTC time');
-
-  // Relative dates are unaffected
-  equal(Date.utc.create('1 minute ago', 'en').relative(), '1 minute ago', 'Date#relative | utc');
-
-
-  d = new Date(2001, 5, 15).utc().utc(false);
-
-  equal(d._utc, false, 'Date#utc | can turn off');
-
-  d = new Date(2001, 5, 15);
-
-  var hours = d.getHours() - (d.getTimezoneOffset() / 60);
-
-
-  // Issue #203
-
-  dateEqual(Date.create('The day after tomorrow 3:45pm', 'en'), new Date(now.getFullYear(), now.getMonth(), now.getDate() + 2, 15, 45), 'Date#create | Fuzzy Dates | The day after tomorrow at 3:45pm');
-  dateEqual(Date.create('The day before yesterday at 11:15am', 'en'), new Date(now.getFullYear(), now.getMonth(), now.getDate() - 2, 11, 15), 'Date#create | Fuzzy Dates | the day before yesterday at 11:15am');
-
-
-  dateEqual(Date.create('the 28th'), new Date().set({ date:28 }, true), 'Date#create | the 28th');
-  dateEqual(Date.create('28th'), new Date().set({ date:28 }, true), 'Date#create | 28th');
-  dateEqual(Date.create('the 28th of January'), new Date().set({ month: 0, date:28 }, true), 'Date#create | the 28th of January');
-  dateEqual(Date.create('28th of January'), new Date().set({ month: 0, date:28 }, true), 'Date#create | 28th of January');
-
-  // Issue #210
-
-  equal(Date.future('Sunday at 3:00').getWeekday(), 0, 'Date.future | weekday should never be ambiguous');
-
-
-
-  // Issue #219
-
-  equal(Date.create('28:00').isValid(),  true,  'Date#create | hours may fall outside range');
-  equal(Date.create('59:00').isValid(),  true,  'Date#create | no hours allowed outside range');
-  equal(Date.create('139:00').isValid(), false, 'Date#create | 3 digits not supported');
-
-  // These dates actually will parse out natively in V8
-  // equal(Date.create('05:75').isValid(), false, 'Date#create | no minutes allowed outside range');
-  // equal(Date.create('05:59:60').isValid(), false, 'Date#create | no seconds allowed outside range');
-  equal(Date.create('05:59:59').isValid(), true, 'Date#create | seconds within range');
-
-
-  // Issue #221
-
-  dateEqual(new Date(2012, 0).addMonths(-13), new Date(2010, 11), 'Date#addMonths | Month traversal should not kick in when n < -12');
-
-  // Issue #227
-
-  dateEqual(Date.create('0 January'), new Date(now.getFullYear() - 1, 11, 31), 'Date#addMonths | 0 January');
-  dateEqual(Date.create('1 January'), new Date(now.getFullYear(), 0, 1), 'Date#addMonths | 1 January');
-  dateEqual(Date.create('01 January'), new Date(now.getFullYear(), 0, 1), 'Date#addMonths | 01 January');
-  dateEqual(Date.create('15 January'), new Date(now.getFullYear(), 0, 15), 'Date#addMonths | 15 January');
-  dateEqual(Date.create('31 January'), new Date(now.getFullYear(), 0, 31), 'Date#addMonths | 31 January');
-
-  dateEqual(Date.create('1 Jan'), new Date(now.getFullYear(), 0, 1), 'Date#addMonths | 1 Jan');
-  dateEqual(Date.create('01 Jan'), new Date(now.getFullYear(), 0, 1), 'Date#addMonths | 01 Jan');
-  dateEqual(Date.create('15 Jan'), new Date(now.getFullYear(), 0, 15), 'Date#addMonths | 15 Jan');
-  dateEqual(Date.create('31 Jan'), new Date(now.getFullYear(), 0, 31), 'Date#addMonths | 31 Jan');
-
-  dateEqual(Date.create('0 July'), new Date(now.getFullYear(), 5, 30), 'Date#addMonths | 0 July');
-  dateEqual(Date.create('1 July'), new Date(now.getFullYear(), 6, 1), 'Date#addMonths | 1 July');
-  dateEqual(Date.create('01 July'), new Date(now.getFullYear(), 6, 1), 'Date#addMonths | 01 July');
-  dateEqual(Date.create('15 July'), new Date(now.getFullYear(), 6, 15), 'Date#addMonths | 15 July');
-  dateEqual(Date.create('31 July'), new Date(now.getFullYear(), 6, 31), 'Date#addMonths | 31 July');
-  dateEqual(Date.create('32 July'), new Date(now.getFullYear(), 7, 1), 'Date#addMonths | 32 July');
-
-  dateEqual(Date.create('1 Dec'), new Date(now.getFullYear(), 11, 1), 'Date#addMonths | 1 Dec');
-  dateEqual(Date.create('01 Dec'), new Date(now.getFullYear(), 11, 1), 'Date#addMonths | 01 Dec');
-  dateEqual(Date.create('15 Dec'), new Date(now.getFullYear(), 11, 15), 'Date#addMonths | 15 Dec');
-  dateEqual(Date.create('31 Dec'), new Date(now.getFullYear(), 11, 31), 'Date#addMonths | 31 Dec');
-
-  dateEqual(Date.create('1 December'), new Date(now.getFullYear(), 11, 1), 'Date#addMonths | 1 December');
-  dateEqual(Date.create('01 December'), new Date(now.getFullYear(), 11, 1), 'Date#addMonths | 01 December');
-  dateEqual(Date.create('15 December'), new Date(now.getFullYear(), 11, 15), 'Date#addMonths | 15 December');
-  dateEqual(Date.create('31 December'), new Date(now.getFullYear(), 11, 31), 'Date#addMonths | 31 December');
-  dateEqual(Date.create('32 December'), new Date(now.getFullYear() + 1, 0, 1), 'Date#addMonths | 32 December');
-
-  dateEqual(Date.create('1 January 3pm'), new Date(now.getFullYear(), 0, 1, 15), 'Date#addMonths | 1 January 3pm');
-  dateEqual(Date.create('1 January 3:45pm'), new Date(now.getFullYear(), 0, 1, 15, 45), 'Date#addMonths | 1 January 3:45pm');
-
-
-  dateEqual(Date.create("'87"), new Date(1987, 0), "Date#create | '87");
-  dateEqual(Date.create("May '87"), new Date(1987, 4), "Date#create | May '87");
-  dateEqual(Date.create("14 May '87"), new Date(1987, 4, 14), "Date#create | 14 May '87");
-
-  // Issue #235
-
-  equal(Date.create().utc(true).clone().isUTC(), true, 'Date#clone | should preserve UTC');
-  equal(new Date().clone()._utc, false, 'Date#clone | should never be UTC if flag not set');
-  equal(Date.create(new Date().utc(true)).isUTC(), true, 'Date#create | should preserve UTC');
-  equal(Date.create(new Date()).isUTC(), isCurrentlyGMT, 'Date#create | non utc date should not have UTC flag');
-
-
-  // Issue #236
-  equal((14).hoursFromNow().daysFromNow(), 0, 'Date#daysFromNow | should floor the number rather than round');
-
-  // Issue #224
-  equal(Date.create('').isValid(), false, 'Date.create | empty strings are not valid');
-
-
-  // Issue #244
-
-  dateEqual(Date.utc.create('0999'), new Date(Date.UTC(999, 0)), 'Date.utc.create | 3 digit year 999 should be equal to ISO8601');
-  dateEqual(Date.utc.create('0123'), new Date(Date.UTC(123, 0)), 'Date.utc.create | 3 digit year 123 should be equal to ISO8601');
-
-  // Issue #251
-
-
-  equal(new Date(2013, 0).setISOWeek(1), new Date(2013, 0, 1).getTime(), 'Date#setISOWeek | Should follow ISO8601');
-  equal(new Date(2013, 0, 6).setISOWeek(1), new Date(2013, 0, 6).getTime(), 'Date#setISOWeek | Sunday should remain at the end of the week as per ISO8601 standard');
-  equal(new Date(2013, 0, 13).setISOWeek(1), new Date(2013, 0, 6).getTime(), 'Date#setISOWeek | Sunday one week ahead');
-  equal(new Date(2013, 0, 7).setISOWeek(1), new Date(2012, 11, 31).getTime(), 'Date#setISOWeek | Monday should remain at the beginning of the week as per ISO8601 standard');
-  equal(new Date(2013, 0, 14).setISOWeek(2), new Date(2013, 0, 7).getTime(), 'Date#setISOWeek | Monday one week ahead');
-  dateEqual(Date.utc.create(2013, 0, 14).utc().set({ week: 1 }), Date.utc.create(2012, 11, 31), 'Date#set | utc dates should not throw errors on week set');
-
-
-  // Issue #262
-  equal(/\d+-/.test(new Date().format('{timezone}')), false, 'Date#format | Timezone format should not include hyphens')
-
-
-  // Issue #264
-
-  Date.setLocale('fo');
-  equal(Date.create().isToday(), true, 'Date#isToday | should always work regardless of locale');
-  equal(Date.create('yesterday', 'en').isYesterday(), true, 'Date#isYesterday | should always work regardless of locale');
-  equal(Date.create('tomorrow', 'en').isTomorrow(), true, 'Date#isTomorrow | should always work regardless of locale');
-  equal(Date.create('monday', 'en').isMonday(), true, 'Date#isMonday | should always work regardless of locale');
-  equal(Date.create('tuesday', 'en').isTuesday(), true, 'Date#isTuesday | should always work regardless of locale');
-  equal(Date.create('wednesday', 'en').isWednesday(), true, 'Date#isWednesday | should always work regardless of locale');
-  equal(Date.create('thursday', 'en').isThursday(), true, 'Date#isThursday | should always work regardless of locale');
-  equal(Date.create('friday', 'en').isFriday(), true, 'Date#isFriday | should always work regardless of locale');
-  equal(Date.create('saturday', 'en').isSaturday(), true, 'Date#isSaturday | should always work regardless of locale');
-  equal(Date.create('sunday', 'en').isSunday(), true, 'Date#isSunday | should always work regardless of locale');
-  equal(Date.create('1 day ago', 'en').isPast(), true, 'Date#isPast | should always work regardless of locale');
-  equal(Date.create('1 day from now', 'en').isFuture(), true, 'Date#isFuture | should always work regardless of locale');
-  Date.setLocale('en');
-
-
-
-  // Issue #267
-
-  equal(new Date('Mar 01, 2013').daysUntil(new Date('Mar 28, 2013')), 27, 'Date#daysUntil | should not be phased by DST traversal');
-  equal(new Date('Mar 10, 2013').daysUntil(new Date('Mar 11, 2013')), 1, 'Date#daysUntil | exact DST traversal point for CST/CDT');
-
-  // Issue #310
-
-  dateEqual(Date.create('6:30pm in 1 day'), getRelativeDate(null, null, 1).set({hours:18,minutes:30}, true), 'Date#create | 6:30pm in 1 day');
-  dateEqual(Date.create('6:30pm in 3 days'), getRelativeDate(null, null, 3).set({hours:18,minutes:30}, true), 'Date#create | 6:30pm in 3 days');
-  dateEqual(Date.create('6:30pm in -3 days'), getRelativeDate(null, null, -3).set({hours:18,minutes:30}, true), 'Date#create | 6:30pm in -3 days');
-
-  dateEqual(Date.create('6:30pm 2 days ago'), getRelativeDate(null, null, -2).set({hours:18,minutes:30}, true), 'Date#create | 6:30pm in 2 days ago');
-
-  dateEqual(Date.create('21:00 in 2 weeks'), getRelativeDate(null, null, 14).set({hours:21}, true), 'Date#create | 21:00pm in 2 weeks');
-  dateEqual(Date.create('5:00am in a month'), getRelativeDate(null, 1).set({hours:5}, true), 'Date#create | 5:00am in a month');
-  dateEqual(Date.create('5am in a month'), getRelativeDate(null, 1).set({hours:5}, true), 'Date#create | 5am in a month');
-  dateEqual(Date.create('5:01am in a month'), getRelativeDate(null, 1).set({hours:5,minutes:1}, true), 'Date#create | 5:01am in a month');
-
-  equal(Date.create('5am in an hour').isValid(), false, 'Date#create | 5am in an hour is invalid');
-  equal(Date.create('5am in a minute').isValid(), false, 'Date#create | 5am in a minute is invalid');
+  group('Custom Formats', function() {
+
+    // https://github.com/andrewplummer/Sugar/issues/119#issuecomment-4520966
+
+    run(Date, 'addFormat', ['(\\d{2})(\\d{2})',['hour','minute']]);
+    dateEqual(testCreateDate('0615'), testCreateDate('06:15'), 'Overrides defined formats');
+
+    // Not sure how nuts I want to get with this so for the sake of the tests just push the proper format back over the top...
+    run(Date, 'addFormat', ['(\\d{4})', ['year']]);
+  });
+
+  method('iso', function() {
+
+    // Issue #146 - These tests were failing when system time was set to Friday, June 1, 2012 PDT
+
+    test(testCreateDate('2010-01-20T20:00:00.000Z'), '2010-01-20T20:00:00.000Z');
+    test(testCreateDate('2010-02-20T20:00:00.000Z'), '2010-02-20T20:00:00.000Z');
+    test(testCreateDate('2010-03-20T20:00:00.000Z'), '2010-03-20T20:00:00.000Z');
+    test(testCreateDate('2010-04-20T20:00:00.000Z'), '2010-04-20T20:00:00.000Z');
+    test(testCreateDate('2010-05-20T20:00:00.000Z'), '2010-05-20T20:00:00.000Z');
+    test(testCreateDate('2010-05-20T20:00:00.000Z'), '2010-05-20T20:00:00.000Z');
+    test(testCreateDate('2010-06-20T20:00:00.000Z'), '2010-06-20T20:00:00.000Z');
+    test(testCreateDate('2010-07-20T20:00:00.000Z'), '2010-07-20T20:00:00.000Z');
+    test(testCreateDate('2010-08-20T20:00:00.000Z'), '2010-08-20T20:00:00.000Z');
+    test(testCreateDate('2010-09-20T20:00:00.000Z'), '2010-09-20T20:00:00.000Z');
+    test(testCreateDate('2010-10-20T20:00:00.000Z'), '2010-10-20T20:00:00.000Z');
+    test(testCreateDate('2010-11-20T20:00:00.000Z'), '2010-11-20T20:00:00.000Z');
+    test(testCreateDate('2010-12-20T20:00:00.000Z'), '2010-12-20T20:00:00.000Z');
+
+    test(testCreateDate('Jan 20 2010 12:00:00 GMT-0800 (PST)'), '2010-01-20T20:00:00.000Z');
+    test(testCreateDate('Feb 20 2010 12:00:00 GMT-0800 (PST)'), '2010-02-20T20:00:00.000Z');
+    test(testCreateDate('Mar 20 2010 12:00:00 GMT-0800 (PST)'), '2010-03-20T20:00:00.000Z');
+    test(testCreateDate('Apr 20 2010 12:00:00 GMT-0800 (PST)'), '2010-04-20T20:00:00.000Z');
+    test(testCreateDate('May 20 2010 12:00:00 GMT-0800 (PST)'), '2010-05-20T20:00:00.000Z');
+    test(testCreateDate('Jun 20 2010 12:00:00 GMT-0800 (PST)'), '2010-06-20T20:00:00.000Z');
+    test(testCreateDate('Jul 20 2010 12:00:00 GMT-0800 (PST)'), '2010-07-20T20:00:00.000Z');
+    test(testCreateDate('Aug 20 2010 12:00:00 GMT-0800 (PST)'), '2010-08-20T20:00:00.000Z');
+    test(testCreateDate('Sep 20 2010 12:00:00 GMT-0800 (PST)'), '2010-09-20T20:00:00.000Z');
+    test(testCreateDate('Oct 20 2010 12:00:00 GMT-0800 (PST)'), '2010-10-20T20:00:00.000Z');
+    test(testCreateDate('Nov 20 2010 12:00:00 GMT-0800 (PST)'), '2010-11-20T20:00:00.000Z');
+    test(testCreateDate('Dec 20 2010 12:00:00 GMT-0800 (PST)'), '2010-12-20T20:00:00.000Z');
+  });
+
+
+  group('Adding a locale', function() {
+    testSetLocale('en');
+    testAddLocale('foobar', { months: ['a','b','c'] });
+
+    equal(testGetLocale().code, testGetLocale('en').code, 'adding a locale does not affect the current locale');
+    equal(testGetLocale('foobar').months[0], 'a', 'new locale has been added');
+    dateEqual(testCreateDate('a', 'foobar'), testCreateDate('January'), 'formats have been recognized');
+  });
 
 
   // Issue #326 begining/endOfISOWeek
 
+  method('beginningOfISOWeek', function() {
 
-  dateEqual(new Date(2013, 6, 8).beginningOfISOWeek(),  new Date(2013, 6, 8), 'Date#beginningOfISOWeek  | Mon');
-  dateEqual(new Date(2013, 6, 9).beginningOfISOWeek(),  new Date(2013, 6, 8), 'Date#beginningOfISOWeek  | Tue');
-  dateEqual(new Date(2013, 6, 10).beginningOfISOWeek(), new Date(2013, 6, 8), 'Date#beginningOfISOWeek  | Wed');
-  dateEqual(new Date(2013, 6, 11).beginningOfISOWeek(), new Date(2013, 6, 8), 'Date#beginningOfISOWeek  | Thu');
-  dateEqual(new Date(2013, 6, 12).beginningOfISOWeek(), new Date(2013, 6, 8), 'Date#beginningOfISOWeek  | Fri');
-  dateEqual(new Date(2013, 6, 13).beginningOfISOWeek(), new Date(2013, 6, 8), 'Date#beginningOfISOWeek  | Sat');
-  dateEqual(new Date(2013, 6, 14).beginningOfISOWeek(), new Date(2013, 6, 8), 'Date#beginningOfISOWeek  | Sun');
-  dateEqual(new Date(2013, 6, 15).beginningOfISOWeek(), new Date(2013, 6, 15), 'Date#beginningOfISOWeek | next Mon');
+    test(new Date(2013, 6, 8),  new Date(2013, 6, 8), 'Mon');
+    test(new Date(2013, 6, 9),  new Date(2013, 6, 8), 'Tue');
+    test(new Date(2013, 6, 10), new Date(2013, 6, 8), 'Wed');
+    test(new Date(2013, 6, 11), new Date(2013, 6, 8), 'Thu');
+    test(new Date(2013, 6, 12), new Date(2013, 6, 8), 'Fri');
+    test(new Date(2013, 6, 13), new Date(2013, 6, 8), 'Sat');
+    test(new Date(2013, 6, 14), new Date(2013, 6, 8), 'Sun');
+    test(new Date(2013, 6, 15), new Date(2013, 6, 15), 'next Mon');
 
-  dateEqual(new Date(2013, 6, 8).endOfISOWeek(),  new Date(2013, 6, 14, 23, 59, 59, 999), 'Date#endOfISOWeek  | Mon');
-  dateEqual(new Date(2013, 6, 9).endOfISOWeek(),  new Date(2013, 6, 14, 23, 59, 59, 999), 'Date#endOfISOWeek  | Tue');
-  dateEqual(new Date(2013, 6, 10).endOfISOWeek(), new Date(2013, 6, 14, 23, 59, 59, 999), 'Date#endOfISOWeek  | Wed');
-  dateEqual(new Date(2013, 6, 11).endOfISOWeek(), new Date(2013, 6, 14, 23, 59, 59, 999), 'Date#endOfISOWeek  | Thu');
-  dateEqual(new Date(2013, 6, 12).endOfISOWeek(), new Date(2013, 6, 14, 23, 59, 59, 999), 'Date#endOfISOWeek  | Fri');
-  dateEqual(new Date(2013, 6, 13).endOfISOWeek(), new Date(2013, 6, 14, 23, 59, 59, 999), 'Date#endOfISOWeek  | Sat');
-  dateEqual(new Date(2013, 6, 14).endOfISOWeek(), new Date(2013, 6, 14, 23, 59, 59, 999), 'Date#endOfISOWeek  | Sun');
-  dateEqual(new Date(2013, 6, 15).endOfISOWeek(), new Date(2013, 6, 21, 23, 59, 59, 999), 'Date#endOfISOWeek | next Mon');
+    test(new Date(2013, 6, 10, 8, 30), new Date(2013, 6, 8), 'resets time');
+  });
 
-  dateEqual(new Date(2013, 6, 10, 8, 30).beginningOfISOWeek(), new Date(2013, 6, 8), 'Date#beginningOfISOWeek  | resets time');
-  dateEqual(new Date(2013, 6, 12, 8, 30).endOfISOWeek(), new Date(2013, 6, 14, 23, 59, 59, 999), 'Date#endOfISOWeek  | resets time');
+  method('endOfISOWeek', function() {
+    test(new Date(2013, 6, 8),  new Date(2013, 6, 14, 23, 59, 59, 999), 'Mon');
+    test(new Date(2013, 6, 9),  new Date(2013, 6, 14, 23, 59, 59, 999), 'Tue');
+    test(new Date(2013, 6, 10), new Date(2013, 6, 14, 23, 59, 59, 999), 'Wed');
+    test(new Date(2013, 6, 11), new Date(2013, 6, 14, 23, 59, 59, 999), 'Thu');
+    test(new Date(2013, 6, 12), new Date(2013, 6, 14, 23, 59, 59, 999), 'Fri');
+    test(new Date(2013, 6, 13), new Date(2013, 6, 14, 23, 59, 59, 999), 'Sat');
+    test(new Date(2013, 6, 14), new Date(2013, 6, 14, 23, 59, 59, 999), 'Sun');
+    test(new Date(2013, 6, 15), new Date(2013, 6, 21, 23, 59, 59, 999), 'next Mon');
 
-
-  // Issue #342 handling offsets for comparison
-
-  Date.SugarNewDate = function() {
-    var d = new Date();
-    d.addMinutes(d.getTimezoneOffset() - 600);
-    // Honolulu time zone
-    return d;
-  };
-
-  var offset = 600 - new Date().getTimezoneOffset();
-  dateEqual(Date.create(), getRelativeDate(null, null, null, null, -offset), 'Date.create | simple create should respect global offset');
-  dateEqual(Date.create('1 day ago'), getRelativeDate(null, null, -1, null, -offset), 'Date.create | relative date should respect global offset');
-  equal(Date.past('4pm').getTime() < (new Date().getTime() + (-offset * 60 * 1000)), true, 'Date.past | repsects global offset');
-  equal(Date.future('4pm').getTime() > (new Date().getTime() + (-offset * 60 * 1000)), true, 'Date.future | repsects global offset');
-
-  d = new Date;
-  d.addMinutes(d.getTimezoneOffset() + 60);
-
-  equal(d.isFuture(), true, 'Date#isFuture | should respect global offset');
-  equal(d.isPast(), false, 'Date#isPast | should respect global offset');
-
-  // Issue #342 internal constructor override
-
-  var AwesomeDate = function() {};
-  AwesomeDate.prototype = new Date();
-  AwesomeDate.prototype.getMinutes = function() {
-  }
-
-  Date.SugarNewDate = function() {
-    return new AwesomeDate();
-  }
-
-  equal(Date.create() instanceof AwesomeDate, true, 'Date.SugarNewDate | Result should be use in Date.create');
-
-  Date.SugarNewDate = null;
+    test(new Date(2013, 6, 12, 8, 30), new Date(2013, 6, 14, 23, 59, 59, 999), 'resets time');
+  });
 
 
-  // Issue #375 "end of yesterday"
+  group('newDateInternal', function() {
 
-  dateEqual(Date.create('beginning of yesterday'), Date.create('yesterday').beginningOfDay(), 'Date.create | beginning of yesterday');
-  dateEqual(Date.create('end of yesterday'), Date.create('yesterday').endOfDay(), 'Date.create | end of yesterday');
-  dateEqual(Date.create('beginning of today'), Date.create('today').beginningOfDay(), 'Date.create | beginning of today');
-  dateEqual(Date.create('end of today'), Date.create('today').endOfDay(), 'Date.create | end of today');
-  dateEqual(Date.create('beginning of tomorrow'), Date.create('tomorrow').beginningOfDay(), 'Date.create | beginning of tomorrow');
-  dateEqual(Date.create('end of tomorrow'), Date.create('tomorrow').endOfDay(), 'Date.create | end of tomorrow');
+    // Issue #342 handling offsets for comparison
 
-  // Issue #387 null in date constructor
+    Sugar.Date.newDateInternal = function() {
+      var d = new Date();
+      // Honolulu time zone
+      d.setTime(d.getTime() + ((d.getTimezoneOffset() - 600) * 60 * 1000));
+      return d;
+    };
 
-  dateEqual(new Date(null), Date.create(null), 'Date.create | null');
+    var offset = 600 - new Date().getTimezoneOffset();
+    dateEqual(testCreateDate(), getRelativeDate(null, null, null, null, -offset), 'simple create should respect global offset');
+    dateEqual(testCreateDate('1 day ago'), getRelativeDate(null, null, -1, null, -offset), 'relative date should respect global offset');
+    equal(testCreatePastDate('4pm').getTime() < (new Date().getTime() + (-offset * 60 * 1000)), true, 'past repsects global offset');
+    equal(testCreateFutureDate('4pm').getTime() > (new Date().getTime() + (-offset * 60 * 1000)), true, 'future repsects global offset');
 
-  // Issue #383 Date.past in 2-digit years
-  dateEqual(Date.past('12/20/23'), new Date(1923,11,20), 'Date.past | 1923-12-20');
-  dateEqual(Date.future('12/20/99'), new Date(2099,11,20), 'Date.future | 2099-12-20');
+    var d = new Date;
+    d.setTime(d.getTime() + ((d.getTimezoneOffset() + 60) * 60 * 1000));
+    equal(run(d, 'isFuture'), true, 'should respect global offset');
+    equal(run(d, 'isPast'), false, 'should respect global offset');
+
+
+    // Issue #342 internal constructor override
+
+    var AwesomeDate = function() {};
+    AwesomeDate.prototype = new Date();
+    AwesomeDate.prototype.getMinutes = function() {
+    }
+
+    Sugar.Date.newDateInternal = function() {
+      return new AwesomeDate();
+    }
+
+    equal(testCreateDate() instanceof AwesomeDate, true, 'Result should be use in Date.create');
+
+    Sugar.Date.newDateInternal = null;
+
+  });
 
 });
 
@@ -2772,37 +2772,57 @@ package('Number', function () {
 
   method('duration', function() {
 
-    Sugar.Date.setLocale('en');
+    testSetLocale('en');
 
-    equal(run(1, 'duration'), '1 millisecond', 'Number#duration | 1 millisecond');
-    equal(run(2, 'duration'), '2 milliseconds', 'Number#duration | 2 milliseconds');
-    equal(run(100, 'duration'), '100 milliseconds', 'Number#duration | 100 milliseconds');
-    equal(run(500, 'duration'), '500 milliseconds', 'Number#duration | 500 milliseconds');
-    equal(run(949, 'duration'), '949 milliseconds', 'Number#duration | 949 milliseconds');
-    equal(run(950, 'duration'), '1 second', 'Number#duration | 950 milliseconds');
-    equal(run(999, 'duration'), '1 second', 'Number#duration | 999 milliseconds');
-    equal(run(1000, 'duration'), '1 second', 'Number#duration | 1 second');
-    equal(run(1999, 'duration'), '2 seconds', 'Number#duration | 2 seconds');
-    equal(run(5000, 'duration'), '5 seconds', 'Number#duration | 5 seconds');
-    equal(run(55000, 'duration'), '55 seconds', 'Number#duration | 55 seconds');
-    equal(run(56000, 'duration'), '56 seconds', 'Number#duration | 56 seconds');
-    equal(run(57000, 'duration'), '1 minute', 'Number#duration | 57 seconds');
-    equal(run(60000, 'duration'), '1 minute', 'Number#duration | 60 seconds');
-    equal(run(3600000, 'duration'), '1 hour', 'Number#duration | 360000 seconds');
+    test(1, '1 millisecond', '1 millisecond');
+    test(2, '2 milliseconds', '2 milliseconds');
+    test(100, '100 milliseconds', '100 milliseconds');
+    test(500, '500 milliseconds', '500 milliseconds');
+    test(949, '949 milliseconds', '949 milliseconds');
+    test(950, '1 second', '950 milliseconds');
+    test(999, '1 second', '999 milliseconds');
+    test(1000, '1 second', '1 second');
+    test(1999, '2 seconds', '2 seconds');
+    test(5000, '5 seconds', '5 seconds');
+    test(55000, '55 seconds', '55 seconds');
+    test(56000, '56 seconds', '56 seconds');
+    test(57000, '1 minute', '57 seconds');
+    test(60000, '1 minute', '60 seconds');
+    test(3600000, '1 hour', '360000 seconds');
 
-    equal(run(run(5, 'hours', 'duration')), '5 hours', 'Number#duration | 5 hours');
-    equal(run(run(22, 'hours', 'duration')), '22 hours', 'Number#duration | 22 hours');
-    equal(run(run(23, 'hours', 'duration')), '1 day', 'Number#duration | 23 hours');
-    equal(run(run(6, 'days', 'duration')), '6 days', 'Number#duration | 6 days');
-    equal(run(run(7, 'days', 'duration')), '1 week', 'Number#duration | 1 week');
-    equal(run(run(28, 'days', 'duration')), '4 weeks', 'Number#duration | 30 days');
-    equal(run(run(29, 'days', 'duration')), '1 month', 'Number#duration | 1 months');
-    equal(run(run(11, 'months', 'duration')), '11 months', 'Number#duration | 11 months');
-    equal(run(run(12, 'months', 'duration')), '1 year', 'Number#duration | 1 year');
-    equal(run(run(2, 'years', 'duration')), '2 years', 'Number#duration | 2 years');
-    equal(run(run(15, 'years', 'duration')), '15 years', 'Number#duration | 15 years');
-    equal(run(run(1500, 'years', 'duration')), '1500 years', 'Number#duration | 1500 years');
+    test(run(5, 'hours'), '5 hours', '5 hours');
+    test(run(22, 'hours'), '22 hours', '22 hours');
+    test(run(23, 'hours'), '1 day', '23 hours');
+    test(run(6, 'days'), '6 days', '6 days');
+    test(run(7, 'days'), '1 week', '1 week');
+    test(run(28, 'days'), '4 weeks', '30 days');
+    test(run(29, 'days'), '1 month', '1 months');
+    test(run(11, 'months'), '11 months', '11 months');
+    test(run(12, 'months'), '1 year', '1 year');
+    test(run(2, 'years'), '2 years', '2 years');
+    test(run(15, 'years'), '15 years', '15 years');
+    test(run(1500, 'years'), '1500 years', '1500 years');
 
+
+    // Fake Locale
+
+    testSetLocale('fo');
+
+    test(run(5, 'days'), '5somomoney', 'Fake locale | 5 days');
+    test(run(150, 'days'), '4timomoney', 'Fake locale | 150 days');
+    test(run(38000, 'seconds'), '10famomoney', 'Fake locale | 38000 seconds');
+    test(run(38000, 'minutes'), '3lamomoney', 'Fake locale | 38000 minutes');
+    test(run(38000, 'hours'), '4domomoney', 'Fake locale | 38000 hours');
+
+
+    // Duration without setting the locale code
+
+    test(run(5, 'days'), ['en'], '5 days', 'English | 5 days');
+    test(run(150, 'days'), ['en'], '4 months', 'English | 150 days');
+    test(run(38000, 'seconds'), ['en'], '10 hours', 'English | 38000 seconds');
+    test(run(38000, 'minutes'), ['en'], '3 weeks', 'English | 38000 minutes');
+    test(run(38000, 'hours'), ['en'], '4 years', 'English | 38000 hours');
+    testSetLocale('en');
   });
 
 });
