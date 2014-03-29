@@ -265,6 +265,15 @@ skipEnvironments = function(environments, test) {
     }
   }
 
+  function getProperty(subject, prop) {
+    if(Sugar.noConflict) {
+      return Sugar[currentPackage.name][prop];
+    } else {
+      return subject[prop];
+    }
+  }
+
+
   function subjectIsClass(subject) {
     switch(subject) {
       case Boolean:
@@ -540,6 +549,7 @@ skipEnvironments = function(environments, test) {
   this.equalWithMargin = equalWithMargin;
   this.asyncFinished = asyncFinished;
   this.raisesError = raisesError;
+  this.getProperty = getProperty;
   this.setIsEqual = setIsEqual;
   this.notEqual = notEqual;
   this.package = package;
