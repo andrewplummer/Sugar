@@ -5,8 +5,6 @@ package('Date | Ranges', function () {
   function createRange() {
     return run(Date, 'range', arguments);
   }
-  //var d1, d2;
-  //var range, expected, result, count, range1, range2, tzOffset;
 
   group('Basics', function() {
 

@@ -1,5 +1,4 @@
-
-package('Number', function () {
+package('Number | Ranges', function () {
 
   function getRange(from, to) {
     return run(Number, 'range', [from, to]);
