@@ -1,4 +1,4 @@
-package('String', function () {
+package('String | Inflections', function () {
 
   /* Note that the following methods are not implemented now and may not be:
    *
@@ -351,7 +351,7 @@ package('String', function () {
   var uncountable = 'ors';
   var countable = 'sponsor';
 
-  String.Inflector.uncountable(uncountable);
+  Sugar.String.Inflector.uncountable(uncountable);
 
   method('singularize', function() {
     test(uncountable, uncountable, 'singularize | uncountable | ors');
@@ -397,9 +397,9 @@ package('String', function () {
 
   // Test overwrite previous inflectors
   equal(run('series', 'singularize'), 'series', 'singularize | series');
-  String.Inflector.singular('series', 'serie');
+  Sugar.String.Inflector.singular('series', 'serie');
   equal(run('series', 'singularize'), 'serie', 'singularize | serie');
-  String.Inflector.singular('series'); // Return to normal
+  Sugar.String.Inflector.singular('series'); // Return to normal
 
 
   // Test irregulars
@@ -437,14 +437,14 @@ package('String', function () {
 
   // Test acronyms
 
-  String.Inflector.acronym("API");
-  String.Inflector.acronym("HTML");
-  String.Inflector.acronym("HTTP");
-  String.Inflector.acronym("RESTful");
-  String.Inflector.acronym("W3C");
-  String.Inflector.acronym("PhD");
-  String.Inflector.acronym("RoR");
-  String.Inflector.acronym("SSL");
+  Sugar.String.Inflector.acronym("API");
+  Sugar.String.Inflector.acronym("HTML");
+  Sugar.String.Inflector.acronym("HTTP");
+  Sugar.String.Inflector.acronym("RESTful");
+  Sugar.String.Inflector.acronym("W3C");
+  Sugar.String.Inflector.acronym("PhD");
+  Sugar.String.Inflector.acronym("RoR");
+  Sugar.String.Inflector.acronym("SSL");
 
   // camelize             underscore            humanize              titleize
   [
@@ -485,7 +485,7 @@ package('String', function () {
 
 
   // Test acronym override
-  String.Inflector.acronym("LegacyApi")
+  Sugar.String.Inflector.acronym("LegacyApi")
 
   method('camelize', function() {
     test('legacyapi', "LegacyApi", 'LegacyApi')
@@ -503,7 +503,7 @@ package('String', function () {
 
   // Test underscore acronym sequence
 
-  String.Inflector.acronym("HTML5");
+  Sugar.String.Inflector.acronym("HTML5");
 
 
   method('underscore', function() {
@@ -548,20 +548,19 @@ package('String', function () {
   });
 
 
-
   method('humanize', function() {
 
     testIterateOverObject(UnderscoreToHuman, function(under, human) {
         test(under, human, 'underscore')
     });
 
-    String.Inflector.human(/_cnt$/i, '_count');
-    String.Inflector.human(/^prefx_/i, '')
+    Sugar.String.Inflector.human(/_cnt$/i, '_count');
+    Sugar.String.Inflector.human(/^prefx_/i, '')
 
     test('jargon_cnt', 'Jargon count', 'Jargon count')
     test('prefx_request', 'Request', 'Request')
 
-    String.Inflector.human("col_rpted_bugs", "Reported bugs")
+    Sugar.String.Inflector.human("col_rpted_bugs", "Reported bugs")
 
     test('col_rpted_bugs', 'Reported bugs', 'Reported bugs')
     test('COL_rpted_bugs', 'Col rpted bugs', 'Col rpted bugs')
@@ -587,16 +586,16 @@ package('String', function () {
 
     // Test clearing inflectors KEEP ME AT THE BOTTOM
     test('foo', 'foos', 'String.Inflector.clear | foo is foos');
-    String.Inflector.clear('plurals');
+    Sugar.String.Inflector.clear('plurals');
     test('foo', 'foo', 'String.Inflector.clear | clear purals');
     equal(run('foos', 'singularize'), 'foo', 'String.Inflector.clear | singulars are not cleared');
-    String.Inflector.plural(/$/, 's');
+    Sugar.String.Inflector.plural(/$/, 's');
     test('foo', 'foos', 'String.Inflector.plural | re-add');
-    String.Inflector.clear('all');
+    Sugar.String.Inflector.clear('all');
     test('foo', 'foo', 'String.Inflector.plural | clear all with "all"');
-    String.Inflector.plural(/$/, 's');
+    Sugar.String.Inflector.plural(/$/, 's');
     test('foo', 'foos', 'String.Inflector.plural | re-add again');
-    String.Inflector.clear();
+    Sugar.String.Inflector.clear();
     test('foo', 'foo', 'String.Inflector.plural | clear all with undefined');
 
   });
