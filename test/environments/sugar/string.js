@@ -495,24 +495,6 @@ package('String', function () {
     test('mayonnaise', false, 'mayonnaise');
   });
 
-
-  method('has', function() {
-
-    test('foo', ['f'], true, 'foo has f');
-    test('foo', ['oo'], true, 'foo has oo');
-    test('foo', [/f/], true, 'foo has /f/');
-    test('foo', [/[a-g]/], true, 'foo has /[a-g]/');
-    test('foo', [/[p-z]/], false, 'foo has /[p-z]/');
-    test('flu?ffy', ['?'], true, 'flu?ffy has ?');
-    test('flu?ffy', ['\?'], true, 'flu?ffy has one slash and ?');
-    test('flu?ffy', ['\\?'], false, 'flu?ffy has two slashes and ?');
-    test('flu?ffy', ['\\\?'], false, 'flu?ffy has three slashes and ?');
-    test('flu?ffy', [/\?/], true, 'flu?ffy has one slash and ? in a regex');
-    test('flu?ffy', [/\\?/], true, 'flu?ffy has two slashes and ? in a regex');
-    test('flu?ffy', [/\\\?/], false, 'flu?ffy has three slashes and ? in a regex');
-    test('flu\\?ffy', [/\\\?/], true, 'flu\\?ffy has three slashes and ? in a regex');
-  });
-
   method('add', function() {
     test('schfifty', [' five'], 'schfifty five', 'schfifty five');
     test('dopamine', ['e', 3], 'dopeamine', 'dopeamine');
