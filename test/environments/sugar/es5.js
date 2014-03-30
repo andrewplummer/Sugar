@@ -7,6 +7,9 @@ package('ES5', function () {
   // This will reset the array in < IE8. Modern browsers will ignore the element.
   equal(arr.length, 0, 'Array internals will not allow more than a 32bit integer as a key. Anything higher will be ignored');
 
+  // The scope when none is set.
+  nullScope = (function(){ return this; }).call();
+
 
 
   // Array.isArray
