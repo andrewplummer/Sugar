@@ -133,12 +133,6 @@ testPadDigits = function(d, place) {
   return str;
 }
 
-getDate = function(year) {
-  var d = new Date(year, 0);
-  d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
-  return d;
-}
-
 testPadNumber = function(val, place, sign) {
   var num = Math.abs(val);
   var len = Math.abs(num).toString().replace(/\.\d+/, '').length;
