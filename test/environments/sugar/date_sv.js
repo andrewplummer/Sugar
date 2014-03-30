@@ -1,138 +1,152 @@
-test('Dates | Swedish', function () {
+package('Date | Swedish', function () {
 
   var now = new Date();
-  Date.setLocale('sv');
+  testSetLocale('sv');
+
+  method('create', function() {
+
+    dateEqual(testCreateDate('den 15 maj 2011'), new Date(2011, 4, 15), 'basic Swedish date');
+    dateEqual(testCreateDate('15 maj 2011'), new Date(2011, 4, 15), 'basic Swedish date');
+    dateEqual(testCreateDate('tisdag 5 januari 2012'), new Date(2012, 0, 5), '2012-01-05');
+    dateEqual(testCreateDate('tisdag, 5 januari 2012'), new Date(2012, 0, 5), '2012-01-05');
+    dateEqual(testCreateDate('maj 2011'), new Date(2011, 4), 'year and month');
+    dateEqual(testCreateDate('15 maj'), new Date(now.getFullYear(), 4, 15), 'month and date');
+    dateEqual(testCreateDate('2011'), new Date(2011, 0), 'year');
+    dateEqual(testCreateDate('maj'), new Date(now.getFullYear(), 4), 'month');
+    dateEqual(testCreateDate('måndag'), getDateWithWeekdayAndOffset(1), 'Monday');
+
+    dateEqual(testCreateDate('15 maj 2011 3:45'), new Date(2011, 4, 15, 3, 45), 'basic Swedish date 3:45');
+    dateEqual(testCreateDate('15 maj 2011 3:45pm'), new Date(2011, 4, 15, 15, 45), 'basic Swedish date 3:45pm');
+
+    dateEqual(testCreateDate('för en millisekund sedan'), getRelativeDate(null, null, null, null, null, null,-1), 'one millisecond ago');
+    dateEqual(testCreateDate('för en sekund sedan'), getRelativeDate(null, null, null, null, null, -1), 'one second ago');
+    dateEqual(testCreateDate('för en minut sedan'), getRelativeDate(null, null, null, null, -1), 'one minute ago');
+    dateEqual(testCreateDate('för en timme sedan'), getRelativeDate(null, null, null, -1), 'one hour ago');
+    dateEqual(testCreateDate('för en dag sedan'), getRelativeDate(null, null, -1), 'one day ago');
+    dateEqual(testCreateDate('för en vecka sedan'), getRelativeDate(null, null, -7), 'one week ago');
+    dateEqual(testCreateDate('för en månad sedan'), getRelativeDate(null, -1), 'one month ago');
+    dateEqual(testCreateDate('för ett år sedan'), getRelativeDate(-1), 'one year ago');
+    dateEqual(testCreateDate('ett år sen'), getRelativeDate(-1), 'one year ago');
+
+    dateEqual(testCreateDate('ett ar sen'), getRelativeDate(-1), 'one year ago');
+
+    dateEqual(testCreateDate('om 5 millisekunder'), getRelativeDate(null, null, null, null, null, null,5), 'dans | five milliseconds from now');
+    dateEqual(testCreateDate('om 5 sekunder'), getRelativeDate(null, null, null, null, null, 5), 'dans | five second from now');
+    dateEqual(testCreateDate('om 5 minuter'), getRelativeDate(null, null, null, null, 5), 'dans | five minute from now');
+    dateEqual(testCreateDate('om 5 timmar'), getRelativeDate(null, null, null, 5), 'dans | five hour from now');
+    dateEqual(testCreateDate('om 5 dagar'), getRelativeDate(null, null, 5), 'dans | five day from now');
+    dateEqual(testCreateDate('om 5 veckor'), getRelativeDate(null, null, 35), 'dans | five weeks from now');
+    dateEqual(testCreateDate('om 5 månader'), getRelativeDate(null, 5), 'dans | five months from now');
+    dateEqual(testCreateDate('om 5 år'), getRelativeDate(5), 'dans | five years from now');
 
 
-  dateEqual(Date.create('den 15 maj 2011'), new Date(2011, 4, 15), 'Date#create | basic Swedish date');
-  dateEqual(Date.create('15 maj 2011'), new Date(2011, 4, 15), 'Date#create | basic Swedish date');
-  dateEqual(Date.create('tisdag 5 januari 2012'), new Date(2012, 0, 5), 'Date#create | Swedish | 2012-01-05');
-  dateEqual(Date.create('tisdag, 5 januari 2012'), new Date(2012, 0, 5), 'Date#create | Swedish | 2012-01-05');
-  dateEqual(Date.create('maj 2011'), new Date(2011, 4), 'Date#create | Swedish | year and month');
-  dateEqual(Date.create('15 maj'), new Date(now.getFullYear(), 4, 15), 'Date#create | Swedish | month and date');
-  dateEqual(Date.create('2011'), new Date(2011, 0), 'Date#create | Swedish | year');
-  dateEqual(Date.create('maj'), new Date(now.getFullYear(), 4), 'Date#create | Swedish | month');
-  dateEqual(Date.create('måndag'), getDateWithWeekdayAndOffset(1), 'Date#create | Swedish | Monday');
+    dateEqual(testCreateDate('i förrgår'), run(getRelativeDate(null, null, -2), 'reset'), 'day before yesterday');
+    dateEqual(testCreateDate('förrgår'), run(getRelativeDate(null, null, -2), 'reset'), 'day before yesterday');
+    dateEqual(testCreateDate('i går'), run(getRelativeDate(null, null, -1), 'reset'), 'yesterday');
+    dateEqual(testCreateDate('igår'), run(getRelativeDate(null, null, -1), 'reset'), 'yesterday');
+    dateEqual(testCreateDate('i dag'), run(getRelativeDate(null, null, 0), 'reset'), 'today');
+    dateEqual(testCreateDate('idag'), run(getRelativeDate(null, null, 0), 'reset'), 'today');
+    dateEqual(testCreateDate('imorgon'), run(getRelativeDate(null, null, 1), 'reset'), 'tomorrow');
+    dateEqual(testCreateDate('i morgon'), run(getRelativeDate(null, null, 1), 'reset'), 'tomorrow');
+    dateEqual(testCreateDate('i övermorgon'), run(getRelativeDate(null, null, 2), 'reset'), 'day after tomorrow');
+    dateEqual(testCreateDate('i över morgon'), run(getRelativeDate(null, null, 2), 'reset'), 'day after tomorrow');
 
-  dateEqual(Date.create('15 maj 2011 3:45'), new Date(2011, 4, 15, 3, 45), 'Date#create | basic Swedish date 3:45');
-  dateEqual(Date.create('15 maj 2011 3:45pm'), new Date(2011, 4, 15, 15, 45), 'Date#create | basic Swedish date 3:45pm');
+    dateEqual(testCreateDate('förra veckan'), getRelativeDate(null, null, -7), 'Last week');
+    dateEqual(testCreateDate('i förra veckan'), getRelativeDate(null, null, -7), 'Last week');
+    dateEqual(testCreateDate('nästa vecka'), getRelativeDate(null, null, 7), 'Next week');
+    dateEqual(testCreateDate('nasta vecka'), getRelativeDate(null, null, 7), 'Next week');
 
-  dateEqual(Date.create('för en millisekund sedan'), getRelativeDate(null, null, null, null, null, null,-1), 'Date#create | Swedish | one millisecond ago');
-  dateEqual(Date.create('för en sekund sedan'), getRelativeDate(null, null, null, null, null, -1), 'Date#create | Swedish | one second ago');
-  dateEqual(Date.create('för en minut sedan'), getRelativeDate(null, null, null, null, -1), 'Date#create | Swedish | one minute ago');
-  dateEqual(Date.create('för en timme sedan'), getRelativeDate(null, null, null, -1), 'Date#create | Swedish | one hour ago');
-  dateEqual(Date.create('för en dag sedan'), getRelativeDate(null, null, -1), 'Date#create | Swedish | one day ago');
-  dateEqual(Date.create('för en vecka sedan'), getRelativeDate(null, null, -7), 'Date#create | Swedish | one week ago');
-  dateEqual(Date.create('för en månad sedan'), getRelativeDate(null, -1), 'Date#create | Swedish | one month ago');
-  dateEqual(Date.create('för ett år sedan'), getRelativeDate(-1), 'Date#create | Swedish | one year ago');
-  dateEqual(Date.create('ett år sen'), getRelativeDate(-1), 'Date#create | Swedish | one year ago');
-  
-  dateEqual(Date.create('ett ar sen'), getRelativeDate(-1), 'Date#create | Swedish | one year ago');
+    dateEqual(testCreateDate('förra månaden'), getRelativeDate(null, -1), 'last month');
+    dateEqual(testCreateDate('nästa månad'), getRelativeDate(null, 1), 'Next month');
 
-  dateEqual(Date.create('om 5 millisekunder'), getRelativeDate(null, null, null, null, null, null,5), 'Date#create | Swedish | dans | five milliseconds from now');
-  dateEqual(Date.create('om 5 sekunder'), getRelativeDate(null, null, null, null, null, 5), 'Date#create | Swedish | dans | five second from now');
-  dateEqual(Date.create('om 5 minuter'), getRelativeDate(null, null, null, null, 5), 'Date#create | Swedish | dans | five minute from now');
-  dateEqual(Date.create('om 5 timmar'), getRelativeDate(null, null, null, 5), 'Date#create | Swedish | dans | five hour from now');
-  dateEqual(Date.create('om 5 dagar'), getRelativeDate(null, null, 5), 'Date#create | Swedish | dans | five day from now');
-  dateEqual(Date.create('om 5 veckor'), getRelativeDate(null, null, 35), 'Date#create | Swedish | dans | five weeks from now');
-  dateEqual(Date.create('om 5 månader'), getRelativeDate(null, 5), 'Date#create | Swedish | dans | five months from now');
-  dateEqual(Date.create('om 5 år'), getRelativeDate(5), 'Date#create | Swedish | dans | five years from now');
+    dateEqual(testCreateDate('förra året'), getRelativeDate(-1), 'Last year');
+    dateEqual(testCreateDate('nästa år'), getRelativeDate(1), 'Next year');
+
+    dateEqual(testCreateDate('förra måndagen'), getDateWithWeekdayAndOffset(1,  -7), 'last monday');
+    dateEqual(testCreateDate('nästa måndag'), getDateWithWeekdayAndOffset(1, 7), 'next monday');
 
 
-  dateEqual(Date.create('i förrgår'), getRelativeDate(null, null, -2).reset(), 'Date#create | Swedish | day before yesterday');
-  dateEqual(Date.create('förrgår'), getRelativeDate(null, null, -2).reset(), 'Date#create | Swedish | day before yesterday');
-  dateEqual(Date.create('i går'), getRelativeDate(null, null, -1).reset(), 'Date#create | Swedish | yesterday');
-  dateEqual(Date.create('igår'), getRelativeDate(null, null, -1).reset(), 'Date#create | Swedish | yesterday');
-  dateEqual(Date.create('i dag'), getRelativeDate(null, null, 0).reset(), 'Date#create | Swedish | today');
-  dateEqual(Date.create('idag'), getRelativeDate(null, null, 0).reset(), 'Date#create | Swedish | today');
-  dateEqual(Date.create('imorgon'), getRelativeDate(null, null, 1).reset(), 'Date#create | Swedish | tomorrow');
-  dateEqual(Date.create('i morgon'), getRelativeDate(null, null, 1).reset(), 'Date#create | Swedish | tomorrow');
-  dateEqual(Date.create('i övermorgon'), getRelativeDate(null, null, 2).reset(), 'Date#create | Swedish | day after tomorrow');
-  dateEqual(Date.create('i över morgon'), getRelativeDate(null, null, 2).reset(), 'Date#create | Swedish | day after tomorrow');
+    // no accents
+    dateEqual(testCreateDate('mandag'), getDateWithWeekdayAndOffset(1), 'Monday');
+    dateEqual(testCreateDate('for en millisekund sedan'), getRelativeDate(null, null, null, null, null, null,-1), 'one millisecond ago');
+    dateEqual(testCreateDate('for en sekund sedan'), getRelativeDate(null, null, null, null, null, -1), 'one second ago');
+    dateEqual(testCreateDate('for en minut sedan'), getRelativeDate(null, null, null, null, -1), 'one minute ago');
+    dateEqual(testCreateDate('for en timme sedan'), getRelativeDate(null, null, null, -1), 'one hour ago');
+    dateEqual(testCreateDate('for en dag sedan'), getRelativeDate(null, null, -1), 'one day ago');
+    dateEqual(testCreateDate('for en vecka sedan'), getRelativeDate(null, null, -7), 'one week ago');
+    dateEqual(testCreateDate('for en manad sedan'), getRelativeDate(null, -1), 'one month ago');
+    dateEqual(testCreateDate('for ett ar sedan'), getRelativeDate(-1), 'one year ago');
+    dateEqual(testCreateDate('ett ar sen'), getRelativeDate(-1), 'one year ago');
 
-  dateEqual(Date.create('förra veckan'), getRelativeDate(null, null, -7), 'Date#create | Swedish | Last week');
-  dateEqual(Date.create('i förra veckan'), getRelativeDate(null, null, -7), 'Date#create | Swedish | Last week');
-  dateEqual(Date.create('nästa vecka'), getRelativeDate(null, null, 7), 'Date#create | Swedish | Next week');
-  dateEqual(Date.create('nasta vecka'), getRelativeDate(null, null, 7), 'Date#create | Swedish | Next week');
+    dateEqual(testCreateDate('om 5 manader'), getRelativeDate(null, 5), 'dans | five months from now');
+    dateEqual(testCreateDate('om 5 ar'), getRelativeDate(5), 'dans | five years from now');
 
-  dateEqual(Date.create('förra månaden'), getRelativeDate(null, -1), 'Date#create | Swedish | last month');
-  dateEqual(Date.create('nästa månad'), getRelativeDate(null, 1), 'Date#create | Swedish | Next month');
+    dateEqual(testCreateDate('i forrgar'), run(getRelativeDate(null, null, -2), 'reset'), 'day before yesterday');
+    dateEqual(testCreateDate('förrgår'), run(getRelativeDate(null, null, -2), 'reset'), 'day before yesterday');
+    dateEqual(testCreateDate('i gar'), run(getRelativeDate(null, null, -1), 'reset'), 'yesterday');
+    dateEqual(testCreateDate('igar'), run(getRelativeDate(null, null, -1), 'reset'), 'yesterday');
+    dateEqual(testCreateDate('i overmorgon'), run(getRelativeDate(null, null, 2), 'reset'), 'day after tomorrow');
+    dateEqual(testCreateDate('i over morgon'), run(getRelativeDate(null, null, 2), 'reset'), 'day after tomorrow');
 
-  dateEqual(Date.create('förra året'), getRelativeDate(-1), 'Date#create | Swedish | Last year');
-  dateEqual(Date.create('nästa år'), getRelativeDate(1), 'Date#create | Swedish | Next year');
+    dateEqual(testCreateDate('forra veckan'), getRelativeDate(null, null, -7), 'Last week');
+    dateEqual(testCreateDate('i forra veckan'), getRelativeDate(null, null, -7), 'Last week');
+    dateEqual(testCreateDate('nasta vecka'), getRelativeDate(null, null, 7), 'Next week');
+    dateEqual(testCreateDate('forra manaden'), getRelativeDate(null, -1), 'last month');
+    dateEqual(testCreateDate('nasta manad'), getRelativeDate(null, 1), 'Next month');
+    dateEqual(testCreateDate('forra aret'), getRelativeDate(-1), 'Last year');
+    dateEqual(testCreateDate('nasta ar'), getRelativeDate(1), 'Next year');
 
-  dateEqual(Date.create('förra måndagen'), getDateWithWeekdayAndOffset(1,  -7), 'Date#create | Swedish | last monday');
-  dateEqual(Date.create('nästa måndag'), getDateWithWeekdayAndOffset(1, 7), 'Date#create | Swedish | next monday');
+  });
 
-
-  // no accents
-  dateEqual(Date.create('mandag'), getDateWithWeekdayAndOffset(1), 'Date#create | Swedish | Monday');
-  dateEqual(Date.create('for en millisekund sedan'), getRelativeDate(null, null, null, null, null, null,-1), 'Date#create | Swedish | one millisecond ago');
-  dateEqual(Date.create('for en sekund sedan'), getRelativeDate(null, null, null, null, null, -1), 'Date#create | Swedish | one second ago');
-  dateEqual(Date.create('for en minut sedan'), getRelativeDate(null, null, null, null, -1), 'Date#create | Swedish | one minute ago');
-  dateEqual(Date.create('for en timme sedan'), getRelativeDate(null, null, null, -1), 'Date#create | Swedish | one hour ago');
-  dateEqual(Date.create('for en dag sedan'), getRelativeDate(null, null, -1), 'Date#create | Swedish | one day ago');
-  dateEqual(Date.create('for en vecka sedan'), getRelativeDate(null, null, -7), 'Date#create | Swedish | one week ago');
-  dateEqual(Date.create('for en manad sedan'), getRelativeDate(null, -1), 'Date#create | Swedish | one month ago');
-  dateEqual(Date.create('for ett ar sedan'), getRelativeDate(-1), 'Date#create | Swedish | one year ago');
-  dateEqual(Date.create('ett ar sen'), getRelativeDate(-1), 'Date#create | Swedish | one year ago');
-  
-  dateEqual(Date.create('om 5 manader'), getRelativeDate(null, 5), 'Date#create | Swedish | dans | five months from now');
-  dateEqual(Date.create('om 5 ar'), getRelativeDate(5), 'Date#create | Swedish | dans | five years from now');
-  
-  dateEqual(Date.create('i forrgar'), getRelativeDate(null, null, -2).reset(), 'Date#create | Swedish | day before yesterday');
-  dateEqual(Date.create('förrgår'), getRelativeDate(null, null, -2).reset(), 'Date#create | Swedish | day before yesterday');
-  dateEqual(Date.create('i gar'), getRelativeDate(null, null, -1).reset(), 'Date#create | Swedish | yesterday');
-  dateEqual(Date.create('igar'), getRelativeDate(null, null, -1).reset(), 'Date#create | Swedish | yesterday');
-  dateEqual(Date.create('i overmorgon'), getRelativeDate(null, null, 2).reset(), 'Date#create | Swedish | day after tomorrow');
-  dateEqual(Date.create('i over morgon'), getRelativeDate(null, null, 2).reset(), 'Date#create | Swedish | day after tomorrow');
-  
-  dateEqual(Date.create('forra veckan'), getRelativeDate(null, null, -7), 'Date#create | Swedish | Last week');
-  dateEqual(Date.create('i forra veckan'), getRelativeDate(null, null, -7), 'Date#create | Swedish | Last week');
-  dateEqual(Date.create('nasta vecka'), getRelativeDate(null, null, 7), 'Date#create | Swedish | Next week');
-  dateEqual(Date.create('forra manaden'), getRelativeDate(null, -1), 'Date#create | Swedish | last month');
-  dateEqual(Date.create('nasta manad'), getRelativeDate(null, 1), 'Date#create | Swedish | Next month');
-  dateEqual(Date.create('forra aret'), getRelativeDate(-1), 'Date#create | Swedish | Last year');
-  dateEqual(Date.create('nasta ar'), getRelativeDate(1), 'Date#create | Swedish | Next year');
+  method('format', function() {
+    test(testCreateDate('2001-06-14 3:45pm'), 'den 14 juni 2001 15:45', 'default format');
+    test(testCreateDate('2011-08-25'), ['{dd} {month} {yyyy}'], '25 augusti 2011', 'dd month yyyy format');
+  });
 
 
-  equal(Date.create('2001-06-14 3:45pm').format(), 'den 14 juni 2001 15:45', 'Date#create | Swedish | format');
-  equal(Date.create('2011-08-25').format('{dd} {month} {yyyy}'), '25 augusti 2011', 'Date#create | Swedish | format');
+  method('relative', function() {
+    test(testCreateDate('1 second ago', 'en'), '1 sekund sedan');
+    test(testCreateDate('1 minute ago', 'en'), '1 minut sedan');
+    test(testCreateDate('1 hour ago', 'en'),   '1 timme sedan');
+    test(testCreateDate('1 day ago', 'en'),    '1 dag sedan');
+    test(testCreateDate('1 week ago', 'en'),   '1 vecka sedan');
+    test(testCreateDate('1 month ago', 'en'),  '1 månad sedan');
+    test(testCreateDate('1 year ago', 'en'),   '1 år sedan');
 
-  equal(Date.create('1 second ago', 'en').relative(), '1 sekund sedan', 'Date#create | Swedish | relative format past');
-  equal(Date.create('1 minute ago', 'en').relative(), '1 minut sedan',  'Date#create | Swedish | relative format past');
-  equal(Date.create('1 hour ago', 'en').relative(),   '1 timme sedan',     'Date#create | Swedish | relative format past');
-  equal(Date.create('1 day ago', 'en').relative(),    '1 dag sedan',    'Date#create | Swedish | relative format past');
-  equal(Date.create('1 week ago', 'en').relative(),   '1 vecka sedan',  'Date#create | Swedish | relative format past');
-  equal(Date.create('1 month ago', 'en').relative(),  '1 månad sedan',   'Date#create | Swedish | relative format past');
-  equal(Date.create('1 year ago', 'en').relative(),   '1 år sedan',     'Date#create | Swedish | relative format past');
+    test(testCreateDate('5 seconds ago', 'en'), '5 sekunder sedan');
+    test(testCreateDate('5 minutes ago', 'en'), '5 minuter sedan');
+    test(testCreateDate('5 hours ago', 'en'),   '5 timmar sedan');
+    test(testCreateDate('5 days ago', 'en'),    '5 dagar sedan');
+    test(testCreateDate('3 weeks ago', 'en'),   '3 veckor sedan');
+    test(testCreateDate('5 weeks ago', 'en'),   '1 månad sedan');
+    test(testCreateDate('5 months ago', 'en'),  '5 månader sedan');
+    test(testCreateDate('5 years ago', 'en'),   '5 år sedan');
 
-  equal(Date.create('5 seconds ago', 'en').relative(), '5 sekunder sedan', 'Date#create | Swedish | relative format past');
-  equal(Date.create('5 minutes ago', 'en').relative(), '5 minuter sedan',  'Date#create | Swedish | relative format past');
-  equal(Date.create('5 hours ago', 'en').relative(),   '5 timmar sedan',     'Date#create | Swedish | relative format past');
-  equal(Date.create('5 days ago', 'en').relative(),    '5 dagar sedan',    'Date#create | Swedish | relative format past');
-  equal(Date.create('3 weeks ago', 'en').relative(),   '3 veckor sedan',  'Date#create | Swedish | relative format past');
-  equal(Date.create('5 weeks ago', 'en').relative(),   '1 månad sedan',  'Date#create | Swedish | relative format past');
-  equal(Date.create('5 months ago', 'en').relative(),  '5 månader sedan',   'Date#create | Swedish | relative format past');
-  equal(Date.create('5 years ago', 'en').relative(),   '5 år sedan',     'Date#create | Swedish | relative format past');
+    test(testCreateDate('1 second from now', 'en'), 'om 1 sekund');
+    test(testCreateDate('1 minute from now', 'en'), 'om 1 minut');
+    test(testCreateDate('1 hour from now', 'en'),   'om 1 timme');
+    test(testCreateDate('1 day from now', 'en'),    'om 1 dag');
+    test(testCreateDate('1 week from now', 'en'),   'om 1 vecka');
+    test(testCreateDate('1 month from now', 'en'),  'om 1 månad');
+    test(testCreateDate('1 year from now', 'en'),   'om 1 år');
 
-  equal(Date.create('1 second from now', 'en').relative(), 'om 1 sekund', 'Date#create | Swedish | relative format future');
-  equal(Date.create('1 minute from now', 'en').relative(), 'om 1 minut',  'Date#create | Swedish | relative format future');
-  equal(Date.create('1 hour from now', 'en').relative(),   'om 1 timme',     'Date#create | Swedish | relative format future');
-  equal(Date.create('1 day from now', 'en').relative(),    'om 1 dag',    'Date#create | Swedish | relative format future');
-  equal(Date.create('1 week from now', 'en').relative(),   'om 1 vecka',  'Date#create | Swedish | relative format future');
-  equal(Date.create('1 month from now', 'en').relative(),  'om 1 månad',   'Date#create | Swedish | relative format future');
-  equal(Date.create('1 year from now', 'en').relative(),   'om 1 år',     'Date#create | Swedish | relative format future');
-
-  equal(Date.create('5 second from now', 'en').relative(), 'om 5 sekunder', 'Date#create | Swedish | relative format future');
-  equal(Date.create('5 minutes from now', 'en').relative(),'om 5 minuter',  'Date#create | Swedish | relative format future');
-  equal(Date.create('5 hour from now', 'en').relative(),   'om 5 timmar',     'Date#create | Swedish | relative format future');
-  equal(Date.create('5 day from now', 'en').relative(),    'om 5 dagar',    'Date#create | Swedish | relative format future');
-  equal(Date.create('3 weeks from now', 'en').relative(),   'om 3 veckor',  'Date#create | Swedish | relative format future');
-  equal(Date.create('5 weeks from now', 'en').relative(),   'om 1 månad',  'Date#create | Swedish | relative format future');
-  equal(Date.create('5 month from now', 'en').relative(),  'om 5 månader',   'Date#create | Swedish | relative format future');
-  equal(Date.create('5 year from now', 'en').relative(),   'om 5 år',     'Date#create | Swedish | relative format future');
-
-  equal((5).hours().duration('sv'), '5 timmar', 'Date#create | Swedish | simple duration');
+    test(testCreateDate('5 second from now', 'en'), 'om 5 sekunder');
+    test(testCreateDate('5 minutes from now', 'en'),'om 5 minuter');
+    test(testCreateDate('5 hour from now', 'en'),   'om 5 timmar');
+    test(testCreateDate('5 day from now', 'en'),    'om 5 dagar');
+    test(testCreateDate('3 weeks from now', 'en'),   'om 3 veckor');
+    test(testCreateDate('5 weeks from now', 'en'),   'om 1 månad');
+    test(testCreateDate('5 month from now', 'en'),  'om 5 månader');
+    test(testCreateDate('5 year from now', 'en'),   'om 5 år');
+  });
 
 });
+
+package('Number | Swedish Dates', function () {
+
+  method('duration', function() {
+    test(run(5, 'hours'), ['sv'], '5 timmar', 'simple duration');
+  });
+
+});
+
