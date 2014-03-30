@@ -1,7 +1,6 @@
 package('Date | Russian', function () {
 
   var now = new Date();
-  var then = new Date(2011, 7, 25, 15, 45, 50);
   testSetLocale('ru');
 
   method('create', function() {
@@ -79,6 +78,7 @@ package('Date | Russian', function () {
   });
 
   method('format', function() {
+    var then = new Date(2011, 7, 25, 15, 45, 50);
     test(then, '25 августа 2011 года 15:45', 'standard format');
     test(then, '25 августа 2011 года 15:45', 'standard format');
     test(then, ['{dd} {month} {yyyy}'], '25 августа 2011', 'format');
