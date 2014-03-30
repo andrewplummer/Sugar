@@ -484,58 +484,6 @@ package('String', function () {
   });
 
 
-  method('startsWith', function() {
-
-    // startsWith/endsWith is defined in Harmony, so only passing a regex or
-    // 3 arguments will actually test this code.
-
-    test('HELLO', false, 'undefined produces false');
-    test('hello', ['hell', 0, true], true, 'hello starts with hell');
-    test('HELLO', ['HELL', 0, true], true, 'HELLO starts with HELL');
-    test('HELLO', ['hell', 0, true], false, 'HELLO starts with hell');
-    test('HELLO', ['hell', 0, true], false, 'case sensitive | HELLO starts with hell');
-    test('hello', [/hell/, 0, true], true, 'accepts regex');
-    test('hello', [/[a-h]/, 0, true], true, 'accepts regex alternates');
-    test('HELLO', ['hell', 0, false], true, 'case insensitive | HELLO starts with hell');
-    test('hello', ['hell', -20, true], true, 'from pos -20');
-    test('hello', ['hell', 1, true], false, 'from pos 1');
-    test('hello', ['hell', 2, true], false, 'from pos 2');
-    test('hello', ['hell', 3, true], false, 'from pos 3');
-    test('hello', ['hell', 4, true], false, 'from pos 4');
-    test('hello', ['hell', 5, true], false, 'from pos 5');
-    test('hello', ['hell', 20, true], false, 'from pos 20');
-    test('10', [10], true, 'Numbers will be converted');
-    test('valley girls\nrock', ['valley girls', 0, true], true, 'valley girls rock starts with valley girls');
-    test('valley girls\nrock', ['valley girls r', 0, true], false, 'valley girls rock starts with valley girls r');
-
-  });
-
-
-  method('endsWith', function() {
-
-    test('HELLO', false, 'undefined produces false');
-    test('vader', ['der', 5, true], true, 'vader ends with der');
-    test('VADER', ['DER', 5, true], true, 'VADER ends with DER');
-    test('VADER', ['der', 5, true], false, 'VADER ends with der');
-    test('VADER', ['DER', 5, false], true, 'case insensitive | VADER ends with DER');
-    test('vader', [/der/, 5, true], true, 'accepts regex');
-    test('vader', [/[q-z]/, 5, true], true, 'accepts regex alternates');
-    test('VADER', ['der', 5, false], true, 'case insensitive |  VADER ends with der');
-    test('VADER', ['DER', 5, true], true, 'case sensitive | VADER ends with DER');
-    test('VADER', ['der', 5, true], false, 'case sensitive |  VADER ends with der');
-    test('vader', ['der', -20, true], false, '| from pos -20');
-    test('vader', ['der', 0, true], false, '| from pos 0');
-    test('vader', ['der', 1, true], false, '| from pos 1');
-    test('vader', ['der', 2, true], false, '| from pos 2');
-    test('vader', ['der', 3, true], false, '| from pos 3');
-    test('vader', ['der', 4, true], false, '| from pos 4');
-    test('vader', ['der', 20, true], true, '| from pos 20');
-    test('10', [10], true, 'Numbers will be converted');
-    test('i aint your\nfather', ['father', 18, true], true, 'vader ends with der');
-    test('i aint your\nfather', ['r father', 18, false], false, 'vader ends with der');
-  });
-
-
   method('isBlank', function() {
 
     test('', true, 'blank string');

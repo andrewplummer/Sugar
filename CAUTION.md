@@ -16,6 +16,9 @@ v1.4.3+
 - Level: Major
   - `Date#utc` is now `Date#setUTC`, and now requires explicitly passing `true` as the first argument to set the flag to true.
 
+- Level: Major
+  - `String#startsWith` and `String#endsWith` are now more in compliance with the ES6 spec. They now no longer accept a RegExp (will throw an error) or a `case` parameter. If you need to do more complex string checking, use `String#match` with standard regexes instead. Also minor differences in the way the starting/ending positions are coerced may also be present.
+
 - Level: Moderate
   - `Object.extend()` is now `Sugar.extendObject`.
 
