@@ -11,9 +11,9 @@
   },
   "files": [
     "release/sugar-full.development.js",
-    "test/javascripts/object_helper.js",
-    "test/javascripts/date_helper.js",
-    "test/javascripts/setup.js",
+    "test/javascripts/date-helpers.js",
+    "test/javascripts/helpers.js",
+    "test/javascripts/suite.js",
     "test/environments/sugar/",
     "test/environments/node/"
   ],
