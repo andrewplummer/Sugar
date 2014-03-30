@@ -4,9 +4,9 @@ environment = 'node';
 var Sugar = require('../../../release/sugar-full.development');
 
 // Test suite
-require('../../javascripts/setup.js');
-require('../../javascripts/date_helper.js');
-require('../../javascripts/object_helper.js');
+require('../../javascripts/suite.js');
+require('../../javascripts/helpers.js');
+require('../../javascripts/date-helpers.js');
 
 // Tests
 require('../sugar/object.js');

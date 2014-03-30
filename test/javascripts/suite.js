@@ -62,6 +62,11 @@ if(typeof environment == 'undefined') environment = 'default'; // Override me!
     }
   }
 
+  function syncTestsFinished() {
+    syncTestsRunning = false;
+    checkCanFinish();
+  }
+
   function wrapTestingScope(fn) {
     var cachedPackage = currentPackage;
     var cachedMethod = currentMethod;
@@ -395,6 +400,7 @@ if(typeof environment == 'undefined') environment = 'default'; // Override me!
     }
   }
 
+  this.syncTestsFinished = syncTestsFinished;
   this.equalWithMargin = equalWithMargin;
   this.raisesError = raisesError;
   this.getProperty = getProperty;
