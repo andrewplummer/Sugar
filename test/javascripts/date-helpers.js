@@ -96,7 +96,7 @@ getMonthFromDate = function(d, utc) {
   return ['january','february','march','april','may','june','july','august','september','october','november','december'][month];
 }
 
-getHours = function(num) {
+testGetHours = function(num) {
   return Math.floor(num < 0 ? 24 + num : num);
 }
 
