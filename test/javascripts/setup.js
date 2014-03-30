@@ -291,14 +291,18 @@ skipEnvironments = function(environments, test) {
     return false;
   }
 
-  function raisesError(fn, message) {
-    var raised = false;
+  function raisesError(fn, message, errorType) {
+    var err;
     try {
       fn.call();
     } catch(e) {
-      raised = true;
+      err = e;
     }
-    equal(raised, true, getFullMessage(message), 1);
+    if(!errorType) {
+      equal(!!err, true, getFullMessage(message), 1);
+    } else {
+      equal(err instanceof errorType, true, getFullMessage(message), 1);
+    }
   }
 
   function getFullMessage(tail) {
