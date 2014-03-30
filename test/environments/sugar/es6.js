@@ -672,6 +672,8 @@ package('ES6', function () {
   equal(String.prototype.repeat.length, 1);
   equal(String.prototype.propertyIsEnumerable('repeat'), false);
 
+  // String#repeat
+
   equal('abc'.repeat(), '');
   equal('abc'.repeat(undefined), '');
   equal('abc'.repeat(null), '');
@@ -726,6 +728,115 @@ package('ES6', function () {
   equal(String.prototype.repeat.apply(42, [4]), '42424242');
   equal(String.prototype.repeat.apply({ 'toString': function() { return 'abc'; } }, [2]), 'abcabc');
 
+  // String#contains
+
+  equal(String.prototype.contains.length, 1);
+
+  equal('abc'.contains(), false);
+  equal('aundefinedb'.contains(), true);
+  equal('abc'.contains(undefined), false);
+  equal('aundefinedb'.contains(undefined), true);
+  equal('abc'.contains(null), false);
+  equal('anullb'.contains(null), true);
+  equal('abc'.contains(false), false);
+  equal('afalseb'.contains(false), true);
+  equal('abc'.contains(NaN), false);
+  equal('aNaNb'.contains(NaN), true);
+  equal('abc'.contains('abc'), true);
+  equal('abc'.contains('def'), false);
+  equal('abc'.contains(''), true);
+  equal(''.contains(''), true);
+
+  equal('abc'.contains('b', -Infinity), true);
+  equal('abc'.contains('b', -1), true);
+  equal('abc'.contains('b', -0), true);
+  equal('abc'.contains('b', +0), true);
+  equal('abc'.contains('b', NaN), true);
+  equal('abc'.contains('b', 'x'), true);
+  equal('abc'.contains('b', false), true);
+  equal('abc'.contains('b', undefined), true);
+  equal('abc'.contains('b', null), true);
+  equal('abc'.contains('b', 1), true);
+  equal('abc'.contains('b', 2), false);
+  equal('abc'.contains('b', 3), false);
+  equal('abc'.contains('b', 4), false);
+  equal('abc'.contains('b', +Infinity), false);
+  equal('abc'.contains('bc'), true);
+  equal('abc'.contains('bc\0'), false);
+
+  equal('abc123def'.contains(1, -Infinity), true);
+  equal('abc123def'.contains(1, -1), true);
+  equal('abc123def'.contains(1, -0), true);
+  equal('abc123def'.contains(1, +0), true);
+  equal('abc123def'.contains(1, NaN), true);
+  equal('abc123def'.contains(1, 'x'), true);
+  equal('abc123def'.contains(1, false), true);
+  equal('abc123def'.contains(1, undefined), true);
+  equal('abc123def'.contains(1, null), true);
+  equal('abc123def'.contains(1, 1), true);
+  equal('abc123def'.contains(1, 2), true);
+  equal('abc123def'.contains(1, 3), true);
+  equal('abc123def'.contains(1, 4), false);
+  equal('abc123def'.contains(1, 5), false);
+  equal('abc123def'.contains(1, +Infinity), false);
+
+  equal('abc123def'.contains(9, -Infinity), false);
+  equal('abc123def'.contains(9, -1), false);
+  equal('abc123def'.contains(9, -0), false);
+  equal('abc123def'.contains(9, +0), false);
+  equal('abc123def'.contains(9, NaN), false);
+  equal('abc123def'.contains(9, 'x'), false);
+  equal('abc123def'.contains(9, false), false);
+  equal('abc123def'.contains(9, undefined), false);
+  equal('abc123def'.contains(9, null), false);
+  equal('abc123def'.contains(9, 1), false);
+  equal('abc123def'.contains(9, 2), false);
+  equal('abc123def'.contains(9, 3), false);
+  equal('abc123def'.contains(9, 4), false);
+  equal('abc123def'.contains(9, 5), false);
+  equal('abc123def'.contains(9, +Infinity), false);
+
+  equal('foo[a-z]+(bar)?'.contains('[a-z]+'), true);
+  equal('foo[a-z]+(bar)?'.contains(/[a-z]+/), false);
+  equal('foo/[a-z]+/(bar)?'.contains(/[a-z]+/), true);
+  equal('foo[a-z]+(bar)?'.contains('(bar)?'), true);
+  equal('foo[a-z]+(bar)?'.contains(/(bar)?/), false);
+  equal('foo[a-z]+/(bar)?/'.contains(/(bar)?/), true);
+
+  // http://mathiasbynens.be/notes/javascript-unicode#poo-test
+  var string = 'I\xF1t\xEBrn\xE2ti\xF4n\xE0liz\xE6ti\xF8n\u2603\uD83D\uDCA9';
+  equal(string.contains(''), true);
+  equal(string.contains('\xF1t\xEBr'), true);
+  equal(string.contains('\xE0liz\xE6'), true);
+  equal(string.contains('\xF8n\u2603\uD83D\uDCA9'), true);
+  equal(string.contains('\u2603'), true);
+  equal(string.contains('\uD83D\uDCA9'), true);
+
+  raisesError(function() { String.prototype.contains.call(undefined); }, TypeError);
+  raisesError(function() { String.prototype.contains.call(undefined, 'b'); }, TypeError);
+  raisesError(function() { String.prototype.contains.call(undefined, 'b', 4); }, TypeError);
+  raisesError(function() { String.prototype.contains.call(null); }, TypeError);
+  raisesError(function() { String.prototype.contains.call(null, 'b'); }, TypeError);
+  raisesError(function() { String.prototype.contains.call(null, 'b', 4); }, TypeError);
+  equal(String.prototype.contains.call(42, '2'), true);
+  equal(String.prototype.contains.call(42, 'b', 4), false);
+  equal(String.prototype.contains.call(42, '2', 4), false);
+  equal(String.prototype.contains.call({ 'toString': function() { return 'abc'; } }, 'b', 0), true);
+  equal(String.prototype.contains.call({ 'toString': function() { return 'abc'; } }, 'b', 1), true);
+  equal(String.prototype.contains.call({ 'toString': function() { return 'abc'; } }, 'b', 2), false);
+
+  raisesError(function() { String.prototype.contains.apply(undefined); }, TypeError);
+  raisesError(function() { String.prototype.contains.apply(undefined, ['b']); }, TypeError);
+  raisesError(function() { String.prototype.contains.apply(undefined, ['b', 4]); }, TypeError);
+  raisesError(function() { String.prototype.contains.apply(null); }, TypeError);
+  raisesError(function() { String.prototype.contains.apply(null, ['b']); }, TypeError);
+  raisesError(function() { String.prototype.contains.apply(null, ['b', 4]); }, TypeError);
+  equal(String.prototype.contains.apply(42, ['2']), true);
+  equal(String.prototype.contains.apply(42, ['b', 4]), false);
+  equal(String.prototype.contains.apply(42, ['2', 4]), false);
+  equal(String.prototype.contains.apply({ 'toString': function() { return 'abc'; } }, ['b', 0]), true);
+  equal(String.prototype.contains.apply({ 'toString': function() { return 'abc'; } }, ['b', 1]), true);
+  equal(String.prototype.contains.apply({ 'toString': function() { return 'abc'; } }, ['b', 2]), false);
 
   // End stolen unit tests
 

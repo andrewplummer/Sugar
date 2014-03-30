@@ -8,7 +8,8 @@ v1.4.3
 - Object.extend() is now Sugar.extendObject().
 - `Date#utc` is now `Date#setUTC`.
 - Renamed `Date.SugarNewDate` to `Sugar.Date.newDateInternal`.
-- Modified `String#startsWith` and `String#endsWith` to be more in compliance with ES6.
+- Modified `String#startsWith` and `String#endsWith` to be more in compliance with ES6. See CAUTION.md for details.
+- Removed `String#has` in favor of `String#contains` to be more in compliance with ES6. See CAUTION.md for details.
 
 
 v1.4.2
