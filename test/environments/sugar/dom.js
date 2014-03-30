@@ -59,18 +59,23 @@ package('Array', function () {
 
 package('Object', function() {
 
-  if(Object.isObject) {
-    equal(Object.isObject(document), false, 'Object.isObject | document');
-  }
+  method('isObject', function() {
+    if(!Sugar.Object.isObject) return;
+    test(Object, [document], false, 'document does not respond to isObject');
+  });
 
-  if(Object.clone) {
+  method('clone', function() {
+    if(!Sugar.Object.clone) return;
+
     // Issue #307  Object.clone should error when cloning unknown types.
-    raisesError(function(){ Object.clone(document.body); }, 'Object.clone | raises an error if trying to clone a DOM element');
-    raisesError(function(){ Object.clone(new MouseEvent('click')); }, 'Object.clone | raises an error if trying to a browser event');
-  }
+    raisesError(function(){ run(Object, 'clone', [document.body]); }, 'raises an error if trying to clone a DOM element');
+    raisesError(function(){ run(Object, 'clone', [new MouseEvent('click')]); }, 'raises an error if trying to a browser event');
 
-  if(Object.isFunction) {
-    equal(Object.isFunction(document.createElement('embed')), false, 'Object.isFunction | not true for embed objects');
-  }
+  });
+
+  method('isFunction', function() {
+    if(!Sugar.Object.isFunction) return;
+    test(Object, [document.createElement('embed')], false, 'not true for embed objects');
+  });
 
 });
