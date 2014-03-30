@@ -1,148 +1,5 @@
 if(typeof environment == 'undefined') environment = 'default'; // Override me!
 
-// The scope when none is set.
-nullScope = (function(){ return this; }).call();
-
-
-/*
-var moduleName;
-var moduleSetupMethod;
-var moduleTeardownMethod;
-*/
-
-
-/*
-var testArrayIndexOf = function(arr, obj) {
-  for(var i = 0; i < arr.length; i++) {
-    if(arr[i] === obj) {
-      return i;
-    }
-  }
-  return -1;
-}
-*/
-
-/*
-testCloneObject = function(obj) {
-  var result = {}, key;
-  for(key in obj) {
-    if(!obj.hasOwnProperty(key)) continue;
-    result[key] = obj[key];
-  }
-  return result;
-}
-*/
-
-// HELPERS
-
-/*HMMM
-var testIsClass = function(obj, klass) {
-  return Object.prototype.toString.call(obj) === '[object ' + klass + ']';
-}
-*/
-
-/*
-test = function(name, fn) {
-  if(moduleSetupMethod) {
-    moduleSetupMethod();
-  }
-  if(!results) {
-    results = [];
-    syncTestsRunning = true;
-    asyncTestsRunning = 0;
-    testsStarted();
-  }
-  currentTest = {
-    name: name,
-    assertions: 0,
-    failures: []
-  };
-  try {
-    fn.call();
-  } catch(e) {
-    console.info(e.stack);
-  }
-  results.push(currentTest);
-  if(moduleTeardownMethod) {
-    moduleTeardownMethod();
-  }
-}
-*/
-
-/* NEED???
-
-
-// Capturing the timers here b/c Mootools (and maybe other frameworks) may clear a timeout that
-// it kicked off after this script is loaded, which would throw off a simple incrementing mechanism.
-var capturedTimers = [];
-
-
-var removeCapturedTimer = function(remove) {
-  var result = [], timer;
-  for (var i = 0, len = capturedTimers.length; i < len; i++) {
-    timer = capturedTimers[i];
-    if(timer !== remove) {
-      result.push(timer);
-    }
-  };
-  capturedTimers = result;
-};
-*/
-
-/*
-testModule = function(name, options) {
-  moduleName = name;
-  moduleSetupMethod = options.setup;
-  moduleTeardownMethod = options.teardown;
-}
-*/
-
-/* HMMM .... RECONFIGURE
-equalWithWarning = function(expected, actual, message) {
-  if(expected != actual) {
-    addFailure(actual, expected, message, null, true);
-  }
-}
-*/
-
-/* BETTER WAY TO DO THIS??
-skipEnvironments = function(environments, test) {
-  if(testArrayIndexOf(environments, environment) === -1) {
-    test.call();
-  }
-}
-*/
-
-
-
-  // This method has 2 benefits:
-  // 1. It gives asynchronous functions their own scope so vars can't be overwritten later by other asynchronous functions
-  // 2. It runs the tests after the CPU is free decreasing the chance of timing based errors.
-  /*
-  function async(fn) {
-    asyncTestsRunning++;
-    var package = currentPackage;
-    var method  = currentMethod;
-    setTimeout(function() {
-      currentPackage = package;
-      currentMethod  = method;
-      fn();
-      currentPackage = null;
-      currentMethod  = null;
-    }, 100);
-  }
-  */
-
-
-
-
-
-
-
-
-// BELOW IS NEW
-
-
 (function() {
 
   var results;
@@ -197,6 +54,12 @@ skipEnvironments = function(environments, test) {
   function asyncFinish() {
     asyncTestsRunning--;
     checkCanFinish();
+  }
+
+  function checkCanFinish() {
+    if(!syncTestsRunning && asyncTestsRunning === 0) {
+      testsFinished();
+    }
   }
 
   function wrapTestingScope(fn) {
@@ -397,25 +260,6 @@ skipEnvironments = function(environments, test) {
     return { file: match[1], line: match[2], col: match[3] };
   }
 
-  // Timing functions TODO: CHANGE??
-
-  function checkCanFinish() {
-    if(!syncTestsRunning && asyncTestsRunning === 0) {
-      testsFinished();
-    }
-  }
-
-  function syncTestsFinished() {
-    syncTestsRunning = false;
-    checkCanFinish();
-  }
-
-  function asyncFinished() {
-    asyncTestsRunning--;
-    checkCanFinish();
-  }
-
-
   // Equality test methods.
 
   function isEqual(one, two) {
@@ -551,9 +395,7 @@ skipEnvironments = function(environments, test) {
     }
   }
 
-  this.syncTestsFinished = syncTestsFinished;
   this.equalWithMargin = equalWithMargin;
-  this.asyncFinished = asyncFinished;
   this.raisesError = raisesError;
   this.getProperty = getProperty;
   this.setIsEqual = setIsEqual;
