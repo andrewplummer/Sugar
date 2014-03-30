@@ -938,7 +938,7 @@ package('Date', function () {
     equal(d.getFullYear(), 2008, 'utc | reset utc | year');
     equal(d.getMonth(), 7, 'utc | reset utc | month');
     equal(d.getDate(), d.getTimezoneOffset() > 240 ? 24 : 25, 'utc | reset utc | date');
-    equal(d.getHours(), getHours(4 - (d.getTimezoneOffset() / 60)), 'utc | reset utc | hours');
+    equal(d.getHours(), testGetHours(4 - (d.getTimezoneOffset() / 60)), 'utc | reset utc | hours');
     equal(d.getMinutes(), Math.abs(d.getTimezoneOffset() % 60), 'utc | reset utc | minutes');
     equal(d.getSeconds(), 0, 'utc | reset utc | seconds');
     equal(d.getMilliseconds(), 0, 'utc | reset utc | milliseconds');
@@ -950,7 +950,7 @@ package('Date', function () {
     equal(d.getFullYear(), 2005, 'utc | no reset utc | year');
     equal(d.getMonth(), 7, 'utc | no reset utc | month');
     equal(d.getDate(), d.getTimezoneOffset() >= 135 ? 24 : 25, 'utc | no reset utc | date');
-    equal(d.getHours(), getHours(2 - (d.getTimezoneOffset() / 60)), 'utc | no reset utc | hours');
+    equal(d.getHours(), testGetHours(2 - (d.getTimezoneOffset() / 60)), 'utc | no reset utc | hours');
     equal(d.getMinutes(), 45, 'utc | no reset utc | minutes');
     equal(d.getSeconds(), 20, 'utc | no reset utc | seconds');
     equal(d.getMilliseconds(), 0, 'utc | no reset utc | milliseconds');
@@ -962,7 +962,7 @@ package('Date', function () {
     equal(d.getFullYear(), 2005, 'utc | no reset | year');
     equal(d.getMonth(), 7, 'utc | no reset | month');
     equal(d.getDate(), d.getTimezoneOffset() >= 135 ? 24 : 25, 'utc | no reset | date');
-    equal(d.getHours(), getHours(2 - (d.getTimezoneOffset() / 60)), 'utc | no reset | hours');
+    equal(d.getHours(), testGetHours(2 - (d.getTimezoneOffset() / 60)), 'utc | no reset | hours');
     equal(d.getMinutes(), 45, 'utc | no reset | minutes');
     equal(d.getSeconds(), 20, 'utc | no reset | seconds');
     equal(d.getMilliseconds(), 0, 'utc | no reset | milliseconds');
