@@ -669,6 +669,64 @@ package('ES6', function () {
   equal(String.prototype.endsWith.apply({ 'toString': function() { return 'abc'; } }, ['b', 2]), true);
 
 
+  equal(String.prototype.repeat.length, 1);
+  equal(String.prototype.propertyIsEnumerable('repeat'), false);
+
+  equal('abc'.repeat(), '');
+  equal('abc'.repeat(undefined), '');
+  equal('abc'.repeat(null), '');
+  equal('abc'.repeat(false), '');
+  equal('abc'.repeat(NaN), '');
+  equal('abc'.repeat('abc'), '');
+  equal('abc'.repeat(-0), '');
+  equal('abc'.repeat(+0), '');
+  equal('abc'.repeat(1), 'abc');
+  equal('abc'.repeat(2), 'abcabc');
+  equal('abc'.repeat(3), 'abcabcabc');
+  equal('abc'.repeat(4), 'abcabcabcabc');
+
+  raisesError(function() {
+    'abc'.repeat(-Infinity);
+  }, 'String#repeat | -Infinity throws RangeError', RangeError);
+  raisesError(function() {
+    'abc'.repeat(-1);
+  }, 'String#repeat | -1 throws RangeError', RangeError);
+  raisesError(function() {
+    'abc'.repeat(+Infinity);
+  }, 'String#repeat | +Infinity throws RangeError', RangeError);
+
+  raisesError(function() {
+    String.prototype.repeat.call(undefined);
+  }, 'String#repeat | undefined throws error', TypeError);
+  raisesError(function() {
+    String.prototype.repeat.call(undefined, 4);
+  }, 'String#repeat | undefined throws error with 4', TypeError);
+  raisesError(function() {
+    String.prototype.repeat.call(null);
+  }, 'String#repeat | null throws error', TypeError);
+  raisesError(function() {
+    String.prototype.repeat.call(null, 4);
+  }, 'String#repeat | null throws error with 4', TypeError);
+  raisesError(function() {
+    String.prototype.repeat.apply(undefined);
+  }, 'String#repeat | apply | undefined throws error', TypeError);
+  raisesError(function() {
+    String.prototype.repeat.apply(undefined, [4]);
+  }, 'String#repeat | apply | undefined throws error 4', TypeError);
+  raisesError(function() {
+    String.prototype.repeat.apply(null);
+  }, 'String#repeat | apply | null throws error with 4', TypeError);
+  raisesError(function() {
+    String.prototype.repeat.apply(null, [4]);
+  }, 'String#repeat | apply | null throws error with 4', TypeError);
+
+  equal(String.prototype.repeat.call(42, 4), '42424242');
+  equal(String.prototype.repeat.call({ 'toString': function() { return 'abc'; } }, 2), 'abcabc');
+
+  equal(String.prototype.repeat.apply(42, [4]), '42424242');
+  equal(String.prototype.repeat.apply({ 'toString': function() { return 'abc'; } }, [2]), 'abcabc');
+
+
   // End stolen unit tests
 
 });
