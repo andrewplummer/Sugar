@@ -86,7 +86,10 @@ package('Number', function () {
 
 
   method('sin', function() {
-    test(1, 0.8414709848078965);
+    // A recent change in the V8 engine now produces less accurate values for
+    // trigonomic functions in Chrome: https://code.google.com/p/v8/issues/detail?id=3006
+    // This issue is flagged for landing in M35.
+    equalWithMargin(run(1, 'sin'), 0.8414709848078965, 0.000000000000001);
     test(0, 0);
     test(Math.PI/2, 1);
   });
@@ -99,8 +102,9 @@ package('Number', function () {
 
   method('tan', function() {
     test(0, 0);
-    test(45, 1.6197751905438615);
-    test(90, -1.995200412208242);
+    // See above
+    equalWithMargin(run(45, 'tan'), 1.6197751905438615, 0.000000000000001);
+    equalWithMargin(run(90, 'tan'), -1.995200412208242, 0.000000000000001);
   });
 
   method('asin', function() {
@@ -130,7 +134,6 @@ package('Number', function () {
     test(1, Math.E);
     test(0, 1);
   });
-
 
   method('sqrt', function() {
     test(9, 3);
