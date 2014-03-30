@@ -17,6 +17,10 @@
     return true;
   }
 
+  function commaSeparate(n) {
+    return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  }
+
   $(document).bind('suite.finished', function(event, environment, results) {
     var totalTests = 0;
     var totalAssertions = 0;
@@ -48,12 +52,12 @@
           } else {
             li.addClass('fail');
             li.text('F');
-            title += '<p class="fail">Fail (' + r.assertions + ' assertions)</p>';
+            title += '<p class="fail">Fail (' + commaSeparate(r.assertions) + ' assertions)</p>';
           }
         } else {
           li.text('.');
           li.addClass('pass');
-          title += '<p class="pass">Pass (' + r.assertions + ' assertions)</p>';
+          title += '<p class="pass">Pass (' + commaSeparate(r.assertions) + ' assertions)</p>';
         }
 
         li.attr('title', '#'+ environment +'_tip_' + totalTests);
@@ -66,7 +70,7 @@
     var stats = $('.stats', env).empty();
     stats.append($('<span class="failures">' + totalFailed + ' ' + (totalFailed == 1 ? 'failure' : 'failures') + '</span>'));
     stats.append($('<span class="tests">' + totalTests + ' ' + (totalTests == 1 ? 'test' : 'tests') + '</span>'));
-    stats.append($('<span class="assertions">' + totalAssertions + ' ' + (totalAssertions == 1 ? 'assertion' : 'assertions') + '</span>'));
+    stats.append($('<span class="assertions">' + commaSeparate(totalAssertions) + ' ' + (totalAssertions == 1 ? 'assertion' : 'assertions') + '</span>'));
     stats.append($('<span class="runtime">Completed in ' + results[0].time / 1000 + ' seconds</span>'));
     env.addClass('finished');
     if(totalFailed != 0){
