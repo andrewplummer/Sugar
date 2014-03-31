@@ -10,6 +10,7 @@ v1.4.3
 - Renamed `Date.SugarNewDate` to `Sugar.Date.newDateInternal`.
 - Modified `String#startsWith` and `String#endsWith` to be more in compliance with ES6. See CAUTION.md for details.
 - Removed `String#has` in favor of `String#contains` to be more in compliance with ES6. See CAUTION.md for details.
+- Added `Number.isNaN` shim.
 
 
 v1.4.2
