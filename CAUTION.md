@@ -10,7 +10,7 @@ Version 1.4.0 improves future-compatibility by ensuring that browser updates do 
 
 
 
-v1.4.3+
+v1.5.0+
 =======
 
 - Level: Major
@@ -21,6 +21,9 @@ v1.4.3+
 
 - Level: Major
   - `String#startsWith` and `String#endsWith` are now more in compliance with the ES6 spec. They now no longer accept a RegExp (will throw an error) or a `case` parameter. If you need to do more complex string checking, use `String#match` with standard regexes instead. Also minor differences in the way the starting/ending positions are coerced may also be present.
+
+- Level: Moderate
+  - Alphanumeric array options are now defined on the global object `Sugar.Array` instead of `Array` itself.
 
 - Level: Moderate
   - `Object.extend()` is now `Sugar.extendObject`.
