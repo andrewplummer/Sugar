@@ -1707,10 +1707,10 @@ package('Array', function () {
   method('sortBy', function() {
     var arr;
 
-    var CapturedSortOrder       = Array.AlphanumericSortOrder;
-    var CapturedSortIgnore      = Array.AlphanumericSortIgnore;
-    var CapturedSortIgnoreCase  = Array.AlphanumericSortIgnoreCase;
-    var CapturedSortEquivalents = Array.AlphanumericSortEquivalents;
+    var CapturedSortOrder       = Sugar.Array.AlphanumericSortOrder;
+    var CapturedSortIgnore      = Sugar.Array.AlphanumericSortIgnore;
+    var CapturedSortIgnoreCase  = Sugar.Array.AlphanumericSortIgnoreCase;
+    var CapturedSortEquivalents = Sugar.Array.AlphanumericSortEquivalents;
 
 
     test([0,1,2,3,4], [0,1,2,3,4], '0 is properly sorted');
@@ -2095,8 +2095,8 @@ package('Array', function () {
       'att fästa'
     ];
 
-    Array.AlphanumericSortEquivalents['ö'] = null;
-    Array.AlphanumericSortEquivalents['ä'] = null;
+    Sugar.Array.AlphanumericSortEquivalents['ö'] = null;
+    Sugar.Array.AlphanumericSortEquivalents['ä'] = null;
 
     test(swedishWords, swedishCollated, 'removing equivalents can restore sort order');
 
@@ -2116,7 +2116,7 @@ package('Array', function () {
       'Adrian'
     ];
 
-    Array.AlphanumericSortIgnoreCase = true;
+    Sugar.Array.AlphanumericSortIgnoreCase = true;
     test(arr, expected, 'allows case ignore');
 
     expected = [
@@ -2126,7 +2126,7 @@ package('Array', function () {
       'abner'
     ];
 
-    Array.AlphanumericSortOrder = 'dba';
+    Sugar.Array.AlphanumericSortOrder = 'dba';
     test(arr, expected, 'allows other order');
 
     expected = [
@@ -2135,18 +2135,18 @@ package('Array', function () {
       'Adrian',
       'aBBey'
     ];
-    Array.AlphanumericSortIgnore = /[abcde]/g;
+    Sugar.Array.AlphanumericSortIgnore = /[abcde]/g;
     test(arr, expected, 'allows custom ignore');
 
-    Array.AlphanumericSortOrder = 'cba';
-    Array.AlphanumericSortIgnore = CapturedSortIgnore;
+    Sugar.Array.AlphanumericSortOrder = 'cba';
+    Sugar.Array.AlphanumericSortIgnore = CapturedSortIgnore;
     arr = ['cotÉ', 'cÔte', 'cÔtÉ', 'andere', 'ändere'];
     test(arr, arr, 'cba');
 
-    Array.AlphanumericSortOrder = CapturedSortOrder;
-    Array.AlphanumericSortIgnore = CapturedSortIgnore;
-    Array.AlphanumericSortIgnoreCase = CapturedSortIgnoreCase;
-    Array.AlphanumericSortEquivalents = CapturedSortEquivalents;
+    Sugar.Array.AlphanumericSortOrder = CapturedSortOrder;
+    Sugar.Array.AlphanumericSortIgnore = CapturedSortIgnore;
+    Sugar.Array.AlphanumericSortIgnoreCase = CapturedSortIgnoreCase;
+    Sugar.Array.AlphanumericSortEquivalents = CapturedSortEquivalents;
 
 
     // Issue #282
@@ -2178,7 +2178,7 @@ package('Array', function () {
     test(['1 Title - The Big Lebowski','1 Title - Gattaca','1 Title - Last Picture Show'], ['1 Title - Gattaca','1 Title - Last Picture Show','1 Title - The Big Lebowski'], 'stolen | movie titles');
 
 
-    Array.AlphanumericSortNatural = false;
+    Sugar.Array.AlphanumericSortNatural = false;
 
     test(['2','100','3'], ['100','2','3'], 'natural sort off');
     test(['a2','a100','a3'], ['a100','a2','a3'], 'natural sort off | leading char');
@@ -2186,7 +2186,7 @@ package('Array', function () {
     test(['２','１００','３'], ['１００','２','３'], 'natural sort off | full width');
     test(['a２','a１００','a３'], ['a１００','a２','a３'], 'natural sort off | full width leading char');
 
-    Array.AlphanumericSortNatural = true;
+    Sugar.Array.AlphanumericSortNatural = true;
 
   });
 
@@ -2635,7 +2635,7 @@ package('Array', function () {
 
     var arr = ['c','b','a','à','å','ä','ö'];
 
-    var viaSort   = arr.sort(Array.AlphanumericSort);
+    var viaSort   = arr.sort(Sugar.Array.AlphanumericSort);
     var viaSortBy = run(arr, 'sortBy');
 
     equal(viaSort, viaSortBy, 'Array.SugarCollateStrings | should be exposed to allow sorting via native Array#sort');

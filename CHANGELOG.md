@@ -1,8 +1,9 @@
-v1.4.3
+v1.5.0
 ======
 
 ### API Changes ###
 
+- Added global objects. All methods will also be defined here.
 - Removed String#escapeRegExp. Use RegExp.escape instead.
 - Changed String#escapeHTML to double-escape entities.
 - Object.extend() is now Sugar.extendObject().
@@ -11,6 +12,7 @@ v1.4.3
 - Modified `String#startsWith` and `String#endsWith` to be more in compliance with ES6. See CAUTION.md for details.
 - Removed `String#has` in favor of `String#contains` to be more in compliance with ES6. See CAUTION.md for details.
 - Added `Number.isNaN` shim.
+- Alphanumeric array options are now on the global object.
 
 
 v1.4.2
