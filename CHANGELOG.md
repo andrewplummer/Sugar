@@ -13,6 +13,8 @@ v1.5.0
 - Removed `String#has` in favor of `String#contains` to be more in compliance with ES6. See CAUTION.md for details.
 - Added `Number.isNaN` shim.
 - Alphanumeric array options are now on the global object.
+- Moved `Object.map`, `Object.each`, and `Object.size` to the object package.
+- Removed `Object.reduce`.
 
 
 v1.4.2

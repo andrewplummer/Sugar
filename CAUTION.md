@@ -22,6 +22,9 @@ v1.5.0+
 - Level: Major
   - `String#startsWith` and `String#endsWith` are now more in compliance with the ES6 spec. They now no longer accept a RegExp (will throw an error) or a `case` parameter. If you need to do more complex string checking, use `String#match` with standard regexes instead. Also minor differences in the way the starting/ending positions are coerced may also be present.
 
+- Level: Major
+  - `Object.reduce` is now deprecated. Use `Array#reduce` together with `Object.keys` instead.
+
 - Level: Moderate
   - Alphanumeric array options are now defined on the global object `Sugar.Array` instead of `Array` itself.
 
@@ -33,6 +36,9 @@ v1.5.0+
 
 - Level: Minor
   - `Date.SugarNewDate` is now `Sugar.Date.newDateInternal`. This method is always on the `Sugar` global (not `Date`).
+
+- Level: Minor
+  - `Object.map`, `Object.each`, and `Object.size` were moved to the Object package from the Array package. If you were using these methods and making custom builds you may have to include the Object package now as well.
 
 
 v1.4.1+
