@@ -833,10 +833,15 @@ package('ES5', function () {
   // Ensure that all prototype methods affected by Sugar are still overwriteable.
 
   var storedEach = Array.prototype.each;
+  var storedEachExisted = 'each' in Array.prototype;
   var a = [];
   a.each = 'OH PLEASE';
   equal(a.each, 'OH PLEASE', 'Sugar methods can ALL be overwritten!');
-  Array.prototype.each = storedEach;
+  if(!storedEachExisted) {
+    delete Array.prototype.each;
+  } else {
+    Array.prototype.each = storedEach;
+  }
 
 
 
