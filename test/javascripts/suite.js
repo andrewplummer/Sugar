@@ -127,11 +127,23 @@ if(typeof environment == 'undefined') environment = 'default'; // Override me!
       }
       return Sugar[currentPackage.name][method].apply(null, args);
     } else {
-      // Sometimes testing on other objects via .call, so access through the global context.
-      var globalObject = globalContext[currentPackage.name];
-      // Use the global object for reason above, but test if method exists on prototype.
-      var target = subject.prototype[method] ? globalObject.prototype : globalObject;
-      return target[method].apply(subject, args);
+      var globalObject = globalContext[currentPackage.name], fn;
+      if(subject && subject[method]) {
+        // If the method exists on the subject, then it is the target
+        // to be called. This is true in normal prototype testing as well
+        // as for Sugar defined objects such as Ranges and Extended Objects.
+        fn = subject[method];
+      } else if(globalObject.prototype[method]) {
+        // If the method is defined on the prototype of the global object,
+        // then use it instead. This is the case when testing methods not
+        // originally defined on the prototype of the subject, such as string
+        // methods on numbers, undefined/null, etc.
+        fn = globalObject.prototype[method];
+      } else {
+        // Otherwise assume a class method of the global object.
+        fn = globalObject[method];
+      }
+      return fn.apply(subject, args);
     }
   }
 
