@@ -871,12 +871,11 @@ package('Object', function () {
   method('clone', function() {
 
     // Issue #256
-    if(Date.prototype.clone) {
-      equal(run(Object, 'clone', [new Date().utc()])._utc, true, 'should preserve utc flag when set');
+    if(Sugar.Date.clone) {
+      equal(run(Object, 'clone', [run(new Date(), 'setUTC', [true])])._utc, true, 'should preserve utc flag when set');
     }
 
   });
-
 
   var date = new Date(2012, 8, 25);
 
