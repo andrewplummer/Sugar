@@ -36,14 +36,6 @@ package('Object', function() {
     testClassAndInstance(obj1, [7], false, 'shortcut | 7');
   });
 
-  method('map', function() {
-    testClassAndInstance(obj1, [function(k, v) { return v * 2; }], {foo:6,bar:8,moo:10,car:12}, 'function');
-    testClassAndInstance(obj1, ['toString'], {foo:'3',bar:'4',moo:'5',car:'6'}, 'string shortcut');
-    testClassAndInstance(obj1, [], obj1, 'no args');
-    testClassAndInstance(obj2, [function(k, v) { return v.age; }], {foo:11,bar:22,moo:33,car:44}, 'mapping nested properties');
-    testClassAndInstance(obj2, ['age'], {foo:11,bar:22,moo:33,car:44}, 'mapping nested properties with string shortcut');
-  });
-
   method('all', function() {
     testClassAndInstance(obj1, [function(key, value) { return key == 'foo'; }], false, 'key is foo');
     testClassAndInstance(obj1, [function(key, value) { return key.length > 3; }], false, 'key length is greater than 3');
@@ -159,16 +151,6 @@ package('Object', function() {
     testClassAndInstance(obj4, ['age', true], {foo: {age:11},blue:{age:11}}, 'all | accepts a string shortcut');
   });
 
-  method('reduce', function() {
-    testClassAndInstance(obj1, [function(acc, b) { return acc + b; }], 18, 'obj1 | default');
-    testClassAndInstance(obj1, [function(acc, b) { return acc + b; }, 10], 28, 'obj1 | with initial');
-    testClassAndInstance(obj1, [function(acc, b) { return acc - b; }], -12, 'obj1 | a - b');
-    testClassAndInstance(obj1, [function(acc, b) { return acc - b; }, 10], -8, 'obj1 | a - b with initial');
-    testClassAndInstance(obj1, [function(acc, b) { return acc * b; }, 0], 0, 'obj1 | a * b with 0 initial is 0');
-    testClassAndInstance(obj2, [function(acc, b) { return (acc.age ? acc.age : acc) + b.age; }], 110, 'obj2 | a + b');
-    testClassAndInstance(obj2, [function(acc, b) { return acc - b.age; }, 10], -100, 'obj2 | a - b with initial');
-  });
-
   method('isEmpty', function() {
     testClassAndInstance({}, [], true, 'object is empty');
     testClassAndInstance({ broken: 'wear' }, [], false, 'object is not empty');
@@ -186,66 +168,6 @@ package('Object', function() {
     testClassAndInstance(NaN, [], true, 'NaN is empty');
     testClassAndInstance(8, [], true, '8 is empty');
     testClassAndInstance(new Number(8), [], true, '8 object is empty');
-  });
-
-  method('size', function() {
-    testClassAndInstance({}, [], 0, 'empty object');
-    testClassAndInstance({foo:'bar'}, [], 1, '1 property');
-    testClassAndInstance({foo:'bar',moo:'car'}, [], 2, '2 properties');
-    testClassAndInstance({foo:1}, [], 1, 'numbers');
-    testClassAndInstance({foo:/bar/}, [], 1, 'regexes');
-    testClassAndInstance({foo:function(){}}, [], 1, 'functions');
-    testClassAndInstance({foo:{bar:'car'}}, [], 1, 'nested object');
-    testClassAndInstance({foo:[1]}, [], 1, 'nested array');
-    testClassAndInstance(['a'], [], 1, 'array');
-    testClassAndInstance(['a','b'], [], 2, 'array 2 elements');
-    testClassAndInstance(['a','b','c'], [], 3, 'array 3 elements');
-    testClassAndInstance('foo', [], 3, 'string primitive');
-    testClassAndInstance(new String('foo'), [], 3, 'string object');
-    testClassAndInstance(1, [], 0, 'number primitive');
-    testClassAndInstance(new Number(1), [], 0, 'number object');
-    testClassAndInstance(true, [], 0, 'boolean primitive');
-    testClassAndInstance(new Boolean(true), [], 0, 'boolean object');
-    testClassAndInstance(null, [], 0, 'null');
-    testClassAndInstance(undefined, [], 0, 'undefined');
-
-    var Foo = function(){};
-    testClassAndInstance(new Foo, [], 0, 'class instances');
-
-    var Foo = function(a){ this.a = a; };
-    testClassAndInstance(new Foo, [], 1, 'class instances with a single property');
-  });
-
-  method('each', function() {
-    var fn = function () {}, callback, result;
-    var d = new Date();
-    var obj = {
-      number: 3,
-      person: 'jim',
-      date: d,
-      func: fn
-    };
-
-    var keys = ['number','person','date','func'];
-    var values = [3, 'jim', d, fn];
-    var count = 0;
-
-    count = 0;
-    callback = function(key, value, o) {
-      equal(key, keys[count], 'accepts a block');
-      equal(value, values[count], 'accepts a block');
-      equal(o, obj, 'accepts a block | object is third param');
-      count++;
-    }
-    result = run(Object, 'each', [obj, callback]);
-    equal(count, 4, 'accepts a block | iterated properly');
-    equal(result, obj, 'accepts a block | result should equal object passed in');
-
-    raisesError(function(){
-      run(Object, 'each', [{foo:'bar'}]);
-    }, 'no iterator raises an error');
-
-    testClassAndInstance(obj, [function () {}], obj, 'each returns itself');
   });
 
 });
