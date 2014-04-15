@@ -41,17 +41,28 @@
     // Issue #248
     // Ensure that methods can be reverted
 
-    Sugar.revert(Object, 'isObject');
-    equal('isObject' in {}, false, 'isObject should be removed');
-
-    Object.prototype.tap = undefined;
     Sugar.extend(Object, {
-      tap: function() {}
+      foobar: function() {}
     });
-    Sugar.revert(Object, 'tap');
-    equal('tap' in {}, true, 'previously undefined property should not be deleted');
-    equal(({}).tap === undefined, true, 'previously undefined property is still undefined');
-    delete Object.prototype.tap;
+    equal('foobar' in {}, true, 'custom method should exist');
+    Sugar.revert(Object, 'foobar');
+    equal('foobar' in {}, false, 'custom method should be removed');
+
+    // Reset...
+    Sugar.Object.foobar = null;
+
+    Object.prototype.foobar = function() {
+      return 'original';
+    }
+    Sugar.extend(Object, {
+      foobar: function() {
+        return 'overwritten';
+      }
+    });
+    equal(({}).foobar(), 'overwritten', 'custom method should overwrite');
+    Sugar.revert(Object, 'foobar');
+    equal(({}).foobar(), 'original', 'should revert back to original method');
+
   });
 
 })();
