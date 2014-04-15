@@ -659,8 +659,8 @@ package('Object', function () {
     equal(obj.tap(), obj, 'Object#tap | return value is strictly equal');
 
 
-    equal(!!'foo'.fromQueryString, true, 'Object.fromQueryString should be mapped');
-    equal(!!'foo'.extended, true, 'Object.extended should be mapped');
+    equal(!!'foo'.fromQueryString, false, 'Object.fromQueryString should not be mapped');
+    equal(!!'foo'.extended, false, 'Object.extended should not be mapped');
     equal('foo'.equal, undefined, 'Object.equal should not be mapped (should be "equals" instead)');
 
     Sugar.extendObject(false);
