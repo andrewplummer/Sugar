@@ -63,7 +63,8 @@ def get_content(package)
     `cat lib/locales/*`
   else
     content = File.open(get_file_path(package)).read
-    content.gsub(/^\s*\/\*\*\*COMPILER REMOVE\*\*\*.*\*\*\*END\*\*\*\/\n/m, '')
+    content.gsub!(/^\s*\/\/---COMPILER REMOVE---.*---END COMPILER REMOVE---\n/m, '')
+    content.gsub!(/'use strict';/, '')
   end
 end
 
@@ -132,7 +133,7 @@ def create_package(name, arr)
 end
 
 def wrap_minified(js)
-  "(function(){#{js}})();"
+  "(function(){'use strict';#{js}})();"
 end
 
 def wrap(js)
