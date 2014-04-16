@@ -15,8 +15,7 @@ if @packages.include?(ARGV[0])
   @custom_packages = ARGV[0..-1]
 else
   @version  = ARGV[0]
-  @custom_packages = ARGV[1..-1]
-
+  @custom_packages = ARGV[1..-1] || []
 end
 
 if @custom_packages.length > 0
