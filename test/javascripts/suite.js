@@ -120,7 +120,7 @@ if(typeof environment == 'undefined') environment = 'default'; // Override me!
 
   function run(subject, method, args) {
     method = method || currentMethod;
-    args = args || currentArgs;
+    args = args || currentArgs || [];
     if(Sugar.noConflict) {
       if(!subjectIsClass(subject)) {
         args = [subject].concat(Array.prototype.slice.call(args));
