@@ -1,34 +1,39 @@
-Sugar          = {};
+Sugar = {};
 Sugar.Array    = {};
 Sugar.Boolean  = {};
 Sugar.Date     = {};
+Sugar.Date.addLocale = function() {};
+// TODO: Can clean this up somehow??
+Sugar.Date.millisecondsFromNow = function() {};
+Sugar.Date.daysFromNow   = function() {};
+Sugar.Date.monthsFromNow = function() {};
+Sugar.Date.daysSince = function() {};
+Sugar.Date.create    = function() {};
 Sugar.Function = {};
 Sugar.Number   = {};
 Sugar.Object   = {};
 Sugar.RegExp   = {};
 Sugar.String   = {};
+Sugar.String.Inflector = {};
+Sugar.String.Inflector.acronyms = {};
+Sugar.String.Inflector.acronym     = function() {};
+Sugar.String.Inflector.plural      = function() {};
+Sugar.String.Inflector.singular    = function() {};
+Sugar.String.Inflector.irregular   = function() {};
+Sugar.String.Inflector.uncountable = function() {};
+Sugar.String.Inflector.human       = function() {};
+Sugar.String.Inflector.clear       = function() {};
 Sugar.natives  = [];
+Sugar.extend  = function() {};
+Sugar.revert  = function() {};
+Sugar.restore = function() {};
+Sugar.define  = function() {};
+Sugar.global  = function() {};
 Sugar.noConflict        = false;
-Sugar.extend            = function() {};
-Sugar.revert            = function() {};
-Sugar.restore           = function() {};
-Sugar.define            = function() {};
-Sugar.global            = function() {};
 Sugar.hasOwnProperty    = function() {};
 Sugar.iterateOverObject = function() {};
 
-Sugar.Date.addLocale = function() {};
-
-// TODO: Can clean this up somehow??
-Sugar.Date.millisecondsFromNow = function() {};
-Sugar.Date.daysFromNow         = function() {};
-Sugar.Date.monthsFromNow       = function() {};
-Sugar.Date.daysSince           = function() {};
-Sugar.Date.create           = function() {};
-
 Date.prototype._utc = false;
-Date.prototype.clone = function() {};
-
 Function.prototype.timers = [];
 
 Range                   = function() {};
