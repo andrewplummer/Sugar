@@ -1,5 +1,5 @@
 
-function testIterateOverObject(obj, fn) {
+testIterateOverObject = function (obj, fn) {
   var key;
   for(key in obj) {
     if(!obj.hasOwnProperty(key)) continue;
@@ -7,7 +7,7 @@ function testIterateOverObject(obj, fn) {
   }
 }
 
-function testClone(obj) {
+testClone = function (obj) {
   var isArray = Object.prototype.toString.call(obj) === '[object Array]';
   var result = isArray ? [] : {}, key;
   for(key in obj) {
@@ -16,7 +16,7 @@ function testClone(obj) {
   }
   return result;
 }
-function testClassAndInstance(subject, args, expected, message) {
+testClassAndInstance = function (subject, args, expected, message) {
   var ext = run(Object, 'extended', [subject]);
   test(ext, args, expected, message);
   test(Object, [ext].concat(args), expected, message);
