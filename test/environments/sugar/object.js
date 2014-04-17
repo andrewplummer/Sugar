@@ -872,14 +872,16 @@ package('Object', function () {
 
     // Issue #256
     if(Sugar.Date.clone) {
-      equal(run(Object, 'clone', [run(new Date(), 'setUTC', [true])])._utc, true, 'should preserve utc flag when set');
+      var date = Sugar.Date.setUTC(new Date(), true);
+      equal(date._utc, true, 'utc flag is set');
+      equal(run(Object, 'clone', [date])._utc, true, 'should preserve utc flag when set');
     }
 
   });
 
-  var date = new Date(2012, 8, 25);
-
   method('toQueryString', function() {
+
+    var date = new Date(2012, 8, 25);
 
     function assertQueryStringGenerated(obj, args, expected, message) {
       expected = expected.replace(/\[/g, '%5B').replace(/\]/g, '%5D');
