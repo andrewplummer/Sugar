@@ -114,7 +114,7 @@ package('String', function () {
     test('VGhpcyB3ZWJwYWdlIGlzIG5vdCBhdmFpbGFibGU=', 'This webpage is not available', 'webpage');
     test('SSBncm93LCBJIHByb3NwZXI7IE5vdywgZ29kcywgc3RhbmQgdXAgZm9yIGJhc3RhcmRzIQ==', 'I grow, I prosper; Now, gods, stand up for bastards!', 'gods');
 
-    raisesError(function() { run('@#$^#$^#@$^') }, 'should throw an error on non-base64 chars');
+    test('@#$^#$^#@$^', '', 'non-base64 characters should produce a blank string');
 
   });
 
