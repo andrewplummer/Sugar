@@ -808,7 +808,7 @@ package('Array', function () {
     arr.sort(function(a, b) {
       return a.name > b.name;
     });
-    equal(arr, [people[1], people[2]], 'contains mary and ronnie');
+    setIsEqual(arr, [people[1], people[2]], 'contains mary and ronnie');
 
     arr.sort(function(a, b) {
       return a.age - b.age;

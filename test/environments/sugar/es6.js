@@ -1,5 +1,8 @@
 package('ES6', function () {
 
+  // Only true in strict mode
+  var allowsNullScope = (function(){ return this; }).call(null) === null;
+
   var arr, result, visited, count;
   var undefinedContextObj = (function(){ return this; }).call(undefined);
 
@@ -327,24 +330,45 @@ package('ES6', function () {
     '[a-z]+/(bar)?/'.startsWith(/(bar)?/);
   }, 'String#startsWith | slashes starting with regex', TypeError);
 
-  raisesError(function() {
-    String.prototype.startsWith.call(undefined);
-  }, 'String#startsWith | undefined', TypeError);
-  raisesError(function() {
-    String.prototype.startsWith.call(undefined, 'b');
-  }, 'String#startsWith | undefined, b', TypeError);
-  raisesError(function() {
-    String.prototype.startsWith.call(undefined, 'b', 4);
-  }, 'String#startsWith | undefined, b, 4', TypeError);
-  raisesError(function() {
-    String.prototype.startsWith.call(null);
-  }, 'String#startsWith | null', TypeError);
-  raisesError(function() {
-    String.prototype.startsWith.call(null, 'b');
-  }, 'String#startsWith | null, b', TypeError);
-  raisesError(function() {
-    String.prototype.startsWith.call(null, 'b', 4);
-  }, 'String#startsWith | null, b, 4', TypeError);
+  if(allowsNullScope) {
+    raisesError(function() {
+      String.prototype.startsWith.call(undefined);
+    }, 'String#startsWith | undefined', TypeError);
+    raisesError(function() {
+      String.prototype.startsWith.call(undefined, 'b');
+    }, 'String#startsWith | undefined, b', TypeError);
+    raisesError(function() {
+      String.prototype.startsWith.call(undefined, 'b', 4);
+    }, 'String#startsWith | undefined, b, 4', TypeError);
+    raisesError(function() {
+      String.prototype.startsWith.call(null);
+    }, 'String#startsWith | null', TypeError);
+    raisesError(function() {
+      String.prototype.startsWith.call(null, 'b');
+    }, 'String#startsWith | null, b', TypeError);
+    raisesError(function() {
+      String.prototype.startsWith.call(null, 'b', 4);
+    }, 'String#startsWith | null, b, 4', TypeError);
+    raisesError(function() {
+      String.prototype.startsWith.apply(undefined);
+    }, 'String#startsWith | apply | undefined', TypeError);
+    raisesError(function() {
+      String.prototype.startsWith.apply(undefined, ['b']);
+    }, 'String#startsWith | apply | undefined, b', TypeError);
+    raisesError(function() {
+      String.prototype.startsWith.apply(undefined, ['b', 4]);
+    }, 'String#startsWith | apply | undefined, b, 4', TypeError);
+    raisesError(function() {
+      String.prototype.startsWith.apply(null);
+    }, 'String#startsWith | apply | null', TypeError);
+    raisesError(function() {
+      String.prototype.startsWith.apply(null, ['b']);
+    }, 'String#startsWith | apply | null, b', TypeError);
+    raisesError(function() {
+      String.prototype.startsWith.apply(null, ['b', 4]);
+    }, 'String#startsWith | apply | null, b, 4', TypeError);
+
+  }
 
   raisesError(function() {
     String.prototype.startsWith.call({ 'toString': function() { throw RangeError(); } }, /./);
@@ -359,25 +383,6 @@ package('ES6', function () {
   raisesError(function() {
     String.prototype.startsWith.apply({ 'toString': function() { return 'abc'; } }, [/./]);
   }, 'String#startsWith | apply | object with abc on toString', TypeError);
-
-  raisesError(function() {
-    String.prototype.startsWith.apply(undefined);
-  }, 'String#startsWith | apply | undefined', TypeError);
-  raisesError(function() {
-    String.prototype.startsWith.apply(undefined, ['b']);
-  }, 'String#startsWith | apply | undefined, b', TypeError);
-  raisesError(function() {
-    String.prototype.startsWith.apply(undefined, ['b', 4]);
-  }, 'String#startsWith | apply | undefined, b, 4', TypeError);
-  raisesError(function() {
-    String.prototype.startsWith.apply(null);
-  }, 'String#startsWith | apply | null', TypeError);
-  raisesError(function() {
-    String.prototype.startsWith.apply(null, ['b']);
-  }, 'String#startsWith | apply | null, b', TypeError);
-  raisesError(function() {
-    String.prototype.startsWith.apply(null, ['b', 4]);
-  }, 'String#startsWith | apply | null, b, 4', TypeError);
 
   equal(String.prototype.startsWith.call(42, '2'), false);
   equal(String.prototype.startsWith.call(42, '4'), true);
@@ -588,24 +593,44 @@ package('ES6', function () {
     '[a-z]+/(bar)?/'.endsWith(/(bar)?/);
   }, 'String#endsWith | slashes starting with regex', TypeError);
 
-  raisesError(function() {
-    String.prototype.endsWith.call(undefined);
-  }, 'String#endsWith | undefined', TypeError);
-  raisesError(function() {
-    String.prototype.endsWith.call(undefined, 'b');
-  }, 'String#endsWith | undefined, b', TypeError);
-  raisesError(function() {
-    String.prototype.endsWith.call(undefined, 'b', 4);
-  }, 'String#endsWith | undefined, b, 4', TypeError);
-  raisesError(function() {
-    String.prototype.endsWith.call(null);
-  }, 'String#endsWith | null', TypeError);
-  raisesError(function() {
-    String.prototype.endsWith.call(null, 'b');
-  }, 'String#endsWith | null, b', TypeError);
-  raisesError(function() {
-    String.prototype.endsWith.call(null, 'b', 4);
-  }, 'String#endsWith | null, b, 4', TypeError);
+  if(allowsNullScope) {
+    raisesError(function() {
+      String.prototype.endsWith.call(undefined);
+    }, 'String#endsWith | undefined', TypeError);
+    raisesError(function() {
+      String.prototype.endsWith.call(undefined, 'b');
+    }, 'String#endsWith | undefined, b', TypeError);
+    raisesError(function() {
+      String.prototype.endsWith.call(undefined, 'b', 4);
+    }, 'String#endsWith | undefined, b, 4', TypeError);
+    raisesError(function() {
+      String.prototype.endsWith.call(null);
+    }, 'String#endsWith | null', TypeError);
+    raisesError(function() {
+      String.prototype.endsWith.call(null, 'b');
+    }, 'String#endsWith | null, b', TypeError);
+    raisesError(function() {
+      String.prototype.endsWith.call(null, 'b', 4);
+    }, 'String#endsWith | null, b, 4', TypeError);
+    raisesError(function() {
+      String.prototype.endsWith.apply(undefined);
+    }, 'String#endsWith | apply | undefined', TypeError);
+    raisesError(function() {
+      String.prototype.endsWith.apply(undefined, ['b']);
+    }, 'String#endsWith | apply | undefined, b', TypeError);
+    raisesError(function() {
+      String.prototype.endsWith.apply(undefined, ['b', 4]);
+    }, 'String#endsWith | apply | undefined, b, 4', TypeError);
+    raisesError(function() {
+      String.prototype.endsWith.apply(null);
+    }, 'String#endsWith | apply | null', TypeError);
+    raisesError(function() {
+      String.prototype.endsWith.apply(null, ['b']);
+    }, 'String#endsWith | apply | null, b', TypeError);
+    raisesError(function() {
+      String.prototype.endsWith.apply(null, ['b', 4]);
+    }, 'String#endsWith | apply | null, b, 4', TypeError);
+  }
 
   raisesError(function() {
     String.prototype.endsWith.call({ 'toString': function() { throw RangeError(); } }, /./);
@@ -620,25 +645,6 @@ package('ES6', function () {
   raisesError(function() {
     String.prototype.endsWith.apply({ 'toString': function() { return 'abc'; } }, [/./]);
   }, 'String#endsWith | apply | object with abc on toString', TypeError);
-
-  raisesError(function() {
-    String.prototype.endsWith.apply(undefined);
-  }, 'String#endsWith | apply | undefined', TypeError);
-  raisesError(function() {
-    String.prototype.endsWith.apply(undefined, ['b']);
-  }, 'String#endsWith | apply | undefined, b', TypeError);
-  raisesError(function() {
-    String.prototype.endsWith.apply(undefined, ['b', 4]);
-  }, 'String#endsWith | apply | undefined, b, 4', TypeError);
-  raisesError(function() {
-    String.prototype.endsWith.apply(null);
-  }, 'String#endsWith | apply | null', TypeError);
-  raisesError(function() {
-    String.prototype.endsWith.apply(null, ['b']);
-  }, 'String#endsWith | apply | null, b', TypeError);
-  raisesError(function() {
-    String.prototype.endsWith.apply(null, ['b', 4]);
-  }, 'String#endsWith | apply | null, b, 4', TypeError);
 
   // http://mathiasbynens.be/notes/javascript-unicode#poo-test
   var string = 'I\xF1t\xEBrn\xE2ti\xF4n\xE0liz\xE6ti\xF8n\u2603\uD83D\uDCA9';
@@ -700,30 +706,32 @@ package('ES6', function () {
     'abc'.repeat(+Infinity);
   }, 'String#repeat | +Infinity throws RangeError', RangeError);
 
-  raisesError(function() {
-    String.prototype.repeat.call(undefined);
-  }, 'String#repeat | undefined throws error', TypeError);
-  raisesError(function() {
-    String.prototype.repeat.call(undefined, 4);
-  }, 'String#repeat | undefined throws error with 4', TypeError);
-  raisesError(function() {
-    String.prototype.repeat.call(null);
-  }, 'String#repeat | null throws error', TypeError);
-  raisesError(function() {
-    String.prototype.repeat.call(null, 4);
-  }, 'String#repeat | null throws error with 4', TypeError);
-  raisesError(function() {
-    String.prototype.repeat.apply(undefined);
-  }, 'String#repeat | apply | undefined throws error', TypeError);
-  raisesError(function() {
-    String.prototype.repeat.apply(undefined, [4]);
-  }, 'String#repeat | apply | undefined throws error 4', TypeError);
-  raisesError(function() {
-    String.prototype.repeat.apply(null);
-  }, 'String#repeat | apply | null throws error with 4', TypeError);
-  raisesError(function() {
-    String.prototype.repeat.apply(null, [4]);
-  }, 'String#repeat | apply | null throws error with 4', TypeError);
+  if(allowsNullScope) {
+    raisesError(function() {
+      String.prototype.repeat.call(undefined);
+    }, 'String#repeat | undefined throws error', TypeError);
+    raisesError(function() {
+      String.prototype.repeat.call(undefined, 4);
+    }, 'String#repeat | undefined throws error with 4', TypeError);
+    raisesError(function() {
+      String.prototype.repeat.call(null);
+    }, 'String#repeat | null throws error', TypeError);
+    raisesError(function() {
+      String.prototype.repeat.call(null, 4);
+    }, 'String#repeat | null throws error with 4', TypeError);
+    raisesError(function() {
+      String.prototype.repeat.apply(undefined);
+    }, 'String#repeat | apply | undefined throws error', TypeError);
+    raisesError(function() {
+      String.prototype.repeat.apply(undefined, [4]);
+    }, 'String#repeat | apply | undefined throws error 4', TypeError);
+    raisesError(function() {
+      String.prototype.repeat.apply(null);
+    }, 'String#repeat | apply | null throws error with 4', TypeError);
+    raisesError(function() {
+      String.prototype.repeat.apply(null, [4]);
+    }, 'String#repeat | apply | null throws error with 4', TypeError);
+  }
 
   equal(String.prototype.repeat.call(42, 4), '42424242');
   equal(String.prototype.repeat.call({ 'toString': function() { return 'abc'; } }, 2), 'abcabc');
@@ -815,12 +823,20 @@ package('ES6', function () {
   equal(string.contains('\u2603'), true);
   equal(string.contains('\uD83D\uDCA9'), true);
 
-  raisesError(function() { String.prototype.contains.call(undefined); }, TypeError);
-  raisesError(function() { String.prototype.contains.call(undefined, 'b'); }, TypeError);
-  raisesError(function() { String.prototype.contains.call(undefined, 'b', 4); }, TypeError);
-  raisesError(function() { String.prototype.contains.call(null); }, TypeError);
-  raisesError(function() { String.prototype.contains.call(null, 'b'); }, TypeError);
-  raisesError(function() { String.prototype.contains.call(null, 'b', 4); }, TypeError);
+  if(allowsNullScope) {
+    raisesError(function() { String.prototype.contains.call(undefined); }, TypeError);
+    raisesError(function() { String.prototype.contains.call(undefined, 'b'); }, TypeError);
+    raisesError(function() { String.prototype.contains.call(undefined, 'b', 4); }, TypeError);
+    raisesError(function() { String.prototype.contains.call(null); }, TypeError);
+    raisesError(function() { String.prototype.contains.call(null, 'b'); }, TypeError);
+    raisesError(function() { String.prototype.contains.call(null, 'b', 4); }, TypeError);
+    raisesError(function() { String.prototype.contains.apply(undefined); }, TypeError);
+    raisesError(function() { String.prototype.contains.apply(undefined, ['b']); }, TypeError);
+    raisesError(function() { String.prototype.contains.apply(undefined, ['b', 4]); }, TypeError);
+    raisesError(function() { String.prototype.contains.apply(null); }, TypeError);
+    raisesError(function() { String.prototype.contains.apply(null, ['b']); }, TypeError);
+    raisesError(function() { String.prototype.contains.apply(null, ['b', 4]); }, TypeError);
+  }
   equal(String.prototype.contains.call(42, '2'), true);
   equal(String.prototype.contains.call(42, 'b', 4), false);
   equal(String.prototype.contains.call(42, '2', 4), false);
@@ -828,12 +844,6 @@ package('ES6', function () {
   equal(String.prototype.contains.call({ 'toString': function() { return 'abc'; } }, 'b', 1), true);
   equal(String.prototype.contains.call({ 'toString': function() { return 'abc'; } }, 'b', 2), false);
 
-  raisesError(function() { String.prototype.contains.apply(undefined); }, TypeError);
-  raisesError(function() { String.prototype.contains.apply(undefined, ['b']); }, TypeError);
-  raisesError(function() { String.prototype.contains.apply(undefined, ['b', 4]); }, TypeError);
-  raisesError(function() { String.prototype.contains.apply(null); }, TypeError);
-  raisesError(function() { String.prototype.contains.apply(null, ['b']); }, TypeError);
-  raisesError(function() { String.prototype.contains.apply(null, ['b', 4]); }, TypeError);
   equal(String.prototype.contains.apply(42, ['2']), true);
   equal(String.prototype.contains.apply(42, ['b', 4]), false);
   equal(String.prototype.contains.apply(42, ['2', 4]), false);
