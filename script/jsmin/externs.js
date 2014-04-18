@@ -3,12 +3,12 @@ Sugar.Array    = {};
 Sugar.Boolean  = {};
 Sugar.Date     = {};
 Sugar.Date.addLocale = function() {};
-// TODO: Can clean this up somehow??
 Sugar.Date.millisecondsFromNow = function() {};
 Sugar.Date.daysFromNow   = function() {};
 Sugar.Date.monthsFromNow = function() {};
 Sugar.Date.daysSince = function() {};
-Sugar.Date.create    = function() {};
+Sugar.Date.clone  = function() {};
+Sugar.Date.create = function() {};
 Sugar.Function = {};
 Sugar.Number   = {};
 Sugar.Object   = {};
