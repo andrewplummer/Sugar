@@ -172,16 +172,16 @@ if(typeof environment == 'undefined') environment = 'default'; // Override me!
   }
 
   function raisesError(fn, message, errorType) {
-    var err;
+    var err, message = getFullMessage(message) + ' should raise an error';
     try {
       fn.call();
     } catch(e) {
       err = e;
     }
     if(!errorType) {
-      equal(!!err, true, getFullMessage(message), 1);
+      equal(!!err, true, message, 1);
     } else {
-      equal(err instanceof errorType, true, getFullMessage(message), 1);
+      equal(err instanceof errorType, true, message, 1);
     }
   }
 
