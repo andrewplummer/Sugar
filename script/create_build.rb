@@ -47,6 +47,10 @@ optparse = OptionParser.new do |opts|
     options[:release] = release
   end
 
+  opts.on('-n', '--no-conflict', 'Build with no conflict flag on. See readme for more.') do
+    options[:no_conflict] = true
+  end
+
   opts.on('-h', '--help', 'Show this message.') do
     puts optparse
     exit
@@ -79,6 +83,7 @@ optparse.parse!
 
 @release = options[:release]
 @custom_packages = options[:packages] || []
+@no_conflict = options[:no_conflict] || false
 
 if !@custom_packages.empty?
   @custom_packages.unshift('common')
@@ -109,7 +114,7 @@ def concat
   File.open(TMP_UNCOMPILED_FILE, 'w') do |file|
     PACKAGES.each do |p|
       content = get_content(p)
-      file.puts content = content + PACKAGE_DELIMTER
+      file.puts content + PACKAGE_DELIMTER
     end
   end
 end
@@ -120,6 +125,10 @@ def get_content(package)
   else
     content = File.open(get_file_path(package)).read
     content.gsub!(/'use strict';/, '')
+    if package == 'core' && @no_conflict
+      content.gsub!(/var noConflict = .+$/, 'var noConflict = true;')
+    end
+    content
   end
 end
 
