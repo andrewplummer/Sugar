@@ -36,6 +36,11 @@ Sugar.iterateOverObject = function() {};
 Date.prototype._utc = false;
 Function.prototype.timers = [];
 
+// ES6
+String.prototype.startsWith = function() {};
+String.prototype.endsWith   = function() {};
+String.prototype.contains   = function() {};
+
 Range                   = function() {};
 Range.prototype.step    = function() {};
 Range.prototype.clamp   = function() {};
