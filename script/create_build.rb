@@ -119,7 +119,6 @@ def get_content(package)
     `cat lib/locales/*`
   else
     content = File.open(get_file_path(package)).read
-    content.gsub!(/^\s*\/\/---COMPILER REMOVE---.*---END COMPILER REMOVE---\n/m, '')
     content.gsub!(/'use strict';/, '')
   end
 end
