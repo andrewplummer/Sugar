@@ -352,16 +352,25 @@ if(typeof environment == 'undefined') environment = 'default'; // Override me!
 
   function sortOnStringValue(arr) {
     return arr.sort(function(a, b) {
-      var aType = typeof a;
-      var bType = typeof b;
-      var aVal = String(a);
-      var bVal = String(b);
-      if(aType != bType) {
-        return aType < bType;
-      }
-      if(aVal === bVal) return 0;
-      return a < b ? -1 : 1;
+      var aStr = getStringValueForObject(a);
+      var bStr = getStringValueForObject(b);
+      if(aStr === bStr) return 0;
+      return aStr < bStr ? -1 : 1;
     });
+  }
+
+  function getStringValueForObject(obj) {
+    var type = typeof obj, str;
+    if(type === 'object') {
+      str = 'obj:';
+      for (var key in obj) {
+        if(!obj.hasOwnProperty(key)) continue;
+        str += key + getStringValueForObject(obj[key]);
+      }
+      return str;
+    } else {
+      return 'pri:' + type + String(obj);
+    }
   }
 
 
