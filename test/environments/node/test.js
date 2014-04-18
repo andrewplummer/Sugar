@@ -1,18 +1,21 @@
 
 environment = 'node';
 
-var Sugar = require('../../../release/sugar-full.development');
+// Test suite
+require('../../javascripts/suite.js');
+require('../../javascripts/helpers.js');
+require('../../javascripts/date-helpers.js');
+
+// No conflict tests
+require('./no-conflict.js');
+
+var Sugar = require( '../../../release/sugar-full.development');
 
 // Adding a reference here to the global context
 // will save massive amounts of pain later when
 // trying to interact with the testing suite, so
 // do this for now.
 global.Sugar = Sugar;
-
-// Test suite
-require('../../javascripts/suite.js');
-require('../../javascripts/helpers.js');
-require('../../javascripts/date-helpers.js');
 
 // Tests
 require('../sugar/object.js');
