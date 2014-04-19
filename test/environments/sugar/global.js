@@ -44,13 +44,14 @@
     Sugar.extend(Object, {
       foobar: function() { return 'haha'; }
     });
+
     equal(Sugar.Object.foobar(), 'haha', 'Global method exists');
     equal('foobar' in {}, !Sugar.noConflict, 'Object.prototype was extended only if not no-conflict');
     Sugar.revert(Object, 'foobar');
     equal('foobar' in {}, false, 'custom method should be removed');
 
     // Reset...
-    Sugar.Object.foobar = null;
+    delete Sugar.Object.foobar;
 
     Object.prototype.foobar = function() {
       return 'original';
@@ -63,6 +64,7 @@
     equal(({}).foobar(), Sugar.noConflict ? 'original' : 'overwritten', 'custom method should overwrite');
     Sugar.revert(Object, 'foobar');
     equal(({}).foobar(), 'original', 'should revert back to original method');
+    delete Object.prototype.foobar;
 
   });
 
