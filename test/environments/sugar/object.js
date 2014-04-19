@@ -1,5 +1,7 @@
 package('Object', function () {
 
+  var definePropertySupport = !!(Object.defineProperty && Object.defineProperties);
+
   method('isObject', function() {
     var Person = function() {};
     var p = new Person();
@@ -614,24 +616,35 @@ package('Object', function () {
 
     // Object#watch
 
-    var obj = { foo: 'bar' }, ran = false, counter = 0, key;
+    if(definePropertySupport) {
 
-    obj.watch('foo', function(prop, oldVal, newVal) {
-      equal(this, obj, 'Object#watch | scope is the object');
-      equal(prop, 'foo', 'Object#watch | first argument is the propety');
-      equal(oldVal, 'bar', 'Object#watch | second argument is the old value');
-      equal(newVal, 'howdy', 'Object#watch | third argument is the new value');
-      ran = true;
-      return newVal;
-    });
+      var obj = { foo: 'bar' }, ran = false;
 
-    equal(obj.foo, 'bar', 'Object#watch | old property is retained');
-    obj.foo = 'howdy';
-    equal(obj.foo, 'howdy', 'Object#watch | property was set');
-    equal(ran, true, 'Object#watch | setter ran');
-    for(key in obj) counter++;
-    equal(counter, 1, 'Object#watch | property should be enumerable');
+      obj.watch('foo', function(prop, oldVal, newVal) {
+        equal(this, obj, 'Object#watch | scope is the object');
+        equal(prop, 'foo', 'Object#watch | first argument is the propety');
+        equal(oldVal, 'bar', 'Object#watch | second argument is the old value');
+        equal(newVal, 'howdy', 'Object#watch | third argument is the new value');
+        ran = true;
+        return newVal;
+      });
 
+      equal(obj.foo, 'bar', 'Object#watch | old property is retained');
+      obj.foo = 'howdy';
+      equal(obj.foo, 'howdy', 'Object#watch | property was set');
+      equal(ran, true, 'Object#watch | setter ran');
+      equal(propertyIsEnumerable(obj, 'foo'), true, 'Object#watch | property should be enumerable');
+
+    } else {
+
+      var obj = { foo: 'bar' }, ran = false, result;
+
+      result = obj.watch('foo', function() { ran = true; });
+
+      equal(result, false, 'Object#watch | should not have succeeded');
+      equal(ran, false, 'Object#watch | setter function should not have run');
+
+    }
 
 
     // Object#tap
@@ -741,23 +754,78 @@ package('Object', function () {
   });
 
   method('watch', function() {
-    var obj = { foo: 'bar' }, ran = false, counter = 0, key;
 
-    run(Object, 'watch', [obj, 'foo', function(prop, oldVal, newVal) {
-      equal(this, obj, 'scope is the object');
-      equal(prop, 'foo', 'first argument is the propety');
-      equal(oldVal, 'bar', 'second argument is the old value');
-      equal(newVal, 'howdy', 'third argument is the new value');
-      ran = true;
-      return newVal;
-    }]);
+    if(definePropertySupport) {
 
-    equal(obj.foo, 'bar', 'old property is retained');
-    obj.foo = 'howdy';
-    equal(obj.foo, 'howdy', 'property was set');
-    equal(ran, true, 'setter ran');
-    for(key in obj) counter++;
-    equal(counter, 1, 'property should be enumerable');
+      var obj = { foo: 'bar' }, ran = false, result;
+
+      result = run(Object, 'watch', [obj, 'foo', function(prop, oldVal, newVal) {
+        equal(this, obj, 'scope is the object');
+        equal(prop, 'foo', 'first argument is the propety');
+        equal(oldVal, 'bar', 'second argument is the old value');
+        equal(newVal, 'howdy', 'third argument is the new value');
+        ran = true;
+        return newVal;
+      }]);
+
+      equal(result, true, 'should have succeeded');
+      equal(obj.foo, 'bar', 'old property is retained');
+      obj.foo = 'howdy';
+      equal(obj.foo, 'howdy', 'property was set');
+      equal(ran, true, 'setter ran');
+      equal(propertyIsEnumerable(obj, 'foo'), true, 'property should be enumerable');
+
+      var obj = {}, result;
+      Object.defineProperty(obj, 'foo', {
+        writable: false,
+        enumerable: false,
+        configurable: false,
+        value: 3
+      });
+      result = run(Object, 'watch', [obj, 'foo', function(){}]);
+
+      equal(result, false, 'should not have succeeded');
+      obj.foo = 4;
+      delete obj.foo;
+      equal(propertyIsEnumerable(obj, 'foo'), false, 'property should not be enumerable if originally non-enumerable');
+
+
+      var obj = {}, result, getCounter = 0, setCounter = 0, newSetCounter = 0;
+      Object.defineProperty(obj, 'foo', {
+        get: function() {
+          getCounter++;
+        },
+        set: function() {
+          setCounter++;
+        }
+      });
+
+      result = run(Object, 'watch', [obj, 'foo', function(){
+        newSetCounter++;
+      }]);
+
+      obj.foo;
+      obj.foo = 4;
+
+      equal(result, false, 'should not have succeeded');
+      equal(getCounter, 1, 'original getter should be preserved');
+      equal(setCounter, 1, 'original setter should be preserved');
+      equal(newSetCounter, 0, 'new setter should be active as well');
+
+    } else {
+
+      var obj = { foo: 'bar' }, ran = false, result;
+
+      result = run(Object, 'watch', [obj, 'foo', function() {
+        ran = true;
+      }]);
+
+      obj.foo = 'howdy';
+
+      equal(result, false, 'should not succeeded');
+      equal(ran, false, 'setter function should not have run');
+
+    }
 
   });
 
