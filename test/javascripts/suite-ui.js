@@ -26,9 +26,13 @@
     var totalAssertions = 0;
     var totalFailed = 0;
     var env = $('#' + environment);
-    $('.loading', env).hide();
-    $('.tests,.stats', env).show();
-    $('.tests', env).empty();
+    // IE8 will throw an error in jQuery 1.8.1+ here when using .find,
+    // so concat the string like this.
+    var envId = '#' + environment;
+    $(envId + ' .loading').hide();
+    $(envId + ' .tests,.stats').show();
+    $(envId + ' .tests').empty();
+
     arrayEach(results, function(module) {
       var mod = $('<ul class="module" />');
       arrayEach(module.results, function(r) {
@@ -64,10 +68,10 @@
         $(document.body).append('<div class="hidden" id="'+ environment +'_tip_' + totalTests + '">' + title + '</div>');
         mod.append(li);
       });
-      $('.tests', env).append(mod);
+      $(envId + ' .tests').append(mod);
     });
 
-    var stats = $('.stats', env).empty();
+    var stats = $(envId + ' .stats').empty();
     stats.append($('<span class="failures">' + totalFailed + ' ' + (totalFailed == 1 ? 'failure' : 'failures') + '</span>'));
     stats.append($('<span class="tests">' + totalTests + ' ' + (totalTests == 1 ? 'test' : 'tests') + '</span>'));
     stats.append($('<span class="assertions">' + commaSeparate(totalAssertions) + ' ' + (totalAssertions == 1 ? 'assertion' : 'assertions') + '</span>'));
@@ -76,7 +80,7 @@
     if(totalFailed != 0){
       env.addClass('fail');
     }
-    $('[title]', env).tooltip({ color: 'black' });
+    $(envId + ' [title]').tooltip({ color: 'black' });
     $(document).trigger('tests_finished', [environment]);
   });
 
