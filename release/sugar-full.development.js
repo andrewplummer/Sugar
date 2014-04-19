@@ -24,8 +24,11 @@
   // The global context
   var globalContext = typeof global !== 'undefined' ? global : window;
 
+  // Is the environment node?
+  var isNode = typeof module !== 'undefined' && module.exports;
+
   // No conflict mode
-  var noConflict = false;
+  var noConflict = isNode ? process.env['SUGAR_NO_CONFLICT'] : false;
 
   // Internal hasOwnProperty
   var internalHasOwnProperty = object.prototype.hasOwnProperty;
@@ -43,23 +46,15 @@
   function initializeGlobal() {
     Sugar = {
       'extend': extend,
-      'define': defineProperty,
       'revert': revert,
       'restore': restore,
-      'natives': natives,
-      'noConflict': noConflict,
-      'hasOwnProperty': hasOwnProperty,
-      'iterateOverObject': iterateOverObject
+      'noConflict': noConflict
     };
-    if (isNode()) {
+    if (isNode) {
       module.exports = Sugar;
     } else {
       globalContext['Sugar'] = Sugar;
     }
-  }
-
-  function isNode() {
-    return typeof module !== 'undefined' && module.exports;
   }
 
   function initializeNatives() {
@@ -125,10 +120,10 @@
   }
 
   function checkGlobal(type, klass, name, extendee) {
-    var proxy = getProxy(klass), method;
-    method = proxy && proxy[name];
-    if(method) {
-      return method[type];
+    var proxy = getProxy(klass), methodExists;
+    methodExists = proxy && hasOwnProperty(proxy, name);
+    if(methodExists) {
+      return proxy[name][type];
     } else {
       return extendee[name];
     }
@@ -218,7 +213,7 @@
   // A few optimizations for Google Closure Compiler will save us a couple kb in the release script.
   var object = Object, array = Array, regexp = RegExp, date = Date, string = String, number = Number, func = Function, math = Math, Undefined;
 
-  var sugarObject = Sugar.Object;
+  var sugarObject = Sugar.Object, sugarArray = Sugar.Array, sugarDate = Sugar.Date, sugarString = Sugar.String;
 
   // Internal toString
   var internalToString = object.prototype.toString;
@@ -791,7 +786,10 @@
     }
   }
 
-
+  function hasISOStringSupport() {
+    var d = new date(date.UTC(2000, 0)), expected = '2000-01-01T00:00:00.000Z';
+    return !!d.toISOString && d.toISOString() === expected;
+  }
 
 
   extend(array, {
@@ -1101,6 +1099,25 @@
    *
    ***/
 
+  extend(date, {
+
+     /***
+     * @method Date.now()
+     * @returns String
+     * @short Returns the number of milliseconds since January 1st, 1970 00:00:00 (UTC time).
+     * @extra Provided for browsers that do not support this method.
+     * @example
+     *
+     *   Date.now() -> ex. 1311938296231
+     *
+     ***/
+    'now': function() {
+      return new date().getTime();
+    }
+
+  }, false, true);
+
+
    /***
    * @method toISOString()
    * @returns String
@@ -1120,25 +1137,6 @@
    *   Date.create().toJSON() -> ex. 2011-07-05 12:24:55.528Z
    *
    ***/
-
-  extend(date, {
-
-     /***
-     * @method Date.now()
-     * @returns String
-     * @short Returns the number of milliseconds since January 1st, 1970 00:00:00 (UTC time).
-     * @extra Provided for browsers that do not support this method.
-     * @example
-     *
-     *   Date.now() -> ex. 1311938296231
-     *
-     ***/
-    'now': function() {
-      return new date().getTime();
-    }
-
-  }, false, true);
-
   extendSimilar(date, 'toISOString,toJSON', function(methods, name) {
     methods[name] = function() {
       return padNumber(this.getUTCFullYear(), 4) + '-' +
@@ -1149,7 +1147,7 @@
              padNumber(this.getUTCSeconds(), 2) + '.' +
              padNumber(this.getUTCMilliseconds(), 3) + 'Z';
     }
-  }, true, true);
+  }, true, true, !hasISOStringSupport());
 
 
   
@@ -1160,11 +1158,6 @@
    * @description Array manipulation and traversal, "fuzzy matching" against elements, alphanumeric sorting and collation, enumerable methods on Object.
    *
    ***/
-
-  // TODO: Should this be something else??
-  var sugarArray = Sugar.Array;
-  var arrayMap;
-  var arraySome;
 
   function regexMatcher(reg) {
     reg = regexp(reg);
@@ -1391,7 +1384,7 @@
 
   function arraySum(arr, map) {
     if(map) {
-      arr = arrayMap(arr, map);
+      arr = sugarArray.map(arr, map);
     }
     return arr.length > 0 ? arr.reduce(function(a,b) { return a + b; }) : 0;
   }
@@ -1608,8 +1601,6 @@
         });
       }
     }, true, callbackCheck);
-    arrayMap = sugarArray.map;
-    arraySome = sugarArray.some;
   }
 
   function buildAlphanumericSort() {
@@ -1652,7 +1643,7 @@
       var result = [];
       multiArgs(arguments, function(a) {
         if(isArgumentsObject(a) || isArrayLike(a)) {
-          a = array.prototype.slice.call(a, 0);
+          a = multiArgs(a);
         }
         result = result.concat(a);
       });
@@ -2370,7 +2361,7 @@
      ***/
     'none': function(f) {
       var args = multiArgs(arguments);
-      return !arraySome.apply(this, [this].concat(args));
+      return !sugarArray.some.apply(this, [this].concat(args));
     }
 
 
@@ -2489,9 +2480,6 @@
    * @description Date parsing and formatting, relative formats like "1 minute ago", Number methods like "daysAgo", localization support with default English locale definition.
    *
    ***/
-
-  // A quick reference to the global methods.
-  var sugarDate = Sugar.Date;
 
   var English;
   var CurrentLocalization;
@@ -2920,7 +2908,7 @@
 
   function addDateInputFormat(locale, format, match, variant) {
     locale.compiledFormats.unshift({
-      variant: variant,
+      variant: !!variant,
       locale: locale,
       reg: regexp('^' + format + '$', 'i'),
       to: match
@@ -4082,7 +4070,7 @@
   }
 
   function buildCoreInputFormats() {
-    English.addFormat('([+-])?(\\d{4,4})[-.]?{full_month}[-.]?(\\d{1,2})?', true, ['year_sign','year','month','date'], false, true);
+    English.addFormat('([+-])?(\\d{4,4})[-.\\/]?{full_month}[-.]?(\\d{1,2})?', true, ['year_sign','year','month','date'], false, true);
     English.addFormat('(\\d{1,2})[-.\\/]{full_month}(?:[-.\\/](\\d{2,4}))?', true, ['date','month','year'], true);
     English.addFormat('{full_month}[-.](\\d{4,4})', false, ['month','year']);
     English.addFormat('\\/Date\\((\\d+(?:[+-]\\d{4,4})?)\\)\\/', false, ['timestamp'])
@@ -5051,9 +5039,6 @@
   var DURATION_REG             = regexp('(\\d+)?\\s*('+ DATE_UNITS +')s?', 'i');
   var RANGE_REG_FRONT_DURATION = regexp('(?:for)?\\s*'+ FULL_CAPTURED_DURATION +'\\s*(?:starting)?\\s*at\\s*(.+)', 'i');
   var RANGE_REG_REAR_DURATION  = regexp('(.+)\\s*for\\s*' + FULL_CAPTURED_DURATION, 'i');
-
-  var sugarDate = Sugar.Date;
-
 
   function Range(start, end) {
     this.start = cloneRangeMember(start);
@@ -6386,6 +6371,9 @@
     }, false);
   }
 
+  var getOwnPropertyDescriptor = object.getOwnPropertyDescriptor;
+  var watchSupport = definePropertySupport && getOwnPropertyDescriptor;
+
   extend(object, {
       /***
        * @method watch(<obj>, <prop>, <fn>)
@@ -6403,11 +6391,16 @@
        *
        ***/
     'watch': function(obj, prop, fn) {
-      if(!object.defineProperty) return false;
-      var value = obj[prop];
+      var value, descriptor;
+      if(!watchSupport) return false;
+      descriptor = getOwnPropertyDescriptor(obj, prop);
+      if(!descriptor.configurable || descriptor.get || descriptor.set) {
+        return false;
+      }
+      value = descriptor.value;
       object.defineProperty(obj, prop, {
-        'enumerable'  : true,
-        'configurable': true,
+        'enumerable'  : descriptor.enumerable,
+        'configurable': descriptor.configurable,
         'get': function() {
           return value;
         },
@@ -6415,6 +6408,7 @@
           value = fn.call(obj, prop, value, to);
         }
       });
+      return true;
     }
   }, false, true);
 
@@ -6547,9 +6541,9 @@
         return obj;
       }
       klass = className(obj);
-      if(isDate(obj, klass) && Sugar.Date.clone) {
+      if(isDate(obj, klass) && sugarDate.clone) {
         // Preserve internal UTC flag when possible.
-        return Sugar.Date.clone(obj);
+        return sugarDate.clone(obj);
       } else if(isDate(obj, klass) || isRegExp(obj, klass)) {
         return new obj.constructor(obj);
       } else if(obj instanceof Hash) {
@@ -6854,7 +6848,7 @@
    ***/
 
   function getInflector() {
-    return Sugar.String.Inflector;
+    return sugarString.Inflector;
   }
 
   function getAcronym(word) {
@@ -8421,8 +8415,8 @@
 
   });
 
-  Sugar.String.Inflector = Inflector;
-  Sugar.String.Inflector.acronyms = acronyms;
+  sugarString.Inflector = Inflector;
+  sugarString.Inflector.acronyms = acronyms;
 
   buildNormalizeMap();
 
