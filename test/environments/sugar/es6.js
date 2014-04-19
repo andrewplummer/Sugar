@@ -679,7 +679,6 @@ package('ES6', function () {
 
 
   // equal(String.prototype.repeat.length, 1);
-  equal(String.prototype.propertyIsEnumerable('repeat'), false);
 
   // String#repeat
 
