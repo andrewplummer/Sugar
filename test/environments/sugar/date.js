@@ -2744,10 +2744,13 @@ package('Number', function () {
     dateEqual(run(5, 'hoursAfter', ['the end of 2006']), new Date(2007, 0, 1, 4, 59, 59, 999), 'hoursAfter | 5 hours after the end of 2006');
 
 
-    var expected = new Date(getDateWithWeekdayAndOffset(1, -7).getTime() - run(5, 'days'));
+    var expected = getDateWithWeekdayAndOffset(1, -7);
+    expected.setDate(expected.getDate() - 5);
     dateEqual(run(5, 'daysBefore', ['last week monday']), expected, 'daysBefore | 5 days before last week monday');
+
     var expected = new Date(getDateWithWeekdayAndOffset(2, 7).getTime() + run(5, 'days'));
     dateEqual(run(5, 'daysAfter', ['next tuesday']), expected, 'daysAfter | 5 days after next week tuesday');
+
     var expected = getRelativeDate(null, null, -35);
     expected.setHours(0);
     expected.setMinutes(0);
