@@ -1463,7 +1463,7 @@ package('Date', function () {
     dyn = function(value, unit, ms, loc) {
       equal(value, 5, '5 minutes ago | value is the closest relevant value');
       equal(unit, 2, '5 minutes ago | unit is the closest relevant unit');
-      equalWithMargin(ms, -300000, 10, '5 minutes ago | ms is the offset in ms');
+      equalWithMargin(ms, -300000, 20, '5 minutes ago | ms is the offset in ms');
       equal(loc.code, 'en', '4 hours ago | 4th argument is the locale object');
       return value + strings[unit] + (ms < 0 ? '前' : '後');
     }
@@ -1473,7 +1473,7 @@ package('Date', function () {
     dyn = function(value, unit, ms, loc) {
       equal(value, 1, '1 minute from now | value is the closest relevant value');
       equal(unit, 2, '1 minute from now | unit is the closest relevant unit');
-      equalWithMargin(ms, 61000, 5, '1 minute from now | ms is the offset in ms');
+      equalWithMargin(ms, 61000, 20, '1 minute from now | ms is the offset in ms');
       equal(loc.code, 'en', '4 hours ago | 4th argument is the locale object');
       return value + strings[unit] + (ms < 0 ? '前' : '後');
     }
@@ -1482,14 +1482,14 @@ package('Date', function () {
     dyn = function(value, unit, ms, loc) {
       equal(value, 4, '4 hours ago | value is the closest relevant value');
       equal(unit, 3, '4 hours ago | unit is the closest relevant unit');
-      equalWithMargin(ms, -14400000, 10, '4 hours ago | ms is the offset in ms');
+      equalWithMargin(ms, -14400000, 20, '4 hours ago | ms is the offset in ms');
       equal(loc.code, 'en', '4 hours ago | 4th argument is the locale object');
       return value + strings[unit] + (ms < 0 ? '前' : '後');
     }
     equal(run(testCreateDate('240 minutes ago'), 'format', [dyn]), '4時間前', '4 hours ago');
 
     run(testCreateDate('223 milliseconds ago'), 'format', [function(value, unit) {
-      equalWithMargin(value, 223, 10, 'still passes < 1 second');
+      equalWithMargin(value, 223, 20, 'still passes < 1 second');
       equal(unit, 0, 'still passes millisecond is zero');
     }]);
 
@@ -1660,7 +1660,7 @@ package('Date', function () {
 
     // now CAN be in the past if there is any lag between when the dates are
     // created, so give this a bit of a buffer...
-    test(run(new Date(), 'advance', [{ milliseconds: 5 }]), ['past', 5], false, 'now is the past');
+    test(run(new Date(), 'advance', [{ milliseconds: 5 }]), ['past', 40], false, 'now is the past');
 
     test(testCreateDate('yesterday'), ['future'], false, 'yesterday is the future');
     test(testCreateDate('yesterday'), ['past'], true, 'yesterday is the past');
