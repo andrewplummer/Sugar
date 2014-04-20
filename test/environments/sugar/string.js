@@ -947,7 +947,7 @@ package('String', function () {
 
 
     // Errors on xsl regex.
-    raisesError(function(){ run('<xsl(template>foobar</xsl(template>', 'removeTags', 'xsl(template'); }, 'form | you now have the power to cause your own regex pain');
+    raisesError(function(){ run('<xsl(template>foobar</xsl(template>', 'removeTags', ['xsl(template']); }, 'form | you now have the power to cause your own regex pain');
 
     test('<b>bold</b> and <i>italic</i> and <a>link</a>', ['b','i'], ' and  and <a>link</a>', 'handles multi args');
     test('', '', 'blank');
