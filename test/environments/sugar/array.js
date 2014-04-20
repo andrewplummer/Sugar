@@ -2571,7 +2571,7 @@ package('Array', function () {
     var four  = new Foo(new Date(2001, 3, 15));
 
     test([one, two, three, four], [{ a: 'one' }], [one], 'matches class instances | object with string');
-    test([one, two, three, four], [{ a: /t/ }], [two, three], 'matches class instances | object with regex');
+    test([one, two, three, four], [{ a: /^t/ }], [two, three], 'matches class instances | object with regex');
     test([one, two, three, four], ['one'], [], 'matches class instances | string');
     test([one, two, three, four], [/t/], [one, two, three, four], 'directly passing a regex is matching the objects stringified');
     test([one, two, three, four], [/x/], [], 'directly passing a regex with no matching letter');
