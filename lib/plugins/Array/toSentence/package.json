@@ -1,0 +1,14 @@
+{
+  "name": "sugar-plugin-to-sentence",
+  "version": "0.0.1",
+  "description": "A Sugar plugin that builds a grammatical list from an array.",
+  "author": "nadinengland",
+  "main": "./toSentence.js",
+  "dependencies": {
+    "sugar-core": ">= 0.0.1"
+  },
+  "engines" : {
+    "node" : ">= 0.4.0"
+  },
+  "license": "MIT"
+}
