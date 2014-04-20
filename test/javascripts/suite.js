@@ -19,7 +19,11 @@ if(typeof environment == 'undefined') environment = 'default'; // Override me!
   var globalContext = typeof global !== 'undefined' ? global : this;
 
 
-  function package(name, fn) {
+  // Global methods.
+  // BE CAREFUL HERE! If you declare these using window.xxx or
+  // some form thereof they will not trigger errors in IE7!
+
+  package = function (name, fn) {
     // Set up results if there are none.
     if(!results) {
       results = [];
@@ -44,42 +48,54 @@ if(typeof environment == 'undefined') environment = 'default'; // Override me!
     currentPackage = null;
   }
 
-  function async(fn) {
-    asyncTestsRunning++;
-    setTimeout(wrapTestingScope(function() {
-      fn(wrapTestingScope, asyncFinish);
-    }), 1);
-  }
-
-  function asyncFinish() {
-    asyncTestsRunning--;
-    checkCanFinish();
-  }
-
-  function checkCanFinish() {
-    if(!syncTestsRunning && asyncTestsRunning === 0) {
-      testsFinished();
-    }
-  }
-
-  function syncTestsFinished() {
+  syncTestsFinished = function () {
     syncTestsRunning = false;
     checkCanFinish();
   }
 
-  function wrapTestingScope(fn) {
-    var cachedPackage = currentPackage;
-    var cachedMethod = currentMethod;
-    var cachedArgs = currentArgs;
-    return function () {
-      currentPackage = cachedPackage;
-      currentMethod = cachedMethod;
-      currentArgs = cachedArgs;
-      fn.apply(this, arguments);
+  equal = function (actual, expected, message, stack) {
+    currentPackage.assertions++;
+    if(!isEqual(actual, expected)) {
+      addFailure(actual, expected, getFullMessage(message), stack);
     }
   }
 
-  function method(name) {
+  equalWithMargin = function (actual, expected, margin, message) {
+    equal((actual > expected - margin) && (actual < expected + margin), true, message, null, 1);
+  }
+
+  // Sets are equal, but order may differ
+  setIsEqual = function (a, b, message) {
+    equal(sortOnStringValue(a), sortOnStringValue(b), message);
+  }
+
+  notEqual = function (actual, expected, message) {
+    equal(actual !== expected, true, message + ' | strict equality', 1);
+  }
+
+  raisesError = function (fn, message, errorType) {
+    var err, message = getFullMessage(message) + ' should raise an error';
+    try {
+      fn.call();
+    } catch(e) {
+      err = e;
+    }
+    if(!errorType) {
+      equal(!!err, true, message, 1);
+    } else {
+      equal(err instanceof errorType, true, message, 1);
+    }
+  }
+
+  getProperty = function (subject, prop) {
+    if(Sugar.noConflict) {
+      return Sugar[currentPackage.name][prop];
+    } else {
+      return subject[prop];
+    }
+  }
+
+  method = function (name) {
     var fn = arguments[arguments.length - 1];
     if(arguments.length === 3) {
       currentArgs = arguments[1];
@@ -92,13 +108,13 @@ if(typeof environment == 'undefined') environment = 'default'; // Override me!
     currentArgs   = [];
   }
 
-  function group(name, fn) {
+  group = function (name, fn) {
     currentGroup = name;
     fn();
     currentGroup = null;
   }
 
-  function test(subject) {
+  test = function (subject) {
     var args, expected, message;
     switch(arguments.length) {
       case 2:
@@ -118,7 +134,7 @@ if(typeof environment == 'undefined') environment = 'default'; // Override me!
     equal(run(subject, null, args), expected, message);
   }
 
-  function run(subject, method, args) {
+  run = function (subject, method, args) {
     method = method || currentMethod;
     args = args || currentArgs || [];
     if(Sugar.noConflict) {
@@ -147,14 +163,36 @@ if(typeof environment == 'undefined') environment = 'default'; // Override me!
     }
   }
 
-  function getProperty(subject, prop) {
-    if(Sugar.noConflict) {
-      return Sugar[currentPackage.name][prop];
-    } else {
-      return subject[prop];
+
+  function async(fn) {
+    asyncTestsRunning++;
+    setTimeout(wrapTestingScope(function() {
+      fn(wrapTestingScope, asyncFinish);
+    }), 1);
+  }
+
+  function asyncFinish() {
+    asyncTestsRunning--;
+    checkCanFinish();
+  }
+
+  function checkCanFinish() {
+    if(!syncTestsRunning && asyncTestsRunning === 0) {
+      testsFinished();
     }
   }
 
+  function wrapTestingScope(fn) {
+    var cachedPackage = currentPackage;
+    var cachedMethod = currentMethod;
+    var cachedArgs = currentArgs;
+    return function () {
+      currentPackage = cachedPackage;
+      currentMethod = cachedMethod;
+      currentArgs = cachedArgs;
+      fn.apply(this, arguments);
+    }
+  }
 
   function subjectIsClass(subject) {
     switch(subject) {
@@ -171,20 +209,6 @@ if(typeof environment == 'undefined') environment = 'default'; // Override me!
     return false;
   }
 
-  function raisesError(fn, message, errorType) {
-    var err, message = getFullMessage(message) + ' should raise an error';
-    try {
-      fn.call();
-    } catch(e) {
-      err = e;
-    }
-    if(!errorType) {
-      equal(!!err, true, message, 1);
-    } else {
-      equal(err instanceof errorType, true, message, 1);
-    }
-  }
-
   function getFullMessage(tail) {
     var msg = '';
     var title = currentMethod || currentGroup;
@@ -199,19 +223,6 @@ if(typeof environment == 'undefined') environment = 'default'; // Override me!
     return msg;
   }
 
-
-  // Runner methods
-
-  function equal(actual, expected, message, stack) {
-    currentPackage.assertions++;
-    if(!isEqual(actual, expected)) {
-      addFailure(actual, expected, getFullMessage(message), stack);
-    }
-  }
-
-  function notEqual(actual, expected, message) {
-    equal(actual !== expected, true, message + ' | strict equality', 1);
-  }
 
   function testsStarted() {
     if(environment == 'node') {
@@ -341,15 +352,6 @@ if(typeof environment == 'undefined') environment = 'default'; // Override me!
     return onep === twop && String(one) === String(two);
   }
 
-  function equalWithMargin(actual, expected, margin, message) {
-    equal((actual > expected - margin) && (actual < expected + margin), true, message, null, 1);
-  }
-
-  // Sets are equal, but order may differ
-  function setIsEqual(a, b, message) {
-    equal(sortOnStringValue(a), sortOnStringValue(b), message);
-  }
-
   function sortOnStringValue(arr) {
     return arr.sort(function(a, b) {
       var aStr = getStringValueForObject(a);
@@ -413,26 +415,15 @@ if(typeof environment == 'undefined') environment = 'default'; // Override me!
       messages = messages.map(function(arg) {
         return String(arg);
       })
-      $('<p/>').text(messages.join(',')).appendTo(document.body);
+      $('<p/>').css({
+        fontFamily: 'monospace',
+        fontSize: '12px'
+      }).text(messages.join(',')).appendTo(document.body);
     }
     console = {
       log: consoleFn,
       info: consoleFn
     }
   }
-
-  this.syncTestsFinished = syncTestsFinished;
-  this.equalWithMargin = equalWithMargin;
-  this.raisesError = raisesError;
-  this.getProperty = getProperty;
-  this.setIsEqual = setIsEqual;
-  this.notEqual = notEqual;
-  this.package = package;
-  this.method = method;
-  this.group = group;
-  this.equal = equal;
-  this.test = test;
-  this.run = run;
-
 
 })();
