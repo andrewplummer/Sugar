@@ -293,6 +293,11 @@
 
   // Argument helpers
 
+  function isArgumentsObject(obj) {
+    // .callee exists on Arguments objects in < IE8
+    return hasProperty(obj, 'length') && (className(obj) === '[object Arguments]' || !!obj.callee);
+  }
+
   function multiArgs(args, fn, from) {
     var result = [], i = from || 0, len;
     for(len = args.length; i < len; i++) {
@@ -1423,11 +1428,6 @@
 
   function isArrayLike(obj) {
     return hasProperty(obj, 'length') && !isString(obj) && !isPlainObject(obj);
-  }
-
-  function isArgumentsObject(obj) {
-    // .callee exists on Arguments objects in < IE8
-    return hasProperty(obj, 'length') && (className(obj) === '[object Arguments]' || !!obj.callee);
   }
 
   function flatArguments(args) {
@@ -6348,6 +6348,7 @@
    *
    * @set
    *   isArray
+   *   isArguments
    *   isObject
    *   isBoolean
    *   isDate
@@ -6441,6 +6442,10 @@
   }, false, function() { return arguments.length > 1; });
 
   extend(object, {
+
+    'isArguments': function(obj) {
+      return isArgumentsObject(obj);
+    },
 
     'isObject': function(obj) {
       return isPlainObject(obj);
