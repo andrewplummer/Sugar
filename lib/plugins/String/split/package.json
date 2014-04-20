@@ -1,0 +1,14 @@
+{
+  "name": "sugar-plugin-split",
+  "version": "0.0.1",
+  "description": "Sugar plugin that patches String#split to work consistently with regexes.",
+  "author": "Andrew Plummer",
+  "main": "./split.js",
+  "dependencies": {
+    "sugar-core": ">= 0.0.1"
+  },
+  "engines" : {
+    "node" : ">= 0.4.0"
+  },
+  "license": "MIT"
+}
