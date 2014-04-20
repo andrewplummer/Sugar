@@ -17,6 +17,7 @@ v1.5.0
 - Removed `Object.reduce`.
 - Added `Object.isArguments`.
 - Changed `String#each` to allow breaking the loop with `false`.
+- Added `String#map`.
 
 
 v1.4.2
