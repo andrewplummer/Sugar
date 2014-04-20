@@ -3023,17 +3023,17 @@
 
   // Date shifting helpers
 
-  function dateAdvance(d, args) {
+  function advanceDate(d, args) {
     var args = collectDateArguments(args, true);
     return updateDate(d, args[0], args[1], 1);
   }
 
-  function dateSet(d, args) {
+  function setDate(d, args) {
     var args = collectDateArguments(args);
     return updateDate(d, args[0], args[1])
   }
 
-  function dateReset(d, unit) {
+  function resetDate(d, unit) {
     var params = {}, recognized;
     unit = unit || 'hours';
     if(unit === 'date') unit = 'days';
@@ -3041,7 +3041,7 @@
       return unit === u.name || unit === u.name + 's';
     });
     params[unit] = unit.match(/^days?/) ? 1 : 0;
-    return recognized ? dateSet(d, [params, true]) : d;
+    return recognized ? setDate(d, [params, true]) : d;
   }
 
   function setWeekday(d, dow) {
@@ -3057,7 +3057,7 @@
       case 'day':   set['day']     = callDateGet(d, 'Date');     break;
       case 'week':  set['weekday'] = 0; break;
     }
-    return dateSet(d, [set, true]);
+    return setDate(d, [set, true]);
   }
 
   function moveToEndOfUnit(d, unit) {
@@ -3067,7 +3067,7 @@
       case 'month': set['day']     = getDaysInMonth(d);  break;
       case 'week':  set['weekday'] = 6;                   break;
     }
-    return dateSet(d, [set, true]);
+    return setDate(d, [set, true]);
   }
 
   // Date parsing helpers
@@ -3154,7 +3154,7 @@
         moveToBeginningOfUnit(d, unit);
       }
       // This value of -2 is arbitrary but it's a nice clean way to hook into this system.
-      if(modifier.value === -2) dateReset(d);
+      if(modifier.value === -2) resetDate(d);
     }
 
     function separateAbsoluteUnits() {
@@ -3178,7 +3178,7 @@
       });
       if(params) {
         afterDateSet(function() {
-          dateSet(d, [params, true]);
+          setDate(d, [params, true]);
         });
       }
     }
@@ -3192,7 +3192,7 @@
     } else if(isNumber(f) || f === null) {
       d.setTime(f);
     } else if(isObjectType(f)) {
-      dateSet(d, [f, true]);
+      setDate(d, [f, true]);
       set = f;
     } else if(isString(f)) {
 
@@ -3252,7 +3252,7 @@
             // Relative day localizations such as "today" and "tomorrow".
             if(set['day'] && (tmp = loc.modifiersByName[set['day']])) {
               set['day'] = tmp.value;
-              dateReset(d);
+              resetDate(d);
               relative = true;
             // If the day is a weekday, then set that instead.
             } else if(set['day'] && (weekday = loc.getWeekday(set['day'])) > -1) {
@@ -3316,7 +3316,7 @@
 
               // Units can be with non-relative dates, set here. ie "the day after monday"
               if(isDefined(set['weekday'])) {
-                dateSet(d, [{'weekday': set['weekday'] }, true]);
+                setDate(d, [{'weekday': set['weekday'] }, true]);
                 delete set['weekday'];
               }
 
@@ -3357,12 +3357,12 @@
           d.addMinutes(-d.getTimezoneOffset());
         }
       } else if(relative) {
-        dateAdvance(d, [set]);
+        advanceDate(d, [set]);
       } else {
         if(d._utc) {
           // UTC times can traverse into other days or even months,
           // so preemtively reset the time here to prevent this.
-          dateReset(d);
+          resetDate(d);
         }
         updateDate(d, set, true, false, prefer);
       }
@@ -3398,20 +3398,20 @@
   function getWeekNumber(date) {
     date = cloneDate(date);
     var dow = callDateGet(date, 'Day') || 7;
-    dateReset(dateAdvance(date, [(4 - dow) + ' days']));
+    resetDate(advanceDate(date, [(4 - dow) + ' days']));
     return 1 + floor(sugarDate.daysSince(date, moveToBeginningOfUnit(cloneDate(date), 'year')) / 7);
   }
 
   function setWeekNumber(date, num) {
     var weekday = callDateGet(date, 'Day') || 7;
     if(isUndefined(num)) return;
-    dateSet(date, [{ 'month': 0, 'date': 4 }]);
-    dateSet(date, [{ 'weekday': 1 }]);
+    setDate(date, [{ 'month': 0, 'date': 4 }]);
+    setDate(date, [{ 'weekday': 1 }]);
     if(num > 1) {
-      dateAdvance(date, [{ 'weeks': num - 1 }]);
+      advanceDate(date, [{ 'weeks': num - 1 }]);
     }
     if(weekday !== 1) {
-      dateAdvance(date, [{ 'days': weekday - 1 }]);
+      advanceDate(date, [{ 'days': weekday - 1 }]);
     }
     return date.getTime();
   }
@@ -3612,7 +3612,7 @@
       if(p.set.specificity === 'month') {
         max = moveToEndOfUnit(cloneDate(p.date), p.set.specificity).getTime();
       } else {
-        max = dateAdvance(cloneDate(p.date), ['1 ' + p.set.specificity]).getTime() - 1;
+        max = advanceDate(cloneDate(p.date), ['1 ' + p.set.specificity]).getTime() - 1;
       }
       if(!override && p.set['sign'] && p.set.specificity != 'millisecond') {
         // If the time is relative, there can occasionally be an disparity between the relative date
@@ -3746,7 +3746,7 @@
           sugarDate[u.addMethod](d, prefer);
           return false;
         } else if(name === 'year' && hasAbbreviatedYear(params)) {
-          dateAdvance(d, [{'years': 100 * prefer}]);
+          advanceDate(d, [{'years': 100 * prefer}]);
         }
       }, specificityIndex + 1);
     }
@@ -4050,7 +4050,7 @@
       methods[u.addMethod] = function(num, reset) {
         var set = {};
         set[name] = num;
-        return dateAdvance(this, [set, reset]);
+        return advanceDate(this, [set, reset]);
       };
       buildNumberToDateAlias(u, multiplier);
       if(i < 3) {
@@ -4380,7 +4380,7 @@
      *
      ***/
     'set': function() {
-      return dateSet(this, arguments);
+      return setDate(this, arguments);
     },
 
      /***
@@ -4447,7 +4447,7 @@
         day = 1;
       }
       setWeekday(this, day);
-      return dateReset(this);
+      return resetDate(this);
     },
 
      /***
@@ -4525,7 +4525,7 @@
      *
      ***/
     'advance': function() {
-      return dateAdvance(this, arguments);
+      return advanceDate(this, arguments);
     },
 
      /***
@@ -4719,7 +4719,7 @@
      *
      ***/
     'reset': function(unit) {
-      return dateReset(this, unit);
+      return resetDate(this, unit);
     },
 
      /***
