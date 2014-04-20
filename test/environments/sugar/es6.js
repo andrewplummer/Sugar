@@ -6,6 +6,12 @@ package('ES6', function () {
   var arr, result, visited, count;
   var undefinedContextObj = (function(){ return this; }).call(undefined);
 
+  // Array#find/findIndex
+  // Can't rely on length at the moment until I figure out
+  // how to turn off this option in the closure compiler.
+  equal(Array.prototype.find.length,        1, 'Array#find | should have argument length of 1');
+  equal(Array.prototype.findIndex.length,   1, 'Array#findIndex | should have argument length of 1');
+
 
   equal([1,2,3].find(function(el){ return el === 3; }), 3, 'Array#find | should find by predicate');
   equal([1,2,3].find(function(el){ return el === 7; }), undefined, 'Array#find | should return undefined when not matched');
@@ -140,18 +146,12 @@ package('ES6', function () {
 
   equal(visited, ['a'], 'Array#findIndex | does not visit elements mutated after being called');
 
-  // TODO:
-  // Can't rely on length at the moment until I figure out
-  // how to turn off this option in the closure compiler.
-  // equal(Array.prototype.find.length,        1, 'Array#find | should have argument length of 1');
-  // equal(Array.prototype.findIndex.length,   1, 'Array#findIndex | should have argument length of 1');
 
-
-  // String#startsWith and String#endsWith
+  // String#startsWith
   // Unit tests egregiously stolen from
   // https://github.com/mathiasbynens/String.prototype.startsWith/blob/master/tests/tests.js
 
-  // equal(String.prototype.startsWith.length, 1);
+  equal(String.prototype.startsWith.length, 1);
 
   equal('undefined'.startsWith(), true);
   equal('undefined'.startsWith(undefined), true);
@@ -403,7 +403,9 @@ package('ES6', function () {
   equal(String.prototype.startsWith.apply({ 'toString': function() { return 'abc'; } }, ['b', 2]), false);
 
 
-  // equal(String.prototype.endsWith.length, 1);
+  // String#endsWith
+
+  equal(String.prototype.endsWith.length, 1);
 
   equal('undefined'.endsWith(), true);
   equal('undefined'.endsWith(undefined), true);
@@ -678,9 +680,9 @@ package('ES6', function () {
   equal(String.prototype.endsWith.apply({ 'toString': function() { return 'abc'; } }, ['b', 2]), true);
 
 
-  // equal(String.prototype.repeat.length, 1);
-
   // String#repeat
+
+  equal(String.prototype.repeat.length, 1);
 
   equal('abc'.repeat(), '');
   equal('abc'.repeat(undefined), '');
@@ -740,7 +742,7 @@ package('ES6', function () {
 
   // String#contains
 
-  // equal(String.prototype.contains.length, 1);
+  equal(String.prototype.contains.length, 1);
 
   equal('abc'.contains(), false);
   equal('aundefinedb'.contains(), true);
