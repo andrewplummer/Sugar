@@ -1,0 +1,14 @@
+{
+  "name": "sugar-plugin-namespace",
+  "version": "0.0.1",
+  "description": "Sugar plugin that finds a dot-notation namespace.",
+  "author": "Andrew Plummer",
+  "main": "./namespace.js",
+  "dependencies": {
+    "sugar-core": ">= 0.0.1"
+  },
+  "engines" : {
+    "node" : ">= 0.4.0"
+  },
+  "license": "MIT"
+}
