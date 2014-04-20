@@ -33,6 +33,10 @@
 
     equal(run(69, 'chr'), 'E', 'extend | simple array of strings should restore Sugar methods');
     equal(run(1, 'plus', [2, 3]), 6, 'extend | restoring Sugar methods should not override other custom extended methods');
+    if(Sugar.noConflict) {
+      equal((3).chr(), 'F', "Ensure that restore doesn't accidentally map methods to prototypes when no-conflict is active");
+      delete Number.prototype.chr;
+    }
 
   });
 
