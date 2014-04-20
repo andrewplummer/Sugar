@@ -304,10 +304,6 @@ package('String', function () {
     equal(result, ['g'], "['g'] should be the resulting value");
 
 
-  });
-
-  method('each', function() {
-
     var counter = 0, result, callback;
     callback = function(str, i) {
       equal(str, 'ginger'.charAt(counter), 'char should be passed as the first argument');
@@ -318,9 +314,6 @@ package('String', function () {
     equal(counter, 6, 'should have ran 6 times');
     equal(result, ['g','i','n','g','e','r'], 'resulting array should contain all the characters');
 
-  });
-
-  method('each', function() {
 
     var counter = 0, result, callback;
 
@@ -333,9 +326,6 @@ package('String', function () {
     equal(counter, 2, 'string argument | should have ran 2 times');
     equal(result, ['g','g'], "string argument | resulting array should be ['g','g']");
 
-  });
-
-  method('each', function() {
 
     var counter = 0, result, callback, arr;
     arr = ['g','i','g','e'];
@@ -349,10 +339,6 @@ package('String', function () {
     equal(counter, 4, 'regexp argument | should have ran 4 times');
     equal(result, ['g','i','g','e'], "regexp argument | resulting array should have been ['g','i','g','e']");
 
-  });
-
-
-  method('each', function() {
 
     // .each should do the same thing as String#scan in ruby except that .each doesn't respect capturing groups
     var testString = 'cruel world';
@@ -365,6 +351,17 @@ package('String', function () {
     test('', ['f'], [], 'empty string | each f');
     test('', [/foo/], [], 'empty string | each /foo/');
     test('', [function() {}], [], 'empty string | passing a block');
+
+
+    var letters = [], result, fn;
+    fn = function(l) {
+      letters.push(l);
+      return false;
+    }
+    result = run('foo', 'each', [fn])
+
+    equal(result, ['f'], 'returning false should break the loop - result');
+    equal(letters, ['f'], 'returning false should break the loop - pushed');
 
   });
 
@@ -420,7 +417,7 @@ package('String', function () {
       return str.toUpperCase();
     }
     result = run('ginger', 'chars', [callback]);
-    equal(result, ['G','I','N','G','E','R'], 'resulting array is properly collected');
+    equal(result, ['g','i','n','g','e','r'], 'cannot be mapped');
 
     test('', [], 'empty string');
   });
@@ -458,7 +455,7 @@ package('String', function () {
       return run(str, 'capitalize');
     }
     result = run('one\ntwo', 'lines', [callback]);
-    equal(['One','Two'], result, 'lines can be modified');
+    equal(['one','two'], result, 'lines cannot be modified');
 
     test('', [''], 'empty string');
   });
