@@ -677,19 +677,9 @@ package('ES5', function () {
   equal(lineTerminators.trim(), '', 'String#trim | should trim all LineTerminator characters defined in 7.3');
 
 
-
-  // String#trimLeft (non standard)
-
-  equal(whiteSpace.trimLeft(), '', 'String#trimLeft | should trim all WhiteSpace characters defined in 7.2 and Unicode "space, separator"');
-  equal(lineTerminators.trimLeft(), '', 'String#trimLeft | should trim all LineTerminator characters defined in 7.3');
-
-
-
-  // String#trimRight (non standard)
-
-  equal(whiteSpace.trimRight(), '', 'String#trimRight | should trim all WhiteSpace characters defined in 7.2 and Unicode "space, separator"');
-  equal(lineTerminators.trimRight(), '', 'String#trimRight | should trim all LineTerminator characters defined in 7.3');
-
+  equal('   wasabi   '.trim(), 'wasabi', 'String#trim | should trim both left and right whitespace');
+  equal(''.trim(), '', 'String#trim | blank');
+  equal(' wasabi '.trim(), 'wasabi', 'String#trim | wasabi with whitespace');
 
 
   equal(String.prototype.trim.call([1]), '1', 'String#trim | should handle objects as well');
