@@ -166,6 +166,25 @@ package('Object', function () {
     test(Object, [true], false, 'true');
   });
 
+  method('isArguments', function() {
+    test(Object, [{}], false, '{}');
+    test(Object, [[]], false, '[]');
+    test(Object, [new Array(1,2,3)], false, 'new Array(1,2,3)');
+    test(Object, [new RegExp()], false, 'new RegExp()');
+    test(Object, [new Date()], false, 'new Date()');
+    test(Object, [function() {}], false, 'function() {}');
+    test(Object, [1], false, '1');
+    test(Object, ['wasabi'], false, '"wasabi"');
+    test(Object, [null], false, 'null');
+    test(Object, [undefined], false, 'undefined');
+    test(Object, [NaN], false, 'NaN');
+    test(Object, [], false, 'blank');
+    test(Object, [false], false, 'false');
+    test(Object, [true], false, 'true');
+    test(Object, [(function(){ return arguments; })()], true, 'arguments object with 0 length');
+    test(Object, [(function(){ return arguments; })(1,2,3)], true, 'arguments object with 3 length');
+  });
+
   method('extended', function() {
     var keys, values, obj, strippedValues;
     var d = new Date();

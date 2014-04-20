@@ -15,6 +15,7 @@ v1.5.0
 - Alphanumeric array options are now on the global object.
 - Moved `Object.map`, `Object.each`, and `Object.size` to the object package.
 - Removed `Object.reduce`.
+- Added `Object.isArguments`.
 
 
 v1.4.2
