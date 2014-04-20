@@ -432,7 +432,7 @@ package('String', function () {
       return str.toUpperCase();
     }
     result = run('ginger', 'chars', [callback]);
-    equal(result, ['g','i','n','g','e','r'], 'cannot be mapped');
+    equal(result, ['G','I','N','G','E','R'], 'can be mapped');
 
     test('', [], 'empty string');
   });
@@ -470,7 +470,7 @@ package('String', function () {
       return run(str, 'capitalize');
     }
     result = run('one\ntwo', 'lines', [callback]);
-    equal(['one','two'], result, 'lines cannot be modified');
+    equal(['One','Two'], result, 'lines can be modified');
 
     test('', [''], 'empty string');
   });
