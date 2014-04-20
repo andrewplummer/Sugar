@@ -524,6 +524,9 @@ package('Array', function () {
     run([1], 'unique', [fn]);
 
     equal(run([function(){ return 'a' }, function() { return 'a'; }, function() { return 'b'; }]).length, 3, 'Functions are always unique');
+
+    test(['toString'], [], ['toString'], 'toString is respected as unique');
+
   });
 
   method('union', function() {
