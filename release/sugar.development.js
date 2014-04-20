@@ -92,6 +92,7 @@
   }
 
   function restore(klass, methods) {
+    if(noConflict) return;
     return batchMethodExecute(klass, methods, function(target, name, m) {
       defineProperty(target, name, m.method);
     });
@@ -786,11 +787,6 @@
     }
   }
 
-  function hasISOStringSupport() {
-    var d = new date(date.UTC(2000, 0)), expected = '2000-01-01T00:00:00.000Z';
-    return !!d.toISOString && d.toISOString() === expected;
-  }
-
 
   extend(array, {
 
@@ -1032,6 +1028,7 @@
    *
    ***/
 
+  var TrimRegExp = regexp('^[' + getTrimmableCharacters() + ']+|['+getTrimmableCharacters()+']+$', 'g')
 
   extend(string, {
     /***
@@ -1048,7 +1045,7 @@
      *
      ***/
     'trim': function() {
-      return this.toString().trimLeft().trimRight();
+      return this.toString().replace(TrimRegExp, '');
     }
   }, true, true);
 
@@ -1098,6 +1095,11 @@
    * Date module
    *
    ***/
+
+  function hasISOStringSupport() {
+    var d = new date(date.UTC(2000, 0)), expected = '2000-01-01T00:00:00.000Z';
+    return !!d.toISOString && d.toISOString() === expected;
+  }
 
   extend(date, {
 
