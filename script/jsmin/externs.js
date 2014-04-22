@@ -46,3 +46,10 @@ Range.prototype.step    = function() {};
 Range.prototype.clamp   = function() {};
 Range.prototype.every   = function() {};
 Range.prototype.isValid   = function() {};
+
+var l = new Localization();
+l.modifiers       = [{ name: 'shift', src: 'last', value: -1 }];
+l.cachedFormat    = l.compiledFormats[0];
+l.compiledFormats = [{ variant: false, locale: '', reg: /date/, to: [] }];
+l.modifiersByName = {};
+
