@@ -1439,7 +1439,7 @@
   }
 
   function elementExistsInHash(hash, key, element, isReference) {
-    var exists = key in hash;
+    var exists = hasOwnProperty(hash, key);
     if(isReference) {
       if(!hash[key]) {
         hash[key] = [];
@@ -6901,7 +6901,7 @@
   }
 
   function stringEach(str, search, fn) {
-    var match, i, len;
+    var i, len, result, chunks;
     if(isFunction(search)) {
       fn = search;
       search = /[\s\S]/g;
@@ -6912,13 +6912,19 @@
     } else if(isRegExp(search)) {
       search = regexp(search.source, getRegExpFlags(search, 'g'));
     }
-    match = str.match(search) || [];
+    chunks = str.match(search) || [];
     if(fn) {
-      for(i = 0, len = match.length; i < len; i++) {
-        match[i] = fn.call(str, match[i], i, match) || match[i];
+      for(i = 0, len = chunks.length; i < len; i++) {
+        result = fn.call(str, chunks[i], i, chunks);
+        if(result === false) {
+          chunks.length = i + 1;
+          break;
+        } else if(isDefined(result)) {
+          chunks[i] = result;
+        }
       }
     }
-    return match;
+    return chunks;
   }
 
   function eachWord(str, fn) {
@@ -7359,7 +7365,7 @@
      * @method each([search] = single character, [fn])
      * @returns Array
      * @short Runs callback [fn] against each occurence of [search].
-     * @extra Returns an array of matches. [search] may be either a string or regex, and defaults to every character in the string.
+     * @extra Returns an array of matches. [search] may be either a string or regex, and defaults to every character in the string. If [fn] returns false at any time it will break out of the loop.
      * @example
      *
      *   'jumpy'.each() -> ['j','u','m','p','y']
@@ -7371,6 +7377,23 @@
      ***/
     'each': function(search, fn) {
       return stringEach(this, search, fn);
+    },
+
+    /***
+     * @method map(<fn>, [scope])
+     * @returns String
+     * @short Maps the string to another string containing the values that are the result of calling <fn> on each element.
+     * @extra [scope] is the %this% object. <fn> is a function, it receives three arguments: the current character, the current index, and a reference to the string.
+     * @example
+     *
+     *   'jumpy'.map(function(l) {
+     *     return String.fromCharCode(l.charCodeAt(0) + 1);
+     *
+     *   }); // Returns the string with each character shifted one code point down.
+     *
+     ***/
+    'map': function(f, scope) {
+      return this.split('').map(f, scope).join('');
     },
 
     /***
