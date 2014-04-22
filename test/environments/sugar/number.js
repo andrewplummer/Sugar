@@ -269,7 +269,10 @@ package('Number', function () {
     test(2, false);
     test(24, false);
     test(200, false);
+    test(1.1, false);
     test(NaN, false);
+    test(Infinity, false);
+    test(-Infinity, false);
   });
 
 
@@ -279,7 +282,10 @@ package('Number', function () {
     test(2, true);
     test(24, true);
     test(200, true);
+    test(1.1, false);
     test(NaN, false);
+    test(Infinity, false);
+    test(-Infinity, false);
   });
 
 
