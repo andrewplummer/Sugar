@@ -42,7 +42,7 @@ if(typeof environment == 'undefined') environment = 'default'; // Override me!
     try {
       fn.call();
     } catch(e) {
-      console.info(e.stack);
+      console.info(e, e.stack);
     }
     results.push(currentPackage);
     currentPackage = null;
