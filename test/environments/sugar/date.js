@@ -2828,4 +2828,28 @@ package('Number', function () {
     testSetLocale('en');
   });
 
+  group('Date Locales', function() {
+
+    // Issue #415 locale object properties should be exported.
+
+    var en = Sugar.Date.getLocale('en');
+    var properties = [
+      'ampm','articles','code','date','dateParse','day','duration','edge','full',
+      'full_month','future','cachedFormat','compiledFormats', 'modifiers','long','modifiers','modifiersByName',
+      'months','num','numbers','past','plural','shift','short','sign','timeMarker',
+      'timeParse','timeSuffixes','tokens','units','weekdays','year'
+    ];
+
+    properties.forEach(function(p) {
+      equal(!!en[p], true, 'property ' + p + ' should exist in the locale object');
+    });
+
+    var cf = en.compiledFormats[0];
+    equal(cf.hasOwnProperty('variant'), true, 'compiled format should have a variant property');
+    equal(cf.hasOwnProperty('locale'), true, 'compiled format should have a locale property');
+    equal(cf.hasOwnProperty('reg'), true, 'compiled format should have a reg property');
+    equal(cf.hasOwnProperty('to'), true, 'compiled format should have a to property');
+
+  });
+
 });
