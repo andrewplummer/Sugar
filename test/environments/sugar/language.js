@@ -211,6 +211,8 @@ package('String', function () {
     test(barabara, ['punctuation'], 'こんにちは｡タロウ　ＹＡＭＡＤＡです｡１８才です!(笑)', 'modes full | punctuation');
     test(barabara, ['spaces'], 'こんにちは。タロウ ＹＡＭＡＤＡです。１８才です！（笑）', 'modes full | spaces');
 
+    test('－', '-', 'Full-width hyphen should be converted to half-width');
+
     test(allZenkakuChars, allHankakuChars, 'everything');
   });
 
@@ -248,6 +250,8 @@ package('String', function () {
     test(barabara, ['katakana'], 'こんにちは｡タロウ YAMADAです｡18才です!(笑)', 'modes full | katakana');
     test(barabara, ['spaces'], 'こんにちは｡ﾀﾛｳ　YAMADAです｡18才です!(笑)', 'modes full | spaces');
     test(barabara, ['punctuation'], 'こんにちは。ﾀﾛｳ YAMADAです。18才です！（笑）', 'modes full | punctuation');
+
+    test('-', '－', 'Half-width hyphen should be converted to full-width');
 
     test(allHankakuChars, allZenkakuChars, 'everything');
   });
