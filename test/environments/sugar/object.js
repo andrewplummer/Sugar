@@ -252,13 +252,17 @@ package('Object', function () {
 
   method('merge', function() {
 
+    var nonEnumerablePropertySupport = !!Object.getOwnPropertyNames;
+
     test(Object, [{ foo: 'bar' }, { broken: 'wear' }], { foo: 'bar', broken: 'wear' }, 'basic');
     test(Object, [{ foo: 'bar' }, 'aha'], { foo: 'bar' }, 'will not merge a string');
-    test(Object, [{ foo: 'bar' }, null], { foo: 'bar' }, 'merge null');
+    test(Object, [{ foo: 'bar' }, null], { foo: 'bar' }, 'will not merge null');
     test(Object, [{}, {}], {}, 'merge multi empty');
     test(Object, [{ foo: 'bar' }, 8], { foo: 'bar' }, 'merge number');
     test(Object, [{ foo:'bar' }, 'wear', 8, null], { foo:'bar' }, 'merge multi invalid');
-    test(Object, [[1,2,3,4], [4,5,6]], [4,5,6,4], 'arrays should also be mergeable');
+
+    var expected = nonEnumerablePropertySupport ? [4,5,6] : [4,5,6,4];
+    test(Object, [[1,2,3,4], [4,5,6]], expected, 'arrays are mergeable but result depends on enumerable property support');
     test(Object, [{ foo: { one: 'two' }}, { foo: { two: 'three' }}, true, true], { foo: { one: 'two', two: 'three' }}, 'accepts deep merges');
     test(Object, ['foo', 'bar'], 'foo', 'two strings');
     test(Object, [{ a:1 }, { a:2 }], { a:2 }, 'incoming wins');
@@ -267,7 +271,10 @@ package('Object', function () {
     test(Object, [{ a:undefined }, { a:2 }], { a:2 }, 'existing but undefined properties are overwritten');
     test(Object, [{ a:null }, { a:2 }], { a:2 }, 'null properties are not overwritten');
     test(Object, [{ a:undefined }, { a:2 }, false, false], { a:2 }, 'false | existing but undefined properties are overwritten');
-    test(Object, [{ a:null }, { a:2 }, false, false], { a:null }, 'false | null properties are not overwritten');
+    test(Object, [{ a:null }, { a:2 }, false, false], { a:2 }, 'false | null properties are overwritten');
+    test(Object, [{ a:true }, { a:2 }, false, false], { a:true }, 'false | true is not overwritten');
+    test(Object, [{ a:false }, { a:2 }, false, false], { a:false }, 'false | false is not overwritten');
+    test(Object, [{ a:'' }, { a:2 }, false, false], { a:'' }, 'false | empty strings are not overwritten');
     test(Object, [[{ foo:'bar' }], [{ moo:'car' }], true, true], [{ foo:'bar',moo:'car' }], 'can merge arrays as well');
 
     var fn1 = function() {};
@@ -339,7 +346,7 @@ package('Object', function () {
         hee: 'haw',
         mee: 'maw'
       },
-      arr: [4,5,6,4]
+      arr: nonEnumerablePropertySupport ? [4,5,6] : [4,5,6,4]
     }
 
     test(Object, [obj1, obj2, true, fn], expected, 'complex objects with resolve function');
@@ -397,6 +404,26 @@ package('Object', function () {
 
     test(Object, [{a:''}, {a:{b:1}}, true], {a:{b:1}}, 'source object wins with empty string');
     test(Object, [{a:'1'}, {a:{b:1}}, true], {a:{b:1}}, 'source object wins with number as string');
+
+
+
+    if(definePropertySupport) {
+
+      var obj1 = {};
+      var obj2 = {};
+      Object.defineProperty(obj1, 'foo', {
+        value: 'hello',
+        enumerable: false,
+        configurable: false
+      });
+
+      var result = run(Object, 'merge', [{}, obj1]);
+      equal(result.foo, 'hello', 'empty object merged with a non-configurable, non-enumerable property');
+
+      raisesError(function(){
+        run(Object, 'merge', [obj1, {foo: 'ohno'}]);
+      }, 'attempting to merge into a non-configurable property should raise an error');
+    }
 
   });
 
@@ -518,6 +545,28 @@ package('Object', function () {
 
     equal(obj2.d.getDate(), 25, 'Object.clone | deep cloning also clones dates');
     equal(obj2.r.source, 'dasfsa', 'Object.clone | deep cloning also clones regexes');
+
+
+    // Issue #396 cloning objects with accessors.
+
+    if(definePropertySupport) {
+      var template = {
+        data: { label: 'original label' }
+      };
+      Object.defineProperty(template, 'label', {
+        get: function() {
+          return this.data.label;
+        },
+        set: function(value) {
+          this.data.label = value;
+        }
+      });
+
+      var template2 =  run(Object, 'clone', [template]);
+      template2.label = 'next label';
+      equal(template2.data.label, 'next label', 'data value should be updated');
+    }
+
 
   });
 
