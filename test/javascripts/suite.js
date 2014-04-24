@@ -323,7 +323,7 @@ if(typeof environment == 'undefined') environment = 'default'; // Override me!
   // will report false.
   function arrayIsEqual(one, two) {
     var i, result = true;
-    if(!one || !two) {
+    if(!one || !two || typeof one !== 'object' || typeof two !== 'object') {
       return false;
     }
     arrayEach(one, function(a, i) {
