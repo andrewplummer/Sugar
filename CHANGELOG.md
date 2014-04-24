@@ -18,6 +18,7 @@ v1.5.0
 - Added `Object.isArguments`.
 - Changed `String#each` to allow breaking the loop with `false`.
 - Added `String#map`.
+- Added non-enumerable property support to `Object.merge`.
 
 
 v1.4.2

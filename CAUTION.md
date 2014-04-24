@@ -25,6 +25,12 @@ v1.5.0+
 - Level: Major
   - `Object.reduce` is now deprecated. Use `Array#reduce` together with `Object.keys` instead.
 
+- Level: Major
+  - `Object.merge` and `Object.clone` now work on non-enumerable properties if supported. This is great for more robust merging of objects, but there are some side effects. The most major is that when arrays are merged together now (as objects) their length property will be merged as well. This will effectively mean that if an array of length 3 is merged into an array of length 4, the result will also have length 3 (depending on the merge strategy) which will chop off the last element. This is also true for nested arrays in the case of deep merging. If you are performing simple operations on straight arrays, consider using `Array#intersect` or `Array#union` instead, which are much more optimized for arrays. If you are doing complex, deep merging with nested arrays of varying length, you will need to pass a function as the resolve strategy and check for arrays using `Array.isArray` and handle appropriately. Additionally, IE8 and below do not have support for iterating over non-enumerable properties, so the results can be different here depending on environment. Sticking to standard object literals when merging/cloning will ensure maximum browser support.
+
+- Level: Major
+  - `Object.merge` will now treat null properties as if they did not exist (previously only undefined properties were treated this way). All other falsy properties such as empty strings and `false` will not be overwritten.
+
 - Level: Moderate
   - Alphanumeric array options are now defined on the global object `Sugar.Array` instead of `Array` itself.
 
