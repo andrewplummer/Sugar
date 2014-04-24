@@ -33,9 +33,9 @@
   // Internal hasOwnProperty
   var internalHasOwnProperty = object.prototype.hasOwnProperty;
 
-  // defineProperty exists in IE8 but will error when trying to define a property on
+  // Property descriptors exist in IE8 but will error when trying to define a property on
   // native objects. IE8 does not have defineProperies, however, so this check saves a try/catch block.
-  var definePropertySupport = object.defineProperty && object.defineProperties;
+  var propertyDescriptorSupport = !!(object.defineProperty && object.defineProperties);
 
   // Natives by name.
   var natives = 'Boolean,Number,String,Array,Date,RegExp,Function'.split(',');
@@ -79,7 +79,7 @@
       }
       defineOnGlobal(klass, name, instance, original, prop, existed);
       if(canDefineOnNative(klass, polyfill, existing, override)) {
-        defineProperty(extendee, name, prop);
+        setProperty(extendee, name, prop);
       }
     });
   }
@@ -94,14 +94,14 @@
   function restore(klass, methods) {
     if(noConflict) return;
     return batchMethodExecute(klass, methods, function(target, name, m) {
-      defineProperty(target, name, m.method);
+      setProperty(target, name, m.method);
     });
   }
 
   function revert(klass, methods) {
     return batchMethodExecute(klass, methods, function(target, name, m) {
       if(m['existed']) {
-        defineProperty(target, name, m['original']);
+        setProperty(target, name, m['original']);
       } else {
         delete target[name];
       }
@@ -161,12 +161,12 @@
     var proxy = getProxy(klass), result;
     if(!proxy) return;
     result = instance ? wrapInstanceAsClass(prop) : prop;
-    defineProperty(proxy, name, result, true);
+    setProperty(proxy, name, result, true);
     if(typeof prop === 'function') {
-      defineProperty(result, 'original', original);
-      defineProperty(result, 'method', prop);
-      defineProperty(result, 'existed', existed);
-      defineProperty(result, 'instance', instance);
+      setProperty(result, 'original', original);
+      setProperty(result, 'method', prop);
+      setProperty(result, 'existed', existed);
+      setProperty(result, 'instance', instance);
     }
   }
 
@@ -174,8 +174,8 @@
     return Sugar[proxies[klass]];
   }
 
-  function defineProperty(target, name, property, enumerable) {
-    if(definePropertySupport) {
+  function setProperty(target, name, property, enumerable) {
+    if(propertyDescriptorSupport) {
       object.defineProperty(target, name, {
         'value': property,
         'enumerable': !!enumerable,
@@ -693,7 +693,7 @@
         }
         return classFn.apply(null, newArgs);
       }
-      defineProperty(target.prototype, name, fn);
+      setProperty(target.prototype, name, fn);
     });
   }
 
@@ -1597,9 +1597,9 @@
       }
     }, true, callbackCheck);
     extend(array, {
-      'map': function(f) {
+      'map': function(map) {
         return nativeMap.call(this, function(el, index) {
-          return transformArgument(el, f, this, [el, index, this]);
+          return transformArgument(el, map, this, [el, index, this]);
         });
       }
     }, true, callbackCheck);
@@ -2960,7 +2960,7 @@
   // UTC helpers
 
   function setUTC(d, force) {
-    defineProperty(d, '_utc', !!force);
+    setProperty(d, '_utc', !!force);
     return d;
   }
 
@@ -3614,7 +3614,7 @@
       } else {
         max = advanceDate(cloneDate(p.date), ['1 ' + p.set.specificity]).getTime() - 1;
       }
-      if(!override && p.set['sign'] && p.set.specificity != 'millisecond') {
+      if(!override && p.set['sign'] && p.set.specificity !== 'millisecond') {
         // If the time is relative, there can occasionally be an disparity between the relative date
         // and "now", which it is being compared to, so set an extra buffer to account for this.
         loBuffer = 50;
@@ -3787,7 +3787,7 @@
     if(targetMonth < 0) {
       targetMonth = targetMonth % 12 + 12;
     }
-    if(targetMonth % 12 != callDateGet(date, 'Month')) {
+    if(targetMonth % 12 !== callDateGet(date, 'Month')) {
       callDateSet(date, 'Date', 0);
     }
   }
@@ -4333,7 +4333,7 @@
       CurrentLocalization = loc;
       // The code is allowed to be more specific than the codes which are required:
       // i.e. zh-CN or en-US. Currently this only affects US date variants such as 8/10/2000.
-      if(localeCode && localeCode != loc['code']) {
+      if(localeCode && localeCode !== loc['code']) {
         loc['code'] = localeCode;
       }
       return loc;
@@ -5818,6 +5818,10 @@
     return (num < 0 ? '-' : '') + result;
   }
 
+  function isInteger(n) {
+    return n % 1 === 0;
+  }
+
   function isMultiple(n1, n2) {
     return n1 % n2 === 0;
   }
@@ -5946,7 +5950,7 @@
      *
      ***/
     'isInteger': function() {
-      return this % 1 == 0;
+      return isInteger(this);
     },
 
     /***
@@ -5960,7 +5964,7 @@
      *
      ***/
     'isOdd': function() {
-      return !isNaN(this) && !isMultiple(this, 2);
+      return isInteger(this) && !isMultiple(this, 2);
     },
 
     /***
@@ -6284,44 +6288,69 @@
     return result;
   }
 
+  // Object merging
+
+  var getOwnPropertyNames      = object.getOwnPropertyNames;
+  var defineProperty           = propertyDescriptorSupport ? object.defineProperty : definePropertyShim;
+  var getOwnPropertyDescriptor = propertyDescriptorSupport ? object.getOwnPropertyDescriptor : getOwnPropertyDescriptorShim;
+  var iterateOverProperties    = propertyDescriptorSupport ? iterateOverPropertyNames : iterateOverObject;
+
+  function iterateOverPropertyNames(obj, fn) {
+    getOwnPropertyNames(obj).forEach(fn);
+  }
+
+  function getOwnPropertyDescriptorShim(obj, prop) {
+    return obj.hasOwnProperty(prop) ? { 'value': obj[prop] } : Undefined;
+  }
+
+  function definePropertyShim(obj, prop, descriptor) {
+    obj[prop] = descriptor['value'];
+  }
+
   function mergeObject(target, source, deep, resolve) {
-    var key, sourceIsObject, targetIsObject, sourceVal, targetVal, conflict, result;
-    // Strings cannot be reliably merged thanks to
-    // their properties not being enumerable in < IE8.
-    if(target && typeof source !== 'string') {
-      for(key in source) {
-        if(!hasOwnProperty(source, key) || !target) continue;
-        sourceVal      = source[key];
-        targetVal      = target[key];
-        conflict       = isDefined(targetVal);
-        sourceIsObject = isObjectType(sourceVal);
-        targetIsObject = isObjectType(targetVal);
-        result         = conflict && resolve === false ? targetVal : sourceVal;
 
-        if(conflict) {
-          if(isFunction(resolve)) {
-            // Use the result of the callback as the result.
-            result = resolve.call(source, key, targetVal, sourceVal)
-          }
-        }
+    // Will not merge a primitive type.
+    if(isPrimitiveType(source)) return target;
 
-        // Going deep
-        if(deep && (sourceIsObject || targetIsObject)) {
-          if(isDate(sourceVal)) {
-            result = new date(sourceVal.getTime());
-          } else if(isRegExp(sourceVal)) {
-            result = new regexp(sourceVal.source, getRegExpFlags(sourceVal));
-          } else {
-            if(!targetIsObject) target[key] = array.isArray(sourceVal) ? [] : {};
-            mergeObject(target[key], sourceVal, deep, resolve);
-            continue;
-          }
+    iterateOverProperties(source, function(prop) {
+
+      var sourceDescriptor = getOwnPropertyDescriptor(source, prop);
+      var targetDescriptor = getOwnPropertyDescriptor(target, prop);
+      var sourceVal        = sourceDescriptor && sourceDescriptor.value;
+      var targetVal        = targetDescriptor && targetDescriptor.value;
+      var sourceIsObject   = isObjectType(sourceVal);
+      var goingDeep        = deep && sourceIsObject;
+      var conflict         = isDefined(targetDescriptor) && targetDescriptor.value != null;
+
+      if(conflict) {
+        if(!goingDeep && resolve === false) {
+          return;
+        } else if(isFunction(resolve)) {
+          sourceDescriptor.value = resolve.call(source, prop, targetVal, sourceVal);
         }
-        target[key] = result;
       }
-    }
+
+      if(goingDeep) {
+        sourceDescriptor.value = handleDeepMerge(targetVal, sourceVal, deep, resolve);
+      }
+
+      defineProperty(target, prop, sourceDescriptor);
+    });
     return target;
   }
+
+  function handleDeepMerge(targetVal, sourceVal, deep, resolve) {
+    if(isDate(sourceVal)) {
+      return new date(sourceVal.getTime());
+    } else if(isRegExp(sourceVal)) {
+      return new regexp(sourceVal.source, getRegExpFlags(sourceVal));
+    } else {
+      if(!isObjectType(targetVal)) targetVal = isArray(sourceVal) ? [] : {};
+      return mergeObject(targetVal, sourceVal, deep, resolve);
+    }
+  }
+
+  // Extending all
 
   function mapAllObject() {
     buildObjectInstanceMethods(getObjectInstanceMethods(), object);
@@ -6374,9 +6403,6 @@
     }, false);
   }
 
-  var getOwnPropertyDescriptor = object.getOwnPropertyDescriptor;
-  var watchSupport = definePropertySupport && getOwnPropertyDescriptor;
-
   extend(object, {
       /***
        * @method watch(<obj>, <prop>, <fn>)
@@ -6395,13 +6421,13 @@
        ***/
     'watch': function(obj, prop, fn) {
       var value, descriptor;
-      if(!watchSupport) return false;
+      if(!propertyDescriptorSupport) return false;
       descriptor = getOwnPropertyDescriptor(obj, prop);
       if(!descriptor.configurable || descriptor.get || descriptor.set) {
         return false;
       }
       value = descriptor.value;
-      object.defineProperty(obj, prop, {
+      defineProperty(obj, prop, {
         'enumerable'  : descriptor.enumerable,
         'configurable': descriptor.configurable,
         'get': function() {
@@ -6413,7 +6439,7 @@
       });
       return true;
     }
-  }, false, true);
+  }, false, true, true);
 
   extend(object, {
 
@@ -6492,7 +6518,7 @@
      * @method merge(<target>, <source>, [deep] = false, [resolve] = true)
      * @returns Merged object
      * @short Merges all the properties of <source> into <target>.
-     * @extra Merges are shallow unless [deep] is %true%. Properties of <source> will win in the case of conflicts, unless [resolve] is %false%. [resolve] can also be a function that resolves the conflict. In this case it will be passed 3 arguments, %key%, %targetVal%, and %sourceVal%, with the context set to <source>. This will allow you to solve conflict any way you want, ie. adding two numbers together, etc. %merge% is available as an instance method on extended objects.
+     * @extra Merges are shallow unless [deep] is %true%. Properties of <target> that are either null or undefined will be treated as if they don't exist. Properties of <source> will win in the case of conflicts, unless [resolve] is %false%. [resolve] can also be a function that resolves the conflict. In this case it will be passed 3 arguments, %key%, %targetVal%, and %sourceVal%, with the context set to <source>. This will allow you to solve conflict any way you want, ie. adding two numbers together, etc. Be careful merging arrays as the %length% property is also merged, which can effectively truncate the result. Also note that IE8 and below do not have support for iterating over non-enumerable properties, which can lead to different results. %merge% is available as an instance method on extended objects.
      * @example
      *
      *   Object.merge({a:1},{b:2}) -> { a:1, b:2 }
@@ -6649,7 +6675,7 @@
      * @method select(<obj>, <find>, ...)
      * @returns Object
      * @short Builds a new object containing the values specified in <find>.
-     * @extra When <find> is a string, that single key will be selected. It can also be a regex, selecting any key that matches, or an object which will match if the key also exists in that object, effectively doing an "intersect" operation on that object. Multiple selections may also be passed as an array or directly as enumerated arguments. %select% is available as an instance method on extended objects.
+     * @extra When <find> is a string, that single key will be selected. It can also be a regex, selecting any key that matches, or an object which will effectively do an "intersect" operation on that object. Multiple selections may also be passed as an array or directly as enumerated arguments. %select% is available as an instance method on extended objects.
      * @example
      *
      *   Object.select({a:1,b:2}, 'a')        -> {a:1}
@@ -7392,8 +7418,15 @@
      *   }); // Returns the string with each character shifted one code point down.
      *
      ***/
-    'map': function(f, scope) {
-      return this.split('').map(f, scope).join('');
+    'map': function(map, scope) {
+      var str = this.toString();
+      if(isFunction(map)) {
+        var fn = map;
+        map = function(letter, i, arr) {
+          return fn.call(scope, letter, i, str);
+        }
+      }
+      return str.split('').map(map, scope).join('');
     },
 
     /***
@@ -7533,10 +7566,11 @@
      * @method remove(<f>)
      * @returns String
      * @short Removes any part of the string that matches <f>.
-     * @extra <f> can be a string or a regex.
+     * @extra <f> can be a stringuor a regex. When it is a string only the first match will be removed.
      * @example
      *
-     *   'schfifty five'.remove('f')     -> 'schity ive'
+     *   'schfifty five'.remove('f')      -> 'schifty five'
+     *   'schfifty five'.remove(/f/g)     -> 'schity ive'
      *   'schfifty five'.remove(/[a-f]/g) -> 'shity iv'
      *
      ***/
