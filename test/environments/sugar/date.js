@@ -477,6 +477,7 @@ package('Date', function () {
     dateEqual(testCreateDate('end of March'), new Date(now.getFullYear(), 2, 31, 23, 59, 59, 999), 'end of March');
     dateEqual(testCreateDate('the first day of March'), new Date(now.getFullYear(), 2), 'the first day of March');
     dateEqual(testCreateDate('the last day of March'), new Date(now.getFullYear(), 2, 31), 'the last day of March');
+    dateEqual(testCreateDate('the last day of March, 2012'), new Date(2012, 2, 31), 'the last day of March, 2012');
 
     dateEqual(testCreateDate('beginning of 1998'), new Date(1998, 0), 'beginning of 1998');
     dateEqual(testCreateDate('end of 1998'), new Date(1998, 11, 31, 23, 59, 59, 999), 'end of 1998');
