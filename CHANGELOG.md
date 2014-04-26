@@ -19,6 +19,8 @@ v1.5.0
 - Changed `String#each` to allow breaking the loop with `false`.
 - Added `String#map`.
 - Added non-enumerable property support to `Object.merge`.
+- Added ability fo `String#stripTags` and `Strip#removeTags` to pass a callback.
+- Made `String#stripTags` and `String#removeTags` much more robust.
 
 
 v1.4.2
