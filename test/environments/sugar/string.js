@@ -861,7 +861,6 @@ package('String', function () {
 
     // Stipping self-closing tags
     test('<input type="text" class="blech" />', '', 'full input stripped');
-
     test('<b>bold<b> and <i>italic</i> and <a>link</a>', ['b','i'], 'bold and italic and <a>link</a>', 'handles multi args');
 
     html =
@@ -869,7 +868,7 @@ package('String', function () {
     '<p>' +
     '<label>label for text:</label>' +
     '<input type="text" value="brabra" />' +
-    '<input type="submit" value="submit" />' +
+    '<input type="submit" value="submit">' +
     '</p>' +
     '</form>';
 
@@ -883,10 +882,136 @@ package('String', function () {
     test('<xsl/template>foobar</xsl/template>', ['xsl/template'], 'foobar', 'strips xsl/template');
 
     // No errors on RegExp
+
     test('<xsl(template>foobar</xsl(template>', ['xsl(template'], 'foobar', 'no regexp errors on tokens');
+    test('<?>ella</?>', ['?'], 'ella', '? token');
 
     test('', '', 'String#stripTags | blank');
     test('chilled <b>monkey</b> brains', 'chilled monkey brains', 'chilled <b>monkey</b> brains');
+
+
+    // Self-closing
+
+    test('<img src="cool.jpg" data-face="nice face!" />', '', 'can strip image tags');
+    test('<img src="cool.jpg" data-face="nice face!"/>', '', 'can strip image tags with no space');
+    test('<img src="cool.jpg" data-face="nice face!" / >', '', 'can strip image tags with trailing space');
+    test('<img src="cool.jpg" data-face="nice face!">', '', 'can strip void tag');
+
+    test('<IMG src="cool.jpg" data-face="nice face!" />', '', 'caps | can strip image tags');
+    test('<IMG src="cool.jpg" data-face="nice face!"/>', '', 'caps | can strip image tags with no space');
+    test('<IMG src="cool.jpg" data-face="nice face!" / >', '', 'caps | can strip image tags with trailing space');
+    test('<IMG src="cool.jpg" data-face="nice face!">', '', 'caps | can strip void tag');
+
+    test('<img src="cool.jpg">', ['IMG'], '', 'can strip when tag name capitalized');
+
+
+    // Other
+    test('<span>some text</span> then closing</p>', 'some text then closing', 'can handle final malformed closer');
+    test('foo </p> bar </p>', 'foo  bar ', 'two unmatched closing tags');
+
+
+    // Issue #410 - replacing stripped tags
+
+    var fn = function() { return 'bar'; };
+    test('<span>foo</span>', [fn], 'bar', 'replaces content with result of callback');
+
+    var fn = function() { return ''; };
+    test('<span>foo</span>', [fn], '', 'replaces content with empty string');
+
+    var fn = function() { return; };
+    test('<span>foo</span>', [fn], 'foo', 'returning undefined removes as normal');
+
+    var fn = function() { return 'wow'; };
+    test('<img src="cool.jpg" data-face="nice face!" />', [fn], 'wow', 'can replace self-closing tags');
+
+    var fn = function() { return 'wow'; };
+    test('<img src="cool.jpg" data-face="nice face!"> noway', [fn], 'wow noway', 'can replace void tag');
+
+    var fn = function() { return 'wow'; };
+    test('<IMG SRC="cool.jpg" DATA-FACE="nice face!"> noway', [fn], 'wow noway', 'can replace void tag with caps');
+
+    var fn = function(a,b,c) { return c; };
+    test('<span></span>', [fn], '', 'attributes should be blank');
+
+    var fn = function(a,b,c) { return c; };
+    test('<span class="orange"></span>', [fn], 'class="orange"', 'attributes should not be blank');
+
+
+    var str = 'which <b>way</b> to go';
+    var fn = function(tag, content, attributes, s) {
+      equal(tag, 'b', 'first argument should be the tag name');
+      equal(content, 'way', 'second argument should be the tag content');
+      equal(attributes, '', 'third argument should be the attributes');
+      equal(s, str, 'fourth argument should be the string');
+      return '|' + content + '|';
+    }
+    test(str, [fn], 'which |way| to go', 'stripped tag should be replaced');
+
+    var str = '<div>fun and</div><p>run</p><p>together</p>';
+    var fn = function(tag, content, s) {
+      if(tag === 'p') {
+        return ' ' + content;
+      }
+    }
+    test(str, ['p', fn], '<div>fun and</div> run together', 'can space out run-together tags');
+
+    var str = '<span>very<span>nested<span>spans<span>are<span>we</span></span></span></span></span>';
+    var expectedContent = [
+      'very<span>nested<span>spans<span>are<span>we</span></span></span></span>',
+      'nested<span>spans<span>are<span>we</span></span></span>',
+      'spans<span>are<span>we</span></span>',
+      'are<span>we</span>',
+      'we'
+    ];
+    var count = 0;
+    var fn = function(tag, content, attributes, s) {
+      equal(tag, 'span', 'first argument should be the tag');
+      equal(content, expectedContent[count++], 'second argument should be the content');
+      equal(attributes, '', 'third argument should be the attributes');
+      equal(s, str, 'fourth argument should be the string');
+      return content;
+    }
+    test(str, [fn], 'verynestedspansarewe', 'stripped tag should be replaced');
+    equal(count, 5, 'should have run 5 times');
+
+    var str = '<p>paragraph with <b>some bold text</b> and an image <img src="http://foobar.com/a/b/c/d.gif" alt="cool gif, bro" /> and thats all</p>';
+    var expected = [
+      {
+        tag: 'p',
+        content: 'paragraph with <b>some bold text</b> and an image <img src="http://foobar.com/a/b/c/d.gif" alt="cool gif, bro" /> and thats all',
+        attributes: ''
+      },
+      {
+        tag: 'b',
+        content: 'some bold text',
+        attributes: ''
+      },
+      {
+        tag: 'img',
+        content: '',
+        attributes: 'src="http://foobar.com/a/b/c/d.gif" alt="cool gif, bro"'
+      }
+    ];
+    var count = 0;
+    var fn = function(tag, content, attributes, s) {
+      var obj = expected[count++];
+      equal(tag, obj.tag, 'first argument should be the tag name');
+      equal(content, obj.content, 'second argument should be the tag content');
+      equal(attributes, obj.attributes, 'third argument should be the attributes');
+      equal(s, str, 'fourth argument should be the string');
+    }
+    test(str, [fn], 'paragraph with some bold text and an image  and thats all', 'complex: all tags should be stripped');
+    equal(count, 3, 'complex: should have run 3 times');
+
+    var str = '<p>paragraph with <b>some bold text</b> and an image <img src="http://foobar.com/a/b/c/d.gif" alt="cool gif, bro"> and thats all</p>';
+    var fn = function(tag, content, attributes, s) {
+      equal(tag, 'img', 'first argument is img');
+      equal(content, '', 'second argument is empty');
+      equal(attributes, 'src="http://foobar.com/a/b/c/d.gif" alt="cool gif, bro"', 'third argument should be the attributes');
+      equal(s, str, 'fourth argument should be the string');
+      return 'not!';
+    }
+    test(str, ['img', fn], '<p>paragraph with <b>some bold text</b> and an image not! and thats all</p>', 'img tag should have been replaced');
 
   });
 
@@ -907,7 +1032,6 @@ package('String', function () {
     test(html, ['a'], removed, '<a> tag removed');
     equal(run(html, 'removeTags', ['a']) == html, false, 'html was changed');
 
-
     removed =
     '<div class="outer">' +
     '<p>text with , &quot;entities&quot; and  tags</p>' +
@@ -925,16 +1049,14 @@ package('String', function () {
     test(html, ['div'], '', '<div> tags removed');
     test(html, '', 'removing all tags');
 
-    test(malformed, ['div'], malformed, 'malformed | <div> tags removed');
-    test(malformed, ['p'], malformed, 'malformed | <p> tags removed');
-    test(malformed, malformed, 'malformed | all tags removed');
+    test(malformed, ['div'], '', 'malformed | <div> tags removed');
+    test(malformed, ['p'], '<div class="outer">', 'malformed | <p> tags removed');
+    test(malformed, '', 'malformed | all tags removed');
 
-
-
-    test('<b NOT BOLD</b>', '<b NOT BOLD</b>', 'unclosed opening tag untouched');
+    test('<b NOT BOLD</b>', '<b NOT BOLD', 'should strip unmatched closing tags');
     test('a < b', 'a < b', 'less than unaffected');
     test('a > b', 'a > b', 'greater than unaffected');
-    test('</foo  >>', '</foo  >>', 'malformed closing tag unaffected');
+    test('</foo  >>', '>', 'malformed closing tag removed');
 
     // Stipping self-closing tags
     test('<input type="text" class="blech" />', '', 'self-closing');
@@ -956,17 +1078,134 @@ package('String', function () {
     test('<xsl:template>foobar</xsl:template>', '', 'form | xml namespaced tags removed');
     test('<xsl:template>foobar</xsl:template>', ['xsl:template'], '', 'form | xsl:template removed');
     test('<xsl/template>foobar</xsl/template>', ['xsl/template'], '', 'form | xsl/template removed');
-
-
-    // Errors on xsl regex.
-    raisesError(function(){ run('<xsl(template>foobar</xsl(template>', 'removeTags', ['xsl(template']); }, 'form | you now have the power to cause your own regex pain');
+    test('<xsl(template>foobar</xsl(template>', ['xsl(template'], '', 'form | xsl(template removed');
 
     test('<b>bold</b> and <i>italic</i> and <a>link</a>', ['b','i'], ' and  and <a>link</a>', 'handles multi args');
     test('', '', 'blank');
     test('chilled <b>monkey</b> brains', 'chilled  brains', 'chilled <b>monkey</b> brains');
+
+    // No errors on regex.
+    test('howdy<?>ella</?>', 'howdy', 'handles regex tokens');
+
+    // Self-closing
+
+    test('<img src="cool.jpg" data-face="nice face!" />', '', 'can strip image tags');
+    test('<img src="cool.jpg" data-face="nice face!"/>', '', 'can strip image tags with no space');
+    test('<img src="cool.jpg" data-face="nice face!" / >', '', 'can strip image tags with trailing space');
+    test('<img src="cool.jpg" data-face="nice face!">', '', 'can strip void tag');
+
+    test('<IMG src="cool.jpg" data-face="nice face!" />', '', 'caps | can strip image tags');
+    test('<IMG src="cool.jpg" data-face="nice face!"/>', '', 'caps | can strip image tags with no space');
+    test('<IMG src="cool.jpg" data-face="nice face!" / >', '', 'caps | can strip image tags with trailing space');
+    test('<IMG src="cool.jpg" data-face="nice face!">', '', 'caps | can strip void tag');
+
+    test('<img src="cool.jpg">', ['IMG'], '', 'can strip when tag name capitalized');
+
+
+    // Other
+    test('<span>some text</span> then closing</p>', ' then closing', 'can handle final malformed closer');
+    test('foo </p> bar </p>', 'foo  bar ', 'two unmatched closing tags');
+
+
+    // Issue #410 - replacing stripped tags
+
+    var fn = function() { return 'bar'; };
+    test('<span>foo</span>', [fn], 'bar', 'replaces content with result of callback');
+
+    var fn = function() { return ''; };
+    test('<span>foo</span>', [fn], '', 'replaces content with empty string');
+
+    var fn = function() { return; };
+    test('<span>foo</span>', [fn], '', 'returning undefined strips as normal');
+
+    var fn = function() { return 'wow'; };
+    test('<img src="cool.jpg" data-face="nice face!" />', [fn], 'wow', 'can replace self-closing tags');
+
+    var fn = function() { return 'wow'; };
+    test('<img src="cool.jpg" data-face="nice face!"> noway', [fn], 'wow noway', 'can replace void tag');
+
+    var fn = function() { return 'wow'; };
+    test('<IMG SRC="cool.jpg" DATA-FACE="nice face!"> noway', [fn], 'wow noway', 'can replace void tag with caps');
+
+    var fn = function(a,b,c) { return c; };
+    test('<span></span>', [fn], '', 'attributes should be blank');
+
+    var str = 'which <b>way</b> to go';
+    var fn = function(tag, content, attributes, s) {
+      equal(tag, 'b', 'first argument should be the tag name');
+      equal(content, 'way', 'second argument should be the tag content');
+      equal(attributes, '', 'third argument should be the attributes');
+      equal(s, str, 'fourth argument should be the string');
+    }
+    test(str, [fn], 'which  to go', 'stripped tag should be replaced');
+
+    var str = '<div>fun and</div><p>run</p><p>together</p>';
+    var fn = function(tag, content, s) {
+      if(tag === 'p') {
+        return ' ' + content;
+      }
+    }
+    test(str, ['p', fn], '<div>fun and</div> run together', 'can space out run-together tags');
+
+    var str = '<span>very<span>nested<span>spans<span>are<span>we</span></span></span></span></span>';
+    var expectedContent = [
+      'very<span>nested<span>spans<span>are<span>we</span></span></span></span>',
+      'nested<span>spans<span>are<span>we</span></span></span>',
+      'spans<span>are<span>we</span></span>',
+      'are<span>we</span>',
+      'we'
+    ];
+    var count = 0;
+    var fn = function(tag, content, attributes, s) {
+      equal(tag, 'span', 'first argument should be the tag');
+      equal(content, expectedContent[count++], 'second argument should be the content');
+      equal(attributes, '', 'third argument should be the attributes');
+      equal(s, str, 'fourth argument should be the string');
+      return content;
+    }
+    test(str, [fn], 'verynestedspansarewe', 'stripped tag should be replaced');
+    equal(count, 5, 'should have run 5 times');
+
+    var str = 'this is a <p>paragraph with <b>some bold text</b> and an image <img src="http://foobar.com/a/b/c/d.gif" alt="cool gif, bro" /> and thats all</p>';
+    var expected = [
+      {
+        tag: 'p',
+        content: 'paragraph with <b>some bold text</b> and an image <img src="http://foobar.com/a/b/c/d.gif" alt="cool gif, bro" /> and thats all',
+        attributes: ''
+      },
+      {
+        tag: 'b',
+        content: 'some bold text',
+        attributes: ''
+      },
+      {
+        tag: 'img',
+        content: '',
+        attributes: 'src="http://foobar.com/a/b/c/d.gif" alt="cool gif, bro"'
+      }
+    ];
+    var count = 0;
+    var fn = function(tag, content, attributes, s) {
+      var obj = expected[count++];
+      equal(tag, obj.tag, 'first argument should be the tag name');
+      equal(content, obj.content, 'second argument should be the tag content');
+      equal(attributes, obj.attributes, 'third argument should be the attributes');
+      equal(s, str, 'fourth argument should be the string');
+    }
+    test(str, [fn], 'this is a ', 'complex: outermost tag should be removed');
+    equal(count, 1, 'complex: should have run 1 time');
+
+    var str = '<p>paragraph with <b>some bold text</b> and an image <img src="http://foobar.com/a/b/c/d.gif" alt="cool gif, bro"> and thats all</p>';
+    var fn = function(tag, content, attributes, s) {
+      equal(tag, 'img', 'first argument is img');
+      equal(content, '', 'second argument is empty');
+      equal(attributes, 'src="http://foobar.com/a/b/c/d.gif" alt="cool gif, bro"', 'third argument should be the attributes');
+      equal(s, str, 'fourth argument should be the string');
+      return 'not!';
+    }
+    test(str, ['img', fn], '<p>paragraph with <b>some bold text</b> and an image not! and thats all</p>', 'img tag should have been replaced');
+
   });
-
-
 
   method('truncate', function() {
     var str = 'Gotta be an entire sentence.';

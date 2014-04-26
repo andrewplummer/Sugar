@@ -46,6 +46,9 @@ v1.5.0+
 - Level: Minor
   - `Object.map`, `Object.each`, and `Object.size` were moved to the Object package from the Array package. If you were using these methods and making custom builds you may have to include the Object package now as well.
 
+- Level: Very Minor
+  - Some minor behavior changes around the way `String#removeTags` works on malformed html. Unmatched closing tags will now be removed.
+
 
 v1.4.1+
 =======
