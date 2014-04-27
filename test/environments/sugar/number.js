@@ -230,6 +230,14 @@ package('Number', function () {
     test(3, [9, null, 3], [3,6,9], 'can handle multiples');
     test(3, [10, null, 3], [3,6,9], 'can handle multiples stops at 9');
     test(3, [8, null, 3], [3,6], 'can handle multiples stops at 8');
+
+
+    // Issue #394 - Ranges using infinity are not valid.
+
+    test(1, [Infinity], [], 'cannot go up to infinity');
+    test(1, [-Infinity], [], 'cannot go up to negative infinity');
+    test(Infinity, [1], [], 'cannot go up from infinity');
+    test(-Infinity, [1], [], 'cannot go up from negative infinity');
   });
 
 
