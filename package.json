@@ -25,7 +25,7 @@
     "sugar-core": ">= 0.0.1"
   },
   "engines" : {
-    "node" : ">= 0.8.0"
+    "node" : ">= 0.8.23"
   },
   "scripts": {
     "test": "node test/environments/node/test.js"
