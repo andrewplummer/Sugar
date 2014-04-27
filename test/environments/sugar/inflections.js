@@ -539,8 +539,7 @@ package('String | Inflections', function () {
     });
   });
 
-  method('normalize', function() {
-
+  method('toAscii', function() {
     test('à', 'a', 'a');
     test('cañon', 'canon', 'cañon');
     test('Jørgen Kastholm', 'Jorgen Kastholm', 'Jørgen Kastholm');
