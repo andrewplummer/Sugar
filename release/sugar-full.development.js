@@ -5055,6 +5055,15 @@
     return isDate(m) ? m.getTime() : m.valueOf();
   }
 
+  function getPrecision(n) {
+    var split = n.toString().split('.');
+    return split[1] ? split[1].length : 0;
+  }
+
+  function getGreaterPrecision(n1, n2) {
+    return max(getPrecision(n1), getPrecision(n2));
+  }
+
   function getSimpleDate(str) {
     // Needed as argument numbers are checked internally here.
     return str == null ? new date() : new date(str);
@@ -5098,7 +5107,11 @@
 
   function isValidRangeMember(m) {
     var val = getRangeMemberPrimitiveValue(m);
-    return !!val || val === 0;
+    return (!!val || val === 0) && valueIsNotInfinite(m);
+  }
+
+  function valueIsNotInfinite(m) {
+    return m !== -Infinity && m !== Infinity;
   }
 
   function getDuration(amt) {
@@ -5136,8 +5149,8 @@
     return string.fromCharCode(current.charCodeAt(0) + amount);
   }
 
-  function incrementNumber(current, amount) {
-    return current + amount;
+  function incrementNumber(current, amount, precision) {
+    return withPrecision(current + amount, precision);
   }
 
   /***
@@ -5228,6 +5241,7 @@
      ***/
     'every': function(amount, fn) {
       var increment,
+          precision,
           start   = this.start,
           end     = this.end,
           inverse = end < start,
@@ -5235,6 +5249,9 @@
           index   = 0,
           result  = [];
 
+      if(!this.isValid()) {
+        return [];
+      }
       if(isFunction(amount)) {
         fn = amount;
         amount = null;
@@ -5242,6 +5259,7 @@
       amount = amount || 1;
       if(isNumber(start)) {
         increment = incrementNumber;
+        precision = getGreaterPrecision(start, amount);
       } else if(isString(start)) {
         increment = incrementString;
       } else if(isDate(start)) {
@@ -5257,7 +5275,7 @@
         if(fn) {
           fn(current, index);
         }
-        current = increment(current, amount);
+        current = increment(current, amount, precision);
         index++;
       }
       return result;
