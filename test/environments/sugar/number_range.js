@@ -4,7 +4,19 @@ package('Number | Ranges', function () {
     return run(Number, 'range', [from, to]);
   }
 
-  method('range', function() {
+  function testRange(start, end, isValid, expectedCount, expectedResult, iterations) {
+    var range = getRange(start, end);
+    var count = 0;
+    var result = range.every(iterations || 1, function() {
+      count++;
+    });
+
+    equal(range.isValid(), isValid, start + ' <> ' + end + ' | is valid');
+    equal(count, expectedCount, start + ' <> ' + end + ' | count');
+    equal(result, expectedResult, start + ' <> ' + end + ' | result');
+  }
+
+  group('range', function() {
     var range = getRange(5, 10);
 
     equal(range.toString(), '5..10', 'toString');
@@ -20,6 +32,22 @@ package('Number | Ranges', function () {
     equal(range.contains(9), true, 'contains 9');
     equal(range.contains(10), true, 'contains 10');
     equal(range.contains(11), false, 'contains 11');
+
+    testRange(NaN, NaN, false, 0, []);
+    testRange(0, NaN, false, 0, []);
+    testRange(NaN, 0, false, 0, []);
+    testRange(0, -Infinity, false, 0, []);
+    testRange(0,  Infinity, false, 0, []);
+    testRange(-Infinity, 0, false, 0, []);
+    testRange(Infinity,  0, false, 0, []);
+    testRange(Infinity,   Infinity, false, 0, []);
+    testRange(-Infinity,  Infinity, false, 0, []);
+    testRange(Infinity,  -Infinity, false, 0, []);
+    testRange(-Infinity, -Infinity, false, 0, []);
+
+    testRange(0.1, 0.5, true, 5, [0.1,0.2,0.3,0.4,0.5], 0.1);
+    testRange(-5.016, 2, true, 8, [-5.016,-4.016,-3.016,-2.016,-1.016,-0.016,0.984,1.984]);
+
   });
 
   method('union', function() {
