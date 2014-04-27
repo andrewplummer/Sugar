@@ -21,6 +21,7 @@ v1.5.0
 - Added non-enumerable property support to `Object.merge`.
 - Added ability fo `String#stripTags` and `Strip#removeTags` to pass a callback.
 - Made `String#stripTags` and `String#removeTags` much more robust.
+- Renamed `String#normalize` to `String#toAscii`.
 
 
 v1.4.2
