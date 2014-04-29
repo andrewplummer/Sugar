@@ -6,11 +6,12 @@ package('RegExp', function () {
     test(RegExp, ['hey there (budday)'], 'hey there \\(budday\\)', 'parentheses');
     test(RegExp, ['what a day...'], 'what a day\\.\\.\\.', 'ellipsis');
     test(RegExp, ['.'], '\\.', 'single period');
-    test(RegExp, ['*.+[]{}()?|/\\'], '\\*\\.\\+\\[\\]\\{\\}\\(\\)\\?\\|\\/\\\\', 'various tokens');
+    test(RegExp, ['*.+[]{}()?|/\\-'], '\\*\\.\\+\\[\\]\\{\\}\\(\\)\\?\\|\\/\\\\\\-', 'various tokens');
     test(RegExp, ['?'], '\\?', '?');
     test(RegExp, ['\?'], '\\?', 'one slash and ?');
     test(RegExp, ['\\?'], '\\\\\\?', 'two slashes and ?');
     test(RegExp, ['\\?'], '\\\\\\?', 'two slashes and ?');
+    test(RegExp, ['-'], '\\-', 'dash');
   });
 
   method('setFlags', function() {
@@ -70,7 +71,6 @@ package('RegExp', function () {
     flagsEqual(/foobar/i, 'i');
     flagsEqual(/foobar/, '');
   });
-
 
 });
 
