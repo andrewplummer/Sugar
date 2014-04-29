@@ -1488,7 +1488,6 @@ package('Array', function () {
     // equal(count, 6, 'Array | objects that inherit from arrays can still iterate');
   });
 
-
   method('create', function() {
     var stringObj = new String('foo');
 
@@ -2192,6 +2191,58 @@ package('Array', function () {
     test(['a２','a１００','a３'], ['a１００','a２','a３'], 'natural sort off | full width leading char');
 
     Sugar.Array.AlphanumericSortNatural = true;
+
+    var arr = [{a:'foo', b: 1},{a:'bar', b: 2},{a:'skittles', b: 1}];
+    equal(arr.sortBy(['b', 'a']), [{a:'foo',b:1},{a:'skittles',b:1},{a:'bar', b:2}], 'sort by key "b" then "a"');
+    equal([[1, 2], [1, 1], [0, 1], [0, 2]].sortBy(), [[0, 1], [0, 2], [1, 1], [1, 2]], 'sorting elements which are arrays');
+
+    var arr = [
+      {
+        age: 34,
+        name: 'Gary'
+      },
+      {
+        age: 18,
+        name: 'Alan'
+      },
+      {
+        age: 8,
+        name: 'Toby'
+      },
+      {
+        age: 8,
+        name: 'Ted'
+      },
+      {
+        age: 8,
+        name: 'Tina'
+      }
+    ];
+
+    var expected = [
+      {
+        age: 18,
+        name: 'Alan'
+      },
+      {
+        age: 34,
+        name: 'Gary'
+      },
+      {
+        age: 8,
+        name: 'Ted'
+      },
+      {
+        age: 8,
+        name: 'Tina'
+      },
+      {
+        age: 8,
+        name: 'Toby'
+      }
+    ];
+
+    equal(arr.sortBy(['name', 'age']), expected, 'sorting by name and age');
 
   });
 
