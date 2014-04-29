@@ -19,8 +19,9 @@ PRECOMPILED_DIR = PARENT_DIR     + "/precompiled"
 PRECOMPILED_MIN_DIR = PARENT_DIR + "/precompiled/minified"
 PRECOMPILED_DEV_DIR = PARENT_DIR + "/precompiled/development"
 
-TMP_COMPILED_FILE = 'tmp/compiled.js'
-TMP_UNCOMPILED_FILE = 'tmp/uncompiled.js'
+TMP_DIR = 'tmp'
+TMP_COMPILED_FILE = TMP_DIR + '/compiled.js'
+TMP_UNCOMPILED_FILE = TMP_DIR + '/uncompiled.js'
 
 options = {}
 
@@ -105,6 +106,7 @@ end
 
 
 def prep_temp_directories
+  FileUtils.mkdir_p TMP_DIR
   FileUtils.mkdir_p PRECOMPILED_DIR
   FileUtils.mkdir_p PRECOMPILED_MIN_DIR
   FileUtils.mkdir_p PRECOMPILED_DEV_DIR
