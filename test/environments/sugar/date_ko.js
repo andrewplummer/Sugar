@@ -59,6 +59,9 @@ package('Date | Korean', function () {
 
     dateEqual(testCreateDate('작년'), getRelativeDate(-1), 'Date#create | Korean | Last year');
     dateEqual(testCreateDate('내년'), getRelativeDate(1), 'Date#create | Korean | Next year');
+    dateEqual(testCreateDate('지난 해'), getRelativeDate(-1), 'Date#create | Korean | Last year');
+    dateEqual(testCreateDate('올해'), getRelativeDate(0), 'Date#create | Korean | this year');
+    dateEqual(testCreateDate('다음 해'), getRelativeDate(1), 'Date#create | Korean | Next year');
 
 
     dateEqual(testCreateDate('지난 주 수요일'), getDateWithWeekdayAndOffset(3, -7), 'Date#create | Korean | Last wednesday');
