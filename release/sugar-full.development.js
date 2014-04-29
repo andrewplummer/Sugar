@@ -8353,8 +8353,8 @@
   Inflector.plural(/$/, 's');
   Inflector.plural(/s$/gi, 's');
   Inflector.plural(/(ax|test)is$/gi, '$1es');
-  Inflector.plural(/(octop|vir|fung|foc|radi|alumn)(i|us)$/gi, '$1i');
-  Inflector.plural(/(census|alias|status)$/gi, '$1es');
+  Inflector.plural(/(octop|fung|foc|radi|alumn|cact)(i|us)$/gi, '$1i');
+  Inflector.plural(/(census|alias|status|fetus|genius|virus)$/gi, '$1es');
   Inflector.plural(/(bu)s$/gi, '$1ses');
   Inflector.plural(/(buffal|tomat)o$/gi, '$1oes');
   Inflector.plural(/([ti])um$/gi, '$1a');
@@ -8366,7 +8366,7 @@
   Inflector.plural(/([^aeiouy]o)$/gi, '$1es');
   Inflector.plural(/([^aeiouy]|qu)y$/gi, '$1ies');
   Inflector.plural(/(x|ch|ss|sh)$/gi, '$1es');
-  Inflector.plural(/(matr|vert|ind)(?:ix|ex)$/gi, '$1ices');
+  Inflector.plural(/(tr|vert)(?:ix|ex)$/gi, '$1ices');
   Inflector.plural(/([ml])ouse$/gi, '$1ice');
   Inflector.plural(/([ml])ice$/gi, '$1ice');
   Inflector.plural(/^(ox)$/gi, '$1en');
@@ -8395,22 +8395,23 @@
   Inflector.singular(/(o)es$/gi, '$1');
   Inflector.singular(/(shoe)s?$/gi, '$1');
   Inflector.singular(/(cris|ax|test)[ie]s$/gi, '$1is');
-  Inflector.singular(/(octop|vir|fung|foc|radi|alumn)(i|us)$/gi, '$1us');
-  Inflector.singular(/(census|alias|status)(es)?$/gi, '$1');
+  Inflector.singular(/(octop|fung|foc|radi|alumn|cact)(i|us)$/gi, '$1us');
+  Inflector.singular(/(census|alias|status|fetus|genius|virus)(es)?$/gi, '$1');
   Inflector.singular(/^(ox)(en)?/gi, '$1');
-  Inflector.singular(/(vert|ind)(ex|ices)$/gi, '$1ex');
-  Inflector.singular(/(matr)(ix|ices)$/gi, '$1ix');
+  Inflector.singular(/(vert)(ex|ices)$/gi, '$1ex');
+  Inflector.singular(/tr(ix|ices)$/gi, 'trix');
   Inflector.singular(/(quiz)(zes)?$/gi, '$1');
   Inflector.singular(/(database)s?$/gi, '$1');
   Inflector.singular(/ee(th?)$/gi, 'oo$1');
 
   Inflector.irregular('person', 'people');
   Inflector.irregular('man', 'men');
+  Inflector.irregular('deer', 'deer');
+  Inflector.irregular('human', 'humans');
   Inflector.irregular('child', 'children');
   Inflector.irregular('sex', 'sexes');
   Inflector.irregular('move', 'moves');
   Inflector.irregular('save', 'saves');
-  Inflector.irregular('cow', 'kine');
   Inflector.irregular('goose', 'geese');
   Inflector.irregular('zombie', 'zombies');
 
