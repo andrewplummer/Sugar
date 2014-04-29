@@ -1243,6 +1243,50 @@
     return defaultMatcher(f);
   }
 
+  function transformArgument(el, map, context, mapArgs) {
+    if(!map) {
+      return el;
+    } else if(map.apply) {
+      return map.apply(context, mapArgs || []);
+    } else if(isArray(map)) {
+      return map.map(function(m) {
+        return transformArgument(el, m, context, mapArgs);
+      });
+    } else if(isFunction(el[map])) {
+      return el[map].call(el);
+    } else {
+      return el[map];
+    }
+  }
+
+  function compareValue(aVal, bVal) {
+    var cmp, i;
+    if(isString(aVal) && isString(bVal)) {
+      return collateStrings(aVal, bVal);
+    } else if(isArray(aVal) && isArray(bVal)) {
+      if(aVal.length < bVal.length) {
+        return -1;
+      } else if(aVal.length > bVal.length) {
+        return 1;
+      } else {
+        for(i = 0; i < aVal.length; i++) {
+          cmp = compareValue(aVal[i], bVal[i]);
+          if(cmp !== 0) {
+            return cmp;
+          }
+        }
+        return 0;
+      }
+    } else if(aVal < bVal) {
+      return -1;
+    } else if(aVal > bVal) {
+      return 1;
+    } else {
+      return 0;
+    }
+
+  }
+
   // Basic array internal methods
 
   function arrayEach(arr, fn, startIndex, loop) {
@@ -1506,7 +1550,6 @@
     return all ? result : result[0];
   }
 
-
   // Alphanumeric collation helpers
 
   function collateStrings(a, b) {
@@ -1597,9 +1640,13 @@
       }
     }, true, callbackCheck);
     extend(array, {
-      'map': function(map) {
-        return nativeMap.call(this, function(el, index) {
-          return transformArgument(el, map, this, [el, index, this]);
+      'map': function(map, context) {
+        var arr = this;
+        if(arguments.length < 2) {
+          context = arr;
+        }
+        return nativeMap.call(arr, function(el, index) {
+          return transformArgument(el, map, context, [el, index, arr]);
         });
       }
     }, true, callbackCheck);
@@ -2180,7 +2227,7 @@
      * @method sortBy(<map>, [desc] = false)
      * @returns Array
      * @short Sorts the array by <map>.
-     * @extra <map> may be a function, a string acting as a shortcut, or blank (direct comparison of array values). [desc] will sort the array in descending order. When the field being sorted on is a string, the resulting order will be determined by an internal collation algorithm that is optimized for major Western languages, but can be customized. For more information see @array_sorting.
+     * @extra <map> may be a function, a string acting as a shortcut, an array (comparison by multiple values), or blank (direct comparison of array values). [desc] will sort the array in descending order. When the field being sorted on is a string, the resulting order will be determined by an internal collation algorithm that is optimized for major Western languages, but can be customized. For more information see @array_sorting.
      * @example
      *
      *   ['world','a','new'].sortBy('length')       -> ['a','new','world']
@@ -2193,19 +2240,9 @@
     'sortBy': function(map, desc) {
       var arr = arrayClone(this);
       arr.sort(function(a, b) {
-        var aProperty, bProperty, comp;
-        aProperty = transformArgument(a, map, arr, [a]);
-        bProperty = transformArgument(b, map, arr, [b]);
-        if(isString(aProperty) && isString(bProperty)) {
-          comp = collateStrings(aProperty, bProperty);
-        } else if(aProperty < bProperty) {
-          comp = -1;
-        } else if(aProperty > bProperty) {
-          comp = 1;
-        } else {
-          comp = 0;
-        }
-        return comp * (desc ? -1 : 1);
+        var aProperty = transformArgument(a, map, arr, [a]);
+        var bProperty = transformArgument(b, map, arr, [b]);
+        return compareValue(aProperty, bProperty) * (desc ? -1 : 1);
       });
       return arr;
     },
