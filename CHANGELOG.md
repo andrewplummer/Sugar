@@ -23,6 +23,7 @@ v1.5.0
 - Made `String#stripTags` and `String#removeTags` much more robust.
 - Renamed `String#normalize` to `String#toAscii`.
 - Updated `Array#sortBy` to handle sorting on multiple properties (Issue #386, thanks to @eric-weiser).
+- Fixed `String#unescapeHTML` to handle HTML (and hex) codes. Also now handling &nbsp;
 
 
 v1.4.2

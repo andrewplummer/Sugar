@@ -65,19 +65,24 @@ package('String', function () {
   });
 
   method('unescapeHTML', function() {
-
     test('&lt;p&gt;some text&lt;/p&gt;', '<p>some text</p>', '<p>some text</p>');
     test('war &amp; peace &amp; food', 'war & peace & food', 'war & peace');
     test('<span>already unescaped, yo</span>', '<span>already unescaped, yo</span>', 'already unescaped will stay unescaped');
-
     test('hell&apos;s', "hell's", "works on '");
     test('I know that &quot;feel&quot; bro', 'I know that "feel" bro', 'works on "');
     test('feel the &#x2f;', 'feel the /', 'works on /');
-
     test('&amp;lt;', '&lt;', 'unescapes a single level of HTML escaping');
-
     test(run('&gt;', 'escapeHTML'), '&gt;', 'is the inverse of escapeHTML');
-
+    test('&#32;', ' ', 'html code | space');
+    test('&#33;', '!', 'html code | !');
+    test('&#192;', 'À', 'html code | À');
+    test('&#64257;', 'ﬁ', 'html code | upper latin');
+    test('&#12354;', 'あ', 'html code | hiragana a');
+    test('&#xC0;', 'À', 'hex code | À');
+    test('&#x2b;', '+', 'hex code | +');
+    test('&#x2B;', '+', 'hex code | uppercase | +');
+    test('&#x3042;', 'あ', 'hex code | hiragana a');
+    test('&nbsp;', ' ', 'non-breaking space');
   });
 
 
