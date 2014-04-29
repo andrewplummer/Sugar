@@ -977,6 +977,7 @@ package('Number', function () {
     test(1048576, '1MB', '2 places | 1048576 bytes is 1MB');
     test(1024, [2], '1kB', '2 places | 1024 bytes is 1kB');
     test(1048576, [2], '1MB', '2 places | 1048576 bytes is 1MB');
+    test(1000, [6, 4, true], '1kB', 'should allow the standard metric definition');
   });
 
   method('bytes', function() {
