@@ -22,6 +22,7 @@ v1.5.0
 - Added ability fo `String#stripTags` and `Strip#removeTags` to pass a callback.
 - Made `String#stripTags` and `String#removeTags` much more robust.
 - Renamed `String#normalize` to `String#toAscii`.
+- Updated `Array#sortBy` to handle sorting on multiple properties (Issue #386, thanks to @eric-weiser).
 
 
 v1.4.2
