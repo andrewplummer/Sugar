@@ -322,6 +322,59 @@ package('Array', function () {
     test([1,2,3], [undefined], [1,2,3], 'undefined');
     test([1,2,3], [null], [1,2,3], 'null');
     test([1,2,3], [4], [undefined, undefined, undefined], 'number');
+
+
+    // Issue #386
+
+    var arr = [
+      {
+        name: 'john',
+        age: 25
+      },
+      {
+        name: 'fred',
+        age: 85
+      }
+    ];
+    test(arr, [['name', 'age']], [['john', 25], ['fred', 85]], 'mapping on both name and age');
+    test(arr, [['name', 'hair']], [['john', undefined], ['fred', undefined]], 'mapping on name and non-existent property');
+    test(arr, [['hair', 'age']], [[undefined, 25], [undefined, 85]], 'mapping on non-existent property and name');
+    test(arr, [['hair', 'eyes']], [[undefined, undefined], [undefined, undefined]], 'mapping on two non-existent properties');
+
+    var arr = [
+      {
+        age: 25,
+        size: 3
+      },
+      {
+        age: 85,
+        size: 7
+      }
+    ];
+    var count1 = 0;
+    var count2 = 0;
+    var fn1 = function(obj, i, a) {
+      equal(this.valueOf(), 0, 'context should still be passable');
+      equal(obj, arr[i], 'first argument should be the element');
+      equal(i, count1, 'second argument should be the index');
+      equal(a, arr, 'third argument should be the array');
+      count1++;
+      return obj.age + 5;
+    }
+    var fn2 = function(obj) {
+      count2++;
+      return obj.size - 3;
+    }
+    var expected = [
+      [30, 0],
+      [90, 4]
+    ]
+    var result = run(arr, 'map', [[fn1, fn2], 0]);
+
+    equal(result, expected, 'should be able to use two mapping functions');
+    equal(count1, 2, 'first mapping function should have run twice');
+    equal(count2, 2, 'second mapping function should have run twice');
+
   });
 
 
@@ -2192,9 +2245,13 @@ package('Array', function () {
 
     Sugar.Array.AlphanumericSortNatural = true;
 
+
+
+    // Issue #386 - sorting on multiple values
+
     var arr = [{a:'foo', b: 1},{a:'bar', b: 2},{a:'skittles', b: 1}];
-    equal(arr.sortBy(['b', 'a']), [{a:'foo',b:1},{a:'skittles',b:1},{a:'bar', b:2}], 'sort by key "b" then "a"');
-    equal([[1, 2], [1, 1], [0, 1], [0, 2]].sortBy(), [[0, 1], [0, 2], [1, 1], [1, 2]], 'sorting elements which are arrays');
+    test(arr, [['b', 'a']], [{a:'foo',b:1},{a:'skittles',b:1},{a:'bar', b:2}], 'sort by key "b" then "a"');
+    test([[1, 2], [1, 1], [0, 1], [0, 2]], [[0, 1], [0, 2], [1, 1], [1, 2]], 'sorting elements which are arrays');
 
     var arr = [
       {
@@ -2242,7 +2299,28 @@ package('Array', function () {
       }
     ];
 
-    equal(arr.sortBy(['name', 'age']), expected, 'sorting by name and age');
+    test(arr, [['name', 'age']], expected, 'sorting by name and age');
+    test(arr, [['name', 'hair']], expected, 'sorting by non-existent property first');
+    test(arr, [['hair', 'name']], expected, 'sorting by non-existent property second');
+    test(arr, [['hair', 'eyes']], arr, 'sorting by both properties non-existent');
+
+    var arr = [
+      [5,4,3,2,1],
+      [3,3,3],
+      [4,3,2,1],
+      [1,2,3],
+      [1,2,3,4]
+    ]
+
+    var expected = [
+      [1,2,3],
+      [3,3,3],
+      [1,2,3,4],
+      [4,3,2,1],
+      [5,4,3,2,1]
+    ]
+
+    test(arr, expected, 'sorting arrays of uneven length');
 
   });
 
