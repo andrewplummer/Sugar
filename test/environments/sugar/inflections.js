@@ -34,7 +34,7 @@ package('String | Inflections', function () {
 
     "archive"     : "archives",
 
-    "index"       : "indices",
+    "index"       : "indexes",
 
     "wife"        : "wives",
     "save"        : "saves",
@@ -94,7 +94,7 @@ package('String | Inflections', function () {
     "louse"       : "lice",
     "house"       : "houses",
     "octopus"     : "octopi",
-    "virus"       : "viri",
+    "virus"       : "viruses",
     "alias"       : "aliases",
     "portfolio"   : "portfolios",
 
@@ -113,7 +113,7 @@ package('String | Inflections', function () {
     "prize"       : "prizes",
     "edge"        : "edges",
 
-    "cow"         : "kine",
+    "cow"         : "cows",
     "database"    : "databases",
 
     // regression tests against improper inflection regexes
@@ -199,7 +199,13 @@ package('String | Inflections', function () {
     "radius"      : "radii",
     "fungus"      : "fungi",
     "status"      : "statuses",
-    "syllabus"    : "syllabuses"
+    "syllabus"    : "syllabuses",
+    "human"       : "humans",
+    "fetus"       : "fetuses",
+    "genius"      : "geniuses",
+    "cactus"      : "cacti",
+    "deer"        : "deer",
+    "aviatrix"    : "aviatrices"
 
   };
 
