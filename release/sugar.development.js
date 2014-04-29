@@ -6934,6 +6934,13 @@
    *
    ***/
 
+  var HTML_CODE_MATCH = /&#(x)?([\w\d]{0,5});/i;
+
+  var HTML_VOID_ELEMENTS = [
+    'area','base','br','col','command','embed','hr','img',
+    'input','keygen','link','meta','param','source','track','wbr'
+  ];
+
   function getInflector() {
     return sugarString.Inflector;
   }
@@ -7111,10 +7118,11 @@
     }).join('');
   }
 
-  var HTML_VOID_ELEMENTS = [
-    'area','base','br','col','command','embed','hr','img',
-    'input','keygen','link','meta','param','source','track','wbr'
-  ];
+  function convertHTMLCodes(str) {
+    return str.replace(HTML_CODE_MATCH, function(full, hex, code) {
+      return string.fromCharCode(parseInt(code, hex ? 16 : 10));
+    });
+  }
 
   function tagIsVoid(tag) {
     return HTML_VOID_ELEMENTS.indexOf(tag.toLowerCase()) !== -1;
@@ -7333,12 +7341,11 @@
       /***
        * @method startsWith(<search>, [pos] = 0)
        * @returns Boolean
-       * @short Returns true if the string starts with <search>.
+       * @short Returns true if the string starts with <search>, which must be a string.
        * @extra Search begins at [pos], which defaults to the entire string length.
        * @example
        *
        *   'hello'.startsWith('hell')   -> true
-       *   'hello'.startsWith(/[a-h]/)  -> true
        *   'hello'.startsWith('HELL')   -> false
        *   'hello'.startsWith('ell', 1) -> true
        *
@@ -7363,12 +7370,11 @@
       /***
        * @method endsWith(<search>, [pos] = length)
        * @returns Boolean
-       * @short Returns true if the string ends with <search>.
+       * @short Returns true if the string ends with <search>, which must be a string.
        * @extra Search ends at [pos], which defaults to the entire string length.
        * @example
        *
        *   'jumpy'.endsWith('py')    -> true
-       *   'jumpy'.endsWith(/[q-z]/) -> true
        *   'jumpy'.endsWith('MPY')   -> false
        *   'jumpy'.endsWith('mp', 4) -> false
        *
@@ -7495,11 +7501,12 @@
       *
       ***/
     'unescapeHTML': function() {
-      return this.replace(/&lt;/g,   '<')
+      return convertHTMLCodes(this)
+                 .replace(/&lt;/g,   '<')
                  .replace(/&gt;/g,   '>')
+                 .replace(/&nbsp;/g, ' ')
                  .replace(/&quot;/g, '"')
                  .replace(/&apos;/g, "'")
-                 .replace(/&#x2f;/g, '/')
                  .replace(/&amp;/g,  '&');
     },
 
