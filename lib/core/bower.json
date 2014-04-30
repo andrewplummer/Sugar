@@ -4,6 +4,9 @@
   "description": "Sugar core",
   "homepage": "http://sugarjs.com/",
   "author": "Andrew Plummer",
-  "main": "core.js",
+  "main": "core.min.js",
+  "ignore": [
+    "core.js"
+  ],
   "license": "MIT"
 }
