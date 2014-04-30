@@ -9,7 +9,7 @@ require('../../javascripts/date-helpers.js');
 // No conflict tests
 require('./no-conflict.js');
 
-var Sugar = require( '../../../release/sugar-full.development');
+var Sugar = require( '../../../release/sugar-full.dev');
 
 // Adding a reference here to the global context
 // will save massive amounts of pain later when
