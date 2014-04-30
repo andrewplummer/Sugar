@@ -5,9 +5,9 @@
   "homepage": "http://sugarjs.com/",
   "author": "Andrew Plummer",
   "keywords": ["sugarjs", "functional", "utility", "util", "browser", "date", "time", "parse", "format"],
-  "main": "release/sugar.min.js",
+  "main": "release/sugar.dev.js",
   "scripts" : [
-      "release/sugar.min.js"
+      "release/sugar.dev.js"
   ],
   "license": "MIT"
 }
