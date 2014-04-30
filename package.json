@@ -5,12 +5,12 @@
   "keywords": ["sugarjs", "functional", "utility", "util", "browser", "date", "time", "parse", "format", "ender"],
   "homepage": "http://sugarjs.com/",
   "author": "Andrew Plummer",
-  "main": "./release/sugar-full.development.js",
+  "main": "./release/sugar-full.dev.js",
   "directories" : {
     "lib" : "./release"
   },
   "files": [
-    "release/sugar-full.development.js",
+    "release/sugar-full.dev.js",
     "test/javascripts/date-helpers.js",
     "test/javascripts/helpers.js",
     "test/javascripts/suite.js",
@@ -20,9 +20,6 @@
   "repository" : {
     "type": "git",
     "url": "https://github.com/andrewplummer/Sugar.git"
-  },
-  "dependencies": {
-    "sugar-core": ">= 0.0.1"
   },
   "engines" : {
     "node" : ">= 0.8.23"
