@@ -1,7 +1,7 @@
 {
-  "name": "sugar-core-test",
+  "name": "sugar-core",
   "version": "0.0.1",
-  "description": "Sugar core (test)",
+  "description": "Sugar core",
   "homepage": "http://sugarjs.com/",
   "author": "Andrew Plummer",
   "main": "core.js",
