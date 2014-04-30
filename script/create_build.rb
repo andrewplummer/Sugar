@@ -23,6 +23,8 @@ TMP_DIR = 'tmp'
 TMP_COMPILED_FILE = TMP_DIR + '/compiled.js'
 TMP_UNCOMPILED_FILE = TMP_DIR + '/uncompiled.js'
 
+CORE_PATH = 'lib/core'
+
 options = {}
 
 optparse = OptionParser.new do |opts|
@@ -154,9 +156,9 @@ end
 
 def create_development(packages, type)
   filename = if type == 'default'
-    "/sugar.development.js"
+    "/sugar.dev.js"
   else
-    "/sugar-#{type}.development.js"
+    "/sugar-#{type}.dev.js"
   end
   full_content = ''
   packages.each do |p|
@@ -202,6 +204,15 @@ def create_minified(name, arr)
   puts "CREATED: #{filename}"
 end
 
+def create_core_standalone
+  File.open(CORE_PATH + "/core.dev.js", 'w') do |f|
+    f.write wrap(File.open(PRECOMPILED_DEV_DIR + "/core.js").read)
+  end
+  File.open(CORE_PATH + "/core.min.js", 'w') do |f|
+    f.write wrap_minified(File.open(PRECOMPILED_MIN_DIR + "/core.js").read.strip)
+  end
+end
+
 def wrap_minified(js)
   "(function(){'use strict';#{js}})();"
 end
@@ -227,5 +238,6 @@ puts ""
 split_compiled
 create_all_minified
 create_all_development
+create_core_standalone if @release != 'custom'
 cleanup
 
