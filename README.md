@@ -5,6 +5,12 @@
 A Javascript library for working with native objects.
 http://sugarjs.com/
 
+## Installing
+
+Pre-built scripts `release/sugar.min.js` and `release/sugar.dev.js` can be immediately included in any project. Both are the standard build of Sugar that includes default packages. `release/sugar-full.min.js` and `release/sugar-full.dev.js` include all packages. These pre-built scripts correspond to what is available on [customize](http://sugarjs.com/customize) page on the main site.
+
+In node, simply use `npm install sugar` for the full build.
+
 
 ## Upgrading
 
