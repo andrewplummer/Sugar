@@ -1,8 +1,12 @@
 {
-  "name": "sugar-core-test",
+  "name": "sugar-core",
+  "version": "0.0.1",
+  "description": "Sugar core",
+  "homepage": "http://sugarjs.com/",
   "author": "Andrew Plummer",
-  "description": "A Javascript library for working with native objects.",
-  "version": "1.4.1",
-  "license": "MIT",
-  "main": "core.js"
+  "main": "core.min.js",
+  "scripts" : [
+      "core.min.js"
+  ],
+  "license": "MIT"
 }
