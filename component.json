@@ -5,6 +5,7 @@
   "homepage": "http://sugarjs.com/",
   "author": "Andrew Plummer",
   "keywords": ["sugarjs", "functional", "utility", "util", "browser", "date", "time", "parse", "format"],
+  "repo": "andrewplummer/Sugar",
   "main": "release/sugar.dev.js",
   "scripts" : [
       "release/sugar.dev.js"
