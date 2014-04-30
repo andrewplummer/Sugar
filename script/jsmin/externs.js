@@ -53,3 +53,5 @@ l.cachedFormat    = l.compiledFormats[0];
 l.compiledFormats = [{ variant: false, locale: '', reg: /date/, to: [] }];
 l.modifiersByName = {};
 
+process = { env: {} };
+module  = { exports: {} };
