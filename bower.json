@@ -4,6 +4,7 @@
   "description": "A Javascript library for working with native objects.",
   "homepage": "http://sugarjs.com/",
   "author": "Andrew Plummer",
+  "keywords": ["sugarjs", "functional", "utility", "util", "browser", "date", "time", "parse", "format"],
   "main": "release/sugar.min.js",
   "ignore": [
     "docs/",
