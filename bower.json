@@ -4,12 +4,16 @@
   "description": "A Javascript library for working with native objects.",
   "homepage": "http://sugarjs.com/",
   "author": "Andrew Plummer",
-  "local": ["sugar-core"],
-  "paths": ["lib/core"],
-  "main": "release/sugar.development.js",
-  "files": ["release/sugar-full.development.js"],
-  "dependencies": {
-    "sugar-core": ">= 0.0.1"
-  },
+  "main": "release/sugar.min.js",
+  "ignore": [
+    "docs/",
+    "lib/",
+    "performance/",
+    "release/copyright.txt",
+    "release/precompiled/",
+    "script/",
+    "test/",
+    "tmp/"
+  ],
   "license": "MIT"
 }
