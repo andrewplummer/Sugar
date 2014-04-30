@@ -25,10 +25,10 @@
   var globalContext = typeof global !== 'undefined' ? global : window;
 
   // Is the environment node?
-  var isNode = typeof module !== 'undefined' && module.exports;
+  var hasExports = typeof module !== 'undefined' && module.exports;
 
   // No conflict mode
-  var noConflict = isNode ? process.env['SUGAR_NO_CONFLICT'] : false;
+  var noConflict = hasExports && typeof process !== 'undefined' ? process.env['SUGAR_NO_CONFLICT'] : false;
 
   // Internal hasOwnProperty
   var internalHasOwnProperty = object.prototype.hasOwnProperty;
@@ -50,7 +50,7 @@
       'restore': restore,
       'noConflict': noConflict
     };
-    if (isNode) {
+    if (hasExports) {
       module.exports = Sugar;
     } else {
       globalContext['Sugar'] = Sugar;
