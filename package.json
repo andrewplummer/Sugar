@@ -2,7 +2,7 @@
   "name": "sugar",
   "version": "1.4.1",
   "description": "A Javascript library for working with native objects.",
-  "keywords": ["functional", "utility", "ender"],
+  "keywords": ["sugarjs", "functional", "utility", "util", "browser", "date", "time", "parse", "format", "ender"],
   "homepage": "http://sugarjs.com/",
   "author": "Andrew Plummer",
   "main": "./release/sugar-full.development.js",
