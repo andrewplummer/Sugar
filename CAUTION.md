@@ -35,6 +35,9 @@ v1.5.0+
   - `Object.merge` will not continue traversing into an object if a resolve function is passed and returns something (anything but undefined). This means that you can selectively choose to handle certain conflicts differently by returning something, or use the merging defaults by returning undefined. It also means that a resolve function can no longer intentionally use `undefined` itself as a conflict resolution value - use `null` or another value instead.
 
 - Level: Moderate
+  - `Number#format` no longer accepts arguments for the thousands separator and decimal point. Instead these can now be set on the global object Sugar.Number.thousands and Sugar.Number.decimal. These will also be respected by Number#abbr, Number#metric, and Number#bytes as well.
+
+- Level: Moderate
   - Alphanumeric array options are now defined on the global object `Sugar.Array` instead of `Array` itself.
 
 - Level: Moderate

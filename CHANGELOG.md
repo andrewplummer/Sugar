@@ -26,6 +26,7 @@ v1.5.0
 - Fixed `String#unescapeHTML` to handle HTML (and hex) codes. Also now handling &nbsp;
 - Added a third argument to `Number#bytes` to allow normal SI units.
 - Updated `Object.merge` to stop traversing into objects that have been resolved via a function.
+- Allowing a global thousands and decimal marker to be set.
 
 
 v1.4.2
