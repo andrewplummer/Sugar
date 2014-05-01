@@ -343,7 +343,6 @@ package('Object', function () {
       prop2: 'beebop',
       inner: {
         foo: 'car',
-        hee: 'haw',
         mee: 'maw'
       },
       arr: nonEnumerablePropertySupport ? [4,5,6] : [4,5,6,4]
@@ -404,6 +403,97 @@ package('Object', function () {
 
     test(Object, [{a:''}, {a:{b:1}}, true], {a:{b:1}}, 'source object wins with empty string');
     test(Object, [{a:'1'}, {a:{b:1}}, true], {a:{b:1}}, 'source object wins with number as string');
+
+
+    var obj1 = {
+      foo: 'bar',
+      moo: ['a','b','c']
+    }
+    var obj2 = {
+      foo: 'car',
+      moo: ['o','p','p']
+    }
+    var expected = {
+      foo: 'car',
+      moo: 'wow'
+    }
+
+    var fn = function(prop, a1, a2) {
+      if(typeof a1 === 'object') {
+        return 'wow';
+      }
+      return a2;
+    }
+
+    var result = run(Object, 'merge', [obj1, obj2, true, fn]);
+    equal(result, expected, 'Returning something from a resolve function will not traverse further into that object');
+
+    var foobar = { foo: 'bar' };
+
+
+    var obj1 = {
+      a1: foobar,
+      one: {
+        two: {
+          three: {
+            a: 1,
+            b: 2
+          }
+        }
+      }
+    }
+    var obj2 = {
+      a2: foobar,
+      one: {
+        two: {
+          three: {
+            a: 1,
+            c: 3
+          }
+        }
+      }
+    }
+    var expected = {
+      a1: { foo: 'bar' },
+      a2: { foo: 'bar' },
+      one: {
+        two: {
+          three: {
+            a: 2,
+            b: 2,
+            c: 3
+          }
+        }
+      }
+    }
+
+    var fn = function(prop, a, b) {
+      if(typeof a === 'number' && typeof b === 'number') {
+        return a + b;
+      }
+    }
+
+    var result = run(Object, 'merge', [testClone(obj1), obj2, true, fn]);
+    equal(result, expected, 'deep merge continues traversing into the object if the resolve function returns undefined');
+    notEqual(result.a2, foobar, 'non-conflciting property a2 was deep merged');
+
+    var expected = {
+      a1: foobar,
+      a2: foobar,
+      one: {
+        two: {
+          three: {
+            a: 1,
+            c: 3
+          }
+        }
+      }
+    }
+
+    var result = run(Object, 'merge', [testClone(obj1), obj2, false, fn]);
+    equal(result, expected, 'non-deep merge continues on to merge the second object');
+    equal(result.a2, foobar, 'non-deep merge keeps strict equality');
+
 
 
 
