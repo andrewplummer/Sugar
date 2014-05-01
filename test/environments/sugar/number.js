@@ -125,7 +125,7 @@ package('Number', function () {
 
   method('log', function() {
     test(64, [2], 6, '64 with base 2');
-    test(9, [3], 2, '9 with base 3');
+    equalWithMargin(run(9, 'log', [3]), 2, 0.000000000000001, '9 with base 3');
     test(5, 1.6094379124341003, '5');
     test(Math.E, 1, 'E');
   });
