@@ -214,7 +214,7 @@
   // A few optimizations for Google Closure Compiler will save us a couple kb in the release script.
   var object = Object, array = Array, regexp = RegExp, date = Date, string = String, number = Number, func = Function, math = Math, Undefined;
 
-  var sugarObject = Sugar.Object, sugarArray = Sugar.Array, sugarDate = Sugar.Date, sugarString = Sugar.String;
+  var sugarObject = Sugar.Object, sugarArray = Sugar.Array, sugarDate = Sugar.Date, sugarString = Sugar.String, sugarNumber = Sugar.Number;
 
   // Internal toString
   var internalToString = object.prototype.toString;
@@ -5827,6 +5827,15 @@
    *
    ***/
 
+  function getThousands() {
+    var str = sugarNumber.thousands;
+    return isString(str) ? str : ',';
+  }
+
+  function getDecimal() {
+    var str = sugarNumber.decimal;
+    return isString(str) ? str : '.';
+  }
 
   function abbreviateNumber(num, roundTo, str, mid, limit, bytes) {
     var fixed        = num.toFixed(20),
@@ -5848,14 +5857,10 @@
     return formatNumber(withPrecision(num / divisor, roundTo || 0)) + unit.trim();
   }
 
-  function formatNumber(num, place, thousands, decimal) {
+  function formatNumber(num, place) {
     var i, str, split, integer, fraction, result = '';
-    if(isUndefined(thousands)) {
-      thousands = ',';
-    }
-    if(isUndefined(decimal)) {
-      decimal = '.';
-    }
+    var thousands = getThousands();
+    var decimal   = getDecimal();
     str      = (isNumber(place) ? withPrecision(num, place || 0).toFixed(max(place, 0)) : num.toString()).replace(/^-/, '');
     split    = str.split('.');
     integer  = split[0];
@@ -5946,7 +5951,7 @@
      * @method abbr([precision] = 0)
      * @returns String
      * @short Returns an abbreviated form of the number.
-     * @extra [precision] will round to the given precision.
+     * @extra [precision] will round to the given precision. %Sugar.Number.thousands% and %Sugar.Number.decimal% allow custom markers to be used.
      * @example
      *
      *   (1000).abbr()    -> "1k"
@@ -5962,7 +5967,7 @@
      * @method metric([precision] = 0, [limit] = 1)
      * @returns String
      * @short Returns the number as a string in metric notation.
-     * @extra [precision] will round to the given precision. Both very large numbers and very small numbers are supported. [limit] is the upper limit for the units. The default is %1%, which is "kilo". If [limit] is %false%, the upper limit will be "exa". The lower limit is "nano", and cannot be changed.
+     * @extra [precision] will round to the given precision. Both very large numbers and very small numbers are supported. [limit] is the upper limit for the units. The default is %1%, which is "kilo". If [limit] is %false%, the upper limit will be "exa". The lower limit is "nano", and cannot be changed. %Sugar.Number.thousands% and %Sugar.Number.decimal% allow custom markers to be used.
      * @example
      *
      *   (1000).metric()            -> "1k"
@@ -5980,7 +5985,7 @@
      * @method bytes([precision] = 0, [limit] = 4, [si] = false)
      * @returns String
      * @short Returns an abbreviated form of the number, considered to be "Bytes".
-     * @extra [precision] will round to the given precision. [limit] is the upper limit for the units. The default is %4%, which is "terabytes" (TB). If [limit] is %false%, the upper limit will be "exa". If [si] is %true%, the standard SI units of 1000 will be used instead of 1024.
+     * @extra [precision] will round to the given precision. [limit] is the upper limit for the units. The default is %4%, which is "terabytes" (TB). If [limit] is %false%, the upper limit will be "exa". If [si] is %true%, the standard SI units of 1000 will be used instead of 1024. %Sugar.Number.thousands% and %Sugar.Number.decimal% allow custom markers to be used.
      * @example
      *
      *   (1000).bytes()                 -> "1kB"
@@ -6053,20 +6058,19 @@
 
 
     /***
-     * @method format([place] = 0, [thousands] = ',', [decimal] = '.')
+     * @method format([place] = 0)
      * @returns String
      * @short Formats the number to a readable string.
-     * @extra If [place] is %undefined%, will automatically determine the place. [thousands] is the character used for the thousands separator. [decimal] is the character used for the decimal point.
+     * @extra If [place] is %undefined%, the place will automatically be determined. %Sugar.Number.thousands% and %Sugar.Number.decimal% allow custom markers to be used.
      * @example
      *
-     *   (56782).format()           -> '56,782'
-     *   (56782).format(2)          -> '56,782.00'
-     *   (4388.43).format(2, ' ')      -> '4 388.43'
-     *   (4388.43).format(2, '.', ',') -> '4.388,43'
+     *   (56782).format()    -> '56,782'
+     *   (56782).format(2)   -> '56,782.00'
+     *   (4388.43).format(2) -> '4,388.43'
      *
      ***/
-    'format': function(place, thousands, decimal) {
-      return formatNumber(this, place, thousands, decimal);
+    'format': function(place) {
+      return formatNumber(this, place);
     },
 
     /***
