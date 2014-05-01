@@ -25,6 +25,7 @@ v1.5.0
 - Updated `Array#sortBy` to handle sorting on multiple properties (Issue #386, thanks to @eric-weiser).
 - Fixed `String#unescapeHTML` to handle HTML (and hex) codes. Also now handling &nbsp;
 - Added a third argument to `Number#bytes` to allow normal SI units.
+- Updated `Object.merge` to stop traversing into objects that have been resolved via a function.
 
 
 v1.4.2
