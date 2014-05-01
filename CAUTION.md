@@ -32,6 +32,9 @@ v1.5.0+
   - `Object.merge` will now treat null properties as if they did not exist (previously only undefined properties were treated this way). All other falsy properties such as empty strings and `false` will not be overwritten.
 
 - Level: Moderate
+  - `Object.merge` will not continue traversing into an object if a resolve function is passed and returns something (anything but undefined). This means that you can selectively choose to handle certain conflicts differently by returning something, or use the merging defaults by returning undefined. It also means that a resolve function can no longer intentionally use `undefined` itself as a conflict resolution value - use `null` or another value instead.
+
+- Level: Moderate
   - Alphanumeric array options are now defined on the global object `Sugar.Array` instead of `Array` itself.
 
 - Level: Moderate
