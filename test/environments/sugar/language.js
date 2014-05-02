@@ -213,6 +213,15 @@ package('String', function () {
 
     test('－', '-', 'Full-width hyphen should be converted to half-width');
 
+    test('ー', ['n'], '-', 'KATAKANA-HIRAGANA PROLONGED SOUND MARK converted to hyphen in number mode');
+    test('−', ['n'], '-', 'MINUS SIGN converted to hyphen in number mode');
+
+    test('ー', ['a'], 'ー', 'KATAKANA-HIRAGANA PROLONGED SOUND MARK not converted to hyphen in alphabet mode');
+    test('−', ['a'], '−', 'MINUS SIGN not converted to hyphen in alphabet mode');
+
+    test('ー', 'ｰ', 'KATAKANA-HIRAGANA PROLONGED SOUND MARK not converted to hyphen in "all" mode');
+    test('−', '-', 'MINUS SIGN still converted to hyphen in "all" mode');
+
     test(allZenkakuChars, allHankakuChars, 'everything');
   });
 
@@ -252,6 +261,7 @@ package('String', function () {
     test(barabara, ['punctuation'], 'こんにちは。ﾀﾛｳ YAMADAです。18才です！（笑）', 'modes full | punctuation');
 
     test('-', '－', 'Half-width hyphen should be converted to full-width');
+    test('ｰ', 'ー', 'KATAKANA-HIRAGANA PROLONGED SOUND MARK converted to full-width');
 
     test(allHankakuChars, allZenkakuChars, 'everything');
   });
