@@ -27,6 +27,7 @@ v1.5.0
 - Added a third argument to `Number#bytes` to allow normal SI units.
 - Updated `Object.merge` to stop traversing into objects that have been resolved via a function.
 - Allowing a global thousands and decimal marker to be set.
+- `String#hankaku` now makes a hyphen from hyphen-like fullwidth chars in number mode.
 
 
 v1.4.2
