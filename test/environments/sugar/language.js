@@ -261,6 +261,8 @@ package('String', function () {
     test(barabara, ['punctuation'], 'こんにちは。ﾀﾛｳ YAMADAです。18才です！（笑）', 'modes full | punctuation');
 
     test('-', '－', 'Half-width hyphen should be converted to full-width');
+    test('-', ['p'], '－', 'Half-width hyphen should be converted to full-width in punctuation mode');
+    test('-', ['n'], '－', 'Half-width hyphen should be converted to full-width in number mode');
     test('ｰ', 'ー', 'KATAKANA-HIRAGANA PROLONGED SOUND MARK converted to full-width');
 
     test(allHankakuChars, allZenkakuChars, 'everything');
