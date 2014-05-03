@@ -8828,6 +8828,7 @@
     setWidthConversion('k', 'ｦﾞ', 'ヺ');
     setConversionTableEntry('hankaku', 'n', '−', '-');
     setConversionTableEntry('hankaku', 'n', 'ー', '-', false);
+    setConversionTableEntry('zenkaku', 'n', '-', '－', false);
   }
 
   function setWidthConversion(type, half, full) {
