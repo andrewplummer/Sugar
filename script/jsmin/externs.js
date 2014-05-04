@@ -57,3 +57,5 @@ l.modifiersByName = {};
 
 process = { env: {} };
 module  = { exports: {} };
+
+function Hash() {};
