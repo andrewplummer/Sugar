@@ -495,8 +495,6 @@ package('Object', function () {
     equal(result.a2, foobar, 'non-deep merge keeps strict equality');
 
 
-
-
     if(definePropertySupport) {
 
       var obj1 = {};
@@ -933,6 +931,16 @@ package('Object', function () {
       equal(ran, true, 'setter ran');
       equal(propertyIsEnumerable(obj, 'foo'), true, 'property should be enumerable');
 
+      // Non-enumerable
+      var obj = {}, result;
+      Object.defineProperty(obj, 'foo', {
+        enumerable: false,
+        value: 3
+      });
+      result = run(Object, 'watch', [obj, 'foo', function(){}]);
+      equal(propertyIsEnumerable(obj, 'foo'), false, 'property should not be enumerable if originally non-enumerable');
+
+      // Non-configurable
       var obj = {}, result;
       Object.defineProperty(obj, 'foo', {
         writable: false,
@@ -944,8 +952,6 @@ package('Object', function () {
 
       equal(result, false, 'should not have succeeded');
       obj.foo = 4;
-      delete obj.foo;
-      equal(propertyIsEnumerable(obj, 'foo'), false, 'property should not be enumerable if originally non-enumerable');
 
 
       var obj = {}, result, getCounter = 0, setCounter = 0, newSetCounter = 0;
@@ -970,6 +976,27 @@ package('Object', function () {
       equal(setCounter, 1, 'original setter should be preserved');
       equal(newSetCounter, 0, 'new setter should be active as well');
 
+
+      // Undefined property
+
+      var obj = {}, ran = false, result;
+
+      result = run(Object, 'watch', [obj, 'foo', function(prop, oldVal, newVal) {
+        equal(this, obj, 'scope is the object');
+        equal(prop, 'foo', 'first argument is the propety');
+        equal(oldVal, undefined, 'second argument is the old value');
+        equal(newVal, 'howdy', 'third argument is the new value');
+        ran = true;
+        return newVal;
+      }]);
+
+      equal(result, true, 'should have succeeded');
+      equal(obj.foo, undefined, 'old property should be undefined');
+      obj.foo = 'howdy';
+      equal(obj.foo, 'howdy', 'property was set');
+      equal(ran, true, 'setter ran');
+      equal(propertyIsEnumerable(obj, 'foo'), true, 'property should be enumerable');
+
     } else {
 
       var obj = { foo: 'bar' }, ran = false, result;
@@ -982,6 +1009,79 @@ package('Object', function () {
 
       equal(result, false, 'should not succeeded');
       equal(ran, false, 'setter function should not have run');
+
+    }
+
+  });
+
+  method('unwatch', function() {
+
+    if(definePropertySupport) {
+
+      var count = 0, obj = { foo: 3 }, fn;
+
+      fn = function() {
+        count++;
+      };
+
+      run(Object, 'watch', [obj, 'foo', fn]);
+      obj.foo = 'a';
+      run(Object, 'unwatch', [obj, 'foo']);
+
+      obj.foo = 'a';
+      equal(count, 1, 'watch function should have been removed');
+
+
+      // Non-configurable property
+
+      var count = 0, obj = {}, fn;
+
+      Object.defineProperty(obj, 'foo', {
+        value: 3,
+        configurable: false
+      });
+
+      fn = function() {
+        count++;
+      };
+
+      run(Object, 'watch', [obj, 'foo', fn]);
+      obj.foo = 'a';
+      run(Object, 'unwatch', [obj, 'foo']);
+
+      obj.foo = 'a';
+      equal(count, 0, 'watch function should not have run on non-configurable property');
+
+      // Non-defined property
+
+      var count = 0, obj = {}, fn;
+
+      fn = function() {
+        count++;
+      };
+
+      run(Object, 'watch', [obj, 'foo', fn]);
+      obj.foo = 'a';
+      run(Object, 'unwatch', [obj, 'foo']);
+
+      obj.foo = 'a';
+      equal(count, 1, 'watch function should have been removed');
+
+    } else {
+
+      var count = 0, obj = { foo: 3 }, fn;
+
+      fn = function() {
+        count++;
+      };
+
+      run(Object, 'watch', [obj, 'foo', fn]);
+      obj.foo = 'a';
+      run(Object, 'unwatch', [obj, 'foo']);
+
+      obj.foo = 'a';
+      equal(count, 0, 'watch function should never have run');
+
 
     }
 
