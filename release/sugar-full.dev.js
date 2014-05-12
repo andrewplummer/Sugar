@@ -5115,7 +5115,7 @@
   }
 
   function createDateRangeFromString(str) {
-    var match, datetime, duration, start, end;
+    var match, datetime, duration, dio, start, end;
     if(match = str.match(RANGE_REG)) {
       return DateRangeConstructor(match[1], match[2]);
     }
@@ -5129,7 +5129,8 @@
     }
     if(datetime && duration) {
       start = getSugarExtendedDate(datetime);
-      end = incrementDate(start, getDuration(duration));
+      dio = getDateIncrementObject(duration);
+      end = incrementDate(start, dio[0], dio[1]);
     }
     return DateRangeConstructor(start, end);
   }
@@ -5151,10 +5152,10 @@
     return m !== -Infinity && m !== Infinity;
   }
 
-  function getDuration(amt) {
+  function getDateIncrementObject(amt) {
     var match, val, unit;
     if(isNumber(amt)) {
-      return amt;
+      return [amt, 'Milliseconds'];
     }
     match = amt.match(DURATION_REG);
     val = parseInt(match[1]) || 1;
@@ -5169,16 +5170,10 @@
     return [val, unit];
   }
 
-  function incrementDate(current, amount) {
-    var num, unit, val, d;
-    if(isNumber(amount)) {
-      return new date(current.getTime() + amount);
-    }
-    num  = amount[0];
-    unit = amount[1];
-    val  = callDateGet(current, unit);
-    d    = new date(current.getTime());
-    callDateSet(d, unit, val + num);
+  function incrementDate(current, amount, unit) {
+    var val  = callDateGet(current, unit);
+    var d    = new date(current.getTime());
+    callDateSet(d, unit, val + amount);
     return d;
   }
 
@@ -5279,6 +5274,8 @@
     'every': function(amount, fn) {
       var increment,
           precision,
+          dio,
+          unit,
           start   = this.start,
           end     = this.end,
           inverse = end < start,
@@ -5295,13 +5292,21 @@
       }
       amount = amount || 1;
       if(isNumber(start)) {
-        increment = incrementNumber;
         precision = getGreaterPrecision(start, amount);
+        increment = function() {
+          return incrementNumber(current, amount, precision);
+        };
       } else if(isString(start)) {
-        increment = incrementString;
+        increment = function() {
+          return incrementString(current, amount);
+        };
       } else if(isDate(start)) {
-        amount    = getDuration(amount);
-        increment = incrementDate;
+        dio = getDateIncrementObject(amount);
+        amount = dio[0];
+        unit = dio[1];
+        increment = function() {
+          return incrementDate(current, amount, unit);
+        };
       }
       // Avoiding infinite loops
       if(inverse && amount > 0) {
@@ -5312,7 +5317,7 @@
         if(fn) {
           fn(current, index);
         }
-        current = increment(current, amount, precision);
+        current = increment();
         index++;
       }
       return result;
