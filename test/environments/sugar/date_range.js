@@ -10,29 +10,29 @@ package('Date | Ranges', function () {
 
     var range = createRange(NaN, NaN);
 
-    equal(range.isValid(), false, 'Date Range | invalid range');
-    equal(typeof range.start.getTime, 'function', 'Date Range | Invalid | start is not minified');
-    equal(typeof range.end.getTime, 'function', 'Date Range | Invalid | end is not minified');
-    equal(isNaN(range.span()), true, 'Date Range | Invalid | has no duration');
-    equal(range.toString(), 'Invalid Range', 'Date Range | Invalid | invalid toString');
+    equal(range.isValid(), false, 'invalid range');
+    equal(typeof range.start.getTime, 'function', 'Invalid | start is not minified');
+    equal(typeof range.end.getTime, 'function', 'Invalid | end is not minified');
+    equal(isNaN(range.span()), true, 'Invalid | has no duration');
+    equal(range.toString(), 'Invalid Range', 'Invalid | invalid toString');
 
     var d1 = new Date(2011,8,10,9);
     var d2 = new Date(2010,10,10,9);
     var range = createRange(d1, d2);
 
-    equal(range.isValid(), true, 'Date Range | Inverted | range');
-    equal(typeof range.start.getTime, 'function', 'Date Range | Inverted | start is not minified');
-    equal(typeof range.end.getTime, 'function', 'Date Range | Inverted | end is not minified');
-    equal(range.span(), Math.abs(d2 - d1) + 1, 'Date Range | Inverted | duration');
-    equal(range.toString(), new Date(2011,8,10,9).toString() + '..' + new Date(2010,10,10,9).toString(), 'Date Range | Inverted | toString');
+    equal(range.isValid(), true, 'Inverted | range');
+    equal(typeof range.start.getTime, 'function', 'Inverted | start is not minified');
+    equal(typeof range.end.getTime, 'function', 'Inverted | end is not minified');
+    equal(range.span(), Math.abs(d2 - d1) + 1, 'Inverted | duration');
+    equal(range.toString(), new Date(2011,8,10,9).toString() + '..' + new Date(2010,10,10,9).toString(), 'Inverted | toString');
 
     var range = createRange(new Date(2010,6,10,9), new Date(2010,8,10,9));
 
     tzOffset = range.end.getTimezoneOffset() - range.start.getTimezoneOffset();
 
-    equal(range.toString(), new Date(2010,6,10,9).toString() + '..' + new Date(2010,8,10,9).toString(), 'Date Range | toString');
-    equal(range.span(), new Date(2010,8,10,9) - new Date(2010,6,10,9) + (tzOffset * 60 * 1000) + 1, 'Date Range | duration');
-    equal(range.isValid(), true, 'Date Range | valid range');
+    equal(range.toString(), new Date(2010,6,10,9).toString() + '..' + new Date(2010,8,10,9).toString(), 'toString');
+    equal(range.span(), new Date(2010,8,10,9) - new Date(2010,6,10,9) + (tzOffset * 60 * 1000) + 1, 'duration');
+    equal(range.isValid(), true, 'valid range');
 
     equal(range.every('year'), [new Date(2010,6,10,9)], 'Range#every | 2010-9 - 2010-11');
 
@@ -41,20 +41,20 @@ package('Date | Ranges', function () {
   group('Creation', function() {
 
     var range = createRange(new Date(2010,6,10,9), new Date(2010,8,10,9));
-    dateEqual(range.start, new Date(2010,6,10,9), 'Date Range | Start has not been modified');
-    dateEqual(range.end, new Date(2010,8,10,9), 'Date Range | End has not been modified');
+    dateEqual(range.start, new Date(2010,6,10,9), 'Start has not been modified');
+    dateEqual(range.end, new Date(2010,8,10,9), 'End has not been modified');
 
     var range = createRange(new Date(2010,3,25));
-    dateEqual(range.start, new Date(2010,3,25), 'Date Range | null end | start');
-    dateEqual(range.end, new Date(), 'Date Range | null end is current time');
+    dateEqual(range.start, new Date(2010,3,25), 'null end | start');
+    dateEqual(range.end, new Date(), 'null end is current time');
 
     var range = createRange(null, new Date(2010,3,25));
-    dateEqual(range.start, new Date(0), 'Date Range | null starts at epoch');
-    dateEqual(range.end, new Date(2010,3,25), 'Date Range | start is reversed when null is current');
+    dateEqual(range.start, new Date(0), 'null starts at epoch');
+    dateEqual(range.end, new Date(2010,3,25), 'start is reversed when null is current');
 
     var range = createRange();
-    dateEqual(range.start, new Date(), 'Date Range | both null | start');
-    dateEqual(range.end, new Date(), 'Date Range | both null | end');
+    dateEqual(range.start, new Date(), 'both null | start');
+    dateEqual(range.end, new Date(), 'both null | end');
 
   });
 
@@ -74,13 +74,13 @@ package('Date | Ranges', function () {
     dateEqual(range.end,   testEnd, 'Date.range | strings | end is equal');
 
     // Issue #367 Advanced date ranges
-    equal(createRange('monday to thursday'), createRange('monday', 'thursday'), 'Date Range | advanced text ranges');
-    equal(createRange('from monday to thursday'), createRange('monday', 'thursday'), 'Date Range | advanced text ranges | from');
-    equal(createRange('from monday until thursday'), createRange('monday', 'thursday'), 'Date Range | advanced text ranges | from..until');
-    equal(createRange('tomorrow at 3pm for 30 minutes'), createRange('3pm tomorrow', '3:30pm tomorrow'), 'Date Range | advanced text ranges | for');
-    equal(createRange('1 hour starting at 3:15 monday'), createRange('3:15 monday', '4:15 monday'), 'Date Range | advanced text ranges | starting at');
-    equal(createRange('for 1 hour starting at 3:15 monday'), createRange('3:15 monday', '4:15 monday'), 'Date Range | advanced text ranges | for..starting at');
-    equal(createRange('foobar'), createRange(), 'Date Range | invalid string is the same as no arguments');
+    equal(createRange('monday to thursday'), createRange('monday', 'thursday'), 'advanced text ranges');
+    equal(createRange('from monday to thursday'), createRange('monday', 'thursday'), 'advanced text ranges | from');
+    equal(createRange('from monday until thursday'), createRange('monday', 'thursday'), 'advanced text ranges | from..until');
+    equal(createRange('tomorrow at 3pm for 30 minutes'), createRange('3pm tomorrow', '3:30pm tomorrow'), 'advanced text ranges | for');
+    equal(createRange('1 hour starting at 3:15 monday'), createRange('3:15 monday', '4:15 monday'), 'advanced text ranges | starting at');
+    equal(createRange('for 1 hour starting at 3:15 monday'), createRange('3:15 monday', '4:15 monday'), 'advanced text ranges | for..starting at');
+    equal(createRange('foobar'), createRange(), 'invalid string is the same as no arguments');
 
   });
 
@@ -91,61 +91,66 @@ package('Date | Ranges', function () {
 
     expected = [new Date(2010,6,10,9), new Date(2010,7,10,9), new Date(2010,8,10,9)]
     result = range.every('month', function(d, index) {
-      dateEqual(d, expected[count], 'Date Range | date is first argument');
-      equal(index, count, 'Date Range | index is second argument');
+      dateEqual(d, expected[count], 'date is first argument');
+      equal(index, count, 'index is second argument');
       count++;
     });
-    equal(result, expected, 'Date Range | 2010-9 - 2010-11 | every month');
-    equal(count, 3, 'Date Range | 2010-9 - 2010-11 | has iterated 3 times');
+    equal(result, expected, '2010-9 - 2010-11 | every month');
+    equal(count, 3, '2010-9 - 2010-11 | has iterated 3 times');
 
-    equal(range.every('year'), [new Date(2010,6,10,9)], 'Date Range | 2010-9 - 2010-11 | every year');
-    equal(range.every('month'), [new Date(2010,6,10,9), new Date(2010,7,10,9), new Date(2010,8,10,9)], 'Date Range | 2010-9 - 2010-11 | every month');
+    equal(range.every('year'), [new Date(2010,6,10,9)], '2010-9 - 2010-11 | every year');
+    equal(range.every('month'), [new Date(2010,6,10,9), new Date(2010,7,10,9), new Date(2010,8,10,9)], '2010-9 - 2010-11 | every month');
 
     // Discrepancies exist here because of the definition of a month
-    equal(range.every(2 * 30.4375 * 24 * 60 * 60 * 1000), [new Date(2010,6,10,9), new Date(2010,8,9,6)], 'Date Range | 2010-9 - 2010-11 | every 2 months');
+    equal(range.every(2 * 30.4375 * 24 * 60 * 60 * 1000), [new Date(2010,6,10,9), new Date(2010,8,9,6)], '2010-9 - 2010-11 | every 2 months');
 
-    equal(range.every(10 * 24 * 60 * 60 * 1000), [new Date(2010,6,10,9), new Date(2010,6,20,9), new Date(2010,6,30,9), new Date(2010,7,9,9), new Date(2010,7,19,9), new Date(2010,7,29,9), new Date(2010,8,8,9)], 'Date Range | 2010-9 - 2010-11 | every 10 days');
+    equal(range.every(10 * 24 * 60 * 60 * 1000), [new Date(2010,6,10,9), new Date(2010,6,20,9), new Date(2010,6,30,9), new Date(2010,7,9,9), new Date(2010,7,19,9), new Date(2010,7,29,9), new Date(2010,8,8,9)], '2010-9 - 2010-11 | every 10 days');
 
     // This version will run every month then iterate over every other
-    equal(range.every('2 months'), [new Date(2010,6,10,9), new Date(2010,8,10,9)], 'Date Range | 2010-9 - 2010-11 | every 2 months text format');
+    equal(range.every('2 months'), [new Date(2010,6,10,9), new Date(2010,8,10,9)], '2010-9 - 2010-11 | every 2 months text format');
 
-    equal(range.every('day'), [new Date(2010,6,10,9), new Date(2010,6,11,9), new Date(2010,6,12,9), new Date(2010,6,13,9), new Date(2010,6,14,9), new Date(2010,6,15,9), new Date(2010,6,16,9), new Date(2010,6,17,9), new Date(2010,6,18,9), new Date(2010,6,19,9), new Date(2010,6,20,9), new Date(2010,6,21,9), new Date(2010,6,22,9), new Date(2010,6,23,9), new Date(2010,6,24,9), new Date(2010,6,25,9), new Date(2010,6,26,9), new Date(2010,6,27,9), new Date(2010,6,28,9), new Date(2010,6,29,9), new Date(2010,6,30,9), new Date(2010,6,31,9), new Date(2010,7,1,9), new Date(2010,7,2,9), new Date(2010,7,3,9), new Date(2010,7,4,9), new Date(2010,7,5,9), new Date(2010,7,6,9), new Date(2010,7,7,9), new Date(2010,7,8,9), new Date(2010,7,9,9), new Date(2010,7,10,9), new Date(2010,7,11,9), new Date(2010,7,12,9), new Date(2010,7,13,9), new Date(2010,7,14,9), new Date(2010,7,15,9), new Date(2010,7,16,9), new Date(2010,7,17,9), new Date(2010,7,18,9), new Date(2010,7,19,9), new Date(2010,7,20,9), new Date(2010,7,21,9), new Date(2010,7,22,9), new Date(2010,7,23,9), new Date(2010,7,24,9), new Date(2010,7,25,9), new Date(2010,7,26,9), new Date(2010,7,27,9), new Date(2010,7,28,9), new Date(2010,7,29,9), new Date(2010,7,30,9), new Date(2010,7,31,9), new Date(2010,8,1,9), new Date(2010,8,2,9), new Date(2010,8,3,9), new Date(2010,8,4,9), new Date(2010,8,5,9), new Date(2010,8,6,9), new Date(2010,8,7,9), new Date(2010,8,8,9), new Date(2010,8,9,9), new Date(2010,8,10,9) ], 'Date Range | 2010-9 - 2010 - 11 | every day');
+    equal(range.every('day'), [new Date(2010,6,10,9), new Date(2010,6,11,9), new Date(2010,6,12,9), new Date(2010,6,13,9), new Date(2010,6,14,9), new Date(2010,6,15,9), new Date(2010,6,16,9), new Date(2010,6,17,9), new Date(2010,6,18,9), new Date(2010,6,19,9), new Date(2010,6,20,9), new Date(2010,6,21,9), new Date(2010,6,22,9), new Date(2010,6,23,9), new Date(2010,6,24,9), new Date(2010,6,25,9), new Date(2010,6,26,9), new Date(2010,6,27,9), new Date(2010,6,28,9), new Date(2010,6,29,9), new Date(2010,6,30,9), new Date(2010,6,31,9), new Date(2010,7,1,9), new Date(2010,7,2,9), new Date(2010,7,3,9), new Date(2010,7,4,9), new Date(2010,7,5,9), new Date(2010,7,6,9), new Date(2010,7,7,9), new Date(2010,7,8,9), new Date(2010,7,9,9), new Date(2010,7,10,9), new Date(2010,7,11,9), new Date(2010,7,12,9), new Date(2010,7,13,9), new Date(2010,7,14,9), new Date(2010,7,15,9), new Date(2010,7,16,9), new Date(2010,7,17,9), new Date(2010,7,18,9), new Date(2010,7,19,9), new Date(2010,7,20,9), new Date(2010,7,21,9), new Date(2010,7,22,9), new Date(2010,7,23,9), new Date(2010,7,24,9), new Date(2010,7,25,9), new Date(2010,7,26,9), new Date(2010,7,27,9), new Date(2010,7,28,9), new Date(2010,7,29,9), new Date(2010,7,30,9), new Date(2010,7,31,9), new Date(2010,8,1,9), new Date(2010,8,2,9), new Date(2010,8,3,9), new Date(2010,8,4,9), new Date(2010,8,5,9), new Date(2010,8,6,9), new Date(2010,8,7,9), new Date(2010,8,8,9), new Date(2010,8,9,9), new Date(2010,8,10,9) ], '2010-9 - 2010 - 11 | every day');
 
     var range = createRange(new Date(2010,3,25,12), new Date(2010,3,25,18)); 
 
-    equal(range.every('hour'), [new Date(2010,3,25,12),new Date(2010,3,25,13),new Date(2010,3,25,14),new Date(2010,3,25,15),new Date(2010,3,25,16),new Date(2010,3,25,17),new Date(2010,3,25,18)], 'Date Range | every hour');
+    equal(range.every('hour'), [new Date(2010,3,25,12),new Date(2010,3,25,13),new Date(2010,3,25,14),new Date(2010,3,25,15),new Date(2010,3,25,16),new Date(2010,3,25,17),new Date(2010,3,25,18)], 'every hour');
 
-    equal(range.every('HOUR'), [new Date(2010,3,25,12),new Date(2010,3,25,13),new Date(2010,3,25,14),new Date(2010,3,25,15),new Date(2010,3,25,16),new Date(2010,3,25,17),new Date(2010,3,25,18)], 'Date Range | every hour | capitalized');
+    equal(range.every('HOUR'), [new Date(2010,3,25,12),new Date(2010,3,25,13),new Date(2010,3,25,14),new Date(2010,3,25,15),new Date(2010,3,25,16),new Date(2010,3,25,17),new Date(2010,3,25,18)], 'every hour | capitalized');
 
     var range = createRange(new Date(2010,3,25,12,30), new Date(2010,3,25,12,40));
 
-    equal(range.every('minute'), [new Date(2010,3,25,12,30),new Date(2010,3,25,12,31),new Date(2010,3,25,12,32),new Date(2010,3,25,12,33),new Date(2010,3,25,12,34),new Date(2010,3,25,12,35),new Date(2010,3,25,12,36),new Date(2010,3,25,12,37),new Date(2010,3,25,12,38),new Date(2010,3,25,12,39),new Date(2010,3,25,12,40)], 'Date Range | every minute');
+    equal(range.every('minute'), [new Date(2010,3,25,12,30),new Date(2010,3,25,12,31),new Date(2010,3,25,12,32),new Date(2010,3,25,12,33),new Date(2010,3,25,12,34),new Date(2010,3,25,12,35),new Date(2010,3,25,12,36),new Date(2010,3,25,12,37),new Date(2010,3,25,12,38),new Date(2010,3,25,12,39),new Date(2010,3,25,12,40)], 'every minute');
 
 
     var range = createRange(new Date(2010,3,25,12,30,30), new Date(2010,3,25,12,30,40));
-    equal(range.every('second'), [new Date(2010,3,25,12,30,30),new Date(2010,3,25,12,30,31),new Date(2010,3,25,12,30,32),new Date(2010,3,25,12,30,33),new Date(2010,3,25,12,30,34),new Date(2010,3,25,12,30,35),new Date(2010,3,25,12,30,36),new Date(2010,3,25,12,30,37),new Date(2010,3,25,12,30,38),new Date(2010,3,25,12,30,39),new Date(2010,3,25,12,30,40)], 'Date Range | every second');
+    equal(range.every('second'), [new Date(2010,3,25,12,30,30),new Date(2010,3,25,12,30,31),new Date(2010,3,25,12,30,32),new Date(2010,3,25,12,30,33),new Date(2010,3,25,12,30,34),new Date(2010,3,25,12,30,35),new Date(2010,3,25,12,30,36),new Date(2010,3,25,12,30,37),new Date(2010,3,25,12,30,38),new Date(2010,3,25,12,30,39),new Date(2010,3,25,12,30,40)], 'every second');
 
 
     var range = createRange(new Date(2010,3,25,12,30,30,500), new Date(2010,3,25,12,30,30,505));
-    equal(range.every('millisecond'), [new Date(2010,3,25,12,30,30,500),new Date(2010,3,25,12,30,30,501),new Date(2010,3,25,12,30,30,502),new Date(2010,3,25,12,30,30,503),new Date(2010,3,25,12,30,30,504),new Date(2010,3,25,12,30,30,505)], 'Date Range | every millisecond');
+    equal(range.every('millisecond'), [new Date(2010,3,25,12,30,30,500),new Date(2010,3,25,12,30,30,501),new Date(2010,3,25,12,30,30,502),new Date(2010,3,25,12,30,30,503),new Date(2010,3,25,12,30,30,504),new Date(2010,3,25,12,30,30,505)], 'every millisecond');
 
     // Every millisecond for 2 milliseconds
 
     var t = 1275318000000;
     var d1 = new Date(t);
     var d2 = new Date(t + 2);
-    equal(createRange(d1, d2).every(), [new Date(t), new Date(t + 1), new Date(t + 2)], 'Date Range | every should work without arguments');
+    equal(createRange(d1, d2).every(), [new Date(t), new Date(t + 1), new Date(t + 2)], 'every should work without arguments');
+
+    // Handles inverse date ranges.
+    var d1 = new Date(t);
+    var d2 = new Date(t - 2);
+    equal(createRange(d1, d2).every(), [new Date(t), new Date(t - 1), new Date(t - 2)], 'should increment down when inverted');
 
   });
 
   method('contains', function() {
     var range = createRange(new Date(2010,6,10,9), new Date(2010,8,10,9));
-    equal(range.contains(new Date(2010, 5,  10)), false, 'Date Range#contains | before');
-    equal(range.contains(new Date(2010, 7,  10)), true, 'Date Range#contains | middle');
-    equal(range.contains(new Date(2010, 9, 10)), false, 'Date Range#contains | after');
-    equal(range.contains(createRange(new Date(2010,6,10,9), new Date(2010,7,10,9))), true, 'Date Range#contains | contained range');
-    equal(range.contains(createRange(new Date(2010,4,10), new Date(2010,7,10,9))), false, 'Date Range#contains | 9 hours before the start');
-    equal(range.contains(createRange(new Date(2010,4,10,9), new Date(2010,6,10,10))), false, 'Date Range#contains | 1 minute after the end');
+    equal(range.contains(new Date(2010, 5,  10)), false, 'before');
+    equal(range.contains(new Date(2010, 7,  10)), true, 'middle');
+    equal(range.contains(new Date(2010, 9, 10)), false, 'after');
+    equal(range.contains(createRange(new Date(2010,6,10,9), new Date(2010,7,10,9))), true, 'contained range');
+    equal(range.contains(createRange(new Date(2010,4,10), new Date(2010,7,10,9))), false, '9 hours before the start');
+    equal(range.contains(createRange(new Date(2010,4,10,9), new Date(2010,6,10,10))), false, '1 minute after the end');
   });
 
   method('union', function() {
@@ -153,9 +158,9 @@ package('Date | Ranges', function () {
     var range2 = createRange(testCreateDate('2002'), testCreateDate('2004'));
     var range = range1.union(range2);
 
-    dateRangeEqual(range, createRange(testCreateDate('2001'), testCreateDate('2004')), 'Date Range#union | simple merge');
-    dateRangeEqual(range1, createRange(testCreateDate('2001'), testCreateDate('2003')), 'Date Range#union | range1 has not changed');
-    dateRangeEqual(range2, createRange(testCreateDate('2002'), testCreateDate('2004')), 'Date Range#union | range2 has not changed');
+    dateRangeEqual(range, createRange(testCreateDate('2001'), testCreateDate('2004')), 'simple merge');
+    dateRangeEqual(range1, createRange(testCreateDate('2001'), testCreateDate('2003')), 'range1 has not changed');
+    dateRangeEqual(range2, createRange(testCreateDate('2002'), testCreateDate('2004')), 'range2 has not changed');
 
     // Union of non-overlapping ranges
 
@@ -163,9 +168,9 @@ package('Date | Ranges', function () {
     var range2 = createRange(testCreateDate('2005'), testCreateDate('2008'));
     var range = range1.union(range2);
 
-    dateRangeEqual(range, createRange(testCreateDate('2001'), testCreateDate('2008')), 'Date Range#union | non-overlapping includes middle');
-    dateRangeEqual(range1, createRange(testCreateDate('2001'), testCreateDate('2003')), 'Date Range#union | range1 has not changed');
-    dateRangeEqual(range2, createRange(testCreateDate('2005'), testCreateDate('2008')), 'Date Range#union | range2 has not changed');
+    dateRangeEqual(range, createRange(testCreateDate('2001'), testCreateDate('2008')), 'non-overlapping includes middle');
+    dateRangeEqual(range1, createRange(testCreateDate('2001'), testCreateDate('2003')), 'range1 has not changed');
+    dateRangeEqual(range2, createRange(testCreateDate('2005'), testCreateDate('2008')), 'range2 has not changed');
 
     // Union of reversed overlapping ranges
 
@@ -173,7 +178,7 @@ package('Date | Ranges', function () {
     var range2 = createRange(testCreateDate('2001'), testCreateDate('2003'));
     var range = range1.union(range2);
 
-    dateRangeEqual(range, createRange(testCreateDate('2001'), testCreateDate('2004')), 'Date Range#union | reversed | simple merge');
+    dateRangeEqual(range, createRange(testCreateDate('2001'), testCreateDate('2004')), 'reversed | simple merge');
 
 
     // Union of reversed non-overlapping ranges
@@ -182,7 +187,7 @@ package('Date | Ranges', function () {
     var range2 = createRange(testCreateDate('2001'), testCreateDate('2003'));
     var range = range1.union(range2);
 
-    dateRangeEqual(range, createRange(testCreateDate('2001'), testCreateDate('2008')), 'Date Range#union | reversed | includes middle');
+    dateRangeEqual(range, createRange(testCreateDate('2001'), testCreateDate('2008')), 'reversed | includes middle');
 
   });
 
@@ -194,9 +199,9 @@ package('Date | Ranges', function () {
     var range2 = createRange(testCreateDate('2002'), testCreateDate('2004'));
     var range = range1.intersect(range2);
 
-    dateRangeEqual(range, createRange(testCreateDate('2002'), testCreateDate('2003')), 'Date Range#intersect | simple merge');
-    dateRangeEqual(range1, createRange(testCreateDate('2001'), testCreateDate('2003')), 'Date Range#intersect | range1 has not changed');
-    dateRangeEqual(range2, createRange(testCreateDate('2002'), testCreateDate('2004')), 'Date Range#intersect | range2 has not changed');
+    dateRangeEqual(range, createRange(testCreateDate('2002'), testCreateDate('2003')), 'simple merge');
+    dateRangeEqual(range1, createRange(testCreateDate('2001'), testCreateDate('2003')), 'range1 has not changed');
+    dateRangeEqual(range2, createRange(testCreateDate('2002'), testCreateDate('2004')), 'range2 has not changed');
 
     // Intersect of non-overlapping ranges
 
@@ -204,7 +209,7 @@ package('Date | Ranges', function () {
     var range2 = createRange(testCreateDate('2005'), testCreateDate('2008'));
     var range = range1.intersect(range2);
 
-    equal(range.isValid(), false, 'Date Range#intersect | non-overlapping ranges are invalid');
+    equal(range.isValid(), false, 'non-overlapping ranges are invalid');
 
 
     // Intersect of reversed overlapping ranges
@@ -213,7 +218,7 @@ package('Date | Ranges', function () {
     var range2 = createRange(testCreateDate('2001'), testCreateDate('2003'));
     var range = range1.intersect(range2);
 
-    dateRangeEqual(range, createRange(testCreateDate('2002'), testCreateDate('2003')), 'Date Range#intersect | simple merge');
+    dateRangeEqual(range, createRange(testCreateDate('2002'), testCreateDate('2003')), 'simple merge');
 
     // Intersect of reversed non-overlapping ranges
 
@@ -221,7 +226,7 @@ package('Date | Ranges', function () {
     var range2 = createRange(testCreateDate('2001'), testCreateDate('2003'));
     var range = range1.intersect(range2);
 
-    equal(range.isValid(), false, 'Date Range#intersect | non-overlapping ranges are invalid');
+    equal(range.isValid(), false, 'non-overlapping ranges are invalid');
 
   });
 
@@ -239,8 +244,8 @@ package('Date | Ranges', function () {
     var range1 = createRange(testCreateDate('2002'), testCreateDate('2004'));
     var range2 = range1.clone();
 
-    equal(range1, range2, 'Date Range#clone | clone object is equal by value');
-    equal(range1 === range2, false, 'Date Range#clone | clone is not strictly equal');
+    equal(range1, range2, 'clone object is equal by value');
+    equal(range1 === range2, false, 'clone is not strictly equal');
 
     // Deep range cloning
 
@@ -254,8 +259,8 @@ package('Date | Ranges', function () {
     range2.start.setFullYear(1999);
     range2.end.setFullYear(2002);
 
-    equal(range1.start.getFullYear(), 2010, 'Date Range | members should be cloned when range is cloned | start');
-    equal(range1.end.getFullYear(), 2010, 'Date Range | members should be cloned when range is cloned | start');
+    equal(range1.start.getFullYear(), 2010, 'members should be cloned when range is cloned | start');
+    equal(range1.end.getFullYear(), 2010, 'members should be cloned when range is cloned | start');
 
   });
 
@@ -263,15 +268,15 @@ package('Date | Ranges', function () {
   method('clamp', function() {
     var range = createRange(new Date(2010, 0), new Date(2011, 0));
 
-    dateEqual(range.clamp(new Date(2008, 0)), new Date(2010, 0), 'Date Range#clamp | low');
-    dateEqual(range.clamp(new Date(2012, 0)), new Date(2011, 0), 'Date Range#clamp | high');
-    dateEqual(range.clamp(new Date(2010, 6)), new Date(2010, 6), 'Date Range#clamp | mid');
-    dateEqual(range.clamp(new Date(2010, 0)), new Date(2010, 0), 'Date Range#clamp | low equal');
-    dateEqual(range.clamp(new Date(2011, 0)), new Date(2011, 0), 'Date Range#clamp | high equal');
+    dateEqual(range.clamp(new Date(2008, 0)), new Date(2010, 0), 'low');
+    dateEqual(range.clamp(new Date(2012, 0)), new Date(2011, 0), 'high');
+    dateEqual(range.clamp(new Date(2010, 6)), new Date(2010, 6), 'mid');
+    dateEqual(range.clamp(new Date(2010, 0)), new Date(2010, 0), 'low equal');
+    dateEqual(range.clamp(new Date(2011, 0)), new Date(2011, 0), 'high equal');
 
-    dateEqual(range.clamp(2), new Date(2010, 0), 'Date Range#clamp | low number');
-    dateEqual(range.clamp(new Date(2013, 5).getTime()), new Date(2011, 0), 'Date Range#clamp | high number');
-    equal(range.clamp(new Date(2010, 5).getTime()), new Date(2010, 5).getTime(), 'Date Range#clamp | mid number');
+    dateEqual(range.clamp(2), new Date(2010, 0), 'low number');
+    dateEqual(range.clamp(new Date(2013, 5).getTime()), new Date(2011, 0), 'high number');
+    equal(range.clamp(new Date(2010, 5).getTime()), new Date(2010, 5).getTime(), 'mid number');
   });
 
 });
