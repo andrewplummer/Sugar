@@ -279,7 +279,43 @@ package('Object', function () {
 
     var fn1 = function() {};
     fn1.foo = 'bar';
-    equal(run(Object, 'merge', [function(){}, fn1]).foo, 'bar', 'retains properties');
+    equal(run(Object, 'merge', [function(){}, fn1]).foo, undefined, 'functions are not merged');
+
+
+    // Merging nested functions
+
+    var fn1 = function() {
+      return 'a';
+    };
+    fn1.foo = 'a';
+    var fn2 = function() {
+      return 'b';
+    };
+    fn2.foo = 'b';
+    var obj1 = { fn: fn1 };
+    var obj2 = { fn: fn2 };
+    var result = run(Object, 'merge', [obj1, obj2, true]);
+    equal(result.fn(), 'b', 'override merge should choose function b');
+    equal(result.fn.foo, 'b', 'override merge should choose function b | fn property');
+
+
+    // Merging nested functions with resolve false
+
+    var fn1 = function() {
+      return 'a';
+    };
+    fn1.foo = 'a';
+    var fn2 = function() {
+      return 'b';
+    };
+    fn2.foo = 'b';
+    var obj1 = { fn: fn1 };
+    var obj2 = { fn: fn2 };
+    var result = run(Object, 'merge', [obj1, obj2, true, false]);
+    equal(result.fn(), 'a', 'non-override merge should choose function a');
+    equal(result.fn.foo, 'a', 'non-override merge should choose function a | fn property');
+
+
 
     var fn = function(key, a, b) {
       equal(key, 'a', 'resolve function | first argument is the key');
@@ -360,7 +396,7 @@ package('Object', function () {
 
     var fn1 = function() {};
     fn1.foo = 'bar';
-    equal(run(Object, 'extended', [function(){}]).merge(fn1).foo, 'bar', 'retains properties');
+    equal(run(Object, 'extended', [function(){}]).merge(fn1).foo, undefined, 'functions are not merged');
     equal(run(Object, 'extended', [{ a:1 }]).merge({ a:2 }), { a:2 }, 'incoming wins');
     equal(run(Object, 'extended', [{ a:1 }]).merge({ a:2 }, true), { a:2 }, 'incoming wins | params true');
     equal(run(Object, 'extended', [{ a:1 }]).merge({ a:2 }, false, false), { a:1 }, 'target wins');
