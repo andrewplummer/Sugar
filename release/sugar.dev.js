@@ -6368,7 +6368,7 @@
   function mergeObject(target, source, deep, resolve) {
 
     // Will not merge a primitive type.
-    if(isPrimitiveType(source)) return target;
+    if(!isObjectType(source)) return target;
 
     iterateOverProperties(source, function(prop) {
 
