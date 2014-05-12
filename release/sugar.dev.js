@@ -6471,9 +6471,9 @@
   extend(object, {
       /***
        * @method watch(<obj>, <prop>, <fn>)
-       * @returns Nothing
-       * @short Watches a property of <obj> and runs <fn> when it changes.
-       * @extra <fn> is passed three arguments: the property <prop>, the old value, and the new value. The return value of [fn] will be set as the new value. This method is useful for things such as validating or cleaning the value when it is set. Warning: this method WILL NOT work in browsers that don't support %Object.defineProperty% (IE 8 and below). This is the only method in Sugar that is not fully compatible with all browsers. %watch% is available as an instance method on extended objects.
+       * @returns Boolean
+       * @short Watches a property of <obj> and runs <fn> when it is updated.
+       * @extra <fn> is passed three arguments: the property <prop>, the old value, and the new value. The return value of [fn] will be set as the new value. Properties that are non-configurable or already have getters or setters cannot be watched. Return value is whether or not the watch operation succeeded. This method is useful for things such as validating or cleaning the value when it is set. Warning: this method WILL NOT work in browsers that don't support %Object.defineProperty% (IE 8 and below). This is the only method in Sugar that is not fully compatible with all browsers. %watch% is available as an instance method on extended objects.
        * @example
        *
        *   Object.watch({ foo: 'bar' }, 'foo', function(prop, oldVal, newVal) {
@@ -6488,13 +6488,13 @@
       var value, descriptor;
       if(!propertyDescriptorSupport) return false;
       descriptor = getOwnPropertyDescriptor(obj, prop);
-      if(!descriptor.configurable || descriptor.get || descriptor.set) {
+      if(descriptor && (!descriptor.configurable || descriptor.get || descriptor.set)) {
         return false;
       }
-      value = descriptor.value;
+      value = obj[prop];
       defineProperty(obj, prop, {
-        'enumerable'  : descriptor.enumerable,
-        'configurable': descriptor.configurable,
+        'configurable': true,
+        'enumerable'  : !descriptor || descriptor.enumerable,
         'get': function() {
           return value;
         },
@@ -6503,6 +6503,25 @@
         }
       });
       return true;
+    },
+
+      /***
+       * @method unwatch(<obj>, <prop>)
+       * @returns Nothing.
+       * @short Removes a watcher previously set.
+       * @extra Return value is whether or not the watch operation succeeded. %unwatch% is available as an instance method on extended objects.
+       ***/
+    'unwatch': function(obj, prop) {
+      var descriptor;
+      if(!propertyDescriptorSupport) return false;
+      descriptor = getOwnPropertyDescriptor(obj, prop);
+      if(!descriptor.configurable) {
+        return;
+      }
+      defineProperty(obj, prop, {
+        'configurable': true,
+        'value': 3
+      });
     }
   }, false, true, true);
 
