@@ -34,13 +34,18 @@ def cleanup
 end
 
 def extract_package(package)
+  path = get_package_path(package)
   @packages[package] ||= {
-    :size => get_full_size("lib/#{package}.js"),
+    :size => get_full_size(path),
     :minified_size => get_minified_size("release/precompiled/minified/#{package}.js", package),
     :extra => !@default_packages.include?(package),
     :modules => {}
   }
-  extract_methods("lib/#{package}.js", @packages[package])
+  extract_methods(path, @packages[package])
+end
+
+def get_package_path(package)
+  package == :core ? 'lib/core/core.js' : "lib/#{package}.js"
 end
 
 def extract_main_docs
