@@ -23,6 +23,7 @@ def match_block(b, linenum, target)
   if match = b.match(/@package (\w+)/)
 
     name = match[1]
+    name = 'Sugar' if name == 'Core'
 
     # package dependency
     match = b.match(/@dependency (.+)/)
