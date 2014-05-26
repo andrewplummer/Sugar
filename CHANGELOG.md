@@ -28,6 +28,7 @@ v1.5.0
 - Updated `Object.merge` to stop traversing into objects that have been resolved via a function.
 - Allowing a global thousands and decimal marker to be set.
 - `String#hankaku` now makes a hyphen from hyphen-like fullwidth chars in number mode.
+- Fixed issue with the digit `ten` in date creation (Issue #431).
 
 
 v1.4.2

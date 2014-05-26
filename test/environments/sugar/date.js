@@ -588,6 +588,10 @@ package('Date', function () {
     dateEqual(testCreateDate('beginning of tomorrow'), run(testCreateDate('tomorrow'), 'beginningOfDay'), 'beginning of tomorrow');
     dateEqual(testCreateDate('end of tomorrow'), run(testCreateDate('tomorrow'), 'endOfDay'), 'end of tomorrow');
 
+    // Issue #431 "ten minutes ago"
+    dateEqual(testCreateDate('ten minutes ago'), getRelativeDate(null, null, null, null, -10), 'ten minutes ago');
+    dateEqual(testCreateDate('ten minutes from now'), getRelativeDate(null, null, null, null, 10), 'ten minutes from now');
+
   });
 
 
