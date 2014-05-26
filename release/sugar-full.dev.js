@@ -45,9 +45,28 @@
 
   function initializeGlobal() {
     Sugar = {
+      /***
+       * @method Sugar.extend(<target>, <methods>, [instance] = true)
+       * @short This method exposes Sugar's core ability to extend Javascript natives, and is useful for creating custom plugins.
+       * @extra <target> should be the Javascript native function such as %String%, %Number%, etc. <methods> is an object containing the methods to extend. When [instance] is true the methods will be mapped to <target>'s prototype, if false they will be mapped onto <target> itself. For more see @global.
+       ***/
       'extend': extend,
-      'revert': revert,
+
+      /***
+       * @method Sugar.restore(<target>, ...)
+       * @short Restores Sugar methods that may have been overwritten by other scripts.
+       * @extra <target> should be the Javascript native function such as %String%, %Number%, etc. Arguments after this may be an enumerated list of method names to restore or can be omitted to restore all.
+       ***/
       'restore': restore,
+
+      /***
+       * @method Sugar.revert(<target>, ...)
+       * @short Reverts Sugar methods to what the were before they were added.
+       * @extra This method can be useful if Sugar methods are causing conflicts with other scripts. <target> should be the Javascript native function such as %String%, %Number%, etc. Arguments after this may be an enumerated list of method names to revert or can be omitted to revert all.
+       * @short Reverts stuff.
+       ***/
+      'revert': revert,
+
       'noConflict': noConflict
     };
     if (hasExports) {
@@ -2675,21 +2694,21 @@
       return this['weekdays'].indexOf(n) % 7;
     },
 
-    getNumber: function(n) {
-      var i;
-      if(isNumber(n)) {
-        return n;
-      } else if(n && (i = this['numbers'].indexOf(n)) !== -1) {
-        return (i + 1) % 10;
-      } else {
-        return 1;
+    getNumber: function(n, digit) {
+      var mapped = this.ordinalNumberMap[n];
+      if(mapped) {
+        if(digit) {
+          mapped = mapped % 10;
+        }
+        return mapped;
       }
+      return isNumber(n) ? n : 1;
     },
 
     getNumericDate: function(n) {
       var self = this;
       return n.replace(regexp(this['num'], 'g'), function(d) {
-        var num = self.getNumber(d);
+        var num = self.getNumber(d, true);
         return num || '';
       });
     },
@@ -2846,8 +2865,8 @@
         if(abbreviate) {
           full += '+' + full.slice(0,3);
         }
-        eachAlternate(full, function(day, j) {
-          arr[j * multiple + i] = day.toLowerCase();
+        eachAlternate(full, function(alt, j) {
+          arr[j * multiple + i] = alt.toLowerCase();
         });
       });
       loc[name] = arr;
@@ -2872,7 +2891,18 @@
       loc[name] = loc[name] || value;
     }
 
-    function setModifiers() {
+    function buildNumbers() {
+      var map = loc.ordinalNumberMap = {}, all = [];
+      loc['numbers'].forEach(function(full, i) {
+        eachAlternate(full, function(alt) {
+          all.push(alt);
+          map[alt] = i + 1;
+        });
+      });
+      loc['numbers'] = all;
+    }
+
+    function buildModifiers() {
       var arr = [];
       loc.modifiersByName = {};
       loc['modifiers'].push({ 'name': 'day', 'src': 'yesterday', 'value': -1 });
@@ -2898,17 +2928,18 @@
 
     canAbbreviate = !loc['monthSuffix'];
 
+    buildNumbers();
+
     setArray('months',   canAbbreviate, 12);
     setArray('weekdays', canAbbreviate, 7);
     setArray('units', false, 8);
-    setArray('numbers', false, 10);
 
     setDefault('code', localeCode);
     setDefault('date', getDigit(1,2, loc['digitDate']));
     setDefault('year', "'\\d{2}|" + getDigit(4,4));
     setDefault('num', getNum());
 
-    setModifiers();
+    buildModifiers();
 
     if(loc['monthSuffix']) {
       loc['month'] = getDigit(1,2);
@@ -9777,7 +9808,7 @@ Sugar.Date.addLocale('pt', {
   'months': 'janeiro,fevereiro,março,abril,maio,junho,julho,agosto,setembro,outubro,novembro,dezembro',
   'weekdays': 'domingo,segunda-feira,terça-feira,quarta-feira,quinta-feira,sexta-feira,sábado|sabado',
   'units': 'milisegundo:|s,segundo:|s,minuto:|s,hora:|s,dia:|s,semana:|s,mês|mêses|mes|meses,ano:|s',
-  'numbers': 'um,dois,três|tres,quatro,cinco,seis,sete,oito,nove,dez,uma,duas',
+  'numbers': 'um:|a,dois|duas,três|tres,quatro,cinco,seis,sete,oito,nove,dez',
   'tokens': 'a,de',
   'short':'{d} de {month} de {yyyy}',
   'long': '{d} de {month} de {yyyy} {H}:{mm}',
