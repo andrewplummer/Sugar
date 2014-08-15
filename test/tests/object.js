@@ -1526,7 +1526,7 @@ package('Object', function () {
     assertQueryStringGenerated({foo: 3}, [], 'foo=3', 'basic number');
     assertQueryStringGenerated({foo: true}, [], 'foo=true', 'basic boolean');
     assertQueryStringGenerated({foo: /reg/}, [], 'foo=%2Freg%2F', 'regexp');
-    assertQueryStringGenerated({foo:'a b'}, [], 'foo=a+b', 'should escape string');
+    assertQueryStringGenerated({foo:'a b'}, [], 'foo=a%20b', 'should escape string');
     assertQueryStringGenerated({foo: date}, [], 'foo=' + date.getTime(), 'should stringify date');
     assertQueryStringGenerated({foo:['a','b','c']}, [], 'foo[0]=a&foo[1]=b&foo[2]=c', 'basic array');
     assertQueryStringGenerated({foo:{bar:'tee',car:'hee'}}, [], 'foo[bar]=tee&foo[car]=hee', 'basic object');
@@ -1549,7 +1549,7 @@ package('Object', function () {
     assertQueryStringGenerated({foo: 3}, ['paw'], 'paw[foo]=3', 'namespace | basic number');
     assertQueryStringGenerated({foo: true}, ['paw'], 'paw[foo]=true', 'namespace | basic boolean');
     assertQueryStringGenerated({foo: /reg/}, ['paw'], 'paw[foo]=%2Freg%2F', 'namespace | regexp');
-    assertQueryStringGenerated({foo:'a b'}, ['paw'], 'paw[foo]=a+b', 'namespace | should escape string');
+    assertQueryStringGenerated({foo:'a b'}, ['paw'], 'paw[foo]=a%20b', 'namespace | should escape string');
     assertQueryStringGenerated({foo: date}, ['paw'], 'paw[foo]=' + date.getTime(), 'namespace | should stringify date');
     assertQueryStringGenerated({foo:['a','b','c']}, ['paw'], 'paw[foo][0]=a&paw[foo][1]=b&paw[foo][2]=c', 'namespace | basic array');
     assertQueryStringGenerated({foo:{bar:'tee',car:'hee'}}, ['paw'], 'paw[foo][bar]=tee&paw[foo][car]=hee', 'namespace | basic object');
@@ -1564,7 +1564,7 @@ package('Object', function () {
     assertQueryStringGenerated({foo:[['fap'],['cap']]}, ['paw'], 'paw[foo][0][0]=fap&paw[foo][1][0]=cap', 'namespace | array horizonal nested');
     assertQueryStringGenerated({foo:{bar:{map:'fap'}}}, ['paw'], 'paw[foo][bar][map]=fap', 'namespace | object double nested');
 
-    assertQueryStringGenerated({'hello there': 'bar'}, [], 'hello+there=bar', 'spaces in key');
+    assertQueryStringGenerated({'hello there': 'bar'}, [], 'hello%20there=bar', 'spaces in key');
     assertQueryStringGenerated({'"/+': 'bar'}, [], '%22%2F%2B=bar', 'key requires encoding');
     assertQueryStringGenerated({'時刻': 'bar'}, [], '%E6%99%82%E5%88%BB=bar', 'Japanese key');
     assertQueryStringGenerated({'%20': 'bar'}, [], '%2520=bar', '%20');
