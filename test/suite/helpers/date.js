@@ -64,9 +64,15 @@ getRelativeDate = function(year, month, day, hours, minutes, seconds, millisecon
     setDate = Math.min(setDate, testGetDaysInMonth(setYear, setMonth));
     d.setDate(setDate);
   }
-  d.setFullYear(setYear);
-  d.setMonth(setMonth);
-  d.setDate(setDate);
+  if (setYear !== d.getFullYear()) {
+    d.setFullYear(setYear);
+  }
+  if (setMonth !== d.getMonth()) {
+    d.setMonth(setMonth);
+  }
+  if (setDate !== d.getDate()) {
+    d.setDate(setDate);
+  }
 
   // "hours" and lower must be set by absolute date or they will result
   // in unintended dates when traversing over DST shifts.
@@ -219,6 +225,17 @@ assertAddUnitIsNumericallyEqual = function (d, method, add, message) {
       mult = 1;
   }
   equal(run(new Date(d), method, [add]) - d, add * mult, message);
+}
+
+// For some awesome reason, calling any "set" method on a newly created date
+// will have the effect of choosing the first ambiguous hour during a DST shift
+// backward. For example, if you are in Mountain Time on Nov 2nd 1:00am, a date
+// created with new Date() will be MST, but calling any set method on the date
+// will make it jump an hour back to MDT. Call this on inconsistent dates to
+// ensure that they are consistent.
+dstSafe = function(d) {
+  d.setFullYear(d.getFullYear());
+  return d;
 }
 
 // If a date cannot set itself back by an hour then it's possible that it was

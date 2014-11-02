@@ -544,7 +544,7 @@ package('Date', function () {
     dateEqual(testCreateDate('Last week'), getRelativeDate(null, null, -7), 'Last week');
     dateEqual(testCreateDate('Next month'), getRelativeDate(null, 1), 'Next month');
     dateEqual(testCreateDate('Next year'), getRelativeDate(1), 'Next year');
-    dateEqual(testCreateDate('this year'), getRelativeDate(0), 'this year');
+    dateEqual(testCreateDate('this year'), dstSafe(getRelativeDate(0)), 'this year');
 
     dateEqual(testCreateDate('beginning of the week'), getDateWithWeekdayAndOffset(0), 'beginning of the week');
     dateEqual(testCreateDate('beginning of this week'), getDateWithWeekdayAndOffset(0), 'beginning of this week');

@@ -61,7 +61,7 @@ package('Dates Simplified Chinese', function () {
     dateEqual(testCreateDate('大后天'), run(getRelativeDate(null, null, 3), 'reset'), 'day after day after tomorrow');
 
     dateEqual(testCreateDate('上周'), getRelativeDate(null, null, -7), 'Last week');
-    dateEqual(testCreateDate('这周'), getRelativeDate(null, null, 0), 'This week');
+    dateEqual(testCreateDate('这周'), dstSafe(getRelativeDate(null, null, 0)), 'This week');
     dateEqual(testCreateDate('下周'), getRelativeDate(null, null, 7), 'Next week');
 
     dateEqual(testCreateDate('上个月'), getRelativeDate(null, -1), 'last month');
