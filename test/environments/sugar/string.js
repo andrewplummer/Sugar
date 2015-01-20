@@ -1018,6 +1018,9 @@ package('String', function () {
     }
     test(str, ['img', fn], '<p>paragraph with <b>some bold text</b> and an image not! and thats all</p>', 'img tag should have been replaced');
 
+    var str = 'one <div                  class          =       "             bar              "  ></div          > two';
+    test(str, ['div'], 'one  two', 'very spaced out div tag');
+
   });
 
 
