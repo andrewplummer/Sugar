@@ -101,6 +101,17 @@ testGetHours = function(num) {
 }
 
 
+getExpectedTimezoneOffset = function(d, iso) {
+  // Beware of DST!
+  if(run(d, 'isUTC', [])) {
+    return iso ? 'Z' : '+0000';
+  }
+  var offset  = d.getTimezoneOffset();
+  var hours   = testPadNumber(Math.floor(-offset / 60), 2, true);
+  var minutes = testPadNumber(Math.abs(offset % 60), 2);
+  return hours + (iso ? ':' : '') + minutes;
+}
+
 testFormatDate = function(d) {
   var tzOffset = d.getTimezoneOffset();
   var tzSign   = tzOffset > 0 ? '+' : '';
