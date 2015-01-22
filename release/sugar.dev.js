@@ -3506,7 +3506,7 @@
       // as it would be due to the fact that the internal
       // "now" date in "relative" is created slightly after
       // that in "create".
-      d = new date(d.getTime() + 5);
+      d = new date(d.getTime() + 10);
     }
     return getAdjustedUnit(ms, function(unit) {
       return abs(sugarDate[unit.name + 'sFromNow'](d));
