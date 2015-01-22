@@ -1,5 +1,5 @@
 /*
- *  Sugar Library v1.5.0
+ *  Sugar Library edge
  *
  *  Freely distributable and licensed under the MIT-style license.
  *  Copyright (c) 2013 Andrew Plummer
@@ -2050,8 +2050,8 @@
      * @short Returns a slice of the array up to <index>.
      * @example
      *
-     *   [1,2,3].to(1)  -> [1]
-     *   [1,2,3].to(2)  -> [1,2]
+     *   [1,3,5].to(1)  -> [1]
+     *   [1,3,5].to(2)  -> [1,3]
      *
      ***/
     'to': function(num) {
@@ -2245,7 +2245,7 @@
     /***
      * @method sortBy(<map>, [desc] = false)
      * @returns Array
-     * @short Sorts the array by <map>.
+     * @short Returns a copy of the array sorted by <map>.
      * @extra <map> may be a function, a string acting as a shortcut, an array (comparison by multiple values), or blank (direct comparison of array values). [desc] will sort the array in descending order. When the field being sorted on is a string, the resulting order will be determined by an internal collation algorithm that is optimized for major Western languages, but can be customized. For more information see @array_sorting.
      * @example
      *
@@ -2595,70 +2595,44 @@
       name: 'year',
       method: 'FullYear',
       ambiguous: true,
-      multiplier: function(d) {
-        var adjust = d ? (isLeapYear(d) ? 1 : 0) : 0.25;
-        return (365 + adjust) * 24 * 60 * 60 * 1000;
-      }
+      multiplier: 365.25 * 24 * 60 * 60 * 1000
     },
     {
       name: 'month',
-      error: 0.919, // Feb 1-28 over 1 month
       method: 'Month',
       ambiguous: true,
-      multiplier: function(d, ms) {
-        var days = 30.4375, inMonth;
-        if(d) {
-          inMonth = getDaysInMonth(d);
-          if(ms <= inMonth * 24 * 60 * 60 * 1000) {
-            days = inMonth;
-          }
-        }
-        return days * 24 * 60 * 60 * 1000;
-      }
+      multiplier: 30.4375 * 24 * 60 * 60 * 1000
     },
     {
       name: 'week',
       method: 'ISOWeek',
-      multiplier: function() {
-        return 7 * 24 * 60 * 60 * 1000;
-      }
+      multiplier: 7 * 24 * 60 * 60 * 1000
     },
     {
       name: 'day',
-      error: 0.958, // DST traversal over 1 day
       method: 'Date',
       ambiguous: true,
-      multiplier: function() {
-        return 24 * 60 * 60 * 1000;
-      }
+      multiplier: 24 * 60 * 60 * 1000
     },
     {
       name: 'hour',
       method: 'Hours',
-      multiplier: function() {
-        return 60 * 60 * 1000;
-      }
+      multiplier: 60 * 60 * 1000
     },
     {
       name: 'minute',
       method: 'Minutes',
-      multiplier: function() {
-        return 60 * 1000;
-      }
+      multiplier: 60 * 1000
     },
     {
       name: 'second',
       method: 'Seconds',
-      multiplier: function() {
-        return 1000;
-      }
+      multiplier: 1000
     },
     {
       name: 'millisecond',
       method: 'Milliseconds',
-      multiplier: function() {
-        return 1;
-      }
+      multiplier: 1
     }
   ];
 
@@ -2722,7 +2696,7 @@
     },
 
     getDuration: function(ms) {
-      return this.convertAdjustedToFormat(getAdjustedUnit(ms), 'duration');
+      return this.convertAdjustedToFormat(getAdjustedUnitForNumber(ms), 'duration');
     },
 
     hasVariant: function(code) {
@@ -2747,7 +2721,7 @@
       if(isFunction(format)) {
         return format.call(this, num, u, ms, mode);
       }
-      mult = this['plural'] && num > 1 ? 1 : 0;
+      mult = !this['plural'] || num === 1 ? 0 : 1;
       unit = this['units'][mult * 8 + u] || this['units'][u];
       if(this['capitalizeUnit']) unit = simpleCapitalize(unit);
       sign = this['modifiers'].filter(function(m) { return m.name == 'sign' && m.value == (ms > 0 ? 1 : -1); })[0];
@@ -3182,7 +3156,7 @@
     });
   }
 
-  function getExtendedDate(f, localeCode, prefer, forceUTC) {
+  function getExtendedDate(contextDate, f, localeCode, prefer, forceUTC) {
     var d, relative, baseLocalization, afterCallbacks, loc, set, unit, unitIndex, weekday, num, tmp;
 
     d = getNewDate();
@@ -3415,7 +3389,7 @@
       if(!set) {
         // The Date constructor does something tricky like checking the number
         // of arguments so simply passing in undefined won't work.
-        if(f !== 'now') {
+        if(!/^now$/i.test(f)) {
           d = new date(f);
         }
         if(forceUTC) {
@@ -3424,6 +3398,15 @@
           d.addMinutes(-d.getTimezoneOffset());
         }
       } else if(relative) {
+        if (contextDate) {
+          // If this is a relative date and is being created via an instance
+          // method (usually "[unit]FromNow", etc), then use the original date
+          // (that the instance method was called on) as the starting point
+          // rather than the freshly created date above to avoid subtle
+          // discrepancies due to the fact that the fresh date was created
+          // slightly later.
+          d = cloneDate(contextDate);
+        }
         advanceDate(d, [set]);
       } else {
         if(d._utc) {
@@ -3487,40 +3470,48 @@
     return 32 - callDateGet(new date(callDateGet(d, 'FullYear'), callDateGet(d, 'Month'), 32), 'Date');
   }
 
-  function getAdjustedUnit(ms) {
-    var next, ams = abs(ms), value = ams, unitIndex = 0;
-    iterateOverDateUnits(function(name, unit, i) {
-      next = floor(withPrecision(ams / unit.multiplier(), 1));
-      if(next >= 1) {
-        value = next;
-        unitIndex = i;
+  // Gets an "adjusted date unit" which is a way of representing
+  // the largest possible meaningful unit. In other words, if passed
+  // 3600000, this will return an array which represents "1 hour".
+  function getAdjustedUnit(ms, fn) {
+    var unitIndex = 0, value = 0;
+    iterateOverObject(DateUnits, function(i, unit) {
+      value = abs(fn(unit));
+      if(value >= 1) {
+        unitIndex = 7 - i;
+        return false;
       }
-    }, 1);
+    });
     return [value, unitIndex, ms];
   }
 
-  function getRelativeWithMonthFallback(date) {
-    var adu = getAdjustedUnit(sugarDate.millisecondsFromNow(date));
-    if(allowMonthFallback(date, adu)) {
-      // If the adjusted unit is in months, then better to use
-      // the "monthsfromNow" which applies a special error margin
-      // for edge cases such as Jan-09 - Mar-09 being less than
-      // 2 months apart (when using a strict numeric definition).
-      // The third "ms" element in the array will handle the sign
-      // (past or future), so simply take the absolute value here.
-      adu[0] = abs(sugarDate.monthsFromNow(date));
-      adu[1] = 6;
+  // Gets the adjusted unit based on simple division by
+  // date unit multiplier.
+  function getAdjustedUnitForNumber(ms) {
+    return getAdjustedUnit(ms, function(unit) {
+      return floor(withPrecision(ms / unit.multiplier, 1));
+    });
+  }
+
+  // Gets the adjusted unit using the [unit]FromNow methods,
+  // which use internal date methods that neatly avoid vaguely
+  // defined units of time (days in month, leap years, etc).
+  function getAdjustedUnitForDate(d) {
+    var ms = sugarDate.millisecondsFromNow(d);
+    if (d.getTime() > date.now()) {
+
+      // This adjustment is solely to allow
+      // Date.create('1 year from now').relative() to remain
+      // "1 year from now" instead of "11 months from now",
+      // as it would be due to the fact that the internal
+      // "now" date in "relative" is created slightly after
+      // that in "create".
+      d = new date(d.getTime() + 5);
     }
-    return adu;
+    return getAdjustedUnit(ms, function(unit) {
+      return abs(sugarDate[unit.name + 'sFromNow'](d));
+    });
   }
-
-  function allowMonthFallback(date, adu) {
-    // Allow falling back to monthsFromNow if the unit is in months...
-    return adu[1] === 6 ||
-    // ...or if it's === 4 weeks and there are more days than in the given month
-    (adu[1] === 5 && adu[0] === 4 && sugarDate.daysFromNow(date) >= getDaysInMonth(getNewDate()));
-  }
-
 
   // Date format token helpers
 
@@ -3619,11 +3610,11 @@
     } else if(isString(sugarDate[format])) {
       format = sugarDate[format];
     } else if(isFunction(format)) {
-      adu = getRelativeWithMonthFallback(date);
+      adu = getAdjustedUnitForDate(date);
       format = format.apply(date, adu.concat(getLocalization(localeCode)));
     }
     if(!format && relative) {
-      adu = adu || getRelativeWithMonthFallback(date);
+      adu = adu || getAdjustedUnitForDate(date);
       // Adjust up if time is in ms, as this doesn't
       // look very good for a standard relative date.
       if(adu[1] === 0) {
@@ -3666,7 +3657,7 @@
 
   function compareDate(d, find, localeCode, buffer, forceUTC) {
     var p, t, min, max, override, accuracy = 0, loBuffer = 0, hiBuffer = 0;
-    p = getExtendedDate(find, localeCode, null, forceUTC);
+    p = getExtendedDate(null, find, localeCode, null, forceUTC);
     if(buffer > 0) {
       loBuffer = hiBuffer = buffer;
       override = true;
@@ -3859,16 +3850,21 @@
     }
   }
 
-  function createDate(args, prefer, forceUTC) {
+  function createDateFromArgs(contextDate, args, prefer, forceUTC) {
     var f, localeCode;
     if(isNumber(args[1])) {
-      // If the second argument is a number, then we have an enumerated constructor type as in "new Date(2003, 2, 12);"
+      // If the second argument is a number, then we have an
+      // enumerated constructor type as in "new Date(2003, 2, 12);"
       f = collectDateArguments(args)[0];
     } else {
-      f          = args[0];
+      f = args[0];
       localeCode = args[1];
     }
-    return getExtendedDate(f, localeCode, prefer, forceUTC).date;
+    return createDate(contextDate, f, localeCode, prefer, forceUTC);
+  }
+
+  function createDate(contextDate, f, localeCode, prefer, forceUTC) {
+    return getExtendedDate(contextDate, f, localeCode, prefer, forceUTC).date;
   }
 
   function invalidateDate(d) {
@@ -4080,46 +4076,39 @@
 
   function buildDateMethods() {
     extendSimilar(date, DateUnits, function(methods, u, i) {
-      var name = u.name, caps = simpleCapitalize(name), multiplier = u.multiplier(), since, until;
+      var name = u.name, caps = simpleCapitalize(name), since, until;
       u.addMethod = 'add' + caps + 's';
-      // "since/until now" only count "past" an integer, i.e. "2 days ago" is
-      // anything between 2 - 2.999 days. The default margin of error is 0.999,
-      // but "months" have an inherently larger margin, as the number of days
-      // in a given month may be significantly less than the number of days in
-      // the average month, so for example "30 days" before March 15 may in fact
-      // be 1 month ago. Years also have a margin of error due to leap years,
-      // but this is roughly 0.999 anyway (365 / 365.25). Other units do not
-      // technically need the error margin applied to them but this accounts
-      // for discrepancies like (15).hoursAgo() which technically creates the
-      // current date first, then creates a date 15 hours before and compares
-      // them, the discrepancy between the creation of the 2 dates means that
-      // they may actually be 15.0001 hours apart. Milliseconds don't have
-      // fractions, so they won't be subject to this error margin.
-      function applyErrorMargin(ms) {
-        var num      = ms / multiplier,
-            fraction = num % 1,
-            error    = u.error || 0.999;
-        if(fraction && abs(fraction % 1) > error) {
-          num = round(num);
-        }
-        return num < 0 ? ceil(num) : floor(num);
-      }
-      since = function(f, localeCode) {
-        return applyErrorMargin(this.getTime() - createDate([f, localeCode]).getTime());
-      };
-      until = function(f, localeCode) {
-        return applyErrorMargin(createDate([f, localeCode]).getTime() - this.getTime());
-      };
-      methods[name+'sAgo']     = until;
-      methods[name+'sUntil']   = until;
-      methods[name+'sSince']   = since;
-      methods[name+'sFromNow'] = since;
-      methods[u.addMethod] = function(num, reset) {
+
+      function add(num, reset) {
         var set = {};
         set[name] = num;
         return advanceDate(this, [set, reset]);
-      };
-      buildNumberToDateAlias(u, multiplier);
+      }
+
+      function timeDistanceNumeric(d1, d2) {
+        var n = (d1.getTime() - d2.getTime()) / u.multiplier;
+        return n < 0 ? ceil(n) : floor(n);
+      }
+
+      function timeDistanceTraversal(d1, d2) {
+        var count = 0, inc = d1 < d2, t = inc ? 1 : -1;
+        d1 = cloneDate(d1);
+        add.call(d1, t);
+        while (inc ? d1 <= d2 : d1 >= d2) {
+          count += -t;
+          add.call(d1, t);
+        }
+        return count;
+      }
+
+      function compareSince(fn, d, args) {
+        return fn(d, createDateFromArgs(d, args, 0, false));
+      }
+
+      function compareUntil(fn, d, args) {
+        return fn(createDateFromArgs(d, args, 0, false), d);
+      }
+
       if(i < 3) {
         ['Last','This','Next'].forEach(function(shift) {
           methods['is' + shift + caps] = function() {
@@ -4134,7 +4123,27 @@
         methods['endOf' + caps] = function() {
           return moveToEndOfUnit(this, name);
         };
+        since = function() {
+          return compareSince(timeDistanceTraversal, this, arguments);
+        };
+        until = function() {
+          return compareUntil(timeDistanceTraversal, this, arguments);
+        };
+      } else {
+        since = function() {
+          return compareSince(timeDistanceNumeric, this, arguments);
+        };
+        until = function() {
+          return compareUntil(timeDistanceNumeric, this, arguments);
+        };
       }
+      methods[name+'sAgo']     = until;
+      methods[name+'sUntil']   = until;
+      methods[name+'sSince']   = since;
+      methods[name+'sFromNow'] = since;
+
+      methods[u.addMethod] = add;
+      buildNumberToDateAlias(u, u.multiplier);
     });
   }
 
@@ -4289,15 +4298,15 @@
     extend(date, {
       'utc': {
         'create': function() {
-          return createDate(arguments, 0, true);
+          return createDateFromArgs(null, arguments, 0, true);
         },
 
         'past': function() {
-          return createDate(arguments, -1, true);
+          return createDateFromArgs(null, arguments, -1, true);
         },
 
         'future': function() {
-          return createDate(arguments, 1, true);
+          return createDateFromArgs(null, arguments, 1, true);
         }
       }
     }, false);
@@ -4338,7 +4347,7 @@
      *
      ***/
     'create': function() {
-      return createDate(arguments);
+      return createDateFromArgs(null, arguments);
     },
 
      /***
@@ -4356,7 +4365,7 @@
      *
      ***/
     'past': function() {
-      return createDate(arguments, -1);
+      return createDateFromArgs(null, arguments, -1);
     },
 
      /***
@@ -4374,7 +4383,7 @@
      *
      ***/
     'future': function() {
-      return createDate(arguments, 1);
+      return createDateFromArgs(null, arguments, 1);
     },
 
      /***
@@ -4638,7 +4647,7 @@
      *
      ***/
     'isAfter': function(d, margin, utc) {
-      return this.getTime() > createDate([d]).getTime() - (margin || 0);
+      return this.getTime() > createDate(null, d).getTime() - (margin || 0);
     },
 
      /***
@@ -4653,7 +4662,7 @@
      *
      ***/
     'isBefore': function(d, margin) {
-      return this.getTime() < createDate([d]).getTime() + (margin || 0);
+      return this.getTime() < createDate(null, d).getTime() + (margin || 0);
     },
 
      /***
@@ -4669,8 +4678,8 @@
      ***/
     'isBetween': function(d1, d2, margin) {
       var t  = this.getTime();
-      var t1 = createDate([d1]).getTime();
-      var t2 = createDate([d2]).getTime();
+      var t1 = createDate(null, d1).getTime();
+      var t2 = createDate(null, d2).getTime();
       var lo = min(t1, t2);
       var hi = max(t1, t2);
       margin = margin || 0;
@@ -4993,10 +5002,10 @@
       return round(this * multiplier);
     }
     function after() {
-      return sugarDate[u.addMethod](createDate(arguments), this);
+      return sugarDate[u.addMethod](createDateFromArgs(null, arguments), this);
     }
     function before() {
-      return sugarDate[u.addMethod](createDate(arguments), -this);
+      return sugarDate[u.addMethod](createDateFromArgs(null, arguments), -this);
     }
     methods[name] = base;
     methods[name + 's'] = base;
@@ -7203,7 +7212,7 @@
     tags = flattenedArgs(args).map(function(tag) {
       return escapeRegExp(tag);
     }).join('|');
-    reg = regexp('<(\\/)?(' + (tags || '[^\\s>]+') + ')\\s*([^<>]*?)\\s*(\\/)?\\s*>', 'gi');
+    reg = regexp('<(\\/)?(' + (tags || '[^\\s>]+') + ')(\\s+[^<>]*?)?\\s*(\\/)?>', 'gi');
     return runTagReplacements(str, reg, strip, replacementFn);
   }
 
@@ -7238,7 +7247,7 @@
     while(match = reg.exec(str)) {
 
       var tagName         = match[2];
-      var attributes      = match[3];
+      var attributes      = (match[3]|| '').slice(1);
       var isClosingTag    = !!match[1];
       var isSelfClosing   = !!match[4];
       var tagLength       = match[0].length;
