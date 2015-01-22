@@ -1,22 +1,12 @@
 package('Date', function () {
 
+
+
   // Setup
 
   var d;
   var now = new Date();
   var thisYear = now.getFullYear();
-
-  // ISO Offset
-  // Be VERY careful here. Timezone offset is NOT always guaranteed to be the same for a given timezone,
-  // as DST may come into play.
-  var d = new Date();
-  var offset = d.getTimezoneOffset();
-  var isotzd = testPadNumber(Math.floor(-offset / 60), 2, true) + ':' + testPadNumber(Math.abs(offset % 60), 2);
-  var tzd = isotzd.replace(/:/, '');
-  if(run(d, 'isUTC', [])) {
-    isotzd = 'Z';
-    tzd = '+0000';
-  }
 
   // Imaginary locale to test locale switching
   testAddLocale('fo', {
@@ -30,9 +20,6 @@ package('Date', function () {
   notEqual(testGetLocale().code, undefined, 'Current locale must be something... other libs may overwrite this');
 
   testSetLocale('en');
-
-  //var day, d, date1, date2, dst, o;
-
 
   method('isValid', function() {
 
@@ -1383,6 +1370,7 @@ package('Date', function () {
     test(d, ['{yyyy}-{MM}-{dd} {hh}:{mm}:{ss}Z'], '2010-08-05 04:03:02Z', 'ISO8601 UTC');
     test(d, ['{Month}, {yyyy}'], 'August, 2010', 'month and year');
 
+    var isotzd = getExpectedTimezoneOffset(d, true);
     test(d, [getProperty(Date, 'ISO8601_DATE')], '2010-08-05', 'ISO8601_DATE | constant');
     test(d, [getProperty(Date, 'ISO8601_DATETIME')], '2010-08-05T04:03:02.000'+isotzd, 'ISO8601_DATETIME | constant');
 
@@ -1431,8 +1419,8 @@ package('Date', function () {
 
   method('getUTCOffset', function() {
     var d = new Date('August 5, 2010 04:03:02');
-    test(d, tzd, 'no colon');
-    test(d, [true], isotzd, 'colon');
+    test(d, getExpectedTimezoneOffset(d), 'no colon');
+    test(d, [true], getExpectedTimezoneOffset(d, true), 'colon');
   });
 
   method('iso', function() {
@@ -1508,7 +1496,7 @@ package('Date', function () {
     equal(run(testCreateDate('360 minutes ago'), 'relative'), '6 hours ago', 'minutes');
     equal(run(testCreateDate('360 hours ago'), 'relative'), '2 weeks ago', 'hours');
     equal(run(testCreateDate('340 days ago'), 'relative'), '11 months ago', '340 days');
-    equal(run(testCreateDate('360 days ago'), 'relative'), '1 year ago', '360 days');
+    equal(run(testCreateDate('360 days ago'), 'relative'), '11 months ago', '360 days');
     equal(run(testCreateDate('360 weeks ago'), 'relative'), '6 years ago', 'weeks');
     equal(run(testCreateDate('360 months ago'), 'relative'), '30 years ago', 'months');
     equal(run(testCreateDate('360 years ago'), 'relative'), '360 years ago', 'years');
@@ -1519,11 +1507,14 @@ package('Date', function () {
     equal(run(testCreateDate('361 minutes from now'), 'relative'), '6 hours from now', 'minutes');
     equal(run(testCreateDate('360 hours from now'), 'relative'), '2 weeks from now', 'hours');
     equal(run(testCreateDate('340 days from now'), 'relative'), '11 months from now', '340 days');
-    equal(run(testCreateDate('360 days from now'), 'relative'), '1 year from now', '360 days');
+    equal(run(testCreateDate('360 days from now'), 'relative'), '11 months from now', '360 days');
     equal(run(testCreateDate('360 weeks from now'), 'relative'), '6 years from now', 'weeks');
     equal(run(testCreateDate('360 months from now'), 'relative'), '30 years from now', 'months');
     equal(run(testCreateDate('360 years from now'), 'relative'), '360 years from now', 'years');
     equal(run(testCreateDate('13 months from now'), 'relative'), '1 year from now', '12 months ago');
+
+    // Issue #474
+    equal(run(testCreateDate('2 months from now'), 'relative'), '2 months from now', 'relative units should remain the same');
 
   });
 
@@ -1559,7 +1550,7 @@ package('Date', function () {
     test(d, [d], true, 'self is true');
     test(d, [new Date(2010,7,5,13,45,2,542)], true, 'equal date is true');
     test(d, [new Date()], false, 'other dates are not true');
-    test(d, [1281015902542 + (offset * 60 * 1000)], true, 'timestamps also accepted');
+    test(d, [1281015902542 + (d.getTimezoneOffset() * 60 * 1000)], true, 'timestamps also accepted');
 
     test(new Date(), ['now', 10], true, 'now is now');
     test(new Date(2010,7,5,13,42,42,324), ['August 5th, 2010 13:42:42.324'], true, 'August 5th, 2010 13:42:42.324');
@@ -1856,6 +1847,11 @@ package('Date', function () {
     // Issue #267
     equal(run(new Date('Mar 01, 2013'), 'daysUntil', [new Date('Mar 28, 2013')]), 27, 'should not be phased by DST traversal');
     equal(run(new Date('Mar 10, 2013'), 'daysUntil', [new Date('Mar 11, 2013')]), 1, 'exact DST traversal point for CST/CDT');
+
+    // Issue #474
+    var daysUntil9pm = run(new Date('11/10/2014 21:00:00'), 'daysSince', [new Date('7/1/2014')]);
+    var daysUntil10pm = run(new Date('11/10/2014 22:00:00'), 'daysSince', [new Date('7/1/2014')]);
+    equal(daysUntil9pm, daysUntil10pm, 'daysSince should not traverse between 21:00 and 22:00');
 
   });
 
@@ -2783,6 +2779,7 @@ package('Number', function () {
 
     testSetLocale('en');
 
+    test(0, '0 milliseconds', '1 milliseconds');
     test(1, '1 millisecond', '1 millisecond');
     test(2, '2 milliseconds', '2 milliseconds');
     test(100, '100 milliseconds', '100 milliseconds');

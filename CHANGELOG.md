@@ -29,6 +29,8 @@ v1.5.0
 - Allowing a global thousands and decimal marker to be set.
 - `String#hankaku` now makes a hyphen from hyphen-like fullwidth chars in number mode.
 - Fixed issue with the digit `ten` in date creation (Issue #431).
+- Fixed issue with the `Date#[unit]Since` improperly applying error margins.
+- Refactored the `since` and `fromNow` methods to traverse using internal date methods instead of applying an error margin. This makes them much more accurate in dicey situations like DST traversal, leap years, etc.
 
 
 v1.4.2
