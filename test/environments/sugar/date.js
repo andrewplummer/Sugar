@@ -339,10 +339,14 @@ package('Date', function () {
 
   group('Create | Fuzzy Dates', function() {
     dateEqual(testCreateDate('now'), new Date(), 'now');
+    dateEqual(testCreateDate('Now'), new Date(), 'Now');
     dateEqual(testCreateDate('Just now'), new Date(), 'Just Now');
-    dateEqual(testCreateDate('today'), new Date(now.getFullYear(), now.getMonth(), now.getDate()), 'Today');
-    dateEqual(testCreateDate('yesterday'), new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1), 'Yesterday');
-    dateEqual(testCreateDate('tomorrow'), new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1), 'Tomorrow');
+    dateEqual(testCreateDate('today'), new Date(now.getFullYear(), now.getMonth(), now.getDate()), 'today');
+    dateEqual(testCreateDate('Today'), new Date(now.getFullYear(), now.getMonth(), now.getDate()), 'Today');
+    dateEqual(testCreateDate('yesterday'), new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1), 'yesterday');
+    dateEqual(testCreateDate('Yesterday'), new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1), 'Yesterday');
+    dateEqual(testCreateDate('tomorrow'), new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1), 'tomorrow');
+    dateEqual(testCreateDate('Tomorrow'), new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1), 'Tomorrow');
     dateEqual(testCreateDate('4pm'), new Date(now.getFullYear(), now.getMonth(), now.getDate(), 16), '4pm');
     dateEqual(testCreateDate('today at 4pm'), new Date(now.getFullYear(), now.getMonth(), now.getDate(), 16), 'Today at 4pm');
     dateEqual(testCreateDate('today at 4 pm'), new Date(now.getFullYear(), now.getMonth(), now.getDate(), 16), 'Today at 4 pm');
