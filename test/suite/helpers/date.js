@@ -191,13 +191,6 @@ testAddLocale = function(code, set) {
   return Sugar.Date.addLocale(code, set);
 }
 
-testMonthsFromNow = function(n, monthString, weekString) {
-  var en = n === 1 ? '1 month from now' : n + ' months from now';
-  var date = testCreateDate(en, 'en');
-  var expected = date.getDate() < new Date().getDate() ? weekString : monthString;
-  equal(run(date, 'relative'), expected, en);
-}
-
 assertAddUnitIsNumericallyEqual = function (d, method, add, message) {
   var mult;
   message = [message, method, add, 'should be equal to adding absolute time'].join(' | ');

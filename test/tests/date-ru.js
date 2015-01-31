@@ -180,7 +180,6 @@ package('Dates Russian', function () {
     test(testCreateDate('1 hour from now', 'en'),   'через 1 час');
     test(testCreateDate('1 day from now', 'en'),    'через 1 день');
     test(testCreateDate('1 week from now', 'en'),   'через 1 неделю');
-    testMonthsFromNow(1, 'через 1 месяц',           'через 4 недели');
     test(testCreateDate('1 year from now', 'en'),   'через 1 год');
 
     test(testCreateDate('2 seconds from now', 'en'), 'через 2 секунды');
@@ -188,7 +187,6 @@ package('Dates Russian', function () {
     test(testCreateDate('2 hours from now', 'en'),   'через 2 часа');
     test(testCreateDate('2 days from now', 'en'),    'через 2 дня');
     test(testCreateDate('2 weeks from now', 'en'),   'через 2 недели');
-    testMonthsFromNow(2, 'через 2 месяца',           'через 1 месяц');
     test(testCreateDate('2 years from now', 'en'),   'через 2 года');
 
     test(testCreateDate('5 seconds from now', 'en'), 'через 5 секунд');
@@ -196,7 +194,6 @@ package('Dates Russian', function () {
     test(testCreateDate('5 hours from now', 'en'),   'через 5 часов');
     test(testCreateDate('5 days from now', 'en'),    'через 5 дней');
     test(testCreateDate('5 weeks from now', 'en'),   'через 1 месяц');
-    testMonthsFromNow(5, 'через 5 месяцев',          'через 4 месяца');
     test(testCreateDate('5 years from now', 'en'),   'через 5 лет');
 
     test(testCreateDate('11 hours ago', 'en'), '11 часов назад');
