@@ -112,7 +112,6 @@ package('Dates Spanish', function () {
     test(testCreateDate('1 hour from now', 'en'),   'dentro de 1 hora');
     test(testCreateDate('1 day from now', 'en'),    'dentro de 1 día');
     test(testCreateDate('1 week from now', 'en'),   'dentro de 1 semana');
-    testMonthsFromNow(1, 'dentro de 1 mes', 'dentro de 4 semanas');
     test(testCreateDate('1 year from now', 'en'),   'dentro de 1 año');
 
     test(testCreateDate('5 second from now', 'en'), 'dentro de 5 segundos');
@@ -120,7 +119,6 @@ package('Dates Spanish', function () {
     test(testCreateDate('5 hour from now', 'en'),   'dentro de 5 horas');
     test(testCreateDate('5 day from now', 'en'),    'dentro de 5 días');
     test(testCreateDate('5 week from now', 'en'),   'dentro de 1 mes');
-    testMonthsFromNow(5, 'dentro de 5 meses', 'dentro de 4 meses');
     test(testCreateDate('5 year from now', 'en'),   'dentro de 5 años');
   });
 

@@ -120,7 +120,6 @@ package('Dates Dutch', function () {
     test(testCreateDate('1 hour from now', 'en'), '1 uur vanaf nu', '1 hour ago');
     test(testCreateDate('1 day from now', 'en'), '1 dag vanaf nu', '1 day ago');
     test(testCreateDate('1 week from now', 'en'), '1 week vanaf nu', '1 week ago');
-    testMonthsFromNow(1, '1 maand vanaf nu', '4 weken vanaf nu');
     test(testCreateDate('1 year from now', 'en'), '1 jaar vanaf nu', '1 year ago');
 
     test(testCreateDate('5 seconds from now', 'en'), '5 seconden vanaf nu', '5 seconds ago');
@@ -128,7 +127,6 @@ package('Dates Dutch', function () {
     test(testCreateDate('5 hours from now', 'en'), '5 uur vanaf nu', '5 hours ago');
     test(testCreateDate('5 days from now', 'en'), '5 dagen vanaf nu', '5 days ago');
     test(testCreateDate('5 weeks from now', 'en'), '1 maand vanaf nu', '5 weeks ago');
-    testMonthsFromNow(5, '5 maanden vanaf nu', '4 maanden vanaf nu');
     test(testCreateDate('5 years from now', 'en'), '5 jaar vanaf nu', '5 years ago');
   });
 

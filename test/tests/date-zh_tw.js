@@ -115,7 +115,6 @@ package('Dates Traditional Chinese', function () {
     test(testCreateDate('1 hour from now', 'en'),   '1小時後');
     test(testCreateDate('1 day from now', 'en'),    '1天後');
     test(testCreateDate('1 week from now', 'en'),   '1個星期後');
-    testMonthsFromNow(1, '1個月後', '4個星期後');
     test(testCreateDate('1 year from now', 'en'),   '1年後');
 
     test(testCreateDate('5 second from now', 'en'), '5秒鐘後');
@@ -123,7 +122,6 @@ package('Dates Traditional Chinese', function () {
     test(testCreateDate('5 hour from now', 'en'),   '5小時後');
     test(testCreateDate('5 day from now', 'en'),    '5天後');
     test(testCreateDate('5 week from now', 'en'),   '1個月後');
-    testMonthsFromNow(5, '5個月後', '4個月後');
     test(testCreateDate('5 year from now', 'en'),   '5年後');
   });
 

@@ -1677,8 +1677,8 @@ package('Date', function () {
     // Issue #474
     // "1 month from now" can be forced back when there are not enough days in a month.
     // In these cases "relative()" should return "4 weeks from now" instead of "1 month from now".
-    testMonthsFromNow(1, '1 month from now', '4 weeks from now');
-    testMonthsFromNow(2, '2 months from now', '1 month from now');
+    equal(run(testCreateDate('11/10/2014 21:00:00'), 'daysSince', ['7/1/2014']), 132, 'daysSince should be 132 at 9pm');
+    equal(run(testCreateDate('11/10/2014 22:00:00'), 'daysSince', ['7/1/2014']), 132, 'daysSince should be 132 at 10pm');
 
   });
 

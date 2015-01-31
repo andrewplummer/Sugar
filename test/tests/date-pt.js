@@ -107,7 +107,6 @@ package('Dates Portuguese', function () {
     test(testCreateDate('1 hour from now', 'en'), 'daqui a 1 hora');
     test(testCreateDate('1 day from now', 'en'), 'daqui a 1 dia');
     test(testCreateDate('1 week from now', 'en'), 'daqui a 1 semana');
-    testMonthsFromNow(1, 'daqui a 1 mês', 'daqui a 4 semanas');
     test(testCreateDate('1 year from now', 'en'), 'daqui a 1 ano');
 
     test(testCreateDate('5 second from now', 'en'), 'daqui a 5 segundos');
@@ -115,7 +114,6 @@ package('Dates Portuguese', function () {
     test(testCreateDate('5 hour from now', 'en'), 'daqui a 5 horas');
     test(testCreateDate('5 day from now', 'en'), 'daqui a 5 dias');
     test(testCreateDate('5 week from now', 'en'), 'daqui a 1 mês');
-    testMonthsFromNow(5, 'daqui a 5 mêses', 'daqui a 4 mêses');
     test(testCreateDate('5 year from now', 'en'), 'daqui a 5 anos');
   });
 

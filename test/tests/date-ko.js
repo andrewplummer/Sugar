@@ -111,7 +111,6 @@ package('Dates Korean', function () {
     test(testCreateDate('1 hour from now', 'en'), '1시간 후', '1 hour from now');
     test(testCreateDate('1 day from now', 'en'), '1일 후', '1 day from now');
     test(testCreateDate('1 week from now', 'en'), '1주 후', '1 week from now');
-    testMonthsFromNow(1, '1개월 후', '4주 후');
     test(testCreateDate('1 year from now', 'en'), '1년 후', '1 year from now');
 
     test(testCreateDate('5 seconds from now', 'en'), '5초 후', '5 seconds from now');
@@ -119,7 +118,6 @@ package('Dates Korean', function () {
     test(testCreateDate('5 hours from now', 'en'), '5시간 후', '5 hours from now');
     test(testCreateDate('5 days from now', 'en'), '5일 후', '5 days from now');
     test(testCreateDate('5 weeks from now', 'en'), '1개월 후', '5 weeks from now');
-    testMonthsFromNow(5, '5개월 후', '4개월 후');
     test(testCreateDate('5 years from now', 'en'), '5년 후', '5 years from now');
   });
 

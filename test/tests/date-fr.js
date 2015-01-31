@@ -151,7 +151,6 @@ package('Dates French', function () {
     test(testCreateDate('1 hour from now', 'en'),   'dans 1 heure');
     test(testCreateDate('1 day from now', 'en'),    'dans 1 jour');
     test(testCreateDate('1 week from now', 'en'),   'dans 1 semaine');
-    testMonthsFromNow(1, 'dans 1 mois', 'dans 4 semaines');
     test(testCreateDate('1 year from now', 'en'),   'dans 1 an');
 
     test(testCreateDate('5 second from now', 'en'), 'dans 5 secondes');
@@ -159,7 +158,6 @@ package('Dates French', function () {
     test(testCreateDate('5 hour from now', 'en'),   'dans 5 heures');
     test(testCreateDate('5 day from now', 'en'),    'dans 5 jours');
     test(testCreateDate('5 week from now', 'en'),   'dans 1 mois');
-    testMonthsFromNow(5, 'dans 5 mois', 'dans 4 mois');
     test(testCreateDate('5 year from now', 'en'),   'dans 5 ans');
   });
 
