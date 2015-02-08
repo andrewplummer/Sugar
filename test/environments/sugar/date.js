@@ -492,7 +492,7 @@ package('Date', function () {
     dateEqual(testCreateDate('Thursday of next week, 3:30pm'), getDateWithWeekdayAndOffset(4, 7, 15, 30), 'thursday of next week, 3:30pm');
 
 
-    dateEqual(testCreateDate('the 2nd Tuesday of June, 2012'), new Date(2012, 5, 12), 'the 2nd tuesday of June');
+    dateEqual(testCreateDate('the 2nd Tuesday of June, 2012'), new Date(2012, 5, 12), 'the 2nd tuesday of June, 2012');
 
     dateEqual(testCreateDate('the 1st Tuesday of November, 2012'), new Date(2012, 10, 6), 'the 1st tuesday of November');
     dateEqual(testCreateDate('the 2nd Tuesday of November, 2012'), new Date(2012, 10, 13), 'the 2nd tuesday of November');
