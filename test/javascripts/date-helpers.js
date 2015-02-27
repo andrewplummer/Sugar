@@ -194,3 +194,10 @@ testAddLocale = function(code, set) {
   }
 }
 
+testFourWeeksAgo = function(fourWeeksString, oneMonthString) {
+  var fourWeeksAgo = new Date();
+  fourWeeksAgo.setDate(fourWeeksAgo.getDate() - 7 * 4);
+  var oneMonthAgo = new Date();
+  oneMonthAgo.setMonth(fourWeeksAgo.getMonth() - 1);
+  return fourWeeksAgo > oneMonthAgo ? oneMonthString : fourWeeksString;
+}

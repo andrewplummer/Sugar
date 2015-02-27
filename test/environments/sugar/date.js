@@ -1520,6 +1520,9 @@ package('Date', function () {
     // Issue #474
     equal(run(testCreateDate('2 months from now'), 'relative'), '2 months from now', 'relative units should remain the same');
 
+    // 4 weeks ago can be "1 month ago" in the case of February.
+    equal(run(testCreateDate('4 weeks ago'), 'relative'), testFourWeeksAgo('4 weeks ago', '1 month ago'), '4 weeks ago vs. 1 month ago');
+
   });
 
 

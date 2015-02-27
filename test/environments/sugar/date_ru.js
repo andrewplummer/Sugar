@@ -124,9 +124,11 @@ package('Date | Russian', function () {
     test(testCreateDate('4 minutes ago', 'en'), '4 минуты назад');
     test(testCreateDate('4 hours ago', 'en'),   '4 часа назад');
     test(testCreateDate('4 days ago', 'en'),    '4 дня назад');
-    test(testCreateDate('4 weeks ago', 'en'),   '4 недели назад');
     test(testCreateDate('4 months ago', 'en'),  '4 месяца назад');
     test(testCreateDate('4 years ago', 'en'),   '4 года назад');
+
+    // Four weeks ago is an oddball as it may be "1 month ago" in February
+    test(testCreateDate('4 weeks ago', 'en'),   testFourWeeksAgo('4 недели назад','1 месяц назад'));
 
     test(testCreateDate('5 seconds ago', 'en'), '5 секунд назад');
     test(testCreateDate('5 minutes ago', 'en'), '5 минут назад');
@@ -233,4 +235,3 @@ package('Number | Russian Dates', function () {
   });
 
 });
-
