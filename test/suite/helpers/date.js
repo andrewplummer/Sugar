@@ -220,3 +220,32 @@ assertAddUnitIsNumericallyEqual = function (d, method, add, message) {
   }
   equal(run(new Date(d), method, [add]) - d, add * mult, message);
 }
+
+// If a date cannot set itself back by an hour then it's possible that it was
+// shifted forward as the target time did not exist.
+mayHaveDSTShifted = function(d) {
+  var d2 = new Date(d), h = d2.getHours();
+  d2.setHours(d.getHours() - 1);
+  return d2.getHours() === h;
+}
+
+// "relative" goes through the Date#since/until methods which need to step
+// through "set" methods for higher order units (anything above hours). Doing
+// this can occasionally result in a forward DST shift -- when a date will move
+// forward an hour because the target date does not exist (as it is during the
+// shift). While this can be compensated for internally when traversing, nothing
+// can be done if the date has already jumped forward. In other words,
+// "12 months ago" is not always "12 months ago" because at the point of the
+// date being created it may have shifted forward in time by 1 hour. These tests
+// should technically be rewritten to account for this, however the complexity
+// of timezones and locales makes this prohibitive. It is also impossible to be
+// sure that the shift is actually occurring or the date landed on was
+// coincidentally an hour after a DST shift. Note that this issue does not exist
+// in Fall as there are no gaps in the clock. Conversely "set" methods do not
+// work so absolute time needs to be used with "setTime".
+assertRelative = function(format, expected) {
+  var d = testCreateDate(format, 'en');
+  if (!mayHaveDSTShifted(d)) {
+    equal(run(d, 'relative'), expected, 'relative | ' + format);
+  }
+}

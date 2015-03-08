@@ -11,15 +11,15 @@ package('Dates Finnish', function () {
   });
 
   method('relative', function() {
-    test(testCreateDate('1 hour ago', 'en'), 'tunti sitten', 'relative format past');
-    test(testCreateDate('2 hours ago', 'en'), '2 tuntia sitten', 'relative format past');
-    test(testCreateDate('1 hour from now', 'en'), 'tunnin päästä', 'relative format future');
-    test(testCreateDate('2 hours from now', 'en'), '2 tunnin päästä', 'relative format future');
-    test(testCreateDate('12 hours ago', 'en'), '12 tuntia sitten', '22 hours ago');
-    test(testCreateDate('12 hours from now', 'en'), '12 tunnin päästä', '22 hours from now');
+    assertRelative('1 hour ago', 'tunti sitten');
+    assertRelative('2 hours ago', '2 tuntia sitten');
+    assertRelative('1 hour from now', 'tunnin päästä');
+    assertRelative('2 hours from now', '2 tunnin päästä');
+    assertRelative('12 hours ago', '12 tuntia sitten');
+    assertRelative('12 hours from now', '12 tunnin päästä');
 
-    test(testCreateDate('125 years ago', 'en'), '125 vuotta sitten', '125 years ago');
-    //test(testCreateDate('125 years from now', 'en'), '125 vuoden päästä', '125 years from now');
+    assertRelative('125 years ago', '125 vuotta sitten');
+    //test(testCreateDate('125 years from now', '125 vuoden päästä', '125 years from now');
   });
 
 });
