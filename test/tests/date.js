@@ -2746,14 +2746,28 @@ package('Date', function () {
 
     Sugar.Date.newDateInternal = function() {
       var d = new Date();
-      // Honolulu time zone
-      d.setTime(d.getTime() + ((d.getTimezoneOffset() - 600) * 60 * 1000));
+      // Honolulu time zone GMT-10:00
+      var offset = (d.getTimezoneOffset() - (10 * 60)) * 60 * 1000;
+      d.setTime(d.getTime() + offset);
       return d;
     };
 
     var offset = 600 - new Date().getTimezoneOffset();
-    dateEqual(testCreateDate(), getRelativeDate(null, null, null, null, -offset), 'simple create should respect global offset');
-    dateEqual(testCreateDate('1 day ago'), getRelativeDate(null, null, -1, null, -offset), 'relative date should respect global offset');
+
+    var d = testCreateDate();
+    var expected = new Date();
+    expected.setTime(expected.getTime() - (offset * 60 * 1000));
+    dateEqual(d, expected, 'now | offset was respected');
+
+    var d = testCreateDate('1 day ago');
+    var expected = new Date();
+    // Need to set the timezone BEFORE setting the date as that's how
+    // our newDateInternal method is working. Otherwise the date may
+    // traverse across a DST boundary which could affect the offset.
+    expected.setTime(expected.getTime() - (offset * 60 * 1000));
+    expected.setDate(expected.getDate() - 1);
+    dateEqual(d, expected, '1 day ago | offset was respected');
+
     equal(testCreatePastDate('4pm').getTime() < (new Date().getTime() + (-offset * 60 * 1000)), true, 'past repsects global offset');
     equal(testCreateFutureDate('4pm').getTime() > (new Date().getTime() + (-offset * 60 * 1000)), true, 'future repsects global offset');
 
