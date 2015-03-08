@@ -91,35 +91,35 @@ package('Dates Spanish', function () {
   });
 
   method('relative', function() {
-    test(testCreateDate('1 second ago', 'en'), 'hace 1 segundo');
-    test(testCreateDate('1 minute ago', 'en'), 'hace 1 minuto');
-    test(testCreateDate('1 hour ago', 'en'),   'hace 1 hora');
-    test(testCreateDate('1 day ago', 'en'),    'hace 1 día');
-    test(testCreateDate('1 week ago', 'en'),   'hace 1 semana');
-    test(testCreateDate('1 month ago', 'en'),  'hace 1 mes');
-    test(testCreateDate('1 year ago', 'en'),   'hace 1 año');
+    assertRelative('1 second ago', 'hace 1 segundo');
+    assertRelative('1 minute ago', 'hace 1 minuto');
+    assertRelative('1 hour ago',   'hace 1 hora');
+    assertRelative('1 day ago',    'hace 1 día');
+    assertRelative('1 week ago',   'hace 1 semana');
+    assertRelative('1 month ago',  'hace 1 mes');
+    assertRelative('1 year ago',   'hace 1 año');
 
-    test(testCreateDate('2 seconds ago', 'en'), 'hace 2 segundos');
-    test(testCreateDate('2 minutes ago', 'en'), 'hace 2 minutos');
-    test(testCreateDate('2 hours ago', 'en'),   'hace 2 horas');
-    test(testCreateDate('2 days ago', 'en'),    'hace 2 días');
-    test(testCreateDate('2 weeks ago', 'en'),   'hace 2 semanas');
-    test(testCreateDate('2 months ago', 'en'),  'hace 2 meses');
-    test(testCreateDate('2 years ago', 'en'),   'hace 2 años');
+    assertRelative('2 seconds ago', 'hace 2 segundos');
+    assertRelative('2 minutes ago', 'hace 2 minutos');
+    assertRelative('2 hours ago',   'hace 2 horas');
+    assertRelative('2 days ago',    'hace 2 días');
+    assertRelative('2 weeks ago',   'hace 2 semanas');
+    assertRelative('2 months ago',  'hace 2 meses');
+    assertRelative('2 years ago',   'hace 2 años');
 
-    test(testCreateDate('1 second from now', 'en'), 'dentro de 1 segundo');
-    test(testCreateDate('1 minute from now', 'en'), 'dentro de 1 minuto');
-    test(testCreateDate('1 hour from now', 'en'),   'dentro de 1 hora');
-    test(testCreateDate('1 day from now', 'en'),    'dentro de 1 día');
-    test(testCreateDate('1 week from now', 'en'),   'dentro de 1 semana');
-    test(testCreateDate('1 year from now', 'en'),   'dentro de 1 año');
+    assertRelative('1 second from now', 'dentro de 1 segundo');
+    assertRelative('1 minute from now', 'dentro de 1 minuto');
+    assertRelative('1 hour from now',   'dentro de 1 hora');
+    assertRelative('1 day from now',    'dentro de 1 día');
+    assertRelative('1 week from now',   'dentro de 1 semana');
+    assertRelative('1 year from now',   'dentro de 1 año');
 
-    test(testCreateDate('5 second from now', 'en'), 'dentro de 5 segundos');
-    test(testCreateDate('5 minute from now', 'en'), 'dentro de 5 minutos');
-    test(testCreateDate('5 hour from now', 'en'),   'dentro de 5 horas');
-    test(testCreateDate('5 day from now', 'en'),    'dentro de 5 días');
-    test(testCreateDate('5 week from now', 'en'),   'dentro de 1 mes');
-    test(testCreateDate('5 year from now', 'en'),   'dentro de 5 años');
+    assertRelative('5 second from now', 'dentro de 5 segundos');
+    assertRelative('5 minute from now', 'dentro de 5 minutos');
+    assertRelative('5 hour from now',   'dentro de 5 horas');
+    assertRelative('5 day from now',    'dentro de 5 días');
+    assertRelative('5 week from now',   'dentro de 1 mes');
+    assertRelative('5 year from now',   'dentro de 5 años');
   });
 
 

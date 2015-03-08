@@ -108,35 +108,35 @@ package('Dates Simplified Chinese', function () {
   });
 
   method('relative', function() {
-    test(testCreateDate('1 second ago', 'en'), '1秒钟前');
-    test(testCreateDate('1 minute ago', 'en'), '1分钟前');
-    test(testCreateDate('1 hour ago', 'en'),   '1小时前');
-    test(testCreateDate('1 day ago', 'en'),    '1天前');
-    test(testCreateDate('1 week ago', 'en'),   '1个星期前');
-    test(testCreateDate('1 month ago', 'en'),  '1个月前');
-    test(testCreateDate('1 year ago', 'en'),   '1年前');
+    assertRelative('1 second ago', '1秒钟前');
+    assertRelative('1 minute ago', '1分钟前');
+    assertRelative('1 hour ago',   '1小时前');
+    assertRelative('1 day ago',    '1天前');
+    assertRelative('1 week ago',   '1个星期前');
+    assertRelative('1 month ago',  '1个月前');
+    assertRelative('1 year ago',   '1年前');
 
-    test(testCreateDate('2 seconds ago', 'en'), '2秒钟前');
-    test(testCreateDate('2 minutes ago', 'en'), '2分钟前');
-    test(testCreateDate('2 hours ago', 'en'),   '2小时前');
-    test(testCreateDate('2 days ago', 'en'),    '2天前');
-    test(testCreateDate('2 weeks ago', 'en'),   '2个星期前');
-    test(testCreateDate('2 months ago', 'en'),  '2个月前');
-    test(testCreateDate('2 years ago', 'en'),   '2年前');
+    assertRelative('2 seconds ago', '2秒钟前');
+    assertRelative('2 minutes ago', '2分钟前');
+    assertRelative('2 hours ago',   '2小时前');
+    assertRelative('2 days ago',    '2天前');
+    assertRelative('2 weeks ago',   '2个星期前');
+    assertRelative('2 months ago',  '2个月前');
+    assertRelative('2 years ago',   '2年前');
 
-    test(testCreateDate('1 second from now', 'en'), '1秒钟后');
-    test(testCreateDate('1 minute from now', 'en'), '1分钟后');
-    test(testCreateDate('1 hour from now', 'en'),   '1小时后');
-    test(testCreateDate('1 day from now', 'en'),    '1天后');
-    test(testCreateDate('1 week from now', 'en'),   '1个星期后');
-    test(testCreateDate('1 year from now', 'en'),   '1年后');
+    assertRelative('1 second from now', '1秒钟后');
+    assertRelative('1 minute from now', '1分钟后');
+    assertRelative('1 hour from now',   '1小时后');
+    assertRelative('1 day from now',    '1天后');
+    assertRelative('1 week from now',   '1个星期后');
+    assertRelative('1 year from now',   '1年后');
 
-    test(testCreateDate('5 seconds from now', 'en'), '5秒钟后');
-    test(testCreateDate('5 minutes from now', 'en'), '5分钟后');
-    test(testCreateDate('5 hours from now', 'en'),   '5小时后');
-    test(testCreateDate('5 days from now', 'en'),    '5天后');
-    test(testCreateDate('5 weeks from now', 'en'),   '1个月后');
-    test(testCreateDate('5 years from now', 'en'),   '5年后');
+    assertRelative('5 seconds from now', '5秒钟后');
+    assertRelative('5 minutes from now', '5分钟后');
+    assertRelative('5 hours from now',   '5小时后');
+    assertRelative('5 days from now',    '5天后');
+    assertRelative('5 weeks from now',   '1个月后');
+    assertRelative('5 years from now',   '5年后');
   });
 
 

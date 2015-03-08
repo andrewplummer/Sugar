@@ -103,35 +103,35 @@ package('Dates Italian', function () {
 
 
   method('relative', function() {
-    test(testCreateDate('1 second ago', 'en'), '1 secondo fa');
-    test(testCreateDate('1 minute ago', 'en'), '1 minuto fa');
-    test(testCreateDate('1 hour ago', 'en'),   '1 ora fa');
-    test(testCreateDate('1 day ago', 'en'),    '1 giorno fa');
-    test(testCreateDate('1 week ago', 'en'),   '1 settimana fa');
-    test(testCreateDate('1 month ago', 'en'),  '1 mese fa');
-    test(testCreateDate('1 year ago', 'en'),   '1 anno fa');
+    assertRelative('1 second ago', '1 secondo fa');
+    assertRelative('1 minute ago', '1 minuto fa');
+    assertRelative('1 hour ago',   '1 ora fa');
+    assertRelative('1 day ago',    '1 giorno fa');
+    assertRelative('1 week ago',   '1 settimana fa');
+    assertRelative('1 month ago',  '1 mese fa');
+    assertRelative('1 year ago',   '1 anno fa');
 
-    test(testCreateDate('2 seconds ago', 'en'), '2 secondi fa');
-    test(testCreateDate('2 minutes ago', 'en'), '2 minuti fa');
-    test(testCreateDate('2 hours ago', 'en'),   '2 ore fa');
-    test(testCreateDate('2 days ago', 'en'),    '2 giorni fa');
-    test(testCreateDate('2 weeks ago', 'en'),   '2 settimane fa');
-    test(testCreateDate('2 months ago', 'en'),  '2 mesi fa');
-    test(testCreateDate('2 years ago', 'en'),   '2 anni fa');
+    assertRelative('2 seconds ago', '2 secondi fa');
+    assertRelative('2 minutes ago', '2 minuti fa');
+    assertRelative('2 hours ago',   '2 ore fa');
+    assertRelative('2 days ago',    '2 giorni fa');
+    assertRelative('2 weeks ago',   '2 settimane fa');
+    assertRelative('2 months ago',  '2 mesi fa');
+    assertRelative('2 years ago',   '2 anni fa');
 
-    test(testCreateDate('1 second from now', 'en'), '1 secondo da adesso');
-    test(testCreateDate('1 minute from now', 'en'), '1 minuto da adesso');
-    test(testCreateDate('1 hour from now', 'en'),   '1 ora da adesso');
-    test(testCreateDate('1 day from now', 'en'),    '1 giorno da adesso');
-    test(testCreateDate('1 week from now', 'en'),   '1 settimana da adesso');
-    test(testCreateDate('1 year from now', 'en'),   '1 anno da adesso');
+    assertRelative('1 second from now', '1 secondo da adesso');
+    assertRelative('1 minute from now', '1 minuto da adesso');
+    assertRelative('1 hour from now',   '1 ora da adesso');
+    assertRelative('1 day from now',    '1 giorno da adesso');
+    assertRelative('1 week from now',   '1 settimana da adesso');
+    assertRelative('1 year from now',   '1 anno da adesso');
 
-    test(testCreateDate('5 second from now', 'en'), '5 secondi da adesso');
-    test(testCreateDate('5 minutes from now', 'en'),'5 minuti da adesso');
-    test(testCreateDate('5 hour from now', 'en'),   '5 ore da adesso');
-    test(testCreateDate('5 day from now', 'en'),    '5 giorni da adesso');
-    test(testCreateDate('5 week from now', 'en'),   '1 mese da adesso');
-    test(testCreateDate('5 year from now', 'en'),   '5 anni da adesso');
+    assertRelative('5 second from now', '5 secondi da adesso');
+    assertRelative('5 minutes from now','5 minuti da adesso');
+    assertRelative('5 hour from now',   '5 ore da adesso');
+    assertRelative('5 day from now',    '5 giorni da adesso');
+    assertRelative('5 week from now',   '1 mese da adesso');
+    assertRelative('5 year from now',   '5 anni da adesso');
   });
 
 });

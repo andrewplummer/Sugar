@@ -90,35 +90,35 @@ package('Dates Korean', function () {
 
 
   method('relative', function() {
-    test(testCreateDate('1 second ago', 'en'), '1초 전', '1 second ago');
-    test(testCreateDate('1 minute ago', 'en'), '1분 전', '1 minute ago');
-    test(testCreateDate('1 hour ago', 'en'), '1시간 전', '1 hour ago');
-    test(testCreateDate('1 day ago', 'en'), '1일 전', '1 day ago');
-    test(testCreateDate('1 week ago', 'en'), '1주 전', '1 week ago');
-    test(testCreateDate('1 month ago', 'en'), '1개월 전', '1 month ago');
-    test(testCreateDate('1 year ago', 'en'), '1년 전', '1 year ago');
+    assertRelative('1 second ago', '1초 전');
+    assertRelative('1 minute ago', '1분 전');
+    assertRelative('1 hour ago', '1시간 전');
+    assertRelative('1 day ago', '1일 전');
+    assertRelative('1 week ago', '1주 전');
+    assertRelative('1 month ago', '1개월 전');
+    assertRelative('1 year ago', '1년 전');
 
-    test(testCreateDate('2 seconds ago', 'en'), '2초 전', '2 seconds ago');
-    test(testCreateDate('2 minutes ago', 'en'), '2분 전', '2 minutes ago');
-    test(testCreateDate('2 hours ago', 'en'), '2시간 전', '2 hours ago');
-    test(testCreateDate('2 days ago', 'en'), '2일 전', '2 days ago');
-    test(testCreateDate('2 weeks ago', 'en'), '2주 전', '2 weeks ago');
-    test(testCreateDate('2 months ago', 'en'), '2개월 전', '2 months ago');
-    test(testCreateDate('2 years ago', 'en'), '2년 전', '2 years ago');
+    assertRelative('2 seconds ago', '2초 전');
+    assertRelative('2 minutes ago', '2분 전');
+    assertRelative('2 hours ago', '2시간 전');
+    assertRelative('2 days ago', '2일 전');
+    assertRelative('2 weeks ago', '2주 전');
+    assertRelative('2 months ago', '2개월 전');
+    assertRelative('2 years ago', '2년 전');
 
-    test(testCreateDate('1 second from now', 'en'), '1초 후', '1 second from now');
-    test(testCreateDate('1 minute from now', 'en'), '1분 후', '1 minute from now');
-    test(testCreateDate('1 hour from now', 'en'), '1시간 후', '1 hour from now');
-    test(testCreateDate('1 day from now', 'en'), '1일 후', '1 day from now');
-    test(testCreateDate('1 week from now', 'en'), '1주 후', '1 week from now');
-    test(testCreateDate('1 year from now', 'en'), '1년 후', '1 year from now');
+    assertRelative('1 second from now', '1초 후');
+    assertRelative('1 minute from now', '1분 후');
+    assertRelative('1 hour from now', '1시간 후');
+    assertRelative('1 day from now', '1일 후');
+    assertRelative('1 week from now', '1주 후');
+    assertRelative('1 year from now', '1년 후');
 
-    test(testCreateDate('5 seconds from now', 'en'), '5초 후', '5 seconds from now');
-    test(testCreateDate('5 minutes from now', 'en'), '5분 후', '5 minutes from now');
-    test(testCreateDate('5 hours from now', 'en'), '5시간 후', '5 hours from now');
-    test(testCreateDate('5 days from now', 'en'), '5일 후', '5 days from now');
-    test(testCreateDate('5 weeks from now', 'en'), '1개월 후', '5 weeks from now');
-    test(testCreateDate('5 years from now', 'en'), '5년 후', '5 years from now');
+    assertRelative('5 seconds from now', '5초 후');
+    assertRelative('5 minutes from now', '5분 후');
+    assertRelative('5 hours from now', '5시간 후');
+    assertRelative('5 days from now', '5일 후');
+    assertRelative('5 weeks from now', '1개월 후');
+    assertRelative('5 years from now', '5년 후');
   });
 
 });

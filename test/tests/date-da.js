@@ -72,37 +72,37 @@ package('Dates Danish', function () {
   });
 
   method('relative', function() {
-    test(testCreateDate('1 second ago', 'en'), '1 sekund siden');
-    test(testCreateDate('1 minute ago', 'en'), '1 minut siden');
-    test(testCreateDate('1 hour ago', 'en'), '1 time siden');
-    test(testCreateDate('1 day ago', 'en'), '1 dag siden');
-    test(testCreateDate('1 week ago', 'en'), '1 uge siden');
-    test(testCreateDate('1 month ago', 'en'), '1 måned siden');
-    test(testCreateDate('1 year ago', 'en'), '1 år siden');
+    assertRelative('1 second ago', '1 sekund siden');
+    assertRelative('1 minute ago', '1 minut siden');
+    assertRelative('1 hour ago', '1 time siden');
+    assertRelative('1 day ago', '1 dag siden');
+    assertRelative('1 week ago', '1 uge siden');
+    assertRelative('1 month ago', '1 måned siden');
+    assertRelative('1 year ago', '1 år siden');
 
-    test(testCreateDate('5 seconds ago', 'en'), '5 sekunder siden');
-    test(testCreateDate('5 minutes ago', 'en'), '5 minutter siden');
-    test(testCreateDate('5 hours ago', 'en'), '5 timer siden');
-    test(testCreateDate('5 days ago', 'en'), '5 dage siden');
-    test(testCreateDate('3 weeks ago', 'en'), '3 uger siden');
-    test(testCreateDate('5 weeks ago', 'en'), '1 måned siden');
-    test(testCreateDate('5 months ago', 'en'), '5 måneder siden');
-    test(testCreateDate('5 years ago', 'en'), '5 år siden');
+    assertRelative('5 seconds ago', '5 sekunder siden');
+    assertRelative('5 minutes ago', '5 minutter siden');
+    assertRelative('5 hours ago', '5 timer siden');
+    assertRelative('5 days ago', '5 dage siden');
+    assertRelative('3 weeks ago', '3 uger siden');
+    assertRelative('5 weeks ago', '1 måned siden');
+    assertRelative('5 months ago', '5 måneder siden');
+    assertRelative('5 years ago', '5 år siden');
 
-    test(testCreateDate('1 second from now', 'en'), 'om 1 sekund');
-    test(testCreateDate('1 minute from now', 'en'), 'om 1 minut');
-    test(testCreateDate('1 hour from now', 'en'), 'om 1 time');
-    test(testCreateDate('1 day from now', 'en'), 'om 1 dag');
-    test(testCreateDate('1 week from now', 'en'), 'om 1 uge');
-    test(testCreateDate('1 year from now', 'en'), 'om 1 år');
+    assertRelative('1 second from now', 'om 1 sekund');
+    assertRelative('1 minute from now', 'om 1 minut');
+    assertRelative('1 hour from now', 'om 1 time');
+    assertRelative('1 day from now', 'om 1 dag');
+    assertRelative('1 week from now', 'om 1 uge');
+    assertRelative('1 year from now', 'om 1 år');
 
-    test(testCreateDate('5 second from now', 'en'), 'om 5 sekunder')
-    test(testCreateDate('5 minutes from now', 'en'), 'om 5 minutter');
-    test(testCreateDate('5 hour from now', 'en'), 'om 5 timer');
-    test(testCreateDate('5 day from now', 'en'), 'om 5 dage');
-    test(testCreateDate('3 weeks from now', 'en'), 'om 3 uger');
-    test(testCreateDate('5 weeks from now', 'en'), 'om 1 måned');
-    test(testCreateDate('5 year from now', 'en'), 'om 5 år');
+    assertRelative('5 second from now', 'om 5 sekunder')
+    assertRelative('5 minutes from now', 'om 5 minutter');
+    assertRelative('5 hour from now', 'om 5 timer');
+    assertRelative('5 day from now', 'om 5 dage');
+    assertRelative('3 weeks from now', 'om 3 uger');
+    assertRelative('5 weeks from now', 'om 1 måned');
+    assertRelative('5 year from now', 'om 5 år');
   });
 });
 
