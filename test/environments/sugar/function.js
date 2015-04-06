@@ -478,18 +478,34 @@ package('Function', function () {
     async(function(wrap, finish) {
       // Issue #348
       var counter = 0;
+      var check1Finished = false;
+      var check2Finished = false;
+      function checkFinished() {
+        if (check1Finished && check2Finished) {
+          finish();
+        }
+      }
       var fn = wrap(function(one, two) {
         equal(this, fn, 'this object should be the function');
         equal(one, 'one', 'first argument should be curried');
         equal(two, 'two', 'second argument should be curried');
         counter++;
+        if (counter === 5) {
+          run(fn, 'cancel');
+          setTimeout(wrap(function() {
+            // Issue #488
+            equal(counter, 5, 'should not have been called since cancel was run');
+            check1Finished = true;
+            checkFinished();
+          }), 50);
+        }
       });
       run(fn, 'every' , [10, 'one', 'two']);
       setTimeout(wrap(function() {
-        run(fn, 'cancel');
-        equal(counter > 6, true, 'should have been called at least 7 times');
-        finish();
-      }), 150);
+        equal(counter, 5, 'should have been called 5 times');
+        check2Finished = true;
+        checkFinished();
+      }), 100);
     });
   });
 
