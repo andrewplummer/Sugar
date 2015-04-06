@@ -1493,35 +1493,35 @@ package('Date', function () {
 
     equal(run(testCreateDate('2002-02-17'), 'format', [function() {}]), 'February 17, 2002 12:00am', 'function that returns undefined defaults to standard format');
 
-    equal(run(testCreateDate(), 'relative'), '1 second ago', '6 milliseconds');
-    equal(run(testCreateDate('6234 milliseconds ago'), 'relative'), '6 seconds ago', '6 milliseconds');
-    equal(run(testCreateDate('6 seconds ago'), 'relative'), '6 seconds ago', '6 seconds');
-    equal(run(testCreateDate('360 seconds ago'), 'relative'), '6 minutes ago', '360 seconds');
-    equal(run(testCreateDate('360 minutes ago'), 'relative'), '6 hours ago', 'minutes');
-    equal(run(testCreateDate('360 hours ago'), 'relative'), '2 weeks ago', 'hours');
-    equal(run(testCreateDate('340 days ago'), 'relative'), '11 months ago', '340 days');
-    equal(run(testCreateDate('360 days ago'), 'relative'), '11 months ago', '360 days');
-    equal(run(testCreateDate('360 weeks ago'), 'relative'), '6 years ago', 'weeks');
-    equal(run(testCreateDate('360 months ago'), 'relative'), '30 years ago', 'months');
-    equal(run(testCreateDate('360 years ago'), 'relative'), '360 years ago', 'years');
+    equal(run(testCreateDate(), 'relative'), '1 second ago', '6 milliseconds ago');
+    equal(run(testCreateDate('6234 milliseconds ago'), 'relative'), '6 seconds ago', '6 milliseconds ago');
+    equal(run(testCreateDate('6 seconds ago'), 'relative'), '6 seconds ago', '6 seconds ago');
+    equal(run(testCreateDate('360 seconds ago'), 'relative'), '6 minutes ago', '360 seconds ago');
+    equal(run(testCreateDate('360 minutes ago'), 'relative'), '6 hours ago', 'minutes ago');
+    equal(run(testCreateDate('360 hours ago'), 'relative'), '2 weeks ago', 'hours ago');
+    equal(run(testCreateDate('340 days ago'), 'relative'), '11 months ago', '340 days ago');
+    equal(run(testCreateDate('360 days ago'), 'relative'), '11 months ago', '360 days ago');
+    equal(run(testCreateDate('360 weeks ago'), 'relative'), '6 years ago', 'weeks ago');
+    equal(run(testCreateDate('360 months ago'), 'relative'), '30 years ago', 'months ago');
+    equal(run(testCreateDate('360 years ago'), 'relative'), '360 years ago', 'years ago');
     equal(run(testCreateDate('12 months ago'), 'relative'), '1 year ago', '12 months ago');
 
-    equal(run(testCreateDate('6234 milliseconds from now'), 'relative'), '6 seconds from now', '6 milliseconds');
-    equal(run(testCreateDate('361 seconds from now'), 'relative'), '6 minutes from now', '360 seconds');
-    equal(run(testCreateDate('361 minutes from now'), 'relative'), '6 hours from now', 'minutes');
-    equal(run(testCreateDate('360 hours from now'), 'relative'), '2 weeks from now', 'hours');
-    equal(run(testCreateDate('340 days from now'), 'relative'), '11 months from now', '340 days');
-    equal(run(testCreateDate('360 days from now'), 'relative'), '11 months from now', '360 days');
-    equal(run(testCreateDate('360 weeks from now'), 'relative'), '6 years from now', 'weeks');
-    equal(run(testCreateDate('360 months from now'), 'relative'), '30 years from now', 'months');
-    equal(run(testCreateDate('360 years from now'), 'relative'), '360 years from now', 'years');
-    equal(run(testCreateDate('13 months from now'), 'relative'), '1 year from now', '12 months ago');
+    equal(run(testCreateDate('6234 milliseconds from now'), 'relative'), '6 seconds from now', '6 milliseconds from now');
+    equal(run(testCreateDate('361 seconds from now'), 'relative'), '6 minutes from now', '360 seconds from now');
+    equal(run(testCreateDate('361 minutes from now'), 'relative'), '6 hours from now', 'minutes from now');
+    equal(run(testCreateDate('360 hours from now'), 'relative'), '2 weeks from now', 'hours from now');
+    equal(run(testCreateDate('340 days from now'), 'relative'), '11 months from now', '340 days from now');
+    equal(run(testCreateDate('360 days from now'), 'relative'), '11 months from now', '360 days from now');
+    equal(run(testCreateDate('360 weeks from now'), 'relative'), '6 years from now', 'weeks from now');
+    equal(run(testCreateDate('360 months from now'), 'relative'), '30 years from now', 'months from now');
+    equal(run(testCreateDate('360 years from now'), 'relative'), '360 years from now', 'years from now');
+    equal(run(testCreateDate('13 months from now'), 'relative'), '1 year from now', '12 months ago from now');
 
     // Issue #474
-    equal(run(testCreateDate('2 months from now'), 'relative'), '2 months from now', 'relative units should remain the same');
-
-    // 4 weeks ago can be "1 month ago" in the case of February.
-    equal(run(testCreateDate('4 weeks ago'), 'relative'), testFourWeeksAgo('4 weeks ago', '1 month ago'), '4 weeks ago vs. 1 month ago');
+    // "1 month from now" can be forced back when there are not enough days in a month.
+    // In these cases "relative()" should return "4 weeks from now" instead of "1 month from now".
+    testMonthsFromNow(1, '1 month from now', '4 weeks from now');
+    testMonthsFromNow(2, '2 months from now', '1 month from now');
 
   });
 

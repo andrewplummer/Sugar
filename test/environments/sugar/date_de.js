@@ -141,7 +141,7 @@ package('Date | German', function () {
     test(testCreateDate('1 hour from now', 'en'),   'in 1 Stunde');
     test(testCreateDate('1 day from now', 'en'),    'in 1 Tag');
     test(testCreateDate('1 week from now', 'en'),   'in 1 Woche');
-    test(testCreateDate('1 month from now', 'en'),  'in 1 Monat');
+    testMonthsFromNow(1, 'in 1 Monat', 'in 4 Wochen');
     test(testCreateDate('1 year from now', 'en'),   'in 1 Jahr');
 
     test(testCreateDate('5 second from now', 'en'), 'in 5 Sekunden');
@@ -149,7 +149,7 @@ package('Date | German', function () {
     test(testCreateDate('5 hour from now', 'en'),   'in 5 Stunden');
     test(testCreateDate('5 day from now', 'en'),    'in 5 Tagen');
     test(testCreateDate('5 week from now', 'en'),   'in 1 Monat');
-    test(testCreateDate('5 month from now', 'en'),  'in 5 Monaten');
+    testMonthsFromNow(5, 'in 5 Monaten', 'in 4 Monaten');
     test(testCreateDate('5 year from now', 'en'),   'in 5 Jahren');
   });
 

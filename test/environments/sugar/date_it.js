@@ -119,7 +119,7 @@ package('Date | Italian', function () {
     test(testCreateDate('1 hour from now', 'en'),   '1 ora da adesso');
     test(testCreateDate('1 day from now', 'en'),    '1 giorno da adesso');
     test(testCreateDate('1 week from now', 'en'),   '1 settimana da adesso');
-    test(testCreateDate('1 month from now', 'en'),  '1 mese da adesso');
+    testMonthsFromNow(1, '1 mese da adesso', '4 settimane da adesso');
     test(testCreateDate('1 year from now', 'en'),   '1 anno da adesso');
 
     test(testCreateDate('5 second from now', 'en'), '5 secondi da adesso');
@@ -127,7 +127,7 @@ package('Date | Italian', function () {
     test(testCreateDate('5 hour from now', 'en'),   '5 ore da adesso');
     test(testCreateDate('5 day from now', 'en'),    '5 giorni da adesso');
     test(testCreateDate('5 week from now', 'en'),   '1 mese da adesso');
-    test(testCreateDate('5 month from now', 'en'),  '5 mesi da adesso');
+    testMonthsFromNow(5, '5 mesi da adesso', '4 mesi da adesso');
     test(testCreateDate('5 year from now', 'en'),   '5 anni da adesso');
   });
 

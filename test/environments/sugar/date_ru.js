@@ -127,9 +127,6 @@ package('Date | Russian', function () {
     test(testCreateDate('4 months ago', 'en'),  '4 месяца назад');
     test(testCreateDate('4 years ago', 'en'),   '4 года назад');
 
-    // Four weeks ago is an oddball as it may be "1 month ago" in February
-    test(testCreateDate('4 weeks ago', 'en'),   testFourWeeksAgo('4 недели назад','1 месяц назад'));
-
     test(testCreateDate('5 seconds ago', 'en'), '5 секунд назад');
     test(testCreateDate('5 minutes ago', 'en'), '5 минут назад');
     test(testCreateDate('5 hours ago', 'en'),   '5 часов назад');
@@ -178,7 +175,7 @@ package('Date | Russian', function () {
     test(testCreateDate('1 hour from now', 'en'),   'через 1 час');
     test(testCreateDate('1 day from now', 'en'),    'через 1 день');
     test(testCreateDate('1 week from now', 'en'),   'через 1 неделю');
-    test(testCreateDate('1 month from now', 'en'),  'через 1 месяц');
+    testMonthsFromNow(1, 'через 1 месяц',           'через 4 недели');
     test(testCreateDate('1 year from now', 'en'),   'через 1 год');
 
     test(testCreateDate('2 seconds from now', 'en'), 'через 2 секунды');
@@ -186,7 +183,7 @@ package('Date | Russian', function () {
     test(testCreateDate('2 hours from now', 'en'),   'через 2 часа');
     test(testCreateDate('2 days from now', 'en'),    'через 2 дня');
     test(testCreateDate('2 weeks from now', 'en'),   'через 2 недели');
-    test(testCreateDate('2 months from now', 'en'),  'через 2 месяца');
+    testMonthsFromNow(2, 'через 2 месяца',           'через 1 месяц');
     test(testCreateDate('2 years from now', 'en'),   'через 2 года');
 
     test(testCreateDate('5 seconds from now', 'en'), 'через 5 секунд');
@@ -194,7 +191,7 @@ package('Date | Russian', function () {
     test(testCreateDate('5 hours from now', 'en'),   'через 5 часов');
     test(testCreateDate('5 days from now', 'en'),    'через 5 дней');
     test(testCreateDate('5 weeks from now', 'en'),   'через 1 месяц');
-    test(testCreateDate('5 months from now', 'en'),  'через 5 месяцев');
+    testMonthsFromNow(5, 'через 5 месяцев',          'через 4 месяца');
     test(testCreateDate('5 years from now', 'en'),   'через 5 лет');
 
     test(testCreateDate('11 hours ago', 'en'), '11 часов назад');

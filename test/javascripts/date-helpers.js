@@ -194,10 +194,10 @@ testAddLocale = function(code, set) {
   }
 }
 
-testFourWeeksAgo = function(fourWeeksString, oneMonthString) {
-  var fourWeeksAgo = new Date();
-  fourWeeksAgo.setDate(fourWeeksAgo.getDate() - 7 * 4);
-  var oneMonthAgo = new Date();
-  oneMonthAgo.setMonth(fourWeeksAgo.getMonth() - 1);
-  return fourWeeksAgo > oneMonthAgo ? oneMonthString : fourWeeksString;
+testMonthsFromNow = function(n, monthString, weekString) {
+  var en = n === 1 ? '1 month from now' : n + ' months from now';
+  var date = testCreateDate(en, 'en');
+  var expected = date.getDate() < new Date().getDate() ? weekString : monthString;
+  equal(run(date, 'relative'), expected, en);
 }
+
