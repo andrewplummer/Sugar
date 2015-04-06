@@ -1233,6 +1233,10 @@ package('Date', function () {
     var dayInMs = 24 * 60 * 60 * 1000;
     test(d, [dayInMs], new Date(d.getTime() - dayInMs), 'can rewind milliseconds');
 
+    // Issue #492
+    d = new Date('August 25, 2010 11:45:20');
+    run(d, 'rewind', [{ week: 1, day: 1}]);
+    dateEqual(d, new Date(2010, 7, 17, 11, 45, 20), 'negative weeks supported');
   });
 
   method('daysInMonth', function() {
