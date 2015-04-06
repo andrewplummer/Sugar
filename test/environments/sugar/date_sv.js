@@ -127,17 +127,17 @@ package('Date | Swedish', function () {
     test(testCreateDate('1 hour from now', 'en'),   'om 1 timme');
     test(testCreateDate('1 day from now', 'en'),    'om 1 dag');
     test(testCreateDate('1 week from now', 'en'),   'om 1 vecka');
-    test(testCreateDate('1 month from now', 'en'),  'om 1 månad');
+    testMonthsFromNow(1, 'om 1 månad',              'om 4 veckor');
     test(testCreateDate('1 year from now', 'en'),   'om 1 år');
 
-    test(testCreateDate('5 second from now', 'en'), 'om 5 sekunder');
-    test(testCreateDate('5 minutes from now', 'en'),'om 5 minuter');
-    test(testCreateDate('5 hour from now', 'en'),   'om 5 timmar');
-    test(testCreateDate('5 day from now', 'en'),    'om 5 dagar');
+    test(testCreateDate('5 seconds from now', 'en'), 'om 5 sekunder');
+    test(testCreateDate('5 minutes from now', 'en'), 'om 5 minuter');
+    test(testCreateDate('5 hours from now', 'en'),   'om 5 timmar');
+    test(testCreateDate('5 days from now', 'en'),    'om 5 dagar');
     test(testCreateDate('3 weeks from now', 'en'),   'om 3 veckor');
     test(testCreateDate('5 weeks from now', 'en'),   'om 1 månad');
-    test(testCreateDate('5 month from now', 'en'),  'om 5 månader');
-    test(testCreateDate('5 year from now', 'en'),   'om 5 år');
+    testMonthsFromNow(5, 'om 5 månader',             'om 4 månader');
+    test(testCreateDate('5 year from now', 'en'),    'om 5 år');
   });
 
 });

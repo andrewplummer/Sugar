@@ -124,37 +124,37 @@ package('Date | Japanese', function () {
   });
 
   method('relative', function() {
-    test(testCreateDate('1 second ago', 'en'), '1秒前', 'relative format past');
-    test(testCreateDate('1 minute ago', 'en'), '1分前',  'relative format past');
-    test(testCreateDate('1 hour ago', 'en'),   '1時間前',     'relative format past');
-    test(testCreateDate('1 day ago', 'en'),    '1日前',    'relative format past');
-    test(testCreateDate('1 week ago', 'en'),   '1週間前',  'relative format past');
-    test(testCreateDate('1 month ago', 'en'),  '1ヶ月前',   'relative format past');
-    test(testCreateDate('1 year ago', 'en'),   '1年前',     'relative format past');
+    test(testCreateDate('1 second ago', 'en'), '1秒前', '1 second ago');
+    test(testCreateDate('1 minute ago', 'en'), '1分前', '1 minute ago');
+    test(testCreateDate('1 hour ago', 'en'), '1時間前', '1 hour ago');
+    test(testCreateDate('1 day ago', 'en'), '1日前', '1 day ago');
+    test(testCreateDate('1 week ago', 'en'), '1週間前', '1 week ago');
+    test(testCreateDate('1 month ago', 'en'), '1ヶ月前', '1 month ago');
+    test(testCreateDate('1 year ago', 'en'), '1年前', '1 year ago');
 
-    test(testCreateDate('2 seconds ago', 'en'), '2秒前', 'relative format past');
-    test(testCreateDate('2 minutes ago', 'en'), '2分前',  'relative format past');
-    test(testCreateDate('2 hours ago', 'en'),   '2時間前',     'relative format past');
-    test(testCreateDate('2 days ago', 'en'),    '2日前',    'relative format past');
-    test(testCreateDate('2 weeks ago', 'en'),   '2週間前',  'relative format past');
-    test(testCreateDate('2 months ago', 'en'),  '2ヶ月前',   'relative format past');
-    test(testCreateDate('2 years ago', 'en'),   '2年前',     'relative format past');
+    test(testCreateDate('2 seconds ago', 'en'), '2秒前', '2 seconds ago');
+    test(testCreateDate('2 minutes ago', 'en'), '2分前', '2 minutes ago');
+    test(testCreateDate('2 hours ago', 'en'), '2時間前', '2 hours ago');
+    test(testCreateDate('2 days ago', 'en'), '2日前', '2 days ago');
+    test(testCreateDate('2 weeks ago', 'en'), '2週間前', '2 weeks ago');
+    test(testCreateDate('2 months ago', 'en'), '2ヶ月前', '2 months ago');
+    test(testCreateDate('2 years ago', 'en'), '2年前', '2 years ago');
 
-    test(testCreateDate('1 second from now', 'en'), '1秒後', 'relative format future');
-    test(testCreateDate('1 minute from now', 'en'), '1分後',  'relative format future');
-    test(testCreateDate('1 hour from now', 'en'),   '1時間後',     'relative format future');
-    test(testCreateDate('1 day from now', 'en'),    '1日後',    'relative format future');
-    test(testCreateDate('1 week from now', 'en'),   '1週間後',  'relative format future');
-    test(testCreateDate('1 month from now', 'en'),  '1ヶ月後',   'relative format future');
-    test(testCreateDate('1 year from now', 'en'),   '1年後',     'relative format future');
+    test(testCreateDate('1 second from now', 'en'), '1秒後', '1 second from now');
+    test(testCreateDate('1 minute from now', 'en'), '1分後', '1 minute from now');
+    test(testCreateDate('1 hour from now', 'en'), '1時間後', '1 hour from now');
+    test(testCreateDate('1 day from now', 'en'), '1日後', '1 day from now');
+    test(testCreateDate('1 week from now', 'en'), '1週間後', '1 week from now');
+    testMonthsFromNow(1, '1ヶ月後', '4週間後');
+    test(testCreateDate('1 year from now', 'en'), '1年後', '1 year from now');
 
-    test(testCreateDate('5 second from now', 'en'), '5秒後', 'relative format future');
-    test(testCreateDate('5 minute from now', 'en'), '5分後',  'relative format future');
-    test(testCreateDate('5 hour from now', 'en'),   '5時間後',     'relative format future');
-    test(testCreateDate('5 day from now', 'en'),    '5日後',    'relative format future');
-    test(testCreateDate('5 week from now', 'en'),   '1ヶ月後',  'relative format future');
-    test(testCreateDate('5 month from now', 'en'),  '5ヶ月後',   'relative format future');
-    test(testCreateDate('5 year from now', 'en'),   '5年後',     'relative format future');
+    test(testCreateDate('5 seconds from now', 'en'), '5秒後', '5 seconds from now');
+    test(testCreateDate('5 minutes from now', 'en'), '5分後', '5 minutes from now');
+    test(testCreateDate('5 hours from now', 'en'), '5時間後', '5 hours from now');
+    test(testCreateDate('5 days from now', 'en'), '5日後', '5 days from now');
+    test(testCreateDate('5 weeks from now', 'en'), '1ヶ月後', '5 weeks from now');
+    testMonthsFromNow(5, '5ヶ月後', '4ヶ月後');
+    test(testCreateDate('5 years from now', 'en'), '5年後', '5 years from now');
   });
 
 });

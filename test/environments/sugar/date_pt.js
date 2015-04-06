@@ -83,35 +83,35 @@ package('Date | Portuguese', function () {
   method('relative', function() {
     test(testCreateDate('1 second ago', 'en'), '1 segundo atrás');
     test(testCreateDate('1 minute ago', 'en'), '1 minuto atrás');
-    test(testCreateDate('1 hour ago', 'en'),   '1 hora atrás');
-    test(testCreateDate('1 day ago', 'en'),    '1 dia atrás');
-    test(testCreateDate('1 week ago', 'en'),   '1 semana atrás');
-    test(testCreateDate('1 month ago', 'en'),  '1 mês atrás');
-    test(testCreateDate('1 year ago', 'en'),   '1 ano atrás');
+    test(testCreateDate('1 hour ago', 'en'), '1 hora atrás');
+    test(testCreateDate('1 day ago', 'en'), '1 dia atrás');
+    test(testCreateDate('1 week ago', 'en'), '1 semana atrás');
+    test(testCreateDate('1 month ago', 'en'), '1 mês atrás');
+    test(testCreateDate('1 year ago', 'en'), '1 ano atrás');
 
     test(testCreateDate('2 seconds ago', 'en'), '2 segundos atrás');
     test(testCreateDate('2 minutes ago', 'en'), '2 minutos atrás');
-    test(testCreateDate('2 hours ago', 'en'),   '2 horas atrás');
-    test(testCreateDate('2 days ago', 'en'),    '2 dias atrás');
-    test(testCreateDate('2 weeks ago', 'en'),   '2 semanas atrás');
-    test(testCreateDate('2 months ago', 'en'),  '2 mêses atrás');
-    test(testCreateDate('2 years ago', 'en'),   '2 anos atrás');
+    test(testCreateDate('2 hours ago', 'en'), '2 horas atrás');
+    test(testCreateDate('2 days ago', 'en'), '2 dias atrás');
+    test(testCreateDate('2 weeks ago', 'en'), '2 semanas atrás');
+    test(testCreateDate('2 months ago', 'en'), '2 mêses atrás');
+    test(testCreateDate('2 years ago', 'en'), '2 anos atrás');
 
     test(testCreateDate('1 second from now', 'en'), 'daqui a 1 segundo');
     test(testCreateDate('1 minute from now', 'en'), 'daqui a 1 minuto');
-    test(testCreateDate('1 hour from now', 'en'),   'daqui a 1 hora');
-    test(testCreateDate('1 day from now', 'en'),    'daqui a 1 dia');
-    test(testCreateDate('1 week from now', 'en'),   'daqui a 1 semana');
-    test(testCreateDate('1 month from now', 'en'),  'daqui a 1 mês');
-    test(testCreateDate('1 year from now', 'en'),   'daqui a 1 ano');
+    test(testCreateDate('1 hour from now', 'en'), 'daqui a 1 hora');
+    test(testCreateDate('1 day from now', 'en'), 'daqui a 1 dia');
+    test(testCreateDate('1 week from now', 'en'), 'daqui a 1 semana');
+    testMonthsFromNow(1, 'daqui a 1 mês', 'daqui a 4 semanas');
+    test(testCreateDate('1 year from now', 'en'), 'daqui a 1 ano');
 
     test(testCreateDate('5 second from now', 'en'), 'daqui a 5 segundos');
     test(testCreateDate('5 minute from now', 'en'), 'daqui a 5 minutos');
-    test(testCreateDate('5 hour from now', 'en'),   'daqui a 5 horas');
-    test(testCreateDate('5 day from now', 'en'),    'daqui a 5 dias');
-    test(testCreateDate('5 week from now', 'en'),   'daqui a 1 mês');
-    test(testCreateDate('5 month from now', 'en'),  'daqui a 5 mêses');
-    test(testCreateDate('5 year from now', 'en'),   'daqui a 5 anos');
+    test(testCreateDate('5 hour from now', 'en'), 'daqui a 5 horas');
+    test(testCreateDate('5 day from now', 'en'), 'daqui a 5 dias');
+    test(testCreateDate('5 week from now', 'en'), 'daqui a 1 mês');
+    testMonthsFromNow(5, 'daqui a 5 mêses', 'daqui a 4 mêses');
+    test(testCreateDate('5 year from now', 'en'), 'daqui a 5 anos');
   });
 
 
