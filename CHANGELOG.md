@@ -31,6 +31,9 @@ v1.5.0
 - Fixed issue with the digit `ten` in date creation (Issue #431).
 - Fixed issue with the `Date#[unit]Since` improperly applying error margins.
 - Refactored the `since` and `fromNow` methods to traverse using internal date methods instead of applying an error margin. This makes them much more accurate in dicey situations like DST traversal, leap years, etc.
+- Fixed issue with dates shifting in "monthsFromNow" (and consequently "relative") when traversing into a month that doesn't have enough days.
+- Fixed issue with advance/rewind using an object with both a "week" and "day" parameter (Issue #492).
+- Fixed issue `Function#every` not being able to cancel itself (Issue #488).
 
 
 v1.4.2
