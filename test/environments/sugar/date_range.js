@@ -74,13 +74,13 @@ package('Date | Ranges', function () {
     dateEqual(range.end,   testEnd, 'Date.range | strings | end is equal');
 
     // Issue #367 Advanced date ranges
-    equal(createRange('monday to thursday'), createRange('monday', 'thursday'), 'advanced text ranges');
-    equal(createRange('from monday to thursday'), createRange('monday', 'thursday'), 'advanced text ranges | from');
-    equal(createRange('from monday until thursday'), createRange('monday', 'thursday'), 'advanced text ranges | from..until');
-    equal(createRange('tomorrow at 3pm for 30 minutes'), createRange('3pm tomorrow', '3:30pm tomorrow'), 'advanced text ranges | for');
-    equal(createRange('1 hour starting at 3:15 monday'), createRange('3:15 monday', '4:15 monday'), 'advanced text ranges | starting at');
-    equal(createRange('for 1 hour starting at 3:15 monday'), createRange('3:15 monday', '4:15 monday'), 'advanced text ranges | for..starting at');
-    equal(createRange('foobar'), createRange(), 'invalid string is the same as no arguments');
+    dateRangeEqual(createRange('monday to thursday'), createRange('monday', 'thursday'), 'advanced text ranges');
+    dateRangeEqual(createRange('from monday to thursday'), createRange('monday', 'thursday'), 'advanced text ranges | from');
+    dateRangeEqual(createRange('from monday until thursday'), createRange('monday', 'thursday'), 'advanced text ranges | from..until');
+    dateRangeEqual(createRange('tomorrow at 3pm for 30 minutes'), createRange('3pm tomorrow', '3:30pm tomorrow'), 'advanced text ranges | for');
+    dateRangeEqual(createRange('1 hour starting at 3:15 monday'), createRange('3:15 monday', '4:15 monday'), 'advanced text ranges | starting at');
+    dateRangeEqual(createRange('for 1 hour starting at 3:15 monday'), createRange('3:15 monday', '4:15 monday'), 'advanced text ranges | for..starting at');
+    dateRangeEqual(createRange('foobar'), createRange(), 'invalid string is the same as no arguments');
 
   });
 
