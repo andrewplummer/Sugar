@@ -116,6 +116,10 @@ package('Date | German', function () {
     equal(run(then, 'full'), 'Donnerstag 25. August 2011 15:45:50', 'full shortcut');
     equal(run(then, 'format', ['short']), '25. August 2011', 'short format');
     equal(run(then, 'short'), '25. August 2011', 'short shortcut');
+
+    // Issue #489
+    equal(run(then, 'format', ['{do}']), 'do', 'dow token should be 2 characters');
+    equal(run(then, 'format', ['{Do}']), 'Do', 'Dow token should be 2 characters');
   });
 
 

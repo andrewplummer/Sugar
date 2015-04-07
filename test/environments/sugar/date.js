@@ -1342,6 +1342,8 @@ package('Date', function () {
     test(d, ['{day}'], '5', 'days');
     test(d, ['{dow}'], 'thu', 'dow');
     test(d, ['{Dow}'], 'Thu', 'Dow');
+    test(d, ['{do}'], 'th', 'do');
+    test(d, ['{Do}'], 'Th', 'Do');
     test(d, ['{weekday}'], 'thursday', 'weekday');
     test(d, ['{Weekday}'], 'Thursday', 'Weekday');
     test(d, ['{M}'], '8', 'M');
