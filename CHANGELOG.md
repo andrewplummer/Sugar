@@ -34,6 +34,7 @@ v1.5.0
 - Fixed issue with dates shifting in "monthsFromNow" (and consequently "relative") when traversing into a month that doesn't have enough days.
 - Fixed issue with advance/rewind using an object with both a "week" and "day" parameter (Issue #492).
 - Fixed issue `Function#every` not being able to cancel itself (Issue #488).
+- Fixed issue with German dates not allowing abbreviated weekdays with 2 characters.
 
 
 v1.4.2
