@@ -2811,7 +2811,7 @@
   }
 
   function setLocalization(localeCode, set) {
-    var loc, canAbbreviate;
+    var loc;
 
     function initializeField(name) {
       var val = loc[name];
@@ -2833,11 +2833,11 @@
       return str.split('|').forEach(fn);
     }
 
-    function setArray(name, abbreviate, multiple) {
+    function setArray(name, abbreviationSize, multiple) {
       var arr = [];
       loc[name].forEach(function(full, i) {
-        if(abbreviate) {
-          full += '+' + full.slice(0,3);
+        if(abbreviationSize) {
+          full += '+' + full.slice(0, abbreviationSize);
         }
         eachAlternate(full, function(alt, j) {
           arr[j * multiple + i] = alt.toLowerCase();
@@ -2859,6 +2859,13 @@
         arr = arr.concat(numbers);
       }
       return arrayToAlternates(arr);
+    }
+
+    function getAbbreviationSize(type) {
+      // Month suffixes like those found in Asian languages
+      // serve as a good proxy to detect month/weekday abbreviations.
+      var hasMonthSuffix = !!loc['monthSuffix'];
+      return loc[type + 'Abbreviate'] || (hasMonthSuffix ? null : 3);
     }
 
     function setDefault(name, value) {
@@ -2900,12 +2907,10 @@
     initializeField('modifiers');
     'months,weekdays,units,numbers,articles,tokens,timeMarker,ampm,timeSuffixes,dateParse,timeParse'.split(',').forEach(initializeField);
 
-    canAbbreviate = !loc['monthSuffix'];
-
     buildNumbers();
 
-    setArray('months',   canAbbreviate, 12);
-    setArray('weekdays', canAbbreviate, 7);
+    setArray('months', getAbbreviationSize('month'), 12);
+    setArray('weekdays', getAbbreviationSize('weekday'), 7);
     setArray('units', false, 8);
 
     setDefault('code', localeCode);
@@ -3542,6 +3547,8 @@
       var dow = callDateGet(d, 'Day');
       return getLocalization(localeCode)['weekdays'][dow];
     }
+    createFormatToken('do', fn, 2);
+    createFormatToken('Do', fn, 2, 1);
     createFormatToken('dow', fn, 3);
     createFormatToken('Dow', fn, 3, 1);
     createFormatToken('weekday', fn);
