@@ -390,6 +390,25 @@ package('Function', function () {
     equal(counter, 1, 'returning undefined will not affect the number of calls');
   });
 
+  method('once', function() {
+    var fn, counter = 0;
+    fn = run(function(n) {
+      counter++;
+      return n + 1;
+    }, 'once');
+    equal(fn(3), 4, 'running with 3 should add 1');
+    equal(fn(4), 5, 'running with 4 should still add 1');
+    equal(fn(500), 501, 'running with 500 should still add 1');
+    // Runs
+    fn(1);
+    // Runs
+    fn(2);
+    // Cached
+    fn(3);
+    equal(counter, 5, 'should have run 5 times');
+  });
+
+
 
   var format = function(place, last){
     return (last || '') + this.toFixed(place);
