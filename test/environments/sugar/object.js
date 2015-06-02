@@ -943,6 +943,10 @@ package('Object', function () {
     test(Object, ['foo=127.0.0.1'], { foo: '127.0.0.1' }, 'IP addresses not treated as numbers');
     test(Object, ['zip=00165'], { zip: '00165' }, 'zipcodes are not treated as numbers');
     test(Object, ['foo[=bar'], { 'foo[': 'bar' }, 'opening bracket does not trigger deep parameters');
+
+    test(Object, ['f=a', false, true], { f: 'a' }, 'shallow | standard');
+    test(Object, ['f=a&f=b&f=c&f=d&f=e&f=f', false, true], { f: ['a','b','c','d','e','f'] }, 'shallow | large array');
+    test(Object, ['f=a&f=b&bar=1', false, true], { f: ['a', 'b'], bar: '1' }, 'shallow | mixed');
   });
 
   method('watch', function() {
@@ -1305,6 +1309,10 @@ package('Object', function () {
     assertQueryStringGenerated(8, [], '', 'straight number no namespace');
     assertQueryStringGenerated(date, [], '', 'straight date no namespace');
     assertQueryStringGenerated({foo:'bar'}, ['萬'], '%E8%90%AC[foo]=bar', 'Japanese characters in the namespace');
+
+    assertQueryStringGenerated({foo:['fap','cap']}, [null, true], 'foo=fap&foo=cap', 'shallow | basic array');
+    assertQueryStringGenerated({foo:[['fap','cap']]}, [null, true], 'foo=fap&foo=cap', 'shallow | double array');
+    assertQueryStringGenerated({foo:{bar:'tee',car:'hee'}}, [null, true], 'foo=tee&foo=hee', 'shallow | basic object');
 
     equal(run(Object, 'toQueryString', ['foo']), '', 'straight string no namespace');
 
