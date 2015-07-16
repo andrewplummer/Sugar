@@ -1,10 +1,13 @@
-var gulp     = require('gulp'),
+var fs       = require('fs'),
+    gulp     = require('gulp'),
     args     = require('yargs').argv,
     util     = require('gulp-util'),
     merge    = require('merge-stream'),
     concat   = require('gulp-concat'),
     replace  = require('gulp-replace'),
     compiler = require('gulp-closure-compiler');
+
+var COMPIER_JAR_PATH = 'bower_components/closure-compiler/compiler.jar';
 
 var HELP_MESSAGE = [
   '',
@@ -128,12 +131,18 @@ function buildDevelopment(packages) {
 }
 
 function buildMinified(packages) {
+  try {
+    fs.lstatSync(COMPIER_JAR_PATH);
+  } catch(e) {
+    util.log(util.colors.red('Closure compiler missing!'), 'Run', util.colors.yellow('bower install'));
+    return;
+  }
   return outputWithCopyright(packages, '.min.js', function(fileStream, p) {
     util.log(util.colors.yellow('Minifying', p));
     return fileStream
       .pipe(
         compiler({
-          compilerPath: 'script/jsmin/compiler.jar',
+          compilerPath: COMPIER_JAR_PATH,
           fileName: 'tmp.js',
           compilerFlags: {
             compilation_level: 'ADVANCED_OPTIMIZATIONS',
