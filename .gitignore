@@ -18,6 +18,7 @@ logs
 log
 tmp
 node_modules
+bower_components
 
 ## PROJECT::SPECIFIC
 release/sugar-test.min.js
