@@ -39,9 +39,10 @@
   },
   "license": "MIT",
   "devDependencies": {
+    "closure-compiler-stream": "^0.1.15",
+    "glob": "^5.0.14",
     "gulp": "^3.9.0",
-    "gulp-closure-compiler": "^0.2.20",
-    "gulp-concat": "^2.6.0",
+    "gulp-concat-util": "^0.5.2",
     "gulp-replace": "^0.5.3",
     "gulp-util": "^3.0.6",
     "merge-stream": "^0.1.8",
