@@ -1,11 +1,15 @@
+
 var fs       = require('fs'),
     gulp     = require('gulp'),
     glob     = require('glob'),
+    zlib     = require('zlib'),
+    path     = require('path'),
     args     = require('yargs').argv,
     util     = require('gulp-util'),
     merge    = require('merge-stream'),
     concat   = require('gulp-concat-util'),
     replace  = require('gulp-replace'),
+    through  = require('through2'),
     compiler = require('closure-compiler-stream');
 
 var COMPIER_JAR_PATH = 'bower_components/closure-compiler/compiler.jar';
@@ -77,8 +81,10 @@ function getPackages() {
   return args.p || args.packages || 'default';
 }
 
-function getFiles(packages) {
+function getFiles(packages, skipLocales) {
   var arr, files = [];
+  files.push('lib/core/core.js');
+  files.push('lib/common.js');
   switch(packages) {
     case 'default':
       arr = DEFAULT_PACKAGES;
@@ -90,13 +96,13 @@ function getFiles(packages) {
       arr = packages.split(',');
   }
   arr.forEach(function(p) {
-    if (p === 'locales') {
+    if (p === 'locales' && !skipLocales) {
       files = files.concat(glob.sync('lib/locales/*.js'));
     } else {
       files.push('lib/' + p + '.js');
     }
   });
-  return ['lib/core/core.js', 'lib/common.js'].concat(files);
+  return files;
 }
 
 function getModules(files) {
@@ -207,6 +213,9 @@ function getDefaultFlags() {
   }
 }
 
+
+
+
 // -------------- Tasks ----------------
 
 gulp.task('default', showHelpMessage);
@@ -241,3 +250,159 @@ gulp.task('precompile:min', function() {
   return gulp.src(files).pipe(compileModules(modules));
 });
 
+
+// -------------- Docs ----------------
+
+gulp.task('docs', function() {
+  var files = getFiles('all', true), packages = {}, methodsByNamespace = {};
+  var output = args.f || args.file || 'docs.json';
+  var basename = path.basename(output);
+  var dirname = path.dirname(output);
+
+  return gulp.src(files)
+    .pipe(through.obj(function(file, enc, cb) {
+      var text, lines, currentNamespace, currentPackage;
+
+      text = file.contents.toString('utf-8')
+      lines = text.split('\n');
+
+      function extractMethodNameAndArgs(obj, str) {
+        var match = str.match(/(\w+\.)?([^(]+)\(([^\)]*)\)/), args = [];
+        var klass = match[1];
+        var name  = match[2];
+
+        match[3].split(',').forEach(function(a) {
+          var o = a.split(' = '), arg = {};
+          var required = true;
+          var argName = o[0].trim().replace(/[<>]/g, '').replace(/[\[\]]/g, function(s) {
+            required = false;
+            return '';
+          });
+          if (!argName) {
+            return;
+          } else if (argName == '...') {
+            obj['glob'] = true;
+            return;
+          }
+          arg['name'] = argName;
+          if (o[1]) {
+            arg['default'] = o[1];
+            arg['type'] = eval('typeof ' + o[1]);
+          }
+          if (!required) {
+            arg['optional'] = true;
+          }
+          args.push(arg);
+        });
+        if (!klass) {
+          obj['instance'] = true;
+        }
+        if (args.length) {
+          obj['args'] = args;
+        }
+        return name;
+      }
+
+      function getLineNumber(name) {
+        var lineNum;
+        var reg = RegExp('@method ' + name + '\\b');
+        lines.some(function(l, i) {
+          if (l.match(reg)) {
+            lineNum = i + 1;
+            return true;
+          }
+        });
+        return lineNum;
+      }
+
+      function switchNamespace(name) {
+        currentNamespace = methodsByNamespace[name];
+        if (!currentNamespace) {
+          currentNamespace = methodsByNamespace[name] = {};
+        }
+      }
+
+      function getMultiline(str) {
+        var result = [], fOpen = false;
+        str.split('\n').forEach(function(l) {
+          l = l.replace(/^[\s*]+|[\s*]+$/g, '').replace(/\s+->.+$/, '');
+          if (l) {
+            if (fOpen) {
+              result[result.length - 1] += '\n' + l;
+            } else {
+              result.push(l);
+            }
+          }
+          if (l.match(/\{$/)) {
+            fOpen = true;
+          } else if (l.match(/^\}/)) {
+            fOpen = false;
+          }
+        });
+        return result;
+      }
+
+      function getFileSize(path) {
+        return fs.statSync(path).size;
+      }
+
+      function getGzippedFileSize(path) {
+        return zlib.gzipSync(fs.readFileSync(path, 'utf-8')).length;
+      }
+
+      function getPackageSize(package) {
+        var name = package.replace(/\s/g, '_').toLowerCase();
+        var dPath = 'release/precompiled/development/' + name + '.js';
+        var mPath = 'release/precompiled/minified/' + name + '.js';
+        packages[package]['size'] = getFileSize(dPath);
+        packages[package]['min_size'] = getGzippedFileSize(mPath);
+      }
+
+      text.replace(/\*\*\*([\s\S]+?)[\s\n*]*(?=\*\*\*)/gm, function(m, tags) {
+        var obj = {};
+        tags.replace(/@(\w+)\s?([^@]*)/g, function(all, key, val) {
+          val = val.replace(/^[\s*]/gm, '').replace(/[\s*]+$/, '');
+          switch(key) {
+            case 'package':
+              packages[val] = obj;
+              currentPackage = val;
+              if (DEFAULT_PACKAGES.indexOf(val.toLowerCase()) !== -1) {
+                obj['supplemental'] = true;
+              }
+              switchNamespace(val);
+              getPackageSize(val);
+              break;
+            case 'namespace':
+              switchNamespace(val);
+              break;
+            case 'method':
+              var name = extractMethodNameAndArgs(obj, val);
+              obj.line = getLineNumber(name);
+              obj.package = currentPackage;
+              currentNamespace[name] = obj;
+              break;
+            case 'set':
+              obj[key] = getMultiline(val);
+              break;
+            case 'example':
+              obj[key] = getMultiline(val);
+              break;
+            default:
+              obj[key] = val;
+          }
+        });
+      });
+      this.push(file);
+      cb();
+    }))
+    .pipe(concat(basename, { newLine: '' }))
+    .pipe(through.obj(function(file, enc, cb) {
+      file.contents = new Buffer(JSON.stringify({
+        packages: packages,
+        methodsByNamespace: methodsByNamespace
+      }), "utf8");
+      this.push(file);
+      cb();
+    }))
+    .pipe(gulp.dest(dirname));
+});
