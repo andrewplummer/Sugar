@@ -215,7 +215,6 @@ function getDefaultFlags() {
 
 
 
-
 // -------------- Tasks ----------------
 
 gulp.task('default', showHelpMessage);
@@ -249,6 +248,7 @@ gulp.task('precompile:min', function() {
   var modules = getModules(files);
   return gulp.src(files).pipe(compileModules(modules));
 });
+
 
 
 // -------------- Docs ----------------
