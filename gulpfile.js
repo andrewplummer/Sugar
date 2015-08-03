@@ -209,7 +209,7 @@ function getDefaultFlags() {
     compilation_level: 'ADVANCED_OPTIMIZATIONS',
     warning_level: 'QUIET',
     output_wrapper: getLicense() + "\n(function(){'use strict';%output%}).call(window);",
-    externs: 'script/jsmin/externs.js',
+    externs: 'lib/extras/externs.js',
   }
 }
 
