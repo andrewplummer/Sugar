@@ -1,12 +1,12 @@
 /*
- *  Sugar Library VERSION
+ *  Sugar Library edge
  *
  *  Freely distributable and licensed under the MIT-style license.
- *  Copyright (c) YEAR Andrew Plummer
+ *  Copyright (c) 2015 Andrew Plummer
  *  http://sugarjs.com/
  *
  * ---------------------------- */
-(function(){
+(function() {
   'use strict';
   
 
@@ -48,7 +48,7 @@
       /***
        * @method Sugar.extend(<target>, <methods>, [instance] = true)
        * @short This method exposes Sugar's core ability to extend Javascript natives, and is useful for creating custom plugins.
-       * @extra <target> should be the Javascript native function such as %String%, %Number%, etc. <methods> is an object containing the methods to extend. When [instance] is true the methods will be mapped to <target>'s prototype, if false they will be mapped onto <target> itself. For more see @global.
+       * @extra <target> should be the Javascript native function such as %String%, %Number%, etc. <methods> is an object containing the methods to extend. When [instance] is true the methods will be mapped to <target>'s prototype, if false they will be mapped onto <target> itself. For more see %global%.
        ***/
       'extend': extend,
 
@@ -729,7 +729,7 @@
 
 
   /***
-   * Object module
+   * @namespace Object
    *
    ***/
 
@@ -750,7 +750,7 @@
 
 
   /***
-   * Array module
+   * @namespace Array
    *
    ***/
 
@@ -841,7 +841,7 @@
      * @method every(<f>, [scope])
      * @returns Boolean
      * @short Returns true if all elements in the array match <f>.
-     * @extra [scope] is the %this% object. %all% is provided an alias. In addition to providing this method for browsers that don't support it natively, this method also implements @array_matching.
+     * @extra [scope] is the %this% object. %all% is provided an alias. In addition to providing this method for browsers that don't support it natively, this method also implements %array_matching%.
      * @example
      *
      +   ['a','a','a'].every(function(n) {
@@ -866,7 +866,7 @@
      * @method some(<f>, [scope])
      * @returns Boolean
      * @short Returns true if any element in the array matches <f>.
-     * @extra [scope] is the %this% object. %any% is provided as an alias. In addition to providing this method for browsers that don't support it natively, this method also implements @array_matching.
+     * @extra [scope] is the %this% object. %any% is provided as an alias. In addition to providing this method for browsers that don't support it natively, this method also implements %array_matching%.
      * @example
      *
      +   ['a','b','c'].some(function(n) {
@@ -922,7 +922,7 @@
      * @method filter(<f>, [scope])
      * @returns Array
      * @short Returns any elements in the array that match <f>.
-     * @extra [scope] is the %this% object. In addition to providing this method for browsers that don't support it natively, this method also implements @array_matching.
+     * @extra [scope] is the %this% object. In addition to providing this method for browsers that don't support it natively, this method also implements %array_matching%.
      * @example
      *
      +   [1,2,3].filter(function(n) {
@@ -1048,7 +1048,7 @@
 
 
   /***
-   * String module
+   * @namespace String
    *
    ***/
 
@@ -1076,7 +1076,7 @@
 
 
   /***
-   * Function module
+   * @namespace Function
    *
    ***/
 
@@ -1116,7 +1116,7 @@
   }, true, true);
 
   /***
-   * Date module
+   * @namespace Date
    *
    ***/
 
@@ -1702,7 +1702,7 @@
      *
      *   Array.create('one', true, 3)   -> ['one', true, 3]
      *   Array.create(['one', true, 3]) -> ['one', true, 3]
-     +   Array.create(function(n) {
+     *   Array.create(function(n) {
      *     return arguments;
      *   }('howdy', 'doody'));
      *
@@ -1723,13 +1723,13 @@
   extend(array, {
 
     /***
-     * @method find(<f>, [context] = undefined)
+     * @method find(<f>, [context])
      * @returns Mixed
      * @short Returns the first element that matches <f>.
-     * @extra [context] is the %this% object if passed. When <f> is a function, will use native implementation if it exists. <f> will also match a string, number, array, object, or alternately test against a function or regex. This method implements @array_matching.
+     * @extra [context] is the %this% object if passed. When <f> is a function, will use native implementation if it exists. <f> will also match a string, number, array, object, or alternately test against a function or regex. This method implements %array_matching%.
      * @example
      *
-     +   [{a:1,b:2},{a:1,b:3},{a:1,b:4}].find(function(n) {
+     *   [{a:1,b:2},{a:1,b:3},{a:1,b:4}].find(function(n) {
      *     return n['a'] == 1;
      *   });                                  -> {a:1,b:3}
      *   ['cuba','japan','canada'].find(/^c/) -> 'cuba'
@@ -1742,18 +1742,18 @@
     },
 
     /***
-     * @method findIndex(<f>, [context] = undefined)
+     * @method findIndex(<f>, [context])
      * @returns Number
      * @short Returns the index of the first element that matches <f> or -1 if not found.
-     * @extra [context] is the %this% object if passed. When <f> is a function, will use native implementation if it exists. <f> will also match a string, number, array, object, or alternately test against a function or regex. This method implements @array_matching.
+     * @extra [context] is the %this% object if passed. When <f> is a function, will use native implementation if it exists. <f> will also match a string, number, array, object, or alternately test against a function or regex. This method implements %array_matching%.
      *
      * @example
      *
-     +   [1,2,3,4].findIndex(function(n) {
+     *   [1,2,3,4].findIndex(function(n) {
      *     return n % 2 == 0;
      *   }); -> 1
-     +   [1,2,3,4].findIndex(3);               -> 2
-     +   ['one','two','three'].findIndex(/t/); -> 1
+     *   [1,2,3,4].findIndex(3);               -> 2
+     *   ['one','two','three'].findIndex(/t/); -> 1
      *
      ***/
     'findIndex': function(f) {
@@ -1771,7 +1771,7 @@
      * @method findFrom(<f>, [index] = 0, [loop] = false)
      * @returns Array
      * @short Returns any element that matches <f>, beginning from [index].
-     * @extra <f> will match a string, number, array, object, or alternately test against a function or regex. Will continue from index = 0 if [loop] is true. This method implements @array_matching.
+     * @extra <f> will match a string, number, array, object, or alternately test against a function or regex. Will continue from index = 0 if [loop] is true. This method implements %array_matching%.
      * @example
      *
      *   ['cuba','japan','canada'].findFrom(/^c/, 2) -> 'canada'
@@ -1785,7 +1785,7 @@
      * @method findIndexFrom(<f>, [index] = 0, [loop] = false)
      * @returns Array
      * @short Returns the index of any element that matches <f>, beginning from [index].
-     * @extra <f> will match a string, number, array, object, or alternately test against a function or regex. Will continue from index = 0 if [loop] is true. This method implements @array_matching.
+     * @extra <f> will match a string, number, array, object, or alternately test against a function or regex. Will continue from index = 0 if [loop] is true. This method implements %array_matching%.
      * @example
      *
      *   ['cuba','japan','canada'].findIndexFrom(/^c/, 2) -> 2
@@ -1800,10 +1800,10 @@
      * @method findAll(<f>, [index] = 0, [loop] = false)
      * @returns Array
      * @short Returns all elements that match <f>.
-     * @extra <f> will match a string, number, array, object, or alternately test against a function or regex. Starts at [index], and will continue once from index = 0 if [loop] is true. This method implements @array_matching.
+     * @extra <f> will match a string, number, array, object, or alternately test against a function or regex. Starts at [index], and will continue once from index = 0 if [loop] is true. This method implements %array_matching%.
      * @example
      *
-     +   [{a:1,b:2},{a:1,b:3},{a:2,b:4}].findAll(function(n) {
+     *   [{a:1,b:2},{a:1,b:3},{a:2,b:4}].findAll(function(n) {
      *     return n['a'] == 1;
      *   });                                        -> [{a:1,b:3},{a:1,b:4}]
      *   ['cuba','japan','canada'].findAll(/^c/)    -> 'cuba','canada'
@@ -1818,12 +1818,12 @@
      * @method count(<f>)
      * @returns Number
      * @short Counts all elements in the array that match <f>.
-     * @extra <f> will match a string, number, array, object, or alternately test against a function or regex. This method implements @array_matching.
+     * @extra <f> will match a string, number, array, object, or alternately test against a function or regex. This method implements %array_matching%.
      * @example
      *
      *   [1,2,3,1].count(1)       -> 2
      *   ['a','b','c'].count(/b/) -> 1
-     +   [{a:1},{b:2}].count(function(n) {
+     *   [{a:1},{b:2}].count(function(n) {
      *     return n['a'] > 1;
      *   });                      -> 0
      *
@@ -1870,12 +1870,12 @@
      * @method exclude([f1], [f2], ...)
      * @returns Array
      * @short Removes any element in the array that matches [f1], [f2], etc.
-     * @extra This is a non-destructive alias for %remove%. It will not change the original array. This method implements @array_matching.
+     * @extra This is a non-destructive alias for %remove%. It will not change the original array. This method implements %array_matching%.
      * @example
      *
      *   [1,2,3].exclude(3)         -> [1,2]
      *   ['a','b','c'].exclude(/b/) -> ['a','c']
-     +   [{a:1},{b:2}].exclude(function(n) {
+     *   [{a:1},{b:2}].exclude(function(n) {
      *     return n['a'] == 1;
      *   });                       -> [{b:2}]
      *
@@ -1906,7 +1906,7 @@
      *
      *   [1,2,2,3].unique()                 -> [1,2,3]
      *   [{foo:'bar'},{foo:'bar'}].unique() -> [{foo:'bar'}]
-     +   [{foo:'bar'},{foo:'bar'}].unique(function(obj){
+     *   [{foo:'bar'},{foo:'bar'}].unique(function(obj){
      *     return obj.foo;
      *   }); -> [{foo:'bar'}]
      *   [{foo:'bar'},{foo:'bar'}].unique('foo') -> [{foo:'bar'}]
@@ -2069,10 +2069,10 @@
      *   [1,2,3].min()                          -> 1
      *   ['fee','fo','fum'].min('length')       -> 'fo'
      *   ['fee','fo','fum'].min('length', true) -> ['fo']
-     +   ['fee','fo','fum'].min(function(n) {
+     *   ['fee','fo','fum'].min(function(n) {
      *     return n.length;
      *   });                              -> ['fo']
-     +   [{a:3,a:2}].min(function(n) {
+     *   [{a:3,a:2}].min(function(n) {
      *     return n['a'];
      *   });                              -> [{a:2}]
      *
@@ -2091,7 +2091,7 @@
      *   [1,2,3].max()                          -> 3
      *   ['fee','fo','fum'].max('length')       -> 'fee'
      *   ['fee','fo','fum'].max('length', true) -> ['fee']
-     +   [{a:3,a:2}].max(function(n) {
+     *   [{a:3,a:2}].max(function(n) {
      *     return n['a'];
      *   });                              -> {a:3}
      *
@@ -2109,7 +2109,7 @@
      *
      *   [3,2,2].least()                   -> [3]
      *   ['fe','fo','fum'].least('length') -> ['fum']
-     +   [{age:35,name:'ken'},{age:12,name:'bob'},{age:12,name:'ted'}].least(function(n) {
+     *   [{age:35,name:'ken'},{age:12,name:'bob'},{age:12,name:'ted'}].least(function(n) {
      *     return n.age;
      *   });                               -> [{age:35,name:'ken'}]
      *
@@ -2127,7 +2127,7 @@
      *
      *   [3,2,2].most()                   -> [2]
      *   ['fe','fo','fum'].most('length') -> ['fe','fo']
-     +   [{age:35,name:'ken'},{age:12,name:'bob'},{age:12,name:'ted'}].most(function(n) {
+     *   [{age:35,name:'ken'},{age:12,name:'bob'},{age:12,name:'ted'}].most(function(n) {
      *     return n.age;
      *   });                              -> [{age:12,name:'bob'},{age:12,name:'ted'}]
      *
@@ -2144,7 +2144,7 @@
      * @example
      *
      *   [1,2,2].sum()                           -> 5
-     +   [{age:35},{age:12},{age:12}].sum(function(n) {
+     *   [{age:35},{age:12},{age:12}].sum(function(n) {
      *     return n.age;
      *   });                                     -> 59
      *   [{age:35},{age:12},{age:12}].sum('age') -> 59
@@ -2162,7 +2162,7 @@
      * @example
      *
      *   [1,2,3].average()                           -> 2
-     +   [{age:35},{age:11},{age:11}].average(function(n) {
+     *   [{age:35},{age:11},{age:11}].average(function(n) {
      *     return n.age;
      *   });                                         -> 19
      *   [{age:35},{age:11},{age:11}].average('age') -> 19
@@ -2246,12 +2246,12 @@
      * @method sortBy(<map>, [desc] = false)
      * @returns Array
      * @short Returns a copy of the array sorted by <map>.
-     * @extra <map> may be a function, a string acting as a shortcut, an array (comparison by multiple values), or blank (direct comparison of array values). [desc] will sort the array in descending order. When the field being sorted on is a string, the resulting order will be determined by an internal collation algorithm that is optimized for major Western languages, but can be customized. For more information see @array_sorting.
+     * @extra <map> may be a function, a string acting as a shortcut, an array (comparison by multiple values), or blank (direct comparison of array values). [desc] will sort the array in descending order. When the field being sorted on is a string, the resulting order will be determined by an internal collation algorithm that is optimized for major Western languages, but can be customized. For more information see %array_sorting%.
      * @example
      *
      *   ['world','a','new'].sortBy('length')       -> ['a','new','world']
      *   ['world','a','new'].sortBy('length', true) -> ['world','new','a']
-     +   [{age:72},{age:13},{age:18}].sortBy(function(n) {
+     *   [{age:72},{age:13},{age:18}].sortBy(function(n) {
      *     return n.age;
      *   });                                        -> [{age:13},{age:18},{age:72}]
      *
@@ -2356,12 +2356,12 @@
      * @method remove([f1], [f2], ...)
      * @returns Array
      * @short Removes any element in the array that matches [f1], [f2], etc.
-     * @extra Will match a string, number, array, object, or alternately test against a function or regex. This method will change the array! Use %exclude% for a non-destructive alias. This method implements @array_matching.
+     * @extra Will match a string, number, array, object, or alternately test against a function or regex. This method will change the array! Use %exclude% for a non-destructive alias. This method implements %array_matching%.
      * @example
      *
      *   [1,2,3].remove(3)         -> [1,2]
      *   ['a','b','c'].remove(/b/) -> ['a','c']
-     +   [{a:1},{b:2}].remove(function(n) {
+     *   [{a:1},{b:2}].remove(function(n) {
      *     return n['a'] == 1;
      *   });                       -> [{b:2}]
      *
@@ -2394,7 +2394,7 @@
      * @example
      *
      *   ['fee','fi','fum'].groupBy('length') -> { 2: ['fi'], 3: ['fee','fum'] }
-     +   [{age:35,name:'ken'},{age:15,name:'bob'}].groupBy(function(n) {
+     *   [{age:35,name:'ken'},{age:15,name:'bob'}].groupBy(function(n) {
      *     return n.age;
      *   });                                  -> { 35: [{age:35,name:'ken'}], 15: [{age:15,name:'bob'}] }
      *
@@ -2407,12 +2407,12 @@
      * @method none(<f>)
      * @returns Boolean
      * @short Returns true if none of the elements in the array match <f>.
-     * @extra <f> will match a string, number, array, object, or alternately test against a function or regex. This method implements @array_matching.
+     * @extra <f> will match a string, number, array, object, or alternately test against a function or regex. This method implements %array_matching%.
      * @example
      *
      *   [1,2,3].none(5)         -> true
      *   ['a','b','c'].none(/b/) -> false
-     +   [{a:1},{b:2}].none(function(n) {
+     *   [{a:1},{b:2}].none(function(n) {
      *     return n['a'] > 1;
      *   });                     -> true
      *
@@ -2450,8 +2450,7 @@
 
 
   /***
-   * Object module
-   * Enumerable methods on objects
+   * @namespace Object
    *
    ***/
 
@@ -2459,7 +2458,7 @@
    * @method [enumerable](<obj>)
    * @returns Boolean
    * @short Enumerable methods in the Array package are also available to the Object class. They will perform their normal operations for every property in <obj>.
-   * @extra In cases where a callback is used, instead of %element, index%, the callback will instead be passed %key, value%. Enumerable methods are also available to extended objects as instance methods.
+   * @extra In cases where a callback is used, instead of %element, index%, the callback will instead be passed %key, value%. Enumerable methods are also available to %extended objects% as instance methods.
    *
    * @set
    *   any
@@ -2481,7 +2480,7 @@
    *   Object.any({foo:'bar'}, 'bar')            -> true
    *   Object.extended({foo:'bar'}).any('bar')   -> true
    *   Object.isEmpty({})                        -> true
-   +   Object.map({ fred: { age: 52 } }, 'age'); -> { fred: 52 }
+   *   Object.map({ fred: { age: 52 } }, 'age'); -> { fred: 52 }
    *
    ***/
 
@@ -3898,7 +3897,7 @@
    * @method [units]Since([d], [locale] = currentLocale)
    * @returns Number
    * @short Returns the time since [d] in the appropriate unit.
-   * @extra [d] will accept a date object, timestamp, or text format. If not specified, [d] is assumed to be now. [locale] can be passed to specify the locale that the date is in. %[unit]Ago% is provided as an alias to make this more readable when [d] is assumed to be the current date. For more see @date_format.
+   * @extra [d] will accept a date object, timestamp, or text format. If not specified, [d] is assumed to be now. [locale] can be passed to specify the locale that the date is in. %[unit]Ago% is provided as an alias to make this more readable when [d] is assumed to be the current date. For more see %date_format%.
    *
    * @set
    *   millisecondsSince
@@ -3942,7 +3941,7 @@
    * @method [units]Until([d], [locale] = currentLocale)
    * @returns Number
    * @short Returns the time until [d] in the appropriate unit.
-   * @extra [d] will accept a date object, timestamp, or text format. If not specified, [d] is assumed to be now. [locale] can be passed to specify the locale that the date is in. %[unit]FromNow% is provided as an alias to make this more readable when [d] is assumed to be the current date. For more see @date_format.
+   * @extra [d] will accept a date object, timestamp, or text format. If not specified, [d] is assumed to be now. [locale] can be passed to specify the locale that the date is in. %[unit]FromNow% is provided as an alias to make this more readable when [d] is assumed to be the current date. For more see %date_format%.
    *
    * @set
    *   millisecondsUntil
@@ -4369,7 +4368,7 @@
      * @method Date.create(<d>, [locale] = currentLocale)
      * @returns Date
      * @short Alternate Date constructor which understands many different text formats, a timestamp, or another date.
-     * @extra If no argument is given, date is assumed to be now. %Date.create% additionally can accept enumerated parameters as with the standard date constructor. [locale] can be passed to specify the locale that the date is in. When unspecified, the current locale (default is English) is assumed. UTC-based dates can be created through the %utc% object. For more see @date_format.
+     * @extra If no argument is given, date is assumed to be now. %Date.create% additionally can accept enumerated parameters as with the standard date constructor. [locale] can be passed to specify the locale that the date is in. When unspecified, the current locale (default is English) is assumed. UTC-based dates can be created through the %utc% object. For more see %date_format%.
      * @set
      *   Date.utc.create
      *
@@ -4395,7 +4394,7 @@
      * @method Date.past(<d>, [locale] = currentLocale)
      * @returns Date
      * @short Alternate form of %Date.create% with any ambiguity assumed to be the past.
-     * @extra For example %"Sunday"% can be either "the Sunday coming up" or "the Sunday last" depending on context. Note that dates explicitly in the future ("next Sunday") will remain in the future. This method simply provides a hint when ambiguity exists. UTC-based dates can be created through the %utc% object. For more, see @date_format.
+     * @extra For example %"Sunday"% can be either "the Sunday coming up" or "the Sunday last" depending on context. Note that dates explicitly in the future ("next Sunday") will remain in the future. This method simply provides a hint when ambiguity exists. UTC-based dates can be created through the %utc% object. For more, see %date_format%.
      * @set
      *   Date.utc.past
      *
@@ -4413,7 +4412,7 @@
      * @method Date.future(<d>, [locale] = currentLocale)
      * @returns Date
      * @short Alternate form of %Date.create% with any ambiguity assumed to be the future.
-     * @extra For example %"Sunday"% can be either "the Sunday coming up" or "the Sunday last" depending on context. Note that dates explicitly in the past ("last Sunday") will remain in the past. This method simply provides a hint when ambiguity exists. UTC-based dates can be created through the %utc% object. For more, see @date_format.
+     * @extra For example %"Sunday"% can be either "the Sunday coming up" or "the Sunday last" depending on context. Note that dates explicitly in the past ("last Sunday") will remain in the past. This method simply provides a hint when ambiguity exists. UTC-based dates can be created through the %utc% object. For more, see %date_format%.
      * @set
      *   Date.utc.future
      *
@@ -4431,7 +4430,7 @@
      * @method Date.addLocale(<code>, <set>)
      * @returns Locale
      * @short Adds a locale <set> to the locales understood by Sugar.
-     * @extra For more see @date_format.
+     * @extra For more see %date_format%.
      *
      ***/
     'addLocale': function(localeCode, set) {
@@ -4442,7 +4441,7 @@
      * @method Date.setLocale(<code>)
      * @returns Locale
      * @short Sets the current locale to be used with dates.
-     * @extra Sugar has support for 13 locales that are available through the "Date Locales" package. In addition you can define a new locale with %Date.addLocale%. For more see @date_format.
+     * @extra Sugar has support for 13 locales that are available through the "Date Locales" package. In addition you can define a new locale with %Date.addLocale%. For more see %date_format%.
      *
      ***/
     'setLocale': function(localeCode, set) {
@@ -4460,7 +4459,7 @@
      * @method Date.getLocale([code] = current)
      * @returns Locale
      * @short Gets the locale for the given code, or the current locale.
-     * @extra The resulting locale object can be manipulated to provide more control over date localizations. For more about locales, see @date_format.
+     * @extra The resulting locale object can be manipulated to provide more control over date localizations. For more about locales, see %date_format%.
      *
      ***/
     'getLocale': function(localeCode) {
@@ -4471,7 +4470,7 @@
      * @method Date.addFormat(<format>, <match>, [code] = null)
      * @returns Nothing
      * @short Manually adds a new date input format.
-     * @extra This method allows fine grained control for alternate formats. <format> is a string that can have regex tokens inside. <match> is an array of the tokens that each regex capturing group will map to, for example %year%, %date%, etc. For more, see @date_format.
+     * @extra This method allows fine grained control for alternate formats. <format> is a string that can have regex tokens inside. <match> is an array of the tokens that each regex capturing group will map to, for example %year%, %date%, etc. For more, see %date_format%.
      *
      **/
     'addFormat': function(format, match, localeCode) {
@@ -4602,7 +4601,7 @@
      * @method setUTC([on] = false)
      * @returns Date
      * @short Sets the internal utc flag for the date. When on, UTC-based methods will be called internally.
-     * @extra For more see @date_format.
+     * @extra For more see %date_format%.
      * @example
      *
      *   new Date().setUTC(true)
@@ -4632,7 +4631,7 @@
      * @method advance(<set>, [reset] = false)
      * @returns Date
      * @short Sets the date forward.
-     * @extra This method can accept multiple formats including an object, a string in the format %3 days%, a single number as milliseconds, or enumerated parameters (as with the Date constructor). If [reset] is %true%, any units more specific than those passed will be reset. For more see @date_format.
+     * @extra This method can accept multiple formats including an object, a string in the format %3 days%, a single number as milliseconds, or enumerated parameters (as with the Date constructor). If [reset] is %true%, any units more specific than those passed will be reset. For more see %date_format%.
      * @example
      *
      *   new Date().advance({ year: 2 }) -> 2 years in the future
@@ -4649,7 +4648,7 @@
      * @method rewind(<set>, [reset] = false)
      * @returns Date
      * @short Sets the date back.
-     * @extra This method can accept multiple formats including a single number as a timestamp, an object, or enumerated parameters (as with the Date constructor). If [reset] is %true%, any units more specific than those passed will be reset. For more see @date_format.
+     * @extra This method can accept multiple formats including a single number as a timestamp, an object, or enumerated parameters (as with the Date constructor). If [reset] is %true%, any units more specific than those passed will be reset. For more see %date_format%.
      * @example
      *
      *   new Date().rewind({ year: 2 }) -> 2 years in the past
@@ -4680,7 +4679,7 @@
      * @method isAfter(<d>, [margin] = 0)
      * @returns Boolean
      * @short Returns true if the date is after the <d>.
-     * @extra [margin] is to allow extra margin of error (in ms). <d> will accept a date object, timestamp, or text format. If not specified, <d> is assumed to be now. See @date_format for more.
+     * @extra [margin] is to allow extra margin of error (in ms). <d> will accept a date object, timestamp, or text format. If not specified, <d> is assumed to be now. See %date_format% for more.
      * @example
      *
      *   new Date().isAfter('tomorrow')  -> false
@@ -4695,7 +4694,7 @@
      * @method isBefore(<d>, [margin] = 0)
      * @returns Boolean
      * @short Returns true if the date is before <d>.
-     * @extra [margin] is to allow extra margin of error (in ms). <d> will accept a date object, timestamp, or text format. If not specified, <d> is assumed to be now. See @date_format for more.
+     * @extra [margin] is to allow extra margin of error (in ms). <d> will accept a date object, timestamp, or text format. If not specified, <d> is assumed to be now. See %date_format% for more.
      * @example
      *
      *   new Date().isBefore('tomorrow')  -> true
@@ -4710,7 +4709,7 @@
      * @method isBetween(<d1>, <d2>, [margin] = 0)
      * @returns Boolean
      * @short Returns true if the date falls between <d1> and <d2>.
-     * @extra [margin] is to allow extra margin of error (in ms). <d1> and <d2> will accept a date object, timestamp, or text format. If not specified, they are assumed to be now. See @date_format for more.
+     * @extra [margin] is to allow extra margin of error (in ms). <d1> and <d2> will accept a date object, timestamp, or text format. If not specified, they are assumed to be now. See %date_format% for more.
      * @example
      *
      *   new Date().isBetween('yesterday', 'tomorrow')    -> true
@@ -4758,7 +4757,7 @@
      * @method format(<format>, [locale] = currentLocale)
      * @returns String
      * @short Formats and outputs the date.
-     * @extra <format> can be a number of pre-determined formats or a string of tokens. Locale-specific formats are %short%, %long%, and %full% which have their own aliases and can be called with %date.short()%, etc. If <format> is not specified the %long% format is assumed. [locale] specifies a locale code to use (if not specified the current locale is used). See @date_format for more details.
+     * @extra <format> can be a number of pre-determined formats or a string of tokens. Locale-specific formats are %short%, %long%, and %full% which have their own aliases and can be called with %date.short()%, etc. If <format> is not specified the %long% format is assumed. [locale] specifies a locale code to use (if not specified the current locale is used). See %date_format% for more details.
      *
      * @set
      *   short
@@ -4786,7 +4785,7 @@
      * @method relative([fn], [locale] = currentLocale)
      * @returns String
      * @short Returns a relative date string offset to the current time.
-     * @extra [fn] can be passed to provide for more granular control over the resulting string. [fn] is passed 4 arguments: the adjusted value, unit, offset in milliseconds, and a localization object. As an alternate syntax, [locale] can also be passed as the first (and only) parameter. For more, see @date_format.
+     * @extra [fn] can be passed to provide for more granular control over the resulting string. [fn] is passed 4 arguments: the adjusted value, unit, offset in milliseconds, and a localization object. As an alternate syntax, [locale] can also be passed as the first (and only) parameter. For more, see %date_format%.
      * @example
      *
      *   Date.create('90 seconds ago').relative() -> 1 minute ago
@@ -4809,7 +4808,7 @@
      * @method is(<f>, [margin] = 0, [utc] = false)
      * @returns Boolean
      * @short Returns true if the date is <f>.
-     * @extra <f> will accept a date object, timestamp, or text format. %is% additionally understands more generalized expressions like month/weekday names, 'today', etc, and compares to the precision implied in <f>. [margin] allows an extra margin of error in milliseconds. [utc] will treat the compared date as UTC. For more, see @date_format.
+     * @extra <f> will accept a date object, timestamp, or text format. %is% additionally understands more generalized expressions like month/weekday names, 'today', etc, and compares to the precision implied in <f>. [margin] allows an extra margin of error in milliseconds. [utc] will treat the compared date as UTC. For more, see %date_format%.
      * @example
      *
      *   Date.create().is('July')               -> true or false?
@@ -4886,7 +4885,7 @@
 
 
   /***
-   * Number module
+   * @namespace Number
    *
    ***/
 
@@ -4924,7 +4923,7 @@
    * @method [unit]Before([d], [locale] = currentLocale)
    * @returns Date
    * @short Returns a date that is <n> units before [d], where <n> is the number.
-   * @extra [d] will accept a date object, timestamp, or text format. Note that "months" is ambiguous as a unit of time. If the target date falls on a day that does not exist (ie. August 31 -> February 31), the date will be shifted to the last day of the month. Be careful using %monthsBefore% if you need exact precision. See @date_format for more.
+   * @extra [d] will accept a date object, timestamp, or text format. Note that "months" is ambiguous as a unit of time. If the target date falls on a day that does not exist (ie. August 31 -> February 31), the date will be shifted to the last day of the month. Be careful using %monthsBefore% if you need exact precision. See %date_format% for more.
    *
    * @set
    *   millisecondBefore
@@ -4982,7 +4981,7 @@
    * @method [unit]After([d], [locale] = currentLocale)
    * @returns Date
    * @short Returns a date <n> units after [d], where <n> is the number.
-   * @extra [d] will accept a date object, timestamp, or text format. Note that "months" is ambiguous as a unit of time. If the target date falls on a day that does not exist (ie. August 31 -> February 31), the date will be shifted to the last day of the month. Be careful using %monthsAfter% if you need exact precision. See @date_format for more.
+   * @extra [d] will accept a date object, timestamp, or text format. Note that "months" is ambiguous as a unit of time. If the target date falls on a day that does not exist (ie. August 31 -> February 31), the date will be shifted to the last day of the month. Be careful using %monthsAfter% if you need exact precision. See %date_format% for more.
    *
    * @set
    *   millisecondAfter
@@ -5082,6 +5081,12 @@
 
   });
 
+  /***
+   * @package Locales
+   * @dependency date
+   * @description Locale definitions French (fr), Italian (it), Spanish (es), Portuguese (pt), German (de), Russian (ru), Polish (pl), Swedish (sv), Japanese (ja), Korean (ko), Simplified Chinese (zh-CN), and Traditional Chinese (zh-TW). Locales can also be included individually. See @date_locales for more.
+   *
+   ***/
 
   English = CurrentLocalization = sugarDate.addLocale('en', {
     'plural':     true,
@@ -5485,32 +5490,29 @@
 
 
   /***
-   * Number module
-   ***
+   * @namespace Number
    * @method Number.range([start], [end])
    * @returns Range
-   * @short Creates a new range between [start] and [end]. See @ranges for more.
+   * @short Creates a new range between [start] and [end]. See %ranges% for more.
    * @example
    *
    *   Number.range(5, 10)
    *
    ***
-   * String module
-   ***
+   * @namespace String
    * @method String.range([start], [end])
    * @returns Range
-   * @short Creates a new range between [start] and [end]. See @ranges for more.
+   * @short Creates a new range between [start] and [end]. See %ranges% for more.
    * @example
    *
    *   String.range('a', 'z')
    *
    ***
-   * Date module
-   ***
+   * @namespace Date
    * @method Date.range([start], [end])
    * @returns Range
    * @short Creates a new range between [start] and [end].
-   * @extra If either [start] or [end] are null, they will default to the current date. See @ranges for more.
+   * @extra If either [start] or [end] are null, they will default to the current date. See %ranges% for more.
    * @example
    *
    *   Date.range('today', 'tomorrow')
@@ -5544,7 +5546,7 @@
    extendRangeConstructor(date, DateRangeConstructor);
 
   /***
-   * Number module
+   * @namespace Number
    *
    ***/
 
@@ -5617,7 +5619,7 @@
 
 
   /***
-   * Array module
+   * @namespace Array
    *
    ***/
 
@@ -5714,7 +5716,7 @@
      * @method lazy([ms] = 1, [immediate] = false, [limit] = Infinity)
      * @returns Function
      * @short Creates a lazy function that, when called repeatedly, will queue execution and wait [ms] milliseconds to execute.
-     * @extra If [immediate] is %true%, first execution will happen immediately, then lock. If [limit] is a fininte number, calls past [limit] will be ignored while execution is locked. Compare this to %throttle%, which will execute only once per [ms] milliseconds. Note that [ms] can also be a fraction. Calling %cancel% on a lazy function will clear the entire queue. For more see @functions.
+     * @extra If [immediate] is %true%, first execution will happen immediately, then lock. If [limit] is a fininte number, calls past [limit] will be ignored while execution is locked. Compare this to %throttle%, which will execute only once per [ms] milliseconds. Note that [ms] can also be a fraction. Calling %cancel% on a lazy function will clear the entire queue. For more see %functions%.
      * @example
      *
      *   (function() {
@@ -5736,7 +5738,7 @@
      * @method throttle([ms] = 1)
      * @returns Function
      * @short Creates a "throttled" version of the function that will only be executed once per <ms> milliseconds.
-     * @extra This is functionally equivalent to calling %lazy% with a [limit] of %1% and [immediate] as %true%. %throttle% is appropriate when you want to make sure a function is only executed at most once for a given duration. For more see @functions.
+     * @extra This is functionally equivalent to calling %lazy% with a [limit] of %1% and [immediate] as %true%. %throttle% is appropriate when you want to make sure a function is only executed at most once for a given duration. For more see %functions%.
      * @example
      *
      *   (3).times(function() {
@@ -5752,7 +5754,7 @@
      * @method debounce([ms] = 1)
      * @returns Function
      * @short Creates a "debounced" function that postpones its execution until after <ms> milliseconds have passed.
-     * @extra This method is useful to execute a function after things have "settled down". A good example of this is when a user tabs quickly through form fields, execution of a heavy operation should happen after a few milliseconds when they have "settled" on a field. For more see @functions.
+     * @extra This method is useful to execute a function after things have "settled down". A good example of this is when a user tabs quickly through form fields, execution of a heavy operation should happen after a few milliseconds when they have "settled" on a field. For more see %functions%.
      * @example
      *
      *   var fn = (function(arg1) {
@@ -5821,7 +5823,7 @@
      * @example
      *
      *   (function() {
-     *     alert('hay'); // Never called
+     *     alert('hay'); -> Never called
      *   }).delay(500).cancel();
      *
      ***/
@@ -6349,7 +6351,7 @@
   /***
    * @package Object
    * @dependency core
-   * @description Object manipulation, type checking (isNumber, isString, ...), extended objects with hash-like methods available as instance methods.
+   * @description Object manipulation, type checking (isNumber, isString, ...), %extended objects% with hash-like methods available as instance methods.
    *
    * Much thanks to kangax for his informative aricle about how problems with instanceof and constructor
    * http://perfectionkills.com/instanceof-considered-harmful-or-how-to-write-a-robust-isarray/
@@ -6561,7 +6563,7 @@
        * @method watch(<obj>, <prop>, <fn>)
        * @returns Boolean
        * @short Watches a property of <obj> and runs <fn> when it is updated.
-       * @extra <fn> is passed three arguments: the property <prop>, the old value, and the new value. The return value of [fn] will be set as the new value. Properties that are non-configurable or already have getters or setters cannot be watched. Return value is whether or not the watch operation succeeded. This method is useful for things such as validating or cleaning the value when it is set. Warning: this method WILL NOT work in browsers that don't support %Object.defineProperty% (IE 8 and below). This is the only method in Sugar that is not fully compatible with all browsers. %watch% is available as an instance method on extended objects.
+       * @extra <fn> is passed three arguments: the property <prop>, the old value, and the new value. The return value of [fn] will be set as the new value. Properties that are non-configurable or already have getters or setters cannot be watched. Return value is whether or not the watch operation succeeded. This method is useful for things such as validating or cleaning the value when it is set. Warning: this method WILL NOT work in browsers that don't support %Object.defineProperty% (IE 8 and below). This is the only method in Sugar that is not fully compatible with all browsers. %watch% is available as an instance method on %extended objects%.
        * @example
        *
        *   Object.watch({ foo: 'bar' }, 'foo', function(prop, oldVal, newVal) {
@@ -6597,7 +6599,7 @@
        * @method unwatch(<obj>, <prop>)
        * @returns Nothing.
        * @short Removes a watcher previously set.
-       * @extra Return value is whether or not the watch operation succeeded. %unwatch% is available as an instance method on extended objects.
+       * @extra Return value is whether or not the watch operation succeeded. %unwatch% is available as an instance method on %extended objects%.
        ***/
     'unwatch': function(obj, prop) {
       var descriptor;
@@ -6619,7 +6621,7 @@
      * @method keys(<obj>, [fn])
      * @returns Array
      * @short Returns an array containing the keys in <obj>. Optionally calls [fn] for each key.
-     * @extra This method is provided for browsers that don't support it natively, and additionally is enhanced to accept the callback [fn]. Returned keys are in no particular order. %keys% is available as an instance method on extended objects.
+     * @extra This method is provided for browsers that don't support it natively, and additionally is enhanced to accept the callback [fn]. Returned keys are in no particular order. %keys% is available as an instance method on %extended objects%.
      * @example
      *
      *   Object.keys({ broken: 'wear' }) -> ['broken']
@@ -6658,7 +6660,7 @@
      * @method equal(<a>, <b>)
      * @returns Boolean
      * @short Returns true if <a> and <b> are equal.
-     * @extra %equal% in Sugar is "egal", meaning the values are equal if they are "not observably distinguishable". Note that on extended objects the name is %equals% for readability.
+     * @extra %equal% in Sugar is "egal", meaning the values are equal if they are "not observably distinguishable". Note that on %extended objects% the name is %equals% for readability.
      * @example
      *
      *   Object.equal({a:2}, {a:2}) -> true
@@ -6674,7 +6676,7 @@
      * @method Object.extended(<obj> = {})
      * @returns Extended object
      * @short Creates a new object, equivalent to %new Object()% or %{}%, but with extended methods.
-     * @extra See extended objects for more.
+     * @extra See %extended objects% for more.
      * @example
      *
      *   Object.extended()
@@ -6690,7 +6692,7 @@
      * @method merge(<target>, <source>, [deep] = false, [resolve] = true)
      * @returns Merged object
      * @short Merges all the properties of <source> into <target>.
-     * @extra Merges are shallow unless [deep] is %true%. Properties of <target> that are either null or undefined will be treated as if they don't exist. Properties of <source> will win in the case of conflicts, unless [resolve] is %false%. [resolve] can also be a function that resolves the conflict. In this case it will be passed 3 arguments, %key%, %targetVal%, and %sourceVal%. %merge% is available as an instance method on extended objects. For more, see @object_merging.
+     * @extra Merges are shallow unless [deep] is %true%. Properties of <target> that are either null or undefined will be treated as if they don't exist. Properties of <source> will win in the case of conflicts, unless [resolve] is %false%. [resolve] can also be a function that resolves the conflict. In this case it will be passed 3 arguments, %key%, %targetVal%, and %sourceVal%. %merge% is available as an instance method on %extended objects%. For more, see %object_merging%.
      * @example
      *
      *   Object.merge({a:1},{b:2}) -> { a:1, b:2 }
@@ -6709,7 +6711,7 @@
      * @method values(<obj>, [fn])
      * @returns Array
      * @short Returns an array containing the values in <obj>. Optionally calls [fn] for each value.
-     * @extra Returned values are in no particular order. %values% is available as an instance method on extended objects.
+     * @extra Returned values are in no particular order. %values% is available as an instance method on %extended objects%.
      * @example
      *
      *   Object.values({ broken: 'wear' }) -> ['wear']
@@ -6732,7 +6734,7 @@
      * @method clone(<obj> = {}, [deep] = false)
      * @returns Cloned object
      * @short Creates a clone (copy) of <obj>.
-     * @extra Default is a shallow clone, unless [deep] is true. %clone% is available as an instance method on extended objects.
+     * @extra Default is a shallow clone, unless [deep] is true. %clone% is available as an instance method on %extended objects%.
      * @example
      *
      *   Object.clone({foo:'bar'})            -> { foo: 'bar' }
@@ -6806,7 +6808,7 @@
      * @method tap(<obj>, <fn>)
      * @returns Object
      * @short Runs <fn> and returns <obj>.
-     * @extra  A string can also be used as a shortcut to a method. This method is used to run an intermediary function in the middle of method chaining. As a standalone method on the Object class it doesn't have too much use. The power of %tap% comes when using extended objects or modifying the Object prototype with Object.extend().
+     * @extra  A string can also be used as a shortcut to a method. This method is used to run an intermediary function in the middle of method chaining. As a standalone method on the Object class it doesn't have too much use. The power of %tap% comes when using %extended objects% or modifying the Object prototype with %Object.extend()%.
      * @example
      *
      *   Object.extend();
@@ -6847,7 +6849,7 @@
      * @method select(<obj>, <find>, ...)
      * @returns Object
      * @short Builds a new object containing the values specified in <find>.
-     * @extra When <find> is a string, that single key will be selected. It can also be a regex, selecting any key that matches, or an object which will effectively do an "intersect" operation on that object. Multiple selections may also be passed as an array or directly as enumerated arguments. %select% is available as an instance method on extended objects.
+     * @extra When <find> is a string, that single key will be selected. It can also be a regex, selecting any key that matches, or an object which will effectively do an "intersect" operation on that object. Multiple selections may also be passed as an array or directly as enumerated arguments. %select% is available as an instance method on %extended objects%.
      * @example
      *
      *   Object.select({a:1,b:2}, 'a')        -> {a:1}
@@ -6865,7 +6867,7 @@
      * @method reject(<obj>, <find>, ...)
      * @returns Object
      * @short Builds a new object containing all values except those specified in <find>.
-     * @extra When <find> is a string, that single key will be rejected. It can also be a regex, rejecting any key that matches, or an object which will match if the key also exists in that object, effectively "subtracting" that object. Multiple selections may also be passed as an array or directly as enumerated arguments. %reject% is available as an instance method on extended objects.
+     * @extra When <find> is a string, that single key will be rejected. It can also be a regex, rejecting any key that matches, or an object which will match if the key also exists in that object, effectively "subtracting" that object. Multiple selections may also be passed as an array or directly as enumerated arguments. %reject% is available as an instance method on %extended objects%.
      * @example
      *
      *   Object.reject({a:1,b:2}, 'a')        -> {b:2}
@@ -6924,7 +6926,7 @@
      * @method size(<obj>)
      * @returns Number
      * @short Returns the number of properties in <obj>.
-     * @extra %size% is available as an instance method on extended objects.
+     * @extra %size% is available as an instance method on %extended objects%.
      * @example
      *
      *   Object.size({ foo: 'bar' }) -> 1
@@ -7659,9 +7661,9 @@
     },
 
     /***
-     * @method each([search] = single character, [fn])
+     * @method each([search], [fn])
      * @returns Array
-     * @short Runs callback [fn] against each occurence of [search].
+     * @short Runs callback [fn] against each occurence of [search] or each character if [search] is not provided.
      * @extra Returns an array of matches. [search] may be either a string or regex, and defaults to every character in the string. If [fn] returns false at any time it will break out of the loop.
      * @example
      *
@@ -7686,7 +7688,7 @@
      *   'jumpy'.map(function(l) {
      *     return String.fromCharCode(l.charCodeAt(0) + 1);
      *
-     *   }); // Returns the string with each character shifted one code point down.
+     *   }); -> Returns the string with each character shifted one code point down.
      *
      ***/
     'map': function(map, scope) {
@@ -8000,7 +8002,7 @@
      *   '<p>just <b>some</b> text</p>'.stripTags('p') -> 'just <b>some</b> text'
      *   '<p>hi!</p>'.stripTags('p', function(tag, content) {
      *     return '|' + content + '|';
-     *   }); // returns '|hi!|'
+     *   }); -> '|hi!|'
      *
      ***/
     'stripTags': function() {
@@ -8018,7 +8020,7 @@
      *   '<p>just <b>some</b> text</p>'.removeTags('b') -> '<p>just text</p>'
      *   '<p>hi!</p>'.removeTags('p', function(tag, content) {
      *     return 'bye!';
-     *   }); // returns 'bye!'
+     *   }); -> 'bye!'
      *
      ***/
     'removeTags': function() {
@@ -8220,7 +8222,7 @@
    ***/
 
   /***
-   * String module
+   * @namespace String
    *
    ***/
 
@@ -8765,7 +8767,7 @@
    ***/
 
   /***
-   * String module
+   * @namespace String
    *
    ***/
 
