@@ -21,8 +21,6 @@ node_modules
 bower_components
 
 ## PROJECT::SPECIFIC
-release/sugar-test.min.js
-release/utf8/sugar-test.min.js
 release/precompiled
 
 ## Want to test these across branches/tags
