@@ -149,8 +149,12 @@ function getFilename(packages, ext) {
   }
 }
 
+function getRelease() {
+  return args.r || args.release || 'custom';
+}
+
 function getLicense() {
-  var release = args.r || args.release || 'custom';
+  var release = getRelease();
   return fs.readFileSync('release/copyright.txt', 'utf-8')
     .replace(/VERSION/, release.match(/[\d.]+/) ? 'v' + release : release)
     .replace(/YEAR/, new Date().getFullYear())
@@ -230,6 +234,9 @@ gulp.task('min', function(done) {
 });
 
 gulp.task('release', function() {
+  util.log(util.colors.blue('-------------------------------'));
+  util.log(util.colors.blue('Creating release:', getRelease()));
+  util.log(util.colors.blue('-------------------------------'));
   return merge(buildDevelopment('default'), buildMinified('default'), buildDevelopment('all'), buildMinified('all'));
 });
 
