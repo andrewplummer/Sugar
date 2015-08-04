@@ -3070,13 +3070,13 @@
   // Date shifting helpers
 
   function advanceDate(d, args) {
-    var args = collectDateArguments(args, true);
-    return updateDate(d, args[0], args[1], 1);
+    var set = collectDateArguments(args, true);
+    return updateDate(d, set[0], set[1], 1);
   }
 
   function setDate(d, args) {
-    var args = collectDateArguments(args);
-    return updateDate(d, args[0], args[1])
+    var set = collectDateArguments(args);
+    return updateDate(d, set[0], set[1])
   }
 
   function resetDate(d, unit) {
@@ -3169,7 +3169,6 @@
     // TODO can we split this up into smaller methods?
     var d, relative, baseLocalization, afterCallbacks, loc, set, unit, unitIndex, weekday, num, tmp, weekdayForward;
 
-    d = getNewDate();
     afterCallbacks = [];
 
     function afterDateSet(fn) {
@@ -3237,6 +3236,14 @@
           setDate(d, [params, true]);
         });
       }
+    }
+
+    if (contextDate && f) {
+      // If a context date is passed, (in the case of "get"
+      // and "[unit]FromNow") then use it as the starting point.
+      d = cloneDate(contextDate);
+    } else {
+      d = getNewDate();
     }
 
     setUTC(d, forceUTC);
@@ -3372,7 +3379,7 @@
 
               if(isDefined(set['weekday'])) {
                 // Units can be with non-relative dates, set here. ie "the day after monday"
-                setDate(d, [{'weekday': set['weekday'] }, true]);
+                setDate(d, [{'weekday': set['weekday']}, true]);
                 delete set['weekday'];
               }
 
@@ -3413,15 +3420,6 @@
           d.addMinutes(-d.getTimezoneOffset());
         }
       } else if(relative) {
-        if (contextDate) {
-          // If this is a relative date and is being created via an instance
-          // method (usually "[unit]FromNow", etc), then use the original date
-          // (that the instance method was called on) as the starting point
-          // rather than the freshly created date above to avoid subtle
-          // discrepancies due to the fact that the fresh date was created
-          // slightly later.
-          d = cloneDate(contextDate);
-        }
         advanceDate(d, [set]);
       } else {
         if(d._utc) {
@@ -4480,6 +4478,22 @@
   }, false);
 
   extend(date, {
+
+     /***
+     * @method get(<d>, [locale] = currentLocale)
+     * @returns Date
+     * @short Gets a new date using the current one as a starting point.
+     * @extra For most purposes, this method is identical to %Date.create%, except that if a relative format such as "next week" is passed, it will be relative to the instance rather than the current time.
+     *
+     * @example
+     *
+     *   new Date(2010, 0).get('next week') -> 1 week after 2010-01-01
+     *   new Date(2004, 4).get('2 years before') -> 2 years before May, 2004
+     *
+     ***/
+    'get': function(s) {
+      return createDateFromArgs(this, arguments);
+    },
 
      /***
      * @method set(<set>, [reset] = false)
