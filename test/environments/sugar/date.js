@@ -856,6 +856,33 @@ package('Date', function () {
 
   });
 
+  method('get', function() {
+    var d = new Date('August 25, 2010 11:45:20');
+
+    test(d, ['next week'], new Date('September 1, 2010 11:45:20'), 'next week');
+    test(d, ['next monday'], new Date('August 30, 2010'), 'next monday');
+
+    test(d, ['5 milliseconds ago'], new Date('August 25, 2010 11:45:19.995'), '5 milliseconds ago');
+    test(d, ['5 seconds ago'], new Date('August 25, 2010 11:45:15'), '5 seconds ago');
+    test(d, ['5 minutes ago'], new Date('August 25, 2010 11:40:20'), '5 minutes ago');
+    test(d, ['5 hours ago'], new Date('August 25, 2010 6:45:20'), '5 hours ago');
+    test(d, ['5 days ago'], new Date('August 20, 2010 11:45:20'), '5 days ago');
+    test(d, ['5 weeks ago'], new Date('July 21, 2010 11:45:20'), '5 weeks ago');
+    test(d, ['5 months ago'], new Date('March 25, 2010 11:45:20'), '5 months ago');
+    test(d, ['5 years ago'], new Date('August 25, 2005 11:45:20'), '5 years ago');
+    test(d, ['5 years before'], new Date('August 25, 2005 11:45:20'), '5 years before');
+
+    test(d, ['5 milliseconds from now'], new Date('August 25, 2010 11:45:20.005'), '5 milliseconds from now');
+    test(d, ['5 seconds from now'], new Date('August 25, 2010 11:45:25'), '5 seconds from now');
+    test(d, ['5 minutes from now'], new Date('August 25, 2010 11:50:20'), '5 minutes from now');
+    test(d, ['5 hours from now'], new Date('August 25, 2010 16:45:20'), '5 hours from now');
+    test(d, ['5 days from now'], new Date('August 30, 2010 11:45:20'), '5 days from now');
+    test(d, ['5 weeks from now'], new Date('September 29, 2010 11:45:20'), '5 weeks from now');
+    test(d, ['5 months from now'], new Date('January 25, 2011 11:45:20'), '5 months from now');
+    test(d, ['5 years from now'], new Date('August 25, 2015 11:45:20'), '5 years from now');
+    test(d, ['5 years after'], new Date('August 25, 2015 11:45:20'), '5 years after');
+  });
+
   method('set', function() {
 
     // Just the time
