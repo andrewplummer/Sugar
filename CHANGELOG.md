@@ -36,6 +36,7 @@ v1.5.0
 - Fixed issue `Function#every` not being able to cancel itself (Issue #488).
 - Fixed issue with German dates not allowing abbreviated weekdays with 2 characters.
 - Added `Date#get` allowing date creation with a context date that can be used as a starting point for relative dates.
+- Added `Function#memoize` (Issue #486)
 
 
 v1.4.2
