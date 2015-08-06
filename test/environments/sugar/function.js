@@ -359,7 +359,40 @@ package('Function', function () {
 
 
   method('once', function() {
-    var fn, obj = { foo:'bar' }, counter = 0;
+    var fn, counter;
+
+    // Simple counter
+    counter = 0;
+    fn = run(function(one, two) {
+      counter++;
+    }, 'once');
+
+    fn.call();
+    fn.call();
+    fn.call();
+
+    equal(counter, 1, 'returning undefined will not affect the number of calls');
+
+    // Simple arguments
+    counter = 0;
+    fn = run(function(n) {
+      counter++;
+      return n + 1;
+    }, 'once');
+    equal(fn(3), 4, 'running with 3 should add 1');
+    equal(fn(4), 4, 'running with 4 should remain 4');
+    equal(fn(500), 4, 'running with 500 should still be 4');
+    // Runs
+    fn(1);
+    // Runs
+    fn(2);
+    // Cached
+    fn(3);
+    equal(counter, 1, 'should have run once');
+
+    // Complex arguments
+    var obj = { foo: 'bar' };
+    counter = 0;
     fn = run(function(one, two) {
       counter++;
       equal(this, obj, 'scope is properly set');
@@ -375,22 +408,10 @@ package('Function', function () {
     equal(fn.call(obj, 'one', 'two'), 30, 'fifth call memoizes the result');
 
     equal(counter, 1, 'counter is only incremented once');
+
   });
 
-  method('once', function() {
-    var fn, counter = 0;
-    fn = run(function(one, two) {
-      counter++;
-    }, 'once');
-
-    fn.call();
-    fn.call();
-    fn.call();
-
-    equal(counter, 1, 'returning undefined will not affect the number of calls');
-  });
-
-  method('once', function() {
+  method('memoize', function() {
     var fn, counter = 0;
     fn = run(function(n) {
       counter++;
@@ -408,13 +429,12 @@ package('Function', function () {
     equal(counter, 5, 'should have run 5 times');
   });
 
-
-
-  var format = function(place, last){
-    return (last || '') + this.toFixed(place);
-  }
-
   method('fill', function() {
+
+    var format = function(place, last){
+      return (last || '') + this.toFixed(place);
+    }
+
     var filled;
 
     Number.prototype.two = run(format, 'fill', [2]);
