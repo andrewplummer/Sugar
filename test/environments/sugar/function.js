@@ -412,11 +412,15 @@ package('Function', function () {
   });
 
   method('memoize', function() {
-    var fn, counter = 0;
+    var fn, counter;
+
+    // Simple memoization
+
+    counter = 0;
     fn = run(function(n) {
       counter++;
       return n + 1;
-    }, 'once');
+    }, 'memoize');
     equal(fn(3), 4, 'running with 3 should add 1');
     equal(fn(4), 5, 'running with 4 should still add 1');
     equal(fn(500), 501, 'running with 500 should still add 1');
@@ -427,6 +431,46 @@ package('Function', function () {
     // Cached
     fn(3);
     equal(counter, 5, 'should have run 5 times');
+
+
+    // Custom hash function.
+
+    var firstArgument = function(x) {
+      return x;
+    }
+
+    counter = 0;
+    fn = run(function(n) {
+      counter++;
+      return n + 1;
+    }, 'memoize', [firstArgument]);
+    equal(fn(1, 'a'), 2, 'first time should run');
+    equal(fn(1, 'a'), 2, 'second time should be cached');
+    equal(fn(2, 'a'), 3, 'different first argument should run');
+    equal(fn(2, 'b'), 3, 'different second argument should be cached');
+    equal(counter, 2, 'should have run 2 times');
+
+
+    // Complex memoization
+
+    var foo1 = { foo: 'bar' };
+    var foo2 = { foo: 'bar' };
+    var foo3 = { foo: 'bar', moo: 'car' };
+
+    counter = 0;
+    fn = run(function(n) {
+      counter++;
+    }, 'memoize');
+    fn(foo1); // Should run
+    fn(foo1); // Should cache
+    fn(foo2); // Equal by value, should also cache
+    fn(foo3); // Not equal by value, should run
+    fn(foo2, 'c'); // Equal first argument, but different second so should run
+    fn(foo2, 'c'); // Identical to last, should cache
+    fn(foo1, 'c'); // Equivalent to last, should also cache
+
+    equal(counter, 3, 'should have run 3 times');
+
   });
 
   method('fill', function() {
