@@ -312,9 +312,10 @@
 
   // Argument helpers
 
-  function isArgumentsObject(obj) {
+  function isArgumentsObject(obj, klass) {
+    klass = klass || className(obj);
     // .callee exists on Arguments objects in < IE8
-    return hasProperty(obj, 'length') && (className(obj) === '[object Arguments]' || !!obj.callee);
+    return hasProperty(obj, 'length') && (klass === '[object Arguments]' || !!obj.callee);
   }
 
   function multiArgs(args, fn, from) {
@@ -588,17 +589,19 @@
     var type = typeof thing,
         thingIsObject,
         thingIsArray,
+        thingIsArguments,
         klass, value,
         arr, key, i, len;
 
     // Return quickly if string to save cycles
     if(type === 'string') return thing;
 
-    klass         = internalToString.call(thing);
-    thingIsObject = isPlainObject(thing, klass);
-    thingIsArray  = isArray(thing, klass);
+    klass            = internalToString.call(thing);
+    thingIsObject    = isPlainObject(thing, klass);
+    thingIsArray     = isArray(thing, klass);
+    thingIsArguments = isArgumentsObject(thing, klass);
 
-    if(thing != null && thingIsObject || thingIsArray) {
+    if(thing != null && thingIsObject || thingIsArray || thingIsArguments) {
       // This method for checking for cyclic structures was egregiously stolen from
       // the ingenious method by @kitcambridge from the Underscore script:
       // https://github.com/documentcloud/underscore/issues/240
@@ -5724,6 +5727,24 @@
     return lazy;
   }
 
+  function stringifyArguments() {
+    return stringify(arguments);
+  }
+
+  function createMemoizedFunction(fn, hashFn) {
+    var cache = {};
+    if (!hashFn) {
+      hashFn = stringifyArguments;
+    }
+    return function memoized() {
+      var key = hashFn.apply(this, arguments);
+      if (hasOwnProperty(cache, key)) {
+        return cache[key];
+      }
+      return cache[key] = fn.apply(this, arguments);
+    }
+  }
+
   extend(func, {
 
      /***
@@ -5891,7 +5912,25 @@
      *
      ***/
     'once': function() {
-      return createLazyFunction(this, Infinity, true, 1);
+      // noop always returns "undefined" as the cache key.
+      return createMemoizedFunction(this, function() {});
+    },
+
+     /***
+     * @method memoize([fn])
+     * @returns Function
+     * @short Creates a function that will cache results for unique calls.
+     * @extra %memoize% can be though of as a more power %once%. Where %once% will only call a function once ever, memoized functions will be called once per unique call. A "unique call" is determined by the result of [fn], which is a hashing function. If empty, [fn] will stringify all arguments, such that any different argument signature will be unique.
+     * @example
+     *
+     *   var fn = (function() {
+     *     // Will be executed twice, returning the memoized
+     *     // result of the first call again on the last.
+     *   }).memoize(); fn(1); fn(2); fn(1);
+     *
+     ***/
+    'memoize': function(fn) {
+      return createMemoizedFunction(this, fn);
     },
 
      /***
