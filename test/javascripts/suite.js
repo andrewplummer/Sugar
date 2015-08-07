@@ -10,7 +10,6 @@ if(typeof environment == 'undefined') environment = 'default'; // Override me!
   var currentArgs;
 
   var syncTestsRunning;
-  var asyncTestsRunning;
 
   var startTime;
   var runtime;
@@ -28,7 +27,6 @@ if(typeof environment == 'undefined') environment = 'default'; // Override me!
     if(!results) {
       results = [];
       syncTestsRunning = true;
-      asyncTestsRunning = 0;
       testsStarted();
     }
     var split = name.split(' | ');
@@ -103,7 +101,7 @@ if(typeof environment == 'undefined') environment = 'default'; // Override me!
       currentArgs = [];
     }
     currentMethod = name;
-    fn(async);
+    fn();
     currentMethod = null;
     currentArgs   = [];
   }
@@ -163,34 +161,9 @@ if(typeof environment == 'undefined') environment = 'default'; // Override me!
     }
   }
 
-
-  function async(fn) {
-    asyncTestsRunning++;
-    setTimeout(wrapTestingScope(function() {
-      fn(wrapTestingScope, asyncFinish);
-    }), 1);
-  }
-
-  function asyncFinish() {
-    asyncTestsRunning--;
-    checkCanFinish();
-  }
-
   function checkCanFinish() {
-    if(!syncTestsRunning && asyncTestsRunning === 0) {
+    if(!syncTestsRunning) {
       testsFinished();
-    }
-  }
-
-  function wrapTestingScope(fn) {
-    var cachedPackage = currentPackage;
-    var cachedMethod = currentMethod;
-    var cachedArgs = currentArgs;
-    return function () {
-      currentPackage = cachedPackage;
-      currentMethod = cachedMethod;
-      currentArgs = cachedArgs;
-      fn.apply(this, arguments);
     }
   }
 
