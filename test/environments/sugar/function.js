@@ -1,345 +1,415 @@
 package('Function', function () {
 
-  method('delay', function(async) {
-    async(function(wrap, finish) {
-      var fn, ref;
+  var clock = sinon.useFakeTimers();
 
-      fn = wrap(function(one, two) {
-        equal(this, fn, 'this object should be the function');
-        equal(one, 'one', 'first parameter');
-        equal(two, 'two', 'second parameter');
-        finish();
-      });
-      ref = run(fn, 'delay', [20, 'one', 'two']);
-      equal(typeof ref, 'function', 'returns the function');
-    });
+  method('delay', function() {
+    var fn, ref, count;
+
+    clock.reset();
+    count = 0;
+    fn = function(one, two) {
+      count++;
+      equal(this, fn, 'this object should be the function');
+      equal(one, 'one', 'first parameter');
+      equal(two, 'two', 'second parameter');
+    };
+    equal(fn.timers, undefined, 'timers object should not exist yet');
+    ref = run(fn, 'delay', [20, 'one', 'two']);
+    equal(typeof fn.timers, 'object', 'timers object should be exposed');
+    equal(typeof ref, 'function', 'returns the function');
+    equal(count, 0, 'should not have run yet');
+    clock.tick(20);
+    equal(count, 1, 'should have run once');
+    equal(fn.timers.length, 1, 'timers are not cleared after execution');
+
   });
 
-  method('delay', function(async) {
-    async(function(wrap, finish) {
-      var fn, ref, shouldBeFalse = false;
-      fn = function() {
-        shouldBeFalse = true;
-      };
-      run(fn, 'delay', [20 / 4]);
-      run(fn, 'delay', [20 / 5]);
-      run(fn, 'delay', [20 / 6]);
-      ref = run(fn, 'cancel');
-      equal(typeof fn.timers, 'object', 'timers object should be exposed');
-      equal(ref, fn, 'returns a reference to the function');
-      setTimeout(wrap(function() {
-        equal(shouldBeFalse, false, 'cancel is working');
-        finish();
-      }), 60);
-    });
-  });
+  method('cancel', function() {
+    var fn, ref, count;
 
-  method('delay', function(async) {
-    async(function(wrap, finish) {
-      var counter = 0;
-      var fn = function(){
-        counter++;
-      }
+    // Basic functionality
+    clock.reset();
+    count = 0;
+    fn = function() {
+      count++;
+    };
+    run(fn, 'delay', [20 / 4]);
+    run(fn, 'delay', [20 / 5]);
+    run(fn, 'delay', [20 / 6]);
+    ref = run(fn, 'cancel');
+    equal(ref, fn, 'returns a reference to the function');
+    clock.tick(20);
+    equal(count, 0, 'all functions should be canceled');
 
-      run(fn, 'delay', [50]);
-      run(fn, 'delay', [10]);
+    // Canceling after a delay
+    clock.reset();
+    count = 0;
+    fn = function() {
+      count++;
+    };
+    run(fn, 'delay', [50]);
+    run(fn, 'delay', [10]);
 
-      setTimeout(wrap(function() {
+    equal(count, 0, 'should not have been called yet');
+    equal(fn.timers.length, 2, 'should be 2 calls pending');
+
+    clock.tick(30);
+
+    run(fn, 'cancel');
+    equal(count, 1, 'should have called the function once');
+    equal(fn.timers.length, 0, 'should have no more calls pending');
+
+    clock.tick(30);
+    equal(count, 1, 'should still have only been called once');
+    equal(fn.timers.length, 0, 'should still be no more delays');
+
+
+    // Canceling after first call (Issue #346)
+    clock.reset();
+    count = 0;
+    fn = function() {
+      count++;
+      run(fn, 'cancel');
+    };
+    run(fn, 'delay', [5]);
+    run(fn, 'delay', [20]);
+    run(fn, 'delay', [20]);
+    run(fn, 'delay', [20]);
+    run(fn, 'delay', [20]);
+    run(fn, 'delay', [20]);
+
+    equal(count, 0, 'should not have been called yet');
+    equal(fn.timers.length, 6, 'should be 6 calls pending');
+
+    clock.tick(50);
+
+    equal(count, 1, 'delays should have been canceled after 1');
+    equal(fn.timers.length, 0, 'should be no more pending calls');
+
+
+    // Canceling n functions in
+    clock.reset();
+    count = 0;
+    fn = function() {
+      count++;
+      if (count === 2) {
         run(fn, 'cancel');
-      }), 30);
+      }
+    };
+    run(fn, 'delay', [20]);
+    run(fn, 'delay', [20]);
+    run(fn, 'delay', [2]);
+    run(fn, 'delay', [5]);
+    run(fn, 'delay', [20]);
+    run(fn, 'delay', [20]);
 
-      setTimeout(wrap(function() {
-        equal(counter, 1, 'should be able to find the correct timers');
+    equal(count, 0, 'should not have been called yet');
+    equal(fn.timers.length, 6, 'should be 6 calls pending');
+
+    clock.tick(50);
+
+    equal(count, 2, 'should have been called twice');
+    equal(fn.timers.length, 0, 'should be no more pending calls');
+
+  });
+
+  method('lazy', function() {
+    var count, fn, expected;
+
+    // Default
+    clock.reset();
+    expected = [['maybe','a',1],['baby','b',2],['you lazy','c',3],['biotch','d',4]];
+    count = 0;
+    fn = run(function(one, two) {
+      equal([this.toString(), one, two], expected[count], 'scope and arguments are correct');
+      count++;
+    }, 'lazy');
+
+    fn.call('maybe', 'a', 1);
+    fn.call('baby', 'b', 2);
+    fn.call('you lazy', 'c', 3);
+
+    equal(count, 0, 'not immediate by default');
+
+    clock.tick(5);
+
+    equal(count, 3, 'was executed 3 times in 5ms');
+    fn.call('biotch', 'd', 4);
+    equal(count, 3, 'should not execute immediately on subsequent call');
+
+    clock.tick(5);
+
+    equal(count, 4, 'final call');
+
+
+    // Immediate execution
+    clock.reset();
+    count = 0;
+    expected = [['maybe','a',1],['baby','b',2],['you lazy','c',3],['biotch','d',4]];
+    fn = run(function(one, two) {
+      equal([this.toString(), one, two], expected[count], 'scope and arguments are correct');
+      count++;
+    }, 'lazy', [1, true]);
+
+    fn.call('maybe', 'a', 1);
+    fn.call('baby', 'b', 2);
+    fn.call('you lazy', 'c', 3);
+
+    equal(count, 1, 'immediately executed');
+
+    clock.tick(5);
+    equal(count, 3, 'was executed 3 times in 5ms');
+    fn.call('biotch', 'd', 4);
+    equal(count, 4, 'should execute immediately again');
+    clock.tick(5);
+    equal(count, 4, 'should still have executed 4 times');
+
+    // Canceling lazy functions
+    clock.reset();
+    count = 0;
+    fn = run(function() {
+      count++;
+    }, 'lazy');
+    fn();
+    fn();
+    fn();
+
+    equal(count, 0, 'no calls made yet before cancel');
+    equal(fn.timers.length, 1, 'should have 1 pending call');
+
+    run(fn, 'cancel');
+
+    equal(count, 0, 'no calls made after cancel');
+    equal(fn.timers.length, 0, 'should have no more pending calls');
+
+    clock.tick(10);
+
+    equal(count, 0, 'lazy function should have been canceled');
+    equal(fn.timers.length, 0, 'should have no more pending calls');
+
+
+    // Cancelling immediate lazy functions
+    clock.reset();
+    count = 0;
+    fn = run(function() {
+      count++;
+    }, 'lazy', [1, true]);
+    fn();
+    fn();
+    fn();
+
+    equal(count, 1, 'should have run once before cancel');
+    equal(fn.timers.length, 1, 'should have 1 pending call');
+
+    run(fn, 'cancel');
+
+    equal(count, 1, 'should still have only run once after cancel');
+    equal(fn.timers.length, 0, 'should have no more pending calls');
+
+    clock.tick(10);
+
+    equal(count, 1, 'should still have only run once after 10ms');
+
+
+    // Fractional ms values
+    clock.reset();
+    count = 0;
+    fn = run(function() {
+      count++;
+    }, 'lazy', [0.1]);
+    for(var i = 0; i < 20; i++) {
+      fn();
+    }
+
+    equal(count, 0, 'no calls before tick');
+
+    clock.tick(2);
+
+    equal(count, 20, 'a fractional wait value will call multiple times in a single tick');
+
+
+    // Upper limit for calls
+    clock.reset();
+    count = 0;
+    fn = run(function() {
+      count++;
+    }, 'lazy', [0.1, false, 10]);
+    for(var i = 0; i < 50; i++) {
+      fn();
+    }
+    clock.tick(5);
+    equal(count, 10, 'number of calls should be capped at 10');
+
+
+    // Upper limit for calls with immediate execution
+    clock.reset();
+    count = 0;
+    fn = run(function() {
+      count++;
+    }, 'lazy', [0.1, true, 10]);
+    for(var i = 0; i < 50; i++) {
+      fn();
+    }
+    clock.tick(5);
+    equal(count, 10, 'number of calls should be capped at 10');
+
+
+    // Upper limit of 1
+    clock.reset();
+    count = 0;
+    fn = run(function() {
+      count++;
+    }, 'lazy', [0.1, false, 1]);
+    for(var i = 0; i < 50; i++) {
+      fn();
+    }
+    clock.tick(5);
+    equal(count, 1, 'should have been called once');
+
+    // Upper limit of 1 with immediate execution
+    clock.reset();
+    count = 0;
+    fn = run(function() {
+      count++;
+    }, 'lazy', [0.1, true, 1]);
+    for(var i = 0; i < 50; i++) {
+      fn();
+    }
+    clock.tick(5);
+    equal(count, 1, 'should have been called once');
+  });
+
+  method('debounce', function() {
+    var fn, ret, count;
+
+    // Basic debouncing
+    clock.reset();
+    count = 0;
+    expected = [['leia', 5], ['han solo', 7]];
+    fn = run(function(one){
+      equal([this.toString(), one], expected[count], 'scope and arguments are correct');
+      count++;
+    }, 'debounce', [20]);
+
+    ret = fn.call('3p0', 1);
+    fn.call('r2d2', 2);
+    clock.tick(5);
+    fn.call('chewie', 3);
+    clock.tick(10);
+    fn.call('leia', 5);
+
+    clock.tick(20);
+    equal(count, 1, 'should have fired after 30ms');
+    fn.call('luke', 6);
+    fn.call('han solo', 7);
+
+    equal(ret, undefined, 'calls to a debounced function return undefined');
+
+    clock.tick(40);
+    equal(count, 2, 'count should still be correct after another 10ms');
+
+
+    // Canceling debounced functions
+    count = 0;
+    fn = run(function() {
+      count++;
+    }, 'debounce', [50]);
+    fn();
+    fn();
+    fn();
+    run(fn, 'cancel');
+    equal(count, 0, 'canceled debounce function should not have been called yet');
+    clock.tick(50);
+    equal(count, 0, 'canceled debounce function should not have been called after 50ms');
+
+  });
+
+  method('throttle', function() {
+    var fn, ret, count;
+
+    // Basic throttle functionality
+    clock.reset();
+    count = 0;
+    expected = [['3p0', 1], ['luke', 6]];
+    fn = run(function(one){
+      equal([this.toString(), one], expected[count], 'immediate execution | scope and arguments are correct');
+      count++;
+      return count;
+    }, 'throttle', [50]);
+
+    equal(fn.call('3p0', 1), 1, 'first run, gets value');
+    equal(fn.call('r2d2', 2), 1, 'second run, return value is caching');
+    equal(fn.call('chewie', 3), 1, 'third run, return value is caching');
+    equal(fn.call('vader', 4), 1, 'fourth run, return value is caching');
+
+    clock.tick(25);
+    equal(fn.call('leia', 5), 1, 'fifth run, return value is caching');
+
+    clock.tick(50);
+    equal(fn.call('luke', 6), 2, 'sixth run, gets value');
+    equal(fn.call('han solo', 7), 2, 'seventh run, return value is caching');
+
+    clock.tick(100);
+    equal(count, 2, 'count is correct');
+
+
+    // Throttle memoizing
+    clock.reset();
+    count = 1;
+    fn = run(function() {
+      return ++count;
+    }, 'throttle', [50]);
+
+    equal(fn(), 2, 'iteration 1');
+    equal(fn(), 2, 'iteration 2');
+    equal(fn(), 2, 'iteration 3');
+
+    clock.tick(200);
+    equal(fn(), 3, 'memoize | result expires after 200 ms');
+
+  });
+
+  method('every', function() {
+    var fn, count;
+
+    // Basic
+    clock.reset();
+    count = 0;
+    fn = function(one, two) {
+      equal(this, fn, 'this object should be the function');
+      equal(one, 'one', 'first argument should be curried');
+      equal(two, 'two', 'second argument should be curried');
+      count++;
+    };
+    run(fn, 'every' , [10, 'one', 'two']);
+    clock.tick(100);
+    equal(count, 10, 'should have been called 10 times');
+
+    // Issue #488
+    clock.reset();
+    count = 0;
+    fn = function(one, two) {
+      count++;
+      if (count === 5) {
         run(fn, 'cancel');
-        finish();
-      }), 60);
-    });
-  });
-
-
-  // Note that lazy can be tricky to test, as it does not immediately
-  // set a timeout when a lazy function is called, but rather queues, and
-  // will set a timeout when execution of the first function has ended, meaning
-  // that another asynchronous function set up later can sometimes fire before,
-  // even if it has a longer timeout, so be careful here.
-  method('lazy', function(async) {
-    async(function(wrap, finish) {
-      var counter = 0;
-      var expected = [['maybe','a',1],['baby','b',2],['you lazy','c',3],['biotch','d',4]];
-      var fn = run(wrap(function(one, two) {
-        equal([this.toString(), one, two], expected[counter], 'scope and arguments are correct');
-        counter++;
-      }), 'lazy');
-      fn.call('maybe', 'a', 1);
-      fn.call('baby', 'b', 2);
-      fn.call('you lazy', 'c', 3);
-      setTimeout(wrap(function() {
-        equal(counter, 3, 'was executed by 10ms');
-        fn.call('biotch', 'd', 4);
-        equal(counter, 3, 'counter should still be 3');
-        setTimeout(wrap(function() {
-          equal(counter, 4, 'final call');
-          finish();
-        }), 80);
-      }), 80);
-      equal(counter, 0, 'not immediate by default');
-    });
-  });
-
-  method('lazy', function(async) {
-    async(function(wrap, finish) {
-      var counter = 0;
-      var expected = [['maybe','a',1],['baby','b',2],['you lazy','c',3],['biotch','d',4]];
-      var fn = run(wrap(function(one, two) {
-        equal([this.toString(), one, two], expected[counter], 'scope and arguments are correct');
-        counter++;
-      }), 'lazy', [1, true]);
-      fn.call('maybe', 'a', 1);
-      fn.call('baby', 'b', 2);
-      fn.call('you lazy', 'c', 3);
-      equal(counter, 1, 'immediately executed');
-      setTimeout(wrap(function() {
-        equal(counter, 3, 'was executed by 10ms');
-        fn.call('biotch', 'd', 4);
-        equal(counter, 4, 'counter should now be 4');
-        setTimeout(wrap(function() {
-          equal(counter, 4, 'should still be 4');
-          finish();
-        }), 80);
-      }), 80);
-    });
-  });
-
-  method('lazy', function(async) {
-    async(function(wrap, finish) {
-      var counter = 0;
-      var fn = run(function() {
-        counter++;
-      }, 'lazy');
-      fn();
-      fn();
-      fn();
-      run(fn, 'cancel');
-      setTimeout(function() {
-        equal(counter, 0, 'lazy functions can also be canceled');
-        finish();
-      }, 20);
-    });
-  });
-
-  method('lazy', function(async) {
-    async(function(wrap, finish) {
-      var counter = 0;
-      var fn = run(function() {
-        counter++;
-      }, 'lazy', [1, true]);
-      fn();
-      fn();
-      fn();
-      run(fn, 'cancel');
-      setTimeout(function() {
-        equal(counter, 1, 'immediate | lazy functions can also be canceled');
-        finish();
-      }, 10);
-    });
-  });
-
-
-  method('lazy', function(async) {
-    async(function(wrap, finish) {
-      var counter = 0;
-      var fn = run(function() {
-        counter++;
-      }, 'lazy', [0.1]);
-      for(var i = 0; i < 20; i++) {
-        fn();
       }
-      setTimeout(function() {
-        equal(counter, 20, 'lazy (throttled) functions can have a [wait] value of < 1ms');
-        finish();
-      }, 100);
-    });
-  });
-
-
-  method('lazy', function(async) {
-    async(function(wrap, finish) {
-
-      var counter = 0;
-      var fn = run(function() {
-        counter++;
-      }, 'lazy', [0.1, false, 10]);
-      for(var i = 0; i < 50; i++) {
-        fn();
-      }
-      setTimeout(wrap(function() {
-        equal(counter, 10, 'lazy functions have an upper threshold');
-        finish();
-      }), 50);
-    });
-  });
-
-  method('lazy', function(async) {
-    async(function(wrap, finish) {
-      var counter = 0;
-      var fn = run(function() {
-        counter++;
-      }, 'lazy', [0.1, true, 10]);
-      for(var i = 0; i < 50; i++) {
-        fn();
-      }
-      setTimeout(wrap(function() {
-        equal(counter, 10, 'immediate | should have same upper threshold as non-immediate');
-        finish();
-      }), 50);
-    });
-  });
-
-
-  method('lazy', function(async) {
-    async(function(wrap, finish) {
-      var counter = 0;
-      var fn = run(function() {
-        counter++;
-      }, 'lazy', [0.1, false, 1]);
-      for(var i = 0; i < 50; i++) {
-        fn();
-      }
-      setTimeout(wrap(function() {
-        equal(counter, 1, 'lazy functions with a limit of 1 will still execute');
-        finish();
-      }), 50);
-    });
-  });
-
-  method('lazy', function(async) {
-    async(function(wrap, finish) {
-      var counter = 0;
-      var fn = run(function() {
-        counter++;
-      }, 'lazy', [0.1, true, 1]);
-      for(var i = 0; i < 50; i++) {
-        fn();
-      }
-      setTimeout(wrap(function() {
-        equal(counter, 1, 'immediate | lazy functions with a limit of 1 will still execute');
-        finish();
-      }), 50);
-    });
-  });
-
-
-  method('debounce', function(async) {
-    async(function(wrap, finish) {
-      var fn, ret, counter = 0, expected = [['leia', 5],['han solo', 7]];
-      var fn = run(function(one){
-        equal([this.toString(), one], expected[counter], 'scope and arguments are correct');
-        counter++;
-      }, 'debounce', [20]);
-
-      fn.call('3p0', 1);
-      fn.call('r2d2', 2);
-      fn.call('chewie', 3);
-
-      setTimeout(function() {
-        fn.call('leia', 5);
-      }, 10);
-
-      setTimeout(function() {
-        fn.call('luke', 6);
-        fn.call('han solo', 7);
-      }, 100);
-
-      ret = fn.call('vader', 4);
-
-      equal(ret, undefined, 'calls to a debounced function return undefined');
-
-      setTimeout(wrap(function() {
-        equal(counter, 2, 'counter is correct');
-        finish();
-      }), 150);
-    });
-  });
-
-
-  method('debounce', function(async) {
-    async(function(wrap, finish) {
-      var counter = 0;
-      var fn = run(function() {
-        counter++;
-      }, 'debounce', [50]);
-      fn();
-      fn();
-      fn();
-      run(fn, 'cancel');
-      equal(counter, 0, 'debounced functions can also be canceled | immediate');
-      setTimeout(wrap(function() {
-        equal(counter, 0, 'debounced functions can also be canceled | after delay');
-        finish();
-      }), 50);
-    });
-  });
-
-  method('throttle', function(async) {
-    async(function(wrap, finish) {
-      var fn, ret, counter = 0, expected = [['3p0', 1],['luke', 6]];
-      fn = run(function(one){
-        equal([this.toString(), one], expected[counter], 'immediate execution | scope and arguments are correct');
-        counter++;
-        return counter;
-      }, 'throttle', [50]);
-
-      equal(fn.call('3p0', 1), 1, 'first run, gets value');
-      equal(fn.call('r2d2', 2), 1, 'second run, return value is caching');
-      equal(fn.call('chewie', 3), 1, 'third run, return value is caching');
-
-      setTimeout(wrap(function() {
-        equal(fn.call('leia', 5), 1, 'fifth run, return value is caching');
-      }), 10);
-
-      setTimeout(wrap(function() {
-        equal(fn.call('luke', 6), 2, 'sixth run, gets value');
-        equal(fn.call('han solo', 7), 2, 'seventh run, return value is caching');
-      }), 100);
-
-      equal(fn.call('vader', 4), 1, 'fourth run, return value is caching');
-
-      setTimeout(wrap(function() {
-        equal(counter, 2, 'counter is correct');
-        finish();
-      }), 200);
-    });
-  });
-
-  method('throttle', function(async) {
-    async(function(wrap, finish) {
-      var n = 1;
-      var fn = run(function() {
-        return ++n;
-      }, 'throttle', [50]);
-
-      equal(fn(), 2, 'memoize | iteration 1');
-      equal(fn(), 2, 'memoize | iteration 2');
-      equal(fn(), 2, 'memoize | iteration 3');
-
-      setTimeout(wrap(function() {
-        equal(fn(), 3, 'memoize | result expires after 200 ms');
-        finish();
-      }), 200);
-    });
+    };
+    run(fn, 'every' , [10]);
+    clock.tick(100);
+    equal(count, 5, 'should have been called 5 times');
   });
 
 
   method('after', function() {
-    var fn, ret, counter = 0, i = 1;
+    var fn, ret, count = 0, i = 1;
     var expectedArguments = [
       [[1,'bop'], [2,'bop'], [3,'bop'], [4,'bop'], [5,'bop']],
       [[6,'bop'],[7,'bop'],[8,'bop'],[9,'bop'],[10,'bop']]
     ];
     fn = run(function(args) {
-      equal(args, expectedArguments[counter], 'collects arguments called');
+      equal(args, expectedArguments[count], 'collects arguments called');
       equal(!!args[0].slice, true, 'arguments are converted to actual arrays');
-      counter++;
+      count++;
       return 'hooha';
     }, 'after', [5]);
     while(i <= 10) {
@@ -347,36 +417,36 @@ package('Function', function () {
       equal(ret, (i % 5 == 0 ? 'hooha' : undefined), 'collects return value as well');
       i++;
     }
-    equal(counter, 2, 'calls a function only after a certain number of calls');
+    equal(count, 2, 'calls a function only after a certain number of calls');
   });
 
   method('after', function() {
-    var fn, counter = 0;
-    var fn = run(function(args) { counter++; }, 'after', [0]);
-    equal(counter, 1, '0 should fire the function immediately');
+    var fn, count = 0;
+    var fn = run(function(args) { count++; }, 'after', [0]);
+    equal(count, 1, '0 should fire the function immediately');
     equal(typeof fn, 'function', '0 should still return a function');
   });
 
 
   method('once', function() {
-    var fn, counter;
+    var fn, count;
 
-    // Simple counter
-    counter = 0;
+    // Simple count
+    count = 0;
     fn = run(function(one, two) {
-      counter++;
+      count++;
     }, 'once');
 
     fn.call();
     fn.call();
     fn.call();
 
-    equal(counter, 1, 'returning undefined will not affect the number of calls');
+    equal(count, 1, 'returning undefined will not affect the number of calls');
 
     // Simple arguments
-    counter = 0;
+    count = 0;
     fn = run(function(n) {
-      counter++;
+      count++;
       return n + 1;
     }, 'once');
     equal(fn(3), 4, 'running with 3 should add 1');
@@ -388,17 +458,17 @@ package('Function', function () {
     fn(2);
     // Cached
     fn(3);
-    equal(counter, 1, 'should have run once');
+    equal(count, 1, 'should have run once');
 
     // Complex arguments
     var obj = { foo: 'bar' };
-    counter = 0;
+    count = 0;
     fn = run(function(one, two) {
-      counter++;
+      count++;
       equal(this, obj, 'scope is properly set');
       equal(one, 'one', 'first argument is passed');
       equal(two, 'two', 'second argument is passed');
-      return counter * 30;
+      return count * 30;
     }, 'once');
 
     equal(fn.call(obj, 'one', 'two'), 30, 'first call calculates the result');
@@ -407,18 +477,18 @@ package('Function', function () {
     equal(fn.call(obj, 'one', 'two'), 30, 'fourth call memoizes the result');
     equal(fn.call(obj, 'one', 'two'), 30, 'fifth call memoizes the result');
 
-    equal(counter, 1, 'counter is only incremented once');
+    equal(count, 1, 'count is only incremented once');
 
   });
 
   method('memoize', function() {
-    var fn, counter;
+    var fn, count;
 
     // Simple memoization
 
-    counter = 0;
+    count = 0;
     fn = run(function(n) {
-      counter++;
+      count++;
       return n + 1;
     }, 'memoize');
     equal(fn(3), 4, 'running with 3 should add 1');
@@ -430,7 +500,7 @@ package('Function', function () {
     fn(2);
     // Cached
     fn(3);
-    equal(counter, 5, 'should have run 5 times');
+    equal(count, 5, 'should have run 5 times');
 
 
     // Custom hash function.
@@ -439,16 +509,16 @@ package('Function', function () {
       return x;
     }
 
-    counter = 0;
+    count = 0;
     fn = run(function(n) {
-      counter++;
+      count++;
       return n + 1;
     }, 'memoize', [firstArgument]);
     equal(fn(1, 'a'), 2, 'first time should run');
     equal(fn(1, 'a'), 2, 'second time should be cached');
     equal(fn(2, 'a'), 3, 'different first argument should run');
     equal(fn(2, 'b'), 3, 'different second argument should be cached');
-    equal(counter, 2, 'should have run 2 times');
+    equal(count, 2, 'should have run 2 times');
 
 
     // Complex memoization
@@ -457,9 +527,9 @@ package('Function', function () {
     var foo2 = { foo: 'bar' };
     var foo3 = { foo: 'bar', moo: 'car' };
 
-    counter = 0;
+    count = 0;
     fn = run(function(n) {
-      counter++;
+      count++;
     }, 'memoize');
     fn(foo1); // Should run
     fn(foo1); // Should cache
@@ -469,7 +539,7 @@ package('Function', function () {
     fn(foo2, 'c'); // Identical to last, should cache
     fn(foo1, 'c'); // Equivalent to last, should also cache
 
-    equal(counter, 3, 'should have run 3 times');
+    equal(count, 3, 'should have run 3 times');
 
   });
 
@@ -511,86 +581,7 @@ package('Function', function () {
     equal(filled('a'), [0, 'a'], 'falsy values can be passed');
   });
 
-
-  method('cancel', function(async) {
-    async(function(wrap, finish) {
-      // Issue #346
-      var counter = 0;
-      var fn = function() {
-        counter++;
-        run(fn, 'cancel');
-      };
-      run(fn, 'delay', [5]);
-      run(fn, 'delay', [20]);
-      run(fn, 'delay', [20]);
-      run(fn, 'delay', [20]);
-      run(fn, 'delay', [20]);
-      run(fn, 'delay', [20]);
-      setTimeout(wrap(function() {
-        equal(counter, 1, 'delays should have been canceled after 1');
-        finish();
-      }), 50);
-    });
-  });
-
-  method('cancel', function(async) {
-    async(function(wrap, finish) {
-      var counter = 0;
-      var fn = function() {
-        counter++;
-        if (counter === 2) {
-          run(fn, 'cancel');
-        }
-      };
-      // Note that IE seems unable to clear timeouts that are too close
-      // together, so spacing them out a bit.
-      run(fn, 'delay', [20]);
-      run(fn, 'delay', [20]);
-      run(fn, 'delay', [2]);
-      run(fn, 'delay', [5]);
-      run(fn, 'delay', [20]);
-      run(fn, 'delay', [20]);
-      setTimeout(wrap(function() {
-        equal(counter, 2, 'delays should have been canceled after 2');
-        finish();
-      }), 50);
-    });
-  });
-
-  method('every', function(async) {
-    async(function(wrap, finish) {
-      // Issue #348
-      var counter = 0;
-      var check1Finished = false;
-      var check2Finished = false;
-      function checkFinished() {
-        if (check1Finished && check2Finished) {
-          finish();
-        }
-      }
-      var fn = wrap(function(one, two) {
-        equal(this, fn, 'this object should be the function');
-        equal(one, 'one', 'first argument should be curried');
-        equal(two, 'two', 'second argument should be curried');
-        counter++;
-        if (counter === 5) {
-          run(fn, 'cancel');
-          setTimeout(wrap(function() {
-            // Issue #488
-            equal(counter, 5, 'should not have been called since cancel was run');
-            check1Finished = true;
-            checkFinished();
-          }), 50);
-        }
-      });
-      run(fn, 'every' , [10, 'one', 'two']);
-      setTimeout(wrap(function() {
-        equal(counter, 5, 'should have been called 5 times');
-        check2Finished = true;
-        checkFinished();
-      }), 100);
-    });
-  });
+  clock.restore();
 
 });
 
