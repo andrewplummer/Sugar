@@ -2,9 +2,8 @@ if(typeof environment == 'undefined') environment = 'default'; // Override me!
 
 (function() {
 
-  var tests = [];
+  var allTests = [];
   var packages = [];
-  var results;
   var currentTest;
   var currentArgs;
   var currentPackage;
@@ -18,7 +17,8 @@ if(typeof environment == 'undefined') environment = 'default'; // Override me!
   // some form thereof they will not trigger errors in IE7!
 
   runTests = function(fn) {
-    var time = testsStarted(), clock;
+    var time = new Date;
+    var tests = getTestsToRun();
     for (var i = 0; i < tests.length; i++) {
       currentTest = tests[i];
       if (typeof currentTest.fn != 'function') {
@@ -34,14 +34,19 @@ if(typeof environment == 'undefined') environment = 'default'; // Override me!
       }
       currentTest = null;
     }
-    fn(new Date() - time, packages);
+    var runPackages = packages.filter(function(p) {
+      return p.assertions > 0;
+    });
+    fn(new Date() - time, runPackages);
   }
 
-  package = function (name, fn) {
-    var split = name.split(' | ');
+  package = function (name, fn, focused) {
+    var split;
+    split = name.split(' | ');
     currentPackage = {
       name: split[0],
       subname: split[1],
+      focused: !!focused,
       assertions: 0,
       failures: []
     };
@@ -50,6 +55,13 @@ if(typeof environment == 'undefined') environment = 'default'; // Override me!
     fn.call();
     currentPackage = null;
   }
+
+  fpackage = function(name, fn) {
+    package(name, fn, true);
+  }
+
+  // Noop
+  xpackage = function() {};
 
   equal = function (actual, expected, message, stack) {
     currentTest.package.assertions++;
@@ -93,13 +105,28 @@ if(typeof environment == 'undefined') environment = 'default'; // Override me!
     }
   }
 
-  method = function (name, fn) {
-    tests.push({
+  method = function (name, fn, focused, ignored) {
+    allTests.push({
       fn: fn,
       name: name,
+      focused: !!focused,
+      ignored: !!ignored,
       package: currentPackage
     });
   }
+
+  fmethod = function(name, fn) {
+    method(name, fn, true);
+  }
+
+  xmethod = function(name, fn) {
+    method(name, fn, false, true);
+  }
+
+  // Alias
+  group = method;
+  fgroup = fmethod;
+  xgroup = xmethod;
 
   setup = function(fn) {
     currentPackage.setup = fn;
@@ -108,9 +135,6 @@ if(typeof environment == 'undefined') environment = 'default'; // Override me!
   teardown = function(fn) {
     currentPackage.teardown = fn;
   }
-
-  // Alias
-  group = method;
 
   withArgs = function(args, fn) {
     currentArgs = args;
@@ -167,6 +191,31 @@ if(typeof environment == 'undefined') environment = 'default'; // Override me!
     }
   }
 
+  function getTestsToRun() {
+    var focusedPackagesExist;
+
+    function packageIsActive(package) {
+      if (!focusedPackagesExist) {
+        return true;
+      }
+      return package.focused;
+    }
+
+    focusedPackagesExist = packages.some(function(p) {
+      return p.focused;
+    });
+
+    var focused = allTests.filter(function(t) {
+      return t.focused && packageIsActive(t.package);
+    });
+    if (focused.length) {
+      return focused;
+    }
+    return allTests.filter(function(t) {
+      return !t.ignored && packageIsActive(t.package);
+    });
+  }
+
   function subjectIsClass(subject) {
     switch(subject) {
       case Boolean:
@@ -190,15 +239,6 @@ if(typeof environment == 'undefined') environment = 'default'; // Override me!
     }
     msg += tail;
     return msg;
-  }
-
-
-  function testsStarted() {
-    results = [];
-    if(environment == 'node') {
-      console.info('\n----------------------- STARTING TESTS ----------------------------\n');
-    }
-    return new Date();
   }
 
   function addFailure(actual, expected, message, stack, warning) {
