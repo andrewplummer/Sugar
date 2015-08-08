@@ -825,10 +825,16 @@ package('ES5', function () {
     raisesError(function(){ Object.keys(undefined); }, 'raises a TypeError for undefined');
     raisesError(function(){ Object.keys(null); }, 'raises a TypeError for null');
 
-    equal(Object.keys(true), [], 'boolean coerced into empty object');
-    equal(Object.keys(3), [], 'number coerced into empty object');
-    equal(Object.keys(NaN), [], 'NaN coerced into empty object');
-    equal(Object.keys('wasabi'), ['0', '1', '2', '3', '4', '5'], 'string coerced into object of keys');
+    // ES5 states that a TypeError must be thrown when non-objects are
+    // passed to Object.keys. However, ES6 revises this and performs
+    // a coercion instead. The Sugar polyfills follow the ES5 spec for now,
+    // however some browsers have already started to implement ES6 behavior,
+    // so this is not consistent at the moment, so comment these tests out.
+
+    // raisesError(function(){ Object.keys(true); }, 'raises a TypeError for boolean');
+    // raisesError(function(){ Object.keys(3); }, 'raises a TypeError for number');
+    // raisesError(function(){ Object.keys(NaN); }, 'raises a TypeError for NaN');
+    // raisesError(function(){ Object.keys('wasabi'); }, 'raises a TypeError for string');
 
     equal(Object.keys({ moo:'bar', broken:'wear' }), ['moo','broken'], 'returns keys of an object');
     equal(Object.keys(['a','b','c']), ['0','1','2'], 'returns indexes of an array');
