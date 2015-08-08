@@ -86,12 +86,6 @@ package('String', function () {
   });
 
 
-  // Ensure that btoa and atob don't leak in node
-  if(environment == 'node') {
-    equal(typeof btoa, 'undefined', 'btoa global does not exist in node');
-    equal(typeof atob, 'undefined', 'atob global does not exist in node');
-  }
-
   method('encodeBase64', function() {
 
     test('This webpage is not available', 'VGhpcyB3ZWJwYWdlIGlzIG5vdCBhdmFpbGFibGU=', 'webpage');
@@ -104,6 +98,11 @@ package('String', function () {
     test('にほんご', '44Gr44G744KT44GU', 'Hiragana');
     test('한국어', '7ZWc6rWt7Ja0', 'Korean');
 
+    // Ensure that btoa and atob don't leak in node
+    if(environment == 'node') {
+      equal(typeof btoa, 'undefined', 'btoa global does not exist in node');
+      equal(typeof atob, 'undefined', 'atob global does not exist in node');
+    }
 
   });
 

@@ -2545,7 +2545,6 @@ package('Array', function () {
 
     var aObj = {
       text: 'foo',
-      arr:  ['a','b','c'],
       reg: /moofa/,
       arr: [{foo:'bar'},{moo:'car'}],
       date: new Date(2001, 5, 15)
@@ -2553,7 +2552,6 @@ package('Array', function () {
 
     var bObj = {
       text: 'foo',
-      arr:  ['a','b','c'],
       reg: /moofa/,
       arr: [{foo:'bar'},{moo:'car'}],
       date: new Date(2001, 5, 15)
@@ -2561,7 +2559,6 @@ package('Array', function () {
 
     var cObj = {
       text: 'foo',
-      arr:  ['a','b','c'],
       reg: /moofo/,
       arr: [{foo:'bar'},{moo:'car'}],
       date: new Date(2001, 5, 15)
@@ -2569,7 +2566,6 @@ package('Array', function () {
 
     var dObj = {
       text: 'foo',
-      arr:  ['a','b','c'],
       reg: /moofa/,
       arr: [{foo:'bar'},{moo:'car'}],
       date: new Date(2001, 8, 15)
@@ -2577,7 +2573,6 @@ package('Array', function () {
 
     var eObj = {
       text: 'foo',
-      arr:  ['a','b','c'],
       reg: /moofa/,
       arr: [{foo:'bar'},{moo:'par'}],
       date: new Date(2001, 8, 15)
