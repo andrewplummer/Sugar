@@ -266,7 +266,7 @@ gulp.task('precompile:min', function() {
 
 
 gulp.task('test:watch', function() {
-  gulp.watch(['lib/*.js'], ['dev:all', 'test']);
+  gulp.watch(['lib/**/*.js'], ['dev:all', 'test']);
   gulp.watch(['test/**/*.js'], ['test']);
 });
 
