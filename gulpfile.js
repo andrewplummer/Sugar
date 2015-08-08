@@ -1,6 +1,5 @@
 
 var fs       = require('fs'),
-    gulp     = require('gulp'),
     glob     = require('glob'),
     zlib     = require('zlib'),
     path     = require('path'),
@@ -10,7 +9,9 @@ var fs       = require('fs'),
     concat   = require('gulp-concat-util'),
     replace  = require('gulp-replace'),
     through  = require('through2'),
-    compiler = require('closure-compiler-stream');
+    compiler = require('closure-compiler-stream'),
+    gulp     = require('gulp-npm-run')(require('gulp'));
+
 
 var COMPIER_JAR_PATH = 'bower_components/closure-compiler/compiler.jar';
 var PRECOMPILED_MIN_DIR = 'release/precompiled/minified/';
@@ -229,6 +230,10 @@ gulp.task('dev', function() {
   return buildDevelopment(getPackages());
 });
 
+gulp.task('dev:all', function() {
+  return buildDevelopment('all');
+});
+
 gulp.task('min', function(done) {
   return buildMinified(getPackages());
 });
@@ -256,6 +261,14 @@ gulp.task('precompile:min', function() {
   return gulp.src(files).pipe(compileModules(modules));
 });
 
+
+// -------------- Test ----------------
+
+
+gulp.task('test:watch', function() {
+  gulp.watch(['lib/*.js'], ['dev:all', 'test']);
+  gulp.watch(['test/**/*.js'], ['test']);
+});
 
 
 // -------------- Docs ----------------

@@ -43,6 +43,7 @@
     "glob": "^5.0.14",
     "gulp": "^3.9.0",
     "gulp-concat-util": "^0.5.2",
+    "gulp-npm-run": "0.0.1",
     "gulp-replace": "^0.5.3",
     "gulp-util": "^3.0.6",
     "merge-stream": "^0.1.8",
