@@ -1,4 +1,5 @@
 package('Object', function () {
+  "use strict";
 
   var definePropertySupport = !!(Object.defineProperty && Object.defineProperties);
 
@@ -186,7 +187,7 @@ package('Object', function () {
   });
 
   method('extended', function() {
-    var keys, values, obj, strippedValues;
+    var keys, values, obj, strippedValues, count;
     var d = new Date();
 
     equal(({}).keys, undefined, 'Object | native objects are not wrapped by default');
@@ -665,7 +666,6 @@ package('Object', function () {
     var obj2 = run(Object, 'clone', [obj1, true]);
 
     obj1.d.setDate(3);
-    obj1.r.source = 'mwahaha';
 
     equal(obj2.d.getDate(), 25, 'Object.clone | deep cloning also clones dates');
     equal(obj2.r.source, 'dasfsa', 'Object.clone | deep cloning also clones regexes');
@@ -721,6 +721,7 @@ package('Object', function () {
   });
 
   method('Extend All', function() {
+    var obj1, obj2;
 
     Sugar.extendObject();
 
@@ -987,7 +988,9 @@ package('Object', function () {
       result = run(Object, 'watch', [obj, 'foo', function(){}]);
 
       equal(result, false, 'should not have succeeded');
-      obj.foo = 4;
+      try {
+        obj.foo = 4;
+      } catch(e) {}
 
 
       var obj = {}, result, getCounter = 0, setCounter = 0, newSetCounter = 0;
@@ -1004,8 +1007,10 @@ package('Object', function () {
         newSetCounter++;
       }]);
 
-      obj.foo;
-      obj.foo = 4;
+      try {
+        obj.foo;
+        obj.foo = 4;
+      } catch(e) {}
 
       equal(result, false, 'should not have succeeded');
       equal(getCounter, 1, 'original getter should be preserved');
@@ -1064,7 +1069,10 @@ package('Object', function () {
       obj.foo = 'a';
       run(Object, 'unwatch', [obj, 'foo']);
 
-      obj.foo = 'a';
+      try {
+        obj.foo = 'a';
+      } catch(e) {};
+
       equal(count, 1, 'watch function should have been removed');
 
 
@@ -1082,10 +1090,15 @@ package('Object', function () {
       };
 
       run(Object, 'watch', [obj, 'foo', fn]);
-      obj.foo = 'a';
+      try {
+        obj.foo = 'a';
+      } catch (e) {}
       run(Object, 'unwatch', [obj, 'foo']);
 
-      obj.foo = 'a';
+      try {
+        obj.foo = 'a';
+      } catch(e) {};
+
       equal(count, 0, 'watch function should not have run on non-configurable property');
 
       // Non-defined property
@@ -1100,7 +1113,10 @@ package('Object', function () {
       obj.foo = 'a';
       run(Object, 'unwatch', [obj, 'foo']);
 
-      obj.foo = 'a';
+      try {
+        obj.foo = 'a';
+      } catch(e) {};
+
       equal(count, 1, 'watch function should have been removed');
 
     } else {

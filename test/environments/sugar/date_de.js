@@ -1,7 +1,12 @@
 package('Date | German', function () {
+  "use string";
 
-  var now = new Date();
-  testSetLocale('de');
+  var now;
+
+  setup(function() {
+    now = new Date();
+    testSetLocale('de');
+  });
 
   method('create', function() {
     dateEqual(testCreateDate('15. Mai 2011'), new Date(2011, 4, 15), 'Date#create | basic German date');

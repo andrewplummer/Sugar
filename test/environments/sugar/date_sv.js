@@ -1,7 +1,12 @@
 package('Date | Swedish', function () {
+  "use string";
 
-  var now = new Date();
-  testSetLocale('sv');
+  var now;
+
+  setup(function() {
+    now = new Date();
+    testSetLocale('sv');
+  });
 
   method('create', function() {
 

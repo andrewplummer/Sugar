@@ -1,7 +1,12 @@
 package('Date | Portuguese', function () {
+  "use string";
 
-  var now = new Date();
-  testSetLocale('pt');
+  var now;
+
+  setup(function() {
+    now = new Date();
+    testSetLocale('pt');
+  });
 
   method('create', function() {
     dateEqual(testCreateDate('15 de maio 2011'), new Date(2011, 4, 15), 'basic Portuguese date');

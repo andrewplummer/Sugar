@@ -11,7 +11,6 @@
     <script type="text/javascript" src="javascripts/suite.js"></script>
     <script type="text/javascript" src="javascripts/suite-ui.js"></script>
     <script type="text/javascript" src="javascripts/date-helpers.js"></script>
-    <script type="text/javascript" src="javascripts/environment.js"></script>
     <script type="text/javascript" src="javascripts/tooltip.js"></script>
     <script type="text/javascript" src="../performance/javascripts/benchmark.js"></script>
     <!-- sugar -->
@@ -20,21 +19,10 @@
     <script type="text/javascript" src="../lib/es5.js"></script>
     <script type="text/javascript" src="../lib/range.js"></script>
     <script type="text/javascript" src="../lib/date.js"></script>
-    <!--<script type="text/javascript" src="../release/1.2.5/minified/sugar-1.2.5.min.js"></script>-->
-    <script type="text/javascript">
-      registerEnvironment('core', [
-        {
-          name: 'core',
-          path: 'environments/sugar/',
-          tests: [
-            'date_range.js',
-            'number_range.js',
-            'string_range.js'
-          ]
-        }
-      ]);
-
-    </script>
+    <!-- tests -->
+    <script type="text/javascript" src="environments/sugar/date_range.js"></script>
+    <script type="text/javascript" src="environments/sugar/number_range.js"></script>
+    <script type="text/javascript" src="environments/sugar/string_range.js"></script>
   </head>
   <body>
   </body>

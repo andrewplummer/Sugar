@@ -1,8 +1,7 @@
-(function() {
+package('Custom Extending', function() {
+  "use strict";
 
-  // Sugar.extend functionality
-
-  package('String', function () {
+  group('Extend | String', function () {
     Sugar.extend(String, {
       foo: function() {
         return 'bar';
@@ -13,7 +12,7 @@
     equal('foo' in Sugar.String, true, 'extend | ensure method was added to global as well');
   });
 
-  package('Number', function () {
+  group('Extend | Number', function () {
     Sugar.extend(Number, {
       plus: function(a, b) {
         return this + a + b;
@@ -40,7 +39,7 @@
 
   });
 
-  package('Reverting', function () {
+  group('Extend | Reverting', function () {
 
     // Issue #248
     // Ensure that methods can be reverted
@@ -72,4 +71,4 @@
 
   });
 
-})();
+});

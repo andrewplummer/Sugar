@@ -1,7 +1,12 @@
 package('Date | Dutch', function () {
+  "use string";
 
-  var now = new Date();
-  testSetLocale('nl');
+  var now;
+
+  setup(function() {
+    now = new Date();
+    testSetLocale('nl');
+  });
 
 
   method('create', function() {

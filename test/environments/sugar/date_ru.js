@@ -1,7 +1,12 @@
 package('Date | Russian', function () {
+  "use string";
 
-  var now = new Date();
-  testSetLocale('ru');
+  var now;
+
+  setup(function() {
+    now = new Date();
+    testSetLocale('ru');
+  });
 
   method('create', function() {
     dateEqual(testCreateDate('15 мая 2011'), new Date(2011, 4, 15), 'basic Russian date');

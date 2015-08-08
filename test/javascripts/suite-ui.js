@@ -21,10 +21,11 @@
     return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   }
 
-  $(document).bind('suite.finished', function(event, environment, results) {
+  function testsFinished(runtime, packages) {
     var totalTests = 0;
     var totalAssertions = 0;
     var totalFailed = 0;
+    var environment = 'main';
     var env = $('#' + environment);
     // IE8 will throw an error in jQuery 1.8.1+ here when using .find,
     // so concat the string like this.
@@ -33,80 +34,55 @@
     $(envId + ' .tests,.stats').show();
     $(envId + ' .tests').empty();
 
-    arrayEach(results, function(module) {
-      var mod = $('<ul class="module" />');
-      arrayEach(module.results, function(r) {
-        totalTests++;
-        totalAssertions += r.assertions;
-        totalFailed += r.failures.length;
-        var li = $('<li class="test" />');
-        var title = '<h5>' + r.name + (r.subname ? ' | ' + r.subname : '') + '</h5>';
-        if(r.failures.length > 0) {
-          arrayEach(r.failures, function(f) {
-            title += getFailureHTML(f);
-            if(f.warning) {
-              totalFailed--;
-            }
+    var list = $('<ul class="module" />');
+    $(envId + ' .tests').append(list);
 
-          });
-          var warning = arrayEvery(r.failures, function(f){ return f.warning; });
-          if(warning) {
-            li.addClass('warning');
-            li.text('.');
-          } else {
-            li.addClass('fail');
-            li.text('F');
-            title += '<p class="fail">Fail (' + commaSeparate(r.assertions) + ' assertions)</p>';
+    arrayEach(packages, function(p) {
+      totalTests++;
+      totalAssertions += p.assertions;
+      totalFailed += p.failures.length;
+      var li = $('<li class="test" />');
+      var title = '<h5>' + p.name + (p.subname ? ' | ' + p.subname : '') + '</h5>';
+      if(p.failures.length > 0) {
+        arrayEach(p.failures, function(f) {
+          title += getFailureHTML(f);
+          if(f.warning) {
+            totalFailed--;
           }
-        } else {
-          li.text('.');
-          li.addClass('pass');
-          title += '<p class="pass">Pass (' + commaSeparate(r.assertions) + ' assertions)</p>';
-        }
 
-        li.attr('title', '#'+ environment +'_tip_' + totalTests);
-        $(document.body).append('<div class="hidden" id="'+ environment +'_tip_' + totalTests + '">' + title + '</div>');
-        mod.append(li);
-      });
-      $(envId + ' .tests').append(mod);
+        });
+        var warning = arrayEvery(p.failures, function(f){ return f.warning; });
+        if(warning) {
+          li.addClass('warning');
+          li.text('.');
+        } else {
+          li.addClass('fail');
+          li.text('F');
+          title += '<p class="fail">Fail (' + commaSeparate(p.assertions) + ' assertions)</p>';
+        }
+      } else {
+        li.text('.');
+        li.addClass('pass');
+        title += '<p class="pass">Pass (' + commaSeparate(p.assertions) + ' assertions)</p>';
+      }
+
+      li.attr('title', '#'+ environment +'_tip_' + totalTests);
+      $(document.body).append('<div class="hidden" id="'+ environment +'_tip_' + totalTests + '">' + title + '</div>');
+      list.append(li);
     });
 
     var stats = $(envId + ' .stats').empty();
     stats.append($('<span class="failures">' + totalFailed + ' ' + (totalFailed == 1 ? 'failure' : 'failures') + '</span>'));
     stats.append($('<span class="tests">' + totalTests + ' ' + (totalTests == 1 ? 'test' : 'tests') + '</span>'));
     stats.append($('<span class="assertions">' + commaSeparate(totalAssertions) + ' ' + (totalAssertions == 1 ? 'assertion' : 'assertions') + '</span>'));
-    stats.append($('<span class="runtime">Completed in ' + results[0].time / 1000 + ' seconds</span>'));
-    env.addClass('finished');
-    if(totalFailed != 0){
-      env.addClass('fail');
-    }
+    stats.append($('<span class="runtime">Completed in ' + runtime / 1000 + ' seconds</span>'));
     $(envId + ' [title]').tooltip({ color: 'black' });
-    $(document).trigger('tests_finished', [environment]);
-  });
-
-
-  $(document).bind('suite.started', function(event, environment, modules) {
-    var test = findOrCreateTestDiv();
-    findOrCreateEnvironmentDiv(environment, test);
-  });
+  }
 
   $(document).ready(function() {
-    if(typeof startTests == 'function') {
-      startTests();
-    } else {
-      $('.run').click(function(e) {
-        var el = $(this);
-        var env = el.parents('.environment');
-        e.preventDefault();
-        el.add($('.tests,.stats', env)).hide();
-        $('.loading', env).show();
-        try {
-          $('iframe#' + el.data('frame'))[0].contentWindow.startTests();
-        } catch(e) {
-          console.info(e);
-        }
-      });
-    }
+    var test = findOrCreateTestDiv();
+    findOrCreateEnvironmentDiv('main', test);
+    runTests(testsFinished);
   });
 
 
@@ -138,9 +114,14 @@
     if(f.warning) {
       return '<p class="warning">Warning: ' + message + '</p>';
     } else {
-      expected = getStringified(f.expected);
-      actual = getStringified(f.actual);
-      return '<p class="fail">' + message + ', expected: ' + escapeHTML(expected) + ' actual: ' + escapeHTML(actual) + '</p>';
+      var html = '<p class="fail">' + message;
+      if (f.hasOwnProperty('expected') && f.hasOwnProperty('actual')) {
+        expected = getStringified(f.expected);
+        actual = getStringified(f.actual);
+        html += ', expected: ' + escapeHTML(expected) + ' actual: ' + escapeHTML(actual);
+      }
+      html += '</p>';
+      return html;
     }
   };
 

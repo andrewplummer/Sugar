@@ -1,8 +1,12 @@
 package('Date | French', function () {
+  "use string";
 
-  var now = new Date();
-  testSetLocale('fr');
+  var now;
 
+  setup(function() {
+    now = new Date();
+    testSetLocale('fr');
+  });
 
   method('create', function() {
 

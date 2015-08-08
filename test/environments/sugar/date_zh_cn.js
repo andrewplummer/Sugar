@@ -1,7 +1,12 @@
 package('Date | Simplified Chinese', function () {
+  "use string";
 
-  var now = new Date();
-  testSetLocale('zh-CN');
+  var now;
+
+  setup(function() {
+    now = new Date();
+    testSetLocale('zh-CN');
+  });
 
   method('create', function() {
     dateEqual(testCreateDate('2011年5月15日'), new Date(2011, 4, 15), 'Date#create | basic Simplified Chinese date');

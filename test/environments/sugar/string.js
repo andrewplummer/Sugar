@@ -1,6 +1,8 @@
 package('String', function () {
+  "use strict";
 
-  var arr;
+  var whiteSpace = '\u0009\u000B\u000C\u0020\u00A0\uFEFF\u1680\u180E\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u202F\u205F\u3000';
+  var lineTerminators = '\u000A\u000D\u2028\u2029';
 
   method('escapeURL', function() {
 
@@ -14,12 +16,12 @@ package('String', function () {
 
   });
 
-  method('escapeURL', [true], function() {
-    test('what a day...', 'what%20a%20day...', '...');
-    test('/?:@&=+$#', '%2F%3F%3A%40%26%3D%2B%24%23', 'url chars');
-    test('!%^*()[]{}\\:', '!%25%5E*()%5B%5D%7B%7D%5C%3A', 'non url special chars');
-    test('http://www.amazon.com/Kindle-Special-Offers-Wireless-Reader/dp/B004HFS6Z0/ref=amb_link_356652042_2?pf_rd_m=ATVPDKIKX0DER&pf_rd_s=center-1&pf_rd_r=1RKN5V41WJ23AXKFSQ56&pf_rd_t=101&pf_rd_p=1306249942&pf_rd_i=507846', 'http%3A%2F%2Fwww.amazon.com%2FKindle-Special-Offers-Wireless-Reader%2Fdp%2FB004HFS6Z0%2Fref%3Damb_link_356652042_2%3Fpf_rd_m%3DATVPDKIKX0DER%26pf_rd_s%3Dcenter-1%26pf_rd_r%3D1RKN5V41WJ23AXKFSQ56%26pf_rd_t%3D101%26pf_rd_p%3D1306249942%26pf_rd_i%3D507846', 'amazon link');
-    test('http://cgi.ebay.com/T-Shirt-Tee-NEW-Naruto-Shippuuden-Kakashi-Adult-Men-XL-/350233503515?_trksid=p5197.m263&_trkparms=algo=SIC&itu=UCI%2BIA%2BUA%2BFICS%2 fBUFI%2BDDSIC&otn=10&pmod=260625794431%2B370476659389&po=LVI&ps=63&clkid=962675460977455716#ht_3216wt_1141', 'http%3A%2F%2Fcgi.ebay.com%2FT-Shirt-Tee-NEW-Naruto-Shippuuden-Kakashi-Adult-Men-XL-%2F350233503515%3F_trksid%3Dp5197.m263%26_trkparms%3Dalgo%3DSIC%26itu%3DUCI%252BIA%252BUA%252BFICS%252%20fBUFI%252BDDSIC%26otn%3D10%26pmod%3D260625794431%252B370476659389%26po%3DLVI%26ps%3D63%26clkid%3D962675460977455716%23ht_3216wt_1141', 'ebay link');
+  method('escapeURL', function() {
+    test('what a day...', [true], 'what%20a%20day...', '...');
+    test('/?:@&=+$#', [true], '%2F%3F%3A%40%26%3D%2B%24%23', 'url chars');
+    test('!%^*()[]{}\\:', [true], '!%25%5E*()%5B%5D%7B%7D%5C%3A', 'non url special chars');
+    test('http://www.amazon.com/Kindle-Special-Offers-Wireless-Reader/dp/B004HFS6Z0/ref=amb_link_356652042_2?pf_rd_m=ATVPDKIKX0DER&pf_rd_s=center-1&pf_rd_r=1RKN5V41WJ23AXKFSQ56&pf_rd_t=101&pf_rd_p=1306249942&pf_rd_i=507846', [true], 'http%3A%2F%2Fwww.amazon.com%2FKindle-Special-Offers-Wireless-Reader%2Fdp%2FB004HFS6Z0%2Fref%3Damb_link_356652042_2%3Fpf_rd_m%3DATVPDKIKX0DER%26pf_rd_s%3Dcenter-1%26pf_rd_r%3D1RKN5V41WJ23AXKFSQ56%26pf_rd_t%3D101%26pf_rd_p%3D1306249942%26pf_rd_i%3D507846', 'amazon link');
+    test('http://cgi.ebay.com/T-Shirt-Tee-NEW-Naruto-Shippuuden-Kakashi-Adult-Men-XL-/350233503515?_trksid=p5197.m263&_trkparms=algo=SIC&itu=UCI%2BIA%2BUA%2BFICS%2 fBUFI%2BDDSIC&otn=10&pmod=260625794431%2B370476659389&po=LVI&ps=63&clkid=962675460977455716#ht_3216wt_1141', [true], 'http%3A%2F%2Fcgi.ebay.com%2FT-Shirt-Tee-NEW-Naruto-Shippuuden-Kakashi-Adult-Men-XL-%2F350233503515%3F_trksid%3Dp5197.m263%26_trkparms%3Dalgo%3DSIC%26itu%3DUCI%252BIA%252BUA%252BFICS%252%20fBUFI%252BDDSIC%26otn%3D10%26pmod%3D260625794431%252B370476659389%26po%3DLVI%26ps%3D63%26clkid%3D962675460977455716%23ht_3216wt_1141', 'ebay link');
 
   });
 
@@ -35,18 +37,16 @@ package('String', function () {
     raisesError(function() { run('% 23'); }, 'should raise an error for malformed urls');
   });
 
-  method('unescapeURL', [true], function() {
-
-    test('what%20a%20day...', 'what a day...', '...');
-    test('%2F%3F%3A%40%26%3D%2B%24%23', '%2F%3F%3A%40%26%3D%2B%24%23', 'url chars');
-    test('!%25%5E*()%5B%5D%7B%7D%5C:', '!%^*()[]{}\\:', 'non url special chars');
-    test('http%3A%2F%2Fsomedomain.com%3Fparam%3D%22this%3A%20isn\'t%20an%20easy%20URL%20to%20escape%22', 'http%3A%2F%2Fsomedomain.com%3Fparam%3D"this%3A isn\'t an easy URL to escape"', 'fake url')
-    test('http%3A%2F%2Fwww.amazon.com%2FKindle-Special-Offers-Wireless-Reader%2Fdp%2FB004HFS6Z0%2Fref%3Damb_link_356652042_2%3Fpf_rd_m%3DATVPDKIKX0DER%26pf_rd_s%3Dcenter-1%26pf_rd_r%3D1RKN5V41WJ23AXKFSQ56%26pf_rd_t%3D101%26pf_rd_p%3D1306249942%26pf_rd_i%3D507846', 'http%3A%2F%2Fwww.amazon.com%2FKindle-Special-Offers-Wireless-Reader%2Fdp%2FB004HFS6Z0%2Fref%3Damb_link_356652042_2%3Fpf_rd_m%3DATVPDKIKX0DER%26pf_rd_s%3Dcenter-1%26pf_rd_r%3D1RKN5V41WJ23AXKFSQ56%26pf_rd_t%3D101%26pf_rd_p%3D1306249942%26pf_rd_i%3D507846', 'amazon link');
-    test('http://twitter.com/#!/nov/status/85613699410296833', 'http://twitter.com/#!/nov/status/85613699410296833', 'twitter link');
-    test('http://cgi.ebay.com/T-Shirt-Tee-NEW-Naruto-Shippuuden-Kakashi-Adult-Men-XL-/350233503515?_trksid=p5197.m263&_trkparms=algo=SIC&itu=UCI%2BIA%2BUA%2BFICS%2fBUFI%2BDDSIC&otn=10&pmod=260625794431%2B370476659389&po=LVI&ps=63&clkid=962675460977455716#ht_3216wt_1141', 'http://cgi.ebay.com/T-Shirt-Tee-NEW-Naruto-Shippuuden-Kakashi-Adult-Men-XL-/350233503515?_trksid=p5197.m263&_trkparms=algo=SIC&itu=UCI%2BIA%2BUA%2BFICS%2fBUFI%2BDDSIC&otn=10&pmod=260625794431%2B370476659389&po=LVI&ps=63&clkid=962675460977455716#ht_3216wt_1141', 'ebay link');
+  method('unescapeURL', function() {
+    test('what%20a%20day...', [true], 'what a day...', '...');
+    test('%2F%3F%3A%40%26%3D%2B%24%23', [true], '%2F%3F%3A%40%26%3D%2B%24%23', 'url chars');
+    test('!%25%5E*()%5B%5D%7B%7D%5C:', [true], '!%^*()[]{}\\:', 'non url special chars');
+    test('http%3A%2F%2Fsomedomain.com%3Fparam%3D%22this%3A%20isn\'t%20an%20easy%20URL%20to%20escape%22', [true], 'http%3A%2F%2Fsomedomain.com%3Fparam%3D"this%3A isn\'t an easy URL to escape"', 'fake url')
+    test('http%3A%2F%2Fwww.amazon.com%2FKindle-Special-Offers-Wireless-Reader%2Fdp%2FB004HFS6Z0%2Fref%3Damb_link_356652042_2%3Fpf_rd_m%3DATVPDKIKX0DER%26pf_rd_s%3Dcenter-1%26pf_rd_r%3D1RKN5V41WJ23AXKFSQ56%26pf_rd_t%3D101%26pf_rd_p%3D1306249942%26pf_rd_i%3D507846', [true], 'http%3A%2F%2Fwww.amazon.com%2FKindle-Special-Offers-Wireless-Reader%2Fdp%2FB004HFS6Z0%2Fref%3Damb_link_356652042_2%3Fpf_rd_m%3DATVPDKIKX0DER%26pf_rd_s%3Dcenter-1%26pf_rd_r%3D1RKN5V41WJ23AXKFSQ56%26pf_rd_t%3D101%26pf_rd_p%3D1306249942%26pf_rd_i%3D507846', 'amazon link');
+    test('http://twitter.com/#!/nov/status/85613699410296833', [true], 'http://twitter.com/#!/nov/status/85613699410296833', 'twitter link');
+    test('http://cgi.ebay.com/T-Shirt-Tee-NEW-Naruto-Shippuuden-Kakashi-Adult-Men-XL-/350233503515?_trksid=p5197.m263&_trkparms=algo=SIC&itu=UCI%2BIA%2BUA%2BFICS%2fBUFI%2BDDSIC&otn=10&pmod=260625794431%2B370476659389&po=LVI&ps=63&clkid=962675460977455716#ht_3216wt_1141', [true], 'http://cgi.ebay.com/T-Shirt-Tee-NEW-Naruto-Shippuuden-Kakashi-Adult-Men-XL-/350233503515?_trksid=p5197.m263&_trkparms=algo=SIC&itu=UCI%2BIA%2BUA%2BFICS%2fBUFI%2BDDSIC&otn=10&pmod=260625794431%2B370476659389&po=LVI&ps=63&clkid=962675460977455716#ht_3216wt_1141', 'ebay link');
 
     raisesError(function() { run('% 23'); }, 'should raise an error for malformed urls');
-
   });
 
 
@@ -134,40 +134,35 @@ package('String', function () {
     test('wasabi', 'Wasabi', 'wasabi');
   });
 
-  method('capitalize', [true], function() {
+  method('capitalize', function() {
 
-    test('reuben sandwich', 'Reuben Sandwich', 'should capitalize all first letters');
-    test('Reuben sandwich', 'Reuben Sandwich', 'should capitalize the second letter only');
-    test('REUBEN SANDWICH', 'Reuben Sandwich', 'should uncapitalize all other letters');
-    test('фыва йцук', 'Фыва Йцук', 'should capitalize unicode letters');
-    test('what a shame of a title', 'What A Shame Of A Title', 'all lower-case');
-    test('What A Shame Of A Title', 'What A Shame Of A Title', 'already capitalized');
-    test(' what a shame of a title    ', ' What A Shame Of A Title    ', 'preserves whitespace');
-    test(' what a shame of\n a title    ', ' What A Shame Of\n A Title    ', 'preserves new lines');
+    test('reuben sandwich', [true], 'Reuben Sandwich', 'should capitalize all first letters');
+    test('Reuben sandwich', [true], 'Reuben Sandwich', 'should capitalize the second letter only');
+    test('REUBEN SANDWICH', [true], 'Reuben Sandwich', 'should uncapitalize all other letters');
+    test('фыва йцук', [true], 'Фыва Йцук', 'should capitalize unicode letters');
+    test('what a shame of a title', [true], 'What A Shame Of A Title', 'all lower-case');
+    test('What A Shame Of A Title', [true], 'What A Shame Of A Title', 'already capitalized');
+    test(' what a shame of a title    ', [true], ' What A Shame Of A Title    ', 'preserves whitespace');
+    test(' what a shame of\n a title    ', [true], ' What A Shame Of\n A Title    ', 'preserves new lines');
 
-    test('reuben-sandwich', 'Reuben-Sandwich', 'hyphen');
-    test('reuben,sandwich', 'Reuben,Sandwich', 'comma');
-    test('reuben;sandwich', 'Reuben;Sandwich', 'semicolon');
-    test('reuben.sandwich', 'Reuben.Sandwich', 'period');
-    test('reuben_sandwich', 'Reuben_Sandwich', 'underscore');
-    test('reuben\nsandwich', 'Reuben\nSandwich', 'new line');
-    test("reuben's sandwich", "Reuben's Sandwich", 'apostrophe should not trigger capitalize');
-    test('фыва-йцук', 'Фыва-Йцук', 'Russian with hyphens');
-    test('фыва,йцук', 'Фыва,Йцук', 'Russian with comma');
-    test('фыва;йцук', 'Фыва;Йцук', 'Russian with semicolon');
-    test('фыва7йцук', 'Фыва7Йцук', 'Russian with 7');
+    test('reuben-sandwich', [true], 'Reuben-Sandwich', 'hyphen');
+    test('reuben,sandwich', [true], 'Reuben,Sandwich', 'comma');
+    test('reuben;sandwich', [true], 'Reuben;Sandwich', 'semicolon');
+    test('reuben.sandwich', [true], 'Reuben.Sandwich', 'period');
+    test('reuben_sandwich', [true], 'Reuben_Sandwich', 'underscore');
+    test('reuben\nsandwich', [true], 'Reuben\nSandwich', 'new line');
+    test("reuben's sandwich", [true], "Reuben's Sandwich", 'apostrophe should not trigger capitalize');
+    test('фыва-йцук', [true], 'Фыва-Йцук', 'Russian with hyphens');
+    test('фыва,йцук', [true], 'Фыва,Йцук', 'Russian with comma');
+    test('фыва;йцук', [true], 'Фыва;Йцук', 'Russian with semicolon');
+    test('фыва7йцук', [true], 'Фыва7Йцук', 'Russian with 7');
 
   });
 
   method('chars', function() {
-
     test('wasabi', ['w','a','s','a','b','i'], 'splits string into constituent chars');
     test(' wasabi \n', [' ','w','a','s','a','b','i',' ','\n'], 'should not trim whitespace');
-
   });
-
-  var whiteSpace = '\u0009\u000B\u000C\u0020\u00A0\uFEFF\u1680\u180E\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u202F\u205F\u3000';
-  var lineTerminators = '\u000A\u000D\u2028\u2029';
 
   method('trimLeft', function() {
     test('   wasabi   ', 'wasabi   ', 'should trim left whitespace only');
@@ -493,7 +488,7 @@ package('String', function () {
       equal(str, arr[i], 'match is the first argument');
       counter ++;
     };
-    result = run(essay, 'paragraphs', [callback]);
+    var result = run(essay, 'paragraphs', [callback]);
     equal(counter, 4, 'should have run 4 times');
     equal(result, arr, 'result should be an array of matches');
 
@@ -589,13 +584,13 @@ package('String', function () {
   });
 
   // Hexadecimal
-  method('toNumber', [16], function() {
-    test('ff', 255, 'ff');
-    test('00', 0, '00');
-    test('33', 51, '33');
-    test('66', 102, '66');
-    test('99', 153, '99');
-    test('bb', 187, 'bb');
+  method('toNumber', function() {
+    test('ff', [16], 255, 'ff');
+    test('00', [16], 0, '00');
+    test('33', [16], 51, '33');
+    test('66', [16], 102, '66');
+    test('99', [16], 153, '99');
+    test('bb', [16], 187, 'bb');
   });
 
 
@@ -763,20 +758,20 @@ package('String', function () {
     test('no-fing-way', 'NoFingWay', 'no-fing-way');
   });
 
-  method('camelize', [false], function() {
-    test('hop-on-pop', 'hopOnPop', 'first false | dashes');
-    test('HOP-ON-POP', 'hopOnPop', 'first false | capital dashes');
-    test('hop_on_pop', 'hopOnPop', 'first false | underscores');
-    test('watch me fail', 'watchMeFail', 'first false | whitespace');
-    test('watch me fail-sad-face', 'watchMeFailSadFace', 'first false | whitespace sad face');
-    test('waTch me su-cCeed', 'waTchMeSuCCeed', 'first false | complex whitespace');
+  method('camelize', function() {
+    test('hop-on-pop', [false], 'hopOnPop', 'first false | dashes');
+    test('HOP-ON-POP', [false], 'hopOnPop', 'first false | capital dashes');
+    test('hop_on_pop', [false], 'hopOnPop', 'first false | underscores');
+    test('watch me fail', [false], 'watchMeFail', 'first false | whitespace');
+    test('watch me fail-sad-face', [false], 'watchMeFailSadFace', 'first false | whitespace sad face');
+    test('waTch me su-cCeed', [false], 'waTchMeSuCCeed', 'first false | complex whitespace');
 
   });
 
-  method('camelize', [true], function() {
-    test('hop-on-pop', 'HopOnPop', 'first true | dashes');
-    test('HOP-ON-POP', 'HopOnPop', 'first true | capital dashes');
-    test('hop_on_pop', 'HopOnPop', 'first true | underscores');
+  method('camelize', function() {
+    test('hop-on-pop', [true], 'HopOnPop', 'first true | dashes');
+    test('HOP-ON-POP', [true], 'HopOnPop', 'first true | capital dashes');
+    test('hop_on_pop', [true], 'HopOnPop', 'first true | underscores');
   });
 
 

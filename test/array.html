@@ -11,7 +11,6 @@
     <script type="text/javascript" src="javascripts/suite.js"></script>
     <script type="text/javascript" src="javascripts/suite-ui.js"></script>
     <script type="text/javascript" src="javascripts/helpers.js"></script>
-    <script type="text/javascript" src="javascripts/environment.js"></script>
     <script type="text/javascript" src="javascripts/tooltip.js"></script>
     <script type="text/javascript" src="../performance/javascripts/benchmark.js"></script>
     <!-- sugar -->
@@ -21,22 +20,11 @@
     <script type="text/javascript" src="../lib/array.js"></script>
     <script type="text/javascript" src="../lib/object.js"></script>
     <script type="text/javascript" src="../lib/number.js"></script>
-    <!--<script type="text/javascript" src="../release/1.2.5/minified/sugar-1.2.5.min.js"></script>-->
-    <script type="text/javascript">
-      registerEnvironment('core', [
-        {
-          name: 'core',
-          path: 'environments/sugar/',
-          tests: [
-            'es5.js',
-            'array.js',
-            'enumerable.js',
-            'dom.js'
-          ]
-        }
-      ]);
-
-    </script>
+    <!-- tests -->
+    <script type="text/javascript" src="environments/sugar/es5.js"></script>
+    <script type="text/javascript" src="environments/sugar/array.js"></script>
+    <script type="text/javascript" src="environments/sugar/enumerable.js"></script>
+    <script type="text/javascript" src="environments/sugar/dom.js"></script>
   </head>
   <body>
   </body>
