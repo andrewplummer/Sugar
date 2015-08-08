@@ -737,7 +737,7 @@
 
     'keys': function(obj) {
       var keys = [];
-      if(obj == null) {
+      if (!isObjectType(obj) && !isRegExp(obj) && !isFunction(obj)) {
         throw new TypeError('Object required');
       }
       iterateOverObject(obj, function(key, value) {
