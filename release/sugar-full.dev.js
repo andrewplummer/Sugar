@@ -93,11 +93,11 @@
       var existing = checkGlobal('method', klass, name, extendee),
           original = checkGlobal('original', klass, name, extendee),
           existed  = name in extendee;
-      if(typeof polyfill === 'function' && existing) {
+      if (typeof polyfill === 'function' && existing) {
         prop = wrapExisting(existing, prop, polyfill);
       }
-      defineOnGlobal(klass, name, instance, original, prop, existed);
-      if(canDefineOnNative(klass, polyfill, existing, override)) {
+      defineOnGlobal(klass, name, instance, original, prop, existed, polyfill);
+      if (canDefineOnNative(klass, polyfill, existing, override)) {
         setProperty(extendee, name, prop);
       }
     });
@@ -111,7 +111,7 @@
   }
 
   function restore(klass, methods) {
-    if(noConflict) return;
+    if (noConflict) return;
     return batchMethodExecute(klass, methods, function(target, name, m) {
       setProperty(target, name, m.method);
     });
@@ -119,7 +119,7 @@
 
   function revert(klass, methods) {
     return batchMethodExecute(klass, methods, function(target, name, m) {
-      if(m['existed']) {
+      if (m['existed']) {
         setProperty(target, name, m['original']);
       } else {
         delete target[name];
@@ -129,9 +129,9 @@
 
   function batchMethodExecute(klass, methods, fn) {
     var all = !methods, changed = false;
-    if(typeof methods === 'string') methods = [methods];
+    if (typeof methods === 'string') methods = [methods];
     iterateOverObject(getProxy(klass), function(name, m) {
-      if(all || methods.indexOf(name) !== -1) {
+      if (all || methods.indexOf(name) !== -1) {
         changed = true;
         fn(m['instance'] ? klass.prototype : klass, name, m);
       }
@@ -141,8 +141,8 @@
 
   function checkGlobal(type, klass, name, extendee) {
     var proxy = getProxy(klass), methodExists;
-    methodExists = proxy && hasOwnProperty(proxy, name);
-    if(methodExists) {
+    methodExists = proxy && hasOwnProperty(proxy, name) && !proxy[name]['polyfill'];
+    if (methodExists) {
       return proxy[name][type];
     } else {
       return extendee[name];
@@ -150,9 +150,9 @@
   }
 
   function canDefineOnNative(klass, polyfill, existing, override) {
-    if(override) {
+    if (override) {
       return true;
-    } else if(polyfill === true) {
+    } else if (polyfill === true) {
       return !existing;
     }
     return !noConflict || !proxies[klass];
@@ -176,16 +176,17 @@
     };
   }
 
-  function defineOnGlobal(klass, name, instance, original, prop, existed) {
+  function defineOnGlobal(klass, name, instance, original, prop, existed, polyfill) {
     var proxy = getProxy(klass), result;
-    if(!proxy) return;
+    if (!proxy) return;
     result = instance ? wrapInstanceAsClass(prop) : prop;
     setProperty(proxy, name, result, true);
-    if(typeof prop === 'function') {
+    if (typeof prop === 'function') {
       setProperty(result, 'original', original);
       setProperty(result, 'method', prop);
       setProperty(result, 'existed', existed);
       setProperty(result, 'instance', instance);
+      setProperty(result, 'polyfill', polyfill);
     }
   }
 
@@ -194,7 +195,7 @@
   }
 
   function setProperty(target, name, property, enumerable) {
-    if(propertyDescriptorSupport) {
+    if (propertyDescriptorSupport) {
       object.defineProperty(target, name, {
         'value': property,
         'enumerable': !!enumerable,
@@ -209,8 +210,8 @@
   function iterateOverObject(obj, fn) {
     var key;
     for(key in obj) {
-      if(!hasOwnProperty(obj, key)) continue;
-      if(fn.call(obj, key, obj[key], obj) === false) break;
+      if (!hasOwnProperty(obj, key)) continue;
+      if (fn.call(obj, key, obj[key], obj) === false) break;
     }
   }
 
@@ -586,22 +587,16 @@
   // Used by Array#unique and Object.equal
 
   function stringify(thing, stack) {
-    var type = typeof thing,
-        thingIsObject,
-        thingIsArray,
-        thingIsArguments,
-        klass, value,
-        arr, key, i, len;
+    var type = typeof thing, isObject, isArrayLike, klass, value, arr, key, i, len;
 
     // Return quickly if string to save cycles
     if(type === 'string') return thing;
 
-    klass            = internalToString.call(thing);
-    thingIsObject    = isPlainObject(thing, klass);
-    thingIsArray     = isArray(thing, klass);
-    thingIsArguments = isArgumentsObject(thing, klass);
+    klass       = internalToString.call(thing);
+    isObject    = isPlainObject(thing, klass);
+    isArrayLike = isArray(thing, klass) || isArgumentsObject(thing, klass);
 
-    if(thing != null && thingIsObject || thingIsArray || thingIsArguments) {
+    if(thing != null && isObject || isArrayLike) {
       // This method for checking for cyclic structures was egregiously stolen from
       // the ingenious method by @kitcambridge from the Underscore script:
       // https://github.com/documentcloud/underscore/issues/240
@@ -620,9 +615,9 @@
       }
       stack.push(thing);
       value = thing.valueOf() + string(thing.constructor);
-      arr = thingIsArray ? thing : object.keys(thing).sort();
+      arr = isArrayLike ? thing : object.keys(thing).sort();
       for(i = 0, len = arr.length; i < len; i++) {
-        key = thingIsArray ? i : arr[i];
+        key = isArrayLike ? i : arr[i];
         value += key + stringify(thing[key], stack);
       }
       stack.pop();
@@ -695,10 +690,9 @@
     }
   }
 
-   function keysWithObjectCoercion(obj) {
-     return object.keys(coercePrimitiveToObject(obj));
-   }
-
+  function keysWithObjectCoercion(obj) {
+    return object.keys(coercePrimitiveToObject(obj));
+  }
 
   // Object class methods implemented as instance methods. This method
   // is being called only on Hash and Object itself, so we don't want
@@ -707,7 +701,10 @@
 
   function buildObjectInstanceMethods(set, target) {
     set.forEach(function(name) {
-      var classFn = sugarObject[name === 'equals' ? 'equal' : name];
+      var key = name === 'equals' ? 'equal' : name;
+      // Polyfill methods like Object.keys may not be defined
+      // on the Sugar global object so check the main namespace.
+      var classFn = sugarObject[key] || object[key];
       var fn = function() {
         var args = arguments, newArgs = [this], i;
         for(i = 0;i < args.length;i++) {
@@ -740,7 +737,7 @@
 
     'keys': function(obj) {
       var keys = [];
-      if(!isObjectType(obj) && !isRegExp(obj) && !isFunction(obj)) {
+      if(obj == null) {
         throw new TypeError('Object required');
       }
       iterateOverObject(obj, function(key, value) {
@@ -5667,7 +5664,7 @@
     // ability to call timeouts in the queue on the same tick (ms?)
     // even if functionally they have already been cleared.
     fn._canceled = false;
-    fn.timers.push(setTimeout(function(){
+    fn.timers.push(setTimeout(function() {
       if(!fn._canceled) {
         after.apply(scope, args || []);
       }
@@ -5829,7 +5826,7 @@
      * @method every([ms] = 1, [arg1], ...)
      * @returns Function
      * @short Executes the function every <ms> milliseconds.
-     * @extra Returns a reference to itself. Repeating functions with %every% can be canceled using the %cancel% method. Can also curry arguments passed in after <ms>.
+     * @extra Returns a reference to itself. %every% uses %setTimeout%, which means that you are guaranteed a period of idle time equal to [ms] after execution has finished. Compare this to %setInterval% which will try to run a function every [ms], even when execution itself takes up a portion of that time. In most cases avoiding %setInterval% is better as calls won't "back up" when the CPU is under strain, however this also means that calls are less likely to happen at exact intervals of [ms], so the use case here should be considered. Additionally, %every% can curry arguments passed in after [ms], and also be canceled with %cancel%.
      * @example
      *
      *   (function(arg1) {
@@ -5920,7 +5917,7 @@
      * @method memoize([fn])
      * @returns Function
      * @short Creates a function that will cache results for unique calls.
-     * @extra %memoize% can be though of as a more power %once%. Where %once% will only call a function once ever, memoized functions will be called once per unique call. A "unique call" is determined by the result of [fn], which is a hashing function. If empty, [fn] will stringify all arguments, such that any different argument signature will be unique.
+     * @extra %memoize% can be thought of as a more power %once%. Where %once% will only call a function once ever, memoized functions will be called once per unique call. A "unique call" is determined by the result of [fn], which is a hashing function. If empty, [fn] will stringify all arguments, such that any different argument signature will result in a unique call. This includes objects passed as arguments, which will be deep inspected to produce the cache key.
      * @example
      *
      *   var fn = (function() {
@@ -7311,7 +7308,7 @@
       return escapeRegExp(tag);
     }).join('|');
     reg = regexp('<(\\/)?(' + (tags || '[^\\s>]+') + ')(\\s+[^<>]*?)?\\s*(\\/)?>', 'gi');
-    return runTagReplacements(str, reg, strip, replacementFn);
+    return runTagReplacements(str.toString(), reg, strip, replacementFn);
   }
 
   function runTagReplacements(str, reg, strip, replacementFn, fullString) {
@@ -9344,6 +9341,48 @@ Sugar.Date.addLocale('es', {
     '{date?} {2?} {month} {2?} {year?}'
   ]
 });
+/*
+ *
+ * Sugar.Date.addLocale(<code>) adds this locale to Sugar.
+ * To set the locale globally, simply call:
+ *
+ * Sugar.Date.setLocale('ja');
+ *
+ * var locale = Sugar.Date.getLocale(<code>) will return this object, which
+ * can be tweaked to change the behavior of parsing/formatting in the locales.
+ *
+ * locale.addFormat adds a date format (see this file for examples).
+ * Special tokens in the date format will be parsed out into regex tokens:
+ *
+ * {0} is a reference to an entry in locale.tokens. Output: (?:the)?
+ * {unit} is a reference to all units. Output: (day|week|month|...)
+ * {unit3} is a reference to a specific unit. Output: (hour)
+ * {unit3-5} is a reference to a subset of the units array. Output: (hour|day|week)
+ * {unit?} "?" makes that token optional. Output: (day|week|month)?
+ *
+ * {day} Any reference to tokens in the modifiers array will include all with the same name. Output: (yesterday|today|tomorrow)
+ *
+ * All spaces are optional and will be converted to "\s*"
+ *
+ * Locale arrays months, weekdays, units, numbers, as well as the "src" field for
+ * all entries in the modifiers array follow a special format indicated by a colon:
+ *
+ * minute:|s  = minute|minutes
+ * thicke:n|r = thicken|thicker
+ *
+ * Additionally in the months, weekdays, units, and numbers array these will be added at indexes that are multiples
+ * of the relevant number for retrieval. For example having "sunday:|s" in the units array will result in:
+ *
+ * units: ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sundays']
+ *
+ * When matched, the index will be found using:
+ *
+ * units.indexOf(match) % 7;
+ *
+ * Resulting in the correct index with any number of alternates for that entry.
+ *
+ */
+
 Sugar.Date.addLocale('fi', {
     'plural':     true,
     'timeMarker': 'kello',
