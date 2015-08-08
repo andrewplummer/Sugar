@@ -1,8 +1,12 @@
 package('Date | Japanese', function () {
+  "use string";
 
-  var now  = new Date();
+  var now;
 
-  testSetLocale('ja');
+  setup(function() {
+    now  = new Date();
+    testSetLocale('ja');
+  });
 
   method('create', function() {
     dateEqual(testCreateDate('2011年5月15日'), new Date(2011, 4, 15), 'Date#create | basic Japanese date');

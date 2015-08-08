@@ -1,4 +1,5 @@
 package('RegExp', function () {
+  "use strict";
 
   method('escape', function() {
     test(RegExp, ['test regexp'], 'test regexp', 'basic');

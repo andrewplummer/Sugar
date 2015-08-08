@@ -1,6 +1,15 @@
 package('Function', function () {
+  "use strict";
 
-  var clock = sinon.useFakeTimers();
+  var clock;
+
+  setup(function() {
+    clock = sinon.useFakeTimers();
+  });
+
+  teardown(function() {
+    clock.restore();
+  });
 
   method('delay', function() {
     var fn, ref, count;
@@ -280,7 +289,7 @@ package('Function', function () {
   });
 
   method('debounce', function() {
-    var fn, ret, count;
+    var fn, ret, count, expected;
 
     // Basic debouncing
     clock.reset();
@@ -325,7 +334,7 @@ package('Function', function () {
   });
 
   method('throttle', function() {
-    var fn, ret, count;
+    var fn, ret, count, expected;
 
     // Basic throttle functionality
     clock.reset();
@@ -580,8 +589,6 @@ package('Function', function () {
 
     equal(filled('a'), [0, 'a'], 'falsy values can be passed');
   });
-
-  clock.restore();
 
 });
 

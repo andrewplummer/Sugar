@@ -1,4 +1,5 @@
 package('Object', function() {
+  "use strict";
 
   var obj1 = {
     foo: 3,

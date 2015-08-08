@@ -1,7 +1,12 @@
 package('Date | Spanish', function () {
+  "use string";
 
-  var now = new Date();
-  testSetLocale('es');
+  var now;
+
+  setup(function() {
+    now = new Date();
+    testSetLocale('es');
+  });
 
   method('create', function() {
     dateEqual(testCreateDate('la semana pasada'), getRelativeDate(null, null, -7), 'Last week');

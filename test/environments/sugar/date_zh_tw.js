@@ -1,8 +1,14 @@
 package('Date | Traditional Chinese', function () {
+  "use string";
 
-  var now = new Date();
-  var then = new Date(2011, 7, 25, 15, 45, 50);
-  testSetLocale('zh-TW');
+  var now;
+  var then;
+
+  setup(function() {
+    now = new Date();
+    then = new Date(2011, 7, 25, 15, 45, 50);
+    testSetLocale('zh-TW');
+  });
 
 
   method('create', function() {

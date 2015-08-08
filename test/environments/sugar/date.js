@@ -1,25 +1,24 @@
 package('Date', function () {
+  "use strict";
 
-
-
-  // Setup
-
-  var d;
   var now = new Date();
   var thisYear = now.getFullYear();
 
-  // Imaginary locale to test locale switching
-  testAddLocale('fo', {
-    units: 'do,re,mi,fa,so,la,ti,do',
-    months: 'do,re,mi,fa,so,la,ti,do',
-    dateParse: '{year}kupo',
-    duration: '{num}{unit}momoney',
-    long: 'yeehaw'
+  group('Locale Setup', function() {
+
+    // Imaginary locale to test locale switching
+    testAddLocale('fo', {
+      units: 'do,re,mi,fa,so,la,ti,do',
+      months: 'do,re,mi,fa,so,la,ti,do',
+      dateParse: '{year}kupo',
+      duration: '{num}{unit}momoney',
+      long: 'yeehaw'
+    });
+
+    notEqual(testGetLocale().code, undefined, 'Current locale must be something... other libs may overwrite this');
+    testSetLocale('en');
+
   });
-
-  notEqual(testGetLocale().code, undefined, 'Current locale must be something... other libs may overwrite this');
-
-  testSetLocale('en');
 
   method('isValid', function() {
 
@@ -77,7 +76,7 @@ package('Date', function () {
 
   group('Create | Timestamps', function() {
     var timestamp = 1294012800000;
-    d = testCreateDate(timestamp); // 2011-01-03 00:00:00 
+    var d = testCreateDate(timestamp); // 2011-01-03 00:00:00 
     equal(d.getFullYear(), 2011, '2011')
     equal(d.getMonth(), 0, 'is January');
     equal(d.getDate(), Math.floor(3 - (d.getTimezoneOffset() / 60 / 24)), 'is the 3rd');
@@ -872,7 +871,7 @@ package('Date', function () {
     test(d, ['5 years ago'], new Date('August 25, 2005 11:45:20'), '5 years ago');
     test(d, ['5 years before'], new Date('August 25, 2005 11:45:20'), '5 years before');
 
-    test(d, ['5 milliseconds from now'], new Date(2010, 7, 25, 11, 45, 20, 005), '5 milliseconds from now');
+    test(d, ['5 milliseconds from now'], new Date(2010, 7, 25, 11, 45, 20, 5), '5 milliseconds from now');
     test(d, ['5 seconds from now'], new Date('August 25, 2010 11:45:25'), '5 seconds from now');
     test(d, ['5 minutes from now'], new Date('August 25, 2010 11:50:20'), '5 minutes from now');
     test(d, ['5 hours from now'], new Date('August 25, 2010 16:45:20'), '5 hours from now');
@@ -1000,7 +999,7 @@ package('Date', function () {
     equal(d.getDate(), 5, 'does not reset date');
     equal(d.getHours(), 13, 'does not reset hours');
     equal(d.getMinutes(), 45, 'does not reset minutes');
-    equal(d.getSeconds(), 02, 'does not reset seconds');
+    equal(d.getSeconds(), 2, 'does not reset seconds');
     equal(d.getMilliseconds(), 234, 'does not reset milliseconds');
 
     d = new Date('August 5, 2010 13:45:02');
@@ -2483,8 +2482,6 @@ package('Date', function () {
     equal(run(testCreateDate('2010-Jan-25'), 'format'), 'yeehaw', 'will not set the current locale to an invalid locale');
 
   });
-
-  testSetLocale('en');
 
   method('getISOWeek', function() {
 

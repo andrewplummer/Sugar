@@ -1,4 +1,6 @@
 package('String | Inflections', function () {
+  // Skipping strict mode here as testing
+  // malformed utf-8 is part of these tests.
 
   /* Note that the following methods are not implemented now and may not be:
    *
@@ -345,21 +347,22 @@ package('String | Inflections', function () {
   });
 
 
-  // Test uncountability of words
-  Uncountables.forEach(function(word) {
-    equal(run(word, 'singularize'), word, 'singularize | uncountables');
-    equal(run(word, 'pluralize'), word, 'pluralize | uncountables');
-    equal(run(word, 'singularize'), run(word, 'pluralize'), 'singularize | uncountables | same as pluralize');
+  group('Uncountables', function() {
+    // Test uncountability of words
+    Uncountables.forEach(function(word) {
+      equal(run(word, 'singularize'), word, 'singularize | uncountables');
+      equal(run(word, 'pluralize'), word, 'pluralize | uncountables');
+      equal(run(word, 'singularize'), run(word, 'pluralize'), 'singularize | uncountables | same as pluralize');
+    });
   });
 
-
-  // Test uncountable word is not greedy
-  var uncountable = 'ors';
-  var countable = 'sponsor';
-
-  Sugar.String.Inflector.uncountable(uncountable);
-
   method('singularize', function() {
+
+    var uncountable = 'ors';
+    var countable = 'sponsor';
+
+    Sugar.String.Inflector.uncountable(uncountable);
+
     test(uncountable, uncountable, 'singularize | uncountable | ors');
     test(countable, 'sponsor', 'singularize | countable | sponsor');
 
@@ -379,6 +382,9 @@ package('String | Inflections', function () {
   });
 
   method('pluralize', function() {
+    var uncountable = 'ors';
+    var countable = 'sponsor';
+
     test(uncountable, uncountable, 'pluralize | uncountable | ors');
     test(uncountable, run(uncountable, 'singularize'), 'singularize | uncountable | both are same');
 
@@ -399,24 +405,22 @@ package('String | Inflections', function () {
 
   });
 
-
-
-  // Test overwrite previous inflectors
-  equal(run('series', 'singularize'), 'series', 'singularize | series');
-  Sugar.String.Inflector.singular('series', 'serie');
-  equal(run('series', 'singularize'), 'serie', 'singularize | serie');
-  Sugar.String.Inflector.singular('series'); // Return to normal
-
-
-  // Test irregulars
-
-  testIterateOverObject(Irregulars, function(singular, plural) {
-    equal(run(plural, 'singularize'), singular, 'singularize | irregulars');
-    equal(run(singular, 'pluralize'), plural, 'pluralize | irregulars | pluralized singular is plural');
+  group('Overwrite previous inflectors', function() {
+    equal(run('series', 'singularize'), 'series', 'singularize | series');
+    Sugar.String.Inflector.singular('series', 'serie');
+    equal(run('series', 'singularize'), 'serie', 'singularize | serie');
+    Sugar.String.Inflector.singular('series'); // Return to normal
   });
 
-  testIterateOverObject(Irregulars, function(singular, plural) {
-    equal(run(plural, 'pluralize'), plural, 'singularize | irregulars | pluralized plural id pluralized');
+  group('Irregulars', function() {
+    testIterateOverObject(Irregulars, function(singular, plural) {
+      equal(run(plural, 'singularize'), singular, 'singularize | irregulars');
+      equal(run(singular, 'pluralize'), plural, 'pluralize | irregulars | pluralized singular is plural');
+    });
+
+    testIterateOverObject(Irregulars, function(singular, plural) {
+      equal(run(plural, 'pluralize'), plural, 'singularize | irregulars | pluralized plural id pluralized');
+    });
   });
 
   method('titleize', function() {
@@ -425,101 +429,92 @@ package('String | Inflections', function () {
     });
   });
 
+  group('Acronyms', function() {
+
+    Sugar.String.Inflector.acronym("API");
+    Sugar.String.Inflector.acronym("HTML");
+    Sugar.String.Inflector.acronym("HTTP");
+    Sugar.String.Inflector.acronym("RESTful");
+    Sugar.String.Inflector.acronym("W3C");
+    Sugar.String.Inflector.acronym("PhD");
+    Sugar.String.Inflector.acronym("RoR");
+    Sugar.String.Inflector.acronym("SSL");
+
+    // camelize             underscore            humanize              titleize
+    [
+      ["API",               "api",                "API",                "API"],
+      ["APIController",     "api_controller",     "API controller",     "API Controller"],
+
+      // Ruby specific inflections don't make sense here.
+      // ["Nokogiri::HTML",    "nokogiri/html",      "Nokogiri/HTML",      "Nokogiri/HTML"],
+      // ["HTTP::Get",         "http/get",           "HTTP/get",           "HTTP/Get"],
+
+      ["HTTPAPI",           "http_api",           "HTTP API",           "HTTP API"],
+      ["SSLError",          "ssl_error",          "SSL error",          "SSL Error"],
+      ["RESTful",           "restful",            "RESTful",            "RESTful"],
+      ["RESTfulController", "restful_controller", "RESTful controller", "RESTful Controller"],
+      ["IHeartW3C",         "i_heart_w3c",        "I heart W3C",        "I Heart W3C"],
+      ["PhDRequired",       "phd_required",       "PhD required",       "PhD Required"],
+      ["IRoRU",             "i_ror_u",            "I RoR u",            "I RoR U"],
+      ["RESTfulHTTPAPI",    "restful_http_api",   "RESTful HTTP API",   "RESTful HTTP API"],
+
+      // misdirection
+      ["Capistrano",        "capistrano",         "Capistrano",       "Capistrano"],
+      ["CapiController",    "capi_controller",    "Capi controller",  "Capi Controller"],
+      ["HttpsApis",         "https_apis",         "Https apis",       "Https Apis"],
+      ["Html5",             "html5",              "Html5",            "Html5"],
+      ["Restfully",         "restfully",          "Restfully",        "Restfully"]
+      // This one confounds the JS implementation, but I argue that it isn't correct anyway.
+      // ["RoRails",           "ro_rails",           "Ro rails",         "Ro Rails"]
+    ].forEach(function(set) {
+      var camel = set[0], under = set[1], human = set[2], title = set[3];
+      equal(run(under, 'camelize'), camel, 'camelize | under.camelize()')
+      equal(run(camel, 'camelize'), camel, 'camelize | camel.camelize()')
+      equal(run(under, 'underscore'), under, 'underscore | under.underscore()')
+      equal(run(camel, 'underscore'), under, 'underscore | camel.underscore()')
+      equal(run(under, 'titleize'), title, 'titleize | under.titleize()')
+      equal(run(camel, 'titleize'), title, 'titleize | camel.titleize()')
+      equal(run(under, 'humanize'), human, 'humanize | under.humanize()')
+    });
+
+  });
+
+
   method('camelize', function() {
+    Sugar.String.Inflector.acronym("API");
+    Sugar.String.Inflector.acronym("HTML");
     testIterateOverObject(CamelToUnderscore, function(camel, underscore) {
       test(underscore, camel, 'mixed cases')
     });
     test('Camel_Case', 'CamelCase', 'handles underscores');
-  });
 
-  method('camelize', [false], function() {
-    testIterateOverObject(UnderscoreToLowerCamel, function(under, lowerCamel) {
-      // Sugar differs from ActiveSupport here in that the first character is upcased by default
-      test(under, lowerCamel, 'lower camel')
-    });
-    test('Capital', 'capital', 'downcases the first letter');
-
-  });
-
-  // Test acronyms
-
-  Sugar.String.Inflector.acronym("API");
-  Sugar.String.Inflector.acronym("HTML");
-  Sugar.String.Inflector.acronym("HTTP");
-  Sugar.String.Inflector.acronym("RESTful");
-  Sugar.String.Inflector.acronym("W3C");
-  Sugar.String.Inflector.acronym("PhD");
-  Sugar.String.Inflector.acronym("RoR");
-  Sugar.String.Inflector.acronym("SSL");
-
-  // camelize             underscore            humanize              titleize
-  [
-    ["API",               "api",                "API",                "API"],
-    ["APIController",     "api_controller",     "API controller",     "API Controller"],
-
-    // Ruby specific inflections don't make sense here.
-    // ["Nokogiri::HTML",    "nokogiri/html",      "Nokogiri/HTML",      "Nokogiri/HTML"],
-    // ["HTTP::Get",         "http/get",           "HTTP/get",           "HTTP/Get"],
-
-    ["HTTPAPI",           "http_api",           "HTTP API",           "HTTP API"],
-    ["SSLError",          "ssl_error",          "SSL error",          "SSL Error"],
-    ["RESTful",           "restful",            "RESTful",            "RESTful"],
-    ["RESTfulController", "restful_controller", "RESTful controller", "RESTful Controller"],
-    ["IHeartW3C",         "i_heart_w3c",        "I heart W3C",        "I Heart W3C"],
-    ["PhDRequired",       "phd_required",       "PhD required",       "PhD Required"],
-    ["IRoRU",             "i_ror_u",            "I RoR u",            "I RoR U"],
-    ["RESTfulHTTPAPI",    "restful_http_api",   "RESTful HTTP API",   "RESTful HTTP API"],
-
-    // misdirection
-    ["Capistrano",        "capistrano",         "Capistrano",       "Capistrano"],
-    ["CapiController",    "capi_controller",    "Capi controller",  "Capi Controller"],
-    ["HttpsApis",         "https_apis",         "Https apis",       "Https Apis"],
-    ["Html5",             "html5",              "Html5",            "Html5"],
-    ["Restfully",         "restfully",          "Restfully",        "Restfully"]
-    // This one confounds the JS implementation, but I argue that it isn't correct anyway.
-    // ["RoRails",           "ro_rails",           "Ro rails",         "Ro Rails"]
-  ].forEach(function(set) {
-    var camel = set[0], under = set[1], human = set[2], title = set[3];
-    equal(run(under, 'camelize'), camel, 'camelize | under.camelize()')
-    equal(run(camel, 'camelize'), camel, 'camelize | camel.camelize()')
-    equal(run(under, 'underscore'), under, 'underscore | under.underscore()')
-    equal(run(camel, 'underscore'), under, 'underscore | camel.underscore()')
-    equal(run(under, 'titleize'), title, 'titleize | under.titleize()')
-    equal(run(camel, 'titleize'), title, 'titleize | camel.titleize()')
-    equal(run(under, 'humanize'), human, 'humanize | under.humanize()')
-  });
-
-
-  // Test acronym override
-  Sugar.String.Inflector.acronym("LegacyApi")
-
-  method('camelize', function() {
+    Sugar.String.Inflector.acronym("LegacyApi")
     test('legacyapi', "LegacyApi", 'LegacyApi')
     test('legacy_api', "LegacyAPI", 'LegacyAPI')
     test('some_legacyapi', "SomeLegacyApi", 'SomeLegacyApi')
     test('nonlegacyapi', "Nonlegacyapi", 'Nonlegacyapi')
+
+    withArgs([false], function() {
+      test('html_api', 'htmlAPI', 'html_api')
+      test('htmlAPI', 'htmlAPI', 'htmlAPI')
+      test('HTMLAPI', 'htmlAPI', 'HTMLAPI')
+      testIterateOverObject(UnderscoreToLowerCamel, function(under, lowerCamel) {
+        // Sugar differs from ActiveSupport here in that the first character is upcased by default
+        test(under, lowerCamel, 'lower camel')
+      });
+      test('Capital', 'capital', 'downcases the first letter');
+    });
+
   });
-
-
-  method('camelize', [false], function() {
-    test('html_api', 'htmlAPI', 'html_api')
-    test('htmlAPI', 'htmlAPI', 'htmlAPI')
-    test('HTMLAPI', 'htmlAPI', 'HTMLAPI')
-  });
-
-  // Test underscore acronym sequence
-
-  Sugar.String.Inflector.acronym("HTML5");
-
 
   method('underscore', function() {
-
+    // Make sure this test doesn't come before "camelize",
+    // or it will affect the "html5" acronym which should not be active at that point.
+    Sugar.String.Inflector.acronym("HTML5");
     test('HTML5HTMLAPI', 'html5_html_api', 'HTML5HTMLAPI')
-
     testIterateOverObject(CamelToUnderscore, function(camel, underscore) {
         test(camel, underscore, 'mixed cases')
     });
-
     testIterateOverObject(CamelToUnderscoreWithoutReverse, function(camel, underscore) {
         test(camel, underscore, 'mixed cases without reverse')
     });

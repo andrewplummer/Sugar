@@ -1,4 +1,5 @@
 package('Array', function () {
+  "use strict";
 
   var sparseArraySupport = 0 in [undefined];
 
@@ -64,7 +65,7 @@ package('Array', function () {
   });
 
   method('some', function() {
-    var arr;
+    var arr, fn;
 
     test([1,2,3], [1], true, 'accepts a number shortcut match');
     test([2,3,4], [1], false, 'accepts a number shortcut no match');
@@ -143,7 +144,7 @@ package('Array', function () {
 
 
   method('each', function() {
-    var arr, fn, result, count;
+    var arr, fn, result, count, indexes;
 
     arr = [2, 5, 9];
     fn = function(el, i, a) {
@@ -1115,7 +1116,8 @@ package('Array', function () {
 
 
   method('exclude', function() {
-    var fn;
+    var arr, fn;
+
     fn = function() {};
 
     test([1,2,2,3], [1,2,2,3], 'no argument numeric');
@@ -1498,6 +1500,7 @@ package('Array', function () {
   });
 
   group('Array Inheritance', function() {
+    var count;
 
     // Inherits from array...
 
@@ -2644,8 +2647,8 @@ package('Array', function () {
     equal(run([aObj], 'union', [[bObj]]).length, 1, 'Properties may not be in the same order.');
 
 
-    xFunc = function (){ return 'x'; }
-    yFunc = function (){ return 'y'; }
+    var xFunc = function (){ return 'x'; }
+    var yFunc = function (){ return 'y'; }
 
     setIsEqual(run([xFunc], 'union', [[]]), [xFunc], 'functions with different content | [x] + []');
     setIsEqual(run([yFunc], 'union', [[]]), [yFunc], 'functions with different content | [y] + []');

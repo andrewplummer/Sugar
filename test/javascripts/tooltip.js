@@ -212,7 +212,7 @@
     win     = $(window);
     arrowWidth = arrow.width();
     arrowHeight = arrow.height();
-    $('[title]').tooltip();
+    //$('[title]').tooltip();
   });
 
 })(jQuery);

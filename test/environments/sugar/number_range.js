@@ -1,4 +1,5 @@
-package('Number | Ranges', function () {
+package('Number Ranges', function () {
+  "use strict";
 
   function getRange(from, to) {
     return run(Number, 'range', [from, to]);
@@ -246,14 +247,16 @@ package('Number | Ranges', function () {
     equal(getRange(new Date(2010, 0).getTime(), new Date(2010, 2).getTime()).contains(new Date(2010, 0)), true, 'contains different type');
   });
 
-  if(Sugar.Array.create) {
-    equal(Sugar.Array.create(getRange(1, 5)), [1,2,3,4,5], 'Array.create | should work on number ranges');
-    equal(Sugar.Array.create(getRange(5, 1)), [5,4,3,2,1], 'Array.create | should work on inverse number ranges');
-  }
+  group('Array#create on number ranges', function() {
+    if(Sugar.Array.create) {
+      equal(Sugar.Array.create(getRange(1, 5)), [1,2,3,4,5], 'Array.create | should work on number ranges');
+      equal(Sugar.Array.create(getRange(5, 1)), [5,4,3,2,1], 'Array.create | should work on inverse number ranges');
+    }
+  });
 
 });
 
-package('Number', function() {
+package('Number', function () {
 
   method('clamp', function() {
     test(25, [5, 10], 10, '25');
@@ -280,6 +283,7 @@ package('Number', function() {
     test(0,  [10, 5], 5, 'inverted | 0');
     test(-1, [10, 5], 5, 'inverted | -1');
   });
+  return;
 
   method('cap', function() {
     test(5, [6], 5, '5 capped to 6');

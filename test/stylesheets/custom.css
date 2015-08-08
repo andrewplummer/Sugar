@@ -1,4 +1,8 @@
 
+html {
+  overflow: hidden;
+}
+
 body {
   font-family: sans-serif;
   padding: 10px;

@@ -1,7 +1,12 @@
 package('Date | Korean', function () {
+  "use string";
 
-  var now = new Date();
-  testSetLocale('ko');
+  var now;
+
+  setup(function() {
+    now = new Date();
+    testSetLocale('ko');
+  });
 
   method('create', function() {
     dateEqual(testCreateDate('2011년5월15일'), new Date(2011, 4, 15), '2011-4-15');

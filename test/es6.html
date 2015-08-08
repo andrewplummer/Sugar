@@ -10,7 +10,6 @@
     <!-- test suite -->
     <script type="text/javascript" src="javascripts/suite.js"></script>
     <script type="text/javascript" src="javascripts/suite-ui.js"></script>
-    <script type="text/javascript" src="javascripts/environment.js"></script>
     <script type="text/javascript" src="javascripts/tooltip.js"></script>
     <!-- sugar -->
     <script type="text/javascript" src="../lib/core/core.js"></script>
@@ -18,18 +17,8 @@
     <script type="text/javascript" src="../lib/array.js"></script>
     <script type="text/javascript" src="../lib/number.js"></script>
     <script type="text/javascript" src="../lib/string.js"></script>
-    <script type="text/javascript">
-      registerEnvironment('core', [
-        {
-          name: 'core',
-          path: 'environments/sugar/',
-          tests: [
-            'es6.js'
-          ]
-        }
-      ]);
-
-    </script>
+    <!-- tests -->
+    <script type="text/javascript" src="environments/sugar/es6.js"></script>
   </head>
   <body>
   </body>

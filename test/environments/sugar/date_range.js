@@ -1,10 +1,13 @@
 package('Date | Ranges', function () {
-
-  testSetLocale('en');
+  "use strict";
 
   function createRange() {
     return run(Date, 'range', arguments);
   }
+
+  setup(function() {
+    testSetLocale('en');
+  });
 
   group('Basics', function() {
 
@@ -28,7 +31,7 @@ package('Date | Ranges', function () {
 
     var range = createRange(new Date(2010,6,10,9), new Date(2010,8,10,9));
 
-    tzOffset = range.end.getTimezoneOffset() - range.start.getTimezoneOffset();
+    var tzOffset = range.end.getTimezoneOffset() - range.start.getTimezoneOffset();
 
     equal(range.toString(), new Date(2010,6,10,9).toString() + '..' + new Date(2010,8,10,9).toString(), 'toString');
     equal(range.span(), new Date(2010,8,10,9) - new Date(2010,6,10,9) + (tzOffset * 60 * 1000) + 1, 'duration');
@@ -89,8 +92,8 @@ package('Date | Ranges', function () {
     var count = 0;
     var range = createRange(new Date(2010,6,10,9), new Date(2010,8,10,9));
 
-    expected = [new Date(2010,6,10,9), new Date(2010,7,10,9), new Date(2010,8,10,9)]
-    result = range.every('month', function(d, index) {
+    var expected = [new Date(2010,6,10,9), new Date(2010,7,10,9), new Date(2010,8,10,9)];
+    var result = range.every('month', function(d, index) {
       dateEqual(d, expected[count], 'date is first argument');
       equal(index, count, 'index is second argument');
       count++;

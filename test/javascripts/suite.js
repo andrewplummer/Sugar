@@ -2,17 +2,12 @@ if(typeof environment == 'undefined') environment = 'default'; // Override me!
 
 (function() {
 
+  var tests = [];
+  var packages = [];
   var results;
-
-  var currentPackage;
-  var currentMethod;
-  var currentGroup;
+  var currentTest;
   var currentArgs;
-
-  var syncTestsRunning;
-
-  var startTime;
-  var runtime;
+  var currentPackage;
 
   // The global context
   var globalContext = typeof global !== 'undefined' ? global : this;
@@ -22,13 +17,27 @@ if(typeof environment == 'undefined') environment = 'default'; // Override me!
   // BE CAREFUL HERE! If you declare these using window.xxx or
   // some form thereof they will not trigger errors in IE7!
 
-  package = function (name, fn) {
-    // Set up results if there are none.
-    if(!results) {
-      results = [];
-      syncTestsRunning = true;
-      testsStarted();
+  runTests = function(fn) {
+    var time = testsStarted(), clock;
+    for (var i = 0; i < tests.length; i++) {
+      currentTest = tests[i];
+      if (typeof currentTest.fn != 'function') {
+        throw new Error('Test ' + currentTest.name + ' has no tests.');
+        continue;
+      }
+      if (currentTest.package.setup) {
+        currentTest.package.setup();
+      }
+      currentTest.fn();
+      if (currentTest.package.teardown) {
+        currentTest.package.teardown();
+      }
+      currentTest = null;
     }
+    fn(new Date() - time, packages);
+  }
+
+  package = function (name, fn) {
     var split = name.split(' | ');
     currentPackage = {
       name: split[0],
@@ -36,23 +45,14 @@ if(typeof environment == 'undefined') environment = 'default'; // Override me!
       assertions: 0,
       failures: []
     };
-    // Run the tests...
-    try {
-      fn.call();
-    } catch(e) {
-      console.info(e, e.stack);
-    }
-    results.push(currentPackage);
+    packages.push(currentPackage);
+    // Queue the tests...
+    fn.call();
     currentPackage = null;
   }
 
-  syncTestsFinished = function () {
-    syncTestsRunning = false;
-    checkCanFinish();
-  }
-
   equal = function (actual, expected, message, stack) {
-    currentPackage.assertions++;
+    currentTest.package.assertions++;
     if(!isEqual(actual, expected)) {
       addFailure(actual, expected, getFullMessage(message), stack);
     }
@@ -87,29 +87,35 @@ if(typeof environment == 'undefined') environment = 'default'; // Override me!
 
   getProperty = function (subject, prop) {
     if(Sugar.noConflict) {
-      return Sugar[currentPackage.name][prop];
+      return Sugar[currentTest.package.name][prop];
     } else {
       return subject[prop];
     }
   }
 
-  method = function (name) {
-    var fn = arguments[arguments.length - 1];
-    if(arguments.length === 3) {
-      currentArgs = arguments[1];
-    } else {
-      currentArgs = [];
-    }
-    currentMethod = name;
-    fn();
-    currentMethod = null;
-    currentArgs   = [];
+  method = function (name, fn) {
+    tests.push({
+      fn: fn,
+      name: name,
+      package: currentPackage
+    });
   }
 
-  group = function (name, fn) {
-    currentGroup = name;
+  setup = function(fn) {
+    currentPackage.setup = fn;
+  }
+
+  teardown = function(fn) {
+    currentPackage.teardown = fn;
+  }
+
+  // Alias
+  group = method;
+
+  withArgs = function(args, fn) {
+    currentArgs = args;
     fn();
-    currentGroup = null;
+    currentArgs = null;
   }
 
   test = function (subject) {
@@ -133,15 +139,15 @@ if(typeof environment == 'undefined') environment = 'default'; // Override me!
   }
 
   run = function (subject, method, args) {
-    method = method || currentMethod;
+    method = method || currentTest.name;
     args = args || currentArgs || [];
     if(Sugar.noConflict) {
       if(!subjectIsClass(subject)) {
         args = [subject].concat(Array.prototype.slice.call(args));
       }
-      return Sugar[currentPackage.name][method].apply(null, args);
+      return Sugar[currentTest.package.name][method].apply(null, args);
     } else {
-      var globalObject = globalContext[currentPackage.name], fn;
+      var globalObject = globalContext[currentTest.package.name], fn;
       if(subject && subject[method]) {
         // If the method exists on the subject, then it is the target
         // to be called. This is true in normal prototype testing as well
@@ -158,12 +164,6 @@ if(typeof environment == 'undefined') environment = 'default'; // Override me!
         fn = globalObject[method];
       }
       return fn.apply(subject, args);
-    }
-  }
-
-  function checkCanFinish() {
-    if(!syncTestsRunning) {
-      testsFinished();
     }
   }
 
@@ -184,13 +184,9 @@ if(typeof environment == 'undefined') environment = 'default'; // Override me!
 
   function getFullMessage(tail) {
     var msg = '';
-    var title = currentMethod || currentGroup;
+    var title = currentTest.name;
     if(title) {
-      msg += title;
-      if(currentArgs && currentArgs.length > 0) {
-        msg += '('+ currentArgs.join(',') +')';
-      }
-      msg += ' | ';
+      msg += title + ' | ';
     }
     msg += tail;
     return msg;
@@ -198,44 +194,16 @@ if(typeof environment == 'undefined') environment = 'default'; // Override me!
 
 
   function testsStarted() {
+    results = [];
     if(environment == 'node') {
       console.info('\n----------------------- STARTING TESTS ----------------------------\n');
     }
-    startTime = new Date();
-  }
-
-  function testsFinished() {
-    runtime = new Date() - startTime;
-    if(environment == 'node') {
-      // will exit now setting the status to the number of failed tests
-      process.exit(logResults());
-    } else if(this.testsFinishedCallback) {
-      this.testsFinishedCallback(results, runtime);
-    }
-    results = [];
-  }
-
-  function logResults() {
-    var i, j, failure, totalAssertions = 0, totalFailures = 0;
-    for (i = 0; i < results.length; i += 1) {
-      totalAssertions += results[i].assertions;
-      totalFailures += results[i].failures.length;
-      for(j = 0; j < results[i].failures.length; j++) {
-        failure = results[i].failures[j];
-        console.info('\n'+ (j + 1) + ') Failure:');
-        console.info(failure.message);
-        console.info('Expected: ' + JSON.stringify(failure.expected) + ' but was: ' + JSON.stringify(failure.actual));
-        console.info('File: ' + failure.file + ', Line: ' + failure.line, ' Col: ' + failure.col + '\n');
-      }
-    };
-    var time = (runtime / 1000);
-    console.info(results.length + ' tests, ' + totalAssertions + ' assertions, ' + totalFailures + ' failures, ' + time + 's\n');
-    return totalFailures;
+    return new Date();
   }
 
   function addFailure(actual, expected, message, stack, warning) {
     var meta = getMeta(stack);
-    currentPackage.failures.push({
+    currentTest.package.failures.push({
       actual: actual,
       expected: expected,
       message: message,

@@ -17,6 +17,24 @@ var Sugar = require( '../../../release/sugar-full.dev');
 // do this for now.
 global.Sugar = Sugar;
 
+function logResults(runtime, results) {
+  var i, j, failure, totalAssertions = 0, totalFailures = 0;
+  for (i = 0; i < results.length; i += 1) {
+    totalAssertions += results[i].assertions;
+    totalFailures += results[i].failures.length;
+    for(j = 0; j < results[i].failures.length; j++) {
+      failure = results[i].failures[j];
+      console.info('\n'+ (j + 1) + ') Failure:');
+      console.info(failure.message);
+      console.info('Expected: ' + JSON.stringify(failure.expected) + ' but was: ' + JSON.stringify(failure.actual));
+      console.info('File: ' + failure.file + ', Line: ' + failure.line, ' Col: ' + failure.col + '\n');
+    }
+  };
+  var time = (runtime / 1000);
+  console.info(results.length + ' tests, ' + totalAssertions + ' assertions, ' + totalFailures + ' failures, ' + time + 's\n');
+  process.exit(totalFailures);
+}
+
 // Tests
 require('../sugar/object.js');
 require('../sugar/string.js');
@@ -48,4 +66,4 @@ require('../sugar/date_zh_tw.js')
 require('../sugar/inflections.js');
 require('../sugar/language.js');
 
-syncTestsFinished();
+runTests(logResults);
