@@ -266,7 +266,7 @@ package('Array', function () {
 
 
     test(['a','b','c'], [function(){}], ['a','b','c'], 'null function returns the array');
-    raisesError(function(){ run([1], 'each') }, 'raises an error if no callback');
+    raisesError(function(){ run([1], 'each') }, 'raises an error if no callback', TypeError);
 
     count = 0;
     fn = function() {
