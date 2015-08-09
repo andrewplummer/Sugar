@@ -48,6 +48,7 @@
     "gulp-util": "^3.0.6",
     "merge-stream": "^0.1.8",
     "sinon": "^1.15.4",
+    "through2": "^2.0.0",
     "yargs": "^3.15.0"
   }
 }
