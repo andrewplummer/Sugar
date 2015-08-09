@@ -35,11 +35,10 @@ h3 {
   display: none;
 }
 
-.environment {
+.set {
   clear: left;
   overflow: hidden;
-  margin-bottom: 10px;
-  padding: 10px;
+  padding: 12px;
   border: 1px solid #aaa;
   -moz-border-radius: 5px;
   -webkit-border-radius: 5px;
@@ -47,50 +46,27 @@ h3 {
   background-color: #fff;
 }
 
-.environment .loading {
+.finished .loading {
   display: none;
 }
 
-.environment .run {
-  display: none;
-}
-
-.environments.fail {
-  border-color: #caa;
-}
-
-.environment h3 {
-  margin-bottom: 10px;
-}
-
-.environment h3 .subheader {
-  font-size: 10px;
-  margin-left: 10px;
-  color: #bbb;
-}
-
-.environment .tests {
-  overflow: hidden;
-}
-
-.module {
-  margin-right: 5px;
-  display: inline-block;
-}
-
-.module h4 {
+.set h4 {
   font-size: 10px;
   color: #aaa;
 }
 
-.module li {
+.tests {
+  overflow: hidden;
+}
+
+.tests li {
   float: left;
   list-style-type: none;
 }
 
 .test {
   padding: 2px;
-  cursor: help;
+  cursor: default;
 }
 
 .test h3 {
