@@ -276,8 +276,8 @@ package('String', function () {
     // Can't test this in IE etc where calling with null
     // context reverts back to the global object.
     if(undefinedContext === undefined) {
-      raisesError(function(){ run(undefined, 'repeat'); }, 'raises error on undefined');
-      raisesError(function(){ run(null, 'repeat'); }, 'raises error on null');
+      raisesError(function(){ run(undefined, 'repeat'); }, 'raises error on undefined', TypeError);
+      raisesError(function(){ run(null, 'repeat'); }, 'raises error on null', TypeError);
     }
 
     raisesError(function(){ run('a', 'repeat', [-1]); }, 'negative number raises error', RangeError);
