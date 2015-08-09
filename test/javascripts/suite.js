@@ -90,10 +90,13 @@ if(typeof environment == 'undefined') environment = 'default'; // Override me!
     } catch(e) {
       err = e;
     }
-    if(!errorType) {
-      equal(!!err, true, message, 1);
-    } else {
+    if(errorType) {
       equal(err instanceof errorType, true, message, 1);
+    } else {
+      if (err.message.match(/cannot read property/i)) {
+        console.warn('Possible missing method. Error:\n', err.stack);
+      }
+      equal(!!err, true, message, 1);
     }
   }
 

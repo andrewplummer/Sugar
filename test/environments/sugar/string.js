@@ -280,9 +280,9 @@ package('String', function () {
       raisesError(function(){ run(null, 'repeat'); }, 'raises error on null');
     }
 
-    raisesError(function(){ run('a', 'run', [-1]); }, 'negative number raises error');
-    raisesError(function(){ run('a', 'run', [Infinity]); }, 'Infinity raises error');
-    raisesError(function(){ run('a', 'run', [-Infinity]); }, '-Infinity raises error');
+    raisesError(function(){ run('a', 'repeat', [-1]); }, 'negative number raises error', RangeError);
+    raisesError(function(){ run('a', 'repeat', [Infinity]); }, 'Infinity raises error', RangeError);
+    raisesError(function(){ run('a', 'repeat', [-Infinity]); }, '-Infinity raises error', RangeError);
 
   });
 

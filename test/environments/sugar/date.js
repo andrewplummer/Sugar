@@ -2875,7 +2875,7 @@ package('Number', function () {
     var en = Sugar.Date.getLocale('en');
     var properties = [
       'ampm','articles','code','date','dateParse','day','duration','edge','full',
-      'full_month','future','cachedFormat','compiledFormats', 'modifiers','long','modifiers','modifiersByName',
+      'fullMonth','future','cachedFormat','compiledFormats', 'modifiers','long','modifiers','modifiersByName',
       'months','num','numbers','past','plural','shift','short','sign','timeMarker',
       'timeParse','timeSuffixes','tokens','units','weekdays','year'
     ];
