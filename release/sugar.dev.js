@@ -289,7 +289,7 @@
 
   function buildPrimitiveClassCheck(type, klass) {
     var fn = function(obj) {
-      if(isObjectType(obj)) {
+      if (isObjectType(obj)) {
         return isClass(obj, klass);
       }
       return typeof obj === type;
@@ -323,14 +323,14 @@
     var result = [], i = from || 0, len;
     for(len = args.length; i < len; i++) {
       result.push(args[i]);
-      if(fn) fn.call(args, args[i], i);
+      if (fn) fn.call(args, args[i], i);
     }
     return result;
   }
 
   function flattenedArgs(args, fn, from) {
     var arg = args[from || 0];
-    if(isArray(arg)) {
+    if (isArray(arg)) {
       args = arg;
       from = 0;
     }
@@ -338,7 +338,7 @@
   }
 
   function checkCallback(fn) {
-    if(!fn || !fn.call) {
+    if (!fn || !fn.call) {
       throw new TypeError('Callback is not callable');
     }
   }
@@ -407,10 +407,10 @@
 
    // Make primtives types like strings into objects.
    function coercePrimitiveToObject(obj) {
-     if(isPrimitiveType(obj)) {
+     if (isPrimitiveType(obj)) {
        obj = object(obj);
      }
-     if(noKeysInStringObjects && isString(obj)) {
+     if (noKeysInStringObjects && isString(obj)) {
        forceStringCoercion(obj);
      }
      return obj;
@@ -446,7 +446,7 @@
   function withPrecision(val, precision, fn) {
     var multiplier = pow(10, abs(precision || 0));
     fn = fn || round;
-    if(precision < 0) multiplier = 1 / multiplier;
+    if (precision < 0) multiplier = 1 / multiplier;
     return fn(val * multiplier) / multiplier;
   }
 
@@ -517,7 +517,7 @@
     var sanitized, isDecimal;
     sanitized = str.replace(NumberNormalizeReg, function(chr) {
       var replacement = NumberNormalizeMap[chr];
-      if(replacement === HalfWidthPeriod) {
+      if (replacement === HalfWidthPeriod) {
         isDecimal = true;
       }
       return replacement;
@@ -531,14 +531,14 @@
   function padNumber(num, place, sign, base) {
     var str = abs(num).toString(base || 10);
     str = repeatString('0', place - str.replace(/\.\d+/, '').length) + str;
-    if(sign || num < 0) {
+    if (sign || num < 0) {
       str = (num < 0 ? '-' : '+') + str;
     }
     return str;
   }
 
   function getOrdinalizedSuffix(num) {
-    if(num >= 11 && num <= 13) {
+    if (num >= 11 && num <= 13) {
       return 'th';
     } else {
       switch(num % 10) {
@@ -557,7 +557,7 @@
     var flags = '';
     add = add || '';
     function checkFlag(prop, flag) {
-      if(prop || add.indexOf(flag) > -1) {
+      if (prop || add.indexOf(flag) > -1) {
         flags += flag;
       }
     }
@@ -569,7 +569,7 @@
   }
 
   function escapeRegExp(str) {
-    if(!isString(str)) str = string(str);
+    if (!isString(str)) str = string(str);
     return str.replace(/([\\\/\'*+?|()\[\]{}.^$-])/g,'\\$1');
   }
 
@@ -590,22 +590,22 @@
     var type = typeof thing, isObject, isArrayLike, klass, value, arr, key, i, len;
 
     // Return quickly if string to save cycles
-    if(type === 'string') return thing;
+    if (type === 'string') return thing;
 
     klass       = internalToString.call(thing);
     isObject    = isPlainObject(thing, klass);
     isArrayLike = isArray(thing, klass) || isArgumentsObject(thing, klass);
 
-    if(thing != null && isObject || isArrayLike) {
+    if (thing != null && isObject || isArrayLike) {
       // This method for checking for cyclic structures was egregiously stolen from
       // the ingenious method by @kitcambridge from the Underscore script:
       // https://github.com/documentcloud/underscore/issues/240
-      if(!stack) stack = [];
+      if (!stack) stack = [];
       // Allowing a step into the structure before triggering this
       // script to save cycles on standard JSON structures and also to
       // try as hard as possible to catch basic properties that may have
       // been modified.
-      if(stack.length > 1) {
+      if (stack.length > 1) {
         i = stack.length;
         while (i--) {
           if (stack[i] === thing) {
@@ -621,7 +621,7 @@
         value += key + stringify(thing[key], stack);
       }
       stack.pop();
-    } else if(1 / thing === -Infinity) {
+    } else if (1 / thing === -Infinity) {
       value = '-0';
     } else {
       value = string(thing && thing.valueOf ? thing.valueOf() : thing);
@@ -630,11 +630,11 @@
   }
 
   function isEqual(a, b) {
-    if(a === b) {
+    if (a === b) {
       // Return quickly up front when matching by reference,
       // but be careful about 0 !== -0.
       return a !== 0 || 1 / a === 1 / b;
-    } else if(objectIsMatchedByValue(a) && objectIsMatchedByValue(b)) {
+    } else if (objectIsMatchedByValue(a) && objectIsMatchedByValue(b)) {
       return stringify(a) === stringify(b);
     }
     return false;
@@ -657,21 +657,21 @@
         argsLen   = args.length,
         overshoot = args[argsLen - 1] !== false,
         multiple  = argsLen > (overshoot ? 1 : 2);
-    if(!multiple) {
+    if (!multiple) {
       return entryAtIndex(obj, length, args[0], overshoot, isString);
     }
     result = [];
     multiArgs(args, function(index) {
-      if(isBoolean(index)) return false;
+      if (isBoolean(index)) return false;
       result.push(entryAtIndex(obj, length, index, overshoot, isString));
     });
     return result;
   }
 
   function entryAtIndex(obj, length, index, overshoot, isString) {
-    if(overshoot) {
+    if (overshoot) {
       index = index % length;
-      if(index < 0) index = length + index;
+      if (index < 0) index = length + index;
     }
     return isString ? obj.charAt(index) : obj[index];
   }
@@ -679,11 +679,11 @@
   // Used by the Array and Object packages.
 
   function transformArgument(el, map, context, mapArgs) {
-    if(!map) {
+    if (!map) {
       return el;
-    } else if(map.apply) {
+    } else if (map.apply) {
       return map.apply(context, mapArgs || []);
-    } else if(isFunction(el[map])) {
+    } else if (isFunction(el[map])) {
       return el[map].call(el);
     } else {
       return el[map];
@@ -761,14 +761,14 @@
         fromRight = increment == -1,
         start = fromRight ? length - 1 : 0,
         index = toIntegerWithDefault(fromIndex, start);
-    if(index < 0) {
+    if (index < 0) {
       index = length + index;
     }
-    if((!fromRight && index < 0) || (fromRight && index >= length)) {
+    if ((!fromRight && index < 0) || (fromRight && index >= length)) {
       index = start;
     }
     while((fromRight && index >= 0) || (!fromRight && index < length)) {
-      if(arr[index] === search) {
+      if (arr[index] === search) {
         return index;
       }
       index += increment;
@@ -779,9 +779,9 @@
   function arrayReduce(arr, fn, initialValue, fromRight) {
     var length = arr.length, count = 0, defined = isDefined(initialValue), result, index;
     checkCallback(fn);
-    if(length == 0 && !defined) {
+    if (length == 0 && !defined) {
       throw new TypeError('Reduce called on empty array with no initial value');
-    } else if(defined) {
+    } else if (defined) {
       result = initialValue;
     } else {
       result = arr[fromRight ? length - 1 : count];
@@ -789,7 +789,7 @@
     }
     while(count < length) {
       index = fromRight ? length - count - 1 : count;
-      if(index in arr) {
+      if (index in arr) {
         result = fn(result, arr[index], index, arr);
       }
       count++;
@@ -798,7 +798,7 @@
   }
 
   function toIntegerWithDefault(i, d) {
-    if(isNaN(i)) {
+    if (isNaN(i)) {
       return d;
     } else {
       return parseInt(i >> 0);
@@ -806,7 +806,7 @@
   }
 
   function checkFirstArgumentExists(args) {
-    if(args.length === 0) {
+    if (args.length === 0) {
       throw new TypeError('First argument must be defined');
     }
   }
@@ -854,7 +854,7 @@
       var length = this.length, index = 0;
       checkFirstArgumentExists(arguments);
       while(index < length) {
-        if(index in this && !fn.call(scope, this[index], index, this)) {
+        if (index in this && !fn.call(scope, this[index], index, this)) {
           return false;
         }
         index++;
@@ -882,7 +882,7 @@
       var length = this.length, index = 0;
       checkFirstArgumentExists(arguments);
       while(index < length) {
-        if(index in this && fn.call(scope, this[index], index, this)) {
+        if (index in this && fn.call(scope, this[index], index, this)) {
           return true;
         }
         index++;
@@ -910,7 +910,7 @@
       var scope = arguments[1], length = this.length, index = 0, result = new Array(length);
       checkFirstArgumentExists(arguments);
       while(index < length) {
-        if(index in this) {
+        if (index in this) {
           result[index] = fn.call(scope, this[index], index, this);
         }
         index++;
@@ -936,7 +936,7 @@
       var length = this.length, index = 0, result = [];
       checkFirstArgumentExists(arguments);
       while(index < length) {
-        if(index in this && fn.call(scope, this[index], index, this)) {
+        if (index in this && fn.call(scope, this[index], index, this)) {
           result.push(this[index]);
         }
         index++;
@@ -957,7 +957,7 @@
      ***/
     'indexOf': function(search) {
       var fromIndex = arguments[1];
-      if(isString(this)) return this.indexOf(search, fromIndex);
+      if (isString(this)) return this.indexOf(search, fromIndex);
       return arrayIndexOf(this, search, fromIndex, 1);
     },
 
@@ -974,7 +974,7 @@
      ***/
     'lastIndexOf': function(search) {
       var fromIndex = arguments[1];
-      if(isString(this)) return this.lastIndexOf(search, fromIndex);
+      if (isString(this)) return this.lastIndexOf(search, fromIndex);
       return arrayIndexOf(this, search, fromIndex, -1);
     },
 
@@ -994,7 +994,7 @@
       var length = this.length, index = 0, scope = arguments[1];
       checkCallback(fn);
       while(index < length) {
-        if(index in this) {
+        if (index in this) {
           fn.call(scope, this[index], index, this);
         }
         index++;
@@ -1103,7 +1103,7 @@
      ***/
     'bind': function(scope) {
       var fn = this, args = multiArgs(arguments, null, 1), bound;
-      if(!isFunction(this)) {
+      if (!isFunction(this)) {
         throw new TypeError('Function.prototype.bind called on a non-function');
       }
       bound = function() {
@@ -1217,12 +1217,12 @@
     var matchers = {};
     return function (el, i, arr) {
       var key;
-      if(!isObjectType(el)) {
+      if (!isObjectType(el)) {
         return false;
       }
       for(key in obj) {
         matchers[key] = matchers[key] || getMatcher(obj[key], isObject);
-        if(matchers[key].call(arr, el[key], i, arr) === false) {
+        if (matchers[key].call(arr, el[key], i, arr) === false) {
           return false;
         }
       }
@@ -1237,24 +1237,24 @@
   }
 
   function getMatcher(f, isObject) {
-    if(isPrimitiveType(f)) {
+    if (isPrimitiveType(f)) {
       // Do nothing and fall through to the
       // default matcher below.
-    } else if(isRegExp(f)) {
+    } else if (isRegExp(f)) {
       // Match against a regexp
       return regexMatcher(f);
-    } else if(isDate(f)) {
+    } else if (isDate(f)) {
       // Match against a date. isEqual below should also
       // catch this but matching directly up front for speed.
       return dateMatcher(f);
-    } else if(isFunction(f)) {
+    } else if (isFunction(f)) {
       // Match against a filtering function
-      if(isObject) {
+      if (isObject) {
         return invertedArgsFunctionMatcher(f);
       } else {
         return functionMatcher(f);
       }
-    } else if(isPlainObject(f)) {
+    } else if (isPlainObject(f)) {
       // Match against a fuzzy hash or array.
       return fuzzyMatcher(f, isObject);
     }
@@ -1263,15 +1263,15 @@
   }
 
   function transformArgument(el, map, context, mapArgs) {
-    if(!map) {
+    if (!map) {
       return el;
-    } else if(map.apply) {
+    } else if (map.apply) {
       return map.apply(context, mapArgs || []);
-    } else if(isArray(map)) {
+    } else if (isArray(map)) {
       return map.map(function(m) {
         return transformArgument(el, m, context, mapArgs);
       });
-    } else if(isFunction(el[map])) {
+    } else if (isFunction(el[map])) {
       return el[map].call(el);
     } else {
       return el[map];
@@ -1280,25 +1280,25 @@
 
   function compareValue(aVal, bVal) {
     var cmp, i;
-    if(isString(aVal) && isString(bVal)) {
+    if (isString(aVal) && isString(bVal)) {
       return collateStrings(aVal, bVal);
-    } else if(isArray(aVal) && isArray(bVal)) {
-      if(aVal.length < bVal.length) {
+    } else if (isArray(aVal) && isArray(bVal)) {
+      if (aVal.length < bVal.length) {
         return -1;
-      } else if(aVal.length > bVal.length) {
+      } else if (aVal.length > bVal.length) {
         return 1;
       } else {
         for(i = 0; i < aVal.length; i++) {
           cmp = compareValue(aVal[i], bVal[i]);
-          if(cmp !== 0) {
+          if (cmp !== 0) {
             return cmp;
           }
         }
         return 0;
       }
-    } else if(aVal < bVal) {
+    } else if (aVal < bVal) {
       return -1;
-    } else if(aVal > bVal) {
+    } else if (aVal > bVal) {
       return 1;
     } else {
       return 0;
@@ -1310,16 +1310,16 @@
 
   function arrayEach(arr, fn, startIndex, loop) {
     var index, i, length = +arr.length;
-    if(startIndex < 0) startIndex = arr.length + startIndex;
+    if (startIndex < 0) startIndex = arr.length + startIndex;
     i = isNaN(startIndex) ? 0 : startIndex;
-    if(loop === true) {
+    if (loop === true) {
       length += i;
     }
     while(i < length) {
       index = i % arr.length;
-      if(!(index in arr)) {
+      if (!(index in arr)) {
         return iterateOverSparseArray(arr, fn, i, loop);
-      } else if(fn.call(arr, arr[index], index, arr) === false) {
+      } else if (fn.call(arr, arr[index], index, arr) === false) {
         break;
       }
       i++;
@@ -1329,7 +1329,7 @@
   function iterateOverSparseArray(arr, fn, fromIndex, loop) {
     var indexes = [], i;
     for(i in arr) {
-      if(isArrayIndex(arr, i) && i >= fromIndex) {
+      if (isArrayIndex(arr, i) && i >= fromIndex) {
         indexes.push(parseInt(i));
       }
     }
@@ -1349,10 +1349,10 @@
 
   function arrayFind(arr, f, startIndex, loop, returnIndex, context) {
     var result, index, matcher;
-    if(arr.length > 0) {
+    if (arr.length > 0) {
       matcher = getMatcher(f);
       arrayEach(arr, function(el, i) {
-        if(matcher.call(context, el, i, arr)) {
+        if (matcher.call(context, el, i, arr)) {
           result = el;
           index = i;
           return false;
@@ -1364,10 +1364,10 @@
 
   function arrayFindAll(arr, f, index, loop) {
     var result = [], matcher;
-    if(arr.length > 0) {
+    if (arr.length > 0) {
       matcher = getMatcher(f);
       arrayEach(arr, function(el, i, arr) {
-        if(matcher(el, i, arr)) {
+        if (matcher(el, i, arr)) {
           result.push(el);
         }
       }, index, loop);
@@ -1376,7 +1376,7 @@
   }
 
   function arrayAdd(arr, el, index) {
-    if(!isNumber(number(index)) || isNaN(index)) index = arr.length;
+    if (!isNumber(number(index)) || isNaN(index)) index = arr.length;
     array.prototype.splice.apply(arr, [index, 0].concat(el));
     return arr;
   }
@@ -1385,7 +1385,7 @@
     multiArgs(args, function(f) {
       var i = 0, matcher = getMatcher(f);
       while(i < arr.length) {
-        if(matcher(arr[i], i, arr)) {
+        if (matcher(arr[i], i, arr)) {
           arr.splice(i, 1);
         } else {
           i++;
@@ -1399,7 +1399,7 @@
     var result = [], o = {}, transformed;
     arrayEach(arr, function(el, i) {
       transformed = map ? transformArgument(el, map, arr, [el, i, arr]) : el;
-      if(!checkForElementInHashAndSet(o, transformed)) {
+      if (!checkForElementInHashAndSet(o, transformed)) {
         result.push(el);
       }
     })
@@ -1417,7 +1417,7 @@
       // Add the result to the array if:
       // 1. We're subtracting intersections or it doesn't already exist in the result and
       // 2. It exists in the compared array and we're adding, or it doesn't exist and we're removing.
-      if(elementExistsInHash(o, stringified, el, isReference) !== subtract) {
+      if (elementExistsInHash(o, stringified, el, isReference) !== subtract) {
         discardElementFromHash(o, stringified, el, isReference);
         result.push(el);
       }
@@ -1430,7 +1430,7 @@
     current = current || 0;
     var result = [];
     arrayEach(arr, function(el) {
-      if(isArray(el) && current < level) {
+      if (isArray(el) && current < level) {
         result = result.concat(arrayFlatten(el, level, current + 1));
       } else {
         result.push(el);
@@ -1443,17 +1443,17 @@
     var result = {}, key;
     arrayEach(arr, function(el, index) {
       key = transformArgument(el, map, arr, [el, index, arr]);
-      if(!result[key]) result[key] = [];
+      if (!result[key]) result[key] = [];
       result[key].push(el);
     });
-    if(fn) {
+    if (fn) {
       iterateOverObject(result, fn);
     }
     return result;
   }
 
   function arraySum(arr, map) {
-    if(map) {
+    if (map) {
       arr = sugarArray.map(arr, map);
     }
     return arr.length > 0 ? arr.reduce(function(a,b) { return a + b; }) : 0;
@@ -1462,11 +1462,11 @@
   function arrayCompact(arr, all) {
     var result = [];
     arrayEach(arr, function(el, i) {
-      if(isArray(el)) {
+      if (isArray(el)) {
         result.push(arrayCompact(el));
-      } else if(all && el) {
+      } else if (all && el) {
         result.push(el);
-      } else if(!all && el != null && el.valueOf() === el.valueOf()) {
+      } else if (!all && el != null && el.valueOf() === el.valueOf()) {
         result.push(el);
       }
     });
@@ -1503,8 +1503,8 @@
 
   function elementExistsInHash(hash, key, element, isReference) {
     var exists = hasOwnProperty(hash, key);
-    if(isReference) {
-      if(!hash[key]) {
+    if (isReference) {
+      if (!hash[key]) {
         hash[key] = [];
       }
       exists = hash[key].indexOf(element) !== -1;
@@ -1516,7 +1516,7 @@
     var stringified = stringify(element),
         isReference = !objectIsMatchedByValue(element),
         exists      = elementExistsInHash(hash, stringified, element, isReference);
-    if(isReference) {
+    if (isReference) {
       hash[stringified].push(element);
     } else {
       hash[stringified] = element;
@@ -1526,10 +1526,10 @@
 
   function discardElementFromHash(hash, key, element, isReference) {
     var arr, i = 0;
-    if(isReference) {
+    if (isReference) {
       arr = hash[key];
       while(i < arr.length) {
-        if(arr[i] === element) {
+        if (arr[i] === element) {
           arr.splice(i, 1);
         } else {
           i += 1;
@@ -1552,20 +1552,20 @@
         min = which === 'min',
         isArray = array.isArray(obj);
     for(key in obj) {
-      if(!obj.hasOwnProperty(key)) continue;
+      if (!obj.hasOwnProperty(key)) continue;
       el   = obj[key];
       test = transformArgument(el, map, obj, isArray ? [el, parseInt(key), obj] : []);
-      if(isUndefined(test)) {
+      if (isUndefined(test)) {
         throw new TypeError('Cannot compare with undefined');
       }
-      if(test === edge) {
+      if (test === edge) {
         result.push(el);
-      } else if(isUndefined(edge) || (max && test > edge) || (min && test < edge)) {
+      } else if (isUndefined(edge) || (max && test > edge) || (min && test < edge)) {
         result = [el];
         edge = test;
       }
     }
-    if(!isArray) result = arrayFlatten(result, 1);
+    if (!isArray) result = arrayFlatten(result, 1);
     return all ? result : result[0];
   }
 
@@ -1590,32 +1590,32 @@
       aValue = getSortOrderIndex(aChar, sortOrder);
       bValue = getSortOrderIndex(bChar, sortOrder);
 
-      if(aValue === -1 || bValue === -1) {
+      if (aValue === -1 || bValue === -1) {
         aValue = a.charCodeAt(index) || null;
         bValue = b.charCodeAt(index) || null;
-        if(naturalSort && codeIsNumeral(aValue) && codeIsNumeral(bValue)) {
+        if (naturalSort && codeIsNumeral(aValue) && codeIsNumeral(bValue)) {
           aValue = stringToNumber(a.slice(index));
           bValue = stringToNumber(b.slice(index));
         }
       } else {
         aEquiv = aChar !== a.charAt(index);
         bEquiv = bChar !== b.charAt(index);
-        if(aEquiv !== bEquiv && tiebreaker === 0) {
+        if (aEquiv !== bEquiv && tiebreaker === 0) {
           tiebreaker = aEquiv - bEquiv;
         }
       }
       index += 1;
     } while(aValue != null && bValue != null && aValue === bValue);
-    if(aValue === bValue) return tiebreaker;
+    if (aValue === bValue) return tiebreaker;
     return aValue - bValue;
   }
 
   function getCollationReadyString(str, sortIgnore, sortIgnoreCase) {
-    if(!isString(str)) str = string(str);
-    if(sortIgnoreCase) {
+    if (!isString(str)) str = string(str);
+    if (sortIgnoreCase) {
       str = str.toLowerCase();
     }
-    if(sortIgnore) {
+    if (sortIgnore) {
       str = str.replace(sortIgnore, '');
     }
     return str;
@@ -1627,7 +1627,7 @@
   }
 
   function getSortOrderIndex(chr, sortOrder) {
-    if(!chr) {
+    if (!chr) {
       return null;
     } else {
       return sortOrder.indexOf(chr);
@@ -1661,7 +1661,7 @@
     extend(array, {
       'map': function(map, context) {
         var arr = this;
-        if(arguments.length < 2) {
+        if (arguments.length < 2) {
           context = arr;
         }
         return nativeMap.call(arr, function(el, index) {
@@ -1710,7 +1710,7 @@
     'create': function() {
       var result = [];
       multiArgs(arguments, function(a) {
-        if(isArgumentsObject(a) || isArrayLike(a)) {
+        if (isArgumentsObject(a) || isArrayLike(a)) {
           a = multiArgs(a);
         }
         result = result.concat(a);
@@ -1829,7 +1829,7 @@
      *
      ***/
     'count': function(f) {
-      if(isUndefined(f)) return this.length;
+      if (isUndefined(f)) return this.length;
       return arrayFindAll(this, f).length;
     },
 
@@ -1844,8 +1844,8 @@
      *
      ***/
     'removeAt': function(start, end) {
-      if(isUndefined(start)) return this;
-      if(isUndefined(end))   end = start;
+      if (isUndefined(start)) return this;
+      if (isUndefined(end))   end = start;
       this.splice(start, end - start + 1);
       return this;
     },
@@ -2008,8 +2008,8 @@
      *
      ***/
     'first': function(num) {
-      if(isUndefined(num)) return this[0];
-      if(num < 0) num = 0;
+      if (isUndefined(num)) return this[0];
+      if (num < 0) num = 0;
       return this.slice(0, num);
     },
 
@@ -2025,7 +2025,7 @@
      *
      ***/
     'last': function(num) {
-      if(isUndefined(num)) return this[this.length - 1];
+      if (isUndefined(num)) return this[this.length - 1];
       var start = this.length - num < 0 ? 0 : this.length - num;
       return this.slice(start);
     },
@@ -2055,7 +2055,7 @@
      *
      ***/
     'to': function(num) {
-      if(isUndefined(num)) num = this.length;
+      if (isUndefined(num)) num = this.length;
       return this.slice(0, num);
     },
 
@@ -2191,7 +2191,7 @@
       simpleRepeat(num, function(i) {
         var index = i * divisor;
         var group = arr.slice(index, index + divisor);
-        if(pad && group.length < divisor) {
+        if (pad && group.length < divisor) {
           simpleRepeat(divisor - group.length, function() {
             group.push(padding);
           });
@@ -2214,9 +2214,9 @@
      ***/
     'inGroupsOf': function(num, padding) {
       var result = [], len = this.length, arr = this, group;
-      if(len === 0 || num === 0) return arr;
-      if(isUndefined(num)) num = 1;
-      if(isUndefined(padding)) padding = null;
+      if (len === 0 || num === 0) return arr;
+      if (isUndefined(num)) num = 1;
+      if (isUndefined(padding)) padding = null;
       simpleRepeat(ceil(len / num), function(i) {
         group = arr.slice(num * i, num * i + num);
         while(group.length < num) {
@@ -2489,18 +2489,18 @@
       var unwrapped = sugarArray[name]['method'];
       methods[name] = function(obj, arg1, arg2) {
         var result, coerced = keysWithObjectCoercion(obj), matcher;
-        if(!mapping) {
+        if (!mapping) {
           matcher = getMatcher(arg1, true);
         }
         result = unwrapped.call(coerced, function(key) {
           var value = obj[key];
-          if(mapping) {
+          if (mapping) {
             return transformArgument(value, arg1, obj, [key, value, obj]);
           } else {
             return matcher(value, key, obj);
           }
         }, arg2);
-        if(isArray(result)) {
+        if (isArray(result)) {
           // The method has returned an array of keys so use this array
           // to build up the resulting object in the form we want it in.
           result = result.reduce(function(o, key, i) {
@@ -2656,7 +2656,7 @@
     },
 
     getMonth: function(n) {
-      if(isNumber(n)) {
+      if (isNumber(n)) {
         return n - 1;
       } else {
         return this['months'].indexOf(n) % 12;
@@ -2669,8 +2669,8 @@
 
     getNumber: function(n, digit) {
       var mapped = this.ordinalNumberMap[n];
-      if(mapped) {
-        if(digit) {
+      if (mapped) {
+        if (digit) {
           mapped = mapped % 10;
         }
         return mapped;
@@ -2717,12 +2717,12 @@
           u      = adu[1],
           ms     = adu[2],
           format = this[mode] || this['relative'];
-      if(isFunction(format)) {
+      if (isFunction(format)) {
         return format.call(this, num, u, ms, mode);
       }
       mult = !this['plural'] || num === 1 ? 0 : 1;
       unit = this['units'][mult * 8 + u] || this['units'][u];
-      if(this['capitalizeUnit']) unit = simpleCapitalize(unit);
+      if (this['capitalizeUnit']) unit = simpleCapitalize(unit);
       sign = this['modifiers'].filter(function(m) { return m.name == 'sign' && m.value == (ms > 0 ? 1 : -1); })[0];
       return format.replace(/\{(.*?)\}/g, function(full, match) {
         switch(match) {
@@ -2747,19 +2747,19 @@
             nc    = k.match(/^(\d+)\??$/),
             slice = k.match(/(\d)(?:-(\d))?/),
             key   = k.replace(/[^a-z]+$/, '');
-        if(nc) {
+        if (nc) {
           value = loc.get('tokens')[nc[1]];
-        } else if(loc[key]) {
+        } else if (loc[key]) {
           value = loc[key];
-        } else if(loc[key + 's']) {
+        } else if (loc[key + 's']) {
           value = loc[key + 's'];
-          if(slice) {
+          if (slice) {
             // Can't use filter here as Prototype hijacks the method and doesn't
             // pass an index, so use a simple loop instead!
             arr = [];
             value.forEach(function(m, i) {
               var mod = i % (loc['units'] ? 8 : value.length);
-              if(mod >= slice[1] && mod <= (slice[2] || slice[1])) {
+              if (mod >= slice[1] && mod <= (slice[2] || slice[1])) {
                 arr.push(m);
               }
             });
@@ -2767,23 +2767,23 @@
           }
           value = arrayToAlternates(value);
         }
-        if(!value) {
+        if (!value) {
           return '';
         }
-        if(nc) {
+        if (nc) {
           result = '(?:' + value + ')';
         } else {
-          if(!match) {
+          if (!match) {
             to.push(key);
           }
           result = '(' + value + ')';
         }
-        if(opt) {
+        if (opt) {
           result += '?';
         }
         return result;
       });
-      if(allowsTime) {
+      if (allowsTime) {
         time = prepareTime(RequiredTime, loc, iso);
         timeMarkers = ['t','[\\s\\u3000]'].concat(loc.get('timeMarker'));
         lastIsNumeral = src.match(/\\d\{\d,\d\}\)+\??$/);
@@ -2801,9 +2801,9 @@
 
   function getLocalization(localeCode, fallback) {
     var loc;
-    if(!isString(localeCode)) localeCode = '';
+    if (!isString(localeCode)) localeCode = '';
     loc = Localizations[localeCode] || Localizations[localeCode.slice(0,2)];
-    if(fallback === false && !loc) {
+    if (fallback === false && !loc) {
       throw new TypeError('Invalid locale.');
     }
     return loc || CurrentLocalization;
@@ -2814,9 +2814,9 @@
 
     function initializeField(name) {
       var val = loc[name];
-      if(isString(val)) {
+      if (isString(val)) {
         loc[name] = val.split(',');
-      } else if(!val) {
+      } else if (!val) {
         loc[name] = [];
       }
     }
@@ -2835,7 +2835,7 @@
     function setArray(name, abbreviationSize, multiple) {
       var arr = [];
       loc[name].forEach(function(full, i) {
-        if(abbreviationSize) {
+        if (abbreviationSize) {
           full += '+' + full.slice(0, abbreviationSize);
         }
         eachAlternate(full, function(alt, j) {
@@ -2847,14 +2847,14 @@
 
     function getDigit(start, stop, allowNumbers) {
       var str = '\\d{' + start + ',' + stop + '}';
-      if(allowNumbers) str += '|(?:' + arrayToAlternates(loc.get('numbers')) + ')+';
+      if (allowNumbers) str += '|(?:' + arrayToAlternates(loc.get('numbers')) + ')+';
       return str;
     }
 
     function getNum() {
       var numbers = loc.get('numbers');
       var arr = ['-?\\d+'].concat(loc.get('articles'));
-      if(numbers) {
+      if (numbers) {
         arr = arr.concat(numbers);
       }
       return arrayToAlternates(arr);
@@ -2919,7 +2919,7 @@
 
     buildModifiers();
 
-    if(loc['monthSuffix']) {
+    if (loc['monthSuffix']) {
       loc['month'] = getDigit(1,2);
       loc['months'] = '1,2,3,4,5,6,7,8,9,10,11,12'.split(',').map(function(n) { return n + loc['monthSuffix']; });
     }
@@ -2932,7 +2932,7 @@
 
     // If the locale has time suffixes then add a time only format for that locale
     // that is separate from the core English-based one.
-    if(loc['timeSuffixes'].length > 0) {
+    if (loc['timeSuffixes'].length > 0) {
       loc.addFormat(prepareTime(RequiredTime, loc), false, TimeFormat);
     }
 
@@ -2987,7 +2987,7 @@
   // Normal callDateSet method with ability
   // to handle ISOWeek setting as well.
   function callDateSetWithWeek(d, method, value) {
-    if(method === 'ISOWeek') {
+    if (method === 'ISOWeek') {
       return setWeekNumber(d, value);
     } else {
       return callDateSet(d, method, value);
@@ -3017,7 +3017,7 @@
   function getUTCOffset(d, iso) {
     var offset = d._utc ? 0 : d.getTimezoneOffset();
     var colon  = iso === true ? ':' : '';
-    if(!offset && iso) return 'Z';
+    if (!offset && iso) return 'Z';
     return padNumber(floor(-offset / 60), 2, true) + colon + padNumber(abs(offset % 60), 2);
   }
 
@@ -3025,7 +3025,7 @@
 
   function collectDateArguments(args, allowDuration) {
     var obj;
-    if(isObjectType(args[0])) {
+    if (isObjectType(args[0])) {
       return args;
     } else if (isNumber(args[0]) && !isNumber(args[1])) {
       return [args[0]];
@@ -3042,10 +3042,10 @@
   function getDateParamsFromString(str, num) {
     var match, num, params = {};
     match = str.match(/^(-?\d+)?\s?(\w+?)s?$/i);
-    if(match) {
-      if(isUndefined(num)) {
+    if (match) {
+      if (isUndefined(num)) {
         num = parseInt(match[1]);
-        if(isNaN(num)) {
+        if (isNaN(num)) {
           num = 1;
         }
       }
@@ -3058,10 +3058,10 @@
 
   function iterateOverDateUnits(fn, from, to) {
     var i, unit;
-    if(isUndefined(to)) to = DateUnitsReversed.length;
+    if (isUndefined(to)) to = DateUnitsReversed.length;
     for(i = from || 0; i < to; i++) {
       unit = DateUnitsReversed[i];
-      if(fn(unit.name, unit, i) === false) {
+      if (fn(unit.name, unit, i) === false) {
         break;
       }
     }
@@ -3082,7 +3082,7 @@
   function resetDate(d, unit) {
     var params = {}, recognized;
     unit = unit || 'hours';
-    if(unit === 'date') unit = 'days';
+    if (unit === 'date') unit = 'days';
     recognized = DateUnits.some(function(u) {
       return unit === u.name || unit === u.name + 's';
     });
@@ -3091,7 +3091,7 @@
   }
 
   function setWeekday(d, dow, forward) {
-    if(isUndefined(dow)) return;
+    if (isUndefined(dow)) return;
     // Dates like "the 2nd Tuesday of June" need to be set forward
     // so make sure that the day of the week reflects that here.
     if (forward && dow % 7 < d.getDay()) {
@@ -3127,8 +3127,8 @@
     var obj = {}, value, num;
     arr.forEach(function(key, i) {
       value = match[i + 1];
-      if(isUndefined(value) || value === '') return;
-      if(key === 'year') {
+      if (isUndefined(value) || value === '') return;
+      if (key === 'year') {
         obj.yearAsString = value.replace(/'/, '');
       }
       num = parseFloat(value.replace(/'/, '').replace(/,/, '.'));
@@ -3145,22 +3145,22 @@
   function convertAsianDigits(str) {
     return str.replace(AsianDigitReg, function(full, disallowed, match) {
       var sum = 0, place = 1, lastWasHolder, lastHolder;
-      if(disallowed) return full;
+      if (disallowed) return full;
       match.split('').reverse().forEach(function(letter) {
         var value = AsianDigitMap[letter], holder = value > 9;
-        if(holder) {
-          if(lastWasHolder) sum += place;
+        if (holder) {
+          if (lastWasHolder) sum += place;
           place *= value / (lastHolder || 1);
           lastHolder = value;
         } else {
-          if(lastWasHolder === false) {
+          if (lastWasHolder === false) {
             place *= 10;
           }
           sum += place * value;
         }
         lastWasHolder = holder;
       });
-      if(lastWasHolder) sum += place;
+      if (lastWasHolder) sum += place;
       return sum;
     });
   }
@@ -3193,34 +3193,34 @@
     function setUnitEdge() {
       var modifier = loc.modifiersByName[set['edge']];
       iterateOverDateUnits(function(name) {
-        if(isDefined(set[name])) {
+        if (isDefined(set[name])) {
           unit = name;
           return false;
         }
       }, 4);
-      if(unit === 'year') {
+      if (unit === 'year') {
         set.specificity = 'month';
-      } else if(unit === 'month' || unit === 'week') {
+      } else if (unit === 'month' || unit === 'week') {
         set.specificity = 'day';
       }
-      if(modifier.value < 0) {
+      if (modifier.value < 0) {
         moveToEndOfUnit(d, unit);
       } else {
         moveToBeginningOfUnit(d, unit);
       }
       // This value of -2 is arbitrary but it's a nice clean way to hook into this system.
-      if(modifier.value === -2) resetDate(d);
+      if (modifier.value === -2) resetDate(d);
     }
 
     function separateAbsoluteUnits() {
       var params;
       iterateOverDateUnits(function(name, u, i) {
-        if(name === 'day') name = 'date';
-        if(isDefined(set[name])) {
+        if (name === 'day') name = 'date';
+        if (isDefined(set[name])) {
           // If there is a time unit set that is more specific than
           // the matched unit we have a string like "5:30am in 2 minutes",
           // which is meaningless, so invalidate the date...
-          if(i >= unitIndex) {
+          if (i >= unitIndex) {
             invalidateDate(d);
             return false;
           }
@@ -3231,7 +3231,7 @@
           delete set[name];
         }
       });
-      if(params) {
+      if (params) {
         afterDateSet(function() {
           setDate(d, [params, true]);
         });
@@ -3248,16 +3248,16 @@
 
     setUTC(d, forceUTC);
 
-    if(isDate(f)) {
+    if (isDate(f)) {
       // If the source here is already a date object, then the operation
       // is the same as cloning the date, which preserves the UTC flag.
       setUTC(d, isUTC(f)).setTime(f.getTime());
-    } else if(isNumber(f) || f === null) {
+    } else if (isNumber(f) || f === null) {
       d.setTime(f);
-    } else if(isObjectType(f)) {
+    } else if (isObjectType(f)) {
       setDate(d, [f, true]);
       set = f;
-    } else if(isString(f)) {
+    } else if (isString(f)) {
 
       // The act of getting the localization will pre-initialize
       // if it is missing and add the required formats.
@@ -3266,63 +3266,63 @@
       // Clean the input and convert Kanji based numerals if they exist.
       f = cleanDateInput(f);
 
-      if(baseLocalization) {
+      if (baseLocalization) {
         iterateOverObject(baseLocalization.getFormats(), function(i, dif) {
           var match = f.match(dif.reg);
-          if(match) {
+          if (match) {
 
             loc = dif.locale;
             set = getFormatMatch(match, dif.to, loc);
             loc.cachedFormat = dif;
 
-            if(set['utc']) {
+            if (set['utc']) {
               setUTC(d, true);
             }
 
-            if(set.timestamp) {
+            if (set.timestamp) {
               set = set.timestamp;
               return false;
             }
 
-            if(dif.variant && !isString(set['month']) && (isString(set['date']) || baseLocalization.hasVariant(localeCode))) {
+            if (dif.variant && !isString(set['month']) && (isString(set['date']) || baseLocalization.hasVariant(localeCode))) {
               // If there's a variant (crazy Endian American format), swap the month and day.
               tmp = set['month'];
               set['month'] = set['date'];
               set['date']  = tmp;
             }
 
-            if(hasAbbreviatedYear(set)) {
+            if (hasAbbreviatedYear(set)) {
               // If the year is 2 digits then get the implied century.
               set['year'] = getYearFromAbbreviation(set['year']);
             }
 
-            if(set['month']) {
+            if (set['month']) {
               // Set the month which may be localized.
               set['month'] = loc.getMonth(set['month']);
-              if(set['shift'] && !set['unit']) set['unit'] = loc['units'][7];
+              if (set['shift'] && !set['unit']) set['unit'] = loc['units'][7];
             }
 
-            if(set['weekday'] && set['date']) {
+            if (set['weekday'] && set['date']) {
               // If there is both a weekday and a date, the date takes precedence.
               delete set['weekday'];
-            } else if(set['weekday']) {
+            } else if (set['weekday']) {
               // Otherwise set a localized weekday.
               set['weekday'] = loc.getWeekday(set['weekday']);
-              if(set['shift'] && !set['unit']) {
+              if (set['shift'] && !set['unit']) {
                 set['unit'] = loc['units'][5];
               }
             }
 
-            if(set['day'] && (tmp = loc.modifiersByName[set['day']])) {
+            if (set['day'] && (tmp = loc.modifiersByName[set['day']])) {
               // Relative day localizations such as "today" and "tomorrow".
               set['day'] = tmp.value;
               resetDate(d);
               relative = true;
-            } else if(set['day'] && (weekday = loc.getWeekday(set['day'])) > -1) {
+            } else if (set['day'] && (weekday = loc.getWeekday(set['day'])) > -1) {
               // If the day is a weekday, then set that instead.
               delete set['day'];
               set['weekday'] = getWeekdayWithMultiplier(weekday);
-              if(set['num'] && set['month']) {
+              if (set['num'] && set['month']) {
                 // If we have "the 2nd Tuesday of June", then pass the "weekdayForward" flag
                 // along to updateDate so that the date does not accidentally traverse into
                 // the previous month. This needs to be independent of the "prefer" flag because
@@ -3331,30 +3331,30 @@
               }
             }
 
-            if(set['date'] && !isNumber(set['date'])) {
+            if (set['date'] && !isNumber(set['date'])) {
               set['date'] = loc.getNumericDate(set['date']);
             }
 
-            if(loc.matchPM(set['ampm']) && set['hour'] < 12) {
+            if (loc.matchPM(set['ampm']) && set['hour'] < 12) {
               // If the time is 1pm-11pm advance the time by 12 hours.
               set['hour'] += 12;
-            } else if(loc.matchAM(set['ampm']) && set['hour'] === 12) {
+            } else if (loc.matchAM(set['ampm']) && set['hour'] === 12) {
               // If it is 12:00am then set the hour to 0.
               set['hour'] = 0;
             }
 
-            if('offset_hours' in set || 'offset_minutes' in set) {
+            if ('offset_hours' in set || 'offset_minutes' in set) {
               // Adjust for timezone offset
               setUTC(d, true);
               set['offset_minutes'] = set['offset_minutes'] || 0;
               set['offset_minutes'] += set['offset_hours'] * 60;
-              if(set['offset_sign'] === '-') {
+              if (set['offset_sign'] === '-') {
                 set['offset_minutes'] *= -1;
               }
               set['minute'] -= set['offset_minutes'];
             }
 
-            if(set['unit']) {
+            if (set['unit']) {
               // Date has a unit like "days", "months", etc. are all relative to the current date.
               relative  = true;
               num       = loc.getNumber(set['num']);
@@ -3367,17 +3367,17 @@
               // set them after the relative ones have been set.
               separateAbsoluteUnits();
 
-              if(set['shift']) {
+              if (set['shift']) {
                 // Shift and unit, ie "next month", "last week", etc.
                 num *= (tmp = loc.modifiersByName[set['shift']]) ? tmp.value : 0;
               }
 
-              if(set['sign'] && (tmp = loc.modifiersByName[set['sign']])) {
+              if (set['sign'] && (tmp = loc.modifiersByName[set['sign']])) {
                 // Unit and sign, ie "months ago", "weeks from now", etc.
                 num *= tmp.value;
               }
 
-              if(isDefined(set['weekday'])) {
+              if (isDefined(set['weekday'])) {
                 // Units can be with non-relative dates, set here. ie "the day after monday"
                 setDate(d, [{'weekday': set['weekday']}, true]);
                 delete set['weekday'];
@@ -3387,19 +3387,19 @@
               set[unit] = (set[unit] || 0) + num;
             }
 
-            if(set['edge']) {
+            if (set['edge']) {
               // If there is an "edge" it needs to be set after the
               // other fields are set. ie "the end of February"
               afterDateSet(setUnitEdge);
             }
 
-            if(set['year_sign'] === '-') {
+            if (set['year_sign'] === '-') {
               set['year'] *= -1;
             }
 
             iterateOverDateUnits(function(name, unit, i) {
               var value = set[name], fraction = value % 1;
-              if(fraction) {
+              if (fraction) {
                 set[DateUnitsReversed[i - 1].name] = round(fraction * (name === 'second' ? 1000 : 60));
                 set[name] = floor(value);
               }
@@ -3408,21 +3408,21 @@
           }
         });
       }
-      if(!set) {
+      if (!set) {
         // The Date constructor does something tricky like checking the number
         // of arguments so simply passing in undefined won't work.
-        if(!/^now$/i.test(f)) {
+        if (!/^now$/i.test(f)) {
           d = new date(f);
         }
-        if(forceUTC) {
+        if (forceUTC) {
           // Falling back to system date here which cannot be parsed as UTC,
           // so if we're forcing UTC then simply add the offset.
           d.addMinutes(-d.getTimezoneOffset());
         }
-      } else if(relative) {
+      } else if (relative) {
         advanceDate(d, [set]);
       } else {
-        if(d._utc) {
+        if (d._utc) {
           // UTC times can traverse into other days or even months,
           // so preemtively reset the time here to prevent this.
           resetDate(d);
@@ -3467,13 +3467,13 @@
 
   function setWeekNumber(date, num) {
     var weekday = callDateGet(date, 'Day') || 7;
-    if(isUndefined(num)) return;
+    if (isUndefined(num)) return;
     setDate(date, [{ 'month': 0, 'date': 4 }]);
     setDate(date, [{ 'weekday': 1 }]);
-    if(num > 1) {
+    if (num > 1) {
       advanceDate(date, [{ 'weeks': num - 1 }]);
     }
-    if(weekday !== 1) {
+    if (weekday !== 1) {
       advanceDate(date, [{ 'days': weekday - 1 }]);
     }
     return date.getTime();
@@ -3490,7 +3490,7 @@
     var unitIndex = 0, value = 0;
     iterateOverObject(DateUnits, function(i, unit) {
       value = abs(fn(unit));
-      if(value >= 1) {
+      if (value >= 1) {
         unitIndex = 7 - i;
         return false;
       }
@@ -3573,8 +3573,8 @@
   function createFormatToken(t, fn, slice, caps) {
     DateFormatTokens[t] = function(d, localeCode) {
       var str = fn(d, localeCode);
-      if(slice) str = str.slice(0, slice);
-      if(caps)  str = str.slice(0, caps).toUpperCase() + str.slice(caps);
+      if (slice) str = str.slice(0, slice);
+      if (caps)  str = str.slice(0, caps).toUpperCase() + str.slice(caps);
       return str;
     }
   }
@@ -3584,7 +3584,7 @@
     DateFormatTokens[t + t] = function (d, localeCode) {
       return padNumber(fn(d, localeCode), 2);
     };
-    if(ms) {
+    if (ms) {
       DateFormatTokens[t + t + t] = function (d, localeCode) {
         return padNumber(fn(d, localeCode), 3);
       };
@@ -3620,30 +3620,30 @@
 
   function formatDate(date, format, relative, localeCode) {
     var adu;
-    if(!isValid(date)) {
+    if (!isValid(date)) {
       return 'Invalid Date';
-    } else if(isString(sugarDate[format])) {
+    } else if (isString(sugarDate[format])) {
       format = sugarDate[format];
-    } else if(isFunction(format)) {
+    } else if (isFunction(format)) {
       adu = getAdjustedUnitForDate(date);
       format = format.apply(date, adu.concat(getLocalization(localeCode)));
     }
-    if(!format && relative) {
+    if (!format && relative) {
       adu = adu || getAdjustedUnitForDate(date);
       // Adjust up if time is in ms, as this doesn't
       // look very good for a standard relative date.
-      if(adu[1] === 0) {
+      if (adu[1] === 0) {
         adu[1] = 1;
         adu[0] = 1;
       }
       return getLocalization(localeCode).getRelativeFormat(adu);
     }
     format = format || 'long';
-    if(format === 'short' || format === 'long' || format === 'full') {
+    if (format === 'short' || format === 'long' || format === 'full') {
       format = getLocalization(localeCode)[format];
     }
 
-    if(!CompiledOutputFormats[format]) {
+    if (!CompiledOutputFormats[format]) {
       buildCompiledOutputFormat(format);
     }
 
@@ -3654,8 +3654,8 @@
 
   function fullCompareDate(d, f, margin, utc) {
     var tmp, comp;
-    if(!isValid(d)) return;
-    if(isString(f)) {
+    if (!isValid(d)) return;
+    if (isString(f)) {
       f = f.trim().toLowerCase();
       comp = setUTC(cloneDate(d), utc);
       switch(true) {
@@ -3673,21 +3673,21 @@
   function compareDate(d, find, localeCode, buffer, forceUTC) {
     var p, t, min, max, override, accuracy = 0, loBuffer = 0, hiBuffer = 0;
     p = getExtendedDate(null, find, localeCode, null, forceUTC);
-    if(buffer > 0) {
+    if (buffer > 0) {
       loBuffer = hiBuffer = buffer;
       override = true;
     }
-    if(!isValid(p.date)) return false;
-    if(p.set && p.set.specificity) {
-      if(p.set['edge'] || p.set['shift']) {
+    if (!isValid(p.date)) return false;
+    if (p.set && p.set.specificity) {
+      if (p.set['edge'] || p.set['shift']) {
         moveToBeginningOfUnit(p.date, p.set.specificity);
       }
-      if(p.set.specificity === 'month') {
+      if (p.set.specificity === 'month') {
         max = moveToEndOfUnit(cloneDate(p.date), p.set.specificity).getTime();
       } else {
         max = advanceDate(cloneDate(p.date), ['1 ' + p.set.specificity]).getTime() - 1;
       }
-      if(!override && p.set['sign'] && p.set.specificity !== 'millisecond') {
+      if (!override && p.set['sign'] && p.set.specificity !== 'millisecond') {
         // If the time is relative, there can occasionally be an disparity between the relative date
         // and "now", which it is being compared to, so set an extra buffer to account for this.
         loBuffer = 50;
@@ -3705,10 +3705,10 @@
     var dMin, dMax, minOffset, maxOffset;
     dMin = new date(min);
     dMax = setUTC(new date(max), isUTC(d));
-    if(callDateGet(dMax, 'Hours') !== 23) {
+    if (callDateGet(dMax, 'Hours') !== 23) {
       minOffset = dMin.getTimezoneOffset();
       maxOffset = dMax.getTimezoneOffset();
-      if(minOffset !== maxOffset) {
+      if (minOffset !== maxOffset) {
         max += (maxOffset - minOffset).minutes();
       }
     }
@@ -3737,17 +3737,17 @@
       }
     }
 
-    if(isNumber(params) && advance) {
+    if (isNumber(params) && advance) {
       // If param is a number and we're advancing, the number is presumed to be milliseconds.
       params = { 'milliseconds': params };
-    } else if(isNumber(params)) {
+    } else if (isNumber(params)) {
       // Otherwise just set the timestamp and return.
       d.setTime(params);
       return d;
     }
 
     // "date" can also be passed for the day
-    if(isDefined(params['date'])) {
+    if (isDefined(params['date'])) {
       params['day'] = params['date'];
     }
 
@@ -3758,11 +3758,11 @@
     // as setting hour: 3, minute: 345, etc.
     iterateOverDateUnits(function(name, unit, i) {
       var isDay = name === 'day';
-      if(uniqueParamExists(name, isDay)) {
+      if (uniqueParamExists(name, isDay)) {
         params.specificity = name;
         specificityIndex = +i;
         return false;
-      } else if(reset && name !== 'week' && (!isDay || !paramExists('week'))) {
+      } else if (reset && name !== 'week' && (!isDay || !paramExists('week'))) {
         // Days are relative to months, not weeks, so don't reset if a week exists.
         callDateSet(d, unit.method, (isDay ? 1 : 0));
       }
@@ -3772,14 +3772,14 @@
     DateUnits.forEach(function(u, i) {
       var name = u.name, method = u.method, higherUnit = DateUnits[i - 1], value;
       value = getParam(name)
-      if(isUndefined(value)) return;
-      if(advance) {
-        if(name === 'week') {
+      if (isUndefined(value)) return;
+      if (advance) {
+        if (name === 'week') {
           value *= 7;
           method = 'Date';
         }
         value = (value * advance) + callDateGet(d, method);
-      } else if(name === 'month' && paramExists('day')) {
+      } else if (name === 'month' && paramExists('day')) {
         // When setting the month, there is a chance that we will traverse into a new month.
         // This happens in DST shifts, for example June 1st DST jumping to January 1st
         // (non-DST) will have a shift of -1:00 which will traverse into the previous year.
@@ -3797,7 +3797,7 @@
         callDateSet(d, 'Date', 15);
       }
       callDateSetWithWeek(d, method, value);
-      if(advance && name === 'month') {
+      if (advance && name === 'month') {
         checkMonthTraversal(d, value);
       }
     });
@@ -3806,19 +3806,19 @@
     // is overriding, set it here after all other units have been set.
     // Note that the date has to be perfectly set before disambiguation
     // so that a proper comparison can be made.
-    if(!advance && !paramExists('day') && paramExists('weekday')) {
+    if (!advance && !paramExists('day') && paramExists('weekday')) {
       setWeekday(d, getParam('weekday'), weekdayForward);
     }
 
     // If past or future is preferred, then the process of "disambiguation" will ensure that an
     // ambiguous time/date ("4pm", "thursday", "June", etc.) will be in the past or future.
-    if(canDisambiguate()) {
+    if (canDisambiguate()) {
       iterateOverDateUnits(function(name, u) {
         var ambiguous = u.ambiguous || (name === 'week' && paramExists('weekday'));
-        if(ambiguous && !uniqueParamExists(name, name === 'day')) {
+        if (ambiguous && !uniqueParamExists(name, name === 'day')) {
           sugarDate[u.addMethod](d, prefer);
           return false;
-        } else if(name === 'year' && hasAbbreviatedYear(params)) {
+        } else if (name === 'year' && hasAbbreviatedYear(params)) {
           advanceDate(d, [{'years': 100 * prefer}]);
         }
       }, specificityIndex + 1);
@@ -3835,13 +3835,13 @@
       var separators = [],
           isHours = token === 'h',
           tokenIsRequired = isHours && !iso;
-      if(token === 't') {
+      if (token === 't') {
         return loc.get('ampm').join('|');
       } else {
-        if(isHours) {
+        if (isHours) {
           separators.push(':');
         }
-        if(add = loc['timeSuffixes'][timeSuffixMapping[token]]) {
+        if (add = loc['timeSuffixes'][timeSuffixMapping[token]]) {
           separators.push(add + '\\s*');
         }
         return separators.length === 0 ? '' : '(?:' + separators.join('|') + ')' + (tokenIsRequired ? '' : '?');
@@ -3855,17 +3855,17 @@
   // though there is no February 30th, so it will of necessity be February 28th
   // (or 29th in the case of a leap year).
   function checkMonthTraversal(date, targetMonth) {
-    if(targetMonth < 0) {
+    if (targetMonth < 0) {
       targetMonth = targetMonth % 12 + 12;
     }
-    if(targetMonth % 12 !== callDateGet(date, 'Month')) {
+    if (targetMonth % 12 !== callDateGet(date, 'Month')) {
       callDateSet(date, 'Date', 0);
     }
   }
 
   function createDateFromArgs(contextDate, args, prefer, forceUTC) {
     var f, localeCode;
-    if(isNumber(args[1])) {
+    if (isNumber(args[1])) {
       // If the second argument is a number, then we have an
       // enumerated constructor type as in "new Date(2003, 2, 12);"
       f = collectDateArguments(args)[0];
@@ -4147,14 +4147,14 @@
         return fn(createDateFromArgs(d, args, 0, false), d);
       }
 
-      if(i < 3) {
+      if (i < 3) {
         ['Last','This','Next'].forEach(function(shift) {
           methods['is' + shift + caps] = function() {
             return compareDate(this, shift + ' ' + name, 'en');
           };
         });
       }
-      if(i < 4) {
+      if (i < 4) {
         methods['beginningOf' + caps] = function() {
           return moveToBeginningOfUnit(this, name);
         };
@@ -4263,7 +4263,7 @@
   function buildAsianDigits() {
     KanjiDigits.split('').forEach(function(digit, value) {
       var holder;
-      if(value > 9) {
+      if (value > 9) {
         value = pow(10, value - 9);
       }
       AsianDigitMap[digit] = value;
@@ -4447,7 +4447,7 @@
       CurrentLocalization = loc;
       // The code is allowed to be more specific than the codes which are required:
       // i.e. zh-CN or en-US. Currently this only affects US date variants such as 8/10/2000.
-      if(localeCode && localeCode !== loc['code']) {
+      if (localeCode && localeCode !== loc['code']) {
         loc['code'] = localeCode;
       }
       return loc;
@@ -4571,9 +4571,9 @@
      ***/
     'beginningOfISOWeek': function() {
       var day = this.getDay();
-      if(day === 0) {
+      if (day === 0) {
         day = -6;
-      } else if(day !== 1) {
+      } else if (day !== 1) {
         day = 1;
       }
       setWeekday(this, day);
@@ -4591,7 +4591,7 @@
      *
      ***/
     'endOfISOWeek': function() {
-      if(this.getDay() !== 0) {
+      if (this.getDay() !== 0) {
         setWeekday(this, 7);
       }
       return moveToEndOfUnit(this, 'day');
@@ -4811,7 +4811,7 @@
      *
      ***/
     'relative': function(fn, localeCode) {
-      if(isString(fn)) {
+      if (isString(fn)) {
         localeCode = fn;
         fn = null;
       }
@@ -5188,7 +5188,7 @@
   }
 
   function getRangeMemberPrimitiveValue(m) {
-    if(m == null) return m;
+    if (m == null) return m;
     return isDate(m) ? m.getTime() : m.valueOf();
   }
 
@@ -5216,18 +5216,18 @@
 
   function createDateRangeFromString(str) {
     var match, datetime, duration, dio, start, end;
-    if(match = str.match(RANGE_REG)) {
+    if (match = str.match(RANGE_REG)) {
       return DateRangeConstructor(match[1], match[2]);
     }
-    if(match = str.match(RANGE_REG_FRONT_DURATION)) {
+    if (match = str.match(RANGE_REG_FRONT_DURATION)) {
       duration = match[1];
       datetime = match[2];
     }
-    if(match = str.match(RANGE_REG_REAR_DURATION)) {
+    if (match = str.match(RANGE_REG_REAR_DURATION)) {
       datetime = match[1];
       duration = match[2];
     }
-    if(datetime && duration) {
+    if (datetime && duration) {
       start = getSugarExtendedDate(datetime);
       dio = getDateIncrementObject(duration);
       end = incrementDate(start, dio[0], dio[1]);
@@ -5236,7 +5236,7 @@
   }
 
   function cloneRangeMember(m) {
-    if(isDate(m)) {
+    if (isDate(m)) {
       return new date(m.getTime());
     } else {
       return getRangeMemberPrimitiveValue(m);
@@ -5254,17 +5254,17 @@
 
   function getDateIncrementObject(amt) {
     var match, val, unit;
-    if(isNumber(amt)) {
+    if (isNumber(amt)) {
       return [amt, 'Milliseconds'];
     }
     match = amt.match(DURATION_REG);
     val = parseInt(match[1]) || 1;
     unit = match[2].slice(0,1).toUpperCase() + match[2].slice(1).toLowerCase();
-    if(unit.match(/hour|minute|second/i)) {
+    if (unit.match(/hour|minute|second/i)) {
       unit += 's';
-    } else if(unit === 'Year') {
+    } else if (unit === 'Year') {
       unit = 'FullYear';
-    } else if(unit === 'Day') {
+    } else if (unit === 'Day') {
       unit = 'Date';
     }
     return [val, unit];
@@ -5351,8 +5351,8 @@
      ***/
     'contains': function(obj) {
       var self = this, arr;
-      if(obj == null) return false;
-      if(obj.start && obj.end) {
+      if (obj == null) return false;
+      if (obj.start && obj.end) {
         return obj.start >= this.start && obj.start <= this.end &&
                obj.end   >= this.start && obj.end   <= this.end;
       } else {
@@ -5383,24 +5383,24 @@
           index   = 0,
           result  = [];
 
-      if(!this.isValid()) {
+      if (!this.isValid()) {
         return [];
       }
-      if(isFunction(amount)) {
+      if (isFunction(amount)) {
         fn = amount;
         amount = null;
       }
       amount = amount || 1;
-      if(isNumber(start)) {
+      if (isNumber(start)) {
         precision = getGreaterPrecision(start, amount);
         increment = function() {
           return incrementNumber(current, amount, precision);
         };
-      } else if(isString(start)) {
+      } else if (isString(start)) {
         increment = function() {
           return incrementString(current, amount);
         };
-      } else if(isDate(start)) {
+      } else if (isDate(start)) {
         dio = getDateIncrementObject(amount);
         amount = dio[0];
         unit = dio[1];
@@ -5409,12 +5409,12 @@
         };
       }
       // Avoiding infinite loops
-      if(inverse && amount > 0) {
+      if (inverse && amount > 0) {
         amount *= -1;
       }
       while(inverse ? current >= end : current <= end) {
         result.push(current);
-        if(fn) {
+        if (fn) {
           fn(current, index);
         }
         current = increment();
@@ -5451,7 +5451,7 @@
      *
      ***/
     'intersect': function(range) {
-      if(range.start > this.end || range.end < this.start) {
+      if (range.start > this.end || range.end < this.start) {
         return new Range(NaN, NaN);
       }
       return new Range(
@@ -5490,9 +5490,9 @@
           end = this.end,
           min = end < start ? end : start,
           max = start > end ? start : end;
-      if(obj < min) {
+      if (obj < min) {
         clamped = min;
-      } else if(obj > max) {
+      } else if (obj > max) {
         clamped = max;
       } else {
         clamped = obj;
@@ -5542,8 +5542,8 @@
    };
 
    var DateRangeConstructor = function(start, end) {
-     if(dateConstructorIsExtended()) {
-       if(arguments.length === 1 && isString(start)) {
+     if (dateConstructorIsExtended()) {
+       if (arguments.length === 1 && isString(start)) {
          return createDateRangeFromString(start);
        }
        start = getSugarExtendedDate(start);
@@ -5657,15 +5657,15 @@
 
   function setDelay(fn, ms, after, scope, args) {
     // Delay of infinity is never called of course...
-    if(ms === Infinity) return;
-    if(!fn.timers) fn.timers = [];
-    if(!isNumber(ms)) ms = 1;
+    if (ms === Infinity) return;
+    if (!fn.timers) fn.timers = [];
+    if (!isNumber(ms)) ms = 1;
     // This is a workaround for <= IE8, which apparently has the
     // ability to call timeouts in the queue on the same tick (ms?)
     // even if functionally they have already been cleared.
     fn._canceled = false;
     fn.timers.push(setTimeout(function() {
-      if(!fn._canceled) {
+      if (!fn._canceled) {
         after.apply(scope, args || []);
       }
     }, ms));
@@ -5673,7 +5673,7 @@
 
   function cancelFunction(fn) {
     var timers = fn.timers, timer;
-    if(isArray(timers)) {
+    if (isArray(timers)) {
       while(timer = timers.shift()) {
         clearTimeout(timer);
       }
@@ -5690,7 +5690,7 @@
     perExecution = round(rounded / ms) || 1;
     execute = function() {
       var queueLength = queue.length, maxPerRound;
-      if(queueLength == 0) return;
+      if (queueLength == 0) return;
       // Allow fractions of a millisecond by calling
       // multiple times per actual timeout execution
       maxPerRound = max(queueLength - perExecution, 0);
@@ -5707,12 +5707,12 @@
     function lazy() {
       // If the execution has locked and it's immediate, then
       // allow 1 less in the queue as 1 call has already taken place.
-      if(queue.length < limit - (locked && immediate ? 1 : 0)) {
+      if (queue.length < limit - (locked && immediate ? 1 : 0)) {
         queue.push([this, arguments]);
       }
-      if(!locked) {
+      if (!locked) {
         locked = true;
-        if(immediate) {
+        if (immediate) {
           execute();
         } else {
           setDelay(lazy, rounded, execute);
@@ -5877,9 +5877,9 @@
      ***/
     'after': function(num) {
       var fn = this, counter = 0, storedArguments = [];
-      if(!isNumber(num)) {
+      if (!isNumber(num)) {
         num = 1;
-      } else if(num === 0) {
+      } else if (num === 0) {
         fn.call();
         return fn;
       }
@@ -5887,7 +5887,7 @@
         var ret;
         storedArguments.push(multiArgs(arguments));
         counter++;
-        if(counter == num) {
+        if (counter == num) {
           ret = fn.call(this, storedArguments);
           counter = 0;
           storedArguments = [];
@@ -5948,7 +5948,7 @@
       return function() {
         var args = multiArgs(arguments);
         curried.forEach(function(arg, index) {
-          if(arg != null || index >= args.length) args.splice(index, 0, arg);
+          if (arg != null || index >= args.length) args.splice(index, 0, arg);
         });
         return fn.apply(this, args);
       }
@@ -5983,12 +5983,12 @@
         numeralPlace = fixed.search(/[1-9]/),
         significant  = decimalPlace - numeralPlace,
         unit, i, divisor;
-    if(significant > 0) {
+    if (significant > 0) {
       significant -= 1;
     }
     i = max(min(floor(significant / 3), limit === false ? str.length : limit), -mid);
     unit = str.charAt(i + mid - 1);
-    if(significant < -9) {
+    if (significant < -9) {
       i = -3;
       roundTo = abs(significant) - 9;
       unit = str.slice(0,1);
@@ -6006,12 +6006,12 @@
     integer  = split[0];
     fraction = split[1];
     for(i = integer.length; i > 0; i -= 3) {
-      if(i < integer.length) {
+      if (i < integer.length) {
         result = thousands + result;
       }
       result = integer.slice(max(0, i - 3), i) + result;
     }
-    if(fraction) {
+    if (fraction) {
       result += decimal + repeatString('0', (place || 0) - fraction.length) + fraction;
     }
     return (num < 0 ? '-' : '') + result;
@@ -6042,7 +6042,7 @@
      ***/
     'random': function(n1, n2) {
       var minNum, maxNum;
-      if(arguments.length == 1) n2 = n1, n1 = 0;
+      if (arguments.length == 1) n2 = n1, n1 = 0;
       minNum = min(n1 || 0, isUndefined(n2) ? 1 : n2);
       maxNum = max(n1 || 0, isUndefined(n2) ? 1 : n2) + 1;
       return floor((math.random() * (maxNum - minNum)) + minNum);
@@ -6241,7 +6241,7 @@
      *
      ***/
     'times': function(fn) {
-      if(fn) {
+      if (fn) {
         for(var i = 0; i < this; i++) {
           fn.call(this, i);
         }
@@ -6413,23 +6413,23 @@
 
   function setParamsObject(obj, param, value, castBoolean) {
     var reg = /^(.+?)(\[.*\])$/, paramIsArray, match, allKeys, key;
-    if(match = param.match(reg)) {
+    if (match = param.match(reg)) {
       key = match[1];
       allKeys = match[2].replace(/^\[|\]$/g, '').split('][');
       allKeys.forEach(function(k) {
         paramIsArray = !k || k.match(/^\d+$/);
-        if(!key && isArray(obj)) key = obj.length;
-        if(!hasOwnProperty(obj, key)) {
+        if (!key && isArray(obj)) key = obj.length;
+        if (!hasOwnProperty(obj, key)) {
           obj[key] = paramIsArray ? [] : {};
         }
         obj = obj[key];
         key = k;
       });
-      if(!key && paramIsArray) key = obj.length.toString();
+      if (!key && paramIsArray) key = obj.length.toString();
       setParamsObject(obj, key, value, castBoolean);
-    } else if(castBoolean && value === 'true') {
+    } else if (castBoolean && value === 'true') {
       obj[param] = true;
-    } else if(castBoolean && value === 'false') {
+    } else if (castBoolean && value === 'false') {
       obj[param] = false;
     } else {
       obj[param] = value;
@@ -6439,17 +6439,17 @@
   function objectToQueryString(base, obj) {
     var tmp;
     // If a custom toString exists bail here and use that instead
-    if(isArray(obj) || (isObjectType(obj) && obj.toString === internalToString)) {
+    if (isArray(obj) || (isObjectType(obj) && obj.toString === internalToString)) {
       tmp = [];
       iterateOverObject(obj, function(key, value) {
-        if(base) {
+        if (base) {
           key = base + '[' + key + ']';
         }
         tmp.push(objectToQueryString(key, value));
       });
       return tmp.join('&');
     } else {
-      if(!base) return '';
+      if (!base) return '';
       return sanitizeURIComponent(base) + '=' + (isDate(obj) ? obj.getTime() : sanitizeURIComponent(obj));
     }
   }
@@ -6461,9 +6461,9 @@
   }
 
   function matchInObject(match, key, value) {
-    if(isRegExp(match)) {
+    if (isRegExp(match)) {
       return match.test(key);
-    } else if(isObjectType(match)) {
+    } else if (isObjectType(match)) {
       return match[key] === value;
     } else {
       return key === string(match);
@@ -6475,11 +6475,11 @@
     iterateOverObject(obj, function(key, value) {
       match = false;
       flattenedArgs(args, function(arg) {
-        if(matchInObject(arg, key, value)) {
+        if (matchInObject(arg, key, value)) {
           match = true;
         }
       }, 1);
-      if(match === select) {
+      if (match === select) {
         result[key] = value;
       }
     });
@@ -6508,7 +6508,7 @@
   function mergeObject(target, source, deep, resolve) {
 
     // Will not merge a primitive type.
-    if(!isObjectType(source)) return target;
+    if (!isObjectType(source)) return target;
 
     iterateOverProperties(source, function(prop) {
 
@@ -6521,12 +6521,12 @@
       var goingDeep        = deep && sourceIsObject;
       var conflict         = isDefined(targetDescriptor) && targetDescriptor.value != null;
 
-      if(conflict) {
-        if(!goingDeep && resolve === false) {
+      if (conflict) {
+        if (!goingDeep && resolve === false) {
           return;
-        } else if(isFunction(resolve)) {
+        } else if (isFunction(resolve)) {
           resolved = resolve.call(source, prop, targetVal, sourceVal);
-          if(isDefined(resolved)) {
+          if (isDefined(resolved)) {
             // If the source returns anything except undefined, then the conflict has
             // been resovled, so don't continue traversing into the object.
             sourceDescriptor.value = resolved;
@@ -6535,7 +6535,7 @@
         }
       }
 
-      if(goingDeep) {
+      if (goingDeep) {
         sourceDescriptor.value = handleDeepMerge(targetVal, sourceVal, deep, resolve);
       }
 
@@ -6545,12 +6545,12 @@
   }
 
   function handleDeepMerge(targetVal, sourceVal, deep, resolve) {
-    if(isDate(sourceVal)) {
+    if (isDate(sourceVal)) {
       return new date(sourceVal.getTime());
-    } else if(isRegExp(sourceVal)) {
+    } else if (isRegExp(sourceVal)) {
       return new regexp(sourceVal.source, getRegExpFlags(sourceVal));
     } else {
-      if(!isObjectType(targetVal)) targetVal = isArray(sourceVal) ? [] : {};
+      if (!isObjectType(targetVal)) targetVal = isArray(sourceVal) ? [] : {};
       return mergeObject(targetVal, sourceVal, deep, resolve);
     }
   }
@@ -6564,7 +6564,7 @@
   function unmapAllObject() {
     var objProto = object.prototype, methods = getObjectInstanceMethods();
     methods.forEach(function(name) {
-      if(objProto[name]) {
+      if (objProto[name]) {
         delete objProto[name];
       }
     });
@@ -6626,9 +6626,9 @@
        ***/
     'watch': function(obj, prop, fn) {
       var value, descriptor;
-      if(!propertyDescriptorSupport) return false;
+      if (!propertyDescriptorSupport) return false;
       descriptor = getOwnPropertyDescriptor(obj, prop);
-      if(descriptor && (!descriptor.configurable || descriptor.get || descriptor.set)) {
+      if (descriptor && (!descriptor.configurable || descriptor.get || descriptor.set)) {
         return false;
       }
       value = obj[prop];
@@ -6653,9 +6653,9 @@
        ***/
     'unwatch': function(obj, prop) {
       var descriptor;
-      if(!propertyDescriptorSupport) return false;
+      if (!propertyDescriptorSupport) return false;
       descriptor = getOwnPropertyDescriptor(obj, prop);
-      if(!descriptor.configurable) {
+      if (!descriptor.configurable) {
         return;
       }
       defineProperty(obj, prop, {
@@ -6775,7 +6775,7 @@
       var values = [];
       iterateOverObject(obj, function(k,v) {
         values.push(v);
-        if(fn) fn.call(obj,v);
+        if (fn) fn.call(obj,v);
       });
       return values;
     },
@@ -6794,20 +6794,20 @@
      ***/
     'clone': function(obj, deep) {
       var target, klass;
-      if(!isObjectType(obj)) {
+      if (!isObjectType(obj)) {
         return obj;
       }
       klass = className(obj);
-      if(isDate(obj, klass) && sugarDate.clone) {
+      if (isDate(obj, klass) && sugarDate.clone) {
         // Preserve internal UTC flag when possible.
         return sugarDate.clone(obj);
-      } else if(isDate(obj, klass) || isRegExp(obj, klass)) {
+      } else if (isDate(obj, klass) || isRegExp(obj, klass)) {
         return new obj.constructor(obj);
-      } else if(obj instanceof Hash) {
+      } else if (obj instanceof Hash) {
         target = new Hash;
-      } else if(isArray(obj, klass)) {
+      } else if (isArray(obj, klass)) {
         target = [];
-      } else if(isPlainObject(obj, klass)) {
+      } else if (isPlainObject(obj, klass)) {
         target = {};
       } else {
         throw new TypeError('Clone must be a basic data type.');
@@ -6832,7 +6832,7 @@
       str = str && str.toString ? str.toString() : '';
       str.replace(/^.*?\?/, '').split('&').forEach(function(p) {
         var split = p.split('=');
-        if(split.length !== 2) return;
+        if (split.length !== 2) return;
         setParamsObject(result, split[0], decodeURIComponent(split[1]), castBoolean);
       });
       return result;
@@ -6870,9 +6870,9 @@
      ***/
     'tap': function(obj, arg) {
       var fn = arg;
-      if(!isFunction(arg)) {
+      if (!isFunction(arg)) {
         fn = function() {
-          if(arg) obj[arg]();
+          if (arg) obj[arg]();
         }
       }
       fn.call(obj, obj);
@@ -6947,7 +6947,7 @@
     'map': function(obj, map) {
       var result = {}, key, value;
       for(key in obj) {
-        if(!hasOwnProperty(obj, key)) continue;
+        if (!hasOwnProperty(obj, key)) continue;
         value = obj[key];
         result[key] = transformArgument(value, map, obj, [key, value, obj]);
       }
@@ -6991,7 +6991,7 @@
   extend(Sugar, {
 
     'extendObject': function(on) {
-      if(on !== false) {
+      if (on !== false) {
         mapAllObject();
       } else {
         unmapAllObject();
@@ -7118,14 +7118,14 @@
   function getAcronym(word) {
     var inflector = getInflector();
     var word = inflector && inflector.acronyms[word];
-    if(isString(word)) {
+    if (isString(word)) {
       return word;
     }
   }
 
   function checkRepeatRange(num) {
     num = +num;
-    if(num < 0 || num === Infinity) {
+    if (num < 0 || num === Infinity) {
       throw new RangeError('Invalid number');
     }
     return num;
@@ -7137,7 +7137,7 @@
 
   function truncateString(str, length, from, ellipsis, split) {
     var str1, str2, len1, len2;
-    if(str.length <= length) {
+    if (str.length <= length) {
       return str.toString();
     }
     ellipsis = isUndefined(ellipsis) ? '...' : ellipsis;
@@ -7159,24 +7159,24 @@
 
   function stringEach(str, search, fn) {
     var i, len, result, chunks;
-    if(isFunction(search)) {
+    if (isFunction(search)) {
       fn = search;
       search = /[\s\S]/g;
-    } else if(!search) {
+    } else if (!search) {
       search = /[\s\S]/g
-    } else if(isString(search)) {
+    } else if (isString(search)) {
       search = regexp(escapeRegExp(search), 'gi');
-    } else if(isRegExp(search)) {
+    } else if (isRegExp(search)) {
       search = regexp(search.source, getRegExpFlags(search, 'g'));
     }
     chunks = str.match(search) || [];
-    if(fn) {
+    if (fn) {
       for(i = 0, len = chunks.length; i < len; i++) {
         result = fn.call(str, chunks[i], i, chunks);
-        if(result === false) {
+        if (result === false) {
           chunks.length = i + 1;
           break;
-        } else if(isDefined(result)) {
+        } else if (isDefined(result)) {
           chunks[i] = result;
         }
       }
@@ -7193,7 +7193,7 @@
     for(i = 0, len = str.length; i < len; i++) {
       var code = str.charCodeAt(i);
       codes.push(code);
-      if(fn) fn.call(str, code, i);
+      if (fn) fn.call(str, code, i);
     }
     return codes;
   }
@@ -7238,12 +7238,12 @@
   }
 
   function stringFirst(str, num) {
-    if(isUndefined(num)) num = 1;
+    if (isUndefined(num)) num = 1;
     return str.substr(0, num);
   }
 
   function stringLast(str, num) {
-    if(isUndefined(num)) num = 1;
+    if (isUndefined(num)) num = 1;
     var start = str.length - num < 0 ? 0 : str.length - num;
     return str.substr(start);
   }
@@ -7253,14 +7253,14 @@
   }
 
   function stringTo(str, to) {
-    if(isUndefined(to)) to = str.length;
+    if (isUndefined(to)) to = str.length;
     return str.slice(0, numberOrIndex(str, to));
   }
 
   function stringAssign(str, args) {
     var obj = {};
     flattenedArgs(args, function(a, i) {
-      if(isObjectType(a)) {
+      if (isObjectType(a)) {
         simpleMerge(obj, a);
       } else {
         obj[i + 1] = a;
@@ -7276,7 +7276,7 @@
   }
 
   function truncateOnWord(str, limit, fromLeft) {
-    if(fromLeft) {
+    if (fromLeft) {
       return reverseString(truncateOnWord(reverseString(str), limit));
     }
     var reg = regexp('(?=[' + getTrimmableCharacters() + '])');
@@ -7300,7 +7300,7 @@
 
   function replaceTags(str, args, strip) {
     var lastIndex = args.length - 1, lastArg = args[lastIndex], replacementFn, tags, reg;
-    if(isFunction(lastArg)) {
+    if (isFunction(lastArg)) {
       replacementFn = lastArg;
       args.length = lastIndex;
     }
@@ -7322,14 +7322,14 @@
 
     function processTag(index, tagName, attributes, tagLength) {
       var content = str.slice(currentIndex, index), replacement;
-      if(replacementFn) {
+      if (replacementFn) {
         replacement = replacementFn.call(fullString, tagName, content, attributes, fullString);
-        if(isDefined(replacement)) {
+        if (isDefined(replacement)) {
           content = replacement;
-        } else if(!strip) {
+        } else if (!strip) {
           content = '';
         }
-      } else if(!strip) {
+      } else if (!strip) {
         content = '';
       }
       result += runTagReplacements(content, reg, strip, replacementFn, fullString);
@@ -7349,32 +7349,32 @@
       var isOpeningTag    = !isClosingTag && !isSelfClosing && !tagIsVoid(tagName);
       var isSameAsCurrent = tagName === currentlyOpenTagName;
 
-      if(!currentlyOpenTagName) {
+      if (!currentlyOpenTagName) {
         result += str.slice(currentIndex, match.index);
         currentIndex = match.index;
       }
 
-      if(isOpeningTag) {
-        if(!currentlyOpenTagName) {
+      if (isOpeningTag) {
+        if (!currentlyOpenTagName) {
           currentlyOpenTagName = tagName;
           currentlyOpenTagAttributes = attributes;
           currentlyOpenTagCount++;
           currentIndex += tagLength;
-        } else if(isSameAsCurrent) {
+        } else if (isSameAsCurrent) {
           currentlyOpenTagCount++;
         }
-      } else if(isClosingTag && isSameAsCurrent) {
+      } else if (isClosingTag && isSameAsCurrent) {
         currentlyOpenTagCount--;
-        if(currentlyOpenTagCount === 0) {
+        if (currentlyOpenTagCount === 0) {
           processTag(match.index, currentlyOpenTagName, currentlyOpenTagAttributes, tagLength);
           currentlyOpenTagName       = null;
           currentlyOpenTagAttributes = null;
         }
-      } else if(!currentlyOpenTagName) {
+      } else if (!currentlyOpenTagName) {
         processTag(match.index, tagName, attributes, tagLength);
       }
     }
-    if(currentlyOpenTagName) {
+    if (currentlyOpenTagName) {
       processTag(str.length, currentlyOpenTagName, currentlyOpenTagAttributes);
     }
     result += str.slice(currentIndex);
@@ -7382,9 +7382,9 @@
   }
 
   function numberOrIndex(str, n, from) {
-    if(isString(n)) {
+    if (isString(n)) {
       n = str.indexOf(n);
-      if(n === -1) {
+      if (n === -1) {
         n = from ? str.length : 0;
       }
     }
@@ -7406,7 +7406,7 @@
       }
     }
 
-    if(typeof Buffer !== 'undefined') {
+    if (typeof Buffer !== 'undefined') {
       encodeBase64 = function(str) {
         return new Buffer(str).toString('base64');
       }
@@ -7415,7 +7415,7 @@
       }
       return;
     }
-    if(typeof btoa !== 'undefined') {
+    if (typeof btoa !== 'undefined') {
       encodeAscii = catchEncodingError(btoa);
       decodeAscii = catchEncodingError(atob);
     } else {
@@ -7449,7 +7449,7 @@
         var chr1, chr2, chr3;
         var enc1, enc2, enc3, enc4;
         var i = 0;
-        if(input.match(base64reg)) {
+        if (input.match(base64reg)) {
           return '';
         }
         input = input.replace(/[^A-Za-z0-9\+\/\=]/g, '');
@@ -7483,14 +7483,14 @@
   }
 
   function getCoercedStringSubject(obj) {
-    if(obj == null) {
+    if (obj == null) {
       throw new TypeError();
     }
     return string(obj);
   }
 
   function getCoercedSearchString(obj, errorOnRegex) {
-    if(errorOnRegex && isRegExp(obj)) {
+    if (errorOnRegex && isRegExp(obj)) {
       throw new TypeError();
     }
     return string(obj);
@@ -7528,10 +7528,10 @@
         len = str.length;
         start = min(max(pos, 0), len);
         searchLength = searchString.length;
-        if(searchLength + start > len) {
+        if (searchLength + start > len) {
           return false;
         }
-        if(str.substr(start, searchLength) === searchString) {
+        if (str.substr(start, searchLength) === searchString) {
           return true;
         }
         return false;
@@ -7555,16 +7555,16 @@
         searchString = getCoercedSearchString(searchString, true);
         len = str.length;
         pos = len;
-        if(isDefined(endPosition)) {
+        if (isDefined(endPosition)) {
           pos = number(endPosition) || 0;
         }
         end = min(max(pos, 0), len);
         searchLength = searchString.length;
         start = end - searchLength;
-        if(start < 0) {
+        if (start < 0) {
           return false;
         }
-        if(str.substr(start, searchLength) === searchString) {
+        if (str.substr(start, searchLength) === searchString) {
           return true;
         }
         return false;
@@ -7586,8 +7586,8 @@
      *   'broken'.contains('bro', 3) -> false
      *
      ***/
-    'contains': function(searchString) {
-      var str = getCoercedStringSubject(this), position = arguments[1];
+    'contains': function(searchString, position) {
+      var str = getCoercedStringSubject(this);
       return str.indexOf(searchString, position) > -1;
     },
 
@@ -7743,7 +7743,7 @@
      ***/
     'map': function(map, scope) {
       var str = this.toString();
-      if(isFunction(map)) {
+      if (isFunction(map)) {
         var fn = map;
         map = function(letter, i, arr) {
           return fn.call(scope, letter, i, str);
@@ -7847,7 +7847,7 @@
     'paragraphs': function(fn) {
       var paragraphs = this.trim().split(/[\r\n]{2,}/);
       paragraphs = paragraphs.map(function(p) {
-        if(fn) var s = fn.call(p);
+        if (fn) var s = fn.call(p);
         return s ? s : p;
       });
       return paragraphs;
@@ -8021,7 +8021,7 @@
     'camelize': function(first) {
       return underscore(this).replace(/(^|_)([^_]+)/g, function(match, pre, word, index) {
         var acronym = getAcronym(word), cap = first !== false || index > 0;
-        if(acronym) return cap ? acronym : acronym.toLowerCase();
+        if (acronym) return cap ? acronym : acronym.toLowerCase();
         return cap ? capitalize(word) : word;
       });
     },
