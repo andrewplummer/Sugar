@@ -1,5 +1,5 @@
 language: node_js
-install: npm install
+install: npm install sinon
 node_js:
   - "0.12"
   - "0.11"
