@@ -166,7 +166,7 @@
     }
   }
 
-  function wrapInstanceAsClass(fn) {
+  function wrapInstanceMethod(fn) {
     return function(obj) {
       var args = arguments, newArgs = [], i;
       for(i = 1;i < args.length;i++) {
@@ -179,7 +179,7 @@
   function defineMethodOnNamespace(klass, name, instance, original, prop, existed, polyfill) {
     var proxy = getProxy(klass), result;
     if (!proxy) return;
-    result = instance ? wrapInstanceAsClass(prop) : prop;
+    result = instance ? wrapInstanceMethod(prop) : prop;
     setProperty(proxy, name, result, true);
     if (typeof prop === 'function') {
       setProperty(result, 'fn', prop);
