@@ -96,7 +96,7 @@
       if (typeof polyfill === 'function' && existing) {
         prop = wrapExisting(existing, prop, polyfill);
       }
-      defineOnGlobal(klass, name, instance, original, prop, existed, polyfill);
+      defineMethodOnNamespace(klass, name, instance, original, prop, existed, polyfill);
       if (canDefineOnNative(klass, polyfill, existing, override)) {
         setProperty(extendee, name, prop);
       }
@@ -176,7 +176,7 @@
     };
   }
 
-  function defineOnGlobal(klass, name, instance, original, prop, existed, polyfill) {
+  function defineMethodOnNamespace(klass, name, instance, original, prop, existed, polyfill) {
     var proxy = getProxy(klass), result;
     if (!proxy) return;
     result = instance ? wrapInstanceAsClass(prop) : prop;
