@@ -267,59 +267,5 @@ package('Object | Equality', function() {
     equal(callObjectEqual({}, isEqualObj), false, 'Commutative equality is implemented for objects with different `isEqual` methods');
   });
 
-  // Custom `isEqual` methods - comparing different types
-  /* CHANGED: Leaving the alone off for now
-  LocalizedString = (function() {
-    function LocalizedString(id) { this.id = id; this.string = (this.id===10)? 'Bonjour': ''; }
-    LocalizedString.prototype.isEqual = function(that) {
-      if (_.isString(that)) return this.string == that;
-      else if (that instanceof LocalizedString) return this.id == that.id;
-      return false;
-    };
-    return LocalizedString;
-  })();
-  var localized_string1 = new LocalizedString(10), localized_string2 = new LocalizedString(10), localized_string3 = new LocalizedString(11);
-  equal(callObjectEqual(localized_string1, localized_string2), true, 'comparing same typed instances with same ids');
-  equal(callObjectEqual(localized_string1, localized_string3), false, 'comparing same typed instances with different ids');
-  equal(callObjectEqual(localized_string1, 'Bonjour'), true, 'comparing different typed instances with same values');
-  equal(callObjectEqual('Bonjour', localized_string1), true, 'comparing different typed instances with same values');
-  equal(callObjectEqual('Bonjour', localized_string3), false, 'comparing two localized strings with different ids');
-  equal(callObjectEqual(localized_string1, 'Au revoir'), false, 'comparing different typed instances with different values');
-  equal(callObjectEqual('Au revoir', localized_string1), false, 'comparing different typed instances with different values');
-
-  // Custom `isEqual` methods - comparing with serialized data
-  Date.prototype.toJSON = function() {
-    return {
-      _type:'Date',
-      year:this.getUTCFullYear(),
-      month:this.getUTCMonth(),
-      day:this.getUTCDate(),
-      hours:this.getUTCHours(),
-      minutes:this.getUTCMinutes(),
-      seconds:this.getUTCSeconds()
-    };
-  };
-  Date.prototype.isEqual = function(that) {
-    var this_date_components = this.toJSON();
-    var that_date_components = (that instanceof Date) ? that.toJSON() : that;
-    delete this_date_components['_type']; delete that_date_components['_type']
-    return callObjectEqual(this_date_components, that_date_components);
-  };
-
-  var date = new Date();
-  var date_json = {
-    _type:'Date',
-    year:date.getUTCFullYear(),
-    month:date.getUTCMonth(),
-    day:date.getUTCDate(),
-    hours:date.getUTCHours(),
-    minutes:date.getUTCMinutes(),
-    seconds:date.getUTCSeconds()
-  };
-
-  equal(callObjectEqual(date_json, date), 'serialized date matches date');
-  equal(callObjectEqual(date, date_json), 'date matches serialized date');
-  */
-
 });
 
