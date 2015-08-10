@@ -6612,7 +6612,7 @@
       /***
        * @method watch(<obj>, <prop>, <fn>)
        * @returns Boolean
-       * @short Watches a property of <obj> and runs <fn> when it is updated.
+       * @short Watches property <prop> of <obj> and runs <fn> when it changes.
        * @extra <fn> is passed three arguments: the property <prop>, the old value, and the new value. The return value of [fn] will be set as the new value. Properties that are non-configurable or already have getters or setters cannot be watched. Return value is whether or not the watch operation succeeded. This method is useful for things such as validating or cleaning the value when it is set. Warning: this method WILL NOT work in browsers that don't support %Object.defineProperty% (IE 8 and below). This is the only method in Sugar that is not fully compatible with all browsers. %watch% is available as an instance method on %extended objects%.
        * @example
        *
@@ -6655,13 +6655,16 @@
       var descriptor;
       if (!propertyDescriptorSupport) return false;
       descriptor = getOwnPropertyDescriptor(obj, prop);
-      if (!descriptor.configurable) {
-        return;
+      if (!descriptor || !descriptor.configurable || !descriptor.get || !descriptor.set) {
+        return false;
       }
       defineProperty(obj, prop, {
+        writable: true,
         configurable: true,
-        value: 3
+        enumerable: descriptor.enumerable,
+        value: obj[prop]
       });
+      return true;
     }
   }, false, true, true);
 
