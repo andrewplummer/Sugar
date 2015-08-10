@@ -1059,21 +1059,53 @@ package('Object', function () {
 
     if(definePropertySupport) {
 
-      var count = 0, obj = { foo: 3 }, fn;
+      // Successful watch of undefined property
 
-      fn = function() {
+      var count = 0, obj = {}, fn;
+
+      fn = function(prop, before, after) {
         count++;
+        return after;
       };
 
-      run(Object, 'watch', [obj, 'foo', fn]);
+      var result = run(Object, 'watch', [obj, 'foo', fn]);
+      equal(result, true, 'watch called on non-existent property should succeed');
+
       obj.foo = 'a';
-      run(Object, 'unwatch', [obj, 'foo']);
 
-      try {
-        obj.foo = 'a';
-      } catch(e) {};
+      equal(count, 1, 'watch function should have been called');
 
-      equal(count, 1, 'watch function should have been removed');
+      var result = run(Object, 'unwatch', [obj, 'foo']);
+      equal(result, true, 'property now exists so unwatch should succeed');
+      equal(obj.foo, 'a', 'property should now be exposed');
+
+      obj.foo = 'b';
+
+      equal(count, 1, 'watch function should only have run once');
+      equal(obj.foo, 'b', 'property should have been overridden');
+
+      // Successful watch of existing property
+
+      var count = 0, obj = { foo: 3 }, fn;
+
+      fn = function(prop, before, after) {
+        count++;
+        return after;
+      };
+
+      var result = run(Object, 'watch', [obj, 'foo', fn]);
+      equal(result, true, 'successful watch function should return true');
+
+      obj.foo = 'a';
+
+      var result = run(Object, 'unwatch', [obj, 'foo']);
+      equal(result, true, 'successful unwatch function should return true');
+      equal(obj.foo, 'a', 'property should now be "a"');
+
+      obj.foo = 'b';
+
+      equal(obj.foo, 'b', 'property should now be "b"');
+      equal(count, 1, 'watch function should only have run once');
 
 
       // Non-configurable property
@@ -1089,35 +1121,35 @@ package('Object', function () {
         count++;
       };
 
-      run(Object, 'watch', [obj, 'foo', fn]);
+      var result = run(Object, 'watch', [obj, 'foo', fn]);
+      equal(result, false, 'unsuccessful watch function should return false');
       try {
         obj.foo = 'a';
       } catch (e) {}
-      run(Object, 'unwatch', [obj, 'foo']);
+
+      var result = run(Object, 'unwatch', [obj, 'foo']);
+      equal(result, false, 'unsuccessful unwatch function should return false');
 
       try {
         obj.foo = 'a';
-      } catch(e) {};
+      } catch(e) {}
 
+      equal(obj.foo, 3, 'property should still be 3');
       equal(count, 0, 'watch function should not have run on non-configurable property');
 
-      // Non-defined property
 
-      var count = 0, obj = {}, fn;
+      // Unwatch on undefined property
 
-      fn = function() {
-        count++;
-      };
+      var obj = {};
+      var result = run(Object, 'unwatch', [obj, 'foo']);
+      equal(result, false, 'unwatch should be unsuccessful when used on undefined property');
 
-      run(Object, 'watch', [obj, 'foo', fn]);
-      obj.foo = 'a';
-      run(Object, 'unwatch', [obj, 'foo']);
+      // Unwatch on plain property
 
-      try {
-        obj.foo = 'a';
-      } catch(e) {};
-
-      equal(count, 1, 'watch function should have been removed');
+      var obj = { foo: 3 };
+      var result = run(Object, 'unwatch', [obj, 'foo']);
+      equal(result, false, 'unwatch should be unsuccessful when used on undefined property');
+      equal(obj.foo, 3, 'value should still be 3');
 
     } else {
 
