@@ -15,20 +15,22 @@ package('ES5', function () {
   method('isArray', function() {
 
     // all following calls return true
-    test(Array, [[]], true, 'empty array');
-    test(Array, [[1]], true, 'simple array');
-    test(Array, [new Array()], true, 'new array with constructor');
-    test(Array, [Array.prototype], true, 'Array.prototype'); // Little known fact: Array.prototype is itself an array.
+    equal(Array.isArray([]), true, 'empty array');
+    equal(Array.isArray([1]), true, 'simple array');
+    equal(Array.isArray(new Array()), true, 'new array with constructor');
+
+    // Little known fact: Array.prototype is itself an array.
+    equal(Array.isArray(Array.prototype), true, 'Array.prototype');
 
     // all following calls return false
-    test(Array, [], false, 'no param');
-    test(Array, [{}], false, 'object');
-    test(Array, [null], false, 'null');
-    test(Array, [undefined], false, 'undefined');
-    test(Array, [17], false, 'number');
-    test(Array, ["Array"], false, 'string');
-    test(Array, [true], false, 'true');
-    test(Array, [false], false, 'false');
+    equal(Array.isArray(), false, 'no param');
+    equal(Array.isArray({}), false, 'object');
+    equal(Array.isArray(null), false, 'null');
+    equal(Array.isArray(undefined), false, 'undefined');
+    equal(Array.isArray(17), false, 'number');
+    equal(Array.isArray("Array"), false, 'string');
+    equal(Array.isArray(true), false, 'true');
+    equal(Array.isArray(false), false, 'false');
   });
 
 
