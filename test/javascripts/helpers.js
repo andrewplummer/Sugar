@@ -17,10 +17,10 @@ testClone = function (obj) {
   return result;
 }
 
-testClassAndInstance = function (subject, args, expected, message) {
-  var ext = run(Object, 'extended', [subject]);
-  test(ext, args, expected, message);
-  test(Object, [ext].concat(args), expected, message);
+testStaticAndInstance = function (subject, args, expected, message) {
+  var obj = run(Object, 'extended', [subject]);
+  equal(obj[getCurrentTest().name].apply(obj, args), expected, message);
+  test(Object, [obj].concat(args), expected, message);
 }
 
 propertyIsEnumerable = function(obj, prop) {
