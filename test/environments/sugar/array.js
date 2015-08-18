@@ -140,6 +140,16 @@ package('Array', function () {
     test([{name:'john',age:25},{name:'fred',age:85}], ['age'], [], 'simple string mistakenly passed for complex objects');
     test([{name:'john',age:25},{name:'fred',age:85}], [{name:'john',age:25}], [{name:'john',age:25}], 'filtering john');
     test([{name:'john',age:25},{name:'fred',age:85}], [{name:'fred',age:85}], [{name:'fred',age:85}], 'filtering fred');
+
+    raisesError(function() { run([1,2,3], 'filter'); }, 'no argument raises a type error');
+
+    test([undefined, undefined], [undefined], [undefined, undefined], 'undefined should match all undefined');
+    test([undefined, undefined], [null], [], 'null should not match all undefined');
+    test([undefined, null], [undefined], [undefined], 'undefined should match one undefined');
+    test([undefined, null], [null], [null], 'null should match one null');
+    test([null, null], [null], [null, null], 'null should match all null');
+    test([null, null], [undefined], [], 'undefined should not match all null');
+
   });
 
 
@@ -317,10 +327,10 @@ package('Array', function () {
 
     test([1,2,3], ['toString'], ['1','2','3'], 'calls a function on a shortcut string');
 
-    raisesError(function(){ run([1,2,3], 'map') }, 'raises an error if no argument');
+    raisesError(function(){ run([1,2,3], 'map') }, 'no argument raises a type error');
+    raisesError(function(){ run([1,2,3], 'map', [undefined]) }, 'undefined raises a type error');
+    raisesError(function(){ run([1,2,3], 'map', [null]) }, 'null raises a type error');
 
-    test([1,2,3], [undefined], [1,2,3], 'undefined');
-    test([1,2,3], [null], [1,2,3], 'null');
     test([1,2,3], [4], [undefined, undefined, undefined], 'number');
 
 
@@ -474,6 +484,8 @@ package('Array', function () {
     });
     equal(count, 1, 'should also be mapped to global');
 
+    raisesError(function() { run([1,2,3], 'find'); }, 'no argument raises a type error');
+
   });
 
 
@@ -556,6 +568,9 @@ package('Array', function () {
       equal(this, undefinedContextObj, 'this argument should be undefined context');
     }
     run([1], 'findAll', [fn]);
+
+    raisesError(function() { run([1,2,3], 'findIndex'); }, 'no argument raises a type error');
+
   });
 
   method('unique', function() {
@@ -1363,7 +1378,14 @@ package('Array', function () {
     };
     run([1], 'any', [fn, 'wasabi']);
 
-    raisesError(function(){ [1,2,3].any() }, 'no argument raises a TypeError');
+    raisesError(function() { run([1,2,3], 'any') }, 'no argument raises a TypeError');
+
+    test([undefined, undefined], [undefined], true, 'undefined should match all undefined');
+    test([undefined, undefined], [null], false, 'null should not match all undefined');
+    test([undefined, null], [undefined], true, 'undefined should match one undefined');
+    test([undefined, null], [null], true, 'null should match one null');
+    test([null, null], [null], true, 'null should match all null');
+    test([null, null], [undefined], false, 'undefined should not match all null');
   });
 
   method('none', function() {
@@ -1385,6 +1407,13 @@ package('Array', function () {
     test([{a:1},{a:2},{a:1}], [function(e) { return e['b'] == 1; }], true, 'objects | key "b" is 1');
 
     raisesError(function() { run([1,2,3], 'none'); }, 'no argument raises a TypeError');
+
+    test([undefined, undefined], [undefined], false, 'undefined should match all undefined');
+    test([undefined, undefined], [null], true, 'null should not match all undefined');
+    test([undefined, null], [undefined], false, 'undefined should match one undefined');
+    test([undefined, null], [null], false, 'null should match one null');
+    test([null, null], [null], false, 'null should match all null');
+    test([null, null], [undefined], true, 'undefined should not match all null');
   });
 
   method('all', function() {
@@ -1416,6 +1445,13 @@ package('Array', function () {
     run([1], 'all', [fn, 'wasabi']);
 
     raisesError(function() { run([1,2,3], 'all'); }, 'no argument raises a type error');
+
+    test([undefined, undefined], [undefined], true, 'undefined should match all undefined');
+    test([undefined, undefined], [null], false, 'null should not match all undefined');
+    test([undefined, null], [undefined], false, 'undefined should match one undefined');
+    test([undefined, null], [null], false, 'null should match one null');
+    test([null, null], [null], true, 'null should match all null');
+    test([null, null], [undefined], false, 'undefined should not match all null');
   });
 
   method('flatten', function() {

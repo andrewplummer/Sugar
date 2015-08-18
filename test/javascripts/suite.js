@@ -86,7 +86,7 @@ if(typeof environment == 'undefined') environment = 'default'; // Override me!
   }
 
   raisesError = function (fn, message, errorType) {
-    var err, message = getFullMessage(message) + ' should raise an error';
+    var err;
     try {
       fn.call();
     } catch(e) {
@@ -95,7 +95,7 @@ if(typeof environment == 'undefined') environment = 'default'; // Override me!
     if(errorType) {
       equal(err instanceof errorType, true, message, 1);
     } else {
-      if (err.message.match(/cannot read property/i)) {
+      if (err && err.message.match(/cannot read property/i)) {
         console.warn('Possible missing method. Error:\n', err.stack);
       }
       equal(!!err, true, message, 1);
@@ -194,6 +194,10 @@ if(typeof environment == 'undefined') environment = 'default'; // Override me!
       }
       return Sugar[currentTest.package.name][method].apply(null, args);
     }
+  }
+
+  getCurrentTest = function() {
+    return currentTest;
   }
 
   function getTestsToRun() {
