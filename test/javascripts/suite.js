@@ -8,6 +8,8 @@ if(typeof environment == 'undefined') environment = 'default'; // Override me!
   var currentArgs;
   var currentPackage;
 
+  var testGlobals;
+
   // The global context
   var globalContext = typeof global !== 'undefined' ? global : this;
 
@@ -101,10 +103,10 @@ if(typeof environment == 'undefined') environment = 'default'; // Override me!
   }
 
   getProperty = function (subject, prop) {
-    if(Sugar.noConflict) {
-      return Sugar[currentTest.package.name][prop];
-    } else {
+    if(Sugar.enabled) {
       return subject[prop];
+    } else {
+      return Sugar[currentTest.package.name][prop];
     }
   }
 
@@ -168,12 +170,7 @@ if(typeof environment == 'undefined') environment = 'default'; // Override me!
   run = function (subject, method, args) {
     method = method || currentTest.name;
     args = args || currentArgs || [];
-    if(Sugar.noConflict) {
-      if(!subjectIsClass(subject)) {
-        args = [subject].concat(Array.prototype.slice.call(args));
-      }
-      return Sugar[currentTest.package.name][method].apply(null, args);
-    } else {
+    if(Sugar.enabled) {
       var globalObject = globalContext[currentTest.package.name], fn;
       if(subject && subject[method]) {
         // If the method exists on the subject, then it is the target
@@ -191,6 +188,11 @@ if(typeof environment == 'undefined') environment = 'default'; // Override me!
         fn = globalObject[method];
       }
       return fn.apply(subject, args);
+    } else {
+      if(!subjectIsClass(subject)) {
+        args = [subject].concat(Array.prototype.slice.call(args));
+      }
+      return Sugar[currentTest.package.name][method].apply(null, args);
     }
   }
 
