@@ -296,7 +296,6 @@ package('Array', function () {
 
   method('map', function() {
     var fn;
-    // cool!
     test([1,4,9], [Math.sqrt], [1,2,3], 'passing Math.sqrt directly');
     test([{ foo: 'bar' }], [function(el) { return el['foo']; }], ['bar'], 'with key "foo"');
 
