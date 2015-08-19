@@ -1,4 +1,4 @@
-package('Date | Ranges', function () {
+package('Date', function () {
   "use strict";
 
   function createRange() {

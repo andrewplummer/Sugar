@@ -1,4 +1,4 @@
-package('String | Ranges', function () {
+package('String', function () {
   "use strict";
 
   function getRange(from, to) {
