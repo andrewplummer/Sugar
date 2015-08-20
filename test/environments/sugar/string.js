@@ -257,35 +257,6 @@ package('String', function () {
 
   });
 
-  method('repeat', function() {
-
-    test('wasabi', [0], '', '0 should repeat the string 0 times');
-    test('wasabi', [1], 'wasabi', 'repeating 1 time');
-    test('wasabi', [2], 'wasabiwasabi', '2 should repeat the string 2 times');
-    test('wasabi', [2.5], 'wasabiwasabi', '2.5 should floor to 2 times');
-
-
-    test(true, [3], 'truetruetrue', 'boolean coerced to string');
-    test({}, [3], '[object Object][object Object][object Object]', 'object coerced to string');
-    test(1, [3], '111', 'number coerced to string');
-    test('a', ['3'], 'aaa', 'count should be coerced to number');
-    test('a', ['a'], '', 'NaN coercions should be 0');
-
-    var undefinedContext = (function(){ return this; }).call(undefined);
-
-    // Can't test this in IE etc where calling with null
-    // context reverts back to the global object.
-    if(undefinedContext === undefined) {
-      raisesError(function(){ run(undefined, 'repeat'); }, 'raises error on undefined', TypeError);
-      raisesError(function(){ run(null, 'repeat'); }, 'raises error on null', TypeError);
-    }
-
-    raisesError(function(){ run('a', 'repeat', [-1]); }, 'negative number raises error', RangeError);
-    raisesError(function(){ run('a', 'repeat', [Infinity]); }, 'Infinity raises error', RangeError);
-    raisesError(function(){ run('a', 'repeat', [-Infinity]); }, '-Infinity raises error', RangeError);
-
-  });
-
   method('each', function() {
 
     var callbackTest, result;
