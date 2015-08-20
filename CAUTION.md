@@ -14,6 +14,9 @@ v1.5.0+
 =======
 
 - Level: Major
+  - `Object.equal` is renamed to `Object.isEqual` in both the static and instance method types.
+
+- Level: Major
   - `String#has` is now removed in favor of `String#contains` to be in compliance with the ES6 spec. For more complex string checking, use `String#match` with standard regexes instead.
 
 - Level: Major

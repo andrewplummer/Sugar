@@ -30,3 +30,11 @@ propertyIsEnumerable = function(obj, prop) {
   }
   return false;
 }
+
+revertGlobalExtend = function() {
+  testIterateOverObject(Sugar.Object, function(name, method) {
+    if (method.instance) {
+      delete Object.prototype[name];
+    }
+  });
+}

@@ -38,6 +38,7 @@ v1.5.0
 - Added `Date#get` allowing date creation with a context date that can be used as a starting point for relative dates.
 - Added `Function#memoize` (Issue #486)
 - Async functions are now synchronous with Sinon.
+- Renamed `Object.equal` and `Object#equals` to `isEqual` for parity.
 
 
 v1.4.2
