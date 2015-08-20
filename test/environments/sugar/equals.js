@@ -6,7 +6,7 @@ package('Object | Equality', function() {
   // wrappers, and more. Sugar's callObjectEqual should now be considered "egal".
 
   function callObjectEqual(a, b) {
-    return run(Object, 'equal', arguments);
+    return run(Object, 'isEqual', arguments);
   }
 
   function First() {

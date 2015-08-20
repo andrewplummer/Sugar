@@ -694,7 +694,7 @@ package('Object', function () {
 
   });
 
-  method('equal', function() {
+  method('isEqual', function() {
 
     test(Object, [{ broken: 'wear' }, { broken: 'wear' }], true, 'objects are equal');
     test(Object, [{ broken: 'wear' }, { broken: 'jumpy' }], false, 'objects are not equal');
@@ -704,11 +704,11 @@ package('Object', function () {
 
     test(Object, [{x: 1, y: undefined}, {x: 1, z: 2}], false, 'undefined keys');
 
-    equal(run(Object, 'extended', [{ broken: 'wear' }]).equals({ broken: 'wear' }), true, 'extended | are equal to plain objects');
-    equal(run(Object, 'extended', [{ broken: 'wear' }]).equals({ broken: 'jumpy' }), false, 'extended | objects are not equal');
-    equal(run(Object, 'extended', [{}]).equals({}), true, 'extended | empty extended objects are equal to empty plain objects');
-    equal(run(Object, 'extended', [{}]).equals({ broken: 'wear' }), false, 'extended | 1st empty');
-    equal(run(Object, 'extended', [{ broken: 'wear' }]).equals({}), false, 'extended | 2nd empty');
+    equal(run(Object, 'extended', [{ broken: 'wear' }]).isEqual({ broken: 'wear' }), true, 'extended | are equal to plain objects');
+    equal(run(Object, 'extended', [{ broken: 'wear' }]).isEqual({ broken: 'jumpy' }), false, 'extended | objects are not equal');
+    equal(run(Object, 'extended', [{}]).isEqual({}), true, 'extended | empty extended objects are equal to empty plain objects');
+    equal(run(Object, 'extended', [{}]).isEqual({ broken: 'wear' }), false, 'extended | 1st empty');
+    equal(run(Object, 'extended', [{ broken: 'wear' }]).isEqual({}), false, 'extended | 2nd empty');
 
     var obj1 = { foo: 'bar' };
     test(Object, [{ a: obj1, b: obj1 }, { a: obj1, b: obj1 }], true, 'multiple references will not choke');
@@ -720,10 +720,10 @@ package('Object', function () {
 
   });
 
-  method('Extend All', function() {
+  group('Extend All', function() {
     var obj1, obj2;
 
-    Sugar.extendObject();
+    Sugar.Object.extend();
 
     var count = 0;
 
@@ -732,7 +732,7 @@ package('Object', function () {
 
     equal(count, 2, 'Object | Object.prototype should have correctly called all functions');
 
-    equal(({ foo: 'bar' }).equals({ foo: 'bar' }), true, 'Object#equals | Object.prototype');
+    equal(({ foo: 'bar' }).isEqual({ foo: 'bar' }), true, 'Object#isEqual | Object.prototype');
     equal(({ foo: 'bar' }).merge({ moo: 'car' }), { foo: 'bar', moo: 'car' }, 'Object#merge | Object.prototype');
 
     obj1 = { foo: 'bar' };
@@ -867,13 +867,12 @@ package('Object', function () {
 
     equal(!!'foo'.fromQueryString, false, 'Object.fromQueryString should not be mapped');
     equal(!!'foo'.extended, false, 'Object.extended should not be mapped');
-    equal('foo'.equal, undefined, 'Object.equal should not be mapped (should be "equals" instead)');
 
-    Sugar.extendObject(false);
+    revertGlobalExtend();
 
     equal(({foo:'bar'}).keys, undefined, 'keys no longer mapped');
     equal(({foo:'bar'}).values, undefined, 'values no longer mapped');
-    equal(({foo:'bar'}).equals, undefined, 'equals no longer mapped');
+    equal(({foo:'bar'}).isEqual, undefined, 'isEqual no longer mapped');
     equal(({foo:'bar'}).merge, undefined, 'merge no longer mapped');
     equal(({foo:'bar'}).clone, undefined, 'clone no longer mapped');
     equal(({foo:'bar'}).isArray, undefined, 'isArray no longer mapped');
@@ -1224,27 +1223,27 @@ package('Object', function () {
 
     var obj3 = run(Object, 'extended', [obj]);
 
-    testClassAndInstance(obj, ['one'], { one: 1 }, 'one key');
-    testClassAndInstance(obj, ['foo'], {}, 'nonexistent key');
-    testClassAndInstance(obj, ['one', 'two'], { one: 1, two: 2 }, 'two keys');
-    testClassAndInstance(obj, ['one', 'foo'], { one: 1 }, 'one existing one non-existing');
-    testClassAndInstance(obj, ['four', 'two'], { two: 2, four: 4 }, 'keys out of order');
-    testClassAndInstance(obj, [['four', 'two']], { two: 2, four: 4 }, 'keys in an array');
-    testClassAndInstance(obj, [/o/], { one: 1, two: 2, four: 4 }, 'regex');
-    testClassAndInstance(obj, [/o$/], { two: 2 }, 'regex $');
-    testClassAndInstance(obj, [/^o/], { one: 1 }, '^ regex');
-    testClassAndInstance(obj, [/z/], {}, 'non-matching regex');
-    testClassAndInstance(obj, [{ one: 1 }], { one: 1 }, 'comparing object');
-    testClassAndInstance(obj, [{ one: 'foobar' }], {}, 'should not match with different values');
-    testClassAndInstance(obj, [{}], {}, 'empty object');
-    testClassAndInstance(obj, [[/^o/, /^f/]], { one: 1, four: 4, five: 5 }, 'complex nested array of regexes');
+    testStaticAndInstance(obj, ['one'], { one: 1 }, 'one key');
+    testStaticAndInstance(obj, ['foo'], {}, 'nonexistent key');
+    testStaticAndInstance(obj, ['one', 'two'], { one: 1 }, 'does not accept enumerated arguments');
+    testStaticAndInstance(obj, [['four', 'two']], { two: 2, four: 4 }, 'accepts multiple from array');
+    testStaticAndInstance(obj, [['one', 'foo']], { one: 1 }, 'one existing one non-existing');
+    testStaticAndInstance(obj, [['four', 'two']], { two: 2, four: 4 }, 'keys out of order');
+    testStaticAndInstance(obj, [/o/], { one: 1, two: 2, four: 4 }, 'regex');
+    testStaticAndInstance(obj, [/o$/], { two: 2 }, 'regex $');
+    testStaticAndInstance(obj, [/^o/], { one: 1 }, '^ regex');
+    testStaticAndInstance(obj, [/z/], {}, 'non-matching regex');
+    testStaticAndInstance(obj, [{ one: 1 }], { one: 1 }, 'comparing object');
+    testStaticAndInstance(obj, [{ one: 'foobar' }], {}, 'should not match with different values');
+    testStaticAndInstance(obj, [{}], {}, 'empty object');
+    testStaticAndInstance(obj, [[/^o/, /^f/]], { one: 1, four: 4, five: 5 }, 'complex nested array of regexes');
 
     equal(run(Object, 'select', [obj2, 'foo']).foo, obj, 'selected values should be equal by reference');
 
     equal(typeof run(Object, 'select', [obj,  'one']).select, 'undefined', 'non-Hash should return non Hash');
-    equal(typeof run(Object, 'select', [obj,  'two', 'three']).select, 'undefined', 'non-Hash should return non Hash');
+    equal(typeof run(Object, 'select', [obj,  ['two', 'three']]).select, 'undefined', 'non-Hash should return non Hash');
     equal(typeof run(Object, 'select', [obj3, 'one']).select, 'function', 'Hash should return Hash');
-    equal(typeof run(Object, 'select', [obj3, 'two', 'three']).select, 'function', 'Hash should return Hash');
+    equal(typeof run(Object, 'select', [obj3, ['two', 'three']]).select, 'function', 'Hash should return Hash');
   });
 
   method('reject', function() {
@@ -1259,26 +1258,26 @@ package('Object', function () {
 
     var obj2 = { foo: obj };
 
-    testClassAndInstance(obj, ['one'], { two: 2, three: 3, four: 4, five: 5 }, 'one key');
-    testClassAndInstance(obj, ['foo'], obj, 'nonexistent key');
-    testClassAndInstance(obj, ['one', 'two'], { three: 3, four: 4, five: 5 }, 'two keys');
-    testClassAndInstance(obj, ['one', 'foo'], { two: 2, three: 3, four: 4, five: 5 }, 'one existing one non-existing');
-    testClassAndInstance(obj, ['four', 'two'], { one: 1, three: 3, five: 5 }, 'keys out of order');
-    testClassAndInstance(obj, [['four', 'two']], { one: 1, three: 3, five: 5 }, 'keys in an array');
-    testClassAndInstance(obj, [/o/], { three: 3, five: 5 }, 'regex');
-    testClassAndInstance(obj, [/o$/], { one: 1, three: 3, four: 4, five: 5 }, 'regex $');
-    testClassAndInstance(obj, [/^o/], { two: 2, three: 3, four: 4, five: 5 }, '^ regex');
-    testClassAndInstance(obj, [/z/], obj, 'non-matching regex');
-    testClassAndInstance(obj, [{ one: 1 }], { two: 2, three: 3, four: 4, five: 5 }, 'comparing object');
-    testClassAndInstance(obj, [{ one: 'foobar' }], obj, 'comparing object with different values');
-    testClassAndInstance(obj, [{}], obj, 'empty object');
-    testClassAndInstance(obj, [[/^o/, /^f/]], { two: 2, three: 3 }, 'complex nested array of regexes');
+    testStaticAndInstance(obj, ['one'], { two: 2, three: 3, four: 4, five: 5 }, 'one key');
+    testStaticAndInstance(obj, ['foo'], obj, 'nonexistent key');
+    testStaticAndInstance(obj, ['one', 'two'], { two: 2, three: 3, four: 4, five: 5 }, 'does not accept enumerated arguments');
+    testStaticAndInstance(obj, [['four', 'two']], { one: 1, three: 3, five: 5 }, 'accepts multiple from array');
+    testStaticAndInstance(obj, [['one', 'foo']], { two: 2, three: 3, four: 4, five: 5 }, 'one existing one non-existing');
+    testStaticAndInstance(obj, [['four', 'two']], { one: 1, three: 3, five: 5 }, 'keys out of order');
+    testStaticAndInstance(obj, [/o/], { three: 3, five: 5 }, 'regex');
+    testStaticAndInstance(obj, [/o$/], { one: 1, three: 3, four: 4, five: 5 }, 'regex $');
+    testStaticAndInstance(obj, [/^o/], { two: 2, three: 3, four: 4, five: 5 }, '^ regex');
+    testStaticAndInstance(obj, [/z/], obj, 'non-matching regex');
+    testStaticAndInstance(obj, [{ one: 1 }], { two: 2, three: 3, four: 4, five: 5 }, 'comparing object');
+    testStaticAndInstance(obj, [{ one: 'foobar' }], obj, 'comparing object with different values');
+    testStaticAndInstance(obj, [{}], obj, 'empty object');
+    testStaticAndInstance(obj, [[/^o/, /^f/]], { two: 2, three: 3 }, 'complex nested array of regexes');
 
     equal(run(Object, 'reject', [obj2, 'moo']).foo, obj, 'rejected values should be equal by reference');
   });
 
 
-  method('clone', function() {
+  xmethod('clone', function() {
 
     // Issue #256
     if(Sugar.Date.clone) {
@@ -1295,7 +1294,7 @@ package('Object', function () {
 
     function assertQueryStringGenerated(obj, args, expected, message) {
       expected = expected.replace(/\[/g, '%5B').replace(/\]/g, '%5D');
-      testClassAndInstance(obj, args, expected, message);
+      testStaticAndInstance(obj, args, expected, message);
     }
 
     assertQueryStringGenerated({foo:'bar'}, [], 'foo=bar', 'basic string');
@@ -1388,39 +1387,39 @@ package('Object', function () {
      car: { age: 44 }
     }
 
-    testClassAndInstance(obj1, [function(k, v) { return v * 2; }], {foo:6,bar:8,moo:10,car:12}, 'function');
-    testClassAndInstance(obj1, ['toString'], {foo:'3',bar:'4',moo:'5',car:'6'}, 'string shortcut');
-    testClassAndInstance(obj1, [], obj1, 'no args');
-    testClassAndInstance(obj2, [function(k, v) { return v.age; }], {foo:11,bar:22,moo:33,car:44}, 'mapping nested properties');
-    testClassAndInstance(obj2, ['age'], {foo:11,bar:22,moo:33,car:44}, 'mapping nested properties with string shortcut');
+    testStaticAndInstance(obj1, [function(k, v) { return v * 2; }], {foo:6,bar:8,moo:10,car:12}, 'function');
+    testStaticAndInstance(obj1, ['toString'], {foo:'3',bar:'4',moo:'5',car:'6'}, 'string shortcut');
+    testStaticAndInstance(obj1, [], obj1, 'no args');
+    testStaticAndInstance(obj2, [function(k, v) { return v.age; }], {foo:11,bar:22,moo:33,car:44}, 'mapping nested properties');
+    testStaticAndInstance(obj2, ['age'], {foo:11,bar:22,moo:33,car:44}, 'mapping nested properties with string shortcut');
   });
 
   method('size', function() {
-    testClassAndInstance({}, [], 0, 'empty object');
-    testClassAndInstance({foo:'bar'}, [], 1, '1 property');
-    testClassAndInstance({foo:'bar',moo:'car'}, [], 2, '2 properties');
-    testClassAndInstance({foo:1}, [], 1, 'numbers');
-    testClassAndInstance({foo:/bar/}, [], 1, 'regexes');
-    testClassAndInstance({foo:function(){}}, [], 1, 'functions');
-    testClassAndInstance({foo:{bar:'car'}}, [], 1, 'nested object');
-    testClassAndInstance({foo:[1]}, [], 1, 'nested array');
-    testClassAndInstance(['a'], [], 1, 'array');
-    testClassAndInstance(['a','b'], [], 2, 'array 2 elements');
-    testClassAndInstance(['a','b','c'], [], 3, 'array 3 elements');
-    testClassAndInstance('foo', [], 3, 'string primitive');
-    testClassAndInstance(new String('foo'), [], 3, 'string object');
-    testClassAndInstance(1, [], 0, 'number primitive');
-    testClassAndInstance(new Number(1), [], 0, 'number object');
-    testClassAndInstance(true, [], 0, 'boolean primitive');
-    testClassAndInstance(new Boolean(true), [], 0, 'boolean object');
-    testClassAndInstance(null, [], 0, 'null');
-    testClassAndInstance(undefined, [], 0, 'undefined');
+    testStaticAndInstance({}, [], 0, 'empty object');
+    testStaticAndInstance({foo:'bar'}, [], 1, '1 property');
+    testStaticAndInstance({foo:'bar',moo:'car'}, [], 2, '2 properties');
+    testStaticAndInstance({foo:1}, [], 1, 'numbers');
+    testStaticAndInstance({foo:/bar/}, [], 1, 'regexes');
+    testStaticAndInstance({foo:function(){}}, [], 1, 'functions');
+    testStaticAndInstance({foo:{bar:'car'}}, [], 1, 'nested object');
+    testStaticAndInstance({foo:[1]}, [], 1, 'nested array');
+    testStaticAndInstance(['a'], [], 1, 'array');
+    testStaticAndInstance(['a','b'], [], 2, 'array 2 elements');
+    testStaticAndInstance(['a','b','c'], [], 3, 'array 3 elements');
+    testStaticAndInstance('foo', [], 3, 'string primitive');
+    testStaticAndInstance(new String('foo'), [], 3, 'string object');
+    testStaticAndInstance(1, [], 0, 'number primitive');
+    testStaticAndInstance(new Number(1), [], 0, 'number object');
+    testStaticAndInstance(true, [], 0, 'boolean primitive');
+    testStaticAndInstance(new Boolean(true), [], 0, 'boolean object');
+    testStaticAndInstance(null, [], 0, 'null');
+    testStaticAndInstance(undefined, [], 0, 'undefined');
 
     var Foo = function(){};
-    testClassAndInstance(new Foo, [], 0, 'class instances');
+    testStaticAndInstance(new Foo, [], 0, 'class instances');
 
     var Foo = function(a){ this.a = a; };
-    testClassAndInstance(new Foo, [], 1, 'class instances with a single property');
+    testStaticAndInstance(new Foo, [], 1, 'class instances with a single property');
   });
 
   method('each', function() {
@@ -1452,7 +1451,7 @@ package('Object', function () {
       run(Object, 'each', [{foo:'bar'}]);
     }, 'no iterator raises an error');
 
-    testClassAndInstance(obj, [function () {}], obj, 'each returns itself');
+    testStaticAndInstance(obj, [function () {}], obj, 'each returns itself');
   });
 
 
