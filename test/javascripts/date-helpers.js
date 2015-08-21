@@ -163,7 +163,7 @@ testGetTimezoneHours = function(d) {
 }
 
 runUTC = function(name, args) {
-  var target = Sugar.noConflict ? Sugar.Date.utc : Date.utc;
+  var target = Sugar.Date.utc;
   return target[name].apply(null, args);
 }
 
@@ -171,27 +171,15 @@ runUTC = function(name, args) {
 // the locale is sometimes performed outside the Date package,
 // giving no context for run().
 testSetLocale = function(code) {
-  if(Sugar.noConflict) {
-    return Sugar.Date.setLocale(code);
-  } else {
-    return Date.setLocale(code);
-  }
+  return Sugar.Date.setLocale(code);
 }
 
 testGetLocale = function(code) {
-  if(Sugar.noConflict) {
-    return Sugar.Date.getLocale(code);
-  } else {
-    return Date.getLocale(code);
-  }
+  return Sugar.Date.getLocale(code);
 }
 
 testAddLocale = function(code, set) {
-  if(Sugar.noConflict) {
-    return Sugar.Date.addLocale(code, set);
-  } else {
-    return Date.addLocale(code, set);
-  }
+  return Sugar.Date.addLocale(code, set);
 }
 
 testMonthsFromNow = function(n, monthString, weekString) {

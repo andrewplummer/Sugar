@@ -585,7 +585,7 @@ package('Date', function () {
   });
 
 
-  group('Create | UTC', function() {
+  xgroup('Create | UTC', function() {
     dateEqual(runUTC('create', ['February 29, 2012 22:15:42', 'en']), new Date(Date.UTC(2012, 1, 29, 22, 15, 42)), 'full text');
     dateEqual(runUTC('create', ['2012-05-31', 'en']), new Date(Date.UTC(2012, 4, 31)), 'dashed');
     dateEqual(runUTC('create', ['1998-02-23 11:54:32', 'en']), new Date(Date.UTC(1998,1,23,11,54,32)), 'dashed with time');
@@ -1030,7 +1030,7 @@ package('Date', function () {
 
   });
 
-  group('Get/Set Weekday', function() {
+  xgroup('Get/Set Weekday', function() {
     var d;
 
     d = new Date('August 25, 2010 11:45:20');
@@ -1301,7 +1301,7 @@ package('Date', function () {
 
 
 
-  method('setISOWeek', function() {
+  xmethod('setISOWeek', function() {
     var d = new Date('August 25, 2010 11:45:20');
 
     run(d, 'setISOWeek', [1]);
@@ -1895,7 +1895,7 @@ package('Date', function () {
   });
 
 
-  group('Beginning/End', function() {
+  xgroup('Beginning/End', function() {
 
     var d = new Date('August 5, 2010 13:45:02');
 

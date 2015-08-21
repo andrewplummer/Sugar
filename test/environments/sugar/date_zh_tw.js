@@ -1,5 +1,5 @@
-package('Date | Traditional Chinese', function () {
-  "use string";
+package('Date', function () {
+  "use strict";
 
   var now;
   var then;

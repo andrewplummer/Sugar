@@ -1,5 +1,5 @@
-package('Date | French', function () {
-  "use string";
+package('Date', function () {
+  "use strict";
 
   var now;
 
