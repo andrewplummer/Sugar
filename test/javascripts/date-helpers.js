@@ -3,12 +3,25 @@ testCreateDate = function() {
   return run(Date, 'create', arguments);
 }
 
+testCreateDateWithOptions = function(rawArgs, optName) {
+  // Optimized: no leaking arguments
+  var args = [], $i; for($i = 0; $i < rawArgs.length; $i++) args.push(rawArgs[$i]);
+  var opt = {};
+  opt[optName] = true;
+  args.push(opt);
+  return testCreateDate.apply(null, args);
+}
+
 testCreateFutureDate = function() {
-  return run(Date, 'future', arguments);
+  return testCreateDateWithOptions(arguments, 'future');
 }
 
 testCreatePastDate = function() {
-  return run(Date, 'past', arguments);
+  return testCreateDateWithOptions(arguments, 'past');
+}
+
+testCreateUTCDate = function() {
+  return testCreateDateWithOptions(arguments, 'utc');
 }
 
 dateRun = function(d, name, arguments) {
@@ -160,11 +173,6 @@ testCapitalize = function(str) {
 
 testGetTimezoneHours = function(d) {
   return Math.floor(Math.abs(d.getTimezoneOffset()) / 60);
-}
-
-runUTC = function(name, args) {
-  var target = Sugar.Date.utc;
-  return target[name].apply(null, args);
 }
 
 // These helper methods are necessary because setting/getting

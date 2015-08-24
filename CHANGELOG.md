@@ -39,6 +39,7 @@ v1.5.0
 - Added `Function#memoize` (Issue #486)
 - Async functions are now synchronous with Sinon.
 - Renamed `Object.equal` and `Object#equals` to `isEqual` for parity.
+- Removed `Date.utc` object as well as `Date.past` and `Date.future` in favor of an options object on `Date#create`.
 
 
 v1.4.2
