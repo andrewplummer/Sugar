@@ -20,6 +20,9 @@ v1.5.0+
   - `String#has` is now removed in favor of `String#contains` to be in compliance with the ES6 spec. For more complex string checking, use `String#match` with standard regexes instead.
 
 - Level: Major
+  - `Date.past`, `Date.future`, `Date.utc.create`, `Date.utc.past`, and `Date.utc.future` are all deprecated. Instead, pass an options object as the last argument to `Date.create` with the equivalent properties. For example: `Date.create('March', { future: true, utc: true, locale: 'ja' })`, etc.
+
+- Level: Major
   - `Date#utc` is now `Date#setUTC`, and now requires explicitly passing `true` as the first argument to set the flag to true.
 
 - Level: Major
