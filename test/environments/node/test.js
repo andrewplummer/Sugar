@@ -49,6 +49,7 @@ function logResults(runtime, results) {
 
 // Tests
 
+require('../sugar/core.js');
 require('../sugar/array.js');
 require('../sugar/date.js');
 require('../sugar/date_de.js');
@@ -69,7 +70,6 @@ require('../sugar/equals.js');
 require('../sugar/es5.js');
 require('../sugar/es6.js');
 require('../sugar/function.js');
-require('../sugar/global.js');
 require('../sugar/inflections.js');
 require('../sugar/language.js');
 require('../sugar/number.js');
