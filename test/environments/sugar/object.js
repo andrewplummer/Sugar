@@ -1277,7 +1277,7 @@ package('Object', function () {
   });
 
 
-  xmethod('clone', function() {
+  method('clone', function() {
 
     // Issue #256
     if(Sugar.Date.clone) {

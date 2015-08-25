@@ -1,6 +1,6 @@
 package('No Conflict', function() {
 
-  xgroup('No Conflict', function() {
+  group('No Conflict', function() {
     process.env.SUGAR_NO_CONFLICT = 'true';
     var Sugar = require( '../../../release/sugar-full.dev');
     equal(global['Sugar'], undefined, 'Sugar should not exist in the global namespace');

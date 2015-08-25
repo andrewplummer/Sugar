@@ -189,10 +189,11 @@ if(typeof environment == 'undefined') environment = 'default'; // Override me!
       }
       return fn.apply(subject, args);
     } else {
-      if(!subjectIsClass(subject)) {
+      if(!objectIsClass(subject)) {
         args = [subject].concat(Array.prototype.slice.call(args));
       }
-      return Sugar[currentTest.package.name][method].apply(null, args);
+      console.info('ohboy', getSugarNamespace(subject)[method], method);
+      return getSugarNamespace(subject)[method].apply(null, args);
     }
   }
 
@@ -225,8 +226,34 @@ if(typeof environment == 'undefined') environment = 'default'; // Override me!
     });
   }
 
-  function subjectIsClass(subject) {
-    switch(subject) {
+  function getSugarNamespace(subject) {
+    var ns;
+    ns = Sugar[currentTest.package.name];
+    if (ns) {
+      // If the current package name is the namespace,
+      // simply return it.
+      return ns;
+    }
+    var global = matchGlobalClass(subject);
+    ns = Sugar[global && global.name];
+    if (ns) {
+      // If the subject is a global class, then use the
+      // name to get the Sugar namespace.
+      return ns;
+    }
+    return Sugar[getObjectClassName(subject)];
+  }
+
+  function getObjectClassName(obj) {
+    return Object.prototype.toString.call(obj).match(/object (\w+)/)[1];
+  }
+
+  function objectIsClass(obj) {
+    return !!matchGlobalClass(obj);
+  }
+
+  function matchGlobalClass(obj) {
+    switch(obj) {
       case Boolean:
       case Number:
       case String:
@@ -235,9 +262,8 @@ if(typeof environment == 'undefined') environment = 'default'; // Override me!
       case Date:
       case RegExp:
       case Function:
-        return true;
+        return obj;
     }
-    return false;
   }
 
   function getFullMessage(tail) {

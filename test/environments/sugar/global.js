@@ -3,7 +3,7 @@ package('Custom Extending', function() {
 
   // TODO decide what to do here!
 
-  group('Extending String', function () {
+  fgroup('Extending String', function () {
     Sugar.String.extend({
       foo: function() {
         return 'bar';
