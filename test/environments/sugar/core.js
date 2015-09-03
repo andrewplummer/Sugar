@@ -1,4 +1,4 @@
-package('Custom Extending', function() {
+fpackage('Custom Extending', function() {
   "use strict";
 
   // TODO decide what to do here!
