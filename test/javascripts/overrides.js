@@ -55,12 +55,3 @@ Date.prototype.long       = overridingFunction;
 Date.prototype.isToday    = overridingFunction;
 Date.prototype.addMinutes = overridingFunction;
 
-
-
-
-// ES6
-
-Array.prototype.find       = overridingFunction;
-Array.prototype.findIndex  = overridingFunction;
-String.prototype.repeat    = overridingFunction;
-String.prototype.normalize = overridingFunction;

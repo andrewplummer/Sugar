@@ -192,7 +192,6 @@ if(typeof environment == 'undefined') environment = 'default'; // Override me!
       if(!objectIsClass(subject)) {
         args = [subject].concat(Array.prototype.slice.call(args));
       }
-      console.info('ohboy', getSugarNamespace(subject)[method], method);
       return getSugarNamespace(subject)[method].apply(null, args);
     }
   }
