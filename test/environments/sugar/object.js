@@ -868,7 +868,7 @@ package('Object', function () {
     equal(!!'foo'.fromQueryString, false, 'Object.fromQueryString should not be mapped');
     equal(!!'foo'.extended, false, 'Object.extended should not be mapped');
 
-    revertGlobalExtend();
+    revertNamespaceExtend('Object');
 
     equal(({foo:'bar'}).keys, undefined, 'keys no longer mapped');
     equal(({foo:'bar'}).values, undefined, 'values no longer mapped');
