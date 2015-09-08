@@ -140,6 +140,7 @@
         delete target[name];
       }
     });
+    Sugar[namespace].active = false;
   }
 
   revertGlobalExtend = function() {

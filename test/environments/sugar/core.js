@@ -186,4 +186,22 @@ package('Core', function() {
 
   });
 
+  group('Custom Methods after extending', function () {
+
+    Sugar.String.extend();
+
+    Sugar.String.defineInstance({
+      foo: function() {
+        return 'foo!';
+      }
+    });
+    equal(Sugar.String.foo(), 'foo!', 'Namespace method exists when defined after namespace extend');
+    equal('wasabi'.foo(), 'foo!', 'Instance method exists when defined after namespace extend');
+
+    revertNamespaceExtend('String');
+
+    equal(String.prototype.foo, undefined, 'Instance method should no longer exist');
+
+  });
+
 });
