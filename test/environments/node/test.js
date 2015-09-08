@@ -1,17 +1,14 @@
 
 environment = 'node';
 
+var Sugar = require( '../../../release/sugar-full.dev');
+
 // Test suite
+sinon = require('sinon');
 require('../../javascripts/suite.js');
 require('../../javascripts/helpers.js');
+require('../../javascripts/core-helpers.js');
 require('../../javascripts/date-helpers.js');
-
-sinon = require('sinon');
-
-// No conflict tests
-require('./no-conflict.js');
-
-var Sugar = require( '../../../release/sugar-full.dev');
 
 // Adding a reference here to the global context
 // will save massive amounts of pain later when

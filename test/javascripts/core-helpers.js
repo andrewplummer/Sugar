@@ -1,4 +1,7 @@
-(function(globalContext) {
+(function() {
+
+  // The global context
+  var globalContext = typeof global !== 'undefined' ? global : this;
 
   var nativeMethods = {
     Array: {
@@ -155,4 +158,4 @@
   // correctly restored later.
   storeNativeMethods();
 
-})(this);
+})();
