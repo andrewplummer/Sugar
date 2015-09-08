@@ -150,6 +150,9 @@
     }
   }
 
+  // Note that this file (core-helpers.js) should be included AFTER Sugar has
+  // been loaded as Sugar adds polyfill methods that should be saved here to be
+  // correctly restored later.
   storeNativeMethods();
 
 })(this);
