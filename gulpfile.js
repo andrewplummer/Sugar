@@ -1,4 +1,3 @@
-
 var fs       = require('fs'),
     glob     = require('glob'),
     zlib     = require('zlib'),
@@ -25,8 +24,8 @@ var HELP_MESSAGE = [
   '',
   '    %Tasks%',
   '',
-  '      |dev|                          Non-minified (concatenate files only).',
-  '      |min|                          Minified release.',
+  '      |dev|                          Build non-minified (concatenate files only).',
+  '      |min|                          Build minified release.',
   '      |help|                         Show this message.',
   '',
   '    %Options%',
@@ -84,7 +83,7 @@ function getPackages() {
 
 function getFiles(packages, skipLocales) {
   var arr, files = [];
-  files.push('lib/core/core.js');
+  files.push('lib/core.js');
   files.push('lib/common.js');
   switch(packages) {
     case 'default':
@@ -163,7 +162,7 @@ function getLicense() {
 }
 
 function buildDevelopment(packages) {
-  var wrapper = [
+  var template = [
     getLicense(),
     '(function() {',
       "  'use strict';",
@@ -175,8 +174,8 @@ function buildDevelopment(packages) {
   util.log(util.colors.yellow('Building:', packages));
   return gulp.src(files)
     .pipe(concat(filename, { newLine: '' }))
-    .pipe(replace(/'use strict';/g, ''))
-    .pipe(replace(/^([\s\S]+)$/m, wrapper))
+    .pipe(replace(/^\s*'use strict';\n/g, ''))
+    .pipe(replace(/^([\s\S]+)$/m, template))
     .pipe(gulp.dest('release'));
 }
 
@@ -220,7 +219,7 @@ function getDefaultFlags() {
 
 
 
-// -------------- Tasks ----------------
+// -------------- Build ----------------
 
 gulp.task('default', showHelpMessage);
 
@@ -251,7 +250,7 @@ gulp.task('precompile:dev', function() {
   });
   return merge(gulp.src(files), gulp.src('lib/locales/*.js')
       .pipe(concat('locales.js', { newLine: '' })))
-    .pipe(replace(/'use strict';/g, ''))
+    .pipe(replace(/^\s*'use strict';\n/g, ''))
     .pipe(gulp.dest(PRECOMPILED_DEV_DIR));
 });
 
@@ -260,6 +259,43 @@ gulp.task('precompile:min', function() {
   var modules = getModules(files);
   return gulp.src(files).pipe(compileModules(modules));
 });
+
+
+// -------------- npm ----------------
+
+
+gulp.task('npm', function() {
+  var template = [
+    '(function() {',
+      "  'use strict';",
+      '$1',
+      '  module.exports = EXPORT;',
+      '',
+    '})();'
+  ].join('\n');
+  var files = getFiles(getPackages());
+  var streams = [];
+  for (var i = 0; i < files.length; i++) {
+    if (!files[i].match(/common/)) {
+      var package = files[i].match(/(\w+)\.js$/)[1];
+      var isCore = package === 'core';
+      var src = isCore ? [files[i]] : ['lib/core.js', 'lib/common.js', files[i]];
+      var packageCaps = package.slice(0, 1).toUpperCase() + package.slice(1);
+      var npmExport = isCore ? 'Sugar': 'Sugar.' + packageCaps;
+      var packageTemplate = template.replace(/EXPORT/, npmExport);
+      streams.push(
+        gulp.src(src)
+          .pipe(concat('sugar-' + package + '.js', { newLine: '' }))
+          .pipe(replace(/^\s*'use strict';\n/g, ''))
+          .pipe(replace(/^.*\/\/ npm ignore\n/gim, ''))
+          .pipe(replace(/^([\s\S]+)$/m, packageTemplate))
+          .pipe(gulp.dest('release/npm/sugar-' + package))
+      );
+    }
+  }
+  return merge(streams);
+});
+
 
 
 // -------------- Test ----------------

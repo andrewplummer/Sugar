@@ -1,12 +1,8 @@
 
-html {
-  overflow: hidden;
-}
-
 body {
   font-family: sans-serif;
-  padding: 10px;
   background-color: #f2f2f2;
+  margin: 0;
 }
 
 ul,li,h1,h2,h3,h4,h5,h6,p {
@@ -16,6 +12,11 @@ ul,li,h1,h2,h3,h4,h5,h6,p {
 
 ul,li {
   list-style-type: none;
+}
+
+h2 {
+  font-size: 12px;
+  color: #aaa;
 }
 
 .hidden {
@@ -39,6 +40,7 @@ h3 {
   clear: left;
   overflow: hidden;
   padding: 12px;
+  margin: 12px;
   border: 1px solid #aaa;
   -moz-border-radius: 5px;
   -webkit-border-radius: 5px;
@@ -89,7 +91,11 @@ h3 {
 }
 
 iframe {
-  visibility: hidden;
+  display: block;
+  width: 100%;
+  height: 91px;
+  border: none;
+  overflow: hidden;
 }
 
 .stats {
