@@ -369,13 +369,11 @@ package('String | Inflections', function () {
     // Test singularize plural
     testIterateOverObject(SingularToPlural, function(singular, plural) {
       test(plural, singular, 'singularize | plural > singular');
-      test(run(plural, 'capitalize'), run(singular, 'capitalize'), 'singularize | plural > capitalize > singular == singular > capitalize');
     });
 
     // Test singularize singular
     testIterateOverObject(SingularToPlural, function(singular, plural) {
       equal(singular, singular, 'singular > singular');
-      equal(run(singular, 'capitalize'), run(singular, 'capitalize'), 'singular > capitalize > singular == singular > capitalize');
     });
 
 
@@ -394,13 +392,11 @@ package('String | Inflections', function () {
     // Test pluralize singular
     testIterateOverObject(SingularToPlural, function(singular, plural) {
       test(singular, plural, 'pluralize | singular > plural');
-      test(run(singular, 'capitalize'), run(plural, 'capitalize'), 'pluralize | singular > capitalize > plural == plural > capitalize');
     });
 
     // Test pluralize plural
     testIterateOverObject(SingularToPlural, function(singular, plural) {
       test(plural, plural, 'plural > plural');
-      test(run(plural, 'capitalize'), run(plural, 'capitalize'), 'plural > capitalize > plural == plural > capitalize');
     });
 
   });
@@ -421,6 +417,12 @@ package('String | Inflections', function () {
     testIterateOverObject(Irregulars, function(singular, plural) {
       equal(run(plural, 'pluralize'), plural, 'singularize | irregulars | pluralized plural id pluralized');
     });
+  });
+
+  group('Custom Irregulars', function() {
+    Sugar.String.Inflector.irregular('wasabi', 'meecrab');
+    equal(run('wasabi', 'pluralize'), 'meecrab', 'custom singular -> plural');
+    equal(run('meecrab', 'singularize'), 'wasabi', 'custom plural -> singular');
   });
 
   method('titleize', function() {

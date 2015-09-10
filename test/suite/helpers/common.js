@@ -17,9 +17,11 @@ testClone = function (obj) {
 }
 
 testStaticAndInstance = function (subject, args, expected, message) {
-  var obj = run(Object, 'extended', [subject]);
-  equal(obj[getCurrentTest().name].apply(obj, args), expected, message);
-  test(Object, [obj].concat(args), expected, message);
+  test(Object, [subject].concat(args), expected, message);
+  if (Sugar.Object && Sugar.Object.extended) {
+    var obj = run(Object, 'extended', [subject]);
+    equal(obj[getCurrentTest().name].apply(obj, args), expected, message);
+  }
 }
 
 propertyIsEnumerable = function(obj, prop) {

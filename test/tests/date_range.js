@@ -71,8 +71,8 @@ package('Date', function () {
     equal(range.isValid(), true, 'Date.range | understands relative strings');
 
     var range = createRange('2001', '2003');
-    var testStart = testCreateDate('2001');
-    var testEnd   = testCreateDate('2003');
+    var testStart = new Date(2001, 0);
+    var testEnd   = new Date(2003, 0);
     dateEqual(range.start, testStart, 'Date.range | strings | start is equal');
     dateEqual(range.end,   testEnd, 'Date.range | strings | end is equal');
 
@@ -157,40 +157,40 @@ package('Date', function () {
   });
 
   method('union', function() {
-    var range1 = createRange(testCreateDate('2001'), testCreateDate('2003'));
-    var range2 = createRange(testCreateDate('2002'), testCreateDate('2004'));
+    var range1 = createRange(new Date(2001, 0), new Date(2003, 0));
+    var range2 = createRange(new Date(2002, 0), new Date(2004, 0));
     var range = range1.union(range2);
 
-    dateRangeEqual(range, createRange(testCreateDate('2001'), testCreateDate('2004')), 'simple merge');
-    dateRangeEqual(range1, createRange(testCreateDate('2001'), testCreateDate('2003')), 'range1 has not changed');
-    dateRangeEqual(range2, createRange(testCreateDate('2002'), testCreateDate('2004')), 'range2 has not changed');
+    dateRangeEqual(range, createRange(new Date(2001, 0), new Date(2004, 0)), 'simple merge');
+    dateRangeEqual(range1, createRange(new Date(2001, 0), new Date(2003, 0)), 'range1 has not changed');
+    dateRangeEqual(range2, createRange(new Date(2002, 0), new Date(2004, 0)), 'range2 has not changed');
 
     // Union of non-overlapping ranges
 
-    var range1 = createRange(testCreateDate('2001'), testCreateDate('2003'));
-    var range2 = createRange(testCreateDate('2005'), testCreateDate('2008'));
+    var range1 = createRange(new Date(2001, 0), new Date(2003, 0));
+    var range2 = createRange(new Date(2005, 0), new Date(2008, 0));
     var range = range1.union(range2);
 
-    dateRangeEqual(range, createRange(testCreateDate('2001'), testCreateDate('2008')), 'non-overlapping includes middle');
-    dateRangeEqual(range1, createRange(testCreateDate('2001'), testCreateDate('2003')), 'range1 has not changed');
-    dateRangeEqual(range2, createRange(testCreateDate('2005'), testCreateDate('2008')), 'range2 has not changed');
+    dateRangeEqual(range, createRange(new Date(2001, 0), new Date(2008, 0)), 'non-overlapping includes middle');
+    dateRangeEqual(range1, createRange(new Date(2001, 0), new Date(2003, 0)), 'range1 has not changed');
+    dateRangeEqual(range2, createRange(new Date(2005, 0), new Date(2008, 0)), 'range2 has not changed');
 
     // Union of reversed overlapping ranges
 
-    var range1 = createRange(testCreateDate('2002'), testCreateDate('2004'));
-    var range2 = createRange(testCreateDate('2001'), testCreateDate('2003'));
+    var range1 = createRange(new Date(2002, 0), new Date(2004, 0));
+    var range2 = createRange(new Date(2001, 0), new Date(2003, 0));
     var range = range1.union(range2);
 
-    dateRangeEqual(range, createRange(testCreateDate('2001'), testCreateDate('2004')), 'reversed | simple merge');
+    dateRangeEqual(range, createRange(new Date(2001, 0), new Date(2004, 0)), 'reversed | simple merge');
 
 
     // Union of reversed non-overlapping ranges
 
-    var range1 = createRange(testCreateDate('2005'), testCreateDate('2008'));
-    var range2 = createRange(testCreateDate('2001'), testCreateDate('2003'));
+    var range1 = createRange(new Date(2005, 0), new Date(2008, 0));
+    var range2 = createRange(new Date(2001, 0), new Date(2003, 0));
     var range = range1.union(range2);
 
-    dateRangeEqual(range, createRange(testCreateDate('2001'), testCreateDate('2008')), 'reversed | includes middle');
+    dateRangeEqual(range, createRange(new Date(2001, 0), new Date(2008, 0)), 'reversed | includes middle');
 
   });
 
@@ -198,18 +198,18 @@ package('Date', function () {
 
     // Intersect of overlapping ranges
 
-    var range1 = createRange(testCreateDate('2001'), testCreateDate('2003'));
-    var range2 = createRange(testCreateDate('2002'), testCreateDate('2004'));
+    var range1 = createRange(new Date(2001, 0), new Date(2003, 0));
+    var range2 = createRange(new Date(2002, 0), new Date(2004, 0));
     var range = range1.intersect(range2);
 
-    dateRangeEqual(range, createRange(testCreateDate('2002'), testCreateDate('2003')), 'simple merge');
-    dateRangeEqual(range1, createRange(testCreateDate('2001'), testCreateDate('2003')), 'range1 has not changed');
-    dateRangeEqual(range2, createRange(testCreateDate('2002'), testCreateDate('2004')), 'range2 has not changed');
+    dateRangeEqual(range, createRange(new Date(2002, 0), new Date(2003, 0)), 'simple merge');
+    dateRangeEqual(range1, createRange(new Date(2001, 0), new Date(2003, 0)), 'range1 has not changed');
+    dateRangeEqual(range2, createRange(new Date(2002, 0), new Date(2004, 0)), 'range2 has not changed');
 
     // Intersect of non-overlapping ranges
 
-    var range1 = createRange(testCreateDate('2001'), testCreateDate('2003'));
-    var range2 = createRange(testCreateDate('2005'), testCreateDate('2008'));
+    var range1 = createRange(new Date(2001, 0), new Date(2003, 0));
+    var range2 = createRange(new Date(2005, 0), new Date(2008, 0));
     var range = range1.intersect(range2);
 
     equal(range.isValid(), false, 'non-overlapping ranges are invalid');
@@ -217,16 +217,16 @@ package('Date', function () {
 
     // Intersect of reversed overlapping ranges
 
-    var range1 = createRange(testCreateDate('2002'), testCreateDate('2004'));
-    var range2 = createRange(testCreateDate('2001'), testCreateDate('2003'));
+    var range1 = createRange(new Date(2002, 0), new Date(2004, 0));
+    var range2 = createRange(new Date(2001, 0), new Date(2003, 0));
     var range = range1.intersect(range2);
 
-    dateRangeEqual(range, createRange(testCreateDate('2002'), testCreateDate('2003')), 'simple merge');
+    dateRangeEqual(range, createRange(new Date(2002, 0), new Date(2003, 0)), 'simple merge');
 
     // Intersect of reversed non-overlapping ranges
 
-    var range1 = createRange(testCreateDate('2005'), testCreateDate('2008'));
-    var range2 = createRange(testCreateDate('2001'), testCreateDate('2003'));
+    var range1 = createRange(new Date(2005, 0), new Date(2008, 0));
+    var range2 = createRange(new Date(2001, 0), new Date(2003, 0));
     var range = range1.intersect(range2);
 
     equal(range.isValid(), false, 'non-overlapping ranges are invalid');
@@ -244,7 +244,7 @@ package('Date', function () {
   method('clone', function() {
 
     // Range cloning (Issue #230)
-    var range1 = createRange(testCreateDate('2002'), testCreateDate('2004'));
+    var range1 = createRange(new Date(2002, 0), new Date(2004, 0));
     var range2 = range1.clone();
 
     equal(range1, range2, 'clone object is equal by value');

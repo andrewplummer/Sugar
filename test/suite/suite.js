@@ -41,6 +41,8 @@
       return p.assertions > 0;
     });
     fn(new Date() - time, runPackages);
+    allTests = [];
+    packages = [];
   }
 
   package = function (name, fn, focused) {
@@ -191,6 +193,13 @@
 
   getCurrentTest = function() {
     return currentTest;
+  }
+
+  // Required to pass the Sugar global in npm as it's
+  // not exposed on the global context. Certain tests
+  // are testing the global even when testNatives is active.
+  setSugarGlobal = function(g) {
+    Sugar = g;
   }
 
   function getTestsToRun() {

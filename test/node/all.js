@@ -1,0 +1,14 @@
+require('./default/array.js');
+require('./default/core.js');
+require('./default/date.js');
+require('./default/date-locales.js');
+require('./default/function.js');
+require('./default/inflections.js');
+require('./default/language.js');
+require('./default/number.js');
+require('./default/object.js');
+require('./default/range.js');
+require('./default/regexp.js');
+require('./default/string.js');
+require('./default/sugar.js');
+require('./default/full.js');
