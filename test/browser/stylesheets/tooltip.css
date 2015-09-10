@@ -22,7 +22,7 @@
   width: 11px;
   height: 11px;
   position: absolute;
-  background-image: url('../images/tooltip.png');
+  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADkAAAAZCAYAAACLtIazAAABkklEQVRYR+WYv1LDMAzGP28kC8fYkZHrIzCy8cDdOvYRmNlg5FgSNnHK4ZxqZEtukh4kXaNG38/6Gwf4fjcA7gEcATwBeAXw5fvrbFaDBiI6hhCqNASHBAkYzaucOHxYJiNgNKwBtSA1wGuD/gKsBS1BlgCvBZoFrAHNQXoAlwY1Ab2gGiS/fAfgZBWKeP4I4H3GZjRo6Lru1DSNKaPve7Rtm9WQQsoIPgP4ND0AtwAOM3Zd2UXdGojokGtGEjJNUT4ZHhXWj0dLjPrUrnuWoiEEtwYiGjRooBFSq0G3gyS1LwXVxoRbQ4TUQBky12TcDpT6rQVVm8wlkdSaEUM+/GwyaVpOgeR3eUFLc9CtQUYyBWXIt0zRuR0UOvEewIdR1HdE9KLZTImkAN1vJpKbqEmO7Oq7a0zf1c9JDdS9bfynjUeCrnp3zaVuaQp456G1HqbPF/0KqQFdCvBMA1955E7Ic0Ow+ZuBUkSXjqCZup4IjluPs1BWf1snI8qf6f2MNwDOMx7N+LCrNVg1WSviT9p/A9xtIUr5SLVoAAAAAElFTkSuQmCC);
   background-repeat: no-repeat;
 }
 
