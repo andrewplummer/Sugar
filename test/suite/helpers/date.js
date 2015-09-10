@@ -179,6 +179,7 @@ testGetTimezoneHours = function(d) {
 // the locale is sometimes performed outside the Date package,
 // giving no context for run().
 testSetLocale = function(code) {
+  if (!Sugar.Date || !Sugar.Date.setLocale) return;
   return Sugar.Date.setLocale(code);
 }
 

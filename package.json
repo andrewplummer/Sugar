@@ -35,7 +35,7 @@
     "node": ">= 0.8.23"
   },
   "scripts": {
-    "test": "node test/environments/node/test.js"
+    "test": "node test/node/all.js"
   },
   "license": "MIT",
   "devDependencies": {
@@ -47,6 +47,7 @@
     "gulp-replace": "^0.5.3",
     "gulp-util": "^3.0.6",
     "merge-stream": "^0.1.8",
+    "require-reload": "^0.2.2",
     "sinon": "^1.15.4",
     "through2": "^2.0.0",
     "yargs": "^3.15.0"

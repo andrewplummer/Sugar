@@ -37,13 +37,13 @@ var HELP_MESSAGE = [
   '',
   '      array',
   '      date',
-  '      es5',
   '      function',
   '      number',
   '      object',
   '      range',
   '      regexp',
   '      string',
+  '      es5 |*|',
   '      locales |*|',
   '      language |*|',
   '      inflections |*|',
@@ -51,7 +51,6 @@ var HELP_MESSAGE = [
 ].join('\n');
 
 var DEFAULT_PACKAGES = [
-  'es5',
   'array',
   'date',
   'range',
@@ -63,7 +62,6 @@ var DEFAULT_PACKAGES = [
 ];
 
 var ALL_PACKAGES = [
-  'es5',
   'array',
   'date',
   'range',
@@ -86,6 +84,8 @@ function getFiles(packages, skipLocales) {
   files.push('lib/core.js');
   files.push('lib/common.js');
   switch(packages) {
+    case 'core':
+      return ['lib/core.js'];
     case 'default':
       arr = DEFAULT_PACKAGES;
     break;
@@ -263,35 +263,85 @@ gulp.task('precompile:min', function() {
 
 // -------------- npm ----------------
 
+var NPM_MODULES = [
+  {
+    name: 'sugar',
+    files: 'default'
+  },
+  {
+    name: 'sugar-full',
+    files: 'all'
+  },
+  {
+    name: 'sugar-core',
+    files: 'core'
+  },
+  {
+    name: 'sugar-array',
+    files: 'array'
+  },
+  {
+    name: 'sugar-date',
+    files: 'date'
+  },
+  {
+    name: 'sugar-date-locales',
+    files: 'date,locales'
+  },
+  {
+    name: 'sugar-range',
+    files: 'range'
+  },
+  {
+    name: 'sugar-function',
+    files: 'function'
+  },
+  {
+    name: 'sugar-number',
+    files: 'number'
+  },
+  {
+    name: 'sugar-object',
+    files: 'object'
+  },
+  {
+    name: 'sugar-regexp',
+    files: 'regexp'
+  },
+  {
+    name: 'sugar-string',
+    files: 'string'
+  },
+  {
+    name: 'sugar-inflections',
+    files: 'string,inflections'
+  },
+  {
+    name: 'sugar-language',
+    files: 'language'
+  }
+];
 
 gulp.task('npm', function() {
   var template = [
     '(function() {',
       "  'use strict';",
       '$1',
-      '  module.exports = EXPORT;',
+      '  module.exports = Sugar;',
       '',
     '})();'
   ].join('\n');
-  var files = getFiles(getPackages());
   var streams = [];
-  for (var i = 0; i < files.length; i++) {
-    if (!files[i].match(/common/)) {
-      var package = files[i].match(/(\w+)\.js$/)[1];
-      var isCore = package === 'core';
-      var src = isCore ? [files[i]] : ['lib/core.js', 'lib/common.js', files[i]];
-      var packageCaps = package.slice(0, 1).toUpperCase() + package.slice(1);
-      var npmExport = isCore ? 'Sugar': 'Sugar.' + packageCaps;
-      var packageTemplate = template.replace(/EXPORT/, npmExport);
-      streams.push(
-        gulp.src(src)
-          .pipe(concat('sugar-' + package + '.js', { newLine: '' }))
-          .pipe(replace(/^\s*'use strict';\n/g, ''))
-          .pipe(replace(/^.*\/\/ npm ignore\n/gim, ''))
-          .pipe(replace(/^([\s\S]+)$/m, packageTemplate))
-          .pipe(gulp.dest('release/npm/sugar-' + package))
-      );
-    }
+  for (var i = 0; i < NPM_MODULES.length; i++) {
+    var module = NPM_MODULES[i];
+    streams.push(
+      gulp.src(getFiles(module.files))
+        .pipe(concat(module.name + '.js', { newLine: '' }))
+        .pipe(replace(/^\s*'use strict';\n/g, ''))
+        .pipe(replace(/^.*\/\/ npm ignore\n/gim, ''))
+        .pipe(replace(/^([\s\S]+)$/m, template))
+        .pipe(gulp.dest('release/npm/' + module.name))
+    );
   }
   return merge(streams);
 });
