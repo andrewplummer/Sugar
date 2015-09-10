@@ -22,11 +22,11 @@
 
   function assertNamespace(namespace, assert, checkStatic, checkInstance) {
     var sugarNamespace = Sugar[namespace],
-        native = globalContext[namespace],
+        nativeClass = globalContext[namespace],
         count = 0, mappedCount = 0;
 
     function methodIsMapped(method, name) {
-      return (method.instance && method.instance === native.prototype[name]) || method === native[name];
+      return (method.instance && method.instance === nativeClass.prototype[name]) || method === nativeClass[name];
     }
 
     function checkMethod() {
@@ -82,7 +82,7 @@
     testIterateOverObject(Sugar, function(name, ns) {
       var state = nativeState[name] = {};
       nativeState[name + 'Active'] = ns.active;
-      var native = globalContext[name];
+      var nativeClass = globalContext[name];
       testIterateOverObject(ns, function(methodName, method) {
         if (!isSugarMethod(method)) {
           // Only store Sugar defined methods.
@@ -91,8 +91,8 @@
         // Store both static and instance methods as both
         // are possible, such as in the case of Object.keys.
         state[methodName] = {
-          static: native[methodName],
-          instance: native.prototype[methodName]
+          static: nativeClass[methodName],
+          instance: nativeClass.prototype[methodName]
         }
       });
     });
@@ -100,7 +100,7 @@
 
   restoreNativeState = function() {
     testIterateOverObject(Sugar, function(name, ns) {
-      var native = globalContext[name];
+      var nativeClass = globalContext[name];
       ns.active = nativeState[name + 'Active'];
       testIterateOverObject(ns, function(methodName, method) {
         if (!isSugarMethod(method)) {
@@ -115,8 +115,8 @@
           // state as undefined.
           state = {};
         }
-        restoreNative(methodName, native, state.static);
-        restoreNative(methodName, native.prototype, state.instance);
+        restoreNative(methodName, nativeClass, state.static);
+        restoreNative(methodName, nativeClass.prototype, state.instance);
       });
     });
   }

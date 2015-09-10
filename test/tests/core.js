@@ -15,12 +15,20 @@ package('Core', function() {
     });
   }
 
+  function deleteCustom() {
+    delete Sugar.Object.foo;
+    delete Sugar.String.foo;
+    delete Sugar.String.bar;
+    delete Sugar.String.moo;
+  }
+
   setup(function() {
     storeNativeState();
   });
 
   teardown(function() {
     restoreNativeState();
+    deleteCustom();
   });
 
   group('Sugar namespace', function () {
@@ -69,7 +77,9 @@ package('Core', function() {
   });
 
   group('Sugar Object extend', function () {
-    Sugar.Object.extend();
+    // Passing a boolean here to explicitly turn off object
+    // instances which may have been affected by other tests.
+    Sugar.Object.extend(false);
     assertStaticMethodsMappedToNative(['Object']);
     assertInstanceMethodsNotMappedToNative(['Object']);
     assertNoMethodsMappedToNative(['Array', 'Boolean', 'Number', 'Date', 'String', 'RegExp', 'Function']);
@@ -205,7 +215,9 @@ package('Core', function() {
   });
 
   group('Will not extend to Object.prototype after namespace extend', function () {
-    Sugar.Object.extend();
+    // Passing a boolean here to explicitly turn off object
+    // instances which may have been affected by other tests.
+    Sugar.Object.extend(false);
     Sugar.Object.defineInstance({
       foo: function() {
         return 'foo!';
