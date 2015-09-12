@@ -23,6 +23,9 @@
   // The global context
   var globalContext = typeof global !== 'undefined' ? global : window;
 
+  // Is the environment node?
+  var hasExports = typeof module !== 'undefined' && module.exports;
+
   // Internal hasOwnProperty
   var internalHasOwnProperty = object.prototype.hasOwnProperty;
 
@@ -51,7 +54,11 @@
     // namespace itself is also available for cleaner npm modules.
     setProperty(Sugar, 'extend', Sugar);
     iterateOverObject(natives, setupNamespace);
-    globalContext.Sugar = Sugar; // npm ignore
+    if (hasExports) {
+      module.exports = Sugar;
+    } else {
+      globalContext.Sugar = Sugar;
+    }
   }
 
   function setupNamespace(i, namespace) {

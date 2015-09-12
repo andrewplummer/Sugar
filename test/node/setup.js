@@ -56,6 +56,10 @@ function getPackageName(name) {
 
 function getNpmPath(name) {
   var packageName = getPackageName(name);
+  if (packageName === 'sugar') {
+    // In the root directory
+    return '../../sugar';
+  }
   return '../../release/npm/' + packageName + '/' + packageName;
 }
 
