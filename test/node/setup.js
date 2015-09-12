@@ -116,14 +116,20 @@ module.exports = {
     this.run(mod, true);
   },
 
+  reset: function() {
+    globalFailures = 0;
+  },
+
   exitOnFail: function(set) {
     exitOnFail = set;
   },
 
-  logTotals: function() {
+  logTotals: function(exit) {
     if (globalFailures) {
       notice('Fail! ' + globalFailures + ' failures', logRed);
-      process.exit(1);
+      if (exit) {
+        process.exit(1);
+      }
     } else {
       notice('Success! 0 failures', logBlue);
     }

@@ -9,8 +9,8 @@ var fs       = require('fs'),
     concat   = require('gulp-concat-util'),
     replace  = require('gulp-replace'),
     through  = require('through2'),
+    reload   = require('require-reload')(require),
     compiler = require('closure-compiler-stream');
-
 
 var COMPIER_JAR_PATH = 'bower_components/closure-compiler/compiler.jar';
 var PRECOMPILED_MIN_DIR = 'release/precompiled/minified/';
@@ -253,10 +253,6 @@ gulp.task('release', function() {
   return merge(buildDevelopment('default'), buildMinified('default'));
 });
 
-gulp.task('dev:all', function() {
-  return buildDevelopment('all');
-});
-
 gulp.task('precompile:dev', function() {
   var files = getFiles('all').filter(function(path) {
     return !path.match(/locales/);
@@ -360,12 +356,18 @@ gulp.task('npm', function() {
 // -------------- Test ----------------
 
 
-gulp.task('test', function() {
-  require('./test/node/all.js');
+gulp.task('test', function(cb) {
+  reload('./test/node/watch.js');
+  cb();
+});
+
+gulp.task('test-build', ['npm'], function(cb) {
+  reload('./test/node/watch.js');
+  cb();
 });
 
 gulp.task('test:watch', function() {
-  gulp.watch(['lib/**/*.js'], ['dev:all', 'test']);
+  gulp.watch(['lib/**/*.js'], ['test-build']);
   gulp.watch(['test/**/*.js'], ['test']);
 });
 

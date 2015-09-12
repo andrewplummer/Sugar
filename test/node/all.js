@@ -1,4 +1,5 @@
 var runner = require('./setup');
+
 runner.exitOnFail(false);
 
 runner.notice('Default Tests');
@@ -34,4 +35,4 @@ require('./native/string.js');
 require('./native/sugar.js');
 require('./native/full.js');
 
-runner.logTotals();
+runner.logTotals(true);
