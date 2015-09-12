@@ -1,8 +1,8 @@
 package('Core', function() {
   "use strict";
 
-  function defineCustom() {
-    Sugar.String.defineInstance({
+  function defineCustom(target) {
+    var methods = {
       foo: function() {
         return 'foo!';
       },
@@ -12,11 +12,19 @@ package('Core', function() {
       moo: function() {
         return 'moo!';
       }
-    });
+    };
+    if (target === Sugar.Object) {
+      methods.foo.static = true;
+      methods.bar.static = true;
+      methods.moo.static = true;
+    }
+    target.defineInstance(methods);
   }
 
   function deleteCustom() {
     delete Sugar.Object.foo;
+    delete Sugar.Object.bar;
+    delete Sugar.Object.moo;
     delete Sugar.String.foo;
     delete Sugar.String.bar;
     delete Sugar.String.moo;
@@ -27,6 +35,9 @@ package('Core', function() {
   });
 
   teardown(function() {
+    // Passing a boolean here to explicitly turn off object
+    // instances which may have been turned on by the tests.
+    Sugar.Object.extend(false);
     restoreNativeState();
     deleteCustom();
   });
@@ -77,9 +88,6 @@ package('Core', function() {
   });
 
   group('Sugar Object extend', function () {
-    // Passing a boolean here to explicitly turn off object
-    // instances which may have been affected by other tests.
-    Sugar.Object.extend(false);
     assertStaticMethodsMappedToNative(['Object']);
     assertInstanceMethodsNotMappedToNative(['Object']);
     assertNoMethodsMappedToNative(['Array', 'Boolean', 'Number', 'Date', 'String', 'RegExp', 'Function']);
@@ -98,21 +106,21 @@ package('Core', function() {
   });
 
   group('Extending by name namespace', function () {
-    defineCustom();
+    defineCustom(Sugar.String);
     Sugar.String('foo');
     equal(''.foo(), 'foo!', 'foo has been mapped');
     equal(''.bar, undefined, 'bar has not been mapped');
   });
 
   group('Extending by name extend', function () {
-    defineCustom();
+    defineCustom(Sugar.String);
     Sugar.String.extend('foo');
     equal(''.foo(), 'foo!', 'foo has been mapped');
     equal(''.bar, undefined, 'bar has not been mapped');
   });
 
   group('Extending by name namespace with array', function () {
-    defineCustom();
+    defineCustom(Sugar.String);
     Sugar.String(['foo', 'bar']);
     equal(''.foo(), 'foo!', 'foo has been mapped');
     equal(''.bar(), 'bar!', 'bar has been mapped');
@@ -120,7 +128,7 @@ package('Core', function() {
   });
 
   group('Extending by name extend with array', function () {
-    defineCustom();
+    defineCustom(Sugar.String);
     Sugar.String.extend(['foo', 'bar']);
     equal(''.foo(), 'foo!', 'foo has been mapped');
     equal(''.bar(), 'bar!', 'bar has been mapped');
@@ -209,30 +217,41 @@ package('Core', function() {
 
   group('Custom Methods after extending', function () {
     Sugar.String.extend();
-    defineCustom();
+    defineCustom(Sugar.String);
     equal(Sugar.String.foo(), 'foo!', 'Namespace method exists when defined after namespace extend');
     equal('wasabi'.foo(), 'foo!', 'Instance method exists when defined after namespace extend');
   });
 
   group('Will not extend to Object.prototype after namespace extend', function () {
-    // Passing a boolean here to explicitly turn off object
-    // instances which may have been affected by other tests.
-    Sugar.Object.extend(false);
-    Sugar.Object.defineInstance({
-      foo: function() {
-        return 'foo!';
-      }
-    });
+    defineCustom(Sugar.Object);
     equal(({}).foo, undefined, 'foo has not been mapped');
   });
 
   group('Will extend to Object.prototype after namespace extend', function () {
     Sugar.Object.extend(true);
-    Sugar.Object.defineInstance({
-      foo: function() {
-        return 'foo!';
-      }
-    });
+    defineCustom(Sugar.Object);
     equal(({}).foo(), 'foo!', 'foo has been mapped');
+  });
+
+  group('Can extend single method to object without prototype extension', function () {
+    defineCustom(Sugar.Object);
+    Sugar.Object.extend('foo');
+    equal(Object.foo(), 'foo!', 'foo static has been mapped');
+    equal(Object.bar, undefined, 'bar static has not been mapped');
+    equal(Object.moo, undefined, 'moo static has not been mapped');
+    equal(({}).foo, undefined, 'foo instance has not been mapped');
+    equal(({}).bar, undefined, 'bar instance has not been mapped');
+    equal(({}).moo, undefined, 'moo instance has not been mapped');
+  });
+
+  group('Can extend single method to object prototype', function () {
+    defineCustom(Sugar.Object);
+    Sugar.Object.extend('foo', true);
+    equal(Object.foo(), 'foo!', 'foo static has been mapped');
+    equal(Object.bar, undefined, 'bar static has not been mapped');
+    equal(Object.moo, undefined, 'moo static has not been mapped');
+    equal(({}).foo(), 'foo!', 'foo has been mapped');
+    equal(({}).bar, undefined, 'bar has not been mapped');
+    equal(({}).moo, undefined, 'moo has not been mapped');
   });
 });
