@@ -15,13 +15,46 @@
     return true;
   }
 
+  function capitalize(str) {
+    if (str.match(/^es\d$/)) {
+      return str.toUpperCase();
+    }
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  }
+
   function commaSeparate(n) {
     return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   }
 
+  function getSplitPath() {
+    var match = document.location.pathname.match(/(\w+)\/(\w+)\/([\w-]+)\.html$/);
+    return [match[1], match[2], match[3]];
+  }
+
+  function getTestName() {
+    var path = getSplitPath();
+    var testName = capitalize(path[2]);
+    var isNative = path[0] === 'native';
+    var isMin = path[1] === 'min';
+    if (isNative || isMin) {
+      var tokens = [];
+      if (isNative) {
+        tokens.push('extended');
+      }
+      if (isMin) {
+        tokens.push('minified');
+      }
+      testName += ' (' + tokens.join(' | ') + ')';
+    }
+    return testName;
+  }
+
   function createHTML() {
+    var testName = getTestName();
+    document.title = 'Sugar ' + testName;
     $(document.body).append([
       '<div class="set">',
+        '<h4 class="name">' + testName + '</h4>',
         '<div class="loading">Running tests.</div>',
         '<ul id="tests" class="tests"></ul>',
         '<p id="stats" class="stats"></p>',
@@ -127,7 +160,10 @@
     $('#tests [title]').tooltip({ color: 'black' });
   }
 
-  window.createHTML = createHTML;
+  $(document).ready(function() {
+    createHTML();
+  });
+
   window.testsFinished = testsFinished;
 
 })(jQuery);

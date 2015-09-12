@@ -35,7 +35,7 @@
     "node": ">= 0.8.23"
   },
   "scripts": {
-    "test": "node test/node/index.js"
+    "test": "node test/node/all.js"
   },
   "license": "MIT",
   "devDependencies": {

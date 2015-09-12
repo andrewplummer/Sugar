@@ -1,9 +1,6 @@
-var reload = require('require-reload')(require);
-
-require('../setup');
+var runner = require('../setup');
 
 // Tests
-reload('../../tests/language.js');
+runner.loadTest('language');
 
-setSugarGlobal(require( '../../../release/npm/sugar-language/sugar-language'));
-runTests(logResults, false, 'node');
+runner.run(module);

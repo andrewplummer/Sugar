@@ -1,11 +1,8 @@
-var reload = require('require-reload')(require);
-
-require('../setup');
+var runner = require('../setup');
 
 // Tests
-reload('../../tests/es5.js');
-reload('../../tests/array.js');
-reload('../../tests/enumerable.js');
+runner.loadTest('es5');
+runner.loadTest('array');
+runner.loadTest('enumerable');
 
-setSugarGlobal(require( '../../../release/npm/sugar-array/sugar-array'));
-runTests(logResults, false, 'node');
+runner.run(module);

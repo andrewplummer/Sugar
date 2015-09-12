@@ -1,24 +1,20 @@
-var reload = require('require-reload')(require);
-
-require('../setup');
+var runner = require('../setup');
 
 // Tests
-reload('../../tests/date.js');
-reload('../../tests/date_da.js');
-reload('../../tests/date_de.js');
-reload('../../tests/date_es.js');
-reload('../../tests/date_fi.js');
-reload('../../tests/date_fr.js');
-reload('../../tests/date_it.js');
-reload('../../tests/date_ja.js');
-reload('../../tests/date_ko.js');
-reload('../../tests/date_nl.js');
-reload('../../tests/date_pt.js');
-reload('../../tests/date_ru.js');
-reload('../../tests/date_sv.js');
-reload('../../tests/date_zh_cn.js');
-reload('../../tests/date_zh_tw.js');
+runner.loadTest('date');
+runner.loadTest('date_da');
+runner.loadTest('date_de');
+runner.loadTest('date_es');
+runner.loadTest('date_fi');
+runner.loadTest('date_fr');
+runner.loadTest('date_it');
+runner.loadTest('date_ja');
+runner.loadTest('date_ko');
+runner.loadTest('date_nl');
+runner.loadTest('date_pt');
+runner.loadTest('date_ru');
+runner.loadTest('date_sv');
+runner.loadTest('date_zh_cn');
+runner.loadTest('date_zh_tw');
 
-
-setSugarGlobal(require( '../../../release/npm/sugar-date-locales/sugar-date-locales'));
-runTests(logResults, false, 'node');
+runner.run(module);
