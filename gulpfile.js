@@ -5,6 +5,7 @@ var fs       = require('fs'),
     path     = require('path'),
     args     = require('yargs').argv,
     util     = require('gulp-util'),
+    mkdirp   = require('mkdirp'),
     merge    = require('merge-stream'),
     concat   = require('gulp-concat-util'),
     replace  = require('gulp-replace'),
@@ -31,7 +32,7 @@ var HELP_MESSAGE = [
   '    %Options%',
   '',
   '      -p, --packages PACKAGES      Comma separated packages to include (optional). Packages below (non-default marked with |*|).',
-  '      -v, --version VERSION        Version (optional). Default: "custom".',
+  '      -v, --version VERSION        Version (optional).',
   '',
   '    %Packages%',
   '',
@@ -153,17 +154,8 @@ function getFilename(name, min) {
   return name + (min ? '.min' : '') + '.js';
 }
 
-function getPackageFilename(packages, min) {
-  switch(packages) {
-    case 'default':
-      return getFilename('sugar', min);
-    default:
-      return getFilename('sugar-custom', min);
-  }
-}
-
 function getVersion() {
-  return args.v || args.version || 'custom';
+  return args.v || args.version || '';
 }
 
 function getLicense() {
@@ -174,7 +166,7 @@ function getLicense() {
     .replace(/\n$/, '');
 }
 
-function buildDevelopment(packages) {
+function buildDevelopment(packages, path) {
   var template = [
     getLicense(),
     '(function() {',
@@ -182,9 +174,9 @@ function buildDevelopment(packages) {
       '$1',
     '})();'
   ].join('\n');
-  var filename = getPackageFilename(packages);
   var files = getFiles(packages);
-  util.log(util.colors.yellow('Building:', packages));
+  var filename = getFilename(path || 'sugar');
+  util.log(util.colors.yellow('Building:', filename));
   return gulp.src(files)
     .pipe(concat(filename, { newLine: '' }))
     .pipe(replace(/^\s*'use strict';\n/g, ''))
@@ -192,16 +184,16 @@ function buildDevelopment(packages) {
     .pipe(gulp.dest('.'));
 }
 
-function buildMinified(packages) {
+function buildMinified(packages, path) {
   try {
     fs.lstatSync(COMPIER_JAR_PATH);
   } catch(e) {
     util.log(util.colors.red('Closure compiler missing!'), 'Run', util.colors.yellow('bower install'));
     return;
   }
-  var filename = getPackageFilename(packages, true);
   var files = getFiles(packages);
-  util.log(util.colors.yellow('Minifying:', packages));
+  var filename = getFilename(path || 'sugar', true);
+  util.log(util.colors.yellow('Minifying:', filename));
   return gulp.src(files).pipe(compileSingle(filename));
 }
 
@@ -327,23 +319,57 @@ var NPM_MODULES = [
   }
 ];
 
+function getKeywords(name, keywords) {
+  if (!name.match(/date|full/)) {
+    keywords = keywords.filter(function(k) {
+      return k !== 'date' && k !== 'time';
+    });
+  }
+  return keywords;
+}
+
+function getModulePackage(name, mainPackage) {
+  var package = JSON.parse(JSON.stringify(mainPackage));
+  package.name = name;
+  package.main = name + '.js';
+  package.keywords = getKeywords(name, package.keywords);
+  delete package.files;
+  delete package.scripts;
+  delete package.devDependencies;
+  return JSON.stringify(package, null, 2);
+}
+
+function getModuleComponent(name, mainComponent) {
+  var component = JSON.parse(JSON.stringify(mainComponent));
+  component.name = name;
+  component.scripts = [name + '.js'];
+  component.keywords = getKeywords(name, component.keywords);
+  return JSON.stringify(component, null, 2);
+}
+
 gulp.task('npm', function() {
-  var template = [
-    '(function() {',
-      "  'use strict';",
-      '$1',
-    '})();'
-  ].join('\n');
+  var streams = [];
+  var mainPackage = require('./package.json');
+  var mainComponent = require('./component.json');
+  for (var i = 0; i < NPM_MODULES.length; i++) {
+    var module = NPM_MODULES[i];
+    var path = 'release/npm/' + module.name + '/';
+    mkdirp.sync(path);
+    fs.writeFileSync(path + 'package.json', getModulePackage(module.name, mainPackage));
+    fs.writeFileSync(path + 'component.json', getModuleComponent(module.name, mainComponent));
+    streams.push(buildDevelopment(module.files, path + module.name));
+    streams.push(gulp.src(['LICENSE', 'README.md', 'CHANGELOG.md']).pipe(gulp.dest(path)));
+  }
+  return merge(streams);
+});
+
+gulp.task('npm:min', function() {
   var streams = [];
   for (var i = 0; i < NPM_MODULES.length; i++) {
     var module = NPM_MODULES[i];
-    streams.push(
-      gulp.src(getFiles(module.files))
-        .pipe(concat(module.name + '.js', { newLine: '' }))
-        .pipe(replace(/^\s*'use strict';\n/g, ''))
-        .pipe(replace(/^([\s\S]+)$/m, template))
-        .pipe(gulp.dest('release/npm/' + module.name))
-    );
+    var path = 'release/npm/' + module.name + '/';
+    mkdirp.sync(path);
+    streams.push(buildMinified(module.files, path + module.name));
   }
   return merge(streams);
 });
