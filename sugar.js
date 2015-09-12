@@ -313,10 +313,10 @@
 
 
   // A few optimizations for Google Closure Compiler will save us a couple kb in the release script.
+  // Not doing this for RegExp as it prevents regex optimization.
   var Undefined,
       object = Object,
       array  = Array,
-      regexp = RegExp,
       date   = Date,
       string = String,
       number = Number,
@@ -335,7 +335,7 @@
   var internalToString = object.prototype.toString;
 
   // Are regexes type function?
-  var regexIsFunction = typeof regexp() === 'function';
+  var regexIsFunction = typeof RegExp() === 'function';
 
   // Do strings have no keys?
   var noKeysInStringObjects = !('0' in new string('a'));
@@ -528,7 +528,9 @@
 
   // Hash definition
 
-  function Hash(obj) {
+  // Compiler is known to barf unless this
+  // is defined as a variable with "var".
+  var Hash = function Hash(obj) {
     simpleMerge(this, coercePrimitiveToObject(obj));
   };
 
@@ -585,7 +587,7 @@
     // Mapping this to itself to easily be able to easily
     // capture it in stringToNumber to detect decimals later.
     NumberNormalizeMap[HalfWidthPeriod] = HalfWidthPeriod;
-    NumberNormalizeReg = regexp('[' + FullWidthDigits + FullWidthPeriod + HalfWidthComma + HalfWidthPeriod + ']', 'g');
+    NumberNormalizeReg = RegExp('[' + FullWidthDigits + FullWidthPeriod + HalfWidthComma + HalfWidthPeriod + ']', 'g');
   }
 
   // String helpers
@@ -839,7 +841,7 @@
   var AlphanumericSortNatural     = 'AlphanumericSortNatural';
 
   function regexMatcher(reg) {
-    reg = regexp(reg);
+    reg = RegExp(reg);
     return function (el) {
       return reg.test(el);
     }
@@ -894,7 +896,7 @@
       // Do nothing and fall through to the
       // default matcher below.
     } else if (isRegExp(f)) {
-      // Match against a regexp
+      // Match against a RegExp
       return regexMatcher(f);
     } else if (isDate(f)) {
       // Match against a date. isEqual below should also
@@ -2396,7 +2398,7 @@
 
     getNumericDate: function(n) {
       var self = this;
-      return n.replace(regexp(this.num, 'g'), function(d) {
+      return n.replace(RegExp(this.num, 'g'), function(d) {
         var num = self.getNumber(d, true);
         return num || '';
       });
@@ -2673,7 +2675,7 @@
     locale.compiledFormats.unshift({
       variant: !!variant,
       locale: locale,
-      reg: regexp('^' + format + '$', 'i'),
+      reg: RegExp('^' + format + '$', 'i'),
       to: match
     });
   }
@@ -4021,7 +4023,7 @@
     // CJK numerals may also be included in phrases which are text-based rather
     // than actual numbers such as Chinese weekdays (上周三), and "the day before
     // yesterday" (一昨日) in Japanese, so don't match these.
-    CJKDigitReg = regexp('([期週周])?([' + CJKDigits + FullWidthDigits + ']+)(?!昨)', 'g');
+    CJKDigitReg = RegExp('([期週周])?([' + CJKDigits + FullWidthDigits + ']+)(?!昨)', 'g');
   }
 
    /***
@@ -4857,9 +4859,9 @@
   var DATE_UNITS               = 'year|month|week|day|hour|minute|(?:milli)?second';
   var FULL_CAPTURED_DURATION   = '((?:\\d+)?\\s*(?:' + DATE_UNITS + '))s?';
   var RANGE_REG                = /(?:from)?\s*(.+)\s+(?:to|until)\s+(.+)$/i;
-  var DURATION_REG             = regexp('(\\d+)?\\s*('+ DATE_UNITS +')s?', 'i');
-  var RANGE_REG_FRONT_DURATION = regexp('(?:for)?\\s*'+ FULL_CAPTURED_DURATION +'\\s*(?:starting)?\\s*at\\s*(.+)', 'i');
-  var RANGE_REG_REAR_DURATION  = regexp('(.+)\\s*for\\s*' + FULL_CAPTURED_DURATION, 'i');
+  var DURATION_REG             = RegExp('(\\d+)?\\s*('+ DATE_UNITS +')s?', 'i');
+  var RANGE_REG_FRONT_DURATION = RegExp('(?:for)?\\s*'+ FULL_CAPTURED_DURATION +'\\s*(?:starting)?\\s*at\\s*(.+)', 'i');
+  var RANGE_REG_REAR_DURATION  = RegExp('(.+)\\s*for\\s*' + FULL_CAPTURED_DURATION, 'i');
 
   function Range(start, end) {
     this.start = cloneRangeMember(start);
@@ -6225,7 +6227,7 @@
     if (isDate(sourceVal)) {
       return new date(sourceVal.getTime());
     } else if (isRegExp(sourceVal)) {
-      return new regexp(sourceVal.source, getRegExpFlags(sourceVal));
+      return RegExp(sourceVal.source, getRegExpFlags(sourceVal));
     } else {
       if (!isObjectType(targetVal)) targetVal = isArray(sourceVal) ? [] : {};
       return objectMerge(targetVal, sourceVal, deep, resolve);
@@ -6712,7 +6714,7 @@
     *
     ***/
     'setFlags': function(r, flags) {
-      return regexp(r.source, flags);
+      return RegExp(r.source, flags);
     },
 
    /***
@@ -6725,7 +6727,7 @@
     *
     ***/
     'addFlag': function(r, flag) {
-      return regexp(r.source, getRegExpFlags(r, flag));
+      return RegExp(r.source, getRegExpFlags(r, flag));
     },
 
    /***
@@ -6738,7 +6740,7 @@
     *
     ***/
     'removeFlag': function(r, flag) {
-      return regexp(r.source, getRegExpFlags(r).replace(flag, ''));
+      return RegExp(r.source, getRegExpFlags(r).replace(flag, ''));
     }
 
   });
@@ -6859,9 +6861,9 @@
     } else if (!search) {
       search = /[\s\S]/g
     } else if (isString(search)) {
-      search = regexp(escapeRegExp(search), 'gi');
+      search = RegExp(escapeRegExp(search), 'gi');
     } else if (isRegExp(search)) {
-      search = regexp(search.source, getRegExpFlags(search, 'g'));
+      search = RegExp(search.source, getRegExpFlags(search, 'g'));
     }
     chunks = str.match(search) || [];
     if (fn) {
@@ -6922,7 +6924,7 @@
     if (fromLeft) {
       return reverseString(truncateOnWord(reverseString(str), limit));
     }
-    var reg = regexp('(?=[' + getTrimmableCharacters() + '])');
+    var reg = RegExp('(?=[' + getTrimmableCharacters() + '])');
     var words = str.split(reg);
     var count = 0;
     return words.filter(function(word) {
@@ -6951,7 +6953,7 @@
     tags = args.map(function(tag) {
       return escapeRegExp(tag);
     }).join('|');
-    reg = regexp('<(\\/)?(' + (tags || '[^\\s>]+') + ')(\\s+[^<>]*?)?\\s*(\\/)?>', 'gi');
+    reg = RegExp('<(\\/)?(' + (tags || '[^\\s>]+') + ')(\\s+[^<>]*?)?\\s*(\\/)?>', 'gi');
     return runTagReplacements(str.toString(), reg, strip, replacementFn);
   }
 
@@ -6981,7 +6983,7 @@
     }
 
     fullString = fullString || str;
-    reg = regexp(reg.source, 'gi');
+    reg = RegExp(reg.source, 'gi');
 
     while(match = reg.exec(str)) {
 
@@ -7796,11 +7798,11 @@
      ***/
 
     'trimLeft': function(str) {
-      return str.replace(regexp('^['+getTrimmableCharacters()+']+'), '');
+      return str.replace(RegExp('^['+getTrimmableCharacters()+']+'), '');
     },
 
     'trimRight': function(str) {
-      return str.replace(regexp('['+getTrimmableCharacters()+']+$'), '');
+      return str.replace(RegExp('['+getTrimmableCharacters()+']+$'), '');
     }
 
   });
@@ -7889,6 +7891,5 @@
 
   polyfillStartEndsWith();
   buildBase64('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=');
-
 
 })();
