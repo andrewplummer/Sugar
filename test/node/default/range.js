@@ -1,11 +1,8 @@
-var reload = require('require-reload')(require);
-
-require('../setup');
+var runner = require('../setup');
 
 // Tests
-reload('../../tests/date_range.js');
-reload('../../tests/number_range.js');
-reload('../../tests/string_range.js');
+runner.loadTest('date_range');
+runner.loadTest('number_range');
+runner.loadTest('string_range');
 
-setSugarGlobal(require( '../../../release/npm/sugar-range/sugar-range'));
-runTests(logResults, false, 'node');
+runner.run(module);

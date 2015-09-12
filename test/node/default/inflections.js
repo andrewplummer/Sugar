@@ -1,9 +1,6 @@
-var reload = require('require-reload')(require);
-
-require('../setup');
+var runner = require('../setup');
 
 // Tests
-reload('../../tests/inflections.js');
+runner.loadTest('inflections');
 
-setSugarGlobal(require( '../../../release/npm/sugar-inflections/sugar-inflections'));
-runTests(logResults, false, 'node');
+runner.run(module);

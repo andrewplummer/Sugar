@@ -195,13 +195,6 @@
     return currentTest;
   }
 
-  // Required to pass the Sugar global in npm as it's
-  // not exposed on the global context. Certain tests
-  // are testing the global even when testNatives is active.
-  setSugarGlobal = function(g) {
-    Sugar = g;
-  }
-
   function getTestsToRun() {
     var focusedPackagesExist;
 

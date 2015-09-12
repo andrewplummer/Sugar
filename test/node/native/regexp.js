@@ -1,9 +1,6 @@
-var reload = require('require-reload')(require);
-
-require('../setup');
+var runner = require('../setup');
 
 // Tests
-reload('../../tests/regexp.js');
+runner.loadTest('regexp');
 
-setSugarGlobal(require( '../../../release/npm/sugar-regexp/sugar-regexp')());
-runTests(logResults, true, 'node');
+runner.runNative(module);

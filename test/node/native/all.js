@@ -1,3 +1,6 @@
+var runner = require('../setup');
+runner.exitOnFail(false);
+
 require('./array.js');
 require('./date.js');
 require('./date-locales.js');
@@ -11,3 +14,5 @@ require('./regexp.js');
 require('./string.js');
 require('./sugar.js');
 require('./full.js');
+
+runner.logTotals();
