@@ -11,6 +11,7 @@ var fs       = require('fs'),
     through  = require('through2'),
     compiler = require('closure-compiler-stream');
 
+
 var COMPIER_JAR_PATH = 'bower_components/closure-compiler/compiler.jar';
 var PRECOMPILED_MIN_DIR = 'release/precompiled/minified/';
 var PRECOMPILED_DEV_DIR = 'release/precompiled/development/';
@@ -23,14 +24,14 @@ var HELP_MESSAGE = [
   '',
   '    %Tasks%',
   '',
-  '      |dev|                          Build non-minified (concatenate files only).',
-  '      |min|                          Build minified release.',
+  '      |dev|                          Non-minified build (concatenate files only).',
+  '      |min|                          Minified build.',
   '      |help|                         Show this message.',
   '',
   '    %Options%',
   '',
-  '      -p, --packages PACKAGES      Comma separated packages to include. Packages listed below (non-default marked with |*|).',
-  '      -r, --release RELEASE        Release name. Default: "custom".',
+  '      -p, --packages PACKAGES      Comma separated packages to include (optional). Packages below (non-default marked with |*|).',
+  '      -v, --version VERSION        Version (optional). Default: "custom".',
   '',
   '    %Packages%',
   '',
@@ -47,6 +48,17 @@ var HELP_MESSAGE = [
   '      language |*|',
   '      inflections |*|',
   ''
+].join('\n');
+
+var COPYRIGHT = [
+  '/*',
+  ' *  Sugar Library VERSION',
+  ' *',
+  ' *  Freely distributable and licensed under the MIT-style license.',
+  ' *  Copyright (c) YEAR Andrew Plummer',
+  ' *  http://sugarjs.com/',
+  ' *',
+  ' * ---------------------------- */'
 ].join('\n');
 
 var DEFAULT_PACKAGES = [
@@ -145,21 +157,19 @@ function getPackageFilename(packages, min) {
   switch(packages) {
     case 'default':
       return getFilename('sugar', min);
-    case 'all':
-      return getFilename('sugar-full', min);
     default:
       return getFilename('sugar-custom', min);
   }
 }
 
-function getRelease() {
-  return args.r || args.release || 'custom';
+function getVersion() {
+  return args.v || args.version || 'custom';
 }
 
 function getLicense() {
-  var release = getRelease();
-  return fs.readFileSync('release/copyright.txt', 'utf-8')
-    .replace(/VERSION/, release.match(/[\d.]+/) ? 'v' + release : release)
+  var version = getVersion();
+  return COPYRIGHT
+    .replace(/VERSION/, version.match(/[\d.]+/) ? 'v' + version : version)
     .replace(/YEAR/, new Date().getFullYear())
     .replace(/\n$/, '');
 }
@@ -179,7 +189,7 @@ function buildDevelopment(packages) {
     .pipe(concat(filename, { newLine: '' }))
     .pipe(replace(/^\s*'use strict';\n/g, ''))
     .pipe(replace(/^([\s\S]+)$/m, template))
-    .pipe(gulp.dest('release'));
+    .pipe(gulp.dest('.'));
 }
 
 function buildMinified(packages) {
@@ -192,7 +202,7 @@ function buildMinified(packages) {
   var filename = getPackageFilename(packages, true);
   var files = getFiles(packages);
   util.log(util.colors.yellow('Minifying:', packages));
-  return gulp.src(files).pipe(compileSingle('release/' + filename));
+  return gulp.src(files).pipe(compileSingle(filename));
 }
 
 // -------------- Compiler ----------------
@@ -232,19 +242,19 @@ gulp.task('dev', function() {
   return buildDevelopment(getPackages());
 });
 
-gulp.task('dev:all', function() {
-  return buildDevelopment('all');
-});
-
 gulp.task('min', function(done) {
   return buildMinified(getPackages());
 });
 
 gulp.task('release', function() {
   util.log(util.colors.blue('-------------------------------'));
-  util.log(util.colors.blue('Creating release:', getRelease()));
+  util.log(util.colors.blue('Building release:', getVersion()));
   util.log(util.colors.blue('-------------------------------'));
-  return merge(buildDevelopment('default'), buildMinified('default'), buildDevelopment('all'), buildMinified('all'));
+  return merge(buildDevelopment('default'), buildMinified('default'));
+});
+
+gulp.task('dev:all', function() {
+  return buildDevelopment('all');
 });
 
 gulp.task('precompile:dev', function() {
@@ -267,10 +277,6 @@ gulp.task('precompile:min', function() {
 // -------------- npm ----------------
 
 var NPM_MODULES = [
-  {
-    name: 'sugar',
-    files: 'default'
-  },
   {
     name: 'sugar-full',
     files: 'all'
@@ -353,6 +359,10 @@ gulp.task('npm', function() {
 
 // -------------- Test ----------------
 
+
+gulp.task('test', function() {
+  require('./test/node/all.js');
+});
 
 gulp.task('test:watch', function() {
   gulp.watch(['lib/**/*.js'], ['dev:all', 'test']);
@@ -461,8 +471,8 @@ gulp.task('docs', function() {
 
       function getPackageSize(package) {
         var name = package.replace(/\s/g, '_').toLowerCase();
-        var dPath = 'release/precompiled/development/' + name + '.js';
-        var mPath = 'release/precompiled/minified/' + name + '.js';
+        var dPath = PRECOMPILED_DEV_DIR + name + '.js';
+        var mPath = PRECOMPILED_MIN_DIR + name + '.js';
         packages[package]['size'] = getFileSize(dPath);
         packages[package]['min_size'] = getGzippedFileSize(mPath);
       }
