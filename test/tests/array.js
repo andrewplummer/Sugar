@@ -16,6 +16,27 @@ package('Array', function () {
   var arrayOfUndefinedWith1 = [1];
   arrayOfUndefinedWith1.push(undefined);
 
+  var storedProps = {};
+
+  function storeAlphanumericProps() {
+    storedProps.AlphanumericSort            = Sugar.Array.AlphanumericSort;
+    storedProps.AlphanumericSortOrder       = Sugar.Array.AlphanumericSortOrder;
+    storedProps.AlphanumericSortIgnore      = Sugar.Array.AlphanumericSortIgnore;
+    storedProps.AlphanumericSortIgnoreCase  = Sugar.Array.AlphanumericSortIgnoreCase;
+    storedProps.AlphanumericSortNatural     = Sugar.Array.AlphanumericSortNatural;
+    storedProps.AlphanumericSortEquivalents = testClone(Sugar.Array.AlphanumericSortEquivalents);
+  }
+
+  function restoreAlphanumericProps() {
+    Sugar.Array.AlphanumericSort            = storedProps.AlphanumericSort;
+    Sugar.Array.AlphanumericSortOrder       = storedProps.AlphanumericSortOrder;
+    Sugar.Array.AlphanumericSortIgnore      = storedProps.AlphanumericSortIgnore;
+    Sugar.Array.AlphanumericSortIgnoreCase  = storedProps.AlphanumericSortIgnoreCase;
+    Sugar.Array.AlphanumericSortEquivalents = storedProps.AlphanumericSortEquivalents;
+    Sugar.Array.AlphanumericSortNatural     = storedProps.AlphanumericSortNatural;
+  }
+
+
 
   method('every', function() {
     var fn, arr;
@@ -1802,11 +1823,7 @@ package('Array', function () {
   method('sortBy', function() {
     var arr;
 
-    var CapturedSortOrder       = Sugar.Array.AlphanumericSortOrder;
-    var CapturedSortIgnore      = Sugar.Array.AlphanumericSortIgnore;
-    var CapturedSortIgnoreCase  = Sugar.Array.AlphanumericSortIgnoreCase;
-    var CapturedSortEquivalents = Sugar.Array.AlphanumericSortEquivalents;
-
+    storeAlphanumericProps();
 
     test([0,1,2,3,4], [0,1,2,3,4], '0 is properly sorted');
     test(['0','1','2','3','4'], ['0','1','2','3','4'], 'string numerals are properly sorted');
@@ -2233,16 +2250,12 @@ package('Array', function () {
     Sugar.Array.AlphanumericSortIgnore = /[abcde]/g;
     test(arr, expected, 'allows custom ignore');
 
+    restoreAlphanumericProps();
     Sugar.Array.AlphanumericSortOrder = 'cba';
-    Sugar.Array.AlphanumericSortIgnore = CapturedSortIgnore;
     arr = ['cotÉ', 'cÔte', 'cÔtÉ', 'andere', 'ändere'];
     test(arr, arr, 'cba');
 
-    Sugar.Array.AlphanumericSortOrder = CapturedSortOrder;
-    Sugar.Array.AlphanumericSortIgnore = CapturedSortIgnore;
-    Sugar.Array.AlphanumericSortIgnoreCase = CapturedSortIgnoreCase;
-    Sugar.Array.AlphanumericSortEquivalents = CapturedSortEquivalents;
-
+    restoreAlphanumericProps();
 
     // Issue #282
 
@@ -2359,6 +2372,8 @@ package('Array', function () {
     ]
 
     test(arr, expected, 'sorting arrays of uneven length');
+
+    restoreAlphanumericProps();
 
   });
 
