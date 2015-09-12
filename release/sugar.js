@@ -8,7 +8,6 @@
  * ---------------------------- */
 (function() {
   'use strict';
-  
 
   /***
    * @package Core
@@ -24,9 +23,6 @@
   // The global context
   var globalContext = typeof global !== 'undefined' ? global : window;
 
-  // Is the environment node?
-  var hasExports = typeof module !== 'undefined' && module.exports;
-
   // Internal hasOwnProperty
   var internalHasOwnProperty = object.prototype.hasOwnProperty;
 
@@ -35,14 +31,18 @@
   var propertyDescriptorSupport = !!(object.defineProperty && object.defineProperties);
 
   // Natives by name.
-  var natives = 'Boolean,Number,String,Array,Date,RegExp,Function'.split(',');
+  var natives = 'Boolean,Number,String,Array,Date,RegExp,Function,Object'.split(',');
+
+  // Whether object instance methods can be mapped to the prototype.
+  var allowObjectInstance = false;
 
   function setupGlobal() {
     Sugar = function extend() {
-      // Extend all natives except Object.
       for (var i = 0; i < natives.length; i++) {
         Sugar[natives[i]].extend();
       }
+      // return self
+      return Sugar;
     };
     // There are 2 identical methods for extending with Sugar:
     // 1. Sugar.extend();
@@ -50,70 +50,80 @@
     // The "extend" method is more explicit and preferred, but the
     // namespace itself is also available for cleaner npm modules.
     setProperty(Sugar, 'extend', Sugar);
-    if (hasExports) {
-      module.exports = Sugar;
-    } else {
-      globalContext.Sugar = Sugar;
-    }
-    setupNamespaces();
+    iterateOverObject(natives, setupNamespace);
+    globalContext.Sugar = Sugar; // npm ignore
   }
 
-  function setupNamespaces() {
-    iterateOverObject(natives.concat('Object'), function(i, namespace) {
+  function setupNamespace(i, namespace) {
+    var nativeClass = globalContext[namespace],
+        isObject = nativeClass === object;
 
-      // Namespace method, i.e. Sugar.Array() or Sugar.Array.extend()
-      function extend(methodsByName) {
-        var staticMethods = {}, instanceMethods = {};
-        if (typeof methodsByName === 'string') {
-          methodsByName = [methodsByName];
-        }
-        iterateOverObject(methodsByName || Sugar[namespace], function(methodName, method) {
-          if (methodsByName) {
-            // If we have method names passed in an array,
-            // then we need to flip the key and value here
-            // and find the method in the Sugar namespace.
-            methodName = method;
-            method = Sugar[namespace][methodName];
-          } else {
-            // If there are no method names passed, then
-            // all methods in then namespace will be extended
-            // to the native. This includes all future defined
-            // methods, so add a flag here to check later.
-            setProperty(extend, 'active', true);
-          }
-          if (hasOwnProperty(method, 'instance')) {
-            instanceMethods[methodName] = method.instance;
-          } else if(hasOwnProperty(method, 'static')) {
-            staticMethods[methodName] = method;
-          }
-        });
-        extendNative(globalContext[namespace], staticMethods);
-        extendNative(globalContext[namespace].prototype, instanceMethods);
+    // Namespace method, i.e. Sugar.Array() or Sugar.Array.extend()
+    function extend(arg) {
+      var staticMethods = {}, instanceMethods = {}, methodsByName;
+
+      function canExtendPrototype() {
+        return !isObject || allowObjectInstance;
       }
 
-      // Extending by namespace:
-      // 1. Sugar.Array.extend();
-      // 2. require('sugar-array')();
-      Sugar[namespace] = extend;
-      setProperty(extend, 'extend', extend);
+      if (typeof arg === 'boolean' && isObject) {
+        // If the first argument is true, Object.prototype
+        // will also be extended when applicable.
+        allowObjectInstance = arg;
+      } else if (arg) {
+        methodsByName = typeof arg === 'string' ? [arg] : arg;
+      }
 
-      setProperty(extend, 'defineStatic', function(methods) {
-        defineMethods(extend, methods);
+      iterateOverObject(methodsByName || Sugar[namespace], function(methodName, method) {
+        if (methodsByName) {
+          // If we have method names passed in an array,
+          // then we need to flip the key and value here
+          // and find the method in the Sugar namespace.
+          methodName = method;
+          method = Sugar[namespace][methodName];
+        }
+        if (hasOwnProperty(method, 'instance') && canExtendPrototype()) {
+          instanceMethods[methodName] = method.instance;
+        }
+        if(hasOwnProperty(method, 'static')) {
+          staticMethods[methodName] = method;
+        }
       });
+      extendNative(nativeClass, staticMethods);
+      extendNative(nativeClass.prototype, instanceMethods);
+      if (!methodsByName) {
+        // If there are no method names passed, then
+        // all methods in then namespace will be extended
+        // to the native. This includes all future defined
+        // methods, so add a flag here to check later.
+        setProperty(extend, 'active', true);
+      }
+      // return self
+      return extend;
+    }
 
-      setProperty(extend, 'defineStaticWithArguments', function(methods) {
-        defineMethods(extend, methods, false, true);
-      });
+    // Extending by namespace:
+    // 1. Sugar.Array.extend();
+    // 2. require('sugar-array')();
+    Sugar[namespace] = extend;
+    setProperty(extend, 'extend', extend);
 
-      setProperty(extend, 'defineInstance', function(methods) {
-        defineMethods(extend, methods, true);
-      });
-
-      setProperty(extend, 'defineInstanceWithArguments', function(methods) {
-        defineMethods(extend, methods, true, true);
-      });
-
+    setProperty(extend, 'defineStatic', function(methods) {
+      defineMethods(extend, methods);
     });
+
+    setProperty(extend, 'defineStaticWithArguments', function(methods) {
+      defineMethods(extend, methods, false, true);
+    });
+
+    setProperty(extend, 'defineInstance', function(methods) {
+      defineMethods(extend, methods, true);
+    });
+
+    setProperty(extend, 'defineInstanceWithArguments', function(methods) {
+      defineMethods(extend, methods, true, true);
+    });
+
   }
 
   function extendNative(extendee, source, polyfill) {
@@ -166,13 +176,13 @@
   }
 
   function defineMethods(sugarNamespace, methods, instance, args) {
-    iterateOverObject(methods, function(name, method) {
+    iterateOverObject(methods, function(methodName, method) {
       var instanceMethod, staticMethod = method;
       if (args) {
         staticMethod = wrapMethodWithArguments(method);
       }
-      setProperty(sugarNamespace, name, staticMethod, true);
-      if (instance) {
+      setProperty(sugarNamespace, methodName, staticMethod, true);
+      if (instance && !method.instance) {
         if (args) {
           instanceMethod = wrapMethodWithArguments(method, true);
         } else {
@@ -185,7 +195,7 @@
       if (sugarNamespace.active) {
         // If the namespace has been activated (all methods mapped)
         // then map this method as well.
-        sugarNamespace(name);
+        sugarNamespace(methodName);
       }
     });
   }
@@ -281,7 +291,7 @@
   }
 
   setupGlobal();
-  
+  'use strict';
 
 
   /***
@@ -800,473 +810,7 @@
   buildNumberHelpers();
 
 
-  
-
-  /***
-   * @package ES5
-   * @description Shim methods that provide ES5 compatible functionality. This package can be excluded if you do not require legacy browser support (IE8 and below).
-   *
-   ***/
-
-
-  /***
-   * @namespace Object
-   *
-   ***/
-
-  defineStaticPolyfill(object, {
-
-    'keys': function(obj) {
-      var keys = [];
-      if (!isObjectType(obj) && !isRegExp(obj) && !isFunction(obj)) {
-        throw new TypeError('Object required');
-      }
-      iterateOverObject(obj, function(key, value) {
-        keys.push(key);
-      });
-      return keys;
-    }
-
-  });
-
-
-  /***
-   * @namespace Array
-   *
-   ***/
-
-  // ECMA5 methods
-
-  function arrayIndexOf(arr, search, fromIndex, increment) {
-    var length = arr.length,
-        fromRight = increment == -1,
-        start = fromRight ? length - 1 : 0,
-        index = toIntegerWithDefault(fromIndex, start);
-    if (index < 0) {
-      index = length + index;
-    }
-    if ((!fromRight && index < 0) || (fromRight && index >= length)) {
-      index = start;
-    }
-    while((fromRight && index >= 0) || (!fromRight && index < length)) {
-      if (arr[index] === search) {
-        return index;
-      }
-      index += increment;
-    }
-    return -1;
-  }
-
-  function arrayReduce(arr, fn, initialValue, fromRight) {
-    var length = arr.length, count = 0, defined = isDefined(initialValue), result, index;
-    checkCallback(fn);
-    if (length == 0 && !defined) {
-      throw new TypeError('Reduce called on empty array with no initial value');
-    } else if (defined) {
-      result = initialValue;
-    } else {
-      result = arr[fromRight ? length - 1 : count];
-      count++;
-    }
-    while(count < length) {
-      index = fromRight ? length - count - 1 : count;
-      if (index in arr) {
-        result = fn(result, arr[index], index, arr);
-      }
-      count++;
-    }
-    return result;
-  }
-
-  function toIntegerWithDefault(i, d) {
-    if (isNaN(i)) {
-      return d;
-    } else {
-      return parseInt(i >> 0);
-    }
-  }
-
-  function checkFirstArgumentExists(args) {
-    if (args.length === 0) {
-      throw new TypeError('First argument must be defined');
-    }
-  }
-
-
-  defineStaticPolyfill(array, {
-
-    /***
-     *
-     * @method Array.isArray(<obj>)
-     * @returns Boolean
-     * @short Returns true if <obj> is an Array.
-     * @extra This method is provided for browsers that don't support it internally.
-     * @example
-     *
-     *   Array.isArray(3)        -> false
-     *   Array.isArray(true)     -> false
-     *   Array.isArray('wasabi') -> false
-     *   Array.isArray([1,2,3])  -> true
-     *
-     ***/
-    'isArray': function(obj) {
-      return isArray(obj);
-    }
-
-  });
-
-
-  defineInstancePolyfill(array, {
-
-    /***
-     * @method every(<f>, [scope])
-     * @returns Boolean
-     * @short Returns true if all elements in the array match <f>.
-     * @extra [scope] is the %this% object. %all% is provided an alias. In addition to providing this method for browsers that don't support it natively, this method also implements %array_matching%.
-     * @example
-     *
-     +   ['a','a','a'].every(function(n) {
-     *     return n == 'a';
-     *   });
-     *   ['a','a','a'].every('a')   -> true
-     *   [{a:2},{a:2}].every({a:2}) -> true
-     ***/
-    'every': function(fn, scope) {
-      var length = this.length, index = 0;
-      checkFirstArgumentExists(arguments);
-      while(index < length) {
-        if (index in this && !fn.call(scope, this[index], index, this)) {
-          return false;
-        }
-        index++;
-      }
-      return true;
-    },
-
-    /***
-     * @method some(<f>, [scope])
-     * @returns Boolean
-     * @short Returns true if any element in the array matches <f>.
-     * @extra [scope] is the %this% object. %any% is provided as an alias. In addition to providing this method for browsers that don't support it natively, this method also implements %array_matching%.
-     * @example
-     *
-     +   ['a','b','c'].some(function(n) {
-     *     return n == 'a';
-     *   });
-     +   ['a','b','c'].some(function(n) {
-     *     return n == 'd';
-     *   });
-     *   ['a','b','c'].some('a')   -> true
-     *   [{a:2},{b:5}].some({a:2}) -> true
-     ***/
-    'some': function(fn, scope) {
-      var length = this.length, index = 0;
-      checkFirstArgumentExists(arguments);
-      while(index < length) {
-        if (index in this && fn.call(scope, this[index], index, this)) {
-          return true;
-        }
-        index++;
-      }
-      return false;
-    },
-
-    /***
-     * @method map(<map>, [scope])
-     * @returns Array
-     * @short Maps the array to another array containing the values that are the result of calling <map> on each element.
-     * @extra [scope] is the %this% object. When <map> is a function, it receives three arguments: the current element, the current index, and a reference to the array. In addition to providing this method for browsers that don't support it natively, this enhanced method also directly accepts a string, which is a shortcut for a function that gets that property (or invokes a function) on each element.
-     * @example
-     *
-     *   [1,2,3].map(function(n) {
-     *     return n * 3;
-     *   });                                  -> [3,6,9]
-     *   ['one','two','three'].map(function(n) {
-     *     return n.length;
-     *   });                                  -> [3,3,5]
-     *   ['one','two','three'].map('length')  -> [3,3,5]
-     *
-     ***/
-    'map': function(fn, scope) {
-      var scope = arguments[1], length = this.length, index = 0, result = new Array(length);
-      checkFirstArgumentExists(arguments);
-      while(index < length) {
-        if (index in this) {
-          result[index] = fn.call(scope, this[index], index, this);
-        }
-        index++;
-      }
-      return result;
-    },
-
-    /***
-     * @method filter(<f>, [scope])
-     * @returns Array
-     * @short Returns any elements in the array that match <f>.
-     * @extra [scope] is the %this% object. In addition to providing this method for browsers that don't support it natively, this method also implements %array_matching%.
-     * @example
-     *
-     +   [1,2,3].filter(function(n) {
-     *     return n > 1;
-     *   });
-     *   [1,2,2,4].filter(2) -> 2
-     *
-     ***/
-    'filter': function(fn) {
-      var scope = arguments[1];
-      var length = this.length, index = 0, result = [];
-      checkFirstArgumentExists(arguments);
-      while(index < length) {
-        if (index in this && fn.call(scope, this[index], index, this)) {
-          result.push(this[index]);
-        }
-        index++;
-      }
-      return result;
-    },
-
-    /***
-     * @method indexOf(<search>, [fromIndex])
-     * @returns Number
-     * @short Searches the array and returns the first index where <search> occurs, or -1 if the element is not found.
-     * @extra [fromIndex] is the index from which to begin the search. This method performs a simple strict equality comparison on <search>. It does not support enhanced functionality such as searching the contents against a regex, callback, or deep comparison of objects. For such functionality, use the %findIndex% method instead.
-     * @example
-     *
-     *   [1,2,3].indexOf(3)           -> 1
-     *   [1,2,3].indexOf(7)           -> -1
-     *
-     ***/
-    'indexOf': function(search) {
-      var fromIndex = arguments[1];
-      if (isString(this)) return this.indexOf(search, fromIndex);
-      return arrayIndexOf(this, search, fromIndex, 1);
-    },
-
-    /***
-     * @method lastIndexOf(<search>, [fromIndex])
-     * @returns Number
-     * @short Searches the array and returns the last index where <search> occurs, or -1 if the element is not found.
-     * @extra [fromIndex] is the index from which to begin the search. This method performs a simple strict equality comparison on <search>.
-     * @example
-     *
-     *   [1,2,1].lastIndexOf(1)                 -> 2
-     *   [1,2,1].lastIndexOf(7)                 -> -1
-     *
-     ***/
-    'lastIndexOf': function(search) {
-      var fromIndex = arguments[1];
-      if (isString(this)) return this.lastIndexOf(search, fromIndex);
-      return arrayIndexOf(this, search, fromIndex, -1);
-    },
-
-    /***
-     * @method forEach([fn], [scope])
-     * @returns Nothing
-     * @short Iterates over the array, calling [fn] on each loop.
-     * @extra This method is only provided for those browsers that do not support it natively. [scope] becomes the %this% object.
-     * @example
-     *
-     *   ['a','b','c'].forEach(function(a) {
-     *     // Called 3 times: 'a','b','c'
-     *   });
-     *
-     ***/
-    'forEach': function(fn) {
-      var length = this.length, index = 0, scope = arguments[1];
-      checkCallback(fn);
-      while(index < length) {
-        if (index in this) {
-          fn.call(scope, this[index], index, this);
-        }
-        index++;
-      }
-    },
-
-    /***
-     * @method reduce(<fn>, [init])
-     * @returns Mixed
-     * @short Reduces the array to a single result.
-     * @extra If [init] is passed as a starting value, that value will be passed as the first argument to the callback. The second argument will be the first element in the array. From that point, the result of the callback will then be used as the first argument of the next iteration. This is often refered to as "accumulation", and [init] is often called an "accumulator". If [init] is not passed, then <fn> will be called n - 1 times, where n is the length of the array. In this case, on the first iteration only, the first argument will be the first element of the array, and the second argument will be the second. After that callbacks work as normal, using the result of the previous callback as the first argument of the next. This method is only provided for those browsers that do not support it natively.
-     *
-     * @example
-     *
-     +   [1,2,3,4].reduce(function(a, b) {
-     *     return a - b;
-     *   });
-     +   [1,2,3,4].reduce(function(a, b) {
-     *     return a - b;
-     *   }, 100);
-     *
-     ***/
-    'reduce': function(fn) {
-      return arrayReduce(this, fn, arguments[1]);
-    },
-
-    /***
-     * @method reduceRight([fn], [init])
-     * @returns Mixed
-     * @short Identical to %Array#reduce%, but operates on the elements in reverse order.
-     * @extra This method is only provided for those browsers that do not support it natively.
-     *
-     *
-     *
-     *
-     * @example
-     *
-     +   [1,2,3,4].reduceRight(function(a, b) {
-     *     return a - b;
-     *   });
-     *
-     ***/
-    'reduceRight': function(fn) {
-      return arrayReduce(this, fn, arguments[1], true);
-    }
-
-
-  });
-
-
-
-
-  /***
-   * @namespace String
-   *
-   ***/
-
-  var TrimRegExp = regexp('^[' + getTrimmableCharacters() + ']+|['+getTrimmableCharacters()+']+$', 'g')
-
-  defineInstancePolyfill(string, {
-    /***
-     * @method trim()
-     * @returns String
-     * @short Removes leading and trailing whitespace from the string.
-     * @extra Whitespace is defined as line breaks, tabs, and any character in the "Space, Separator" Unicode category, conforming to the the ES5 spec. The standard %trim% method is only added when not fully supported natively.
-     *
-     * @example
-     *
-     *   '   wasabi   '.trim()      -> 'wasabi'
-     *   '   wasabi   '.trimLeft()  -> 'wasabi   '
-     *   '   wasabi   '.trimRight() -> '   wasabi'
-     *
-     ***/
-    'trim': function() {
-      return this.toString().replace(TrimRegExp, '');
-    }
-  });
-
-
-
-  /***
-   * @namespace Function
-   *
-   ***/
-
-
-  defineInstancePolyfill(func, {
-
-     /***
-     * @method bind(<scope>, [arg1], ...)
-     * @returns Function
-     * @short Binds <scope> as the %this% object for the function when it is called. Also allows currying an unlimited number of parameters.
-     * @extra "currying" means setting parameters ([arg1], [arg2], etc.) ahead of time so that they are passed when the function is called later. If you pass additional parameters when the function is actually called, they will be added will be added to the end of the curried parameters. This method is provided for browsers that don't support it internally.
-     * @example
-     *
-     +   (function() {
-     *     return this;
-     *   }).bind('woof')(); -> returns 'woof'; function is bound with 'woof' as the this object.
-     *   (function(a) {
-     *     return a;
-     *   }).bind(1, 2)();   -> returns 2; function is bound with 1 as the this object and 2 curried as the first parameter
-     *   (function(a, b) {
-     *     return a + b;
-     *   }).bind(1, 2)(3);  -> returns 5; function is bound with 1 as the this object, 2 curied as the first parameter and 3 passed as the second when calling the function
-     *
-     ***/
-    'bind': function(scope) {
-      // Optimized: no leaking arguments
-      var boundArgs = [], $i; for($i = 1; $i < arguments.length; $i++) boundArgs.push(arguments[$i]);
-      var fn = this, bound;
-      if (!isFunction(this)) {
-        throw new TypeError('Function.prototype.bind called on a non-function');
-      }
-      bound = function() {
-        // Optimized: no leaking arguments
-        var args = [], $i; for($i = 0; $i < arguments.length; $i++) args.push(arguments[$i]);
-        return fn.apply(fn.prototype && this instanceof fn ? this : scope, boundArgs.concat(args));
-      }
-      bound.prototype = this.prototype;
-      return bound;
-    }
-
-  });
-
-  /***
-   * @namespace Date
-   *
-   ***/
-
-  defineStaticPolyfill(date, {
-
-     /***
-     * @method Date.now()
-     * @returns String
-     * @short Returns the number of milliseconds since January 1st, 1970 00:00:00 (UTC time).
-     * @extra Provided for browsers that do not support this method.
-     * @example
-     *
-     *   Date.now() -> ex. 1311938296231
-     *
-     ***/
-    'now': function() {
-      return new date().getTime();
-    }
-
-  });
-
-
-   /***
-   * @method toISOString()
-   * @returns String
-   * @short Formats the string to ISO8601 format.
-   * @extra This will always format as UTC time. Provided for browsers that do not support this method.
-   * @example
-   *
-   *   Date.create().toISOString() -> ex. 2011-07-05 12:24:55.528Z
-   *
-   ***
-   * @method toJSON()
-   * @returns String
-   * @short Returns a JSON representation of the date.
-   * @extra This is effectively an alias for %toISOString%. Will always return the date in UTC time. Provided for browsers that do not support this method.
-   * @example
-   *
-   *   Date.create().toJSON() -> ex. 2011-07-05 12:24:55.528Z
-   *
-   ***/
-
-  function hasISOStringSupport() {
-    var d = new date(date.UTC(2000, 0)), expected = '2000-01-01T00:00:00.000Z';
-    return !!d.toISOString && d.toISOString() === expected;
-  }
-
-  function dateToISOString() {
-    return padNumber(this.getUTCFullYear(), 4) + '-' +
-           padNumber(this.getUTCMonth() + 1, 2) + '-' +
-           padNumber(this.getUTCDate(), 2) + 'T' +
-           padNumber(this.getUTCHours(), 2) + ':' +
-           padNumber(this.getUTCMinutes(), 2) + ':' +
-           padNumber(this.getUTCSeconds(), 2) + '.' +
-           padNumber(this.getUTCMilliseconds(), 3) + 'Z';
-  }
-
-  if (!hasISOStringSupport()) {
-    defineInstancePolyfill(date, {
-      'toISOString': dateToISOString,
-      'toJSON': dateToISOString
-    });
-  }
-
-  
+  'use strict';
 
   /***
    * @package Array
@@ -1274,8 +818,6 @@
    * @description Array manipulation and traversal, "fuzzy matching" against elements, alphanumeric sorting and collation, enumerable methods on Object.
    *
    ***/
-
-  var arrayNativeMethods = {};
 
   var AlphanumericSort            = 'AlphanumericSort';
   var AlphanumericSortOrder       = 'AlphanumericSortOrder';
@@ -1640,10 +1182,6 @@
     return arr.length > 0 ? arraySum(arr, map) / arr.length : 0;
   }
 
-  function arrayNone(arr, f) {
-    return !sugarArray.some.apply(null, arguments);
-  }
-
   function arrayCompact(arr, all) {
     var result = [];
     arrayEach(arr, function(el, i) {
@@ -1862,28 +1400,25 @@
     }
   }
 
-  function storeNative(name) {
-    arrayNativeMethods[name] = array.prototype[name];
-  }
-
-  function callNativeWithMatcher(name, argLen, arr, f, context) {
-    var nativeFn = arrayNativeMethods[name], args = [], matcher;
+  function callNativeWithMatcher(nativeFn, arr, f, context, argLen) {
+    var args = [], matcher;
+    if (argLen === 0) {
+      throw new TypeError('First argument required');
+    }
     if (isFunction(f)) {
       args.push(f);
-    } else if (argLen > 1) {
+    } else {
       matcher = getMatcher(f);
       args.push(function(el, index, arr) {
         return matcher(el, index, arr);
       });
     }
-    if (context) {
-      args.push(context);
-    }
+    args.push(context);
     return nativeFn.apply(arr, args);
   }
 
-  function enhancedMap(arr, f, context) {
-    var nativeMap = arrayNativeMethods.map, args = [];
+  function callNativeMapWithTransform(nativeFn, arr, f, context) {
+    var args = [];
     if (isFunction(f)) {
       args.push(f);
     } else if (f) {
@@ -1891,22 +1426,64 @@
         return transformArgument(el, f, context, [el, index, arr]);
       });
     }
-    if (context) {
-      args.push(context);
-    }
-    return nativeMap.apply(arr, args);
+    args.push(context);
+    return nativeFn.apply(arr, args);
   }
 
   function buildEnhancements() {
-    storeNative('map');
     defineInstanceSimilar(sugarArray, 'every,some,filter,find,findIndex', function(methods, name) {
-      storeNative(name);
-      methods[name] = function withMatcher(arr, f, context) {
-        return callNativeWithMatcher(name, arguments.length, arr, f, context);
+      var nativeFn = array.prototype[name];
+      function withMatcher(arr, f, context) {
+        return callNativeWithMatcher(nativeFn, arr, f, context, arguments.length - 1);
+      }
+      // The instance method is custom here because it's checking argument length
+      // in order to throw an error that creates parity with the native methods,
+      // however we don't want to go so far as to actually collect the arguments.
+      // Also these methods should maintain their length of 1 as per the spec.
+      withMatcher.instance = function withMatcher(f) {
+        return callNativeWithMatcher(nativeFn, this, f, arguments[1], arguments.length);
+      }
+      methods[name] = withMatcher;
+    });
+    buildEnhancedMap();
+    buildNone();
+  }
+
+  function buildEnhancedMap() {
+    var nativeFn = array.prototype['map'];
+    defineInstance(sugarArray, {
+      'map': function(arr, f, context) {
+        return callNativeMapWithTransform(nativeFn, arr, f, context);
       }
     });
+  }
+
+  function buildNone() {
+    // None needs to be built because it also throws errors based on
+    // argument length to create parity with other similar native methods.
+    function none() {
+      return !sugarArray.some.apply(null, arguments);
+    }
+    none.instance = function() {
+      return ![].some.apply(this, arguments);
+    }
     defineInstance(sugarArray, {
-      'map': enhancedMap
+
+      /***
+       * @method none(<f>)
+       * @returns Boolean
+       * @short Returns true if none of the elements in the array match <f>.
+       * @extra <f> will match a string, number, array, object, or alternately test against a function or regex. This method implements %array_matching%.
+       * @example
+       *
+       *   [1,2,3].none(5)         -> true
+       *   ['a','b','c'].none(/b/) -> false
+       *   [{a:1},{b:2}].none(function(n) {
+       *     return n['a'] > 1;
+       *   });                     -> true
+       *
+       ***/
+      'none': none
     });
   }
 
@@ -2441,23 +2018,7 @@
      *   });                                  -> { 35: [{age:35,name:'ken'}], 15: [{age:15,name:'bob'}] }
      *
      ***/
-    'groupBy': arrayGroupBy,
-
-    /***
-     * @method none(<f>)
-     * @returns Boolean
-     * @short Returns true if none of the elements in the array match <f>.
-     * @extra <f> will match a string, number, array, object, or alternately test against a function or regex. This method implements %array_matching%.
-     * @example
-     *
-     *   [1,2,3].none(5)         -> true
-     *   ['a','b','c'].none(/b/) -> false
-     *   [{a:1},{b:2}].none(function(n) {
-     *     return n['a'] > 1;
-     *   });                     -> true
-     *
-     ***/
-    'none': arrayNone
+    'groupBy': arrayGroupBy
 
 
   });
@@ -2668,7 +2229,7 @@
   buildEnumerableMethods(EnumerableFindingMethods);
   buildEnumerableMethods(EnumerableMappingMethods, true);
 
-  
+  'use strict';
 
   /***
    * @package Date
@@ -5272,7 +4833,7 @@
   buildAllowedDateOptions();
   setDateProperties();
 
-  
+  'use strict';
 
   /***
    * @package Range
@@ -5313,7 +4874,7 @@
 
   function getSimpleDate(str) {
     // Needed as argument numbers are checked internally here.
-    return str == null ? new date() : new date(str);
+    return str === undefined ? new date() : new date(str);
   }
 
   function getSugarExtendedDate(d) {
@@ -5755,7 +5316,7 @@
 
   enhanceArrayCreate();
 
-  
+  'use strict';
 
   /***
    * @package Function
@@ -6082,7 +5643,7 @@
 
   });
 
-  
+  'use strict';
 
   /***
    * @package Number
@@ -6495,12 +6056,12 @@
    *
    ***/
   defineInstanceSimilar(sugarNumber, 'abs,pow,sin,asin,cos,acos,tan,atan,exp,pow,sqrt', function(methods, name) {
-    methods[name] = function mathAlias() {
-      return math[name].apply(null, arguments);
+    methods[name] = function mathAlias(n, arg) {
+      return math[name](n, arg);
     }
   });
 
-  
+  'use strict';
 
   /***
    * @package Object
@@ -7018,6 +6579,13 @@
      ***/
     'reject': function (obj, f) {
       return selectFromObject(obj, f, false);
+    },
+
+    'isArguments': isArgumentsObject,
+
+    'isNaN': function(obj) {
+      // This is only true of NaN
+      return isNumber(obj) && obj.valueOf() !== obj.valueOf();
     }
 
   });
@@ -7048,31 +6616,34 @@
    *   Object.isObject({ broken:'wear' }) -> true
    *
    ***/
-  defineInstance(sugarObject, {
+  function buildTypeCheckMethods() {
+    defineInstanceSimilar(sugarObject, natives, function(methods, name) {
+      methods['is' + name] = name === 'Object' ? isPlainObject : typeChecks[name];
+    });
+  }
 
-    'isArguments': isArgumentsObject,
+  function buildHashMethods() {
+    iterateOverObject(sugarObject, function(name, method) {
+      if (method.instance) {
+        setProperty(Hash.prototype, name, method.instance);
+      }
+    });
+  }
 
-    'isObject': isPlainObject,
+  function flagInstanceMethodsAsStatic() {
+    iterateOverObject(sugarObject, function(name, method) {
+      if (method.instance) {
+        // Instance methods on Object also do double duty as static methods as well.
+        setProperty(method, 'static', true);
+      }
+    });
+  }
 
-    'isNaN': function(obj) {
-      // This is only true of NaN
-      return isNumber(obj) && obj.valueOf() !== obj.valueOf();
-    }
+  buildTypeCheckMethods();
+  buildHashMethods();
+  flagInstanceMethodsAsStatic();
 
-  });
-
-  defineInstanceSimilar(sugarObject, natives, function(methods, name) {
-    var method = 'is' + name;
-    methods[method] = typeChecks[name];
-  });
-
-  iterateOverObject(sugarObject, function(name, method) {
-    if (method.instance) {
-      setProperty(Hash.prototype, name, method.instance);
-    }
-  });
-
-  
+  'use strict';
 
   /***
    * @package RegExp
@@ -7162,7 +6733,7 @@
 
 
 
-  
+  'use strict';
 
   /***
    * @package String
@@ -7200,15 +6771,6 @@
 
   function padString(num, padding) {
     return repeatString(isDefined(padding) ? padding : ' ', num);
-  }
-
-  function shiftChar(str, n) {
-    var result = '';
-    n = n || 0;
-    stringCodes(str, function(c) {
-      result += chr(c + n);
-    });
-    return result;
   }
 
   function isBlank(str) {
