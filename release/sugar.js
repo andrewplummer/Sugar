@@ -59,19 +59,24 @@
         isObject = nativeClass === object;
 
     // Namespace method, i.e. Sugar.Array() or Sugar.Array.extend()
-    function extend(arg) {
-      var staticMethods = {}, instanceMethods = {}, methodsByName;
+    function extend(arg1, arg2) {
+      var staticMethods = {}, instanceMethods = {}, methodsByName, flag;
 
       function canExtendPrototype() {
         return !isObject || allowObjectInstance;
       }
 
-      if (typeof arg === 'boolean' && isObject) {
-        // If the first argument is true, Object.prototype
-        // will also be extended when applicable.
-        allowObjectInstance = arg;
-      } else if (arg) {
-        methodsByName = typeof arg === 'string' ? [arg] : arg;
+      if (arg1 && typeof arg1 !== 'boolean') {
+        methodsByName = typeof arg1 === 'string' ? [arg1] : arg1;
+        flag = arg2;
+      } else {
+        flag = arg1;
+      }
+
+      if (isObject && typeof flag === 'boolean') {
+        // If a boolean flag was passed as the last argument,
+        // Object.prototype will also be extended when applicable.
+        allowObjectInstance = flag;
       }
 
       iterateOverObject(methodsByName || Sugar[namespace], function(methodName, method) {
