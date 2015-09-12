@@ -1,4 +1,5 @@
 var fs       = require('fs'),
+    gulp     = require('gulp'),
     glob     = require('glob'),
     zlib     = require('zlib'),
     path     = require('path'),
@@ -8,9 +9,7 @@ var fs       = require('fs'),
     concat   = require('gulp-concat-util'),
     replace  = require('gulp-replace'),
     through  = require('through2'),
-    compiler = require('closure-compiler-stream'),
-    gulp     = require('gulp-npm-run')(require('gulp'));
-
+    compiler = require('closure-compiler-stream');
 
 var COMPIER_JAR_PATH = 'bower_components/closure-compiler/compiler.jar';
 var PRECOMPILED_MIN_DIR = 'release/precompiled/minified/';
