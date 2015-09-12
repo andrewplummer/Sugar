@@ -332,8 +332,6 @@ gulp.task('npm', function() {
     '(function() {',
       "  'use strict';",
       '$1',
-      '  module.exports = Sugar;',
-      '',
     '})();'
   ].join('\n');
   var streams = [];
@@ -343,7 +341,6 @@ gulp.task('npm', function() {
       gulp.src(getFiles(module.files))
         .pipe(concat(module.name + '.js', { newLine: '' }))
         .pipe(replace(/^\s*'use strict';\n/g, ''))
-        .pipe(replace(/^.*\/\/ npm ignore\n/gim, ''))
         .pipe(replace(/^([\s\S]+)$/m, template))
         .pipe(gulp.dest('release/npm/' + module.name))
     );
@@ -361,7 +358,7 @@ gulp.task('test', function(cb) {
   cb();
 });
 
-gulp.task('test-build', ['npm'], function(cb) {
+gulp.task('test-build', ['dev', 'npm'], function(cb) {
   reload('./test/node/watch.js');
   cb();
 });
