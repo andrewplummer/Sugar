@@ -6,9 +6,9 @@
   "author": "Andrew Plummer",
   "keywords": ["sugarjs", "functional", "utility", "util", "browser", "date", "time", "parse", "format"],
   "repo": "andrewplummer/Sugar",
-  "main": "release/sugar.dev.js",
+  "main": "release/sugar.js",
   "scripts" : [
-      "release/sugar.dev.js"
+      "release/sugar.js"
   ],
   "license": "MIT"
 }

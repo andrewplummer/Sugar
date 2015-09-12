@@ -138,14 +138,18 @@ function showHelpMessage() {
   console.info(msg);
 }
 
-function getFilename(packages, ext) {
+function getFilename(name, min) {
+  return name + (min ? '.min' : '') + '.js';
+}
+
+function getPackageFilename(packages, min) {
   switch(packages) {
     case 'default':
-      return 'sugar.' + ext + '.js';
+      return getFilename('sugar', min);
     case 'all':
-      return 'sugar-full.' + ext + '.js';
+      return getFilename('sugar-full', min);
     default:
-      return 'sugar-custom.' + ext + '.js';
+      return getFilename('sugar-custom', min);
   }
 }
 
@@ -169,7 +173,7 @@ function buildDevelopment(packages) {
       '$1',
     '})();'
   ].join('\n');
-  var filename = getFilename(packages, 'dev');
+  var filename = getPackageFilename(packages);
   var files = getFiles(packages);
   util.log(util.colors.yellow('Building:', packages));
   return gulp.src(files)
@@ -186,7 +190,7 @@ function buildMinified(packages) {
     util.log(util.colors.red('Closure compiler missing!'), 'Run', util.colors.yellow('bower install'));
     return;
   }
-  var filename = getFilename(packages, 'min');
+  var filename = getPackageFilename(packages, true);
   var files = getFiles(packages);
   util.log(util.colors.yellow('Minifying:', packages));
   return gulp.src(files).pipe(compileSingle('release/' + filename));

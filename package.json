@@ -15,12 +15,12 @@
   ],
   "homepage": "http://sugarjs.com/",
   "author": "Andrew Plummer",
-  "main": "./release/sugar-full.dev.js",
+  "main": "./release/sugar-full.js",
   "directories": {
     "lib": "./release"
   },
   "files": [
-    "release/sugar-full.dev.js",
+    "release/sugar-full.js",
     "test/javascripts/date-helpers.js",
     "test/javascripts/helpers.js",
     "test/javascripts/suite.js",
