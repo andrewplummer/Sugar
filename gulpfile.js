@@ -267,54 +267,67 @@ gulp.task('precompile:min', function() {
 var NPM_MODULES = [
   {
     name: 'sugar-full',
+    description: 'This build includes all Sugar packages including extra string helpers and all Date locales.',
     files: 'all'
   },
   {
     name: 'sugar-core',
+    description: 'This build is only the core module, which allows custom methods to be defined and extended later.',
     files: 'core'
   },
   {
     name: 'sugar-array',
+    description: 'This build includes array manipulation and traversal, "fuzzy matching" against elements, alphanumeric sorting and collation, and enumerable methods on Object.',
     files: 'array'
   },
   {
     name: 'sugar-date',
+    description: 'This build includes date parsing and formatting, relative formats like "1 minute ago", number methods like "daysAgo", and localization support. This build includes English only. For other locales, see the sugar-date-locales module.',
     files: 'date'
   },
   {
     name: 'sugar-date-locales',
+    description: 'This build includes date parsing and formatting, relative formats like "1 minute ago", number methods like "daysAgo", and localization support. This build includes all available locales.',
     files: 'date,locales'
   },
   {
     name: 'sugar-range',
+    description: 'This build includes ranges which create spans of numbers, strings, or dates. They can enumerate over specific points within that range, and be manipulated and compared.',
     files: 'range'
   },
   {
     name: 'sugar-function',
+    description: 'This build includes helpers for lazy, throttled, and memoized functions, delayed functions and handling of timers, and argument currying.',
     files: 'function'
   },
   {
     name: 'sugar-number',
+    description: 'This build includes helpers for number formatting, rounding (with precision), and aliases to Math methods.',
     files: 'number'
   },
   {
     name: 'sugar-object',
+    description: 'This build includes helpers for object manipulation, type checking (isNumber, isString, etc) and extended objects with hash-like methods. Note that Object.prototype is not extended by default. See the README for more.',
     files: 'object'
   },
   {
     name: 'sugar-regexp',
+    description: 'This build includes helpers for escaping regexes and manipulating their flags.',
     files: 'regexp'
   },
   {
     name: 'sugar-string',
+    description: 'This build includes helpers for string manupulation, escaping, encoding, truncation, and conversion.',
     files: 'string'
   },
   {
     name: 'sugar-inflections',
+    description: 'This build includes pluralization similar to ActiveSupport including uncountable words and acronyms, humanized and URL-friendly strings.',
     files: 'string,inflections'
   },
   {
     name: 'sugar-language',
+    description: 'This build includes helpers for detecting language by character block, full-width <-> half-width character conversion, and Hiragana and Katakana conversions.',
     files: 'language'
   }
 ];
@@ -328,22 +341,24 @@ function getKeywords(name, keywords) {
   return keywords;
 }
 
-function getModulePackage(name, mainPackage) {
+function getModulePackage(module, mainPackage) {
   var package = JSON.parse(JSON.stringify(mainPackage));
-  package.name = name;
-  package.main = name + '.js';
-  package.keywords = getKeywords(name, package.keywords);
+  package.name = module.name;
+  package.main = module.name + '.js';
+  package.keywords = getKeywords(module.name, package.keywords);
+  package.description += ' ' + module.description;
   delete package.files;
   delete package.scripts;
   delete package.devDependencies;
   return JSON.stringify(package, null, 2);
 }
 
-function getModuleComponent(name, mainComponent) {
+function getModuleComponent(module, mainComponent) {
   var component = JSON.parse(JSON.stringify(mainComponent));
-  component.name = name;
-  component.scripts = [name + '.js'];
-  component.keywords = getKeywords(name, component.keywords);
+  component.name = module.name;
+  component.scripts = [module.name + '.js'];
+  component.keywords = getKeywords(module.name, component.keywords);
+  component.description += ' ' + module.description;
   return JSON.stringify(component, null, 2);
 }
 
@@ -355,8 +370,8 @@ gulp.task('npm', function() {
     var module = NPM_MODULES[i];
     var path = 'release/npm/' + module.name + '/';
     mkdirp.sync(path);
-    fs.writeFileSync(path + 'package.json', getModulePackage(module.name, mainPackage));
-    fs.writeFileSync(path + 'component.json', getModuleComponent(module.name, mainComponent));
+    fs.writeFileSync(path + 'package.json', getModulePackage(module, mainPackage));
+    fs.writeFileSync(path + 'component.json', getModuleComponent(module, mainComponent));
     streams.push(buildDevelopment(module.files, path + module.name));
     streams.push(gulp.src(['LICENSE', 'README.md', 'CHANGELOG.md']).pipe(gulp.dest(path)));
   }
