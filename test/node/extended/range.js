@@ -1,8 +1,8 @@
 var runner = require('../setup');
 
 // Tests
-runner.loadTest('date_range');
-runner.loadTest('number_range');
-runner.loadTest('string_range');
+runner.loadTest('date-range');
+runner.loadTest('number-range');
+runner.loadTest('string-range');
 
 runner.runExtended(module);
