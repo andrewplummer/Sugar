@@ -11,7 +11,7 @@
 
   /***
    * @package Core
-   * @description Core method extension and restoration.
+   * @description Core package allows custom methods to be defined on the Sugar global and extended onto natives later.
    ***/
 
   // The global to export.
@@ -34,15 +34,18 @@
   var propertyDescriptorSupport = !!(object.defineProperty && object.defineProperties);
 
   // Natives by name.
-  var natives = 'Boolean,Number,String,Array,Date,RegExp,Function,Object'.split(',');
+  var natives = 'Boolean,Number,String,Array,Date,RegExp,Function'.split(',');
+
+  // Natives including Object
+  var nativesWithObject = natives.concat('Object');
 
   // Whether object instance methods can be mapped to the prototype.
   var allowObjectInstance = false;
 
   function setupGlobal() {
-    Sugar = function extend() {
-      for (var i = 0; i < natives.length; i++) {
-        Sugar[natives[i]].extend();
+    Sugar = function(arg) {
+      for (var i = 0; i < nativesWithObject.length; i++) {
+        Sugar[nativesWithObject[i]].extend(arg);
       }
       // return self
       return Sugar;
@@ -53,20 +56,18 @@
     // The "extend" method is more explicit and preferred, but the
     // namespace itself is also available for cleaner npm modules.
     setProperty(Sugar, 'extend', Sugar);
-    iterateOverObject(natives, setupNamespace);
+    iterateOverObject(nativesWithObject, setupNamespace);
     if (hasExports) {
       module.exports = Sugar;
     } else {
-      globalContext.Sugar = Sugar;
+      globalContext['Sugar'] = Sugar;
     }
   }
 
-  function setupNamespace(i, namespace) {
-    var nativeClass = globalContext[namespace],
-        isObject = nativeClass === object;
+  function setupNamespace(i, name) {
+    var nativeClass = globalContext[name], isObject = nativeClass === object, namespace;
 
-    // Namespace method, i.e. Sugar.Array() or Sugar.Array.extend()
-    function extend(arg1, arg2) {
+    namespace = function(arg1, arg2) {
       var staticMethods = {}, instanceMethods = {}, methodsByName, flag;
 
       function canExtendPrototype() {
@@ -86,13 +87,13 @@
         allowObjectInstance = flag;
       }
 
-      iterateOverObject(methodsByName || Sugar[namespace], function(methodName, method) {
+      iterateOverObject(methodsByName || namespace, function(methodName, method) {
         if (methodsByName) {
           // If we have method names passed in an array,
           // then we need to flip the key and value here
           // and find the method in the Sugar namespace.
           methodName = method;
-          method = Sugar[namespace][methodName];
+          method = namespace[methodName];
         }
         if (hasOwnProperty(method, 'instance') && canExtendPrototype()) {
           instanceMethods[methodName] = method.instance;
@@ -108,32 +109,32 @@
         // all methods in then namespace will be extended
         // to the native. This includes all future defined
         // methods, so add a flag here to check later.
-        setProperty(extend, 'active', true);
+        setProperty(namespace, 'active', true);
       }
       // return self
-      return extend;
+      return namespace;
     }
 
     // Extending by namespace:
     // 1. Sugar.Array.extend();
     // 2. require('sugar-array')();
-    Sugar[namespace] = extend;
-    setProperty(extend, 'extend', extend);
+    Sugar[name] = namespace;
+    setProperty(namespace, 'extend', namespace);
 
-    setProperty(extend, 'defineStatic', function(methods) {
-      defineMethods(extend, methods);
+    setProperty(namespace, 'defineStatic', function(methods) {
+      defineMethods(namespace, methods);
     });
 
-    setProperty(extend, 'defineStaticWithArguments', function(methods) {
-      defineMethods(extend, methods, false, true);
+    setProperty(namespace, 'defineStaticWithArguments', function(methods) {
+      defineMethods(namespace, methods, false, true);
     });
 
-    setProperty(extend, 'defineInstance', function(methods) {
-      defineMethods(extend, methods, true);
+    setProperty(namespace, 'defineInstance', function(methods) {
+      defineMethods(namespace, methods, true);
     });
 
-    setProperty(extend, 'defineInstanceWithArguments', function(methods) {
-      defineMethods(extend, methods, true, true);
+    setProperty(namespace, 'defineInstanceWithArguments', function(methods) {
+      defineMethods(namespace, methods, true, true);
     });
 
   }
@@ -219,7 +220,7 @@
     // a prototype, then "this" will be pushed into the arguments array so start
     // collecting 1 argument earlier.
     var startCollect = fn.length - 1 - (instance ? 1 : 0);
-    return function withArgs() {
+    return function() {
       var args = [], collectedArgs = [];
       if (instance) {
         args.push(this);
@@ -245,23 +246,23 @@
       // may cause confusion here, so return the same wrapped function regardless.
       case 0:
       case 1:
-        return function wrap() {
+        return function() {
           return fn(this);
         }
       case 2:
-        return function wrap(a) {
+        return function(a) {
           return fn(this, a);
         }
       case 3:
-        return function wrap(a, b) {
+        return function(a, b) {
           return fn(this, a, b);
         }
       case 4:
-        return function wrap(a, b, c) {
+        return function(a, b, c) {
           return fn(this, a, b, c);
         }
       case 5:
-        return function wrap(a, b, c, d) {
+        return function(a, b, c, d) {
           return fn(this, a, b, c, d);
         }
     }
@@ -528,9 +529,7 @@
 
   // Hash definition
 
-  // Compiler is known to barf unless this
-  // is defined as a variable with "var".
-  var Hash = function Hash(obj) {
+  var Hash = function(obj) {
     simpleMerge(this, coercePrimitiveToObject(obj));
   };
 
@@ -842,27 +841,27 @@
 
   function regexMatcher(reg) {
     reg = RegExp(reg);
-    return function (el) {
+    return function(el) {
       return reg.test(el);
     }
   }
 
   function dateMatcher(d) {
     var ms = d.getTime();
-    return function (el) {
+    return function(el) {
       return !!(el && el.getTime) && el.getTime() === ms;
     }
   }
 
   function functionMatcher(fn) {
-    return function (el, i, arr) {
+    return function(el, i, arr) {
       // Return true up front if match by reference
       return el === fn || fn.call(this, el, i, arr);
     }
   }
 
   function invertedArgsFunctionMatcher(fn) {
-    return function (value, key, obj) {
+    return function(value, key, obj) {
       // Return true up front if match by reference
       return value === fn || fn.call(obj, key, value, obj);
     }
@@ -870,7 +869,7 @@
 
   function fuzzyMatcher(obj, isObject) {
     var matchers = {};
-    return function (el, i, arr) {
+    return function(el, i, arr) {
       var key;
       if (!isObjectType(el)) {
         return false;
@@ -886,7 +885,7 @@
   }
 
   function defaultMatcher(f) {
-    return function (el) {
+    return function(el) {
       return el === f || isEqual(el, f);
     }
   }
@@ -1031,23 +1030,10 @@
     return result;
   }
 
-  function arrayCount(arr, f) {
-    if (isUndefined(f)) return arr.length;
-    return arrayFindAll(arr, f).length;
-  }
-
   function arrayAdd(arr, el, index) {
     if (!isNumber(number(index)) || isNaN(index)) index = arr.length;
     array.prototype.splice.apply(arr, [index, 0].concat(el));
     return arr;
-  }
-
-  function arrayInclude(arr, el, index) {
-    return arrayAdd(arrayClone(arr), el, index);
-  }
-
-  function arrayExclude(arr, args) {
-    return arrayRemove(arrayClone(arr), args);
   }
 
   function arrayRemove(arr, args) {
@@ -1064,13 +1050,6 @@
     return arr;
   }
 
-  function arrayRemoveAtIndex(arr, start, end) {
-    if (isUndefined(start)) return arr;
-    if (isUndefined(end))   end = start;
-    arr.splice(start, end - start + 1);
-    return arr;
-  }
-
   function arrayUnique(arr, map) {
     var result = [], o = {}, transformed;
     arrayEach(arr, function(el, i) {
@@ -1082,16 +1061,8 @@
     return result;
   }
 
-  function arrayUnion(arr, args) {
-    return arrayUnique([].concat.apply(arr, args));
-  }
-
   function arrayIntersect(arr, args) {
     return arrayIntersectOrSubtract(arr, args, false);
-  }
-
-  function arraySubtract(arr, args) {
-    return arrayIntersectOrSubtract(arr, args, true);
   }
 
   function arrayIntersectOrSubtract(arr1, args, subtract) {
@@ -1113,14 +1084,6 @@
     return result;
   }
 
-  function arrayZip(arr, args) {
-    return arr.map(function(el, i) {
-      return [el].concat(args.map(function(k) {
-        return (i in k) ? k[i] : null;
-      }));
-    });
-  }
-
   function arrayFlatten(arr, level, current) {
     level = level || Infinity;
     current = current || 0;
@@ -1133,43 +1096,6 @@
       }
     });
     return result;
-  }
-
-  function arrayFirst(arr, num) {
-    if (isUndefined(num)) return arr[0];
-    if (num < 0) num = 0;
-    return arr.slice(0, num);
-  }
-
-  function arrayLast(arr, num) {
-    if (isUndefined(num)) return arr[arr.length - 1];
-    var start = arr.length - num < 0 ? 0 : arr.length - num;
-    return arr.slice(start);
-  }
-
-  function arrayFrom(arr, num) {
-    return arr.slice(num);
-  }
-
-  function arrayTo(arr, num) {
-    if (isUndefined(num)) num = arr.length;
-    return arr.slice(0, num);
-  }
-
-  function arrayMin(arr, map, all) {
-    return getMinOrMax(arr, map, 'min', all);
-  }
-
-  function arrayMax(arr, map, all) {
-    return getMinOrMax(arr, map, 'max', all);
-  }
-
-  function arrayLeast(arr, map, all) {
-    return getMinOrMax(arrayGroupBy(arr, map), 'length', 'min', all);
-  }
-
-  function arrayMost(arr, map, all) {
-    return getMinOrMax(arrayGroupBy(arr, map), 'length', 'max', all);
   }
 
   function arrayGroupBy(arr, map, fn) {
@@ -1192,10 +1118,6 @@
     return arr.length > 0 ? arr.reduce(function(a,b) { return a + b; }) : 0;
   }
 
-  function arrayAverage(arr, map) {
-    return arr.length > 0 ? arraySum(arr, map) / arr.length : 0;
-  }
-
   function arrayCompact(arr, all) {
     var result = [];
     arrayEach(arr, function(el, i) {
@@ -1210,52 +1132,6 @@
     return result;
   }
 
-  function arrayInGroups(arr, num, padding) {
-    var pad = isDefined(padding);
-    var result = [];
-    var divisor = ceil(arr.length / num);
-    simpleRepeat(num, function(i) {
-      var index = i * divisor;
-      var group = arr.slice(index, index + divisor);
-      if (pad && group.length < divisor) {
-        simpleRepeat(divisor - group.length, function() {
-          group.push(padding);
-        });
-      }
-      result.push(group);
-    });
-    return result;
-  }
-
-  function arrayInGroupsOf(arr, num, padding) {
-    var result = [], len = arr.length, group;
-    if (len === 0 || num === 0) return arr;
-    if (isUndefined(num)) num = 1;
-    if (isUndefined(padding)) padding = null;
-    simpleRepeat(ceil(len / num), function(i) {
-      group = arr.slice(num * i, num * i + num);
-      while(group.length < num) {
-        group.push(padding);
-      }
-      result.push(group);
-    });
-    return result;
-  }
-
-  function arrayIsEmpty(arr) {
-    return arrayCompact(arr).length == 0;
-  }
-
-  function arraySortBy(arr, map, desc) {
-    var newArray = arrayClone(arr);
-    newArray.sort(function(a, b) {
-      var aProperty = transformArgument(a, map, newArray, [a]);
-      var bProperty = transformArgument(b, map, newArray, [b]);
-      return compareValue(aProperty, bProperty) * (desc ? -1 : 1);
-    });
-    return newArray;
-  }
-
   function arrayRandomize(arr) {
     arr = arrayClone(arr);
     var i = arr.length, j, x;
@@ -1266,11 +1142,6 @@
       arr[j] = x;
     }
     return arr;
-  }
-
-  function arraySample(arr, num) {
-    var arr = arrayRandomize(arr);
-    return isDefined(num) ? arr.slice(0, num) : arr[0];
   }
 
   function arrayClone(arr) {
@@ -1447,14 +1318,14 @@
   function buildEnhancements() {
     defineInstanceSimilar(sugarArray, 'every,some,filter,find,findIndex', function(methods, name) {
       var nativeFn = array.prototype[name];
-      function withMatcher(arr, f, context) {
+      var withMatcher = function(arr, f, context) {
         return callNativeWithMatcher(nativeFn, arr, f, context, arguments.length - 1);
       }
       // The instance method is custom here because it's checking argument length
       // in order to throw an error that creates parity with the native methods,
       // however we don't want to go so far as to actually collect the arguments.
       // Also these methods should maintain their length of 1 as per the spec.
-      withMatcher.instance = function withMatcher(f) {
+      withMatcher.instance = function(f) {
         return callNativeWithMatcher(nativeFn, this, f, arguments[1], arguments.length);
       }
       methods[name] = withMatcher;
@@ -1475,7 +1346,7 @@
   function buildNone() {
     // None needs to be built because it also throws errors based on
     // argument length to create parity with other similar native methods.
-    function none() {
+    var none = function() {
       return !sugarArray.some.apply(null, arguments);
     }
     none.instance = function() {
@@ -1505,6 +1376,9 @@
     var order = 'AÁÀÂÃĄBCĆČÇDĎÐEÉÈĚÊËĘFGĞHıIÍÌİÎÏJKLŁMNŃŇÑOÓÒÔPQRŘSŚŠŞTŤUÚÙŮÛÜVWXYÝZŹŻŽÞÆŒØÕÅÄÖ';
     var equiv = 'AÁÀÂÃÄ,CÇ,EÉÈÊË,IÍÌİÎÏ,OÓÒÔÕÖ,Sß,UÚÙÛÜ';
     var props = {};
+    var collate = function(a, b) {
+      return collateStrings(a, b);
+    };
     props[AlphanumericSortOrder] = order.split('').map(function(str) {
       return str + str.toLowerCase();
     }).join('');
@@ -1519,7 +1393,7 @@
     props[AlphanumericSortNatural] = true;
     props[AlphanumericSortIgnoreCase] = true;
     props[AlphanumericSortEquivalents] = equivalents;
-    props[AlphanumericSort] = collateStrings;
+    props[AlphanumericSort] = collate;
     defineStaticProperties(sugarArray, props);
   }
 
@@ -1624,7 +1498,7 @@
      *   ['cuba','japan','canada'].findFrom(/^c/, 2) -> 'canada'
      *
      ***/
-    'findFrom': function findFrom(arr, f, index, loop) {
+    'findFrom': function(arr, f, index, loop) {
       return arrayFind(arr, f, index, loop);
     },
 
@@ -1638,7 +1512,7 @@
      *   ['cuba','japan','canada'].findIndexFrom(/^c/, 2) -> 2
      *
      ***/
-    'findIndexFrom': function findIndexFrom(arr, f, index, loop) {
+    'findIndexFrom': function(arr, f, index, loop) {
       var index = arrayFind(arr, f, index, loop, true);
       return isUndefined(index) ? -1 : index;
     },
@@ -1658,7 +1532,9 @@
      *   ['cuba','japan','canada'].findAll(/^c/, 2) -> 'canada'
      *
      ***/
-    'findAll': arrayFindAll,
+    'findAll': function(arr, f, index, loop) {
+      return arrayFindAll(arr, f, index, loop);
+    },
 
     /***
      * @method count(<f>)
@@ -1674,7 +1550,10 @@
      *   });                      -> 0
      *
      ***/
-    'count': arrayCount,
+    'count': function(arr, f) {
+      if (isUndefined(f)) return arr.length;
+      return arrayFindAll(arr, f).length;
+    },
 
     /***
      * @method removeAt(<start>, [end])
@@ -1686,7 +1565,12 @@
      *   [1,2,3,4].removeAt(1, 3)  -> [1]
      *
      ***/
-    'removeAt': arrayRemoveAtIndex,
+    'removeAt': function(arr, start, end) {
+      if (isUndefined(start)) return arr;
+      if (isUndefined(end))   end = start;
+      arr.splice(start, end - start + 1);
+      return arr;
+    },
 
     /***
      * @method include(<el>, [index])
@@ -1700,7 +1584,9 @@
      *   [1,2,3,4].include([5,6,7]) -> [1,2,3,4,5,6,7]
      *
      ***/
-    'include': arrayInclude,
+    'include': function(arr, el, index) {
+      return arrayAdd(arrayClone(arr), el, index);
+    },
 
     /***
      * @method clone()
@@ -1711,7 +1597,9 @@
      *   [1,2,3].clone() -> [1,2,3]
      *
      ***/
-    'clone': arrayClone,
+    'clone': function(arr) {
+      return arrayClone(arr);
+    },
 
     /***
      * @method unique([map] = null)
@@ -1728,7 +1616,9 @@
      *   [{foo:'bar'},{foo:'bar'}].unique('foo') -> [{foo:'bar'}]
      *
      ***/
-    'unique': arrayUnique,
+    'unique': function(arr, map) {
+      return arrayUnique(arr, map);
+    },
 
     /***
      * @method flatten([limit] = Infinity)
@@ -1741,7 +1631,9 @@
      *   [['a'],[],'b','c'].flatten() -> ['a','b','c']
      *
      ***/
-    'flatten': arrayFlatten,
+    'flatten': function(arr, limit) {
+      return arrayFlatten(arr, limit);
+    },
 
     /***
      * @method first([num] = 1)
@@ -1754,7 +1646,11 @@
      *   [1,2,3].first(2)       -> [1,2]
      *
      ***/
-    'first': arrayFirst,
+    'first': function(arr, num) {
+      if (isUndefined(num)) return arr[0];
+      if (num < 0) num = 0;
+      return arr.slice(0, num);
+    },
 
     /***
      * @method last([num] = 1)
@@ -1767,7 +1663,11 @@
      *   [1,2,3].last(2)       -> [2,3]
      *
      ***/
-    'last': arrayLast,
+    'last': function(arr, num) {
+      if (isUndefined(num)) return arr[arr.length - 1];
+      var start = arr.length - num < 0 ? 0 : arr.length - num;
+      return arr.slice(start);
+    },
 
     /***
      * @method from(<index>)
@@ -1779,7 +1679,9 @@
      *   [1,2,3].from(2)  -> [3]
      *
      ***/
-    'from': arrayFrom,
+    'from': function(arr, num) {
+      return arr.slice(num);
+    },
 
     /***
      * @method to(<index>)
@@ -1791,7 +1693,10 @@
      *   [1,3,5].to(2)  -> [1,3]
      *
      ***/
-    'to': arrayTo,
+    'to': function(arr, num) {
+      if (isUndefined(num)) num = arr.length;
+      return arr.slice(0, num);
+    },
 
     /***
      * @method min([map], [all] = false)
@@ -1811,7 +1716,9 @@
      *   });                              -> [{a:2}]
      *
      ***/
-    'min': arrayMin,
+    'min': function(arr, map, all) {
+      return getMinOrMax(arr, map, 'min', all);
+    },
 
     /***
      * @method max([map], [all] = false)
@@ -1828,7 +1735,9 @@
      *   });                              -> {a:3}
      *
      ***/
-    'max': arrayMax,
+    'max': function(arr, map, all) {
+      return getMinOrMax(arr, map, 'max', all);
+    },
 
     /***
      * @method least([map])
@@ -1844,7 +1753,9 @@
      *   });                               -> [{age:35,name:'ken'}]
      *
      ***/
-    'least': arrayLeast,
+    'least': function(arr, map, all) {
+      return getMinOrMax(arrayGroupBy(arr, map), 'length', 'min', all);
+    },
 
     /***
      * @method most([map])
@@ -1860,7 +1771,9 @@
      *   });                              -> [{age:12,name:'bob'},{age:12,name:'ted'}]
      *
      ***/
-    'most': arrayMost,
+    'most': function(arr, map, all) {
+      return getMinOrMax(arrayGroupBy(arr, map), 'length', 'max', all);
+    },
 
     /***
      * @method sum([map])
@@ -1876,7 +1789,9 @@
      *   [{age:35},{age:12},{age:12}].sum('age') -> 59
      *
      ***/
-    'sum': arraySum,
+    'sum': function(arr, map) {
+      return arraySum(arr, map);
+    },
 
     /***
      * @method average([map])
@@ -1892,7 +1807,9 @@
      *   [{age:35},{age:11},{age:11}].average('age') -> 19
      *
      ***/
-    'average': arrayAverage,
+    'average': function(arr, map) {
+      return arr.length > 0 ? arraySum(arr, map) / arr.length : 0;
+    },
 
     /***
      * @method inGroups(<num>, [padding])
@@ -1905,7 +1822,22 @@
      *   [1,2,3,4,5,6,7].inGroups(3, 'none') -> [ [1,2,3], [4,5,6], [7,'none','none'] ]
      *
      ***/
-    'inGroups': arrayInGroups,
+    'inGroups': function(arr, num, padding) {
+      var pad = isDefined(padding);
+      var result = [];
+      var divisor = ceil(arr.length / num);
+      simpleRepeat(num, function(i) {
+        var index = i * divisor;
+        var group = arr.slice(index, index + divisor);
+        if (pad && group.length < divisor) {
+          simpleRepeat(divisor - group.length, function() {
+            group.push(padding);
+          });
+        }
+        result.push(group);
+      });
+      return result;
+    },
 
     /***
      * @method inGroupsOf(<num>, [padding] = null)
@@ -1918,7 +1850,20 @@
      *   [1,2,3,4,5,6,7].inGroupsOf(4, 'none') -> [ [1,2,3,4], [5,6,7,'none'] ]
      *
      ***/
-    'inGroupsOf': arrayInGroupsOf,
+    'inGroupsOf': function(arr, num, padding) {
+      var result = [], len = arr.length, group;
+      if (len === 0 || num === 0) return arr;
+      if (isUndefined(num)) num = 1;
+      if (isUndefined(padding)) padding = null;
+      simpleRepeat(ceil(len / num), function(i) {
+        group = arr.slice(num * i, num * i + num);
+        while(group.length < num) {
+          group.push(padding);
+        }
+        result.push(group);
+      });
+      return result;
+    },
 
     /***
      * @method isEmpty()
@@ -1931,7 +1876,9 @@
      *   [null,undefined].isEmpty() -> true
      *
      ***/
-    'isEmpty': arrayIsEmpty,
+    'isEmpty': function(arr) {
+      return arrayCompact(arr).length == 0;
+    },
 
     /***
      * @method sortBy(<map>, [desc] = false)
@@ -1947,7 +1894,15 @@
      *   });                                        -> [{age:13},{age:18},{age:72}]
      *
      ***/
-    'sortBy': arraySortBy,
+    'sortBy': function(arr, map, desc) {
+      var newArray = arrayClone(arr);
+      newArray.sort(function(a, b) {
+        var aProperty = transformArgument(a, map, newArray, [a]);
+        var bProperty = transformArgument(b, map, newArray, [b]);
+        return compareValue(aProperty, bProperty) * (desc ? -1 : 1);
+      });
+      return newArray;
+    },
 
     /***
      * @method randomize()
@@ -1959,7 +1914,9 @@
      *   [1,2,3,4].randomize()  -> [?,?,?,?]
      *
      ***/
-    'randomize': arrayRandomize,
+    'randomize': function(arr) {
+      return arrayRandomize(arr);
+    },
 
     /***
      * @method sample([num])
@@ -1972,7 +1929,10 @@
      *   [1,2,3,4,5].sample(3) -> // Array of 3 random elements
      *
      ***/
-    'sample': arraySample,
+    'sample': function(arr, num) {
+      var arr = arrayRandomize(arr);
+      return isDefined(num) ? arr.slice(0, num) : arr[0];
+    },
 
     /***
      * @method each(<fn>, [index] = 0, [loop] = false)
@@ -1989,7 +1949,9 @@
      *   }, 2, true);
      *
      ***/
-    'each': arrayEach,
+    'each': function(arr, fn, index, loop) {
+      return arrayEach(arr, fn, index, loop);
+    },
 
     /***
      * @method add(<el>, [index])
@@ -2003,7 +1965,9 @@
      *   [1,2,3,4].insert(8, 1) -> [1,8,2,3,4]
      *
      ***/
-    'add': arrayAdd,
+    'add': function(arr, el, index) {
+      return arrayAdd(arr, el, index);
+    },
 
     /***
      * @method compact([all] = false)
@@ -2017,7 +1981,9 @@
      *   [1,'',2,false,3].compact(true)   -> [1,2,3]
      *
      ***/
-    'compact': arrayCompact,
+    'compact': function(arr, all) {
+      return arrayCompact(arr, all);
+    },
 
     /***
      * @method groupBy(<map>, [fn])
@@ -2032,8 +1998,9 @@
      *   });                                  -> { 35: [{age:35,name:'ken'}], 15: [{age:15,name:'bob'}] }
      *
      ***/
-    'groupBy': arrayGroupBy
-
+    'groupBy': function(arr, map, fn) {
+      return arrayGroupBy(arr, map, fn);
+    }
 
   });
 
@@ -2073,7 +2040,9 @@
      *   });                       -> [{b:2}]
      *
      ***/
-    'exclude': arrayExclude,
+    'exclude': function(arr, args) {
+      return arrayRemove(arrayClone(arr), args);
+    },
 
     /***
      * @method remove([f1], [f2], ...)
@@ -2089,7 +2058,9 @@
      *   });                       -> [{b:2}]
      *
      ***/
-    'remove': arrayRemove,
+    'remove': function(arr, args) {
+      return arrayRemove(arr, args);
+    },
 
     /***
      * @method union([a1], [a2], ...)
@@ -2102,7 +2073,9 @@
      *   ['a','b'].union(['b','c']) -> ['a','b','c']
      *
      ***/
-    'union': arrayUnion,
+    'union': function(arr, args) {
+      return arrayUnique([].concat.apply(arr, args));
+    },
 
     /***
      * @method intersect([a1], [a2], ...)
@@ -2115,7 +2088,9 @@
      *   ['a','b'].intersect('b','c') -> ['b']
      *
      ***/
-    'intersect': arrayIntersect,
+    'intersect': function(arr, args) {
+      return arrayIntersect(arr, args);
+    },
 
     /***
      * @method subtract([a1], [a2], ...)
@@ -2129,7 +2104,9 @@
      *   ['a','b'].subtract('b','c') -> ['a']
      *
      ***/
-    'subtract': arraySubtract,
+    'subtract': function(arr, args) {
+      return arrayIntersectOrSubtract(arr, args, true);
+    },
 
     /***
      * @method zip([arr1], [arr2], ...)
@@ -2142,7 +2119,13 @@
      *   ['Martin','John'].zip(['Luther','F.'], ['King','Kennedy']) -> [['Martin','Luther','King'], ['John','F.','Kennedy']]
      *
      ***/
-    'zip': arrayZip
+    'zip': function(arr, args) {
+      return arr.map(function(el, i) {
+        return [el].concat(args.map(function(k) {
+          return (i in k) ? k[i] : null;
+        }));
+      });
+    }
 
   });
 
@@ -2207,7 +2190,7 @@
 
   function buildEnumerableMethods(names, mapping) {
     defineStaticSimilar(sugarObject, names, function(methods, name) {
-      methods[name] = function enumerable(obj, arg1, arg2) {
+      methods[name] = function(obj, arg1, arg2) {
         var result, coerced = keysWithObjectCoercion(obj), matcher;
         if (!mapping) {
           matcher = getMatcher(arg1, true);
@@ -2715,11 +2698,6 @@
     return !isNaN(d.getTime());
   }
 
-  function isLeapYear(d) {
-    var year = callDateGet(d, 'FullYear');
-    return (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
-  }
-
   // UTC helpers
 
   function setUTC(d, force) {
@@ -3210,14 +3188,6 @@
     return hours === 0 ? 12 : hours - (floor(hours / 13) * 12);
   }
 
-  // weeksSince won't work here as the result needs to be floored, not rounded.
-  function getWeekNumber(date) {
-    date = cloneDate(date);
-    var dow = callDateGet(date, 'Day') || 7;
-    resetDate(advanceDate(date, [(4 - dow) + ' days']));
-    return 1 + floor(sugarDate.daysSince(date, moveToBeginningOfUnit(cloneDate(date), 'year')) / 7);
-  }
-
   function setWeekNumber(date, num) {
     var weekday = callDateGet(date, 'Day') || 7;
     if (isUndefined(num)) return;
@@ -3334,14 +3304,14 @@
 
   function createPaddedToken(t, fn, ms) {
     DateFormatTokens[t] = fn;
-    DateFormatTokens[t + t] = function (d, localeCode) {
+    DateFormatTokens[t + t] = function(d, localeCode) {
       return padNumber(fn(d, localeCode), 2);
     };
     if (ms) {
-      DateFormatTokens[t + t + t] = function (d, localeCode) {
+      DateFormatTokens[t + t + t] = function(d, localeCode) {
         return padNumber(fn(d, localeCode), 3);
       };
-      DateFormatTokens[t + t + t + t] = function (d, localeCode) {
+      DateFormatTokens[t + t + t + t] = function(d, localeCode) {
         return padNumber(fn(d, localeCode), 4);
       };
     }
@@ -3853,7 +3823,7 @@
         };
       }
 
-      methods[u.addMethod] = function (d, num, reset) {
+      methods[u.addMethod] = function(d, num, reset) {
         var set = {};
         set[name] = num;
         return advanceDate(d, [set, reset]);
@@ -4255,7 +4225,7 @@
   defineInstance(sugarDate, {
 
      /***
-     * @method setWeekday()
+     * @method setWeekday(<dow>)
      * @returns Nothing
      * @short Sets the weekday of the date.
      * @extra In order to maintain a parallel with %getWeekday% (which itself is an alias for Javascript native %getDay%), Sunday is considered day %0%. This contrasts with ISO-8601 standard (used in %getISOWeek% and %setISOWeek%) which places Sunday at the end of the week (day 7). This effectively means that passing %0% to this method while in the middle of a week will rewind the date, where passing %7% will advance it.
@@ -4266,7 +4236,9 @@
      *   d = new Date(); d.setWeekday(6); d; -> Saturday of this week
      *
      ***/
-    'setWeekday': setWeekday,
+    'setWeekday': function(d, dow) {
+      return setWeekday(d, dow);
+    },
 
      /***
      * @method setISOWeek(<num>)
@@ -4279,7 +4251,9 @@
      *   d = new Date(); d.setISOWeek(15); d; -> 15th week of the year
      *
      ***/
-    'setISOWeek': setWeekNumber,
+    'setISOWeek': function(d, num) {
+      return setWeekNumber(d, num);
+    },
 
      /***
      * @method getISOWeek()
@@ -4292,7 +4266,12 @@
      *   new Date().getISOWeek()    -> today's week of the year
      *
      ***/
-    'getISOWeek': getWeekNumber,
+    'getISOWeek': function(d) {
+      d = cloneDate(d);
+      var dow = callDateGet(d, 'Day') || 7;
+      resetDate(advanceDate(d, [(4 - dow) + ' days']));
+      return 1 + floor(sugarDate.daysSince(d, moveToBeginningOfUnit(cloneDate(d), 'year')) / 7);
+    },
 
      /***
      * @method beginningOfISOWeek()
@@ -4342,7 +4321,9 @@
      *   new Date().getUTCOffset(true) -> "+09:00"
      *
      ***/
-    'getUTCOffset': getUTCOffset,
+    'getUTCOffset': function(d, iso) {
+      return getUTCOffset(d, iso);
+    },
 
      /***
      * @method setUTC([on] = false)
@@ -4355,7 +4336,9 @@
      *   new Date().setUTC(false)
      *
      ***/
-    'setUTC': setUTC,
+    'setUTC': function(d, on) {
+      return setUTC(d, on);
+    },
 
      /***
      * @method isUTC()
@@ -4368,7 +4351,9 @@
      *   new Date().utc(true).isUTC() -> true
      *
      ***/
-    'isUTC': isUTC,
+    'isUTC': function(d) {
+      return isUTC(d);
+    },
 
      /***
      * @method isValid()
@@ -4380,7 +4365,9 @@
      *   new Date('flexor').isValid() -> false
      *
      ***/
-    'isValid': isValid,
+    'isValid': function(d) {
+      return isValid(d);
+    },
 
      /***
      * @method isAfter(<d>, [margin] = 0)
@@ -4442,7 +4429,10 @@
      *   Date.create('2000').isLeapYear() -> true
      *
      ***/
-    'isLeapYear': isLeapYear,
+    'isLeapYear': function(d) {
+      var year = callDateGet(d, 'FullYear');
+      return (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
+    },
 
      /***
      * @method daysInMonth()
@@ -4454,7 +4444,9 @@
      *   Date.create('February, 2000').daysInMonth() -> 29
      *
      ***/
-    'daysInMonth': daysInMonth,
+    'daysInMonth': function(d) {
+      return daysInMonth(d);
+    },
 
      /***
      * @method format(<format>, [locale] = currentLocale)
@@ -4537,7 +4529,9 @@
      *   Date.create().reset('month') -> 1st of the month
      *
      ***/
-    'reset': resetDate,
+    'reset': function(d, unit) {
+      return resetDate(d, unit);
+    },
 
      /***
      * @method clone()
@@ -4548,7 +4542,9 @@
      *   Date.create().clone() -> Copy of now
      *
      ***/
-    'clone': cloneDate,
+    'clone': function(d) {
+      return cloneDate(d);
+    },
 
      /***
      * @method iso()
@@ -4737,13 +4733,13 @@
    ***/
   function buildNumberMethods(u, multiplier) {
     var name = u.name, methods = {}, methodsWithArgs = {};
-    function base(n) {
+    var base = function(n) {
       return round(n * multiplier);
     }
-    function after(n, args) {
+    var after = function(n, args) {
       return sugarDate[u.addMethod](createDate(null, args), n);
     }
-    function before(n, args) {
+    var before = function(n, args) {
       return sugarDate[u.addMethod](createDate(null, args), -n);
     }
     methods[name] = base;
@@ -5214,11 +5210,11 @@
      defineStatic(klass, { range: constructor });
    }
 
-   var PrimitiveRangeConstructor = function range(start, end) {
+   var PrimitiveRangeConstructor = function(start, end) {
      return new Range(start, end);
    };
 
-   var DateRangeConstructor = function range(start, end) {
+   var DateRangeConstructor = function(start, end) {
      if (dateConstructorIsExtended()) {
        if (arguments.length === 1 && isString(start)) {
          return createDateRangeFromString(start);
@@ -5662,7 +5658,7 @@
   /***
    * @package Number
    * @dependency core
-   * @description Number formatting, rounding (with precision), and ranges. Aliases to Math methods.
+   * @description Number formatting, rounding (with precision). Aliases to Math methods.
    *
    ***/
 
@@ -5725,7 +5721,7 @@
   }
 
   function createRoundingFunction(fn) {
-    return function (n, precision) {
+    return function(n, precision) {
       return precision ? withPrecision(n, precision, fn) : fn(n);
     }
   }
@@ -5781,7 +5777,9 @@
      *   (4.5).isInteger() -> false
      *
      ***/
-    'isInteger': isInteger,
+    'isInteger': function(n) {
+      return isInteger(n);
+    },
 
     /***
      * @method isOdd()
@@ -5823,7 +5821,9 @@
      *   (34).isMultipleOf(4) -> false
      *
      ***/
-    'isMultipleOf': isMultipleOf,
+    'isMultipleOf': function(n, num) {
+      return isMultipleOf(n, num);
+    },
 
     /***
      * @method log(<base> = Math.E)
@@ -5903,7 +5903,9 @@
      *   (4388.43).format(2) -> '4,388.43'
      *
      ***/
-    'format': numberFormat,
+    'format': function(n, place) {
+      return numberFormat(n, place);
+    },
 
     /***
      * @method hex([pad] = 1)
@@ -5967,7 +5969,9 @@
      *   (82).pad(3, true) -> '+082'
      *
      ***/
-    'pad': padNumber,
+    'pad': function(n, place, sign, base) {
+      return padNumber(n, place, sign, base);
+    },
 
     /***
      * @method ordinalize()
@@ -6070,7 +6074,7 @@
    *
    ***/
   defineInstanceSimilar(sugarNumber, 'abs,pow,sin,asin,cos,acos,tan,atan,exp,pow,sqrt', function(methods, name) {
-    methods[name] = function mathAlias(n, arg) {
+    methods[name] = function(n, arg) {
       return math[name](n, arg);
     }
   });
@@ -6374,7 +6378,9 @@
      *   Object.extended({a:2}).isEqual({a:3}) -> false
      *
      ***/
-    'isEqual': isEqual,
+    'isEqual': function(a, b) {
+      return isEqual(a, b);
+    },
 
     /***
      * @method merge(<target>, <source>, [deep] = false, [resolve] = true)
@@ -6391,7 +6397,9 @@
      *   Object.extended({a:1}).merge({b:2}) -> { a:1, b:2 }
      *
      ***/
-    'merge': objectMerge,
+    'merge': function(target, source, deep, resolve) {
+      return objectMerge(target, source, deep, resolve);
+    },
 
     /***
      * @method values(<obj>, [fn])
@@ -6463,7 +6471,9 @@
      *   Object.toQueryString({name:'Bob'}, 'user') -> 'user[name]=Bob'
      *
      ***/
-    'toQueryString': toQueryString,
+    'toQueryString': function(obj, namespace) {
+      return toQueryString(obj, namespace);
+    },
 
     /***
      * @method tap(<obj>, <fn>)
@@ -6502,7 +6512,9 @@
      *   Object.has({ hasOwnProperty: true }, 'foo') -> false
      *
      ***/
-    'has': hasOwnProperty,
+    'has': function(obj, key) {
+      return hasOwnProperty(obj, key);
+    },
 
     /***
      * @method map(<obj>, <map>)
@@ -6555,7 +6567,7 @@
      *   Object.size({ foo: 'bar' }) -> 1
      *
      ***/
-    'size': function (obj) {
+    'size': function(obj) {
       return keysWithObjectCoercion(obj).length;
     },
 
@@ -6573,7 +6585,7 @@
      *   Object.select({a:1,b:2}, ['a', 'b']) -> {a:1,b:2}
      *
      ***/
-    'select': function (obj, f) {
+    'select': function(obj, f) {
       return selectFromObject(obj, f, true);
     },
 
@@ -6591,15 +6603,21 @@
      *   Object.reject({a:1,b:2}, ['a', 'b']) -> {}
      *
      ***/
-    'reject': function (obj, f) {
+    'reject': function(obj, f) {
       return selectFromObject(obj, f, false);
     },
 
-    'isArguments': isArgumentsObject,
+    'isArguments': function(obj) {
+      return isArgumentsObject(obj);
+    },
 
     'isNaN': function(obj) {
       // This is only true of NaN
       return isNumber(obj) && obj.valueOf() !== obj.valueOf();
+    },
+
+    'isObject': function(obj) {
+      return isPlainObject(obj);
     }
 
   });
@@ -6632,7 +6650,7 @@
    ***/
   function buildTypeCheckMethods() {
     defineInstanceSimilar(sugarObject, natives, function(methods, name) {
-      methods['is' + name] = name === 'Object' ? isPlainObject : typeChecks[name];
+      methods['is' + name] = typeChecks[name];
     });
   }
 
@@ -6752,7 +6770,7 @@
   /***
    * @package String
    * @dependency core
-   * @description String manupulation, escaping, encoding, truncation, and:conversion.
+   * @description String manupulation, escaping, encoding, truncation, and conversion.
    *
    ***/
 
@@ -6789,42 +6807,6 @@
 
   function isBlank(str) {
     return str.trim().length === 0;
-  }
-
-  function stringFirst(str, num) {
-    if (isUndefined(num)) num = 1;
-    return str.substr(0, num);
-  }
-
-  function stringLast(str, num) {
-    if (isUndefined(num)) num = 1;
-    var start = str.length - num < 0 ? 0 : str.length - num;
-    return str.substr(start);
-  }
-
-  function stringFrom(str, from) {
-    return str.slice(numberOrIndex(str, from, true));
-  }
-
-  function stringTo(str, to) {
-    if (isUndefined(to)) to = str.length;
-    return str.slice(0, numberOrIndex(str, to));
-  }
-
-  function stringAssign(str, args) {
-    var obj = {};
-    args = [].concat.apply([], args);
-    for (var i = 0; i < args.length; i++) {
-      var a = args[i];
-      if (isObjectType(a)) {
-        simpleMerge(obj, a);
-      } else {
-        obj[i + 1] = a;
-      }
-    }
-    return str.replace(/\{([^{]+?)\}/g, function(m, key) {
-      return hasOwnProperty(obj, key) ? obj[key] : m;
-    });
   }
 
   function spacify(str) {
@@ -7372,7 +7354,9 @@
      *   });
      *
      ***/
-    'each': stringEach,
+    'each': function(str, search, fn) {
+      return stringEach(str, search, fn);
+    },
 
     /***
      * @method map(<fn>, [scope])
@@ -7428,7 +7412,9 @@
      *   });
      *
      ***/
-    'codes': stringCodes,
+    'codes': function(str, fn) {
+      return stringCodes(str, fn);
+    },
 
     /***
      * @method chars([fn])
@@ -7442,7 +7428,9 @@
      *   });
      *
      ***/
-    'chars': stringEach,
+    'chars': function(str, search, fn) {
+      return stringEach(str, search, fn);
+    },
 
     /***
      * @method words([fn])
@@ -7557,7 +7545,9 @@
      *   'lucky charms'.reverse() -> 'smrahc ykcul'
      *
      ***/
-    'reverse': reverseString,
+    'reverse': function(str) {
+      return reverseString(str);
+    },
 
     /***
      * @method compact()
@@ -7585,7 +7575,9 @@
      *   'lucky charms'.from(7)  -> 'harms'
      *
      ***/
-    'from': stringFrom,
+    'from': function(str, from) {
+      return str.slice(numberOrIndex(str, from, true));
+    },
 
     /***
      * @method to([index] = end)
@@ -7597,7 +7589,10 @@
      *   'lucky charms'.to(7)  -> 'lucky ch'
      *
      ***/
-    'to': stringTo,
+    'to': function(str, to) {
+      if (isUndefined(to)) to = str.length;
+      return str.slice(0, numberOrIndex(str, to));
+    },
 
     /***
      * @method dasherize()
@@ -7623,7 +7618,9 @@
      *   'capsLock'.underscore()           -> 'caps_lock'
      *
      ***/
-    'underscore': underscore,
+    'underscore': function(str) {
+      return underscore(str);
+    },
 
     /***
      * @method camelize([first] = true)
@@ -7656,7 +7653,7 @@
      *   'oh-no_youDid-not'.spacify().capitalize(true) -> 'something else'
      *
      ***/
-    'spacify': function (str) {
+    'spacify': function(str) {
       return underscore(str).replace(/_/g, ' ');
     },
 
@@ -7672,7 +7669,9 @@
      *   'sittin on the dock of the bay'.truncate(18, 'middle') -> 'just sitt...of the bay'
      *
      ***/
-    'truncate': truncateString,
+    'truncate': function(str, length, from, ellipsis) {
+      return truncateString(str, length, from, ellipsis);
+    },
 
     /***
      * @method truncateOnWord(<length>, [from] = 'right', [ellipsis] = '...')
@@ -7736,7 +7735,10 @@
      *   'lucky charms'.first(3)  -> 'luc'
      *
      ***/
-    'first': stringFirst,
+    'first': function(str, num) {
+      if (isUndefined(num)) num = 1;
+      return str.substr(0, num);
+    },
 
     /***
      * @method last([n] = 1)
@@ -7748,7 +7750,11 @@
      *   'lucky charms'.last(3)  -> 'rms'
      *
      ***/
-    'last': stringLast,
+    'last': function(str, num) {
+      if (isUndefined(num)) num = 1;
+      var start = str.length - num < 0 ? 0 : str.length - num;
+      return str.substr(start);
+    },
 
     /***
      * @method toNumber([base] = 10)
@@ -7763,7 +7769,9 @@
      *   'ff'.toNumber(16)   -> 255
      *
      ***/
-    'toNumber': stringToNumber,
+    'toNumber': function(str, base) {
+      return stringToNumber(str, base);
+    },
 
     /***
      * @method capitalize([all] = false)
@@ -7778,7 +7786,9 @@
      *
      *
      ***/
-    'capitalize': capitalize,
+    'capitalize': function(str, all) {
+      return capitalize(str, all);
+    },
 
     /***
      * @method trim[Side]()
@@ -7877,7 +7887,21 @@
      *   '{n} and {r}'.assign({ n: 'Cheech' }, { r: 'Chong' }) -> 'Cheech and Chong'
      *
      ***/
-    'assign': stringAssign
+    'assign': function(str, args) {
+      var obj = {};
+      args = [].concat.apply([], args);
+      for (var i = 0; i < args.length; i++) {
+        var a = args[i];
+        if (isObjectType(a)) {
+          simpleMerge(obj, a);
+        } else {
+          obj[i + 1] = a;
+        }
+      }
+      return str.replace(/\{([^{]+?)\}/g, function(m, key) {
+        return hasOwnProperty(obj, key) ? obj[key] : m;
+      });
+    }
 
   });
 
