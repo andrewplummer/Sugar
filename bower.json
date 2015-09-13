@@ -1,20 +1,27 @@
 {
   "name": "sugar",
-  "version": "1.4.1",
   "description": "A Javascript library for working with native objects.",
+  "authors": [
+    "Andrew Plummer"
+  ],
   "homepage": "http://sugarjs.com/",
-  "author": "Andrew Plummer",
-  "keywords": ["sugarjs", "functional", "utility", "util", "browser", "date", "time", "parse", "format"],
-  "main": "release/sugar.min.js",
-  "ignore": [
-    "docs/",
-    "lib/",
-    "performance/",
-    "release/copyright.txt",
-    "release/precompiled/",
-    "script/",
-    "test/",
-    "tmp/"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/andrewplummer/Sugar.git"
+  },
+  "keywords": [
+    "sugarjs",
+    "functional",
+    "utility",
+    "util",
+    "browser",
+    "date",
+    "time"
+  ],
+  "main": "sugar.min.js",
+  "moduleType": [
+    "globals",
+    "node"
   ],
   "devDependencies": {
     "closure-compiler": "http://dl.google.com/closure-compiler/compiler-latest.zip"
