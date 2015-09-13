@@ -22,6 +22,7 @@
   "ignore": [
     "package.json",
     "component.json",
+    "gulpfile.js",
     "lib/",
     "release/",
     "test/",
