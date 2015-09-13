@@ -353,25 +353,14 @@ function getModulePackage(module, mainPackage) {
   return JSON.stringify(package, null, 2);
 }
 
-function getModuleComponent(module, mainComponent) {
-  var component = JSON.parse(JSON.stringify(mainComponent));
-  component.name = module.name;
-  component.scripts = [module.name + '.js'];
-  component.keywords = getKeywords(module.name, component.keywords);
-  component.description += ' ' + module.description;
-  return JSON.stringify(component, null, 2);
-}
-
 gulp.task('npm', function() {
   var streams = [];
   var mainPackage = require('./package.json');
-  var mainComponent = require('./component.json');
   for (var i = 0; i < NPM_MODULES.length; i++) {
     var module = NPM_MODULES[i];
     var path = 'release/npm/' + module.name + '/';
     mkdirp.sync(path);
     fs.writeFileSync(path + 'package.json', getModulePackage(module, mainPackage));
-    fs.writeFileSync(path + 'component.json', getModuleComponent(module, mainComponent));
     streams.push(buildDevelopment(module.files, path + module.name));
     streams.push(gulp.src(['LICENSE', 'README.md', 'CHANGELOG.md']).pipe(gulp.dest(path)));
   }
