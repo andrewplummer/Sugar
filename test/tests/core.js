@@ -233,6 +233,18 @@ package('Core', function() {
     equal(({}).foo(), 'foo!', 'foo has been mapped');
   });
 
+  group('Will extend to Object.prototype on global call with true', function () {
+    Sugar(true);
+    defineCustom(Sugar.Object);
+    equal(({}).foo(), 'foo!', 'foo has been mapped');
+  });
+
+  group('Will extend to Object.prototype on global extend with true', function () {
+    Sugar.extend(true);
+    defineCustom(Sugar.Object);
+    equal(({}).foo(), 'foo!', 'foo has been mapped');
+  });
+
   group('Can extend single method to object without prototype extension', function () {
     defineCustom(Sugar.Object);
     Sugar.Object.extend('foo');
