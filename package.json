@@ -22,6 +22,7 @@
     "url": "https://github.com/andrewplummer/Sugar/issues"
   },
   "files": [
+    "CAUTION.md",
     "sugar.js",
     "sugar.min.js"
   ],
