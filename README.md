@@ -7,7 +7,7 @@ http://sugarjs.com/
 
 ## Installing
 
-Pre-built scripts [release/sugar.min.js](release/sugar.min.js) and [release/sugar.js](release/sugar.js) can be immediately included in any project. Both are the standard build of Sugar that includes default packages. [release/sugar-full.min.js](release/sugar-full.min.js) and [release/sugar-full.js](release/sugar-full.js) include all packages. These pre-built scripts correspond to what is available on [customize](http://sugarjs.com/customize) page on the main site.
+Pre-built scripts [sugar.min.js](sugar.min.js) and [sugar.js](sugar.js) can be immediately included in any project. Both are the standard build of Sugar that includes default packages. These pre-built scripts correspond to what is available on [customize](http://sugarjs.com/customize) page on the main site.
 
 In node, simply use `npm install sugar` for the full build.
 
