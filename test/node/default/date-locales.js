@@ -2,19 +2,19 @@ var runner = require('../setup');
 
 // Tests
 runner.loadTest('date');
-runner.loadTest('date_da');
-runner.loadTest('date_de');
-runner.loadTest('date_es');
-runner.loadTest('date_fi');
-runner.loadTest('date_fr');
-runner.loadTest('date_it');
-runner.loadTest('date_ja');
-runner.loadTest('date_ko');
-runner.loadTest('date_nl');
-runner.loadTest('date_pt');
-runner.loadTest('date_ru');
-runner.loadTest('date_sv');
-runner.loadTest('date_zh_cn');
-runner.loadTest('date_zh_tw');
+runner.loadTest('date-da');
+runner.loadTest('date-de');
+runner.loadTest('date-es');
+runner.loadTest('date-fi');
+runner.loadTest('date-fr');
+runner.loadTest('date-it');
+runner.loadTest('date-ja');
+runner.loadTest('date-ko');
+runner.loadTest('date-nl');
+runner.loadTest('date-pt');
+runner.loadTest('date-ru');
+runner.loadTest('date-sv');
+runner.loadTest('date-zh_cn');
+runner.loadTest('date-zh_tw');
 
 runner.run(module);
