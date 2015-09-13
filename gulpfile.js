@@ -353,14 +353,28 @@ function getModulePackage(module, mainPackage) {
   return JSON.stringify(package, null, 2);
 }
 
+function getModuleBower(module, mainBower) {
+  var bower = JSON.parse(JSON.stringify(mainBower));
+  bower.name = module.name;
+  bower.main = module.name + '.min.js';
+  // Bower throws a warning if "ignore" isn't defined.
+  bower.ignore = [];
+  bower.keywords = getKeywords(module.name, bower.keywords);
+  bower.description += ' ' + module.description;
+  delete bower.devDependencies;
+  return JSON.stringify(bower, null, 2);
+}
+
 gulp.task('npm', function() {
   var streams = [];
   var mainPackage = require('./package.json');
+  var mainBower = require('./bower.json');
   for (var i = 0; i < NPM_MODULES.length; i++) {
     var module = NPM_MODULES[i];
     var path = 'release/npm/' + module.name + '/';
     mkdirp.sync(path);
     fs.writeFileSync(path + 'package.json', getModulePackage(module, mainPackage));
+    fs.writeFileSync(path + 'bower.json', getModuleBower(module, mainBower));
     streams.push(buildDevelopment(module.files, path + module.name));
     streams.push(gulp.src(['LICENSE', 'README.md', 'CHANGELOG.md']).pipe(gulp.dest(path)));
   }
