@@ -6,7 +6,7 @@ If your code breaks on update check here first! Read all the ones that are great
 
 ### Note about versions < 1.3.9
 
-Version 1.4.0 improves future-compatibility by ensuring that browser updates do not cause breakages going forward. Upgrading is highly recommended, however as there are also many API changes, [this patch](https://raw.github.com/andrewplummer/Sugar/master/lib/patches/sugar-es6-patch.min.js) was created for older versions. Just drop it in after the main script.
+Version 1.4.0 improves future-compatibility by ensuring that browser updates do not cause breakages going forward. Upgrading is highly recommended, however as there are also many API changes, [this patch](https://raw.github.com/andrewplummer/Sugar/master/lib/extras/patches/sugar-es6-patch.min.js) was created for older versions. Just drop it in after the main script.
 
 
 
