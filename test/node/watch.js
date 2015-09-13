@@ -21,20 +21,20 @@ reload('./default/string.js');
 reload('./default/sugar.js');
 reload('./default/full.js');
 
-runner.notice('Native Tests');
+runner.notice('Extended Tests');
 
-reload('./native/array.js');
-reload('./native/date.js');
-reload('./native/date-locales.js');
-reload('./native/function.js');
-reload('./native/inflections.js');
-reload('./native/language.js');
-reload('./native/number.js');
-reload('./native/object.js');
-reload('./native/range.js');
-reload('./native/regexp.js');
-reload('./native/string.js');
-reload('./native/sugar.js');
-reload('./native/full.js');
+reload('./extended/array.js');
+reload('./extended/date.js');
+reload('./extended/date-locales.js');
+reload('./extended/function.js');
+reload('./extended/inflections.js');
+reload('./extended/language.js');
+reload('./extended/number.js');
+reload('./extended/object.js');
+reload('./extended/range.js');
+reload('./extended/regexp.js');
+reload('./extended/string.js');
+reload('./extended/sugar.js');
+reload('./extended/full.js');
 
 runner.logTotals();

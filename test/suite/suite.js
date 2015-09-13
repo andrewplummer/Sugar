@@ -2,7 +2,7 @@
 
   var allTests = [];
   var packages = [];
-  var testNatives;
+  var testExtended;
   var currentTest;
   var currentArgs;
   var currentPackage;
@@ -17,10 +17,10 @@
   // BE CAREFUL HERE! If you declare these using window.xxx or
   // some form thereof they will not trigger errors in IE7!
 
-  runTests = function(fn, natives, env) {
+  runTests = function(fn, extended, env) {
     var time = new Date;
     var tests = getTestsToRun();
-    testNatives = natives;
+    testExtended = extended;
     environment = env;
     for (var i = 0; i < tests.length; i++) {
       currentTest = tests[i];
@@ -165,7 +165,7 @@
   run = function (subject, method, args) {
     method = method || currentTest.name;
     args = args || currentArgs || [];
-    if(testNatives) {
+    if(testExtended) {
       var globalObject = globalContext[currentTest.package.name], fn;
       if(subject && subject[method]) {
         // If the method exists on the subject, then it is the target
