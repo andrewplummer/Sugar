@@ -65,7 +65,7 @@ function getNpmPath(name) {
 
 function getTestName(type, name) {
   var packageName = getPackageName(name);
-  return type === 'native' ? packageName + ' (extended)' : packageName;
+  return type === 'extended' ? packageName + ' (extended)' : packageName;
 }
 
 function logGreen(message) {
@@ -116,7 +116,7 @@ module.exports = {
     runTests(finished, !!extended, 'node');
   },
 
-  runNative: function(mod) {
+  runExtended: function(mod) {
     this.run(mod, true);
   },
 

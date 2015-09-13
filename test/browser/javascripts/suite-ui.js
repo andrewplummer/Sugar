@@ -34,11 +34,11 @@
   function getTestName() {
     var path = getSplitPath();
     var testName = capitalize(path[2]);
-    var isNative = path[0] === 'native';
+    var isExtended = path[0] === 'extended';
     var isMin = path[1] === 'min';
-    if (isNative || isMin) {
+    if (isExtended || isMin) {
       var tokens = [];
-      if (isNative) {
+      if (isExtended) {
         tokens.push('extended');
       }
       if (isMin) {

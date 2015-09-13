@@ -19,20 +19,20 @@ require('./default/string.js');
 require('./default/sugar.js');
 require('./default/full.js');
 
-runner.notice('Native Tests');
+runner.notice('Extended Tests');
 
-require('./native/array.js');
-require('./native/date.js');
-require('./native/date-locales.js');
-require('./native/function.js');
-require('./native/inflections.js');
-require('./native/language.js');
-require('./native/number.js');
-require('./native/object.js');
-require('./native/range.js');
-require('./native/regexp.js');
-require('./native/string.js');
-require('./native/sugar.js');
-require('./native/full.js');
+require('./extended/array.js');
+require('./extended/date.js');
+require('./extended/date-locales.js');
+require('./extended/function.js');
+require('./extended/inflections.js');
+require('./extended/language.js');
+require('./extended/number.js');
+require('./extended/object.js');
+require('./extended/range.js');
+require('./extended/regexp.js');
+require('./extended/string.js');
+require('./extended/sugar.js');
+require('./extended/full.js');
 
 runner.logTotals(true);
