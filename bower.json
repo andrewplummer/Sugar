@@ -21,7 +21,6 @@
   "main": "sugar.min.js",
   "ignore": [
     "package.json",
-    "component.json",
     "gulpfile.js",
     "lib/",
     "release/",
