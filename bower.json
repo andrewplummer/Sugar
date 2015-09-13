@@ -19,6 +19,15 @@
     "time"
   ],
   "main": "sugar.min.js",
+  "ignore": [
+    "package.json",
+    "component.json",
+    "lib/",
+    "release/",
+    "test/",
+    "bower_components/",
+    "node_modules/"
+  ],
   "moduleType": [
     "globals",
     "node"
