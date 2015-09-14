@@ -6,7 +6,7 @@ v2.0.0
 - Added global objects. All methods will also be defined here.
 - Removed String#escapeRegExp. Use RegExp.escape instead.
 - Changed String#escapeHTML to double-escape entities.
-- Object.extend() is now Sugar.extendObject().
+- Object.extend() is now passed as a flag on the global Sugar.Object.extend(true).
 - `Date#utc` is now `Date#setUTC`.
 - Renamed `Date.SugarNewDate` to `Sugar.Date.newDateInternal`.
 - Modified `String#startsWith` and `String#endsWith` to be more in compliance with ES6. See CAUTION.md for details.
