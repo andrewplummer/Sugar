@@ -10,7 +10,7 @@ Version 1.4.0 improves future-compatibility by ensuring that browser updates do 
 
 
 
-v1.5.0+
+v2.0.0+
 =======
 
 - Level: Major
