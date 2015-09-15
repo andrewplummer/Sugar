@@ -249,6 +249,11 @@ package('Object', function () {
     strippedValues = run(Object, 'values', [run(Object, 'extended')]).filter(function(m) { return typeof m != 'function'; });
     equal(strippedValues, [], 'empty object');
 
+
+    // Object.extended hasOwnProperty issue #97
+    // see: http://www.devthought.com/2012/01/18/an-object-is-not-a-hash/
+    Object.extended({ hasOwnProperty: true });
+
   });
 
   method('merge', function() {
@@ -1204,12 +1209,6 @@ package('Object', function () {
     test(Object, [{ hasOwnProperty: true, foo: 'bar' }, 'foo'], true, 'local hasOwnProperty is ignored');
   });
 
-
-
-  // Object.extended hasOwnProperty issue #97
-  // see: http://www.devthought.com/2012/01/18/an-object-is-not-a-hash/
-
-  //var a = Object.extended({ hasOwnProperty: true });
 
   method('select', function() {
 
