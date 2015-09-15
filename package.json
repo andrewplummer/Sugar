@@ -12,7 +12,7 @@
     "time"
   ],
   "homepage": "http://sugarjs.com/",
-  "author": "Andrew Plummer",
+  "author": "Andrew Plummer <plummer.andrew@gmail.com>",
   "main": "sugar.js",
   "repository": {
     "type": "git",

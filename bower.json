@@ -2,7 +2,7 @@
   "name": "sugar",
   "description": "A Javascript library for working with native objects.",
   "authors": [
-    "Andrew Plummer"
+    "Andrew Plummer <plummer.andrew@gmail.com>"
   ],
   "homepage": "http://sugarjs.com/",
   "repository": {
