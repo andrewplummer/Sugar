@@ -18,7 +18,6 @@ package('Object', function() {
   var obj3 = testClone(obj1); obj3['blue'] = 4;
   var obj4 = testClone(obj2); obj4['blue'] = {age:11};
 
-
   method('any', function() {
     testStaticAndInstance(obj1, [function(key, value, o) {
       equal(typeof key, 'string', 'first argument is always the key');
@@ -169,6 +168,35 @@ package('Object', function() {
     testStaticAndInstance(NaN, [], true, 'NaN is empty');
     testStaticAndInstance(8, [], true, '8 is empty');
     testStaticAndInstance(new Number(8), [], true, '8 object is empty');
+  });
+
+  group('Enumerables on Object.prototype', function() {
+    storeNativeState();
+    Sugar.Object.extend(true);
+
+    equal(({a:1,b:3,c:5}).sum(), 9, 'Object#sum');
+    equal(({a:1,b:3,c:5}).average(), 3, 'Object#average');
+    equal(({a:1,b:3,c:5}).min(), 'a', 'Object#min');
+    equal(({a:1,b:3,c:5}).max(), 'c', 'Object#max');
+    equal(({a:1,b:1,c:5}).min(null, true), {a:1,b:1}, 'Object#min (all)');
+    equal(({a:1,b:5,c:5}).max(null, true), {b:5,c:5}, 'Object#max (all)');
+    equal(({a:1,b:1,c:5}).least(), 'c', 'Object#least');
+    equal(({a:1,b:2,c:2}).most(), 'b', 'Object#most');
+    equal(({a:1,b:1,c:5}).least(null, true), {c:5}, 'Object#least (all)');
+    equal(({a:1,b:2,c:2}).most(null, true), {b:2,c:2}, 'Object#most (all)');
+
+    equal(({a:1,b:2,c:2}).any(1), true, 'Object#any');
+    equal(({a:1,b:2,c:2}).all(1), false, 'Object#all');
+    equal(({a:1,b:2,c:2}).none(5), true, 'Object#none');
+    equal(({a:1,b:2,c:3}).count(2), 1, 'Object#count');
+    equal(({a:1,b:2,c:3}).find(3), 'c', 'Object#find');
+    equal(({a:1,b:2,c:3}).findAll(3), {c:3}, 'Object#findAll');
+
+    equal(({a:'a',b:'b',c:'c'}).findAll(/[ac]/), {a:'a',c:'c'}, 'Object#findAll');
+    equal(({}).isEmpty(), true, 'Object#isEmpty');
+    equal(({a:1}).isEmpty(), false, 'Object#isEmpty');
+
+    restoreNativeState();
   });
 
 });
