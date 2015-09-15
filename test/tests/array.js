@@ -2801,12 +2801,12 @@ package('Array', function () {
     var fn1 = function() {};
     var fn2 = function() {};
 
-    if(Sugar.Object && Sugar.Object.equal) {
-      equal(run([fn1, fn1, fn1], 'all', [function(el) { return Sugar.Object.equal(el, fn1); }]), true, 'functions can be matched inside the callback');
-      equal(run([fn1, fn1, fn2], 'all', [function(el) { return Sugar.Object.equal(el, fn1); }]), false, 'functions can be matched inside the callback');
-      equal(run([fn1, fn1, fn2], 'any', [function(el) { return Sugar.Object.equal(el, fn1); }]), true, 'functions can be matched inside the callback');
-      equal(run([fn1, fn2, fn1], 'findAll', [function(el) { return Sugar.Object.equal(el, fn1); }]), [fn1, fn1], 'functions can be matched inside the callback');
-      equal(run([fn1, fn2, fn1], 'findAll', [function(el) { return Sugar.Object.equal(el, fn2); }]), [fn2], 'fn2 | functions can be matched inside the callback');
+    if(Sugar.Object && Sugar.Object.isEqual) {
+      equal(run([fn1, fn1, fn1], 'all', [function(el) { return Sugar.Object.isEqual(el, fn1); }]), true, 'functions can be matched inside the callback');
+      equal(run([fn1, fn1, fn2], 'all', [function(el) { return Sugar.Object.isEqual(el, fn1); }]), false, 'functions can be matched inside the callback');
+      equal(run([fn1, fn1, fn2], 'any', [function(el) { return Sugar.Object.isEqual(el, fn1); }]), true, 'functions can be matched inside the callback');
+      equal(run([fn1, fn2, fn1], 'findAll', [function(el) { return Sugar.Object.isEqual(el, fn1); }]), [fn1, fn1], 'functions can be matched inside the callback');
+      equal(run([fn1, fn2, fn1], 'findAll', [function(el) { return Sugar.Object.isEqual(el, fn2); }]), [fn2], 'fn2 | functions can be matched inside the callback');
     }
 
   });
