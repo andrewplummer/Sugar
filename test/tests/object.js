@@ -252,7 +252,7 @@ package('Object', function () {
 
     // Object.extended hasOwnProperty issue #97
     // see: http://www.devthought.com/2012/01/18/an-object-is-not-a-hash/
-    Object.extended({ hasOwnProperty: true });
+    run(Object, 'extended', [{ hasOwnProperty: true }]);
 
   });
 
