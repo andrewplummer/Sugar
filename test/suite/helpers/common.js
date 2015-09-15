@@ -6,9 +6,12 @@ testIterateOverObject = function (obj, fn) {
   }
 }
 
+testIsArray = function(obj) {
+  return Object.prototype.toString.call(obj) === '[object Array]';
+}
+
 testClone = function (obj) {
-  var isArray = Object.prototype.toString.call(obj) === '[object Array]';
-  var result = isArray ? [] : {}, key;
+  var result = testIsArray(obj) ? [] : {}, key;
   for(key in obj) {
     if(!obj.hasOwnProperty(key)) continue;
     result[key] = obj[key];

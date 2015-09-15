@@ -588,6 +588,112 @@ package('Function', function () {
     }, 'fill', [0]);
 
     equal(filled('a'), [0, 'a'], 'falsy values can be passed');
+
+    function stringifyArray(arr) {
+      var result = [];
+      for (var i = 0; i < arr.length; i++) {
+        if (testIsArray(arr[i])) {
+          result.push('[' + stringifyArray(arr[i]) + ']');
+        } else {
+          result.push(String(arr[i]));
+        }
+      }
+      return result.join(' ');
+    }
+    var fn = function() {
+      return stringifyArray(arguments);
+    }
+    equal(run(fn, 'fill', [null, 'a'])('b'), 'null a b', 'null first will not act as a placeholder');
+    equal(run(fn, 'fill', ['a', null])('b'), 'a null b', 'null second will not act as a placeholder');
+    equal(run(fn, 'fill', [null, null, 'a'])(), 'null null a', 'null repeated first');
+    equal(run(fn, 'fill', ['a', null, null])(), 'a null null', 'null repeated last');
+    equal(run(fn, 'fill', [null, null, null])(), 'null null null', 'all null');
+    equal(run(fn, 'fill', [null, null, null])('a','b','c'), 'null null null a b c', 'all null overflowing');
+
+    equal(run(fn, 'fill', [undefined, 'a'])('b'), 'b a', 'undefined first will act as a placeholder');
+    equal(run(fn, 'fill', ['a', undefined])('b'), 'a b', 'undefined second will act as a placeholder');
+    equal(run(fn, 'fill', [undefined, undefined, 'a'])('a', 'b'), 'a b a', 'two placeholders first');
+    equal(run(fn, 'fill', ['a', undefined, undefined])('a', 'b'), 'a a b', 'two placeholders last');
+    equal(run(fn, 'fill', [undefined, undefined, undefined])('a', 'b', 'c'), 'a b c', 'all placeholders');
+    equal(run(fn, 'fill', [undefined, undefined, undefined])('a', 'b'), 'a b undefined', 'all placeholders with last undefined');
+    equal(run(fn, 'fill', [undefined, undefined, undefined])('a','b','c','d','e'), 'a b c d e', 'all undefined overflowing');
+
+    equal(run(fn, 'fill', [null, undefined, null])(), 'null undefined null', 'null and undefined mixed');
+    equal(run(fn, 'fill', [null, undefined, null])('a'), 'null a null', 'null and undefined mixed with 1 arg');
+    equal(run(fn, 'fill', [null, undefined, null])('a', 'b'), 'null a null b', 'null and undefined mixed with 2 args');
+    equal(run(fn, 'fill', [null, undefined, null])('a', 'b', 'c'), 'null a null b c', 'null and undefined mixed with 3 args');
+
+    equal(run(fn, 'fill', [undefined, null, undefined])(), 'undefined null undefined', 'undefined and null mixed');
+    equal(run(fn, 'fill', [undefined, null, undefined])('a'), 'a null undefined', 'undefined and null mixed with 1 arg');
+    equal(run(fn, 'fill', [undefined, null, undefined])('a', 'b'), 'a null b', 'undefined and null mixed with 2 args');
+    equal(run(fn, 'fill', [undefined, null, undefined])('a', 'b', 'c'), 'a null b c', 'undefined and null mixed with 3 args');
+
+    equal(run(fn, 'fill', ['a'])(undefined), 'a undefined', 'passing undefined');
+    equal(run(fn, 'fill', ['a'])(undefined, 'b'), 'a undefined b', 'passing undefined first');
+    equal(run(fn, 'fill', ['a'])('b', undefined), 'a b undefined', 'passing undefined second');
+
+    equal(run(fn, 'fill', [undefined])(undefined), 'undefined', 'passing undefined to a placeholder');
+    equal(run(fn, 'fill', [undefined])(undefined, 'b'), 'undefined b', 'passing undefined to a placeholder first');
+    equal(run(fn, 'fill', [undefined])('b', undefined), 'b undefined', 'passing undefined to a placeholder second');
+
+    equal(run(fn, 'fill', ['a'])(null), 'a null', 'passing null');
+    equal(run(fn, 'fill', ['a'])(null, 'b'), 'a null b', 'passing null first');
+    equal(run(fn, 'fill', ['a'])('b', null), 'a b null', 'passing null second');
+
+    equal(run(fn, 'fill', [undefined])(null), 'null', 'passing null to a placeholder');
+    equal(run(fn, 'fill', [undefined])(null, 'b'), 'null b', 'passing null to a placeholder first');
+    equal(run(fn, 'fill', [undefined])('b', null), 'b null', 'passing null to a placeholder second');
+
+    // More complex
+    equal(run(fn, 'fill', [[undefined]])('a'), '[undefined] a', 'array of undefined is not a placeholder');
+    equal(run(fn, 'fill', [[undefined], undefined])('a'), '[undefined] a', 'placeholder after array');
+    equal(run(fn, 'fill', [undefined, [undefined]])('a'), 'a [undefined]', 'placeholder before array');
+
+    equal(run(fn, 'fill', [[null]])('a'), '[null] a', 'array of null is not a placeholder');
+    equal(run(fn, 'fill', [[null], undefined])('a'), '[null] a', 'placeholder after array');
+    equal(run(fn, 'fill', [undefined, [null]])('a'), 'a [null]', 'placeholder before array');
+
+
+    // Tests lovingly borrowed from Underscore
+
+    var obj = {name: 'moe'};
+    var func = function() { return this.name + ' ' + Array.prototype.slice.call(arguments).join(' '); };
+
+    obj.func = run(func, 'fill', ['a', 'b']);
+    equal(obj.func('c', 'd'), 'moe a b c d', 'can partially apply');
+
+    obj.func = run(func, 'fill', [undefined, 'b', undefined, 'd']);
+    equal(obj.func('a', 'c'), 'moe a b c d', 'can partially apply with placeholders');
+
+    func = run(function() { return arguments.length; }, 'fill', [undefined, 'b', undefined, 'd']);
+    equal(func('a', 'c', 'e'), 5, 'accepts more arguments than the number of placeholders');
+    equal(func('a'), 4, 'accepts fewer arguments than the number of placeholders');
+
+    func = run(function() { return typeof arguments[2]; }, 'fill', [undefined, 'b', undefined, 'd']);
+    equal(func('a'), 'undefined', 'unfilled placeholders are undefined');
+
+    // passes context
+    function MyWidget(name, options) {
+      this.name = name;
+      this.options = options;
+    }
+    MyWidget.prototype.get = function() {
+      return this.name;
+    };
+    var MyWidgetWithCoolOpts = run(MyWidget, 'fill', [undefined, {a: 1}]);
+    var widget = new MyWidgetWithCoolOpts('foo');
+    equal(widget instanceof MyWidget, true, 'Can partially bind a constructor');
+    equal(widget.get(), 'foo', 'keeps prototype');
+    equal(widget.options, {a: 1}, 'options equal');
+
+    // explicit return value in constructor
+    function MyWidget2() {
+      return {foo:'bar'};
+    }
+    var MyFilledWidget = run(MyWidget2, 'fill', [undefined, {a: 1}]);
+    var widget = new MyFilledWidget();
+    equal(widget instanceof MyWidget, false, 'explicit return value is no longer an instance of the constructor');
+    equal(widget.foo, 'bar', 'respects return value');
   });
 
 });

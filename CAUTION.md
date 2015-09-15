@@ -50,6 +50,9 @@ v2.0.0+
   - `String#normalize` is now renamed to `String#toAscii` to comply with the ES6 spec.
 
 - Level: Minor
+  - `Function#fill` now no longer accepts `null` as a placeholder. Use `undefined` instead.
+
+- Level: Minor
   - `String#escapeHTML` now double escapes entities, meaning '&amp;' will become '&amp;amp;', etc.
 
 - Level: Minor
