@@ -280,7 +280,6 @@ package('Number', function () {
     test(0,  [10, 5], 5, 'inverted | 0');
     test(-1, [10, 5], 5, 'inverted | -1');
   });
-  return;
 
   method('cap', function() {
     test(5, [6], 5, '5 capped to 6');
