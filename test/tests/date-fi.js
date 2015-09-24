@@ -109,19 +109,12 @@ package('Date', function () {
   });
 
   method('relative', function() {
-    test(testCreateDate('a second ago',  'en'), 'sekunti sitten');
     test(testCreateDate('1 second ago',  'en'), '1 sekunti sitten');
-    test(testCreateDate('a minute ago',  'en'), 'minuutti sitten');
     test(testCreateDate('1 minute ago',  'en'), '1 minuutti sitten');
-    test(testCreateDate('an hour ago',   'en'), 'tunti sitten');
     test(testCreateDate('1 hour ago',    'en'), '1 tunti sitten');
-    test(testCreateDate('a day ago',     'en'), 'päivä sitten');
     test(testCreateDate('1 day ago',     'en'), '1 päivä sitten');
-    test(testCreateDate('a week ago',    'en'), 'viikko sitten');
     test(testCreateDate('1 week ago',    'en'), '1 viikko sitten');
-    test(testCreateDate('a month ago',   'en'), 'kuukausi sitten');
     test(testCreateDate('1 month ago',   'en'), '1 kuukausi sitten');
-    test(testCreateDate('a year ago',    'en'), 'vuosi sitten');
     test(testCreateDate('1 year ago',    'en'), '1 vuosi sitten');
     test(testCreateDate('5 seconds ago', 'en'), '5 sekuntia sitten');
     test(testCreateDate('5 minutes ago', 'en'), '5 minuuttia sitten');
@@ -131,19 +124,12 @@ package('Date', function () {
     test(testCreateDate('5 months ago',  'en'), '5 kuukautta sitten');
     test(testCreateDate('5 years ago',   'en'), '5 vuotta sitten');
 
-    test(testCreateDate('a second from now',  'en'), 'sekunnin päästä');
     test(testCreateDate('1 second from now',  'en'), '1 sekunnin päästä');
-    test(testCreateDate('a minute from now',  'en'), 'minuutin päästä');
     test(testCreateDate('1 minute from now',  'en'), '1 minuutin päästä');
-    test(testCreateDate('an hour from now',   'en'), 'tunnin päästä');
     test(testCreateDate('1 hour from now',    'en'), '1 tunnin päästä');
-    test(testCreateDate('a day from now',     'en'), 'päivän päästä');
     test(testCreateDate('1 day from now',     'en'), '1 päivän päästä');
-    test(testCreateDate('a week from now',    'en'), 'viikon päästä');
     test(testCreateDate('1 week from now',    'en'), '1 viikon päästä');
-    test(testCreateDate('a month from now',   'en'), 'kuukauden päästä');
     test(testCreateDate('1 month from now',   'en'), '1 kuukauden päästä');
-    test(testCreateDate('a year from now',    'en'), 'vuoden päästä');
     test(testCreateDate('1 year from now',    'en'), '1 vuoden päästä');
     test(testCreateDate('5 seconds from now', 'en'), '5 sekunnin päästä');
     test(testCreateDate('5 minutes from now', 'en'), '5 minuutin päästä');
