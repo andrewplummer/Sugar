@@ -583,6 +583,26 @@ package('String | Inflections', function () {
 
   method('pluralize', function() {
 
+    // Testing optional number argument first.
+    test('person', [0], 'people', 'person with 0');
+    test('sponsor', [0], 'sponsors', 'sponsor with 0');
+    test('person', [0], 'people', 'person with 0');
+    test('sponsor', [0], 'sponsors', 'sponsor with 0');
+    test('person', [1], 'person', 'person with 1');
+    test('sponsor', [1], 'sponsor', 'sponsor with 1');
+    test('person', [2], 'people', 'person with 2');
+    test('sponsor', [2], 'sponsors', 'sponsor with 2');
+    test('person', [999], 'people', 'person with 999');
+    test('sponsor', [999], 'sponsors', 'sponsor with 999');
+
+    // Irregulars
+    test('person', [-1], 'people', 'person with -1');
+    test('person', [-Infinity], 'people', 'person with Infinity');
+    test('person', [Infinity], 'people', 'person with -Infinity');
+    test('person', [NaN], 'people', 'person with NaN');
+    test('person', [null], 'people', 'person with null');
+    test('person', [undefined], 'people', 'person with undefined');
+
     // More irregulars
     test('street', 'streets', 'String.Inflector | street > streets');
 
