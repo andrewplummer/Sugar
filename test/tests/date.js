@@ -408,6 +408,7 @@ package('Date', function () {
   });
 
   group('Create | Fuzzy Dates', function() {
+
     dateEqual(testCreateDate('now'), new Date(), 'now');
     dateEqual(testCreateDate('Now'), new Date(), 'Now');
     dateEqual(testCreateDate('Just now'), new Date(), 'Just Now');
@@ -652,6 +653,12 @@ package('Date', function () {
     // Issue #431 "ten minutes ago"
     dateEqual(testCreateDate('ten minutes ago'), getRelativeDate(null, null, null, null, -10), 'ten minutes ago');
     dateEqual(testCreateDate('ten minutes from now'), getRelativeDate(null, null, null, null, 10), 'ten minutes from now');
+
+    // Issue #509 "a/p" for "am/pm"
+    dateEqual(testCreateDate('yesterday at 3p'), new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1, 15), 'yesterday at 3p');
+    dateEqual(testCreateDate('yesterday at 3a'), new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1, 3), 'yesterday at 3a');
+    dateEqual(testCreateDate('yesterday at 3:00p'), new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1, 15), 'yesterday at 3:00p');
+    dateEqual(testCreateDate('yesterday at 3:00a'), new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1, 3), 'yesterday at 3:00a');
 
   });
 
