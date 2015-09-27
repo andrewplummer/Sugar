@@ -36,6 +36,7 @@ var HELP_MESSAGE = [
   '',
   '    %Packages%',
   '',
+  '      es6',
   '      array',
   '      date',
   '      function',
@@ -48,7 +49,17 @@ var HELP_MESSAGE = [
   '      locales |*|',
   '      language |*|',
   '      inflections |*|',
-  ''
+  '',
+  '    %Notes%',
+  '',
+  '      ES5 package is no longer default in Sugar builds. It should be',
+  '      added if ES5 compatibility is required in environments where it',
+  '      does not exist (most commonly IE8 and below).',
+  '',
+  '      ES6 package is default and includes minimal ES6 polyfills required',
+  '      by Sugar. This package can be removed if full ES6 support can be',
+  '      guaranteed, either natively or through a polyfill library.',
+  '',
 ].join('\n');
 
 var COPYRIGHT = [
@@ -95,20 +106,19 @@ function getPackages() {
 
 function getFiles(packages, skipLocales) {
   var arr, files = [];
+  if (packages === 'core') {
+    return ['lib/core.js'];
+  }
   files.push('lib/core.js');
   files.push('lib/common.js');
-  switch(packages) {
-    case 'core':
-      return ['lib/core.js'];
-    case 'default':
-      arr = DEFAULT_PACKAGES;
-    break;
-    case 'all':
-      arr = ALL_PACKAGES;
-    break;
-    default:
-      arr = packages.split(',');
-  }
+  arr = packages.split(',');
+  arr.forEach(function(name) {
+    if (name === 'default') {
+      Array.prototype.push.apply(arr, DEFAULT_PACKAGES);
+    } else if (name === 'all') {
+      Array.prototype.push.apply(arr, ALL_PACKAGES);
+    }
+  });
   arr.forEach(function(p) {
     if (p === 'locales' && !skipLocales) {
       files = files.concat(glob.sync('lib/locales/*.js'));
@@ -270,7 +280,7 @@ var NPM_MODULES = [
   {
     name: 'sugar-full',
     description: 'This build includes all Sugar packages including extra string helpers and all Date locales.',
-    files: 'all'
+    files: 'es6,all'
   },
   {
     name: 'sugar-core',
@@ -280,7 +290,7 @@ var NPM_MODULES = [
   {
     name: 'sugar-array',
     description: 'This build includes array manipulation and traversal, "fuzzy matching" against elements, alphanumeric sorting and collation, and enumerable methods on Object.',
-    files: 'array'
+    files: 'es6,array'
   },
   {
     name: 'sugar-date',
@@ -320,7 +330,7 @@ var NPM_MODULES = [
   {
     name: 'sugar-string',
     description: 'This build includes helpers for string manupulation, escaping, encoding, truncation, and conversion.',
-    files: 'string'
+    files: 'es6,string'
   },
   {
     name: 'sugar-inflections',
