@@ -1,4 +1,4 @@
-package('Date', function () {
+package('Dates Dutch', function () {
   "use strict";
 
   var now;
