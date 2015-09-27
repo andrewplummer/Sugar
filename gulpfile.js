@@ -63,6 +63,7 @@ var COPYRIGHT = [
 ].join('\n');
 
 var DEFAULT_PACKAGES = [
+  'es6',
   'array',
   'date',
   'range',
@@ -74,6 +75,7 @@ var DEFAULT_PACKAGES = [
 ];
 
 var ALL_PACKAGES = [
+  'es6',
   'array',
   'date',
   'range',

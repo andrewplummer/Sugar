@@ -1311,5 +1311,32 @@ package('String', function () {
 
   });
 
+  method('includes', function() {
+    test('foo', [/foo/],  true, 'simple regex');
+    test('foo', [/^foo/], true, 'with lead');
+    test('foo', [/foo$/], true, 'with trail');
+    test('poo', [/foo/],  false, 'simple regex no match');
+    test('poo', [/^foo/], false, 'with lead no match');
+    test('poo', [/foo$/], false, 'with trail no match');
+
+    test('foo', [/foo/,  0], true,  'with position 0 | simple regex');
+    test('foo', [/^foo/, 0], true,  'with position 0 | with lead');
+    test('foo', [/foo$/, 0], true,  'with position 0 | with trail');
+    test('poo', [/foo/,  0], false, 'with position 0 | simple regex no match');
+    test('poo', [/^foo/, 0], false, 'with position 0 | with lead no match');
+    test('poo', [/foo$/, 0], false, 'with position 0 | with trail no match');
+
+    test('foo', [/foo/,  1], false, 'with position 1 | simple regex');
+    test('foo', [/^foo/, 1], false, 'with position 1 | with lead');
+    test('foo', [/foo$/, 1], false, 'with position 1 | with trail');
+    test('poo', [/foo/,  1], false, 'with position 1 | simple regex no match');
+    test('poo', [/^foo/, 1], false, 'with position 1 | with lead no match');
+    test('poo', [/foo$/, 1], false, 'with position 1 | with trail no match');
+
+    test('foo', [/oo/,  1],  true,  'with position 1 | match');
+    test('foo', [/o/, 2],    true,  'with position 2 | match');
+    test('foo', [/./, 3],    false, 'with position 3 | no match');
+    test('foo', [/$/, 3],    true,  'with position 3 | match');
+  });
 
 });
