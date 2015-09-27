@@ -35,9 +35,6 @@ package('Core', function() {
   });
 
   teardown(function() {
-    // Passing a boolean here to explicitly turn off object
-    // instances which may have been turned on by the tests.
-    Sugar.Object.extend(false);
     restoreNativeState();
     deleteCustom();
   });
@@ -94,13 +91,17 @@ package('Core', function() {
   });
 
   group('Sugar Object namespace full', function () {
-    Sugar.Object(true);
+    Sugar.Object({
+      objectInstance: true
+    });
     assertAllMethodsMappedToNative(['Object']);
     assertNoMethodsMappedToNative(['Array', 'Boolean', 'Number', 'Date', 'String', 'RegExp', 'Function']);
   });
 
   group('Sugar Object extend full', function () {
-    Sugar.Object.extend(true);
+    Sugar.Object.extend({
+      objectInstance: true
+    });
     assertAllMethodsMappedToNative(['Object']);
     assertNoMethodsMappedToNative(['Array', 'Boolean', 'Number', 'Date', 'String', 'RegExp', 'Function']);
   });
@@ -228,19 +229,25 @@ package('Core', function() {
   });
 
   group('Will extend to Object.prototype after namespace extend', function () {
-    Sugar.Object.extend(true);
+    Sugar.Object.extend({
+      objectInstance: true
+    });
     defineCustom(Sugar.Object);
     equal(({}).foo(), 'foo!', 'foo has been mapped');
   });
 
   group('Will extend to Object.prototype on global call with true', function () {
-    Sugar(true);
+    Sugar({
+      objectInstance: true
+    });
     defineCustom(Sugar.Object);
     equal(({}).foo(), 'foo!', 'foo has been mapped');
   });
 
   group('Will extend to Object.prototype on global extend with true', function () {
-    Sugar.extend(true);
+    Sugar.extend({
+      objectInstance: true
+    });
     defineCustom(Sugar.Object);
     equal(({}).foo(), 'foo!', 'foo has been mapped');
   });
@@ -258,7 +265,10 @@ package('Core', function() {
 
   group('Can extend single method to object prototype', function () {
     defineCustom(Sugar.Object);
-    Sugar.Object.extend('foo', true);
+    Sugar.Object.extend({
+      methods: ['foo'],
+      objectInstance: true
+    });
     equal(Object.foo(), 'foo!', 'foo static has been mapped');
     equal(Object.bar, undefined, 'bar static has not been mapped');
     equal(Object.moo, undefined, 'moo static has not been mapped');
@@ -266,4 +276,28 @@ package('Core', function() {
     equal(({}).bar, undefined, 'bar has not been mapped');
     equal(({}).moo, undefined, 'moo has not been mapped');
   });
+
+  group('Array enhancements', function() {
+    // This test is in core because it cannot be run in
+    // the "extended" tests where arrays may already be enhanced.
+    Sugar.Array.extend({
+      enhanceArray: false
+    });
+    raisesError(function() { [1,2,3].every(1); }, 'every is not enhanced');
+    raisesError(function() { [1,2,3].some(1); }, 'some is not enhanced');
+    raisesError(function() { [1,2,3].filter(1); }, 'filter is not enhanced');
+    raisesError(function() { [1,2,3].find(1); }, 'find is not enhanced');
+    raisesError(function() { [1,2,3].findIndex(1); }, 'findIndex is not enhanced');
+    raisesError(function() { [1,2,3].map(1); }, 'findIndex is not enhanced');
+  });
+
+  group('String enhancements', function() {
+    // This test is in core because it cannot be run in
+    // the "extended" tests where arrays may already be enhanced.
+    Sugar.String.extend({
+      enhanceString: false
+    });
+    raisesError(function() { 'foobar'.includes(/foo/); }, 'includes is not enhanced');
+  });
+
 });
