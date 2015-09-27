@@ -730,7 +730,9 @@ package('Object', function () {
 
     storeNativeState();
 
-    Sugar.Object.extend(true);
+    Sugar.Object.extend({
+      objectInstance: true
+    });
 
     var count = 0;
 

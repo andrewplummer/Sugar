@@ -36,8 +36,6 @@ package('Array', function () {
     Sugar.Array.AlphanumericSortNatural     = storedProps.AlphanumericSortNatural;
   }
 
-
-
   method('every', function() {
     var fn, arr;
 

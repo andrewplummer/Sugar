@@ -172,7 +172,9 @@ package('Object', function() {
 
   group('Enumerables on Object.prototype', function() {
     storeNativeState();
-    Sugar.Object.extend(true);
+    Sugar.Object.extend({
+      objectInstance: true
+    });
 
     equal(({a:1,b:3,c:5}).sum(), 9, 'Object#sum');
     equal(({a:1,b:3,c:5}).average(), 3, 'Object#average');
