@@ -19,6 +19,11 @@ h2 {
   color: #aaa;
 }
 
+a,
+a:visited {
+  color: #666;
+}
+
 .hidden {
   display: none;
 }

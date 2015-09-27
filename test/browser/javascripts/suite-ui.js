@@ -51,10 +51,11 @@
 
   function createHTML() {
     var testName = getTestName();
+    var testLink = '<a target="_top" href="' + document.location.pathname + '">' + testName + '</a>';
     document.title = 'Sugar ' + testName;
     $(document.body).append([
       '<div class="set">',
-        '<h4 class="name">' + testName + '</h4>',
+        '<h4 class="name">' + testLink + '</h4>',
         '<div class="loading">Running tests.</div>',
         '<ul id="tests" class="tests"></ul>',
         '<p id="stats" class="stats"></p>',
