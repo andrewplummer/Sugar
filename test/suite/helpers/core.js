@@ -99,6 +99,12 @@
   }
 
   restoreNativeState = function() {
+    // "objectInstance" preserves state for future
+    // method definitions, so reset that flag here.
+    Sugar.Object.extend({
+      methods: [],
+      objectInstance: false
+    });
     testIterateOverObject(Sugar, function(name, ns) {
       var nativeClass = globalContext[name];
       ns.active = nativeState[name + 'Active'];
