@@ -8,9 +8,7 @@ package('ES6', function () {
   method('find', function() {
     var arr, count, result, visited;
 
-    // Can't rely on length at the moment until I figure out
-    // how to turn off this option in the closure compiler.
-    equal(Array.prototype.find.length,        1, 'Array#find | should have argument length of 1');
+    equal(Array.prototype.find.length, 1, 'should have argument length of 1');
 
     equal([1,2,3].find(function(el){ return el === 3; }), 3, 'Array#find | should find by predicate');
     equal([1,2,3].find(function(el){ return el === 7; }), undefined, 'Array#find | should return undefined when not matched');
@@ -750,120 +748,113 @@ package('ES6', function () {
     equal(String.prototype.repeat.apply({ 'toString': function() { return 'abc'; } }, [2]), 'abcabc');
   });
 
-  method('contains', function() {
+  method('includes', function() {
 
-    // It seems the minifier may modify output functions to accept
-    // a different number of arguments, so we cannot guarantee that
-    // the length of this function will always be 1.
-    // equal(String.prototype.contains.length, 1);
+    equal(String.prototype.includes.length, 1, 'should have argument length of 1');
 
-    equal('abc'.contains(), false);
-    equal('aundefinedb'.contains(), true);
-    equal('abc'.contains(undefined), false);
-    equal('aundefinedb'.contains(undefined), true);
-    equal('abc'.contains(null), false);
-    equal('anullb'.contains(null), true);
-    equal('abc'.contains(false), false);
-    equal('afalseb'.contains(false), true);
-    equal('abc'.contains(NaN), false);
-    equal('aNaNb'.contains(NaN), true);
-    equal('abc'.contains('abc'), true);
-    equal('abc'.contains('def'), false);
-    equal('abc'.contains(''), true);
-    equal(''.contains(''), true);
+    equal('abc'.includes(), false);
+    equal('aundefinedb'.includes(), true);
+    equal('abc'.includes(undefined), false);
+    equal('aundefinedb'.includes(undefined), true);
+    equal('abc'.includes(null), false);
+    equal('anullb'.includes(null), true);
+    equal('abc'.includes(false), false);
+    equal('afalseb'.includes(false), true);
+    equal('abc'.includes(NaN), false);
+    equal('aNaNb'.includes(NaN), true);
+    equal('abc'.includes('abc'), true);
+    equal('abc'.includes('def'), false);
+    equal('abc'.includes(''), true);
+    equal(''.includes(''), true);
 
-    equal('abc'.contains('b', -Infinity), true);
-    equal('abc'.contains('b', -1), true);
-    equal('abc'.contains('b', -0), true);
-    equal('abc'.contains('b', +0), true);
-    equal('abc'.contains('b', NaN), true);
-    equal('abc'.contains('b', 'x'), true);
-    equal('abc'.contains('b', false), true);
-    equal('abc'.contains('b', undefined), true);
-    equal('abc'.contains('b', null), true);
-    equal('abc'.contains('b', 1), true);
-    equal('abc'.contains('b', 2), false);
-    equal('abc'.contains('b', 3), false);
-    equal('abc'.contains('b', 4), false);
-    equal('abc'.contains('b', +Infinity), false);
-    equal('abc'.contains('bc'), true);
-    equal('abc'.contains('bc\0'), false);
+    equal('abc'.includes('b', -Infinity), true);
+    equal('abc'.includes('b', -1), true);
+    equal('abc'.includes('b', -0), true);
+    equal('abc'.includes('b', +0), true);
+    equal('abc'.includes('b', NaN), true);
+    equal('abc'.includes('b', 'x'), true);
+    equal('abc'.includes('b', false), true);
+    equal('abc'.includes('b', undefined), true);
+    equal('abc'.includes('b', null), true);
+    equal('abc'.includes('b', 1), true);
+    equal('abc'.includes('b', 2), false);
+    equal('abc'.includes('b', 3), false);
+    equal('abc'.includes('b', 4), false);
+    equal('abc'.includes('b', +Infinity), false);
+    equal('abc'.includes('bc'), true);
+    equal('abc'.includes('bc\0'), false);
 
-    equal('abc123def'.contains(1, -Infinity), true);
-    equal('abc123def'.contains(1, -1), true);
-    equal('abc123def'.contains(1, -0), true);
-    equal('abc123def'.contains(1, +0), true);
-    equal('abc123def'.contains(1, NaN), true);
-    equal('abc123def'.contains(1, 'x'), true);
-    equal('abc123def'.contains(1, false), true);
-    equal('abc123def'.contains(1, undefined), true);
-    equal('abc123def'.contains(1, null), true);
-    equal('abc123def'.contains(1, 1), true);
-    equal('abc123def'.contains(1, 2), true);
-    equal('abc123def'.contains(1, 3), true);
-    equal('abc123def'.contains(1, 4), false);
-    equal('abc123def'.contains(1, 5), false);
-    equal('abc123def'.contains(1, +Infinity), false);
+    equal('abc123def'.includes(1, -Infinity), true);
+    equal('abc123def'.includes(1, -1), true);
+    equal('abc123def'.includes(1, -0), true);
+    equal('abc123def'.includes(1, +0), true);
+    equal('abc123def'.includes(1, NaN), true);
+    equal('abc123def'.includes(1, 'x'), true);
+    equal('abc123def'.includes(1, false), true);
+    equal('abc123def'.includes(1, undefined), true);
+    equal('abc123def'.includes(1, null), true);
+    equal('abc123def'.includes(1, 1), true);
+    equal('abc123def'.includes(1, 2), true);
+    equal('abc123def'.includes(1, 3), true);
+    equal('abc123def'.includes(1, 4), false);
+    equal('abc123def'.includes(1, 5), false);
+    equal('abc123def'.includes(1, +Infinity), false);
 
-    equal('abc123def'.contains(9, -Infinity), false);
-    equal('abc123def'.contains(9, -1), false);
-    equal('abc123def'.contains(9, -0), false);
-    equal('abc123def'.contains(9, +0), false);
-    equal('abc123def'.contains(9, NaN), false);
-    equal('abc123def'.contains(9, 'x'), false);
-    equal('abc123def'.contains(9, false), false);
-    equal('abc123def'.contains(9, undefined), false);
-    equal('abc123def'.contains(9, null), false);
-    equal('abc123def'.contains(9, 1), false);
-    equal('abc123def'.contains(9, 2), false);
-    equal('abc123def'.contains(9, 3), false);
-    equal('abc123def'.contains(9, 4), false);
-    equal('abc123def'.contains(9, 5), false);
-    equal('abc123def'.contains(9, +Infinity), false);
+    equal('abc123def'.includes(9, -Infinity), false);
+    equal('abc123def'.includes(9, -1), false);
+    equal('abc123def'.includes(9, -0), false);
+    equal('abc123def'.includes(9, +0), false);
+    equal('abc123def'.includes(9, NaN), false);
+    equal('abc123def'.includes(9, 'x'), false);
+    equal('abc123def'.includes(9, false), false);
+    equal('abc123def'.includes(9, undefined), false);
+    equal('abc123def'.includes(9, null), false);
+    equal('abc123def'.includes(9, 1), false);
+    equal('abc123def'.includes(9, 2), false);
+    equal('abc123def'.includes(9, 3), false);
+    equal('abc123def'.includes(9, 4), false);
+    equal('abc123def'.includes(9, 5), false);
+    equal('abc123def'.includes(9, +Infinity), false);
 
-    equal('foo[a-z]+(bar)?'.contains('[a-z]+'), true);
-    equal('foo[a-z]+(bar)?'.contains(/[a-z]+/), false);
-    equal('foo/[a-z]+/(bar)?'.contains(/[a-z]+/), true);
-    equal('foo[a-z]+(bar)?'.contains('(bar)?'), true);
-    equal('foo[a-z]+(bar)?'.contains(/(bar)?/), false);
-    equal('foo[a-z]+/(bar)?/'.contains(/(bar)?/), true);
+    equal('foo[a-z]+(bar)?'.includes('[a-z]+'), true);
+    equal('foo[a-z]+(bar)?'.includes('(bar)?'), true);
 
     // http://mathiasbynens.be/notes/javascript-unicode#poo-test
     var string = 'I\xF1t\xEBrn\xE2ti\xF4n\xE0liz\xE6ti\xF8n\u2603\uD83D\uDCA9';
-    equal(string.contains(''), true);
-    equal(string.contains('\xF1t\xEBr'), true);
-    equal(string.contains('\xE0liz\xE6'), true);
-    equal(string.contains('\xF8n\u2603\uD83D\uDCA9'), true);
-    equal(string.contains('\u2603'), true);
-    equal(string.contains('\uD83D\uDCA9'), true);
+    equal(string.includes(''), true);
+    equal(string.includes('\xF1t\xEBr'), true);
+    equal(string.includes('\xE0liz\xE6'), true);
+    equal(string.includes('\xF8n\u2603\uD83D\uDCA9'), true);
+    equal(string.includes('\u2603'), true);
+    equal(string.includes('\uD83D\uDCA9'), true);
 
     if(allowsNullScope) {
-      raisesError(function() { String.prototype.contains.call(undefined); }, TypeError);
-      raisesError(function() { String.prototype.contains.call(undefined, 'b'); }, TypeError);
-      raisesError(function() { String.prototype.contains.call(undefined, 'b', 4); }, TypeError);
-      raisesError(function() { String.prototype.contains.call(null); }, TypeError);
-      raisesError(function() { String.prototype.contains.call(null, 'b'); }, TypeError);
-      raisesError(function() { String.prototype.contains.call(null, 'b', 4); }, TypeError);
-      raisesError(function() { String.prototype.contains.apply(undefined); }, TypeError);
-      raisesError(function() { String.prototype.contains.apply(undefined, ['b']); }, TypeError);
-      raisesError(function() { String.prototype.contains.apply(undefined, ['b', 4]); }, TypeError);
-      raisesError(function() { String.prototype.contains.apply(null); }, TypeError);
-      raisesError(function() { String.prototype.contains.apply(null, ['b']); }, TypeError);
-      raisesError(function() { String.prototype.contains.apply(null, ['b', 4]); }, TypeError);
+      raisesError(function() { String.prototype.includes.call(undefined); }, TypeError);
+      raisesError(function() { String.prototype.includes.call(undefined, 'b'); }, TypeError);
+      raisesError(function() { String.prototype.includes.call(undefined, 'b', 4); }, TypeError);
+      raisesError(function() { String.prototype.includes.call(null); }, TypeError);
+      raisesError(function() { String.prototype.includes.call(null, 'b'); }, TypeError);
+      raisesError(function() { String.prototype.includes.call(null, 'b', 4); }, TypeError);
+      raisesError(function() { String.prototype.includes.apply(undefined); }, TypeError);
+      raisesError(function() { String.prototype.includes.apply(undefined, ['b']); }, TypeError);
+      raisesError(function() { String.prototype.includes.apply(undefined, ['b', 4]); }, TypeError);
+      raisesError(function() { String.prototype.includes.apply(null); }, TypeError);
+      raisesError(function() { String.prototype.includes.apply(null, ['b']); }, TypeError);
+      raisesError(function() { String.prototype.includes.apply(null, ['b', 4]); }, TypeError);
     }
-    equal(String.prototype.contains.call(42, '2'), true);
-    equal(String.prototype.contains.call(42, 'b', 4), false);
-    equal(String.prototype.contains.call(42, '2', 4), false);
-    equal(String.prototype.contains.call({ 'toString': function() { return 'abc'; } }, 'b', 0), true);
-    equal(String.prototype.contains.call({ 'toString': function() { return 'abc'; } }, 'b', 1), true);
-    equal(String.prototype.contains.call({ 'toString': function() { return 'abc'; } }, 'b', 2), false);
+    equal(String.prototype.includes.call(42, '2'), true);
+    equal(String.prototype.includes.call(42, 'b', 4), false);
+    equal(String.prototype.includes.call(42, '2', 4), false);
+    equal(String.prototype.includes.call({ 'toString': function() { return 'abc'; } }, 'b', 0), true);
+    equal(String.prototype.includes.call({ 'toString': function() { return 'abc'; } }, 'b', 1), true);
+    equal(String.prototype.includes.call({ 'toString': function() { return 'abc'; } }, 'b', 2), false);
 
-    equal(String.prototype.contains.apply(42, ['2']), true);
-    equal(String.prototype.contains.apply(42, ['b', 4]), false);
-    equal(String.prototype.contains.apply(42, ['2', 4]), false);
-    equal(String.prototype.contains.apply({ 'toString': function() { return 'abc'; } }, ['b', 0]), true);
-    equal(String.prototype.contains.apply({ 'toString': function() { return 'abc'; } }, ['b', 1]), true);
-    equal(String.prototype.contains.apply({ 'toString': function() { return 'abc'; } }, ['b', 2]), false);
+    equal(String.prototype.includes.apply(42, ['2']), true);
+    equal(String.prototype.includes.apply(42, ['b', 4]), false);
+    equal(String.prototype.includes.apply(42, ['2', 4]), false);
+    equal(String.prototype.includes.apply({ 'toString': function() { return 'abc'; } }, ['b', 0]), true);
+    equal(String.prototype.includes.apply({ 'toString': function() { return 'abc'; } }, ['b', 1]), true);
+    equal(String.prototype.includes.apply({ 'toString': function() { return 'abc'; } }, ['b', 2]), false);
   });
 
   method('Number.isNaN', function() {
