@@ -1,4 +1,4 @@
-package('Date', function () {
+package('Dates Traditional Chinese', function () {
   "use strict";
 
   var now;
