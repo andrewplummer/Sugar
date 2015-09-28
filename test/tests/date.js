@@ -716,7 +716,18 @@ package('Date', function () {
     dateEqual(dateRun(d, 'beginningOfMonth'), new Date(Date.UTC(2001, 5, 1)), 'the beginning of the month');
     dateEqual(dateRun(d, 'endOfMonth'), new Date(Date.UTC(2001, 5, 30, 23, 59, 59, 999)), 'the end of the month');
     equal(run(d, 'minutesSince', [testCreateUTCDate('2001-06-15')]), d.getTimezoneOffset(), 'minutesSince is equal to the timezone offset');
-    equal(run(d, 'hoursSince', ['2001-6-14']), 24, 'hoursSince | does not actually shift time');
+
+    // In this example the date is flagged as UTC but was not parsed that way.
+    // In JST timezone this would be 2001-06-15 09:00:00. However since the UTC
+    // flag will be presumed (unless specifically overridden) when a context date
+    // is flagged as UTC, the test date will be UTC (2001-06-15 00:00:00), so the
+    // hours offset should be equal to 24 minus whatever timezone offset we're in.
+    var d = run(new Date(2001, 5, 15), 'setUTC', [true]);
+    equal(run(d, 'hoursSince', ['2001-6-14']), 24 + (d.getTimezoneOffset() / 60), 'hoursSince | preserves UTC flag');
+
+    // This effect can be overridden using the fromUTC flag.
+    var d = run(new Date(2001, 5, 15), 'setUTC', [true]);
+    equal(run(d, 'hoursSince', ['2001-6-14', { fromUTC: false }]), 24, 'hoursSince | does not preserve UTC flag if fromUTC is set');
 
     var d = run(testCreateDate('1 month ago'), 'setUTC', [true])
     equal(run(d, 'isLastMonth'), true, 'isLastMonth');
@@ -989,6 +1000,17 @@ package('Date', function () {
     test(d, ['5 months from now'], new Date('January 25, 2011 11:45:20'), '5 months from now');
     test(d, ['5 years from now'], new Date('August 25, 2015 11:45:20'), '5 years from now');
     test(d, ['5 years after'], new Date('August 25, 2015 11:45:20'), '5 years after');
+
+    var d1 = run(new Date(Date.UTC(2010, 7, 25)), 'setUTC', [true]);
+    var d2 = run(d1, 'get', ['tomorrow']);
+    dateEqual(d2, new Date(Date.UTC(2010, 7, 26)), 'date should be taken as UTC'); 
+    equal(d2._utc, true, 'utc flag should be preserved');
+
+    var d1 = run(new Date(Date.UTC(2010, 7, 25)), 'setUTC', [true]);
+    var d2 = run(d1, 'get', ['tomorrow', { fromUTC: false, setUTC: false }]);
+    dateEqual(d2, new Date(2010, 7, 26), 'fromUTC can overridden utc preservation'); 
+    equal(d2._utc, false, 'setUTC can override utc preservation');
+
   });
 
   method('set', function() {
