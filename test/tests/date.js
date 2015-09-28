@@ -302,6 +302,9 @@ package('Date', function () {
     dateEqual(testCreateDate('15 July, 2008'), new Date(2008, 6, 15), 'dd Month, yyyy');
     dateEqual(testCreateDate('15 July 2008'), new Date(2008, 6, 15), 'dd Month yyyy');
     dateEqual(testCreateDate('juNe 1St 2008'), new Date(2008, 5, 1), 'Month 1st yyyy case insensitive');
+
+    // Issue #507 "sept"
+    dateEqual(testCreateDate('Sept 2015'), new Date(2015, 8, 1), 'Sept is handled');
   });
 
   group('Create | Special Cases', function() {
@@ -334,7 +337,7 @@ package('Date', function () {
     dateEqual(testCreateDate('2001-01-01'), new Date(2001, 0, 1), 'month and day padded');
     dateEqual(testCreateDate('2010-11-22'), new Date(2010, 10, 22), 'month and day padded 2010');
     dateEqual(testCreateDate('20101122'), new Date(2010, 10, 22), 'digits strung together');
-    dateEqual(testCreateDate('17760523T024508+0830'), getUTCDate(1776,5,22,18,15,08), 'full datetime strung together');
+    dateEqual(testCreateDate('17760523T024508+0830'), getUTCDate(1776,5,22,18,15,8), 'full datetime strung together');
     dateEqual(testCreateDate('-0002-07-26'), new Date(-2, 6, 26), 'minus sign (bc)'); // BC
     dateEqual(testCreateDate('+1978-04-17'), new Date(1978, 3, 17), 'plus sign (ad)'); // AD
   });
@@ -389,10 +392,10 @@ package('Date', function () {
 
     equal(testCreateDate('1994-11-05T13:15:30Z')._utc, false, 'does not forcefully set UTC flag');
 
-    dateEqual(testCreateDate('1776-05-23T02:45:08-08:30'), getUTCDate(1776, 5, 23, 11, 15, 08), 'Full example 3');
-    dateEqual(testCreateDate('1776-05-23T02:45:08+08:30'), getUTCDate(1776, 5, 22, 18, 15, 08), 'Full example 4');
-    dateEqual(testCreateDate('1776-05-23T02:45:08-0830'), getUTCDate(1776, 5, 23, 11, 15, 08), 'Full example 5');
-    dateEqual(testCreateDate('1776-05-23T02:45:08+0830'), getUTCDate(1776, 5, 22, 18, 15, 08), 'Full example 6');
+    dateEqual(testCreateDate('1776-05-23T02:45:08-08:30'), getUTCDate(1776, 5, 23, 11, 15, 8), 'Full example 3');
+    dateEqual(testCreateDate('1776-05-23T02:45:08+08:30'), getUTCDate(1776, 5, 22, 18, 15, 8), 'Full example 4');
+    dateEqual(testCreateDate('1776-05-23T02:45:08-0830'), getUTCDate(1776, 5, 23, 11, 15, 8), 'Full example 5');
+    dateEqual(testCreateDate('1776-05-23T02:45:08+0830'), getUTCDate(1776, 5, 22, 18, 15, 8), 'Full example 6');
 
     // No limit on the number of millisecond decimals, so....
     dateEqual(testCreateDate('1997-07-16T19:20:30.4+01:00'), getUTCDate(1997, 7, 16, 18, 20, 30, 400), 'milliseconds have no limit 1');
