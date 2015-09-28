@@ -128,29 +128,56 @@ package('Date', function () {
 
     raisesError(function(){ testCreateDate('1999', { foo: 'bar'}); }, 'unknown option should raise an error');
 
-    var d1 = new Date(2012, 11, 31);
-    var d2 = testCreateDate('2012-12-31', { utc: true });
-    equal(d1 - d2, d1.getTimezoneOffset() * 60 * 1000, 'string created dates allow options object as last argument');
+    // fromUTC option
 
     var d1 = new Date(2012, 11, 31);
-    var d2 = testCreateDate({ year: 2012, month: 11, day: 31 }, { utc: true });
+    var d2 = testCreateDate('2012-12-31', { fromUTC: true });
+    equal(d1 - d2, d1.getTimezoneOffset() * 60 * 1000, 'string created dates allow options object as last argument');
+    equal(d2._utc, false, 'UTC flag should not be set');
+
+    var d1 = new Date(2012, 11, 31);
+    var d2 = testCreateDate('2012-12-31', { fromUTC: false });
+    equal(d1 - d2, 0, 'false param should not be parsed as utc');
+
+    var d1 = new Date(2012, 11, 31);
+    var d2 = testCreateDate({ year: 2012, month: 11, day: 31 }, { fromUTC: true });
     equal(d1 - d2, d1.getTimezoneOffset() * 60 * 1000, 'object created dates allow options object as last argument');
 
     var d1 = new Date(2012, 11, 31);
-    var d2 = testCreateDate(2012, 11, 31, { utc: true });
+    var d2 = testCreateDate(2012, 11, 31, { fromUTC: true });
     equal(d1 - d2, d1.getTimezoneOffset() * 60 * 1000, 'enumerated dates allow options object as last argument');
 
     var opt = {
-      utc: true,
+      fromUTC: true,
       locale: 'fo',
       future: true
     }
+
     var now = new Date();
     var d1 = testCreateDate('March', { future: true });
     var d2 = testCreateDate('mimofo', opt);
 
     equal(d2 > now, true, 'compound options | future is true');
     equal(d1 - d2, d1.getTimezoneOffset() * 60 * 1000, 'compound options | utc is true');
+
+    // setUTC option
+
+    var d = testCreateDate(2012, 11, 31, { setUTC: true });
+    equal(d._utc, true, 'setUTC should set the _utc flag');
+
+    var d = testCreateDate(1440428400000, { setUTC: true });
+    equal(d._utc, true, 'setUTC should be allowed on a timestamp');
+
+    var d = testCreateDate({ month: 7, day: 25 }, { setUTC: true });
+    equal(d._utc, true, 'setUTC should be allowed on a parameter created date');
+
+    var d1 = new Date(2012, 11, 31);
+    var d2 = testCreateDate(2012, 11, 31, {
+      fromUTC: true,
+      setUTC: true
+    });
+    equal(d1 - d2, d1.getTimezoneOffset() * 60 * 1000, 'both UTC flags should parsed as UTC');
+    equal(d2._utc, true, 'both UTC flags should also set UTC');
 
   });
 

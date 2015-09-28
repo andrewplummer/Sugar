@@ -21,7 +21,7 @@ testCreatePastDate = function() {
 }
 
 testCreateUTCDate = function() {
-  return testCreateDateWithOptions(arguments, 'utc');
+  return testCreateDateWithOptions(arguments, 'fromUTC');
 }
 
 dateRun = function(d, name, arguments) {
