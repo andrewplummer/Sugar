@@ -61,6 +61,9 @@ v2.0.0+
 - Level: Minor
   - `Object.map`, `Object.each`, and `Object.size` were moved to the Object package from the Array package. If you were using these methods and making custom builds you may have to include the Object package now as well.
 
+- Level: Minor
+  - `Date#unitSince` (`Date#hoursSince`, etc) will now assume that the passed in format is UTC if the context date is also flagged as UTC (if you're using `setUTC`). This behavior can be overriden by passing `{ fromUTC: false }` to these methods.
+
 - Level: Very Minor
   - Some minor behavior changes around the way `String#removeTags` works on malformed html. Unmatched closing tags will now be removed.
 
