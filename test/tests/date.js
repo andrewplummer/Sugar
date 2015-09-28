@@ -179,6 +179,9 @@ package('Date', function () {
     equal(d1 - d2, d1.getTimezoneOffset() * 60 * 1000, 'both UTC flags should parsed as UTC');
     equal(d2._utc, true, 'both UTC flags should also set UTC');
 
+    // Options objects without a date.
+    equal(testCreateDate({ fromUTC: true }).getTime(), NaN, 'accidentally passing an options object without a date to parse is invalid');
+
   });
 
   group('Create | Simple', function() {
@@ -728,6 +731,10 @@ package('Date', function () {
     // This effect can be overridden using the fromUTC flag.
     var d = run(new Date(2001, 5, 15), 'setUTC', [true]);
     equal(run(d, 'hoursSince', ['2001-6-14', { fromUTC: false }]), 24, 'hoursSince | does not preserve UTC flag if fromUTC is set');
+
+    // Passing just an options object without a date results in an invalid date.
+    var d = run(new Date(2001, 5, 15), 'setUTC', [true]);
+    equal(run(d, 'hoursSince', [{ fromUTC: false }]), NaN, 'hoursSince | needs more than just an options object');
 
     var d = run(testCreateDate('1 month ago'), 'setUTC', [true])
     equal(run(d, 'isLastMonth'), true, 'isLastMonth');
