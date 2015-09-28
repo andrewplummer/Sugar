@@ -660,12 +660,6 @@ package('Date', function () {
     dateEqual(testCreateDate('yesterday at 3:00p'), new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1, 15), 'yesterday at 3:00p');
     dateEqual(testCreateDate('yesterday at 3:00a'), new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1, 3), 'yesterday at 3:00a');
 
-    // Issue #513 "yesterday at 3"
-    dateEqual(testCreateDate('yesterday at 3'), new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1, 3), 'yesterday at 3');
-    dateEqual(testCreateDate('tomorrow at 12'), new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 12), 'tomorrow at 12');
-    dateEqual(testCreateDate('Monday at 15'), getDateWithWeekdayAndOffset(1, 0, 15), 'Monday at 15');
-    dateEqual(testCreateDate('Saturday at 24'), getDateWithWeekdayAndOffset(6, 1, 0), 'Saturday at 24');
-
   });
 
 
