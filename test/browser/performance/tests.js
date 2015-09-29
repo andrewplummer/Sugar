@@ -28,10 +28,26 @@ arr = arr.concat(arr);
 var tests = [
   {
     fn: function(arg) {
-      return Date.create('2010-08-25')
+      return Sugar.String.assign(arg, { name: 'Bob' });
     },
     targets: [
-      'normalString * 1000'
+      'smallStringWithToken * 100000',
+      'smallStringWithoutToken * 100000',
+      'largeStringWithOneToken * 100',
+      'largeStringWithNoTokens * 100',
+      'largeStringWithAllKeywordTokens * 100'
+    ]
+  },
+  {
+    fn: function(arg) {
+      return Sugar.String.assign2(arg, { name: 'Bob' });
+    },
+    targets: [
+      'smallStringWithToken * 100000',
+      'smallStringWithoutToken * 100000',
+      'largeStringWithOneToken * 100',
+      'largeStringWithNoTokens * 100',
+      'largeStringWithAllKeywordTokens * 100'
     ]
   },
   {
