@@ -37,6 +37,9 @@ v2.0.0+
 - Level: Major
   - `Object.merge` will now treat null properties as if they did not exist (previously only undefined properties were treated this way). All other falsy properties such as empty strings and `false` will not be overwritten.
 
+- Level: Major
+  - `String#assign` is now `String#format`, and behaves very closely to Python's method of the same name. Tokens are now zero based, and start with `{0}`. Also, errors will be thrown when tokens cannot be matched. Lastly, braces can be escaped by repeating them.
+
 - Level: Moderate
   - `Object.merge` will not continue traversing into an object if a resolve function is passed and returns something (anything but undefined). This means that you can selectively choose to handle certain conflicts differently by returning something, or use the merging defaults by returning undefined. It also means that a resolve function can no longer intentionally use `undefined` itself as a conflict resolution value - use `null` or another value instead.
 
