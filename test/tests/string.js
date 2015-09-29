@@ -1283,31 +1283,95 @@ package('String', function () {
     test('Alpha Beta Gamma Delta Epsilon', [20, 'middle', ''], 'Alpha BetaEpsilon', 'Issue 311');
   });
 
-  method('assign', function() {
-    var obj1 = { first: 'Harry' };
+  method('format', function() {
+    var obj1 = { name: 'Harry' };
     var obj2 = { last: 'Potter' };
+    var obj3 = { name: 'program', age: 21, points: 345 };
 
-    test('Welcome, {name}.', [{ name: 'program' }], 'Welcome, program.', 'basic functionality');
-    test('Welcome, {1}.', ['program'], 'Welcome, program.', 'numeric params');
-    test('Welcome, {1}.', [{ name: 'program' }], 'Welcome, {1}.', 'numeric params will be untouched if object passed');
-    test('Welcome, {name}. You are {age} years old and have {points} points left.', [{ name: 'program', age: 21, points: 345 }], 'Welcome, program. You are 21 years old and have 345 points left.', '1 hash');
-    test('Welcome, {1}. You are {2} years old and have {3} points left.', ['program', 21, 345], 'Welcome, program. You are 21 years old and have 345 points left.', '3 arguments');
-    test('Welcome, {name}. You are {age} years old and have {3} points left.', [{ name: 'program' }, { age: 21 }, 345], 'Welcome, program. You are 21 years old and have 345 points left.', 'complex');
+    test('Welcome, {0}.', ['program'], 'Welcome, program.', 'array index');
+    test('Welcome, {0}.', [obj1], 'Welcome, [object Object].', 'numeric key does not exist in object');
+    test('Welcome, {name}.', [obj1], 'Welcome, Harry.', 'keyword');
+    test('Welcome, {name}. You are {age} years old and have {points} points left.', [obj3], 'Welcome, program. You are 21 years old and have 345 points left.', '3 arguments by keyword');
+    test('Welcome, {0}. You are {1} years old and have {2} points left.', ['program', 21, 345], 'Welcome, program. You are 21 years old and have 345 points left.', '3 arguments by index');
+    test('hello {0.name}', [obj1], 'hello undefined', 'does not allow dot expressions');
+    test('hello {name} {last}', [obj1, obj2], 'hello Harry Potter', 'objects will be merged');
 
-    test('Hello, {first} {last}', [obj1, obj2], 'Hello, Harry Potter', 'passing 2 objects');
-    test(obj1.first, 'Harry', 'obj1 retains its properties');
+    test('hello {0} {name}', ['Dirty', obj1], 'hello Dirty Harry', 'string and object');
+    test('hello {0} {1}', ['Dirty', obj1.name], 'hello Dirty Harry', 'string and object property');
+    test('hello {name} {1}', [obj1, 'Dirty'], 'hello Harry Dirty', 'object and string');
+
+    test(obj1.name, 'Harry', 'obj1 retains its properties');
     equal(obj1.last, undefined, 'obj1 is untampered');
 
     test(obj2.last, 'Potter', 'obj2 retains its properties');
-    equal(obj2.first, undefined, 'obj2 is untampered');
+    equal(obj2.name, undefined, 'obj2 is untampered');
 
-    test('Hello, {1}', [''], 'Hello, ', 'empty string as argument');
-    test('Hello, {empty}', [{ empty: '' }], 'Hello, ', 'empty string as object');
+    test('Hello, {0}.', [''], 'Hello, .', 'empty string has no index');
+    test('Hello, {0}.', [], 'Hello, undefined.', 'no argument with index');
+    test('Hello, {name}.', [], 'Hello, undefined.', 'no argument with keyword');
+    test('Hello, {empty}.', [{ empty: '' }], 'Hello, .', 'empty string matches');
 
-    test('{{1} {2}}', [5,6], '{5 6}', 'nested braces');
-    test('{one {1} {2} two}', [5,6], '{one 5 6 two}', 'nested braces with strings outside');
+    test('{}', ['foo'], '{}', 'single curly braces does not match');
+    test('{{}}', ['foo'], '{}', 'double curly braces escapes');
+    test('}}{{', ['foo'], '}{', 'reverse double curly braces');
+    test('{{{0} {1}}}', ['foo', 'bar'], '{foo bar}', 'properly nested braces');
+    test('{{0 {1}', ['foo', 'bar'], '{0 bar', 'escaped open with non-escaped');
 
-    test('Hello, {first} {last}', [[obj1, obj2]], 'Hello, Harry Potter', 'passing 2 objects in an array');
+    test('{{0}}', ['foo'], '{0}', 'single nested');
+    test('{{{0}}}', ['foo'], '{foo}', 'double nested');
+    test('{{{{0}}}}', ['foo'], '{{0}}', '3 nested');
+    test('{{{{{0}}}}}', ['foo'], '{{foo}}', '4 nested');
+    test('{{{{{{0}}}}}}', ['foo'], '{{{0}}}', '5 nested');
+
+    raisesError(function() { run('0}', 'format', ['foo']); }, 'unmatched }');
+    raisesError(function() { run('{0', 'format', ['foo']); }, 'unmatched {');
+    raisesError(function() { run('}{', 'format', ['foo']); }, 'reversed curly braces');
+    raisesError(function() { run('{{foo}', 'format', ['foo']); }, 'escaped open with unmatched close');
+    raisesError(function() { run('{{0} {1}}', 'format', ['foo', 'bar']); }, 'improperly nested braces');
+    raisesError(function() { run('{0}}', 'format', ['foo']); }, 'two trailing braces');
+    raisesError(function() { run('{0}}}}', 'format', ['foo']); }, 'four trailing braces');
+
+    test('{0}}}', ['foo'], 'foo}', 'three trailing braces');
+    test('{0}}}}}', ['foo'], 'foo}}', 'five trailing braces');
+
+    test('Welcome, {0}.', [Object('user')], 'Welcome, user.', 'string object should be coerced');
+    test('Welcome, {0}.', [Object(3)], 'Welcome, 3.', 'number should be coerced');
+    test('Welcome, {0}.', [Object(true)], 'Welcome, true.', 'boolean should be coerced');
+    test('Welcome, {0}.', [undefined], 'Welcome, undefined.', 'passing undefined');
+    test('Welcome, {0}.', [null], 'Welcome, null.', 'passing null');
+
+    // Taken from Python format docs.
+    test('First, thou shalt count to {0}', ['foo'], 'First, thou shalt count to foo', '');
+    test('Bring me a {}', ['foo'], 'Bring me a {}', 'requires a key to be passed');
+    test('From {} to {}', ['foo', 'bar'], 'From {} to {}', 'requires keys to be passed');
+    test('My quest is {name}', [{name:'partying'}], 'My quest is partying', 'allows keyword arguments as objects');
+    test('Weight in tons {0.weight}', ['foo'], 'Weight in tons undefined', 'does not allow operators as part of format');
+    test('Units destroyed: {players[0]}', [{players: ['huey', 'duey']}], 'Units destroyed: undefined', 'Does not allow expressions in format');
+
+    test('{0}, {1}, {2}', ['a', 'b', 'c'], 'a, b, c', 'simple enumeration');
+    test('{}, {}, {}', ['a', 'b', 'c'], '{}, {}, {}', 'empty tokens');
+    test('{2}, {1}, {0}', ['a', 'b', 'c'], 'c, b, a', 'reversed');
+    test('{0}{1}{0}', ['abra', 'cad'], 'abracadabra', 'indices can be repeated');
+
+    test('Coordinates: {latitude}, {longitude}', [{latitude: '37.24N', longitude: '-115.81W'}], 'Coordinates: 37.24N, -115.81W', 'coordinates separate');
+
+    var coord = {'latitude': '37.24N', 'longitude': '-115.81W'};
+    test('Coordinates: {latitude}, {longitude}', [coord], 'Coordinates: 37.24N, -115.81W', 'coords as object');
+
+    // Sugar departs somewhat from Python here as it is not greedy in matching
+    // nested braces. This is largely for the sake of simplicity; not requiring
+    // a recursive and/or tokenized system lets a single regex cover 99% of use
+    // cases, and is highly optimized by the browser. Although "one {0} {1} two"
+    // could in theory be an object key in Javascript, a key such as "{one}" is
+    // impossible to access (see test below), so it also makes things cleaner
+    // to simply not allow nested braces from the start, and instead require the
+    // properties to be enumerated or mapped to a new object.
+    raisesError(function() { run('{one {0} {1} two}', 'format', []); }, 'nested without escaping');
+
+    // There is currently no way to access properties that have braces in the keynames.
+    // They will have to be enumerated as arguments or mapped to different property names.
+    // This is not possible in Python as kwargs names cannot have special characters.
+    test('{{{name}}}', [{'{name}': 'John'}], '{undefined}', 'cannot access properties with braces');
 
   });
 

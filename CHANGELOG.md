@@ -42,6 +42,7 @@ v2.0.0
 - Removed `Date.utc` object as well as `Date.past` and `Date.future` in favor of an options object on `Date#create`.
 - `null` now no longer acts as a placeholder in `Function#fill`. Other bugs fixed around this including using `fill` on constructors.
 - Options object now uses `fromUTC` instead of just `utc`. A new option `setUTC` is also added which will set the internal utc flag on creation.
+- `String#assign` refactored and renamed to `String#format`. Tokens are zero based and a few other changes.
 
 
 v1.4.2
