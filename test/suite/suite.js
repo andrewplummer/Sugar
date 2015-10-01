@@ -12,6 +12,8 @@
   // The global context
   var globalContext = typeof global !== 'undefined' ? global : this;
 
+  var internalToString = Object.prototype.toString;
+
 
   // Global methods.
   // BE CAREFUL HERE! If you declare these using window.xxx or
@@ -239,7 +241,7 @@
   }
 
   function getObjectClassName(obj) {
-    return Object.prototype.toString.call(obj).match(/object (\w+)/)[1];
+    return internalToString.call(obj).match(/object (\w+)/)[1];
   }
 
   function objectIsClass(obj) {
@@ -311,7 +313,7 @@
       return typeof two === 'number' && ((isNaN(one) && isNaN(two)) || one === two);
     }
 
-    klass = Object.prototype.toString.call(one);
+    klass = internalToString.call(one);
 
     if(klass === '[object Date]') {
       return one.getTime() === two.getTime();
@@ -320,7 +322,7 @@
     } else if(klass === '[object Array]') {
       return arrayIsEqual(one, two);
     } else if((klass === '[object Object]' || klass === '[object Arguments]') && ('hasOwnProperty' in one) && type === 'object') {
-      return objectIsEqual(one, two);
+      return objectIsEqual(one, two) && klass === internalToString.call(two);
     } else if(klass === '[object Number]' && isNaN(one) && isNaN(two)) {
       return true;
     }
