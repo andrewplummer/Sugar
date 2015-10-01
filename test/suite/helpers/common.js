@@ -7,7 +7,7 @@ testIterateOverObject = function (obj, fn) {
 }
 
 testGetClass = function(obj) {
-  return internalToString.call(obj);
+  return testInternalToString.call(obj);
 }
 
 testIsArray = function(obj) {
