@@ -1295,9 +1295,12 @@ package('Object', function () {
 
     var date = new Date(2012, 8, 25);
 
+    function getExpected(str) {
+      return str.replace(/\[/g, '%5B').replace(/\]/g, '%5D');
+    }
+
     function assertQueryStringGenerated(obj, args, expected, message) {
-      expected = expected.replace(/\[/g, '%5B').replace(/\]/g, '%5D');
-      testStaticAndInstance(obj, args, expected, message);
+      testStaticAndInstance(obj, args, getExpected(expected), message);
     }
 
     assertQueryStringGenerated({foo:'bar'}, [], 'foo=bar', 'basic string');
@@ -1371,7 +1374,7 @@ package('Object', function () {
       return 'custom';
     }
 
-    assertQueryStringGenerated({foo: new Foo}, [], 'foo=custom', 'toString inherited method');
+    test({foo: new Foo}, [], getExpected('foo=custom'), 'toString inherited method');
 
   });
 
@@ -1457,5 +1460,300 @@ package('Object', function () {
     testStaticAndInstance(obj, [function () {}], obj, 'each returns itself');
   });
 
+  method('get', function() {
+
+    var obj = {
+      'a.b.c': 'surprise',
+      a: {
+        b: {
+          c: {
+            foo: 'bar'
+          },
+          str: 'hi',
+          num: 5,
+          und: undefined,
+          nul: null,
+          arr: [1]
+        },
+        str: 'hi',
+        num: 5,
+        und: undefined,
+        nul: null,
+        arr: [1]
+      },
+      str: 'hi',
+      num: 5,
+      und: undefined,
+      nul: null,
+      arr: [1]
+    };
+
+    testStaticAndInstance(obj, ['str'], 'hi', 'flat string');
+    testStaticAndInstance(obj, ['num'], 5, 'flat number');
+    testStaticAndInstance(obj, ['und'], undefined, 'flat undefined');
+    testStaticAndInstance(obj, ['nul'], null, 'flat null');
+    testStaticAndInstance(obj, ['arr'], [1], 'flat array');
+    testStaticAndInstance(obj, ['non'], undefined, 'flat non-existent');
+
+    testStaticAndInstance(obj, ['a.str'], 'hi', 'one level | string');
+    testStaticAndInstance(obj, ['a.num'], 5, 'one level | number');
+    testStaticAndInstance(obj, ['a.und'], undefined, 'one level | undefined');
+    testStaticAndInstance(obj, ['a.nul'], null, 'one level | null');
+    testStaticAndInstance(obj, ['a.arr'], [1], 'one level | array');
+    testStaticAndInstance(obj, ['a.non'], undefined, 'one level | non-existent');
+
+    testStaticAndInstance(obj, ['a.b.str'], 'hi', 'two levels | string');
+    testStaticAndInstance(obj, ['a.b.num'], 5, 'two levels | number');
+    testStaticAndInstance(obj, ['a.b.und'], undefined, 'two levels | undefined');
+    testStaticAndInstance(obj, ['a.b.nul'], null, 'two levels | null');
+    testStaticAndInstance(obj, ['a.b.arr'], [1], 'two levels | array');
+    testStaticAndInstance(obj, ['a.b.non'], undefined, 'two levels | non-existent');
+
+    testStaticAndInstance(obj, ['arr.0'], 1, 'flat array property');
+    testStaticAndInstance(obj, ['a.arr.0'], 1, 'one level | array property');
+    testStaticAndInstance(obj, ['a.b.arr.0'], 1, 'two levels | array property');
+
+    testStaticAndInstance(obj, ['a.b.c'], { foo: 'bar' }, 'deep inner object');
+    equal(obj['a.b.c'], 'surprise', 'flat shadowing property can still be accessed');
+
+    testStaticAndInstance(obj, ['a.b.c.foo'], 'bar', 'deep');
+    testStaticAndInstance(obj, ['a.b.b'], undefined, 'deep last non-existent');
+    testStaticAndInstance(obj, ['c.b.a'], undefined, 'deep none exist');
+
+    testStaticAndInstance(obj, ['.'], undefined, 'single dot');
+    testStaticAndInstance(obj, ['..'], undefined, 'two dots');
+    testStaticAndInstance(obj, ['...'], undefined, 'three dots');
+
+    testStaticAndInstance({}, [], undefined, 'no arguments');
+    testStaticAndInstance({undefined:1}, [undefined], undefined, 'undefined should not be coerced to string');
+    testStaticAndInstance({null:1}, [null], undefined, 'null should not be coerced to string');
+    testStaticAndInstance({3:1}, [3], 1, 'number should be coerced to string');
+    testStaticAndInstance({'[object Object]':1}, [{foo:'bar'}], 1, 'object should be coerced to string');
+    testStaticAndInstance({undefined:1}, ['undefined'], 1, '"undefined" is found');
+    testStaticAndInstance({null:1}, ['null'], 1, '"null" is found');
+
+    testStaticAndInstance({'':1}, [''], 1, 'empty string as key');
+    testStaticAndInstance({'':{'':2}}, ['.'], 2, 'nested empty string as key');
+    testStaticAndInstance({'':{'':{'':3}}}, ['..'], 3, 'twice nested empty string as key');
+
+    testStaticAndInstance(undefined, ['a'], undefined, 'flat property on undefined');
+    testStaticAndInstance(undefined, ['a.b'], undefined, 'deep property on undefined');
+    testStaticAndInstance(null, ['a'], undefined, 'flat property on null');
+    testStaticAndInstance(null, ['a.b'], undefined, 'deep property on null');
+    testStaticAndInstance({}, ['a'], undefined, 'flat property on empty object');
+    testStaticAndInstance({}, ['a.b'], undefined, 'deep property on empty object');
+    testStaticAndInstance(NaN, ['a'], undefined, 'flat property on NaN');
+    testStaticAndInstance(NaN, ['a.b'], undefined, 'deep property on NaN');
+    testStaticAndInstance('foo', ['a'], undefined, 'flat property on string');
+    testStaticAndInstance('foo', ['a.b'], undefined, 'flat property on string');
+
+    testStaticAndInstance(['a','b'], [0], 'a', 'array property found');
+    testStaticAndInstance(['a','b'], [1], 'b', 'array property found');
+    testStaticAndInstance(['a','b'], ['0'], 'a', 'array property found by string');
+    testStaticAndInstance(['a','b'], ['1'], 'b', 'array property found by string');
+
+    testStaticAndInstance([{foo:'bar'}], ['0.foo'], 'bar', 'array deep property');
+    testStaticAndInstance({foo:['bar']}, ['foo.0'], 'bar', 'object array property');
+    testStaticAndInstance([[['bar']]], ['0.0.0'], 'bar', 'deep array');
+
+    var Foo = function() {};
+    var Bar = function() { this.c = 'inst-c'; };
+
+    Foo.a = 'class-a';
+    Foo.prototype.a = 'foo-a';
+    Foo.prototype.b = 'foo-b';
+    Foo.prototype.c = 'foo-c';
+
+    Bar.prototype = new Foo;
+    Bar.prototype.b = 'bar-b';
+
+    var instFoo = new Foo();
+    var instBar = new Bar();
+
+    test(Foo, ['a'], 'class-a', 'Class method class-a');
+
+    test(Foo.prototype, ['a'], 'foo-a', 'Foo.prototype.a');
+    test(Bar.prototype, ['a'], 'foo-a', 'Bar.prototype.a');
+    test(Foo.prototype, ['b'], 'foo-b', 'Foo.prototype.b');
+    test(Bar.prototype, ['b'], 'bar-b', 'Bar.prototype.b');
+
+    test(instFoo, ['a'], 'foo-a', 'foo.a');
+    test(instBar, ['a'], 'foo-a', 'bar.a');
+    test(instFoo, ['b'], 'foo-b', 'foo.b');
+    test(instBar, ['b'], 'bar-b', 'bar.b');
+    test(instFoo, ['c'], 'foo-c', 'foo.c');
+    test(instBar, ['c'], 'inst-c', 'bar.c');
+
+    test(Object, [Array, 'prototype.every'], Array.prototype.every, 'works on built-ins');
+
+    if (definePropertySupport) {
+      // Non-enumerable
+      var obj = {};
+      Object.defineProperty(obj, 'foo', {
+        enumerable: false,
+        value: 3
+      });
+      Object.defineProperty(obj, 'bar', {
+        enumerable: false,
+        value: {}
+      });
+      Object.defineProperty(obj.bar, 'car', {
+        enumerable: false,
+        value: 'hi'
+      });
+      test(obj, ['foo'], 3, 'works on non-enumerable properties');
+      test(obj, ['bar.car'], 'hi', 'works on deep non-enumerable properties');
+    }
+
+  });
+
+  method('set', function() {
+
+    var obj = {};
+    var result = run(Object, 'set', [obj, 'foo', 'bar']);
+    equal(obj.foo, 'bar', 'Basic flat property is set on original object');
+    equal(result === obj, true, 'returned value is the original object');
+
+    var obj = {};
+    run(Object, 'set', [obj, 'foo.bar', 'car']);
+    equal(obj.foo.bar, 'car', 'Basic flat property is set on original object');
+
+
+    testStaticAndInstance({}, ['str', 'hi'], {str:'hi'}, 'flat string');
+    testStaticAndInstance({}, ['num', 5], {num:5}, 'flat number');
+    testStaticAndInstance({}, ['und', undefined], {und:undefined}, 'flat undefined');
+    testStaticAndInstance({}, ['nul', null], {nul:null}, 'flat null');
+    testStaticAndInstance({}, ['arr', [1]], {arr:[1]}, 'flat array');
+    testStaticAndInstance({}, ['obj', {a:'b'}], {obj:{a:'b'}}, 'flat object');
+
+    testStaticAndInstance({}, ['a.str', 'hi'], {a:{str:'hi'}}, 'one level | string');
+    testStaticAndInstance({}, ['a.num', 5], {a:{num:5}}, 'one level | number');
+    testStaticAndInstance({}, ['a.und', undefined], {a:{und:undefined}}, 'one level | undefined');
+    testStaticAndInstance({}, ['a.nul', null], {a:{nul:null}}, 'one level | null');
+    testStaticAndInstance({}, ['a.arr', [1]], {a:{arr:[1]}}, 'one level | array');
+    testStaticAndInstance({}, ['a.obj', {a:'b'}], {a:{obj:{a:'b'}}}, 'one level | object');
+
+    testStaticAndInstance({}, ['a.b.str', 'hi'], {a:{b:{str:'hi'}}}, 'two levels | string');
+    testStaticAndInstance({}, ['a.b.num', 5], {a:{b:{num:5}}}, 'two levels | number');
+    testStaticAndInstance({}, ['a.b.und', undefined], {a:{b:{und:undefined}}}, 'two levels | undefined');
+    testStaticAndInstance({}, ['a.b.nul', null], {a:{b:{nul:null}}}, 'two levels | null');
+    testStaticAndInstance({}, ['a.b.arr', [1]], {a:{b:{arr:[1]}}}, 'two levels | array');
+    testStaticAndInstance({}, ['a.b.obj', {a:'b'}], {a:{b:{obj:{a:'b'}}}}, 'two levels | object');
+
+    testStaticAndInstance({}, ['0', 'x'], {0:'x'}, 'numeric index on object');
+    testStaticAndInstance({}, ['0.foo', 'x'], {0:{foo:'x'}}, 'keyword after numeric index');
+    testStaticAndInstance({}, ['foo.0', 'x'], {foo:{0:'x'}}, 'numeric index after keyword');
+    testStaticAndInstance({}, ['foo.bar.0', 'x'], {foo:{bar:{0:'x'}}}, 'numeric index two deep');
+    testStaticAndInstance({}, ['foo.0.bar', 'x'], {foo:{0:{bar:'x'}}}, 'numeric index in the middle');
+
+    testStaticAndInstance({}, ['a','x'], {a:'x'}, 'flat property on empty object');
+    testStaticAndInstance({}, ['a.b','x'], {a:{b:'x'}}, 'deep property on empty object');
+
+    // Array tests won't make sense on an extended object.
+    test([], ['0', 'x'], ['x'], 'numeric index on array');
+    test(['a','b'], [0,'x'], ['x','b'], 'array property set');
+    test(['a','b'], [1,'x'], ['a','x'], 'array property set');
+    test(['a','b'], ['0','x'], ['x','b'], 'array property set by string');
+    test(['a','b'], ['1','x'], ['a','x'], 'array property set by string');
+
+    test([{foo:'bar'}], ['0.foo', 'x'], [{foo:'x'}], 'array deep property');
+    test({foo:['bar']}, ['foo.0','x'], {foo:['x']}, 'object array property');
+    test([[['bar']]], ['0.0.0', 'x'], [[['x']]], 'deep array');
+
+    var obj = {
+      a: {
+        b: {
+          c: 'bar'
+        }
+      }
+    };
+
+    testStaticAndInstance(testClone(obj), ['a.b.c', 'x'], {a:{b:{c:'x'}}}, 'deep');
+    testStaticAndInstance(testClone(obj), ['a.b.b', 'x'], {a:{b:{c:'bar',b:'x'}}}, 'deep last non-existent');
+    testStaticAndInstance(testClone(obj), ['c.b.a', 'x'], {a:{b:{c:'bar'}},c:{b:{a:'x'}}}, 'deep none exist');
+
+    testStaticAndInstance({}, ['.','x'], {'':{'':'x'}}, 'single dot');
+    testStaticAndInstance({}, ['..','x'], {'':{'':{'':'x'}}}, 'two dots');
+    testStaticAndInstance({}, ['...','x'], {'':{'':{'':{'':'x'}}}}, 'three dots');
+
+    testStaticAndInstance({}, [], {}, 'no arguments');
+    testStaticAndInstance({}, [undefined, 'x'], {}, 'undefined should be ignored');
+    testStaticAndInstance({}, [null, 'x'], {}, 'null should ignored');
+    testStaticAndInstance({}, [3, 'x'], {3:'x'}, 'number should be coerced to string');
+    testStaticAndInstance({}, [{foo:'bar'}, 'x'], {'[object Object]': 'x'}, 'object should be coerced to string');
+    testStaticAndInstance({3:1}, [3,'x'], {3:'x'}, 'coerced number is set');
+    testStaticAndInstance({'[object Object]':1}, [{foo:'bar'}, 'x'], {'[object Object]':'x'}, 'coerced object is set');
+
+    testStaticAndInstance({'':1}, ['','x'], {'':'x'}, 'empty string as key');
+    testStaticAndInstance({'':{'':2}}, ['.','x'], {'':{'':'x'}}, 'nested empty string as key');
+    testStaticAndInstance({'':{'':{'':3}}}, ['..','x'], {'':{'':{'':'x'}}}, 'twice nested empty string as key');
+
+    raisesError(function(){ run(Object, 'set', [undefined, 'a', 'x']); }, 'should raise error on undefined');
+    raisesError(function(){ run(Object, 'set', [null, 'a', 'x']); }, 'should raise error on null');
+    raisesError(function(){ run(Object, 'set', [NaN, 'a', 'x']); }, 'should raise error on NaN');
+    raisesError(function(){ run(Object, 'set', ['foo', 'a', 'x']); }, 'should raise error on string');
+
+    raisesError(function(){ run(Object, 'set', [{a:undefined}, 'a.b', 'x']); }, 'should raise error on undefined deep');
+    raisesError(function(){ run(Object, 'set', [{a:null}, 'a.b', 'x']); }, 'should raise error on null deep');
+    raisesError(function(){ run(Object, 'set', [{a:NaN}, 'a.b', 'x']); }, 'should raise error on NaN deep');
+    raisesError(function(){ run(Object, 'set', [{a:'foo'}, 'a.b', 'x']); }, 'should raise error on string deep');
+
+
+    var Foo = function() { this.a = 'a'; };
+    var Bar = function() { this.b = 'b'; };
+
+    Foo.prototype = new Bar;
+    Bar.prototype.c = 'c';
+
+    var f = new Foo();
+
+    equal(f.hasOwnProperty('a'), true,  'instance setup | a is own');
+    equal(f.hasOwnProperty('b'), false, 'instance setup | b is not own');
+    equal(f.hasOwnProperty('c'), false, 'instance setup | c is not own');
+
+    run(Object, 'set', [f, 'a', 'x']);
+    run(Object, 'set', [f, 'b', 'x']);
+    run(Object, 'set', [f, 'c', 'x']);
+
+    equal(f.hasOwnProperty('a'), true, 'a is set');
+    equal(f.hasOwnProperty('b'), true, 'b is set');
+    equal(f.hasOwnProperty('c'), true, 'c is set');
+
+    if (f.__proto__) {
+      equal(f.__proto__.b, 'b', 'b is shadowed');
+      equal(f.__proto__.c, 'c', 'c is shadowed');
+    }
+
+    run(Object, 'set', [Array, 'prototype.whee', 'x']);
+    equal(Array.prototype.whee, 'x', 'works on built-ins');
+    delete Array.prototype['whee'];
+
+    if (definePropertySupport) {
+      // Non-enumerable
+      var obj = {};
+      Object.defineProperty(obj, 'foo', {
+        writable: true,
+        enumerable: false,
+        value: 3
+      });
+      Object.defineProperty(obj, 'bar', {
+        writable: true,
+        enumerable: false,
+        value: {}
+      });
+      Object.defineProperty(obj.bar, 'car', {
+        writable: true,
+        enumerable: false,
+        value: 'hi'
+      });
+      run(Object, 'set', [obj, 'foo', 'x']);
+      equal(obj.foo, 'x', 'Non-enumerable property set');
+      equal(obj.bar.car, 'hi', 'deep non-enumerable property exists');
+
+      run(Object, 'set', [obj, 'bar.car', 'x']);
+      equal(obj.bar.car, 'x', 'deep non-enumerable property set');
+    }
+
+  });
 
 });

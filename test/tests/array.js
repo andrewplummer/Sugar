@@ -344,6 +344,16 @@ package('Array', function () {
     test([{name:'john',age:25},{name:'fred',age:85}], ['cupsize'], [undefined, undefined], '(nonexistent) cupsize');
     test([], ['name'], [], 'empty array');
 
+    // Nested properties
+    test([{name:{first:'John',last:'Waters'}},{name:{first:'Fred',last:'Flintstone'}}], ['name.first'], ['John', 'Fred'], 'deep matching with dot');
+    test([{a:{b:{c:'x'}}},{a:{b:{c:'y'}}},{a:{b:{c:'z'}}}], ['a.b.c'], ['x','y','z'], 'deeper matching with dot');
+    test([{a:[1]},{a:[2]}], ['a.0'], [1,2], 'matching nested array indexes');
+    test([{a:[1]},{b:[2]}], ['a.0'], [1,undefined], 'matching nested array index non-existent');
+    test([{a:'a'},{b:'a'}], ['.'], [undefined,undefined], 'single dot');
+    test([{a:'a'},{b:'a'}], ['..'], [undefined,undefined], 'double dot');
+    test([[[1,2]],[[1,2]]], ['0.1'], [2,2], 'deep arrays');
+    test([{name:{first:'Joe',last:'P'}},{name:{first:'John',last:'Q'}}], [['name.first', 'name.last']], [['Joe','P'], ['John', 'Q']], 'array with dots');
+
     test([1,2,3], ['toString'], ['1','2','3'], 'calls a function on a shortcut string');
 
     raisesError(function(){ run([1,2,3], 'map') }, 'no argument raises a type error');
@@ -602,6 +612,7 @@ package('Array', function () {
     test([{ foo:'bar' }, { foo:'bar' }], [{foo:'bar'}], 'objects uniqued as well');
     test([{ first: 'John', last: 'Woo' }, { first: 'Reynold', last: 'Woo' }], [function(n){ return n.last; }], [{ first: 'John', last: 'Woo' }], 'can be uniqued via a mapping function');
     test([{ first: 'John', last: 'Woo' }, { first: 'Reynold', last: 'Woo' }], ['last'], [{ first: 'John', last: 'Woo' }], 'can be uniqued via a mapping shortcut');
+    test([{name:{first:'John',last:'P'}}, {name:{first:'Reynold',last:'P'}}], ['name.last'], [{name:{first:'John',last:'P'}}], 'mapping function can go deep with dot operator');
 
     var fn = function(el,i,a) {
       equal(this, [1], 'scope should be the array');
@@ -806,6 +817,15 @@ package('Array', function () {
     raisesError(function() { run(arrayOfUndefined, 'min'); }, 'should raise an error when comparing undefined');
     raisesError(function() { run(arrayOfUndefinedWith1, 'min'); }, 'should raise an error when comparing 1 to undefined');
     raisesError(function() { run([87,12,55], 'min', [4]); }, 'number not found in number, so undefined');
+
+    var arr = [
+      {id:1,a:{b:{c:6}}},
+      {id:2,a:{b:{c:6}}},
+      {id:3,a:{b:{c:4}}},
+      {id:4,a:{b:{c:4}}}
+    ];
+    test(arr, ['a.b.c'], {id:3,a:{b:{c:4}}}, 'by deep dot operator');
+    test(arr, ['a.b.c', true], [{id:3,a:{b:{c:4}}},{id:4,a:{b:{c:4}}}], 'by deep dot operator multiple');
   });
 
   method('max', function() {
@@ -840,6 +860,16 @@ package('Array', function () {
     raisesError(function() { run(arrayOfUndefined, 'max'); }, 'should raise an error when comparing undefined');
     raisesError(function() { run(arrayOfUndefinedWith1, 'max'); }, 'should raise an error when comparing 1 to undefined');
     raisesError(function() { run([87,12,55], 'max', [4]); }, 'number not found in number, so undefined');
+
+    var arr = [
+      {id:1,a:{b:{c:6}}},
+      {id:2,a:{b:{c:6}}},
+      {id:3,a:{b:{c:4}}},
+      {id:4,a:{b:{c:4}}}
+    ];
+    test(arr, ['a.b.c'], {id:1,a:{b:{c:6}}}, 'by deep dot operator');
+    test(arr, ['a.b.c', true], [{id:1,a:{b:{c:6}}},{id:2,a:{b:{c:6}}}], 'by deep dot operator multiple');
+
   });
 
 
@@ -876,6 +906,16 @@ package('Array', function () {
       return el;
     };
     run([1], 'most', [fn]);
+
+    var arr = [
+      {id:1,a:{b:{c:6}}},
+      {id:2,a:{b:{c:4}}},
+      {id:3,a:{b:{c:4}}},
+      {id:4,a:{b:{c:4}}}
+    ];
+    test(arr, ['a.b.c'], {id:2,a:{b:{c:4}}}, 'by deep dot operator');
+    test(arr, ['a.b.c', true], [{id:2,a:{b:{c:4}}},{id:3,a:{b:{c:4}}},{id:4,a:{b:{c:4}}}], 'by deep dot operator multiple');
+
   });
 
   method('least', function() {
@@ -928,6 +968,17 @@ package('Array', function () {
       return el;
     };
     run([1], 'least', [fn]);
+
+    var arr = [
+      {id:1,a:{b:{c:6}}},
+      {id:2,a:{b:{c:4}}},
+      {id:3,a:{b:{c:4}}},
+      {id:4,a:{b:{c:4}}}
+    ];
+    test(arr, ['a.b.c'], {id:1,a:{b:{c:6}}}, 'by deep dot operator');
+    test(arr, ['a.b.c', true], [{id:1,a:{b:{c:6}}}], 'by deep dot operator multiple');
+
+
   });
 
   method('sum', function() {
@@ -1006,6 +1057,17 @@ package('Array', function () {
     run([1], 'groupBy', [fn]);
 
     equal(obj, { 'd':['a'],'e':['b'],'f':['c'] }, 'should use an index');
+
+    var arr = [
+      {id:1,a:{b:{c:'x'}}},
+      {id:2,a:{b:{c:'x'}}},
+      {id:3,a:{b:{c:'y'}}}
+    ];
+    var expected = {
+      x: [{id:1,a:{b:{c:'x'}}}, {id:2,a:{b:{c:'x'}}}],
+      y: [{id:3,a:{b:{c:'y'}}}]
+    };
+    test(arr, ['a.b.c'], expected, 'grouping by deep dot operator');
   });
 
   method('inGroups', function() {
@@ -1532,6 +1594,16 @@ package('Array', function () {
     var e = new Simple(2);
 
     test([a,b,c,d,e], [d,b,e,c,a], 'objects with "valueOf" defined will also be sorted properly');
+
+
+    var obj1 = {id:1,a:{b:{c:248}}};
+    var obj2 = {id:2,a:{b:{c:17}}};
+    var obj3 = {id:3,a:{b:{c:50238}}};
+    var obj4 = {id:4,a:{b:{c:29}}};
+    var arr = [obj1, obj2, obj3, obj4];
+    test(arr, ['a.b.c'], [obj2, obj4, obj1, obj3], 'by deep dot operator');
+    test(arr, ['a.b.c', true], [obj3, obj1, obj4, obj2], 'by deep dot operator multiple');
+
   });
 
   method('randomize', function() {
