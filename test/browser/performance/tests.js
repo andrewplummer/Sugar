@@ -28,63 +28,49 @@ arr = arr.concat(arr);
 var tests = [
   {
     fn: function(arg) {
-      return Sugar.String.assign(arg, { name: 'Bob' });
+      return arg.indexOf('.') !== -1;
+    },
+    vars: {
+      noDots: 'one',
+      oneDot: 'one.two',
+      tenDots: 'one.two.three.four.five.six.seven.eight.nine.ten'
     },
     targets: [
-      'smallStringWithToken * 100000',
-      'smallStringWithoutToken * 100000',
-      'largeStringWithOneToken * 100',
-      'largeStringWithNoTokens * 100',
-      'largeStringWithAllKeywordTokens * 100'
+      'noDots * 1000000',
+      'oneDot * 1000000',
+      'tenDots * 1000000'
     ]
   },
   {
     fn: function(arg) {
-      return Sugar.String.assign2(arg, { name: 'Bob' });
+      var split = arg.split('.');
+      return split.length > 1;
+    },
+    vars: {
+      noDots: 'one',
+      oneDot: 'one.two',
+      tenDots: 'one.two.three.four.five.six.seven.eight.nine.ten'
     },
     targets: [
-      'smallStringWithToken * 100000',
-      'smallStringWithoutToken * 100000',
-      'largeStringWithOneToken * 100',
-      'largeStringWithNoTokens * 100',
-      'largeStringWithAllKeywordTokens * 100'
+      'noDots * 1000000',
+      'oneDot * 1000000',
+      'tenDots * 1000000'
     ]
   },
   {
     fn: function(arg) {
-      return arg.findAll(/^a/);
+      return /\./.test(arg);
+    },
+    vars: {
+      noDots: 'one',
+      oneDot: 'one.two',
+      tenDots: 'one.two.three.four.five.six.seven.eight.nine.ten'
     },
     targets: [
-      'emptyArray * 200000',
-      'smallNumberArray * 100000',
-      'smallStringArray * 100000',
-      'bigNumberArray * 100',
-      'bigStringArray * 100',
-      'bigDateArray * 10',
-      'jsonArray * 10000'
+      'noDots * 1000000',
+      'oneDot * 1000000',
+      'tenDots * 1000000'
     ]
   },
-  {
-    fn: function(arg) {
-      return Object.map(arg, function() {
-        return 3;
-      });
-    },
-    targets: [
-      'simpleObject * 100000',
-      'deepObject * 100000',
-      'jsonObject * 100000'
-    ]
-  },
-  {
-    fn: function(arg) {
-      return Object.isString(arg);
-    },
-    targets: [
-      'emptyString * 1000000',
-      'normalString * 1000000',
-      'hugeString * 1000000',
-    ]
-  }
 ];
 
