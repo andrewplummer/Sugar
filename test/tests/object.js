@@ -1398,6 +1398,16 @@ package('Object', function () {
     testStaticAndInstance(obj1, [], obj1, 'no args');
     testStaticAndInstance(obj2, [function(k, v) { return v.age; }], {foo:11,bar:22,moo:33,car:44}, 'mapping nested properties');
     testStaticAndInstance(obj2, ['age'], {foo:11,bar:22,moo:33,car:44}, 'mapping nested properties with string shortcut');
+
+    var obj = {
+     foo:{a:{b:{c:11}}},
+     bar:{a:{b:{c:22}}},
+     moo:{a:{b:{c:33}}},
+     car:{a:{b:{c:44}}}
+    }
+
+    testStaticAndInstance(obj, ['a.b.c'], {foo:11,bar:22,moo:33,car:44}, 'mapping shortcut can go deep with dot syntax');
+
   });
 
   method('size', function() {
