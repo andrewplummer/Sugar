@@ -1374,7 +1374,7 @@ package('Object', function () {
       return 'custom';
     }
 
-    test({foo: new Foo}, [], getExpected('foo=custom'), 'toString inherited method');
+    test(Object, [{foo: new Foo}], getExpected('foo=custom'), 'toString inherited method');
 
   });
 
@@ -1580,19 +1580,19 @@ package('Object', function () {
     var instFoo = new Foo();
     var instBar = new Bar();
 
-    test(Foo, ['a'], 'class-a', 'Class method class-a');
+    test(Object, [Foo, 'a'], 'class-a', 'Class method class-a');
 
-    test(Foo.prototype, ['a'], 'foo-a', 'Foo.prototype.a');
-    test(Bar.prototype, ['a'], 'foo-a', 'Bar.prototype.a');
-    test(Foo.prototype, ['b'], 'foo-b', 'Foo.prototype.b');
-    test(Bar.prototype, ['b'], 'bar-b', 'Bar.prototype.b');
+    test(Object, [Foo.prototype, 'a'], 'foo-a', 'Foo.prototype.a');
+    test(Object, [Bar.prototype, 'a'], 'foo-a', 'Bar.prototype.a');
+    test(Object, [Foo.prototype, 'b'], 'foo-b', 'Foo.prototype.b');
+    test(Object, [Bar.prototype, 'b'], 'bar-b', 'Bar.prototype.b');
 
-    test(instFoo, ['a'], 'foo-a', 'foo.a');
-    test(instBar, ['a'], 'foo-a', 'bar.a');
-    test(instFoo, ['b'], 'foo-b', 'foo.b');
-    test(instBar, ['b'], 'bar-b', 'bar.b');
-    test(instFoo, ['c'], 'foo-c', 'foo.c');
-    test(instBar, ['c'], 'inst-c', 'bar.c');
+    test(Object, [instFoo, 'a'], 'foo-a', 'foo.a');
+    test(Object, [instBar, 'a'], 'foo-a', 'bar.a');
+    test(Object, [instFoo, 'b'], 'foo-b', 'foo.b');
+    test(Object, [instBar, 'b'], 'bar-b', 'bar.b');
+    test(Object, [instFoo, 'c'], 'foo-c', 'foo.c');
+    test(Object, [instBar, 'c'], 'inst-c', 'bar.c');
 
     test(Object, [Array, 'prototype.every'], Array.prototype.every, 'works on built-ins');
 
@@ -1611,8 +1611,8 @@ package('Object', function () {
         enumerable: false,
         value: 'hi'
       });
-      test(obj, ['foo'], 3, 'works on non-enumerable properties');
-      test(obj, ['bar.car'], 'hi', 'works on deep non-enumerable properties');
+      test(Object, [obj, 'foo'], 3, 'works on non-enumerable properties');
+      test(Object, [obj, 'bar.car'], 'hi', 'works on deep non-enumerable properties');
     }
 
   });
@@ -1660,15 +1660,15 @@ package('Object', function () {
     testStaticAndInstance({}, ['a.b','x'], {a:{b:'x'}}, 'deep property on empty object');
 
     // Array tests won't make sense on an extended object.
-    test([], ['0', 'x'], ['x'], 'numeric index on array');
-    test(['a','b'], [0,'x'], ['x','b'], 'array property set');
-    test(['a','b'], [1,'x'], ['a','x'], 'array property set');
-    test(['a','b'], ['0','x'], ['x','b'], 'array property set by string');
-    test(['a','b'], ['1','x'], ['a','x'], 'array property set by string');
+    test(Object, [[], '0', 'x'], ['x'], 'numeric index on array');
+    test(Object, [['a','b'], 0,'x'], ['x','b'], 'array property set');
+    test(Object, [['a','b'], 1,'x'], ['a','x'], 'array property set');
+    test(Object, [['a','b'], '0','x'], ['x','b'], 'array property set by string');
+    test(Object, [['a','b'], '1','x'], ['a','x'], 'array property set by string');
 
-    test([{foo:'bar'}], ['0.foo', 'x'], [{foo:'x'}], 'array deep property');
-    test({foo:['bar']}, ['foo.0','x'], {foo:['x']}, 'object array property');
-    test([[['bar']]], ['0.0.0', 'x'], [[['x']]], 'deep array');
+    test(Object, [[{foo:'bar'}], '0.foo', 'x'], [{foo:'x'}], 'array deep property');
+    test(Object, [{foo:['bar']}, 'foo.0','x'], {foo:['x']}, 'object array property');
+    test(Object, [[[['bar']]], '0.0.0', 'x'], [[['x']]], 'deep array');
 
     var obj = {
       a: {
