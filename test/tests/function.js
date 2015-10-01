@@ -550,6 +550,28 @@ package('Function', function () {
 
     equal(count, 3, 'should have run 3 times');
 
+
+    // Dot operator can serve as a shortcut to the hashing function.
+
+    var p1 = { name: { first: 'Tom', last: 'Hanks'  }};
+    var p2 = { name: { first: 'Jon', last: 'Voight' }};
+    var p3 = { name: { first: 'Tom', last: 'Cruise' }};
+    var p4 = { name: { first: 'Joe', last: 'Rogan'  }};
+    var p5 = { name: { first: 'Tom', last: 'Waits'  }};
+
+    count = 0;
+    fn = run(function(obj) {
+      count++;
+      return obj.name.first + ' ' + obj.name.last;
+    }, 'memoize', ['name.first']);
+
+    equal(fn(p1), 'Tom Hanks', 'first should run');
+    equal(fn(p2), 'Jon Voight', 'second should run');
+    equal(fn(p3), 'Tom Hanks', 'third should cache');
+    equal(fn(p4), 'Joe Rogan', 'fourth should run');
+    equal(fn(p5), 'Tom Hanks', 'fifth should run');
+    equal(count, 3, 'should have run 3 times');
+
   });
 
   method('fill', function() {
