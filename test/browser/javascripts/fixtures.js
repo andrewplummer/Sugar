@@ -1,4 +1,12 @@
 
+function createHugeString(str) {
+  var tmp = str;
+  for(var i = 0; i < 12; i++) {
+    tmp += str;
+  }
+  return tmp;
+}
+
 normalDate = new Date();
 normalFunction = function() {
   return 'foo';
@@ -95,23 +103,6 @@ smallStringArrayWithNumbersMixedIn = [
 bigNumberArray = [];
 bigCharacterArray = [];
 bigDateArray   = [];
-
-(function() {
-
-  var word = 'wasabi ';
-  var tmp1 = word;
-  var tmp2 = word + ' {name} ';
-  for(var i = 0; i < 12; i++) {
-    tmp1 += tmp1;
-    tmp2 += tmp2;
-  }
-  smallStringWithToken = 'well hello there, {name}';
-  smallStringWithoutToken = 'well hello there';
-  largeStringWithOneToken = tmp1.slice(0, tmp1.length / 2) + '{name} ' + tmp1.slice(tmp1.length / 2);
-  largeStringWithNoTokens = tmp1;
-  largeStringWithAllKeywordTokens = tmp2;
-
-})();
 
 (function() {
 
