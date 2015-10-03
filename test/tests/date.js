@@ -1154,19 +1154,6 @@ package('Date', function () {
     equal(d.getSeconds(), 0, 'does reset seconds');
     equal(d.getMilliseconds(), 0, 'does reset milliseconds');
 
-
-    // Catch for DST inequivalencies
-    // FAILS IN DAMASCUS IN XP!
-    d = run(new Date(2010, 11, 9, 17), 'set', [{ year: 1998, month: 3, day: 3}, true]);
-    equal(d.getHours(), 0, 'handles DST properly');
-
-
-    d = run(new Date(2010, 0, 31), 'set', [{ month: 1 }, true]);
-    dateEqual(d, new Date(2010,1), 'reset dates will not accidentally traverse into a different month');
-
-    d = run(new Date(2010, 0, 31), 'advance', [{ month: 1 }]);
-    dateEqual(d, new Date(2010,1,28), 'reset dates will not accidentally traverse into a different month');
-
     dateEqual(run(new Date, 'set', [0]), new Date(0), 'handles timestamps');
 
   });
@@ -1329,13 +1316,6 @@ package('Date', function () {
     var d = new Date();
     var dayInMs = 24 * 60 * 60 * 1000;
     test(d, [dayInMs], new Date(d.getTime() + dayInMs), 'can advance milliseconds');
-
-
-    // If traversing into a new month don't reset the date if the date was also advanced
-
-    dateTest(new Date(2011, 0, 31), [{ month: 1 }], new Date(2011, 1, 28), 'basic month traversal will reset the date to the last day');
-    dateTest(new Date(2011, 0, 31), [{ month: 1, day: 3 }], new Date(2011, 2, 3), 'when the day is specified date reset will not happen');
-    dateEqual(run(new Date(2011, 0, 31), 'set', [{ month: 1, day: 3 }]), new Date(2011, 1, 3), 'set will also not cause date traversal');
 
 
     // Advance also allows resetting.
@@ -2771,6 +2751,44 @@ package('Date', function () {
     equal(testCreateDate() instanceof AwesomeDate, true, 'Result should be use in Date.create');
 
     Sugar.Date.newDateInternal = null;
+
+  });
+
+  group('Month traversal issues', function() {
+
+    // If traversing into a new month don't reset the date if the date was also advanced
+
+    dateEqual(run(new Date(2011, 0, 31), 'advance', [{ month: 1 }]), new Date(2011, 1, 28), 'advanced by month will land on last day if the day does not exist');
+    dateEqual(run(new Date(2011, 0, 31), 'advance', [{ month: 1, day: 3 }]), new Date(2011, 2, 3), 'can still advance days after reset');
+    dateEqual(run(new Date(2011, 2, 31), 'rewind', [{ month: 1 }]), new Date(2011, 1, 28), 'rewind by month will land on last day if the day does not exist');
+    dateEqual(run(new Date(2011, 2, 31), 'rewind', [{ month: 1, day: 3 }]), new Date(2011, 1, 25), 'can still rewind days after reset');
+    dateEqual(run(new Date(2011, 0, 31), 'set', [{ month: 1 }]), new Date(2011, 1, 28), 'set does not cause month traversal');
+    dateEqual(run(new Date(2011, 0, 31), 'set', [{ month: 1, day: 3 }]), new Date(2011, 1, 3), 'set with day does not cause month traversal');
+
+
+    var d = run(new Date(2010, 0, 31), 'set', [{ month: 1 }, true]);
+    dateEqual(d, new Date(2010, 1), 'reset dates will not accidentally traverse into a different month');
+
+  });
+
+  group('DST Issues', function() {
+
+    // These tests are meant to be run in a North American timezone with DST (PDT, MDT, etc)
+
+    assertAddUnitIsSequential(new Date(2015, 2, 8, 1, 45), 'addMinutes', 15, 'Spring DST | Forward');
+    assertAddUnitIsSequential(new Date(2015, 2, 8, 2), 'addMinutes', -15, 'Spring DST | Reverse');
+    assertAddUnitIsSequential(new Date(2015, 10, 1, 1, 45), 'addMinutes', 15, 'Fall DST | Forward');
+    assertAddUnitIsSequential(new Date(2015, 10, 2), 'addMinutes', -15, 'Fall DST | Reverse');
+
+    assertAddUnitIsSequential(new Date(2015, 2, 8, 1, 45), 'addHours', 1, 'Spring DST | Forward');
+    assertAddUnitIsSequential(new Date(2015, 2, 8, 2), 'addHours', -1, 'Spring DST | Reverse');
+    assertAddUnitIsSequential(new Date(2015, 10, 1, 1, 45), 'addHours', 15, 'Fall DST | Forward');
+    assertAddUnitIsSequential(new Date(2015, 10, 2), 'addHours', -15, 'Fall DST | Reverse');
+
+    // Catch for DST inequivalencies
+    // FAILS IN DAMASCUS IN XP!
+    var d = run(new Date(2010, 11, 9, 17), 'set', [{ year: 1998, month: 3, day: 3}, true]);
+    equal(d.getHours(), 0, 'handles DST properly');
 
   });
 
