@@ -198,9 +198,9 @@ testMonthsFromNow = function(n, monthString, weekString) {
   equal(run(date, 'relative'), expected, en);
 }
 
-assertAddUnitIsSequential = function (d, method, add, message) {
+assertAddUnitIsNumericallyEqual = function (d, method, add, message) {
   var mult;
-  message = [message, method, add, 'should be sequential'].join(' | ');
+  message = [message, method, add, 'should be equal to adding absolute time'].join(' | ');
   switch (method.match(/add(\w+)/)[1]) {
     case 'Seconds':
       mult = 1000;
