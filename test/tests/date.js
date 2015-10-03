@@ -2776,15 +2776,31 @@ package('Date', function () {
 
     // These tests are meant to be run in a North American timezone with DST (PDT, MDT, etc)
 
-    assertAddUnitIsSequential(new Date(2015, 2, 8, 1, 45), 'addMinutes', 15, 'Spring DST | Forward');
-    assertAddUnitIsSequential(new Date(2015, 2, 8, 2), 'addMinutes', -15, 'Spring DST | Reverse');
-    assertAddUnitIsSequential(new Date(2015, 10, 1, 1, 45), 'addMinutes', 15, 'Fall DST | Forward');
-    assertAddUnitIsSequential(new Date(2015, 10, 2), 'addMinutes', -15, 'Fall DST | Reverse');
+    assertAddUnitIsNumericallyEqual(new Date(2015, 2, 8, 1, 45), 'addHours', 1, 'Spring DST | Forward');
+    assertAddUnitIsNumericallyEqual(new Date(2015, 2, 8, 2), 'addHours', -1, 'Spring DST | Reverse');
+    assertAddUnitIsNumericallyEqual(new Date(2015, 10, 1, 1, 45), 'addHours', 15, 'Fall DST | Forward');
+    assertAddUnitIsNumericallyEqual(new Date(2015, 10, 2), 'addHours', -15, 'Fall DST | Reverse');
 
-    assertAddUnitIsSequential(new Date(2015, 2, 8, 1, 45), 'addHours', 1, 'Spring DST | Forward');
-    assertAddUnitIsSequential(new Date(2015, 2, 8, 2), 'addHours', -1, 'Spring DST | Reverse');
-    assertAddUnitIsSequential(new Date(2015, 10, 1, 1, 45), 'addHours', 15, 'Fall DST | Forward');
-    assertAddUnitIsSequential(new Date(2015, 10, 2), 'addHours', -15, 'Fall DST | Reverse');
+    assertAddUnitIsNumericallyEqual(new Date(2015, 2, 8, 1, 45), 'addMinutes', 15, 'Spring DST | Forward');
+    assertAddUnitIsNumericallyEqual(new Date(2015, 2, 8, 2), 'addMinutes', -15, 'Spring DST | Reverse');
+    assertAddUnitIsNumericallyEqual(new Date(2015, 10, 1, 1, 45), 'addMinutes', 15, 'Fall DST | Forward');
+    assertAddUnitIsNumericallyEqual(new Date(2015, 10, 2), 'addMinutes', -15, 'Fall DST | Reverse');
+
+    assertAddUnitIsNumericallyEqual(new Date(2015, 2, 8, 1, 59, 59), 'addSeconds', 10, 'Spring DST | Forward');
+    assertAddUnitIsNumericallyEqual(new Date(2015, 2, 8, 2), 'addSeconds', -10, 'Spring DST | Reverse');
+    assertAddUnitIsNumericallyEqual(new Date(2015, 10, 1, 1, 59, 59), 'addSeconds', 10, 'Fall DST | Forward');
+    assertAddUnitIsNumericallyEqual(new Date(2015, 10, 2), 'addSeconds', -10, 'Fall DST | Reverse');
+
+    assertAddUnitIsNumericallyEqual(new Date(2015, 2, 8, 1, 59, 59, 950), 'addMilliseconds', 100, 'Spring DST | Forward');
+    assertAddUnitIsNumericallyEqual(new Date(2015, 2, 8, 2), 'addMilliseconds', -100, 'Spring DST | Reverse');
+    assertAddUnitIsNumericallyEqual(new Date(2015, 10, 1, 1, 59, 59, 950), 'addMilliseconds', 100, 'Fall DST | Forward');
+    assertAddUnitIsNumericallyEqual(new Date(2015, 10, 2), 'addMilliseconds', -100, 'Fall DST | Reverse');
+
+    var d1 = new Date(2015, 2, 8);
+    var d2 = run(new Date(d1), 'addDays', [1]);
+    var t1 = d1.getTimezoneOffset();
+    var t2 = d2.getTimezoneOffset();
+    equal(d2 - d1, (24 * 60 * 60 * 1000) + ((t2 - t1) * 60 * 1000), 'adding a day should be equal to 24 hours + whatever change in timezone offset that may have occurred');
 
     // Catch for DST inequivalencies
     // FAILS IN DAMASCUS IN XP!
