@@ -1587,7 +1587,7 @@ package('Date', function () {
     test(d, expected, 'Date#iso is an alias for the ISO8601_DATETIME format in UTC');
   });
 
-  group('Relative Dates', function() {
+  method('relative', function() {
 
     var d;
     var simpleDateFormat = '{Month} {date}, {year}';
@@ -1898,6 +1898,7 @@ package('Date', function () {
   });
 
   group('Since/Until', function() {
+
     var d = new Date(2010,7,5,13,45,2,542);
 
     equal(run(new Date(2010,7,5,13,45,2,543),  'millisecondsSince', [d]), 1, '1 milliseconds since');
@@ -2020,6 +2021,19 @@ package('Date', function () {
     var daysUntil9pm = run(new Date('11/10/2014 21:00:00'), 'daysSince', [new Date('7/1/2014')]);
     var daysUntil10pm = run(new Date('11/10/2014 22:00:00'), 'daysSince', [new Date('7/1/2014')]);
     equal(daysUntil9pm, daysUntil10pm, 'daysSince should not traverse between 21:00 and 22:00');
+
+
+    // Traversing over February
+
+    equal(run(new Date(2015, 0, 31), 'monthsUntil', [new Date(2015, 1, 28)]),  1, 'Jan 31st is  1 months until Feb 28th');
+    equal(run(new Date(2015, 0, 31), 'monthsSince', [new Date(2015, 1, 28)]), -1, 'Jan 31st is -1 months since Feb 28th');
+    equal(run(new Date(2015, 1, 28), 'monthsUntil', [new Date(2015, 0, 31)]), -1, 'Feb 28th is -1 months until Jan 31st');
+    equal(run(new Date(2015, 1, 28), 'monthsSince', [new Date(2015, 0, 31)]),  1, 'Feb 28th is  1 months since Jan 31st');
+
+    equal(run(new Date(2015, 0, 31), 'monthsUntil', [new Date(2015, 2, 31)]),  2, 'Jan 31st is  2 months until Mar 31st');
+    equal(run(new Date(2015, 0, 31), 'monthsSince', [new Date(2015, 2, 31)]), -2, 'Jan 31st is -2 months since Mar 31st');
+    equal(run(new Date(2015, 2, 31), 'monthsUntil', [new Date(2015, 0, 31)]), -2, 'Mar 31st is -2 months until Jan 31st');
+    equal(run(new Date(2015, 2, 31), 'monthsSince', [new Date(2015, 0, 31)]),  2, 'Mar 31st is  2 months since Jan 31st');
 
   });
 
