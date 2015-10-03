@@ -198,3 +198,21 @@ testMonthsFromNow = function(n, monthString, weekString) {
   equal(run(date, 'relative'), expected, en);
 }
 
+assertAddUnitIsSequential = function (d, method, add, message) {
+  var mult;
+  message = [message, method, add, 'should be sequential'].join(' | ');
+  switch (method.match(/add(\w+)/)[1]) {
+    case 'Seconds':
+      mult = 1000;
+    break;
+    case 'Minutes':
+      mult = 60 * 1000;
+    break;
+    case 'Hours':
+      mult = 60 * 60 * 1000;
+    break;
+    default:
+      mult = 1;
+  }
+  equal(run(new Date(d), method, [add]) - d, add * mult, message);
+}
