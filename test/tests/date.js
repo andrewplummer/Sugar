@@ -1018,7 +1018,8 @@ package('Date', function () {
 
     var d1 = run(new Date(Date.UTC(2010, 7, 25)), 'setUTC', [true]);
     var d2 = run(d1, 'get', ['tomorrow', { fromUTC: false, setUTC: false }]);
-    dateEqual(d2, new Date(2010, 7, 26), 'fromUTC can overridden utc preservation'); 
+    // d1 may be Aug 24th or Aug 25th depending on the timezone.
+    dateEqual(d2, new Date(2010, 7, d1.getDate() + 1), 'fromUTC can override utc preservation');
     equal(d2._utc, false, 'setUTC can override utc preservation');
 
   });
