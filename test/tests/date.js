@@ -1770,7 +1770,14 @@ package('Date', function () {
     test(new Date(1970,4,15,22,3,1,432), [new Date(1969,4,14,22,3,2,432), 31536000000], false, 'accuracy | 1969 accurate to a year is still contstrained');
     test(new Date(1970,4,15,22,3,1,432), [new Date(1969,4,15,22,3,1,432), 31536000000], true, 'accuracy | 1969 accurate to a year');
     test(new Date(1970,4,15,22,3,1,432), [new Date(1970,4,15,22,3,1,432), 31536000000], true, 'accuracy | 1970 accurate to a year');
+
+    // Indianapolis went off DST during this year, so this test is also a good
+    // measurement of DST traversal that can happen between years.
     test(new Date(1970,4,15,22,3,1,432), [new Date(1971,4,15,22,3,1,432), 31536000000], true, 'accuracy | 1971 accurate to a year');
+    test(new Date(1971,4,15,22,3,1,432), [new Date(1970,4,15,22,3,1,432), 31536000000], true, 'accuracy | 1971 accurate to a year');
+    test(new Date(1970,4,15,22,3,1,432), [new Date(1971,4,15,22,3,1,433), 31536000000], false, 'accuracy | 1971 accurate to a year');
+    test(new Date(1971,4,15,22,3,1,433), [new Date(1970,4,15,22,3,1,432), 31536000000], false, 'accuracy | 1971 accurate to a year');
+
     test(new Date(1970,4,15,22,3,1,432), [new Date(1971,4,16,22,3,1,432), 31536000000], false, 'accuracy | 1971 accurate to a year is still contstrained');
 
 
