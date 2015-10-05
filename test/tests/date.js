@@ -75,6 +75,11 @@ package('Date', function () {
     dateEqual(testCreateDate({ year: 1998, month: 1, day: 23, hour: 11, minutes: 54, seconds: 32 }), new Date(1998,1,23,11,54,32), 'January 23, 1998 11:54:32');
     dateEqual(testCreateDate({ year: 1998, month: 1, day: 23, hour: 11, minutes: 54, seconds: 32, milliseconds: 454 }), new Date(1998,1,23,11,54,32,454), 'January 23, 1998 11:54:32.454');
 
+    var obj = { year: 1998 };
+    testCreateDate(obj);
+
+    equal(obj.year, 1998, 'Year should still be 1998');
+    equal(Object.keys(obj).length, 1, 'No other properties should be set');
   });
 
   group('Create | Timestamps', function() {
