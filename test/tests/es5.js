@@ -4,14 +4,6 @@ package('ES5', function () {
   // The scope when none is set.
   var nullScope = (function(){ return this; }).call();
 
-
-  method('init', function() {
-    // This will reset the array in < IE8. Modern browsers will ignore the element.
-    var arr = [];
-    arr[4294967295] = 'd';
-    equal(arr.length, 0, 'Array internals will not allow more than a 32bit integer as a key. Anything higher will be ignored');
-  });
-
   method('isArray', function() {
 
     // all following calls return true
@@ -855,29 +847,6 @@ package('ES5', function () {
 
   group('now', function() {
     equalWithMargin(Date.now(), new Date().getTime(), 5, 'Date#now | basic functionality');
-  });
-
-  group('parse', function() {
-
-    // Returns 807937200000 in time zone GMT-0300, and other values in other
-    // timezones, since the argument does not specify a time zone.
-    equal(Date.parse("Aug 9, 1995"), new Date(1995, 7, 9).getTime(), 'Date#parse | No timezone');
-    // Returns 807926400000 no matter the local time zone.
-    equal(Date.parse("Wed, 09 Aug 1995 00:00:00 GMT"), new Date(807926400000).getTime(), 'Date#parse | GMT');
-    // Returns 807937200000 in timezone GMT-0300, and other values in other
-    // timezones, since there is no time zone specifier in the argument.
-    equal(Date.parse("Wed, 09 Aug 1995 00:00:00"), new Date(1995, 7, 9).getTime(), 'Date#parse | No timezone with time');
-    equal(Date.parse("Thu, 09 Aug 1995 00:00:00 GMT-0400"), 807940800000, 'Date#parse | 1995/7/9 GMT-04:00');
-    // Returns 0 no matter the local time zone.
-    equal(Date.parse("Thu, 01 Jan 1970 00:00:00 GMT"), 0, 'Date#parse | 1970/1/1 GMT');
-
-    // Note: Avoiding non GMT dates around the epoch as they tend to be unreliable.
-    // Returns 14400000 in timezone GMT-0400, and other values in other
-    // timezones, since there is no time zone specifier in the argument.
-    // equal(Date.parse("Thu, 01 Jan 1970 00:00:00"), (new Date).getTimezoneOffset().minutes(), 'Date#parse | 1970/1/1 Local');
-    // Returns 14400000 no matter the local time zone.
-    // equal(Date.parse("Thu, 01 Jan 1970 00:00:00 GMT-0400"), new Date(1995, 7, 9).getTime(), 'Date#parse | 1970/1/1 GMT-04:00');
-
   });
 
   group('toISOString', function() {
