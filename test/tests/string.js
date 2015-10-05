@@ -1296,6 +1296,7 @@ package('String', function () {
     test('hello {0.name}', [obj1], 'hello undefined', 'does not allow dot expressions');
     test('hello {name} {last}', [obj1, obj2], 'hello undefined undefined', 'objects will not be merged');
     test('hello {0.name} {1.last}', [obj1, obj2], 'hello Harry Potter', 'arrays are accessible through indexes');
+    test('hello {0.name} {1.last}', [[obj1, obj2]], 'hello Harry Potter', 'passing an array as the only argument will get unwrapped');
 
     test('hello {0} {1.name}', ['Dirty', obj1], 'hello Dirty Harry', 'string and object');
     test('hello {0} {1}', ['Dirty', obj1.name], 'hello Dirty Harry', 'string and object property');
