@@ -1289,16 +1289,17 @@ package('String', function () {
     var obj3 = { name: 'program', age: 21, points: 345 };
 
     test('Welcome, {0}.', ['program'], 'Welcome, program.', 'array index');
-    test('Welcome, {0}.', [obj1], 'Welcome, [object Object].', 'numeric key does not exist in object');
+    test('Welcome, {0}.', [obj1], 'Welcome, undefined.', 'numeric key does not exist in object');
     test('Welcome, {name}.', [obj1], 'Welcome, Harry.', 'keyword');
     test('Welcome, {name}. You are {age} years old and have {points} points left.', [obj3], 'Welcome, program. You are 21 years old and have 345 points left.', '3 arguments by keyword');
     test('Welcome, {0}. You are {1} years old and have {2} points left.', ['program', 21, 345], 'Welcome, program. You are 21 years old and have 345 points left.', '3 arguments by index');
     test('hello {0.name}', [obj1], 'hello undefined', 'does not allow dot expressions');
-    test('hello {name} {last}', [obj1, obj2], 'hello Harry Potter', 'objects will be merged');
+    test('hello {name} {last}', [obj1, obj2], 'hello undefined undefined', 'objects will not be merged');
+    test('hello {0.name} {1.last}', [obj1, obj2], 'hello Harry Potter', 'arrays are accessible through indexes');
 
-    test('hello {0} {name}', ['Dirty', obj1], 'hello Dirty Harry', 'string and object');
+    test('hello {0} {1.name}', ['Dirty', obj1], 'hello Dirty Harry', 'string and object');
     test('hello {0} {1}', ['Dirty', obj1.name], 'hello Dirty Harry', 'string and object property');
-    test('hello {name} {1}', [obj1, 'Dirty'], 'hello Harry Dirty', 'object and string');
+    test('hello {0.name} {1}', [obj1, 'Dirty'], 'hello Harry Dirty', 'object and string');
 
     test(obj1.name, 'Harry', 'obj1 retains its properties');
     equal(obj1.last, undefined, 'obj1 is untampered');
@@ -1339,6 +1340,10 @@ package('String', function () {
     test('Welcome, {0}.', [Object(true)], 'Welcome, true.', 'boolean should be coerced');
     test('Welcome, {0}.', [undefined], 'Welcome, undefined.', 'passing undefined');
     test('Welcome, {0}.', [null], 'Welcome, null.', 'passing null');
+
+    var obj1 = {a:{b:{c:'foo'}}};
+    var obj2 = {a:{b:{c:'bar'}}};
+    test('{0.a.b.c}{1.a.b.c}', [obj1, obj2], 'foobar', 'deep objects');
 
     // Taken from Python format docs.
     test('First, thou shalt count to {0}', ['foo'], 'First, thou shalt count to foo', '');
