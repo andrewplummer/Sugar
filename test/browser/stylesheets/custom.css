@@ -66,6 +66,7 @@ h3 {
   font-size: 12px;
   font-weight: normal;
   color: #888;
+  *right: 20px;
 }
 
 .tests {
@@ -75,6 +76,8 @@ h3 {
 .tests li {
   float: left;
   list-style-type: none;
+  *float: none;
+  *display: inline;
 }
 
 .test {
