@@ -1440,6 +1440,10 @@ package('Date', function () {
     // Issue #262
     equal(/\d+-/.test(run(new Date(), 'format', ['{timezone}'])), false, 'Timezone format should not include hyphens')
 
+    // Issue #498
+    test(new Date(1901, 0, 2), ['{yy}'], '01', 'Zero padded year should respect yy format');
+    test(new Date(1901, 0, 2), ['{yyyy}'], '1901', 'Zero padded year should respect yyyy format');
+
   });
 
   group('Locale Specific Formats', function() {
