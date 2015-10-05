@@ -66,11 +66,14 @@ package('Dates Japanese', function () {
     dateEqual(testCreateDate('５年後'), getRelativeDate(5), 'five years from now');
 
 
+    dateEqual(testCreateDate('おととい'), run(getRelativeDate(null, null, -2), 'reset'), 'おととい');
     dateEqual(testCreateDate('一昨日'), run(getRelativeDate(null, null, -2), 'reset'), '一昨日');
     dateEqual(testCreateDate('昨日'), run(getRelativeDate(null, null, -1), 'reset'), 'yesterday');
     dateEqual(testCreateDate('今日'), run(getRelativeDate(null, null, 0), 'reset'), 'today');
     dateEqual(testCreateDate('明日'), run(getRelativeDate(null, null, 1), 'reset'), 'tomorrow');
     dateEqual(testCreateDate('明後日'), run(getRelativeDate(null, null, 2), 'reset'), '明後日');
+    dateEqual(testCreateDate('明々後日'), run(getRelativeDate(null, null, 3), 'reset'), '明々後日');
+
 
     dateEqual(testCreateDate('先週'), getRelativeDate(null, null, -7), 'Last week');
     dateEqual(testCreateDate('来週'), getRelativeDate(null, null, 7), 'Next week');
