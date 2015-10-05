@@ -412,17 +412,17 @@ package('Date', function () {
     // .NET output
     dateEqual(testCreateDate('2012-04-23T07:58:42.7940000z'), getUTCDate(2012, 4, 23, 7, 58, 42, 794), '.NET long format');
 
-    // Fractions in ISO8601 dates
-    dateEqual(testCreateDate('1997-07-16T14:30:40.5'), new Date(1997, 6, 16, 14, 30, 40, 500), 'fractions in seconds');
-    dateEqual(testCreateDate('1997-07-16T14:30.5'), new Date(1997, 6, 16, 14, 30, 30), 'fractions in minutes');
+    // decimals in ISO8601 dates
+    dateEqual(testCreateDate('1997-07-16T14:30:40.5'), new Date(1997, 6, 16, 14, 30, 40, 500), 'decimals in seconds');
+    dateEqual(testCreateDate('1997-07-16T14:30.5'), new Date(1997, 6, 16, 14, 30, 30), 'decimals in minutes');
 
-    // Comma based fractions in ISO8601 dates
-    dateEqual(testCreateDate('1997-07-16T14:30:40,5'), new Date(1997, 6, 16, 14, 30, 40, 500), 'fractions in seconds');
-    dateEqual(testCreateDate('1997-07-16T14:30,5'), new Date(1997, 6, 16, 14, 30, 30), 'fractions in minutes');
+    // Comma based decimals in ISO8601 dates
+    dateEqual(testCreateDate('1997-07-16T14:30:40,5'), new Date(1997, 6, 16, 14, 30, 40, 500), 'decimals in seconds');
+    dateEqual(testCreateDate('1997-07-16T14:30,5'), new Date(1997, 6, 16, 14, 30, 30), 'decimals in minutes');
 
-    // Fractional hours in ISO dates
-    dateEqual(testCreateDate('1997-07-16T14.5'), new Date(1997, 6, 16, 14, 30), 'fractions in hours');
-    dateEqual(testCreateDate('1997-07-16T14,5'), new Date(1997, 6, 16, 14, 30), 'fractions in hours');
+    // decimal hours in ISO dates
+    dateEqual(testCreateDate('1997-07-16T14.5'), new Date(1997, 6, 16, 14, 30), 'decimals in hours');
+    dateEqual(testCreateDate('1997-07-16T14,5'), new Date(1997, 6, 16, 14, 30), 'decimals in hours');
 
     // These are all the same moment...
     dateEqual(testCreateDate('2001-04-03T18:30Z'), getUTCDate(2001,4,3,18,30), 'Synonymous dates with timezone 1');
