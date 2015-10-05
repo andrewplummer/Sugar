@@ -96,14 +96,14 @@ package('Dates Finnish', function () {
   method('format', function() {
     var then = new Date(2011, 7, 25, 15, 45, 50);
 
-    equal(run(then, 'format'),                          '25. elokuuta 2011 klo 15.45', 'format');
-    equal(run(then, 'format', ['{dd} {Month} {yyyy}']), '25. elokuuta 2011',           'format');
+    equal(run(then, 'format'),                           '25. elokuuta 2011 klo 15.45', 'format');
+    equal(run(then, 'format', ['{dd}. {month} {yyyy}']), '25. elokuuta 2011',           'format');
 
     // Format shortcuts
     equal(run(then, 'format', ['long']),  '25. elokuuta 2011 klo 15.45',            'long format');
     equal(run(then, 'long'),              '25. elokuuta 2011 klo 15.45',            'long shortcut');
-    equal(run(then, 'format', ['full']),  'torstai 25. elokuuta 2011 klo 15.45.50', 'full format');
-    equal(run(then, 'full'),              'torstai 25. elokuuta 2011 klo 15.45.50', 'full shortcut');
+    equal(run(then, 'format', ['full']),  'torstai 25. elokuuta 2011 klo 15.45', 'full format');
+    equal(run(then, 'full'),              'torstai 25. elokuuta 2011 klo 15.45', 'full shortcut');
     equal(run(then, 'format', ['short']), '25. elokuuta 2011',                      'short format');
     equal(run(then, 'short'),             '25. elokuuta 2011',                      'short shortcut');
   });
@@ -120,7 +120,7 @@ package('Dates Finnish', function () {
     assertRelative('5 minutes ago', '5 minuuttia sitten');
     assertRelative('5 hours ago', '5 tuntia sitten');
     assertRelative('5 days ago', '5 päivää sitten');
-    assertRelative('5 weeks ago', '5 viikkoa sitten');
+    assertRelative('5 weeks ago', '1 kuukausi sitten');
     assertRelative('5 months ago', '5 kuukautta sitten');
     assertRelative('5 years ago', '5 vuotta sitten');
 
@@ -141,6 +141,7 @@ package('Dates Finnish', function () {
 });
 
 package('Number | Finnish Dates', function () {
+
   method('duration', function() {
     test(run(1,     'year'), ['fi'], 'vuoden',           'a year');
     test(run(1,     'year'), ['fi'], '1 vuoden',         '1 year');
@@ -164,4 +165,5 @@ package('Number | Finnish Dates', function () {
     test(run(1,   'second'), ['fi'], '1 sekunnin',     '1 second');
     test(run(10, 'seconds'), ['fi'], '10 sekuntia',  '10 seconds');
   });
+
 });
