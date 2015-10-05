@@ -1,5 +1,7 @@
 var runner = require('../setup');
 
+runner.resetPolyfills('es6');
+
 // Tests
 runner.loadTest('core');
 runner.loadTest('array');
