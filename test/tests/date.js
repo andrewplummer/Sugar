@@ -1164,6 +1164,12 @@ package('Date', function () {
 
     dateEqual(run(new Date, 'set', [0]), new Date(0), 'handles timestamps');
 
+    var obj = { year: 1998 };
+    var d = new Date();
+    run(d, 'set', [obj]);
+
+    equal(obj.year, 1998, 'Year should still be 1998');
+    equal(Object.keys(obj).length, 1, 'No other properties should be set');
   });
 
   group('Get/Set Weekday', function() {
