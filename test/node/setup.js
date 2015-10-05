@@ -120,6 +120,10 @@ module.exports = {
     this.run(mod, true);
   },
 
+  resetPolyfills: function(name) {
+    reload('../suite/helpers/' + name + '-reset.js');
+  },
+
   reset: function() {
     globalFailures = 0;
   },
