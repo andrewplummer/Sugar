@@ -1774,6 +1774,28 @@ package('Array', function () {
     equal(arr2.length, arr.length, "should not sample the same element twice");
 
     equal(run(arr, 'sample', [0]).length, 0, '0');
+
+
+    var arr = [1,2,3,4];
+    var result = run(arr, 'sample', [true])
+    equal(typeof result , 'number', 'should have returned single number');
+    equal(arr.length, 3, 'should have removed 1 element');
+
+    var arr = [1,2,3,4];
+    var result = run(arr, 'sample', [0, true])
+    equal(result.length, 0, 'should have returned 0 sampled elements');
+    equal(arr.length, 4, 'should have removed 0 elements');
+
+    var arr = [1,2,3,4];
+    var result = run(arr, 'sample', [1, true])
+    equal(result.length, 1, 'should have returned 1 sampled element');
+    equal(arr.length, 3, 'should have removed 1 element');
+
+    var arr = [1,2,3,4];
+    var result = run(arr, 'sample', [2, true])
+    equal(result.length, 2, 'should have returned 2 sampled elements');
+    equal(arr.length, 2, 'should have removed 2 elements');
+
   });
 
   method('findAll', function() {

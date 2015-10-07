@@ -46,6 +46,7 @@ v2.0.0
 - Added `Object.get` and `Object.set` and allowed deep object transforms on `Array#map`, and a few other methods.
 - Fixed many issues with DST and simplified month traversal.
 - Renamed `Array#randomize` to `Array#shuffle`
+- Added `Array#sample` ability to remove sampled elements and performance optimization.
 
 
 v1.4.2
