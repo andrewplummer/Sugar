@@ -45,6 +45,7 @@ v2.0.0
 - `String#assign` refactored and renamed to `String#format`. Tokens are zero based and a few other changes.
 - Added `Object.get` and `Object.set` and allowed deep object transforms on `Array#map`, and a few other methods.
 - Fixed many issues with DST and simplified month traversal.
+- Renamed `Array#randomize` to `Array#shuffle`
 
 
 v1.4.2

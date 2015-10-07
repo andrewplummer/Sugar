@@ -1606,19 +1606,19 @@ package('Array', function () {
 
   });
 
-  method('randomize', function() {
+  method('shuffle', function() {
     var arr = [1,2,3,4,5,6,7,8,9,10];
     var firsts = [];
-    firsts.push(run(arr, 'randomize')[0]);
-    firsts.push(run(arr, 'randomize')[0]);
-    firsts.push(run(arr, 'randomize')[0]);
-    firsts.push(run(arr, 'randomize')[0]);
-    firsts.push(run(arr, 'randomize')[0]);
-    firsts.push(run(arr, 'randomize')[0]);
-    firsts.push(run(arr, 'randomize')[0]);
-    firsts.push(run(arr, 'randomize')[0]);
-    firsts.push(run(arr, 'randomize')[0]);
-    firsts.push(run(arr, 'randomize')[0]);
+    firsts.push(run(arr, 'shuffle')[0]);
+    firsts.push(run(arr, 'shuffle')[0]);
+    firsts.push(run(arr, 'shuffle')[0]);
+    firsts.push(run(arr, 'shuffle')[0]);
+    firsts.push(run(arr, 'shuffle')[0]);
+    firsts.push(run(arr, 'shuffle')[0]);
+    firsts.push(run(arr, 'shuffle')[0]);
+    firsts.push(run(arr, 'shuffle')[0]);
+    firsts.push(run(arr, 'shuffle')[0]);
+    firsts.push(run(arr, 'shuffle')[0]);
 
     /* Note that there is a built-in 0.00000001% chance that this test will fail */
     equal(firsts.every(function(a) { return a == 1; }), false, 'sufficiently randomized');
@@ -1972,12 +1972,12 @@ package('Array', function () {
       'anne'
     ];
 
-    test(Sugar.Array.randomize(frenchNames), frenchNames, 'sorting french names');
+    test(Sugar.Array.shuffle(frenchNames), frenchNames, 'sorting french names');
 
     arr = frenchNames.map(function(n) {
       return n.toUpperCase();
     });
-    test(Sugar.Array.randomize(arr), arr, 'sorting french names in upper case');
+    test(Sugar.Array.shuffle(arr), arr, 'sorting french names in upper case');
 
     // MSDN http://msdn.microsoft.com/en-us/library/cc194880.aspx
     arr = [
@@ -2033,7 +2033,7 @@ package('Array', function () {
       'Žal',
       'Žena'
     ];
-    test(Sugar.Array.randomize(arr), arr, 'Default collation');
+    test(Sugar.Array.shuffle(arr), arr, 'Default collation');
 
     arr = [
       'cweat',
@@ -2049,7 +2049,7 @@ package('Array', function () {
       'žweat',
       'žweet'
     ];
-    test(Sugar.Array.randomize(arr), arr, 'Czech/Lithuanian order is respected');
+    test(Sugar.Array.shuffle(arr), arr, 'Czech/Lithuanian order is respected');
 
     arr = [
       'cat',
@@ -2057,7 +2057,7 @@ package('Array', function () {
       'ðroll',
       'ebert'
     ];
-    test(Sugar.Array.randomize(arr), arr, 'Icelandic ð order is respected');
+    test(Sugar.Array.shuffle(arr), arr, 'Icelandic ð order is respected');
 
     arr = [
       'goth',
@@ -2067,7 +2067,7 @@ package('Array', function () {
       'şeparate',
       'tumble'
     ];
-    test(Sugar.Array.randomize(arr), arr, 'Turkish order is respected');
+    test(Sugar.Array.shuffle(arr), arr, 'Turkish order is respected');
 
     arr = [
       'ape',
@@ -2094,7 +2094,7 @@ package('Array', function () {
       'źebra',
       'żoo'
     ];
-    test(Sugar.Array.randomize(arr), arr, 'Polish order is respected');
+    test(Sugar.Array.shuffle(arr), arr, 'Polish order is respected');
 
     arr = [
       'cab',
@@ -2105,7 +2105,7 @@ package('Array', function () {
       'ølaf',
       'ålegra'
     ];
-    test(Sugar.Array.randomize(arr), arr, 'Danish/Norwegian order is respected');
+    test(Sugar.Array.shuffle(arr), arr, 'Danish/Norwegian order is respected');
 
     arr = [
       'llama',
@@ -2115,7 +2115,7 @@ package('Array', function () {
     // Compressions simply can't be handled without a complex collation system
     // as there is simply no way fundamentally to know what was intended as a
     // compression. For example "catch a llama" vs "catch Al Lama"
-    test(Sugar.Array.randomize(arr), arr, 'Compressions are not handled');
+    test(Sugar.Array.shuffle(arr), arr, 'Compressions are not handled');
 
     arr = [
       'àbel',
@@ -2171,7 +2171,7 @@ package('Array', function () {
       'üte',
       'utu'
     ];
-    test(Sugar.Array.randomize(arr), arr, 'Standard Western-Latin equivalents are enforced');
+    test(Sugar.Array.shuffle(arr), arr, 'Standard Western-Latin equivalents are enforced');
 
     // Swedish collation
     var swedishWords = [
