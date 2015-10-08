@@ -84,6 +84,10 @@ package('Object', function() {
   });
 
   method('find', function() {
+    if (!Array.prototype.find) {
+      equal(Sugar.Object.find, undefined, 'enumerated method should not exist if no native to call');
+      return;
+    }
     testStaticAndInstance(obj1, [function(key, value) { return key == 'foo'; }], 'foo', 'key is foo');
     testStaticAndInstance(obj1, [function(key, value) { return key.length > 3; }], undefined, 'key length is greater than 3');
     testStaticAndInstance(obj1, [function(key, value) { return key.length > 0; }], 'foo', 'key length is greater than 0');

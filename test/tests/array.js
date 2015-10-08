@@ -477,6 +477,11 @@ package('Array', function () {
 
   method('find', function() {
     var count;
+    if (!Array.prototype.find) {
+      equal(Sugar.Array.find, undefined, 'enhanced method should not exist if no native to call');
+      return;
+    }
+
     test(['a','b','c'], ['a'], 'a', 'a');
     test(['a','a','c'], ['a'], 'a', 'first a');
     test(['a','b','c'], ['q'], undefined, 'q');
@@ -1679,6 +1684,10 @@ package('Array', function () {
   });
 
   method('findIndex', function() {
+    if (!Array.prototype.findIndex) {
+      equal(Sugar.Array.findIndex, undefined, 'enhanced method should not exist if no native to call');
+      return;
+    }
     test(['a','b','c'], ['b'], 1, 'b in a,b,c');
     test(['a','b','c'], ['b', 0], 1, 'b in a,b,c from 0');
     test(['a','b','c'], ['a'], 0, 'a in a,b,c');
