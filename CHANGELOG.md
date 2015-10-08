@@ -48,6 +48,7 @@ v2.0.0
 - Renamed `Array#randomize` to `Array#shuffle`
 - Added `Array#sample` ability to remove sampled elements and performance optimization.
 - Added `String#replaceAll` and `String#removeAll`.
+- Added polyfill for `Array.from` and removed `Array.create`.
 
 
 v1.4.2

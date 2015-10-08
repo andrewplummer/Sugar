@@ -1670,46 +1670,6 @@ package('Array', function () {
     // equal(count, 6, 'Array | objects that inherit from arrays can still iterate');
   });
 
-  method('create', function() {
-    var stringObj = new String('foo');
-
-    test(Array, [], 'no args');
-    test(Array, ['one'], ['one'], 'string');
-    test(Array, [stringObj], [stringObj], 'string object');
-    test(Array, [{length: 2}], [{length: 2}], "can't trick array-like coercion");
-    test(Array, [2], [2], 'number');
-    test(Array, [[2]], [2], 'in array | number');
-    test(Array, [true], [true], 'boolean');
-    test(Array, [[true]], [true], 'in array | boolean');
-    test(Array, [null], [null], 'null');
-    test(Array, [[null]], [null], 'in array | null');
-    test(Array, [undefined], [undefined], 'mixed');
-    test(Array, [[undefined]], [undefined], 'in array | mixed');
-    test(Array, ['one', 2, true, null], ['one', 2, true, null], 'mixed 1');
-    test(Array, ['one', 2, true, undefined], ['one', 2, true, undefined], 'mixed 2');
-
-    test(Array, [[1,2,3]], [1,2,3], 'passing an array');
-    test(Array, [[[1,2,3]]], [[1,2,3]], 'in array | is nested');
-    test(Array, [[1,2,3], [1,2,3]], [1,2,3,1,2,3], 'passing two arrays will concat them');
-    test(Array, [[1,2,3], 'four'], [1,2,3,'four'], 'passing an array and another object will concat them');
-
-    test(Array, [{a:1}], [{a:1}], 'object');
-    test(Array, [[{a:1}]], [{a:1}], 'in array | object');
-    test(Array, [{a:1}, {b:2}], [{a:1},{b:2}], 'two objects');
-    test(Array, [{a:1}, ['b']], [{a:1}, 'b'], 'object and array');
-    test(Array, [{a:1}, 'b'], [{a:1}, 'b'], 'object and string');
-
-    equal((function(){ return run(Array, 'create', [arguments]); })('one','two'), ['one','two'], 'works on an arguments object');
-    equal((function(){ return run(Array, 'create', [arguments]); })(), [], 'works on a zero length arguments object');
-    equal((function(){ return run(Array, 'create', [arguments]); })('one').slice, Array.prototype.slice, 'converted arguments object is a true array');
-    equal((function(){ return run(Array, 'create', [arguments]); })('one','two').slice, Array.prototype.slice, 'two | converted arguments object is a true array');
-    equal((function(){ return Sugar.Array.create.apply(null, [arguments]); })('one','two'), ['one','two'], 'arguments using apply');
-
-    var args = (function() { return arguments; })(true, 1, 'two');
-    test(Array, [[args]], [args], 'nested arguments is a nested array');
-
-  });
-
   method('zip', function() {
     test([1, 2, 3], [[1], [2], [3]], 'one array');
     test([1, 2, 3], [[4, 5, 6]], [[1, 4], [2, 5], [3, 6]], 'two arrays');
