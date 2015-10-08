@@ -490,13 +490,51 @@ package('String', function () {
   });
 
   method('remove', function() {
-    test('schfifty five', ['five'], 'schfifty ', 'five');
-    test('schfifty five', [/five/], 'schfifty ', '/five/');
-    test('schfifty five', [/f/], 'schifty five', '/f/');
-    test('schfifty five', [/f/g], 'schity ive', '/f/g');
-    test('schfifty five', [/[a-f]/g], 'shity iv', '/[a-f]/');
+    test('schfifty five', ['fi'], 'schfty five', 'should remove first fi only');
+    test('schfifty five', ['five'], 'schfifty ', 'should remove five');
+    test('schfifty five', [/five/], 'schfifty ', 'basic regex');
+    test('schfifty five', [/f/], 'schifty five', 'single char regex');
+    test('schfifty five', [/f/g], 'schifty five', 'global regex only replaces first');
+    test('schfifty five', [/[a-f]/g], 'shfifty five', 'character class');
     test('?', ['?'], '', 'strings have tokens escaped');
     test('?(', ['?('], '', 'strings have all tokens escaped');
+    test('schfifty five', ['F'], 'schfifty five', 'should be case sensitive');
+    test('schfifty five', [], 'schfifty five', 'no args');
+  });
+
+  method('removeAll', function() {
+    test('schfifty five', ['fi'], 'schfty ve', 'should remove all fi');
+    test('schfifty five', ['five'], 'schfifty ', 'should remove five');
+    test('schfifty five', [/five/], 'schfifty ', 'basic regex');
+    test('schfifty five', [/f/], 'schity ive', 'single char regex replaces all');
+    test('schfifty five', [/f/g], 'schity ive', 'global regex replaces all');
+    test('schfifty five', [/[a-f]/g], 'shity iv', 'character class');
+    test('?', ['?'], '', 'strings have tokens escaped');
+    test('?(', ['?('], '', 'strings have all tokens escaped');
+    test('schfifty five', ['F'], 'schfifty five', 'should be case sensitive');
+    test('schfifty five', [], 'schfifty five', 'no args');
+  });
+
+  method('replaceAll', function() {
+    test('-x -y -z', ['-', 1, 2, 3], '1x 2y 3z', 'basic');
+    test('-x -y -z', ['-'], 'x y z', 'no args');
+    test('-x -y -z', ['-', 1, 2], '1x 2y z', 'not enough args');
+    test('-x -y -z', ['-', 1, 2, 3, 4], '1x 2y 3z', 'too many args');
+    test('-x -y -z', ['-', 1, 0, 3], '1x 0y 3z', 'arg can be 0');
+    test('-x -y -z', ['-', 1, null, 3], '1x y 3z', 'null arg will be blank');
+    test('-x -y -z', ['-', 1, undefined, 3], '1x y 3z', 'undefined will be blank');
+    test('-x -y -z', ['-', 1, NaN, 3], '1x NaNy 3z', 'NaN is stringifiable');
+
+    test('a', [/a/, 'hi'], 'hi', 'basic regex');
+    test('aaa', [/a/g,'b','c','d'], 'bcd', 'global regex');
+    test('aaa', [/a/,'b','c','d'], 'bcd', 'non-global regex still matches all');
+    test('a1 b2', [/a|b/, 'x', 'y'], 'x1 y2', 'alternator');
+
+    test('a', ['A', 'b'], 'a', 'should be case sensitive');
+    test('?', ['?', 'a'], 'a', 'strings have tokens escaped');
+    test('?(', ['?(', 'b'], 'b', 'strings have all tokens escaped');
+
+    test('abc', [], 'abc', 'no args');
   });
 
   method('insert', function() {
