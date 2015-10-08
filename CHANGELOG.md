@@ -47,6 +47,7 @@ v2.0.0
 - Fixed many issues with DST and simplified month traversal.
 - Renamed `Array#randomize` to `Array#shuffle`
 - Added `Array#sample` ability to remove sampled elements and performance optimization.
+- Added `String#replaceAll` and `String#removeAll`.
 
 
 v1.4.2
