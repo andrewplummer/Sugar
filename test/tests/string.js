@@ -494,8 +494,8 @@ package('String', function () {
     test('schfifty five', ['five'], 'schfifty ', 'should remove five');
     test('schfifty five', [/five/], 'schfifty ', 'basic regex');
     test('schfifty five', [/f/], 'schifty five', 'single char regex');
-    test('schfifty five', [/f/g], 'schifty five', 'global regex only replaces first');
-    test('schfifty five', [/[a-f]/g], 'shfifty five', 'character class');
+    test('schfifty five', [/f/g], 'schity ive', 'respects global flag');
+    test('schfifty five', [/[a-f]/g], 'shity iv', 'character class');
     test('?', ['?'], '', 'strings have tokens escaped');
     test('?(', ['?('], '', 'strings have all tokens escaped');
     test('schfifty five', ['F'], 'schfifty five', 'should be case sensitive');
