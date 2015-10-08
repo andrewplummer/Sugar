@@ -1,3 +1,4 @@
+delete Array.from;
 delete Array.prototype.find;
 delete Array.prototype.findIndex;
 
