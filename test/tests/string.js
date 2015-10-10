@@ -1024,6 +1024,10 @@ package('String', function () {
     var str = 'one <div                  class          =       "             bar              "  ></div          > two';
     test(str, ['div'], 'one  two', 'very spaced out div tag');
 
+
+    // Issue #467
+    test('<img src="cool.jpg">', ['i'], '<img src="cool.jpg">', 'will not replace <img> for <i>');
+
   });
 
 
@@ -1215,6 +1219,10 @@ package('String', function () {
       return 'not!';
     }
     test(str, ['img', fn], '<p>paragraph with <b>some bold text</b> and an image not! and thats all</p>', 'img tag should have been replaced');
+
+
+    // Issue #467
+    test('<img src="cool.jpg">', ['i'], '<img src="cool.jpg">', 'will not replace <img> for <i>');
 
   });
 
