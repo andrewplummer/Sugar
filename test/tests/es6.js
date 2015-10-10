@@ -880,7 +880,6 @@ package('ES6', function () {
     equal(Number.isNaN(NaN), true, 'NaN is NaN');
 
   });
-  // End stolen unit tests
 
   method('Array.from', function() {
     var stringObj = new String('foo');
@@ -1045,6 +1044,15 @@ package('ES6', function () {
     // More tests taken from polyfill
     equal(Array.from({length:NaN}), [], 'accepts NaN lengths');
     equal(Array.from({length:.33333}), [], 'accepts non integer lengths');
+    equal(Array.from({length:-Infinity}), [], 'swallows -Infinity');
+
+    Array.from([1], function () {
+      equal(this, undefinedContextObj, 'when not passed, context should be default undefined context');
+    });
+
+    Array.from.call({}, [1], function () {
+      equal(this, undefinedContextObj, 'context should still be undefined even if .call() is used');
+    });
 
   });
 
