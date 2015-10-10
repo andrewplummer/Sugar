@@ -1042,6 +1042,10 @@ package('ES6', function () {
 
     equal(typeof Array.prototype.shift.bind(Array.from([1,2,3])), 'function',  'allows shift without throwing type error');
 
+    // More tests taken from polyfill
+    equal(Array.from({length:NaN}), [], 'accepts NaN lengths');
+    equal(Array.from({length:.33333}), [], 'accepts non integer lengths');
+
   });
 
 });
