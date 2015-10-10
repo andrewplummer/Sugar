@@ -49,6 +49,7 @@ v2.0.0
 - Added `Array#sample` ability to remove sampled elements and performance optimization.
 - Added `String#replaceAll` and `String#removeAll`.
 - Added polyfill for `Array.from` and removed `Array.create`.
+- Changed behavior of `Function#after` to more closely match that of Underscore/Lodash.
 
 
 v1.4.2

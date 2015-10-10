@@ -12,7 +12,15 @@ package('Function', function () {
   });
 
   method('delay', function() {
-    var fn, ref, count;
+    var fn, ret, count;
+    count = 0;
+    fn = function() {
+      count++;
+    }
+    run(fn, 'delay', []);
+    clock.tick(1);
+    equal(count, 1, 'no arguments should be equal to 1ms');
+    return;
 
     clock.reset();
     count = 0;
@@ -23,13 +31,21 @@ package('Function', function () {
       equal(two, 'two', 'second parameter');
     };
     equal(fn.timers, undefined, 'timers object should not exist yet');
-    ref = run(fn, 'delay', [20, 'one', 'two']);
+    ret = run(fn, 'delay', [20, 'one', 'two']);
     equal(typeof fn.timers, 'object', 'timers object should be exposed');
-    equal(typeof ref, 'function', 'returns the function');
+    equal(typeof ret, 'function', 'returns the function');
     equal(count, 0, 'should not have run yet');
     clock.tick(20);
     equal(count, 1, 'should have run once');
     equal(fn.timers.length, 1, 'timers are not cleared after execution');
+
+    count = 0;
+    fn = function() {
+      count++;
+    }
+    run(fn, 'delay', []);
+    clock.tick(1);
+    equal(count, 1, 'no arguments should be equal to 1ms');
 
   });
 
@@ -411,9 +427,34 @@ package('Function', function () {
 
   method('after', function() {
     var fn, ret, count = 0, i = 1;
+
+    function assertCalledAfter(times, arg) {
+      var i = 0;
+      var fn = run(function() {
+        return true;
+      }, 'after', [arg]);
+      while(!fn()) {
+        i++;
+      };
+      equal(i + 1, times, 'should have fired after ' + times + ' executions');
+    }
+
+    function assertCalledOutOfTen(times, args) {
+      var count = 0;
+      var fn = run(function() {
+        count++;
+      }, 'after', args);
+      for (var i = 0; i < 10; i++) {
+        fn();
+      }
+      equal(count, times, 'should have fired ' + times + ' times out of 10');
+    }
+
     var expectedArguments = [
       [[1,'bop'], [2,'bop'], [3,'bop'], [4,'bop'], [5,'bop']],
-      [[6,'bop'],[7,'bop'],[8,'bop'],[9,'bop'],[10,'bop']]
+      [[1,'bop'], [2,'bop'], [3,'bop'], [4,'bop'], [5,'bop'], [6,'bop']],
+      [[1,'bop'], [2,'bop'], [3,'bop'], [4,'bop'], [5,'bop'], [6,'bop'], [7,'bop']],
+      [[1,'bop'], [2,'bop'], [3,'bop'], [4,'bop'], [5,'bop'], [6,'bop'], [7,'bop'], [8,'bop']]
     ];
     fn = run(function(args) {
       equal(args, expectedArguments[count], 'collects arguments called');
@@ -421,19 +462,48 @@ package('Function', function () {
       count++;
       return 'hooha';
     }, 'after', [5]);
-    while(i <= 10) {
-      ret = fn(i, 'bop');
-      equal(ret, (i % 5 == 0 ? 'hooha' : undefined), 'collects return value as well');
+    while(i <= 8) {
+      equal(fn(i, 'bop'), (i >= 5 ? 'hooha' : undefined), 'collects return value as well');
       i++;
     }
-    equal(count, 2, 'calls a function only after a certain number of calls');
-  });
+    equal(count, 4, 'calls function every time after n calls');
 
-  method('after', function() {
-    var fn, count = 0;
-    var fn = run(function(args) { count++; }, 'after', [0]);
-    equal(count, 1, '0 should fire the function immediately');
-    equal(typeof fn, 'function', '0 should still return a function');
+    assertCalledAfter(1,  0);
+    assertCalledAfter(3,  3);
+    assertCalledAfter(10, 10);
+    assertCalledAfter(1,  1.5);
+    assertCalledAfter(1,  '0');
+    assertCalledAfter(3,  '3');
+    assertCalledAfter(10, '10');
+
+    assertCalledAfter(1,  null);
+    assertCalledAfter(1,  undefined);
+    assertCalledAfter(1,  NaN);
+    assertCalledAfter(1,  false);
+    assertCalledAfter(1,  true);
+    assertCalledAfter(1,  []);
+    assertCalledAfter(1,  {});
+
+    assertCalledOutOfTen(10, [0]);
+    assertCalledOutOfTen(10, [1]);
+    assertCalledOutOfTen(9,  [2]);
+    assertCalledOutOfTen(8,  [3]);
+
+    assertCalledOutOfTen(10, [0, true]);
+    assertCalledOutOfTen(10, [1, true]);
+    assertCalledOutOfTen(9,  [2, true]);
+    assertCalledOutOfTen(8,  [3, true]);
+
+    assertCalledOutOfTen(1, [0, false]);
+    assertCalledOutOfTen(1, [1, false]);
+    assertCalledOutOfTen(1, [2, false]);
+    assertCalledOutOfTen(1, [3, false]);
+
+    raisesError(function() { run(fn, 'after', [-1]); }, 'negative raises an error');
+    raisesError(function() { run(fn, 'after', ['-1']); }, 'negative string raises an error');
+    raisesError(function() { run(fn, 'after', [Infinity]); }, 'Infinity raises an error');
+    raisesError(function() { run(fn, 'after', [-Infinity]); }, '-Infinity raises an error');
+
   });
 
 
