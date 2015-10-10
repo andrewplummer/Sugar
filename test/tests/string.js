@@ -181,13 +181,17 @@ package('String', function () {
 
   method('pad', function() {
 
-    raisesError(function(){ run('wasabi', 'pad', [-1]); }, 'String#pad | -1 raises error');
-    raisesError(function(){ run('wasabi', 'pad', [Infinity]); }, 'String#pad | Infinity raises error');
+    raisesError(function(){ run('wasabi', 'pad', [-1]); }, '-1 raises error');
+    raisesError(function(){ run('wasabi', 'pad', [-Infinity]); }, '-Infinity raises error');
+    raisesError(function(){ run('wasabi', 'pad', [Infinity]); }, 'Infinity raises error');
 
     test('wasabi', 'wasabi', 'no arguments default to 0');
     test('wasabi', [undefined], 'wasabi', 'undefined defaults to 0');
     test('wasabi', [null], 'wasabi', 'null defaults to 0');
     test('wasabi', [NaN], 'wasabi', 'NaN defaults to 0');
+
+    test('', [false], '', 'false is 0');
+    test('', [true], ' ', 'true is 1');
 
     test('wasabi', [0], 'wasabi', '0');
     test('wasabi', [1], 'wasabi', '1');
