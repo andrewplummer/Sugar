@@ -1428,6 +1428,7 @@ package('String', function () {
   });
 
   method('includes', function() {
+    test('foo', ['foo'],  true, 'string still works');
     test('foo', [/foo/],  true, 'simple regex');
     test('foo', [/^foo/], true, 'with lead');
     test('foo', [/foo$/], true, 'with trail');
