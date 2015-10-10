@@ -208,8 +208,8 @@ package('ES5', function () {
     arr[3] = 'a';
 
     equal(arr.indexOf('a'), 3, 'must work on sparse arrays as well');
-    equal(['a'].indexOf('a', Infinity), 0, 'infinity is valid');
-    equal(['a'].indexOf('a', -Infinity), 0, '-infinity is valid');
+    equal(['a'].indexOf('a', Infinity), -1, 'Infinity is valid');
+    equal(['a'].indexOf('a', -Infinity), 0, '-Infinity is valid');
 
     equal(['a','b','c'].indexOf('b'), 1, 'b in a,b,c');
     equal(['a','b','c'].indexOf('b', 0), 1, 'b in a,b,c from 0');
@@ -295,8 +295,8 @@ package('ES5', function () {
     arr[3] = 'a';
 
     equal(arr.lastIndexOf('c'), 0, 'must work on sparse arrays as well');
-    equal(['a'].lastIndexOf('a', Infinity), 0, 'infinity is valid');
-    equal(['a'].lastIndexOf('a', -Infinity), 0, '-infinity is valid');
+    equal(['a'].lastIndexOf('a', Infinity), 0, 'Infinity is valid');
+    equal(['a'].lastIndexOf('a', -Infinity), -1, '-Infinity is valid');
 
     equal(['a','b','c','d','a','b'].lastIndexOf('b'), 5, 'b');
     equal(['a','b','c','d','a','b'].lastIndexOf('b', 4), 1, 'b from index 4');
