@@ -247,12 +247,9 @@ package('Number', function () {
     equal(getRange(new Date(2010, 0).getTime(), new Date(2010, 2).getTime()).contains(new Date(2010, 0)), true, 'contains different type');
   });
 
-  group('Array#create on number ranges', function() {
-    if(Sugar.Array.create) {
-      equal(Sugar.Array.create(getRange(1, 5)), [1,2,3,4,5], 'should work on number ranges');
-      equal(Sugar.Array.create(getRange(5, 1)), [5,4,3,2,1], 'should work on inverse number ranges');
-      equal(Sugar.Array.create([1,2,3]), [1,2,3], 'should still work as normal');
-    }
+  method('toArray', function() {
+    equal(getRange(1, 5).toArray(), [1,2,3,4,5], 'should work on number ranges');
+    equal(getRange(5, 1).toArray(), [5,4,3,2,1], 'should work on inverse number ranges');
   });
 
   method('clamp', function() {
