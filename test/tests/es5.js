@@ -250,10 +250,11 @@ package('ES5', function () {
     equal(['a'].indexOf('a', 1.5), -1, 'decimal greater than index should not match');
 
     var obj = [];
+    obj[7] = 'b';
     obj[6] = 'a';
-    obj[5] = 'a';
     obj[4] = 'a';
-    obj.length = 7;
+    obj[3] = 'b';
+    obj.length = 9;
     equal(Array.prototype.indexOf.call(obj, 'a'), 4, 'first index should match on sparse-array');
 
   });
@@ -342,10 +343,11 @@ package('ES5', function () {
     equal(['a'].lastIndexOf('a', 1.5), 0, 'decimal greater than index should match');
 
     var obj = {};
+    obj[7] = 'b';
     obj[6] = 'a';
-    obj[5] = 'a';
     obj[4] = 'a';
-    obj.length = 7;
+    obj[3] = 'b';
+    obj.length = 9;
     equal(Array.prototype.lastIndexOf.call(obj, 'a'), 6, 'last index should match on sparse-array');
 
   });
