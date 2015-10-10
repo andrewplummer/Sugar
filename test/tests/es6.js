@@ -855,6 +855,8 @@ package('ES6', function () {
     equal(String.prototype.includes.apply({ 'toString': function() { return 'abc'; } }, ['b', 0]), true);
     equal(String.prototype.includes.apply({ 'toString': function() { return 'abc'; } }, ['b', 1]), true);
     equal(String.prototype.includes.apply({ 'toString': function() { return 'abc'; } }, ['b', 2]), false);
+
+    equal('a'.includes('A'), false, 'should be case sensitive');
   });
 
   method('Number.isNaN', function() {
