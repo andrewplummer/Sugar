@@ -968,9 +968,9 @@ package('ES6', function () {
     equal(Array.from(arr), [1, undefined, 3], 'fills in 1,,3');
     equal(Array.from([4,, 6]), [4, undefined, 6], 'fills in 4,,6');
 
-    Object.prototype[1] = 42;
-    equal(Array.from({ length: 3, 0: 1, 2: 3 }), [1, 42, 3], 'it includes Object.prototype values when it is polluted');
-    delete Object.prototype[1];
+    Object.prototype[3] = 42;
+    equal(Array.from({0:1,1:2,2:3,length:4}), [1, 2, 3, 42], 'it includes Object.prototype values when it is polluted');
+    delete Object.prototype[3];
 
     equal(Array.from({ length: 1 }), [void 0], 'works with empty array-like');
     equal(Array.from({ 0: 'a', 1: 'b', length: 2 }), ['a', 'b'], 'works with array-like');
