@@ -46,6 +46,9 @@ v2.0.0+
 - Level: Major
   - `Array.create` was removed. Use ES6 method `Array.from` instead. Sugar provides this as a polyfill in the default package.
 
+- Level: Major
+  - `Function#after` has changed behavior. Previously it would fire every `n` times. Now it will fire after `n` calls, with an optional flag to only fire once. Additionally it will not immediately fire when `0` is passed.
+
 - Level: Moderate
   - `Object.merge` will not continue traversing into an object if a resolve function is passed and returns something (anything but undefined). This means that you can selectively choose to handle certain conflicts differently by returning something, or use the merging defaults by returning undefined. It also means that a resolve function can no longer intentionally use `undefined` itself as a conflict resolution value - use `null` or another value instead.
 
