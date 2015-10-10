@@ -2,7 +2,7 @@ package('ES5', function () {
   "use strict";
 
   // The scope when none is set.
-  var nullScope = (function(){ return this; }).call();
+  var nullScope = (function() { return this; }).call();
 
   method('isArray', function() {
 
@@ -31,11 +31,11 @@ package('ES5', function () {
 
     arr = ['a','b','c'];
 
-    raisesError(function(){ [].forEach(); }, 'should raise an error when no fn given');
-    result = arr.forEach(function(){
+    raisesError(function() { [].forEach(); }, 'should raise an error when no fn given');
+    result = arr.forEach(function() {
       equal(this, nullScope, 'scope should be undefined when not passed');
     });
-    result = arr.forEach(function(){
+    result = arr.forEach(function() {
       equal(this.toString(), 'wasabi', 'scope can be passed');
     }, 'wasabi');
     equal(result, undefined, 'returns undefined');
@@ -43,7 +43,7 @@ package('ES5', function () {
     arr[234] = 'd';
     count = 0;
     expected = ['a','b','c','d'];
-    arr.forEach(function(el, i, arr){
+    arr.forEach(function(el, i, arr) {
       arr.push(3)
       equal(el, expected[count], 'elements should be as expected');
       equal(typeof i, 'number', 'i must be a number');
@@ -63,7 +63,7 @@ package('ES5', function () {
 
     arr[256] = 'd';
     count = 0;
-    arr.forEach(function(el, i){
+    arr.forEach(function(el, i) {
       count++;
     });
 
@@ -79,7 +79,7 @@ package('ES5', function () {
     arr = ['a','b','c'];
     expected = ['a','x'];
     count = 0;
-    arr.forEach(function(el, i){
+    arr.forEach(function(el, i) {
       if(i == 0) {
         arr[1] = 'x';
         delete arr[2];
@@ -94,7 +94,7 @@ package('ES5', function () {
     count = 0;
     arr[2] = 'two';
     arr['2'] = 'moo';
-    arr.forEach(function(el, i){
+    arr.forEach(function(el, i) {
       equal(el, expected[count], 'strings and numbers are both the same for accessing array elements');
       count++;
     });
@@ -188,7 +188,7 @@ package('ES5', function () {
     equal(arr.indexOf(3, -1.7), 2, 'index -1.7 becomes -1');
 
 
-    fn  = function(){};
+    fn  = function() {};
     reg = /arf/;
     obj = { moo: 'cow' };
 
@@ -275,7 +275,7 @@ package('ES5', function () {
     equal(arr.lastIndexOf('a', -3), 0, 'from index -3');
     equal(arr.lastIndexOf('a', -4), -1, 'from index -4');
 
-    fn  = function(){};
+    fn  = function() {};
     reg = /arf/;
     obj = { moo: 'cow' };
 
@@ -349,26 +349,26 @@ package('ES5', function () {
     var arr, count, expected, result;
 
     arr = [];
-    raisesError(function(){ [].every(); }, 'should raise an error when no first param');
-    result = arr.every(function(){
+    raisesError(function() { [].every(); }, 'should raise an error when no first param');
+    result = arr.every(function() {
       equal(this, nullScope, 'scope should be undefined when not passed');
     });
-    [1].every(function(){
+    [1].every(function() {
       equal(this.toString(), 'wasabi', 'scope can be passed');
     }, 'wasabi');
-    [1].every(function(){
+    [1].every(function() {
       equal(this.toString(), '', 'scope can be falsy');
     }, '');
-    equal([].every(function(){ return true; }), true, 'empty arrays will always be true');
-    equal([].every(function(){ return false; }), true, 'empty arrays will always be true even when false returned');
-    equal([1].every(function(){ return 1; }), true, '1 coerced to true');
-    equal([1].every(function(){ return 0; }), false, '0 coerced to false');
-    equal([1].every(function(){ return 'blah'; }), true, 'non-null string coerced to true');
-    equal([1].every(function(){ return ''; }), false, 'blank string coerced to false');
+    equal([].every(function() { return true; }), true, 'empty arrays will always be true');
+    equal([].every(function() { return false; }), true, 'empty arrays will always be true even when false returned');
+    equal([1].every(function() { return 1; }), true, '1 coerced to true');
+    equal([1].every(function() { return 0; }), false, '0 coerced to false');
+    equal([1].every(function() { return 'blah'; }), true, 'non-null string coerced to true');
+    equal([1].every(function() { return ''; }), false, 'blank string coerced to false');
 
     arr = ['c','c','c'];
     count = 0;
-    result = arr.every(function(el, i, a){
+    result = arr.every(function(el, i, a) {
       equal(el, 'c', 'first argument is element');
       equal(i, count, 'second argument is index');
       equal(a, arr, 'third argument is the array');
@@ -381,7 +381,7 @@ package('ES5', function () {
 
     arr = ['a','b','c'];
     count = 0;
-    result = arr.every(function(el){
+    result = arr.every(function(el) {
       count++;
       return el == 'c';
     });
@@ -392,7 +392,7 @@ package('ES5', function () {
     arr = [];
     arr[247] = 'a';
     count = 0;
-    result = arr.every(function(el){
+    result = arr.every(function(el) {
       count++;
       return el == 'a';
     });
@@ -403,7 +403,7 @@ package('ES5', function () {
     arr = ['a','b','c'];
     expected = ['a','x'];
     count = 0;
-    arr.every(function(el, i){
+    arr.every(function(el, i) {
       if(i == 0) {
         arr[1] = 'x';
         delete arr[2];
@@ -420,26 +420,26 @@ package('ES5', function () {
     var arr, count, expected, result;
 
     arr = [];
-    raisesError(function(){ [].some(); }, 'should raise an error when no first param');
-    result = arr.some(function(){
+    raisesError(function() { [].some(); }, 'should raise an error when no first param');
+    result = arr.some(function() {
       equal(this, nullScope, 'scope should be undefined when not passed');
     });
-    [1].some(function(){
+    [1].some(function() {
       equal(this.toString(), 'wasabi', 'scope can be passed');
     }, 'wasabi');
-    [1].some(function(){
+    [1].some(function() {
       equal(this.toString(), '', 'scope can be falsy');
     }, '');
-    equal([].some(function(){ return true; }), false, 'empty arrays will always be false');
-    equal([].some(function(){ return false; }), false, 'empty arrays will always be false even when false returned');
-    equal([1].some(function(){ return 1; }), true, '1 coerced to true');
-    equal([1].some(function(){ return 0; }), false, '0 coerced to false');
-    equal([1].some(function(){ return 'blah'; }), true, 'non-null string coerced to true');
-    equal([1].some(function(){ return ''; }), false, 'blank string coerced to false');
+    equal([].some(function() { return true; }), false, 'empty arrays will always be false');
+    equal([].some(function() { return false; }), false, 'empty arrays will always be false even when false returned');
+    equal([1].some(function() { return 1; }), true, '1 coerced to true');
+    equal([1].some(function() { return 0; }), false, '0 coerced to false');
+    equal([1].some(function() { return 'blah'; }), true, 'non-null string coerced to true');
+    equal([1].some(function() { return ''; }), false, 'blank string coerced to false');
 
     arr = ['c','c','c'];
     count = 0;
-    result = arr.some(function(el, i, a){
+    result = arr.some(function(el, i, a) {
       equal(el, 'c', 'first argument is element');
       equal(i, count, 'second argument is index');
       equal(a, arr, 'third argument is the array');
@@ -452,7 +452,7 @@ package('ES5', function () {
 
     arr = ['a','b','c'];
     count = 0;
-    result = arr.some(function(el){
+    result = arr.some(function(el) {
       count++;
       return el == 'd';
     });
@@ -463,7 +463,7 @@ package('ES5', function () {
     arr = [];
     arr[247] = 'a';
     count = 0;
-    result = arr.some(function(el){
+    result = arr.some(function(el) {
       count++;
       return el == 'a';
     });
@@ -475,7 +475,7 @@ package('ES5', function () {
     arr = ['a','b','c'];
     expected = ['a','x'];
     count = 0;
-    arr.some(function(el, i){
+    arr.some(function(el, i) {
       if(i == 0) {
         arr[1] = 'x';
         delete arr[2];
@@ -493,23 +493,23 @@ package('ES5', function () {
     var arr, count, expected, result;
 
     arr = [];
-    raisesError(function(){ [].map(); }, 'should raise an error when no first param');
-    result = arr.map(function(){
+    raisesError(function() { [].map(); }, 'should raise an error when no first param');
+    result = arr.map(function() {
       equal(this, nullScope, 'scope should be undefined when not passed');
     });
-    [1].map(function(){
+    [1].map(function() {
       equal(this.toString(), 'wasabi', 'scope can be passed');
     }, 'wasabi');
-    [1].map(function(){
+    [1].map(function() {
       equal(this.toString(), '', 'scope can be falsy');
     }, '');
-    [1].map(function(){
+    [1].map(function() {
       equal(Number(this), 0, 'scope can be a number');
     }, 0);
 
     arr = ['c','c','c'];
     count = 0;
-    result = arr.map(function(el, i, a){
+    result = arr.map(function(el, i, a) {
       equal(el, 'c', 'first argument is element');
       equal(i, count, 'second argument is index');
       equal(a, arr, 'third argument is the array');
@@ -522,7 +522,7 @@ package('ES5', function () {
 
     arr = [1,2,3];
     count = 0;
-    result = arr.map(function(el){
+    result = arr.map(function(el) {
       return Math.pow(el, 2);
     });
     equal(result, [1,4,9], 'n^2');
@@ -531,7 +531,7 @@ package('ES5', function () {
     arr = [];
     arr[247] = 'a';
     count = 0;
-    result = arr.map(function(el){
+    result = arr.map(function(el) {
       count++;
       return 'c';
     });
@@ -542,7 +542,7 @@ package('ES5', function () {
     arr = ['a','b','c'];
     expected = ['a','x'];
     count = 0;
-    arr.map(function(el, i){
+    arr.map(function(el, i) {
       if(i == 0) {
         arr[1] = 'x';
         delete arr[2];
@@ -558,26 +558,26 @@ package('ES5', function () {
     var arr, count, expected, result;
 
     arr = [];
-    raisesError(function(){ [].filter(); }, 'should raise an error when no first param');
-    result = arr.filter(function(){
+    raisesError(function() { [].filter(); }, 'should raise an error when no first param');
+    result = arr.filter(function() {
       equal(this, nullScope, 'scope should be undefined when not passed');
     });
-    [1].filter(function(){
+    [1].filter(function() {
       equal(this.toString(), 'wasabi', 'scope can be passed');
     }, 'wasabi');
-    [1].filter(function(){
+    [1].filter(function() {
       equal(this.toString(), '', 'scope can be falsy');
     }, '');
-    equal([].filter(function(){ return true; }), [], 'empty arrays will always be []');
-    equal([].filter(function(){ return false; }), [], 'empty arrays will always be [] even when false returned');
-    equal([1].filter(function(){ return 1; }), [1], '1 coerced to true');
-    equal([1].filter(function(){ return 0; }), [], '0 coerced to false');
-    equal([1].filter(function(){ return 'blah'; }), [1], 'non-null string coerced to true');
-    equal([1].filter(function(){ return ''; }), [], 'blank string coerced to false');
+    equal([].filter(function() { return true; }), [], 'empty arrays will always be []');
+    equal([].filter(function() { return false; }), [], 'empty arrays will always be [] even when false returned');
+    equal([1].filter(function() { return 1; }), [1], '1 coerced to true');
+    equal([1].filter(function() { return 0; }), [], '0 coerced to false');
+    equal([1].filter(function() { return 'blah'; }), [1], 'non-null string coerced to true');
+    equal([1].filter(function() { return ''; }), [], 'blank string coerced to false');
 
     arr = ['c','c','c'];
     count = 0;
-    result = arr.filter(function(el, i, a){
+    result = arr.filter(function(el, i, a) {
       equal(el, 'c', 'first argument is element');
       equal(i, count, 'second argument is index');
       equal(a, arr, 'third argument is the array');
@@ -590,7 +590,7 @@ package('ES5', function () {
 
     arr = ['a','b','c'];
     count = 0;
-    result = arr.filter(function(el){
+    result = arr.filter(function(el) {
       count++;
       return el == 'b';
     });
@@ -601,7 +601,7 @@ package('ES5', function () {
     arr = [];
     arr[247] = 'a';
     count = 0;
-    result = arr.filter(function(el){
+    result = arr.filter(function(el) {
       count++;
       return true;
     });
@@ -612,7 +612,7 @@ package('ES5', function () {
     arr = ['a','b','c'];
     expected = ['a','x'];
     count = 0;
-    result = arr.filter(function(el, i){
+    result = arr.filter(function(el, i) {
       if(i == 0) {
         arr[1] = 'x';
         delete arr[2];
@@ -629,9 +629,9 @@ package('ES5', function () {
     var arr, count, result, previous, current;
 
     arr = [];
-    raisesError(function(){ [1].reduce(); }, 'should raise an error when no callback provided');
-    raisesError(function(){ [].reduce(function(){}); }, 'should raise an error on an empty array with no initial value');
-    [1].reduce(function(){
+    raisesError(function() { [1].reduce(); }, 'should raise an error when no callback provided');
+    raisesError(function() { [].reduce(function() {}); }, 'should raise an error on an empty array with no initial value');
+    [1].reduce(function() {
       equal(this, nullScope, 'scope should be undefined');
     }, 1);
 
@@ -641,7 +641,7 @@ package('ES5', function () {
     current = [2,3];
     count = 0;
 
-    result = arr.reduce(function(prev, el, i, o){
+    result = arr.reduce(function(prev, el, i, o) {
       equal(prev, previous[count], 'first argument is the prev value');
       equal(el, current[count], 'second argument is element');
       equal(i, count + 1, 'third argument is index');
@@ -654,7 +654,7 @@ package('ES5', function () {
     equal(count, 2, 'should have been called 3 times');
 
 
-    equal([1].reduce(function(){ return 324242; }), 1, 'function is not called and returns 1');
+    equal([1].reduce(function() { return 324242; }), 1, 'function is not called and returns 1');
 
     count = 0;
     [1].reduce(function(prev, current, i) {
@@ -669,7 +669,7 @@ package('ES5', function () {
     previous = ['a','ab'];
     current  = ['b','c'];
     count = 0;
-    result = arr.reduce(function(prev, el, i){
+    result = arr.reduce(function(prev, el, i) {
       if(i == 0) {
         arr[1] = 'x';
         delete arr[2];
@@ -681,7 +681,7 @@ package('ES5', function () {
     });
     equal(count, 2, 'elements deleted after the loop begins should not be visited');
 
-    equal([1,2,3].reduce(function(a, n){ return a + n; }, 0), 6, 'can handle initial value of 0');
+    equal([1,2,3].reduce(function(a, n) { return a + n; }, 0), 6, 'can handle initial value of 0');
 
 
     // array.js
@@ -713,9 +713,9 @@ package('ES5', function () {
     var arr, count, result, previous, current;
 
     arr = [];
-    raisesError(function(){ [1].reduceRight(); }, 'should raise an error when no callback provided');
-    raisesError(function(){ [].reduceRight(function(){}); }, 'should raise an error on an empty array with no initial value');
-    [1].reduceRight(function(){
+    raisesError(function() { [1].reduceRight(); }, 'should raise an error when no callback provided');
+    raisesError(function() { [].reduceRight(function() {}); }, 'should raise an error on an empty array with no initial value');
+    [1].reduceRight(function() {
       equal(this, nullScope, 'scope should be undefined');
     }, 1);
 
@@ -725,7 +725,7 @@ package('ES5', function () {
     current = [2,1];
     count = 0;
 
-    result = arr.reduceRight(function(prev, el, i, o){
+    result = arr.reduceRight(function(prev, el, i, o) {
       equal(prev, previous[count], 'first argument is the prev value');
       equal(el, current[count], 'second argument is element');
       equal(i, 1 - count, 'third argument is index');
@@ -738,7 +738,7 @@ package('ES5', function () {
     equal(count, 2, 'should have been called 3 times');
 
 
-    equal([1].reduceRight(function(){ return 324242; }), 1, 'function is not called and returns 1');
+    equal([1].reduceRight(function() { return 324242; }), 1, 'function is not called and returns 1');
 
     count = 0;
     [1].reduceRight(function(prev, current, i) {
@@ -753,7 +753,7 @@ package('ES5', function () {
     previous = ['c','cb'];
     current  = ['b','a'];
     count = 0;
-    result = arr.reduceRight(function(prev, el, i){
+    result = arr.reduceRight(function(prev, el, i) {
       if(i == 0) {
         arr[1] = 'x';
         delete arr[2];
@@ -765,7 +765,7 @@ package('ES5', function () {
     });
     equal(count, 2, 'elements deleted after the loop begins should not be visited');
 
-    equal([1,2,3].reduceRight(function(a, n){ return a + n; }, 0), 6, 'can handle initial value of 0');
+    equal([1,2,3].reduceRight(function(a, n) { return a + n; }, 0), 6, 'can handle initial value of 0');
 
 
     // array.js
@@ -796,7 +796,7 @@ package('ES5', function () {
   group('inheritance', function() {
     var count;
 
-    var Soup = function(){};
+    var Soup = function() {};
     Soup.prototype = [1,2,3];
 
     var x = new Soup();
@@ -852,8 +852,8 @@ package('ES5', function () {
   group('keys', function() {
     var Person;
 
-    raisesError(function(){ Object.keys(undefined); }, 'raises a TypeError for undefined');
-    raisesError(function(){ Object.keys(null); }, 'raises a TypeError for null');
+    raisesError(function() { Object.keys(undefined); }, 'raises a TypeError for undefined');
+    raisesError(function() { Object.keys(null); }, 'raises a TypeError for null');
 
     // ES5 states that a TypeError must be thrown when non-objects are
     // passed to Object.keys. However, ES6 revises this and performs
@@ -861,15 +861,15 @@ package('ES5', function () {
     // however some browsers have already started to implement ES6 behavior,
     // so this is not consistent at the moment, so comment these tests out.
 
-    // raisesError(function(){ Object.keys(true); }, 'raises a TypeError for boolean');
-    // raisesError(function(){ Object.keys(3); }, 'raises a TypeError for number');
-    // raisesError(function(){ Object.keys(NaN); }, 'raises a TypeError for NaN');
-    // raisesError(function(){ Object.keys('wasabi'); }, 'raises a TypeError for string');
+    // raisesError(function() { Object.keys(true); }, 'raises a TypeError for boolean');
+    // raisesError(function() { Object.keys(3); }, 'raises a TypeError for number');
+    // raisesError(function() { Object.keys(NaN); }, 'raises a TypeError for NaN');
+    // raisesError(function() { Object.keys('wasabi'); }, 'raises a TypeError for string');
 
     equal(Object.keys({ moo:'bar', broken:'wear' }), ['moo','broken'], 'returns keys of an object');
     equal(Object.keys(['a','b','c']), ['0','1','2'], 'returns indexes of an array');
     equal(Object.keys(/foobar/), [], 'regexes return a blank array');
-    equal(Object.keys(function(){}), [], 'functions return a blank array');
+    equal(Object.keys(function() {}), [], 'functions return a blank array');
     equal(Object.keys(new Date), [], 'dates return a blank array');
 
     Person = function() {
@@ -899,22 +899,22 @@ package('ES5', function () {
   group('bind', function() {
     var instance, BoundPerson, Person;
 
-    raisesError(function(){ Function.prototype.bind.call('mooo'); }, 'Raises an error when used on anything un-callable');
-    raisesError(function(){ Function.prototype.bind.call(/mooo/); }, 'Regexes are functions in chrome');
+    raisesError(function() { Function.prototype.bind.call('mooo'); }, 'Raises an error when used on anything un-callable');
+    raisesError(function() { Function.prototype.bind.call(/mooo/); }, 'Regexes are functions in chrome');
 
-    equal((function(){ return this; }).bind('yellow')().toString(), 'yellow', 'basic binding of this arg');
-    equal((function(){ return arguments[0]; }).bind('yellow', 'mellow')(), 'mellow', 'currying argument 1');
-    equal((function(){ return arguments[1]; }).bind('yellow', 'mellow', 'fellow')(), 'fellow', 'currying argument 2');
-    equal((function(){ return this; }).bind(undefined)(), nullScope, 'passing undefined as the scope');
+    equal((function() { return this; }).bind('yellow')().toString(), 'yellow', 'basic binding of this arg');
+    equal((function() { return arguments[0]; }).bind('yellow', 'mellow')(), 'mellow', 'currying argument 1');
+    equal((function() { return arguments[1]; }).bind('yellow', 'mellow', 'fellow')(), 'fellow', 'currying argument 2');
+    equal((function() { return this; }).bind(undefined)(), nullScope, 'passing undefined as the scope');
 
-    (function(a, b){
+    (function(a, b) {
       equal(this.toString(), 'yellow', 'ensure only one call | this object');
       equal(a, 'mellow', 'ensure only one call | argument 1');
       equal(b, 'fellow', 'ensure only one call | argument 2');
     }).bind('yellow', 'mellow', 'fellow')();
 
     // It seems this functionality can't be achieved in a JS polyfill...
-    // equal((function(){}).bind().prototype, undefined, 'currying argument 2'); 
+    // equal((function() {}).bind().prototype, undefined, 'currying argument 2'); 
 
     Person = function(a, b) {
       this.first = a;
