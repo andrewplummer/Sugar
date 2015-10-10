@@ -135,4 +135,9 @@ package('String', function () {
 
   });
 
+  method('toArray', function() {
+    equal(getRange('a', 'd').toArray(), ['a','b','c','d'], 'should work on string ranges');
+    equal(getRange('d', 'a').toArray(), ['d','c','b','a'], 'should work on inverse string ranges');
+  });
+
 });
