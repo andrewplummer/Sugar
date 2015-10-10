@@ -6,6 +6,8 @@ package('ES5', function () {
 
   method('isArray', function() {
 
+    equal(Array.isArray.length, 1, 'should have argument length of 1');
+
     // all following calls return true
     equal(Array.isArray([]), true, 'empty array');
     equal(Array.isArray([1]), true, 'simple array');
@@ -28,6 +30,8 @@ package('ES5', function () {
 
   method('forEach', function() {
     var arr, count, expected, result;
+
+    equal(Array.prototype.forEach.length, 1, 'should have argument length of 1');
 
     arr = ['a','b','c'];
 
@@ -134,8 +138,6 @@ package('ES5', function () {
     equal(count, 4, 'undefined members are counted');
 
 
-    // array.js
-
     arr = [2, 5, 9];
     arr.forEach(function(el, i, a) {
       equal(el, a[i], 'looping successfully');
@@ -159,6 +161,8 @@ package('ES5', function () {
 
   method('indexOf', function() {
     var arr, fn, reg, obj;
+
+    equal(Array.prototype.indexOf.length, 1, 'should have argument length of 1');
 
     arr = [1,2,3];
     arr[-2] = 4; // Throw a wrench in the gears by assigning a non-valid array index as object property.
@@ -258,6 +262,8 @@ package('ES5', function () {
   method('lastIndexOf', function() {
     var arr, fn, reg, obj;
 
+    equal(Array.prototype.lastIndexOf.length, 1, 'should have argument length of 1');
+
     arr = ['a', 1, 'a'];
     arr[-2] = 'a'; // Throw a wrench in the gears by assigning a non-valid array index as object property.
 
@@ -348,6 +354,8 @@ package('ES5', function () {
   method('every', function() {
     var arr, count, expected, result;
 
+    equal(Array.prototype.every.length, 1, 'should have argument length of 1');
+
     arr = [];
     raisesError(function() { [].every(); }, 'should raise an error when no first param');
     result = arr.every(function() {
@@ -418,6 +426,8 @@ package('ES5', function () {
 
   method('some', function() {
     var arr, count, expected, result;
+
+    equal(Array.prototype.some.length, 1, 'should have argument length of 1');
 
     arr = [];
     raisesError(function() { [].some(); }, 'should raise an error when no first param');
@@ -492,6 +502,8 @@ package('ES5', function () {
   method('map', function() {
     var arr, count, expected, result;
 
+    equal(Array.prototype.map.length, 1, 'should have argument length of 1');
+
     arr = [];
     raisesError(function() { [].map(); }, 'should raise an error when no first param');
     result = arr.map(function() {
@@ -556,6 +568,8 @@ package('ES5', function () {
 
   method('filter', function() {
     var arr, count, expected, result;
+
+    equal(Array.prototype.filter.length, 1, 'should have argument length of 1');
 
     arr = [];
     raisesError(function() { [].filter(); }, 'should raise an error when no first param');
@@ -628,6 +642,8 @@ package('ES5', function () {
   method('reduce', function() {
     var arr, count, result, previous, current;
 
+    equal(Array.prototype.reduce.length, 1, 'should have argument length of 1');
+
     arr = [];
     raisesError(function() { [1].reduce(); }, 'should raise an error when no callback provided');
     raisesError(function() { [].reduce(function() {}); }, 'should raise an error on an empty array with no initial value');
@@ -684,8 +700,6 @@ package('ES5', function () {
     equal([1,2,3].reduce(function(a, n) { return a + n; }, 0), 6, 'can handle initial value of 0');
 
 
-    // array.js
-
     equal([0,1,2,3,4].reduce(function(a,b) { return a + b; }), 10, 'a + b');
     equal([[0,1],[2,3],[4,5]].reduce(function(a,b) { return a.concat(b); }, []), [0,1,2,3,4,5], 'concat');
     ['a'].reduce(function(p, c, i, a) {
@@ -711,6 +725,8 @@ package('ES5', function () {
 
   method('reduceRight', function() {
     var arr, count, result, previous, current;
+
+    equal(Array.prototype.reduceRight.length, 1, 'should have argument length of 1');
 
     arr = [];
     raisesError(function() { [1].reduceRight(); }, 'should raise an error when no callback provided');
@@ -767,8 +783,6 @@ package('ES5', function () {
 
     equal([1,2,3].reduceRight(function(a, n) { return a + n; }, 0), 6, 'can handle initial value of 0');
 
-
-    // array.js
 
     equal([0,1,2,3,4].reduceRight(function(a,b) { return a + b; }), 10, 'a + b');
     equal([[0,1],[2,3],[4,5]].reduceRight(function(a,b) { return a.concat(b); }, []), [4,5,2,3,0,1], 'concat');
@@ -835,6 +849,8 @@ package('ES5', function () {
     var whiteSpace = '\u0009\u000B\u000C\u0020\u00A0\uFEFF\u1680\u180E\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u202F\u205F\u3000';
     var lineTerminators = '\u000A\u000D\u2028\u2029';
 
+    equal(String.prototype.trim.length, 0, 'should have argument length of 1');
+
     equal(whiteSpace.trim(), '', 'should trim all WhiteSpace characters defined in 7.2 and Unicode "space, separator and Unicode "space, separator""');
     equal(lineTerminators.trim(), '', 'should trim all LineTerminator characters defined in 7.3');
 
@@ -851,6 +867,8 @@ package('ES5', function () {
 
   group('keys', function() {
     var Person;
+
+    equal(Object.keys.length, 1, 'should have argument length of 1');
 
     raisesError(function() { Object.keys(undefined); }, 'raises a TypeError for undefined');
     raisesError(function() { Object.keys(null); }, 'raises a TypeError for null');
@@ -882,10 +900,12 @@ package('ES5', function () {
 
 
   group('now', function() {
+    equal(Date.now.length, 0, 'should have argument length of 1');
     equalWithMargin(Date.now(), new Date().getTime(), 5, 'basic functionality');
   });
 
   group('toISOString', function() {
+    equal(Date.prototype.toISOString.length, 0, 'should have argument length of 1');
     equal(new Date(Date.UTC(2000, 0, 1)).toISOString(), '2000-01-01T00:00:00.000Z', 'new millenium!');
     equal(new Date(Date.UTC(1978, 7, 25)).toISOString(), '1978-08-25T00:00:00.000Z', 'happy birthday!');
     equal(new Date(Date.UTC(1978, 7, 25, 11, 45, 33, 456)).toISOString(), '1978-08-25T11:45:33.456Z', 'with time');
@@ -893,11 +913,14 @@ package('ES5', function () {
 
 
   group('toJSON', function() {
+    equal(Date.prototype.toJSON.length, 1, 'should have argument length of 1');
     equal(new Date(2002, 7, 25).toJSON(), new Date(2002, 7, 25).toISOString(), 'output');
   });
 
   group('bind', function() {
     var instance, BoundPerson, Person;
+
+    equal(Function.prototype.bind.length, 1, 'should have argument length of 1');
 
     raisesError(function() { Function.prototype.bind.call('mooo'); }, 'Raises an error when used on anything un-callable');
     raisesError(function() { Function.prototype.bind.call(/mooo/); }, 'Regexes are functions in chrome');
