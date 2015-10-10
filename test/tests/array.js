@@ -1156,8 +1156,8 @@ package('Array', function () {
     test([], [], 'empty array');
     test(['a','b','c'], ['a','b','c'], 'a,b,c');
     test([f1, f2], [f1, f2], 'functions');
-    test([null,[null],[false,[null,undefined,3]]], [[],[false,[3]]], 'deep compacts as well');
-    test([null,null,null,[null],null], [[]], "deep compact doesn't have index conflicts");
+    test([[null]], [[null]], 'does not deeply compact');
+    test([null,[null],[false,[null,undefined,3]]], [[null],[false,[null,undefined,3]]], 'does not deeply compact | complex');
 
     test([false,false,false], [true], [], 'falsy | false is removed');
     test([0,0], [true], [], 'falsy | 0');
