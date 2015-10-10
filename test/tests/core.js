@@ -291,11 +291,34 @@ package('Core', function() {
     raisesError(function() { [1,2,3].map(1); }, 'findIndex is not enhanced');
   });
 
-  group('String enhancements', function() {
+  group('Array enhancements with enhance flag', function() {
     // This test is in core because it cannot be run in
     // the "extended" tests where arrays may already be enhanced.
+    Sugar.Array.extend({
+      enhance: false
+    });
+    raisesError(function() { [1,2,3].every(1); }, 'every is not enhanced');
+    raisesError(function() { [1,2,3].some(1); }, 'some is not enhanced');
+    raisesError(function() { [1,2,3].filter(1); }, 'filter is not enhanced');
+    raisesError(function() { [1,2,3].find(1); }, 'find is not enhanced');
+    raisesError(function() { [1,2,3].findIndex(1); }, 'findIndex is not enhanced');
+    raisesError(function() { [1,2,3].map(1); }, 'findIndex is not enhanced');
+  });
+
+  group('String enhancements', function() {
+    // This test is in core because it cannot be run in
+    // the "extended" tests where strings may already be enhanced.
     Sugar.String.extend({
       enhanceString: false
+    });
+    raisesError(function() { 'foobar'.includes(/foo/); }, 'includes is not enhanced');
+  });
+
+  group('String enhancements with enhance flag', function() {
+    // This test is in core because it cannot be run in
+    // the "extended" tests where strings may already be enhanced.
+    Sugar.String.extend({
+      enhance: false
     });
     raisesError(function() { 'foobar'.includes(/foo/); }, 'includes is not enhanced');
   });
