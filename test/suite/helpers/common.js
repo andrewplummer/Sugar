@@ -29,7 +29,7 @@ testClone = function (obj) {
     if(!obj.hasOwnProperty(key)) continue;
     var val = obj[key];
     if (testIsDate(val)) {
-      val = new Date(val);
+      val = new Date(val.getTime());
     } else if (testIsRegExp(val)) {
       val = new RegExp(val);
     } else if (val && typeof val === 'object') {

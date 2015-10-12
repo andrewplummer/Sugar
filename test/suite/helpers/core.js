@@ -1,7 +1,7 @@
 (function() {
 
   // The global context
-  var globalContext = typeof global !== 'undefined' ? global : this;
+  var globalContext = typeof global !== 'undefined' && global.Object ? global : this;
   var nativeState;
 
   function restoreNative(methodName, target, storedMethod) {

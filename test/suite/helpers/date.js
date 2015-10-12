@@ -224,7 +224,7 @@ assertAddUnitIsNumericallyEqual = function (d, method, add, message) {
     default:
       mult = 1;
   }
-  equal(run(new Date(d), method, [add]) - d, add * mult, message);
+  equal(run(new Date(d.getTime()), method, [add]) - d, add * mult, message);
 }
 
 // For some awesome reason, calling any "set" method on a newly created date
@@ -241,7 +241,7 @@ dstSafe = function(d) {
 // If a date cannot set itself back by an hour then it's possible that it was
 // shifted forward as the target time did not exist.
 mayHaveDSTShifted = function(d) {
-  var d2 = new Date(d), h = d2.getHours();
+  var d2 = new Date(d.getTime()), h = d2.getHours();
   d2.setHours(d.getHours() - 1);
   return d2.getHours() === h;
 }
