@@ -421,19 +421,27 @@
   }
 
   if(typeof console === 'undefined') {
-    var consoleFn = function() {
-      var messages = Array.prototype.slice.call(arguments);
-      messages = messages.map(function(arg) {
-        return String(arg);
-      })
-      $('<p/>').css({
-        fontFamily: 'monospace',
-        fontSize: '12px'
-      }).text(messages.join(',')).appendTo(document.body);
-    }
-    console = {
-      log: consoleFn,
-      info: consoleFn
+
+    if (typeof print !== 'undefined') {
+      console = {
+        log: print,
+        info: print
+      }
+    } else if (typeof $ !== 'undefined') {
+      var consoleFn = function() {
+        var messages = Array.prototype.slice.call(arguments);
+        messages = messages.map(function(arg) {
+          return String(arg);
+        })
+        $('<p/>').css({
+          fontFamily: 'monospace',
+          fontSize: '12px'
+        }).text(messages.join(',')).appendTo(document.body);
+      }
+      console = {
+        log: consoleFn,
+        info: consoleFn
+      }
     }
   }
 
