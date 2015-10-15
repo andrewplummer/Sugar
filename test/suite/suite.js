@@ -342,7 +342,19 @@
         result = false;
       }
     });
-    return result && one.length === two.length;
+    var onep = 0, twop = 0;
+    for(key in one) {
+      if(!one.hasOwnProperty(key) || !isNaN(+key)) continue;
+      onep++;
+      if(!isEqual(one[key], two[key])) {
+        return false;
+      }
+    }
+    for(key in two) {
+      if(!two.hasOwnProperty(key) || !isNaN(+key)) continue;
+      twop++;
+    }
+    return result && one.length === two.length && onep === twop;
   }
 
   function objectIsEqual(one, two) {
