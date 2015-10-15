@@ -3,6 +3,10 @@ package('Object', function () {
 
   var definePropertySupport = !!(Object.defineProperty && Object.defineProperties);
 
+  // The scope when none is set.
+  var nullScope = (function() { return this; }).call();
+
+
   method('isObject', function() {
     var Person = function() {};
     var p = new Person();
@@ -258,34 +262,125 @@ package('Object', function () {
 
   method('merge', function() {
 
-    var nonEnumerablePropertySupport = !!Object.getOwnPropertyNames;
+    // Basic no-conflict merging
 
-    test(Object, [{ foo: 'bar' }, { broken: 'wear' }], { foo: 'bar', broken: 'wear' }, 'basic');
-    test(Object, [{ foo: 'bar' }, 'aha'], { foo: 'bar' }, 'will not merge a string');
-    test(Object, [{ foo: 'bar' }, null], { foo: 'bar' }, 'will not merge null');
-    test(Object, [{}, {}], {}, 'merge multi empty');
-    test(Object, [{ foo: 'bar' }, 8], { foo: 'bar' }, 'merge number');
-    test(Object, [{ foo:'bar' }, 'wear', 8, null], { foo:'bar' }, 'merge multi invalid');
+    testStaticAndInstance({a:'a'}, [{b:'b'}], {a:'a',b:'b'}, 'string');
+    testStaticAndInstance({a:'a'}, [{b:8}], {a:'a',b:8}, 'number');
+    testStaticAndInstance({a:'a'}, [{b:true}], {a:'a',b:true}, 'boolean');
+    testStaticAndInstance({a:'a'}, [{b:null}], {a:'a',b:null}, 'null');
+    testStaticAndInstance({a:'a'}, [{b:undefined}], {a:'a'}, 'undefined will not merge');
+    testStaticAndInstance({a:'a'}, [{b:NaN}], {a:'a',b:NaN}, 'NaN');
+    testStaticAndInstance({a:'a'}, [{b:Infinity}], {a:'a',b:Infinity}, 'NaN');
 
-    var expected = nonEnumerablePropertySupport ? [4,5,6] : [4,5,6,4];
-    test(Object, [[1,2,3,4], [4,5,6]], expected, 'arrays are mergeable but result depends on enumerable property support');
-    test(Object, [{ foo: { one: 'two' }}, { foo: { two: 'three' }}, true, true], { foo: { one: 'two', two: 'three' }}, 'accepts deep merges');
-    test(Object, ['foo', 'bar'], 'foo', 'two strings');
-    test(Object, [{ a:1 }, { a:2 }], { a:2 }, 'incoming wins');
-    test(Object, [{ a:1 }, { a:2 }], { a:2 }, 'incoming wins | params true');
-    test(Object, [{ a:1 }, { a:2 }, false, false], { a:1 }, 'target wins');
-    test(Object, [{ a:undefined }, { a:2 }], { a:2 }, 'existing but undefined properties are overwritten');
-    test(Object, [{ a:null }, { a:2 }], { a:2 }, 'null properties are not overwritten');
-    test(Object, [{ a:undefined }, { a:2 }, false, false], { a:2 }, 'false | existing but undefined properties are overwritten');
-    test(Object, [{ a:null }, { a:2 }, false, false], { a:2 }, 'false | null properties are overwritten');
-    test(Object, [{ a:true }, { a:2 }, false, false], { a:true }, 'false | true is not overwritten');
-    test(Object, [{ a:false }, { a:2 }, false, false], { a:false }, 'false | false is not overwritten');
-    test(Object, [{ a:'' }, { a:2 }, false, false], { a:'' }, 'false | empty strings are not overwritten');
-    test(Object, [[{ foo:'bar' }], [{ moo:'car' }], true, true], [{ foo:'bar',moo:'car' }], 'can merge arrays as well');
+    testStaticAndInstance({a:'a'}, [{b:[1]}], {a:'a',b:[1]}, 'array');
+    testStaticAndInstance({a:'a'}, [{b:{c:'c'}}], {a:'a',b:{c:'c'}}, 'object');
 
-    var fn1 = function() {};
-    fn1.foo = 'bar';
-    equal(run(Object, 'merge', [function(){}, fn1]).foo, undefined, 'functions are not merged');
+    testStaticAndInstance({a:'a'}, ['aha'], {a:'a',0:'a',1:'h',2:'a'}, 'string has enumerated properties');
+    testStaticAndInstance({a:'a'}, [undefined], {a:'a'}, 'undefined has no properties');
+    testStaticAndInstance({a:'a'}, [NaN], {a:'a'}, 'undefined has no properties');
+    testStaticAndInstance({a:'a'}, [null], {a:'a'}, 'null has no properties');
+    testStaticAndInstance({a:'a'}, [8], {a:'a'}, 'number has no properties');
+    testStaticAndInstance({}, [{}], {}, 'empty object has no properties');
+
+
+    // Merging with conflicts
+
+    testStaticAndInstance({a:'a'}, [{a:'b'}], {a:'b'}, 'source should win by default');
+    testStaticAndInstance({a:'a'}, [{a:null}], {a:null}, 'null wins');
+    testStaticAndInstance({a:'a'}, [{a:false}], {a:false}, 'false wins');
+    testStaticAndInstance({a:'a'}, [{a:''}], {a:''}, 'empty string wins');
+    testStaticAndInstance({a:'a'}, [{a:[1]}], {a:[1]}, 'array wins');
+    testStaticAndInstance({a:'a'}, [{a:{b:'b'}}], {a:{b:'b'}}, 'object wins');
+    testStaticAndInstance({a:'a'}, [{a:undefined}], {a:'a'}, 'undefined does not win');
+
+    testStaticAndInstance({a:[1]}, [{a:[2]}], {a:[2]}, 'deep source array wins');
+    testStaticAndInstance({a:{b:'b'}}, [{a:{c:'c'}}], {a:{c:'c'}}, 'deep source object wins');
+
+    testStaticAndInstance({a:undefined}, [{a:1}], {a:1}, 'target undefined, source wins');
+    testStaticAndInstance({a:null}, [{a:1}], {a:1}, 'target null, source wins');
+    testStaticAndInstance({a:false}, [{a:1}], {a:1}, 'target false, source wins');
+    testStaticAndInstance({a:true}, [{a:1}], {a:1}, 'target true, source wins');
+    testStaticAndInstance({a:''}, [{a:1}], {a:1}, 'target empty string, source wins');
+
+    // Shallow merge, source wins
+
+    var opts = { resolve: false };
+    testStaticAndInstance({a:'a'}, [{a:'b'}, opts], {a:'a'}, 'target wins when resolve is false');
+    testStaticAndInstance({a:undefined}, [{a:1}, opts], {a:1}, 'source wins when target is undefined');
+    testStaticAndInstance({a:null}, [{a:1}, opts], {a:null}, 'target wins when null');
+    testStaticAndInstance({a:false}, [{a:1}, opts], {a:false}, 'target wins when false');
+    testStaticAndInstance({a:true}, [{a:1}, opts], {a:true}, 'target wins when true');
+    testStaticAndInstance({a:''}, [{a:1}, opts], {a:''}, 'target wins when empty string');
+
+    // Deep merge, target wins
+
+    var opts = { deep: true };
+    testStaticAndInstance({a:{b:'b'}}, [{a:{c:'c'}}, opts], {a:{b:'b',c:'c'}}, 'deeply merged');
+    testStaticAndInstance({a:[1,2]}, [{a:['a']}, opts], {a:['a',2]}, 'array deeply merged');
+    test([{a:'a'}], [[{b:'b'}], opts], [{a:'a',b:'b'}], 'objects in arrays deeply merged');
+
+    // Internal object-types
+
+    var d1 = new Date(2015, 9, 13);
+    var d2 = new Date(2015, 9, 14);
+    test(d1, [d2], d1, 'dates merged as objects have no enumerable properties');
+
+    var obj1 = { d: d1 };
+    var obj2 = { d: d2 };
+    var result = run(Object, 'merge', [obj1, obj2]);
+    equal(result.d, d2, 'dates in non-deep merge should be equal by reference');
+
+    var obj1 = { d: d1 };
+    var obj2 = { d: d2 };
+    var opts = { deep: true };
+    var result = run(Object, 'merge', [obj1, obj2, opts]);
+    equal(result.d !== d2, true, 'dates in deep merge should not be equal by reference');
+    equal(result.d.getTime(), d2.getTime(), 'dates in deep merge should be equal by value');
+
+    var obj1 = { d: d1 };
+    var obj2 = { d: d2 };
+    var opts = { deep: true, resolve: false };
+    var result = run(Object, 'merge', [obj1, obj2, opts]);
+    equal(result.d === d1, true, 'resolve false should be original date');
+
+
+    var r1 = /foo/gi;
+    var r2 = /bar/gi;
+    test(r1, [r2], r1, 'regexes merged as objects have no enumerable properties');
+
+    var obj1 = { r: r1 };
+    var obj2 = { r: r2 };
+    var result = run(Object, 'merge', [obj1, obj2]);
+    equal(result.r, r2, 'regexes in non-deep merge should be equal by reference');
+
+    var obj1 = { r: r1 };
+    var obj2 = { r: r2 };
+    var opts = { deep: true };
+    var result = run(Object, 'merge', [obj1, obj2, opts]);
+    equal(result.r !== r2, true, 'regexes in deep merge should not be equal by reference');
+    equal(result.r.source, r2.source, 'regexes in deep merge should have same source');
+    equal(result.r.global, r2.global, 'regexes in deep merge should both have same global flag');
+    equal(result.r.ignoreCase, r2.ignoreCase, 'regexes in deep merge should both have same ignoreCase flag');
+
+    var obj1 = { r: r1 };
+    var obj2 = { r: r2 };
+    var opts = { deep: true, resolve: false };
+    var result = run(Object, 'merge', [obj1, obj2, opts]);
+    equal(result.r === r1, true, 'resolve false should be original regex');
+
+
+    // Merging functions
+
+    var fn = function() {};
+    fn.foo = 'bar';
+    var opts = {};
+    var result = run(Object, 'merge', [function(){}, fn, opts])
+    equal(result.foo, 'bar', 'functions properties are merged');
+
+    var opts = { deep: true };
+    var result = run(Object, 'merge', [{}, {a:{b:fn}}, opts])
+    equal(result.a.b === fn, true, 'functions are not deep merged');
+    equal(result.a.b.foo, 'bar', 'function property exists in merged object');
 
 
     // Merging nested functions
@@ -300,12 +395,10 @@ package('Object', function () {
     fn2.foo = 'b';
     var obj1 = { fn: fn1 };
     var obj2 = { fn: fn2 };
-    var result = run(Object, 'merge', [obj1, obj2, true]);
+    var result = run(Object, 'merge', [obj1, obj2, { deep: true }]);
     equal(result.fn(), 'b', 'override merge should choose function b');
     equal(result.fn.foo, 'b', 'override merge should choose function b | fn property');
 
-
-    // Merging nested functions with resolve false
 
     var fn1 = function() {
       return 'a';
@@ -317,27 +410,191 @@ package('Object', function () {
     fn2.foo = 'b';
     var obj1 = { fn: fn1 };
     var obj2 = { fn: fn2 };
-    var result = run(Object, 'merge', [obj1, obj2, true, false]);
+    var result = run(Object, 'merge', [obj1, obj2, { resolve: false }]);
     equal(result.fn(), 'a', 'non-override merge should choose function a');
     equal(result.fn.foo, 'a', 'non-override merge should choose function a | fn property');
 
 
+    // Resolve functions
+
+    var fn = function(key, a, b, target, source) {
+      equal(key, 'count', 'First argument should be the key');
+      equal(a, undefined, 'Second argument should be the object value');
+      equal(b, 5, 'Third argument should be the source value');
+      equal(target, {}, 'Fourth argument should be the target');
+      equal(source, {count:5}, 'Fifth argument should be the target');
+      equal(this, nullScope, 'No scope is set by default');
+      return b * 2;
+    }
+    var opts = { resolve: fn };
+    testStaticAndInstance({}, [{count:5}, opts], {count:10}, 'custom function is respected');
+
+    var fn = function(key, a, b) { return a + b; };
+    var opts = { resolve: fn };
+    testStaticAndInstance({a:1}, [{a:2}, opts], {a:3}, 'custom function adds properties together');
+
+    var fn = function(key, a, b) { return 0; };
+    var opts = { resolve: fn };
+    testStaticAndInstance({a:{b:'b'}}, [{a:{b:'c'}}, opts], {a:0}, '0 is respected as a return value');
+
+    var fn = function(key, a, b) { return null; };
+    var opts = { resolve: fn };
+    testStaticAndInstance({a:{b:'b'}}, [{a:{b:'c'}}, opts], {a:null}, 'null is respected as a return value');
+
+    var fn = function(key, a, b) { return undefined; };
+    var opts = { resolve: fn };
+    testStaticAndInstance({a:{b:'b'}}, [{a:{b:'c'}}, opts], {a:{b:'c'}}, 'undefined will be handled');
+
+    var fn = function(key, a, b) { return a.concat(b); };
+    var opts = { resolve: fn };
+    testStaticAndInstance({a:[1]}, [{a:[2]}, opts], {a:[1,2]}, 'custom function concats arrays');
 
     var fn = function(key, a, b) {
-      equal(key, 'a', 'resolve function | first argument is the key');
-      equal(a, 1, 'resolve function | second argument is the target val');
-      equal(b, 2, 'resolve function | third argument is the source val');
-      equal(this, { a:2 }, 'resolve function | context is the source object');
-      return a + b;
+      if (a && a.length && b && b.length) {
+        return a.concat(b);
+      }
     };
+    var opts = { resolve: fn };
+    testStaticAndInstance({a:[1]}, [{a:[2],b:'b'}, opts], {a:[1,2],b:'b'}, 'default merge is used if custom function returns undefined');
 
-    test(Object, [{ a:1 }, { a:2 }, false, fn], { a:3 }, 'function resolves');
+    var count = 0;
+    var obj = {a:{a:{a:'a'}}};
+    var fn = function(prop, a1, a2) {
+      count++;
+      return 1;
+    }
+    var opts = { deep: true, resolve: fn };
+    var result = run(Object, 'merge', [{}, obj, opts]);
+    equal(count, 1, 'resolve function should have been called once');
+    equal(result, {a:1}, 'returning non-undefined in custom function should not traverse further into that object');
 
 
-    // Issue #335
+    var obj1 = {a:{b:{c:{one:5,two:10}}}};
+    var obj2 = {a:{b:{c:{one:7,three:9}}}};
+    var expected = {a:{b:{c:{one:12,two:10,three:9}}}};
+    var fn = function(prop, a, b) {
+      if(typeof a === 'number' || typeof b === 'number') {
+        return (a || 0) + (b || 0);
+      }
+    }
+    var opts = { deep: true, resolve: fn };
+    testStaticAndInstance(obj1, [obj2, opts], expected, 'deep merge continues traversing into the object if the resolve function returns undefined');
 
-    test(Object, [{a:{b:1}}, {a:{b:2,c:3} }, true, false], {a:{b:1,c:3}}, 'two deep properties');
 
+    if (definePropertySupport) {
+
+      // Merging by descriptor
+
+      var opts = { descriptors: true };
+      var obj = getAccessorObject();
+      var result = run(Object, 'merge', [{}, obj]);
+      result.data.label = 'bar';
+      equal(result.label, 'foo', 'basic merge does not support property descriptors');
+
+      var opts = { descriptors: true };
+      var obj = getAccessorObject();
+      var result = run(Object, 'merge',  [{}, obj, opts]);
+      result.data.label = 'bar';
+      equal(result.label, 'bar', 'property getter merged');
+      result.label = 'car';
+      equal(result.data.label, 'car', 'property setter merged');
+
+      var opts = { deep: true, descriptors: true };
+      var obj = { foo: getAccessorObject() }
+      var result = run(Object, 'merge',  [{}, obj, opts]);
+      equal(result.foo !== obj.foo, true, 'object was deeply merged');
+      result.foo.label = 'bar';
+      equal(result.foo.data.label, 'bar', 'deep property setter merged');
+
+      var opts = { hidden: true };
+      var obj1 = [1,2,3,4];
+      var obj2 = [1,2,3];
+      var result = run(Object, 'merge',  [obj1, obj2, opts]);
+      equal(result, [1,2,3], 'merging non-enumerable properties includes array.length');
+
+      var opts = { hidden: true, deep: true };
+      var obj1 = { foo: [1,2,3,4] };
+      var obj2 = { foo: [1,2,3] };
+      var result = run(Object, 'merge',  [obj1, obj2, opts]);
+      equal(result.foo, [1,2,3], 'deep merging non-enumerable properties includes array.length');
+
+      // Non-enumerated properties
+
+      var obj = getDescriptorObject();
+      var result = run(Object, 'merge',  [{}, obj]);
+      equal(result.foo, undefined, 'default non-enumerable property is not merged');
+
+      var opts = { hidden: true };
+      var obj = getDescriptorObject();
+      var result = run(Object, 'merge',  [{}, obj, opts]);
+      equal(result.foo, 'bar', 'non-enumerable property merged with hidden flag on');
+
+      var opts = { hidden: true };
+      var obj = {
+        yo: getDescriptorObject()
+      }
+      var result = run(Object, 'merge',  [{}, obj, opts]);
+      equal(result.yo.foo, 'bar', 'deep non-enumerable property merged with hidden flag on');
+
+      var opts = { descriptors: true, hidden: true };
+      var obj = getDescriptorObject();
+      var result = run(Object, 'merge',  [{}, obj, opts]);
+      raisesError(function() { result.foo = 'moo'; }, 're-assignment of non-writable property raises error');
+
+      var obj1 = getDescriptorObject();
+      var obj2 = { foo: 'bar' }
+      raisesError(function() { run(Object, 'merge',  [obj1, obj2]); }, 'merging into read-only property raises error');
+
+    }
+
+    // Non-standard merges
+
+    test('a', ['b'], 'a', 'two strings');
+    test([1,2,3,4], [[4,5,6]], [4,5,6,4], 'two arrays');
+
+    var a = [1];
+    a.b = 'b';
+    testStaticAndInstance({a:[1]}, [{a:{b:'b'}}, {deep:true}], {a:a}, 'mis-matched object types do not make an effort to override');
+
+    var obj = {a:'a'};
+    testStaticAndInstance({one:obj}, [{one:obj}], {one:obj}, 'should handle identical object conflicts');
+
+    if (Object.create) {
+      var obj = Object.create({ bar: 3 }, {
+        foo: {
+          value: 4,
+          enumerable: true
+        }
+      });
+      testStaticAndInstance({}, [obj], {foo:4}, 'should not merge inherited properties');
+      testStaticAndInstance({}, [obj, {deep:true}], {foo:4}, 'should not merge deep inherited properties');
+    }
+
+    var Foo = function() {};
+    raisesError(function(){ run(Object, 'merge', [{}, {x: new Foo}, {deep:true}]); }, 'should raise an error if clone is not a basic object type');
+
+    var fn = function(key, a, b) {
+      if (b instanceof Foo) {
+        return b;
+      }
+    }
+    var f = new Foo;
+    var obj = {
+      a: 'a',
+      b: 'b',
+      f: f
+    }
+    var opts = { deep: true, resolve: fn };
+    testStaticAndInstance({}, [obj, opts], {a:'a',b:'b',f:f}, 'instead a resolve function can be passed to handle such cases');
+
+    // Exceeding maximum call stack takes time so disable this on normal runs.
+    // var a = {};
+    // a.a = a;
+    // var opts = { deep: true };
+    // raisesError(function() { run(Object, 'merge', [{}, a, opts]); }, 'does not work on cyclical objects', RangeError);
+
+
+    // Complex
 
     var fn1 = function() { return 'joe' };
     var fn2 = function() { return 'moe' };
@@ -387,186 +644,39 @@ package('Object', function () {
         foo: 'car',
         mee: 'maw'
       },
-      arr: nonEnumerablePropertySupport ? [4,5,6] : [4,5,6,4]
+      arr: definePropertySupport ? [4,5,6] : [4,5,6,4]
     }
 
-    test(Object, [obj1, obj2, true, fn], expected, 'complex objects with resolve function');
+    var opts = { deep: true, resolve: fn };
+    testStaticAndInstance(obj1, [obj2, opts], expected, 'complex objects with resolve function');
     equal(obj1.fn(), 'moe', 'fn conflict resolved');
     equal(obj1.date.getTime(), new Date(2005, 1, 6).getTime(), 'date conflict resolved');
 
-    equal(run(Object, 'extended', [{ foo: 'bar' }]).merge({ broken: 'wear' }), { foo: 'bar', broken: 'wear' }, 'Object#merge | basic');
-    equal(run(Object, 'extended', [{ foo: 'bar' }]).merge('aha'), { foo: 'bar' }, 'Object#merge | will not merge a string');
-    equal(run(Object, 'extended', [{ foo: 'bar' }]).merge(null), { foo: 'bar' }, 'Object#merge | merge null');
-    equal(run(Object, 'extended', [{}]).merge({}, {}, {}), {}, 'Object#merge | merge multi empty');
-    equal(run(Object, 'extended', [{ foo: 'bar' }]).merge('wear', 8, null), { foo:'bar' }, 'Object#merge | merge multi invalid');
 
-    var fn1 = function() {};
-    fn1.foo = 'bar';
-    equal(run(Object, 'extended', [function(){}]).merge(fn1).foo, undefined, 'functions are not merged');
-    equal(run(Object, 'extended', [{ a:1 }]).merge({ a:2 }), { a:2 }, 'incoming wins');
-    equal(run(Object, 'extended', [{ a:1 }]).merge({ a:2 }, true), { a:2 }, 'incoming wins | params true');
-    equal(run(Object, 'extended', [{ a:1 }]).merge({ a:2 }, false, false), { a:1 }, 'target wins');
-    equal(run(Object, 'extended', [{ a:1 }]).merge({ a:2 }, false, function(key, a, b){ return a + b; }), { a:3 }, 'function resolves');
+    // Issue #335
 
-
-    // should not merge prototype properties
-
-    var Foo = function(){};
-    Foo.prototype.bar = 3;
-
-    var f = new Foo();
-
-    equal(run(Object, 'merge', [{}, f]).bar, undefined, 'Object.merge should not merge inherited properties');
-
-    // Issue #307 - Object.clone should error when cloning unknown types.
-
-    raisesError(function(){ run(Object, 'clone', [f]); }, 'Object.clone | raises an error if clone is not a basic object type');
-
-
-    // should not choke when target and source contain strictly equal objects
-
-    var obj = { foo: 'bar' };
-
-    test(Object, [{ one: obj }, { one: obj }], { one: obj }, 'Object.merge should be able to handle identical source/target objects');
-
-    obj.moo = obj;
-
-    equal(typeof run(Object, 'merge', [obj, { foo: obj }]), 'object', 'Object.merge should not choke on cyclic references');
-
-    // deep merges should clone regexes
-
-    var obj1 = {
-      reg: /foobar/g
-    }
-
-    notEqual(run(Object, 'merge', [{}, obj1, true]).reg, obj1.reg, 'Object.merge | deep merging will clone regexes');
+    var opts = { deep: true, resolve: false };
+    testStaticAndInstance({a:{b:1}}, [{a:{b:2,c:3} }, opts], {a:{b:1,c:3}}, 'two deep properties');
 
     // Issue #365 Object.merge can skip when source is object and target is not.
 
-    test(Object, [{a:''}, {a:{b:1}}, true], {a:{b:1}}, 'source object wins with empty string');
-    test(Object, [{a:'1'}, {a:{b:1}}, true], {a:{b:1}}, 'source object wins with number as string');
-
-
-    var obj1 = {
-      foo: 'bar',
-      moo: ['a','b','c']
-    }
-    var obj2 = {
-      foo: 'car',
-      moo: ['o','p','p']
-    }
-    var expected = {
-      foo: 'car',
-      moo: 'wow'
-    }
-
-    var fn = function(prop, a1, a2) {
-      if(typeof a1 === 'object') {
-        return 'wow';
-      }
-      return a2;
-    }
-
-    var result = run(Object, 'merge', [obj1, obj2, true, fn]);
-    equal(result, expected, 'Returning something from a resolve function will not traverse further into that object');
-
-    var foobar = { foo: 'bar' };
-
-
-    var obj1 = {
-      a1: foobar,
-      one: {
-        two: {
-          three: {
-            a: 1,
-            b: 2
-          }
-        }
-      }
-    }
-    var obj2 = {
-      a2: foobar,
-      one: {
-        two: {
-          three: {
-            a: 1,
-            c: 3
-          }
-        }
-      }
-    }
-    var expected = {
-      a1: { foo: 'bar' },
-      a2: { foo: 'bar' },
-      one: {
-        two: {
-          three: {
-            a: 2,
-            b: 2,
-            c: 3
-          }
-        }
-      }
-    }
-
-    var fn = function(prop, a, b) {
-      if(typeof a === 'number' && typeof b === 'number') {
-        return a + b;
-      }
-    }
-
-    var result = run(Object, 'merge', [testClone(obj1), obj2, true, fn]);
-    equal(result, expected, 'deep merge continues traversing into the object if the resolve function returns undefined');
-    notEqual(result.a2, foobar, 'non-conflciting property a2 was deep merged');
-
-    var expected = {
-      a1: foobar,
-      a2: foobar,
-      one: {
-        two: {
-          three: {
-            a: 1,
-            c: 3
-          }
-        }
-      }
-    }
-
-    var result = run(Object, 'merge', [testClone(obj1), obj2, false, fn]);
-    equal(result, expected, 'non-deep merge continues on to merge the second object');
-    equal(result.a2, foobar, 'non-deep merge keeps strict equality');
-
-
-    if(definePropertySupport) {
-
-      var obj1 = {};
-      var obj2 = {};
-      Object.defineProperty(obj1, 'foo', {
-        value: 'hello',
-        enumerable: false,
-        configurable: false
-      });
-
-      var result = run(Object, 'merge', [{}, obj1]);
-      equal(result.foo, 'hello', 'empty object merged with a non-configurable, non-enumerable property');
-
-      raisesError(function(){
-        run(Object, 'merge', [obj1, {foo: 'ohno'}]);
-      }, 'attempting to merge into a non-configurable property should raise an error');
-    }
+    var opts = { deep: true };
+    test(Object, [{a:''}, {a:{b:1}}, opts], {a:{b:1}}, 'source object wins with empty string');
+    test(Object, [{a:'1'}, {a:{b:1}}, opts], {a:{b:1}}, 'source object wins with number as string');
 
   });
 
   method('clone', function() {
 
-    test(Object, ['hardy'], 'hardy', 'clone on a string');
-    test(Object, [undefined], undefined, 'clone on undefined');
-    test(Object, [null], null, 'clone on null');
-    test(Object, [{ foo: 'bar' }], { foo: 'bar' }, 'basic clone');
-    test(Object, [{ foo: 'bar', broken: 1, wear: null }], { foo: 'bar', broken: 1, wear: null }, 'complex clone');
-    test(Object, [{ foo: { broken: 'wear' }}], { foo: { broken: 'wear' }}, 'deep clone');
-    test(Object, [[1,2,3]], [1,2,3], 'clone on arrays');
-    test(Object, [['a','b','c']], ['a','b','c'], 'clone on array of strings');
+    test('hardy', [], 'hardy', 'clone on a string');
+    test(undefined, [], undefined, 'clone on undefined');
+    test(null, [], null, 'clone on null');
+    test([1,2,3], [], [1,2,3], 'clone on arrays');
+    test(['a','b','c'], [], ['a','b','c'], 'clone on array of strings');
+
+    testStaticAndInstance({a:'a'}, [], {a:'a'}, 'basic clone');
+    testStaticAndInstance({a:'a',b:1,c:null}, [], {a:'a',b:1,c:null}, 'multiple clone');
+    testStaticAndInstance({a:{b:'b'}}, [], {a:{b:'b'}}, 'deep clone');
 
     var arr1    = [1];
     var arr2    = [2];
@@ -623,10 +733,6 @@ package('Object', function () {
     notEqual(arr2[1], obj2, 'array deep | obj2 is not equal');
     notEqual(arr2[2], obj3, 'array deep | obj3 is not equal');
 
-    equal(run(Object, 'extended', [{ foo: 'bar' }]).clone(), { foo: 'bar' }, 'extended | basic clone');
-    equal(run(Object, 'extended', [{ foo: 'bar', broken: 1, wear: null }]).clone(), { foo: 'bar', broken: 1, wear: null }, 'extended | complex clone');
-    equal(run(Object, 'extended', [{ foo: { broken: 'wear' }}]).clone(), { foo: { broken: 'wear' }}, 'extended | deep clone');
-    equal(run(Object, 'extended', [{ foo: 'bar', broken: 1, wear: /foo/ }]).clone() == { foo: 'bar', broken: 1, wear: /foo/ }, false, 'extended | fully cloned');
 
     var obj1, obj2, obj3;
 
@@ -669,12 +775,15 @@ package('Object', function () {
     }
 
     var obj2 = run(Object, 'clone', [obj1, true]);
-
     obj1.d.setDate(3);
-
     equal(obj2.d.getDate(), 25, 'Object.clone | deep cloning also clones dates');
     equal(obj2.r.source, 'dasfsa', 'Object.clone | deep cloning also clones regexes');
 
+    var d = new Date(2000, 5, 25);
+    // Simulate the Sugar date setUTC without actually requiring it
+    d._utc = true;
+    var result = run(Object, 'clone', [d]);
+    equal(result._utc, true, 'date property should also be cloned');
 
     // Issue #396 cloning objects with accessors.
 
@@ -696,6 +805,10 @@ package('Object', function () {
       equal(template2.data.label, 'next label', 'data value should be updated');
     }
 
+    // Issue #307 - Object.clone should error when cloning unknown types.
+
+    var Foo = function() {};
+    raisesError(function(){ run(Object, 'clone', [new Foo]); }, 'should raise an error if clone is not a basic object type');
 
   });
 
