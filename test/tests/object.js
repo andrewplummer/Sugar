@@ -653,6 +653,104 @@ package('Object', function () {
     equal(obj1.date.getTime(), new Date(2005, 1, 6).getTime(), 'date conflict resolved');
 
 
+    var deepObject1 = {
+      user: {
+        firstName: 'Darth',
+        lastName: 'Vader',
+        helmetSize: 22,
+        likes: 2
+      }
+    }
+
+    var deepObject2 = {
+      user: {
+        firstName: 'Luke',
+        lastName: 'Skywalker',
+        handSize: 15,
+        likes: 4
+      }
+    }
+
+    var expectedDeepSourceWins = {
+      user: {
+        firstName: 'Luke',
+        lastName: 'Skywalker',
+        helmetSize: 22,
+        handSize: 15,
+        likes: 4
+      }
+    }
+
+    var expectedDeepTargetWins = {
+      user: {
+        firstName: 'Darth',
+        lastName: 'Vader',
+        helmetSize: 22,
+        handSize: 15,
+        likes: 2
+      }
+    }
+
+    var expectedDeepCombinator = {
+      user: {
+        firstName: 'Luke',
+        lastName: 'Skywalker',
+        helmetSize: 22,
+        handSize: 15,
+        likes: 6
+      }
+    }
+
+    var expectedDeepConservativeCombinator = {
+      user: {
+        firstName: 'Darth',
+        lastName: 'Vader',
+        helmetSize: 22,
+        handSize: 15,
+        likes: 6
+      }
+    }
+
+    var combinator = function(key, targetVal, sourceVal) {
+      if (key === 'likes') {
+        return targetVal + sourceVal;
+      }
+    }
+
+    var conservativeCombinator = function(key, targetVal, sourceVal) {
+      if (key === 'likes') {
+        return targetVal + sourceVal;
+      }
+      // If the key is "user" then return undefined so that the default merge
+      // will continue traversing into the object. Forcing the user to return
+      // undefined to continue traversal is slightly awkward, however it is
+      // simpler in implementation, more clear in function (returning anything
+      // other than undefined will halt the merge) and avoids issues with
+      // traversing into objects that are not basic data types, for example
+      // MouseEvent, which cannot be re-created without knowing the original
+      // constructor arguments.
+      if (key !== 'user') {
+        return targetVal;
+      }
+    }
+
+    testStaticAndInstance(testClone(deepObject1), [deepObject2], deepObject2, 'standard shallow merge produces source');
+
+    var opts = { resolve: false };
+    testStaticAndInstance(testClone(deepObject1), [deepObject2, opts], deepObject1, 'standard shallow merge with resolve: false produces target');
+
+    var opts = { deep: true };
+    testStaticAndInstance(testClone(deepObject1), [deepObject2, opts], expectedDeepSourceWins, 'deep merge | source wins');
+
+    var opts = { deep: true, resolve: false };
+    testStaticAndInstance(testClone(deepObject1), [deepObject2, opts], expectedDeepTargetWins, 'deep merge | target wins');
+
+    var opts = { deep: true, resolve: combinator };
+    testStaticAndInstance(testClone(deepObject1), [deepObject2, opts], expectedDeepCombinator, 'deep merge | combinator function');
+
+    var opts = { deep: true, resolve: conservativeCombinator };
+    testStaticAndInstance(testClone(deepObject1), [deepObject2, opts], expectedDeepConservativeCombinator, 'deep merge | conservative combinator function');
+
     // Issue #335
 
     var opts = { deep: true, resolve: false };
