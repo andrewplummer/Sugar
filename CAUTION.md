@@ -59,7 +59,7 @@ v2.0.0+
   - `String#normalize` is now renamed to `String#toAscii` to comply with the ES6 spec.
 
 - Level: Minor
-  - `Date#set` will now rewind dates that have accidentally traversed into a new month, such as setting `{ month: 1 }` on `January 31st`. This behavior was previously only on `advance` and `rewind`.
+  - `Date#set` now rewinds dates that have accidentally traversed into a new month, such as setting `{ month: 1 }` on `January 31st`. This behavior was previously only on `advance` and `rewind`.
 
 - Level: Minor
   - `String#escapeHTML` now double escapes entities, meaning '&amp;' will become '&amp;amp;', etc.
@@ -71,16 +71,16 @@ v2.0.0+
   - `Object.map`, `Object.each`, and `Object.size` were moved to the Object package from the Array package. If you were using these methods and making custom builds you may have to include the Object package now as well.
 
 - Level: Minor
-  - `Date#unitSince` (`Date#hoursSince`, etc) will now assume that the passed in format is UTC if the context date is also flagged as UTC (if you're using `setUTC`). This behavior can be overriden by passing `{ fromUTC: false }` to these methods.
+  - `Date#unitSince` (`Date#hoursSince`, etc) now assumes that the passed in format is UTC if the context date is also flagged as UTC (if you're using `setUTC`). This behavior can be overriden by passing `{ fromUTC: false }` to these methods.
 
 - Level: Major
-  - `Object.clone` will now clone both non-enumerable properties if they exist and the attribute accessors "get" and "set".
+  - `Object.clone` now clones both non-enumerable properties if they exist and the attribute accessors "get" and "set".
 
 - Level: Very Minor
-  - `Array#map`, `Array#unique`, `Array#groupBy`, `Array#min`, `Array#max`, `Array#least`, `Array#most`, `Array#sortBy`: Mapping shortcut strings now accept deep matchers with the dot `.` token. If you have objects that use `.` in the keys and are using these methods, be careful as this will now make the methods try to go deep. Pass a function instead to map as before.
+  - `Array#map`, `Array#unique`, `Array#groupBy`, `Array#min`, `Array#max`, `Array#least`, `Array#most`, `Array#sortBy`: Mapping shortcut strings now accept deep matchers with the dot `.` token. If you have objects that use `.` in the keys and are using these methods, be careful as this now makes the methods try to go deep. Pass a function instead to map as before.
 
 - Level: Very Minor
-  - Some minor behavior changes around the way `String#removeTags` works on malformed html. Unmatched closing tags will now be removed.
+  - Some minor behavior changes around the way `String#removeTags` works on malformed html. Unmatched closing tags are removed.
 
 
 v1.4.1+
@@ -127,10 +127,10 @@ v1.4.0+
   - The `split` argument was removed from `String#truncate`. For truncating without splitting words, use `String#truncateOnWord` instead. Argument position is adjusted accordingly.
 
 - Level: Moderate
-  - Class instances are now internally matched by reference only. This means that `Object.equal(new Person, new Person)` will now be `false`. This was in fact the original intended behavior but a bug had not been closed here leading to it not actually being `false`. Although a case can be made for matching class instances by value, in the end it is too expensive and tricky to distinguish them from host objects, which should never be matched by value. Instead it is better to check for equality of class instances on a unique identifier or the like.
+  - Class instances are now internally matched by reference only. This means that `Object.equal(new Person, new Person)` is `false`. This was in fact the original intended behavior but a bug had not been closed here leading to it not actually being `false`. Although a case can be made for matching class instances by value, in the end it is too expensive and tricky to distinguish them from host objects, which should never be matched by value. Instead it is better to check for equality of class instances on a unique identifier or the like.
 
 - Level: Moderate
-  - `Object.isObject` will now no longer return true for class instances for the same reasons listed above. This also was intended behavior but was defective.
+  - `Object.isObject` no longer returns true for class instances for the same reasons listed above. This also was intended behavior but was defective.
 
 - Level: Moderate
   - `String#normalize` is now deprecated, but still available as a separate script in the `lib/plugins` directory.
@@ -238,6 +238,9 @@ v1.3.1+
 
 - Level: Major
   - `Date#setUTCWeekday` deprecated. Set the utc flag and use `Date#setWeekday` instead.
+
+- Level: Minor
+  - `Number#times` now returns an array which is the collected return values of the function passed.
 
 - Level: Minor
   - `Date#clone` will now preserve the utc flag.

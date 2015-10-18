@@ -169,15 +169,15 @@ package('Number', function () {
   });
 
   method('times', function() {
-    var counter = 0;
+    var count = 0;
     var callback = function(first) {
-      equal(first, counter, 'first parameter is the index');
-      counter++;
+      equal(first, count, 'first parameter is the index');
+      count++;
+      return count;
     };
-    run(5, 'times', [callback, 'wasabi']);
-    equal(counter, 5, 'iterated 5 times');
-
-    test(new Number(5), 5, 'ensure primitive is returned');
+    var result = run(5, 'times', [callback, 'wasabi']);
+    equal(result, [1,2,3,4,5], 'result should be the collected return values of all calls');
+    equal(count, 5, 'iterated 5 times');
   });
 
   method('isMultipleOf', function() {
