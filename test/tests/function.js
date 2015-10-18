@@ -786,7 +786,92 @@ package('Function', function () {
     var widget = new MyFilledWidget();
     equal(widget instanceof MyWidget, false, 'explicit return value is no longer an instance of the constructor');
     equal(widget.foo, 'bar', 'respects return value');
+
+
+
+    // Tests lovingly borrowed from Lodash
+
+    function identity(n) {
+      return n;
+    }
+
+    var partial = run(identity, 'fill', ['a']);
+    equal(partial(), 'a', 'partially applies arguments');
+
+    var fn = function(a, b) { return [a, b]; };
+    var partial = run(fn, 'fill', ['a']);
+    equal(partial('b'), ['a', 'b'], 'creates a function that can be invoked with additional arguments');
+
+    var fn = function() { return arguments.length; };
+    var partial = run(fn, 'fill', []);
+    equal(partial(), 0, 'works when there are no partially applied arguments and the created function is invoked without additional arguments');
+
+    var partial = run(identity, 'fill', []);
+    equal(partial('a'), 'a', 'works when there are no partially applied arguments and the created function is invoked with additional arguments');
+
+
+    // Placeholders are "undefined" in Sugar.
+
+    var fn = function() { return Array.prototype.slice.call(arguments); };
+    var partial = run(fn, 'fill', [undefined,'b',undefined]);
+    equal(partial('a', 'c'), ['a','b','c'], 'placeholders | filling 2');
+    equal(partial('a'), ['a','b',undefined], 'placeholders | filling 1');
+    equal(partial(), [undefined,'b',undefined], 'placeholders | filling none');
+    equal(partial('a','c','d'), ['a','b','c','d'], 'placeholders | filling 2 adding 1');
+
+
+    var fn = function(a, b, c) {};
+    var partial = run(fn, 'fill', ['a']);
+    equal(partial.length, 0, 'creates a function with a length of 0');
+
+    var object = {};
+    function Foo(value) {
+      return value && object;
+    }
+    var partial = run(Foo, 'fill', []);
+    equal(new partial instanceof Foo, true, 'ensure new partialed is an instance of func');
+    equal(new partial(true), object, 'ensure new partialed return value');
+
+    function greet(greeting, name) {
+      return greeting + ' ' + name;
+    }
+    var partial1 = run(greet, 'fill', ['hi']);
+    var partial2 = run(partial1, 'fill', ['barney']);
+    var partial3 = run(partial1, 'fill', ['pebbles']);
+    equal(partial1('fred'), 'hi fred');
+    equal(partial2(), 'hi barney');
+    equal(partial3(), 'hi pebbles');
+
+
+    var fn = function() {
+      var result = [this.a];
+      Array.prototype.push.apply(result, arguments);
+      return result;
+    };
+    var object = { 'a': 1, 'fn': fn };
+
+    var a = fn.bind(object);
+    var b = run(a, 'fill', [2]);
+    equal(b(3), [1,2,3], 'should work with combinations of bound and partial functions');
+
+    var a = run(fn, 'fill', [2]);
+    var b = a.bind(object);
+    equal(b(3), [1,2,3], 'should work with combinations of partial and bound functions');
+
+
+    // Function#bind is spec so our hands are tied here
+
+    var fn = function() { return Array.prototype.slice.call(arguments); };
+    var object = { 'fn': fn };
+
+    var a = fn.bind(object, undefined, 2);
+    var b = run(a, 'fill', [1, undefined, 4]);
+    equal(b(3, 5), [undefined,2,1,3,4,5], 'should not work with combinations of functions with placeholders');
+
+    var a = run(fn, 'fill', [undefined, 2]);
+    var b = a.bind(object, 1, undefined, 4);
+    equal(b(3, 5), [1, 2, undefined, 4, 3, 5], 'should not work with combinations of functions with placeholders');
+
   });
 
 });
-
