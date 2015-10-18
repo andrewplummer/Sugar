@@ -709,6 +709,13 @@ package('Date', function () {
     dateEqual(testCreateDate('Monday at midnight'), getDateWithWeekdayAndOffset(1, 0), 'Monday at midnight');
     dateEqual(testCreateDate('next Saturday at midnight'), getDateWithWeekdayAndOffset(6, 7), 'next Saturday at midnight');
     dateEqual(testCreateDate('last Tuesday at midnight'), getDateWithWeekdayAndOffset(2, -7), 'last Tuesday at midnight');
+
+
+    // Issue #455
+    dateEqual(testCreateDate('a week from Tuesday'), getDateWithWeekdayAndOffset(2, 7), 'a week from Tuesday');
+    dateEqual(testCreateDate('week from Tuesday'), getDateWithWeekdayAndOffset(2, 7), 'week from Tuesday');
+    dateEqual(testCreateDate('first of the month'), new Date(now.getFullYear(), now.getMonth()), 'first of the month');
+
   });
 
 
