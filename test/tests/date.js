@@ -699,7 +699,16 @@ package('Date', function () {
     dateEqual(testCreateDate('yesterday at 3:00a'), new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1, 3), 'yesterday at 3:00a');
 
     // Issue #453 "tomorrow at noon"
-    //dateEqual(testCreateDate('tomorrow at noon'), new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1, 12), 'tommorrow at noon');
+    dateEqual(testCreateDate('noon'), new Date(now.getFullYear(), now.getMonth(), now.getDate(), 12), 'noon');
+    dateEqual(testCreateDate('tomorrow at noon'), new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 12), 'tommorrow at noon');
+    dateEqual(testCreateDate('Monday at noon'), getDateWithWeekdayAndOffset(1, 0, 12), 'Monday at noon');
+    dateEqual(testCreateDate('next Saturday at noon'), getDateWithWeekdayAndOffset(6, 7, 12), 'next Saturday at noon');
+    dateEqual(testCreateDate('last Tuesday at noon'), getDateWithWeekdayAndOffset(2, -7, 12), 'last Tuesday at noon');
+    dateEqual(testCreateDate('midnight'), new Date(now.getFullYear(), now.getMonth(), now.getDate()), 'midnight');
+    dateEqual(testCreateDate('tomorrow at midnight'), new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1), 'tommorrow at midnight');
+    dateEqual(testCreateDate('Monday at midnight'), getDateWithWeekdayAndOffset(1, 0), 'Monday at midnight');
+    dateEqual(testCreateDate('next Saturday at midnight'), getDateWithWeekdayAndOffset(6, 7), 'next Saturday at midnight');
+    dateEqual(testCreateDate('last Tuesday at midnight'), getDateWithWeekdayAndOffset(2, -7), 'last Tuesday at midnight');
   });
 
 
