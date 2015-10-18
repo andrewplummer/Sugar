@@ -644,42 +644,40 @@ package('Function', function () {
 
   });
 
-  method('fill', function() {
+  method('partial', function() {
 
     var format = function(place, last){
       return (last || '') + this.toFixed(place);
     }
 
-    var filled;
-
-    Number.prototype.two = run(format, 'fill', [2]);
+    Number.prototype.two = run(format, 'partial', [2]);
     equal((18).two(), '18.00');
     equal((9999).two(), '9999.00');
     equal((9999).two('$'), '$9999.00');
 
-    Number.prototype.euro = run(format, 'fill', [undefined, '€']);
+    Number.prototype.euro = run(format, 'partial', [undefined, '€']);
     equal((9999.77).euro(), '€10000', 'euro | no params | 9.999,77');
     equal((9999.77).euro(0), '€10000', 'euro | 0 | 9.999');
     equal((9999.77).euro(1), '€9999.8', 'euro | 1 | 9.999,8');
     equal((9999.77).euro(2), '€9999.77', 'euro | 2 | 9.999,77');
     equal((9999.77).euro(3), '€9999.770', 'euro | 3 | 9.999,777');
 
-    Number.prototype.noop = run(format, 'fill');
+    Number.prototype.noop = run(format, 'partial');
     equal((1000).noop(3, '$'), '$1000.000', 'noop | 1 000,000');
     equal((1000).noop(4, '$'), '$1000.0000', 'noop | 1 000,0000');
     equal((1000).noop(5, '$'), '$1000.00000', 'noop | 1 000,00000');
 
-    filled = run(function(first) {
+    var partial = run(function(first) {
       return first;
-    }, 'fill', [['a', 'b']]);
+    }, 'partial', [['a', 'b']]);
 
-    equal(filled(), ['a','b'], 'can be passed arrays');
+    equal(partial(), ['a','b'], 'can be passed arrays');
 
-    filled = run(function(first) {
+    var partial = run(function(first) {
       return Array.prototype.slice.call(arguments);
-    }, 'fill', [0]);
+    }, 'partial', [0]);
 
-    equal(filled('a'), [0, 'a'], 'falsy values can be passed');
+    equal(partial('a'), [0, 'a'], 'falsy values can be passed');
 
     function stringifyArray(arr) {
       var result = [];
@@ -695,55 +693,55 @@ package('Function', function () {
     var fn = function() {
       return stringifyArray(arguments);
     }
-    equal(run(fn, 'fill', [null, 'a'])('b'), 'null a b', 'null first will not act as a placeholder');
-    equal(run(fn, 'fill', ['a', null])('b'), 'a null b', 'null second will not act as a placeholder');
-    equal(run(fn, 'fill', [null, null, 'a'])(), 'null null a', 'null repeated first');
-    equal(run(fn, 'fill', ['a', null, null])(), 'a null null', 'null repeated last');
-    equal(run(fn, 'fill', [null, null, null])(), 'null null null', 'all null');
-    equal(run(fn, 'fill', [null, null, null])('a','b','c'), 'null null null a b c', 'all null overflowing');
+    equal(run(fn, 'partial', [null, 'a'])('b'), 'null a b', 'null first will not act as a placeholder');
+    equal(run(fn, 'partial', ['a', null])('b'), 'a null b', 'null second will not act as a placeholder');
+    equal(run(fn, 'partial', [null, null, 'a'])(), 'null null a', 'null repeated first');
+    equal(run(fn, 'partial', ['a', null, null])(), 'a null null', 'null repeated last');
+    equal(run(fn, 'partial', [null, null, null])(), 'null null null', 'all null');
+    equal(run(fn, 'partial', [null, null, null])('a','b','c'), 'null null null a b c', 'all null overflowing');
 
-    equal(run(fn, 'fill', [undefined, 'a'])('b'), 'b a', 'undefined first will act as a placeholder');
-    equal(run(fn, 'fill', ['a', undefined])('b'), 'a b', 'undefined second will act as a placeholder');
-    equal(run(fn, 'fill', [undefined, undefined, 'a'])('a', 'b'), 'a b a', 'two placeholders first');
-    equal(run(fn, 'fill', ['a', undefined, undefined])('a', 'b'), 'a a b', 'two placeholders last');
-    equal(run(fn, 'fill', [undefined, undefined, undefined])('a', 'b', 'c'), 'a b c', 'all placeholders');
-    equal(run(fn, 'fill', [undefined, undefined, undefined])('a', 'b'), 'a b undefined', 'all placeholders with last undefined');
-    equal(run(fn, 'fill', [undefined, undefined, undefined])('a','b','c','d','e'), 'a b c d e', 'all undefined overflowing');
+    equal(run(fn, 'partial', [undefined, 'a'])('b'), 'b a', 'undefined first will act as a placeholder');
+    equal(run(fn, 'partial', ['a', undefined])('b'), 'a b', 'undefined second will act as a placeholder');
+    equal(run(fn, 'partial', [undefined, undefined, 'a'])('a', 'b'), 'a b a', 'two placeholders first');
+    equal(run(fn, 'partial', ['a', undefined, undefined])('a', 'b'), 'a a b', 'two placeholders last');
+    equal(run(fn, 'partial', [undefined, undefined, undefined])('a', 'b', 'c'), 'a b c', 'all placeholders');
+    equal(run(fn, 'partial', [undefined, undefined, undefined])('a', 'b'), 'a b undefined', 'all placeholders with last undefined');
+    equal(run(fn, 'partial', [undefined, undefined, undefined])('a','b','c','d','e'), 'a b c d e', 'all undefined overflowing');
 
-    equal(run(fn, 'fill', [null, undefined, null])(), 'null undefined null', 'null and undefined mixed');
-    equal(run(fn, 'fill', [null, undefined, null])('a'), 'null a null', 'null and undefined mixed with 1 arg');
-    equal(run(fn, 'fill', [null, undefined, null])('a', 'b'), 'null a null b', 'null and undefined mixed with 2 args');
-    equal(run(fn, 'fill', [null, undefined, null])('a', 'b', 'c'), 'null a null b c', 'null and undefined mixed with 3 args');
+    equal(run(fn, 'partial', [null, undefined, null])(), 'null undefined null', 'null and undefined mixed');
+    equal(run(fn, 'partial', [null, undefined, null])('a'), 'null a null', 'null and undefined mixed with 1 arg');
+    equal(run(fn, 'partial', [null, undefined, null])('a', 'b'), 'null a null b', 'null and undefined mixed with 2 args');
+    equal(run(fn, 'partial', [null, undefined, null])('a', 'b', 'c'), 'null a null b c', 'null and undefined mixed with 3 args');
 
-    equal(run(fn, 'fill', [undefined, null, undefined])(), 'undefined null undefined', 'undefined and null mixed');
-    equal(run(fn, 'fill', [undefined, null, undefined])('a'), 'a null undefined', 'undefined and null mixed with 1 arg');
-    equal(run(fn, 'fill', [undefined, null, undefined])('a', 'b'), 'a null b', 'undefined and null mixed with 2 args');
-    equal(run(fn, 'fill', [undefined, null, undefined])('a', 'b', 'c'), 'a null b c', 'undefined and null mixed with 3 args');
+    equal(run(fn, 'partial', [undefined, null, undefined])(), 'undefined null undefined', 'undefined and null mixed');
+    equal(run(fn, 'partial', [undefined, null, undefined])('a'), 'a null undefined', 'undefined and null mixed with 1 arg');
+    equal(run(fn, 'partial', [undefined, null, undefined])('a', 'b'), 'a null b', 'undefined and null mixed with 2 args');
+    equal(run(fn, 'partial', [undefined, null, undefined])('a', 'b', 'c'), 'a null b c', 'undefined and null mixed with 3 args');
 
-    equal(run(fn, 'fill', ['a'])(undefined), 'a undefined', 'passing undefined');
-    equal(run(fn, 'fill', ['a'])(undefined, 'b'), 'a undefined b', 'passing undefined first');
-    equal(run(fn, 'fill', ['a'])('b', undefined), 'a b undefined', 'passing undefined second');
+    equal(run(fn, 'partial', ['a'])(undefined), 'a undefined', 'passing undefined');
+    equal(run(fn, 'partial', ['a'])(undefined, 'b'), 'a undefined b', 'passing undefined first');
+    equal(run(fn, 'partial', ['a'])('b', undefined), 'a b undefined', 'passing undefined second');
 
-    equal(run(fn, 'fill', [undefined])(undefined), 'undefined', 'passing undefined to a placeholder');
-    equal(run(fn, 'fill', [undefined])(undefined, 'b'), 'undefined b', 'passing undefined to a placeholder first');
-    equal(run(fn, 'fill', [undefined])('b', undefined), 'b undefined', 'passing undefined to a placeholder second');
+    equal(run(fn, 'partial', [undefined])(undefined), 'undefined', 'passing undefined to a placeholder');
+    equal(run(fn, 'partial', [undefined])(undefined, 'b'), 'undefined b', 'passing undefined to a placeholder first');
+    equal(run(fn, 'partial', [undefined])('b', undefined), 'b undefined', 'passing undefined to a placeholder second');
 
-    equal(run(fn, 'fill', ['a'])(null), 'a null', 'passing null');
-    equal(run(fn, 'fill', ['a'])(null, 'b'), 'a null b', 'passing null first');
-    equal(run(fn, 'fill', ['a'])('b', null), 'a b null', 'passing null second');
+    equal(run(fn, 'partial', ['a'])(null), 'a null', 'passing null');
+    equal(run(fn, 'partial', ['a'])(null, 'b'), 'a null b', 'passing null first');
+    equal(run(fn, 'partial', ['a'])('b', null), 'a b null', 'passing null second');
 
-    equal(run(fn, 'fill', [undefined])(null), 'null', 'passing null to a placeholder');
-    equal(run(fn, 'fill', [undefined])(null, 'b'), 'null b', 'passing null to a placeholder first');
-    equal(run(fn, 'fill', [undefined])('b', null), 'b null', 'passing null to a placeholder second');
+    equal(run(fn, 'partial', [undefined])(null), 'null', 'passing null to a placeholder');
+    equal(run(fn, 'partial', [undefined])(null, 'b'), 'null b', 'passing null to a placeholder first');
+    equal(run(fn, 'partial', [undefined])('b', null), 'b null', 'passing null to a placeholder second');
 
     // More complex
-    equal(run(fn, 'fill', [[undefined]])('a'), '[undefined] a', 'array of undefined is not a placeholder');
-    equal(run(fn, 'fill', [[undefined], undefined])('a'), '[undefined] a', 'placeholder after array');
-    equal(run(fn, 'fill', [undefined, [undefined]])('a'), 'a [undefined]', 'placeholder before array');
+    equal(run(fn, 'partial', [[undefined]])('a'), '[undefined] a', 'array of undefined is not a placeholder');
+    equal(run(fn, 'partial', [[undefined], undefined])('a'), '[undefined] a', 'placeholder after array');
+    equal(run(fn, 'partial', [undefined, [undefined]])('a'), 'a [undefined]', 'placeholder before array');
 
-    equal(run(fn, 'fill', [[null]])('a'), '[null] a', 'array of null is not a placeholder');
-    equal(run(fn, 'fill', [[null], undefined])('a'), '[null] a', 'placeholder after array');
-    equal(run(fn, 'fill', [undefined, [null]])('a'), 'a [null]', 'placeholder before array');
+    equal(run(fn, 'partial', [[null]])('a'), '[null] a', 'array of null is not a placeholder');
+    equal(run(fn, 'partial', [[null], undefined])('a'), '[null] a', 'placeholder after array');
+    equal(run(fn, 'partial', [undefined, [null]])('a'), 'a [null]', 'placeholder before array');
 
 
     // Tests lovingly borrowed from Underscore
@@ -751,17 +749,17 @@ package('Function', function () {
     var obj = {name: 'moe'};
     var func = function() { return this.name + ' ' + Array.prototype.slice.call(arguments).join(' '); };
 
-    obj.func = run(func, 'fill', ['a', 'b']);
+    obj.func = run(func, 'partial', ['a', 'b']);
     equal(obj.func('c', 'd'), 'moe a b c d', 'can partially apply');
 
-    obj.func = run(func, 'fill', [undefined, 'b', undefined, 'd']);
+    obj.func = run(func, 'partial', [undefined, 'b', undefined, 'd']);
     equal(obj.func('a', 'c'), 'moe a b c d', 'can partially apply with placeholders');
 
-    func = run(function() { return arguments.length; }, 'fill', [undefined, 'b', undefined, 'd']);
+    func = run(function() { return arguments.length; }, 'partial', [undefined, 'b', undefined, 'd']);
     equal(func('a', 'c', 'e'), 5, 'accepts more arguments than the number of placeholders');
     equal(func('a'), 4, 'accepts fewer arguments than the number of placeholders');
 
-    func = run(function() { return typeof arguments[2]; }, 'fill', [undefined, 'b', undefined, 'd']);
+    func = run(function() { return typeof arguments[2]; }, 'partial', [undefined, 'b', undefined, 'd']);
     equal(func('a'), 'undefined', 'unfilled placeholders are undefined');
 
     // passes context
@@ -772,7 +770,7 @@ package('Function', function () {
     MyWidget.prototype.get = function() {
       return this.name;
     };
-    var MyWidgetWithCoolOpts = run(MyWidget, 'fill', [undefined, {a: 1}]);
+    var MyWidgetWithCoolOpts = run(MyWidget, 'partial', [undefined, {a: 1}]);
     var widget = new MyWidgetWithCoolOpts('foo');
     equal(widget instanceof MyWidget, true, 'Can partially bind a constructor');
     equal(widget.get(), 'foo', 'keeps prototype');
@@ -782,7 +780,7 @@ package('Function', function () {
     function MyWidget2() {
       return {foo:'bar'};
     }
-    var MyFilledWidget = run(MyWidget2, 'fill', [undefined, {a: 1}]);
+    var MyFilledWidget = run(MyWidget2, 'partial', [undefined, {a: 1}]);
     var widget = new MyFilledWidget();
     equal(widget instanceof MyWidget, false, 'explicit return value is no longer an instance of the constructor');
     equal(widget.foo, 'bar', 'respects return value');
@@ -795,25 +793,25 @@ package('Function', function () {
       return n;
     }
 
-    var partial = run(identity, 'fill', ['a']);
+    var partial = run(identity, 'partial', ['a']);
     equal(partial(), 'a', 'partially applies arguments');
 
     var fn = function(a, b) { return [a, b]; };
-    var partial = run(fn, 'fill', ['a']);
+    var partial = run(fn, 'partial', ['a']);
     equal(partial('b'), ['a', 'b'], 'creates a function that can be invoked with additional arguments');
 
     var fn = function() { return arguments.length; };
-    var partial = run(fn, 'fill', []);
+    var partial = run(fn, 'partial', []);
     equal(partial(), 0, 'works when there are no partially applied arguments and the created function is invoked without additional arguments');
 
-    var partial = run(identity, 'fill', []);
+    var partial = run(identity, 'partial', []);
     equal(partial('a'), 'a', 'works when there are no partially applied arguments and the created function is invoked with additional arguments');
 
 
     // Placeholders are "undefined" in Sugar.
 
     var fn = function() { return Array.prototype.slice.call(arguments); };
-    var partial = run(fn, 'fill', [undefined,'b',undefined]);
+    var partial = run(fn, 'partial', [undefined,'b',undefined]);
     equal(partial('a', 'c'), ['a','b','c'], 'placeholders | filling 2');
     equal(partial('a'), ['a','b',undefined], 'placeholders | filling 1');
     equal(partial(), [undefined,'b',undefined], 'placeholders | filling none');
@@ -821,23 +819,23 @@ package('Function', function () {
 
 
     var fn = function(a, b, c) {};
-    var partial = run(fn, 'fill', ['a']);
+    var partial = run(fn, 'partial', ['a']);
     equal(partial.length, 0, 'creates a function with a length of 0');
 
     var object = {};
     function Foo(value) {
       return value && object;
     }
-    var partial = run(Foo, 'fill', []);
+    var partial = run(Foo, 'partial', []);
     equal(new partial instanceof Foo, true, 'ensure new partialed is an instance of func');
     equal(new partial(true), object, 'ensure new partialed return value');
 
     function greet(greeting, name) {
       return greeting + ' ' + name;
     }
-    var partial1 = run(greet, 'fill', ['hi']);
-    var partial2 = run(partial1, 'fill', ['barney']);
-    var partial3 = run(partial1, 'fill', ['pebbles']);
+    var partial1 = run(greet, 'partial', ['hi']);
+    var partial2 = run(partial1, 'partial', ['barney']);
+    var partial3 = run(partial1, 'partial', ['pebbles']);
     equal(partial1('fred'), 'hi fred');
     equal(partial2(), 'hi barney');
     equal(partial3(), 'hi pebbles');
@@ -851,10 +849,10 @@ package('Function', function () {
     var object = { 'a': 1, 'fn': fn };
 
     var a = fn.bind(object);
-    var b = run(a, 'fill', [2]);
+    var b = run(a, 'partial', [2]);
     equal(b(3), [1,2,3], 'should work with combinations of bound and partial functions');
 
-    var a = run(fn, 'fill', [2]);
+    var a = run(fn, 'partial', [2]);
     var b = a.bind(object);
     equal(b(3), [1,2,3], 'should work with combinations of partial and bound functions');
 
@@ -865,10 +863,10 @@ package('Function', function () {
     var object = { 'fn': fn };
 
     var a = fn.bind(object, undefined, 2);
-    var b = run(a, 'fill', [1, undefined, 4]);
+    var b = run(a, 'partial', [1, undefined, 4]);
     equal(b(3, 5), [undefined,2,1,3,4,5], 'should not work with combinations of functions with placeholders');
 
-    var a = run(fn, 'fill', [undefined, 2]);
+    var a = run(fn, 'partial', [undefined, 2]);
     var b = a.bind(object, 1, undefined, 4);
     equal(b(3, 5), [1, 2, undefined, 4, 3, 5], 'should not work with combinations of functions with placeholders');
 
