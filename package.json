@@ -29,6 +29,9 @@
   "engines": {
     "node": ">= 0.8.23"
   },
+  "browser": {
+    "buffer": false
+  },
   "scripts": {
     "test": "node test/node/all.js"
   },
