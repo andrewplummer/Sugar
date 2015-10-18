@@ -587,6 +587,10 @@ package('Object', function () {
     var opts = { deep: true, resolve: fn };
     testStaticAndInstance({}, [obj, opts], {a:'a',b:'b',f:f}, 'instead a resolve function can be passed to handle such cases');
 
+    var Foo = function() {};
+    Foo.prototype.bar = 3;
+    testStaticAndInstance({}, [new Foo], {}, 'properties on the prototype are not merged');
+
     // Exceeding maximum call stack takes time so disable this on normal runs.
     // var a = {};
     // a.a = a;
