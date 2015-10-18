@@ -46,6 +46,9 @@ v2.0.0+
 - Level: Major
   - `Function#after` has changed behavior. Previously it would fire every `n` times. Now it will fire after `n` calls, with an optional flag to only fire once. Additionally it will not immediately fire when `0` is passed.
 
+- Level: Major
+  - `Function#fill` was renamed to `Function#partial`. Additionally, it no longer accepts `null` as a placeholder. Use `undefined` instead.
+
 - Level: Moderate
   - `Object.merge` will not continue traversing into an object if a resolve function is passed and returns something (anything but undefined). This means that you can selectively choose to handle certain conflicts differently by returning something, or use the merging defaults by returning undefined. It also means that a resolve function can no longer intentionally use `undefined` itself as a conflict resolution value - use `null` or another value instead.
 
@@ -60,9 +63,6 @@ v2.0.0+
 
 - Level: Minor
   - `Date#set` will now rewind dates that have accidentally traversed into a new month, such as setting `{ month: 1 }` on `January 31st`. This behavior was previously only on `advance` and `rewind`.
-
-- Level: Minor
-  - `Function#fill` now no longer accepts `null` as a placeholder. Use `undefined` instead.
 
 - Level: Minor
   - `String#escapeHTML` now double escapes entities, meaning '&amp;' will become '&amp;amp;', etc.
