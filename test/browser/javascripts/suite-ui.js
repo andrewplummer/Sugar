@@ -84,16 +84,17 @@
   };
 
   function getStringified(p) {
-    var str, arr, isArray;
+    var str, arr, isArray = p.join, arrayHasUndefined;
+    // JSON.stringify makes undefined into "null" in arrays
+    arrayHasUndefined = isArray && p.indexOf(undefined) !== -1;
     if(p && p.length > 5000) return 'One BIG ass array of length ' + p.length;
     if(typeof p === 'function') return 'function';
-    if(typeof JSON !== 'undefined' && JSON.stringify) {
+    if(typeof JSON !== 'undefined' && JSON.stringify && !arrayHasUndefined) {
       try {
         return str = JSON.stringify(p);
       } catch(e) {}
     }
     if(typeof p !== 'object') return String(p);
-    isArray = p.join;
     str = isArray ? '[' : '{';
     arr = [];
     for(var key in p){
