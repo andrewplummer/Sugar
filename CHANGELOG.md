@@ -50,6 +50,7 @@ v2.0.0
 - Added `String#replaceAll` and `String#removeAll`.
 - Added polyfill for `Array.from` and removed `Array.create`.
 - Changed behavior of `Function#after` to more closely match that of Underscore/Lodash.
+- Changed behavior of `Number#times` to return an array of return values.
 
 
 v1.4.2
