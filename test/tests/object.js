@@ -485,13 +485,13 @@ package('Object', function () {
 
       // Merging by descriptor
 
-      var opts = { descriptors: true };
+      var opts = { descriptor: true };
       var obj = getAccessorObject();
       var result = run(Object, 'merge', [{}, obj]);
       result.data.label = 'bar';
       equal(result.label, 'foo', 'basic merge does not support property descriptors');
 
-      var opts = { descriptors: true };
+      var opts = { descriptor: true };
       var obj = getAccessorObject();
       var result = run(Object, 'merge',  [{}, obj, opts]);
       result.data.label = 'bar';
@@ -499,7 +499,7 @@ package('Object', function () {
       result.label = 'car';
       equal(result.data.label, 'car', 'property setter merged');
 
-      var opts = { deep: true, descriptors: true };
+      var opts = { deep: true, descriptor: true };
       var obj = { foo: getAccessorObject() }
       var result = run(Object, 'merge',  [{}, obj, opts]);
       equal(result.foo !== obj.foo, true, 'object was deeply merged');
@@ -536,7 +536,7 @@ package('Object', function () {
       var result = run(Object, 'merge',  [{}, obj, opts]);
       equal(result.yo.foo, 'bar', 'deep non-enumerable property merged with hidden flag on');
 
-      var opts = { descriptors: true, hidden: true };
+      var opts = { descriptor: true, hidden: true };
       var obj = getDescriptorObject();
       var result = run(Object, 'merge',  [{}, obj, opts]);
       raisesError(function() { result.foo = 'moo'; }, 're-assignment of non-writable property raises error');
