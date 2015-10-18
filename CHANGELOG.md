@@ -18,14 +18,13 @@ v2.0.0
 - Added `Object.isArguments`.
 - Changed `String#each` to allow breaking the loop with `false`.
 - Added `String#map`.
-- Added non-enumerable property support to `Object.merge`.
 - Added ability fo `String#stripTags` and `Strip#removeTags` to pass a callback.
 - Made `String#stripTags` and `String#removeTags` much more robust.
 - Renamed `String#normalize` to `String#toAscii`.
 - Updated `Array#sortBy` to handle sorting on multiple properties (Issue #386, thanks to @eric-weiser).
 - Fixed `String#unescapeHTML` to handle HTML (and hex) codes. Also now handling &nbsp;
 - Added a third argument to `Number#bytes` to allow normal SI units.
-- Updated `Object.merge` to stop traversing into objects that have been resolved via a function.
+- `Object.merge` updated to take an options object. Non-enumerable property support is now an option, as well as property descriptors. Resolver function now will not traverse further into a deep merge if it has been resolved with a function.
 - Allowing a global thousands and decimal marker to be set.
 - `String#hankaku` now makes a hyphen from hyphen-like fullwidth chars in number mode.
 - Fixed issue with the digit `ten` in date creation (Issue #431).

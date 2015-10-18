@@ -32,10 +32,7 @@ v2.0.0+
   - `Object.reduce` is now deprecated. Use `Array#reduce` together with `Object.keys` instead.
 
 - Level: Major
-  - `Object.merge` and `Object.clone` now work on non-enumerable properties if supported. This is great for more robust merging of objects, but there are some side effects. The most major is that when arrays are merged together now (as objects) their length property will be merged as well. This will effectively mean that if an array of length 3 is merged into an array of length 4, the result will also have length 3 (depending on the merge strategy) which will chop off the last element. This is also true for nested arrays in the case of deep merging. If you are performing simple operations on straight arrays, consider using `Array#intersect` or `Array#union` instead, which are much more optimized for arrays. If you are doing complex, deep merging with nested arrays of varying length, you will need to pass a function as the resolve strategy and check for arrays using `Array.isArray` and handle appropriately. Additionally, IE8 and below do not have support for iterating over non-enumerable properties, so the results can be different here depending on environment. Sticking to standard object literals when merging/cloning will ensure maximum browser support.
-
-- Level: Major
-  - `Object.merge` will now treat null properties as if they did not exist (previously only undefined properties were treated this way). All other falsy properties such as empty strings and `false` will not be overwritten.
+  - `Object.merge` now takes an options object instead of a list of arguments. The 3rd argument is now "deep" in the options hash, and the 4th is "resolve". Also, if a function is passed to "resolve", any value returned by the function that is not undefined will halt the merge. Returning undefined will continue to merge as normal.
 
 - Level: Major
   - `String#assign` is now `String#format`, and behaves very closely to Python's method of the same name. Tokens are now zero based, and start with `{0}`. Also, errors will be thrown when tokens cannot be matched. Lastly, braces can be escaped by repeating them.
@@ -78,6 +75,9 @@ v2.0.0+
 
 - Level: Minor
   - `Date#unitSince` (`Date#hoursSince`, etc) will now assume that the passed in format is UTC if the context date is also flagged as UTC (if you're using `setUTC`). This behavior can be overriden by passing `{ fromUTC: false }` to these methods.
+
+- Level: Major
+  - `Object.clone` will now clone both non-enumerable properties if they exist and the attribute accessors "get" and "set".
 
 - Level: Very Minor
   - `Array#map`, `Array#unique`, `Array#groupBy`, `Array#min`, `Array#max`, `Array#least`, `Array#most`, `Array#sortBy`: Mapping shortcut strings now accept deep matchers with the dot `.` token. If you have objects that use `.` in the keys and are using these methods, be careful as this will now make the methods try to go deep. Pass a function instead to map as before.
