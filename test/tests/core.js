@@ -47,7 +47,7 @@ package('Core', function() {
   });
 
   group('Sugar extend', function () {
-    Sugar.extend();
+    Sugar.extendAll();
     assertAllMethodsMappedToNative(['Array', 'Boolean', 'Number', 'String', 'Date', 'RegExp', 'Function']);
     assertStaticMethodsMappedToNative(['Object']);
     assertInstanceMethodsNotMappedToNative(['Object']);
@@ -245,7 +245,7 @@ package('Core', function() {
   });
 
   group('Will extend to Object.prototype on global extend with true', function () {
-    Sugar.extend({
+    Sugar.extendAll({
       objectInstance: true
     });
     defineCustom(Sugar.Object);
