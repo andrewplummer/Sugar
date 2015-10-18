@@ -10,7 +10,7 @@ package('Date', function () {
     testAddLocale('fo', {
       units: 'do,re,mi,fa,so,la,ti,do',
       months: 'do,re,mi,fa,so,la,ti,do',
-      dateParse: [
+      parse: [
         '{year}kupo',
         '{month}mofo',
       ],
@@ -698,6 +698,8 @@ package('Date', function () {
     dateEqual(testCreateDate('yesterday at 3:00p'), new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1, 15), 'yesterday at 3:00p');
     dateEqual(testCreateDate('yesterday at 3:00a'), new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1, 3), 'yesterday at 3:00a');
 
+    // Issue #453 "tomorrow at noon"
+    //dateEqual(testCreateDate('tomorrow at noon'), new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1, 12), 'tommorrow at noon');
   });
 
 
@@ -3105,7 +3107,7 @@ package('Number', function () {
 
     var en = Sugar.Date.getLocale('en');
     var properties = [
-      'ampm','articles','code','date','dateParse','day','duration','edge','full',
+      'ampm','articles','code','date','parse','day','duration','edge','full',
       'fullMonth','future','cachedFormat','compiledFormats', 'modifiers','long','modifiers','modifiersByName',
       'months','num','numbers','past','plural','shift','short','sign','timeMarker',
       'timeParse','timeSuffixes','tokens','units','weekdays','year'
