@@ -181,7 +181,7 @@
         fn = globalObject.prototype[method];
       } else {
         // Otherwise assume a class method of the global object.
-        fn = globalObject[method];
+        return globalObject[method].apply(null, [subject].concat(args));
       }
       return fn.apply(subject, args);
     } else {
