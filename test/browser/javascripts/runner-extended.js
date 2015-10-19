@@ -1,7 +1,7 @@
 (function($) {
 
   $(document).ready(function() {
-    Sugar.extend();
+    Sugar.extendAll();
     runTests(testsFinished, true, 'browser');
   });
 
