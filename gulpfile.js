@@ -184,7 +184,7 @@ function buildDevelopment(packages, path) {
     '(function() {',
       "  'use strict';",
       '$1',
-    '})();'
+    '}).call(this);'
   ].join('\n');
   var files = getFiles(packages);
   var filename = getFilename(path || 'sugar');
@@ -229,7 +229,7 @@ function getDefaultFlags() {
     jar: COMPIER_JAR_PATH,
     compilation_level: 'ADVANCED_OPTIMIZATIONS',
     warning_level: 'QUIET',
-    output_wrapper: getLicense() + "\n(function(){'use strict';%output%}).call(window);",
+    output_wrapper: getLicense() + "\n(function(){'use strict';%output%}).call(this);",
     externs: 'lib/extras/externs.js',
   }
 }
