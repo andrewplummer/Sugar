@@ -854,6 +854,9 @@ package('Array', function () {
     test(['short','and', 'morts', 'fat'], [function(el) { return el.length; }, true], ['short','morts'], 'short,morts');
     test([12,12,12], [function(n){ return n; }, true], [12,12,12], 'should not unique');
 
+    test([{foo:'bar'}], [], {foo:'bar'}, 'object passed should return itself');
+    test([{foo:'bar'}], ['foo', true], [{foo:'bar'}], 'object passed with multiple returns array');
+
     var fn = function(el,i,a) {
       equal(this, [1], 'scope should be the array');
       equal(i, 0, 'second param should be the index');
@@ -1305,8 +1308,8 @@ package('Array', function () {
     test(['a','b','c'], ['d', 2], ['a','b','d','c'], 'index 2 | d');
     test([{a:1},{a:2}], [{a:3}, 2], [{a:1},{a:2},{a:3}], 'index 2 | a:3');
 
-    test(['a','b','c'], ['d', 5], ['a','b','c','d'], 'index 5 | d');
     test(['a','b','c'], ['d', 0], ['d','a','b','c'], 'index 0 | d');
+    test(['a','b','c'], ['d', 5], ['a','b','c','d'], 'index 5 | d');
     test(['a','b','c'], ['d', -1], ['a','b','d','c'], 'index -1 | d');
     test(['a','b','c'], ['d', -2], ['a','d','b','c'], 'index -2 | d');
     test(['a','b','c'], ['d', -3], ['d','a','b','c'], 'index -3 | d');
@@ -1315,6 +1318,7 @@ package('Array', function () {
     test(['a','b','c'], ['d', undefined], ['a','b','c','d'], 'undefined index | d');
     test(['a','b','c'], ['d', 'a'], ['a','b','c','d'], 'index a | d');
     test(['a','b','c'], ['d', NaN], ['a','b','c','d'], 'index NaN | d');
+    test(['a','b','c'], ['d', '0'], ['d','a','b','c'], "index '0' | d");
 
     var arr = [1,2,3];
     run(arr, 'add', [4]);
@@ -1413,6 +1417,7 @@ package('Array', function () {
     test(['a','b','c'], ['d', undefined], ['a','b','c','d'], 'undefined index | d');
     test(['a','b','c'], ['d', 'a'], ['a','b','c','d'], 'index a | d');
     test(['a','b','c'], ['d', NaN], ['a','b','c','d'], 'index NaN | d');
+    test(['a','b','c'], ['d', '0'], ['d','a','b','c'], "index '0' | d");
 
     var arr = [1,2,3];
     run(arr, 'include', [4]);
