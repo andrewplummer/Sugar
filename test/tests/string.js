@@ -1334,29 +1334,29 @@ package('String', function () {
   });
 
   method('format', function() {
-    var obj1 = { name: 'Harry' };
-    var obj2 = { last: 'Potter' };
-    var obj3 = { name: 'program', age: 21, points: 345 };
+    var obj1 = { firstName: 'Harry' };
+    var obj2 = { lastName: 'Potter' };
+    var obj3 = { firstName: 'program', age: 21, points: 345 };
 
     test('Welcome, {0}.', ['program'], 'Welcome, program.', 'array index');
     test('Welcome, {0}.', [obj1], 'Welcome, undefined.', 'numeric key does not exist in object');
-    test('Welcome, {name}.', [obj1], 'Welcome, Harry.', 'keyword');
-    test('Welcome, {name}. You are {age} years old and have {points} points left.', [obj3], 'Welcome, program. You are 21 years old and have 345 points left.', '3 arguments by keyword');
+    test('Welcome, {firstName}.', [obj1], 'Welcome, Harry.', 'keyword');
+    test('Welcome, {firstName}. You are {age} years old and have {points} points left.', [obj3], 'Welcome, program. You are 21 years old and have 345 points left.', '3 arguments by keyword');
     test('Welcome, {0}. You are {1} years old and have {2} points left.', ['program', 21, 345], 'Welcome, program. You are 21 years old and have 345 points left.', '3 arguments by index');
-    test('hello {0.name}', [obj1], 'hello undefined', 'does not allow dot expressions');
-    test('hello {name} {last}', [obj1, obj2], 'hello undefined undefined', 'objects will not be merged');
-    test('hello {0.name} {1.last}', [obj1, obj2], 'hello Harry Potter', 'arrays are accessible through indexes');
-    test('hello {0.name} {1.last}', [[obj1, obj2]], 'hello Harry Potter', 'passing an array as the only argument will get unwrapped');
+    test('hello {0.firstName}', [obj1], 'hello undefined', 'does not allow dot expressions');
+    test('hello {firstName} {lastName}', [obj1, obj2], 'hello undefined undefined', 'objects will not be merged');
+    test('hello {0.firstName} {1.lastName}', [obj1, obj2], 'hello Harry Potter', 'arrays are accessible through indexes');
+    test('hello {0.firstName} {1.lastName}', [[obj1, obj2]], 'hello Harry Potter', 'passing an array as the only argument will get unwrapped');
 
-    test('hello {0} {1.name}', ['Dirty', obj1], 'hello Dirty Harry', 'string and object');
-    test('hello {0} {1}', ['Dirty', obj1.name], 'hello Dirty Harry', 'string and object property');
-    test('hello {0.name} {1}', [obj1, 'Dirty'], 'hello Harry Dirty', 'object and string');
+    test('hello {0} {1.firstName}', ['Dirty', obj1], 'hello Dirty Harry', 'string and object');
+    test('hello {0} {1}', ['Dirty', obj1.firstName], 'hello Dirty Harry', 'string and object property');
+    test('hello {0.firstName} {1}', [obj1, 'Dirty'], 'hello Harry Dirty', 'object and string');
 
-    test(obj1.name, 'Harry', 'obj1 retains its properties');
-    equal(obj1.last, undefined, 'obj1 is untampered');
+    test(obj1.firstName, 'Harry', 'obj1 retains its properties');
+    equal(obj1.lastName, undefined, 'obj1 is untampered');
 
-    test(obj2.last, 'Potter', 'obj2 retains its properties');
-    equal(obj2.name, undefined, 'obj2 is untampered');
+    test(obj2.lastName, 'Potter', 'obj2 retains its properties');
+    equal(obj2.firstName, undefined, 'obj2 is untampered');
 
     test('Hello, {0}.', [''], 'Hello, .', 'empty string has no index');
     test('Hello, {0}.', [], 'Hello, undefined.', 'no argument with index');
