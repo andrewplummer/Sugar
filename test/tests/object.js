@@ -1157,10 +1157,10 @@ package('Object', function () {
 
     test(Object, ['http://fake.com?foo=bar'], { foo: 'bar' }, 'handles whole URLs');
     test(Object, {}, 'will not die if no arguments');
-    equal(run(Object, 'fromQueryString', ['foo=bar&moo=car']).keys(), ['foo', 'moo'], 'should be extended');
+    equal(run(Object, 'fromQueryString', ['foo=bar&moo=car']).keys, undefined, 'should not be extended');
 
     if(typeof window !== 'undefined') {
-      equal(Array.isArray(run(Object, 'fromQueryString', [window.location]).keys()), true, 'can handle just window.location');
+      equal(typeof run(Object, 'fromQueryString', [window.location]), 'object', 'can handle just window.location');
     }
 
     test(Object, ['foo=3.14156'], { foo: '3.14156' }, 'float values are not coerced');
