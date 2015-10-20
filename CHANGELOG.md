@@ -51,6 +51,7 @@ v2.0.0
 - Added polyfill for `Array.from` and removed `Array.create`.
 - Changed behavior of `Function#after` to more closely match that of Underscore/Lodash.
 - Changed behavior of `Number#times` to return an array of return values.
+- Changed `Object.fromQueryString` to return a plain object.
 
 
 v1.4.2

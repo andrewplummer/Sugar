@@ -73,8 +73,11 @@ v2.0.0+
 - Level: Minor
   - `Date#unitSince` (`Date#hoursSince`, etc) now assumes that the passed in format is UTC if the context date is also flagged as UTC (if you're using `setUTC`). This behavior can be overriden by passing `{ fromUTC: false }` to these methods.
 
-- Level: Major
+- Level: Minor
   - `Object.clone` now clones both non-enumerable properties if they exist and the attribute accessors "get" and "set".
+
+- Level: Minor
+  - `Object.fromQueryString` now returns a plain object. If you want an extended object call `Object.extended` on the result.
 
 - Level: Very Minor
   - `Array#map`, `Array#unique`, `Array#groupBy`, `Array#min`, `Array#max`, `Array#least`, `Array#most`, `Array#sortBy`: Mapping shortcut strings now accept deep matchers with the dot `.` token. If you have objects that use `.` in the keys and are using these methods, be careful as this now makes the methods try to go deep. Pass a function instead to map as before.
