@@ -1,22 +1,22 @@
 globalFailures = 0;
 
-function logGreen(message) {
+logGreen = function(message) {
   console.log('\x1b[32m', message || '','\x1b[0m');
 }
 
-function logRed(message) {
+logRed = function(message) {
   console.log('\x1b[31m', message || '','\x1b[0m');
 }
 
-function logBlue(message) {
+logBlue = function(message) {
   console.log('\x1b[36m', message || '','\x1b[0m');
 }
 
-function logYellow(message) {
+logYellow = function(message) {
   console.log('\x1b[33m', message || '','\x1b[0m');
 }
 
-function logLine() {
+logLine = function() {
   console.log();
 }
 

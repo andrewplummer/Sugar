@@ -8,6 +8,7 @@ require('../suite/log');
 require('../suite/helpers/common');
 require('../suite/helpers/core');
 require('../suite/helpers/date');
+require('../suite/helpers/object');
 
 var exitOnFail = true;
 
