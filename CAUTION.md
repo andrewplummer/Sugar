@@ -44,6 +44,9 @@ v2.0.0+
   - `Array.create` was removed. Use ES6 method `Array.from` instead. Sugar provides this as a polyfill in the default package.
 
 - Level: Major
+  - `Object.watch` was removed. This method was the only part of Sugar that was not 100% compatible in all environments, and was an overly simplistic solution to a difficult problem that others have done better (see discussions around Object.observe and polling). As a quick and dirty solution, this will be made available as a [plugin](https://github.com/andrewplummer/sugar-plugins). Also includes `Object.unwatch`.
+
+- Level: Major
   - `Function#after` has changed behavior. Previously it would fire every `n` times. Now it will fire after `n` calls, with an optional flag to only fire once. Additionally it will not immediately fire when `0` is passed.
 
 - Level: Major
