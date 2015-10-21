@@ -288,7 +288,7 @@ package('Core', function() {
     raisesError(function() { [1,2,3].filter(1); }, 'filter is not enhanced');
     raisesError(function() { [1,2,3].find(1); }, 'find is not enhanced');
     raisesError(function() { [1,2,3].findIndex(1); }, 'findIndex is not enhanced');
-    raisesError(function() { [1,2,3].map(1); }, 'findIndex is not enhanced');
+    raisesError(function() { [1,2,3].map(1); }, 'map is not enhanced');
   });
 
   group('Array enhancements with enhance flag', function() {
@@ -302,7 +302,7 @@ package('Core', function() {
     raisesError(function() { [1,2,3].filter(1); }, 'filter is not enhanced');
     raisesError(function() { [1,2,3].find(1); }, 'find is not enhanced');
     raisesError(function() { [1,2,3].findIndex(1); }, 'findIndex is not enhanced');
-    raisesError(function() { [1,2,3].map(1); }, 'findIndex is not enhanced');
+    raisesError(function() { [1,2,3].map(1); }, 'map is not enhanced');
   });
 
   group('String enhancements', function() {
