@@ -62,6 +62,9 @@ v2.0.0+
   - `String#normalize` is now renamed to `String#toAscii` to comply with the ES6 spec.
 
 - Level: Minor
+  - `Date.create` no longer accepts enumerated parameters (2001, 5, 31, ...). Use the normal date constructor instead.
+
+- Level: Minor
   - `Date#set` now rewinds dates that have accidentally traversed into a new month, such as setting `{ month: 1 }` on `January 31st`. This behavior was previously only on `advance` and `rewind`.
 
 - Level: Minor
