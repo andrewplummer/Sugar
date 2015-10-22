@@ -3042,6 +3042,8 @@ package('Number', function () {
 
     testSetLocale('en');
 
+    test(-3600000, '0 milliseconds', 'negative number should be 0');
+
     test(0, '0 milliseconds', '1 milliseconds');
     test(1, '1 millisecond', '1 millisecond');
     test(2, '2 milliseconds', '2 milliseconds');
