@@ -2609,7 +2609,7 @@ package('Date', function () {
     run(Date, 'addFormat', ['on ze (\\d+)th of (january|february|march|april|may) lavigne', ['date','month'], 'en']);
     dateEqual(testCreateDate('on ze 18th of april lavigne', 'en'), new Date(thisYear, 3, 18), 'handles other formats');
 
-    equal(typeof testGetLocale(), 'object', 'current localization object is exposed in case needed');
+    equal(typeof testGetLocale(), 'object', 'current locale object is exposed in case needed');
     equal(testGetLocale().code, 'en', 'adding the format did not change the current locale');
 
   });
@@ -2720,6 +2720,9 @@ package('Date', function () {
     equal(testGetLocale().code, testGetLocale('en').code, 'adding a locale does not affect the current locale');
     equal(testGetLocale('foobar').months[0], 'a', 'new locale has been added');
     dateEqual(testCreateDate('a', 'foobar'), testCreateDate('January'), 'formats have been recognized');
+
+    testAddLocale({ code: 'barbar', months: ['d','e','f'] });
+    dateEqual(testCreateDate('f', 'barbar'), testCreateDate('March'), 'can add locale with just object');
   });
 
 
