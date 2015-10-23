@@ -53,19 +53,6 @@ package('Date', function () {
     dateEqual(run(Date, 'create'), new Date(), 'empty');
   });
 
-  group('Create | Enumerated Parameters', function() {
-    dateEqual(testCreateDate(1998), new Date(1998), '1998');
-    dateEqual(testCreateDate(1998,1), new Date(1998,1), 'January, 1998');
-    dateEqual(testCreateDate(1998,1,23), new Date(1998,1,23), 'January 23, 1998');
-    dateEqual(testCreateDate(1998,1,23,11), new Date(1998,1,23,11), 'January 23, 1998 11am');
-    dateEqual(testCreateDate(1998,1,23,11,54), new Date(1998,1,23,11,54), 'January 23, 1998 11:54am');
-    dateEqual(testCreateDate(1998,1,23,11,54,32), new Date(1998,1,23,11,54,32), 'January 23, 1998 11:54:32');
-    dateEqual(testCreateDate(1998,1,23,11,54,32,454), new Date(1998,1,23,11,54,32,454), 'January 23, 1998 11:54:32.454');
-    dateEqual(testCreateDate('1998', true), new Date(1998, 0), 'will not choke on a boolean as second param');
-    dateEqual(testCreateDate('1998', ''), new Date(1998, 0), 'will not choke on an empty string as second param');
-  });
-
-
   group('Create | Objects', function() {
     dateEqual(testCreateDate({ year: 1998 }), new Date(1998, 0), '1998');
     dateEqual(testCreateDate({ year: 1998, month: 1 }), new Date(1998,1), 'January, 1998');
@@ -131,8 +118,6 @@ package('Date', function () {
     dateEqual(testCreateDate('Saturday',  opt), testCreateDate('Saturday'),  'past and future cancel | Saturday');
 
 
-    raisesError(function(){ testCreateDate('1999', { foo: 'bar'}); }, 'unknown option should raise an error');
-
     // fromUTC option
 
     var d1 = new Date(2012, 11, 31);
@@ -147,10 +132,6 @@ package('Date', function () {
     var d1 = new Date(2012, 11, 31);
     var d2 = testCreateDate({ year: 2012, month: 11, day: 31 }, { fromUTC: true });
     equal(d1 - d2, d1.getTimezoneOffset() * 60 * 1000, 'object created dates allow options object as last argument');
-
-    var d1 = new Date(2012, 11, 31);
-    var d2 = testCreateDate(2012, 11, 31, { fromUTC: true });
-    equal(d1 - d2, d1.getTimezoneOffset() * 60 * 1000, 'enumerated dates allow options object as last argument');
 
     var opt = {
       fromUTC: true,
@@ -167,9 +148,6 @@ package('Date', function () {
 
     // setUTC option
 
-    var d = testCreateDate(2012, 11, 31, { setUTC: true });
-    equal(d._utc, true, 'setUTC should set the _utc flag');
-
     var d = testCreateDate(1440428400000, { setUTC: true });
     equal(d._utc, true, 'setUTC should be allowed on a timestamp');
 
@@ -177,7 +155,7 @@ package('Date', function () {
     equal(d._utc, true, 'setUTC should be allowed on a parameter created date');
 
     var d1 = new Date(2012, 11, 31);
-    var d2 = testCreateDate(2012, 11, 31, {
+    var d2 = testCreateDate({ year: 2012, month: 11, date: 31 }, {
       fromUTC: true,
       setUTC: true
     });
@@ -818,9 +796,9 @@ package('Date', function () {
     dateEqual(testCreateUTCDate('0999'), new Date(Date.UTC(999, 0)), '3 digit year 999 should be equal to ISO8601');
     dateEqual(testCreateUTCDate('0123'), new Date(Date.UTC(123, 0)), '3 digit year 123 should be equal to ISO8601');
 
-    var d = run(testCreateUTCDate(2013, 0, 14), 'setUTC', [true]);
+    var d = run(testCreateUTCDate({ year: 2013, month: 0, date: 14 }), 'setUTC', [true]);
     run(d, 'set', [{week:1}]);
-    dateEqual(d, testCreateUTCDate(2012, 11, 31), 'utc dates should not throw errors on week set');
+    dateEqual(d, new Date(Date.UTC(2012, 11, 31)), 'utc dates should not throw errors on week set');
 
   });
 
@@ -1884,6 +1862,7 @@ package('Date', function () {
 
     test(testCreateDate('3 hours ago'), ['now', 'bloopie'], false, 'does not die on string-based precision');
 
+    test(new Date(2001, 5, 4), [{ year: 2001 }], true, 'is 2001 by object');
 
     // Issue #160
     test(testCreateDate('12/01/2013'), ['November 2013'], false, 'December 2013 is not November 2013');
@@ -3014,8 +2993,6 @@ package('Number', function () {
     dateEqual(run(5, 'yearsBefore', [christmas]), getRelativeDate.call(christmas, -5), 'yearsBefore | 5 years before christmas');
     dateEqual(run(5, 'yearsAfter', [christmas]), getRelativeDate.call(christmas, 5), 'yearsAfter | 5 years after christmas');
 
-    dateEqual(run(5, 'hoursBefore', [1972, 11, 25]), getRelativeDate.call(christmas, null, null, null, -5), 'hoursBefore | accepts numbers');
-
 
     // Hooking it all up!!
 
@@ -3064,6 +3041,8 @@ package('Number', function () {
   method('duration', function() {
 
     testSetLocale('en');
+
+    test(-3600000, '0 milliseconds', 'negative number should be 0');
 
     test(0, '0 milliseconds', '1 milliseconds');
     test(1, '1 millisecond', '1 millisecond');

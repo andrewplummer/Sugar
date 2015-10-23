@@ -53,6 +53,7 @@ v2.0.0
 - Changed behavior of `Number#times` to return an array of return values.
 - Changed `Object.fromQueryString` to return a plain object.
 - Removed `Object.watch` and `Object.unwatch`.
+- Removed ability for `Date.create` to accept enumerated arguments.
 
 
 v1.4.2
