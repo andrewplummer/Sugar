@@ -12,7 +12,7 @@ package('Date', function () {
       months: 'do,re,mi,fa,so,la,ti,do',
       parse: [
         '{year}kupo',
-        '{month}mofo',
+        '{month}mofo'
       ],
       duration: '{num}{unit}momoney',
       long: 'yeehaw'
@@ -747,7 +747,6 @@ package('Date', function () {
 
     var d = run(testCreateUTCDate('2001-06-15'), 'setUTC', [true]);
 
-    equal(run(d, 'iso'), '2001-06-15T00:00:00.000Z', 'will properly be output in UTC');
     equal(run(d, 'format', ['{tz}']), '+0000', 'format UTC date will have +0000 offset');
     equal(run(d, 'getUTCOffset'), '+0000', 'getUTCOffset');
     dateEqual(dateRun(d, 'advance', ['1 month']), new Date(Date.UTC(2001, 6, 15)), 'advancing');
@@ -1592,12 +1591,6 @@ package('Date', function () {
     var d = new Date('August 5, 2010 04:03:02');
     test(d, getExpectedTimezoneOffset(d), 'no colon');
     test(d, [true], getExpectedTimezoneOffset(d, true), 'colon');
-  });
-
-  method('iso', function() {
-    var d = new Date('August 5, 2010 04:03:02');
-    var expected = run(run(d, 'setUTC', [true], 'format', [Sugar.Date.ISO8601_DATETIME]));
-    test(d, expected, 'Date#iso is an alias for the ISO8601_DATETIME format in UTC');
   });
 
   method('relative', function() {
@@ -2682,6 +2675,10 @@ package('Date', function () {
 
   method('iso', function() {
 
+    var d = new Date('August 5, 2010 04:03:02');
+    var expected = run(run(d, 'setUTC', [true], 'format', [Sugar.Date.ISO8601_DATETIME]));
+    test(d, expected, 'Date#iso is an alias for the ISO8601_DATETIME format in UTC');
+
     // Issue #146 - These tests were failing when system time was set to Friday, June 1, 2012 PDT
 
     test(testCreateDate('2010-01-20T20:00:00.000Z'), '2010-01-20T20:00:00.000Z');
@@ -2710,6 +2707,10 @@ package('Date', function () {
     test(testCreateDate('Oct 20 2010 12:00:00 GMT-0800 (PST)'), '2010-10-20T20:00:00.000Z');
     test(testCreateDate('Nov 20 2010 12:00:00 GMT-0800 (PST)'), '2010-11-20T20:00:00.000Z');
     test(testCreateDate('Dec 20 2010 12:00:00 GMT-0800 (PST)'), '2010-12-20T20:00:00.000Z');
+
+    var d = run(testCreateUTCDate('2001-06-15'), 'setUTC', [true]);
+    equal(run(d, 'iso'), '2001-06-15T00:00:00.000Z', 'will properly be output in UTC');
+
   });
 
 
@@ -3111,9 +3112,10 @@ package('Number', function () {
       'timeParse','timeSuffixes','tokens','units','weekdays','year'
     ];
 
-    properties.forEach(function(p) {
+    for (var i = 0; i < properties.length; i++) {
+      var p = properties[i];
       equal(!!en[p], true, 'property ' + p + ' should exist in the locale object');
-    });
+    }
 
     var cf = en.compiledFormats[0];
     equal(cf.hasOwnProperty('variant'), true, 'compiled format should have a variant property');
