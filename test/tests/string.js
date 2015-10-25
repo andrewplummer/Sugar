@@ -352,22 +352,6 @@ package('String', function () {
 
   });
 
-
-  method('map', function() {
-
-    var counter = 0, ctx = { foo: 'bar' };
-    var fn = function(l, i, str) {
-      equal(i, counter, 'index should be passed');
-      equal(str, 'abcd', 'string should be passed');
-      equal(this, ctx, 'context should be passable');
-      counter++;
-      return String.fromCharCode(l.charCodeAt(0) + 1);
-    }
-
-    test('abcd', [fn, ctx], 'bcde', 'asfdsa');
-
-  });
-
   method('codes', function() {
 
     var counter = 0, result;
