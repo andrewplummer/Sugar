@@ -4,6 +4,8 @@
   var globalContext = typeof global !== 'undefined' && global.Object ? global : this;
   var nativeState;
 
+  var NATIVES = ['Boolean','Number','String','Array','Date','RegExp','Function', 'Object'];
+
   function restoreNative(methodName, target, storedMethod) {
     if (target[methodName] !== storedMethod) {
       if (!storedMethod) {
@@ -105,8 +107,12 @@
       methods: [],
       objectInstance: false
     });
-    testIterateOverObject(Sugar, function(name, ns) {
+    for (var i = 0; i < NATIVES.length; i++) {
+
+      var name        = NATIVES[i];
+      var ns          = Sugar[name];
       var nativeClass = globalContext[name];
+
       ns.active = nativeState[name + 'Active'];
       testIterateOverObject(ns, function(methodName, method) {
         if (!isSugarMethod(method)) {
@@ -124,7 +130,7 @@
         restoreNative(methodName, nativeClass, state.static);
         restoreNative(methodName, nativeClass.prototype, state.instance);
       });
-    });
+    }
   }
 
 })();

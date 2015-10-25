@@ -1,11 +1,9 @@
 package('Object', function () {
   "use strict";
 
-  var definePropertySupport = !!(Object.defineProperty && Object.defineProperties);
-
-  // The scope when none is set.
+  // The scope when none is set. Needs to be set here
+  // as strict mode affects this"
   var nullScope = (function() { return this; }).call();
-
 
   method('isObject', function() {
     var Person = function() {};
@@ -207,13 +205,13 @@ package('Object', function () {
     equal(obj.keys(), keys, "returns object's keys");
     count = 0;
     obj.keys(function(key, value) {
-      equal(key, keys[count], 'accepts a block');
+      equal(key, keys[count], 'accepts a function');
       equal(value, values[count], 'value is also passed');
       equal(this, obj, '"this" is the object');
       count++;
     });
 
-    equal(count, 3, 'accepts a block | iterated properly');
+    equal(count, 3, 'accepts a function | iterated properly');
 
     equal(run(Object, 'extended').keys(), [], 'empty object');
     equal(run(Object, 'keys', [run(Object, 'extended')]), [], 'empty object');
@@ -223,29 +221,29 @@ package('Object', function () {
     equal(run(Object, 'keys', [obj]), keys, "Object.keys | returns object's keys");
     count = 0;
     run(Object, 'keys', [obj, function(key) {
-      equal(key, keys[count], 'Object.keys | accepts a block');
+      equal(key, keys[count], 'Object.keys | accepts a function');
       count++;
     }]);
-    equal(count, 3, 'Object.keys | accepts a block | iterated properly');
+    equal(count, 3, 'Object.keys | accepts a function | iterated properly');
 
     strippedValues = obj.values().filter(function(m) { return typeof m != 'function'; });
     equal(strippedValues, values, "returns object's values");
     count = 0;
     obj.values(function(value) {
-      equal(value, values[count], 'accepts a block');
+      equal(value, values[count], 'accepts a function');
       count++;
     });
 
-    equal(count, 3, 'accepts a block | iterated properly');
+    equal(count, 3, 'accepts a function | iterated properly');
 
     strippedValues = run(Object, 'values', [obj]).filter(function(m) { return typeof m != 'function'; });
     equal(strippedValues, values, "Object.values | returns object's values");
     count = 0;
     run(Object, 'values', [obj, function(value) {
-      equal(value, values[count], 'Object.values | accepts a block');
+      equal(value, values[count], 'Object.values | accepts a function');
       count++;
     }]);
-    equal(count, 3, 'Object.values | accepts a block | iterated properly');
+    equal(count, 3, 'Object.values | accepts a function | iterated properly');
 
     strippedValues = run(Object, 'extended').values().filter(function(m) { return typeof m != 'function'; });
     equal(strippedValues, [], 'empty object');
@@ -648,7 +646,7 @@ package('Object', function () {
         foo: 'car',
         mee: 'maw'
       },
-      arr: definePropertySupport ? [4,5,6] : [4,5,6,4]
+      arr: [4,5,6]
     }
 
     var opts = { deep: true, resolve: fn };
@@ -754,6 +752,18 @@ package('Object', function () {
 
     var opts = { deep: true, resolve: conservativeCombinator };
     testStaticAndInstance(testClone(deepObject1), [deepObject2, opts], expectedDeepConservativeCombinator, 'deep merge | conservative combinator function');
+
+
+    // DontEnum bug in < IE9
+
+    var obj = {toString: function() { return 'foo!'; }};
+
+    var result = run({}, 'merge', [obj]);
+    equal(result.toString(), 'foo!', 'dont enum bug');
+
+    var hash = run(Object, 'extended', []);
+    var result = hash.merge(obj);
+    equal(result.toString(), 'foo!', 'dont enum bug | extended');
 
     // Issue #335
 
@@ -1410,14 +1420,14 @@ package('Object', function () {
 
     count = 0;
     callback = function(key, value, o) {
-      equal(key, keys[count], 'accepts a block');
-      equal(value, values[count], 'accepts a block');
-      equal(o, obj, 'accepts a block | object is third param');
+      equal(key, keys[count], 'accepts a function');
+      equal(value, values[count], 'accepts a function');
+      equal(o, obj, 'accepts a function | object is third param');
       count++;
     }
     result = run(Object, 'each', [obj, callback]);
-    equal(count, 4, 'accepts a block | iterated properly');
-    equal(result, obj, 'accepts a block | result should equal object passed in');
+    equal(count, 4, 'accepts a function | iterated properly');
+    equal(result, obj, 'accepts a function | result should equal object passed in');
 
     raisesError(function(){
       run(Object, 'each', [{foo:'bar'}]);
@@ -1491,12 +1501,12 @@ package('Object', function () {
     testStaticAndInstance(obj, ['...'], undefined, 'three dots');
 
     testStaticAndInstance({}, [], undefined, 'no arguments');
-    testStaticAndInstance({undefined:1}, [undefined], undefined, 'undefined should not be coerced to string');
-    testStaticAndInstance({null:1}, [null], undefined, 'null should not be coerced to string');
+    testStaticAndInstance({'undefined':1}, [undefined], undefined, 'undefined should not be coerced to string');
+    testStaticAndInstance({'null':1}, [null], undefined, 'null should not be coerced to string');
     testStaticAndInstance({3:1}, [3], 1, 'number should be coerced to string');
     testStaticAndInstance({'[object Object]':1}, [{foo:'bar'}], 1, 'object should be coerced to string');
-    testStaticAndInstance({undefined:1}, ['undefined'], 1, '"undefined" is found');
-    testStaticAndInstance({null:1}, ['null'], 1, '"null" is found');
+    testStaticAndInstance({'undefined':1}, ['undefined'], 1, '"undefined" is found');
+    testStaticAndInstance({'null':1}, ['null'], 1, '"null" is found');
 
     testStaticAndInstance({'':1}, [''], 1, 'empty string as key');
     testStaticAndInstance({'':{'':2}}, ['.'], 2, 'nested empty string as key');

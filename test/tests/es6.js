@@ -1021,11 +1021,10 @@ package('ES6', function () {
 
 
     if (Array.propertyIsEnumerable) {
-      equal(Array.propertyIsEnumerable('from'), false, 'Array.from is not enumerable');
+      equal(Array.propertyIsEnumerable('from'), definePropertySupport ? false : true, 'Array.from is not enumerable');
     }
 
-    // Quick IE8 check
-    if (Object.defineProperty && Object.defineProperties) {
+    if (definePropertySupport) {
 
       var MyType = function () {};
       Object.defineProperty(MyType.prototype, '0', {

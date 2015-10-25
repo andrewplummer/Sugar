@@ -74,7 +74,7 @@ getRelativeDate = function(year, month, day, hours, minutes, seconds, millisecon
     d.setDate(setDate);
   }
 
-  // "hours" and lower must be set by absolute date or they will result
+  // "hours" and lower must be set by absolute time or they will result
   // in unintended dates when traversing over DST shifts.
   d.setTime(d.getTime() +
     ((hours        || 0) * 60 * 60 * 1000) +
