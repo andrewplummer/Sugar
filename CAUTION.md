@@ -59,6 +59,9 @@ v2.0.0+
   - Alphanumeric array options are now defined on the global object `Sugar.Array` instead of `Array` itself.
 
 - Level: Moderate
+  - `String#map` was removed. This functionality can easily be replicated by mapping an array, and even more succinctly by using `Function#partial`.
+
+- Level: Moderate
   - `String#normalize` is now renamed to `String#toAscii` to comply with the ES6 spec.
 
 - Level: Minor
