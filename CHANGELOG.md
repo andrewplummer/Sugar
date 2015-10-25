@@ -54,6 +54,7 @@ v2.0.0
 - Changed `Object.fromQueryString` to return a plain object.
 - Removed `Object.watch` and `Object.unwatch`.
 - Removed ability for `Date.create` to accept enumerated arguments.
+- Removed `String#map`.
 
 
 v1.4.2
