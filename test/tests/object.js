@@ -646,7 +646,7 @@ package('Object', function () {
         foo: 'car',
         mee: 'maw'
       },
-      arr: definePropertySupport ? [4,5,6] : [4,5,6,4]
+      arr: [4,5,6]
     }
 
     var opts = { deep: true, resolve: fn };
@@ -752,6 +752,18 @@ package('Object', function () {
 
     var opts = { deep: true, resolve: conservativeCombinator };
     testStaticAndInstance(testClone(deepObject1), [deepObject2, opts], expectedDeepConservativeCombinator, 'deep merge | conservative combinator function');
+
+
+    // DontEnum bug in < IE9
+
+    var obj = {toString: function() { return 'foo!'; }};
+
+    var result = run({}, 'merge', [obj]);
+    equal(result.toString(), 'foo!', 'dont enum bug');
+
+    var hash = run(Object, 'extended', []);
+    var result = hash.merge(obj);
+    equal(result.toString(), 'foo!', 'dont enum bug | extended');
 
     // Issue #335
 
