@@ -25,6 +25,12 @@ testIsDate = function(obj) {
 testClone = function (obj) {
   var klass = testGetClass(obj);
   var result = testIsArray(obj, klass) ? [] : {}, key, val;
+  if (typeof obj === 'string' || typeof obj === 'number' || typeof obj === 'boolean') {
+    return obj;
+  }
+  if (obj && typeof obj.valueOf() === 'string' && obj.length > 0 && !obj.hasOwnProperty(0)) {
+    testForceStringCoercion(obj);
+  }
   for(key in obj) {
     if(!obj.hasOwnProperty(key)) continue;
     var val = obj[key];
@@ -37,7 +43,20 @@ testClone = function (obj) {
     }
     result[key] = val;
   }
+  if (obj && typeof obj === 'object' && obj.hasOwnProperty('toString')) {
+    result['toString'] = obj['toString'];
+  }
   return result;
+}
+
+testForceStringCoercion = function(obj) {
+  var i = 0, chr;
+  while(chr = obj.charAt(i)) {
+    obj[i++] = chr;
+  }
+  for (var key in obj) {
+    if(!obj.hasOwnProperty(key)) continue;
+  };
 }
 
 testStaticAndInstance = function (subject, args, expected, message) {

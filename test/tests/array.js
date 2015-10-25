@@ -16,6 +16,9 @@ package('Array', function () {
   var arrayOfUndefinedWith1 = [1];
   arrayOfUndefinedWith1.push(undefined);
 
+  var arrayOfUndefinedWithNull = [null];
+  arrayOfUndefinedWithNull.push(undefined);
+
   var storedProps = {};
 
   function storeAlphanumericProps() {
@@ -183,10 +186,10 @@ package('Array', function () {
 
     raisesError(function() { run([1,2,3], 'filter'); }, 'no argument raises a type error');
 
-    test([undefined, undefined], [undefined], [undefined, undefined], 'undefined should match all undefined');
-    test([undefined, undefined], [null], [], 'null should not match all undefined');
-    test([undefined, null], [undefined], [undefined], 'undefined should match one undefined');
-    test([undefined, null], [null], [null], 'null should match one null');
+    test(arrayOfUndefined, [undefined], arrayOfUndefined, 'undefined should match all undefined');
+    test(arrayOfUndefined, [null], [], 'null should not match all undefined');
+    test(arrayOfUndefinedWithNull, [undefined], [undefined], 'undefined should match one undefined');
+    test(arrayOfUndefinedWithNull, [null], [null], 'null should match one null');
     test([null, null], [null], [null, null], 'null should match all null');
     test([null, null], [undefined], [], 'undefined should not match all null');
 
@@ -343,10 +346,10 @@ package('Array', function () {
 
     raisesError(function() { run([1,2,3], 'any') }, 'no argument raises a TypeError');
 
-    test([undefined, undefined], [undefined], true, 'undefined should match all undefined');
-    test([undefined, undefined], [null], false, 'null should not match all undefined');
-    test([undefined, null], [undefined], true, 'undefined should match one undefined');
-    test([undefined, null], [null], true, 'null should match one null');
+    test(arrayOfUndefined, [undefined], true, 'undefined should match all undefined');
+    test(arrayOfUndefined, [null], false, 'null should not match all undefined');
+    test(arrayOfUndefinedWithNull, [undefined], true, 'undefined should match one undefined');
+    test(arrayOfUndefinedWithNull, [null], true, 'null should match one null');
     test([null, null], [null], true, 'null should match all null');
     test([null, null], [undefined], false, 'undefined should not match all null');
 
@@ -398,10 +401,10 @@ package('Array', function () {
 
     raisesError(function() { run([1,2,3], 'all'); }, 'no argument raises a type error');
 
-    test([undefined, undefined], [undefined], true, 'undefined should match all undefined');
-    test([undefined, undefined], [null], false, 'null should not match all undefined');
-    test([undefined, null], [undefined], false, 'undefined should match one undefined');
-    test([undefined, null], [null], false, 'null should match one null');
+    test(arrayOfUndefined, [undefined], true, 'undefined should match all undefined');
+    test(arrayOfUndefined, [null], false, 'null should not match all undefined');
+    test(arrayOfUndefinedWithNull, [undefined], false, 'undefined should match one undefined');
+    test(arrayOfUndefinedWithNull, [null], false, 'null should match one null');
     test([null, null], [null], true, 'null should match all null');
     test([null, null], [undefined], false, 'undefined should not match all null');
 
@@ -439,10 +442,10 @@ package('Array', function () {
 
     raisesError(function() { run([1,2,3], 'none'); }, 'no argument raises a TypeError');
 
-    test([undefined, undefined], [undefined], false, 'undefined should match all undefined');
-    test([undefined, undefined], [null], true, 'null should not match all undefined');
-    test([undefined, null], [undefined], false, 'undefined should match one undefined');
-    test([undefined, null], [null], false, 'null should match one null');
+    test(arrayOfUndefined, [undefined], false, 'undefined should match all undefined');
+    test(arrayOfUndefined, [null], true, 'null should not match all undefined');
+    test(arrayOfUndefinedWithNull, [undefined], false, 'undefined should match one undefined');
+    test(arrayOfUndefinedWithNull, [null], false, 'null should match one null');
     test([null, null], [null], false, 'null should match all null');
     test([null, null], [undefined], true, 'undefined should not match all null');
 
@@ -705,7 +708,7 @@ package('Array', function () {
     test(['foo','bar'], [/q+/], undefined, '/q+/');
     test([function() {}], [function(e) {}, 0], undefined, 'undefined function');
     test([null, null], [null, 0], null, 'null');
-    test([undefined, undefined], [undefined, 0], undefined, 'undefined');
+    test(arrayOfUndefined, [undefined, 0], undefined, 'undefined');
     test([undefined, 'a'], [undefined, 1], undefined, 'undefined can be found');
 
 
@@ -2909,7 +2912,7 @@ package('Array', function () {
     test([{a:10},{a:8},{a:3}], [function(e) { return e['a'] > 5; }, 2], undefined, 'key "a" greater than 5 from index 2');
     test([function() {}], [function(e) {}, 1], undefined, 'null function from index 1');
     test([null, null], [null, 1], null, 'null from index 1');
-    test([undefined, undefined], [undefined, 1], undefined, 'undefined from index 1');
+    test(arrayOfUndefined, [undefined, 1], undefined, 'undefined from index 1');
 
   });
 
