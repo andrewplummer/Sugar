@@ -208,10 +208,22 @@ package('ES5', function () {
     equal(arr.indexOf('c'), 0, 'walks array in order');
     equal(Array.prototype.indexOf.call('moo', 'o'), 1, 'should work on strings as well');
 
-    arr = [];
+    arr = ['c'];
     arr[3] = 'a';
 
-    equal(arr.indexOf('a'), 3, 'must work on sparse arrays as well');
+    equal(arr.indexOf('c'),  0, 'finds c with no arguments');
+    equal(arr.indexOf('a'),  3, 'finds a with no arguments');
+
+    equal(arr.indexOf('c',  1), -1, 'does not find c from offset  1');
+    equal(arr.indexOf('c', -1), -1, 'does not find c from offset -1');
+    equal(arr.indexOf('c', -3), -1, 'does not find c from offset -3');
+    equal(arr.indexOf('c', -4),  0, 'finds c from offset -4');
+
+    equal(arr.indexOf('a',  3),  3, 'finds a from offset 3');
+    equal(arr.indexOf('a',  4), -1, 'does not find a from offset 4');
+    equal(arr.indexOf('a', -1),  3, 'finds a from offset -1');
+    equal(arr.indexOf('a', -4),  3, 'finds a from offset -4');
+
     equal(['a'].indexOf('a', Infinity), -1, 'Infinity is valid');
     equal(['a'].indexOf('a', -Infinity), 0, '-Infinity is valid');
 
@@ -302,7 +314,19 @@ package('ES5', function () {
     arr = ['c'];
     arr[3] = 'a';
 
-    equal(arr.lastIndexOf('c'), 0, 'must work on sparse arrays as well');
+    equal(arr.lastIndexOf('c'),      0, 'sparse array with no arguments');
+
+    equal(arr.lastIndexOf('c',  1),  0, 'sparse array with  1 offset finds');
+    equal(arr.lastIndexOf('c', -1),  0, 'sparse array with -1 offset finds');
+    equal(arr.lastIndexOf('c', -2),  0, 'sparse array with -2 offset finds');
+    equal(arr.lastIndexOf('c', -5), -1, 'sparse array with -3 offset does not find');
+    equal(arr.lastIndexOf('a',  1), -1, 'sparse array will not find index from offset 1');
+    equal(arr.lastIndexOf('a',  3),  3, 'sparse array will find index from offset 3');
+    equal(arr.lastIndexOf('a', -1),  3, 'sparse array will find index from offset -1');
+    equal(arr.lastIndexOf('a', -2), -1, 'sparse array will not find index from offset -2');
+
+
+
     equal(['a'].lastIndexOf('a', Infinity), 0, 'Infinity is valid');
     equal(['a'].lastIndexOf('a', -Infinity), -1, '-Infinity is valid');
 
