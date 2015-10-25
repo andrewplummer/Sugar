@@ -12,6 +12,9 @@
   // The global context
   var globalContext = typeof global !== 'undefined' ? global : this;
 
+  // Has ability to use Object.defineProperty
+  definePropertySupport = !!(Object.defineProperty && Object.defineProperties);
+
   testInternalToString = Object.prototype.toString;
 
   // Global methods.
@@ -38,7 +41,7 @@
       }
       currentTest = null;
     }
-    var runPackages = packages.filter(function(p) {
+    var runPackages = arrayFilter(packages, function(p) {
       return p.assertions > 0;
     });
     fn(new Date() - time, runPackages);
@@ -163,32 +166,36 @@
     equal(run(subject, null, args), expected, message);
   }
 
-  run = function (subject, method, args) {
-    method = method || currentTest.name;
+  run = function (subject, methodName, args) {
+    methodName = methodName || currentTest.name;
     args = args || currentArgs || [];
     if(testExtended) {
       var globalObject = globalContext[currentTest.package.name], fn;
-      if(subject && subject[method]) {
+      if(subject && subject[methodName]) {
         // If the method exists on the subject, then it is the target
         // to be called. This is true in normal prototype testing as well
         // as for Sugar defined objects such as Ranges and Extended Objects.
-        fn = subject[method];
-      } else if(globalObject.prototype[method]) {
+        fn = subject[methodName];
+      } else if(globalObject.prototype[methodName]) {
         // If the method is defined on the prototype of the global object,
         // then use it instead. This is the case when testing methods not
         // originally defined on the prototype of the subject, such as string
         // methods on numbers, undefined/null, etc.
-        fn = globalObject.prototype[method];
+        fn = globalObject.prototype[methodName];
       } else {
         // Otherwise assume a class method of the global object.
-        return globalObject[method].apply(null, [subject].concat(args));
+        return globalObject[methodName].apply(null, [subject].concat(args));
       }
       return fn.apply(subject, args);
     } else {
       if(!objectIsClass(subject)) {
         args = [subject].concat(Array.prototype.slice.call(args));
       }
-      return getSugarNamespace(subject)[method].apply(null, args);
+      var method = getSugarNamespace(subject)[methodName];
+      if (!method) {
+        throw new Error(methodName + ' does not exist');
+      }
+      return method.apply(null, args);
     }
   }
 
@@ -197,7 +204,7 @@
   }
 
   function getTestsToRun() {
-    var focusedPackagesExist;
+    var focusedPackagesExist = false;
 
     function packageIsActive(package) {
       if (!focusedPackagesExist) {
@@ -206,17 +213,22 @@
       return package.focused;
     }
 
-    focusedPackagesExist = packages.some(function(p) {
-      return p.focused;
-    });
+    for (var i = 0; i < packages.length; i++) {
+      if (packages[i].focused) {
+        focusedPackagesExist = true;
+        break;
+      }
+    }
 
-    var focused = allTests.filter(function(t) {
+    var focused = arrayFilter(allTests, function(t) {
       return t.focused && packageIsActive(t.package);
     });
+
     if (focused.length) {
       return focused;
     }
-    return allTests.filter(function(t) {
+
+    return arrayFilter(allTests, function(t) {
       return !t.ignored && packageIsActive(t.package);
     });
   }
@@ -230,7 +242,7 @@
       return ns;
     }
     var global = matchGlobalClass(subject);
-    ns = Sugar[global && global.name];
+    ns = Sugar[getGlobalName(global)];
     if (ns) {
       // If the subject is a global class, then use the
       // name to get the Sugar namespace.
@@ -258,6 +270,23 @@
       case RegExp:
       case Function:
         return obj;
+    }
+  }
+
+  function getGlobalName(global) {
+    if (global && global.name) {
+      return global.name;
+    }
+    // < IE9 environments do not have .name
+    switch (global) {
+      case Boolean:  return 'Boolean';
+      case Number:   return 'Number';
+      case String:   return 'String';
+      case Array:    return 'Array';
+      case Object:   return 'Object';
+      case Date:     return 'Date';
+      case RegExp:   return 'RegExp';
+      case Function: return 'Function';
     }
   }
 
@@ -398,7 +427,6 @@
     }
   }
 
-
   // Iteration methods
 
   // Tests may include sparse arrays, so need a way to iterate
@@ -426,6 +454,16 @@
       return fn.call(arr, arr[index], index, arr);
     });
     return arr;
+  }
+
+  function arrayFilter(arr, fn) {
+    var result = [];
+    for (var i = 0; i < arr.length; i++) {
+      if (fn(arr[i], i)) {
+        result.push(arr[i]);
+      }
+    }
+    return result;
   }
 
   function isArrayIndex(arr, i) {
