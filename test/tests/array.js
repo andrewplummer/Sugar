@@ -16,6 +16,9 @@ package('Array', function () {
   var arrayOfUndefinedWith1 = [1];
   arrayOfUndefinedWith1.push(undefined);
 
+  var arrayOfUndefinedWithNull = [null];
+  arrayOfUndefinedWithNull.push(undefined);
+
   var storedProps = {};
 
   function storeAlphanumericProps() {
@@ -34,6 +37,17 @@ package('Array', function () {
     Sugar.Array.AlphanumericSortIgnoreCase  = storedProps.AlphanumericSortIgnoreCase;
     Sugar.Array.AlphanumericSortEquivalents = storedProps.AlphanumericSortEquivalents;
     Sugar.Array.AlphanumericSortNatural     = storedProps.AlphanumericSortNatural;
+  }
+
+  function assertRandomized(arr, iterFn) {
+    var allOne = true;
+    for (var i = 0; i < arr.length; i++) {
+      if (iterFn(i) !== 1) {
+        allOne = false;
+      }
+    }
+    // Note that there is a built-in 0.00000001% chance that this test will fail */
+    equal(allOne, false, 'sufficiently randomized');
   }
 
   method('every', function() {
@@ -71,13 +85,6 @@ package('Array', function () {
     }
     run(['a'], 'every', [fn, 'this']);
 
-    test([{name:'john',age:25}], [{name:'john',age:25}], true, 'handles complex objects');
-    test([{name:'john',age:25},{name:'fred',age:85}], ['age'], false, 'simple string mistakenly passed for complex objects');
-    test([{name:'john',age:25},{name:'fred',age:85}], [{name:'john',age:25}], false, "john isn't all");
-  });
-
-
-  method('all', function() {
     test([{name:'john',age:25}], [{name:'john',age:25}], true, 'handles complex objects');
     test([{name:'john',age:25},{name:'fred',age:85}], ['age'], false, 'simple string mistakenly passed for complex objects');
     test([{name:'john',age:25},{name:'fred',age:85}], [{name:'john',age:25}], false, "john isn't all");
@@ -122,13 +129,30 @@ package('Array', function () {
     test([{name:'john',age:25},{name:'fred',age:85}], ['age'], false, 'simple string mistakenly passed for complex objects');
     test([{name:'john',age:25},{name:'fred',age:85}], [{name:'john',age:25}], true, 'john can be found ');
 
+    var people = [
+      { name: 'jim',    age: 27, hair: 'brown'  },
+      { name: 'mary',   age: 52, hair: 'blonde' },
+      { name: 'ronnie', age: 13, hair: 'brown'  },
+      { name: 'edmund', age: 27, hair: 'blonde' },
+      { name: 'buddy',  age: 82, hair: { color: 'red', type: 'long', cost: 15, last_cut: new Date(2010, 4, 18) } }
+    ];
 
-  });
-
-  method('any', function() {
-    test([{name:'john',age:25}], [{name:'john',age:25}], true, 'handles complex objects');
-    test([{name:'john',age:25},{name:'fred',age:85}], ['age'], false, 'simple string mistakenly passed for complex objects');
-    test([{name:'john',age:25},{name:'fred',age:85}], [{name:'john',age:25}], true, 'john can be found ');
+    test(people, [{ age: 27 }], true, 'complex | one property');
+    test(people, [{ age: 27, hair: 'brown' }], true, 'complex | two properties');
+    test(people, [{ hair: { color: 'red' }}], true, 'complex | nested property');
+    test(people, [{ hair: { color: 'green' }}], false, 'complex | non-matching nested property');
+    test(people, [{ hair: { color: 'red', type: 'long' }}], true, 'complex | two nested properties');
+    test(people, [{ hair: { color: 'green', type: 'mean' }}], false, 'complex | two non-matching nested properties');
+    test(people, [{ hair: { color: 'red', type: 'mean' }}], false, 'complex | two nested properties, one non-matching');
+    test(people, [{ hair: { color: 'red', life: 'long' }}], false, 'complex | two nested properties, one non-existing');
+    test(people, [{ hair: { color: /r/ }}], true, 'complex | nested regex');
+    test(people, [{ hair: { cost: 15 }}], true, 'complex | nested number');
+    test(people, [{ hair: { cost: 23 }}], false, 'complex | nested non-matching number');
+    test(people, [{ hair: { cost: undefined }}], false, 'complex | nested undefined property');
+    test(people, [{ hair: { cost: NaN }}], false, 'complex | nested property is NaN');
+    test(people, [{ hair: { color: function(c){ return c == 'red'; } }}], true, 'complex | nested function');
+    test(people, [{ some: { random: { shit: {}}}}], false, 'complex | totally unrelated properties');
+    test(people, [{ hair: { last_cut: new Date(2010, 4, 18) }}], true, 'complex | simple date');
   });
 
   method('filter', function() {
@@ -162,15 +186,295 @@ package('Array', function () {
 
     raisesError(function() { run([1,2,3], 'filter'); }, 'no argument raises a type error');
 
-    test([undefined, undefined], [undefined], [undefined, undefined], 'undefined should match all undefined');
-    test([undefined, undefined], [null], [], 'null should not match all undefined');
-    test([undefined, null], [undefined], [undefined], 'undefined should match one undefined');
-    test([undefined, null], [null], [null], 'null should match one null');
+    test(arrayOfUndefined, [undefined], arrayOfUndefined, 'undefined should match all undefined');
+    test(arrayOfUndefined, [null], [], 'null should not match all undefined');
+    test(arrayOfUndefinedWithNull, [undefined], [undefined], 'undefined should match one undefined');
+    test(arrayOfUndefinedWithNull, [null], [null], 'null should match one null');
     test([null, null], [null], [null, null], 'null should match all null');
     test([null, null], [undefined], [], 'undefined should not match all null');
 
   });
 
+  group('Fuzzy Matching', function() {
+    var arr = [{name: 'joe', age: 25}];
+    var match = { name: /j/ };
+
+    equal(run(arr, 'every', [match]), true, 'every');
+    equal(run(arr, 'some', [match]), true, 'some');
+    equal(run(arr, 'none', [match]), false, 'none');
+    equal(run(arr, 'count', [match]), 1, 'count');
+    equal(run(arr, 'find', [match]), arr[0], 'find');
+    equal(run(arr, 'findAll', [match]), [arr[0]], 'findAll');
+    equal(run(arr, 'findIndex', [match]), 0, 'findIndex');
+    equal(run(arr, 'exclude', [match]).length, 0, 'exclude');
+
+
+    var arr2 = run(testClone(arr), 'remove', [match]);
+    equal(arr2.length, 0, 'remove');
+
+    equal(run([arr], 'intersect', [[match]]), [], 'intersect is NOT fuzzy');
+    equal(run([match], 'intersect', [[arr]]), [], 'intersect reverse is NOT fuzzy');
+
+    equal(run(arr, 'subtract', [[match]]), arr, 'subtract is NOT fuzzy');
+    equal(run([match], 'subtract', [[arr]]), [match], 'subtract reverse is NOT fuzzy');
+
+    equal(run(arr, 'unique', [match]), arr, 'unique is NOT fuzzy');
+    equal(run([match], 'unique', [arr]), [match], 'unique reverse is NOT fuzzy');
+  });
+
+
+  method('map', function() {
+    var fn;
+    test([1,4,9], [Math.sqrt], [1,2,3], 'passing Math.sqrt directly');
+    test([{ foo: 'bar' }], [function(el) { return el['foo']; }], ['bar'], 'with key "foo"');
+
+    fn = function(el, i, a) {
+      equal(el, 'a', 'first parameter is the element');
+      equal(i, 0, 'second parameter is the index');
+      equal(a, ['a'], 'third parameter is the array');
+      equal(this.toString(), 'this', 'scope is passed properly');
+    };
+    run(['a'], 'map', [fn, 'this']);
+
+
+    test(['foot','goose','moose'], [function(el) { return el.replace(/o/g, 'e'); }], ['feet', 'geese', 'meese'], 'with regexp');
+    test(['foot','goose','moose'], ['length'], [4,5,5], 'length');
+    test([{name:'john',age:25},{name:'fred',age:85}], ['age'], [25,85], 'age');
+    test([{name:'john',age:25},{name:'fred',age:85}], ['name'], ['john','fred'], 'name');
+    test([{name:'john',age:25},{name:'fred',age:85}], ['cupsize'], [undefined, undefined], '(nonexistent) cupsize');
+    test([], ['name'], [], 'empty array');
+
+    // Nested properties
+    test([{name:{first:'John',last:'Waters'}},{name:{first:'Fred',last:'Flintstone'}}], ['name.first'], ['John', 'Fred'], 'deep matching with dot');
+    test([{a:{b:{c:'x'}}},{a:{b:{c:'y'}}},{a:{b:{c:'z'}}}], ['a.b.c'], ['x','y','z'], 'deeper matching with dot');
+    test([{a:[1]},{a:[2]}], ['a.0'], [1,2], 'matching nested array indexes');
+    test([{a:[1]},{b:[2]}], ['a.0'], [1,undefined], 'matching nested array index non-existent');
+    test([{a:'a'},{b:'a'}], ['.'], [undefined,undefined], 'single dot');
+    test([{a:'a'},{b:'a'}], ['..'], [undefined,undefined], 'double dot');
+    test([[[1,2]],[[1,2]]], ['0.1'], [2,2], 'deep arrays');
+    test([{name:{first:'Joe',last:'P'}},{name:{first:'John',last:'Q'}}], [['name.first', 'name.last']], [['Joe','P'], ['John', 'Q']], 'array with dots');
+
+    test([1,2,3], ['toString'], ['1','2','3'], 'calls a function on a shortcut string');
+
+    raisesError(function(){ run([1,2,3], 'map') }, 'no argument raises a type error');
+    raisesError(function(){ run([1,2,3], 'map', [undefined]) }, 'undefined raises a type error');
+    raisesError(function(){ run([1,2,3], 'map', [null]) }, 'null raises a type error');
+
+    test([1,2,3], [4], [undefined, undefined, undefined], 'number');
+
+
+    // Issue #386
+
+    var arr = [
+      {
+        name: 'john',
+        age: 25
+      },
+      {
+        name: 'fred',
+        age: 85
+      }
+    ];
+    test(arr, [['name', 'age']], [['john', 25], ['fred', 85]], 'mapping on both name and age');
+    test(arr, [['name', 'hair']], [['john', undefined], ['fred', undefined]], 'mapping on name and non-existent property');
+    test(arr, [['hair', 'age']], [[undefined, 25], [undefined, 85]], 'mapping on non-existent property and name');
+    test(arr, [['hair', 'eyes']], [[undefined, undefined], [undefined, undefined]], 'mapping on two non-existent properties');
+
+    var arr = [
+      {
+        age: 25,
+        size: 3
+      },
+      {
+        age: 85,
+        size: 7
+      }
+    ];
+    var count1 = 0;
+    var count2 = 0;
+    var fn1 = function(obj, i, a) {
+      equal(this.valueOf(), 0, 'context should still be passable');
+      equal(obj, arr[i], 'first argument should be the element');
+      equal(i, count1, 'second argument should be the index');
+      equal(a, arr, 'third argument should be the array');
+      count1++;
+      return obj.age + 5;
+    }
+    var fn2 = function(obj) {
+      count2++;
+      return obj.size - 3;
+    }
+    var expected = [
+      [30, 0],
+      [90, 4]
+    ]
+    var result = run(arr, 'map', [[fn1, fn2], 0]);
+
+    equal(result, expected, 'should be able to use two mapping functions');
+    equal(count1, 2, 'first mapping function should have run twice');
+    equal(count2, 2, 'second mapping function should have run twice');
+
+  });
+
+  method('any', function() {
+
+    test([{name:'john',age:25}], [{name:'john',age:25}], true, 'handles complex objects');
+    test([{name:'john',age:25},{name:'fred',age:85}], ['age'], false, 'simple string mistakenly passed for complex objects');
+    test([{name:'john',age:25},{name:'fred',age:85}], [{name:'john',age:25}], true, 'john can be found ');
+
+    test([1,2,3], [1], true, 'numeric | 1');
+    test([1,2,3], [4], false, 'numeric | 4');
+    test([1,2,3], ['a'], false, 'numeric | a');
+    test(['a','b','c'], ['a'], true, 'alphabet | a');
+    test(['a','b','c'], ['f'], false, 'alphabet | f');
+    test(['a','b','c'], [/[a-f]/], true, 'alphabet | /[a-f]/');
+    test(['a','b','c'], [/[m-z]/], false, 'alphabet | /[m-z]/');
+    test([{a:1},{a:2},{a:1}], [1], false, 'objects | 1');
+    test([0], [0], true, '[0] | 0');
+    test([{a:1},{a:2},{a:1}], [{a:1}], true, 'objects | a:1');
+
+    test(['a','b','c'], [function(e) { return e.length > 1; }], false, 'alphabet | length greater than 1');
+    test(['a','b','c'], [function(e) { return e.length < 2; }], true, 'alphabet | length less than 2');
+    test(['a','bar','cat'], [function(e) { return e.length < 2; }], true, 'a,bar,cat | length less than 2');
+    test([{a:1},{a:2},{a:1}], [function(e) { return e['a'] == 1; }], true, 'objects | key "a" is 1');
+    test([{a:1},{a:2},{a:1}], [function(e) { return e['b'] == 1; }], false, 'objects | key "b" is 1');
+
+    var fn = function() {
+      equal(this.toString(), 'wasabi', 'scope should be passable');
+    };
+    run([1], 'any', [fn, 'wasabi']);
+
+    raisesError(function() { run([1,2,3], 'any') }, 'no argument raises a TypeError');
+
+    test(arrayOfUndefined, [undefined], true, 'undefined should match all undefined');
+    test(arrayOfUndefined, [null], false, 'null should not match all undefined');
+    test(arrayOfUndefinedWithNull, [undefined], true, 'undefined should match one undefined');
+    test(arrayOfUndefinedWithNull, [null], true, 'null should match one null');
+    test([null, null], [null], true, 'null should match all null');
+    test([null, null], [undefined], false, 'undefined should not match all null');
+
+    var fn1 = function() {};
+    var fn2 = function() {};
+    var matchFn1 = function(el) {
+      return el === fn1;
+    }
+    var matchFn2 = function(el) {
+      return el === fn2;
+    }
+
+    equal(run([fn1, fn2, fn2], 'any', [matchFn1]), true, 'functions can be matched inside the callback');
+    equal(run([fn2, fn2, fn2], 'any', [matchFn1]), false, 'functions can be matched inside the callback');
+
+  });
+
+  method('all', function() {
+
+    test([{name:'john',age:25}], [{name:'john',age:25}], true, 'handles complex objects');
+    test([{name:'john',age:25},{name:'fred',age:85}], ['age'], false, 'simple string mistakenly passed for complex objects');
+    test([{name:'john',age:25},{name:'fred',age:85}], [{name:'john',age:25}], false, "john isn't all");
+
+    test([1,2,3], [1], false, 'numeric | 1');
+    test([1,1,1], [1], true, 'numeric | 1 is true for all');
+    test([1,2,3], [3], false, 'numeric | 3');
+    test(['a','b','c'], ['a'], false, 'alphabet | a');
+    test(['a','a','a'], ['a'], true, 'alphabet | a is true for all');
+    test(['a','b','c'], ['f'], false, 'alphabet | f');
+    test(['a','b','c'], [/[a-f]/], true, 'alphabet | /[a-f]/');
+    test(['a','b','c'], [/[a-b]/], false, 'alphabet | /[m-z]/');
+    test([{a:1},{a:2},{a:1}], [1], false, 'objects | 1');
+    test([{a:1},{a:2},{a:1}], [{a:1}], false, 'objects | a:1');
+    test([{a:1},{a:1},{a:1}], [{a:1}], true, 'objects | a:1 is true for all');
+
+
+    test(['a','b','c'], [function(e) { return e.length > 1; }], false, 'alphabet | length is greater than 1');
+    test(['a','b','c'], [function(e) { return e.length < 2; }], true, 'alphabet | length is less than 2');
+    test(['a','bar','cat'], [function(e) { return e.length < 2; }], false, 'a,bar,cat | length is less than 2');
+    test([{a:1},{a:2},{a:1}], [function(e) { return e['a'] == 1; }], false, 'objects | key "a" is 1');
+    test([{a:1},{a:2},{a:1}], [function(e) { return e['b'] == 1; }], false, 'objects | key "b" is 1');
+    test([{a:1},{a:1},{a:1}], [function(e) { return e['a'] == 1; }], true, 'objects | key "a" is 1 for all');
+
+
+    var fn = function() {
+      equal(this.toString(), 'wasabi', 'scope should be passable');
+    };
+    run([1], 'all', [fn, 'wasabi']);
+
+    raisesError(function() { run([1,2,3], 'all'); }, 'no argument raises a type error');
+
+    test(arrayOfUndefined, [undefined], true, 'undefined should match all undefined');
+    test(arrayOfUndefined, [null], false, 'null should not match all undefined');
+    test(arrayOfUndefinedWithNull, [undefined], false, 'undefined should match one undefined');
+    test(arrayOfUndefinedWithNull, [null], false, 'null should match one null');
+    test([null, null], [null], true, 'null should match all null');
+    test([null, null], [undefined], false, 'undefined should not match all null');
+
+    var fn1 = function() {};
+    var fn2 = function() {};
+    var matchFn1 = function(el) {
+      return el === fn1;
+    }
+    var matchFn2 = function(el) {
+      return el === fn2;
+    }
+
+    equal(run([fn1, fn1, fn1], 'all', [matchFn1]), true, 'functions can be matched inside the callback');
+    equal(run([fn1, fn1, fn2], 'all', [matchFn1]), false, 'functions can be matched inside the callback');
+
+  });
+
+  method('none', function() {
+
+    test([1,2,3], [1], false, 'numeric | 1');
+    test([1,2,3], [4], true, 'numeric | 4');
+    test([1,2,3], ['a'], true, 'numeric | a');
+    test(['a','b','c'], ['a'], false, 'alphabet | a');
+    test(['a','b','c'], ['f'], true, 'alphabet | f');
+    test(['a','b','c'], [/[a-f]/], false, 'alphabet | /[a-f]/');
+    test(['a','b','c'], [/[m-z]/], true, 'alphabet | /[m-z]/');
+    test([{a:1},{a:2},{a:1}], [1], true, 'objects | 1');
+    test([{a:1},{a:2},{a:1}], [{a:1}], false, 'objects | a:1');
+
+    test(['a','b','c'], [function(e) { return e.length > 1; }], true, 'alphabet | length is greater than 1');
+    test(['a','b','c'], [function(e) { return e.length < 2; }], false, 'alphabet | length is less than 2');
+    test(['a','bar','cat'], [function(e) { return e.length < 2; }], false, 'a,bar,cat | length is less than 2');
+    test([{a:1},{a:2},{a:1}], [function(e) { return e['a'] == 1; }], false, 'objects | key "a" is 1');
+    test([{a:1},{a:2},{a:1}], [function(e) { return e['b'] == 1; }], true, 'objects | key "b" is 1');
+
+    raisesError(function() { run([1,2,3], 'none'); }, 'no argument raises a TypeError');
+
+    test(arrayOfUndefined, [undefined], false, 'undefined should match all undefined');
+    test(arrayOfUndefined, [null], true, 'null should not match all undefined');
+    test(arrayOfUndefinedWithNull, [undefined], false, 'undefined should match one undefined');
+    test(arrayOfUndefinedWithNull, [null], false, 'null should match one null');
+    test([null, null], [null], false, 'null should match all null');
+    test([null, null], [undefined], true, 'undefined should not match all null');
+
+    var people = [
+      { name: 'jim',    age: 27, hair: 'brown'  },
+      { name: 'mary',   age: 52, hair: 'blonde' },
+      { name: 'ronnie', age: 13, hair: 'brown'  },
+      { name: 'edmund', age: 27, hair: 'blonde' },
+      { name: 'buddy',  age: 82, hair: { color: 'red', type: 'long', cost: 15, last_cut: new Date(2010, 4, 18) } }
+    ];
+
+    test(people, [{ age: 27 }], false, 'complex | one property');
+    test(people, [{ age: 27, hair: 'brown' }], false, 'complex | two properties');
+    test(people, [{ hair: { color: 'red' }}], false, 'complex | nested property');
+    test(people, [{ hair: { color: 'green' }}], true, 'complex | non-matching nested property');
+    test(people, [{ hair: { color: 'red', type: 'long' }}], false, 'complex | two nested properties');
+    test(people, [{ hair: { color: 'green', type: 'mean' }}], true, 'complex | two non-matching nested properties');
+    test(people, [{ hair: { color: 'red', type: 'mean' }}], true, 'complex | two nested properties, one non-matching');
+    test(people, [{ hair: { color: 'red', life: 'long' }}], true, 'complex | two nested properties, one non-existing');
+    test(people, [{ hair: { color: /r/ }}], false, 'complex | nested regex');
+    test(people, [{ hair: { cost: 15 }}], false, 'complex | nested number');
+    test(people, [{ hair: { cost: 23 }}], true, 'complex | nested non-matching number');
+    test(people, [{ hair: { cost: undefined }}], true, 'complex | nested undefined property');
+    test(people, [{ hair: { cost: NaN }}], true, 'complex | nested property is NaN');
+    test(people, [{ hair: { color: function(c){ return c == 'red'; } }}], false, 'complex | nested function');
+    test(people, [{ none: { random: { shit: {}}}}], true, 'complex | totally unrelated properties');
+    test(people, [{ hair: { last_cut: new Date(2010, 4, 18) }}], false, 'complex | simple date');
+
+  });
 
   method('each', function() {
     var arr, fn, result, count, indexes;
@@ -321,104 +625,9 @@ package('Array', function () {
     run(['a','b','c'], 'each', [fn]);
     equal(count, 3, 'returning undefined will not break the loop');
 
-  });
 
-  method('map', function() {
-    var fn;
-    test([1,4,9], [Math.sqrt], [1,2,3], 'passing Math.sqrt directly');
-    test([{ foo: 'bar' }], [function(el) { return el['foo']; }], ['bar'], 'with key "foo"');
-
-    fn = function(el, i, a) {
-      equal(el, 'a', 'first parameter is the element');
-      equal(i, 0, 'second parameter is the index');
-      equal(a, ['a'], 'third parameter is the array');
-      equal(this.toString(), 'this', 'scope is passed properly');
-    };
-    run(['a'], 'map', [fn, 'this']);
-
-
-    test(['foot','goose','moose'], [function(el) { return el.replace(/o/g, 'e'); }], ['feet', 'geese', 'meese'], 'with regexp');
-    test(['foot','goose','moose'], ['length'], [4,5,5], 'length');
-    test([{name:'john',age:25},{name:'fred',age:85}], ['age'], [25,85], 'age');
-    test([{name:'john',age:25},{name:'fred',age:85}], ['name'], ['john','fred'], 'name');
-    test([{name:'john',age:25},{name:'fred',age:85}], ['cupsize'], [undefined, undefined], '(nonexistent) cupsize');
-    test([], ['name'], [], 'empty array');
-
-    // Nested properties
-    test([{name:{first:'John',last:'Waters'}},{name:{first:'Fred',last:'Flintstone'}}], ['name.first'], ['John', 'Fred'], 'deep matching with dot');
-    test([{a:{b:{c:'x'}}},{a:{b:{c:'y'}}},{a:{b:{c:'z'}}}], ['a.b.c'], ['x','y','z'], 'deeper matching with dot');
-    test([{a:[1]},{a:[2]}], ['a.0'], [1,2], 'matching nested array indexes');
-    test([{a:[1]},{b:[2]}], ['a.0'], [1,undefined], 'matching nested array index non-existent');
-    test([{a:'a'},{b:'a'}], ['.'], [undefined,undefined], 'single dot');
-    test([{a:'a'},{b:'a'}], ['..'], [undefined,undefined], 'double dot');
-    test([[[1,2]],[[1,2]]], ['0.1'], [2,2], 'deep arrays');
-    test([{name:{first:'Joe',last:'P'}},{name:{first:'John',last:'Q'}}], [['name.first', 'name.last']], [['Joe','P'], ['John', 'Q']], 'array with dots');
-
-    test([1,2,3], ['toString'], ['1','2','3'], 'calls a function on a shortcut string');
-
-    raisesError(function(){ run([1,2,3], 'map') }, 'no argument raises a type error');
-    raisesError(function(){ run([1,2,3], 'map', [undefined]) }, 'undefined raises a type error');
-    raisesError(function(){ run([1,2,3], 'map', [null]) }, 'null raises a type error');
-
-    test([1,2,3], [4], [undefined, undefined, undefined], 'number');
-
-
-    // Issue #386
-
-    var arr = [
-      {
-        name: 'john',
-        age: 25
-      },
-      {
-        name: 'fred',
-        age: 85
-      }
-    ];
-    test(arr, [['name', 'age']], [['john', 25], ['fred', 85]], 'mapping on both name and age');
-    test(arr, [['name', 'hair']], [['john', undefined], ['fred', undefined]], 'mapping on name and non-existent property');
-    test(arr, [['hair', 'age']], [[undefined, 25], [undefined, 85]], 'mapping on non-existent property and name');
-    test(arr, [['hair', 'eyes']], [[undefined, undefined], [undefined, undefined]], 'mapping on two non-existent properties');
-
-    var arr = [
-      {
-        age: 25,
-        size: 3
-      },
-      {
-        age: 85,
-        size: 7
-      }
-    ];
-    var count1 = 0;
-    var count2 = 0;
-    var fn1 = function(obj, i, a) {
-      equal(this.valueOf(), 0, 'context should still be passable');
-      equal(obj, arr[i], 'first argument should be the element');
-      equal(i, count1, 'second argument should be the index');
-      equal(a, arr, 'third argument should be the array');
-      count1++;
-      return obj.age + 5;
-    }
-    var fn2 = function(obj) {
-      count2++;
-      return obj.size - 3;
-    }
-    var expected = [
-      [30, 0],
-      [90, 4]
-    ]
-    var result = run(arr, 'map', [[fn1, fn2], 0]);
-
-    equal(result, expected, 'should be able to use two mapping functions');
-    equal(count1, 2, 'first mapping function should have run twice');
-    equal(count2, 2, 'second mapping function should have run twice');
-
-  });
-
-
-  method('each', function() {
     // Sparse array handling
+
     var arr, expected, expectedIndexes, count, fn;
 
     arr = ['a'];
@@ -474,7 +683,6 @@ package('Array', function () {
     equal(count, 3, 'however, simply having an undefined in an array does not qualify it as sparse');
   });
 
-
   method('find', function() {
     var count;
     if (!Array.prototype.find) {
@@ -500,7 +708,7 @@ package('Array', function () {
     test(['foo','bar'], [/q+/], undefined, '/q+/');
     test([function() {}], [function(e) {}, 0], undefined, 'undefined function');
     test([null, null], [null, 0], null, 'null');
-    test([undefined, undefined], [undefined, 0], undefined, 'undefined');
+    test(arrayOfUndefined, [undefined, 0], undefined, 'undefined');
     test([undefined, 'a'], [undefined, 1], undefined, 'undefined can be found');
 
 
@@ -522,6 +730,36 @@ package('Array', function () {
 
   });
 
+  method('findIndex', function() {
+    if (!Array.prototype.findIndex) {
+      equal(Sugar.Array.findIndex, undefined, 'enhanced method should not exist if no native to call');
+      return;
+    }
+    test(['a','b','c'], ['b'], 1, 'b in a,b,c');
+    test(['a','b','c'], ['b', 0], 1, 'b in a,b,c from 0');
+    test(['a','b','c'], ['a'], 0, 'a in a,b,c');
+    test(['a','b','c'], ['f'], -1, 'f in a,b,c');
+
+    test(['a','b','c','b'], ['b'], 1, 'finds first instance');
+
+    test([5,2,4], [5], 0, '5 in 5,2,4');
+    test([5,2,4], [2], 1, '2 in 5,2,4');
+    test([5,2,4], [4], 2, '4 in 5,2,4');
+
+    test([{ foo: 'bar' }], [{ foo: 'bar' }], 0, 'will find deep objects');
+    test([{ foo: 'bar' }], [function(a) { return a.foo === 'bar'; }], 0, 'will run against a function');
+
+    test(['a','b','c'], [/[bz]/], 1, 'matches regexp');
+
+    var people = [
+      { name: 'jim',    age: 27, hair: 'brown'  },
+      { name: 'mary',   age: 52, hair: 'blonde' },
+      { name: 'ronnie', age: 13, hair: 'brown'  },
+      { name: 'edmund', age: 27, hair: 'blonde' }
+    ];
+
+    test(people, [function(person) { return person.age == 13; }], 2, 'JSON objects');
+  });
 
   method('findAll', function() {
     test(['a','b','c'], ['a'], ['a'], 'a');
@@ -604,6 +842,104 @@ package('Array', function () {
     run([1], 'findAll', [fn]);
 
     raisesError(function() { run([1,2,3], 'findIndex'); }, 'no argument raises a type error');
+
+
+    var people = [
+      { name: 'jim',    age: 27, hair: 'brown'  },
+      { name: 'mary',   age: 52, hair: 'blonde' },
+      { name: 'ronnie', age: 13, hair: 'brown'  },
+      { name: 'edmund', age: 27, hair: 'blonde' },
+      { name: 'buddy',  age: 82, hair: { color: 'red', type: 'long', cost: 15, last_cut: new Date(2010, 4, 18) } }
+    ];
+
+    test(people, [], 'complex | no arguments');
+    test(people, [{}], people, 'complex | empty object');
+    test(people, ['age'], [], 'complex | string argument');
+    test(people, [4], [], 'complex | number argument');
+    test(people, [{ age: 27 }], [people[0], people[3]], 'complex | one property');
+    test(people, [{ age: 27, hair: 'brown' }], [people[0]], 'complex | two properties');
+    test(people, [{ hair: { color: 'red' }}], [people[4]], 'complex | nested property');
+    test(people, [{ hair: { color: 'green' }}], [], 'complex | non-matching nested property');
+    test(people, [{ hair: { color: 'red', type: 'long' }}], [people[4]], 'complex | two nested properties');
+    test(people, [{ hair: { color: 'green', type: 'mean' }}], [], 'complex | two non-matching nested properties');
+    test(people, [{ hair: { color: 'red', type: 'mean' }}], [], 'complex | two nested properties, one non-matching');
+    test(people, [{ hair: { color: 'red', life: 'long' }}], [], 'complex | two nested properties, one non-existing');
+    test(people, [{ hair: { color: /r/ }}], [people[4]], 'complex | nested regex');
+    test(people, [{ hair: { cost: 15 }}], [people[4]], 'complex | nested number');
+    test(people, [{ hair: { cost: 23 }}], [], 'complex | nested non-matching number');
+    test(people, [{ hair: { cost: undefined }}], [], 'complex | nested undefined property');
+    test(people, [{ hair: { post: undefined }}], [people[4]], 'complex | nested undefined property non-existent');
+    test(people, [{ hair: { cost: NaN }}], [], 'complex | nested property is NaN');
+    test(people, [{ hair: { color: function(c){ return c == 'red'; } }}], [people[4]], 'complex | nested function');
+    test(people, [{ some: { random: { shit: {}}}}], [], 'complex | totally unrelated properties');
+    test(people, [{ hair: { last_cut: new Date(2010, 4, 18) }}], [people[4]], 'complex | simple date');
+
+
+    // Issue #157 Ensure that instances can be subject to fuzzy matches despite not being "objects"
+
+    function Foo(a) {
+      this.a = a;
+    }
+
+    var one   = new Foo('one');
+    var two   = new Foo('two');
+    var three = new Foo('three');
+    var four  = new Foo(new Date(2001, 3, 15));
+
+    test([one, two, three, four], [{ a: 'one' }], [one], 'matches class instances | object with string');
+    test([one, two, three, four], [{ a: /^t/ }], [two, three], 'matches class instances | object with regex');
+    test([one, two, three, four], ['one'], [], 'matches class instances | string');
+    test([one, two, three, four], [/t/], [one, two, three, four], 'directly passing a regex is matching the objects stringified');
+    test([one, two, three, four], [/x/], [], 'directly passing a regex with no matching letter');
+    test([one, two, three, four], [true], [], 'matches class instances | boolean');
+    test([one, two, three, four], [new Date()], [], 'matches class instances | now');
+    test([one, two, three, four], [new Date(2001, 3, 15)], [], 'matches class instances | correct date');
+    test([one, two, three, four], [null], [], 'matches class instances | null');
+    test([one, two, three, four], [undefined], [], 'matches class instances | undefined');
+    test([one, two, three, four], [{ a: 'twof' }], [], 'matches class instances | nonexistent string');
+    test([one, two, three, four], [{ b: 'one' }], [], 'matches class instances | nonexistent property');
+    test([one, two, three, four], [{}], [one, two, three, four], 'matches class instances | empty object');
+    test([one, two, three, four], [{ a: new Date(2001, 3, 15) }], [four], 'matches class instances | object with correct date');
+    test([one, two, three, four], [{ b: new Date(2001, 3, 15) }], [], 'matches class instances | object with correct date but wrong property');
+    test([one, two, three, four], [{ a: new Date(2001, 3, 16) }], [], 'matches class instances | object with incorrect date');
+    test([one, two, three, four], [{ a: new Date(2001, 3, 15, 0, 0, 0, 1) }], [], 'matches class instances | object with date off by 1ms');
+
+    var date = new Date(2001, 3, 15);
+    var timestamp = date.getTime();
+    var obj = { a: { getTime: function () { return timestamp; } }};
+    test([obj], [{ a: date }], [obj], 'duck typing for date matching');
+
+    var five = new Foo(one);
+
+    test([five], [{ a: 'one' }], [], 'nested instances | object with string');
+    test([five], [{ a: { a: 'one' } }], [five], 'nested instances | object with double nested string');
+    test([five], [{ a: { a: 'two' } }], [], 'nested instances | object with double nested string but incorrect');
+
+
+    // Fuzzy matching behavior on functions.
+
+    var count = 0;
+    var fn = function(){ count ++; };
+
+    run([1,2,3], 'findAll', [fn]);
+    equal(count, 3, 'functions treated as callbacks when matching against non-functions');
+
+    count = 0;
+    run([function() {}, function() {}, function() {}], 'findAll', [fn]);
+    equal(count, 3, 'functions are not directly matched');
+
+
+    var fn1 = function() {};
+    var fn2 = function() {};
+    var matchFn1 = function(el) {
+      return el === fn1;
+    }
+    var matchFn2 = function(el) {
+      return el === fn2;
+    }
+
+    equal(run([fn1, fn2, fn1], 'findAll', [matchFn1]), [fn1, fn1], 'functions can be matched inside the callback');
+    equal(run([fn1, fn2, fn1], 'findAll', [matchFn2]), [fn2], 'fn2 | functions can be matched inside the callback');
 
   });
 
@@ -880,7 +1216,6 @@ package('Array', function () {
 
   });
 
-
   method('most', function() {
     var people = [
       { name: 'jim',    age: 27, hair: 'brown'  },
@@ -1141,7 +1476,6 @@ package('Array', function () {
     equal(arr.length, 20, 'does not corrupt original array length');
 
   });
-
 
   method('compact', function() {
     var f1 = function() {};
@@ -1444,109 +1778,7 @@ package('Array', function () {
     test([0,0], false, '[0,0]');
   });
 
-
-  method('any', function() {
-
-    test([1,2,3], [1], true, 'numeric | 1');
-    test([1,2,3], [4], false, 'numeric | 4');
-    test([1,2,3], ['a'], false, 'numeric | a');
-    test(['a','b','c'], ['a'], true, 'alphabet | a');
-    test(['a','b','c'], ['f'], false, 'alphabet | f');
-    test(['a','b','c'], [/[a-f]/], true, 'alphabet | /[a-f]/');
-    test(['a','b','c'], [/[m-z]/], false, 'alphabet | /[m-z]/');
-    test([{a:1},{a:2},{a:1}], [1], false, 'objects | 1');
-    test([0], [0], true, '[0] | 0');
-    test([{a:1},{a:2},{a:1}], [{a:1}], true, 'objects | a:1');
-
-    test(['a','b','c'], [function(e) { return e.length > 1; }], false, 'alphabet | length greater than 1');
-    test(['a','b','c'], [function(e) { return e.length < 2; }], true, 'alphabet | length less than 2');
-    test(['a','bar','cat'], [function(e) { return e.length < 2; }], true, 'a,bar,cat | length less than 2');
-    test([{a:1},{a:2},{a:1}], [function(e) { return e['a'] == 1; }], true, 'objects | key "a" is 1');
-    test([{a:1},{a:2},{a:1}], [function(e) { return e['b'] == 1; }], false, 'objects | key "b" is 1');
-
-    var fn = function() {
-      equal(this.toString(), 'wasabi', 'scope should be passable');
-    };
-    run([1], 'any', [fn, 'wasabi']);
-
-    raisesError(function() { run([1,2,3], 'any') }, 'no argument raises a TypeError');
-
-    test([undefined, undefined], [undefined], true, 'undefined should match all undefined');
-    test([undefined, undefined], [null], false, 'null should not match all undefined');
-    test([undefined, null], [undefined], true, 'undefined should match one undefined');
-    test([undefined, null], [null], true, 'null should match one null');
-    test([null, null], [null], true, 'null should match all null');
-    test([null, null], [undefined], false, 'undefined should not match all null');
-  });
-
-  method('none', function() {
-
-    test([1,2,3], [1], false, 'numeric | 1');
-    test([1,2,3], [4], true, 'numeric | 4');
-    test([1,2,3], ['a'], true, 'numeric | a');
-    test(['a','b','c'], ['a'], false, 'alphabet | a');
-    test(['a','b','c'], ['f'], true, 'alphabet | f');
-    test(['a','b','c'], [/[a-f]/], false, 'alphabet | /[a-f]/');
-    test(['a','b','c'], [/[m-z]/], true, 'alphabet | /[m-z]/');
-    test([{a:1},{a:2},{a:1}], [1], true, 'objects | 1');
-    test([{a:1},{a:2},{a:1}], [{a:1}], false, 'objects | a:1');
-
-    test(['a','b','c'], [function(e) { return e.length > 1; }], true, 'alphabet | length is greater than 1');
-    test(['a','b','c'], [function(e) { return e.length < 2; }], false, 'alphabet | length is less than 2');
-    test(['a','bar','cat'], [function(e) { return e.length < 2; }], false, 'a,bar,cat | length is less than 2');
-    test([{a:1},{a:2},{a:1}], [function(e) { return e['a'] == 1; }], false, 'objects | key "a" is 1');
-    test([{a:1},{a:2},{a:1}], [function(e) { return e['b'] == 1; }], true, 'objects | key "b" is 1');
-
-    raisesError(function() { run([1,2,3], 'none'); }, 'no argument raises a TypeError');
-
-    test([undefined, undefined], [undefined], false, 'undefined should match all undefined');
-    test([undefined, undefined], [null], true, 'null should not match all undefined');
-    test([undefined, null], [undefined], false, 'undefined should match one undefined');
-    test([undefined, null], [null], false, 'null should match one null');
-    test([null, null], [null], false, 'null should match all null');
-    test([null, null], [undefined], true, 'undefined should not match all null');
-  });
-
-  method('all', function() {
-
-    test([1,2,3], [1], false, 'numeric | 1');
-    test([1,1,1], [1], true, 'numeric | 1 is true for all');
-    test([1,2,3], [3], false, 'numeric | 3');
-    test(['a','b','c'], ['a'], false, 'alphabet | a');
-    test(['a','a','a'], ['a'], true, 'alphabet | a is true for all');
-    test(['a','b','c'], ['f'], false, 'alphabet | f');
-    test(['a','b','c'], [/[a-f]/], true, 'alphabet | /[a-f]/');
-    test(['a','b','c'], [/[a-b]/], false, 'alphabet | /[m-z]/');
-    test([{a:1},{a:2},{a:1}], [1], false, 'objects | 1');
-    test([{a:1},{a:2},{a:1}], [{a:1}], false, 'objects | a:1');
-    test([{a:1},{a:1},{a:1}], [{a:1}], true, 'objects | a:1 is true for all');
-
-
-    test(['a','b','c'], [function(e) { return e.length > 1; }], false, 'alphabet | length is greater than 1');
-    test(['a','b','c'], [function(e) { return e.length < 2; }], true, 'alphabet | length is less than 2');
-    test(['a','bar','cat'], [function(e) { return e.length < 2; }], false, 'a,bar,cat | length is less than 2');
-    test([{a:1},{a:2},{a:1}], [function(e) { return e['a'] == 1; }], false, 'objects | key "a" is 1');
-    test([{a:1},{a:2},{a:1}], [function(e) { return e['b'] == 1; }], false, 'objects | key "b" is 1');
-    test([{a:1},{a:1},{a:1}], [function(e) { return e['a'] == 1; }], true, 'objects | key "a" is 1 for all');
-
-
-    var fn = function() {
-      equal(this.toString(), 'wasabi', 'scope should be passable');
-    };
-    run([1], 'all', [fn, 'wasabi']);
-
-    raisesError(function() { run([1,2,3], 'all'); }, 'no argument raises a type error');
-
-    test([undefined, undefined], [undefined], true, 'undefined should match all undefined');
-    test([undefined, undefined], [null], false, 'null should not match all undefined');
-    test([undefined, null], [undefined], false, 'undefined should match one undefined');
-    test([undefined, null], [null], false, 'null should match one null');
-    test([null, null], [null], true, 'null should match all null');
-    test([null, null], [undefined], false, 'undefined should not match all null');
-  });
-
   method('flatten', function() {
-
     test([1,2,3], [1,2,3], '1,2,3');
     test(['a','b','c'], ['a','b','c'], 'a,b,c');
     test([{a:1},{a:2},{a:1}], [{a:1},{a:2},{a:1}], 'a:1,a:2,a:1');
@@ -1568,10 +1800,8 @@ package('Array', function () {
     equal(run([undefined], 'flatten').length, sparseArraySupport ? 1 : 0, 'should not compact arrays');
   });
 
-
   method('sortBy', function() {
     var arr;
-
     arr = ['more','everyone!','bring','the','family'];
     test(arr, ['length'], ['the','more','bring','family','everyone!'], 'sorting by length');
     test(arr, ['length', true], ['everyone!','family','bring','more','the'], 'desc | sorting by length');
@@ -1617,22 +1847,11 @@ package('Array', function () {
   });
 
   method('shuffle', function() {
-    var arr = [1,2,3,4,5,6,7,8,9,10];
-    var firsts = [];
-    firsts.push(run(arr, 'shuffle')[0]);
-    firsts.push(run(arr, 'shuffle')[0]);
-    firsts.push(run(arr, 'shuffle')[0]);
-    firsts.push(run(arr, 'shuffle')[0]);
-    firsts.push(run(arr, 'shuffle')[0]);
-    firsts.push(run(arr, 'shuffle')[0]);
-    firsts.push(run(arr, 'shuffle')[0]);
-    firsts.push(run(arr, 'shuffle')[0]);
-    firsts.push(run(arr, 'shuffle')[0]);
-    firsts.push(run(arr, 'shuffle')[0]);
-
-    /* Note that there is a built-in 0.00000001% chance that this test will fail */
-    equal(firsts.every(function(a) { return a == 1; }), false, 'sufficiently randomized');
-
+    var arr = run([1,2,3,4,5,6,7,8,9,10], 'shuffle');
+    var fn = function(i) {
+      return arr[i];
+    }
+    assertRandomized(arr, fn);
   });
 
   group('Array Inheritance', function() {
@@ -1688,54 +1907,12 @@ package('Array', function () {
     test([4, 5, 6], [[1, 2], [8]], [[4, 1, 8], [5, 2, null], [6, null, null]], 'filled with null');
   });
 
-  method('findIndex', function() {
-    if (!Array.prototype.findIndex) {
-      equal(Sugar.Array.findIndex, undefined, 'enhanced method should not exist if no native to call');
-      return;
-    }
-    test(['a','b','c'], ['b'], 1, 'b in a,b,c');
-    test(['a','b','c'], ['b', 0], 1, 'b in a,b,c from 0');
-    test(['a','b','c'], ['a'], 0, 'a in a,b,c');
-    test(['a','b','c'], ['f'], -1, 'f in a,b,c');
-
-    test(['a','b','c','b'], ['b'], 1, 'finds first instance');
-
-    test([5,2,4], [5], 0, '5 in 5,2,4');
-    test([5,2,4], [2], 1, '2 in 5,2,4');
-    test([5,2,4], [4], 2, '4 in 5,2,4');
-
-    test([{ foo: 'bar' }], [{ foo: 'bar' }], 0, 'will find deep objects');
-    test([{ foo: 'bar' }], [function(a) { return a.foo === 'bar'; }], 0, 'will run against a function');
-
-    test(['a','b','c'], [/[bz]/], 1, 'matches regexp');
-
-    var people = [
-      { name: 'jim',    age: 27, hair: 'brown'  },
-      { name: 'mary',   age: 52, hair: 'blonde' },
-      { name: 'ronnie', age: 13, hair: 'brown'  },
-      { name: 'edmund', age: 27, hair: 'blonde' }
-    ];
-
-    test(people, [function(person) { return person.age == 13; }], 2, 'JSON objects');
-  });
-
   method('sample', function() {
     var arr = [1,2,3,4,5,6,7,8,9,10];
-    var samples = [];
-
-    samples.push(run(arr, 'sample'));
-    samples.push(run(arr, 'sample'));
-    samples.push(run(arr, 'sample'));
-    samples.push(run(arr, 'sample'));
-    samples.push(run(arr, 'sample'));
-    samples.push(run(arr, 'sample'));
-    samples.push(run(arr, 'sample'));
-    samples.push(run(arr, 'sample'));
-    samples.push(run(arr, 'sample'));
-    samples.push(run(arr, 'sample'));
-
-    /* Note that there is a built-in 0.00000001% chance that this test will fail */
-    equal(samples.every(function(a) { return a == 1; }), false, 'should get a good randomization');
+    var fn = function(i) {
+      return run(arr, 'sample');
+    }
+    assertRandomized(arr, fn);
 
     equal(typeof run(arr, 'sample'), 'number', 'no params');
     equal(run(arr, 'sample', [1]).length, 1, '1');
@@ -1770,120 +1947,6 @@ package('Array', function () {
     equal(result.length, 2, 'should have returned 2 sampled elements');
     equal(arr.length, 2, 'should have removed 2 elements');
 
-  });
-
-  method('findAll', function() {
-    var people = [
-      { name: 'jim',    age: 27, hair: 'brown'  },
-      { name: 'mary',   age: 52, hair: 'blonde' },
-      { name: 'ronnie', age: 13, hair: 'brown'  },
-      { name: 'edmund', age: 27, hair: 'blonde' },
-      { name: 'buddy',  age: 82, hair: { color: 'red', type: 'long', cost: 15, last_cut: new Date(2010, 4, 18) } }
-    ];
-
-    test(people, [], 'complex | no arguments');
-    test(people, [{}], people, 'complex | empty object');
-    test(people, ['age'], [], 'complex | string argument');
-    test(people, [4], [], 'complex | number argument');
-    test(people, [{ age: 27 }], [people[0], people[3]], 'complex | one property');
-    test(people, [{ age: 27, hair: 'brown' }], [people[0]], 'complex | two properties');
-    test(people, [{ hair: { color: 'red' }}], [people[4]], 'complex | nested property');
-    test(people, [{ hair: { color: 'green' }}], [], 'complex | non-matching nested property');
-    test(people, [{ hair: { color: 'red', type: 'long' }}], [people[4]], 'complex | two nested properties');
-    test(people, [{ hair: { color: 'green', type: 'mean' }}], [], 'complex | two non-matching nested properties');
-    test(people, [{ hair: { color: 'red', type: 'mean' }}], [], 'complex | two nested properties, one non-matching');
-    test(people, [{ hair: { color: 'red', life: 'long' }}], [], 'complex | two nested properties, one non-existing');
-    test(people, [{ hair: { color: /r/ }}], [people[4]], 'complex | nested regex');
-    test(people, [{ hair: { cost: 15 }}], [people[4]], 'complex | nested number');
-    test(people, [{ hair: { cost: 23 }}], [], 'complex | nested non-matching number');
-    test(people, [{ hair: { cost: undefined }}], [], 'complex | nested undefined property');
-    test(people, [{ hair: { post: undefined }}], [people[4]], 'complex | nested undefined property non-existent');
-    test(people, [{ hair: { cost: NaN }}], [], 'complex | nested property is NaN');
-    test(people, [{ hair: { color: function(c){ return c == 'red'; } }}], [people[4]], 'complex | nested function');
-    test(people, [{ some: { random: { shit: {}}}}], [], 'complex | totally unrelated properties');
-    test(people, [{ hair: { last_cut: new Date(2010, 4, 18) }}], [people[4]], 'complex | simple date');
-  });
-
-  method('some', function() {
-    var people = [
-      { name: 'jim',    age: 27, hair: 'brown'  },
-      { name: 'mary',   age: 52, hair: 'blonde' },
-      { name: 'ronnie', age: 13, hair: 'brown'  },
-      { name: 'edmund', age: 27, hair: 'blonde' },
-      { name: 'buddy',  age: 82, hair: { color: 'red', type: 'long', cost: 15, last_cut: new Date(2010, 4, 18) } }
-    ];
-
-    test(people, [{ age: 27 }], true, 'complex | one property');
-    test(people, [{ age: 27, hair: 'brown' }], true, 'complex | two properties');
-    test(people, [{ hair: { color: 'red' }}], true, 'complex | nested property');
-    test(people, [{ hair: { color: 'green' }}], false, 'complex | non-matching nested property');
-    test(people, [{ hair: { color: 'red', type: 'long' }}], true, 'complex | two nested properties');
-    test(people, [{ hair: { color: 'green', type: 'mean' }}], false, 'complex | two non-matching nested properties');
-    test(people, [{ hair: { color: 'red', type: 'mean' }}], false, 'complex | two nested properties, one non-matching');
-    test(people, [{ hair: { color: 'red', life: 'long' }}], false, 'complex | two nested properties, one non-existing');
-    test(people, [{ hair: { color: /r/ }}], true, 'complex | nested regex');
-    test(people, [{ hair: { cost: 15 }}], true, 'complex | nested number');
-    test(people, [{ hair: { cost: 23 }}], false, 'complex | nested non-matching number');
-    test(people, [{ hair: { cost: undefined }}], false, 'complex | nested undefined property');
-    test(people, [{ hair: { cost: NaN }}], false, 'complex | nested property is NaN');
-    test(people, [{ hair: { color: function(c){ return c == 'red'; } }}], true, 'complex | nested function');
-    test(people, [{ some: { random: { shit: {}}}}], false, 'complex | totally unrelated properties');
-    test(people, [{ hair: { last_cut: new Date(2010, 4, 18) }}], true, 'complex | simple date');
-  });
-
-  method('none', function() {
-    var people = [
-      { name: 'jim',    age: 27, hair: 'brown'  },
-      { name: 'mary',   age: 52, hair: 'blonde' },
-      { name: 'ronnie', age: 13, hair: 'brown'  },
-      { name: 'edmund', age: 27, hair: 'blonde' },
-      { name: 'buddy',  age: 82, hair: { color: 'red', type: 'long', cost: 15, last_cut: new Date(2010, 4, 18) } }
-    ];
-
-    test(people, [{ age: 27 }], false, 'complex | one property');
-    test(people, [{ age: 27, hair: 'brown' }], false, 'complex | two properties');
-    test(people, [{ hair: { color: 'red' }}], false, 'complex | nested property');
-    test(people, [{ hair: { color: 'green' }}], true, 'complex | non-matching nested property');
-    test(people, [{ hair: { color: 'red', type: 'long' }}], false, 'complex | two nested properties');
-    test(people, [{ hair: { color: 'green', type: 'mean' }}], true, 'complex | two non-matching nested properties');
-    test(people, [{ hair: { color: 'red', type: 'mean' }}], true, 'complex | two nested properties, one non-matching');
-    test(people, [{ hair: { color: 'red', life: 'long' }}], true, 'complex | two nested properties, one non-existing');
-    test(people, [{ hair: { color: /r/ }}], false, 'complex | nested regex');
-    test(people, [{ hair: { cost: 15 }}], false, 'complex | nested number');
-    test(people, [{ hair: { cost: 23 }}], true, 'complex | nested non-matching number');
-    test(people, [{ hair: { cost: undefined }}], true, 'complex | nested undefined property');
-    test(people, [{ hair: { cost: NaN }}], true, 'complex | nested property is NaN');
-    test(people, [{ hair: { color: function(c){ return c == 'red'; } }}], false, 'complex | nested function');
-    test(people, [{ none: { random: { shit: {}}}}], true, 'complex | totally unrelated properties');
-    test(people, [{ hair: { last_cut: new Date(2010, 4, 18) }}], false, 'complex | simple date');
-  });
-
-
-  method('fuzzy', function() {
-    var arr = [{name: 'joe', age: 25}];
-    var match = { name: /j/ };
-
-    equal(run(arr, 'every', [match]), true, 'every');
-    equal(run(arr, 'some', [match]), true, 'some');
-    equal(run(arr, 'none', [match]), false, 'none');
-    equal(run(arr, 'count', [match]), 1, 'count');
-    equal(run(arr, 'find', [match]), arr[0], 'find');
-    equal(run(arr, 'findAll', [match]), [arr[0]], 'findAll');
-    equal(run(arr, 'findIndex', [match]), 0, 'findIndex');
-    equal(run(arr, 'exclude', [match]).length, 0, 'exclude');
-
-
-    var arr2 = run(testClone(arr), 'remove', [match]);
-    equal(arr2.length, 0, 'remove');
-
-    equal(run([arr], 'intersect', [[match]]), [], 'intersect is NOT fuzzy');
-    equal(run([match], 'intersect', [[arr]]), [], 'intersect reverse is NOT fuzzy');
-
-    equal(run(arr, 'subtract', [[match]]), arr, 'subtract is NOT fuzzy');
-    equal(run([match], 'subtract', [[arr]]), [match], 'subtract reverse is NOT fuzzy');
-
-    equal(run(arr, 'unique', [match]), arr, 'unique is NOT fuzzy');
-    equal(run([match], 'unique', [arr]), [match], 'unique reverse is NOT fuzzy');
   });
 
   method('sortBy', function() {
@@ -1970,9 +2033,10 @@ package('Array', function () {
 
     test(Sugar.Array.shuffle(frenchNames), frenchNames, 'sorting french names');
 
-    arr = frenchNames.map(function(n) {
-      return n.toUpperCase();
-    });
+    var arr = [];
+    for (var i = 0; i < frenchNames.length; i++) {
+      arr.push(frenchNames[i].toUpperCase());
+    }
     test(Sugar.Array.shuffle(arr), arr, 'sorting french names in upper case');
 
     // MSDN http://msdn.microsoft.com/en-us/library/cc194880.aspx
@@ -2806,77 +2870,6 @@ package('Array', function () {
   });
 
 
-  method('findAll', function() {
-    // Issue #157 Ensure that instances can be subject to fuzzy matches despite not being "objects"
-
-    function Foo(a) {
-      this.a = a;
-    }
-
-    var one   = new Foo('one');
-    var two   = new Foo('two');
-    var three = new Foo('three');
-    var four  = new Foo(new Date(2001, 3, 15));
-
-    test([one, two, three, four], [{ a: 'one' }], [one], 'matches class instances | object with string');
-    test([one, two, three, four], [{ a: /^t/ }], [two, three], 'matches class instances | object with regex');
-    test([one, two, three, four], ['one'], [], 'matches class instances | string');
-    test([one, two, three, four], [/t/], [one, two, three, four], 'directly passing a regex is matching the objects stringified');
-    test([one, two, three, four], [/x/], [], 'directly passing a regex with no matching letter');
-    test([one, two, three, four], [true], [], 'matches class instances | boolean');
-    test([one, two, three, four], [new Date()], [], 'matches class instances | now');
-    test([one, two, three, four], [new Date(2001, 3, 15)], [], 'matches class instances | correct date');
-    test([one, two, three, four], [null], [], 'matches class instances | null');
-    test([one, two, three, four], [undefined], [], 'matches class instances | undefined');
-    test([one, two, three, four], [{ a: 'twof' }], [], 'matches class instances | nonexistent string');
-    test([one, two, three, four], [{ b: 'one' }], [], 'matches class instances | nonexistent property');
-    test([one, two, three, four], [{}], [one, two, three, four], 'matches class instances | empty object');
-    test([one, two, three, four], [{ a: new Date(2001, 3, 15) }], [four], 'matches class instances | object with correct date');
-    test([one, two, three, four], [{ b: new Date(2001, 3, 15) }], [], 'matches class instances | object with correct date but wrong property');
-    test([one, two, three, four], [{ a: new Date(2001, 3, 16) }], [], 'matches class instances | object with incorrect date');
-    test([one, two, three, four], [{ a: new Date(2001, 3, 15, 0, 0, 0, 1) }], [], 'matches class instances | object with date off by 1ms');
-
-    var date = new Date(2001, 3, 15);
-    var timestamp = date.getTime();
-    var obj = { a: { getTime: function () { return timestamp; } }};
-    test([obj], [{ a: date }], [obj], 'duck typing for date matching');
-
-    var five = new Foo(one);
-
-    test([five], [{ a: 'one' }], [], 'nested instances | object with string');
-    test([five], [{ a: { a: 'one' } }], [five], 'nested instances | object with double nested string');
-    test([five], [{ a: { a: 'two' } }], [], 'nested instances | object with double nested string but incorrect');
-
-  });
-
-
-  method('findAll', function() {
-    // Fuzzy matching behavior on functions.
-
-    var count = 0;
-    var fn = function(){ count ++; };
-
-    run([1,2,3], 'findAll', [fn]);
-    equal(count, 3, 'functions treated as callbacks when matching against non-functions');
-
-    count = 0;
-    run([function() {}, function() {}, function() {}], 'findAll', [fn]);
-    equal(count, 3, 'functions are not directly matched');
-
-
-    var fn1 = function() {};
-    var fn2 = function() {};
-
-    if(Sugar.Object && Sugar.Object.isEqual) {
-      equal(run([fn1, fn1, fn1], 'all', [function(el) { return Sugar.Object.isEqual(el, fn1); }]), true, 'functions can be matched inside the callback');
-      equal(run([fn1, fn1, fn2], 'all', [function(el) { return Sugar.Object.isEqual(el, fn1); }]), false, 'functions can be matched inside the callback');
-      equal(run([fn1, fn1, fn2], 'any', [function(el) { return Sugar.Object.isEqual(el, fn1); }]), true, 'functions can be matched inside the callback');
-      equal(run([fn1, fn2, fn1], 'findAll', [function(el) { return Sugar.Object.isEqual(el, fn1); }]), [fn1, fn1], 'functions can be matched inside the callback');
-      equal(run([fn1, fn2, fn1], 'findAll', [function(el) { return Sugar.Object.isEqual(el, fn2); }]), [fn2], 'fn2 | functions can be matched inside the callback');
-    }
-
-  });
-
   method('sortBy', function() {
 
     // Issue #273 - exposing collateString
@@ -2919,7 +2912,7 @@ package('Array', function () {
     test([{a:10},{a:8},{a:3}], [function(e) { return e['a'] > 5; }, 2], undefined, 'key "a" greater than 5 from index 2');
     test([function() {}], [function(e) {}, 1], undefined, 'null function from index 1');
     test([null, null], [null, 1], null, 'null from index 1');
-    test([undefined, undefined], [undefined, 1], undefined, 'undefined from index 1');
+    test(arrayOfUndefined, [undefined, 1], undefined, 'undefined from index 1');
 
   });
 
