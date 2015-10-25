@@ -57,4 +57,3 @@ propertyIsEnumerable = function(obj, prop) {
   }
   return false;
 }
-
