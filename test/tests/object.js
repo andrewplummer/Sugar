@@ -1265,67 +1265,105 @@ package('Object', function () {
       return str.replace(/\[/g, '%5B').replace(/\]/g, '%5D');
     }
 
-    function assertQueryStringGenerated(obj, args, expected, message) {
-      testStaticAndInstance(obj, args, getExpected(expected), message);
+    function assertQueryString(obj, args, expected, message, skipHash) {
+      if (skipHash) {
+        test(obj, args, getExpected(expected), message);
+      } else {
+        testStaticAndInstance(obj, args, getExpected(expected), message);
+      }
     }
 
-    assertQueryStringGenerated({foo:'bar'}, [], 'foo=bar', 'basic string');
-    assertQueryStringGenerated({foo:'bar',moo:'car'}, [], 'foo=bar&moo=car', 'two keys');
-    assertQueryStringGenerated({foo:'bar',moo:8}, [], 'foo=bar&moo=8', 'one string one numeric');
-    assertQueryStringGenerated({foo:'bar3'}, [], 'foo=bar3', 'number in back');
-    assertQueryStringGenerated({foo:'3bar'}, [], 'foo=3bar', 'number in front');
-    assertQueryStringGenerated({foo: 3}, [], 'foo=3', 'basic number');
-    assertQueryStringGenerated({foo: true}, [], 'foo=true', 'basic boolean');
-    assertQueryStringGenerated({foo: /reg/}, [], 'foo=%2Freg%2F', 'regexp');
-    assertQueryStringGenerated({foo:'a b'}, [], 'foo=a%20b', 'should escape string');
-    assertQueryStringGenerated({foo: date}, [], 'foo=' + date.getTime(), 'should stringify date');
-    assertQueryStringGenerated({foo:['a','b','c']}, [], 'foo[0]=a&foo[1]=b&foo[2]=c', 'basic array');
-    assertQueryStringGenerated({foo:{bar:'tee',car:'hee'}}, [], 'foo[bar]=tee&foo[car]=hee', 'basic object');
+    equal(run(Object, 'toQueryString', ['foo']), '', 'straight string no prefix');
 
-    assertQueryStringGenerated({foo:undefined}, [], 'foo=', 'undefined');
-    assertQueryStringGenerated({foo:false}, [], 'foo=false', 'false');
-    assertQueryStringGenerated({foo:null}, [], 'foo=', 'null');
-    assertQueryStringGenerated({foo:NaN}, [], 'foo=', 'NaN');
-    assertQueryStringGenerated({foo:''}, [], 'foo=', 'empty string');
-    assertQueryStringGenerated({foo:0}, [], 'foo=0', '0');
-    assertQueryStringGenerated({foo:[['fap','cap']]}, [], 'foo[0][0]=fap&foo[0][1]=cap', 'array double nested');
-    assertQueryStringGenerated({foo:[['fap'],['cap']]}, [], 'foo[0][0]=fap&foo[1][0]=cap', 'array horizonal nested');
-    assertQueryStringGenerated({foo:{bar:{map:'fap'}}}, [], 'foo[bar][map]=fap', 'object double nested');
+    assertQueryString({foo:'bar'}, [], 'foo=bar', 'basic string');
+    assertQueryString({foo:'bar',moo:'car'}, [], 'foo=bar&moo=car', 'two keys');
+    assertQueryString({foo:'bar',moo:8}, [], 'foo=bar&moo=8', 'one string one numeric');
+    assertQueryString({foo:'bar3'}, [], 'foo=bar3', 'number in back');
+    assertQueryString({foo:'3bar'}, [], 'foo=3bar', 'number in front');
+    assertQueryString({foo: 3}, [], 'foo=3', 'basic number');
+    assertQueryString({foo: true}, [], 'foo=true', 'basic boolean');
+    assertQueryString({foo: /reg/}, [], 'foo=%2Freg%2F', 'regexp');
+    assertQueryString({foo:'a b'}, [], 'foo=a%20b', 'should escape string');
+    assertQueryString({foo: date}, [], 'foo=' + date.getTime(), 'should stringify date');
+    assertQueryString({foo:['a','b','c']}, [], 'foo=a&foo=b&foo=c', 'basic array');
+    assertQueryString({foo:{bar:'tee',car:'hee'}}, [], 'foo_bar=tee&foo_car=hee', 'deep object');
 
-    assertQueryStringGenerated({foo:'bar'}, ['paw'], 'paw[foo]=bar', 'namespace | basic string');
-    assertQueryStringGenerated({foo:'bar',moo:'car'}, ['paw'], 'paw[foo]=bar&paw[moo]=car', 'namespace | two keys');
-    assertQueryStringGenerated({foo:'bar',moo:8}, ['paw'], 'paw[foo]=bar&paw[moo]=8', 'namespace | one string one numeric');
-    assertQueryStringGenerated({foo:'bar3'}, ['paw'], 'paw[foo]=bar3', 'namespace | number in back');
-    assertQueryStringGenerated({foo:'3bar'}, ['paw'], 'paw[foo]=3bar', 'namespace | number in front');
-    assertQueryStringGenerated({foo: 3}, ['paw'], 'paw[foo]=3', 'namespace | basic number');
-    assertQueryStringGenerated({foo: true}, ['paw'], 'paw[foo]=true', 'namespace | basic boolean');
-    assertQueryStringGenerated({foo: /reg/}, ['paw'], 'paw[foo]=%2Freg%2F', 'namespace | regexp');
-    assertQueryStringGenerated({foo:'a b'}, ['paw'], 'paw[foo]=a%20b', 'namespace | should escape string');
-    assertQueryStringGenerated({foo: date}, ['paw'], 'paw[foo]=' + date.getTime(), 'namespace | should stringify date');
-    assertQueryStringGenerated({foo:['a','b','c']}, ['paw'], 'paw[foo][0]=a&paw[foo][1]=b&paw[foo][2]=c', 'namespace | basic array');
-    assertQueryStringGenerated({foo:{bar:'tee',car:'hee'}}, ['paw'], 'paw[foo][bar]=tee&paw[foo][car]=hee', 'namespace | basic object');
+    assertQueryString({foo:undefined}, [], 'foo=', 'undefined');
+    assertQueryString({foo:false}, [], 'foo=false', 'false');
+    assertQueryString({foo:null}, [], 'foo=', 'null');
+    assertQueryString({foo:NaN}, [], 'foo=', 'NaN');
+    assertQueryString({foo:''}, [], 'foo=', 'empty string');
+    assertQueryString({foo:0}, [], 'foo=0', '0');
 
-    assertQueryStringGenerated({foo:undefined}, ['paw'], 'paw[foo]=', 'namespace | undefined');
-    assertQueryStringGenerated({foo:false}, ['paw'], 'paw[foo]=false', 'namespace | false');
-    assertQueryStringGenerated({foo:null}, ['paw'], 'paw[foo]=', 'namespace | null');
-    assertQueryStringGenerated({foo:NaN}, ['paw'], 'paw[foo]=', 'namespace | NaN');
-    assertQueryStringGenerated({foo:''}, ['paw'], 'paw[foo]=', 'namespace | empty string');
-    assertQueryStringGenerated({foo:0}, ['paw'], 'paw[foo]=0', 'namespace | 0');
-    assertQueryStringGenerated({foo:[['fap','cap']]}, ['paw'], 'paw[foo][0][0]=fap&paw[foo][0][1]=cap', 'namespace | array double nested');
-    assertQueryStringGenerated({foo:[['fap'],['cap']]}, ['paw'], 'paw[foo][0][0]=fap&paw[foo][1][0]=cap', 'namespace | array horizonal nested');
-    assertQueryStringGenerated({foo:{bar:{map:'fap'}}}, ['paw'], 'paw[foo][bar][map]=fap', 'namespace | object double nested');
+    assertQueryString({foo:'bar'}, [{prefix:'paw'}], 'paw_foo=bar', 'prefix | basic string');
+    assertQueryString({foo:'bar',moo:'car'}, [{prefix:'paw'}], 'paw_foo=bar&paw_moo=car', 'prefix | two keys');
+    assertQueryString({foo:'bar',moo:8}, [{prefix:'paw'}], 'paw_foo=bar&paw_moo=8', 'prefix | one string one numeric');
+    assertQueryString({foo:'bar3'}, [{prefix:'paw'}], 'paw_foo=bar3', 'prefix | number in back');
+    assertQueryString({foo:'3bar'}, [{prefix:'paw'}], 'paw_foo=3bar', 'prefix | number in front');
+    assertQueryString({foo: 3}, [{prefix:'paw'}], 'paw_foo=3', 'prefix | basic number');
+    assertQueryString({foo: true}, [{prefix:'paw'}], 'paw_foo=true', 'prefix | basic boolean');
+    assertQueryString({foo: /reg/}, [{prefix:'paw'}], 'paw_foo=%2Freg%2F', 'prefix | regexp');
+    assertQueryString({foo:'a b'}, [{prefix:'paw'}], 'paw_foo=a%20b', 'prefix | should escape string');
+    assertQueryString({foo: date}, [{prefix:'paw'}], 'paw_foo=' + date.getTime(), 'prefix | should stringify date');
+    assertQueryString({foo:['a','b','c']}, [{prefix:'paw'}], 'paw_foo=a&paw_foo=b&paw_foo=c', 'prefix | deep array');
+    assertQueryString({foo:{bar:'tee',car:'hee'}}, [{prefix:'paw'}], 'paw_foo_bar=tee&paw_foo_car=hee', 'prefix | deep object');
 
-    assertQueryStringGenerated({'hello there': 'bar'}, [], 'hello%20there=bar', 'spaces in key');
-    assertQueryStringGenerated({'"/+': 'bar'}, [], '%22%2F%2B=bar', 'key requires encoding');
-    assertQueryStringGenerated({'時刻': 'bar'}, [], '%E6%99%82%E5%88%BB=bar', 'Japanese key');
-    assertQueryStringGenerated({'%20': 'bar'}, [], '%2520=bar', '%20');
+    assertQueryString({foo:undefined}, [{prefix:'paw'}], 'paw_foo=', 'prefix | undefined');
+    assertQueryString({foo:false}, [{prefix:'paw'}], 'paw_foo=false', 'prefix | false');
+    assertQueryString({foo:null}, [{prefix:'paw'}], 'paw_foo=', 'prefix | null');
+    assertQueryString({foo:NaN}, [{prefix:'paw'}], 'paw_foo=', 'prefix | NaN');
+    assertQueryString({foo:''}, [{prefix:'paw'}], 'paw_foo=', 'prefix | empty string');
+    assertQueryString({foo:0}, [{prefix:'paw'}], 'paw_foo=0', 'prefix | 0');
 
-    assertQueryStringGenerated(['a','b','c'], [], '0=a&1=b&2=c', 'straight array no namespace');
-    assertQueryStringGenerated(8, [], '', 'straight number no namespace');
-    assertQueryStringGenerated(date, [], '', 'straight date no namespace');
-    assertQueryStringGenerated({foo:'bar'}, ['萬'], '%E8%90%AC[foo]=bar', 'Japanese characters in the namespace');
+    assertQueryString({'hello there': 'bar'}, [], 'hello%20there=bar', 'spaces in key');
+    assertQueryString({'"/+': 'bar'}, [], '%22%2F%2B=bar', 'key requires encoding');
+    assertQueryString({'時刻': 'bar'}, [], '%E6%99%82%E5%88%BB=bar', 'Japanese key');
+    assertQueryString({'%20': 'bar'}, [], '%2520=bar', '%20');
 
-    equal(run(Object, 'toQueryString', ['foo']), '', 'straight string no namespace');
+    assertQueryString(8, [], '', 'straight number no prefix');
+    assertQueryString(date, [], '', 'straight date no prefix');
+    assertQueryString({foo:'bar'}, [{prefix:'萬'}], '%E8%90%AC_foo=bar', 'Japanese characters in the prefix');
+    assertQueryString({type:['a','b']}, [], 'type=a&type=b', 'array in object');
+
+    assertQueryString({foo:'bar'}, [{prefix:'moo'}], 'moo_foo=bar', 'basic with prefix');
+    assertQueryString({type:['a','b']}, [{deep:true}], 'type[]=a&type[]=b', 'deep | array in object');
+    assertQueryString({type:['a','b']}, [{deep:true}], 'type[]=a&type[]=b', 'deep array');
+    assertQueryString({foo:'bar'}, [{deep:true,prefix:'moo'}], 'moo[foo]=bar', 'deep and prefix | shallow');
+
+    assertQueryString({foo:[['fap','cap']]}, [], 'foo=fap&foo=cap', 'array double nested');
+    assertQueryString({foo:[['fap'],['cap']]}, [], 'foo=fap&foo=cap', 'array horizontal nested');
+    assertQueryString({foo:{bar:{map:'fap'}}}, [], 'foo_bar_map=fap', 'object double nested');
+
+    assertQueryString({foo:[['fap','cap']]}, [{prefix:'paw'}], 'paw_foo=fap&paw_foo=cap', 'prefix | array double nested');
+    assertQueryString({foo:[['fap'],['cap']]}, [{prefix:'paw'}], 'paw_foo=fap&paw_foo=cap', 'prefix | array horizontal nested');
+    assertQueryString({foo:{bar:{map:'fap'}}}, [{prefix:'paw'}], 'paw_foo_bar_map=fap', 'prefix | object double nested');
+
+    assertQueryString({foo:[['fap'],['cap']]}, [{deep:true,prefix:'paw'}], 'paw[foo][][]=fap&paw[foo][][]=cap', 'deep and | array horizontal nested');
+    assertQueryString({foo:[['fap','cap']]}, [{deep:true,prefix:'paw'}], 'paw[foo][][]=fap&paw[foo][][]=cap', 'deep and prefix | array double nested');
+    assertQueryString({foo:['a','b','c']}, [{deep:true,prefix:'paw'}], 'paw[foo][]=a&paw[foo][]=b&paw[foo][]=c', 'deep and prefix | deep array');
+
+    assertQueryString({user:{id:12345,name:'pooh'}}, [], 'user_id=12345&user_name=pooh', 'user object');
+    assertQueryString({user:{id:12345,name:'pooh'}}, [{separator:'-'}], 'user-id=12345&user-name=pooh', 'user object with separator');
+
+    // Directly using arrays so can't go through extended objects here.
+
+    assertQueryString(['a','b','c'], [], 'a&b&c', 'straight array no prefix', true);
+    assertQueryString(['a','b','c'], [], 'a&b&c', 'array', true);
+    assertQueryString([{a:'b'},{c:'d'}], [], 'a=b&c=d', 'objects in array', true);
+    assertQueryString(['a','b','c'], [{deep:true}], 'a&b&c', 'deep | array', true);
+    assertQueryString([{a:'b'},{c:'d'}], [{deep:true}], 'a=b&c=d', 'deep | objects in array', true);
+    assertQueryString(['Rails', 'coding'], [{prefix:'hobbies'}], 'hobbies=Rails&hobbies=coding', 'ActiveSupport example no brackets', true);
+    assertQueryString(['Rails', 'coding'], [{deep:true,prefix:'hobbies'}], 'hobbies[]=Rails&hobbies[]=coding', 'ActiveSupport example with brackets', true);
+
+    var booleanToNumber = function(val) {
+      return typeof val === 'boolean' ? +val : val;
+    }
+    assertQueryString({a:true,b:'b',c:false}, [{getValue:booleanToNumber}], 'a=1&b=b&c=0', 'values can be overridden with getValue');
+    assertQueryString({foo:{a:true,b:'b',c:false}}, [{deep:true,getValue:booleanToNumber}], 'foo[a]=1&foo[b]=b&foo[c]=0', 'deep values can be overridden with getValue');
+
+    Sugar.Object.toQueryString(obj, { deep: true, dateFormat: '%Y-%m-%d', castBoolean: true });
+
+
 
     var obj = {
       toString: function() {
@@ -1333,7 +1371,7 @@ package('Object', function () {
       }
     }
 
-    assertQueryStringGenerated({foo: obj}, [], 'foo=hardyhar', 'toString object member');
+    assertQueryString({foo: obj}, [], 'foo=hardyhar', 'toString object member');
 
     var Foo = function() {};
     Foo.prototype.toString = function() {
