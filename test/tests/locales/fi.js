@@ -9,7 +9,7 @@ package('Dates Finnish', function () {
   });
 
   method('create', function() {
-    dateEqual(testCreateDate('15. toukokuuta 2011'),          new Date(2011, 4, 15),              'Date#create | basic Finnish date');
+    dateEqual(testCreateDate('15. toukokuuta 2011'),          new Date(2011, 4, 15),              'basic Finnish date');
     dateEqual(testCreateDate('tiistai 5. tammikuuta 2012'),   new Date(2012, 0, 5),               '2012-01-05');
     dateEqual(testCreateDate('tiistaina 5. tammikuuta 2012'), new Date(2012, 0, 5),               '2012-01-05 (na)');
     dateEqual(testCreateDate('toukokuu 2011'),                new Date(2011, 4),                  'year and month');
