@@ -1179,6 +1179,7 @@ package('Object', function () {
     test(Object, ['foo=Infinity'],{ foo: 'Infinity' }, 'smart | should not cast Infinity');
     test(Object, ['foo=99,999'],  { foo: '99,999' },   'smart | should not cast numbers with commas');
     test(Object, ['foo=24px'],    { foo: '24px' },     'smart | should not cast 24px');
+    test(Object, ['foo=5-'],      { foo: '5-' },       'smart | should not cast 5-');
 
 
     test(Object, ['foo=bar&foo=car'], {'foo':['bar','car']}, 'two keys detected by smart');
