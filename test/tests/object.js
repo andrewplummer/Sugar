@@ -1092,42 +1092,51 @@ package('Object', function () {
   method('fromQueryString', function() {
 
     test(Object, ['foo=bar&moo=car'], {foo:'bar',moo:'car'}, 'basic');
-    test(Object, ['foo=bar&moo=3'], {foo:'bar',moo:'3'}, 'with numbers');
+    test(Object, ['foo=bar&moo=3'], {foo:'bar',moo:3}, 'with numbers');
+    test(Object, ['foo=bar&moo=3', {smart:false}], {foo:'bar',moo:'3'}, 'with numbers not smart');
 
-    test(Object, ['foo=bar&moo=true'], {foo:'bar',moo:'true'}, 'with true');
-    test(Object, ['foo=bar&moo=false'], {foo:'bar',moo:'false'}, 'with false');
+    test(Object, ['foo=bar&moo=true'], {foo:'bar',moo:true}, 'with true smart');
+    test(Object, ['foo=bar&moo=false'], {foo:'bar',moo:false}, 'with false smart');
+    test(Object, ['foo=bar&moo=true', {smart:false}], {foo:'bar',moo:'true'}, 'with true not smart');
+    test(Object, ['foo=bar&moo=false', {smart:false}], {foo:'bar',moo:'false'}, 'with false not smart');
 
-    test(Object, ['foo=bar&moo=true', true], {foo:'bar',moo:true}, 'coerced | with true');
-    test(Object, ['foo=bar&moo=false', true], {foo:'bar',moo:false}, 'coerced | with false');
+    test(Object, ['foo=bar3'], {foo:'bar3'}, 'number in back');
+    test(Object, ['foo=3bar'], {foo:'3bar'}, 'number up front');
 
-    test(Object, ['foo=bar3'], { foo: 'bar3' }, 'number in back');
-    test(Object, ['foo=3bar'], { foo: '3bar' }, 'number up front');
-    test(Object, ['foo=345'], { foo: '345' }, 'numbers only');
-    test(Object, ['foo=&bar='], { foo: '', bar: '' }, 'undefined params');
-    test(Object, ['foo[]=bar&foo[]=car'], { foo: ['bar','car'] }, 'handles array params');
-    test(Object, ['foo[bar]=tee&foo[car]=hee'], { foo: { bar: 'tee', car: 'hee' } }, 'handles hash params');
-    test(Object, ['foo[0]=a&foo[1]=b&foo[2]=c'], { foo: ['a','b','c'] }, 'handles array indexes');
+    test(Object, ['foo=345'], {foo:345}, 'numbers only smart');
+    test(Object, ['foo=&bar='], { foo: null, bar: null }, 'undefined params smart');
+    test(Object, ['foo=&bar=', {smart:false}], { foo: '', bar: '' }, 'undefined params not smart');
+    test(Object, ['foo[]=bar&foo[]=car'], {'foo[]':['bar','car']}, 'deep strings with default');
+    test(Object, ['foo[]=bar&foo[]=car',{smart:false}], {'foo[]':'car'}, 'deep strings with default not smart');
 
-    test(Object, ['foo[cap][map]=3'], { foo: { cap: { map: '3' } } }, 'handles array indexes');
-    test(Object, ['foo[cap][map][]=3'], { foo: { cap: { map: ['3'] } } }, 'nested with trailing array');
-    test(Object, ['foo[moo]=1&bar[far]=2'], { foo: { moo: '1' }, bar: { far: '2' }}, 'sister objects');
+    test(Object, ['foo[]=bar&foo[]=car', {deep:true}], {'foo':['bar','car']}, 'deep strings with deep');
+    test(Object, ['foo[bar]=tee&foo[car]=hee', {deep:true}], { foo: { bar: 'tee', car: 'hee' } }, 'handles hash params');
 
-    test(Object, ['f[]=a&f[]=b&f[]=c&f[]=d&f[]=e&f[]=f'], { f: ['a','b','c','d','e','f'] }, 'large array');
-    test(Object, ['foo[0][]=a&foo[1][]=b'], { foo: [['a'],['b']] }, 'nested arrays separate');
-    test(Object, ['foo[0][0]=3&foo[0][1]=4'], { foo: [['3','4']] }, 'nested arrays together');
-    test(Object, ['foo[][]=3&foo[][]=4'], { foo: [['3'],['4']] }, 'nested arrays');
+    test(Object, ['foo[cap][map]=3', {deep:true}], {foo:{cap:{map:3}}}, 'deep keys');
+    test(Object, ['foo[cap][map][]=3', {deep:true}], {foo:{cap:{map:[3]}}}, 'nested with trailing array');
+    test(Object, ['foo[moo]=1&bar[far]=2', {deep:true}], {foo:{moo:1},bar:{far:2}}, 'sister objects');
+
+    test(Object, ['foo[cap][map]=3', {deep:true,smart:false}], {foo:{cap:{map:'3'}}}, 'deep keys not smart');
+    test(Object, ['foo[cap][map][]=3', {deep:true,smart:false}], {foo:{cap:{map:['3']}}}, 'nested with trailing array not smart');
+    test(Object, ['foo[moo]=1&bar[far]=2', {deep:true,smart:false}], {foo:{moo:'1'},bar:{far:'2'}}, 'sister objects not smart');
+
+    test(Object, ['f[]=a&f[]=b&f[]=c&f[]=d&f[]=e&f[]=f',{deep:true}], { f: ['a','b','c','d','e','f'] }, 'large array');
+    test(Object, ['foo[][]=a&foo[][]=b',{deep:true}], {foo:[['a'],['b']]}, 'nested arrays separate');
+    test(Object, ['foo[][]=3&foo[][]=4',{deep:true}], {foo:[[3],[4]]}, 'nested arrays together');
+    test(Object, ['foo[][]=3&foo[][]=4',{deep:true,smart:false}], {foo:[['3'],['4']]}, 'nested arrays together not smart');
 
     var qs = 'foo[cap][map]=true&foo[cap][pap]=false';
-    test(Object, [qs], {foo:{cap:{ map:'true',pap:'false'}}}, 'nested boolean without coercion');
-    test(Object, [qs, true], {foo:{cap:{map:true,pap:false}}}, 'nested boolean with coercion');
+    test(Object, [qs,{deep:true}], {foo:{cap:{map:true,pap:false}}}, 'nested boolean not smart');
+    test(Object, [qs,{deep:true,smart:false}], {foo:{cap:{ map:'true',pap:'false'}}}, 'nested boolean smart');
 
-    var sparse = [];
-    sparse[3] = 'hardy';
-    sparse[10] = 'har har';
-    test(Object, ['foo[3]=hardy&foo[10]=har har'], { foo: sparse }, 'constructed arrays can be sparse');
+    test(Object, ['foo[3]=hardy&foo[10]=har har', {deep:true}], {foo:{3:'hardy',10:'har har'}}, 'array keys will construct object');
 
     test(Object, ['text=What%20is%20going%20on%20here%3f%3f&url=http://animalsbeingdicks.com/page/2'], { text: 'What is going on here??', url: 'http://animalsbeingdicks.com/page/2' }, 'handles partially escaped params');
     test(Object, ['text=What%20is%20going%20on%20here%3f%3f&url=http%3A%2F%2Fanimalsbeingdicks.com%2Fpage%2F2'], { text: 'What is going on here??', url: 'http://animalsbeingdicks.com/page/2' }, 'handles fully escaped params');
+    test(Object, ['foo%3Dbar=car'], {'foo=bar':'car'}, 'handles = in encoded keys');
+    test(Object, ['foo%2Cbar=car'], {'foo,bar':'car'}, 'handles , in encoded keys');
+    test(Object, ['foo=bar%3Dcar'], {'foo':'bar=car'}, 'handles = in encoded values');
+    test(Object, ['foo=bar%2Ccar'], {'foo':'bar,car'}, 'handles , in encoded values');
 
     test(Object, ['url=http%3A%2F%2Fwww.site.com%2Fslug%3Fin%3D%2Fuser%2Fjoeyblake'], { url: 'http://www.site.com/slug?in=/user/joeyblake' }, 'equal must be escaped as well');
 
@@ -1139,10 +1148,126 @@ package('Object', function () {
       equal(typeof run(Object, 'fromQueryString', [window.location]), 'object', 'can handle just window.location');
     }
 
-    test(Object, ['foo=3.14156'], { foo: '3.14156' }, 'float values are not coerced');
+    // Smart casting
+
+    test(Object, ['foo=3.14156'], { foo: 3.14156 }, 'float values');
+    test(Object, ['foo=3.14156', {smart:false}], { foo: '3.14156' }, 'float values not smart');
     test(Object, ['foo=127.0.0.1'], { foo: '127.0.0.1' }, 'IP addresses not treated as numbers');
-    test(Object, ['zip=00165'], { zip: '00165' }, 'zipcodes are not treated as numbers');
+    test(Object, ['zip=00165'], { zip: 165 }, 'zipcodes are treated as numbers if smart');
+    test(Object, ['zip=00165',{smart:false}], { zip: '00165' }, 'zipcodes are not treated as numbers if not smart');
     test(Object, ['foo[=bar'], { 'foo[': 'bar' }, 'opening bracket does not trigger deep parameters');
+
+    test(Object, ['foo='],        { foo: null },   'smart | null');
+    test(Object, ['foo=0'],       { foo:   0 },    'smart | zero');
+    test(Object, ['foo=-0'],      { foo:  -0 },    'smart | negative zero');
+    test(Object, ['foo=.5'],      { foo:  .5 },    'smart | .5');
+    test(Object, ['foo=0.5'],     { foo:  .5 },    'smart | 0.5');
+    test(Object, ['foo=0.00'],    { foo: 0 },      'smart | 0.00');
+    test(Object, ['foo=1'],       { foo: 1 },      'smart | 1');
+    test(Object, ['foo=-1'],      { foo:-1 },      'smart | -1');
+    test(Object, ['foo=-0.5'],    { foo: -.5 },    'smart | -0.5');
+    test(Object, ['foo=-.5'],     { foo: -.5 },    'smart | -.5');
+    test(Object, ['foo=-.0025'],  { foo: -.0025 }, 'smart | -.0025');
+    test(Object, ['foo=-0.0025'], { foo: -.0025 }, 'smart | -0.0025');
+    test(Object, ['foo=.0025'],   { foo:  .0025 }, 'smart | .0025');
+    test(Object, ['foo=0.0025'],  { foo:  .0025 }, 'smart | 0.0025');
+
+    test(Object, ['foo=0x89'],    { foo: '0x89' },     'smart | should not cast 0x89');
+    test(Object, ['foo=1e25'],    { foo: '1e25' },     'smart | should not cast 1e25');
+    test(Object, ['foo=#fff'],    { foo: '#fff' },     'smart | should not cast #fff');
+    test(Object, ['foo=1.2.3'],   { foo: '1.2.3'},     'smart | should not cast 1.2.3');
+    test(Object, ['foo=Infinity'],{ foo: 'Infinity' }, 'smart | should not cast Infinity');
+    test(Object, ['foo=99,999'],  { foo: '99,999' },   'smart | should not cast numbers with commas');
+
+
+    test(Object, ['foo=bar&foo=car'], {'foo':['bar','car']}, 'two keys detected by smart');
+    test(Object, ['foo=bar&foo=car&foo=moo'], {'foo':['bar','car','moo']}, 'three keys detected by smart');
+    test(Object, ['foo=bar&foo=car', {deep:true}], {'foo':['bar','car']}, 'two keys detected by smart');
+    test(Object, ['foo=bar&foo=car&foo=moo', {deep:true}], {'foo':['bar','car','moo']}, 'three keys detected by smart');
+
+
+    // Separators
+
+    test(Object, ['user_name=Harry'], {'user_name':'Harry'}, 'without separator');
+    test(Object, ['user_name=Harry', {separator:'_'}], {'user':{name:'Harry'}}, 'with separator');
+    test(Object, ['user_name_first=Harry', {separator:'_'}], {'user':{name:{first:'Harry'}}}, 'with separator deeper');
+
+    test(Object, ['user|name=Harry'], {'user|name':'Harry'}, 'without separator | pipe');
+    test(Object, ['user|name=Harry', {separator:'|'}], {'user':{name:'Harry'}}, 'with separator | pipe');
+    test(Object, ['user|name|first=Harry', {separator:'|'}], {'user':{name:{first:'Harry'}}}, 'with separator deeper | pipe');
+
+
+    // Cast function
+
+    var castToFoo = function() { return 'foo'; }
+    test(Object, ['foo=bar', {cast:castToFoo}], {foo:'foo'}, 'cast foo');
+    test(Object, ['foo=3', {cast:castToFoo}], {foo:'foo'}, 'cast foo before smart conversion');
+    test(Object, ['foo=true', {cast:castToFoo}], {foo:'foo'}, 'cast foo before boolean conversion');
+    test(Object, ['foo[]=true', {cast:castToFoo}], {'foo[]':'foo'}, 'cast foo on brackets');
+
+    var castToEmpty = function() { return ''; }
+    test(Object, ['foo=bar', {cast:castToEmpty}], {foo:''}, 'cast empty string');
+
+
+    var count = 0;
+    var testCastArguments = function(key, value) {
+      equal(key, 'foo', 'first argument should be the key');
+      equal(value, 'bar', 'second argument should be the value');
+      count++;
+    }
+    run(Object, 'fromQueryString', ['foo=bar', {cast:testCastArguments}]);
+    equal(count, 1, 'should have run once');
+
+    var count = 0;
+    var expectedKeys = ['foo[name]', 'moo[]'];
+    var expectedValues = ['bar', 'beer'];
+    var capturedObj;
+    var testCastArgumentsDeep = function(key, value, obj) {
+      equal(key, expectedKeys[count], 'first argument');
+      equal(value, expectedValues[count], 'second argument');
+      capturedObj = obj;
+      count++;
+    }
+    var result = run(Object, 'fromQueryString', ['foo[name]=bar&moo[]=beer', {cast:testCastArgumentsDeep}]);
+
+    equal(capturedObj, result, 'third argument should be equal to the result');
+    equal(count, 2, 'should have run twice');
+
+    var castOnlyUserName = function(key) {
+      if (key === 'user_name') {
+        return 'Harry';
+      }
+    }
+    test(Object, ['user_name=moo&user_id=12345', {cast:castOnlyUserName}], {user_name:'Harry',user_id:12345}, 'only cast name');
+
+    var castNumeralAsBoolean = function(key, value) {
+      if (value === '1' || value === '0') {
+        return !!+value;
+      }
+    }
+    var subject = 'user[profile][agreed]=1&user[address][street]=12345%20Foo%20St.&user[profile][friends][]=Mary&user[profile][friends][]=Jerry&user[profile][paid]=0';
+    var expected = {
+      user: {
+        profile: {
+          paid: false,
+          agreed: true,
+          friends: ['Mary', 'Jerry']
+        },
+        address: {
+          street: '12345 Foo St.'
+        }
+      }
+    }
+    test(Object, [subject, {deep:true,cast:castNumeralAsBoolean}], expected, 'complex object with numeral cast to boolean');
+
+
+    var castToArray = function(key, value, obj) {
+      if (key === 'foo' && !obj[key]) {
+        return [value];
+      }
+    }
+    test(Object, ['foo=bar', {cast:castToArray}], {'foo':['bar']}, 'single can still be converted to array with cast function');
+
   });
 
   method('tap', function() {
@@ -1356,6 +1481,7 @@ package('Object', function () {
     assertQueryString(['Rails', 'coding'], [{deep:true,prefix:'hobbies'}], 'hobbies[]=Rails&hobbies[]=coding', 'ActiveSupport example with brackets', true);
 
     var booleanToNumber = function(val) {
+      // TODO test arguments here!!
       return typeof val === 'boolean' ? +val : val;
     }
     assertQueryString({a:true,b:'b',c:false}, [{getValue:booleanToNumber}], 'a=1&b=b&c=0', 'values can be overridden with getValue');
