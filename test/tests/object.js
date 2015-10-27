@@ -1178,6 +1178,7 @@ package('Object', function () {
     test(Object, ['foo=1.2.3'],   { foo: '1.2.3'},     'smart | should not cast 1.2.3');
     test(Object, ['foo=Infinity'],{ foo: 'Infinity' }, 'smart | should not cast Infinity');
     test(Object, ['foo=99,999'],  { foo: '99,999' },   'smart | should not cast numbers with commas');
+    test(Object, ['foo=24px'],    { foo: '24px' },     'smart | should not cast 24px');
 
 
     test(Object, ['foo=bar&foo=car'], {'foo':['bar','car']}, 'two keys detected by smart');
