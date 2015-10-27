@@ -1480,15 +1480,17 @@ package('Object', function () {
     assertQueryString(['Rails', 'coding'], [{prefix:'hobbies'}], 'hobbies=Rails&hobbies=coding', 'ActiveSupport example no brackets', true);
     assertQueryString(['Rails', 'coding'], [{deep:true,prefix:'hobbies'}], 'hobbies[]=Rails&hobbies[]=coding', 'ActiveSupport example with brackets', true);
 
-    var booleanToNumber = function(val) {
-      // TODO test arguments here!!
+    var booleanToNumber = function(key, val) {
       return typeof val === 'boolean' ? +val : val;
     }
     assertQueryString({a:true,b:'b',c:false}, [{getValue:booleanToNumber}], 'a=1&b=b&c=0', 'values can be overridden with getValue');
     assertQueryString({foo:{a:true,b:'b',c:false}}, [{deep:true,getValue:booleanToNumber}], 'foo[a]=1&foo[b]=b&foo[c]=0', 'deep values can be overridden with getValue');
 
-    Sugar.Object.toQueryString(obj, { deep: true, dateFormat: '%Y-%m-%d', castBoolean: true });
-
+    var testGetValueArguments = function(key, value) {
+      equal(key, 'foo', 'first argument should be the key');
+      equal(value, 'bar', 'second argument should be the value');
+    }
+    run(Object, 'toQueryString', [{foo:'bar'}, {getValue:testGetValueArguments}]);
 
 
     var obj = {
