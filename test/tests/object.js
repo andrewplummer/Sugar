@@ -1470,6 +1470,7 @@ package('Object', function () {
 
     assertQueryString({user:{id:12345,name:'pooh'}}, [], 'user_id=12345&user_name=pooh', 'user object');
     assertQueryString({user:{id:12345,name:'pooh'}}, [{separator:'-'}], 'user-id=12345&user-name=pooh', 'user object with separator');
+    assertQueryString({user:{id:12345,name:'pooh'}}, [{separator:''}], 'userid=12345&username=pooh', 'allow blank separator');
 
     // Directly using arrays so can't go through extended objects here.
 
