@@ -1355,6 +1355,40 @@ package('Array', function () {
     equal(isNaN(run(people, 'average', [function(p) { return p.hair; }])), true, 'people average hair is NaN');
   });
 
+  method('median', function() {
+    var people = [
+      { name: 'jim',    age: 27, hair: 'brown'  },
+      { name: 'mary',   age: 52, hair: 'blonde' },
+      { name: 'ronnie', age: 13, hair: 'brown'  },
+      { name: 'edmund', age: 27, hair: 'blonde' }
+    ];
+
+    test([1,2,3,4,5], 3, '1,2,3,4,5');
+    test([5,4,3,2,1], 3, '5,4,3,2,1');
+    test([2,1,3,4,5], 3, '2,1,3,4,5');
+    test([1,2,2,4,5], 2, '1,2,2,4,5');
+    test([5,4,2,2,1], 2, '5,4,2,2,1');
+    test([1,1,1,1,1], 1, '1,1,1,1,1');
+
+    test([1,2,3,4,5,6], 3.5, '1,2,3,4,5,6');
+    test([6,5,4,3,2,1], 3.5, '6,5,4,3,2,1');
+
+    test([1,5,6,3,9,8,4,2,0,7], 4.5, '1,5,6,3,9,8,4,2,0,7');
+    test([1,2,3], 2, '1,2,3');
+    test([1,2], 1.5, '1,2');
+    test([1], 1, '1');
+    test([], undefined, 'no entries in array should be undefined');
+
+    test([1.50,.0024,15.25,44.2], 8.375, 'decimals');
+    test([0,0,0,0], 0, 'all zero');
+    test([NaN,NaN,NaN], NaN, 'all NaN');
+    test([null,false], 0, 'null,false coerced');
+
+    test(people, ['age'], 27, 'people median age is 27');
+    test(people, [function(p) { return p.age; }], 27, 'people median age is 27 by function');
+
+  });
+
   method('groupBy', function() {
     var grouped;
     var people = [
