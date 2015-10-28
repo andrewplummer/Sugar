@@ -83,8 +83,8 @@
     equal((actual > expected - margin) && (actual < expected + margin), true, message, null, 1);
   }
 
-  // Sets are equal, but order may differ
-  setIsEqual = function (a, b, message) {
+  // Array content is equal, but order may differ
+  assertArrayEquivalent = function (a, b, message) {
     equal(sortOnStringValue(a), sortOnStringValue(b), message);
   }
 
