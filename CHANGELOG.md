@@ -57,6 +57,7 @@ v2.0.0
 - Removed `String#map`.
 - Modified `Object.toQueryString` to accept an options object.
 - Modified `Object.fromQueryString` to accept an options object.
+- Added support for Sets in `isEqual`.
 
 
 v1.4.2
