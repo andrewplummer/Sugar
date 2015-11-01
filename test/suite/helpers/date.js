@@ -131,7 +131,7 @@ testFormatDate = function(d) {
   var tzHr     = testPadDigits(tzOffset / 60);
   var tzMin    = testPadDigits(tzOffset % 60);
   return d.getFullYear() + '-' +
-         testPadDigits(d.getMonth()) + '-' +
+         testPadDigits(d.getMonth() + 1) + '-' +
          testPadDigits(d.getDate()) + ' ' +
          testPadDigits(d.getHours()) + ':' +
          testPadDigits(d.getMinutes()) + ':' +
