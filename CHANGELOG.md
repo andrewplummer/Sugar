@@ -59,6 +59,7 @@ v2.0.0
 - Modified `Object.fromQueryString` to accept an options object.
 - Added support for Sets in `isEqual`.
 - Added `Array#median`.
+- Modified `Number#metric` to use a more flexible system of defining units.
 
 
 v1.4.2
