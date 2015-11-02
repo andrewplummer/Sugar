@@ -706,8 +706,7 @@ package('Date', function () {
     dateEqual(testCreateUTCDate('1994-11-05T13:15:30Z'), new Date(Date.UTC(1994, 10, 5, 13, 15, 30)), '"Z" is still utc');
 
     var d = testCreateUTCDate('two days ago');
-    var offset = now.getTimezoneOffset() - d.getTimezoneOffset();
-    dateEqual(d, getRelativeDate(null, null, -2, 0, offset), 'relative dates are not UTC');
+    dateEqual(d, getRelativeDate(null, null, -2, 0), 'relative dates are not UTC', now);
 
     // New handling of UTC dates
 
@@ -1921,20 +1920,16 @@ package('Date', function () {
     equal(run(new Date(2011,7,5,13,45,2,542),  'yearsSince', [d]), 1, '1 years since');
     equal(run(new Date(2009,7,5,13,45,2,542),  'yearsUntil', [d]), 1, '1 years until');
 
+    var shift = testGetTimezoneDiff(d, new Date(2011, 11, 31));
 
-    var tzm = new Date(2011,7,5,13,45,2,542).getTimezoneOffset() - d.getTimezoneOffset();
-    var tzh = tzm / 60;
-    var tzs = tzm * 60;
-    var tzms = tzs * 1000;
-
-    equal(run(new Date(2011,7,5,13,45,2,542), 'millisecondsSince', [d]), 31536000000 + tzms, 'milliseconds since last year');
-    equal(run(new Date(2011,7,5,13,45,2,542), 'millisecondsUntil', [d]), -31536000000 - tzms, 'milliseconds until last year');
-    equal(run(new Date(2011,7,5,13,45,2,542), 'secondsSince', [d]), 31536000 + tzs, 'seconds since last year');
-    equal(run(new Date(2011,7,5,13,45,2,542), 'secondsUntil', [d]), -31536000 - tzs, 'seconds until last year');
-    equal(run(new Date(2011,7,5,13,45,2,542), 'minutesSince', [d]), 525600 + tzm, 'minutes since last year');
-    equal(run(new Date(2011,7,5,13,45,2,542), 'minutesUntil', [d]), -525600 - tzm, 'minutes until last year');
-    equal(run(new Date(2011,7,5,13,45,2,542), 'hoursSince', [d]), 8760 + tzh, 'hours since last year');
-    equal(run(new Date(2011,7,5,13,45,2,542), 'hoursUntil', [d]), -8760 - tzh, 'hours until last year');
+    equal(run(new Date(2011,7,5,13,45,2,542), 'millisecondsSince', [d]), 31536000000 + shift, 'milliseconds since last year');
+    equal(run(new Date(2011,7,5,13,45,2,542), 'millisecondsUntil', [d]), -31536000000 - shift, 'milliseconds until last year');
+    equal(run(new Date(2011,7,5,13,45,2,542), 'secondsSince', [d]), 31536000 + (shift / 1000), 'seconds since last year');
+    equal(run(new Date(2011,7,5,13,45,2,542), 'secondsUntil', [d]), -31536000 - (shift / 1000), 'seconds until last year');
+    equal(run(new Date(2011,7,5,13,45,2,542), 'minutesSince', [d]), 525600 + (shift / 1000 / 60), 'minutes since last year');
+    equal(run(new Date(2011,7,5,13,45,2,542), 'minutesUntil', [d]), -525600 - (shift / 1000 / 60), 'minutes until last year');
+    equal(run(new Date(2011,7,5,13,45,2,542), 'hoursSince', [d]), 8760 + (shift / 1000 / 60 / 60), 'hours since last year');
+    equal(run(new Date(2011,7,5,13,45,2,542), 'hoursUntil', [d]), -8760 - (shift / 1000 / 60 / 60), 'hours until last year');
     equal(run(new Date(2011,7,5,13,45,2,542), 'daysSince', [d]), 365, 'days since last year');
     equal(run(new Date(2011,7,5,13,45,2,542), 'daysUntil', [d]), -365, 'days until last year');
     equal(run(new Date(2011,7,5,13,45,2,542), 'weeksSince', [d]), 52, 'weeks since last year');
@@ -1963,17 +1958,17 @@ package('Date', function () {
     equal(run(new Date(2011,7, 5,13,45,2,542), 'yearsFromNow', [d]), 1, '| FromNow alias | years');
     equal(run(new Date(2009,7, 5,13,45,2,542), 'yearsAgo', [d]), 1, 'o alias | years');
 
-    var dst = (d.getTimezoneOffset() - new Date(2011, 11, 31).getTimezoneOffset()) * 60 * 1000;
+    var shift = testGetTimezoneDiff(new Date(2011, 11, 31), d);
 
     // Works with Date.create?
-    equal(run(d, 'millisecondsSince', ['the last day of 2011']), -44273697458 + dst, 'milliseconds since the last day of 2011');
-    equal(run(d, 'millisecondsUntil', ['the last day of 2011']), 44273697458 - dst, 'milliseconds until the last day of 2011');
-    equal(run(d, 'secondsSince', ['the last day of 2011']), -44273697 + (dst / 1000), 'seconds since the last day of 2011');
-    equal(run(d, 'secondsUntil', ['the last day of 2011']), 44273697 - (dst / 1000), 'seconds until the last day of 2011');
-    equal(run(d, 'minutesSince', ['the last day of 2011']), -737894 + (dst / 60 / 1000), 'minutes since the last day of 2011');
-    equal(run(d, 'minutesUntil', ['the last day of 2011']), 737894 - (dst / 60 / 1000), 'minutes until the last day of 2011');
-    equal(run(d, 'hoursSince', ['the last day of 2011']), -12298 + (dst / 60 / 60 / 1000), 'hours since the last day of 2011');
-    equal(run(d, 'hoursUntil', ['the last day of 2011']), 12298 - (dst / 60 / 60 / 1000), 'hours until the last day of 2011');
+    equal(run(d, 'millisecondsSince', ['the last day of 2011']), -44273697458 + shift, 'milliseconds since the last day of 2011');
+    equal(run(d, 'millisecondsUntil', ['the last day of 2011']), 44273697458 - shift, 'milliseconds until the last day of 2011');
+    equal(run(d, 'secondsSince', ['the last day of 2011']), -44273697 + (shift / 1000), 'seconds since the last day of 2011');
+    equal(run(d, 'secondsUntil', ['the last day of 2011']), 44273697 - (shift / 1000), 'seconds until the last day of 2011');
+    equal(run(d, 'minutesSince', ['the last day of 2011']), -737894 + (shift / 60 / 1000), 'minutes since the last day of 2011');
+    equal(run(d, 'minutesUntil', ['the last day of 2011']), 737894 - (shift / 60 / 1000), 'minutes until the last day of 2011');
+    equal(run(d, 'hoursSince', ['the last day of 2011']), -12298 + (shift / 60 / 60 / 1000), 'hours since the last day of 2011');
+    equal(run(d, 'hoursUntil', ['the last day of 2011']), 12298 - (shift / 60 / 60 / 1000), 'hours until the last day of 2011');
     equal(run(d, 'daysSince', ['the last day of 2011']), -512, 'days since the last day of 2011');
     equal(run(d, 'daysUntil', ['the last day of 2011']), 512, 'days until the last day of 2011');
     equal(run(d, 'weeksSince', ['the last day of 2011']), -73, 'weeks since the last day of 2011');

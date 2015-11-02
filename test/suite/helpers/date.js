@@ -33,14 +33,17 @@ dateTest = function(d) {
   return test.apply(null, [Sugar.Date.clone(d)].concat(args));
 }
 
-dateEqual = function(a, b, message) {
-  var buffer = 50; // Number of milliseconds of "play" to make sure these tests pass.
+dateEqual = function(a, b, message, tzReference) {
+  var buffer = 50, tzOffset = 0; // Number of milliseconds of "play" to make sure these tests pass.
   if(typeof b == 'number') {
     var d = new Date();
     d.setTime(d.getTime() + b);
     b = d;
   }
-  var offset = Math.abs(a.getTime() - b.getTime());
+  if (tzReference) {
+    tzOffset = (b.getTimezoneOffset() - tzReference.getTimezoneOffset()) * 60 * 1000;
+  }
+  var offset = Math.abs(a.getTime() - (b.getTime() - tzOffset));
   equal(offset < buffer, true, message + ' | expected: ' + testFormatDate(b) + ' got: ' + testFormatDate(a), null, 1);
 }
 
@@ -118,6 +121,9 @@ testGetHours = function(num) {
   return Math.floor(num < 0 ? 24 + num : num);
 }
 
+testGetTimezoneDiff = function(d1, d2) {
+  return (d2.getTimezoneOffset() - d1.getTimezoneOffset()) * 60 * 1000;
+}
 
 getExpectedTimezoneOffset = function(d, iso) {
   // Beware of DST!
