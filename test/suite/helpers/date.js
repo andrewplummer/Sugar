@@ -64,10 +64,15 @@ getRelativeDate = function(year, month, day, hours, minutes, seconds, millisecon
   d.setFullYear(setYear);
   d.setMonth(setMonth);
   d.setDate(setDate);
-  d.setHours(d.getHours() + (hours || 0));
-  d.setMinutes(d.getMinutes() + (minutes || 0));
-  d.setSeconds(d.getSeconds() + (seconds || 0));
-  d.setMilliseconds(d.getMilliseconds() + (milliseconds || 0));
+
+  // "hours" and lower must be set by absolute date or they will result
+  // in unintended dates when traversing over DST shifts.
+  d.setTime(d.getTime() +
+    ((hours        || 0) * 60 * 60 * 1000) +
+    ((minutes      || 0) * 60 * 1000) +
+    ((seconds      || 0) * 1000) +
+     (milliseconds || 0)
+  );
   return d;
 }
 
