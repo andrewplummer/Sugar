@@ -704,7 +704,10 @@ package('Date', function () {
     dateEqual(testCreateUTCDate({ year: 1998, month: 1, day: 23, hour: 11 }), new Date(Date.UTC(1998,1,23,11)), 'params');
     dateEqual(testCreateUTCDate('08-25-1978 11:42:32.488am'), new Date(Date.UTC(1978, 7, 25, 11, 42, 32, 488)), 'full with ms');
     dateEqual(testCreateUTCDate('1994-11-05T13:15:30Z'), new Date(Date.UTC(1994, 10, 5, 13, 15, 30)), '"Z" is still utc');
-    dateEqual(testCreateUTCDate('two days ago'), getRelativeDate(null, null, -2), 'relative dates are not UTC');
+
+    var d = testCreateUTCDate('two days ago');
+    var offset = now.getTimezoneOffset() - d.getTimezoneOffset();
+    dateEqual(d, getRelativeDate(null, null, -2, 0, offset), 'relative dates are not UTC');
 
     // New handling of UTC dates
 
