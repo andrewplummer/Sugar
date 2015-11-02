@@ -34,7 +34,7 @@ package('Date Ranges', function () {
     var tzOffset = range.end.getTimezoneOffset() - range.start.getTimezoneOffset();
 
     equal(range.toString(), new Date(2010,6,10,9).toString() + '..' + new Date(2010,8,10,9).toString(), 'toString');
-    equal(range.span(), new Date(2010,8,10,9) - new Date(2010,6,10,9) + (tzOffset * 60 * 1000) + 1, 'duration');
+    equal(range.span(), new Date(2010,8,10,9) - new Date(2010,6,10,9) + 1, 'duration');
     equal(range.isValid(), true, 'valid range');
 
     equal(range.every('year'), [new Date(2010,6,10,9)], 'Range#every | 2010-9 - 2010-11');
