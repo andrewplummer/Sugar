@@ -1921,14 +1921,20 @@ package('Date', function () {
     equal(run(new Date(2011,7,5,13,45,2,542),  'yearsSince', [d]), 1, '1 years since');
     equal(run(new Date(2009,7,5,13,45,2,542),  'yearsUntil', [d]), 1, '1 years until');
 
-    equal(run(new Date(2011,7,5,13,45,2,542), 'millisecondsSince', [d]), 31536000000, 'milliseconds since last year');
-    equal(run(new Date(2011,7,5,13,45,2,542), 'millisecondsUntil', [d]), -31536000000, 'milliseconds until last year');
-    equal(run(new Date(2011,7,5,13,45,2,542), 'secondsSince', [d]), 31536000, 'seconds since last year');
-    equal(run(new Date(2011,7,5,13,45,2,542), 'secondsUntil', [d]), -31536000, 'seconds until last year');
-    equal(run(new Date(2011,7,5,13,45,2,542), 'minutesSince', [d]), 525600, 'minutes since last year');
-    equal(run(new Date(2011,7,5,13,45,2,542), 'minutesUntil', [d]), -525600, 'minutes until last year');
-    equal(run(new Date(2011,7,5,13,45,2,542), 'hoursSince', [d]), 8760, 'hours since last year');
-    equal(run(new Date(2011,7,5,13,45,2,542), 'hoursUntil', [d]), -8760, 'hours until last year');
+
+    var tzm = new Date(2011,7,5,13,45,2,542).getTimezoneOffset() - d.getTimezoneOffset();
+    var tzh = tzm / 60;
+    var tzs = tzm * 60;
+    var tzms = tzs * 1000;
+
+    equal(run(new Date(2011,7,5,13,45,2,542), 'millisecondsSince', [d]), 31536000000 + tzms, 'milliseconds since last year');
+    equal(run(new Date(2011,7,5,13,45,2,542), 'millisecondsUntil', [d]), -31536000000 - tzms, 'milliseconds until last year');
+    equal(run(new Date(2011,7,5,13,45,2,542), 'secondsSince', [d]), 31536000 + tzs, 'seconds since last year');
+    equal(run(new Date(2011,7,5,13,45,2,542), 'secondsUntil', [d]), -31536000 - tzs, 'seconds until last year');
+    equal(run(new Date(2011,7,5,13,45,2,542), 'minutesSince', [d]), 525600 + tzm, 'minutes since last year');
+    equal(run(new Date(2011,7,5,13,45,2,542), 'minutesUntil', [d]), -525600 - tzm, 'minutes until last year');
+    equal(run(new Date(2011,7,5,13,45,2,542), 'hoursSince', [d]), 8760 + tzh, 'hours since last year');
+    equal(run(new Date(2011,7,5,13,45,2,542), 'hoursUntil', [d]), -8760 - tzh, 'hours until last year');
     equal(run(new Date(2011,7,5,13,45,2,542), 'daysSince', [d]), 365, 'days since last year');
     equal(run(new Date(2011,7,5,13,45,2,542), 'daysUntil', [d]), -365, 'days until last year');
     equal(run(new Date(2011,7,5,13,45,2,542), 'weeksSince', [d]), 52, 'weeks since last year');
