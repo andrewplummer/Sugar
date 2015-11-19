@@ -535,6 +535,9 @@ package('Date', function () {
     dateEqual(testCreateDate('beginning of next week'), getDateWithWeekdayAndOffset(0, 7), 'beginning of next week');
     dateEqual(testCreateDate('the beginning of next week'), getDateWithWeekdayAndOffset(0, 7), 'the beginning of next week');
 
+    dateEqual(testCreateDate('beginning of the week', { locale: 'en-GB'}), getDateWithWeekdayAndOffset(1), 'beginning of the week | locale overrides');
+    dateEqual(testCreateDate('end of this week', { locale: 'en-GB'}), getDateWithWeekdayAndOffset(7, 0, 23, 59, 59, 999), 'end of this week | locale overrides');
+
     dateEqual(testCreateDate('beginning of the month'), new Date(now.getFullYear(), now.getMonth()), 'beginning of the month');
     dateEqual(testCreateDate('beginning of this month'), new Date(now.getFullYear(), now.getMonth()), 'beginning of this month');
     dateEqual(testCreateDate('beginning of next month'), new Date(now.getFullYear(), now.getMonth() + 1), 'beginning of next month');
@@ -2219,6 +2222,9 @@ package('Date', function () {
     dateEqual(dateRun(d, 'endOfWeek'), new Date(2010, 7, 7, 23, 59, 59, 999), 'endOfWeek');
     dateEqual(dateRun(d, 'endOfMonth'), new Date(2010, 7, 31, 23, 59, 59, 999), 'endOfMonth');
     dateEqual(dateRun(d, 'endOfYear'), new Date(2010, 11, 31, 23, 59, 59, 999), 'endOfYear');
+
+    dateEqual(dateRun(d, 'beginningOfWeek', ['en-GB']), new Date(2010, 7, 2), 'beginningOfWeek | optional locale code');
+    dateEqual(dateRun(d, 'endOfWeek', ['en-GB']), new Date(2010, 7, 8, 23, 59, 59, 999), 'endOfWeek | optional locale code');
 
     var d = new Date('January 1, 1979 01:33:42');
 
