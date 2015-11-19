@@ -1,10 +1,11 @@
 package('Dates Finnish', function () {
   "use strict";
 
-  var now;
+  var now, then;
 
   setup(function() {
     now = new Date();
+    then = new Date(2010, 0, 5, 15, 52);
     testSetLocale('fi');
   });
 
@@ -120,38 +121,66 @@ package('Dates Finnish', function () {
   });
 
   method('format', function() {
-    var then = new Date(2011, 7, 25, 15, 45, 50);
 
-    equal(run(then, 'format'), '25. elokuuta 2011 klo 15.45', 'format');
+    test(then, '5. tammikuuta 2010, klo 15.52', 'default format');
 
-    equal(run(new Date(2011, 0, 25), 'format', ['{d}. {month} {yyyy}']), '25. tammikuuta 2011', 'Jan');
-    equal(run(new Date(2011, 1, 25), 'format', ['{d}. {month} {yyyy}']), '25. helmikuuta 2011', 'Feb');
-    equal(run(new Date(2011, 2, 25), 'format', ['{d}. {month} {yyyy}']), '25. maaliskuuta 2011', 'Mar');
-    equal(run(new Date(2011, 3, 25), 'format', ['{d}. {month} {yyyy}']), '25. huhtikuuta 2011', 'Apr');
-    equal(run(new Date(2011, 4, 25), 'format', ['{d}. {month} {yyyy}']), '25. toukokuuta 2011', 'May');
-    equal(run(new Date(2011, 5, 25), 'format', ['{d}. {month} {yyyy}']), '25. kesäkuuta 2011', 'Jun');
-    equal(run(new Date(2011, 6, 25), 'format', ['{d}. {month} {yyyy}']), '25. heinäkuuta 2011', 'Jul');
-    equal(run(new Date(2011, 7, 25), 'format', ['{d}. {month} {yyyy}']), '25. elokuuta 2011', 'Aug');
-    equal(run(new Date(2011, 8, 25), 'format', ['{d}. {month} {yyyy}']), '25. syyskuuta 2011', 'Sep');
-    equal(run(new Date(2011, 9, 25), 'format', ['{d}. {month} {yyyy}']), '25. lokakuuta 2011', 'Oct');
-    equal(run(new Date(2011,10, 25), 'format', ['{d}. {month} {yyyy}']), '25. marraskuuta 2011', 'Nov');
-    equal(run(new Date(2011,11, 25), 'format', ['{d}. {month} {yyyy}']), '25. joulukuuta 2011', 'Dec');
+    assertFormatShortcut(then, 'short', '05.01.2010');
+    assertFormatShortcut(then, 'medium', '5. tammikuuta 2010');
+    assertFormatShortcut(then, 'long', '5. tammikuuta 2010, klo 15.52');
+    assertFormatShortcut(then, 'full', 'tiistai, 5. tammikuuta 2010, klo 15.52');
+    test(then, ['{time}'], '15.52', 'preferred time');
+    test(then, ['{stamp}'], 'ti 5 tammi 2010 15.52', 'preferred stamp');
+    test(then, ['%c'], 'ti 5 tammi 2010 15.52', '%c stamp');
 
-    equal(run(new Date(2011, 11, 5), 'format', ['{weekday}']), 'maanantai', 'Mon');
-    equal(run(new Date(2011, 11, 6), 'format', ['{weekday}']), 'tiistai', 'Tue');
-    equal(run(new Date(2011, 11, 7), 'format', ['{weekday}']), 'keskiviikko', 'Wed');
-    equal(run(new Date(2011, 11, 8), 'format', ['{weekday}']), 'torstai', 'Thu');
-    equal(run(new Date(2011, 11, 9), 'format', ['{weekday}']), 'perjantai', 'Fri');
-    equal(run(new Date(2011, 11,10), 'format', ['{weekday}']), 'lauantai', 'Sat');
-    equal(run(new Date(2011, 11,11), 'format', ['{weekday}']), 'sunnuntai', 'Sun');
+    test(new Date(2011, 0, 25), ['{d}. {month} {yyyy}'], '25. tammikuuta 2011', 'Jan');
+    test(new Date(2011, 1, 25), ['{d}. {month} {yyyy}'], '25. helmikuuta 2011', 'Feb');
+    test(new Date(2011, 2, 25), ['{d}. {month} {yyyy}'], '25. maaliskuuta 2011', 'Mar');
+    test(new Date(2011, 3, 25), ['{d}. {month} {yyyy}'], '25. huhtikuuta 2011', 'Apr');
+    test(new Date(2011, 4, 25), ['{d}. {month} {yyyy}'], '25. toukokuuta 2011', 'May');
+    test(new Date(2011, 5, 25), ['{d}. {month} {yyyy}'], '25. kesäkuuta 2011', 'Jun');
+    test(new Date(2011, 6, 25), ['{d}. {month} {yyyy}'], '25. heinäkuuta 2011', 'Jul');
+    test(new Date(2011, 7, 25), ['{d}. {month} {yyyy}'], '25. elokuuta 2011', 'Aug');
+    test(new Date(2011, 8, 25), ['{d}. {month} {yyyy}'], '25. syyskuuta 2011', 'Sep');
+    test(new Date(2011, 9, 25), ['{d}. {month} {yyyy}'], '25. lokakuuta 2011', 'Oct');
+    test(new Date(2011,10, 25), ['{d}. {month} {yyyy}'], '25. marraskuuta 2011', 'Nov');
+    test(new Date(2011,11, 25), ['{d}. {month} {yyyy}'], '25. joulukuuta 2011', 'Dec');
 
-    // Format shortcuts
-    equal(run(then, 'short'),             '25. elokuuta 2011',                   'short shortcut');
-    equal(run(then, 'long'),              '25. elokuuta 2011 klo 15.45',         'long shortcut');
-    equal(run(then, 'full'),              'torstai 25. elokuuta 2011 klo 15.45', 'full shortcut');
-    equal(run(then, 'format', ['short']), '25. elokuuta 2011',                   'short format');
-    equal(run(then, 'format', ['long']),  '25. elokuuta 2011 klo 15.45',         'long format');
-    equal(run(then, 'format', ['full']),  'torstai 25. elokuuta 2011 klo 15.45', 'full format');
+    test(new Date(2011, 11, 5), ['{weekday}'], 'maanantai', 'Mon');
+    test(new Date(2011, 11, 6), ['{weekday}'], 'tiistai', 'Tue');
+    test(new Date(2011, 11, 7), ['{weekday}'], 'keskiviikko', 'Wed');
+    test(new Date(2011, 11, 8), ['{weekday}'], 'torstai', 'Thu');
+    test(new Date(2011, 11, 9), ['{weekday}'], 'perjantai', 'Fri');
+    test(new Date(2011, 11,10), ['{weekday}'], 'lauantai', 'Sat');
+    test(new Date(2011, 11,11), ['{weekday}'], 'sunnuntai', 'Sun');
+
+    test(new Date('January 3, 2010'), ['{w}'], '53', 'locale week number | Jan 3 2010');
+    test(new Date('January 3, 2010'), ['{ww}'], '53', 'locale week number padded | Jan 3 2010');
+    test(new Date('January 3, 2010'), ['{wo}'], '53rd', 'locale week number ordinal | Jan 3 2010');
+    test(new Date('January 4, 2010'), ['{w}'], '1', 'locale week number | Jan 4 2010');
+    test(new Date('January 4, 2010'), ['{ww}'], '01', 'locale week number padded | Jan 4 2010');
+    test(new Date('January 4, 2010'), ['{wo}'], '1st', 'locale week number ordinal | Jan 4 2010');
+
+    test(new Date(2015, 10, 8),  ['{Dow}'], 'su', 'Sun');
+    test(new Date(2015, 10, 9),  ['{Dow}'], 'ma', 'Mon');
+    test(new Date(2015, 10, 10), ['{Dow}'], 'ti', 'Tue');
+    test(new Date(2015, 10, 11), ['{Dow}'], 'ke', 'Wed');
+    test(new Date(2015, 10, 12), ['{Dow}'], 'to', 'Thu');
+    test(new Date(2015, 10, 13), ['{Dow}'], 'pe', 'Fri');
+    test(new Date(2015, 10, 14), ['{Dow}'], 'la', 'Sat');
+
+    test(new Date(2015, 0, 1),  ['{Mon}'], 'tammi', 'Jan');
+    test(new Date(2015, 1, 1),  ['{Mon}'], 'helmi', 'Feb');
+    test(new Date(2015, 2, 1),  ['{Mon}'], 'maalis', 'Mar');
+    test(new Date(2015, 3, 1),  ['{Mon}'], 'huhti', 'Apr');
+    test(new Date(2015, 4, 1),  ['{Mon}'], 'touko', 'May');
+    test(new Date(2015, 5, 1),  ['{Mon}'], 'kesä', 'Jun');
+    test(new Date(2015, 6, 1),  ['{Mon}'], 'heinä', 'Jul');
+    test(new Date(2015, 7, 1),  ['{Mon}'], 'elo', 'Aug');
+    test(new Date(2015, 8, 1),  ['{Mon}'], 'syys', 'Sep');
+    test(new Date(2015, 9, 1),  ['{Mon}'], 'loka', 'Oct');
+    test(new Date(2015, 10, 1), ['{Mon}'], 'marras', 'Nov');
+    test(new Date(2015, 11, 1), ['{Mon}'], 'joulu', 'Dec');
+
   });
 
   method('relative', function() {
@@ -205,6 +234,12 @@ package('Dates Finnish', function () {
     assertRelative('5 years from now',   '5 vuoden päästä');
 
   });
+
+  method('beginning/end', function() {
+    dateEqual(dateRun(new Date(2010, 0), 'beginningOfWeek'), new Date(2009, 11, 28), 'beginningOfWeek');
+    dateEqual(dateRun(new Date(2010, 0), 'endOfWeek'), new Date(2010, 0, 3, 23, 59, 59, 999), 'endOfWeek');
+  });
+
 });
 
 package('Number | Finnish Dates', function () {

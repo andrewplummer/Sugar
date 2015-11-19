@@ -58,6 +58,9 @@ v2.0.0+
 - Level: Major
   - `Object.fromQueryString` now performs "smart" conversion of numerals, booleans, and multiple keys by default. To turn this off, pass `smart: false` in the options object which is now the second argument to the function. Deep bracket syntax (`[]` in keys) is now off by defualt but can be enabled with `deep` on the options object.
 
+- Level: Major
+  - `Date#format` shortcuts ("short", "long", "full", etc) have significantly changed. See the docs for the new formats. Tokens `f`, `fff`, `izotz`, and `ord`, have been replaced with `S`, `SSS`, `Z`, and `do` to align better with Moment/LDML. `Dow` and `Mon` were previously always 3 characters and uppercased. Both of these are now locale dependent, as certain locales may prefer different casing or abbreviation length. Lowercased formats `dow` and `mon` are also locale-dependent in length, but always lowercased.
+
 - Level: Moderate
   - `Number#format` no longer accepts arguments for the thousands separator and decimal point. Instead these can now be set on the global object Sugar.Number.thousands and Sugar.Number.decimal. These will also be respected by Number#abbr, Number#metric, and Number#bytes as well.
 
@@ -69,6 +72,9 @@ v2.0.0+
 
 - Level: Moderate
   - `String#normalize` is now renamed to `String#toAscii` to comply with the ES6 spec.
+
+- Level: Moderate
+  - `Date#beginning/endOfWeek` is now locale dependent, as different locales have different definitions of the start of a week. Currently, this is Monday except for en-US and ja, which are Sunday.
 
 - Level: Minor
   - `Date.create` no longer accepts enumerated parameters (2001, 5, 31, ...). Use the normal date constructor instead.

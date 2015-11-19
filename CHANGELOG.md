@@ -60,6 +60,7 @@ v2.0.0
 - Added support for Sets in `isEqual`.
 - Added `Array#median`.
 - Modified `Number#metric` to use a more flexible system of defining units.
+- Added strf tokens to `Date#format` as well as a number of new standard tokens. Aligned tokens more with moment/ldml and renamed to ldml in the code.
 
 
 v1.4.2

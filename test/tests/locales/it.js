@@ -1,12 +1,11 @@
 package('Dates Italian', function () {
   "use strict";
 
-  var now;
-  var then;
+  var now, then;
 
   setup(function() {
     now = new Date();
-    then = new Date(2011, 7, 25, 15, 45, 50);
+    then = new Date(2010, 0, 5, 15, 52);
     testSetLocale('it');
   });
 
@@ -89,16 +88,45 @@ package('Dates Italian', function () {
 
 
   method('format', function() {
-    test(then, '25 Agosto 2011 15:45', 'format');
-    test(then, ['{dd} {Month} {yyyy}'], '25 Agosto 2011', 'format');
 
-    // Format shortcuts
-    equal(run(then, 'format', ['long']), '25 Agosto 2011 15:45', 'long format');
-    equal(run(then, 'long'), '25 Agosto 2011 15:45', 'long shortcut');
-    equal(run(then, 'format', ['full']), 'Giovedì 25 Agosto 2011 15:45:50', 'full format');
-    equal(run(then, 'full'), 'Giovedì 25 Agosto 2011 15:45:50', 'full shortcut');
-    equal(run(then, 'format', ['short']), '25 Agosto 2011', 'short format');
-    equal(run(then, 'short'), '25 Agosto 2011', 'short shortcut');
+    test(then, '5 gennaio 2010 15:52', 'default format');
+
+    assertFormatShortcut(then, 'short', '05/01/2010');
+    assertFormatShortcut(then, 'medium', '5 gennaio 2010');
+    assertFormatShortcut(then, 'long', '5 gennaio 2010 15:52');
+    assertFormatShortcut(then, 'full', 'martedì, 5 gennaio 2010 15:52');
+    test(then, ['{time}'], '15:52', 'preferred time');
+    test(then, ['{stamp}'], 'mar 5 gen 2010 15:52', 'preferred stamp');
+    test(then, ['%c'], 'mar 5 gen 2010 15:52', '%c stamp');
+
+    test(new Date('January 3, 2010'), ['{w}'], '53', 'locale week number | Jan 3 2010');
+    test(new Date('January 3, 2010'), ['{ww}'], '53', 'locale week number padded | Jan 3 2010');
+    test(new Date('January 3, 2010'), ['{wo}'], '53rd', 'locale week number ordinal | Jan 3 2010');
+    test(new Date('January 4, 2010'), ['{w}'], '1', 'locale week number | Jan 4 2010');
+    test(new Date('January 4, 2010'), ['{ww}'], '01', 'locale week number padded | Jan 4 2010');
+    test(new Date('January 4, 2010'), ['{wo}'], '1st', 'locale week number ordinal | Jan 4 2010');
+
+    test(new Date(2015, 10, 8),  ['{Dow}'], 'dom', 'Sun');
+    test(new Date(2015, 10, 9),  ['{Dow}'], 'lun', 'Mon');
+    test(new Date(2015, 10, 10), ['{Dow}'], 'mar', 'Tue');
+    test(new Date(2015, 10, 11), ['{Dow}'], 'mer', 'Wed');
+    test(new Date(2015, 10, 12), ['{Dow}'], 'gio', 'Thu');
+    test(new Date(2015, 10, 13), ['{Dow}'], 'ven', 'Fri');
+    test(new Date(2015, 10, 14), ['{Dow}'], 'sab', 'Sat');
+
+    test(new Date(2015, 0, 1),  ['{Mon}'], 'gen', 'Jan');
+    test(new Date(2015, 1, 1),  ['{Mon}'], 'feb', 'Feb');
+    test(new Date(2015, 2, 1),  ['{Mon}'], 'mar', 'Mar');
+    test(new Date(2015, 3, 1),  ['{Mon}'], 'apr', 'Apr');
+    test(new Date(2015, 4, 1),  ['{Mon}'], 'mag', 'May');
+    test(new Date(2015, 5, 1),  ['{Mon}'], 'giu', 'Jun');
+    test(new Date(2015, 6, 1),  ['{Mon}'], 'lug', 'Jul');
+    test(new Date(2015, 7, 1),  ['{Mon}'], 'ago', 'Aug');
+    test(new Date(2015, 8, 1),  ['{Mon}'], 'set', 'Sep');
+    test(new Date(2015, 9, 1),  ['{Mon}'], 'ott', 'Oct');
+    test(new Date(2015, 10, 1), ['{Mon}'], 'nov', 'Nov');
+    test(new Date(2015, 11, 1), ['{Mon}'], 'dic', 'Dec');
+
   });
 
 
@@ -132,6 +160,11 @@ package('Dates Italian', function () {
     assertRelative('5 day from now',    '5 giorni da adesso');
     assertRelative('5 week from now',   '1 mese da adesso');
     assertRelative('5 year from now',   '5 anni da adesso');
+  });
+
+  method('beginning/end', function() {
+    dateEqual(dateRun(new Date(2010, 0), 'beginningOfWeek'), new Date(2009, 11, 28), 'beginningOfWeek');
+    dateEqual(dateRun(new Date(2010, 0), 'endOfWeek'), new Date(2010, 0, 3, 23, 59, 59, 999), 'endOfWeek');
   });
 
 });

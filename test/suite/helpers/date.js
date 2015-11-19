@@ -266,3 +266,9 @@ assertRelative = function(format, expected) {
     equal(run(d, 'relative'), expected, 'relative | ' + format);
   }
 }
+
+assertFormatShortcut = function (d, name, expected, localeCode) {
+  var l = localeCode ? ' | ' + localeCode : '';
+  test(d, ['{' + name + '}', localeCode], expected, 'direct token ' + name + l);
+  equal(run(d, name, [localeCode]), expected, 'method ' + name + l);
+}

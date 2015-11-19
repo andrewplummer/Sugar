@@ -1,10 +1,11 @@
 package('Dates Japanese', function () {
   "use strict";
 
-  var now;
+  var now, then;
 
   setup(function() {
     now  = new Date();
+    then = new Date(2010, 0, 5, 15, 52);
     testSetLocale('ja');
   });
 
@@ -114,19 +115,44 @@ package('Dates Japanese', function () {
   });
 
   method('format', function() {
-    var then = new Date(2011, 7, 25, 15, 45, 50);
-    equal(run(then, 'format'), '2011年8月25日 15時45分', 'default format');
-    equal(run(then, 'format', ['long']), '2011年8月25日 15時45分', 'long format');
-    equal(run(then, 'format', ['full']), '2011年8月25日 木曜日 15時45分50秒', 'full formatting');
-    equal(run(then, 'full'), '2011年8月25日 木曜日 15時45分50秒', 'full shortcut');
-    equal(run(then, 'full', ['en']), 'Thursday August 25, 2011 3:45:50pm', 'full locale override');
-    equal(run(then, 'format', ['long']), '2011年8月25日 15時45分', 'long formatting');
-    equal(run(then, 'long'), '2011年8月25日 15時45分', 'long shortcut');
-    equal(run(then, 'long', ['en']), 'August 25, 2011 3:45pm', 'long locale override');
-    equal(run(then, 'format', ['short']), '2011年8月25日', 'short formatting');
-    equal(run(then, 'short'), '2011年8月25日', 'short shortcut');
-    equal(run(then, 'short', ['en']), 'August 25, 2011', 'short locale override');
-    equal(run(then, 'format', ['{yyyy}年{MM}月{dd}日']), '2011年08月25日', 'custom format');
+
+    test(then, '2010年1月5日午後3時52分', 'default format');
+
+    assertFormatShortcut(then, 'short', '2010/01/05');
+    assertFormatShortcut(then, 'medium', '2010年1月5日');
+    assertFormatShortcut(then, 'long', '2010年1月5日午後3時52分');
+    assertFormatShortcut(then, 'full', '2010年1月5日午後3時52分 火曜日');
+    test(then, ['{time}'], '午後3時52分', 'preferred time');
+    test(then, ['{stamp}'], '2010年1月5日 15:52 火', 'preferred stamp');
+    test(then, ['%c'], '2010年1月5日 15:52 火', '%c stamp');
+
+    test(new Date('December 26, 2009'), ['{w}'], '52', 'locale week number | Dec 26 2009');
+    test(new Date('December 26, 2009'), ['{ww}'], '52', 'locale week number padded | Dec 26 2009');
+    test(new Date('December 26, 2009'), ['{wo}'], '52nd', 'locale week number ordinal | Dec 26 2009');
+    test(new Date('December 27, 2009'), ['{w}'], '1', 'locale week number | Dec 27 2009');
+    test(new Date('December 27, 2009'), ['{ww}'], '01', 'locale week number padded | Dec 27 2009');
+    test(new Date('December 27, 2009'), ['{wo}'], '1st', 'locale week number ordinal | Dec 27 2009');
+
+    test(new Date(2015, 10, 8),  ['{Dow}'], '日', 'Sun');
+    test(new Date(2015, 10, 9),  ['{Dow}'], '月', 'Mon');
+    test(new Date(2015, 10, 10), ['{Dow}'], '火', 'Tue');
+    test(new Date(2015, 10, 11), ['{Dow}'], '水', 'Wed');
+    test(new Date(2015, 10, 12), ['{Dow}'], '木', 'Thu');
+    test(new Date(2015, 10, 13), ['{Dow}'], '金', 'Fri');
+    test(new Date(2015, 10, 14), ['{Dow}'], '土', 'Sat');
+
+    test(new Date(2015, 0, 1),  ['{Mon}'], '1月', 'Jan');
+    test(new Date(2015, 1, 1),  ['{Mon}'], '2月', 'Feb');
+    test(new Date(2015, 2, 1),  ['{Mon}'], '3月', 'Mar');
+    test(new Date(2015, 3, 1),  ['{Mon}'], '4月', 'Apr');
+    test(new Date(2015, 4, 1),  ['{Mon}'], '5月', 'May');
+    test(new Date(2015, 5, 1),  ['{Mon}'], '6月', 'Jun');
+    test(new Date(2015, 6, 1),  ['{Mon}'], '7月', 'Jul');
+    test(new Date(2015, 7, 1),  ['{Mon}'], '8月', 'Aug');
+    test(new Date(2015, 8, 1),  ['{Mon}'], '9月', 'Sep');
+    test(new Date(2015, 9, 1),  ['{Mon}'], '10月', 'Oct');
+    test(new Date(2015, 10, 1), ['{Mon}'], '11月', 'Nov');
+    test(new Date(2015, 11, 1), ['{Mon}'], '12月', 'Dec');
 
   });
 
@@ -160,6 +186,11 @@ package('Dates Japanese', function () {
     assertRelative('5 days from now', '5日後');
     assertRelative('5 weeks from now', '1ヶ月後');
     assertRelative('5 years from now', '5年後');
+  });
+
+  method('beginning/end', function() {
+    dateEqual(dateRun(new Date(2010, 0), 'beginningOfWeek'), new Date(2009, 11, 27), 'beginningOfWeek');
+    dateEqual(dateRun(new Date(2010, 0), 'endOfWeek'), new Date(2010, 0, 2, 23, 59, 59, 999), 'endOfWeek');
   });
 
 });
