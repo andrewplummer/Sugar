@@ -15,7 +15,7 @@ runner.loadTest('locales/nl');
 runner.loadTest('locales/pt');
 runner.loadTest('locales/ru');
 runner.loadTest('locales/sv');
-runner.loadTest('locales/zh_cn');
-runner.loadTest('locales/zh_tw');
+runner.loadTest('locales/zh-CN');
+runner.loadTest('locales/zh-TW');
 
 runner.runExtended(module);
