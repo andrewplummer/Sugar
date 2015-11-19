@@ -7,6 +7,7 @@ runner.loadTest('core');
 runner.loadTest('array');
 runner.loadTest('date');
 runner.loadTest('date-range');
+runner.loadTest('locales/ca');
 runner.loadTest('locales/da');
 runner.loadTest('locales/de');
 runner.loadTest('locales/es');

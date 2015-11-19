@@ -2,6 +2,7 @@ var runner = require('../setup');
 
 // Tests
 runner.loadTest('date');
+runner.loadTest('locales/ca');
 runner.loadTest('locales/da');
 runner.loadTest('locales/de');
 runner.loadTest('locales/es');
