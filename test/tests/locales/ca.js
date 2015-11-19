@@ -6,7 +6,7 @@ package('Dates Catalan', function () {
   setup(function() {
     now = new Date();
     then = new Date(2010, 0, 5, 15, 52);
-    testSetLocale('ca-ES');
+    testSetLocale('ca');
   });
 
   method('create', function() {
