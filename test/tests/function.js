@@ -872,4 +872,176 @@ package('Function', function () {
 
   });
 
+  method('lock', function() {
+
+    // simple undefined reference
+    var u;
+
+    function getThreeNoLength(args) {
+      var arr = [];
+      for (var i = 0; i < 3; i++) {
+        arr[i] = args[i];
+      }
+      return arr;
+    }
+
+    function getAllWithLength(args) {
+      var arr = [];
+      for (var i = 0; i < args.length; i++) {
+        arr[i] = args[i];
+      }
+      return arr;
+    }
+
+    function takesNone() {
+      return getThreeNoLength(arguments);
+    }
+
+    function takesOne(a) {
+      return getThreeNoLength(arguments);
+    }
+
+    function takesTwo(a, b) {
+      return getThreeNoLength(arguments);
+    }
+
+    function takesNoneReturnsVaried() {
+      return getAllWithLength(arguments);
+    }
+
+    function takesTwoReturnsVaried(a, b) {
+      return getAllWithLength(arguments);
+    }
+
+
+    // Force 3 arguments as .length could be lying
+
+    var fn = run(takesNone, 'lock', []);
+    equal(fn(),      [u, u, u], 'takes 0 | default | 0 args');
+    equal(fn(1),     [u, u, u], 'takes 0 | default | 1 arg');
+    equal(fn(1,2,3), [u, u, u], 'takes 0 | default | 3 args');
+
+    var fn = run(takesOne, 'lock', []);
+    equal(fn(),      [u, u, u], 'takes 1 | default | 0 args');
+    equal(fn(1),     [1, u, u], 'takes 1 | default | 1 arg');
+    equal(fn(1,2,3), [1, u, u], 'takes 1 | default | 3 args');
+
+    var fn = run(takesTwo, 'lock', []);
+    equal(fn(),      [u, u, u], 'takes 2 | default | 0 args');
+    equal(fn(1),     [1, u, u], 'takes 2 | default | 1 arg');
+    equal(fn(1,2,3), [1, 2, u], 'takes 2 | default | 3 args');
+
+    var fn = run(takesNone, 'lock', [1]);
+    equal(fn(),      [u, u, u], 'takes 0 | manual 1 | 0 args');
+    equal(fn(1),     [1, u, u], 'takes 0 | manual 1 | 1 arg');
+    equal(fn(1,2,3), [1, u, u], 'takes 0 | manual 1 | 3 args');
+
+    var fn = run(takesOne, 'lock', [1]);
+    equal(fn(),      [u, u, u], 'takes 1 | manual 1 | 0 args');
+    equal(fn(1),     [1, u, u], 'takes 1 | manual 1 | 1 arg');
+    equal(fn(1,2,3), [1, u, u], 'takes 1 | manual 1 | 3 args');
+
+    var fn = run(takesTwo, 'lock', [1]);
+    equal(fn(),      [u, u, u], 'takes 2 | manual 1 | 0 args');
+    equal(fn(1),     [1, u, u], 'takes 2 | manual 1 | 1 arg');
+    equal(fn(1,2,3), [1, u, u], 'takes 2 | manual 1 | 3 args');
+
+
+    // Get all arguments by length as forcing 3 could mask
+    // real number called with .apply
+
+    var fn = run(takesNoneReturnsVaried, 'lock', []);
+    equal(fn(),      [], 'takes 0 returns varied | default | 0 args');
+    equal(fn(1),     [], 'takes 0 returns varied | default | 1 arg');
+    equal(fn(1,2,3), [], 'takes 0 returns varied | default | 3 args');
+
+    var fn = run(takesTwoReturnsVaried, 'lock', []);
+    equal(fn(),      [],    'takes 2 returns varied | default | 0 args');
+    equal(fn(1),     [1],   'takes 2 returns varied | default | 1 arg');
+    equal(fn(1,2,3), [1,2], 'takes 2 returns varied | default | 3 args');
+
+    var fn = run(takesNoneReturnsVaried, 'lock', [1]);
+    equal(fn(),      [],  'takes 0 returns varied | manaual 1 | 0 args');
+    equal(fn(1),     [1], 'takes 0 returns varied | manaual 1 | 1 arg');
+    equal(fn(1,2,3), [1], 'takes 0 returns varied | manaual 1 | 3 args');
+
+    var fn = run(takesTwoReturnsVaried, 'lock', [1]);
+    equal(fn(),      [],  'takes 2 returns varied | manual 1 | 0 args');
+    equal(fn(1),     [1], 'takes 2 returns varied | manual 1 | 1 arg');
+    equal(fn(1,2,3), [1], 'takes 2 returns varied | manual 1 | 3 args');
+
+
+    // Locking partial functions with curried arguments
+
+    var partial = run(takesNoneReturnsVaried, 'partial', ['a', 'b']);
+    var fn = run(partial, 'lock', []);
+    equal(fn(),        ['a','b'], 'filled 2 | default lock | 0 args');
+    equal(fn('c'),     ['a','b'], 'filled 2 | default lock | 1 arg');
+    equal(fn('c','d'), ['a','b'], 'filled 2 | default lock | 2 args');
+
+    var partial = run(takesNoneReturnsVaried, 'partial', ['a', 'b']);
+    var fn = run(partial, 'lock', [0]);
+    equal(fn(),        [], 'filled 2 | locked to 0 | 0 args');
+    equal(fn('c'),     [], 'filled 2 | locked to 0 | 1 arg');
+    equal(fn('c','d'), [], 'filled 2 | locked to 0 | 2 args');
+
+    var partial = run(takesNoneReturnsVaried, 'partial', ['a', 'b']);
+    var fn = run(partial, 'lock', [1]);
+    equal(fn(),        ['a'], 'filled 2 | locked to 1 | 0 args');
+    equal(fn('c'),     ['a'], 'filled 2 | locked to 1 | 1 arg');
+    equal(fn('c','d'), ['a'], 'filled 2 | locked to 1 | 2 args');
+
+    var partial = run(takesNoneReturnsVaried, 'partial', ['a', 'b']);
+    var fn = run(partial, 'lock', [3]);
+    equal(fn(),        ['a','b'],     'filled 2 | locked to 3 | 0 args');
+    equal(fn('c'),     ['a','b','c'], 'filled 2 | locked to 3 | 1 arg');
+    equal(fn('c','d'), ['a','b','c'], 'filled 2 | locked to 3 | 2 args');
+
+    var partial = run(takesNoneReturnsVaried, 'partial', []);
+    var fn = run(partial, 'lock', [1]);
+    equal(fn(),        [],    'filled 0 | locked to 1 | 0 args');
+    equal(fn('c'),     ['c'], 'filled 0 | locked to 1 | 1 arg');
+    equal(fn('c','d'), ['c'], 'filled 0 | locked to 1 | 2 args');
+
+
+    // Locking partial functions with curried arguments and holes
+
+    var partial = run(takesNoneReturnsVaried, 'partial', [undefined, 'b']);
+    var fn = run(partial, 'lock', []);
+    equal(fn(),        [u,  'b'], 'filled 1 | 1 hole | default lock | 0 args');
+    equal(fn('c'),     ['c','b'], 'filled 1 | 1 hole | default lock | 1 arg');
+    equal(fn('c','d'), ['c','b'], 'filled 1 | 1 hole | default lock | 2 args');
+
+    var partial = run(takesNoneReturnsVaried, 'partial', [undefined, 'b']);
+    var fn = run(partial, 'lock', [1]);
+    equal(fn(),        [u],   'filled 1 | 1 hole | locked to 1 | 0 args');
+    equal(fn('c'),     ['c'], 'filled 1 | 1 hole | locked to 1 | 1 arg');
+    equal(fn('c','d'), ['c'], 'filled 1 | 1 hole | locked to 1 | 2 args');
+
+    var partial = run(takesNoneReturnsVaried, 'partial', [undefined, 'b']);
+    var fn = run(partial, 'lock', [3]);
+    equal(fn(),        [u, 'b'],      'filled 1 | 1 hole | locked to 3 | 0 args');
+    equal(fn('c'),     ['c','b'],     'filled 1 | 1 hole | locked to 3 | 1 arg');
+    equal(fn('c','d'), ['c','b','d'], 'filled 1 | 1 hole | locked to 3 | 2 args');
+
+    var partial = run(takesNoneReturnsVaried, 'partial', [undefined, undefined]);
+    var fn = run(partial, 'lock', []);
+    equal(fn(),        [u, u], 'filled 0 | 2 holes | default lock | 0 args');
+    equal(fn('c'),     ['c',u], 'filled 0 | 2 holes | default lock | 1 arg');
+    equal(fn('c','d'), ['c','d'], 'filled 0 | 2 holes | default lock | 2 args');
+
+    var partial = run(takesNoneReturnsVaried, 'partial', [undefined, undefined]);
+    var fn = run(partial, 'lock', [1]);
+    equal(fn(),        [u],   'filled 0 | 2 holes | locked to 1 | 0 args');
+    equal(fn('c'),     ['c'], 'filled 0 | 2 holes | locked to 1 | 1 arg');
+    equal(fn('c','d'), ['c'], 'filled 0 | 2 holes | locked to 1 | 2 args');
+
+    var partial = run(takesNoneReturnsVaried, 'partial', [undefined, undefined]);
+    var fn = run(partial, 'lock', [3]);
+    equal(fn(),        [u, u],      'filled 0 | 2 holes | locked to 3 | 0 args');
+    equal(fn('c'),     ['c',u],     'filled 0 | 2 holes | locked to 3 | 1 arg');
+    equal(fn('c','d'), ['c','d'], 'filled 0 | 2 holes | locked to 3 | 2 args');
+
+  });
+
 });
