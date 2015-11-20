@@ -1,16 +1,19 @@
-getAccessorObject = function() {
+getAccessorObject = function(name) {
+  var data = {};
+  name = name || 'label';
+  data[name] = 'foo';
   var obj = {
-    data: { label: 'foo' }
+    data: data
   }
   // Need to use defineProperty here as get label() is a syntax error
   // that would halt tests in < IE9.
-  Object.defineProperty(obj, 'label', {
+  Object.defineProperty(obj, name, {
     enumerable: true,
     get: function() {
-      return this.data.label;
+      return this.data[name];
     },
     set: function(value) {
-      this.data.label = value;
+      this.data[name] = value;
     }
   });
   return obj;

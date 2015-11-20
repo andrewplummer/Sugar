@@ -778,6 +778,48 @@ package('Object', function () {
 
   });
 
+  method('mergeAll', function() {
+
+    var obj1 = {a:'a'};
+    var obj2 = {b:'b'};
+    var obj3 = {c:'c'};
+
+    var target = {};
+    var result = run(Object, 'mergeAll', [target, [obj1, obj2, obj3]]);
+    equal(target, {a:'a',b:'b',c:'c'}, 'All objects should be merged into the result');
+    equal(obj1, {a:'a'}, 'object 1 should be unchanged');
+    equal(obj2, {b:'b'}, 'object 2 should be unchanged');
+    equal(obj3, {c:'c'}, 'object 3 should be unchanged');
+    equal(result === target, true, 'Returned result should be equal to the target object');
+
+    testStaticAndInstance({foo:undefined,bar:undefined}, [[{bar:3},{foo:1}]], {foo:1,bar:3}, 'overwrites undefined');
+    testStaticAndInstance({foo:3}, [[{foo:4},{foo:5}]], {foo:5}, 'last wins');
+    testStaticAndInstance({foo:3}, [[{foo:4},{bar:5}],{resolve:false}], {foo:3,bar:5}, 'used as defaults');
+
+    var result = run(Object, 'mergeAll', [{}, [{one:obj1}],{deep:true}]);
+    equal(result, {one:{a:'a'}}, true, 'object was merged');
+    equal(result.one === obj1, false, 'object was deep merged');
+
+    var fn = function(key, a, b) { return a + b; };
+    testStaticAndInstance({a:1}, [[{a:2},{a:5},{a:8}],{resolve:fn}], {a:16}, 'custom resolver works on all merged objects');
+
+    if (definePropertySupport) {
+      var obj1 = getAccessorObject('one');
+      var obj2 = getAccessorObject('two');
+      var result = run(Object, 'mergeAll',  [{}, [obj1, obj2], {descriptor:true}]);
+      result.data.one = 'hoo';
+      result.data.two = 'ha';
+      equal(result.one + result.two, 'hooha', 'both descriptors were merged');
+
+      var fn = function(key, a, b) { return (a || '') + b; };
+      var obj1 = getDescriptorObject();
+      var obj2 = getDescriptorObject();
+      var obj3 = getDescriptorObject();
+      testStaticAndInstance({}, [[obj1, obj2, obj3],{hidden:true,resolve:fn}],{foo:'barbarbar'}, 'can handle hidden properties');
+    }
+
+  });
+
   method('clone', function() {
 
     test('hardy', [], 'hardy', 'clone on a string');
