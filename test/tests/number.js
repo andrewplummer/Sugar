@@ -938,71 +938,141 @@ package('Number', function () {
 
 
   method('bytes', function() {
-    test(1,                  '1B' ,       '1B       ');
-    test(10,                 '10B' ,      '10B      ');
-    test(100,                '100B' ,     '100B     ');
-    test(1000,               '1KB' ,      '1KB      ');
-    test(10000,              '10KB' ,     '10KB     ');
-    test(100000,             '98KB' ,     '100KB    ');
-    test(1000000,            '1MB' ,      '1MB      ');
-    test(10000000,           '10MB' ,     '10MB     ');
-    test(100000000,          '95MB' ,     '100MB    ');
-    test(1000000000,         '1GB' ,      '1GB      ');
-    test(10000000000,        '9GB' ,      '10GB     ');
-    test(100000000000,       '93GB' ,     '100GB    ');
-    test(1000000000000,      '1TB' ,      '1TB      ');
-    test(10000000000000,     '9TB' ,      '10TB     ');
-    test(100000000000000,    '91TB' ,     '100TB    ');
-    test(1000000000000000,   '1PB' ,      '1PB  ');
-    test(10000000000000000,  '9PB' ,      '9PB ');
-    test(100000000000000000, '89PB' ,     '89PB ');
+
+    test(1,                  '1B',   '1B   ');
+    test(10,                 '10B',  '10B  ');
+    test(100,                '100B', '100B ');
+    test(1000,               '1KB',  '1KB  ');
+    test(10000,              '10KB', '10KB ');
+    test(100000,             '98KB', '100KB');
+    test(1000000,            '1MB',  '1MB  ');
+    test(10000000,           '10MB', '10MB ');
+    test(100000000,          '95MB', '100MB');
+    test(1000000000,         '1GB',  '1GB  ');
+    test(10000000000,        '9GB',  '10GB ');
+    test(100000000000,       '93GB', '100GB');
+    test(1000000000000,      '1TB',  '1TB  ');
+    test(10000000000000,     '9TB',  '10TB ');
+    test(100000000000000,    '91TB', '100TB');
+    test(1000000000000000,   '1PB',  '1PB  ');
+    test(10000000000000000,  '9PB',  '9PB  ');
+    test(100000000000000000, '89PB', '89PB ');
 
     withArgs([0], function() {
-      test(1,                  '1B' ,   'no limit | 1B       ');
-      test(10,                 '10B' ,  'no limit | 10B      ');
-      test(100,                '100B' , 'no limit | 100B     ');
-      test(1000,               '1KB' ,  'no limit | 1KB      ');
-      test(10000,              '10KB' , 'no limit | 10KB     ');
-      test(100000,             '98KB' , 'no limit | 100KB    ');
-      test(1000000,            '1MB' ,  'no limit | 1MB      ');
-      test(10000000,           '10MB' , 'no limit | 10MB     ');
-      test(100000000,          '95MB' , 'no limit | 100MB    ');
-      test(1000000000,         '1GB' ,  'no limit | 1GB      ');
-      test(10000000000,        '9GB' ,  'no limit | 10GB     ');
-      test(100000000000,       '93GB' , 'no limit | 100GB    ');
-      test(1000000000000,      '1TB' ,  'no limit | 1TB      ');
-      test(10000000000000,     '9TB' ,  'no limit | 10TB     ');
-      test(100000000000000,    '91TB' , 'no limit | 100TB    ');
-      test(1000000000000000,   '1PB' ,  'no limit | 1PB  ');
-      test(10000000000000000,  '9PB' ,  'no limit | 9PB ');
-      test(100000000000000000, '89PB' , 'no limit | 89BP');
+      test(1,                  '1B',   '0 places | 1B       ');
+      test(10,                 '10B',  '0 places | 10B      ');
+      test(100,                '100B', '0 places | 100B     ');
+      test(1000,               '1KB',  '0 places | 1KB      ');
+      test(10000,              '10KB', '0 places | 10KB     ');
+      test(100000,             '98KB', '0 places | 100KB    ');
+      test(1000000,            '1MB',  '0 places | 1MB      ');
+      test(10000000,           '10MB', '0 places | 10MB     ');
+      test(100000000,          '95MB', '0 places | 100MB    ');
+      test(1000000000,         '1GB',  '0 places | 1GB      ');
+      test(10000000000,        '9GB',  '0 places | 10GB     ');
+      test(100000000000,       '93GB', '0 places | 100GB    ');
+      test(1000000000000,      '1TB',  '0 places | 1TB      ');
+      test(10000000000000,     '9TB',  '0 places | 10TB     ');
+      test(100000000000000,    '91TB', '0 places | 100TB    ');
+      test(1000000000000000,   '1PB',  '0 places | 1PB  ');
+      test(10000000000000000,  '9PB',  '0 places | 9PB ');
+      test(100000000000000000, '89PB', '0 places | 89BP');
     });
 
     withArgs([2], function() {
 
-      test(1,                  '1B' ,      'no limit, 2 places | 1B       ');
-      test(10,                 '10B' ,     'no limit, 2 places | 10B      ');
-      test(100,                '100B' ,    'no limit, 2 places | 100B     ');
-      test(1000,               '0.98KB' ,  'no limit, 2 places | 1KB      ');
-      test(10000,              '9.77KB' ,  'no limit, 2 places | 10KB     ');
-      test(100000,             '97.66KB' , 'no limit, 2 places | 100KB    ');
-      test(1000000,            '0.95MB' ,  'no limit, 2 places | 1MB      ');
-      test(10000000,           '9.54MB' ,  'no limit, 2 places | 10MB     ');
-      test(100000000,          '95.37MB' , 'no limit, 2 places | 100MB    ');
-      test(1000000000,         '0.93GB' ,  'no limit, 2 places | 1GB      ');
-      test(10000000000,        '9.31GB' ,  'no limit, 2 places | 10GB     ');
-      test(100000000000,       '93.13GB' , 'no limit, 2 places | 100GB    ');
-      test(1000000000000,      '0.91TB' ,  'no limit, 2 places | 1TB      ');
-      test(10000000000000,     '9.09TB' ,  'no limit, 2 places | 10TB     ');
-      test(100000000000000,    '90.95TB' , 'no limit, 2 places | 100TB    ');
-      test(1000000000000000,   '0.89PB' ,  'no limit, 2 places | 1PB  ');
-      test(10000000000000000,  '8.88PB' ,  'no limit, 2 places | 10PB ');
-      test(100000000000000000, '88.82PB' , 'no limit, 2 places | 100PB ');
+      test(1,                  '1B',      '2 places | 1B       ');
+      test(10,                 '10B',     '2 places | 10B      ');
+      test(100,                '100B',    '2 places | 100B     ');
+      test(1000,               '0.98KB',  '2 places | 1KB      ');
+      test(10000,              '9.77KB',  '2 places | 10KB     ');
+      test(100000,             '97.66KB', '2 places | 100KB    ');
+      test(1000000,            '0.95MB',  '2 places | 1MB      ');
+      test(10000000,           '9.54MB',  '2 places | 10MB     ');
+      test(100000000,          '95.37MB', '2 places | 100MB    ');
+      test(1000000000,         '0.93GB',  '2 places | 1GB      ');
+      test(10000000000,        '9.31GB',  '2 places | 10GB     ');
+      test(100000000000,       '93.13GB', '2 places | 100GB    ');
+      test(1000000000000,      '0.91TB',  '2 places | 1TB      ');
+      test(10000000000000,     '9.09TB',  '2 places | 10TB     ');
+      test(100000000000000,    '90.95TB', '2 places | 100TB    ');
+      test(1000000000000000,   '0.89PB',  '2 places | 1PB  ');
+      test(10000000000000000,  '8.88PB',  '2 places | 10PB ');
+      test(100000000000000000, '88.82PB', '2 places | 100PB ');
 
       // Issue #422
       Sugar.Number.decimal = ',';
-      test(1000, '0,98KB' , 'should respect global decimal');
+      test(1000, '0,98KB', 'should respect global decimal');
       delete Sugar.Number.decimal;
+
+    });
+
+    withArgs([0, true], function() {
+
+      test(1,                  '1B',    '2 places | si | 1B   ');
+      test(10,                 '10B',   '2 places | si | 10B  ');
+      test(100,                '100B',  '2 places | si | 100B ');
+      test(1000,               '1KB',   '2 places | si | 1KB  ');
+      test(10000,              '10KB',  '2 places | si | 10KB ');
+      test(100000,             '100KB', '2 places | si | 100KB');
+      test(1000000,            '1MB',   '2 places | si | 1MB  ');
+      test(10000000,           '10MB',  '2 places | si | 10MB ');
+      test(100000000,          '100MB', '2 places | si | 100MB');
+      test(1000000000,         '1GB',   '2 places | si | 1GB  ');
+      test(10000000000,        '10GB',  '2 places | si | 10GB ');
+      test(100000000000,       '100GB', '2 places | si | 100GB');
+      test(1000000000000,      '1TB',   '2 places | si | 1TB  ');
+      test(10000000000000,     '10TB',  '2 places | si | 10TB ');
+      test(100000000000000,    '100TB', '2 places | si | 100TB');
+      test(1000000000000000,   '1PB',   '2 places | si | 1PB  ');
+      test(10000000000000000,  '10PB',  '2 places | si | 10PB ');
+      test(100000000000000000, '100PB', '2 places | si | 100PB');
+
+    });
+
+    withArgs([0, false, '|,Ki,Mi,Gi,Ti,Pi,Ei'], function() {
+
+      test(1,                  '1B',     '0 places | custom units | 1B    ');
+      test(10,                 '10B',    '0 places | custom units | 10B   ');
+      test(100,                '100B',   '0 places | custom units | 100B  ');
+      test(1000,               '1KiB',   '0 places | custom units | 1KiB  ');
+      test(10000,              '10KiB',  '0 places | custom units | 10KiB ');
+      test(100000,             '98KiB', '0 places | custom units | 100KiB');
+      test(1000000,            '1MiB',   '0 places | custom units | 1MiB  ');
+      test(10000000,           '10MiB',  '0 places | custom units | 10MiB ');
+      test(100000000,          '95MiB', '0 places | custom units | 100MiB');
+      test(1000000000,         '1GiB',   '0 places | custom units | 1GiB  ');
+      test(10000000000,        '9GiB',  '0 places | custom units | 10GiB ');
+      test(100000000000,       '93GiB', '0 places | custom units | 100GiB');
+      test(1000000000000,      '1TiB',   '0 places | custom units | 1TiB  ');
+      test(10000000000000,     '9TiB',  '0 places | custom units | 10TiB ');
+      test(100000000000000,    '91TiB', '0 places | custom units | 100TiB');
+      test(1000000000000000,   '1PiB',   '0 places | custom units | 1PiB  ');
+      test(10000000000000000,  '9PiB',  '0 places | custom units | 10PiB ');
+      test(100000000000000000, '89PiB', '0 places | custom units | 100PiB');
+
+    });
+
+    withArgs([0, true, '|,Ki,Mi,Gi,Ti,Pi,Ei'], function() {
+
+      test(1,                  '1B',     '0 places | si | custom units | 1B    ');
+      test(10,                 '10B',    '0 places | si | custom units | 10B   ');
+      test(100,                '100B',   '0 places | si | custom units | 100B  ');
+      test(1000,               '1KiB',   '0 places | si | custom units | 1KiB  ');
+      test(10000,              '10KiB',  '0 places | si | custom units | 10KiB ');
+      test(100000,             '100KiB', '0 places | si | custom units | 100KiB');
+      test(1000000,            '1MiB',   '0 places | si | custom units | 1MiB  ');
+      test(10000000,           '10MiB',  '0 places | si | custom units | 10MiB ');
+      test(100000000,          '100MiB', '0 places | si | custom units | 100MiB');
+      test(1000000000,         '1GiB',   '0 places | si | custom units | 1GiB  ');
+      test(10000000000,        '10GiB',  '0 places | si | custom units | 10GiB ');
+      test(100000000000,       '100GiB', '0 places | si | custom units | 100GiB');
+      test(1000000000000,      '1TiB',   '0 places | si | custom units | 1TiB  ');
+      test(10000000000000,     '10TiB',  '0 places | si | custom units | 10TiB ');
+      test(100000000000000,    '100TiB', '0 places | si | custom units | 100TiB');
+      test(1000000000000000,   '1PiB',   '0 places | si | custom units | 1PiB  ');
+      test(10000000000000000,  '10PiB',  '0 places | si | custom units | 10PiB ');
+      test(100000000000000000, '100PiB', '0 places | si | custom units | 100PiB');
 
     });
 
@@ -1010,7 +1080,6 @@ package('Number', function () {
     test(1048576, '1MB', '2 places | 1048576 bytes is 1MB');
     test(1024, [2], '1KB', '2 places | 1024 bytes is 1KB');
     test(1048576, [2], '1MB', '2 places | 1048576 bytes is 1MB');
-    test(1000, [6, true], '1KB', 'should allow the standard metric definition');
 
     test(Math.pow(10, 16), '9PB', '10 ^ 16 bytes');
     test(Math.pow(10, 16), [-2], '0PB', '10 ^ 16 bytes | -2 places');
