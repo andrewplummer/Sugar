@@ -535,8 +535,8 @@ package('Date', function () {
     dateEqual(testCreateDate('beginning of next week'), getDateWithWeekdayAndOffset(0, 7), 'beginning of next week');
     dateEqual(testCreateDate('the beginning of next week'), getDateWithWeekdayAndOffset(0, 7), 'the beginning of next week');
 
-    dateEqual(testCreateDate('beginning of the week', { locale: 'en-GB'}), getDateWithWeekdayAndOffset(1), 'beginning of the week | locale overrides');
-    dateEqual(testCreateDate('end of this week', { locale: 'en-GB'}), getDateWithWeekdayAndOffset(7, 0, 23, 59, 59, 999), 'end of this week | locale overrides');
+    dateEqual(testCreateDate('beginning of the week', { locale: 'en-GB'}), testGetBeginningOfWeek(1), 'beginning of the week | locale overrides');
+    dateEqual(testCreateDate('end of this week', { locale: 'en-GB'}), testGetEndOfWeek(0), 'end of this week | locale overrides');
 
     dateEqual(testCreateDate('beginning of the month'), new Date(now.getFullYear(), now.getMonth()), 'beginning of the month');
     dateEqual(testCreateDate('beginning of this month'), new Date(now.getFullYear(), now.getMonth()), 'beginning of this month');

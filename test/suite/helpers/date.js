@@ -109,6 +109,34 @@ getDateWithWeekdayAndOffset = function(weekday, offset, hours, minutes, seconds,
   return d;
 }
 
+testGetBeginningOfWeek = function(startWeekday) {
+  var d = new Date();
+  var dow = d.getDay();
+  if (dow < startWeekday) {
+    startWeekday -= 7;
+  }
+  d.setDate(d.getDate() - (dow - startWeekday));
+  d.setHours(0);
+  d.setMinutes(0);
+  d.setSeconds(0);
+  d.setMilliseconds(0);
+  return d;
+}
+
+testGetEndOfWeek = function(endWeekday) {
+  var d = new Date();
+  var dow = d.getDay();
+  if (dow > endWeekday) {
+    endWeekday += 7;
+  }
+  d.setDate(d.getDate() + (dow - endWeekday));
+  d.setHours(23);
+  d.setMinutes(59);
+  d.setSeconds(59);
+  d.setMilliseconds(999);
+  return d;
+}
+
 testGetDaysInMonth = function(year, month) {
   return 32 - new Date(year, month, 32).getDate();
 }
