@@ -98,6 +98,10 @@ getUTCDate = function(year, month, day, hours, minutes, seconds, milliseconds) {
   return d;
 }
 
+testIsUTC = function(d) {
+  return testGetPrivateProp(d, 'utc');
+}
+
 getDateWithWeekdayAndOffset = function(weekday, offset, hours, minutes, seconds, milliseconds) {
   var d = new Date();
   if(offset) d.setDate(d.getDate() + offset);
