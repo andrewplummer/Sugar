@@ -277,6 +277,17 @@ package('Core', function() {
     equal(({}).moo, undefined, 'moo has not been mapped');
   });
 
+  group('Aliasing', function() {
+    defineCustom(Sugar.String);
+    Sugar.String.alias('foo2', Sugar.String.foo);
+    Sugar.String.alias('bar2', 'bar');
+    Sugar.String.extend();
+    equal(('').foo2(), 'foo!', 'foo2 is an alias of foo');
+    equal(('').bar2(), 'bar!', 'bar2 is an alias of foo');
+    delete Sugar.String.foo2;
+    delete Sugar.String.bar2;
+  });
+
   group('Array enhancements', function() {
     // This test is in core because it cannot be run in
     // the "extended" tests where arrays may already be enhanced.
