@@ -935,9 +935,9 @@ package('Object', function () {
 
     var d = new Date(2000, 5, 25);
     // Simulate the Sugar date setUTC without actually requiring it
-    d._utc = true;
+    d.utc = true;
     var result = run(Object, 'clone', [d]);
-    equal(result._utc, true, 'date property should also be cloned');
+    equal(result.utc, true, 'date property should also be cloned');
 
     // Issue #396 cloning objects with accessors.
 
@@ -1444,8 +1444,8 @@ package('Object', function () {
     // Issue #256
     if(Sugar.Date.clone) {
       var date = Sugar.Date.setUTC(new Date(), true);
-      equal(date._utc, true, 'utc flag is set');
-      equal(run(Object, 'clone', [date])._utc, true, 'should preserve utc flag when set');
+      equal(date.utc, true, 'utc flag is set');
+      equal(run(Object, 'clone', [date]).utc, true, 'should preserve utc flag when set');
     }
 
   });
