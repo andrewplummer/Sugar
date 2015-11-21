@@ -1,7 +1,7 @@
 package('Core', function() {
   "use strict";
 
-  function defineCustom(target) {
+  function defineCustom(target, isStatic) {
     var methods = {
       foo: function() {
         return 'foo!';
@@ -13,7 +13,7 @@ package('Core', function() {
         return 'moo!';
       }
     };
-    if (target === Sugar.Object) {
+    if (target === Sugar.Object || isStatic) {
       methods.foo.static = true;
       methods.bar.static = true;
       methods.moo.static = true;
@@ -321,6 +321,18 @@ package('Core', function() {
       enhance: false
     });
     raisesError(function() { 'foobar'.includes(/foo/); }, 'includes is not enhanced');
+  });
+
+  group('Extending after global hijacking', function() {
+    var nativeDate = Date;
+    function FakeDate() {}
+    defineCustom(Sugar.Date, true);
+    // Hijacking the global Date object. Sinon does this to allow time mocking
+    // in tests, so need to support this here.
+    Date = FakeDate;
+    Sugar.Date.extend();
+    equal(Date.foo(), 'foo!', 'hijacked global is now the target');
+    Date = nativeDate;
   });
 
 });
