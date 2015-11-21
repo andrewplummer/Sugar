@@ -1927,7 +1927,6 @@ package('Date', function () {
     test(testCreateDate('tuesday'), ['the end of the week'], false, 'tuesday is the end of the week');
 
     test(testCreateDate('sunday'), ['the beginning of the week'], true, 'sunday is the beginning of the week');
-    test(testCreateDate('sunday'), ['the beginning of the week'], true, 'sunday is the beginning of the week');
 
     test(testCreateDate('tuesday'), ['tuesday'], true, 'tuesday is tuesday');
     test(testCreateDate('sunday'), ['sunday'], true, 'sunday is sunday');
@@ -2728,16 +2727,13 @@ package('Date', function () {
     dateTest(getDateWithWeekdayAndOffset(2), ['monday', 'friday'], true, 'relative | tuesday is between monday and friday');
     dateTest(getDateWithWeekdayAndOffset(0,7), ['monday', 'friday'], false, 'relative | next week sunday is between monday and friday');
     dateTest(getDateWithWeekdayAndOffset(0,-7), ['monday', 'friday'], false, 'relative | last week sunday is between monday and friday');
-    dateTest(getDateWithWeekdayAndOffset(0), ['the beginning of this week','the beginning of last week'], false, 'relative | sunday is between the beginning of this week and the beginning of last week');
-    dateTest(getDateWithWeekdayAndOffset(0), ['the beginning of this week','the beginning of next week'], false, 'relative | sunday is between the beginning of this week and the beginning of next week');
+    dateTest(getDateWithWeekdayAndOffset(0), ['the beginning of this week','the beginning of last week'], true, 'relative | sunday is between the beginning of this week and the beginning of last week');
+    dateTest(getDateWithWeekdayAndOffset(0), ['the beginning of this week','the beginning of next week'], true, 'relative | sunday is between the beginning of this week and the beginning of next week');
     dateTest(getDateWithWeekdayAndOffset(0), ['the beginning of last week','the beginning of next week'], true, 'relative | sunday is between the beginning of last week and the beginning of next week');
     dateTest(getDateWithWeekdayAndOffset(0), ['the beginning of last week','the end of this week'], true, 'relative | sunday is between the beginning of last week and the end of this week');
 
-
-    dateTest(testCreateDate('yesterday'), ['yesterday', 'today'], false, 'today is between yesterday and today');
-    dateTest(testCreateDate('yesterday'), ['yesterday', 'today', 5], true, 'today is between yesterday and today with a 5ms margin');
-    dateTest(testCreateDate('tomorrow'), ['today', 'tomorrow'], false, 'tomrrow is between today and tomorrow');
-    dateTest(testCreateDate('tomorrow'), ['today', 'tomorrow', 5], true, 'tomrrow is between today and tomorrow with a 5ms margin');
+    dateTest(testCreateDate('yesterday'), ['yesterday', 'today'], true, 'today is between yesterday and today');
+    dateTest(testCreateDate('tomorrow'), ['today', 'tomorrow'], true, 'tomrrow is between today and tomorrow');
 
   });
 
