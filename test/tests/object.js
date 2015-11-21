@@ -1156,22 +1156,24 @@ package('Object', function () {
   method('fromQueryString', function() {
 
     test(Object, ['foo=bar&moo=car'], {foo:'bar',moo:'car'}, 'basic');
-    test(Object, ['foo=bar&moo=3'], {foo:'bar',moo:3}, 'with numbers');
-    test(Object, ['foo=bar&moo=3', {smart:false}], {foo:'bar',moo:'3'}, 'with numbers not smart');
+    test(Object, ['foo=bar&moo=3'], {foo:'bar',moo:3}, 'with numbers | smart');
+    test(Object, ['foo=bar&moo=3', {smart:false}], {foo:'bar',moo:'3'}, 'with numbers');
 
-    test(Object, ['foo=bar&moo=true'], {foo:'bar',moo:true}, 'with true smart');
-    test(Object, ['foo=bar&moo=false'], {foo:'bar',moo:false}, 'with false smart');
-    test(Object, ['foo=bar&moo=true', {smart:false}], {foo:'bar',moo:'true'}, 'with true not smart');
-    test(Object, ['foo=bar&moo=false', {smart:false}], {foo:'bar',moo:'false'}, 'with false not smart');
+    test(Object, ['foo=bar&moo=true'], {foo:'bar',moo:true}, 'with true | smart');
+    test(Object, ['foo=bar&moo=false'], {foo:'bar',moo:false}, 'with false | smart');
+    test(Object, ['foo=bar&moo=true', {smart:false}], {foo:'bar',moo:'true'}, 'with true not | smart');
+    test(Object, ['foo=bar&moo=false', {smart:false}], {foo:'bar',moo:'false'}, 'with false not | smart');
 
     test(Object, ['foo=bar3'], {foo:'bar3'}, 'number in back');
     test(Object, ['foo=3bar'], {foo:'3bar'}, 'number up front');
 
-    test(Object, ['foo=345'], {foo:345}, 'numbers only smart');
-    test(Object, ['foo=&bar='], { foo: null, bar: null }, 'undefined params smart');
-    test(Object, ['foo=&bar=', {smart:false}], { foo: '', bar: '' }, 'undefined params not smart');
+    test(Object, ['foo=345'], {foo:345}, 'numbers only | smart');
+    test(Object, ['foo&bar'], {foo:null,bar:null}, 'undefined without = | smart');
+    test(Object, ['foo&bar', {smart:false}], {foo:'',bar:''}, 'undefined without = | not smart');
+    test(Object, ['foo=&bar='], {foo:null,bar:null}, 'undefined params | smart');
+    test(Object, ['foo=&bar=', {smart:false}], {foo:'',bar:''}, 'undefined params | not smart');
     test(Object, ['foo[]=bar&foo[]=car'], {'foo[]':['bar','car']}, 'deep strings with default');
-    test(Object, ['foo[]=bar&foo[]=car',{smart:false}], {'foo[]':'car'}, 'deep strings with default not smart');
+    test(Object, ['foo[]=bar&foo[]=car',{smart:false}], {'foo[]':'car'}, 'deep strings with default | not smart');
 
     test(Object, ['foo[]=bar&foo[]=car', {deep:true}], {'foo':['bar','car']}, 'deep strings with deep');
     test(Object, ['foo[bar]=tee&foo[car]=hee', {deep:true}], { foo: { bar: 'tee', car: 'hee' } }, 'handles hash params');
