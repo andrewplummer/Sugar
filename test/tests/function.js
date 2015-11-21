@@ -3,6 +3,10 @@ package('Function', function () {
 
   var clock;
 
+  function getTimers(fn) {
+    return testGetPrivateProp(fn, 'timers');
+  }
+
   setup(function() {
     clock = sinon.useFakeTimers();
   });
@@ -30,14 +34,14 @@ package('Function', function () {
       equal(one, 'one', 'first parameter');
       equal(two, 'two', 'second parameter');
     };
-    equal(fn.timers, undefined, 'timers object should not exist yet');
+    equal(getTimers(fn), undefined, 'timers object should not exist yet');
     ret = run(fn, 'delay', [20, 'one', 'two']);
-    equal(typeof fn.timers, 'object', 'timers object should be exposed');
+    equal(typeof getTimers(fn), 'object', 'timers object should be exposed');
     equal(typeof ret, 'function', 'returns the function');
     equal(count, 0, 'should not have run yet');
     clock.tick(20);
     equal(count, 1, 'should have run once');
-    equal(fn.timers.length, 1, 'timers are not cleared after execution');
+    equal(getTimers(fn).length, 1, 'timers are not cleared after execution');
 
     count = 0;
     fn = function() {
@@ -76,17 +80,17 @@ package('Function', function () {
     run(fn, 'delay', [10]);
 
     equal(count, 0, 'should not have been called yet');
-    equal(fn.timers.length, 2, 'should be 2 calls pending');
+    equal(getTimers(fn).length, 2, 'should be 2 calls pending');
 
     clock.tick(30);
 
     run(fn, 'cancel');
     equal(count, 1, 'should have called the function once');
-    equal(fn.timers.length, 0, 'should have no more calls pending');
+    equal(getTimers(fn).length, 0, 'should have no more calls pending');
 
     clock.tick(30);
     equal(count, 1, 'should still have only been called once');
-    equal(fn.timers.length, 0, 'should still be no more delays');
+    equal(getTimers(fn).length, 0, 'should still be no more delays');
 
 
     // Canceling after first call (Issue #346)
@@ -104,12 +108,12 @@ package('Function', function () {
     run(fn, 'delay', [20]);
 
     equal(count, 0, 'should not have been called yet');
-    equal(fn.timers.length, 6, 'should be 6 calls pending');
+    equal(getTimers(fn).length, 6, 'should be 6 calls pending');
 
     clock.tick(50);
 
     equal(count, 1, 'delays should have been canceled after 1');
-    equal(fn.timers.length, 0, 'should be no more pending calls');
+    equal(getTimers(fn).length, 0, 'should be no more pending calls');
 
 
     // Canceling n functions in
@@ -129,12 +133,12 @@ package('Function', function () {
     run(fn, 'delay', [20]);
 
     equal(count, 0, 'should not have been called yet');
-    equal(fn.timers.length, 6, 'should be 6 calls pending');
+    equal(getTimers(fn).length, 6, 'should be 6 calls pending');
 
     clock.tick(50);
 
     equal(count, 2, 'should have been called twice');
-    equal(fn.timers.length, 0, 'should be no more pending calls');
+    equal(getTimers(fn).length, 0, 'should be no more pending calls');
 
   });
 
@@ -200,17 +204,17 @@ package('Function', function () {
     fn();
 
     equal(count, 0, 'no calls made yet before cancel');
-    equal(fn.timers.length, 1, 'should have 1 pending call');
+    equal(getTimers(fn).length, 1, 'should have 1 pending call');
 
     run(fn, 'cancel');
 
     equal(count, 0, 'no calls made after cancel');
-    equal(fn.timers.length, 0, 'should have no more pending calls');
+    equal(getTimers(fn).length, 0, 'should have no more pending calls');
 
     clock.tick(10);
 
     equal(count, 0, 'lazy function should have been canceled');
-    equal(fn.timers.length, 0, 'should have no more pending calls');
+    equal(getTimers(fn).length, 0, 'should have no more pending calls');
 
 
     // Cancelling immediate lazy functions
@@ -224,12 +228,12 @@ package('Function', function () {
     fn();
 
     equal(count, 1, 'should have run once before cancel');
-    equal(fn.timers.length, 1, 'should have 1 pending call');
+    equal(getTimers(fn).length, 1, 'should have 1 pending call');
 
     run(fn, 'cancel');
 
     equal(count, 1, 'should still have only run once after cancel');
-    equal(fn.timers.length, 0, 'should have no more pending calls');
+    equal(getTimers(fn).length, 0, 'should have no more pending calls');
 
     clock.tick(10);
 

@@ -935,9 +935,9 @@ package('Object', function () {
 
     var d = new Date(2000, 5, 25);
     // Simulate the Sugar date setUTC without actually requiring it
-    d.utc = true;
+    d.foo = true;
     var result = run(Object, 'clone', [d]);
-    equal(result.utc, true, 'date property should also be cloned');
+    equal(result.foo, true, 'utc property should also be cloned');
 
     // Issue #396 cloning objects with accessors.
 
@@ -963,6 +963,13 @@ package('Object', function () {
 
     var Foo = function() {};
     raisesError(function(){ run(Object, 'clone', [new Foo]); }, 'should raise an error if clone is not a basic object type');
+
+    // Issue #256
+    if(Sugar.Date.clone) {
+      var date = Sugar.Date.setUTC(new Date(), true);
+      equal(testIsUTC(date), true, 'utc flag is set');
+      equal(testIsUTC(run(Object, 'clone', [date])), true, 'should preserve utc flag when set');
+    }
 
   });
 
@@ -1438,17 +1445,6 @@ package('Object', function () {
     equal(run(Object, 'reject', [obj2, 'moo']).foo, obj, 'rejected values should be equal by reference');
   });
 
-
-  method('clone', function() {
-
-    // Issue #256
-    if(Sugar.Date.clone) {
-      var date = Sugar.Date.setUTC(new Date(), true);
-      equal(date.utc, true, 'utc flag is set');
-      equal(run(Object, 'clone', [date]).utc, true, 'should preserve utc flag when set');
-    }
-
-  });
 
   method('toQueryString', function() {
 

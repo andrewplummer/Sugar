@@ -22,6 +22,10 @@ testIsDate = function(obj) {
   return testGetClass(obj) === '[object Date]';
 }
 
+testGetPrivateProp = function(obj, name) {
+  return obj['_sugar_' + name];
+}
+
 testClone = function (obj) {
   var klass = testGetClass(obj);
   var result = testIsArray(obj, klass) ? [] : {}, key, val;

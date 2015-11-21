@@ -123,7 +123,7 @@ package('Date', function () {
     var d1 = new Date(2012, 11, 31);
     var d2 = testCreateDate('2012-12-31', { fromUTC: true });
     equal(d1 - d2, d1.getTimezoneOffset() * 60 * 1000, 'string created dates allow options object as last argument');
-    equal(d2.utc, false, 'UTC flag should not be set');
+    equal(testIsUTC(d2), false, 'UTC flag should not be set');
 
     var d1 = new Date(2012, 11, 31);
     var d2 = testCreateDate('2012-12-31', { fromUTC: false });
@@ -149,10 +149,10 @@ package('Date', function () {
     // setUTC option
 
     var d = testCreateDate(1440428400000, { setUTC: true });
-    equal(d.utc, true, 'setUTC should be allowed on a timestamp');
+    equal(testIsUTC(d), true, 'setUTC should be allowed on a timestamp');
 
     var d = testCreateDate({ month: 7, day: 25 }, { setUTC: true });
-    equal(d.utc, true, 'setUTC should be allowed on a parameter created date');
+    equal(testIsUTC(d), true, 'setUTC should be allowed on a parameter created date');
 
     var d1 = new Date(2012, 11, 31);
     var d2 = testCreateDate({ year: 2012, month: 11, date: 31 }, {
@@ -160,7 +160,7 @@ package('Date', function () {
       setUTC: true
     });
     equal(d1 - d2, d1.getTimezoneOffset() * 60 * 1000, 'both UTC flags should parsed as UTC');
-    equal(d2.utc, true, 'both UTC flags should also set UTC');
+    equal(testIsUTC(d2), true, 'both UTC flags should also set UTC');
 
     // Options objects without a date.
     equal(testCreateDate({ fromUTC: true }).getTime(), NaN, 'accidentally passing an options object without a date to parse is invalid');
@@ -373,7 +373,7 @@ package('Date', function () {
     dateEqual(testCreateDate('1994-11-05T08:15:30-05:00'), getUTCDate(1994, 11, 5, 13, 15, 30), 'Full example 1');
     dateEqual(testCreateDate('1994-11-05T13:15:30Z'), getUTCDate(1994, 11, 5, 13, 15, 30), 'Full example 1');
 
-    equal(testCreateDate('1994-11-05T13:15:30Z').utc, false, 'does not forcefully set UTC flag');
+    equal(testIsUTC(testCreateDate('1994-11-05T13:15:30Z')), false, 'does not forcefully set UTC flag');
 
     dateEqual(testCreateDate('1776-05-23T02:45:08-08:30'), getUTCDate(1776, 5, 23, 11, 15, 8), 'Full example 3');
     dateEqual(testCreateDate('1776-05-23T02:45:08+08:30'), getUTCDate(1776, 5, 22, 18, 15, 8), 'Full example 4');
@@ -719,11 +719,11 @@ package('Date', function () {
     date2.setTime(date2.getTime() - (date2.getTimezoneOffset() * 60 * 1000));
 
     dateEqual(date1, date2, 'is equal to date with timezone subtracted');
-    equal(date1.utc, false, 'does not set internal flag');
+    equal(testIsUTC(date1), false, 'does not set internal flag');
 
     var d = run(new Date(2001, 5, 15), 'setUTC', [true]);
 
-    equal(d.utc, true, 'sets internal flag');
+    equal(testIsUTC(d), true, 'sets internal flag');
     dateEqual(d, new Date(2001, 5, 15), 'does not change date');
     dateEqual(dateRun(d, 'beginningOfMonth'), new Date(Date.UTC(2001, 5, 1)), 'the beginning of the month');
     dateEqual(dateRun(d, 'endOfMonth'), new Date(Date.UTC(2001, 5, 30, 23, 59, 59, 999)), 'the end of the month');
@@ -783,12 +783,12 @@ package('Date', function () {
     equal(run(testCreateUTCDate('1 minute ago'), 'relative'), '1 minute ago', 'relative dates are unaffected');
 
     var d = run(run(new Date(2001, 5, 15), 'setUTC', [true]), 'setUTC', [false]);
-    equal(d.utc, false, 'utc flag can be set off');
+    equal(testIsUTC(d), false, 'utc flag can be set off');
 
     // Issue #235
 
     equal(run(run(run(testCreateDate(), 'setUTC', [true]), 'clone'), 'isUTC'), true, 'clone should preserve UTC');
-    equal(run(new Date(), 'clone').utc, false, 'clone should never be UTC if flag not set');
+    equal(testIsUTC(run(new Date(), 'clone')), false, 'clone should never be UTC if flag not set');
     equal(run(testCreateDate(run(new Date(), 'setUTC', [true])), 'isUTC'), true, 'create should preserve UTC');
 
     var isCurrentlyGMT = new Date(2011, 0, 1).getTimezoneOffset() === 0;
@@ -1020,13 +1020,13 @@ package('Date', function () {
     var d1 = run(new Date(Date.UTC(2010, 7, 25)), 'setUTC', [true]);
     var d2 = run(d1, 'get', ['tomorrow']);
     dateEqual(d2, new Date(Date.UTC(2010, 7, 26)), 'date should be taken as UTC'); 
-    equal(d2.utc, true, 'utc flag should be preserved');
+    equal(testIsUTC(d2), true, 'utc flag should be preserved');
 
     var d1 = run(new Date(Date.UTC(2010, 7, 25)), 'setUTC', [true]);
     var d2 = run(d1, 'get', ['tomorrow', { fromUTC: false, setUTC: false }]);
     // d1 may be Aug 24th or Aug 25th depending on the timezone.
     dateEqual(d2, new Date(2010, 7, d1.getDate() + 1), 'fromUTC can override utc preservation');
-    equal(d2.utc, false, 'setUTC can override utc preservation');
+    equal(testIsUTC(d2), false, 'setUTC can override utc preservation');
 
   });
 
