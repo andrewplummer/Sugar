@@ -224,6 +224,7 @@ package('Array', function () {
 
 
   method('map', function() {
+
     var fn;
     test([1,4,9], [Math.sqrt], [1,2,3], 'passing Math.sqrt directly');
     test([{ foo: 'bar' }], [function(el) { return el['foo']; }], ['bar'], 'with key "foo"');
@@ -244,7 +245,9 @@ package('Array', function () {
     test([{name:'john',age:25},{name:'fred',age:85}], ['cupsize'], [undefined, undefined], '(nonexistent) cupsize');
     test([], ['name'], [], 'empty array');
 
-    // Nested properties
+
+    // Nested properties with dot syntax
+
     test([{name:{first:'John',last:'Waters'}},{name:{first:'Fred',last:'Flintstone'}}], ['name.first'], ['John', 'Fred'], 'deep matching with dot');
     test([{a:{b:{c:'x'}}},{a:{b:{c:'y'}}},{a:{b:{c:'z'}}}], ['a.b.c'], ['x','y','z'], 'deeper matching with dot');
     test([{a:[1]},{a:[2]}], ['a.0'], [1,2], 'matching nested array indexes');
@@ -261,6 +264,41 @@ package('Array', function () {
     raisesError(function(){ run([1,2,3], 'map', [null]) }, 'null raises a type error');
 
     test([1,2,3], [4], [undefined, undefined, undefined], 'number');
+
+
+    // Nested properties with dot and bracket syntax
+
+    var accounts = [
+      {
+        profile: {
+          addresses: [{
+              street: '1600 Pennsylvania Ave',
+              city: 'Washington DC'
+            }, {
+              street: '221B Baker St',
+              city: 'London'
+            }]
+        }
+      },
+      {
+        profile: {
+          addresses: [{
+              street: '31 Spooner St.',
+              city: 'Quahog'
+            }, {
+              street: '742 Evergreen Terrace',
+              city: 'Springfield'
+            }]
+        }
+      }
+    ];
+
+    test(accounts, ['profile.addresses[0]'], [accounts[0].profile.addresses[0], accounts[1].profile.addresses[0]], 'deep with bracket');
+    test(accounts, ['profile.addresses[0].city'], ['Washington DC', 'Quahog'], 'deep with bracket and trailing dot');
+    test(accounts, ['profile.addresses[1]'], [accounts[0].profile.addresses[1], accounts[1].profile.addresses[1]], 'deep with bracket | 1');
+    test(accounts, ['profile.addresses[1].city'], ['London', 'Springfield'], 'deep with bracket and trailing dot | 1');
+    test(accounts, ['profile.addresses[-1]'], [accounts[0].profile.addresses[1], accounts[1].profile.addresses[1]], 'deep with bracket | -1');
+    test(accounts, ['profile.addresses[-1].city'], ['London', 'Springfield'], 'deep with bracket and trailing dot | -1');
 
 
     // Issue #386
