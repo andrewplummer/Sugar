@@ -1395,7 +1395,7 @@ package('String', function () {
     test('From {} to {}', ['foo', 'bar'], 'From {} to {}', 'requires keys to be passed');
     test('My quest is {name}', [{name:'partying'}], 'My quest is partying', 'allows keyword arguments as objects');
     testWithUndefined('Weight in tons {0.weight}', ['foo'], 'Weight in tons undefined', 'does not allow operators as part of format');
-    testWithUndefined('Units destroyed: {players[0]}', [{players: ['huey', 'duey']}], 'Units destroyed: undefined', 'Does not allow expressions in format');
+    testWithUndefined('Units destroyed: {players[0]}', [{players: ['huey', 'duey']}], 'Units destroyed: huey', 'allows bracket syntax');
 
     test('{0}, {1}, {2}', ['a', 'b', 'c'], 'a, b, c', 'simple enumeration');
     test('{}, {}, {}', ['a', 'b', 'c'], '{}, {}, {}', 'empty tokens');

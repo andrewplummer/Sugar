@@ -1732,12 +1732,13 @@ package('Object', function () {
     testStaticAndInstance(obj, ['...'], undefined, 'three dots');
 
     testStaticAndInstance({}, [], undefined, 'no arguments');
+    testStaticAndInstance({'ohai':1}, [{toString:function() {return 'ohai';}}], 1, 'object should be coerced to string');
     testStaticAndInstance({'undefined':1}, [undefined], undefined, 'undefined should not be coerced to string');
     testStaticAndInstance({'null':1}, [null], undefined, 'null should not be coerced to string');
     testStaticAndInstance({3:1}, [3], 1, 'number should be coerced to string');
-    testStaticAndInstance({'[object Object]':1}, [{foo:'bar'}], 1, 'object should be coerced to string');
     testStaticAndInstance({'undefined':1}, ['undefined'], 1, '"undefined" is found');
     testStaticAndInstance({'null':1}, ['null'], 1, '"null" is found');
+
 
     testStaticAndInstance({'':1}, [''], 1, 'empty string as key');
     testStaticAndInstance({'':{'':2}}, ['.'], 2, 'nested empty string as key');
@@ -1751,8 +1752,10 @@ package('Object', function () {
     testStaticAndInstance({}, ['a.b'], undefined, 'deep property on empty object');
     testStaticAndInstance(NaN, ['a'], undefined, 'flat property on NaN');
     testStaticAndInstance(NaN, ['a.b'], undefined, 'deep property on NaN');
-    testStaticAndInstance('foo', ['a'], undefined, 'flat property on string');
-    testStaticAndInstance('foo', ['a.b'], undefined, 'flat property on string');
+    testStaticAndInstance('', ['a'], undefined, 'flat property on empty string');
+    testStaticAndInstance('', ['a.b'], undefined, 'deep property on empty string');
+    testStaticAndInstance('foo', ['a'], undefined, 'flat property on non-empty string');
+    testStaticAndInstance('foo', ['a.b'], undefined, 'deep property on non-empty string');
 
     testStaticAndInstance(['a','b'], [0], 'a', 'array property found');
     testStaticAndInstance(['a','b'], [1], 'b', 'array property found');
@@ -1762,6 +1765,35 @@ package('Object', function () {
     testStaticAndInstance([{foo:'bar'}], ['0.foo'], 'bar', 'array deep property');
     testStaticAndInstance({foo:['bar']}, ['foo.0'], 'bar', 'object array property');
     testStaticAndInstance([[['bar']]], ['0.0.0'], 'bar', 'deep array');
+
+
+    // Bracket syntax
+
+    test(['a'], ['[0]'], 'a', 'simple bracket');
+    test([['a']], ['[0][0]'], 'a', 'deep array index | 2');
+    test([[['a']]], ['[0][0][0]'], 'a', 'deep array index | 3');
+    test([[[{a:'a'}]]], ['[0][0][0].a'], 'a', 'deep array index and dot');
+    test([[[{a:'a'}]]], ['0[0][0].a'], 'a', 'deep array index with no brackets starting');
+    test([[[{a:'a'}]]], ['[-1][-1][-1].a'], 'a', 'deep array index negative');
+    test([], ['[0]'], undefined, 'index in empty array');
+
+    testStaticAndInstance({a:['foo','bar']}, ['a'], ['foo','bar'], 'simple prop');
+    testStaticAndInstance({a:['foo','bar']}, ['a[0]'], 'foo', 'index 0');
+    testStaticAndInstance({a:['foo','bar']}, ['a[1]'], 'bar', 'index 1');
+    testStaticAndInstance({a:['foo','bar']}, ['a[2]'], undefined, 'index 2');
+    testStaticAndInstance({a:['foo','bar']}, ['a[-1]'], 'bar', 'index -1');
+    testStaticAndInstance({a:['foo','bar']}, ['a[-2]'], 'foo', 'index -2');
+    testStaticAndInstance({a:['foo','bar']}, ['a[-3]'], undefined, 'index -3');
+    testStaticAndInstance({a:['foo','bar']}, ['a[]'], undefined, 'null index');
+    testStaticAndInstance({a:['foo','bar']}, ['a.0'], 'foo', 'index 0 | dot');
+    testStaticAndInstance({a:['foo','bar']}, ['a.1'], 'bar', 'index 1 | dot');
+    testStaticAndInstance({a:['foo','bar']}, ['a.2'], undefined, 'index 2 | dot');
+    testStaticAndInstance({a:['foo','bar']}, ['a.-1'], 'bar', 'index -1 | dot');
+    testStaticAndInstance({a:['foo','bar']}, ['a.-2'], 'foo', 'index -2 | dot');
+    testStaticAndInstance({a:['foo','bar']}, ['a.-3'], undefined, 'index -3 | dot');
+    testStaticAndInstance({a:[{b:'b'},{c:'c'}]}, ['a[0].b'], 'b', 'index followed by dot');
+    testStaticAndInstance({a:[{b:'b'},{c:'c'}]}, ['a.0..b'], undefined, 'non-existent deep dot');
+
 
     var Foo = function() {};
     var Bar = function() { this.c = 'inst-c'; };
