@@ -133,7 +133,7 @@ testGetEndOfWeek = function(endWeekday) {
   if (dow > endWeekday) {
     endWeekday += 7;
   }
-  d.setDate(d.getDate() + (dow - endWeekday));
+  d.setDate(d.getDate() + (endWeekday - dow));
   d.setHours(23);
   d.setMinutes(59);
   d.setSeconds(59);
