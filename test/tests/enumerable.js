@@ -15,8 +15,16 @@ package('Object', function() {
    car: { age: 44 }
   }
 
+  var deepObj2 = {
+   foo: { user: {age: 11 } },
+   bar: { user: {age: 22 } },
+   moo: { user: {age: 33 } },
+   car: { user: {age: 44 } }
+  }
+
   var obj3 = testClone(obj1); obj3['blue'] = 4;
   var obj4 = testClone(obj2); obj4['blue'] = {age:11};
+  var deepObj4 = testClone(deepObj2); deepObj4['blue'] = {user:{age:11}};
 
   method('any', function() {
     testStaticAndInstance(obj1, [function(key, value, o) {
@@ -74,6 +82,7 @@ package('Object', function() {
     testStaticAndInstance(obj1, [function(key, value) { return value; }], 18, 'key is foo');
     testStaticAndInstance(obj1, [function(key, value) { return key === 'foo' ? value : 0; }], 3, 'key is foo');
     testStaticAndInstance(obj2, ['age'], 110, 'accepts a string shortcut');
+    testStaticAndInstance(deepObj2, ['user.age'], 110, 'accepts a deep string shortcut');
   });
 
   method('average', function() {
@@ -81,6 +90,7 @@ package('Object', function() {
     testStaticAndInstance(obj1, [function(key, value) { return value; }], 4.5, 'key is foo');
     testStaticAndInstance(obj1, [function(key, value) { return key === 'foo' ? value : 0; }], .75, 'key is foo');
     testStaticAndInstance(obj2, ['age'], 27.5, 'accepts a string shortcut');
+    testStaticAndInstance(deepObj2, ['user.age'], 27.5, 'accepts a deep string shortcut');
   });
 
   method('find', function() {
@@ -119,6 +129,7 @@ package('Object', function() {
     testStaticAndInstance(obj3, [function(key, value) { return key.charCodeAt(0); }, true], {bar: 4,blue:4}, 'all | return the char code of first letter');
     testStaticAndInstance(obj4, ['age'], 'foo', 'accepts a string shortcut');
     testStaticAndInstance(obj4, ['age', true], {foo: {age:11},blue:{age:11}}, 'all | accepts a string shortcut');
+    testStaticAndInstance(deepObj2, ['user.age'], 'foo', 'accepts a deep string shortcut');
   });
 
   method('max', function() {
@@ -131,6 +142,7 @@ package('Object', function() {
     testStaticAndInstance(obj3, [function(key, value) { return key.length; }, true], {blue:4}, 'all | return key.length');
     testStaticAndInstance(obj3, [function(key, value) { return key.charCodeAt(0); }, true], {moo:5}, 'all | return the char code of first letter');
     testStaticAndInstance(obj4, ['age', true], {car:{age:44}}, 'all | accepts a string shortcut');
+    testStaticAndInstance(deepObj2, ['user.age'], 'car', 'accepts a deep string shortcut');
   });
 
   method('least', function() {
@@ -141,6 +153,7 @@ package('Object', function() {
     testStaticAndInstance(obj3, [function(key, value) { return value; }, true], {foo:3,moo:5,car:6}, 'all | return value');
     testStaticAndInstance(obj3, [function(key, value) { return key.length; }, true], {blue:4}, 'all | return key.length');
     testStaticAndInstance(obj4, ['age', true], {bar: {age:22},moo:{age:33},car:{age:44}}, 'all | accepts a string shortcut');
+    testStaticAndInstance(deepObj4, ['user.age',true], {bar:{user:{age:22}},moo:{user:{age:33}},car:{user:{age:44}}}, 'all | accepts a deep string shortcut');
   });
 
   method('most', function() {
@@ -149,10 +162,11 @@ package('Object', function() {
     testStaticAndInstance(obj3, [function(key, value) { return key.length; }], 'foo', 'return key.length');
     testStaticAndInstance(obj3, [function(key, value) { return key.charCodeAt(0); }], 'bar', 'return the char code of first letter');
     testStaticAndInstance(obj4, ['age'], 'foo', 'accepts a string shortcut');
-    testStaticAndInstance(obj3, [function(key, value) { return value; }, true], {bar: 4,blue:4}, 'all | return value');
+    testStaticAndInstance(obj3, [function(key, value) { return value; }, true], {bar:4,blue:4}, 'all | return value');
     testStaticAndInstance(obj3, [function(key, value) { return key.length; }, true], {foo:3,bar:4,moo:5,car:6}, 'all | return key.length');
     testStaticAndInstance(obj3, [function(key, value) { return key.charCodeAt(0); }, true], {bar: 4,blue:4}, 'all | return the char code of first letter');
     testStaticAndInstance(obj4, ['age', true], {foo: {age:11},blue:{age:11}}, 'all | accepts a string shortcut');
+    testStaticAndInstance(deepObj4, ['user.age', true], {foo:{user:{age:11}},blue:{user:{age:11}}}, 'all | accepts a deep string shortcut');
   });
 
   method('isEmpty', function() {
