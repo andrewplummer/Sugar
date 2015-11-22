@@ -277,6 +277,9 @@ package('Array', function () {
             }, {
               street: '221B Baker St',
               city: 'London'
+            }, {
+              street: '350 5th Ave',
+              city: 'New York'
             }]
         }
       },
@@ -288,6 +291,9 @@ package('Array', function () {
             }, {
               street: '742 Evergreen Terrace',
               city: 'Springfield'
+            }, {
+              street: '342 Gravelpit Terrace',
+              city: 'Bedrock'
             }]
         }
       }
@@ -297,8 +303,16 @@ package('Array', function () {
     test(accounts, ['profile.addresses[0].city'], ['Washington DC', 'Quahog'], 'deep with bracket and trailing dot');
     test(accounts, ['profile.addresses[1]'], [accounts[0].profile.addresses[1], accounts[1].profile.addresses[1]], 'deep with bracket | 1');
     test(accounts, ['profile.addresses[1].city'], ['London', 'Springfield'], 'deep with bracket and trailing dot | 1');
-    test(accounts, ['profile.addresses[-1]'], [accounts[0].profile.addresses[1], accounts[1].profile.addresses[1]], 'deep with bracket | -1');
-    test(accounts, ['profile.addresses[-1].city'], ['London', 'Springfield'], 'deep with bracket and trailing dot | -1');
+    test(accounts, ['profile.addresses[-1]'], [accounts[0].profile.addresses[2], accounts[1].profile.addresses[2]], 'deep with bracket | -1');
+    test(accounts, ['profile.addresses[-1].city'], ['New York', 'Bedrock'], 'deep with bracket and trailing dot | -1');
+
+
+    // Bracket range syntax
+
+    var a1 = accounts[0].profile.addresses.slice(0, 2);
+    var a2 = accounts[1].profile.addresses.slice(0, 2);
+    test(accounts, ['profile.addresses[0..1]'], [a1, a2], 'allows range syntax');
+    test(accounts, ['profile.addresses[0..1].city'], [['Washington DC', 'London'], ['Quahog', 'Springfield']], 'allows range syntax with trailing dot');
 
 
     // Issue #386

@@ -1728,8 +1728,6 @@ package('Object', function () {
     testStaticAndInstance(obj, ['c.b.a'], undefined, 'deep none exist');
 
     testStaticAndInstance(obj, ['.'], undefined, 'single dot');
-    testStaticAndInstance(obj, ['..'], undefined, 'two dots');
-    testStaticAndInstance(obj, ['...'], undefined, 'three dots');
 
     testStaticAndInstance({}, [], undefined, 'no arguments');
     testStaticAndInstance({'ohai':1}, [{toString:function() {return 'ohai';}}], 1, 'object should be coerced to string');
@@ -1742,7 +1740,6 @@ package('Object', function () {
 
     testStaticAndInstance({'':1}, [''], 1, 'empty string as key');
     testStaticAndInstance({'':{'':2}}, ['.'], 2, 'nested empty string as key');
-    testStaticAndInstance({'':{'':{'':3}}}, ['..'], 3, 'twice nested empty string as key');
 
     testStaticAndInstance(undefined, ['a'], undefined, 'flat property on undefined');
     testStaticAndInstance(undefined, ['a.b'], undefined, 'deep property on undefined');
@@ -1792,8 +1789,58 @@ package('Object', function () {
     testStaticAndInstance({a:['foo','bar']}, ['a.-2'], 'foo', 'index -2 | dot');
     testStaticAndInstance({a:['foo','bar']}, ['a.-3'], undefined, 'index -3 | dot');
     testStaticAndInstance({a:[{b:'b'},{c:'c'}]}, ['a[0].b'], 'b', 'index followed by dot');
-    testStaticAndInstance({a:[{b:'b'},{c:'c'}]}, ['a.0..b'], undefined, 'non-existent deep dot');
 
+
+    // Range syntax
+
+    test(['foo','bar','cat'], ['[0..1]'], ['foo','bar'], 'range syntax | 0..1');
+    test(['foo','bar','cat'], ['[1..2]'], ['bar','cat'], 'range syntax | 1..2');
+    test(['foo','bar','cat'], ['[1..3]'], ['bar','cat'], 'range syntax | 1..3');
+    test(['foo','bar','cat'], ['[0..0]'], ['foo'], 'range syntax | -1..0');
+    test(['foo','bar','cat'], ['[-1..0]'], [], 'range syntax | -1..0');
+    test(['foo','bar','cat'], ['[-1..-1]'], ['cat'], 'range syntax | -1..-1');
+    test(['foo','bar','cat'], ['[-2..-1]'], ['bar','cat'], 'range syntax | -2..-1');
+    test(['foo','bar','cat'], ['[-3..-1]'], ['foo','bar','cat'], 'range syntax | -3..-1');
+    test(['foo','bar','cat'], ['[-4..-1]'], ['foo','bar','cat'], 'range syntax | -4..-1');
+    test(['foo','bar','cat'], ['[-4..-3]'], ['foo'], 'range syntax | -4..-3');
+    test(['foo','bar','cat'], ['[-5..-4]'], [], 'range syntax | -5..-4');
+    test(['foo','bar','cat'], ['[0..]'], ['foo','bar','cat'], 'range syntax | 0..');
+    test(['foo','bar','cat'], ['[..1]'], ['foo','bar'], 'range syntax | ..1');
+    test(['foo','bar','cat'], ['[..]'], ['foo','bar','cat'], 'range syntax | ..');
+    test(['foo','bar','cat'], ['..'], undefined, 'range syntax | .. should be undefined');
+
+    testStaticAndInstance({a:['foo','bar','cat']}, ['a[0..1]'], ['foo','bar'], 'range syntax | nested bracket');
+    testStaticAndInstance({a:{b:['foo','bar','cat']}}, ['a.b[0..1]'], ['foo','bar'], 'range syntax | dot and bracket');
+    testStaticAndInstance({a:{b:[{d:'final'},{d:'fight'}]}}, ['a.b[0..1].d'], ['final','fight'], 'range syntax | dot and bracket with trailing');
+
+    var complex = [[[{x:'a'},{x:'b'},{x:'c'}],[{x:'d'},{x:'e'},{x:'f'}],[{x:'g'},{x:'h'},{x:'i'}]]];
+    test(complex[0], ['[0..1][0..1]'], [[{x:'a'},{x:'b'}],[{x:'d'},{x:'e'}]], 'range syntax | compound brackets');
+    test(complex, ['[0][0..1][0..1]'], [[{x:'a'},{x:'b'}],[{x:'d'},{x:'e'}]], 'range syntax | compound brackets in 0');
+    test(complex, ['[0][0..1][0..1].x'], [['a','b'],['d','e']], 'range syntax | compound brackets with trailing dot');
+
+    var tree = {
+      f: [{
+          f: [
+            {f:['a','b','c']},
+            {f:['d','e','f']},
+            {f:['g','h','i']}
+          ]
+        }, {
+          f: [
+            {f:['j','k','l']},
+            {f:['m','n','o']},
+            {f:['p','q','r']}
+          ]
+        }, {
+          f: [
+            {f:['s','t','u']},
+            {f:['v','w','x']},
+            {f:['y','z','!']}
+          ]
+        }]
+    };
+
+    testStaticAndInstance(tree, ['f[0..1].f[0..1].f[0..1]'], [[['a','b'],['d','e']],[['j','k'],['m','n']]], 'range syntax | tree');
 
     var Foo = function() {};
     var Bar = function() { this.c = 'inst-c'; };
