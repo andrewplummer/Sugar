@@ -1331,6 +1331,7 @@ package('Array', function () {
     test([null, false], 0, '[null,false] is 0');
     test([{a:1,b:5},{a:2,b:5},{a:3,b:5}], [function(el) { return el['a']; }], 6, 'key "a"');
     test([{a:1,b:5},{a:2,b:5},{a:3,b:5}], ['a'], 6, 'shortcut for key "a"');
+    test([{a:{b:5}},{a:{b:6}}], ['a.b'], 11, 'deep properties');
   });
 
   method('average', function() {
@@ -1353,6 +1354,8 @@ package('Array', function () {
     test(people, ['age'], 29.75, 'people average age is 29.75');
     test(people, [function(p) { return p.age; }], 29.75, 'people average age is 29.75 by function');
     equal(isNaN(run(people, 'average', [function(p) { return p.hair; }])), true, 'people average hair is NaN');
+
+    test([{a:{b:5}},{a:{b:11}}], ['a.b'], 8, 'deep properties');
   });
 
   method('median', function() {
@@ -1387,6 +1390,7 @@ package('Array', function () {
     test(people, ['age'], 27, 'people median age is 27');
     test(people, [function(p) { return p.age; }], 27, 'people median age is 27 by function');
 
+    test([{a:{b:5}},{a:{b:6}},{a:{b:8}}], ['a.b'], 6, 'deep properties');
   });
 
   method('groupBy', function() {
