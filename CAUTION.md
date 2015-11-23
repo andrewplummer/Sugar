@@ -76,6 +76,9 @@ v2.0.0+
 - Level: Moderate
   - `Date#beginning/endOfWeek` is now locale dependent, as different locales have different definitions of the start of a week. Currently, this is Monday except for en-US and ja, which are Sunday.
 
+- Level: Moderate
+  - `Array#at` and `String#at` now no longer accept enumerated arguments. To get an multiple indexes, pass an array instead.
+
 - Level: Minor
   - `Date.create` no longer accepts enumerated parameters (2001, 5, 31, ...). Use the normal date constructor instead.
 
