@@ -62,6 +62,7 @@ v2.0.0
 - Modified `Number#metric` to use a more flexible system of defining units.
 - Added strf tokens to `Date#format` as well as a number of new standard tokens. Aligned tokens more with moment/ldml and renamed to ldml in the code.
 - Modified `Array#at` and `String#at` to use arrays instead of enumerated arguments.
+- Removed mixed modes for `String#hankaku` and `String#zenkaku`.
 
 
 v1.4.2
