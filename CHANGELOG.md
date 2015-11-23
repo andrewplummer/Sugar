@@ -63,6 +63,7 @@ v2.0.0
 - Added strf tokens to `Date#format` as well as a number of new standard tokens. Aligned tokens more with moment/ldml and renamed to ldml in the code.
 - Modified `Array#at` and `String#at` to use arrays instead of enumerated arguments.
 - Removed mixed modes for `String#hankaku` and `String#zenkaku`.
+- Modified `String#replaceTags` and `String#stripTags` to simplify argument signature and small performance boost.
 
 
 v1.4.2
