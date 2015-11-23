@@ -1800,6 +1800,7 @@ package('Object', function () {
     test(['foo','bar','cat'], ['[1..2]'], ['bar','cat'], 'range syntax | 1..2');
     test(['foo','bar','cat'], ['[1..3]'], ['bar','cat'], 'range syntax | 1..3');
     test(['foo','bar','cat'], ['[0..0]'], ['foo'], 'range syntax | -1..0');
+    test(['foo','bar','cat'], ['[0..-1]'], ['foo','bar','cat'], 'range syntax | 0..-1');
     test(['foo','bar','cat'], ['[-1..0]'], [], 'range syntax | -1..0');
     test(['foo','bar','cat'], ['[-1..-1]'], ['cat'], 'range syntax | -1..-1');
     test(['foo','bar','cat'], ['[-2..-1]'], ['bar','cat'], 'range syntax | -2..-1');
