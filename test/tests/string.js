@@ -653,9 +653,9 @@ package('String', function () {
     test('foop', [-5, false], '', 'negative | pos -5');
     test('foop', [-1224, false], '', 'negative | out of bounds');
 
-    test('wowzers', [0,2,4,6], ['w','w','e','s'], 'handles enumerated params');
-    test('wowzers', [0,2,4,6,18], ['w','w','e','s','e'], 'handles enumerated params');
-    test('wowzers', [0,2,4,6,18,false], ['w','w','e','s',''], 'handles enumerated params');
+    test('wowzers', [[0,2,4,6]], ['w','w','e','s'], 'handles enumerated params');
+    test('wowzers', [[0,2,4,6,18]], ['w','w','e','s','e'], 'handles enumerated params');
+    test('wowzers', [[0,2,4,6,18],false], ['w','w','e','s',''], 'handles enumerated params');
 
     test('', [3], '', 'blank');
     test('wasabi', [0], 'w', 'wasabi at pos 0');
