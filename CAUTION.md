@@ -112,6 +112,9 @@ v2.0.0+
 - Level: Very Minor
   - Some minor behavior changes around the way `String#removeTags` works on malformed html. Unmatched closing tags are removed.
 
+- Level: Very Minor
+  - `String#hankaku` and `String#zenkaku` now don't take multiple arguments for modes. Just mix them together in the first argument as a string. See docs for more.
+
 
 v1.4.1+
 =======
