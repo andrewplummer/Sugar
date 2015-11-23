@@ -2062,6 +2062,14 @@ package('Object', function () {
     testStaticAndInstance({}, ['f[1][1].x.y','foo'], {f:testGetSparseArray(1,testGetSparseArray(1,{x:{y:'foo'}}))}, 'nested index 1 1 | 2 in back after index');
 
 
+    test(['foo'], ['[-1]','bar'], ['bar'], 'negative index means last element in bracket syntax');
+    test({f:['foo']}, ['f[-1]','bar'], {f:['bar']}, 'negative index means last element in bracket syntax | deep');
+
+    var arr = ['foo'];
+    arr[-1] = 'bar';
+    test(['foo'], ['-1','bar'], arr, 'negative index can still be set without brackets');
+    test({f:['foo']}, ['f.-1','bar'], {f:arr}, 'negative index can still be set without brackets | deep');
+
     // Push syntax
 
     test([], ['[]','foo'], ['foo'], 'push | simple array');
