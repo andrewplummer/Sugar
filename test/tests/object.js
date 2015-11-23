@@ -1785,9 +1785,11 @@ package('Object', function () {
     testStaticAndInstance({a:['foo','bar']}, ['a.0'], 'foo', 'index 0 | dot');
     testStaticAndInstance({a:['foo','bar']}, ['a.1'], 'bar', 'index 1 | dot');
     testStaticAndInstance({a:['foo','bar']}, ['a.2'], undefined, 'index 2 | dot');
-    testStaticAndInstance({a:['foo','bar']}, ['a.-1'], 'bar', 'index -1 | dot');
-    testStaticAndInstance({a:['foo','bar']}, ['a.-2'], 'foo', 'index -2 | dot');
+
+    testStaticAndInstance({a:['foo','bar']}, ['a.-1'], undefined, 'index -1 | dot');
+    testStaticAndInstance({a:['foo','bar']}, ['a.-2'], undefined, 'index -2 | dot');
     testStaticAndInstance({a:['foo','bar']}, ['a.-3'], undefined, 'index -3 | dot');
+
     testStaticAndInstance({a:[{b:'b'},{c:'c'}]}, ['a[0].b'], 'b', 'index followed by dot');
 
 
@@ -1896,6 +1898,13 @@ package('Object', function () {
   method('set', function() {
 
     var obj = {};
+    run(Object, 'set', [obj, 'foo.bar', 'car']);
+    equal(obj.foo.bar, 'car', 'Basic flat property is set on original object');
+
+    test({}, ['.','x'], {'':{'':'x'}}, 'single dot');
+    test({'':1}, ['','x'], {'':'x'}, 'empty string as key');
+
+    var obj = {};
     var result = run(Object, 'set', [obj, 'foo', 'bar']);
     equal(obj.foo, 'bar', 'Basic flat property is set on original object');
     equal(result === obj, true, 'returned value is the original object');
@@ -1905,23 +1914,23 @@ package('Object', function () {
     equal(obj.foo.bar, 'car', 'Basic flat property is set on original object');
 
 
-    testStaticAndInstance({}, ['str', 'hi'], {str:'hi'}, 'flat string');
-    testStaticAndInstance({}, ['num', 5], {num:5}, 'flat number');
-    testStaticAndInstance({}, ['und', undefined], {und:undefined}, 'flat undefined');
-    testStaticAndInstance({}, ['nul', null], {nul:null}, 'flat null');
-    testStaticAndInstance({}, ['arr', [1]], {arr:[1]}, 'flat array');
-    testStaticAndInstance({}, ['obj', {a:'b'}], {obj:{a:'b'}}, 'flat object');
+    testStaticAndInstance({}, ['str', 'hi'], {str:'hi'}, 'flat | string');
+    testStaticAndInstance({}, ['num', 5], {num:5}, 'flat | number');
+    testStaticAndInstance({}, ['und', undefined], {}, 'flat | undefined is not set');
+    testStaticAndInstance({}, ['nul', null], {nul:null}, 'flat | null');
+    testStaticAndInstance({}, ['arr', [1]], {arr:[1]}, 'flat | array');
+    testStaticAndInstance({}, ['obj', {a:'b'}], {obj:{a:'b'}}, 'flat | object');
 
     testStaticAndInstance({}, ['a.str', 'hi'], {a:{str:'hi'}}, 'one level | string');
     testStaticAndInstance({}, ['a.num', 5], {a:{num:5}}, 'one level | number');
-    testStaticAndInstance({}, ['a.und', undefined], {a:{und:undefined}}, 'one level | undefined');
+    testStaticAndInstance({}, ['a.und', undefined], {a:{}}, 'one level | undefined is not set');
     testStaticAndInstance({}, ['a.nul', null], {a:{nul:null}}, 'one level | null');
     testStaticAndInstance({}, ['a.arr', [1]], {a:{arr:[1]}}, 'one level | array');
     testStaticAndInstance({}, ['a.obj', {a:'b'}], {a:{obj:{a:'b'}}}, 'one level | object');
 
     testStaticAndInstance({}, ['a.b.str', 'hi'], {a:{b:{str:'hi'}}}, 'two levels | string');
     testStaticAndInstance({}, ['a.b.num', 5], {a:{b:{num:5}}}, 'two levels | number');
-    testStaticAndInstance({}, ['a.b.und', undefined], {a:{b:{und:undefined}}}, 'two levels | undefined');
+    testStaticAndInstance({}, ['a.b.und', undefined], {a:{b:{}}}, 'two levels | undefined is not set');
     testStaticAndInstance({}, ['a.b.nul', null], {a:{b:{nul:null}}}, 'two levels | null');
     testStaticAndInstance({}, ['a.b.arr', [1]], {a:{b:{arr:[1]}}}, 'two levels | array');
     testStaticAndInstance({}, ['a.b.obj', {a:'b'}], {a:{b:{obj:{a:'b'}}}}, 'two levels | object');
@@ -1937,10 +1946,10 @@ package('Object', function () {
 
     // Array tests won't make sense on an extended object.
     test(Object, [[], '0', 'x'], ['x'], 'numeric index on array');
-    test(Object, [['a','b'], 0,'x'], ['x','b'], 'array property set');
-    test(Object, [['a','b'], 1,'x'], ['a','x'], 'array property set');
-    test(Object, [['a','b'], '0','x'], ['x','b'], 'array property set by string');
-    test(Object, [['a','b'], '1','x'], ['a','x'], 'array property set by string');
+    test(Object, [['a','b'], 0,'x'], ['x','b'], 'array property set | 0');
+    test(Object, [['a','b'], 1,'x'], ['a','x'], 'array property set | 1');
+    test(Object, [['a','b'], '0','x'], ['x','b'], 'array property set by string | 0');
+    test(Object, [['a','b'], '1','x'], ['a','x'], 'array property set by string | 1');
 
     test(Object, [[{foo:'bar'}], '0.foo', 'x'], [{foo:'x'}], 'array deep property');
     test(Object, [{foo:['bar']}, 'foo.0','x'], {foo:['x']}, 'object array property');
@@ -1959,31 +1968,131 @@ package('Object', function () {
     testStaticAndInstance(testClone(obj), ['c.b.a', 'x'], {a:{b:{c:'bar'}},c:{b:{a:'x'}}}, 'deep none exist');
 
     testStaticAndInstance({}, ['.','x'], {'':{'':'x'}}, 'single dot');
-    testStaticAndInstance({}, ['..','x'], {'':{'':{'':'x'}}}, 'two dots');
-    testStaticAndInstance({}, ['...','x'], {'':{'':{'':{'':'x'}}}}, 'three dots');
 
     testStaticAndInstance({}, [], {}, 'no arguments');
     testStaticAndInstance({}, [undefined, 'x'], {}, 'undefined should be ignored');
     testStaticAndInstance({}, [null, 'x'], {}, 'null should ignored');
     testStaticAndInstance({}, [3, 'x'], {3:'x'}, 'number should be coerced to string');
-    testStaticAndInstance({}, [{foo:'bar'}, 'x'], {'[object Object]': 'x'}, 'object should be coerced to string');
+    testStaticAndInstance({}, [{toString:function(){return 'ohai';}}, 'x'], {'ohai': 'x'}, 'object should be coerced to string');
+
     testStaticAndInstance({3:1}, [3,'x'], {3:'x'}, 'coerced number is set');
-    testStaticAndInstance({'[object Object]':1}, [{foo:'bar'}, 'x'], {'[object Object]':'x'}, 'coerced object is set');
+    testStaticAndInstance({'ohai':1}, [{toString:function(){return 'ohai';}}, 'x'], {'ohai':'x'}, 'coerced object is set');
 
     testStaticAndInstance({'':1}, ['','x'], {'':'x'}, 'empty string as key');
     testStaticAndInstance({'':{'':2}}, ['.','x'], {'':{'':'x'}}, 'nested empty string as key');
-    testStaticAndInstance({'':{'':{'':3}}}, ['..','x'], {'':{'':{'':'x'}}}, 'twice nested empty string as key');
 
     raisesError(function(){ run(Object, 'set', [undefined, 'a', 'x']); }, 'should raise error on undefined');
     raisesError(function(){ run(Object, 'set', [null, 'a', 'x']); }, 'should raise error on null');
     raisesError(function(){ run(Object, 'set', [NaN, 'a', 'x']); }, 'should raise error on NaN');
     raisesError(function(){ run(Object, 'set', ['foo', 'a', 'x']); }, 'should raise error on string');
+    raisesError(function(){ run(Object, 'set', ['foo', '[0]', 'x']); }, 'should raise error on string with bracket syntax');
 
     raisesError(function(){ run(Object, 'set', [{a:undefined}, 'a.b', 'x']); }, 'should raise error on undefined deep');
     raisesError(function(){ run(Object, 'set', [{a:null}, 'a.b', 'x']); }, 'should raise error on null deep');
     raisesError(function(){ run(Object, 'set', [{a:NaN}, 'a.b', 'x']); }, 'should raise error on NaN deep');
     raisesError(function(){ run(Object, 'set', [{a:'foo'}, 'a.b', 'x']); }, 'should raise error on string deep');
+    raisesError(function(){ run(Object, 'set', [{a:'foo'}, 'a[0]', 'x']); }, 'should raise error on string deep with bracket syntax');
 
+
+    var sparse = testGetSparseArray;
+
+    // Bracket syntax
+
+    test([], ['[0]','foo'], ['foo'], 'setting index 0 of array');
+    test([], ['[1]','foo'], testGetSparseArray(1,'foo'), 'setting index 1 of array');
+    test([], ['[-1]','foo'], testGetSparseArray(-1,'foo'), 'negative index set');
+    test([], ['[0][0]','foo'], [['foo']], 'nested index 0 0');
+    test([], ['[1][0]','foo'], testGetSparseArray(1,['foo']), 'nested index 1 0');
+    test([], ['[0][1]','foo'], [testGetSparseArray(1,'foo')], 'nested index 0 1');
+    test([], ['[1][1]','foo'], testGetSparseArray(1,testGetSparseArray(1, 'foo')), 'nested index 1 1');
+
+    test(['bar'], ['[0]','foo'], ['foo'], 'setting index 0 of existing');
+    test(['bar','car'], ['[1]','foo'], ['bar','foo'], 'setting index 1 of existing');
+    test(['bar'], ['[-1]','foo'], ['foo'], 'setting index -1 of existing');
+    test(['bar','car'], ['[-1]','foo'], ['bar','foo'], 'setting index -1 of existing');
+
+    testStaticAndInstance({}, ['f[0]','foo'], {f:['foo']}, 'setting index 0 | deep');
+    testStaticAndInstance({}, ['f[1]','foo'], {f:testGetSparseArray(1,'foo')}, 'setting index 1 | deep');
+    testStaticAndInstance({}, ['f[-1]','foo'], {f:testGetSparseArray(-1,'foo')}, 'negative index set | deep');
+    testStaticAndInstance({}, ['f[0][0]','foo'], {f:[['foo']]}, 'nested index 0 0 | deep');
+    testStaticAndInstance({}, ['f[1][0]','foo'], {f:testGetSparseArray(1,['foo'])}, 'nested index 1 0 | deep');
+    testStaticAndInstance({}, ['f[0][1]','foo'], {f:[testGetSparseArray(1,'foo')]}, 'nested index 0 1 | deep');
+    testStaticAndInstance({}, ['f[1][1]','foo'], {f:testGetSparseArray(1,testGetSparseArray(1, 'foo'))}, 'nested index 1 1 | deep');
+
+    testStaticAndInstance({}, ['f[0].x','foo'], {f:[{x:'foo'}]}, 'setting index 0 | deep with trailing');
+    testStaticAndInstance({}, ['f[1].x','foo'], {f:testGetSparseArray(1,{x:'foo'})}, 'setting index 1 | deep with trailing');
+    testStaticAndInstance({}, ['f[-1].x','foo'], {f:testGetSparseArray(-1,{x:'foo'})}, 'negative index set | deep with trailing');
+    testStaticAndInstance({}, ['f[0][0].x','foo'], {f:[[{x:'foo'}]]}, 'nested index 0 0 | deep with trailing');
+    testStaticAndInstance({}, ['f[1][0].x','foo'], {f:testGetSparseArray(1,[{x:'foo'}])}, 'nested index 1 0 | deep with trailing');
+    testStaticAndInstance({}, ['f[0][1].x','foo'], {f:[testGetSparseArray(1,{x:'foo'})]}, 'nested index 0 1 | deep with trailing');
+    testStaticAndInstance({}, ['f[1][1].x','foo'], {f:testGetSparseArray(1,testGetSparseArray(1, {x:'foo'}))}, 'nested index 1 1 | deep with trailing');
+
+    testStaticAndInstance({}, ['a.b[0].x','foo'], {a:{b:[{x:'foo'}]}}, 'setting index 0 | 2 in front and trailing');
+    testStaticAndInstance({}, ['a.b[1].x','foo'], {a:{b:testGetSparseArray(1, {x:'foo'})}}, 'setting index 1 | 2 in front and trailing');
+    testStaticAndInstance({}, ['a.b[-1].x','foo'], {a:{b:testGetSparseArray(-1, {x:'foo'})}}, 'negative index set | 2 in front and trailing');
+    testStaticAndInstance({}, ['a.b[0][0].x','foo'], {a:{b:[[{x:'foo'}]]}}, 'nested index 0 0 | 2 in front and trailing');
+    testStaticAndInstance({}, ['a.b[1][0].x','foo'], {a:{b:testGetSparseArray(1, [{x:'foo'}])}}, 'nested index 1 0 | 2 in front and trailing');
+    testStaticAndInstance({}, ['a.b[0][1].x','foo'], {a:{b:[testGetSparseArray(1,{x:'foo'})]}}, 'nested index 0 1 | 2 in front and trailing');
+    testStaticAndInstance({}, ['a.b[1][1].x','foo'], {a:{b:testGetSparseArray(1,testGetSparseArray(1,{x:'foo'}))}}, 'nested index 1 1 | 2 in front and trailing');
+
+    testStaticAndInstance({}, ['a.b[0].x[0]','foo'], {a:{b:[{x:['foo']}]}}, 'setting index 0 | 2 in front and trailing index');
+    testStaticAndInstance({}, ['a.b[1].x[0]','foo'], {a:{b:testGetSparseArray(1,{x:['foo']})}}, 'setting index 1 | 2 in front and trailing index');
+    testStaticAndInstance({}, ['a.b[-1].x[0]','foo'], {a:{b:testGetSparseArray(-1,{x:['foo']})}}, 'negative index set | 2 in front and trailing index');
+    testStaticAndInstance({}, ['a.b[0][0].x[0]','foo'], {a:{b:[[{x:['foo']}]]}}, 'nested index 0 0 | 2 in front and trailing index');
+    testStaticAndInstance({}, ['a.b[1][0].x[0]','foo'], {a:{b:testGetSparseArray(1,[{x:['foo']}])}}, 'nested index 1 0 | 2 in front and trailing index');
+    testStaticAndInstance({}, ['a.b[0][1].x[0]','foo'], {a:{b:[testGetSparseArray(1,{x:['foo']})]}}, 'nested index 0 1 | 2 in front and trailing index');
+    testStaticAndInstance({}, ['a.b[1][1].x[0]','foo'], {a:{b:testGetSparseArray(1,testGetSparseArray(1,{x:['foo']}))}}, 'nested index 1 1 | 2 in front and trailing index');
+
+    testStaticAndInstance({}, ['a.b[0].x[0].z','foo'], {a:{b:[{x:[{z:'foo'}]}]}}, 'setting index 0 | 2 in front and trailing index');
+    testStaticAndInstance({}, ['a.b[1].x[0].z','foo'], {a:{b:testGetSparseArray(1,{x:[{z:'foo'}]})}}, 'setting index 1 | 2 in front and trailing index');
+    testStaticAndInstance({}, ['a.b[-1].x[0].z','foo'], {a:{b:testGetSparseArray(-1,{x:[{z:'foo'}]})}}, 'negative index set | 2 in front and trailing index');
+    testStaticAndInstance({}, ['a.b[0][0].x[0].z','foo'], {a:{b:[[{x:[{z:'foo'}]}]]}}, 'nested index 0 0 | 2 in front and trailing index');
+    testStaticAndInstance({}, ['a.b[1][0].x[0].z','foo'], {a:{b:testGetSparseArray(1,[{x:[{z:'foo'}]}])}}, 'nested index 1 0 | 2 in front and trailing index');
+    testStaticAndInstance({}, ['a.b[0][1].x[0].z','foo'], {a:{b:[testGetSparseArray(1,{x:[{z:'foo'}]})]}}, 'nested index 0 1 | 2 in front and trailing index');
+    testStaticAndInstance({}, ['a.b[1][1].x[0].z','foo'], {a:{b:testGetSparseArray(1,testGetSparseArray(1,{x:[{z:'foo'}]}))}}, 'nested index 1 1 | 2 in front and trailing index');
+
+    testStaticAndInstance({}, ['f[0].x.y','foo'], {f:[{x:{y:'foo'}}]}, 'setting index 0 | 2 in back after index');
+    testStaticAndInstance({}, ['f[1].x.y','foo'], {f:testGetSparseArray(1,{x:{y:'foo'}})}, 'setting index 1 | 2 in back after index');
+    testStaticAndInstance({}, ['f[-1].x.y','foo'], {f:testGetSparseArray(-1, {x:{y:'foo'}})}, 'negative index set | 2 in back after index');
+    testStaticAndInstance({}, ['f[0][0].x.y','foo'], {f:[[{x:{y:'foo'}}]]}, 'nested index 0 0 | 2 in back after index');
+    testStaticAndInstance({}, ['f[1][0].x.y','foo'], {f:testGetSparseArray(1,[{x:{y:'foo'}}])}, 'nested index 1 0 | 2 in back after index');
+    testStaticAndInstance({}, ['f[0][1].x.y','foo'], {f:[testGetSparseArray(1,{x:{y:'foo'}})]}, 'nested index 0 1 | 2 in back after index');
+    testStaticAndInstance({}, ['f[1][1].x.y','foo'], {f:testGetSparseArray(1,testGetSparseArray(1,{x:{y:'foo'}}))}, 'nested index 1 1 | 2 in back after index');
+
+
+    // Push syntax
+
+    test([], ['[]','foo'], ['foo'], 'push | simple array');
+    test(['a'], ['[]','foo'], ['a','foo'], 'push | simple array push with existing');
+    test({x:['a']}, ['x[]', 'foo'], {x:['a','foo']}, 'push | array deep');
+    test({x:{y:['a']}}, ['x.y[]', 'foo'], {x:{y:['a','foo']}}, 'push | array 2 deep');
+    testStaticAndInstance({}, ['x[]', 'foo'], {x:['foo']}, 'push | non-existent array');
+
+    test([], ['[].x','foo'], [{x:'foo'}], 'creates namespace when trailing exists');
+    test([], ['[].x.y','foo'], [{x:{y:'foo'}}], 'creates namespace when 2 trailing exist');
+    testStaticAndInstance({}, ['a[].x.y','foo'], {a:[{x:{y:'foo'}}]}, 'creates namespace when leading exists');
+
+
+    // Range syntax
+
+    test([], ['[0..1]', 'wow'], ['wow','wow'], 'range');
+    test([], ['[0..1][0..1]', 'wow'], [['wow','wow'],['wow','wow']], 'range | nested');
+    test([], ['[0..1].car', 'wow'], [{car:'wow'},{car:'wow'}], 'range | trailing');
+
+    testStaticAndInstance({}, ['foo[0..1]', 'wow'], {foo:['wow','wow']}, 'range | leading');
+    testStaticAndInstance({}, ['foo.bar[0..1].car.far','wow'], {foo:{'bar':[{car:{far:'wow'}},{car:{far:'wow'}}]}}, 'range | complex');
+
+    test([], ['[0][0..1]', 'wow'], [['wow','wow']], 'range | leading bracket');
+    test([], ['[1][0..1]', 'wow'], testGetSparseArray(1, ['wow','wow']), 'range | leading bracket | 1');
+    test([], ['[0..1][0]', 'wow'], [['wow'],['wow']], 'range | trailing bracket');
+    test([], ['[0..1][1]', 'wow'], [testGetSparseArray(1, 'wow'),testGetSparseArray(1, 'wow')], 'range | trailing bracket | 1');
+    test([], ['[9][2][0..1][3][5]', 'wow'], sparse(9, sparse(2, [sparse(3, sparse(5, 'wow')),sparse(3, sparse(5, 'wow'))])), 'range | bracket complex');
+
+    var inner = sparse(1, {car:'wow'});
+    testStaticAndInstance({}, ['foo[3].bar[4..5][1].car', 'wow'], {foo:sparse(3,{bar:sparse(4,inner,inner)})}, 'range | quite complex');
+
+
+    // Class instances
 
     var Foo = function() { this.a = 'a'; };
     var Bar = function() { this.b = 'b'; };
