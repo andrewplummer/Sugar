@@ -1530,8 +1530,8 @@ package('Date', function () {
     test(d, ['{W}'], '31', 'ISO week number');
     test(d, ['{WW}'], '31', 'ISO week number padded');
     test(d, ['{Wo}'], '31st', 'ISO week number ordinal');
-    test(d, ['{X}'], '1280983502', 'Unix timestamp');
-    test(d, ['{x}'], '1280983502000', 'Unix millisecond timestamp');
+    test(d, ['{X}'], Math.floor(d.getTime() / 1000).toString(), 'Unix timestamp');
+    test(d, ['{x}'], d.getTime().toString(), 'Unix millisecond timestamp');
 
     test(d, ['{Z}'],  getExpectedTimezoneOffset(d, true), 'Z');
     test(d, ['{ZZ}'], getExpectedTimezoneOffset(d), 'ZZ');

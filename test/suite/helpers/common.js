@@ -81,6 +81,16 @@ testGetSparseArray = function(index) {
   return arr;
 }
 
+// Using the [] constructor with undefined values in <= IE8 will effectively
+// produce a sparse array (no property actually gets set) the only workaround
+// is to push undefined directly onto the array.
+testGetArrayWithUndefined = function() {
+  var arr = [];
+  for (var i = 0; i < arguments.length; i++) {
+    arr.push(arguments[i]);
+  }
+  return arr;
+}
 propertyIsEnumerable = function(obj, prop) {
   for (var key in obj) {
     if(!obj.hasOwnProperty(key)) continue;
