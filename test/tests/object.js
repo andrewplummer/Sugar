@@ -1763,6 +1763,7 @@ package('Object', function () {
     testStaticAndInstance({foo:['bar']}, ['foo.0'], 'bar', 'object array property');
     testStaticAndInstance([[['bar']]], ['0.0.0'], 'bar', 'deep array');
 
+    testStaticAndInstance({users:{993425:{name:'Harry'}}}, ['users.993425.name'], 'Harry', 'gets ids in objects');
 
     // Bracket syntax
 
@@ -1993,6 +1994,7 @@ package('Object', function () {
     raisesError(function(){ run(Object, 'set', [{a:'foo'}, 'a.b', 'x']); }, 'should raise error on string deep');
     raisesError(function(){ run(Object, 'set', [{a:'foo'}, 'a[0]', 'x']); }, 'should raise error on string deep with bracket syntax');
 
+    testStaticAndInstance({}, ['users.993425.name', 'Harry'], {users:{993425:{name:'Harry'}}}, 'allows IDs as strings');
 
     var sparse = testGetSparseArray;
 
@@ -2090,7 +2092,6 @@ package('Object', function () {
 
     var inner = sparse(1, {car:'wow'});
     testStaticAndInstance({}, ['foo[3].bar[4..5][1].car', 'wow'], {foo:sparse(3,{bar:sparse(4,inner,inner)})}, 'range | quite complex');
-
 
     // Class instances
 

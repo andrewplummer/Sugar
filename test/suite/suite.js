@@ -371,16 +371,19 @@
         result = false;
       }
     });
+    if (!result) {
+      return false;
+    }
     var onep = 0, twop = 0;
     for(key in one) {
-      if(!one.hasOwnProperty(key) || !isNaN(+key)) continue;
+      if(!one.hasOwnProperty(key)) continue;
       onep++;
       if(!isEqual(one[key], two[key])) {
         return false;
       }
     }
     for(key in two) {
-      if(!two.hasOwnProperty(key) || !isNaN(+key)) continue;
+      if(!two.hasOwnProperty(key)) continue;
       twop++;
     }
     return result && one.length === two.length && onep === twop;
