@@ -73,6 +73,14 @@ testStaticAndInstance = function (subject, args, expected, message) {
   }
 }
 
+testGetSparseArray = function(index) {
+  var arr = [];
+  for (var i = 1; i < arguments.length; i++) {
+    arr[index + i - 1] = arguments[i];
+  }
+  return arr;
+}
+
 propertyIsEnumerable = function(obj, prop) {
   for (var key in obj) {
     if(!obj.hasOwnProperty(key)) continue;
