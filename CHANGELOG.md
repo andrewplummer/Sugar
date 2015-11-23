@@ -43,7 +43,7 @@ v2.0.0
 - `null` now no longer acts as a placeholder in `Function#partial`. Other bugs fixed around this including using `partial` on constructors.
 - Options object now uses `fromUTC` instead of just `utc`. A new option `setUTC` is also added which will set the internal utc flag on creation.
 - `String#assign` refactored and renamed to `String#format`. Tokens are zero based and a few other changes.
-- Added `Object.get` and `Object.set` and allowed deep object transforms on `Array#map`, and a few other methods.
+- Added `Object.get` and `Object.set`, allowed them to use dot, bracket, range, and push syntax, and allowed deep object transforms on `Array#map`, and other methods.
 - Fixed many issues with DST and simplified month traversal.
 - Renamed `Array#randomize` to `Array#shuffle`
 - Added `Array#sample` ability to remove sampled elements and performance optimization.
