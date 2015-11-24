@@ -64,6 +64,7 @@ v2.0.0
 - Modified `Array#at` and `String#at` to use arrays instead of enumerated arguments.
 - Removed mixed modes for `String#hankaku` and `String#zenkaku`.
 - Modified `String#replaceTags` and `String#stripTags` to simplify argument signature and small performance boost.
+- Added `Array#isEqual`.
 
 
 v1.4.2
