@@ -1064,24 +1064,25 @@ package('Object', function () {
     test(Object, [undefined, 'one'], false, 'string to undefined');
 
     if (typeof Set !== 'undefined') {
-      test(new Set(), [new Set()], true, 'set | empty sets are equal');
-      test(new Set(), [new Set([1])], false, 'set | empty set vs 1 item');
-      test(new Set(['a']), [new Set(['a'])], true, 'set | same strings are equal');
-      test(new Set(['a']), [new Set(['b'])], false, 'set | different strings are not equal');
-      test(new Set([1,2,3,4]), [new Set([1,2,3,4])], true, 'set | sets are equal');
-      test(new Set([1,2,3,4]), [new Set([1,2,3])], false, 'set | 4 vs 3');
-      test(new Set([1,2,3]), [new Set([1,2,3,4])], false, 'set | 3 vs 4');
+      var set = testGetSet;
+      test(set(), [set()], true, 'set | empty sets are equal');
+      test(set(), [set(1)], false, 'set | empty set vs 1 item');
+      test(set('a'), [set('a')], true, 'set | same strings are equal');
+      test(set('a'), [set('b')], false, 'set | different strings are not equal');
+      test(set(1,2,3,4), [set(1,2,3,4)], true, 'set | sets are equal');
+      test(set(1,2,3,4), [set(1,2,3)], false, 'set | 4 vs 3');
+      test(set(1,2,3), [set(1,2,3,4)], false, 'set | 3 vs 4');
 
       var obj = {foo:'bar'};
-      test(new Set([obj]), [new Set([obj])], true, 'set | can have deep structures');
-      test(new Set([obj,'a']), [new Set([obj, 'a'])], true, 'set | deep with same string');
-      test(new Set([obj,'b']), [new Set([obj, 'a'])], false, 'set | deep with different string');
+      test(set(obj), [set(obj)], true, 'set | can have deep structures');
+      test(set(obj,'a'), [set(obj, 'a')], true, 'set | deep with same string');
+      test(set(obj,'b'), [set(obj, 'a')], false, 'set | deep with different string');
 
-      test(new Set(), ['a'], false, 'set | set vs primitive');
-      test('a', [new Set()], false, 'set | primitive vs set');
+      test(set(), ['a'], false, 'set | set vs primitive');
+      test('a', [set()], false, 'set | primitive vs set');
 
-      var s1 = new Set([1]);
-      var s2 = new Set([s1]);
+      var s1 = set(1);
+      var s2 = set(s1);
       test(s2, [s2], true, 'set | can handle cyclic structures');
     }
 
