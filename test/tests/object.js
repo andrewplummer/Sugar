@@ -417,10 +417,10 @@ package('Object', function () {
 
     var fn = function(key, a, b, target, source) {
       equal(key, 'count', 'First argument should be the key');
-      equal(a, undefined, 'Second argument should be the object value');
+      equal(a, undefined, 'Second argument should be the target value');
       equal(b, 5, 'Third argument should be the source value');
       equal(target, {}, 'Fourth argument should be the target');
-      equal(source, {count:5}, 'Fifth argument should be the target');
+      equal(source, {count:5}, 'Fifth argument should be the source');
       equal(this, nullScope, 'No scope is set by default');
       return b * 2;
     }
@@ -819,6 +819,72 @@ package('Object', function () {
       var obj3 = getDescriptorObject();
       testStaticAndInstance({}, [[obj1, obj2, obj3],{hidden:true,resolve:fn}],{foo:'barbarbar'}, 'can handle hidden properties');
     }
+
+  });
+
+  method('defaults', function() {
+
+    function add(key, a, b) {
+      return a + b;
+    }
+
+    testStaticAndInstance({id:999}, [{views:0}], {id:999,views:0}, 'simple defaults');
+    testStaticAndInstance({id:999}, [{id:123}], {id:999}, 'does not overwrite');
+    testStaticAndInstance({id:999}, [{id:123,views:0}], {id:999,views:0}, 'multiple properties single object');
+    testStaticAndInstance({id:999}, [[{id:123},{views:0}]], {id:999,views:0}, 'single property multiple objects');
+
+    testStaticAndInstance({id:null}, [{id:123}], {id:null}, 'does not overwrite null values');
+    testStaticAndInstance({id:undefined}, [{id:123}], {id:123}, 'does overwrite undefined values');
+    testStaticAndInstance({}, [{constructor:'foo'}], {constructor:'foo'}, 'does overwrite shadowed properties');
+
+    test(['a'], [['b']], ['a'], 'array intepreted as multiple');
+    test(['a'], [[['c','b']]], ['a','b'], 'array defaulted in');
+
+    test('a', ['b'], 'a', 'strings');
+    test('a', [['b']], 'a', 'string in array');
+
+
+    var a = {foo:'bar'};
+    var obj = run(Object, 'defaults', [{}, {a:a}]);
+    equal(obj.a === a, true, 'not deep by default');
+
+    var a = {foo:'bar'};
+    var obj = run(Object, 'defaults', [{}, {a:a}, {deep:true}]);
+    equal(obj.a === a, false, 'can be made deep by options');
+
+    testStaticAndInstance({id:999}, [{id:123},{resolve:add}], {id:1122}, 'can override resolver');
+
+
+    var user = { name: 'Frank', likes: 552, profile: { foods: 'Carrots', books: 'Dr. Seuss' } };
+    var userData1 = { name: 'Anonymous', pic: 'default.jpg' };
+    var userData2 = { likes: 0, votes: 53 };
+    var userData3 = { profile: { foods: 'Hamburgers', movies: 'Mall Cop' } };
+
+    var expectedShallow = {
+      name: 'Frank',
+      pic: 'default.jpg',
+      likes: 552,
+      votes: 53,
+      profile: {
+        foods: 'Carrots',
+        books: 'Dr. Seuss'
+      }
+    };
+
+    var expectedDeep = {
+      name: 'Frank',
+      pic: 'default.jpg',
+      likes: 552,
+      votes: 53,
+      profile: {
+        foods: 'Carrots',
+        books: 'Dr. Seuss',
+        movies: 'Mall Cop'
+      }
+    };
+
+    testStaticAndInstance(testClone(user), [[userData1, userData2, userData3]], expectedShallow, 'complex | shallow');
+    testStaticAndInstance(testClone(user), [[userData1, userData2, userData3],{deep:true}], expectedDeep, 'complex | deep');
 
   });
 
