@@ -32,7 +32,7 @@ v2.0.0+
   - `Object.reduce` is now deprecated. Use `Array#reduce` together with `Object.keys` instead.
 
 - Level: Major
-  - `Object.merge` now takes an options object instead of a list of arguments. The 3rd argument is now "deep" in the options hash, and the 4th is "resolve". Also, if a function is passed to "resolve", any value returned by the function that is not undefined will halt the merge. Returning undefined will continue to merge as normal.
+  - `Object.merge` now takes an options object instead of a list of arguments. The 3rd argument is now "deep" in the options hash, and the 4th is "resolve". Resolver functions will now abort the merge (for a single property) if `undefined` is the return value. To tell the resolver function to continue as normal, return the `Sugar` global object instead. Any non-undefined value returned by the function will now resolve the conflict completely and will not continue traversing into it when in "deep" mode. To tell the resolver function to continue with the merge, return the Sugar global object instead.
 
 - Level: Major
   - `String#assign` is now `String#format`, and behaves very closely to Python's method of the same name. Tokens are now zero based, and start with `{0}`. Also, errors will be thrown when tokens cannot be matched. Braces can now be escaped by repeating them. Lastly, multiple objects passed will no longer be merged together. Instead either access with new dot syntax (0.prop) or merge together with Object.merge beforehand.
