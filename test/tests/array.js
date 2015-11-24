@@ -3017,5 +3017,35 @@ package('Array', function () {
     test([5,2,4,4,7,0], [4, -1, true], 2, '4 in 5,2,4,4 from index -1');
   });
 
+  method('isEqual', function() {
+
+    test(['a'], [['a']], true, 'basic 1 element array');
+    test(['a'], [['b']], false, 'basic 1 element array | inequal');
+    test(['a','b','c'], [['a','b','c']], true, '3 element array');
+    test(['a','b','c'], [['a','b','d']], false, '3 element array | inequal');
+
+    test(['a','b'], [{0:'a',1:'b',length:2}], false, 'object with length is not egal with array');
+
+    test([0], [[0]], true, 'arrays of numbers are equal');
+    test([undefined], [[undefined]], true, 'arrays of undefined are equal');
+    test([null], [[null]], true, 'arrays of null are equal');
+    test([NaN], [[NaN]], true, 'arrays of NaN are equal');
+    test(testGetSparseArray(4, 'a'), [testGetSparseArray(4, 'a')], true, 'spare arrays are equal');
+
+    test([], [[]], true, 'empty arrays are equal');
+    test([], [{}], false, 'empty array is not equal to empty object');
+
+    var args = (function(){ return arguments; })('a','b','c');
+    test(['a','b','c'], [args], false, 'array is not egal with arguments object');
+
+    var user1 = { name: 'Larry' };
+    var user2 = { name: 'David' };
+
+    test([user1, user2], [[user1, user2]], true, 'array of objects is equal');
+    test([user1, user2], [[user2, user1]], false, 'array of objects is not equal if not in the same order');
+    test([user1, user2], [[user1]], false, 'array of objects 2:1');
+    test([user1], [[user1, user2]], false, 'array of objects 1:2');
+  });
+
 });
 
