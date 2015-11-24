@@ -441,7 +441,7 @@ package('Object', function () {
 
     var fn = function(key, a, b) { return undefined; };
     var opts = { resolve: fn };
-    testStaticAndInstance({a:{b:'b'}}, [{a:{b:'c'}}, opts], {a:{b:'c'}}, 'undefined will be handled');
+    testStaticAndInstance({}, [{a:'a',b:'b'}, opts], {}, 'returning undefined means no properties are merged');
 
     var fn = function(key, a, b) { return a.concat(b); };
     var opts = { resolve: fn };
@@ -453,7 +453,7 @@ package('Object', function () {
       }
     };
     var opts = { resolve: fn };
-    testStaticAndInstance({a:[1]}, [{a:[2],b:'b'}, opts], {a:[1,2],b:'b'}, 'default merge is used if custom function returns undefined');
+    testStaticAndInstance({a:[1]}, [{a:[2],b:'b'}, opts], {a:[1,2]}, 'property is not merged if custom function returns undefined');
 
     var count = 0;
     var obj = {a:{a:{a:'a'}}};
@@ -464,7 +464,7 @@ package('Object', function () {
     var opts = { deep: true, resolve: fn };
     var result = run(Object, 'merge', [{}, obj, opts]);
     equal(count, 1, 'resolve function should have been called once');
-    equal(result, {a:1}, 'returning non-undefined in custom function should not traverse further into that object');
+    equal(result, {a:1}, 'returning defined value in resolve function should not traverse further into that object');
 
 
     var obj1 = {a:{b:{c:{one:5,two:10}}}};
@@ -474,9 +474,10 @@ package('Object', function () {
       if(typeof a === 'number' || typeof b === 'number') {
         return (a || 0) + (b || 0);
       }
+      return Sugar;
     }
     var opts = { deep: true, resolve: fn };
-    testStaticAndInstance(obj1, [obj2, opts], expected, 'deep merge continues traversing into the object if the resolve function returns undefined');
+    testStaticAndInstance(obj1, [obj2, opts], expected, 'continue on if the resolve function returns the Sugar global');
 
 
     if (definePropertySupport) {
@@ -575,6 +576,7 @@ package('Object', function () {
       if (b instanceof Foo) {
         return b;
       }
+      return Sugar;
     }
     var f = new Foo;
     var obj = {
@@ -717,23 +719,19 @@ package('Object', function () {
       if (key === 'likes') {
         return targetVal + sourceVal;
       }
+      return Sugar;
     }
 
     var conservativeCombinator = function(key, targetVal, sourceVal) {
       if (key === 'likes') {
+        // Merge "likes" by adding them together.
         return targetVal + sourceVal;
+      } else if (typeof targetVal === 'object') {
+        // Allow Sugar to handle any deep merges.
+        return Sugar;
       }
-      // If the key is "user" then return undefined so that the default merge
-      // will continue traversing into the object. Forcing the user to return
-      // undefined to continue traversal is slightly awkward, however it is
-      // simpler in implementation, more clear in function (returning anything
-      // other than undefined will halt the merge) and avoids issues with
-      // traversing into objects that are not basic data types, for example
-      // MouseEvent, which cannot be re-created without knowing the original
-      // constructor arguments.
-      if (key !== 'user') {
-        return targetVal;
-      }
+      // Otherwise preserve the targets properties if they exist.
+      return targetVal || sourceVal;
     }
 
     testStaticAndInstance(testClone(deepObject1), [deepObject2], deepObject2, 'standard shallow merge produces source');
