@@ -803,6 +803,8 @@ package('Object', function () {
     var fn = function(key, a, b) { return a + b; };
     testStaticAndInstance({a:1}, [[{a:2},{a:5},{a:8}],{resolve:fn}], {a:16}, 'custom resolver works on all merged objects');
 
+    testStaticAndInstance({name:'Anonymous'}, [{name:'Frank'}], {name:'Frank'}, 'passing a single object should still work');
+
     if (definePropertySupport) {
       var obj1 = getAccessorObject('one');
       var obj2 = getAccessorObject('two');
