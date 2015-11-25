@@ -10,6 +10,7 @@ package('Dates Korean', function () {
   });
 
   method('create', function() {
+
     dateEqual(testCreateDate('2011년5월15일'), new Date(2011, 4, 15), '2011-4-15');
     dateEqual(testCreateDate('2011년5월'), new Date(2011, 4), 'year and month');
     dateEqual(testCreateDate('5월15일'), new Date(now.getFullYear(), 4, 15), 'month and date');
@@ -20,6 +21,7 @@ package('Dates Korean', function () {
     dateEqual(testCreateDate('구일'), new Date(now.getFullYear(), now.getMonth(), 9), 'the 9th');
     dateEqual(testCreateDate('이십오일'), new Date(now.getFullYear(), now.getMonth(), 25), 'the 25th');
     dateEqual(testCreateDate('한달 전'), getRelativeDate(null, -1), 'one month ago 달');
+
 
 
     dateEqual(testCreateDate('2011년5월15일 3:45'), new Date(2011, 4, 15, 3, 45), '3:45');
@@ -73,6 +75,11 @@ package('Dates Korean', function () {
     dateEqual(testCreateDate('지난 주 수요일'), getDateWithWeekdayAndOffset(3, -7), 'Last wednesday');
     dateEqual(testCreateDate('이번 일요일'), getDateWithWeekdayAndOffset(0), 'this sunday');
     dateEqual(testCreateDate('다음 주 금요일'), getDateWithWeekdayAndOffset(5, 7), 'Next friday');
+
+    // Issue #524
+    dateEqual(testCreateDate('2015년 11월 24일'), new Date(2015, 10, 24), 'spaced out');
+    dateEqual(testCreateDate('2015년 11월 24일 화요일'), new Date(2015, 10, 24), 'spaced out with weekday');
+
   });
 
   method('format', function() {
