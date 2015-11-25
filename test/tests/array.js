@@ -46,6 +46,26 @@ package('Array', function () {
     equal(allOne, false, 'sufficiently randomized');
   }
 
+  method('construct', function() {
+
+    function square(i) {
+      return i * i;
+    }
+    test(Object, [3, square], [0,1,4], 'basic array construction');
+    test(Object, ['3', square], [0,1,4], 'numeric string creates the array');
+
+    test(Object, [3], testGetArrayWithUndefined(undefined, undefined, undefined), 'no function becomes all undefined');
+    test(Object, [0], [], '0 constructs an empty array');
+    test(Object, [null], [], 'null constructs an empty array');
+    test(Object, [3, parseInt], [0,1,2], 'works with parseInt');
+
+    raisesError(function() { run(Object, 'construct'); }, 'no arguments raises error');
+    raisesError(function() { run(Object, 'construct', [NaN]); }, 'no arguments raises error');
+    raisesError(function() { run(Object, 'construct', [undefined]); }, 'no arguments raises error');
+    raisesError(function() { run(Object, 'construct', ['foo']); }, 'non-numeric string raises error');
+
+  });
+
   method('every', function() {
     var fn, arr;
 
