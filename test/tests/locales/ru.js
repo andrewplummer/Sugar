@@ -10,6 +10,7 @@ package('Dates Russian', function () {
   });
 
   method('create', function() {
+
     dateEqual(testCreateDate('15 мая 2011'), new Date(2011, 4, 15), 'basic Russian date');
     dateEqual(testCreateDate('2 мая 1989 года'), new Date(1989, 4, 2), 'format with year');
     dateEqual(testCreateDate('5 января 2012'), new Date(2012, 0, 5), '2012-01-05');
@@ -80,6 +81,9 @@ package('Dates Russian', function () {
     dateEqual(testCreateDate('следующий понедельник 3:45 вечера'), run(getDateWithWeekdayAndOffset(1,7), 'set', [{ hour: 15, minute: 45 }, true]), 'next monday');
 
     dateEqual(testCreateDate('Завтра в 3:30 утра'), run(getRelativeDate(null, null, 1), 'set', [{hours:3,minutes:30}, true]), 'tomorrow at 3:30');
+
+    // Issue #524
+    dateEqual(testCreateDate('3 октября 2014 г.'), new Date(2014, 9, 3), 'Windows long format');
 
   });
 
