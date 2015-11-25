@@ -1028,6 +1028,8 @@ package('Date', function () {
     dateEqual(d2, new Date(2010, 7, d1.getDate() + 1), 'fromUTC can override utc preservation');
     equal(testIsUTC(d2), false, 'setUTC can override utc preservation');
 
+    test(new Date(1960, 5, 11), ["January 5th '50"], new Date(1950, 0, 5), 'year abbreviation in 1960 should be 20th century');
+    test(new Date(2070, 5, 11), ["January 5th '50"], new Date(2050, 0, 5), 'year abbreviation in 2070 should be 21st century');
   });
 
   method('set', function() {
