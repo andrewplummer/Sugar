@@ -7,7 +7,7 @@ package('Date', function () {
   group('Locale Setup', function() {
 
     // Imaginary locale to test locale switching
-    testAddLocale('fo', {
+    Sugar.Date.addLocale('fo', {
       units: 'do,re,mi,fa,so,la,ti,do',
       months: 'Do,Re,Mi,Fa,So,La,Ti,Do',
       parse: [
@@ -18,7 +18,7 @@ package('Date', function () {
       long: 'yeehaw'
     });
 
-    notEqual(testGetLocale().code, undefined, 'Current locale must be something... other libs may overwrite this');
+    notEqual(Sugar.Date.getLocale().code, undefined, 'Current locale must be something... other libs may overwrite this');
     testSetLocale('en');
 
   });
@@ -2261,16 +2261,6 @@ package('Date', function () {
     dateEqual(dateRun(d, 'endOfMonth'), new Date(2012, 1, 29, 23, 59, 59, 999), 'endOfMonth | February 29, 2012');
     dateEqual(dateRun(d, 'endOfYear'), new Date(2012, 11, 31, 23, 59, 59, 999), 'endOfYear | February 29, 2012');
 
-    dateEqual(dateRun(d, 'beginningOfDay', [true]), new Date(2012, 1, 29), 'beginningOfDay | reset if true | February 29, 2012');
-    dateEqual(dateRun(d, 'beginningOfWeek', [true]), new Date(2012, 1, 26), 'beginningOfWeek | reset if true | February 29, 2012');
-    dateEqual(dateRun(d, 'beginningOfMonth', [true]), new Date(2012, 1), 'beginningOfMonth | reset if true | February 29, 2012');
-    dateEqual(dateRun(d, 'beginningOfYear', [true]), new Date(2012, 0), 'beginningOfYear | reset if true | February 29, 2012');
-
-    dateEqual(dateRun(d, 'endOfDay', [true]), new Date(2012, 1, 29, 23, 59, 59, 999), 'endOfDay | reset if true | February 29, 2012');
-    dateEqual(dateRun(d, 'endOfWeek', [true]), new Date(2012, 2, 3, 23, 59, 59, 999), 'endOfWeek | reset if true | February 29, 2012');
-    dateEqual(dateRun(d, 'endOfMonth', [true]), new Date(2012, 1, 29, 23, 59, 59, 999), 'endOfMonth | reset if true | February 29, 2012');
-    dateEqual(dateRun(d, 'endOfYear', [true]), new Date(2012, 11, 31, 23, 59, 59, 999), 'endOfYear | reset if true | February 29, 2012');
-
     var d = run(testCreateUTCDate('January 1, 2010 02:00:00'), 'setUTC', [true]);
 
     dateEqual(dateRun(d, 'beginningOfDay'), new Date(Date.UTC(2010, 0)), 'beginningOfDay | utc');
@@ -2762,8 +2752,8 @@ package('Date', function () {
     run(Date, 'addFormat', ['on ze (\\d+)th of (january|february|march|april|may) lavigne', ['date','month'], 'en']);
     dateEqual(testCreateDate('on ze 18th of april lavigne', 'en'), new Date(thisYear, 3, 18), 'handles other formats');
 
-    equal(typeof testGetLocale(), 'object', 'current locale object is exposed in case needed');
-    equal(testGetLocale().code, 'en', 'adding the format did not change the current locale');
+    equal(typeof Sugar.Date.getLocale(), 'object', 'current locale object is exposed in case needed');
+    equal(Sugar.Date.getLocale().code, 'en', 'adding the format did not change the current locale');
 
   });
 
@@ -2782,7 +2772,8 @@ package('Date', function () {
     equal(run(new Date(2011, 5, 6), 'format', ['{Month}']), 'La', 'june is La');
 
     raisesError(function(){ testSetLocale(); }, 'no arguments raises error');
-    equal(testGetLocale().code, 'fo', 'setting locale with no arguments had no effect');
+    equal(Sugar.Date.getLocale().code, 'fo', 'setting locale with no arguments had no effect');
+
     equal(run(new Date(2011, 5, 6), 'format', ['{Month}']), 'La', 'will not change the locale if no argument passed');
     equal(run(new Date(2011, 5, 6), 'format', ['', 'en']), 'June 6, 2011 12:00 AM', 'local locale should override global');
     equal(run(testCreateDate('5 months ago', 'en'), 'relative', ['en']), '5 months ago', 'local locale should override global');
@@ -2905,16 +2896,21 @@ package('Date', function () {
     equal(all[0], 'en', 'English should be the first');
   });
 
-  group('Adding a locale', function() {
+  group('Adding locales', function() {
     testSetLocale('en');
-    testAddLocale('foobar', { months: ['a','b','c'] });
+    Sugar.Date.addLocale('bar', { months: ['a','b','c'] });
 
-    equal(testGetLocale().code, testGetLocale('en').code, 'adding a locale does not affect the current locale');
-    equal(testGetLocale('foobar').months[0], 'a', 'new locale has been added');
-    dateEqual(testCreateDate('a', 'foobar'), testCreateDate('January'), 'formats have been recognized');
+    equal(Sugar.Date.getLocale().code, Sugar.Date.getLocale('en').code, 'adding a locale does not affect the current locale');
+    equal(Sugar.Date.getLocale('bar').months[0], 'a', 'new locale has been added');
+    dateEqual(testCreateDate('a', 'bar'), testCreateDate('January'), 'formats have been recognized');
 
-    testAddLocale({ code: 'barbar', months: ['d','e','f'] });
+    Sugar.Date.addLocale({ code: 'barbar', months: ['d','e','f'] });
     dateEqual(testCreateDate('f', 'barbar'), testCreateDate('March'), 'can add locale with just object');
+
+    testSetLocale('bar');
+    Sugar.Date.removeLocale('bar');
+    equal(Sugar.Date.getLocale('bar'), undefined, 'should have removed the locale');
+    equal(Sugar.Date.getLocale() === Sugar.Date.getLocale('en'), true, 'current locale should be reset to English');
   });
 
 

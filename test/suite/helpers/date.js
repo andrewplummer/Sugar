@@ -224,20 +224,12 @@ testGetTimezoneHours = function(d) {
   return Math.floor(Math.abs(d.getTimezoneOffset()) / 60);
 }
 
-// These helper methods are necessary because setting/getting
+// This helper method are necessary because setting/getting
 // the locale is sometimes performed outside the Date package,
 // giving no context for run().
 testSetLocale = function(code) {
   if (!Sugar.Date || !Sugar.Date.setLocale) return;
   return Sugar.Date.setLocale(code);
-}
-
-testGetLocale = function(code) {
-  return Sugar.Date.getLocale(code);
-}
-
-testAddLocale = function(code, set) {
-  return Sugar.Date.addLocale(code, set);
 }
 
 assertAddUnitIsNumericallyEqual = function (d, method, add, message) {
