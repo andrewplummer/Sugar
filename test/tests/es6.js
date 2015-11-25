@@ -1055,6 +1055,25 @@ package('ES6', function () {
       equal(this, undefinedContextObj, 'context should still be undefined even if .call() is used');
     });
 
+    if (typeof document !== 'undefined') {
+
+      // Can convert special host objects if they exist.
+      var el = document.createElement('div');
+      if(el.classList) {
+        el.className = 'woot';
+        equal(Array.from(el.classList), ['woot'], 'handles DOMTokenList');
+      }
+      if (document.querySelectorAll) {
+        equal(Array.from(document.querySelectorAll('body')), [document.body], 'handles NodeList');
+      }
+      if(el.children) {
+        var el2 = document.createElement('div');
+        el.appendChild(el2);
+        equal(Array.from(el.children), [el2], 'handles HTMLCollection');
+      }
+
+    }
+
   });
 
 });
