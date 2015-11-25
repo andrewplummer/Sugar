@@ -445,7 +445,7 @@ package('Function', function () {
 
     function assertCalledOutOfTen(times, args) {
       var count = 0;
-      var fn = run(function() {
+      fn = run(function() {
         count++;
       }, 'after', args);
       for (var i = 0; i < 10; i++) {
@@ -493,20 +493,24 @@ package('Function', function () {
     assertCalledOutOfTen(9,  [2]);
     assertCalledOutOfTen(8,  [3]);
 
-    assertCalledOutOfTen(10, [0, true]);
-    assertCalledOutOfTen(10, [1, true]);
-    assertCalledOutOfTen(9,  [2, true]);
-    assertCalledOutOfTen(8,  [3, true]);
-
-    assertCalledOutOfTen(1, [0, false]);
-    assertCalledOutOfTen(1, [1, false]);
-    assertCalledOutOfTen(1, [2, false]);
-    assertCalledOutOfTen(1, [3, false]);
+    assertCalledOutOfTen(10, [0]);
+    assertCalledOutOfTen(10, [1]);
+    assertCalledOutOfTen(9,  [2]);
+    assertCalledOutOfTen(8,  [3]);
 
     raisesError(function() { run(fn, 'after', [-1]); }, 'negative raises an error');
     raisesError(function() { run(fn, 'after', ['-1']); }, 'negative string raises an error');
     raisesError(function() { run(fn, 'after', [Infinity]); }, 'Infinity raises an error');
     raisesError(function() { run(fn, 'after', [-Infinity]); }, '-Infinity raises an error');
+
+
+    var count = 0;
+    var fn = function() { count++; };
+    var single = run(Object, 'after', [run(Object, 'once', [fn]), 'after', 3]);
+    for (var i = 0; i < 10; i++) {
+      single();
+    }
+    equal(count, 1, 'works in conjunction with once to only be called a single time');
 
   });
 
