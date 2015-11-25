@@ -122,11 +122,11 @@ package('Dates Finnish', function () {
 
   method('format', function() {
 
-    test(then, '5. tammikuuta 2010, klo 15.52', 'default format');
+    test(then, '5. tammikuuta 2010 klo 15.52', 'default format');
 
-    assertFormatShortcut(then, 'short', '05.01.2010');
+    assertFormatShortcut(then, 'short', '5.1.2010');
     assertFormatShortcut(then, 'medium', '5. tammikuuta 2010');
-    assertFormatShortcut(then, 'long', '5. tammikuuta 2010, klo 15.52');
+    assertFormatShortcut(then, 'long', '5. tammikuuta 2010 klo 15.52');
     assertFormatShortcut(then, 'full', 'tiistai, 5. tammikuuta 2010, klo 15.52');
     test(then, ['{time}'], '15.52', 'preferred time');
     test(then, ['{stamp}'], 'ti 5 tammi 2010 15.52', 'preferred stamp');
