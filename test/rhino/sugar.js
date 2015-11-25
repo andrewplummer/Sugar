@@ -6,12 +6,16 @@ load('test/suite/log.js');
 load('test/suite/helpers/common.js');
 load('test/suite/helpers/core.js');
 load('test/suite/helpers/date.js');
+load('test/suite/helpers/object.js');
 
 /*
  * 1.7 KNOWN ISSUES:
  *
  * Object(str) produces type "object" but has no defined keys. This breaks a
  * number of tests including Object.isEmpty, Object.size, etc for strings.
+ *
+ * Additionally Rhino appears to allow overwriting non-writable attributes, so
+ * tests that assert on those errors will fail.
  *
  * The function package cannot be used at all as it doesn't have a setTimeout
  * method. A workaround for this can be found here:
