@@ -47,7 +47,7 @@ v2.0.0+
   - `Object.watch` was removed. This method was the only part of Sugar that was not 100% compatible in all environments, and was an overly simplistic solution to a difficult problem that others have done better (see discussions around Object.observe and polling). As a quick and dirty solution, this will be made available as a [plugin](https://github.com/andrewplummer/sugar-plugins). Also includes `Object.unwatch`.
 
 - Level: Major
-  - `Function#after` has changed behavior. Previously it would fire every `n` times. Now it will fire after `n` calls, with an optional flag to only fire once. Additionally it will not immediately fire when `0` is passed.
+  - `Function#after` has changed behavior. Previously it would fire every `n` times. Now it will fire after `n` calls. Additionally it will not immediately fire when `0` is passed.
 
 - Level: Major
   - `Function#fill` was renamed to `Function#partial`. Additionally, it no longer accepts `null` as a placeholder. Use `undefined` instead.
