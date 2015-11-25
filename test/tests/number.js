@@ -175,9 +175,21 @@ package('Number', function () {
       count++;
       return count;
     };
-    var result = run(5, 'times', [callback, 'wasabi']);
-    equal(result, [1,2,3,4,5], 'result should be the collected return values of all calls');
+    var result = run(5, 'times', [callback]);
+    equal(result, [1,2,3,4,5], 'result should be the collected return values');
     equal(count, 5, 'iterated 5 times');
+
+    var fn = function() {};
+    var result = run(3, 'times', [fn]);
+    equal(result, undefined, 'Returning undefined should return nothing');
+
+    var fn = function(i) {
+      return i || undefined;
+    };
+    var result = run(3, 'times', [fn]);
+    equal(result, [1, 2], 'Mixed return values only collects non-undefined');
+
+    raisesError(function() { run(5, 'times', []); }, 'no callback raises error', TypeError);
   });
 
   method('isMultipleOf', function() {
