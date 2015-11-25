@@ -2893,6 +2893,17 @@ package('Date', function () {
 
   });
 
+  method('getAllLocales', function() {
+    var all = run(Date, 'getAllLocales');
+    equal(typeof all, 'object', 'Result should be an object');
+    equal(all['en'].code, 'en', 'English should be set');
+  });
+
+  method('getAllLocaleCodes', function() {
+    var all = run(Date, 'getAllLocaleCodes');
+    equal(testIsArray(all), true, 'Result should be an array');
+    equal(all[0], 'en', 'English should be the first');
+  });
 
   group('Adding a locale', function() {
     testSetLocale('en');
