@@ -48,23 +48,6 @@ package('Array', function () {
 
   }
 
-  method('create', function() {
-    // Can convert special host objects if they exist.
-    var el = document.createElement('div');
-    if(el.classList) {
-      el.className = 'woot';
-      test(Array, [el.classList], ['woot'], 'handles array-like objects');
-    }
-    if(el.children) {
-      var el2 = document.createElement('div');
-      el.appendChild(el2);
-      test(Array, [el.children], [el2], 'DOM element');
-    }
-    test(Array, [el], [el], 'DOM element');
-    test(Array, [[el]], [el], 'DOM element in array');
-  });
-
-
 });
 
 package('Object', function() {
