@@ -15,26 +15,6 @@ package('Array', function () {
   var undefinedWithNull = [null];
   undefinedWithNull.push(undefined);
 
-  var storedProps = {};
-
-  function storeAlphanumericProps() {
-    storedProps.AlphanumericSort            = Sugar.Array.AlphanumericSort;
-    storedProps.AlphanumericSortOrder       = Sugar.Array.AlphanumericSortOrder;
-    storedProps.AlphanumericSortIgnore      = Sugar.Array.AlphanumericSortIgnore;
-    storedProps.AlphanumericSortIgnoreCase  = Sugar.Array.AlphanumericSortIgnoreCase;
-    storedProps.AlphanumericSortNatural     = Sugar.Array.AlphanumericSortNatural;
-    storedProps.AlphanumericSortEquivalents = testClone(Sugar.Array.AlphanumericSortEquivalents);
-  }
-
-  function restoreAlphanumericProps() {
-    Sugar.Array.AlphanumericSort            = storedProps.AlphanumericSort;
-    Sugar.Array.AlphanumericSortOrder       = storedProps.AlphanumericSortOrder;
-    Sugar.Array.AlphanumericSortIgnore      = storedProps.AlphanumericSortIgnore;
-    Sugar.Array.AlphanumericSortIgnoreCase  = storedProps.AlphanumericSortIgnoreCase;
-    Sugar.Array.AlphanumericSortEquivalents = storedProps.AlphanumericSortEquivalents;
-    Sugar.Array.AlphanumericSortNatural     = storedProps.AlphanumericSortNatural;
-  }
-
   function assertRandomized(arr, iterFn) {
     var allOne = true;
     for (var i = 0; i < arr.length; i++) {
@@ -1906,52 +1886,6 @@ package('Array', function () {
     equal(run(oneUndefined, 'flatten').length, 1, 'should not compact arrays');
   });
 
-  method('sortBy', function() {
-    var arr;
-    arr = ['more','everyone!','bring','the','family'];
-    test(arr, ['length'], ['the','more','bring','family','everyone!'], 'sorting by length');
-    test(arr, ['length', true], ['everyone!','family','bring','more','the'], 'desc | sorting by length');
-
-    test(arr, [function(a) { return a.length; }], ['the','more','bring','family','everyone!'], 'sort by length by function');
-    test(arr, [function(a) { return a.length; }, true], ['everyone!','family','bring','more','the'], 'desc | sort by length by function');
-
-    arr = [{a:'foo'},{a:'bar'},{a:'skittles'}];
-    test(arr, ['a'], [{a:'bar'},{a:'foo'},{a:'skittles'}], 'sort by key "a"');
-    test(arr, ['a', true], [{a:'skittles'},{a:'foo'},{a:'bar'}], 'desc | sort by key "a"');
-
-    arr = [1,2,3];
-    run(arr, 'sortBy', [function(n){ return 3 - n; }]);
-    equal(arr, [1,2,3], 'should not be destructive');
-
-    test([1,2,3], oneUndefined, [1,2,3], 'undefined');
-    test([1,2,3], [null], [1,2,3], 'null');
-    test([1,2,3], [4], [1,2,3], 'number');
-
-    var Simple = function(num) {
-      this.valueOf = function() {
-        return num;
-      }
-    }
-
-    var a = new Simple(5);
-    var b = new Simple(2);
-    var c = new Simple(3);
-    var d = new Simple(1);
-    var e = new Simple(2);
-
-    test([a,b,c,d,e], [d,b,e,c,a], 'objects with "valueOf" defined will also be sorted properly');
-
-
-    var obj1 = {id:1,a:{b:{c:248}}};
-    var obj2 = {id:2,a:{b:{c:17}}};
-    var obj3 = {id:3,a:{b:{c:50238}}};
-    var obj4 = {id:4,a:{b:{c:29}}};
-    var arr = [obj1, obj2, obj3, obj4];
-    test(arr, ['a.b.c'], [obj2, obj4, obj1, obj3], 'by deep dot operator');
-    test(arr, ['a.b.c', true], [obj3, obj1, obj4, obj2], 'by deep dot operator multiple');
-
-  });
-
   method('shuffle', function() {
     var arr = run([1,2,3,4,5,6,7,8,9,10], 'shuffle');
     var fn = function(i) {
@@ -2057,8 +1991,6 @@ package('Array', function () {
 
   method('sortBy', function() {
     var arr;
-
-    storeAlphanumericProps();
 
     test([0,1,2,3,4], [0,1,2,3,4], '0 is properly sorted');
     test(['0','1','2','3','4'], ['0','1','2','3','4'], 'string numerals are properly sorted');
@@ -2443,8 +2375,8 @@ package('Array', function () {
       'att fästa'
     ];
 
-    Sugar.Array.AlphanumericSortEquivalents['ö'] = null;
-    Sugar.Array.AlphanumericSortEquivalents['ä'] = null;
+    Sugar.Array.sortEquivalents()['ö'] = null;
+    Sugar.Array.sortEquivalents()['ä'] = null;
 
     test(swedishWords, swedishCollated, 'removing equivalents can restore sort order');
 
@@ -2464,7 +2396,7 @@ package('Array', function () {
       'Adrian'
     ];
 
-    Sugar.Array.AlphanumericSortIgnoreCase = true;
+    Sugar.Array.sortIgnoreCase(true);
     test(arr, expected, 'allows case ignore');
 
     expected = [
@@ -2474,7 +2406,7 @@ package('Array', function () {
       'abner'
     ];
 
-    Sugar.Array.AlphanumericSortOrder = 'dba';
+    Sugar.Array.sortOrder('dba');
     test(arr, expected, 'allows other order');
 
     expected = [
@@ -2483,15 +2415,29 @@ package('Array', function () {
       'Adrian',
       'aBBey'
     ];
-    Sugar.Array.AlphanumericSortIgnore = /[abcde]/g;
+    Sugar.Array.sortIgnore(/[abcde]/g);
     test(arr, expected, 'allows custom ignore');
+    Sugar.Array.sortIgnore(null);
 
-    restoreAlphanumericProps();
-    Sugar.Array.AlphanumericSortOrder = 'cba';
+
+    Sugar.Array.sortOrder('cba');
     arr = ['cotÉ', 'cÔte', 'cÔtÉ', 'andere', 'ändere'];
     test(arr, arr, 'cba');
+    Sugar.Array.sortOrder(null);
 
-    restoreAlphanumericProps();
+
+    Sugar.Array.sortCollate(function(a, b) {
+      switch (true) {
+        case a === 'c': return -1;
+        case b === 'c': return  1;
+        case a < b:     return -1;
+        case a > b:     return  1;
+        default:        return  0;
+      }
+    });
+    arr = ['a','b','c','d','e'];
+    test(arr, ['c','a','b','d','e'], 'allows custom collation');
+    Sugar.Array.sortCollate(null);
 
     // Issue #282
 
@@ -2522,7 +2468,7 @@ package('Array', function () {
     test(['1 Title - The Big Lebowski','1 Title - Gattaca','1 Title - Last Picture Show'], ['1 Title - Gattaca','1 Title - Last Picture Show','1 Title - The Big Lebowski'], 'stolen | movie titles');
 
 
-    Sugar.Array.AlphanumericSortNatural = false;
+    Sugar.Array.sortNatural(false);
 
     test(['2','100','3'], ['100','2','3'], 'natural sort off');
     test(['a2','a100','a3'], ['a100','a2','a3'], 'natural sort off | leading char');
@@ -2530,7 +2476,7 @@ package('Array', function () {
     test(['２','１００','３'], ['１００','２','３'], 'natural sort off | full width');
     test(['a２','a１００','a３'], ['a１００','a２','a３'], 'natural sort off | full width leading char');
 
-    Sugar.Array.AlphanumericSortNatural = true;
+    Sugar.Array.sortNatural(true);
 
 
 
@@ -2609,7 +2555,59 @@ package('Array', function () {
 
     test(arr, expected, 'sorting arrays of uneven length');
 
-    restoreAlphanumericProps();
+    // More
+
+    var arr;
+    arr = ['more','everyone!','bring','the','family'];
+    test(arr, ['length'], ['the','more','bring','family','everyone!'], 'sorting by length');
+    test(arr, ['length', true], ['everyone!','family','bring','more','the'], 'desc | sorting by length');
+
+    test(arr, [function(a) { return a.length; }], ['the','more','bring','family','everyone!'], 'sort by length by function');
+    test(arr, [function(a) { return a.length; }, true], ['everyone!','family','bring','more','the'], 'desc | sort by length by function');
+
+    arr = [{a:'foo'},{a:'bar'},{a:'skittles'}];
+    test(arr, ['a'], [{a:'bar'},{a:'foo'},{a:'skittles'}], 'sort by key "a"');
+    test(arr, ['a', true], [{a:'skittles'},{a:'foo'},{a:'bar'}], 'desc | sort by key "a"');
+
+    arr = [1,2,3];
+    run(arr, 'sortBy', [function(n){ return 3 - n; }]);
+    equal(arr, [1,2,3], 'should not be destructive');
+
+    test([1,2,3], oneUndefined, [1,2,3], 'undefined');
+    test([1,2,3], [null], [1,2,3], 'null');
+    test([1,2,3], [4], [1,2,3], 'number');
+
+    var Simple = function(num) {
+      this.valueOf = function() {
+        return num;
+      }
+    }
+
+    var a = new Simple(5);
+    var b = new Simple(2);
+    var c = new Simple(3);
+    var d = new Simple(1);
+    var e = new Simple(2);
+
+    test([a,b,c,d,e], [d,b,e,c,a], 'objects with "valueOf" defined will also be sorted properly');
+
+
+    var obj1 = {id:1,a:{b:{c:248}}};
+    var obj2 = {id:2,a:{b:{c:17}}};
+    var obj3 = {id:3,a:{b:{c:50238}}};
+    var obj4 = {id:4,a:{b:{c:29}}};
+    var arr = [obj1, obj2, obj3, obj4];
+    test(arr, ['a.b.c'], [obj2, obj4, obj1, obj3], 'by deep dot operator');
+    test(arr, ['a.b.c', true], [obj3, obj1, obj4, obj2], 'by deep dot operator multiple');
+
+
+
+    // Issue #273 - exposing collateString
+
+    var arr = ['c','b','a','à','å','ä','ö'];
+    var viaSort   = arr.sort(Sugar.Array.sortCollate());
+    var viaSortBy = run(arr, 'sortBy');
+    equal(viaSort, viaSortBy, 'Array.SugarCollateStrings | should be exposed to allow sorting via native Array#sort');
 
   });
 
@@ -2975,19 +2973,6 @@ package('Array', function () {
 
   });
 
-
-  method('sortBy', function() {
-
-    // Issue #273 - exposing collateString
-
-    var arr = ['c','b','a','à','å','ä','ö'];
-
-    var viaSort   = arr.sort(Sugar.Array.AlphanumericSort);
-    var viaSortBy = run(arr, 'sortBy');
-
-    equal(viaSort, viaSortBy, 'Array.SugarCollateStrings | should be exposed to allow sorting via native Array#sort');
-
-  });
 
   method('findFrom', function() {
     test(['foo','bar'], [/^[a-f]/, 1], 'bar', '/a-f/ from index 1');

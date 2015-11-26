@@ -216,6 +216,15 @@ package('Core', function() {
     raisesError(function() { 'foo'.foo('1', '2', '3', '4', '5'); }, 'Instance method with 5 arguments will not be mapped to prototype');
   });
 
+  group('Can define single', function () {
+    Sugar.String.defineInstance('foo', function(str) {
+      return str  + ' + you!'
+    });
+    equal(Sugar.String.foo('wasabi'), 'wasabi + you!', 'Namespace method exists');
+    Sugar.String.extend('foo');
+    equal('wasabi'.foo(), 'wasabi + you!', 'Instance method is mapped');
+  });
+
   group('Custom Methods after extending', function () {
     Sugar.String.extend();
     defineCustom(Sugar.String);
