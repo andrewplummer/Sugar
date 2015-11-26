@@ -10,6 +10,7 @@ package('Dates Portuguese', function () {
   });
 
   method('create', function() {
+
     dateEqual(testCreateDate('15 de maio 2011'), new Date(2011, 4, 15), 'basic Portuguese date');
     dateEqual(testCreateDate('5 de janeiro de 2012'), new Date(2012, 0, 5), '2012-01-05');
     dateEqual(testCreateDate('maio de 2011'), new Date(2011, 4), 'year and month');
@@ -69,6 +70,20 @@ package('Dates Portuguese', function () {
 
     dateEqual(testCreateDate('amanhã às 3:30'), run(getRelativeDate(null, null, 1), 'set', [{hours:3,minutes:30}, true]), 'tomorrow at 3:30');
 
+
+    // Numbers
+
+    dateEqual(testCreateDate('zero anos atrás'),   getRelativeDate(0),   'zero years ago');
+    dateEqual(testCreateDate('um ano atrás'),      getRelativeDate(-1),  'one year ago');
+    dateEqual(testCreateDate('dois anos atrás'),   getRelativeDate(-2),  'two years ago');
+    dateEqual(testCreateDate('três anos atrás'),   getRelativeDate(-3),  'three years ago');
+    dateEqual(testCreateDate('quatro anos atrás'), getRelativeDate(-4),  'four years ago');
+    dateEqual(testCreateDate('cinco anos atrás'),  getRelativeDate(-5),  'five years ago');
+    dateEqual(testCreateDate('seis anos atrás'),   getRelativeDate(-6),  'six years ago');
+    dateEqual(testCreateDate('sete anos atrás'),   getRelativeDate(-7),  'seven years ago');
+    dateEqual(testCreateDate('oito anos atrás'),   getRelativeDate(-8),  'eight years ago');
+    dateEqual(testCreateDate('nove anos atrás'),   getRelativeDate(-9),  'nine years ago');
+    dateEqual(testCreateDate('dez anos atrás'),    getRelativeDate(-10), 'ten years ago');
 
   });
 

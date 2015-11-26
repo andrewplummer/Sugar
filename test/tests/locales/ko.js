@@ -22,8 +22,6 @@ package('Dates Korean', function () {
     dateEqual(testCreateDate('이십오일'), new Date(now.getFullYear(), now.getMonth(), 25), 'the 25th');
     dateEqual(testCreateDate('한달 전'), getRelativeDate(null, -1), 'one month ago 달');
 
-
-
     dateEqual(testCreateDate('2011년5월15일 3:45'), new Date(2011, 4, 15, 3, 45), '3:45');
     dateEqual(testCreateDate('2011년5월15일 오후3:45'), new Date(2011, 4, 15, 15, 45), '3:45pm');
     dateEqual(testCreateDate('2011년5월15일 오후 3시 45분'), new Date(2011, 4, 15, 15, 45), 'full korean letters');
@@ -36,7 +34,6 @@ package('Dates Korean', function () {
     dateEqual(testCreateDate('1주 전'), getRelativeDate(null, null, -7), 'one week');
     dateEqual(testCreateDate('1개월 전'), getRelativeDate(null, -1), 'one month ago 개월');
     dateEqual(testCreateDate('1년 전'), getRelativeDate(-1), 'one year ago');
-
 
     dateEqual(testCreateDate('5밀리초 후'), getRelativeDate(null, null, null, null, null, null,5), 'five millisecond from now');
     dateEqual(testCreateDate('5초 후'), getRelativeDate(null, null, null, null, null, 5), 'five second from now');
@@ -75,6 +72,21 @@ package('Dates Korean', function () {
     dateEqual(testCreateDate('지난 주 수요일'), getDateWithWeekdayAndOffset(3, -7), 'Last wednesday');
     dateEqual(testCreateDate('이번 일요일'), getDateWithWeekdayAndOffset(0), 'this sunday');
     dateEqual(testCreateDate('다음 주 금요일'), getDateWithWeekdayAndOffset(5, 7), 'Next friday');
+
+    // Numbers
+
+    dateEqual(testCreateDate('영년 전'), getRelativeDate(0),   'zero years ago');
+    dateEqual(testCreateDate('일년 전'), getRelativeDate(-1),  'one year ago');
+    dateEqual(testCreateDate('이년 전'), getRelativeDate(-2),  'two years ago');
+    dateEqual(testCreateDate('삼년 전'), getRelativeDate(-3),  'three years ago');
+    dateEqual(testCreateDate('사년 전'), getRelativeDate(-4),  'four years ago');
+    dateEqual(testCreateDate('오년 전'), getRelativeDate(-5),  'five years ago');
+    dateEqual(testCreateDate('육년 전'), getRelativeDate(-6),  'six years ago');
+    dateEqual(testCreateDate('칠년 전'), getRelativeDate(-7),  'seven years ago');
+    dateEqual(testCreateDate('팔년 전'), getRelativeDate(-8),  'eight years ago');
+    dateEqual(testCreateDate('구년 전'), getRelativeDate(-9),  'nine years ago');
+    dateEqual(testCreateDate('십년 전'), getRelativeDate(-10), 'ten years ago');
+
 
     // Issue #524
     dateEqual(testCreateDate('2015년 11월 24일'), new Date(2015, 10, 24), 'spaced out');

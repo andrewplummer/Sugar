@@ -106,6 +106,20 @@ package('Dates German', function () {
     dateEqual(testCreateDate('3:45 15. Mai 2011'), new Date(2011, 4, 15, 3, 45), 'time first format');
     dateEqual(testCreateDate('morgen um 3:30'), run(getRelativeDate(null, null, 1), 'set', [{hours:3,minutes:30}, true]), 'tomorrow at 3:30');
 
+    // Numbers
+
+    dateEqual(testCreateDate('vor null Jahre'),    getRelativeDate(0),   'zero years ago');
+    dateEqual(testCreateDate('vor einem Jahr'),    getRelativeDate(-1),  'one year ago');
+    dateEqual(testCreateDate('vor zwei Jahren'),   getRelativeDate(-2),  'two years ago');
+    dateEqual(testCreateDate('vor drei Jahren'),   getRelativeDate(-3),  'three years ago');
+    dateEqual(testCreateDate('vor vier Jahren'),   getRelativeDate(-4),  'four years ago');
+    dateEqual(testCreateDate('vor fuenf Jahren'),  getRelativeDate(-5),  'five years ago');
+    dateEqual(testCreateDate('vor sechs Jahren'),  getRelativeDate(-6),  'six years ago');
+    dateEqual(testCreateDate('vor sieben Jahren'), getRelativeDate(-7),  'seven years ago');
+    dateEqual(testCreateDate('vor acht Jahren'),   getRelativeDate(-8),  'eight years ago');
+    dateEqual(testCreateDate('vor neun Jahren'),   getRelativeDate(-9),  'nine years ago');
+    dateEqual(testCreateDate('vor zehn Jahren'),   getRelativeDate(-10), 'ten years ago');
+
   });
 
 

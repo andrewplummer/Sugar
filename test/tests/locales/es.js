@@ -74,6 +74,21 @@ package('Dates Spanish', function () {
 
     dateEqual(testCreateDate('mañana a las 3:30'), run(getRelativeDate(null, null, 1), 'set', [{hours:3,minutes:30}, true]), 'tomorrow at 3:30');
 
+
+    // Numbers
+
+    dateEqual(testCreateDate('hace cero años'),   getRelativeDate(0),   'zero years ago');
+    dateEqual(testCreateDate('hace uno año'),     getRelativeDate(-1),  'one year ago');
+    dateEqual(testCreateDate('hace dos años'),    getRelativeDate(-2),  'two years ago');
+    dateEqual(testCreateDate('hace tres años'),   getRelativeDate(-3),  'three years ago');
+    dateEqual(testCreateDate('hace cuatro años'), getRelativeDate(-4),  'four years ago');
+    dateEqual(testCreateDate('hace cinco años'),  getRelativeDate(-5),  'five years ago');
+    dateEqual(testCreateDate('hace seis años'),   getRelativeDate(-6),  'six years ago');
+    dateEqual(testCreateDate('hace siete años'),  getRelativeDate(-7),  'seven years ago');
+    dateEqual(testCreateDate('hace ocho años'),   getRelativeDate(-8),  'eight years ago');
+    dateEqual(testCreateDate('hace nueve años'),  getRelativeDate(-9),  'nine years ago');
+    dateEqual(testCreateDate('hace diez años'),   getRelativeDate(-10), 'ten years ago');
+
   });
 
   method('format', function() {

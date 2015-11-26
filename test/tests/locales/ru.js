@@ -82,6 +82,22 @@ package('Dates Russian', function () {
 
     dateEqual(testCreateDate('Завтра в 3:30 утра'), run(getRelativeDate(null, null, 1), 'set', [{hours:3,minutes:30}, true]), 'tomorrow at 3:30');
 
+
+    // Numbers
+
+    dateEqual(testCreateDate('ноль лет назад'),    getRelativeDate(0),   'zero years ago');
+    dateEqual(testCreateDate('один год назад'),    getRelativeDate(-1),  'one year ago');
+    dateEqual(testCreateDate('два года назад'),    getRelativeDate(-2),  'two years ago');
+    dateEqual(testCreateDate('три года назад'),    getRelativeDate(-3),  'three years ago');
+    dateEqual(testCreateDate('четыре года назад'), getRelativeDate(-4),  'four years ago');
+    dateEqual(testCreateDate('пять лет назад'),    getRelativeDate(-5),  'five years ago');
+    dateEqual(testCreateDate('шесть лет назад'),   getRelativeDate(-6),  'six years ago');
+    dateEqual(testCreateDate('семь лет назад'),    getRelativeDate(-7),  'seven years ago');
+    dateEqual(testCreateDate('восемь лет назад'),  getRelativeDate(-8),  'eight years ago');
+    dateEqual(testCreateDate('девять лет назад'),  getRelativeDate(-9),  'nine years ago');
+    dateEqual(testCreateDate('десять лет назад'),  getRelativeDate(-10), 'ten years ago');
+
+
     // Issue #524
     dateEqual(testCreateDate('3 октября 2014 г.'), new Date(2014, 9, 3), 'Windows long format');
 

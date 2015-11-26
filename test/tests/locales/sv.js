@@ -102,6 +102,21 @@ package('Dates Swedish', function () {
     dateEqual(testCreateDate('forra aret'), getRelativeDate(-1), 'Last year');
     dateEqual(testCreateDate('nasta ar'), getRelativeDate(1), 'Next year');
 
+
+    // Numbers
+
+    dateEqual(testCreateDate('noll år sedan'), getRelativeDate(0),   'zero years ago');
+    dateEqual(testCreateDate('ett år sedan'),  getRelativeDate(-1),  'one year ago');
+    dateEqual(testCreateDate('två år sedan'),  getRelativeDate(-2),  'two years ago');
+    dateEqual(testCreateDate('tre år sedan'),  getRelativeDate(-3),  'three years ago');
+    dateEqual(testCreateDate('fyra år sedan'), getRelativeDate(-4),  'four years ago');
+    dateEqual(testCreateDate('fem år sedan'),  getRelativeDate(-5),  'five years ago');
+    dateEqual(testCreateDate('sex år sedan'),  getRelativeDate(-6),  'six years ago');
+    dateEqual(testCreateDate('sju år sedan'),  getRelativeDate(-7),  'seven years ago');
+    dateEqual(testCreateDate('åtta år sedan'), getRelativeDate(-8),  'eight years ago');
+    dateEqual(testCreateDate('nio år sedan'),  getRelativeDate(-9),  'nine years ago');
+    dateEqual(testCreateDate('tio år sedan'),  getRelativeDate(-10), 'ten years ago');
+
   });
 
   method('format', function() {

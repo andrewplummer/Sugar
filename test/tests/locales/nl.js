@@ -11,6 +11,7 @@ package('Dates Dutch', function () {
 
 
   method('create', function() {
+
     dateEqual(testCreateDate('15 mei 2011'), new Date(2011, 4, 15), 'basic Dutch date');
     dateEqual(testCreateDate('Dinsdag, 5 Januari 2012'), new Date(2012, 0, 5), '2012-01-05');
     dateEqual(testCreateDate('Mei 2011'), new Date(2011, 4), 'year and month');
@@ -78,6 +79,20 @@ package('Dates Dutch', function () {
     dateEqual(testCreateDate('17:32 18 augustus'), new Date(now.getFullYear(), 7, 18, 17, 32), 'August 18, 17:32');
 
     dateEqual(testCreateDate('morgen \'s 3:30'), run(getRelativeDate(null, null, 1), 'set', [{hours:3,minutes:30}, true]), 'tomorrow at 3:30');
+
+    // Numbers
+
+    dateEqual(testCreateDate('nul jaar geleden'),   getRelativeDate(0),   'zero years ago');
+    dateEqual(testCreateDate('een jaar geleden'),   getRelativeDate(-1),  'one year ago');
+    dateEqual(testCreateDate('twee jaar geleden'),  getRelativeDate(-2),  'two years ago');
+    dateEqual(testCreateDate('drie jaar geleden'),  getRelativeDate(-3),  'three years ago');
+    dateEqual(testCreateDate('vier jaar geleden'),  getRelativeDate(-4),  'four years ago');
+    dateEqual(testCreateDate('vijf jaar geleden'),  getRelativeDate(-5),  'five years ago');
+    dateEqual(testCreateDate('zes jaar geleden'),   getRelativeDate(-6),  'six years ago');
+    dateEqual(testCreateDate('zeven jaar geleden'), getRelativeDate(-7),  'seven years ago');
+    dateEqual(testCreateDate('acht jaar geleden'),  getRelativeDate(-8),  'eight years ago');
+    dateEqual(testCreateDate('negen jaar geleden'), getRelativeDate(-9),  'nine years ago');
+    dateEqual(testCreateDate('tien jaar geleden'),  getRelativeDate(-10), 'ten years ago');
 
   });
 

@@ -10,6 +10,7 @@ package('Dates Simplified Chinese', function () {
   });
 
   method('create', function() {
+
     dateEqual(testCreateDate('2011年5月15日'), new Date(2011, 4, 15), 'Date#create | basic Simplified Chinese date');
     dateEqual(testCreateDate('2011年5月'), new Date(2011, 4), 'year and month');
     dateEqual(testCreateDate('5月15日'), new Date(now.getFullYear(), 4, 15), 'month and date');
