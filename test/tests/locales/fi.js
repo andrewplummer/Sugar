@@ -226,29 +226,29 @@ package('Dates Finnish', function () {
     assertRelative('5 months ago',  '5 kuukautta sitten');
     assertRelative('5 years ago',   '5 vuotta sitten');
 
-    assertRelative('1 second from now', '1 sekunnin päästä');
-    assertRelative('1 minute from now', '1 minuutin päästä');
-    assertRelative('1 hour from now',   '1 tunnin päästä');
-    assertRelative('1 day from now',    '1 päivän päästä');
-    assertRelative('1 week from now',   '1 viikon päästä');
-    assertRelative('1 month from now',  '1 kuukauden päästä');
-    assertRelative('1 year from now',   '1 vuoden päästä');
+    assertRelative('1 second from now', '1 sekunnin kuluttua');
+    assertRelative('1 minute from now', '1 minuutin kuluttua');
+    assertRelative('1 hour from now',   '1 tunnin kuluttua');
+    assertRelative('1 day from now',    '1 päivän kuluttua');
+    assertRelative('1 week from now',   '1 viikon kuluttua');
+    assertRelative('1 month from now',  '1 kuukauden kuluttua');
+    assertRelative('1 year from now',   '1 vuoden kuluttua');
 
-    assertRelative('3 seconds from now', '3 sekunnin päästä');
-    assertRelative('3 minutes from now', '3 minuutin päästä');
-    assertRelative('3 hours from now',   '3 tunnin päästä');
-    assertRelative('3 days from now',    '3 päivän päästä');
-    assertRelative('3 weeks from now',   '3 viikon päästä');
-    assertRelative('3 months from now',  '3 kuukauden päästä');
-    assertRelative('3 years from now',   '3 vuoden päästä');
+    assertRelative('3 seconds from now', '3 sekunnin kuluttua');
+    assertRelative('3 minutes from now', '3 minuutin kuluttua');
+    assertRelative('3 hours from now',   '3 tunnin kuluttua');
+    assertRelative('3 days from now',    '3 päivän kuluttua');
+    assertRelative('3 weeks from now',   '3 viikon kuluttua');
+    assertRelative('3 months from now',  '3 kuukauden kuluttua');
+    assertRelative('3 years from now',   '3 vuoden kuluttua');
 
-    assertRelative('5 seconds from now', '5 sekunnin päästä');
-    assertRelative('5 minutes from now', '5 minuutin päästä');
-    assertRelative('5 hours from now',   '5 tunnin päästä');
-    assertRelative('5 days from now',    '5 päivän päästä');
-    assertRelative('5 weeks from now',   '1 kuukauden päästä');
-    assertRelative('5 months from now',  '5 kuukauden päästä');
-    assertRelative('5 years from now',   '5 vuoden päästä');
+    assertRelative('5 seconds from now', '5 sekunnin kuluttua');
+    assertRelative('5 minutes from now', '5 minuutin kuluttua');
+    assertRelative('5 hours from now',   '5 tunnin kuluttua');
+    assertRelative('5 days from now',    '5 päivän kuluttua');
+    assertRelative('5 weeks from now',   '1 kuukauden kuluttua');
+    assertRelative('5 months from now',  '5 kuukauden kuluttua');
+    assertRelative('5 years from now',   '5 vuoden kuluttua');
 
   });
 
