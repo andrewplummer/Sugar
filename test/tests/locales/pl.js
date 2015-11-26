@@ -109,18 +109,20 @@ package('Dates Polish', function () {
     //dateEqual(testCreateDate(''), getDateWithWeekdayAndOffset(5, -7), 'last friday');
     //dateEqual(testCreateDate(''), getDateWithWeekdayAndOffset(6, -7), 'last saturday');
 
+
     // Numbers
 
-    //dateEqual(testCreateDate(''),      getRelativeDate(-1), 'one years ago');
-    //dateEqual(testCreateDate(''),     getRelativeDate(-2), 'two years ago');
-    //dateEqual(testCreateDate(''),     getRelativeDate(-3), 'three years ago');
-    //dateEqual(testCreateDate(''),     getRelativeDate(-4), 'four years ago');
-    //dateEqual(testCreateDate(''),     getRelativeDate(-5), 'five years ago');
-    //dateEqual(testCreateDate(''),     getRelativeDate(-6), 'six years ago');
-    //dateEqual(testCreateDate(''), getRelativeDate(-7), 'seven years ago');
-    //dateEqual(testCreateDate(''), getRelativeDate(-8), 'eight years ago');
-    //dateEqual(testCreateDate(''),  getRelativeDate(-9), 'nine years ago');
-
+    dateEqual(testCreateDate('zero lat temu'),      getRelativeDate(0),   'zero years ago');
+    dateEqual(testCreateDate('jeden rok temu'),     getRelativeDate(-1),  'one year ago');
+    dateEqual(testCreateDate('dwa lata temu'),      getRelativeDate(-2),  'two years ago');
+    dateEqual(testCreateDate('trzy lata temu'),     getRelativeDate(-3),  'three years ago');
+    dateEqual(testCreateDate('cztery lata temu'),   getRelativeDate(-4),  'four years ago');
+    dateEqual(testCreateDate('pięć lata temu'),     getRelativeDate(-5),  'five years ago');
+    dateEqual(testCreateDate('sześć lata temu'),    getRelativeDate(-6),  'six years ago');
+    dateEqual(testCreateDate('siedem lata temu'),   getRelativeDate(-7),  'seven years ago');
+    dateEqual(testCreateDate('osiem lata temu'),    getRelativeDate(-8),  'eight years ago');
+    dateEqual(testCreateDate('dziewięć lata temu'), getRelativeDate(-9),  'nine years ago');
+    dateEqual(testCreateDate('dziesięć lata temu'), getRelativeDate(-10), 'ten years ago');
 
   });
 

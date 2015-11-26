@@ -65,6 +65,22 @@ package('Dates Danish', function () {
     dateEqual(testCreateDate('næste måned'), getRelativeDate(null, 1), 'Next month');
     dateEqual(testCreateDate('sidste år'), getRelativeDate(-1), 'Last year');
     dateEqual(testCreateDate('næste år'), getRelativeDate(1), 'Next year');
+
+
+    // Numbers
+
+    dateEqual(testCreateDate('nul år siden'),  getRelativeDate(0),   'zero years ago');
+    dateEqual(testCreateDate('et år siden'),   getRelativeDate(-1),  'one year ago');
+    dateEqual(testCreateDate('to år siden'),   getRelativeDate(-2),  'two years ago');
+    dateEqual(testCreateDate('tre år siden'),  getRelativeDate(-3),  'three years ago');
+    dateEqual(testCreateDate('fire år siden'), getRelativeDate(-4),  'four years ago');
+    dateEqual(testCreateDate('fem år siden'),  getRelativeDate(-5),  'five years ago');
+    dateEqual(testCreateDate('seks år siden'), getRelativeDate(-6),  'six years ago');
+    dateEqual(testCreateDate('syv år siden'),  getRelativeDate(-7),  'seven years ago');
+    dateEqual(testCreateDate('otte år siden'), getRelativeDate(-8),  'eight years ago');
+    dateEqual(testCreateDate('ni år siden'),   getRelativeDate(-9),  'nine years ago');
+    dateEqual(testCreateDate('ti år siden'),   getRelativeDate(-10), 'ten years ago');
+
   });
 
   method('format', function() {

@@ -56,7 +56,7 @@ package('Dates Finnish', function () {
     dateEqual(testCreateDate('yksi päivä sitten'),        getRelativeDate(null, null, -1), 'one day ago');
     dateEqual(testCreateDate('yksi viikko sitten'),       getRelativeDate(null, null, -7), 'one week ago');
     dateEqual(testCreateDate('yksi kuukausi sitten'),     getRelativeDate(null, -1), 'one month ago');
-    dateEqual(testCreateDate('yksi vuotta sitten'),       getRelativeDate(-1), 'one year ago');
+    dateEqual(testCreateDate('yksi vuosi sitten'),        getRelativeDate(-1), 'one year ago');
     dateEqual(testCreateDate('millisekunti sitten'),      getRelativeDate(null, null, null, null, null, null,-1), 'one millisecond ago');
     dateEqual(testCreateDate('sekunti sitten'),           getRelativeDate(null, null, null, null, null, -1), 'one second ago');
     dateEqual(testCreateDate('minuutti sitten'),          getRelativeDate(null, null, null, null, -1), 'one minute ago');
@@ -64,7 +64,7 @@ package('Dates Finnish', function () {
     dateEqual(testCreateDate('päivä sitten'),             getRelativeDate(null, null, -1), 'one day ago');
     dateEqual(testCreateDate('viikko sitten'),            getRelativeDate(null, null, -7), 'one week ago');
     dateEqual(testCreateDate('kuukausi sitten'),          getRelativeDate(null, -1), 'one month ago');
-    dateEqual(testCreateDate('vuotta sitten'),            getRelativeDate(-1), 'one year ago');
+    dateEqual(testCreateDate('vuosi sitten'),             getRelativeDate(-1), 'one year ago');
 
     dateEqual(testCreateDate('5 millisekunnin päästä'),   getRelativeDate(null, null, null, null, null, null,5), 'five milliseconds from now');
     dateEqual(testCreateDate('5 sekunnin päästä'),        getRelativeDate(null, null, null, null, null, 5), 'five second from now');
@@ -85,7 +85,9 @@ package('Dates Finnish', function () {
     dateEqual(testCreateDate('viime viikolla'), getRelativeDate(null, null, -7), 'last week | viikolla');
     dateEqual(testCreateDate('ensi viikko'),    getRelativeDate(null, null,  7), 'next week | viikko');
     dateEqual(testCreateDate('ensi viikolla'),  getRelativeDate(null, null,  7), 'next week | viikolla');
-    dateEqual(testCreateDate('tällä viikolla'), getRelativeDate(null, null,  0), 'this week');
+    dateEqual(testCreateDate('tällä viikolla'), getRelativeDate(null, null,  0), 'this week | viikolla');
+    dateEqual(testCreateDate('tämä viikko'),    getRelativeDate(null, null,  0), 'this week | viikko');
+
 
     dateEqual(testCreateDate('tässä kuussa'),       getRelativeDate(null,  0), 'this month');
     dateEqual(testCreateDate('viime kuussa'),       getRelativeDate(null, -1), 'last month | viime');
@@ -96,10 +98,15 @@ package('Dates Finnish', function () {
     dateEqual(testCreateDate('viime vuosi'),  getRelativeDate(-1),         'last year | vuosi');
     dateEqual(testCreateDate('viime vuonna'), getRelativeDate(-1),         'last year | vuonna');
     dateEqual(testCreateDate('ensi vuosi'),   getRelativeDate(1),          'next year | vuosi');
+    dateEqual(testCreateDate('ensi vuonna'),  getRelativeDate(1),          'next year | vuonna');
+    dateEqual(testCreateDate('tämä vuosi'),   dstSafe(getRelativeDate(0)), 'this year | vuosi');
     dateEqual(testCreateDate('tänä vuonna'),  dstSafe(getRelativeDate(0)), 'this year | vuonna');
 
     dateEqual(testCreateDate('ensi maanantai'),    getDateWithWeekdayAndOffset(1, 7),  'next monday');
-    dateEqual(testCreateDate('viime maanantaina'), getDateWithWeekdayAndOffset(1, -7), 'last monday');
+    dateEqual(testCreateDate('viime maanantai'),   getDateWithWeekdayAndOffset(1, -7), 'last monday');
+
+    dateEqual(testCreateDate('ensi maanantaina'),  getDateWithWeekdayAndOffset(1, 7),  'next monday | na');
+    dateEqual(testCreateDate('viime maanantaina'), getDateWithWeekdayAndOffset(1, -7), 'last monday | na');
 
     dateEqual(testCreateDate('viime maanantaina klo 3.45'), run(getDateWithWeekdayAndOffset(1, -7), 'set', [{ hour: 3, minute: 45 }, true]), 'last monday 3:45');
     dateEqual(testCreateDate('viime maanantai klo 3.45'),   run(getDateWithWeekdayAndOffset(1, -7), 'set', [{ hour: 3, minute: 45 }, true]), 'last monday 3:45 (na)');
@@ -113,9 +120,11 @@ package('Dates Finnish', function () {
     dateEqual(testCreateDate('viime perjantaina'),   getDateWithWeekdayAndOffset(5, -7), 'last friday');
     dateEqual(testCreateDate('viime lauantaina'),    getDateWithWeekdayAndOffset(6, -7), 'last saturday');
 
+
     // Numbers
 
-    dateEqual(testCreateDate('yksi vuotta sitten'),      getRelativeDate(-1), 'one years ago');
+    dateEqual(testCreateDate('nolla vuotta sitten'),     getRelativeDate(0),  'zero years ago');
+    dateEqual(testCreateDate('yksi vuosi sitten'),       getRelativeDate(-1), 'one years ago');
     dateEqual(testCreateDate('kaksi vuotta sitten'),     getRelativeDate(-2), 'two years ago');
     dateEqual(testCreateDate('kolme vuotta sitten'),     getRelativeDate(-3), 'three years ago');
     dateEqual(testCreateDate('neljä vuotta sitten'),     getRelativeDate(-4), 'four years ago');
@@ -161,12 +170,12 @@ package('Dates Finnish', function () {
     test(new Date(2011, 11,10), ['{weekday}'], 'lauantai', 'Sat');
     test(new Date(2011, 11,11), ['{weekday}'], 'sunnuntai', 'Sun');
 
-    test(new Date('January 3, 2010'), ['{w}'], '53', 'locale week number | Jan 3 2010');
-    test(new Date('January 3, 2010'), ['{ww}'], '53', 'locale week number padded | Jan 3 2010');
-    test(new Date('January 3, 2010'), ['{wo}'], '53rd', 'locale week number ordinal | Jan 3 2010');
-    test(new Date('January 4, 2010'), ['{w}'], '1', 'locale week number | Jan 4 2010');
-    test(new Date('January 4, 2010'), ['{ww}'], '01', 'locale week number padded | Jan 4 2010');
-    test(new Date('January 4, 2010'), ['{wo}'], '1st', 'locale week number ordinal | Jan 4 2010');
+    test(new Date('January 3, 2010'), ['{w}'], '53',   'locale week number | Jan 3 2010');
+    test(new Date('January 3, 2010'), ['{ww}'], '53',  'locale week number padded | Jan 3 2010');
+    test(new Date('January 3, 2010'), ['{wo}'], '53.', 'locale week number ordinal | Jan 3 2010');
+    test(new Date('January 4, 2010'), ['{w}'], '1',    'locale week number | Jan 4 2010');
+    test(new Date('January 4, 2010'), ['{ww}'], '01',  'locale week number padded | Jan 4 2010');
+    test(new Date('January 4, 2010'), ['{wo}'], '1.',  'locale week number ordinal | Jan 4 2010');
 
     test(new Date(2015, 10, 8),  ['{Dow}'], 'su', 'Sun');
     test(new Date(2015, 10, 9),  ['{Dow}'], 'ma', 'Mon');

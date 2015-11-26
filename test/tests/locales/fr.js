@@ -96,6 +96,22 @@ package('Dates French', function () {
 
     dateEqual(testCreateDate('demain à 3:30'), run(getRelativeDate(null, null, 1), 'set', [{hours:3,minutes:30}, true]), 'tomorrow at 3:30');
 
+
+    // Numbers
+
+    dateEqual(testCreateDate('il y a zéro ans'),   getRelativeDate(0),   'zero years ago');
+    dateEqual(testCreateDate('il y a un an'),      getRelativeDate(-1),  'one year ago');
+    dateEqual(testCreateDate('il y a deux ans'),   getRelativeDate(-2),  'two years ago');
+    dateEqual(testCreateDate('il y a trois ans'),  getRelativeDate(-3),  'three years ago');
+    dateEqual(testCreateDate('il y a quatre ans'), getRelativeDate(-4),  'four years ago');
+    dateEqual(testCreateDate('il y a cinq ans'),   getRelativeDate(-5),  'five years ago');
+    dateEqual(testCreateDate('il y a six ans'),    getRelativeDate(-6),  'six years ago');
+    dateEqual(testCreateDate('il y a sept ans'),   getRelativeDate(-7),  'seven years ago');
+    dateEqual(testCreateDate('il y a huit ans'),   getRelativeDate(-8),  'eight years ago');
+    dateEqual(testCreateDate('il y a neuf ans'),   getRelativeDate(-9),  'nine years ago');
+    dateEqual(testCreateDate('il y a dix ans'),    getRelativeDate(-10), 'ten years ago');
+
+
     // Issue #249
 
     dateEqual(testCreateDate('mardi 11 decembre 2012','fr'), new Date(2012, 11, 11), 'mardi 11 decembre 2012');
