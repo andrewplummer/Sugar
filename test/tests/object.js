@@ -944,6 +944,10 @@ package('Object', function () {
     test(Object, ['foo=127.0.0.1'], { foo: '127.0.0.1' }, 'IP addresses not treated as numbers');
     test(Object, ['zip=00165'], { zip: '00165' }, 'zipcodes are not treated as numbers');
     test(Object, ['foo[=bar'], { 'foo[': 'bar' }, 'opening bracket does not trigger deep parameters');
+
+    test(Object, ['foo&bar'], {foo:'',bar:''}, 'undefined without =');
+    test(Object, ['foo=&bar='], {foo:'',bar:''}, 'undefined params');
+
   });
 
   method('watch', function() {
