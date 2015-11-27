@@ -3,12 +3,8 @@ v1.5.0
 
 ### API Changes ###
 
-- Added global objects. All methods will also be defined here.
 - Removed String#escapeRegExp. Use RegExp.escape instead.
-- Object.extend() is now Sugar.extendObject().
-- `Date#utc` is now `Date#setUTC`.
 - Added `Number.isNaN` shim.
-- Alphanumeric array options are now on the global object.
 - Moved `Object.map`, `Object.each`, and `Object.size` to the object package.
 - Added `Object.isArguments`.
 - Changed `String#each` to allow breaking the loop with `false`.

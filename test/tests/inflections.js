@@ -361,7 +361,7 @@ package('String | Inflections', function () {
     var uncountable = 'ors';
     var countable = 'sponsor';
 
-    Sugar.String.Inflector.uncountable(uncountable);
+    String.Inflector.uncountable(uncountable);
 
     test(uncountable, uncountable, 'singularize | uncountable | ors');
     test(countable, 'sponsor', 'singularize | countable | sponsor');
@@ -407,9 +407,9 @@ package('String | Inflections', function () {
 
   group('Overwrite previous inflectors', function() {
     equal(run('series', 'singularize'), 'series', 'singularize | series');
-    Sugar.String.Inflector.singular('series', 'serie');
+    String.Inflector.singular('series', 'serie');
     equal(run('series', 'singularize'), 'serie', 'singularize | serie');
-    Sugar.String.Inflector.singular('series'); // Return to normal
+    String.Inflector.singular('series'); // Return to normal
   });
 
   group('Irregulars', function() {
@@ -431,14 +431,14 @@ package('String | Inflections', function () {
 
   group('Acronyms', function() {
 
-    Sugar.String.Inflector.acronym("API");
-    Sugar.String.Inflector.acronym("HTML");
-    Sugar.String.Inflector.acronym("HTTP");
-    Sugar.String.Inflector.acronym("RESTful");
-    Sugar.String.Inflector.acronym("W3C");
-    Sugar.String.Inflector.acronym("PhD");
-    Sugar.String.Inflector.acronym("RoR");
-    Sugar.String.Inflector.acronym("SSL");
+    String.Inflector.acronym("API");
+    String.Inflector.acronym("HTML");
+    String.Inflector.acronym("HTTP");
+    String.Inflector.acronym("RESTful");
+    String.Inflector.acronym("W3C");
+    String.Inflector.acronym("PhD");
+    String.Inflector.acronym("RoR");
+    String.Inflector.acronym("SSL");
 
     // camelize             underscore            humanize              titleize
     [
@@ -481,14 +481,14 @@ package('String | Inflections', function () {
 
 
   method('camelize', function() {
-    Sugar.String.Inflector.acronym("API");
-    Sugar.String.Inflector.acronym("HTML");
+    String.Inflector.acronym("API");
+    String.Inflector.acronym("HTML");
     testIterateOverObject(CamelToUnderscore, function(camel, underscore) {
       test(underscore, camel, 'mixed cases')
     });
     test('Camel_Case', 'CamelCase', 'handles underscores');
 
-    Sugar.String.Inflector.acronym("LegacyApi")
+    String.Inflector.acronym("LegacyApi")
     test('legacyapi', "LegacyApi", 'LegacyApi')
     test('legacy_api', "LegacyAPI", 'LegacyAPI')
     test('some_legacyapi', "SomeLegacyApi", 'SomeLegacyApi')
@@ -510,7 +510,7 @@ package('String | Inflections', function () {
   method('underscore', function() {
     // Make sure this test doesn't come before "camelize",
     // or it will affect the "html5" acronym which should not be active at that point.
-    Sugar.String.Inflector.acronym("HTML5");
+    String.Inflector.acronym("HTML5");
     test('HTML5HTMLAPI', 'html5_html_api', 'HTML5HTMLAPI')
     testIterateOverObject(CamelToUnderscore, function(camel, underscore) {
         test(camel, underscore, 'mixed cases')
@@ -554,13 +554,13 @@ package('String | Inflections', function () {
         test(under, human, 'underscore')
     });
 
-    Sugar.String.Inflector.human(/_cnt$/i, '_count');
-    Sugar.String.Inflector.human(/^prefx_/i, '')
+    String.Inflector.human(/_cnt$/i, '_count');
+    String.Inflector.human(/^prefx_/i, '')
 
     test('jargon_cnt', 'Jargon count', 'Jargon count')
     test('prefx_request', 'Request', 'Request')
 
-    Sugar.String.Inflector.human("col_rpted_bugs", "Reported bugs")
+    String.Inflector.human("col_rpted_bugs", "Reported bugs")
 
     test('col_rpted_bugs', 'Reported bugs', 'Reported bugs')
     test('COL_rpted_bugs', 'Col rpted bugs', 'Col rpted bugs')
@@ -586,16 +586,16 @@ package('String | Inflections', function () {
 
     // Test clearing inflectors KEEP ME AT THE BOTTOM
     test('foo', 'foos', 'String.Inflector.clear | foo is foos');
-    Sugar.String.Inflector.clear('plurals');
+    String.Inflector.clear('plurals');
     test('foo', 'foo', 'String.Inflector.clear | clear purals');
     equal(run('foos', 'singularize'), 'foo', 'String.Inflector.clear | singulars are not cleared');
-    Sugar.String.Inflector.plural(/$/, 's');
+    String.Inflector.plural(/$/, 's');
     test('foo', 'foos', 'String.Inflector.plural | re-add');
-    Sugar.String.Inflector.clear('all');
+    String.Inflector.clear('all');
     test('foo', 'foo', 'String.Inflector.plural | clear all with "all"');
-    Sugar.String.Inflector.plural(/$/, 's');
+    String.Inflector.plural(/$/, 's');
     test('foo', 'foos', 'String.Inflector.plural | re-add again');
-    Sugar.String.Inflector.clear();
+    String.Inflector.clear();
     test('foo', 'foo', 'String.Inflector.plural | clear all with undefined');
 
   });

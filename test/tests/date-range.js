@@ -63,7 +63,7 @@ package('Date | Ranges', function () {
 
 
   group('Creation with extended', function() {
-    if(!Sugar.Date.create) return;
+    if(!Date.create) return;
 
     // Date ranges should be able to be created from a string
 

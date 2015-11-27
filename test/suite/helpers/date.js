@@ -15,12 +15,12 @@ testCreateUTCDate = function() {
 }
 
 dateRun = function(d, name, arguments) {
-  return run(Sugar.Date.clone(d), name, arguments);
+  return run(d.clone(), name, arguments);
 }
 
 dateTest = function(d) {
   var args = Array.prototype.slice.call(arguments, 1);
-  return test.apply(null, [Sugar.Date.clone(d)].concat(args));
+  return test.apply(null, [d.clone()].concat(args));
 }
 
 dateEqual = function(a, b, message, tzReference) {
@@ -218,8 +218,8 @@ testGetTimezoneHours = function(d) {
 // the locale is sometimes performed outside the Date package,
 // giving no context for run().
 testSetLocale = function(code) {
-  if (!Sugar.Date || !Sugar.Date.setLocale) return;
-  return Sugar.Date.setLocale(code);
+  if (!Date.setLocale) return;
+  return Date.setLocale(code);
 }
 
 assertAddUnitIsNumericallyEqual = function (d, method, add, message) {

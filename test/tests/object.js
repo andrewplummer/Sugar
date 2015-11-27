@@ -698,7 +698,7 @@ package('Object', function () {
   method('Extend All', function() {
     var obj1, obj2;
 
-    Sugar.extendObject();
+    Object.extend();
 
     var count = 0;
 
@@ -844,7 +844,7 @@ package('Object', function () {
     equal(!!'foo'.extended, false, 'Object.extended should not be mapped');
     equal('foo'.equal, undefined, 'Object.equal should not be mapped (should be "equals" instead)');
 
-    Sugar.extendObject(false);
+    Object.extend(false);
 
     equal(({foo:'bar'}).keys, undefined, 'keys no longer mapped');
     equal(({foo:'bar'}).values, undefined, 'values no longer mapped');

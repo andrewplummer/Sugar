@@ -13,15 +13,6 @@ Version 1.4.0 improves future-compatibility by ensuring that browser updates do 
 v1.5.0+
 =======
 
-- Level: Moderate
-  - Alphanumeric array options are now defined on the global object `Sugar.Array` instead of `Array` itself.
-
-- Level: Moderate
-  - `Object.extend` is now `Sugar.extendObject`.
-
-- Level: Very Minor
-  - Some minor behavior changes around the way `String#removeTags` works on malformed html. Unmatched closing tags will now be removed.
-
 
 v1.4.2+
 =======

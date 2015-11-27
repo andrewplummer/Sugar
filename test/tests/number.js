@@ -426,30 +426,30 @@ package('Number', function () {
     equal(run(100046546510000.022435451, 'format').replace(/\.\d+$/, ''), '100,046,546,510,000');
     equal(run(-100046546510000.022435451, 'format').replace(/\.\d+$/, ''), '-100,046,546,510,000');
 
-    Sugar.Number.thousands = ' ';
-    Sugar.Number.decimal = ',';
+    Number.thousands = ' ';
+    Number.decimal = ',';
     test(1000, [null, ' '], '1 000', 'with space');
     test(1532587, [null, ' '], '1 532 587', 'larget with space');
     test(1532587.5752, [null, ' ', ','], '1 532 587,5752', 'larger number with decimal');
 
-    Sugar.Number.thousands = '.';
-    Sugar.Number.decimal = ',';
+    Number.thousands = '.';
+    Number.decimal = ',';
     test(9999999.99, [null, '.',','], '9.999.999,99', 'Euro style!');
 
-    Sugar.Number.thousands = '';
-    Sugar.Number.decimal = '.';
+    Number.thousands = '';
+    Number.decimal = '.';
     test(9999999.99, [null, ''], '9999999.99', 'empty string');
 
-    Sugar.Number.thousands = '';
-    Sugar.Number.decimal = '';
+    Number.thousands = '';
+    Number.decimal = '';
     test(9999999.99, [null, '', ''], '999999999', 'no punctuation');
 
-    Sugar.Number.thousands = null;
-    Sugar.Number.decimal = null;
+    Number.thousands = null;
+    Number.decimal = null;
     test(9999999.99, [null, '', ''], '9,999,999.99', 'null returns to defaults');
 
-    delete Sugar.Number.thousands;
-    delete Sugar.Number.decimal;
+    delete Number.thousands;
+    delete Number.decimal;
   });
 
   method('format', function() {
@@ -654,9 +654,9 @@ package('Number', function () {
       test(1749584, '1.75m', 'decimal 3 places | 1,749,584');
 
       // Issue #422
-      Sugar.Number.decimal = ',';
+      Number.decimal = ',';
       test(1749584, '1,75m', 'should respect global decimal marker');
-      delete Sugar.Number.decimal;
+      delete Number.decimal;
     });
   });
 
@@ -769,9 +769,9 @@ package('Number', function () {
       test(1749584000, '1.7G', 'decimal 1 place | 1,749,584,000');
 
       // Issue #422
-      Sugar.Number.decimal = ',';
+      Number.decimal = ',';
       test(3232, [1, 2], '3,2k', 'should respect global decimal marker');
-      delete Sugar.Number.decimal;
+      delete Number.decimal;
     });
   });
 
@@ -1037,9 +1037,9 @@ package('Number', function () {
       test(100000000000000000, '88.82PB' , 'no limit, 2 places | 10,000TB ');
 
       // Issue #422
-      Sugar.Number.decimal = ',';
+      Number.decimal = ',';
       test(1000, '0,98kB' , 'should respect global decimal');
-      delete Sugar.Number.decimal;
+      delete Number.decimal;
 
     });
   });

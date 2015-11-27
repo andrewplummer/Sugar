@@ -468,13 +468,6 @@ package('Array', function () {
     });
     equal(count, 1, 'should immediately finish when it finds a match');
 
-    count = 0;
-    Sugar.Array.find([1,2,3], function(n) {
-      count++;
-      return n == 1;
-    });
-    equal(count, 1, 'should also be mapped to global');
-
   });
 
 
@@ -1577,7 +1570,6 @@ package('Array', function () {
     equal((function(){ return run(Array, 'create', [arguments]); })(), [], 'works on a zero length arguments object');
     equal((function(){ return run(Array, 'create', [arguments]); })('one').slice, Array.prototype.slice, 'converted arguments object is a true array');
     equal((function(){ return run(Array, 'create', [arguments]); })('one','two').slice, Array.prototype.slice, 'two | converted arguments object is a true array');
-    equal((function(){ return Sugar.Array.create.apply(null, [arguments]); })('one','two'), ['one','two'], 'arguments using apply');
 
     var args = (function() { return arguments; })(true, 1, 'two');
     test(Array, [[args]], [args], 'nested arguments is a nested array');
@@ -1644,7 +1636,7 @@ package('Array', function () {
     equal(run(arr, 'sample', [4]).length, 4, '4');
     equal(run(arr, 'sample', [11]).length, 10, "can't sample more than the length of the array");
 
-    var arr2 = Sugar.Array.unique(run(arr, 'sample', [10]));
+    var arr2 = run(arr, 'sample', [10]).unique();
     equal(arr2.length, arr.length, "should not sample the same element twice");
 
     equal(run(arr, 'sample', [0]).length, 0, '0');
@@ -1767,10 +1759,10 @@ package('Array', function () {
   method('sortBy', function() {
     var arr;
 
-    var CapturedSortOrder       = Sugar.Array.AlphanumericSortOrder;
-    var CapturedSortIgnore      = Sugar.Array.AlphanumericSortIgnore;
-    var CapturedSortIgnoreCase  = Sugar.Array.AlphanumericSortIgnoreCase;
-    var CapturedSortEquivalents = Sugar.Array.AlphanumericSortEquivalents;
+    var CapturedSortOrder       = Array.AlphanumericSortOrder;
+    var CapturedSortIgnore      = Array.AlphanumericSortIgnore;
+    var CapturedSortIgnoreCase  = Array.AlphanumericSortIgnoreCase;
+    var CapturedSortEquivalents = Array.AlphanumericSortEquivalents;
 
 
     test([0,1,2,3,4], [0,1,2,3,4], '0 is properly sorted');
@@ -1850,12 +1842,12 @@ package('Array', function () {
       'anne'
     ];
 
-    test(Sugar.Array.randomize(frenchNames), frenchNames, 'sorting french names');
+    test(frenchNames.randomize(), frenchNames, 'sorting french names');
 
     arr = frenchNames.map(function(n) {
       return n.toUpperCase();
     });
-    test(Sugar.Array.randomize(arr), arr, 'sorting french names in upper case');
+    test(arr.randomize(), arr, 'sorting french names in upper case');
 
     // MSDN http://msdn.microsoft.com/en-us/library/cc194880.aspx
     arr = [
@@ -1911,7 +1903,7 @@ package('Array', function () {
       'Žal',
       'Žena'
     ];
-    test(Sugar.Array.randomize(arr), arr, 'Default collation');
+    test(arr.randomize(), arr, 'Default collation');
 
     arr = [
       'cweat',
@@ -1927,7 +1919,7 @@ package('Array', function () {
       'žweat',
       'žweet'
     ];
-    test(Sugar.Array.randomize(arr), arr, 'Czech/Lithuanian order is respected');
+    test(arr.randomize(), arr, 'Czech/Lithuanian order is respected');
 
     arr = [
       'cat',
@@ -1935,7 +1927,7 @@ package('Array', function () {
       'ðroll',
       'ebert'
     ];
-    test(Sugar.Array.randomize(arr), arr, 'Icelandic ð order is respected');
+    test(arr.randomize(), arr, 'Icelandic ð order is respected');
 
     arr = [
       'goth',
@@ -1945,7 +1937,7 @@ package('Array', function () {
       'şeparate',
       'tumble'
     ];
-    test(Sugar.Array.randomize(arr), arr, 'Turkish order is respected');
+    test(arr.randomize(), arr, 'Turkish order is respected');
 
     arr = [
       'ape',
@@ -1972,7 +1964,7 @@ package('Array', function () {
       'źebra',
       'żoo'
     ];
-    test(Sugar.Array.randomize(arr), arr, 'Polish order is respected');
+    test(arr.randomize(), arr, 'Polish order is respected');
 
     arr = [
       'cab',
@@ -1983,7 +1975,7 @@ package('Array', function () {
       'ølaf',
       'ålegra'
     ];
-    test(Sugar.Array.randomize(arr), arr, 'Danish/Norwegian order is respected');
+    test(arr.randomize(), arr, 'Danish/Norwegian order is respected');
 
     arr = [
       'llama',
@@ -1993,7 +1985,7 @@ package('Array', function () {
     // Compressions simply can't be handled without a complex collation system
     // as there is simply no way fundamentally to know what was intended as a
     // compression. For example "catch a llama" vs "catch Al Lama"
-    test(Sugar.Array.randomize(arr), arr, 'Compressions are not handled');
+    test(arr.randomize(), arr, 'Compressions are not handled');
 
     arr = [
       'àbel',
@@ -2049,7 +2041,7 @@ package('Array', function () {
       'üte',
       'utu'
     ];
-    test(Sugar.Array.randomize(arr), arr, 'Standard Western-Latin equivalents are enforced');
+    test(arr.randomize(), arr, 'Standard Western-Latin equivalents are enforced');
 
     // Swedish collation
     var swedishWords = [
@@ -2155,8 +2147,8 @@ package('Array', function () {
       'att fästa'
     ];
 
-    Sugar.Array.AlphanumericSortEquivalents['ö'] = null;
-    Sugar.Array.AlphanumericSortEquivalents['ä'] = null;
+    Array.AlphanumericSortEquivalents['ö'] = null;
+    Array.AlphanumericSortEquivalents['ä'] = null;
 
     test(swedishWords, swedishCollated, 'removing equivalents can restore sort order');
 
@@ -2176,7 +2168,7 @@ package('Array', function () {
       'Adrian'
     ];
 
-    Sugar.Array.AlphanumericSortIgnoreCase = true;
+    Array.AlphanumericSortIgnoreCase = true;
     test(arr, expected, 'allows case ignore');
 
     expected = [
@@ -2186,7 +2178,7 @@ package('Array', function () {
       'abner'
     ];
 
-    Sugar.Array.AlphanumericSortOrder = 'dba';
+    Array.AlphanumericSortOrder = 'dba';
     test(arr, expected, 'allows other order');
 
     expected = [
@@ -2195,18 +2187,18 @@ package('Array', function () {
       'Adrian',
       'aBBey'
     ];
-    Sugar.Array.AlphanumericSortIgnore = /[abcde]/g;
+    Array.AlphanumericSortIgnore = /[abcde]/g;
     test(arr, expected, 'allows custom ignore');
 
-    Sugar.Array.AlphanumericSortOrder = 'cba';
-    Sugar.Array.AlphanumericSortIgnore = CapturedSortIgnore;
+    Array.AlphanumericSortOrder = 'cba';
+    Array.AlphanumericSortIgnore = CapturedSortIgnore;
     arr = ['cotÉ', 'cÔte', 'cÔtÉ', 'andere', 'ändere'];
     test(arr, arr, 'cba');
 
-    Sugar.Array.AlphanumericSortOrder = CapturedSortOrder;
-    Sugar.Array.AlphanumericSortIgnore = CapturedSortIgnore;
-    Sugar.Array.AlphanumericSortIgnoreCase = CapturedSortIgnoreCase;
-    Sugar.Array.AlphanumericSortEquivalents = CapturedSortEquivalents;
+    Array.AlphanumericSortOrder = CapturedSortOrder;
+    Array.AlphanumericSortIgnore = CapturedSortIgnore;
+    Array.AlphanumericSortIgnoreCase = CapturedSortIgnoreCase;
+    Array.AlphanumericSortEquivalents = CapturedSortEquivalents;
 
 
     // Issue #282
@@ -2238,7 +2230,7 @@ package('Array', function () {
     test(['1 Title - The Big Lebowski','1 Title - Gattaca','1 Title - Last Picture Show'], ['1 Title - Gattaca','1 Title - Last Picture Show','1 Title - The Big Lebowski'], 'stolen | movie titles');
 
 
-    Sugar.Array.AlphanumericSortNatural = false;
+    Array.AlphanumericSortNatural = false;
 
     test(['2','100','3'], ['100','2','3'], 'natural sort off');
     test(['a2','a100','a3'], ['a100','a2','a3'], 'natural sort off | leading char');
@@ -2246,7 +2238,7 @@ package('Array', function () {
     test(['２','１００','３'], ['１００','２','３'], 'natural sort off | full width');
     test(['a２','a１００','a３'], ['a１００','a２','a３'], 'natural sort off | full width leading char');
 
-    Sugar.Array.AlphanumericSortNatural = true;
+    Array.AlphanumericSortNatural = true;
 
 
 
@@ -2751,12 +2743,12 @@ package('Array', function () {
     var fn1 = function() {};
     var fn2 = function() {};
 
-    if(Sugar.Object && Sugar.Object.equal) {
-      equal(run([fn1, fn1, fn1], 'all', [function(el) { return Sugar.Object.equal(el, fn1); }]), true, 'functions can be matched inside the callback');
-      equal(run([fn1, fn1, fn2], 'all', [function(el) { return Sugar.Object.equal(el, fn1); }]), false, 'functions can be matched inside the callback');
-      equal(run([fn1, fn1, fn2], 'any', [function(el) { return Sugar.Object.equal(el, fn1); }]), true, 'functions can be matched inside the callback');
-      equal(run([fn1, fn2, fn1], 'findAll', [function(el) { return Sugar.Object.equal(el, fn1); }]), [fn1, fn1], 'functions can be matched inside the callback');
-      equal(run([fn1, fn2, fn1], 'findAll', [function(el) { return Sugar.Object.equal(el, fn2); }]), [fn2], 'fn2 | functions can be matched inside the callback');
+    if(Object.equal) {
+      equal(run([fn1, fn1, fn1], 'all', [function(el) { return Object.equal(el, fn1); }]), true, 'functions can be matched inside the callback');
+      equal(run([fn1, fn1, fn2], 'all', [function(el) { return Object.equal(el, fn1); }]), false, 'functions can be matched inside the callback');
+      equal(run([fn1, fn1, fn2], 'any', [function(el) { return Object.equal(el, fn1); }]), true, 'functions can be matched inside the callback');
+      equal(run([fn1, fn2, fn1], 'findAll', [function(el) { return Object.equal(el, fn1); }]), [fn1, fn1], 'functions can be matched inside the callback');
+      equal(run([fn1, fn2, fn1], 'findAll', [function(el) { return Object.equal(el, fn2); }]), [fn2], 'fn2 | functions can be matched inside the callback');
     }
 
   });
@@ -2767,7 +2759,7 @@ package('Array', function () {
 
     var arr = ['c','b','a','à','å','ä','ö'];
 
-    var viaSort   = arr.sort(Sugar.Array.AlphanumericSort);
+    var viaSort   = arr.sort(Array.AlphanumericSort);
     var viaSortBy = run(arr, 'sortBy');
 
     equal(viaSort, viaSortBy, 'Array.SugarCollateStrings | should be exposed to allow sorting via native Array#sort');

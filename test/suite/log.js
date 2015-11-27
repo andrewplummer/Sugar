@@ -34,7 +34,7 @@ logResults = function(runtime, results, testName, exitOnFail) {
         logRed('Expected: ' + JSON.stringify(failure.expected) + ' but was: ' + JSON.stringify(failure.actual));
       } catch(e) {
         if (e instanceof TypeError) {
-          // Sugar.Date has a "toJSON" method which means if it or the Sugar
+          // Date has a "toJSON" method which means if it or the Sugar
           // global is stringified it will error. In most cases it's the global.
           logRed('Actual value was likely Sugar global object!');
         } else {

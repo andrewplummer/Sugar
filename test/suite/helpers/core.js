@@ -103,7 +103,7 @@
   restoreNativeState = function() {
     // "objectInstance" preserves state for future
     // method definitions, so reset that flag here.
-    Sugar.Object.extend({
+    Object.extend({
       methods: [],
       objectInstance: false
     });

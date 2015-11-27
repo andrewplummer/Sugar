@@ -2551,7 +2551,7 @@ package('Date', function () {
 
   group('Adding a locale', function() {
     testSetLocale('en');
-    Sugar.Date.addLocale('foobar', { months: ['a','b','c'] });
+    Date.addLocale('foobar', { months: ['a','b','c'] });
 
     equal(Date.getLocale().code, Date.getLocale('en').code, 'adding a locale does not affect the current locale');
     equal(Date.getLocale('foobar').months[0], 'a', 'new locale has been added');
@@ -2868,7 +2868,7 @@ package('Number', function () {
 
     // Issue #415 locale object properties should be exported.
 
-    var en = Sugar.Date.getLocale('en');
+    var en = Date.getLocale('en');
     var properties = [
       'ampm','articles','code','date','dateParse','day','duration','edge','full',
       'fullMonth','future','cachedFormat','compiledFormats', 'modifiers','long','modifiers','modifiersByName',

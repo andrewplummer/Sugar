@@ -248,9 +248,9 @@ package('Number Ranges', function () {
   });
 
   group('Array#create on number ranges', function() {
-    if(Sugar.Array.create) {
-      equal(Sugar.Array.create(getRange(1, 5)), [1,2,3,4,5], 'Array.create | should work on number ranges');
-      equal(Sugar.Array.create(getRange(5, 1)), [5,4,3,2,1], 'Array.create | should work on inverse number ranges');
+    if(Array.create) {
+      equal(Array.create(getRange(1, 5)), [1,2,3,4,5], 'Array.create | should work on number ranges');
+      equal(Array.create(getRange(5, 1)), [5,4,3,2,1], 'Array.create | should work on inverse number ranges');
     }
   });
 

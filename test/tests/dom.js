@@ -68,12 +68,12 @@ package('Array', function () {
 package('Object', function() {
 
   method('isObject', function() {
-    if(!Sugar.Object.isObject) return;
+    if(!Object.isObject) return;
     test(Object, [document], false, 'document does not respond to isObject');
   });
 
   method('clone', function() {
-    if(!Sugar.Object.clone) return;
+    if(!Object.clone) return;
 
     // Issue #307  Object.clone should error when cloning unknown types.
     raisesError(function(){ run(Object, 'clone', [document.body]); }, 'raises an error if trying to clone a DOM element');
@@ -82,7 +82,7 @@ package('Object', function() {
   });
 
   method('isFunction', function() {
-    if(!Sugar.Object.isFunction) return;
+    if(!Object.isFunction) return;
     test(Object, [document.createElement('embed')], false, 'not true for embed objects');
   });
 
