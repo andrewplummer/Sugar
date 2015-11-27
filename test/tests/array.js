@@ -867,7 +867,7 @@ package('Array', function () {
     arr.sort(function(a, b) {
       return a.name > b.name;
     });
-    setIsEqual(arr, [people[1], people[2]], 'contains mary and ronnie');
+    assertArrayEquivalent(arr, [people[1], people[2]], 'contains mary and ronnie');
 
     arr.sort(function(a, b) {
       return a.age - b.age;
@@ -2505,43 +2505,43 @@ package('Array', function () {
       return 'd';
     }
 
-    setIsEqual(run([1,2,3], 'union', [[3,4,5]]), [1,2,3,4,5], 'basic');
-    setIsEqual(run([1,2,3], 'union', [['1','2','3']]), [1,2,3,'1','2','3'], 'Numbers vs. Strings');
-    setIsEqual(run([[1,2,3]], 'union', [[['1','2','3']]]), [[1,2,3],['1','2','3']], 'Numbers vs. Strings nested');
+    assertArrayEquivalent(run([1,2,3], 'union', [[3,4,5]]), [1,2,3,4,5], 'basic');
+    assertArrayEquivalent(run([1,2,3], 'union', [['1','2','3']]), [1,2,3,'1','2','3'], 'Numbers vs. Strings');
+    assertArrayEquivalent(run([[1,2,3]], 'union', [[['1','2','3']]]), [[1,2,3],['1','2','3']], 'Numbers vs. Strings nested');
 
-    setIsEqual(run([1,2,3], 'union', [[1,2,3]]), [1,2,3], 'Number array');
-    setIsEqual(run([[1,2,3]], 'union', [[[1,2,3]]]), [[1,2,3]], 'Nested number array');
-    setIsEqual(run([[1,2,3]], 'union', [[[3,2,1]]]), [[1,2,3],[3,2,1]], 'Nested and reversed');
+    assertArrayEquivalent(run([1,2,3], 'union', [[1,2,3]]), [1,2,3], 'Number array');
+    assertArrayEquivalent(run([[1,2,3]], 'union', [[[1,2,3]]]), [[1,2,3]], 'Nested number array');
+    assertArrayEquivalent(run([[1,2,3]], 'union', [[[3,2,1]]]), [[1,2,3],[3,2,1]], 'Nested and reversed');
 
-    setIsEqual(run([aFunc], 'union', [[bFunc]]), [aFunc, bFunc], 'Function references');
-    setIsEqual(run([aFunc], 'union', [[bFunc, cFunc]]), [aFunc, bFunc, cFunc], 'Function references');
-    setIsEqual(run([aFunc, bFunc], 'union', [[bFunc, cFunc]]), [aFunc, bFunc, cFunc], 'Function references');
-    setIsEqual(run([aFunc, bFunc, cFunc], 'union', [[aFunc, bFunc, cFunc]]), [aFunc, bFunc, cFunc], 'Function references');
-    setIsEqual(run([cFunc, cFunc], 'union', [[cFunc, cFunc]]), [cFunc], 'Function references');
-    setIsEqual(run([], 'union', [[aFunc]]), [aFunc], 'Function references');
+    assertArrayEquivalent(run([aFunc], 'union', [[bFunc]]), [aFunc, bFunc], 'Function references');
+    assertArrayEquivalent(run([aFunc], 'union', [[bFunc, cFunc]]), [aFunc, bFunc, cFunc], 'Function references');
+    assertArrayEquivalent(run([aFunc, bFunc], 'union', [[bFunc, cFunc]]), [aFunc, bFunc, cFunc], 'Function references');
+    assertArrayEquivalent(run([aFunc, bFunc, cFunc], 'union', [[aFunc, bFunc, cFunc]]), [aFunc, bFunc, cFunc], 'Function references');
+    assertArrayEquivalent(run([cFunc, cFunc], 'union', [[cFunc, cFunc]]), [cFunc], 'Function references');
+    assertArrayEquivalent(run([], 'union', [[aFunc]]), [aFunc], 'Function references');
     // PICK UP HERE
 
     equal(run([function() { return 'a'; }], 'union', [[function() { return 'a'; }]]).length, 2, 'Functions are never equivalent');
 
 
-    setIsEqual(run([/bar/], 'union', [[/bas/]]), [/bar/,/bas/], 'Regexes');
-    setIsEqual(run([[/bar/]], 'union', [[[/bas/,/bap/]]]), [[/bar/],[/bas/,/bap/]], 'Nested Regexes');
-    setIsEqual(run([{ reg: /bar/ }], 'union', [[{ reg: /bar/ }, { reg: /map/ }]]), [{ reg: /bar/ }, { reg: /map/ }], 'Object Regexes');
+    assertArrayEquivalent(run([/bar/], 'union', [[/bas/]]), [/bar/,/bas/], 'Regexes');
+    assertArrayEquivalent(run([[/bar/]], 'union', [[[/bas/,/bap/]]]), [[/bar/],[/bas/,/bap/]], 'Nested Regexes');
+    assertArrayEquivalent(run([{ reg: /bar/ }], 'union', [[{ reg: /bar/ }, { reg: /map/ }]]), [{ reg: /bar/ }, { reg: /map/ }], 'Object Regexes');
 
-    setIsEqual(run([true], 'union', [[false]]), [true,false], 'Booleans');
-    setIsEqual(run([true], 'union', [[true]]), [true], 'Same Booleans');
-    setIsEqual(run([[true]], 'union', [[[true, false]]]), [[true],[true, false]], 'Nested Booleans');
-    setIsEqual(run([{ b: false }], 'union', [[{ b: false }, { b: true }]]), [{ b: false }, { b: true }], 'Object Booleans');
+    assertArrayEquivalent(run([true], 'union', [[false]]), [true,false], 'Booleans');
+    assertArrayEquivalent(run([true], 'union', [[true]]), [true], 'Same Booleans');
+    assertArrayEquivalent(run([[true]], 'union', [[[true, false]]]), [[true],[true, false]], 'Nested Booleans');
+    assertArrayEquivalent(run([{ b: false }], 'union', [[{ b: false }, { b: true }]]), [{ b: false }, { b: true }], 'Object Booleans');
 
 
-    setIsEqual(run([{},{}], 'union', [[{},{}]]), [{}], 'empty object array');
-    setIsEqual(run([[{}]], 'union', [[[{},{}]]]), [[{}],[{},{}]], 'nested empty object array');
-    setIsEqual(run([[{},{}]], 'union', [[[{},{}]]]), [[{},{}]], 'nested double object array');
+    assertArrayEquivalent(run([{},{}], 'union', [[{},{}]]), [{}], 'empty object array');
+    assertArrayEquivalent(run([[{}]], 'union', [[[{},{}]]]), [[{}],[{},{}]], 'nested empty object array');
+    assertArrayEquivalent(run([[{},{}]], 'union', [[[{},{}]]]), [[{},{}]], 'nested double object array');
 
-    setIsEqual(run([{0:1}], 'union', [[[1]]]), [{0:1},[1]], 'object posing as array');
-    setIsEqual(run([{}], 'union', [[[]]]), [{},[]], 'empty object vs. empty array');
+    assertArrayEquivalent(run([{0:1}], 'union', [[[1]]]), [{0:1},[1]], 'object posing as array');
+    assertArrayEquivalent(run([{}], 'union', [[[]]]), [{},[]], 'empty object vs. empty array');
 
-    setIsEqual(run([[[],1]], 'union', [[[[1]]]]), [[[],1], [[1]]], 'empty array, 1 vs. empty array WITH one');
+    assertArrayEquivalent(run([[[],1]], 'union', [[[[1]]]]), [[[],1], [[1]]], 'empty array, 1 vs. empty array WITH one');
 
     var aObj = {
       text: 'foo',
@@ -2579,17 +2579,17 @@ package('Array', function () {
     }
 
 
-    setIsEqual(run([aObj], 'union', [[aObj]]), [aObj], 'Nested objects a + a');
-    setIsEqual(run([aObj], 'union', [[bObj]]), [aObj], 'Nested objects a + b');
-    setIsEqual(run([aObj,bObj,cObj], 'union', [[]]), [aObj, cObj], 'Nested objects a,b,c + []');
-    setIsEqual(run([], 'union', [[aObj,bObj,cObj]]), [aObj, cObj], 'Nested objects [] + a,b,c');
-    setIsEqual(run([aObj,bObj], 'union', [[cObj]]), [aObj, cObj], 'Nested objects a,b + c');
-    setIsEqual(run([cObj, cObj], 'union', [[cObj, cObj]]), [cObj], 'Nested objects c,c + c,c');
-    setIsEqual(run([aObj, bObj, cObj, dObj], 'union', [[]]), [aObj, cObj, dObj], 'Nested objects a,b,c,d + []');
-    setIsEqual(run([], 'union', [[aObj, bObj, cObj, dObj]]), [aObj, cObj, dObj], 'Nested objects a,b,c,d + a,c,d');
-    setIsEqual(run([aObj, bObj], 'union', [[cObj, dObj]]), [aObj, cObj, dObj], 'Nested objects a,b + c,d');
+    assertArrayEquivalent(run([aObj], 'union', [[aObj]]), [aObj], 'Nested objects a + a');
+    assertArrayEquivalent(run([aObj], 'union', [[bObj]]), [aObj], 'Nested objects a + b');
+    assertArrayEquivalent(run([aObj,bObj,cObj], 'union', [[]]), [aObj, cObj], 'Nested objects a,b,c + []');
+    assertArrayEquivalent(run([], 'union', [[aObj,bObj,cObj]]), [aObj, cObj], 'Nested objects [] + a,b,c');
+    assertArrayEquivalent(run([aObj,bObj], 'union', [[cObj]]), [aObj, cObj], 'Nested objects a,b + c');
+    assertArrayEquivalent(run([cObj, cObj], 'union', [[cObj, cObj]]), [cObj], 'Nested objects c,c + c,c');
+    assertArrayEquivalent(run([aObj, bObj, cObj, dObj], 'union', [[]]), [aObj, cObj, dObj], 'Nested objects a,b,c,d + []');
+    assertArrayEquivalent(run([], 'union', [[aObj, bObj, cObj, dObj]]), [aObj, cObj, dObj], 'Nested objects a,b,c,d + a,c,d');
+    assertArrayEquivalent(run([aObj, bObj], 'union', [[cObj, dObj]]), [aObj, cObj, dObj], 'Nested objects a,b + c,d');
 
-    setIsEqual(run([aObj, bObj, cObj, dObj, eObj], 'union', [[aObj, bObj, cObj, dObj, eObj]]), [aObj, cObj, dObj, eObj], 'Nested objects a,b,c,d,e + a,b,c,d,e');
+    assertArrayEquivalent(run([aObj, bObj, cObj, dObj, eObj], 'union', [[aObj, bObj, cObj, dObj, eObj]]), [aObj, cObj, dObj, eObj], 'Nested objects a,b,c,d,e + a,b,c,d,e');
 
     var aFuncObj = {
       text: 'foo',
@@ -2616,15 +2616,15 @@ package('Array', function () {
     }
 
 
-    setIsEqual(run([aFuncObj], 'union', [[aFuncObj]]), [aFuncObj], 'Nested objects with functions');
-    setIsEqual(run([aFuncObj], 'union', [[bFuncObj]]), [aFuncObj], 'Nested objects with functions');
-    setIsEqual(run([aFuncObj,bFuncObj,cFuncObj], 'union', [[]]), [aFuncObj, cFuncObj], 'Nested objects with functions');
-    setIsEqual(run([aFuncObj,bFuncObj], 'union', [[cFuncObj]]), [aFuncObj, cFuncObj], 'Nested objects with functions');
-    setIsEqual(run([cFuncObj, cFuncObj], 'union', [[cFuncObj, cFuncObj]]), [cFuncObj], 'Nested objects with functions meh');
+    assertArrayEquivalent(run([aFuncObj], 'union', [[aFuncObj]]), [aFuncObj], 'Nested objects with functions');
+    assertArrayEquivalent(run([aFuncObj], 'union', [[bFuncObj]]), [aFuncObj], 'Nested objects with functions');
+    assertArrayEquivalent(run([aFuncObj,bFuncObj,cFuncObj], 'union', [[]]), [aFuncObj, cFuncObj], 'Nested objects with functions');
+    assertArrayEquivalent(run([aFuncObj,bFuncObj], 'union', [[cFuncObj]]), [aFuncObj, cFuncObj], 'Nested objects with functions');
+    assertArrayEquivalent(run([cFuncObj, cFuncObj], 'union', [[cFuncObj, cFuncObj]]), [cFuncObj], 'Nested objects with functions meh');
 
-    setIsEqual(run([NaN,NaN], 'union', [[NaN,NaN]]), [NaN], 'NaN');
-    setIsEqual(run([null,null], 'union', [[null,null]]), [null], 'Null');
-    setIsEqual(run([undefined], 'union', [[undefined]]), sparseArraySupport ? [undefined] : [], 'undefined');
+    assertArrayEquivalent(run([NaN,NaN], 'union', [[NaN,NaN]]), [NaN], 'NaN');
+    assertArrayEquivalent(run([null,null], 'union', [[null,null]]), [null], 'Null');
+    assertArrayEquivalent(run([undefined], 'union', [[undefined]]), sparseArraySupport ? [undefined] : [], 'undefined');
 
 
     var aObj = {
@@ -2645,47 +2645,47 @@ package('Array', function () {
     var xFunc = function (){ return 'x'; }
     var yFunc = function (){ return 'y'; }
 
-    setIsEqual(run([xFunc], 'union', [[]]), [xFunc], 'functions with different content | [x] + []');
-    setIsEqual(run([yFunc], 'union', [[]]), [yFunc], 'functions with different content | [y] + []');
-    setIsEqual(run([], 'union', [[xFunc]]), [xFunc], 'functions with different content | [] + [x]');
-    setIsEqual(run([], 'union', [[yFunc]]), [yFunc], 'functions with different content | [] + [y]');
-    setIsEqual(run([], 'union', [[xFunc, yFunc]]), [xFunc,yFunc], 'functions with different content | [] + [x,y]');
-    setIsEqual(run([xFunc], 'union', [[xFunc]]), [xFunc], 'functions with different content | [x] + [x]');
-    setIsEqual(run([xFunc], 'union', [[yFunc]]), [xFunc,yFunc], 'functions with different content | [x] + [y]');
-    setIsEqual(run([xFunc], 'union', [[xFunc, yFunc]]), [xFunc,yFunc], 'functions with different content | [x] + [x,y]');
-    setIsEqual(run([xFunc, xFunc], 'union', [[xFunc, yFunc]]), [xFunc,yFunc], 'functions with different content | [x,x] + [x,y]');
-    setIsEqual(run([xFunc, xFunc], 'union', [[xFunc, xFunc]]), [xFunc], 'functions with different content | [x,x] + [x,x]');
-    setIsEqual(run([xFunc, yFunc], 'union', [[xFunc, yFunc]]), [xFunc,yFunc], 'functions with different content | [x,y] + [x,y]');
-    setIsEqual(run([xFunc, yFunc], 'union', [[yFunc, xFunc]]), [xFunc,yFunc], 'functions with different content | [x,y] + [y,x]');
-    setIsEqual(run([xFunc, yFunc], 'union', [[yFunc, yFunc]]), [xFunc,yFunc], 'functions with different content | [x,y] + [y,y]');
-    setIsEqual(run([yFunc, xFunc], 'union', [[yFunc, xFunc]]), [yFunc,xFunc], 'functions with different content | [y,x] + [y,x]');
-    setIsEqual(run([yFunc, xFunc], 'union', [[xFunc, yFunc]]), [yFunc,xFunc], 'functions with different content | [y,x] + [x,y]');
-    setIsEqual(run([yFunc, xFunc], 'union', [[xFunc, xFunc]]), [yFunc,xFunc], 'functions with different content | [y,x] + [x,x]');
-    setIsEqual(run([xFunc, xFunc], 'union', [[yFunc, yFunc]]), [xFunc,yFunc], 'functions with different content | [x,x] + [y,y]');
-    setIsEqual(run([yFunc, yFunc], 'union', [[xFunc, xFunc]]), [yFunc,xFunc], 'functions with different content | [y,y] + [x,x]');
+    assertArrayEquivalent(run([xFunc], 'union', [[]]), [xFunc], 'functions with different content | [x] + []');
+    assertArrayEquivalent(run([yFunc], 'union', [[]]), [yFunc], 'functions with different content | [y] + []');
+    assertArrayEquivalent(run([], 'union', [[xFunc]]), [xFunc], 'functions with different content | [] + [x]');
+    assertArrayEquivalent(run([], 'union', [[yFunc]]), [yFunc], 'functions with different content | [] + [y]');
+    assertArrayEquivalent(run([], 'union', [[xFunc, yFunc]]), [xFunc,yFunc], 'functions with different content | [] + [x,y]');
+    assertArrayEquivalent(run([xFunc], 'union', [[xFunc]]), [xFunc], 'functions with different content | [x] + [x]');
+    assertArrayEquivalent(run([xFunc], 'union', [[yFunc]]), [xFunc,yFunc], 'functions with different content | [x] + [y]');
+    assertArrayEquivalent(run([xFunc], 'union', [[xFunc, yFunc]]), [xFunc,yFunc], 'functions with different content | [x] + [x,y]');
+    assertArrayEquivalent(run([xFunc, xFunc], 'union', [[xFunc, yFunc]]), [xFunc,yFunc], 'functions with different content | [x,x] + [x,y]');
+    assertArrayEquivalent(run([xFunc, xFunc], 'union', [[xFunc, xFunc]]), [xFunc], 'functions with different content | [x,x] + [x,x]');
+    assertArrayEquivalent(run([xFunc, yFunc], 'union', [[xFunc, yFunc]]), [xFunc,yFunc], 'functions with different content | [x,y] + [x,y]');
+    assertArrayEquivalent(run([xFunc, yFunc], 'union', [[yFunc, xFunc]]), [xFunc,yFunc], 'functions with different content | [x,y] + [y,x]');
+    assertArrayEquivalent(run([xFunc, yFunc], 'union', [[yFunc, yFunc]]), [xFunc,yFunc], 'functions with different content | [x,y] + [y,y]');
+    assertArrayEquivalent(run([yFunc, xFunc], 'union', [[yFunc, xFunc]]), [yFunc,xFunc], 'functions with different content | [y,x] + [y,x]');
+    assertArrayEquivalent(run([yFunc, xFunc], 'union', [[xFunc, yFunc]]), [yFunc,xFunc], 'functions with different content | [y,x] + [x,y]');
+    assertArrayEquivalent(run([yFunc, xFunc], 'union', [[xFunc, xFunc]]), [yFunc,xFunc], 'functions with different content | [y,x] + [x,x]');
+    assertArrayEquivalent(run([xFunc, xFunc], 'union', [[yFunc, yFunc]]), [xFunc,yFunc], 'functions with different content | [x,x] + [y,y]');
+    assertArrayEquivalent(run([yFunc, yFunc], 'union', [[xFunc, xFunc]]), [yFunc,xFunc], 'functions with different content | [y,y] + [x,x]');
 
 
     xFunc = function (){}
     yFunc = function (){}
 
-    setIsEqual(run([xFunc], 'union', [[]]), [xFunc], 'functions with identical content | [x] + []');
-    setIsEqual(run([yFunc], 'union', [[]]), [yFunc], 'functions with identical content | [y] + []');
-    setIsEqual(run([], 'union', [[xFunc]]), [xFunc], 'functions with identical content | [] + [x]');
-    setIsEqual(run([], 'union', [[yFunc]]), [yFunc], 'functions with identical content | [] + [y]');
-    setIsEqual(run([], 'union', [[xFunc, yFunc]]), [xFunc,yFunc], 'functions with identical content | [] + [x,y]');
-    setIsEqual(run([xFunc], 'union', [[xFunc]]), [xFunc], 'functions with identical content | [x] + [x]');
-    setIsEqual(run([xFunc], 'union', [[yFunc]]), [xFunc,yFunc], 'functions with identical content | [x] + [y]');
-    setIsEqual(run([xFunc], 'union', [[xFunc, yFunc]]), [xFunc,yFunc], 'functions with identical content | [x] + [x,y]');
-    setIsEqual(run([xFunc, xFunc], 'union', [[xFunc, yFunc]]), [xFunc,yFunc], 'functions with identical content | [x,x] + [x,y]');
-    setIsEqual(run([xFunc, xFunc], 'union', [[xFunc, xFunc]]), [xFunc], 'functions with identical content | [x,x] + [x,x]');
-    setIsEqual(run([xFunc, yFunc], 'union', [[xFunc, yFunc]]), [xFunc,yFunc], 'functions with identical content | [x,y] + [x,y]');
-    setIsEqual(run([xFunc, yFunc], 'union', [[yFunc, xFunc]]), [xFunc,yFunc], 'functions with identical content | [x,y] + [y,x]');
-    setIsEqual(run([xFunc, yFunc], 'union', [[yFunc, yFunc]]), [xFunc,yFunc], 'functions with identical content | [x,y] + [y,y]');
-    setIsEqual(run([yFunc, xFunc], 'union', [[yFunc, xFunc]]), [yFunc,xFunc], 'functions with identical content | [y,x] + [y,x]');
-    setIsEqual(run([yFunc, xFunc], 'union', [[xFunc, yFunc]]), [yFunc,xFunc], 'functions with identical content | [y,x] + [x,y]');
-    setIsEqual(run([yFunc, xFunc], 'union', [[xFunc, xFunc]]), [yFunc,xFunc], 'functions with identical content | [y,x] + [x,x]');
-    setIsEqual(run([xFunc, xFunc], 'union', [[yFunc, yFunc]]), [xFunc,yFunc], 'functions with identical content | [x,x] + [y,y]');
-    setIsEqual(run([yFunc, yFunc], 'union', [[xFunc, xFunc]]), [yFunc,xFunc], 'functions with identical content | [y,y] + [x,x]');
+    assertArrayEquivalent(run([xFunc], 'union', [[]]), [xFunc], 'functions with identical content | [x] + []');
+    assertArrayEquivalent(run([yFunc], 'union', [[]]), [yFunc], 'functions with identical content | [y] + []');
+    assertArrayEquivalent(run([], 'union', [[xFunc]]), [xFunc], 'functions with identical content | [] + [x]');
+    assertArrayEquivalent(run([], 'union', [[yFunc]]), [yFunc], 'functions with identical content | [] + [y]');
+    assertArrayEquivalent(run([], 'union', [[xFunc, yFunc]]), [xFunc,yFunc], 'functions with identical content | [] + [x,y]');
+    assertArrayEquivalent(run([xFunc], 'union', [[xFunc]]), [xFunc], 'functions with identical content | [x] + [x]');
+    assertArrayEquivalent(run([xFunc], 'union', [[yFunc]]), [xFunc,yFunc], 'functions with identical content | [x] + [y]');
+    assertArrayEquivalent(run([xFunc], 'union', [[xFunc, yFunc]]), [xFunc,yFunc], 'functions with identical content | [x] + [x,y]');
+    assertArrayEquivalent(run([xFunc, xFunc], 'union', [[xFunc, yFunc]]), [xFunc,yFunc], 'functions with identical content | [x,x] + [x,y]');
+    assertArrayEquivalent(run([xFunc, xFunc], 'union', [[xFunc, xFunc]]), [xFunc], 'functions with identical content | [x,x] + [x,x]');
+    assertArrayEquivalent(run([xFunc, yFunc], 'union', [[xFunc, yFunc]]), [xFunc,yFunc], 'functions with identical content | [x,y] + [x,y]');
+    assertArrayEquivalent(run([xFunc, yFunc], 'union', [[yFunc, xFunc]]), [xFunc,yFunc], 'functions with identical content | [x,y] + [y,x]');
+    assertArrayEquivalent(run([xFunc, yFunc], 'union', [[yFunc, yFunc]]), [xFunc,yFunc], 'functions with identical content | [x,y] + [y,y]');
+    assertArrayEquivalent(run([yFunc, xFunc], 'union', [[yFunc, xFunc]]), [yFunc,xFunc], 'functions with identical content | [y,x] + [y,x]');
+    assertArrayEquivalent(run([yFunc, xFunc], 'union', [[xFunc, yFunc]]), [yFunc,xFunc], 'functions with identical content | [y,x] + [x,y]');
+    assertArrayEquivalent(run([yFunc, xFunc], 'union', [[xFunc, xFunc]]), [yFunc,xFunc], 'functions with identical content | [y,x] + [x,x]');
+    assertArrayEquivalent(run([xFunc, xFunc], 'union', [[yFunc, yFunc]]), [xFunc,yFunc], 'functions with identical content | [x,x] + [y,y]');
+    assertArrayEquivalent(run([yFunc, yFunc], 'union', [[xFunc, xFunc]]), [yFunc,xFunc], 'functions with identical content | [y,y] + [x,x]');
 
   });
 

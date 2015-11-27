@@ -7,7 +7,7 @@ package('Date', function () {
   group('Locale Setup', function() {
 
     // Imaginary locale to test locale switching
-    testAddLocale('fo', {
+    Date.addLocale('fo', {
       units: 'do,re,mi,fa,so,la,ti,do',
       months: 'do,re,mi,fa,so,la,ti,do',
       dateParse: '{year}kupo',
@@ -15,7 +15,7 @@ package('Date', function () {
       long: 'yeehaw'
     });
 
-    notEqual(testGetLocale().code, undefined, 'Current locale must be something... other libs may overwrite this');
+    notEqual(Date.getLocale().code, undefined, 'Current locale must be something... other libs may overwrite this');
     testSetLocale('en');
 
   });
@@ -586,17 +586,17 @@ package('Date', function () {
 
 
   group('Create | UTC', function() {
-    dateEqual(runUTC('create', ['February 29, 2012 22:15:42', 'en']), new Date(Date.UTC(2012, 1, 29, 22, 15, 42)), 'full text');
-    dateEqual(runUTC('create', ['2012-05-31', 'en']), new Date(Date.UTC(2012, 4, 31)), 'dashed');
-    dateEqual(runUTC('create', ['1998-02-23 11:54:32', 'en']), new Date(Date.UTC(1998,1,23,11,54,32)), 'dashed with time');
-    dateEqual(runUTC('create', [{ year: 1998, month: 1, day: 23, hour: 11 }, 'en']), new Date(Date.UTC(1998,1,23,11)), 'params');
-    dateEqual(runUTC('create', ['08-25-1978 11:42:32.488am', 'en']), new Date(Date.UTC(1978, 7, 25, 11, 42, 32, 488)), 'full with ms');
-    dateEqual(runUTC('create', ['1994-11-05T13:15:30Z', 'en']), new Date(Date.UTC(1994, 10, 5, 13, 15, 30)), '"Z" is still utc');
-    dateEqual(runUTC('create', ['two days ago', 'en']), getRelativeDate(null, null, -2), 'relative dates are not UTC');
+    dateEqual(testCreateUTCDate('February 29, 2012 22:15:42'), new Date(Date.UTC(2012, 1, 29, 22, 15, 42)), 'full text');
+    dateEqual(testCreateUTCDate('2012-05-31'), new Date(Date.UTC(2012, 4, 31)), 'dashed');
+    dateEqual(testCreateUTCDate('1998-02-23 11:54:32'), new Date(Date.UTC(1998,1,23,11,54,32)), 'dashed with time');
+    dateEqual(testCreateUTCDate({ year: 1998, month: 1, day: 23, hour: 11 }), new Date(Date.UTC(1998,1,23,11)), 'params');
+    dateEqual(testCreateUTCDate('08-25-1978 11:42:32.488am'), new Date(Date.UTC(1978, 7, 25, 11, 42, 32, 488)), 'full with ms');
+    dateEqual(testCreateUTCDate('1994-11-05T13:15:30Z'), new Date(Date.UTC(1994, 10, 5, 13, 15, 30)), '"Z" is still utc');
+    dateEqual(testCreateUTCDate('two days ago'), getRelativeDate(null, null, -2), 'relative dates are not UTC');
 
     // New handling of UTC dates
 
-    var date1 = runUTC('create', ['2001-06-15', 'en']);
+    var date1 = testCreateUTCDate('2001-06-15');
     var date2 = new Date(2001, 5, 15);
     date2.setTime(date2.getTime() - (date2.getTimezoneOffset() * 60 * 1000));
 
@@ -609,32 +609,32 @@ package('Date', function () {
     dateEqual(d, new Date(2001, 5, 15), 'does not change date');
     dateEqual(dateRun(d, 'beginningOfMonth'), new Date(Date.UTC(2001, 5, 1)), 'the beginning of the month');
     dateEqual(dateRun(d, 'endOfMonth'), new Date(Date.UTC(2001, 5, 30, 23, 59, 59, 999)), 'the end of the month');
-    equal(run(d, 'minutesSince', [runUTC('create', ['2001-06-15', 'en'])]), d.getTimezoneOffset(), 'minutesSince is equal to the timezone offset');
+    equal(run(d, 'minutesSince', [testCreateUTCDate('2001-06-15')]), d.getTimezoneOffset(), 'minutesSince is equal to the timezone offset');
     equal(run(d, 'hoursSince', ['2001-6-14']), 24, 'hoursSince | does not actually shift time');
 
     var d = run(testCreateDate('1 month ago'), 'setUTC', [true])
     equal(run(d, 'isLastMonth'), true, 'isLastMonth');
 
-    var d = run(runUTC('create', ['2001-06-15', 'en']), 'setUTC', [true]);
+    var d = run(testCreateUTCDate('2001-06-15'), 'setUTC', [true]);
 
     equal(run(d, 'iso'), '2001-06-15T00:00:00.000Z', 'will properly be output in UTC');
     equal(run(d, 'format', ['{tz}']), '+0000', 'format UTC date will have +0000 offset');
     equal(run(d, 'getUTCOffset'), '+0000', 'getUTCOffset');
     dateEqual(dateRun(d, 'advance', ['1 month']), new Date(Date.UTC(2001, 6, 15)), 'advancing');
 
-    equal(run(run(runUTC('create', ['2010-02-01', 'en']), 'setUTC', [true]), 'daysInMonth'), 28, 'should find correct days in month');
-    equal(run(run(runUTC('create', ['2000-01', 'en']), 'setUTC', [true]), 'isLeapYear'), true, 'isLeapYear accounts for utc dates');
+    equal(run(run(testCreateUTCDate('2010-02-01'), 'setUTC', [true]), 'daysInMonth'), 28, 'should find correct days in month');
+    equal(run(run(testCreateUTCDate('2000-01'), 'setUTC', [true]), 'isLeapYear'), true, 'isLeapYear accounts for utc dates');
 
-    var d = run(runUTC('create', ['2000-02-18 11:00pm', 'en']), 'setUTC', [true]);
+    var d = run(testCreateUTCDate('2000-02-18 11:00pm'), 'setUTC', [true]);
 
     equal(run(d, 'is', ['Friday', null, true]), true, 'is friday');
     equal(run(d, 'isWeekday', [true]), true, 'friday isWeekday');
     equal(run(d, 'is', ['2000-02-18', null, true]), true, 'friday full date');
-    equal(run(d, 'isAfter', [runUTC('create', ['2000-02-18 10:00pm', 'en'])]), true, 'isAfter');
+    equal(run(d, 'isAfter', [testCreateUTCDate('2000-02-18 10:00pm')]), true, 'isAfter');
     equal(dateRun(d, 'reset'), new Date(Date.UTC(2000, 1, 18)), 'resetting');
 
 
-    var d = run(runUTC('create', ['2000-02-14', 'en']), 'setUTC', [true]);
+    var d = run(testCreateUTCDate('2000-02-14'), 'setUTC', [true]);
 
     equal(run(d, 'is', ['Monday', null, true]), true, 'is monday');
     equal(run(d, 'isWeekday', [true]), true, 'monday is a weekday');
@@ -644,7 +644,7 @@ package('Date', function () {
     equal(run(d, 'long'), 'February 14, 2000 12:00am', 'long format');
     equal(run(d, 'short'), 'February 14, 2000', 'short format');
 
-    equal(run(runUTC('create', ['1 minute ago', 'en']), 'relative'), '1 minute ago', 'relative dates are unaffected');
+    equal(run(testCreateUTCDate('1 minute ago'), 'relative'), '1 minute ago', 'relative dates are unaffected');
 
     var d = run(run(new Date(2001, 5, 15), 'setUTC', [true]), 'setUTC', [false]);
     equal(d._utc, false, 'utc flag can be set off');
@@ -660,12 +660,12 @@ package('Date', function () {
 
     // Issue #244
 
-    dateEqual(runUTC('create', ['0999']), new Date(Date.UTC(999, 0)), '3 digit year 999 should be equal to ISO8601');
-    dateEqual(runUTC('create', ['0123']), new Date(Date.UTC(123, 0)), '3 digit year 123 should be equal to ISO8601');
+    dateEqual(testCreateUTCDate('0999'), new Date(Date.UTC(999, 0)), '3 digit year 999 should be equal to ISO8601');
+    dateEqual(testCreateUTCDate('0123'), new Date(Date.UTC(123, 0)), '3 digit year 123 should be equal to ISO8601');
 
-    var d = run(runUTC('create', [2013, 0, 14]), 'setUTC', [true]);
+    var d = run(testCreateUTCDate({ year: 2013, month: 0, date: 14 }), 'setUTC', [true]);
     run(d, 'set', [{week:1}]);
-    dateEqual(d, runUTC('create', [2012, 11, 31]), 'utc dates should not throw errors on week set');
+    dateEqual(d, testCreateUTCDate('create', [2012, 11, 31]), 'utc dates should not throw errors on week set');
 
   });
 
@@ -1110,7 +1110,7 @@ package('Date', function () {
 
 
     // UTC Date
-    d = run(runUTC('create', ['2010-01-01 03:00', 'en']), 'setUTC', [true]);
+    d = run(testCreateUTCDate('2010-01-01 03:00'), 'setUTC', [true]);
 
     run(d, 'setWeekday', [1]);
     equal(d.getUTCDay(), 1, 'set | should account for UTC shift | getUTCDay');
@@ -1318,7 +1318,7 @@ package('Date', function () {
     d = testCreateDate('August 25, 2010 11:45:20', 'en');
     equal(run(d, 'setISOWeek', [1]), new Date(2010, 0, 6, 11, 45, 20).getTime(), 'returns a timestamp');
 
-    d = run(runUTC('create', ['January 1, 2010 02:15:20', 'en']), 'setUTC', [true]);
+    d = run(testCreateUTCDate('January 1, 2010 02:15:20'), 'setUTC', [true]);
 
     run(d, 'setISOWeek', [15]);
     dateEqual(d, new Date(Date.UTC(2010,3,16,2,15,20)), 'utc | week 15');
@@ -1407,8 +1407,8 @@ package('Date', function () {
     test(d, ['{Month}, {yyyy}'], 'August, 2010', 'month and year');
 
     var isotzd = getExpectedTimezoneOffset(d, true);
-    test(d, [getProperty(Date, 'ISO8601_DATE')], '2010-08-05', 'ISO8601_DATE | constant');
-    test(d, [getProperty(Date, 'ISO8601_DATETIME')], '2010-08-05T04:03:02.000'+isotzd, 'ISO8601_DATETIME | constant');
+    test(d, [Date.ISO8601_DATE], '2010-08-05', 'ISO8601_DATE | constant');
+    test(d, [Date.ISO8601_DATETIME], '2010-08-05T04:03:02.000'+isotzd, 'ISO8601_DATETIME | constant');
 
     test(d, ['ISO8601_DATE'], '2010-08-05', 'ISO8601_DATE | string');
     test(d, ['ISO8601_DATETIME'], '2010-08-05T04:03:02.000'+isotzd, 'ISO8601_DATETIME | string');
@@ -1417,8 +1417,8 @@ package('Date', function () {
     var d = new Date('August 5, 2010 04:03:02');
     var rfc1123 = testCapitalize(getWeekdayFromDate(d).slice(0,3))+', '+testPadNumber(d.getDate(), 2)+' '+testCapitalize(getMonthFromDate(d).slice(0,3))+' '+d.getFullYear()+' '+testPadNumber(d.getHours(), 2)+':'+testPadNumber(d.getMinutes(), 2)+':'+testPadNumber(d.getSeconds(), 2)+' '+ run(d, 'getUTCOffset');
     var rfc1036 = testCapitalize(getWeekdayFromDate(d))+', '+testPadNumber(d.getDate(), 2)+'-'+testCapitalize(getMonthFromDate(d).slice(0,3))+'-'+d.getFullYear().toString().slice(2)+' '+testPadNumber(d.getHours(), 2)+':'+testPadNumber(d.getMinutes(), 2)+':'+testPadNumber(d.getSeconds(), 2)+' '+run(d, 'getUTCOffset');
-    test(d, [getProperty(Date, 'RFC1123')], rfc1123, 'RFC1123 | constant');
-    test(d, [getProperty(Date, 'RFC1036')], rfc1036, 'RFC1036 | constant');
+    test(d, [Date.RFC1123], rfc1123, 'RFC1123 | constant');
+    test(d, [Date.RFC1036], rfc1036, 'RFC1036 | constant');
     test(d, ['RFC1123'], rfc1123, 'RFC1123 | string');
     test(d, ['RFC1036'], rfc1036, 'RFC1036 | string');
 
@@ -1432,10 +1432,10 @@ package('Date', function () {
     // ISO8601 - UTC
     var d = run(new Date('August 5, 2010 04:03:02'), 'setUTC', [true]);
     var iso = d.getUTCFullYear()+'-'+testPadNumber(d.getUTCMonth()+1, 2)+'-'+testPadNumber(d.getUTCDate(), 2)+'T'+testPadNumber(d.getUTCHours(), 2)+':'+testPadNumber(d.getUTCMinutes(), 2)+':'+testPadNumber(d.getUTCSeconds(), 2)+'.'+testPadNumber(d.getUTCMilliseconds(), 3)+'Z';
-    test(d, [getProperty(Date, 'ISO8601_DATETIME')], iso, 'ISO8601_DATETIME UTC | constant');
+    test(d, [Date.ISO8601_DATETIME], iso, 'ISO8601_DATETIME UTC | constant');
     test(d, ['ISO8601_DATETIME'], iso, 'ISO8601_DATETIME UTC');
 
-    test(new Date(NaN), [getProperty(Date, 'ISO8601_DATETIME')], 'Invalid Date', 'invalid');
+    test(new Date(NaN), [Date.ISO8601_DATETIME], 'Invalid Date', 'invalid');
 
     // Issue #262
     equal(/\d+-/.test(run(new Date(), 'format', ['{timezone}'])), false, 'Timezone format should not include hyphens')
@@ -1461,7 +1461,7 @@ package('Date', function () {
 
   method('iso', function() {
     var d = new Date('August 5, 2010 04:03:02');
-    var expected = run(run(d, 'setUTC', [true], 'format', [getProperty(Date, 'ISO8601_DATETIME')]));
+    var expected = run(run(d, 'setUTC', [true], 'format', [Date.ISO8601_DATETIME]));
     test(d, expected, 'Date#iso is an alias for the ISO8601_DATETIME format in UTC');
   });
 
@@ -1552,8 +1552,8 @@ package('Date', function () {
     // Issue #474
     // "1 month from now" can be forced back when there are not enough days in a month.
     // In these cases "relative()" should return "4 weeks from now" instead of "1 month from now".
-    testMonthsFromNow(1, '1 month from now', '4 weeks from now');
-    testMonthsFromNow(2, '2 months from now', '1 month from now');
+    equal(run(testCreateDate('11/10/2014 21:00:00'), 'daysSince', ['7/1/2014']), 132, 'daysSince should be 132 at 9pm');
+    equal(run(testCreateDate('11/10/2014 22:00:00'), 'daysSince', ['7/1/2014']), 132, 'daysSince should be 132 at 10pm');
 
   });
 
@@ -1955,7 +1955,7 @@ package('Date', function () {
     dateEqual(dateRun(d, 'endOfMonth', [true]), new Date(2012, 1, 29, 23, 59, 59, 999), 'endOfMonth | reset if true | February 29, 2012');
     dateEqual(dateRun(d, 'endOfYear', [true]), new Date(2012, 11, 31, 23, 59, 59, 999), 'endOfYear | reset if true | February 29, 2012');
 
-    var d = run(runUTC('create', ['January 1, 2010 02:00:00', 'en']), 'setUTC', [true]);
+    var d = run(testCreateUTCDate('January 1, 2010 02:00:00'), 'setUTC', [true]);
 
     dateEqual(dateRun(d, 'beginningOfDay'), new Date(Date.UTC(2010, 0)), 'beginningOfDay | utc');
     dateEqual(dateRun(d, 'beginningOfWeek'), new Date(Date.UTC(2009, 11, 27)), 'beginningOfWeek | utc');
@@ -2449,8 +2449,8 @@ package('Date', function () {
     run(Date, 'addFormat', ['on ze (\\d+)th of (january|february|march|april|may) lavigne', ['date','month'], 'en']);
     dateEqual(testCreateDate('on ze 18th of april lavigne', 'en'), new Date(thisYear, 3, 18), 'handles other formats');
 
-    equal(typeof testGetLocale(), 'object', 'current localization object is exposed in case needed');
-    equal(testGetLocale().code, 'en', 'adding the format did not change the current locale');
+    equal(typeof Date.getLocale(), 'object', 'current localization object is exposed in case needed');
+    equal(Date.getLocale().code, 'en', 'adding the format did not change the current locale');
 
   });
 
@@ -2469,7 +2469,7 @@ package('Date', function () {
     equal(run(new Date(2011, 5, 6), 'format', ['{Month}']), 'La', 'june is La');
 
     raisesError(function(){ testSetLocale(); }, 'no arguments raises error');
-    equal(testGetLocale().code, 'fo', 'setting locale with no arguments had no effect');
+    equal(Date.getLocale().code, 'fo', 'setting locale with no arguments had no effect');
     equal(run(new Date(2011, 5, 6), 'format', ['{Month}']), 'La', 'will not change the locale if no argument passed');
     equal(run(new Date(2011, 5, 6), 'format', ['', 'en']), 'June 6, 2011 12:00am', 'local locale should override global');
     equal(run(testCreateDate('5 months ago', 'en'), 'relative', ['en']), '5 months ago', 'local locale should override global');
@@ -2555,10 +2555,10 @@ package('Date', function () {
 
   group('Adding a locale', function() {
     testSetLocale('en');
-    testAddLocale('foobar', { months: ['a','b','c'] });
+    Sugar.Date.addLocale('foobar', { months: ['a','b','c'] });
 
-    equal(testGetLocale().code, testGetLocale('en').code, 'adding a locale does not affect the current locale');
-    equal(testGetLocale('foobar').months[0], 'a', 'new locale has been added');
+    equal(Date.getLocale().code, Date.getLocale('en').code, 'adding a locale does not affect the current locale');
+    equal(Date.getLocale('foobar').months[0], 'a', 'new locale has been added');
     dateEqual(testCreateDate('a', 'foobar'), testCreateDate('January'), 'formats have been recognized');
   });
 

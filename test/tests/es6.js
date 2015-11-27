@@ -66,7 +66,7 @@ package('ES6', function () {
       visited.push(el);
     });
 
-    equal(visited, ['a','b'], 'Array#find | should not visit undefined indexes');
+    equal(visited, testGetArrayWithUndefined('a', undefined, 'b'), 'Array#find | should visit undefined indexes');
 
 
     arr = ['a'];
@@ -139,7 +139,7 @@ package('ES6', function () {
       visited.push(el);
     });
 
-    equal(visited, ['a','b'], 'Array#findIndex | should not visit undefined indexes');
+    equal(visited, testGetArrayWithUndefined('a', undefined, 'b'), 'Array#findIndex | should visit undefined indexes');
 
     arr = ['a'];
     visited = [];
