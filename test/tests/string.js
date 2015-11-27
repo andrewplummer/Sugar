@@ -62,14 +62,10 @@ package('String', function () {
 
   method('escapeHTML', function() {
 
-    test('<p>some text</p>', '&lt;p&gt;some text&lt;&#x2f;p&gt;', '<p>some text</p>');
+    test('<p>some text</p>', '&lt;p&gt;some text&lt;/p&gt;', '<p>some text</p>');
     test('war & peace & food', 'war &amp; peace &amp; food', 'war & peace');
     test('&amp;', '&amp;amp;', 'double escapes &amp;');
-    test('&lt;span&gt;already escaped, yo&lt;&#x2f;span&gt;', '&amp;lt;span&amp;gt;already escaped, yo&amp;lt;&amp;#x2f;span&amp;gt;', 'already escaped will be double-escaped');
-
-    test("hell's", 'hell&apos;s', "works on '");
-    test('I know that "feel" bro', 'I know that &quot;feel&quot; bro', 'works on "');
-    test('feel the /', 'feel the &#x2f;', 'works on /');
+    test('&lt;span&gt;already escaped, yo&lt;/span&gt;', '&amp;lt;span&amp;gt;already escaped, yo&amp;lt;/span&amp;gt;', 'already escaped will be double-escaped');
 
   });
 
