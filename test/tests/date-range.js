@@ -9,6 +9,18 @@ package('Date | Ranges', function () {
     testSetLocale('en');
   });
 
+  function assertDateArrayIsSequential(arr, amt) {
+    var sequential = true;
+    for (var i = 1; i < arr.length; i++) {
+      var d1 = arr[i - 1];
+      var d2 = arr[i];
+      if (d2 - d1 !== amt) {
+        sequential = false;
+      }
+    }
+    equal(sequential, true, 'sequence should be sequential');
+  }
+
   group('Basics', function() {
 
     var range = createRange(NaN, NaN);
@@ -281,5 +293,32 @@ package('Date | Ranges', function () {
     dateEqual(range.clamp(new Date(2013, 5).getTime()), new Date(2011, 0), 'high number');
     equal(range.clamp(new Date(2010, 5).getTime()), new Date(2010, 5).getTime(), 'mid number');
   });
+
+  group('DST', function() {
+
+    // Issue #468
+
+    var fifteenMinutes = 15 * 60 * 1000;
+
+    var d1 = new Date(2015, 2, 8, 0);
+    var d2 = new Date(2015, 2, 8, 2);
+    var range = createRange(d1, d2);
+    var dt = d2 - d1;
+    var arr = range.every('15 minutes');
+    equal(range.span(), dt + 1, 'span should be numerically equal');
+    equal(arr.length, Math.floor(dt / fifteenMinutes) + 1, 'span should be numerically equal');
+    assertDateArrayIsSequential(arr, fifteenMinutes);
+
+    var d1 = new Date(2015, 10, 1, 0);
+    var d2 = new Date(2015, 10, 1, 3);
+    var range = createRange(d1, d2);
+    var dt = d2 - d1;
+    var arr = range.every('15 minutes');
+    equal(range.span(), dt + 1, 'span should be numerically equal');
+    equal(arr.length, Math.floor(dt / fifteenMinutes) + 1, 'span should be numerically equal');
+    assertDateArrayIsSequential(arr, fifteenMinutes);
+
+  });
+
 
 });

@@ -30,6 +30,7 @@ v1.5.0
 - Date.create(null) is now interpeted as a time stamp (#387)
 - Fix for ambiguous years not working with `Date#past/future` (#383)
 - Fix for odd iOS7 bug with `Number#abs` (#400)
+- Fixed many issues with DST and simplified month traversal.
 
 v1.4.1
 ======

@@ -241,6 +241,25 @@ assertAddUnitIsNumericallyEqual = function (d, method, add, message) {
   equal(run(new Date(d.getTime()), method, [add]) - d, add * mult, message);
 }
 
+assertAddUnitIsSequential = function (d, method, add, message) {
+  var mult;
+  message = [message, method, add, 'should be sequential'].join(' | ');
+  switch (method.match(/add(\w+)/)[1]) {
+    case 'Seconds':
+      mult = 1000;
+    break;
+    case 'Minutes':
+      mult = 60 * 1000;
+    break;
+    case 'Hours':
+      mult = 60 * 60 * 1000;
+    break;
+    default:
+      mult = 1;
+  }
+  equal(run(new Date(d), method, [add]) - d, add * mult, message);
+}
+
 // For some awesome reason, calling any "set" method on a newly created date
 // will have the effect of choosing the first ambiguous hour during a DST shift
 // backward. For example, if you are in Mountain Time on Nov 2nd 1:00am, a date
