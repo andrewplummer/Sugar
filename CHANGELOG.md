@@ -12,7 +12,6 @@ v1.5.0
 - Added `Number.isNaN` shim.
 - Alphanumeric array options are now on the global object.
 - Moved `Object.map`, `Object.each`, and `Object.size` to the object package.
-- Removed `Object.reduce`.
 - Added `Object.isArguments`.
 - Changed `String#each` to allow breaking the loop with `false`.
 - Added `String#map`.

@@ -14,9 +14,6 @@ v1.5.0+
 =======
 
 - Level: Major
-  - `Object.reduce` is now deprecated. Use `Array#reduce` together with `Object.keys` instead.
-
-- Level: Major
   - `Object.merge` and `Object.clone` now work on non-enumerable properties if supported. This is great for more robust merging of objects, but there are some side effects. The most major is that when arrays are merged together now (as objects) their length property will be merged as well. This will effectively mean that if an array of length 3 is merged into an array of length 4, the result will also have length 3 (depending on the merge strategy) which will chop off the last element. This is also true for nested arrays in the case of deep merging. If you are performing simple operations on straight arrays, consider using `Array#intersect` or `Array#union` instead, which are much more optimized for arrays. If you are doing complex, deep merging with nested arrays of varying length, you will need to pass a function as the resolve strategy and check for arrays using `Array.isArray` and handle appropriately. Additionally, IE8 and below do not have support for iterating over non-enumerable properties, so the results can be different here depending on environment. Sticking to standard object literals when merging/cloning will ensure maximum browser support.
 
 - Level: Major
@@ -43,11 +40,15 @@ v1.5.0+
 - Level: Minor
   - `Date.SugarNewDate` is now `Sugar.Date.newDateInternal`. This method is always on the `Sugar` global (not `Date`).
 
-- Level: Minor
-  - `Object.map`, `Object.each`, and `Object.size` were moved to the Object package from the Array package. If you were using these methods and making custom builds you may have to include the Object package now as well.
-
 - Level: Very Minor
   - Some minor behavior changes around the way `String#removeTags` works on malformed html. Unmatched closing tags will now be removed.
+
+
+v1.4.2+
+=======
+
+- Level: Minor
+  - `Object.map`, `Object.each`, and `Object.size` were moved to the Object package from the Array package. If you were using these methods and making custom builds you may have to include the Object package now as well.
 
 
 v1.4.1+

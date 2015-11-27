@@ -1401,6 +1401,30 @@ package('Object', function () {
     testStaticAndInstance(obj2, ['age'], {foo:11,bar:22,moo:33,car:44}, 'mapping nested properties with string shortcut');
   });
 
+  method('reduce', function() {
+    var obj1 = {
+      foo: 3,
+      bar: 4,
+      moo: 5,
+      car: 6
+    }
+
+    var obj2 = {
+     foo: { age: 11 },
+     bar: { age: 22 },
+     moo: { age: 33 },
+     car: { age: 44 }
+    }
+
+    testStaticAndInstance(obj1, [function(acc, b) { return acc + b; }], 18, 'obj1 | default');
+    testStaticAndInstance(obj1, [function(acc, b) { return acc + b; }, 10], 28, 'obj1 | with initial');
+    testStaticAndInstance(obj1, [function(acc, b) { return acc - b; }], -12, 'obj1 | a - b');
+    testStaticAndInstance(obj1, [function(acc, b) { return acc - b; }, 10], -8, 'obj1 | a - b with initial');
+    testStaticAndInstance(obj1, [function(acc, b) { return acc * b; }, 0], 0, 'obj1 | a * b with 0 initial is 0');
+    testStaticAndInstance(obj2, [function(acc, b) { return (acc.age ? acc.age : acc) + b.age; }], 110, 'obj2 | a + b');
+    testStaticAndInstance(obj2, [function(acc, b) { return acc - b.age; }, 10], -100, 'obj2 | a - b with initial');
+  });
+
   method('size', function() {
     testStaticAndInstance({}, [], 0, 'empty object');
     testStaticAndInstance({foo:'bar'}, [], 1, '1 property');
