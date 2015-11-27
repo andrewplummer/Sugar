@@ -14,9 +14,6 @@ v1.5.0+
 =======
 
 - Level: Major
-  - `String#startsWith` and `String#endsWith` are now more in compliance with the ES6 spec. They now no longer accept a RegExp (will throw an error) or a `case` parameter. If you need to do more complex string checking, use `String#match` with standard regexes instead. Also minor differences in the way the starting/ending positions are coerced may also be present.
-
-- Level: Major
   - `Object.reduce` is now deprecated. Use `Array#reduce` together with `Object.keys` instead.
 
 - Level: Major

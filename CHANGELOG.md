@@ -9,7 +9,6 @@ v1.5.0
 - Object.extend() is now Sugar.extendObject().
 - `Date#utc` is now `Date#setUTC`.
 - Renamed `Date.SugarNewDate` to `Sugar.Date.newDateInternal`.
-- Modified `String#startsWith` and `String#endsWith` to be more in compliance with ES6. See CAUTION.md for details.
 - Added `Number.isNaN` shim.
 - Alphanumeric array options are now on the global object.
 - Moved `Object.map`, `Object.each`, and `Object.size` to the object package.
