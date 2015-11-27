@@ -14,9 +14,6 @@ v1.5.0+
 =======
 
 - Level: Major
-  - `String#has` is now removed in favor of `String#contains` to be in compliance with the ES6 spec. For more complex string checking, use `String#match` with standard regexes instead.
-
-- Level: Major
   - `Date#utc` is now `Date#setUTC`, and now requires explicitly passing `true` as the first argument to set the flag to true.
 
 - Level: Major
