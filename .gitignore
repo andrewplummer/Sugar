@@ -22,6 +22,7 @@ bower_components
 
 ## PROJECT::SPECIFIC
 release/precompiled
+release/
 
 ## Want to test these across branches/tags
 performance/javascripts/tests.js
