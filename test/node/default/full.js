@@ -17,6 +17,7 @@ runner.loadTest('locales/it');
 runner.loadTest('locales/ja');
 runner.loadTest('locales/ko');
 runner.loadTest('locales/nl');
+runner.loadTest('locales/pl');
 runner.loadTest('locales/pt');
 runner.loadTest('locales/ru');
 runner.loadTest('locales/sv');
