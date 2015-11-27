@@ -39,7 +39,7 @@ ruby script/create_build.rb --packages string,array
 listing the packages you want to include. The advantage of using this
 script is that it will perform all the minification on the fly, providing more fine-grained control by allowing you to
 manipulate the source code in [lib/](lib/) before building. If you want to remove specific methods from a package, you can do it this way.
-Be careful about removing dependencies however. Both [lib/core/core.js](lib/core/core.js) and [lib/common.js](lib/common.js) are required and will be added automatically. Be careful about removing methods in here as many methods are depended on by multiple packages.
+Be careful about removing dependencies however. Both [lib/core.js](lib/core.js) and [lib/common.js](lib/common.js) are required and will be added automatically. Be careful about removing methods in here as many methods are depended on by multiple packages.
 
 
 ## Unit Tests Node

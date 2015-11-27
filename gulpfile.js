@@ -100,9 +100,9 @@ function getPackages() {
 function getFiles(packages, skipLocales) {
   var arr, files = [];
   if (packages === 'core') {
-    return ['lib/core/core.js'];
+    return ['lib/core.js'];
   }
-  files.push('lib/core/core.js');
+  files.push('lib/core.js');
   files.push('lib/common.js');
   arr = packages.split(',');
   arr.forEach(function(name) {
