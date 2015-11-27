@@ -5,7 +5,6 @@ v1.5.0
 
 - Added global objects. All methods will also be defined here.
 - Removed String#escapeRegExp. Use RegExp.escape instead.
-- Changed String#escapeHTML to double-escape entities.
 - Object.extend() is now Sugar.extendObject().
 - `Date#utc` is now `Date#setUTC`.
 - Renamed `Date.SugarNewDate` to `Sugar.Date.newDateInternal`.

@@ -20,9 +20,6 @@ v1.5.0+
   - `Object.extend` is now `Sugar.extendObject`.
 
 - Level: Minor
-  - `String#escapeHTML` now double escapes entities, meaning '&amp;' will become '&amp;amp;', etc.
-
-- Level: Minor
   - `Date.SugarNewDate` is now `Sugar.Date.newDateInternal`. This method is always on the `Sugar` global (not `Date`).
 
 - Level: Very Minor
