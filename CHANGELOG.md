@@ -8,7 +8,7 @@ v1.5.0
 - Added `Object.isArguments`.
 - Changed `String#each` to allow breaking the loop with `false`.
 - Added `String#map`.
-- Added ability fo `String#stripTags` and `Strip#removeTags` to pass a callback.
+- Added ability for `String#stripTags` and `Strip#removeTags` to pass a callback.
 - Made `String#stripTags` and `String#removeTags` much more robust.
 - Updated `Array#sortBy` to handle sorting on multiple properties (Issue #386, thanks to @eric-weiser).
 - Fixed `String#unescapeHTML` to handle HTML (and hex) codes. Also now handling &nbsp;
@@ -25,13 +25,6 @@ v1.5.0
 - Added `Date#get` allowing date creation with a context date that can be used as a starting point for relative dates.
 - Added `Function#memoize` (Issue #486)
 - Async functions are now synchronous with Sinon.
-
-
-v1.4.2
-======
-
-### API Changes ###
-
 - Added ability to pass a single string to `Date.range`
 - Bower.json now points to unminified script (#388)
 - Date.create(null) is now interpeted as a time stamp (#387)

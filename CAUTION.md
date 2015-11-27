@@ -13,10 +13,6 @@ Version 1.4.0 improves future-compatibility by ensuring that browser updates do 
 v1.5.0+
 =======
 
-
-v1.4.2+
-=======
-
 - Level: Minor
   - `Object.map`, `Object.each`, and `Object.size` were moved to the Object package from the Array package. If you were using these methods and making custom builds you may have to include the Object package now as well.
 
