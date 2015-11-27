@@ -19,9 +19,6 @@ v1.5.0+
 - Level: Moderate
   - `Object.extend` is now `Sugar.extendObject`.
 
-- Level: Minor
-  - `Date.SugarNewDate` is now `Sugar.Date.newDateInternal`. This method is always on the `Sugar` global (not `Date`).
-
 - Level: Very Minor
   - Some minor behavior changes around the way `String#removeTags` works on malformed html. Unmatched closing tags will now be removed.
 

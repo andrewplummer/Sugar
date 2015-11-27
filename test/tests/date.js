@@ -2589,11 +2589,11 @@ package('Date', function () {
   });
 
 
-  group('newDateInternal', function() {
+  group('SugarNewDate', function() {
 
     // Issue #342 handling offsets for comparison
 
-    Sugar.Date.newDateInternal = function() {
+    Date.SugarNewDate = function() {
       var d = new Date();
       // Honolulu time zone
       d.setTime(d.getTime() + ((d.getTimezoneOffset() - 600) * 60 * 1000));
@@ -2619,13 +2619,13 @@ package('Date', function () {
     AwesomeDate.prototype.getMinutes = function() {
     }
 
-    Sugar.Date.newDateInternal = function() {
+    Date.SugarNewDate = function() {
       return new AwesomeDate();
     }
 
     equal(testCreateDate() instanceof AwesomeDate, true, 'Result should be use in Date.create');
 
-    Sugar.Date.newDateInternal = null;
+    Date.SugarNewDate = null;
 
   });
 
