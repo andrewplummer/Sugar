@@ -3,7 +3,6 @@ v1.5.0
 
 ### API Changes ###
 
-- Removed String#escapeRegExp. Use RegExp.escape instead.
 - Added `Number.isNaN` shim.
 - Moved `Object.map`, `Object.each`, and `Object.size` to the object package.
 - Added `Object.isArguments`.

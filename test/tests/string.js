@@ -4,6 +4,17 @@ package('String', function () {
   var whiteSpace = '\u0009\u000B\u000C\u0020\u00A0\uFEFF\u1680\u180E\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u202F\u205F\u3000';
   var lineTerminators = '\u000A\u000D\u2028\u2029';
 
+  method('escapeRegExp', function() {
+    test('test regexp', 'test regexp', 'String#escapeRegExp | nothing to escape');
+    test('test reg|exp', 'test reg\\|exp', 'String#escapeRegExp | should escape pipe');
+    test('hey there (budday)', 'hey there \\(budday\\)', 'String#escapeRegExp | should escape parentheses');
+    test('.', '\\.', 'String#escapeRegExp | should escape period');
+    test('what a day...', 'what a day\\.\\.\\.', 'String#escapeRegExp | should escape many period');
+    test('*.+[]{}()?|/', '\\*\\.\\+\\[\\]\\{\\}\\(\\)\\?\\|\\/', 'String#escapeRegExp | complex regex tokens');
+    test('', '', 'String#escapeRegExp | blank');
+    test('|', '\\|', 'String#escapeRegExp | pipe');
+  });
+
   method('escapeURL', function() {
 
     test('what a day...', 'what%20a%20day...', '...');
