@@ -402,7 +402,6 @@ package('Number', function () {
 
   });
 
-
   method('format', function() {
     test(100, '100');
     test(1, '1');
@@ -419,6 +418,7 @@ package('Number', function () {
     test(-1000000.01, '-1,000,000.01');
     test(0.52, '0.52');
     test(9999999.99, '9,999,999.99');
+    test(1000.05, [1, '|','&'], '1|000&1', 'respects thousands and decimal');
   });
 
   method('format', function() {
