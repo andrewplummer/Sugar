@@ -1285,10 +1285,12 @@ package('Object', function () {
   method('clone', function() {
 
     // Issue #256
-    if(Sugar.Date.clone) {
-      var date = Sugar.Date.setUTC(new Date(), true);
-      equal(date._utc, true, 'utc flag is set');
-      equal(run(Object, 'clone', [date])._utc, true, 'should preserve utc flag when set');
+    var d = new Date();
+    if(typeof d.utc === 'function') {
+      d.utc();
+      var result = run(Object, 'clone', [d]);
+      equal(d._utc, true, 'utc flag should still be set');
+      equal(result._utc, true, 'should preserve utc flag when set');
     }
 
   });
