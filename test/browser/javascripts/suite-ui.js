@@ -86,7 +86,7 @@
   function getStringified(p) {
     var str, arr, isArray = p && p.join, arrayHasUndefined;
     // JSON.stringify makes undefined into "null" in arrays
-    if (p.getTime && p.setHours) {
+    if (p && p.getTime && p.setHours) {
       return p.toString();
     }
     arrayHasUndefined = isArray && $.inArray(undefined, p) !== -1;

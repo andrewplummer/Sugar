@@ -13,15 +13,6 @@ Version 1.4.0 improves future-compatibility by ensuring that browser updates do 
 v1.5.0+
 =======
 
-- Level: Major
-  - `Object.merge` and `Object.clone` now work on non-enumerable properties if supported. This is great for more robust merging of objects, but there are some side effects. The most major is that when arrays are merged together now (as objects) their length property will be merged as well. This will effectively mean that if an array of length 3 is merged into an array of length 4, the result will also have length 3 (depending on the merge strategy) which will chop off the last element. This is also true for nested arrays in the case of deep merging. If you are performing simple operations on straight arrays, consider using `Array#intersect` or `Array#union` instead, which are much more optimized for arrays. If you are doing complex, deep merging with nested arrays of varying length, you will need to pass a function as the resolve strategy and check for arrays using `Array.isArray` and handle appropriately. Additionally, IE8 and below do not have support for iterating over non-enumerable properties, so the results can be different here depending on environment. Sticking to standard object literals when merging/cloning will ensure maximum browser support.
-
-- Level: Major
-  - `Object.merge` will now treat null properties as if they did not exist (previously only undefined properties were treated this way). All other falsy properties such as empty strings and `false` will not be overwritten.
-
-- Level: Moderate
-  - `Object.merge` will not continue traversing into an object if a resolve function is passed and returns something (anything but undefined). This means that you can selectively choose to handle certain conflicts differently by returning something, or use the merging defaults by returning undefined. It also means that a resolve function can no longer intentionally use `undefined` itself as a conflict resolution value - use `null` or another value instead.
-
 - Level: Moderate
   - `Number#format` no longer accepts arguments for the thousands separator and decimal point. Instead these can now be set on the global object Sugar.Number.thousands and Sugar.Number.decimal. These will also be respected by Number#abbr, Number#metric, and Number#bytes as well.
 

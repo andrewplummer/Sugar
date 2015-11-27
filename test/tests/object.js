@@ -253,8 +253,6 @@ package('Object', function () {
 
   method('merge', function() {
 
-    var nonEnumerablePropertySupport = !!Object.getOwnPropertyNames;
-
     test(Object, [{ foo: 'bar' }, { broken: 'wear' }], { foo: 'bar', broken: 'wear' }, 'basic');
     test(Object, [{ foo: 'bar' }, 'aha'], { foo: 'bar' }, 'will not merge a string');
     test(Object, [{ foo: 'bar' }, null], { foo: 'bar' }, 'will not merge null');
@@ -262,8 +260,6 @@ package('Object', function () {
     test(Object, [{ foo: 'bar' }, 8], { foo: 'bar' }, 'merge number');
     test(Object, [{ foo:'bar' }, 'wear', 8, null], { foo:'bar' }, 'merge multi invalid');
 
-    var expected = nonEnumerablePropertySupport ? [4,5,6] : [4,5,6,4];
-    test(Object, [[1,2,3,4], [4,5,6]], expected, 'arrays are mergeable but result depends on enumerable property support');
     test(Object, [{ foo: { one: 'two' }}, { foo: { two: 'three' }}, true, true], { foo: { one: 'two', two: 'three' }}, 'accepts deep merges');
     test(Object, ['foo', 'bar'], 'foo', 'two strings');
     test(Object, [{ a:1 }, { a:2 }], { a:2 }, 'incoming wins');
@@ -272,7 +268,7 @@ package('Object', function () {
     test(Object, [{ a:undefined }, { a:2 }], { a:2 }, 'existing but undefined properties are overwritten');
     test(Object, [{ a:null }, { a:2 }], { a:2 }, 'null properties are not overwritten');
     test(Object, [{ a:undefined }, { a:2 }, false, false], { a:2 }, 'false | existing but undefined properties are overwritten');
-    test(Object, [{ a:null }, { a:2 }, false, false], { a:2 }, 'false | null properties are overwritten');
+    test(Object, [{ a:null }, { a:2 }, false, false], { a:null }, 'false | null properties are overwritten');
     test(Object, [{ a:true }, { a:2 }, false, false], { a:true }, 'false | true is not overwritten');
     test(Object, [{ a:false }, { a:2 }, false, false], { a:false }, 'false | false is not overwritten');
     test(Object, [{ a:'' }, { a:2 }, false, false], { a:'' }, 'false | empty strings are not overwritten');
@@ -280,7 +276,7 @@ package('Object', function () {
 
     var fn1 = function() {};
     fn1.foo = 'bar';
-    equal(run(Object, 'merge', [function(){}, fn1]).foo, undefined, 'functions are not merged');
+    equal(run(Object, 'merge', [function(){}, fn1]).foo, 'bar', 'functions are merged');
 
 
     // Merging nested functions
@@ -380,9 +376,10 @@ package('Object', function () {
       prop2: 'beebop',
       inner: {
         foo: 'car',
+        hee: 'haw',
         mee: 'maw'
       },
-      arr: nonEnumerablePropertySupport ? [4,5,6] : [4,5,6,4]
+      arr: [4,5,6,4]
     }
 
     test(Object, [obj1, obj2, true, fn], expected, 'complex objects with resolve function');
@@ -397,7 +394,7 @@ package('Object', function () {
 
     var fn1 = function() {};
     fn1.foo = 'bar';
-    equal(run(Object, 'extended', [function(){}]).merge(fn1).foo, undefined, 'functions are not merged');
+    equal(run(Object, 'extended', [function(){}]).merge(fn1).foo, 'bar', 'functions are merged');
     equal(run(Object, 'extended', [{ a:1 }]).merge({ a:2 }), { a:2 }, 'incoming wins');
     equal(run(Object, 'extended', [{ a:1 }]).merge({ a:2 }, true), { a:2 }, 'incoming wins | params true');
     equal(run(Object, 'extended', [{ a:1 }]).merge({ a:2 }, false, false), { a:1 }, 'target wins');
@@ -452,7 +449,7 @@ package('Object', function () {
     }
     var expected = {
       foo: 'car',
-      moo: 'wow'
+      moo: ['o','p','p']
     }
 
     var fn = function(prop, a1, a2) {
@@ -463,7 +460,7 @@ package('Object', function () {
     }
 
     var result = run(Object, 'merge', [obj1, obj2, true, fn]);
-    equal(result, expected, 'Returning something from a resolve function will not traverse further into that object');
+    equal(result, expected, 'Returning something from a resolve function will traverse further into that object');
 
     var foobar = { foo: 'bar' };
 
@@ -517,38 +514,16 @@ package('Object', function () {
     var expected = {
       a1: foobar,
       a2: foobar,
-      one: {
-        two: {
-          three: {
-            a: 1,
-            c: 3
-          }
-        }
-      }
+      one: undefined
     }
 
     var result = run(Object, 'merge', [testClone(obj1), obj2, false, fn]);
-    equal(result, expected, 'non-deep merge continues on to merge the second object');
+    equal(result, expected, 'non-deep merge does not continue on to merge the second object');
     equal(result.a2, foobar, 'non-deep merge keeps strict equality');
 
-
-    if(definePropertySupport) {
-
-      var obj1 = {};
-      var obj2 = {};
-      Object.defineProperty(obj1, 'foo', {
-        value: 'hello',
-        enumerable: false,
-        configurable: false
-      });
-
-      var result = run(Object, 'merge', [{}, obj1]);
-      equal(result.foo, 'hello', 'empty object merged with a non-configurable, non-enumerable property');
-
-      raisesError(function(){
-        run(Object, 'merge', [obj1, {foo: 'ohno'}]);
-      }, 'attempting to merge into a non-configurable property should raise an error');
-    }
+    test(Object, [{ foo: 'bar' }, null], { foo: 'bar' }, 'merge null');
+    test(Object, [[1,2,3,4], [4,5,6]], [4,5,6,4], 'arrays should also be mergeable');
+    test(Object, [{ a:null }, { a:2 }, false, false], { a:null }, 'false | null properties are not overwritten');
 
   });
 
