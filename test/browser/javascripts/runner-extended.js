@@ -1,7 +1,7 @@
 (function($) {
 
   $(document).ready(function() {
-    //Sugar.extendAll();
+    // Retrofitted here not to require extending!
     runTests(testsFinished, true, 'browser');
   });
 

@@ -15,17 +15,12 @@
   ],
   "homepage": "http://sugarjs.com/",
   "author": "Andrew Plummer",
-  "main": "./release/sugar-full.dev.js",
+  "main": "sugar.js",
   "directories": {
-    "lib": "./release"
+    "lib": "release/"
   },
   "files": [
-    "release/sugar-full.dev.js",
-    "test/javascripts/date-helpers.js",
-    "test/javascripts/helpers.js",
-    "test/javascripts/suite.js",
-    "test/environments/sugar/",
-    "test/environments/node/"
+    "test/"
   ],
   "repository": {
     "type": "git",
@@ -35,7 +30,7 @@
     "node": ">= 0.8.23"
   },
   "scripts": {
-    "test": "node test/environments/node/test.js"
+    "test": "node test/node/all.js"
   },
   "license": "MIT",
   "devDependencies": {

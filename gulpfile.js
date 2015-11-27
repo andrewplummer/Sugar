@@ -1,17 +1,17 @@
-
 var fs       = require('fs'),
+    gulp     = require('gulp'),
     glob     = require('glob'),
     zlib     = require('zlib'),
     path     = require('path'),
     args     = require('yargs').argv,
     util     = require('gulp-util'),
+    mkdirp   = require('mkdirp'),
     merge    = require('merge-stream'),
     concat   = require('gulp-concat-util'),
     replace  = require('gulp-replace'),
     through  = require('through2'),
-    compiler = require('closure-compiler-stream'),
-    gulp     = require('gulp-npm-run')(require('gulp'));
-
+    reload   = require('require-reload')(require),
+    compiler = require('closure-compiler-stream');
 
 var COMPIER_JAR_PATH = 'bower_components/closure-compiler/compiler.jar';
 var PRECOMPILED_MIN_DIR = 'release/precompiled/minified/';
@@ -25,34 +25,50 @@ var HELP_MESSAGE = [
   '',
   '    %Tasks%',
   '',
-  '      |dev|                          Non-minified (concatenate files only).',
-  '      |min|                          Minified release.',
+  '      |dev|                          Non-minified build (concatenate files only).',
+  '      |min|                          Minified build.',
   '      |help|                         Show this message.',
   '',
   '    %Options%',
   '',
-  '      -p, --packages PACKAGES      Comma separated packages to include. Packages listed below (non-default marked with |*|).',
-  '      -r, --release RELEASE        Release name. Default: "custom".',
+  '      -p, --packages PACKAGES      Comma separated packages to include (optional). Packages below (non-default marked with |*|).',
+  '      -v, --version VERSION        Version (optional).',
   '',
   '    %Packages%',
   '',
   '      array',
   '      date',
-  '      es5',
   '      function',
   '      number',
   '      object',
   '      range',
   '      regexp',
   '      string',
+  '      es5 |*|',
   '      locales |*|',
   '      language |*|',
   '      inflections |*|',
-  ''
+  '',
+  '    %Notes%',
+  '',
+  '      ES5 package is no longer default in Sugar builds. It should be',
+  '      added if ES5 compatibility is required in environments where it',
+  '      does not exist (most commonly IE8 and below).',
+  '',
+].join('\n');
+
+var COPYRIGHT = [
+  '/*',
+  ' *  Sugar Library VERSION',
+  ' *',
+  ' *  Freely distributable and licensed under the MIT-style license.',
+  ' *  Copyright (c) YEAR Andrew Plummer',
+  ' *  http://sugarjs.com/',
+  ' *',
+  ' * ---------------------------- */'
 ].join('\n');
 
 var DEFAULT_PACKAGES = [
-  'es5',
   'array',
   'date',
   'range',
@@ -64,7 +80,6 @@ var DEFAULT_PACKAGES = [
 ];
 
 var ALL_PACKAGES = [
-  'es5',
   'array',
   'date',
   'range',
@@ -84,18 +99,19 @@ function getPackages() {
 
 function getFiles(packages, skipLocales) {
   var arr, files = [];
+  if (packages === 'core') {
+    return ['lib/core/core.js'];
+  }
   files.push('lib/core/core.js');
   files.push('lib/common.js');
-  switch(packages) {
-    case 'default':
-      arr = DEFAULT_PACKAGES;
-    break;
-    case 'all':
-      arr = ALL_PACKAGES;
-    break;
-    default:
-      arr = packages.split(',');
-  }
+  arr = packages.split(',');
+  arr.forEach(function(name) {
+    if (name === 'default') {
+      Array.prototype.push.apply(arr, DEFAULT_PACKAGES);
+    } else if (name === 'all') {
+      Array.prototype.push.apply(arr, ALL_PACKAGES);
+    }
+  });
   arr.forEach(function(p) {
     if (p === 'locales' && !skipLocales) {
       files = files.concat(glob.sync('lib/locales/*.js'));
@@ -139,58 +155,51 @@ function showHelpMessage() {
   console.info(msg);
 }
 
-function getFilename(packages, ext) {
-  switch(packages) {
-    case 'default':
-      return 'sugar.' + ext + '.js';
-    case 'all':
-      return 'sugar-full.' + ext + '.js';
-    default:
-      return 'sugar-custom.' + ext + '.js';
-  }
+function getFilename(name, min) {
+  return name + (min ? '.min' : '') + '.js';
 }
 
-function getRelease() {
-  return args.r || args.release || 'custom';
+function getVersion() {
+  return args.v || args.version || '';
 }
 
 function getLicense() {
-  var release = getRelease();
-  return fs.readFileSync('release/copyright.txt', 'utf-8')
-    .replace(/VERSION/, release.match(/[\d.]+/) ? 'v' + release : release)
+  var version = getVersion();
+  return COPYRIGHT
+    .replace(/VERSION/, version.match(/[\d.]+/) ? 'v' + version : version)
     .replace(/YEAR/, new Date().getFullYear())
     .replace(/\n$/, '');
 }
 
-function buildDevelopment(packages) {
-  var wrapper = [
+function buildDevelopment(packages, path) {
+  var template = [
     getLicense(),
     '(function() {',
       "  'use strict';",
       '$1',
-    '})();'
+    '}).call(this);'
   ].join('\n');
-  var filename = getFilename(packages, 'dev');
   var files = getFiles(packages);
-  util.log(util.colors.yellow('Building:', packages));
+  var filename = getFilename(path || 'sugar');
+  util.log(util.colors.yellow('Building:', filename));
   return gulp.src(files)
     .pipe(concat(filename, { newLine: '' }))
-    .pipe(replace(/'use strict';/g, ''))
-    .pipe(replace(/^([\s\S]+)$/m, wrapper))
-    .pipe(gulp.dest('release'));
+    .pipe(replace(/^\s*'use strict';\n/g, ''))
+    .pipe(replace(/^([\s\S]+)$/m, template))
+    .pipe(gulp.dest('.'));
 }
 
-function buildMinified(packages) {
+function buildMinified(packages, path) {
   try {
     fs.lstatSync(COMPIER_JAR_PATH);
   } catch(e) {
     util.log(util.colors.red('Closure compiler missing!'), 'Run', util.colors.yellow('bower install'));
     return;
   }
-  var filename = getFilename(packages, 'min');
   var files = getFiles(packages);
-  util.log(util.colors.yellow('Minifying:', packages));
-  return gulp.src(files).pipe(compileSingle('release/' + filename));
+  var filename = getFilename(path || 'sugar', true);
+  util.log(util.colors.yellow('Minifying:', filename));
+  return gulp.src(files).pipe(compileSingle(filename));
 }
 
 // -------------- Compiler ----------------
@@ -212,15 +221,15 @@ function getDefaultFlags() {
   return {
     jar: COMPIER_JAR_PATH,
     compilation_level: 'ADVANCED_OPTIMIZATIONS',
-    warning_level: 'QUIET',
-    output_wrapper: getLicense() + "\n(function(){'use strict';%output%}).call(window);",
+    jscomp_off: ['globalThis', 'misplacedTypeAnnotation', 'checkTypes'],
+    output_wrapper: getLicense() + "\n(function(){'use strict';%output%}).call(this);",
     externs: 'lib/extras/externs.js',
   }
 }
 
 
 
-// -------------- Tasks ----------------
+// -------------- Build ----------------
 
 gulp.task('default', showHelpMessage);
 
@@ -230,19 +239,15 @@ gulp.task('dev', function() {
   return buildDevelopment(getPackages());
 });
 
-gulp.task('dev:all', function() {
-  return buildDevelopment('all');
-});
-
 gulp.task('min', function(done) {
   return buildMinified(getPackages());
 });
 
 gulp.task('release', function() {
   util.log(util.colors.blue('-------------------------------'));
-  util.log(util.colors.blue('Creating release:', getRelease()));
+  util.log(util.colors.blue('Building release:', getVersion()));
   util.log(util.colors.blue('-------------------------------'));
-  return merge(buildDevelopment('default'), buildMinified('default'), buildDevelopment('all'), buildMinified('all'));
+  return merge(buildDevelopment('default'), buildMinified('default'));
 });
 
 gulp.task('precompile:dev', function() {
@@ -251,7 +256,7 @@ gulp.task('precompile:dev', function() {
   });
   return merge(gulp.src(files), gulp.src('lib/locales/*.js')
       .pipe(concat('locales.js', { newLine: '' })))
-    .pipe(replace(/'use strict';/g, ''))
+    .pipe(replace(/^\s*'use strict';\n/g, ''))
     .pipe(gulp.dest(PRECOMPILED_DEV_DIR));
 });
 
@@ -262,11 +267,98 @@ gulp.task('precompile:min', function() {
 });
 
 
+// -------------- npm ----------------
+
+var NPM_MODULES = [
+  {
+    name: 'sugar-full',
+    description: 'This build includes all Sugar packages including extra string helpers and all Date locales.',
+    files: 'all'
+  },
+  {
+    name: 'sugar',
+    description: 'This build includes the default Sugar packages.',
+    files: 'default'
+  },
+];
+
+function getKeywords(name, keywords) {
+  if (!name.match(/date|full/)) {
+    keywords = keywords.filter(function(k) {
+      return k !== 'date' && k !== 'time';
+    });
+  }
+  return keywords;
+}
+
+function getModulePackage(module, mainPackage) {
+  var package = JSON.parse(JSON.stringify(mainPackage));
+  package.name = module.name;
+  package.main = module.name + '.js';
+  package.keywords = getKeywords(module.name, package.keywords);
+  package.description += ' ' + module.description;
+  delete package.files;
+  delete package.scripts;
+  delete package.devDependencies;
+  return JSON.stringify(package, null, 2);
+}
+
+function getModuleBower(module, mainBower) {
+  var bower = JSON.parse(JSON.stringify(mainBower));
+  bower.name = module.name;
+  bower.main = module.name + '.min.js';
+  // Bower throws a warning if "ignore" isn't defined.
+  bower.ignore = [];
+  bower.keywords = getKeywords(module.name, bower.keywords);
+  bower.description += ' ' + module.description;
+  delete bower.devDependencies;
+  return JSON.stringify(bower, null, 2);
+}
+
+gulp.task('npm', function() {
+  var streams = [];
+  var mainPackage = require('./package.json');
+  var mainBower = require('./bower.json');
+  for (var i = 0; i < NPM_MODULES.length; i++) {
+    var module = NPM_MODULES[i];
+    var path = 'release/npm/' + module.name + '/';
+    mkdirp.sync(path);
+    fs.writeFileSync(path + 'package.json', getModulePackage(module, mainPackage));
+    fs.writeFileSync(path + 'bower.json', getModuleBower(module, mainBower));
+    streams.push(buildDevelopment(module.files, path + module.name));
+    streams.push(gulp.src(['LICENSE', 'README.md', 'CHANGELOG.md']).pipe(gulp.dest(path)));
+  }
+  return merge(streams);
+});
+
+gulp.task('npm:min', function() {
+  var streams = [];
+  for (var i = 0; i < NPM_MODULES.length; i++) {
+    var module = NPM_MODULES[i];
+    var path = 'release/npm/' + module.name + '/';
+    mkdirp.sync(path);
+    streams.push(buildMinified(module.files, path + module.name));
+  }
+  return merge(streams);
+});
+
+
+
 // -------------- Test ----------------
 
 
+gulp.task('test', function(cb) {
+  reload('./test/node/watch.js');
+  cb();
+});
+
+gulp.task('test-build', ['dev', 'npm'], function(cb) {
+  reload('./test/node/watch.js');
+  cb();
+});
+
 gulp.task('test:watch', function() {
-  gulp.watch(['lib/**/*.js'], ['dev:all', 'test']);
+  gulp.watch(['lib/**/*.js'], ['test-build']);
   gulp.watch(['test/**/*.js'], ['test']);
 });
 
@@ -372,8 +464,8 @@ gulp.task('docs', function() {
 
       function getPackageSize(package) {
         var name = package.replace(/\s/g, '_').toLowerCase();
-        var dPath = 'release/precompiled/development/' + name + '.js';
-        var mPath = 'release/precompiled/minified/' + name + '.js';
+        var dPath = PRECOMPILED_DEV_DIR + name + '.js';
+        var mPath = PRECOMPILED_MIN_DIR + name + '.js';
         packages[package]['size'] = getFileSize(dPath);
         packages[package]['min_size'] = getGzippedFileSize(mPath);
       }
