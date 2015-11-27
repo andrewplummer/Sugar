@@ -665,7 +665,7 @@ package('Date', function () {
 
     var d = run(testCreateUTCDate({ year: 2013, month: 0, date: 14 }), 'setUTC', [true]);
     run(d, 'set', [{week:1}]);
-    dateEqual(d, testCreateUTCDate('create', [2012, 11, 31]), 'utc dates should not throw errors on week set');
+    dateEqual(d, new Date(Date.UTC(2012, 11, 31)), 'utc dates should not throw errors on week set');
 
   });
 

@@ -1,27 +1,17 @@
-
 testCreateDate = function() {
   return run(Date, 'create', arguments);
 }
 
-testCreateDateWithOptions = function(rawArgs, optName) {
-  // Optimized: no leaking arguments
-  var args = [], $i; for($i = 0; $i < rawArgs.length; $i++) args.push(rawArgs[$i]);
-  var opt = {};
-  opt[optName] = true;
-  args.push(opt);
-  return testCreateDate.apply(null, args);
-}
-
 testCreateFutureDate = function() {
-  return testCreateDateWithOptions(arguments, 'future');
+  return run(Date, 'future', arguments);
 }
 
 testCreatePastDate = function() {
-  return testCreateDateWithOptions(arguments, 'past');
+  return run(Date, 'past', arguments);
 }
 
 testCreateUTCDate = function() {
-  return testCreateDateWithOptions(arguments, 'fromUTC');
+  return run(Date.utc, 'create', arguments);
 }
 
 dateRun = function(d, name, arguments) {

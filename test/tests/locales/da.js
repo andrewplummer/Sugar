@@ -94,7 +94,6 @@ package('Date | Danish', function () {
     test(testCreateDate('1 hour from now', 'en'), 'om 1 time');
     test(testCreateDate('1 day from now', 'en'), 'om 1 dag');
     test(testCreateDate('1 week from now', 'en'), 'om 1 uge');
-    testMonthsFromNow(1, 'om 1 måned', 'om 4 uger');
     test(testCreateDate('1 year from now', 'en'), 'om 1 år');
 
     test(testCreateDate('5 second from now', 'en'), 'om 5 sekunder')
@@ -103,7 +102,6 @@ package('Date | Danish', function () {
     test(testCreateDate('5 day from now', 'en'), 'om 5 dage');
     test(testCreateDate('3 weeks from now', 'en'), 'om 3 uger');
     test(testCreateDate('5 weeks from now', 'en'), 'om 1 måned');
-    testMonthsFromNow(5, 'om 5 måneder', 'om 4 måneder');
     test(testCreateDate('5 year from now', 'en'), 'om 5 år');
   });
 });

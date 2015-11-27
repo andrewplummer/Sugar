@@ -149,7 +149,6 @@ package('Date | Japanese', function () {
     test(testCreateDate('1 hour from now', 'en'), '1時間後', '1 hour from now');
     test(testCreateDate('1 day from now', 'en'), '1日後', '1 day from now');
     test(testCreateDate('1 week from now', 'en'), '1週間後', '1 week from now');
-    testMonthsFromNow(1, '1ヶ月後', '4週間後');
     test(testCreateDate('1 year from now', 'en'), '1年後', '1 year from now');
 
     test(testCreateDate('5 seconds from now', 'en'), '5秒後', '5 seconds from now');
@@ -157,7 +156,6 @@ package('Date | Japanese', function () {
     test(testCreateDate('5 hours from now', 'en'), '5時間後', '5 hours from now');
     test(testCreateDate('5 days from now', 'en'), '5日後', '5 days from now');
     test(testCreateDate('5 weeks from now', 'en'), '1ヶ月後', '5 weeks from now');
-    testMonthsFromNow(5, '5ヶ月後', '4ヶ月後');
     test(testCreateDate('5 years from now', 'en'), '5年後', '5 years from now');
   });
 

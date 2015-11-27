@@ -129,7 +129,6 @@ package('Date | Simplified Chinese', function () {
     test(testCreateDate('1 hour from now', 'en'),   '1小时后');
     test(testCreateDate('1 day from now', 'en'),    '1天后');
     test(testCreateDate('1 week from now', 'en'),   '1个星期后');
-    testMonthsFromNow(1, '1个月后', '4个星期后');
     test(testCreateDate('1 year from now', 'en'),   '1年后');
 
     test(testCreateDate('5 seconds from now', 'en'), '5秒钟后');
@@ -137,7 +136,6 @@ package('Date | Simplified Chinese', function () {
     test(testCreateDate('5 hours from now', 'en'),   '5小时后');
     test(testCreateDate('5 days from now', 'en'),    '5天后');
     test(testCreateDate('5 weeks from now', 'en'),   '1个月后');
-    testMonthsFromNow(5, '5个月后', '4个月后');
     test(testCreateDate('5 years from now', 'en'),   '5年后');
   });
 
