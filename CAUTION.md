@@ -19,9 +19,6 @@ v1.5.0+
 - Level: Moderate
   - `Object.extend` is now `Sugar.extendObject`.
 
-- Level: Moderate
-  - `String#normalize` is now renamed to `String#toAscii` to comply with the ES6 spec.
-
 - Level: Minor
   - `String#escapeHTML` now double escapes entities, meaning '&amp;' will become '&amp;amp;', etc.
 
