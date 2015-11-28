@@ -3,6 +3,7 @@
   "version": "2.0.0",
   "description": "A utility library that provides helpful methods for working effortlessly with native Javascript objects.",
   "keywords": [
+    "sugar",
     "sugarjs",
     "functional",
     "browser",
