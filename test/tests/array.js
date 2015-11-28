@@ -31,13 +31,13 @@ package('Array', function () {
     function square(i) {
       return i * i;
     }
-    test(Object, [3, square], [0,1,4], 'basic array construction');
-    test(Object, ['3', square], [0,1,4], 'numeric string creates the array');
+    test(Array, [3, square], [0,1,4], 'basic array construction');
+    test(Array, ['3', square], [0,1,4], 'numeric string creates the array');
 
-    test(Object, [3], testGetArrayWithUndefined(undefined, undefined, undefined), 'no function becomes all undefined');
-    test(Object, [0], [], '0 constructs an empty array');
-    test(Object, [null], [], 'null constructs an empty array');
-    test(Object, [3, parseInt], [0,1,2], 'works with parseInt');
+    test(Array, [3], testGetArrayWithUndefined(undefined, undefined, undefined), 'no function becomes all undefined');
+    test(Array, [0], [], '0 constructs an empty array');
+    test(Array, [null], [], 'null constructs an empty array');
+    test(Array, [3, parseInt], [0,1,2], 'works with parseInt');
 
     raisesError(function() { run(Object, 'construct'); }, 'no arguments raises error');
     raisesError(function() { run(Object, 'construct', [NaN]); }, 'no arguments raises error');
