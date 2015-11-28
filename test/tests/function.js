@@ -430,7 +430,19 @@ package('Function', function () {
 
 
   method('after', function() {
-    var fn, ret, count = 0, i = 1;
+
+    var count = 0, expected = true;
+    var fn = function() { count++; };
+    var onceFn = run(fn, 'once', []);
+    var single = run(onceFn, 'after', [3]);
+    for (var i = 0; i < 10; i++) {
+      var target = i < 3 ? 0 : 1;
+      if (count !== target) {
+        expected = correct;
+      }
+      single();
+    }
+    equal(expected, true, 'works in conjunction with once to only be called a single time');
 
     function assertCalledAfter(times, arg) {
       var i = 0;
@@ -445,7 +457,7 @@ package('Function', function () {
 
     function assertCalledOutOfTen(times, args) {
       var count = 0;
-      fn = run(function() {
+      var fn = run(function() {
         count++;
       }, 'after', args);
       for (var i = 0; i < 10; i++) {
@@ -454,13 +466,14 @@ package('Function', function () {
       equal(count, times, 'should have fired ' + times + ' times out of 10');
     }
 
+    var count = 0, i = 1;
     var expectedArguments = [
       [[1,'bop'], [2,'bop'], [3,'bop'], [4,'bop'], [5,'bop']],
       [[1,'bop'], [2,'bop'], [3,'bop'], [4,'bop'], [5,'bop'], [6,'bop']],
       [[1,'bop'], [2,'bop'], [3,'bop'], [4,'bop'], [5,'bop'], [6,'bop'], [7,'bop']],
       [[1,'bop'], [2,'bop'], [3,'bop'], [4,'bop'], [5,'bop'], [6,'bop'], [7,'bop'], [8,'bop']]
     ];
-    fn = run(function(args) {
+    var fn = run(function(args) {
       equal(args, expectedArguments[count], 'collects arguments called');
       equal(!!args[0].slice, true, 'arguments are converted to actual arrays');
       count++;
