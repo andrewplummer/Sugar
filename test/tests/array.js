@@ -1851,6 +1851,10 @@ package('Array', function () {
     equal(arr, arr2, 'should clone the array');
     arr2.splice(1, 1);
     equal(arr, [1,2,3], 'original array should be untouched');
+
+    var arr = testGetSparseArray(5, 'a', 'b', 'c');
+    test(arr, [], arr, 'should correctly clone a sparse array');
+
   });
 
   method('isEmpty', function() {
