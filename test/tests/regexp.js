@@ -28,25 +28,32 @@ package('RegExp', function () {
     equal(r.multiline, false, 'multiline untouched');
   });
 
-  method('addFlag', function() {
+  method('addFlags', function() {
     var r = /foobar/;
-    var n = run(r, 'addFlag', ['g']);
+    var n = run(r, 'addFlags', ['g']);
 
     equal(n.global, true, 'global added');
     equal(n.ignoreCase, false, 'ignore not added');
     equal(n.multiline, false, 'multiline not added');
 
-    equal(r.global, false, 'global untouched');
-    equal(r.ignoreCase, false, 'ignore untouched');
-    equal(r.multiline, false, 'multiline untouched');
+    equal(r.global, false, 'original global untouched');
+    equal(r.ignoreCase, false, 'original ignore untouched');
+    equal(r.multiline, false, 'original multiline untouched');
 
-    equal(run(run(/foobar/gim, 'addFlag', ['d']), 'getFlags').length, 3, 'RegExp#addFlag | unknown flag is ignored');
+    var r = /foobar/;
+    var n = run(r, 'addFlags', ['gi']);
+
+    equal(n.global, true, 'multiple | global added');
+    equal(n.ignoreCase, true, 'multiple | ignore added');
+    equal(n.multiline, false, 'multiple | multiline not added');
+
+    equal(run(run(/foobar/gim, 'addFlags', ['d']), 'getFlags').length, 3, 'unknown flag is ignored');
   });
 
 
-  method('removeFlag', function() {
+  method('removeFlags', function() {
     var r = /foobar/gim;
-    var n = run(r, 'removeFlag', ['g']);
+    var n = run(r, 'removeFlags', ['g']);
 
     equal(n.global, false, 'global removed');
     equal(n.ignoreCase, true, 'ignore not removed');
@@ -55,6 +62,14 @@ package('RegExp', function () {
     equal(r.global, true, 'global untouched');
     equal(r.ignoreCase, true, 'ignore untouched');
     equal(r.multiline, true, 'multiline untouched');
+
+    var r = /foobar/gim;
+    var n = run(r, 'removeFlags', ['gi']);
+
+    equal(n.global, false, 'multiple | global removed');
+    equal(n.ignoreCase, false, 'multiple | ignore removed');
+    equal(n.multiline, true, 'multiple | multiline not removed');
+
   });
 
 
