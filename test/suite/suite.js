@@ -475,12 +475,7 @@
 
   if(typeof console === 'undefined') {
 
-    if (typeof print !== 'undefined') {
-      console = {
-        log: print,
-        info: print
-      }
-    } else if (typeof $ !== 'undefined') {
+    if (typeof $ !== 'undefined') {
       var consoleFn = function() {
         var messages = Array.prototype.slice.call(arguments);
         messages = messages.map(function(arg) {
@@ -494,6 +489,11 @@
       console = {
         log: consoleFn,
         info: consoleFn
+      }
+    } else if (typeof print !== 'undefined') {
+      console = {
+        log: print,
+        info: print
       }
     }
   }
