@@ -26,6 +26,15 @@ package('Object', function () {
     test(Object, [false], false, 'false');
     test(Object, [true], false, 'true');
     test(Object, [p], false, 'instance');
+
+    function Foo() {}
+    Foo.prototype = { foo: 3 };
+    test(Object, [new Foo], false, 'Object with inherited properties');
+
+    if (Object.create) {
+      test(Object, [Object.create(null)], true, 'Object with null prototype');
+    }
+
   });
 
   method('isArray', function() {

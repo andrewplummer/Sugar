@@ -71,4 +71,20 @@ package('Object', function() {
     test(Object, [document.createElement('embed')], false, 'not true for embed objects');
   });
 
+  // Confirmed that these tests pass, but avoid subjecting the user
+  // to external frames constantly popping up on each test run.
+  xgroup('Cross Domain Access', function() {
+
+    var iframe = document.createElement('iframe');
+    iframe.style.display = 'none';
+    iframe.src = 'http://www.foo.com/';
+    document.body.appendChild(iframe);
+    equal(run(Object, 'isObject', [iframe.contentWindow]), false, 'Cross Domain iframe should not be a plain object');
+
+    var win = window.open('http://foo.com/', '', 'top=0,left=0,width=0,height=0');
+    equal(run(Object, 'isObject', [win]), false, 'Cross Domain Popup window should not be a plain object');
+    win && win.close();
+
+  });
+
 });
