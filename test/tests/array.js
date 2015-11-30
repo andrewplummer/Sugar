@@ -39,10 +39,10 @@ package('Array', function () {
     test(Array, [null], [], 'null constructs an empty array');
     test(Array, [3, parseInt], [0,1,2], 'works with parseInt');
 
-    raisesError(function() { run(Object, 'construct'); }, 'no arguments raises error');
-    raisesError(function() { run(Object, 'construct', [NaN]); }, 'no arguments raises error');
-    raisesError(function() { run(Object, 'construct', [undefined]); }, 'no arguments raises error');
-    raisesError(function() { run(Object, 'construct', ['foo']); }, 'non-numeric string raises error');
+    raisesError(function() { run(Array, 'construct'); }, 'no arguments raises error');
+    raisesError(function() { run(Array, 'construct', [NaN]); }, 'no arguments raises error');
+    raisesError(function() { run(Array, 'construct', [undefined]); }, 'no arguments raises error');
+    raisesError(function() { run(Array, 'construct', ['foo']); }, 'non-numeric string raises error');
 
   });
 

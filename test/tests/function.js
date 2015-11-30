@@ -519,7 +519,7 @@ package('Function', function () {
 
     var count = 0;
     var fn = function() { count++; };
-    var single = run(Object, 'after', [run(Object, 'once', [fn]), 'after', 3]);
+    var single = run(run(fn, 'once', []), 'after', [3]);
     for (var i = 0; i < 10; i++) {
       single();
     }
