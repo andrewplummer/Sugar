@@ -1,3 +1,4 @@
+// TODO: require on demand??
 var fs       = require('fs'),
     gulp     = require('gulp'),
     glob     = require('glob'),
@@ -404,6 +405,417 @@ gulp.task('npm:min', function() {
   return merge(streams);
 });
 
+
+// -------------- Modularize ----------------
+
+
+var NPM_PACKAGE_TEMPLATE = ['%requires%', '', '%body%', '', '%exports%'].join('\n');
+
+
+function modularize() {
+
+  var TAB = '  ';
+  var NPM_DESTINATION = 'release/modularized';
+  var WHITELISTED = ['Math', 'Object', 'Array', 'RegExp', 'arguments', 'isFinite', 'TypeError', 'RangeError'];
+
+  var acorn = require('acorn');
+
+  var topLevel = {};
+  var sugarMethods = {};
+  var hasOwn = Object.prototype.hasOwnProperty;
+
+  function iter(obj, fn) {
+    for (var key in obj) {
+      if(!hasOwn.call(obj, key)) continue;
+      fn(key, obj[key]);
+    };
+  }
+
+  function getDependencies(name, n) {
+    var deps = [], locals = [];
+
+    function log() {
+      if (name === '') {
+        console.log.apply(null, [name + ':'].concat(Array.prototype.slice.call(arguments, 0)));
+      }
+    }
+
+    function pushLocal(loc) {
+      if (locals.indexOf(loc) === -1) {
+        log("PUSHING LOCAL", loc);
+        locals.push(loc);
+      }
+    }
+
+    function pushLocals(nodes) {
+      nodes.forEach(function(id) {
+        pushLocal(id.name);
+      });
+    }
+
+    function pushDependency(dep) {
+      if (deps.indexOf(dep) === -1) {
+        log("PUSHING DEPENDENCY", dep);
+        deps.push(dep);
+      }
+    }
+
+    function walk(n) {
+      if (!n) {
+        return;
+      }
+      if (n.type) n = [n];
+      n.forEach(processNode);
+    }
+
+    function processNode(node) {
+      log('PROCESSING:', node.type);
+      switch(node.type) {
+        case 'Identifier':
+          pushDependency(node.name);
+          return;
+        case 'VariableDeclarator':
+          pushLocal(node.id.name);
+          walk(node.init);
+          return;
+        case 'FunctionDeclaration':
+          pushLocal(node.id.name);
+          pushLocals(node.params);
+          walk(node.body);
+          return;
+        case 'FunctionExpression':
+          pushLocals(node.params);
+          walk(node.body.body);
+          return;
+        case 'MemberExpression':
+          walk(node.object);
+          // If the MemberExpression is computed syntax (a[b]) then
+          // the property value may be a depencency, so step in.
+          if (node.computed) walk(node.property);
+          return;
+        case 'ExpressionStatement':
+          walk(node.expression);
+          return;
+        case 'SequenceExpression':
+          walk(node.expressions);
+          return;
+        case 'SwitchStatement':
+          walk(node.discriminant);
+          walk(node.cases);
+          return;
+        case 'ObjectExpression':
+          walk(node.properties);
+          return;
+        case 'ArrayExpression':
+          walk(node.elements);
+          return;
+        case 'BlockStatement':
+          walk(node.body);
+          return;
+        case 'ForStatement':
+          walk(node.init);
+          walk(node.test);
+          walk(node.update);
+          walk(node.body);
+          return;
+        case 'ForInStatement':
+          // Left is always assignment
+          walk(node.right);
+          walk(node.body);
+          return;
+        case 'WhileStatement':
+          walk(node.test);
+          walk(node.body);
+          return;
+        case 'VariableDeclaration':
+          walk(node.declarations);
+          return;
+        case 'Property':
+          walk(node.value);
+          return;
+        case 'NewExpression':
+        case 'CallExpression':
+          walk(node.callee);
+          walk(node.arguments);
+          return;
+        case 'SwitchCase':
+        case 'IfStatement':
+        case 'ConditionalExpression':
+          walk(node.test);
+          walk(node.consequent);
+          walk(node.alternate);
+          return;
+        case 'BinaryExpression':
+        case 'LogicalExpression':
+        case 'AssignmentExpression':
+          walk(node.left);
+          walk(node.right);
+          return;
+        case 'ThrowStatement':
+        case 'ReturnStatement':
+        case 'UnaryExpression':
+        case 'UpdateExpression':
+          walk(node.argument);
+          return;
+        case 'Literal':
+        case 'EmptyStatement':
+        case 'ThisExpression':
+        case 'BreakStatement':
+        case 'ContinueStatement':
+          // Pass on literals, {}, this, break, continue
+          return;
+        default:
+          console.info(node);
+          throw new Error("Unknown Node: " + node.type);
+      }
+    }
+
+    function isValidDependency(d) {
+      return d !== name && locals.indexOf(d) === -1 && WHITELISTED.indexOf(d) === -1;
+    }
+
+    walk(n);
+    return deps.filter(isValidDependency);
+  }
+
+  function parseModule(module) {
+    var path = 'lib/' + module + '.js', commentsByEndLine = {}, counter = 1, currentNamespace, source, output, options;
+
+    function onComment(block, text, start, stop, startLoc, endLoc) {
+      var match;
+      commentsByEndLine[endLoc.line] = {
+        text: text,
+        block: block
+      }
+      if (match = text.match(/@(package|namespace) (\w+)/)) {
+        currentNamespace = match[2];
+      }
+    }
+
+    function processTopLevelNode(node) {
+      switch (true) {
+        case isVariableDeclaration(node): return addVars(node);
+        case isFunctionDeclaration(node): return addInternal(node);
+        case isMethodBlock(node):         return processMethodBlock(node);
+        case isBuildExpression(node):     return groupBuildExpression(node);
+      }
+    }
+
+    function isVariableDeclaration(node) {
+      return node.type === 'VariableDeclaration';
+    }
+
+    function isFunctionDeclaration(node) {
+      return node.type === 'FunctionDeclaration';
+    }
+
+    function isMethodBlock(node) {
+      return node.type === 'ExpressionStatement' &&
+             node.expression.type === 'CallExpression' &&
+             !!node.expression.callee.name.match(/^define(Static|Instance)/);
+    }
+
+    function isBuildExpression(node) {
+      return node.type === 'ExpressionStatement' &&
+             node.expression.type === 'CallExpression' &&
+             !!node.expression.callee.name.match(/^build/);
+    }
+
+    function getNodeBody(node) {
+      // Subtract the column to include the first line's whitespace as well.
+      return source.slice(node.start - node.loc.start.column, node.end);
+    }
+
+    function addTopLevel(name, node, type) {
+      topLevel[name] = {
+        type: type,
+        module: module,
+        body: getNodeBody(node),
+        dependencies: getDependencies(name, node)
+      }
+      return topLevel[name];
+    }
+
+    function addVars(node) {
+      if (node.declarations.length > 1) {
+        processMultiVarDeclaration(node);
+      } else {
+        processSingleVarDeclaration(node);
+      }
+    }
+
+    function addInternal(node) {
+      addTopLevel(node.id.name, node, 'internal')
+    }
+
+    function addSugarMethod(name, node, define) {
+      var define = ['Sugar', currentNamespace, define].join('.');
+      var body = [define + '({', '', getNodeBody(node), '', '});'].join('\n');
+      var deps = ['Sugar'].concat(getDependencies(name, node));
+      sugarMethods[name] = {
+        body: body,
+        module: module,
+        dependencies: deps,
+        exports: 'Sugar'
+      }
+      return sugarMethods[name];
+    }
+
+    function getGroupName(loc) {
+      var prevLineComment = commentsByEndLine[loc.start.line - 1];
+      if (prevLineComment) {
+        return prevLineComment.text.replace(/^\s+/, '').replace(/\s/g, '_').toLowerCase();
+      } else {
+        return getFallbackGroupName();
+      }
+    }
+
+    function getFallbackGroupName() {
+      return 'group-' + counter++;
+    }
+
+    function processSingleVarDeclaration(node) {
+      var name = node.declarations[0].id.name;
+      var type = /^[A-Z_]+$/.test(name) ? 'constants' : 'vars';
+      var tl = addTopLevel(name, node, type);
+    }
+
+    function processMultiVarDeclaration(node) {
+      var tl = addTopLevel(getGroupName(node.loc), node, 'vars');
+      tl.names = [];
+      node.declarations.forEach(function(declaration) {
+        tl.names.push(declaration.id.name);
+      });
+    }
+
+    function processMethodBlock(node) {
+      var define = node.expression.callee.name;
+      var methods = node.expression.arguments[1].properties;
+      methods.forEach(function(node) {
+        addSugarMethod(node.key.value, node, define);
+      });
+    }
+
+    function groupBuildExpression(node) {
+      var body;
+      var fnName = node.expression.callee.name;
+      var fnPackage = topLevel[fnName];
+
+      var groupName = fnName.replace(/^build/, '');
+      var groupReg = RegExp('^' + groupName, 'i');
+
+      var names = [];
+      var blocks = [];
+      var deps = fnPackage.dependencies;
+
+      iter(topLevel, function(key, tl) {
+        if (groupReg.test(key)) {
+          var i = deps.indexOf(key);
+          deps.splice(i, 1);
+          tl.alias = groupName;
+          names.push(key);
+          blocks.push(tl.body);
+        }
+      });
+      body = blocks.concat(fnPackage.body).join('\n')
+      topLevel[groupName] = {
+        body: body,
+        type: 'vars',
+        exports: names,
+        module: module,
+        dependencies: deps
+      };
+      // The build function is neither depended on nor should
+      // be output, so delete from the hash.
+      delete topLevel[fnName];
+    }
+
+    source = fs.readFileSync(path, 'utf-8')
+
+    output = acorn.parse(source, {
+      locations: true,
+      sourceFile: path,
+      onComment: onComment
+    });
+
+    output.body.forEach(function(node) {
+      processTopLevelNode(node);
+    });
+
+  }
+
+  function writePackage(packageName, package) {
+
+    if (package.alias) {
+      // Don't export alias packages.
+      return;
+    }
+
+    var deps = package.dependencies;
+
+    // If no explicit exports, then the
+    // package should simply export itself.
+    var exports = package.exports || packageName;
+
+    function getRequires() {
+      if (deps.length === 0) {
+        return '';
+      }
+      var requires = deps.map(function(dep) {
+        return dep + " = require('" + getPackageForDependency(dep) + "')";
+      });
+      return 'var ' + requires.join(',\n' + TAB + TAB) + ';';
+    }
+
+    function getExports() {
+      var compiled, mapped;
+      if (typeof exports === 'string') {
+        compiled = exports;
+      } else {
+        mapped = exports.map(function(e) {
+          return "'"+ e +"':" + e;
+        });
+        compiled = ['{', mapped, '}'].join(',\n' + TAB);
+      }
+      return 'module.exports = ' + compiled + ';';
+    }
+
+    function getPackageForDependency(dep) {
+      if (dep === 'Sugar') {
+        return '../../../lib/core';
+        // TODO: temporary until the core package is created.
+        //return 'sugar-core';
+      }
+      // TODO: temporary until we map core vars into common
+      if (!hasOwn.call(topLevel, dep)) {
+        return '???????????????';
+      }
+      var depPackage = topLevel[dep], module = depPackage.module;
+      var basePath = module === package.module ? './' : '../' + module;
+      return path.join(basePath, depPackage.type, dep);
+    }
+
+    var outputPath = path.join(NPM_DESTINATION, package.module, package.type || '');
+    var outputFilePath = path.join(outputPath, packageName + '.js');
+    var outputBody = NPM_PACKAGE_TEMPLATE
+      .replace(/%requires%/, getRequires())
+      .replace(/%exports%/, getExports())
+      .replace(/%body%/, package.body);
+    mkdirp.sync(outputPath);
+    fs.writeFileSync(outputFilePath, outputBody, 'utf-8');
+  }
+
+  parseModule('common');
+  parseModule('regexp');
+
+  iter(topLevel, writePackage);
+  iter(sugarMethods, writePackage);
+
+}
+
+gulp.task('modularize', function() {
+  modularize();
+});
 
 
 // -------------- Test ----------------
