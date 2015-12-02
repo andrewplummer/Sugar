@@ -10,11 +10,13 @@ require('../suite/helpers/core');
 require('../suite/helpers/date');
 require('../suite/helpers/object');
 
+var npmPath;
 var exitOnFail = true;
 
 function getPackageName(name) {
   return name === 'sugar' ? 'sugar' : 'sugar-' + name;
 }
+/*
 
 function getNpmPath(name) {
   var packageName = getPackageName(name);
@@ -24,6 +26,7 @@ function getNpmPath(name) {
   }
   return '../../release/npm/' + packageName + '/' + packageName;
 }
+*/
 
 function getTestName(type, name) {
   var packageName = getPackageName(name);
@@ -48,11 +51,15 @@ module.exports = {
     reload('../tests/' + name);
   },
 
+  setSource: function(path) {
+    npmPath = path;
+  },
+
   run: function(mod, extended) {
-    var match = mod.filename.match(/(\w+)\/([\w-]+)\.js$/);
-    var type = match[1];
-    var name = match[2];
-    Sugar = reload(getNpmPath(name));
+    //var match = mod.filename.match(/(\w+)\/([\w-]+)\.js$/);
+    //var type = match[1];
+    //var name = match[2];
+    Sugar = reload(npmPath);
     if (extended) {
       Sugar();
     }
