@@ -228,7 +228,7 @@ function getDefaultFlags() {
   return {
     jar: COMPIER_JAR_PATH,
     compilation_level: 'ADVANCED_OPTIMIZATIONS',
-    warning_level: 'QUIET',
+    jscomp_off: ['globalThis', 'misplacedTypeAnnotation', 'checkTypes'],
     output_wrapper: getLicense() + "\n(function(){'use strict';%output%}).call(this);",
     externs: 'lib/extras/externs.js',
   }

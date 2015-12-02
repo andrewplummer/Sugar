@@ -98,6 +98,10 @@ getUTCDate = function(year, month, day, hours, minutes, seconds, milliseconds) {
   return d;
 }
 
+testIsUTC = function(d) {
+  return testGetPrivateProp(d, 'utc');
+}
+
 getDateWithWeekdayAndOffset = function(weekday, offset, hours, minutes, seconds, milliseconds) {
   var d = new Date();
   if(offset) d.setDate(d.getDate() + offset);
@@ -106,6 +110,34 @@ getDateWithWeekdayAndOffset = function(weekday, offset, hours, minutes, seconds,
   d.setMinutes(minutes || 0);
   d.setSeconds(seconds || 0);
   d.setMilliseconds(milliseconds || 0);
+  return d;
+}
+
+testGetBeginningOfWeek = function(startWeekday) {
+  var d = new Date();
+  var dow = d.getDay();
+  if (dow < startWeekday) {
+    startWeekday -= 7;
+  }
+  d.setDate(d.getDate() - (dow - startWeekday));
+  d.setHours(0);
+  d.setMinutes(0);
+  d.setSeconds(0);
+  d.setMilliseconds(0);
+  return d;
+}
+
+testGetEndOfWeek = function(endWeekday) {
+  var d = new Date();
+  var dow = d.getDay();
+  if (dow > endWeekday) {
+    endWeekday += 7;
+  }
+  d.setDate(d.getDate() + (endWeekday - dow));
+  d.setHours(23);
+  d.setMinutes(59);
+  d.setSeconds(59);
+  d.setMilliseconds(999);
   return d;
 }
 
@@ -192,20 +224,12 @@ testGetTimezoneHours = function(d) {
   return Math.floor(Math.abs(d.getTimezoneOffset()) / 60);
 }
 
-// These helper methods are necessary because setting/getting
+// This helper method are necessary because setting/getting
 // the locale is sometimes performed outside the Date package,
 // giving no context for run().
 testSetLocale = function(code) {
   if (!Sugar.Date || !Sugar.Date.setLocale) return;
   return Sugar.Date.setLocale(code);
-}
-
-testGetLocale = function(code) {
-  return Sugar.Date.getLocale(code);
-}
-
-testAddLocale = function(code, set) {
-  return Sugar.Date.addLocale(code, set);
 }
 
 assertAddUnitIsNumericallyEqual = function (d, method, add, message) {
@@ -265,4 +289,10 @@ assertRelative = function(format, expected) {
   if (!mayHaveDSTShifted(d)) {
     equal(run(d, 'relative'), expected, 'relative | ' + format);
   }
+}
+
+assertFormatShortcut = function (d, name, expected, localeCode) {
+  var l = localeCode ? ' | ' + localeCode : '';
+  test(d, ['{' + name + '}', localeCode], expected, 'direct token ' + name + l);
+  equal(run(d, name, [localeCode]), expected, 'method ' + name + l);
 }

@@ -26,6 +26,15 @@ package('Object', function () {
     test(Object, [false], false, 'false');
     test(Object, [true], false, 'true');
     test(Object, [p], false, 'instance');
+
+    function Foo() {}
+    Foo.prototype = { foo: 3 };
+    test(Object, [new Foo], false, 'Object with inherited properties');
+
+    if (Object.create) {
+      test(Object, [Object.create(null)], true, 'Object with null prototype');
+    }
+
   });
 
   method('isArray', function() {
@@ -417,10 +426,10 @@ package('Object', function () {
 
     var fn = function(key, a, b, target, source) {
       equal(key, 'count', 'First argument should be the key');
-      equal(a, undefined, 'Second argument should be the object value');
+      equal(a, undefined, 'Second argument should be the target value');
       equal(b, 5, 'Third argument should be the source value');
       equal(target, {}, 'Fourth argument should be the target');
-      equal(source, {count:5}, 'Fifth argument should be the target');
+      equal(source, {count:5}, 'Fifth argument should be the source');
       equal(this, nullScope, 'No scope is set by default');
       return b * 2;
     }
@@ -441,7 +450,7 @@ package('Object', function () {
 
     var fn = function(key, a, b) { return undefined; };
     var opts = { resolve: fn };
-    testStaticAndInstance({a:{b:'b'}}, [{a:{b:'c'}}, opts], {a:{b:'c'}}, 'undefined will be handled');
+    testStaticAndInstance({}, [{a:'a',b:'b'}, opts], {}, 'returning undefined means no properties are merged');
 
     var fn = function(key, a, b) { return a.concat(b); };
     var opts = { resolve: fn };
@@ -453,7 +462,7 @@ package('Object', function () {
       }
     };
     var opts = { resolve: fn };
-    testStaticAndInstance({a:[1]}, [{a:[2],b:'b'}, opts], {a:[1,2],b:'b'}, 'default merge is used if custom function returns undefined');
+    testStaticAndInstance({a:[1]}, [{a:[2],b:'b'}, opts], {a:[1,2]}, 'property is not merged if custom function returns undefined');
 
     var count = 0;
     var obj = {a:{a:{a:'a'}}};
@@ -464,7 +473,7 @@ package('Object', function () {
     var opts = { deep: true, resolve: fn };
     var result = run(Object, 'merge', [{}, obj, opts]);
     equal(count, 1, 'resolve function should have been called once');
-    equal(result, {a:1}, 'returning non-undefined in custom function should not traverse further into that object');
+    equal(result, {a:1}, 'returning defined value in resolve function should not traverse further into that object');
 
 
     var obj1 = {a:{b:{c:{one:5,two:10}}}};
@@ -474,9 +483,10 @@ package('Object', function () {
       if(typeof a === 'number' || typeof b === 'number') {
         return (a || 0) + (b || 0);
       }
+      return Sugar;
     }
     var opts = { deep: true, resolve: fn };
-    testStaticAndInstance(obj1, [obj2, opts], expected, 'deep merge continues traversing into the object if the resolve function returns undefined');
+    testStaticAndInstance(obj1, [obj2, opts], expected, 'continue on if the resolve function returns the Sugar global');
 
 
     if (definePropertySupport) {
@@ -575,6 +585,7 @@ package('Object', function () {
       if (b instanceof Foo) {
         return b;
       }
+      return Sugar;
     }
     var f = new Foo;
     var obj = {
@@ -717,23 +728,19 @@ package('Object', function () {
       if (key === 'likes') {
         return targetVal + sourceVal;
       }
+      return Sugar;
     }
 
     var conservativeCombinator = function(key, targetVal, sourceVal) {
       if (key === 'likes') {
+        // Merge "likes" by adding them together.
         return targetVal + sourceVal;
+      } else if (typeof targetVal === 'object') {
+        // Allow Sugar to handle any deep merges.
+        return Sugar;
       }
-      // If the key is "user" then return undefined so that the default merge
-      // will continue traversing into the object. Forcing the user to return
-      // undefined to continue traversal is slightly awkward, however it is
-      // simpler in implementation, more clear in function (returning anything
-      // other than undefined will halt the merge) and avoids issues with
-      // traversing into objects that are not basic data types, for example
-      // MouseEvent, which cannot be re-created without knowing the original
-      // constructor arguments.
-      if (key !== 'user') {
-        return targetVal;
-      }
+      // Otherwise preserve the targets properties if they exist.
+      return targetVal || sourceVal;
     }
 
     testStaticAndInstance(testClone(deepObject1), [deepObject2], deepObject2, 'standard shallow merge produces source');
@@ -775,6 +782,116 @@ package('Object', function () {
     var opts = { deep: true };
     test(Object, [{a:''}, {a:{b:1}}, opts], {a:{b:1}}, 'source object wins with empty string');
     test(Object, [{a:'1'}, {a:{b:1}}, opts], {a:{b:1}}, 'source object wins with number as string');
+
+  });
+
+  method('mergeAll', function() {
+
+    var obj1 = {a:'a'};
+    var obj2 = {b:'b'};
+    var obj3 = {c:'c'};
+
+    var target = {};
+    var result = run(Object, 'mergeAll', [target, [obj1, obj2, obj3]]);
+    equal(target, {a:'a',b:'b',c:'c'}, 'All objects should be merged into the result');
+    equal(obj1, {a:'a'}, 'object 1 should be unchanged');
+    equal(obj2, {b:'b'}, 'object 2 should be unchanged');
+    equal(obj3, {c:'c'}, 'object 3 should be unchanged');
+    equal(result === target, true, 'Returned result should be equal to the target object');
+
+    testStaticAndInstance({foo:undefined,bar:undefined}, [[{bar:3},{foo:1}]], {foo:1,bar:3}, 'overwrites undefined');
+    testStaticAndInstance({foo:3}, [[{foo:4},{foo:5}]], {foo:5}, 'last wins');
+    testStaticAndInstance({foo:3}, [[{foo:4},{bar:5}],{resolve:false}], {foo:3,bar:5}, 'used as defaults');
+
+    var result = run(Object, 'mergeAll', [{}, [{one:obj1}],{deep:true}]);
+    equal(result, {one:{a:'a'}}, true, 'object was merged');
+    equal(result.one === obj1, false, 'object was deep merged');
+
+    var fn = function(key, a, b) { return a + b; };
+    testStaticAndInstance({a:1}, [[{a:2},{a:5},{a:8}],{resolve:fn}], {a:16}, 'custom resolver works on all merged objects');
+
+    testStaticAndInstance({name:'Anonymous'}, [{name:'Frank'}], {name:'Frank'}, 'passing a single object should still work');
+
+    if (definePropertySupport) {
+      var obj1 = getAccessorObject('one');
+      var obj2 = getAccessorObject('two');
+      var result = run(Object, 'mergeAll',  [{}, [obj1, obj2], {descriptor:true}]);
+      result.data.one = 'hoo';
+      result.data.two = 'ha';
+      equal(result.one + result.two, 'hooha', 'both descriptors were merged');
+
+      var fn = function(key, a, b) { return (a || '') + b; };
+      var obj1 = getDescriptorObject();
+      var obj2 = getDescriptorObject();
+      var obj3 = getDescriptorObject();
+      testStaticAndInstance({}, [[obj1, obj2, obj3],{hidden:true,resolve:fn}],{foo:'barbarbar'}, 'can handle hidden properties');
+    }
+
+  });
+
+  method('defaults', function() {
+
+    function add(key, a, b) {
+      return a + b;
+    }
+
+    testStaticAndInstance({id:999}, [{views:0}], {id:999,views:0}, 'simple defaults');
+    testStaticAndInstance({id:999}, [{id:123}], {id:999}, 'does not overwrite');
+    testStaticAndInstance({id:999}, [{id:123,views:0}], {id:999,views:0}, 'multiple properties single object');
+    testStaticAndInstance({id:999}, [[{id:123},{views:0}]], {id:999,views:0}, 'single property multiple objects');
+
+    testStaticAndInstance({id:null}, [{id:123}], {id:null}, 'does not overwrite null values');
+    testStaticAndInstance({id:undefined}, [{id:123}], {id:123}, 'does overwrite undefined values');
+    testStaticAndInstance({}, [{constructor:'foo'}], {constructor:'foo'}, 'does overwrite shadowed properties');
+
+    test(['a'], [['b']], ['a'], 'array intepreted as multiple');
+    test(['a'], [[['c','b']]], ['a','b'], 'array defaulted in');
+
+    test('a', ['b'], 'a', 'strings');
+    test('a', [['b']], 'a', 'string in array');
+
+
+    var a = {foo:'bar'};
+    var obj = run(Object, 'defaults', [{}, {a:a}]);
+    equal(obj.a === a, true, 'not deep by default');
+
+    var a = {foo:'bar'};
+    var obj = run(Object, 'defaults', [{}, {a:a}, {deep:true}]);
+    equal(obj.a === a, false, 'can be made deep by options');
+
+    testStaticAndInstance({id:999}, [{id:123},{resolve:add}], {id:1122}, 'can override resolver');
+
+
+    var user = { name: 'Frank', likes: 552, profile: { foods: 'Carrots', books: 'Dr. Seuss' } };
+    var userData1 = { name: 'Anonymous', pic: 'default.jpg' };
+    var userData2 = { likes: 0, votes: 53 };
+    var userData3 = { profile: { foods: 'Hamburgers', movies: 'Mall Cop' } };
+
+    var expectedShallow = {
+      name: 'Frank',
+      pic: 'default.jpg',
+      likes: 552,
+      votes: 53,
+      profile: {
+        foods: 'Carrots',
+        books: 'Dr. Seuss'
+      }
+    };
+
+    var expectedDeep = {
+      name: 'Frank',
+      pic: 'default.jpg',
+      likes: 552,
+      votes: 53,
+      profile: {
+        foods: 'Carrots',
+        books: 'Dr. Seuss',
+        movies: 'Mall Cop'
+      }
+    };
+
+    testStaticAndInstance(testClone(user), [[userData1, userData2, userData3]], expectedShallow, 'complex | shallow');
+    testStaticAndInstance(testClone(user), [[userData1, userData2, userData3],{deep:true}], expectedDeep, 'complex | deep');
 
   });
 
@@ -893,9 +1010,9 @@ package('Object', function () {
 
     var d = new Date(2000, 5, 25);
     // Simulate the Sugar date setUTC without actually requiring it
-    d._utc = true;
+    d.foo = true;
     var result = run(Object, 'clone', [d]);
-    equal(result._utc, true, 'date property should also be cloned');
+    equal(result.foo, true, 'utc property should also be cloned');
 
     // Issue #396 cloning objects with accessors.
 
@@ -921,6 +1038,13 @@ package('Object', function () {
 
     var Foo = function() {};
     raisesError(function(){ run(Object, 'clone', [new Foo]); }, 'should raise an error if clone is not a basic object type');
+
+    // Issue #256
+    if(Sugar.Date.clone) {
+      var date = Sugar.Date.setUTC(new Date(), true);
+      equal(testIsUTC(date), true, 'utc flag is set');
+      equal(testIsUTC(run(Object, 'clone', [date])), true, 'should preserve utc flag when set');
+    }
 
   });
 
@@ -949,24 +1073,25 @@ package('Object', function () {
     test(Object, [undefined, 'one'], false, 'string to undefined');
 
     if (typeof Set !== 'undefined') {
-      test(new Set(), [new Set()], true, 'set | empty sets are equal');
-      test(new Set(), [new Set([1])], false, 'set | empty set vs 1 item');
-      test(new Set(['a']), [new Set(['a'])], true, 'set | same strings are equal');
-      test(new Set(['a']), [new Set(['b'])], false, 'set | different strings are not equal');
-      test(new Set([1,2,3,4]), [new Set([1,2,3,4])], true, 'set | sets are equal');
-      test(new Set([1,2,3,4]), [new Set([1,2,3])], false, 'set | 4 vs 3');
-      test(new Set([1,2,3]), [new Set([1,2,3,4])], false, 'set | 3 vs 4');
+      var set = testGetSet;
+      test(set(), [set()], true, 'set | empty sets are equal');
+      test(set(), [set(1)], false, 'set | empty set vs 1 item');
+      test(set('a'), [set('a')], true, 'set | same strings are equal');
+      test(set('a'), [set('b')], false, 'set | different strings are not equal');
+      test(set(1,2,3,4), [set(1,2,3,4)], true, 'set | sets are equal');
+      test(set(1,2,3,4), [set(1,2,3)], false, 'set | 4 vs 3');
+      test(set(1,2,3), [set(1,2,3,4)], false, 'set | 3 vs 4');
 
       var obj = {foo:'bar'};
-      test(new Set([obj]), [new Set([obj])], true, 'set | can have deep structures');
-      test(new Set([obj,'a']), [new Set([obj, 'a'])], true, 'set | deep with same string');
-      test(new Set([obj,'b']), [new Set([obj, 'a'])], false, 'set | deep with different string');
+      test(set(obj), [set(obj)], true, 'set | can have deep structures');
+      test(set(obj,'a'), [set(obj, 'a')], true, 'set | deep with same string');
+      test(set(obj,'b'), [set(obj, 'a')], false, 'set | deep with different string');
 
-      test(new Set(), ['a'], false, 'set | set vs primitive');
-      test('a', [new Set()], false, 'set | primitive vs set');
+      test(set(), ['a'], false, 'set | set vs primitive');
+      test('a', [set()], false, 'set | primitive vs set');
 
-      var s1 = new Set([1]);
-      var s2 = new Set([s1]);
+      var s1 = set(1);
+      var s2 = set(s1);
       test(s2, [s2], true, 'set | can handle cyclic structures');
     }
 
@@ -1114,22 +1239,24 @@ package('Object', function () {
   method('fromQueryString', function() {
 
     test(Object, ['foo=bar&moo=car'], {foo:'bar',moo:'car'}, 'basic');
-    test(Object, ['foo=bar&moo=3'], {foo:'bar',moo:3}, 'with numbers');
-    test(Object, ['foo=bar&moo=3', {smart:false}], {foo:'bar',moo:'3'}, 'with numbers not smart');
+    test(Object, ['foo=bar&moo=3'], {foo:'bar',moo:3}, 'with numbers | auto');
+    test(Object, ['foo=bar&moo=3', {auto:false}], {foo:'bar',moo:'3'}, 'with numbers');
 
-    test(Object, ['foo=bar&moo=true'], {foo:'bar',moo:true}, 'with true smart');
-    test(Object, ['foo=bar&moo=false'], {foo:'bar',moo:false}, 'with false smart');
-    test(Object, ['foo=bar&moo=true', {smart:false}], {foo:'bar',moo:'true'}, 'with true not smart');
-    test(Object, ['foo=bar&moo=false', {smart:false}], {foo:'bar',moo:'false'}, 'with false not smart');
+    test(Object, ['foo=bar&moo=true'], {foo:'bar',moo:true}, 'with true | auto');
+    test(Object, ['foo=bar&moo=false'], {foo:'bar',moo:false}, 'with false | auto');
+    test(Object, ['foo=bar&moo=true', {auto:false}], {foo:'bar',moo:'true'}, 'with true not | auto');
+    test(Object, ['foo=bar&moo=false', {auto:false}], {foo:'bar',moo:'false'}, 'with false not | auto');
 
     test(Object, ['foo=bar3'], {foo:'bar3'}, 'number in back');
     test(Object, ['foo=3bar'], {foo:'3bar'}, 'number up front');
 
-    test(Object, ['foo=345'], {foo:345}, 'numbers only smart');
-    test(Object, ['foo=&bar='], { foo: null, bar: null }, 'undefined params smart');
-    test(Object, ['foo=&bar=', {smart:false}], { foo: '', bar: '' }, 'undefined params not smart');
+    test(Object, ['foo=345'], {foo:345}, 'numbers only | auto');
+    test(Object, ['foo&bar'], {foo:null,bar:null}, 'undefined without = | auto');
+    test(Object, ['foo&bar', {auto:false}], {foo:'',bar:''}, 'undefined without = | not auto');
+    test(Object, ['foo=&bar='], {foo:null,bar:null}, 'undefined params | auto');
+    test(Object, ['foo=&bar=', {auto:false}], {foo:'',bar:''}, 'undefined params | not auto');
     test(Object, ['foo[]=bar&foo[]=car'], {'foo[]':['bar','car']}, 'deep strings with default');
-    test(Object, ['foo[]=bar&foo[]=car',{smart:false}], {'foo[]':'car'}, 'deep strings with default not smart');
+    test(Object, ['foo[]=bar&foo[]=car',{auto:false}], {'foo[]':'car'}, 'deep strings with default | not auto');
 
     test(Object, ['foo[]=bar&foo[]=car', {deep:true}], {'foo':['bar','car']}, 'deep strings with deep');
     test(Object, ['foo[bar]=tee&foo[car]=hee', {deep:true}], { foo: { bar: 'tee', car: 'hee' } }, 'handles hash params');
@@ -1138,18 +1265,18 @@ package('Object', function () {
     test(Object, ['foo[cap][map][]=3', {deep:true}], {foo:{cap:{map:[3]}}}, 'nested with trailing array');
     test(Object, ['foo[moo]=1&bar[far]=2', {deep:true}], {foo:{moo:1},bar:{far:2}}, 'sister objects');
 
-    test(Object, ['foo[cap][map]=3', {deep:true,smart:false}], {foo:{cap:{map:'3'}}}, 'deep keys not smart');
-    test(Object, ['foo[cap][map][]=3', {deep:true,smart:false}], {foo:{cap:{map:['3']}}}, 'nested with trailing array not smart');
-    test(Object, ['foo[moo]=1&bar[far]=2', {deep:true,smart:false}], {foo:{moo:'1'},bar:{far:'2'}}, 'sister objects not smart');
+    test(Object, ['foo[cap][map]=3', {deep:true,auto:false}], {foo:{cap:{map:'3'}}}, 'deep keys not auto');
+    test(Object, ['foo[cap][map][]=3', {deep:true,auto:false}], {foo:{cap:{map:['3']}}}, 'nested with trailing array not auto');
+    test(Object, ['foo[moo]=1&bar[far]=2', {deep:true,auto:false}], {foo:{moo:'1'},bar:{far:'2'}}, 'sister objects not auto');
 
     test(Object, ['f[]=a&f[]=b&f[]=c&f[]=d&f[]=e&f[]=f',{deep:true}], { f: ['a','b','c','d','e','f'] }, 'large array');
     test(Object, ['foo[][]=a&foo[][]=b',{deep:true}], {foo:[['a'],['b']]}, 'nested arrays separate');
     test(Object, ['foo[][]=3&foo[][]=4',{deep:true}], {foo:[[3],[4]]}, 'nested arrays together');
-    test(Object, ['foo[][]=3&foo[][]=4',{deep:true,smart:false}], {foo:[['3'],['4']]}, 'nested arrays together not smart');
+    test(Object, ['foo[][]=3&foo[][]=4',{deep:true,auto:false}], {foo:[['3'],['4']]}, 'nested arrays together not auto');
 
     var qs = 'foo[cap][map]=true&foo[cap][pap]=false';
-    test(Object, [qs,{deep:true}], {foo:{cap:{map:true,pap:false}}}, 'nested boolean not smart');
-    test(Object, [qs,{deep:true,smart:false}], {foo:{cap:{ map:'true',pap:'false'}}}, 'nested boolean smart');
+    test(Object, [qs,{deep:true}], {foo:{cap:{map:true,pap:false}}}, 'nested boolean not auto');
+    test(Object, [qs,{deep:true,auto:false}], {foo:{cap:{ map:'true',pap:'false'}}}, 'nested boolean auto');
 
     test(Object, ['foo[3]=hardy&foo[10]=har har', {deep:true}], {foo:{3:'hardy',10:'har har'}}, 'array keys will construct object');
 
@@ -1170,44 +1297,44 @@ package('Object', function () {
       equal(typeof run(Object, 'fromQueryString', [window.location]), 'object', 'can handle just window.location');
     }
 
-    // Smart casting
+    // Automatic casting
 
     test(Object, ['foo=3.14156'], { foo: 3.14156 }, 'float values');
-    test(Object, ['foo=3.14156', {smart:false}], { foo: '3.14156' }, 'float values not smart');
+    test(Object, ['foo=3.14156', {auto:false}], { foo: '3.14156' }, 'float values not automatic');
     test(Object, ['foo=127.0.0.1'], { foo: '127.0.0.1' }, 'IP addresses not treated as numbers');
-    test(Object, ['zip=00165'], { zip: 165 }, 'zipcodes are treated as numbers if smart');
-    test(Object, ['zip=00165',{smart:false}], { zip: '00165' }, 'zipcodes are not treated as numbers if not smart');
+    test(Object, ['zip=00165'], { zip: 165 }, 'zipcodes are treated as numbers if auto');
+    test(Object, ['zip=00165',{auto:false}], { zip: '00165' }, 'zipcodes are not treated as numbers if not auto');
     test(Object, ['foo[=bar'], { 'foo[': 'bar' }, 'opening bracket does not trigger deep parameters');
 
-    test(Object, ['foo='],        { foo: null },   'smart | null');
-    test(Object, ['foo=0'],       { foo:   0 },    'smart | zero');
-    test(Object, ['foo=-0'],      { foo:  -0 },    'smart | negative zero');
-    test(Object, ['foo=.5'],      { foo:  .5 },    'smart | .5');
-    test(Object, ['foo=0.5'],     { foo:  .5 },    'smart | 0.5');
-    test(Object, ['foo=0.00'],    { foo: 0 },      'smart | 0.00');
-    test(Object, ['foo=1'],       { foo: 1 },      'smart | 1');
-    test(Object, ['foo=-1'],      { foo:-1 },      'smart | -1');
-    test(Object, ['foo=-0.5'],    { foo: -.5 },    'smart | -0.5');
-    test(Object, ['foo=-.5'],     { foo: -.5 },    'smart | -.5');
-    test(Object, ['foo=-.0025'],  { foo: -.0025 }, 'smart | -.0025');
-    test(Object, ['foo=-0.0025'], { foo: -.0025 }, 'smart | -0.0025');
-    test(Object, ['foo=.0025'],   { foo:  .0025 }, 'smart | .0025');
-    test(Object, ['foo=0.0025'],  { foo:  .0025 }, 'smart | 0.0025');
+    test(Object, ['foo='],        { foo: null },   'auto | null');
+    test(Object, ['foo=0'],       { foo:   0 },    'auto | zero');
+    test(Object, ['foo=-0'],      { foo:  -0 },    'auto | negative zero');
+    test(Object, ['foo=.5'],      { foo:  .5 },    'auto | .5');
+    test(Object, ['foo=0.5'],     { foo:  .5 },    'auto | 0.5');
+    test(Object, ['foo=0.00'],    { foo: 0 },      'auto | 0.00');
+    test(Object, ['foo=1'],       { foo: 1 },      'auto | 1');
+    test(Object, ['foo=-1'],      { foo:-1 },      'auto | -1');
+    test(Object, ['foo=-0.5'],    { foo: -.5 },    'auto | -0.5');
+    test(Object, ['foo=-.5'],     { foo: -.5 },    'auto | -.5');
+    test(Object, ['foo=-.0025'],  { foo: -.0025 }, 'auto | -.0025');
+    test(Object, ['foo=-0.0025'], { foo: -.0025 }, 'auto | -0.0025');
+    test(Object, ['foo=.0025'],   { foo:  .0025 }, 'auto | .0025');
+    test(Object, ['foo=0.0025'],  { foo:  .0025 }, 'auto | 0.0025');
 
-    test(Object, ['foo=0x89'],    { foo: '0x89' },     'smart | should not cast 0x89');
-    test(Object, ['foo=1e25'],    { foo: '1e25' },     'smart | should not cast 1e25');
-    test(Object, ['foo=#fff'],    { foo: '#fff' },     'smart | should not cast #fff');
-    test(Object, ['foo=1.2.3'],   { foo: '1.2.3'},     'smart | should not cast 1.2.3');
-    test(Object, ['foo=Infinity'],{ foo: 'Infinity' }, 'smart | should not cast Infinity');
-    test(Object, ['foo=99,999'],  { foo: '99,999' },   'smart | should not cast numbers with commas');
-    test(Object, ['foo=24px'],    { foo: '24px' },     'smart | should not cast 24px');
-    test(Object, ['foo=5-'],      { foo: '5-' },       'smart | should not cast 5-');
+    test(Object, ['foo=0x89'],    { foo: '0x89' },     'auto | should not cast 0x89');
+    test(Object, ['foo=1e25'],    { foo: '1e25' },     'auto | should not cast 1e25');
+    test(Object, ['foo=#fff'],    { foo: '#fff' },     'auto | should not cast #fff');
+    test(Object, ['foo=1.2.3'],   { foo: '1.2.3'},     'auto | should not cast 1.2.3');
+    test(Object, ['foo=Infinity'],{ foo: 'Infinity' }, 'auto | should not cast Infinity');
+    test(Object, ['foo=99,999'],  { foo: '99,999' },   'auto | should not cast numbers with commas');
+    test(Object, ['foo=24px'],    { foo: '24px' },     'auto | should not cast 24px');
+    test(Object, ['foo=5-'],      { foo: '5-' },       'auto | should not cast 5-');
 
 
-    test(Object, ['foo=bar&foo=car'], {'foo':['bar','car']}, 'two keys detected by smart');
-    test(Object, ['foo=bar&foo=car&foo=moo'], {'foo':['bar','car','moo']}, 'three keys detected by smart');
-    test(Object, ['foo=bar&foo=car', {deep:true}], {'foo':['bar','car']}, 'two keys detected by smart');
-    test(Object, ['foo=bar&foo=car&foo=moo', {deep:true}], {'foo':['bar','car','moo']}, 'three keys detected by smart');
+    test(Object, ['foo=bar&foo=car'], {'foo':['bar','car']}, 'two keys detected by auto');
+    test(Object, ['foo=bar&foo=car&foo=moo'], {'foo':['bar','car','moo']}, 'three keys detected by auto');
+    test(Object, ['foo=bar&foo=car', {deep:true}], {'foo':['bar','car']}, 'two keys detected by auto');
+    test(Object, ['foo=bar&foo=car&foo=moo', {deep:true}], {'foo':['bar','car','moo']}, 'three keys detected by auto');
 
 
     // Separators
@@ -1223,48 +1350,48 @@ package('Object', function () {
 
     // Cast function
 
-    var castToFoo = function() { return 'foo'; }
-    test(Object, ['foo=bar', {cast:castToFoo}], {foo:'foo'}, 'cast foo');
-    test(Object, ['foo=3', {cast:castToFoo}], {foo:'foo'}, 'cast foo before smart conversion');
-    test(Object, ['foo=true', {cast:castToFoo}], {foo:'foo'}, 'cast foo before boolean conversion');
-    test(Object, ['foo[]=true', {cast:castToFoo}], {'foo[]':'foo'}, 'cast foo on brackets');
+    var toFoo = function() { return 'foo'; }
+    test(Object, ['foo=bar',    {transform:toFoo}], {foo:'foo'}, 'transform foo');
+    test(Object, ['foo=3',      {transform:toFoo}], {foo:'foo'}, 'transform foo before auto conversion');
+    test(Object, ['foo=true',   {transform:toFoo}], {foo:'foo'}, 'transform foo before boolean conversion');
+    test(Object, ['foo[]=true', {transform:toFoo}], {'foo[]':'foo'}, 'transform foo on brackets');
 
-    var castToEmpty = function() { return ''; }
-    test(Object, ['foo=bar', {cast:castToEmpty}], {foo:''}, 'cast empty string');
+    var toEmpty = function() { return ''; }
+    test(Object, ['foo=bar', {transform:toEmpty}], {foo:''}, 'transform empty string');
 
 
     var count = 0;
-    var testCastArguments = function(key, value) {
+    var testTransformArguments = function(key, value, obj, str) {
       equal(key, 'foo', 'first argument should be the key');
       equal(value, 'bar', 'second argument should be the value');
       count++;
     }
-    run(Object, 'fromQueryString', ['foo=bar', {cast:testCastArguments}]);
+    run(Object, 'fromQueryString', ['foo=bar', {transform:testTransformArguments}]);
     equal(count, 1, 'should have run once');
 
     var count = 0;
     var expectedKeys = ['foo[name]', 'moo[]'];
     var expectedValues = ['bar', 'beer'];
     var capturedObj;
-    var testCastArgumentsDeep = function(key, value, obj) {
+    var testTransformArgumentsDeep = function(key, value, obj) {
       equal(key, expectedKeys[count], 'first argument');
       equal(value, expectedValues[count], 'second argument');
       capturedObj = obj;
       count++;
     }
-    var result = run(Object, 'fromQueryString', ['foo[name]=bar&moo[]=beer', {cast:testCastArgumentsDeep}]);
+    var result = run(Object, 'fromQueryString', ['foo[name]=bar&moo[]=beer', {transform:testTransformArgumentsDeep}]);
 
     equal(capturedObj, result, 'third argument should be equal to the result');
     equal(count, 2, 'should have run twice');
 
-    var castOnlyUserName = function(key) {
+    var onlyUserName = function(key) {
       if (key === 'user_name') {
         return 'Harry';
       }
     }
-    test(Object, ['user_name=moo&user_id=12345', {cast:castOnlyUserName}], {user_name:'Harry',user_id:12345}, 'only cast name');
+    test(Object, ['user_name=moo&user_id=12345', {transform:onlyUserName}], {user_name:'Harry',user_id:12345}, 'only user name');
 
-    var castNumeralAsBoolean = function(key, value) {
+    var numeralToBoolean = function(key, value) {
       if (value === '1' || value === '0') {
         return !!+value;
       }
@@ -1282,15 +1409,15 @@ package('Object', function () {
         }
       }
     }
-    test(Object, [subject, {deep:true,cast:castNumeralAsBoolean}], expected, 'complex object with numeral cast to boolean');
+    test(Object, [subject, {deep:true,transform:numeralToBoolean}], expected, 'complex object with numeral cast to boolean');
 
 
-    var castToArray = function(key, value, obj) {
+    var toArray = function(key, value, obj) {
       if (key === 'foo' && !obj[key]) {
         return [value];
       }
     }
-    test(Object, ['foo=bar', {cast:castToArray}], {'foo':['bar']}, 'single can still be converted to array with cast function');
+    test(Object, ['foo=bar', {transform:toArray}], {'foo':['bar']}, 'single can still be converted to array with cast function');
 
   });
 
@@ -1395,17 +1522,6 @@ package('Object', function () {
   });
 
 
-  method('clone', function() {
-
-    // Issue #256
-    if(Sugar.Date.clone) {
-      var date = Sugar.Date.setUTC(new Date(), true);
-      equal(date._utc, true, 'utc flag is set');
-      equal(run(Object, 'clone', [date])._utc, true, 'should preserve utc flag when set');
-    }
-
-  });
-
   method('toQueryString', function() {
 
     var date = new Date(2012, 8, 25);
@@ -1508,14 +1624,14 @@ package('Object', function () {
     var booleanToNumber = function(key, val) {
       return typeof val === 'boolean' ? +val : val;
     }
-    assertQueryString({a:true,b:'b',c:false}, [{getValue:booleanToNumber}], 'a=1&b=b&c=0', 'values can be overridden with getValue');
-    assertQueryString({foo:{a:true,b:'b',c:false}}, [{deep:true,getValue:booleanToNumber}], 'foo[a]=1&foo[b]=b&foo[c]=0', 'deep values can be overridden with getValue');
+    assertQueryString({a:true,b:'b',c:false}, [{transform:booleanToNumber}], 'a=1&b=b&c=0', 'values can be overridden with transform');
+    assertQueryString({foo:{a:true,b:'b',c:false}}, [{deep:true,transform:booleanToNumber}], 'foo[a]=1&foo[b]=b&foo[c]=0', 'deep values can be overridden with transform');
 
-    var testGetValueArguments = function(key, value) {
+    var testTransformArguments = function(key, value) {
       equal(key, 'foo', 'first argument should be the key');
       equal(value, 'bar', 'second argument should be the value');
     }
-    run(Object, 'toQueryString', [{foo:'bar'}, {getValue:testGetValueArguments}]);
+    run(Object, 'toQueryString', [{foo:'bar'}, {transform:testTransformArguments}]);
 
 
     var obj = {
@@ -1688,20 +1804,18 @@ package('Object', function () {
     testStaticAndInstance(obj, ['c.b.a'], undefined, 'deep none exist');
 
     testStaticAndInstance(obj, ['.'], undefined, 'single dot');
-    testStaticAndInstance(obj, ['..'], undefined, 'two dots');
-    testStaticAndInstance(obj, ['...'], undefined, 'three dots');
 
     testStaticAndInstance({}, [], undefined, 'no arguments');
+    testStaticAndInstance({'ohai':1}, [{toString:function() {return 'ohai';}}], 1, 'object should be coerced to string');
     testStaticAndInstance({'undefined':1}, [undefined], undefined, 'undefined should not be coerced to string');
     testStaticAndInstance({'null':1}, [null], undefined, 'null should not be coerced to string');
     testStaticAndInstance({3:1}, [3], 1, 'number should be coerced to string');
-    testStaticAndInstance({'[object Object]':1}, [{foo:'bar'}], 1, 'object should be coerced to string');
     testStaticAndInstance({'undefined':1}, ['undefined'], 1, '"undefined" is found');
     testStaticAndInstance({'null':1}, ['null'], 1, '"null" is found');
 
+
     testStaticAndInstance({'':1}, [''], 1, 'empty string as key');
     testStaticAndInstance({'':{'':2}}, ['.'], 2, 'nested empty string as key');
-    testStaticAndInstance({'':{'':{'':3}}}, ['..'], 3, 'twice nested empty string as key');
 
     testStaticAndInstance(undefined, ['a'], undefined, 'flat property on undefined');
     testStaticAndInstance(undefined, ['a.b'], undefined, 'deep property on undefined');
@@ -1711,8 +1825,10 @@ package('Object', function () {
     testStaticAndInstance({}, ['a.b'], undefined, 'deep property on empty object');
     testStaticAndInstance(NaN, ['a'], undefined, 'flat property on NaN');
     testStaticAndInstance(NaN, ['a.b'], undefined, 'deep property on NaN');
-    testStaticAndInstance('foo', ['a'], undefined, 'flat property on string');
-    testStaticAndInstance('foo', ['a.b'], undefined, 'flat property on string');
+    testStaticAndInstance('', ['a'], undefined, 'flat property on empty string');
+    testStaticAndInstance('', ['a.b'], undefined, 'deep property on empty string');
+    testStaticAndInstance('foo', ['a'], undefined, 'flat property on non-empty string');
+    testStaticAndInstance('foo', ['a.b'], undefined, 'deep property on non-empty string');
 
     testStaticAndInstance(['a','b'], [0], 'a', 'array property found');
     testStaticAndInstance(['a','b'], [1], 'b', 'array property found');
@@ -1722,6 +1838,89 @@ package('Object', function () {
     testStaticAndInstance([{foo:'bar'}], ['0.foo'], 'bar', 'array deep property');
     testStaticAndInstance({foo:['bar']}, ['foo.0'], 'bar', 'object array property');
     testStaticAndInstance([[['bar']]], ['0.0.0'], 'bar', 'deep array');
+
+    testStaticAndInstance({users:{993425:{name:'Harry'}}}, ['users.993425.name'], 'Harry', 'gets ids in objects');
+
+    // Bracket syntax
+
+    test(['a'], ['[0]'], 'a', 'simple bracket');
+    test([['a']], ['[0][0]'], 'a', 'deep array index | 2');
+    test([[['a']]], ['[0][0][0]'], 'a', 'deep array index | 3');
+    test([[[{a:'a'}]]], ['[0][0][0].a'], 'a', 'deep array index and dot');
+    test([[[{a:'a'}]]], ['0[0][0].a'], 'a', 'deep array index with no brackets starting');
+    test([[[{a:'a'}]]], ['[-1][-1][-1].a'], 'a', 'deep array index negative');
+    test([], ['[0]'], undefined, 'index in empty array');
+
+    testStaticAndInstance({a:['foo','bar']}, ['a'], ['foo','bar'], 'simple prop');
+    testStaticAndInstance({a:['foo','bar']}, ['a[0]'], 'foo', 'index 0');
+    testStaticAndInstance({a:['foo','bar']}, ['a[1]'], 'bar', 'index 1');
+    testStaticAndInstance({a:['foo','bar']}, ['a[2]'], undefined, 'index 2');
+    testStaticAndInstance({a:['foo','bar']}, ['a[-1]'], 'bar', 'index -1');
+    testStaticAndInstance({a:['foo','bar']}, ['a[-2]'], 'foo', 'index -2');
+    testStaticAndInstance({a:['foo','bar']}, ['a[-3]'], undefined, 'index -3');
+    testStaticAndInstance({a:['foo','bar']}, ['a[]'], undefined, 'null index');
+    testStaticAndInstance({a:['foo','bar']}, ['a.0'], 'foo', 'index 0 | dot');
+    testStaticAndInstance({a:['foo','bar']}, ['a.1'], 'bar', 'index 1 | dot');
+    testStaticAndInstance({a:['foo','bar']}, ['a.2'], undefined, 'index 2 | dot');
+
+    testStaticAndInstance({a:['foo','bar']}, ['a.-1'], undefined, 'index -1 | dot');
+    testStaticAndInstance({a:['foo','bar']}, ['a.-2'], undefined, 'index -2 | dot');
+    testStaticAndInstance({a:['foo','bar']}, ['a.-3'], undefined, 'index -3 | dot');
+
+    testStaticAndInstance({a:[{b:'b'},{c:'c'}]}, ['a[0].b'], 'b', 'index followed by dot');
+
+
+    // Range syntax
+
+    test(['foo','bar','cat'], ['[0..1]'], ['foo','bar'], 'range syntax | 0..1');
+    test(['foo','bar','cat'], ['[1..2]'], ['bar','cat'], 'range syntax | 1..2');
+    test(['foo','bar','cat'], ['[1..3]'], ['bar','cat'], 'range syntax | 1..3');
+    test(['foo','bar','cat'], ['[0..0]'], ['foo'], 'range syntax | -1..0');
+    test(['foo','bar','cat'], ['[0..-1]'], ['foo','bar','cat'], 'range syntax | 0..-1');
+    test(['foo','bar','cat'], ['[-1..0]'], [], 'range syntax | -1..0');
+    test(['foo','bar','cat'], ['[-1..-1]'], ['cat'], 'range syntax | -1..-1');
+    test(['foo','bar','cat'], ['[-2..-1]'], ['bar','cat'], 'range syntax | -2..-1');
+    test(['foo','bar','cat'], ['[-3..-1]'], ['foo','bar','cat'], 'range syntax | -3..-1');
+    test(['foo','bar','cat'], ['[-4..-1]'], ['foo','bar','cat'], 'range syntax | -4..-1');
+    test(['foo','bar','cat'], ['[-4..-3]'], ['foo'], 'range syntax | -4..-3');
+    test(['foo','bar','cat'], ['[-5..-4]'], [], 'range syntax | -5..-4');
+    test(['foo','bar','cat'], ['[0..]'], ['foo','bar','cat'], 'range syntax | 0..');
+    test(['foo','bar','cat'], ['[..1]'], ['foo','bar'], 'range syntax | ..1');
+    test(['foo','bar','cat'], ['[..]'], ['foo','bar','cat'], 'range syntax | ..');
+    test(['foo','bar','cat'], ['..'], undefined, 'range syntax | .. should be undefined');
+
+    testStaticAndInstance({a:['foo','bar','cat']}, ['a[0..1]'], ['foo','bar'], 'range syntax | nested bracket');
+    testStaticAndInstance({a:{b:['foo','bar','cat']}}, ['a.b[0..1]'], ['foo','bar'], 'range syntax | dot and bracket');
+    testStaticAndInstance({a:{b:[{d:'final'},{d:'fight'}]}}, ['a.b[0..1].d'], ['final','fight'], 'range syntax | dot and bracket with trailing');
+
+    var complex = [[[{x:'a'},{x:'b'},{x:'c'}],[{x:'d'},{x:'e'},{x:'f'}],[{x:'g'},{x:'h'},{x:'i'}]]];
+    test(complex[0], ['[0..1][0..1]'], [[{x:'a'},{x:'b'}],[{x:'d'},{x:'e'}]], 'range syntax | compound brackets');
+    test(complex, ['[0][0..1][0..1]'], [[{x:'a'},{x:'b'}],[{x:'d'},{x:'e'}]], 'range syntax | compound brackets in 0');
+    test(complex, ['[0][0..1][0..1].x'], [['a','b'],['d','e']], 'range syntax | compound brackets with trailing dot');
+
+    var tree = {
+      f: [{
+          f: [
+            {f:['a','b','c']},
+            {f:['d','e','f']},
+            {f:['g','h','i']}
+          ]
+        }, {
+          f: [
+            {f:['j','k','l']},
+            {f:['m','n','o']},
+            {f:['p','q','r']}
+          ]
+        }, {
+          f: [
+            {f:['s','t','u']},
+            {f:['v','w','x']},
+            {f:['y','z','!']}
+          ]
+        }]
+    };
+
+    testStaticAndInstance(tree, ['f[0..1].f[0..1].f[0..1]'], [[['a','b'],['d','e']],[['j','k'],['m','n']]], 'range syntax | tree');
 
     var Foo = function() {};
     var Bar = function() { this.c = 'inst-c'; };
@@ -1777,6 +1976,13 @@ package('Object', function () {
   method('set', function() {
 
     var obj = {};
+    run(Object, 'set', [obj, 'foo.bar', 'car']);
+    equal(obj.foo.bar, 'car', 'Basic flat property is set on original object');
+
+    test({}, ['.','x'], {'':{'':'x'}}, 'single dot');
+    test({'':1}, ['','x'], {'':'x'}, 'empty string as key');
+
+    var obj = {};
     var result = run(Object, 'set', [obj, 'foo', 'bar']);
     equal(obj.foo, 'bar', 'Basic flat property is set on original object');
     equal(result === obj, true, 'returned value is the original object');
@@ -1786,23 +1992,23 @@ package('Object', function () {
     equal(obj.foo.bar, 'car', 'Basic flat property is set on original object');
 
 
-    testStaticAndInstance({}, ['str', 'hi'], {str:'hi'}, 'flat string');
-    testStaticAndInstance({}, ['num', 5], {num:5}, 'flat number');
-    testStaticAndInstance({}, ['und', undefined], {und:undefined}, 'flat undefined');
-    testStaticAndInstance({}, ['nul', null], {nul:null}, 'flat null');
-    testStaticAndInstance({}, ['arr', [1]], {arr:[1]}, 'flat array');
-    testStaticAndInstance({}, ['obj', {a:'b'}], {obj:{a:'b'}}, 'flat object');
+    testStaticAndInstance({}, ['str', 'hi'], {str:'hi'}, 'flat | string');
+    testStaticAndInstance({}, ['num', 5], {num:5}, 'flat | number');
+    testStaticAndInstance({}, ['und', undefined], {}, 'flat | undefined is not set');
+    testStaticAndInstance({}, ['nul', null], {nul:null}, 'flat | null');
+    testStaticAndInstance({}, ['arr', [1]], {arr:[1]}, 'flat | array');
+    testStaticAndInstance({}, ['obj', {a:'b'}], {obj:{a:'b'}}, 'flat | object');
 
     testStaticAndInstance({}, ['a.str', 'hi'], {a:{str:'hi'}}, 'one level | string');
     testStaticAndInstance({}, ['a.num', 5], {a:{num:5}}, 'one level | number');
-    testStaticAndInstance({}, ['a.und', undefined], {a:{und:undefined}}, 'one level | undefined');
+    testStaticAndInstance({}, ['a.und', undefined], {a:{}}, 'one level | undefined is not set');
     testStaticAndInstance({}, ['a.nul', null], {a:{nul:null}}, 'one level | null');
     testStaticAndInstance({}, ['a.arr', [1]], {a:{arr:[1]}}, 'one level | array');
     testStaticAndInstance({}, ['a.obj', {a:'b'}], {a:{obj:{a:'b'}}}, 'one level | object');
 
     testStaticAndInstance({}, ['a.b.str', 'hi'], {a:{b:{str:'hi'}}}, 'two levels | string');
     testStaticAndInstance({}, ['a.b.num', 5], {a:{b:{num:5}}}, 'two levels | number');
-    testStaticAndInstance({}, ['a.b.und', undefined], {a:{b:{und:undefined}}}, 'two levels | undefined');
+    testStaticAndInstance({}, ['a.b.und', undefined], {a:{b:{}}}, 'two levels | undefined is not set');
     testStaticAndInstance({}, ['a.b.nul', null], {a:{b:{nul:null}}}, 'two levels | null');
     testStaticAndInstance({}, ['a.b.arr', [1]], {a:{b:{arr:[1]}}}, 'two levels | array');
     testStaticAndInstance({}, ['a.b.obj', {a:'b'}], {a:{b:{obj:{a:'b'}}}}, 'two levels | object');
@@ -1818,10 +2024,10 @@ package('Object', function () {
 
     // Array tests won't make sense on an extended object.
     test(Object, [[], '0', 'x'], ['x'], 'numeric index on array');
-    test(Object, [['a','b'], 0,'x'], ['x','b'], 'array property set');
-    test(Object, [['a','b'], 1,'x'], ['a','x'], 'array property set');
-    test(Object, [['a','b'], '0','x'], ['x','b'], 'array property set by string');
-    test(Object, [['a','b'], '1','x'], ['a','x'], 'array property set by string');
+    test(Object, [['a','b'], 0,'x'], ['x','b'], 'array property set | 0');
+    test(Object, [['a','b'], 1,'x'], ['a','x'], 'array property set | 1');
+    test(Object, [['a','b'], '0','x'], ['x','b'], 'array property set by string | 0');
+    test(Object, [['a','b'], '1','x'], ['a','x'], 'array property set by string | 1');
 
     test(Object, [[{foo:'bar'}], '0.foo', 'x'], [{foo:'x'}], 'array deep property');
     test(Object, [{foo:['bar']}, 'foo.0','x'], {foo:['x']}, 'object array property');
@@ -1840,31 +2046,139 @@ package('Object', function () {
     testStaticAndInstance(testClone(obj), ['c.b.a', 'x'], {a:{b:{c:'bar'}},c:{b:{a:'x'}}}, 'deep none exist');
 
     testStaticAndInstance({}, ['.','x'], {'':{'':'x'}}, 'single dot');
-    testStaticAndInstance({}, ['..','x'], {'':{'':{'':'x'}}}, 'two dots');
-    testStaticAndInstance({}, ['...','x'], {'':{'':{'':{'':'x'}}}}, 'three dots');
 
     testStaticAndInstance({}, [], {}, 'no arguments');
     testStaticAndInstance({}, [undefined, 'x'], {}, 'undefined should be ignored');
     testStaticAndInstance({}, [null, 'x'], {}, 'null should ignored');
     testStaticAndInstance({}, [3, 'x'], {3:'x'}, 'number should be coerced to string');
-    testStaticAndInstance({}, [{foo:'bar'}, 'x'], {'[object Object]': 'x'}, 'object should be coerced to string');
+    testStaticAndInstance({}, [{toString:function(){return 'ohai';}}, 'x'], {'ohai': 'x'}, 'object should be coerced to string');
+
     testStaticAndInstance({3:1}, [3,'x'], {3:'x'}, 'coerced number is set');
-    testStaticAndInstance({'[object Object]':1}, [{foo:'bar'}, 'x'], {'[object Object]':'x'}, 'coerced object is set');
+    testStaticAndInstance({'ohai':1}, [{toString:function(){return 'ohai';}}, 'x'], {'ohai':'x'}, 'coerced object is set');
 
     testStaticAndInstance({'':1}, ['','x'], {'':'x'}, 'empty string as key');
     testStaticAndInstance({'':{'':2}}, ['.','x'], {'':{'':'x'}}, 'nested empty string as key');
-    testStaticAndInstance({'':{'':{'':3}}}, ['..','x'], {'':{'':{'':'x'}}}, 'twice nested empty string as key');
 
     raisesError(function(){ run(Object, 'set', [undefined, 'a', 'x']); }, 'should raise error on undefined');
     raisesError(function(){ run(Object, 'set', [null, 'a', 'x']); }, 'should raise error on null');
     raisesError(function(){ run(Object, 'set', [NaN, 'a', 'x']); }, 'should raise error on NaN');
     raisesError(function(){ run(Object, 'set', ['foo', 'a', 'x']); }, 'should raise error on string');
+    raisesError(function(){ run(Object, 'set', ['foo', '[0]', 'x']); }, 'should raise error on string with bracket syntax');
 
     raisesError(function(){ run(Object, 'set', [{a:undefined}, 'a.b', 'x']); }, 'should raise error on undefined deep');
     raisesError(function(){ run(Object, 'set', [{a:null}, 'a.b', 'x']); }, 'should raise error on null deep');
     raisesError(function(){ run(Object, 'set', [{a:NaN}, 'a.b', 'x']); }, 'should raise error on NaN deep');
     raisesError(function(){ run(Object, 'set', [{a:'foo'}, 'a.b', 'x']); }, 'should raise error on string deep');
+    raisesError(function(){ run(Object, 'set', [{a:'foo'}, 'a[0]', 'x']); }, 'should raise error on string deep with bracket syntax');
 
+    testStaticAndInstance({}, ['users.993425.name', 'Harry'], {users:{993425:{name:'Harry'}}}, 'allows IDs as strings');
+
+    var sparse = testGetSparseArray;
+
+    // Bracket syntax
+
+    test([], ['[0]','foo'], ['foo'], 'setting index 0 of array');
+    test([], ['[1]','foo'], testGetSparseArray(1,'foo'), 'setting index 1 of array');
+    test([], ['[-1]','foo'], testGetSparseArray(-1,'foo'), 'negative index set');
+    test([], ['[0][0]','foo'], [['foo']], 'nested index 0 0');
+    test([], ['[1][0]','foo'], testGetSparseArray(1,['foo']), 'nested index 1 0');
+    test([], ['[0][1]','foo'], [testGetSparseArray(1,'foo')], 'nested index 0 1');
+    test([], ['[1][1]','foo'], testGetSparseArray(1,testGetSparseArray(1, 'foo')), 'nested index 1 1');
+
+    test(['bar'], ['[0]','foo'], ['foo'], 'setting index 0 of existing');
+    test(['bar','car'], ['[1]','foo'], ['bar','foo'], 'setting index 1 of existing');
+    test(['bar'], ['[-1]','foo'], ['foo'], 'setting index -1 of existing');
+    test(['bar','car'], ['[-1]','foo'], ['bar','foo'], 'setting index -1 of existing');
+
+    testStaticAndInstance({}, ['f[0]','foo'], {f:['foo']}, 'setting index 0 | deep');
+    testStaticAndInstance({}, ['f[1]','foo'], {f:testGetSparseArray(1,'foo')}, 'setting index 1 | deep');
+    testStaticAndInstance({}, ['f[-1]','foo'], {f:testGetSparseArray(-1,'foo')}, 'negative index set | deep');
+    testStaticAndInstance({}, ['f[0][0]','foo'], {f:[['foo']]}, 'nested index 0 0 | deep');
+    testStaticAndInstance({}, ['f[1][0]','foo'], {f:testGetSparseArray(1,['foo'])}, 'nested index 1 0 | deep');
+    testStaticAndInstance({}, ['f[0][1]','foo'], {f:[testGetSparseArray(1,'foo')]}, 'nested index 0 1 | deep');
+    testStaticAndInstance({}, ['f[1][1]','foo'], {f:testGetSparseArray(1,testGetSparseArray(1, 'foo'))}, 'nested index 1 1 | deep');
+
+    testStaticAndInstance({}, ['f[0].x','foo'], {f:[{x:'foo'}]}, 'setting index 0 | deep with trailing');
+    testStaticAndInstance({}, ['f[1].x','foo'], {f:testGetSparseArray(1,{x:'foo'})}, 'setting index 1 | deep with trailing');
+    testStaticAndInstance({}, ['f[-1].x','foo'], {f:testGetSparseArray(-1,{x:'foo'})}, 'negative index set | deep with trailing');
+    testStaticAndInstance({}, ['f[0][0].x','foo'], {f:[[{x:'foo'}]]}, 'nested index 0 0 | deep with trailing');
+    testStaticAndInstance({}, ['f[1][0].x','foo'], {f:testGetSparseArray(1,[{x:'foo'}])}, 'nested index 1 0 | deep with trailing');
+    testStaticAndInstance({}, ['f[0][1].x','foo'], {f:[testGetSparseArray(1,{x:'foo'})]}, 'nested index 0 1 | deep with trailing');
+    testStaticAndInstance({}, ['f[1][1].x','foo'], {f:testGetSparseArray(1,testGetSparseArray(1, {x:'foo'}))}, 'nested index 1 1 | deep with trailing');
+
+    testStaticAndInstance({}, ['a.b[0].x','foo'], {a:{b:[{x:'foo'}]}}, 'setting index 0 | 2 in front and trailing');
+    testStaticAndInstance({}, ['a.b[1].x','foo'], {a:{b:testGetSparseArray(1, {x:'foo'})}}, 'setting index 1 | 2 in front and trailing');
+    testStaticAndInstance({}, ['a.b[-1].x','foo'], {a:{b:testGetSparseArray(-1, {x:'foo'})}}, 'negative index set | 2 in front and trailing');
+    testStaticAndInstance({}, ['a.b[0][0].x','foo'], {a:{b:[[{x:'foo'}]]}}, 'nested index 0 0 | 2 in front and trailing');
+    testStaticAndInstance({}, ['a.b[1][0].x','foo'], {a:{b:testGetSparseArray(1, [{x:'foo'}])}}, 'nested index 1 0 | 2 in front and trailing');
+    testStaticAndInstance({}, ['a.b[0][1].x','foo'], {a:{b:[testGetSparseArray(1,{x:'foo'})]}}, 'nested index 0 1 | 2 in front and trailing');
+    testStaticAndInstance({}, ['a.b[1][1].x','foo'], {a:{b:testGetSparseArray(1,testGetSparseArray(1,{x:'foo'}))}}, 'nested index 1 1 | 2 in front and trailing');
+
+    testStaticAndInstance({}, ['a.b[0].x[0]','foo'], {a:{b:[{x:['foo']}]}}, 'setting index 0 | 2 in front and trailing index');
+    testStaticAndInstance({}, ['a.b[1].x[0]','foo'], {a:{b:testGetSparseArray(1,{x:['foo']})}}, 'setting index 1 | 2 in front and trailing index');
+    testStaticAndInstance({}, ['a.b[-1].x[0]','foo'], {a:{b:testGetSparseArray(-1,{x:['foo']})}}, 'negative index set | 2 in front and trailing index');
+    testStaticAndInstance({}, ['a.b[0][0].x[0]','foo'], {a:{b:[[{x:['foo']}]]}}, 'nested index 0 0 | 2 in front and trailing index');
+    testStaticAndInstance({}, ['a.b[1][0].x[0]','foo'], {a:{b:testGetSparseArray(1,[{x:['foo']}])}}, 'nested index 1 0 | 2 in front and trailing index');
+    testStaticAndInstance({}, ['a.b[0][1].x[0]','foo'], {a:{b:[testGetSparseArray(1,{x:['foo']})]}}, 'nested index 0 1 | 2 in front and trailing index');
+    testStaticAndInstance({}, ['a.b[1][1].x[0]','foo'], {a:{b:testGetSparseArray(1,testGetSparseArray(1,{x:['foo']}))}}, 'nested index 1 1 | 2 in front and trailing index');
+
+    testStaticAndInstance({}, ['a.b[0].x[0].z','foo'], {a:{b:[{x:[{z:'foo'}]}]}}, 'setting index 0 | 2 in front and trailing index');
+    testStaticAndInstance({}, ['a.b[1].x[0].z','foo'], {a:{b:testGetSparseArray(1,{x:[{z:'foo'}]})}}, 'setting index 1 | 2 in front and trailing index');
+    testStaticAndInstance({}, ['a.b[-1].x[0].z','foo'], {a:{b:testGetSparseArray(-1,{x:[{z:'foo'}]})}}, 'negative index set | 2 in front and trailing index');
+    testStaticAndInstance({}, ['a.b[0][0].x[0].z','foo'], {a:{b:[[{x:[{z:'foo'}]}]]}}, 'nested index 0 0 | 2 in front and trailing index');
+    testStaticAndInstance({}, ['a.b[1][0].x[0].z','foo'], {a:{b:testGetSparseArray(1,[{x:[{z:'foo'}]}])}}, 'nested index 1 0 | 2 in front and trailing index');
+    testStaticAndInstance({}, ['a.b[0][1].x[0].z','foo'], {a:{b:[testGetSparseArray(1,{x:[{z:'foo'}]})]}}, 'nested index 0 1 | 2 in front and trailing index');
+    testStaticAndInstance({}, ['a.b[1][1].x[0].z','foo'], {a:{b:testGetSparseArray(1,testGetSparseArray(1,{x:[{z:'foo'}]}))}}, 'nested index 1 1 | 2 in front and trailing index');
+
+    testStaticAndInstance({}, ['f[0].x.y','foo'], {f:[{x:{y:'foo'}}]}, 'setting index 0 | 2 in back after index');
+    testStaticAndInstance({}, ['f[1].x.y','foo'], {f:testGetSparseArray(1,{x:{y:'foo'}})}, 'setting index 1 | 2 in back after index');
+    testStaticAndInstance({}, ['f[-1].x.y','foo'], {f:testGetSparseArray(-1, {x:{y:'foo'}})}, 'negative index set | 2 in back after index');
+    testStaticAndInstance({}, ['f[0][0].x.y','foo'], {f:[[{x:{y:'foo'}}]]}, 'nested index 0 0 | 2 in back after index');
+    testStaticAndInstance({}, ['f[1][0].x.y','foo'], {f:testGetSparseArray(1,[{x:{y:'foo'}}])}, 'nested index 1 0 | 2 in back after index');
+    testStaticAndInstance({}, ['f[0][1].x.y','foo'], {f:[testGetSparseArray(1,{x:{y:'foo'}})]}, 'nested index 0 1 | 2 in back after index');
+    testStaticAndInstance({}, ['f[1][1].x.y','foo'], {f:testGetSparseArray(1,testGetSparseArray(1,{x:{y:'foo'}}))}, 'nested index 1 1 | 2 in back after index');
+
+
+    test(['foo'], ['[-1]','bar'], ['bar'], 'negative index means last element in bracket syntax');
+    test({f:['foo']}, ['f[-1]','bar'], {f:['bar']}, 'negative index means last element in bracket syntax | deep');
+
+    var arr = ['foo'];
+    arr[-1] = 'bar';
+    test(['foo'], ['-1','bar'], arr, 'negative index can still be set without brackets');
+    test({f:['foo']}, ['f.-1','bar'], {f:arr}, 'negative index can still be set without brackets | deep');
+
+    // Push syntax
+
+    test([], ['[]','foo'], ['foo'], 'push | simple array');
+    test(['a'], ['[]','foo'], ['a','foo'], 'push | simple array push with existing');
+    test({x:['a']}, ['x[]', 'foo'], {x:['a','foo']}, 'push | array deep');
+    test({x:{y:['a']}}, ['x.y[]', 'foo'], {x:{y:['a','foo']}}, 'push | array 2 deep');
+    testStaticAndInstance({}, ['x[]', 'foo'], {x:['foo']}, 'push | non-existent array');
+
+    test([], ['[].x','foo'], [{x:'foo'}], 'creates namespace when trailing exists');
+    test([], ['[].x.y','foo'], [{x:{y:'foo'}}], 'creates namespace when 2 trailing exist');
+    testStaticAndInstance({}, ['a[].x.y','foo'], {a:[{x:{y:'foo'}}]}, 'creates namespace when leading exists');
+
+
+    // Range syntax
+
+    test([], ['[0..1]', 'wow'], ['wow','wow'], 'range');
+    test([], ['[0..1][0..1]', 'wow'], [['wow','wow'],['wow','wow']], 'range | nested');
+    test([], ['[0..1].car', 'wow'], [{car:'wow'},{car:'wow'}], 'range | trailing');
+
+    testStaticAndInstance({}, ['foo[0..1]', 'wow'], {foo:['wow','wow']}, 'range | leading');
+    testStaticAndInstance({}, ['foo.bar[0..1].car.far','wow'], {foo:{'bar':[{car:{far:'wow'}},{car:{far:'wow'}}]}}, 'range | complex');
+
+    test([], ['[0][0..1]', 'wow'], [['wow','wow']], 'range | leading bracket');
+    test([], ['[1][0..1]', 'wow'], testGetSparseArray(1, ['wow','wow']), 'range | leading bracket | 1');
+    test([], ['[0..1][0]', 'wow'], [['wow'],['wow']], 'range | trailing bracket');
+    test([], ['[0..1][1]', 'wow'], [testGetSparseArray(1, 'wow'),testGetSparseArray(1, 'wow')], 'range | trailing bracket | 1');
+    test([], ['[9][2][0..1][3][5]', 'wow'], sparse(9, sparse(2, [sparse(3, sparse(5, 'wow')),sparse(3, sparse(5, 'wow'))])), 'range | bracket complex');
+
+    var inner = sparse(1, {car:'wow'});
+    testStaticAndInstance({}, ['foo[3].bar[4..5][1].car', 'wow'], {foo:sparse(3,{bar:sparse(4,inner,inner)})}, 'range | quite complex');
+
+    // Class instances
 
     var Foo = function() { this.a = 'a'; };
     var Bar = function() { this.b = 'b'; };

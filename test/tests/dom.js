@@ -48,23 +48,6 @@ package('Array', function () {
 
   }
 
-  method('create', function() {
-    // Can convert special host objects if they exist.
-    var el = document.createElement('div');
-    if(el.classList) {
-      el.className = 'woot';
-      test(Array, [el.classList], ['woot'], 'handles array-like objects');
-    }
-    if(el.children) {
-      var el2 = document.createElement('div');
-      el.appendChild(el2);
-      test(Array, [el.children], [el2], 'DOM element');
-    }
-    test(Array, [el], [el], 'DOM element');
-    test(Array, [[el]], [el], 'DOM element in array');
-  });
-
-
 });
 
 package('Object', function() {
@@ -86,6 +69,22 @@ package('Object', function() {
   method('isFunction', function() {
     if(!Sugar.Object.isFunction) return;
     test(Object, [document.createElement('embed')], false, 'not true for embed objects');
+  });
+
+  // Confirmed that these tests pass, but avoid subjecting the user
+  // to external frames constantly popping up on each test run.
+  xgroup('Cross Domain Access', function() {
+
+    var iframe = document.createElement('iframe');
+    iframe.style.display = 'none';
+    iframe.src = 'http://www.foo.com/';
+    document.body.appendChild(iframe);
+    equal(run(Object, 'isObject', [iframe.contentWindow]), false, 'Cross Domain iframe should not be a plain object');
+
+    var win = window.open('http://foo.com/', '', 'top=0,left=0,width=0,height=0');
+    equal(run(Object, 'isObject', [win]), false, 'Cross Domain Popup window should not be a plain object');
+    win && win.close();
+
   });
 
 });

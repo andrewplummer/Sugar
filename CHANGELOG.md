@@ -24,7 +24,7 @@ v2.0.0
 - Updated `Array#sortBy` to handle sorting on multiple properties (Issue #386, thanks to @eric-weiser).
 - Fixed `String#unescapeHTML` to handle HTML (and hex) codes. Also now handling &nbsp;
 - Added a third argument to `Number#bytes` to allow normal SI units.
-- `Object.merge` updated to take an options object. Non-enumerable property support is now an option, as well as property descriptors. Resolver function now will not traverse further into a deep merge if it has been resolved with a function.
+- `Object.merge` updated to take an options object. Non-enumerable property support is now an option, as well as property descriptors. Resolver function now will not traverse further into a deep merge if it has been resolved with a function. Sugar global object continues the merge.
 - Allowing a global thousands and decimal marker to be set.
 - `String#hankaku` now makes a hyphen from hyphen-like fullwidth chars in number mode.
 - Fixed issue with the digit `ten` in date creation (Issue #431).
@@ -43,7 +43,7 @@ v2.0.0
 - `null` now no longer acts as a placeholder in `Function#partial`. Other bugs fixed around this including using `partial` on constructors.
 - Options object now uses `fromUTC` instead of just `utc`. A new option `setUTC` is also added which will set the internal utc flag on creation.
 - `String#assign` refactored and renamed to `String#format`. Tokens are zero based and a few other changes.
-- Added `Object.get` and `Object.set` and allowed deep object transforms on `Array#map`, and a few other methods.
+- Added `Object.get` and `Object.set`, allowed them to use dot, bracket, range, and push syntax, and allowed deep object transforms on `Array#map`, and other methods.
 - Fixed many issues with DST and simplified month traversal.
 - Renamed `Array#randomize` to `Array#shuffle`
 - Added `Array#sample` ability to remove sampled elements and performance optimization.
@@ -59,6 +59,13 @@ v2.0.0
 - Modified `Object.fromQueryString` to accept an options object.
 - Added support for Sets in `isEqual`.
 - Added `Array#median`.
+- Modified `Number#metric` to use a more flexible system of defining units.
+- Added strf tokens to `Date#format` as well as a number of new standard tokens. Aligned tokens more with moment/ldml and renamed to ldml in the code.
+- Modified `Array#at` and `String#at` to use arrays instead of enumerated arguments.
+- Removed mixed modes for `String#hankaku` and `String#zenkaku`.
+- Modified `String#replaceTags` and `String#stripTags` to simplify argument signature and small performance boost.
+- Added `Array#isEqual`.
+- Renamed `RegExp#addFlag` and `RegExp#removeFlag` to `RegExp#addFlags` and `RegExp#removeFlags`, and ensured they work on multiple flags.
 
 
 v1.4.2

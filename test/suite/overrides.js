@@ -11,7 +11,6 @@ Object.isObject = overridingFunction;
 Object.isNumber = overridingFunction;
 Object.extend   = overridingFunction;
 
-Array.create              = overridingFunction;
 Array.prototype.add       = overridingFunction;
 Array.prototype.groupBy   = overridingFunction;
 

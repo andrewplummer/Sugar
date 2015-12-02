@@ -28,48 +28,26 @@ arr = arr.concat(arr);
 var tests = [
   {
     fn: function(arg) {
-      return arg.indexOf('.') !== -1;
-    },
-    vars: {
-      noDots: 'one',
-      oneDot: 'one.two',
-      tenDots: 'one.two.three.four.five.six.seven.eight.nine.ten'
+      return Sugar.Object.get(arg, '0.response.related.transliterations[1].text');
     },
     targets: [
-      'noDots * 1000000',
-      'oneDot * 1000000',
-      'tenDots * 1000000'
+      'jsonArray * 10000'
     ]
   },
   {
     fn: function(arg) {
-      var split = arg.split('.');
-      return split.length > 1;
-    },
-    vars: {
-      noDots: 'one',
-      oneDot: 'one.two',
-      tenDots: 'one.two.three.four.five.six.seven.eight.nine.ten'
+      return Sugar.Object.get(arg, '0.response.related.transliterations[0..1].text');
     },
     targets: [
-      'noDots * 1000000',
-      'oneDot * 1000000',
-      'tenDots * 1000000'
+      'jsonArray * 10000'
     ]
   },
   {
     fn: function(arg) {
-      return /\./.test(arg);
-    },
-    vars: {
-      noDots: 'one',
-      oneDot: 'one.two',
-      tenDots: 'one.two.three.four.five.six.seven.eight.nine.ten'
+      return Sugar.Object.get3(arg, '0.response.related.transliterations[1].text');
     },
     targets: [
-      'noDots * 1000000',
-      'oneDot * 1000000',
-      'tenDots * 1000000'
+      'jsonArray * 10000'
     ]
   },
 ];

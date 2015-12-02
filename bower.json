@@ -10,6 +10,7 @@
     "url": "https://github.com/andrewplummer/Sugar.git"
   },
   "keywords": [
+    "sugar",
     "sugarjs",
     "functional",
     "utility",
@@ -18,15 +19,15 @@
     "date",
     "time"
   ],
-  "main": "sugar.min.js",
+  "main": "sugar.js",
   "ignore": [
-    "package.json",
+    "lib",
+    "test",
+    "release",
     "gulpfile.js",
-    "lib/",
-    "release/",
-    "test/",
-    "bower_components/",
-    "node_modules/"
+    "package.json",
+    "node_modules",
+    "bower_components"
   ],
   "moduleType": [
     "globals",

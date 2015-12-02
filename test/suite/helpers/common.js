@@ -22,6 +22,10 @@ testIsDate = function(obj) {
   return testGetClass(obj) === '[object Date]';
 }
 
+testGetPrivateProp = function(obj, name) {
+  return obj['_sugar_' + name];
+}
+
 testClone = function (obj) {
   var klass = testGetClass(obj);
   var result = testIsArray(obj, klass) ? [] : {}, key, val;
@@ -67,6 +71,36 @@ testStaticAndInstance = function (subject, args, expected, message) {
     var obj = run(Object, 'extended', [clonedSubject]);
     equal(obj[getCurrentTest().name].apply(obj, args), expected, message + ' | extended');
   }
+}
+
+testGetSparseArray = function(index) {
+  var arr = [];
+  for (var i = 1; i < arguments.length; i++) {
+    arr[index + i - 1] = arguments[i];
+  }
+  return arr;
+}
+
+// Using the [] constructor with undefined values in <= IE8 will effectively
+// produce a sparse array (no property actually gets set) the only workaround
+// is to push undefined directly onto the array.
+testGetArrayWithUndefined = function() {
+  var arr = [];
+  for (var i = 0; i < arguments.length; i++) {
+    arr.push(arguments[i]);
+  }
+  return arr;
+}
+
+// iOS 8 supports Set but not the iterable constructor syntax (it simply adds
+// the array as a set member instead). So this helper method helps creates sets
+// from arguments.
+testGetSet = function() {
+  var s = new Set();
+  for (var i = 0; i < arguments.length; i++) {
+    s.add(arguments[i]);
+  }
+  return s;
 }
 
 propertyIsEnumerable = function(obj, prop) {

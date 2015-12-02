@@ -1,7 +1,7 @@
 package('Core', function() {
   "use strict";
 
-  function defineCustom(target) {
+  function defineCustom(target, isStatic) {
     var methods = {
       foo: function() {
         return 'foo!';
@@ -13,7 +13,7 @@ package('Core', function() {
         return 'moo!';
       }
     };
-    if (target === Sugar.Object) {
+    if (target === Sugar.Object || isStatic) {
       methods.foo.static = true;
       methods.bar.static = true;
       methods.moo.static = true;
@@ -216,6 +216,15 @@ package('Core', function() {
     raisesError(function() { 'foo'.foo('1', '2', '3', '4', '5'); }, 'Instance method with 5 arguments will not be mapped to prototype');
   });
 
+  group('Can define single', function () {
+    Sugar.String.defineInstance('foo', function(str) {
+      return str  + ' + you!'
+    });
+    equal(Sugar.String.foo('wasabi'), 'wasabi + you!', 'Namespace method exists');
+    Sugar.String.extend('foo');
+    equal('wasabi'.foo(), 'wasabi + you!', 'Instance method is mapped');
+  });
+
   group('Custom Methods after extending', function () {
     Sugar.String.extend();
     defineCustom(Sugar.String);
@@ -277,6 +286,17 @@ package('Core', function() {
     equal(({}).moo, undefined, 'moo has not been mapped');
   });
 
+  group('Aliasing', function() {
+    defineCustom(Sugar.String);
+    Sugar.String.alias('foo2', Sugar.String.foo);
+    Sugar.String.alias('bar2', 'bar');
+    Sugar.String.extend();
+    equal(('').foo2(), 'foo!', 'foo2 is an alias of foo');
+    equal(('').bar2(), 'bar!', 'bar2 is an alias of foo');
+    delete Sugar.String.foo2;
+    delete Sugar.String.bar2;
+  });
+
   group('Array enhancements', function() {
     // This test is in core because it cannot be run in
     // the "extended" tests where arrays may already be enhanced.
@@ -321,6 +341,18 @@ package('Core', function() {
       enhance: false
     });
     raisesError(function() { 'foobar'.includes(/foo/); }, 'includes is not enhanced');
+  });
+
+  group('Extending after global hijacking', function() {
+    var nativeDate = Date;
+    function FakeDate() {}
+    defineCustom(Sugar.Date, true);
+    // Hijacking the global Date object. Sinon does this to allow time mocking
+    // in tests, so need to support this here.
+    Date = FakeDate;
+    Sugar.Date.extend();
+    equal(Date.foo(), 'foo!', 'hijacked global is now the target');
+    Date = nativeDate;
   });
 
 });

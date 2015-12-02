@@ -1,43 +1,19 @@
 package('Array', function () {
   "use strict";
 
-  var sparseArraySupport = 0 in [undefined];
+  var safeArray = testGetArrayWithUndefined;
 
-  // Using [] or the constructor "new Array" will cause this test to fail in IE7/8. Evidently passing undefined to the
-  // constructor will not push undefined as expected, however the length property will still appear as if it was pushed.
-  // arr = [undefined, undefined, undefined];
-  //
-  // However we can do it this way, which is a much more likely user scenario in any case:
-  var arrayOfUndefined = [];
-  arrayOfUndefined.push(undefined);
-  arrayOfUndefined.push(undefined);
-  arrayOfUndefined.push(undefined);
+  var oneUndefined   = safeArray(undefined);
+  var twoUndefined   = safeArray(undefined, undefined);
+  var threeUndefined = safeArray(undefined, undefined, undefined);
 
-  var arrayOfUndefinedWith1 = [1];
-  arrayOfUndefinedWith1.push(undefined);
+  var nestedUndefined = safeArray(oneUndefined);
 
-  var arrayOfUndefinedWithNull = [null];
-  arrayOfUndefinedWithNull.push(undefined);
+  var undefinedWith1 = [1];
+  undefinedWith1.push(undefined);
 
-  var storedProps = {};
-
-  function storeAlphanumericProps() {
-    storedProps.AlphanumericSort            = Sugar.Array.AlphanumericSort;
-    storedProps.AlphanumericSortOrder       = Sugar.Array.AlphanumericSortOrder;
-    storedProps.AlphanumericSortIgnore      = Sugar.Array.AlphanumericSortIgnore;
-    storedProps.AlphanumericSortIgnoreCase  = Sugar.Array.AlphanumericSortIgnoreCase;
-    storedProps.AlphanumericSortNatural     = Sugar.Array.AlphanumericSortNatural;
-    storedProps.AlphanumericSortEquivalents = testClone(Sugar.Array.AlphanumericSortEquivalents);
-  }
-
-  function restoreAlphanumericProps() {
-    Sugar.Array.AlphanumericSort            = storedProps.AlphanumericSort;
-    Sugar.Array.AlphanumericSortOrder       = storedProps.AlphanumericSortOrder;
-    Sugar.Array.AlphanumericSortIgnore      = storedProps.AlphanumericSortIgnore;
-    Sugar.Array.AlphanumericSortIgnoreCase  = storedProps.AlphanumericSortIgnoreCase;
-    Sugar.Array.AlphanumericSortEquivalents = storedProps.AlphanumericSortEquivalents;
-    Sugar.Array.AlphanumericSortNatural     = storedProps.AlphanumericSortNatural;
-  }
+  var undefinedWithNull = [null];
+  undefinedWithNull.push(undefined);
 
   function assertRandomized(arr, iterFn) {
     var allOne = true;
@@ -49,6 +25,26 @@ package('Array', function () {
     // Note that there is a built-in 0.00000001% chance that this test will fail */
     equal(allOne, false, 'sufficiently randomized');
   }
+
+  method('construct', function() {
+
+    function square(i) {
+      return i * i;
+    }
+    test(Array, [3, square], [0,1,4], 'basic array construction');
+    test(Array, ['3', square], [0,1,4], 'numeric string creates the array');
+
+    test(Array, [3], testGetArrayWithUndefined(undefined, undefined, undefined), 'no function becomes all undefined');
+    test(Array, [0], [], '0 constructs an empty array');
+    test(Array, [null], [], 'null constructs an empty array');
+    test(Array, [3, parseInt], [0,1,2], 'works with parseInt');
+
+    raisesError(function() { run(Array, 'construct'); }, 'no arguments raises error');
+    raisesError(function() { run(Array, 'construct', [NaN]); }, 'no arguments raises error');
+    raisesError(function() { run(Array, 'construct', [undefined]); }, 'no arguments raises error');
+    raisesError(function() { run(Array, 'construct', ['foo']); }, 'non-numeric string raises error');
+
+  });
 
   method('every', function() {
     var fn, arr;
@@ -69,13 +65,13 @@ package('Array', function () {
     test([12,5,8,130,44], [fn], false, 'not every element is greater than 10');
     test([12,54,18,130,44], [fn], true, 'every element is greater than 10');
 
-    test(arrayOfUndefined, [undefined], true, 'all undefined');
-    test(['a', 'b'], [undefined], false, 'none undefined');
+    test(threeUndefined, oneUndefined, true, 'all undefined');
+    test(['a', 'b'], oneUndefined, false, 'none undefined');
 
-    arr = testClone(arrayOfUndefined);
+    arr = testClone(threeUndefined);
     arr.push('a');
 
-    test(arr, [undefined], false, 'every undefined');
+    test(arr, oneUndefined, false, 'every undefined');
 
     fn = function(el, i, a) {
       equal(el, 'a', 'First parameter is the element');
@@ -108,13 +104,13 @@ package('Array', function () {
     test([12,5,8,130,44], [function(el, i, a) { return el < 4 }], false, 'no elements are less than 4');
     test([], [function(el, i, a) { return el > 10 }], false, 'no elements are greater than 10 in an empty array');
 
-    test(arrayOfUndefined, [undefined], true, 'all undefined');
-    test(['a', 'b'], [undefined], false, 'none undefined');
+    test(threeUndefined, oneUndefined, true, 'all undefined');
+    test(['a', 'b'], oneUndefined, false, 'none undefined');
 
-    arr = testClone(arrayOfUndefined);
+    arr = testClone(threeUndefined);
     arr.push('a');
 
-    test(arr, [undefined], true, 'some undefined');
+    test(arr, oneUndefined, true, 'some undefined');
 
     fn = function(el, i, a) {
       equal(el, 'a', 'first parameter is the element');
@@ -186,12 +182,12 @@ package('Array', function () {
 
     raisesError(function() { run([1,2,3], 'filter'); }, 'no argument raises a type error');
 
-    test(arrayOfUndefined, [undefined], arrayOfUndefined, 'undefined should match all undefined');
-    test(arrayOfUndefined, [null], [], 'null should not match all undefined');
-    test(arrayOfUndefinedWithNull, [undefined], [undefined], 'undefined should match one undefined');
-    test(arrayOfUndefinedWithNull, [null], [null], 'null should match one null');
+    test(threeUndefined, oneUndefined, threeUndefined, 'undefined should match all undefined');
+    test(threeUndefined, [null], [], 'null should not match all undefined');
+    test(undefinedWithNull, oneUndefined, oneUndefined, 'undefined should match one undefined');
+    test(undefinedWithNull, [null], [null], 'null should match one null');
     test([null, null], [null], [null, null], 'null should match all null');
-    test([null, null], [undefined], [], 'undefined should not match all null');
+    test([null, null], oneUndefined, [], 'undefined should not match all null');
 
   });
 
@@ -224,6 +220,7 @@ package('Array', function () {
 
 
   method('map', function() {
+
     var fn;
     test([1,4,9], [Math.sqrt], [1,2,3], 'passing Math.sqrt directly');
     test([{ foo: 'bar' }], [function(el) { return el['foo']; }], ['bar'], 'with key "foo"');
@@ -241,26 +238,77 @@ package('Array', function () {
     test(['foot','goose','moose'], ['length'], [4,5,5], 'length');
     test([{name:'john',age:25},{name:'fred',age:85}], ['age'], [25,85], 'age');
     test([{name:'john',age:25},{name:'fred',age:85}], ['name'], ['john','fred'], 'name');
-    test([{name:'john',age:25},{name:'fred',age:85}], ['cupsize'], [undefined, undefined], '(nonexistent) cupsize');
+    test([{name:'john',age:25},{name:'fred',age:85}], ['cupsize'], twoUndefined, '(nonexistent) cupsize');
     test([], ['name'], [], 'empty array');
 
-    // Nested properties
+
+    // Nested properties with dot syntax
+
     test([{name:{first:'John',last:'Waters'}},{name:{first:'Fred',last:'Flintstone'}}], ['name.first'], ['John', 'Fred'], 'deep matching with dot');
     test([{a:{b:{c:'x'}}},{a:{b:{c:'y'}}},{a:{b:{c:'z'}}}], ['a.b.c'], ['x','y','z'], 'deeper matching with dot');
     test([{a:[1]},{a:[2]}], ['a.0'], [1,2], 'matching nested array indexes');
-    test([{a:[1]},{b:[2]}], ['a.0'], [1,undefined], 'matching nested array index non-existent');
-    test([{a:'a'},{b:'a'}], ['.'], [undefined,undefined], 'single dot');
-    test([{a:'a'},{b:'a'}], ['..'], [undefined,undefined], 'double dot');
+    test([{a:[1]},{b:[2]}], ['a.0'], safeArray(1, undefined), 'matching nested array index non-existent');
+    test([{a:'a'},{b:'a'}], ['.'], twoUndefined, 'single dot');
+    test([{a:'a'},{b:'a'}], ['..'], twoUndefined, 'double dot');
     test([[[1,2]],[[1,2]]], ['0.1'], [2,2], 'deep arrays');
     test([{name:{first:'Joe',last:'P'}},{name:{first:'John',last:'Q'}}], [['name.first', 'name.last']], [['Joe','P'], ['John', 'Q']], 'array with dots');
 
     test([1,2,3], ['toString'], ['1','2','3'], 'calls a function on a shortcut string');
 
     raisesError(function(){ run([1,2,3], 'map') }, 'no argument raises a type error');
-    raisesError(function(){ run([1,2,3], 'map', [undefined]) }, 'undefined raises a type error');
+    raisesError(function(){ run([1,2,3], 'map', oneUndefined) }, 'undefined raises a type error');
     raisesError(function(){ run([1,2,3], 'map', [null]) }, 'null raises a type error');
 
-    test([1,2,3], [4], [undefined, undefined, undefined], 'number');
+    test([1,2,3], [4], threeUndefined, 'number');
+
+
+    // Nested properties with dot and bracket syntax
+
+    var accounts = [
+      {
+        profile: {
+          addresses: [{
+              street: '1600 Pennsylvania Ave',
+              city: 'Washington DC'
+            }, {
+              street: '221B Baker St',
+              city: 'London'
+            }, {
+              street: '350 5th Ave',
+              city: 'New York'
+            }]
+        }
+      },
+      {
+        profile: {
+          addresses: [{
+              street: '31 Spooner St.',
+              city: 'Quahog'
+            }, {
+              street: '742 Evergreen Terrace',
+              city: 'Springfield'
+            }, {
+              street: '342 Gravelpit Terrace',
+              city: 'Bedrock'
+            }]
+        }
+      }
+    ];
+
+    test(accounts, ['profile.addresses[0]'], [accounts[0].profile.addresses[0], accounts[1].profile.addresses[0]], 'deep with bracket');
+    test(accounts, ['profile.addresses[0].city'], ['Washington DC', 'Quahog'], 'deep with bracket and trailing dot');
+    test(accounts, ['profile.addresses[1]'], [accounts[0].profile.addresses[1], accounts[1].profile.addresses[1]], 'deep with bracket | 1');
+    test(accounts, ['profile.addresses[1].city'], ['London', 'Springfield'], 'deep with bracket and trailing dot | 1');
+    test(accounts, ['profile.addresses[-1]'], [accounts[0].profile.addresses[2], accounts[1].profile.addresses[2]], 'deep with bracket | -1');
+    test(accounts, ['profile.addresses[-1].city'], ['New York', 'Bedrock'], 'deep with bracket and trailing dot | -1');
+
+
+    // Bracket range syntax
+
+    var a1 = accounts[0].profile.addresses.slice(0, 2);
+    var a2 = accounts[1].profile.addresses.slice(0, 2);
+    test(accounts, ['profile.addresses[0..1]'], [a1, a2], 'allows range syntax');
+    test(accounts, ['profile.addresses[0..1].city'], [['Washington DC', 'London'], ['Quahog', 'Springfield']], 'allows range syntax with trailing dot');
 
 
     // Issue #386
@@ -276,9 +324,9 @@ package('Array', function () {
       }
     ];
     test(arr, [['name', 'age']], [['john', 25], ['fred', 85]], 'mapping on both name and age');
-    test(arr, [['name', 'hair']], [['john', undefined], ['fred', undefined]], 'mapping on name and non-existent property');
-    test(arr, [['hair', 'age']], [[undefined, 25], [undefined, 85]], 'mapping on non-existent property and name');
-    test(arr, [['hair', 'eyes']], [[undefined, undefined], [undefined, undefined]], 'mapping on two non-existent properties');
+    test(arr, [['name', 'hair']], [safeArray('john', undefined), safeArray('fred', undefined)], 'mapping on name and non-existent property');
+    test(arr, [['hair', 'age']], [safeArray(undefined, 25), safeArray(undefined, 85)], 'mapping on non-existent property and name');
+    test(arr, [['hair', 'eyes']], [twoUndefined, twoUndefined], 'mapping on two non-existent properties');
 
     var arr = [
       {
@@ -346,12 +394,12 @@ package('Array', function () {
 
     raisesError(function() { run([1,2,3], 'any') }, 'no argument raises a TypeError');
 
-    test(arrayOfUndefined, [undefined], true, 'undefined should match all undefined');
-    test(arrayOfUndefined, [null], false, 'null should not match all undefined');
-    test(arrayOfUndefinedWithNull, [undefined], true, 'undefined should match one undefined');
-    test(arrayOfUndefinedWithNull, [null], true, 'null should match one null');
+    test(threeUndefined, oneUndefined, true, 'undefined should match all undefined');
+    test(threeUndefined, [null], false, 'null should not match all undefined');
+    test(undefinedWithNull, oneUndefined, true, 'undefined should match one undefined');
+    test(undefinedWithNull, [null], true, 'null should match one null');
     test([null, null], [null], true, 'null should match all null');
-    test([null, null], [undefined], false, 'undefined should not match all null');
+    test([null, null], oneUndefined, false, 'undefined should not match all null');
 
     var fn1 = function() {};
     var fn2 = function() {};
@@ -401,12 +449,12 @@ package('Array', function () {
 
     raisesError(function() { run([1,2,3], 'all'); }, 'no argument raises a type error');
 
-    test(arrayOfUndefined, [undefined], true, 'undefined should match all undefined');
-    test(arrayOfUndefined, [null], false, 'null should not match all undefined');
-    test(arrayOfUndefinedWithNull, [undefined], false, 'undefined should match one undefined');
-    test(arrayOfUndefinedWithNull, [null], false, 'null should match one null');
+    test(threeUndefined, oneUndefined, true, 'undefined should match all undefined');
+    test(threeUndefined, [null], false, 'null should not match all undefined');
+    test(undefinedWithNull, oneUndefined, false, 'undefined should match one undefined');
+    test(undefinedWithNull, [null], false, 'null should match one null');
     test([null, null], [null], true, 'null should match all null');
-    test([null, null], [undefined], false, 'undefined should not match all null');
+    test([null, null], oneUndefined, false, 'undefined should not match all null');
 
     var fn1 = function() {};
     var fn2 = function() {};
@@ -442,12 +490,12 @@ package('Array', function () {
 
     raisesError(function() { run([1,2,3], 'none'); }, 'no argument raises a TypeError');
 
-    test(arrayOfUndefined, [undefined], false, 'undefined should match all undefined');
-    test(arrayOfUndefined, [null], true, 'null should not match all undefined');
-    test(arrayOfUndefinedWithNull, [undefined], false, 'undefined should match one undefined');
-    test(arrayOfUndefinedWithNull, [null], false, 'null should match one null');
+    test(threeUndefined, oneUndefined, false, 'undefined should match all undefined');
+    test(threeUndefined, [null], true, 'null should not match all undefined');
+    test(undefinedWithNull, oneUndefined, false, 'undefined should match one undefined');
+    test(undefinedWithNull, [null], false, 'null should match one null');
     test([null, null], [null], false, 'null should match all null');
-    test([null, null], [undefined], true, 'undefined should not match all null');
+    test([null, null], oneUndefined, true, 'undefined should not match all null');
 
     var people = [
       { name: 'jim',    age: 27, hair: 'brown'  },
@@ -679,7 +727,7 @@ package('Array', function () {
     fn = function() {
       count++;
     }
-    run(arrayOfUndefined, 'each', [fn]);
+    run(threeUndefined, 'each', [fn]);
     equal(count, 3, 'however, simply having an undefined in an array does not qualify it as sparse');
   });
 
@@ -708,8 +756,8 @@ package('Array', function () {
     test(['foo','bar'], [/q+/], undefined, '/q+/');
     test([function() {}], [function(e) {}, 0], undefined, 'undefined function');
     test([null, null], [null, 0], null, 'null');
-    test(arrayOfUndefined, [undefined, 0], undefined, 'undefined');
-    test([undefined, 'a'], [undefined, 1], undefined, 'undefined can be found');
+    test(threeUndefined, safeArray(undefined, 0), undefined, 'undefined');
+    test(safeArray(undefined, 'a'), safeArray(undefined, 1), undefined, 'undefined can be found');
 
 
     count = 0;
@@ -895,7 +943,7 @@ package('Array', function () {
     test([one, two, three, four], [new Date()], [], 'matches class instances | now');
     test([one, two, three, four], [new Date(2001, 3, 15)], [], 'matches class instances | correct date');
     test([one, two, three, four], [null], [], 'matches class instances | null');
-    test([one, two, three, four], [undefined], [], 'matches class instances | undefined');
+    test([one, two, three, four], oneUndefined, [], 'matches class instances | undefined');
     test([one, two, three, four], [{ a: 'twof' }], [], 'matches class instances | nonexistent string');
     test([one, two, three, four], [{ b: 'one' }], [], 'matches class instances | nonexistent property');
     test([one, two, three, four], [{}], [one, two, three, four], 'matches class instances | empty object');
@@ -1002,7 +1050,7 @@ package('Array', function () {
     test([false], [[false]], [false], '[false] & [false]');
     test([false], [[0]], [], '[false] & [0]');
     test([false], [[null]], [], '[false] & [null]');
-    test([false], [[undefined]], [], '[false] & [undefined]');
+    test([false], nestedUndefined, [], '[false] & [undefined]');
     test([{a:1},{b:2}], [[{b:2},{c:3}]], [{b:2}], 'a:1,b:2 & b:2,c:3');
     test([1,1,3], [[1,5,6]], [1], '1,1,3 & 1,5,6');
     test([1,2,3], [[4,5,6]], [], '1,1,3 & 4,5,6');
@@ -1030,7 +1078,7 @@ package('Array', function () {
     test([false], [[false]], [], '[false] + [false]');
     test([false], [[0]], [false], '[false] + [0]');
     test([false], [[null]], [false], '[false] + [null]');
-    test([false], [[undefined]], [false], '[false] + [undefined]');
+    test([false], nestedUndefined, [false], '[false] + [undefined]');
     test([{a:1},{b:2}], [[{b:2},{c:3}]], [{a:1}], 'a:1,b:2 + b:2,c:3');
     test([1,1,3], [[1,5,6]], [3], '1,1,3 + 1,5,6');
     test([1,2,3], [[4,5,6]], [1,2,3], '1,2,3 + 4,5,6');
@@ -1066,11 +1114,11 @@ package('Array', function () {
     test(['a'], [1], 'a', 'a | 1');
     test(['a'], [1, false], undefined, 'a | loop off | 1');
     test(['a'], [-1], 'a', 'a | -1');
-    test(['a','b','c','d','e','f'], [0,2,4], ['a','c','e'], 'a,b,c,d,e,f | 0,2,4');
-    test(['a','b','c','d','e','f'], [1,3,5], ['b','d','f'], 'a,b,c,d,e,f | 1,3,5');
-    test(['a','b','c','d','e','f'], [0,2,4,6], ['a','c','e','a'], 'a,b,c,d,e,f | 0,2,4,6');
-    test(['a','b','c','d','e','f'], [0,2,4,6,18], ['a','c','e','a','a'], 'a,b,c,d,e,f | 0,2,4,6,18');
-    test(['a','b','c','d','e','f'], [0,2,4,6, false], ['a','c','e', undefined], 'a,b,c,d,e,f | 0,2,4,6,false | false');
+    test(['a','b','c','d','e','f'], [[0,2,4]], ['a','c','e'], 'a,b,c,d,e,f | 0,2,4');
+    test(['a','b','c','d','e','f'], [[1,3,5]], ['b','d','f'], 'a,b,c,d,e,f | 1,3,5');
+    test(['a','b','c','d','e','f'], [[0,2,4,6]], ['a','c','e','a'], 'a,b,c,d,e,f | 0,2,4,6');
+    test(['a','b','c','d','e','f'], [[0,2,4,6,18]], ['a','c','e','a','a'], 'a,b,c,d,e,f | 0,2,4,6,18');
+    test(['a','b','c','d','e','f'], [[0,2,4,6], false], safeArray('a','c','e', undefined), 'a,b,c,d,e,f | 0,2,4,6,false | false');
   });
 
   method('from', function() {
@@ -1127,7 +1175,7 @@ package('Array', function () {
 
   method('min', function() {
     test([12,87,55], 12, 'no argument');
-    test([12,87,55], [undefined], 12, 'undefined');
+    test([12,87,55], oneUndefined, 12, 'undefined');
     test([12,87,55], [null], 12, 'null');
     test([-12,-87,-55], -87, '-87');
     test([5,5,5], 5, '5 is uniqued');
@@ -1155,8 +1203,8 @@ package('Array', function () {
     run([1], 'min', [fn]);
 
 
-    raisesError(function() { run(arrayOfUndefined, 'min'); }, 'should raise an error when comparing undefined');
-    raisesError(function() { run(arrayOfUndefinedWith1, 'min'); }, 'should raise an error when comparing 1 to undefined');
+    raisesError(function() { run(threeUndefined, 'min'); }, 'should raise an error when comparing undefined');
+    raisesError(function() { run(undefinedWith1, 'min'); }, 'should raise an error when comparing 1 to undefined');
     raisesError(function() { run([87,12,55], 'min', [4]); }, 'number not found in number, so undefined');
 
     var arr = [
@@ -1171,7 +1219,7 @@ package('Array', function () {
 
   method('max', function() {
     test([12,87,55], 87, 'no argument');
-    test([12,87,55], [undefined], 87, 'undefined');
+    test([12,87,55], oneUndefined, 87, 'undefined');
     test([12,87,55], [null], 87, 'null');
     test([-12,-87,-55], -12, '-12');
     test([5,5,128], 128, '128');
@@ -1201,8 +1249,8 @@ package('Array', function () {
     };
     run([1], 'max', [fn]);
 
-    raisesError(function() { run(arrayOfUndefined, 'max'); }, 'should raise an error when comparing undefined');
-    raisesError(function() { run(arrayOfUndefinedWith1, 'max'); }, 'should raise an error when comparing 1 to undefined');
+    raisesError(function() { run(threeUndefined, 'max'); }, 'should raise an error when comparing undefined');
+    raisesError(function() { run(undefinedWith1, 'max'); }, 'should raise an error when comparing 1 to undefined');
     raisesError(function() { run([87,12,55], 'max', [4]); }, 'number not found in number, so undefined');
 
     var arr = [
@@ -1225,7 +1273,7 @@ package('Array', function () {
     ];
 
     test([1,2,3], [null], 1, 'null | returns first');
-    test([1,2,3], [undefined], 1, 'undefined | returns first');
+    test([1,2,3], oneUndefined, 1, 'undefined | returns first');
     test([1,2,3], [4], 1, 'number | returns first');
 
     equal(run(people, 'most', [function(person) { return person.age; }]).age, 27, 'age | age is 27');
@@ -1271,7 +1319,7 @@ package('Array', function () {
     ];
 
     test([1,2,3], [null], 1, 'null');
-    test([1,2,3], [undefined], 1, 'undefined');
+    test([1,2,3], oneUndefined, 1, 'undefined');
     test([1,2,3], [4], 1, 'number');
 
     test(people, people[0], 'contains mary | does not return most');
@@ -1331,6 +1379,7 @@ package('Array', function () {
     test([null, false], 0, '[null,false] is 0');
     test([{a:1,b:5},{a:2,b:5},{a:3,b:5}], [function(el) { return el['a']; }], 6, 'key "a"');
     test([{a:1,b:5},{a:2,b:5},{a:3,b:5}], ['a'], 6, 'shortcut for key "a"');
+    test([{a:{b:5}},{a:{b:6}}], ['a.b'], 11, 'deep properties');
   });
 
   method('average', function() {
@@ -1353,6 +1402,8 @@ package('Array', function () {
     test(people, ['age'], 29.75, 'people average age is 29.75');
     test(people, [function(p) { return p.age; }], 29.75, 'people average age is 29.75 by function');
     equal(isNaN(run(people, 'average', [function(p) { return p.hair; }])), true, 'people average hair is NaN');
+
+    test([{a:{b:5}},{a:{b:11}}], ['a.b'], 8, 'deep properties');
   });
 
   method('median', function() {
@@ -1387,6 +1438,7 @@ package('Array', function () {
     test(people, ['age'], 27, 'people median age is 27');
     test(people, [function(p) { return p.age; }], 27, 'people median age is 27 by function');
 
+    test([{a:{b:5}},{a:{b:6}},{a:{b:8}}], ['a.b'], 6, 'deep properties');
   });
 
   method('groupBy', function() {
@@ -1407,7 +1459,7 @@ package('Array', function () {
 
     test(people, [function(p) { return p.age; }], {27: [{name:'edmund',age:27,hair:'blonde'},{name:'jim',age:27,hair:'brown'}],52:[{name:'mary',age:52,hair:'blonde'}],13:[{name:'ronnie',age:13,hair:'brown'}]}, 'grouping people by age');
 
-    test([1,2,3], [undefined], { 1: [1], 2: [2], 3: [3] }, 'undefined');
+    test([1,2,3], oneUndefined, { 1: [1], 2: [2], 3: [3] }, 'undefined');
     test([1,2,3], [null], { 1: [1], 2: [2], 3: [3] }, 'null');
     test([1,2,3], [4], { 'undefined': [1,2,3] }, 'number');
     equal(run(['one','two','three'], 'groupBy', ['length']).keys, undefined, 'result should not be an extended object');
@@ -1502,7 +1554,7 @@ package('Array', function () {
     test([], [3, null], [], 'pad with null | empty array');
     test([null], [3], [[null,null,null]], '[null] in groups of 3');
     test([null], [3, null], [[null,null,null]], 'pad with null | [null] in groups of 3');
-    test([1], [3, undefined], [[1,null,null]], 'passing undefined reverts to null');
+    test([1], safeArray(3, undefined), [[1,null,null]], 'passing undefined reverts to null');
 
     // Issue #142 - inGroupsOf corrupting array length
     var arr = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20];
@@ -1518,7 +1570,7 @@ package('Array', function () {
     test([1,2,3], [1,2,3], '1,2,3');
     test([1,2,null,3], [1,2,3], '1,2,null,3');
     test([1,2,undefined,3], [1,2,3], '1,2,undefined,3');
-    test([undefined,undefined,undefined], [], 'undefined,undefined,undefined');
+    test(threeUndefined, [], 'undefined,undefined,undefined');
     test([null,null,null], [], 'null,null,null');
     test([NaN,NaN,NaN], [], 'NaN,NaN,NaN');
     test(['','',''], ['','',''], 'empty strings');
@@ -1663,7 +1715,7 @@ package('Array', function () {
     test([false], [[false]], [false, false], '[false] + [false]');
     test([false], [[0]], [false, 0], '[false] + [0]');
     test([false], [[null]], [false, null], '[false] + [null]');
-    test([false], [[undefined]], [false, undefined], '[false] + [undefined]');
+    test([false], nestedUndefined, safeArray(false, undefined), '[false] + [undefined]');
     test([{a:1},{b:2}], [[{b:2},{c:3}]], [{a:1},{b:2},{b:2},{c:3}], 'a:1,b:2 + b:2,c:3');
     test([1,1,3], [[1,5,6]], [1,1,3,1,5,6], '1,1,3 + 1,5,6');
     test([1,2,3], [[4,5,6]], [1,2,3,4,5,6], '1,2,3 + 4,5,6');
@@ -1683,7 +1735,7 @@ package('Array', function () {
     test(['a','b','c'], ['d', -3], ['d','a','b','c'], 'index -3 | d');
     test(['a','b','c'], ['d', -4], ['d','a','b','c'], 'index -4 | d');
     test(['a','b','c'], ['d', null], ['d','a','b','c'], 'null index | d');
-    test(['a','b','c'], ['d', undefined], ['a','b','c','d'], 'undefined index | d');
+    test(['a','b','c'], safeArray('d', undefined), ['a','b','c','d'], 'undefined index | d');
     test(['a','b','c'], ['d', 'a'], ['a','b','c','d'], 'index a | d');
     test(['a','b','c'], ['d', NaN], ['a','b','c','d'], 'index NaN | d');
     test(['a','b','c'], ['d', '0'], ['d','a','b','c'], "index '0' | d");
@@ -1712,7 +1764,7 @@ package('Array', function () {
     test([false], [[false]], [false, false], '[false] + [false]');
     test([false], [[0]], [false, 0], '[false] + [0]');
     test([false], [[null]], [false, null], '[false] + [null]');
-    test([false], [[undefined]], [false, undefined], '[false] + [undefined]');
+    test([false], nestedUndefined, safeArray(false, undefined), '[false] + [undefined]');
     test([{a:1},{b:2}], [[{b:2},{c:3}]], [{a:1},{b:2},{b:2},{c:3}], 'a:1,b:2 + b:2,c:3');
     test([1,1,3], [[1,5,6]], [1,1,3,1,5,6], '1,1,3 + 1,5,6');
     test([1,2,3], [[4,5,6]], [1,2,3,4,5,6], '1,2,3 + 4,5,6');
@@ -1732,7 +1784,7 @@ package('Array', function () {
     test(['a','b','c'], ['d', -3], ['d','a','b','c'], 'index -3 | d');
     test(['a','b','c'], ['d', -4], ['d','a','b','c'], 'index -4 | d');
     test(['a','b','c'], ['d', null], ['d','a','b','c'], 'null index | d');
-    test(['a','b','c'], ['d', undefined], ['a','b','c','d'], 'undefined index | d');
+    test(['a','b','c'], safeArray('d', undefined), ['a','b','c','d'], 'undefined index | d');
     test(['a','b','c'], ['d', 'a'], ['a','b','c','d'], 'index a | d');
     test(['a','b','c'], ['d', NaN], ['a','b','c','d'], 'index NaN | d');
 
@@ -1762,7 +1814,7 @@ package('Array', function () {
     test([false], [[false]], [false, false], '[false] + [false]');
     test([false], [[0]], [false, 0], '[false] + [0]');
     test([false], [[null]], [false, null], '[false] + [null]');
-    test([false], [[undefined]], [false, undefined], '[false] + [undefined]');
+    test([false], nestedUndefined, safeArray(false, undefined), '[false] + [undefined]');
     test([{a:1},{b:2}], [[{b:2},{c:3}]], [{a:1},{b:2},{b:2},{c:3}], 'a:1,b:2 + b:2,c:3');
     test([1,1,3], [[1,5,6]], [1,1,3,1,5,6], '1,1,3 + 1,5,6');
     test([1,2,3], [[4,5,6]], [1,2,3,4,5,6], '1,2,3 + 4,5,6');
@@ -1782,7 +1834,7 @@ package('Array', function () {
     test(['a','b','c'], ['d', -3], ['d','a','b','c'], 'index -3 | d');
     test(['a','b','c'], ['d', -4], ['d','a','b','c'], 'index -4 | d');
     test(['a','b','c'], ['d', null], ['d','a','b','c'], 'null index | d');
-    test(['a','b','c'], ['d', undefined], ['a','b','c','d'], 'undefined index | d');
+    test(['a','b','c'], safeArray('d', undefined), ['a','b','c','d'], 'undefined index | d');
     test(['a','b','c'], ['d', 'a'], ['a','b','c','d'], 'index a | d');
     test(['a','b','c'], ['d', NaN], ['a','b','c','d'], 'index NaN | d');
     test(['a','b','c'], ['d', '0'], ['d','a','b','c'], "index '0' | d");
@@ -1799,15 +1851,19 @@ package('Array', function () {
     equal(arr, arr2, 'should clone the array');
     arr2.splice(1, 1);
     equal(arr, [1,2,3], 'original array should be untouched');
+
+    var arr = testGetSparseArray(5, 'a', 'b', 'c');
+    test(arr, [], arr, 'should correctly clone a sparse array');
+
   });
 
   method('isEmpty', function() {
     test([1,2,3], false, '1,2,3');
     test([], true, 'empty array');
     test([null], true, '[null]');
-    test([undefined], true, '[undefined]');
+    test(oneUndefined, true, '[undefined]');
     test([null,null], true, '[null,null]');
-    test([undefined,undefined], true, '[undefined,undefined]');
+    test(twoUndefined, true, '[undefined,undefined]');
     test([false,false], false, '[false,false]');
     test([0,0], false, '[0,0]');
   });
@@ -1831,53 +1887,7 @@ package('Array', function () {
     test([[[['a','b'],'c',['d','e']],'f'],['g']], [false], ['a','b','c','d','e','f','g'], 'wont explode on false');
     test([[[['a','b'],'c',['d','e']],'f'],['g']], [true], [[['a','b'],'c',['d','e']],'f','g'], 'wont explode on true');
 
-    equal(run([undefined], 'flatten').length, sparseArraySupport ? 1 : 0, 'should not compact arrays');
-  });
-
-  method('sortBy', function() {
-    var arr;
-    arr = ['more','everyone!','bring','the','family'];
-    test(arr, ['length'], ['the','more','bring','family','everyone!'], 'sorting by length');
-    test(arr, ['length', true], ['everyone!','family','bring','more','the'], 'desc | sorting by length');
-
-    test(arr, [function(a) { return a.length; }], ['the','more','bring','family','everyone!'], 'sort by length by function');
-    test(arr, [function(a) { return a.length; }, true], ['everyone!','family','bring','more','the'], 'desc | sort by length by function');
-
-    arr = [{a:'foo'},{a:'bar'},{a:'skittles'}];
-    test(arr, ['a'], [{a:'bar'},{a:'foo'},{a:'skittles'}], 'sort by key "a"');
-    test(arr, ['a', true], [{a:'skittles'},{a:'foo'},{a:'bar'}], 'desc | sort by key "a"');
-
-    arr = [1,2,3];
-    run(arr, 'sortBy', [function(n){ return 3 - n; }]);
-    equal(arr, [1,2,3], 'should not be destructive');
-
-    test([1,2,3], [undefined], [1,2,3], 'undefined');
-    test([1,2,3], [null], [1,2,3], 'null');
-    test([1,2,3], [4], [1,2,3], 'number');
-
-    var Simple = function(num) {
-      this.valueOf = function() {
-        return num;
-      }
-    }
-
-    var a = new Simple(5);
-    var b = new Simple(2);
-    var c = new Simple(3);
-    var d = new Simple(1);
-    var e = new Simple(2);
-
-    test([a,b,c,d,e], [d,b,e,c,a], 'objects with "valueOf" defined will also be sorted properly');
-
-
-    var obj1 = {id:1,a:{b:{c:248}}};
-    var obj2 = {id:2,a:{b:{c:17}}};
-    var obj3 = {id:3,a:{b:{c:50238}}};
-    var obj4 = {id:4,a:{b:{c:29}}};
-    var arr = [obj1, obj2, obj3, obj4];
-    test(arr, ['a.b.c'], [obj2, obj4, obj1, obj3], 'by deep dot operator');
-    test(arr, ['a.b.c', true], [obj3, obj1, obj4, obj2], 'by deep dot operator multiple');
-
+    equal(run(oneUndefined, 'flatten').length, 1, 'should not compact arrays');
   });
 
   method('shuffle', function() {
@@ -1985,8 +1995,6 @@ package('Array', function () {
 
   method('sortBy', function() {
     var arr;
-
-    storeAlphanumericProps();
 
     test([0,1,2,3,4], [0,1,2,3,4], '0 is properly sorted');
     test(['0','1','2','3','4'], ['0','1','2','3','4'], 'string numerals are properly sorted');
@@ -2371,8 +2379,8 @@ package('Array', function () {
       'att fästa'
     ];
 
-    Sugar.Array.AlphanumericSortEquivalents['ö'] = null;
-    Sugar.Array.AlphanumericSortEquivalents['ä'] = null;
+    Sugar.Array.sortEquivalents()['ö'] = null;
+    Sugar.Array.sortEquivalents()['ä'] = null;
 
     test(swedishWords, swedishCollated, 'removing equivalents can restore sort order');
 
@@ -2392,7 +2400,7 @@ package('Array', function () {
       'Adrian'
     ];
 
-    Sugar.Array.AlphanumericSortIgnoreCase = true;
+    Sugar.Array.sortIgnoreCase(true);
     test(arr, expected, 'allows case ignore');
 
     expected = [
@@ -2402,7 +2410,7 @@ package('Array', function () {
       'abner'
     ];
 
-    Sugar.Array.AlphanumericSortOrder = 'dba';
+    Sugar.Array.sortOrder('dba');
     test(arr, expected, 'allows other order');
 
     expected = [
@@ -2411,15 +2419,29 @@ package('Array', function () {
       'Adrian',
       'aBBey'
     ];
-    Sugar.Array.AlphanumericSortIgnore = /[abcde]/g;
+    Sugar.Array.sortIgnore(/[abcde]/g);
     test(arr, expected, 'allows custom ignore');
+    Sugar.Array.sortIgnore(null);
 
-    restoreAlphanumericProps();
-    Sugar.Array.AlphanumericSortOrder = 'cba';
+
+    Sugar.Array.sortOrder('cba');
     arr = ['cotÉ', 'cÔte', 'cÔtÉ', 'andere', 'ändere'];
     test(arr, arr, 'cba');
+    Sugar.Array.sortOrder(null);
 
-    restoreAlphanumericProps();
+
+    Sugar.Array.sortCollate(function(a, b) {
+      switch (true) {
+        case a === 'c': return -1;
+        case b === 'c': return  1;
+        case a < b:     return -1;
+        case a > b:     return  1;
+        default:        return  0;
+      }
+    });
+    arr = ['a','b','c','d','e'];
+    test(arr, ['c','a','b','d','e'], 'allows custom collation');
+    Sugar.Array.sortCollate(null);
 
     // Issue #282
 
@@ -2450,7 +2472,7 @@ package('Array', function () {
     test(['1 Title - The Big Lebowski','1 Title - Gattaca','1 Title - Last Picture Show'], ['1 Title - Gattaca','1 Title - Last Picture Show','1 Title - The Big Lebowski'], 'stolen | movie titles');
 
 
-    Sugar.Array.AlphanumericSortNatural = false;
+    Sugar.Array.sortNatural(false);
 
     test(['2','100','3'], ['100','2','3'], 'natural sort off');
     test(['a2','a100','a3'], ['a100','a2','a3'], 'natural sort off | leading char');
@@ -2458,7 +2480,7 @@ package('Array', function () {
     test(['２','１００','３'], ['１００','２','３'], 'natural sort off | full width');
     test(['a２','a１００','a３'], ['a１００','a２','a３'], 'natural sort off | full width leading char');
 
-    Sugar.Array.AlphanumericSortNatural = true;
+    Sugar.Array.sortNatural(true);
 
 
 
@@ -2537,7 +2559,59 @@ package('Array', function () {
 
     test(arr, expected, 'sorting arrays of uneven length');
 
-    restoreAlphanumericProps();
+    // More
+
+    var arr;
+    arr = ['more','everyone!','bring','the','family'];
+    test(arr, ['length'], ['the','more','bring','family','everyone!'], 'sorting by length');
+    test(arr, ['length', true], ['everyone!','family','bring','more','the'], 'desc | sorting by length');
+
+    test(arr, [function(a) { return a.length; }], ['the','more','bring','family','everyone!'], 'sort by length by function');
+    test(arr, [function(a) { return a.length; }, true], ['everyone!','family','bring','more','the'], 'desc | sort by length by function');
+
+    arr = [{a:'foo'},{a:'bar'},{a:'skittles'}];
+    test(arr, ['a'], [{a:'bar'},{a:'foo'},{a:'skittles'}], 'sort by key "a"');
+    test(arr, ['a', true], [{a:'skittles'},{a:'foo'},{a:'bar'}], 'desc | sort by key "a"');
+
+    arr = [1,2,3];
+    run(arr, 'sortBy', [function(n){ return 3 - n; }]);
+    equal(arr, [1,2,3], 'should not be destructive');
+
+    test([1,2,3], oneUndefined, [1,2,3], 'undefined');
+    test([1,2,3], [null], [1,2,3], 'null');
+    test([1,2,3], [4], [1,2,3], 'number');
+
+    var Simple = function(num) {
+      this.valueOf = function() {
+        return num;
+      }
+    }
+
+    var a = new Simple(5);
+    var b = new Simple(2);
+    var c = new Simple(3);
+    var d = new Simple(1);
+    var e = new Simple(2);
+
+    test([a,b,c,d,e], [d,b,e,c,a], 'objects with "valueOf" defined will also be sorted properly');
+
+
+    var obj1 = {id:1,a:{b:{c:248}}};
+    var obj2 = {id:2,a:{b:{c:17}}};
+    var obj3 = {id:3,a:{b:{c:50238}}};
+    var obj4 = {id:4,a:{b:{c:29}}};
+    var arr = [obj1, obj2, obj3, obj4];
+    test(arr, ['a.b.c'], [obj2, obj4, obj1, obj3], 'by deep dot operator');
+    test(arr, ['a.b.c', true], [obj3, obj1, obj4, obj2], 'by deep dot operator multiple');
+
+
+
+    // Issue #273 - exposing collateString
+
+    var arr = ['c','b','a','à','å','ä','ö'];
+    var viaSort   = arr.sort(Sugar.Array.sortCollate());
+    var viaSortBy = run(arr, 'sortBy');
+    equal(viaSort, viaSortBy, 'Array.SugarCollateStrings | should be exposed to allow sorting via native Array#sort');
 
   });
 
@@ -2838,7 +2912,7 @@ package('Array', function () {
 
     assertArrayEquivalent(run([NaN,NaN], 'union', [[NaN,NaN]]), [NaN], 'NaN');
     assertArrayEquivalent(run([null,null], 'union', [[null,null]]), [null], 'Null');
-    assertArrayEquivalent(run([undefined], 'union', [[undefined]]), sparseArraySupport ? [undefined] : [], 'undefined');
+    assertArrayEquivalent(run(oneUndefined, 'union', nestedUndefined), oneUndefined, 'undefined');
 
 
     var aObj = {
@@ -2904,19 +2978,6 @@ package('Array', function () {
   });
 
 
-  method('sortBy', function() {
-
-    // Issue #273 - exposing collateString
-
-    var arr = ['c','b','a','à','å','ä','ö'];
-
-    var viaSort   = arr.sort(Sugar.Array.AlphanumericSort);
-    var viaSortBy = run(arr, 'sortBy');
-
-    equal(viaSort, viaSortBy, 'Array.SugarCollateStrings | should be exposed to allow sorting via native Array#sort');
-
-  });
-
   method('findFrom', function() {
     test(['foo','bar'], [/^[a-f]/, 1], 'bar', '/a-f/ from index 1');
     test(['foo','bar','zak'], [/^[a-f]/, 2, true], 'foo', '/a-f/ from index 1 looping');
@@ -2946,7 +3007,7 @@ package('Array', function () {
     test([{a:10},{a:8},{a:3}], [function(e) { return e['a'] > 5; }, 2], undefined, 'key "a" greater than 5 from index 2');
     test([function() {}], [function(e) {}, 1], undefined, 'null function from index 1');
     test([null, null], [null, 1], null, 'null from index 1');
-    test(arrayOfUndefined, [undefined, 1], undefined, 'undefined from index 1');
+    test(threeUndefined, [undefined, 1], undefined, 'undefined from index 1');
 
   });
 
@@ -2963,6 +3024,36 @@ package('Array', function () {
     test([5,2,4,4,7,0], [8, 10, true], -1, '8 in 5,2,4,4 from index 10');
     test([5,2,4,4,7,0], [4, -10, true], 2, '4 in 5,2,4,4 from index -10');
     test([5,2,4,4,7,0], [4, -1, true], 2, '4 in 5,2,4,4 from index -1');
+  });
+
+  method('isEqual', function() {
+
+    test(['a'], [['a']], true, 'basic 1 element array');
+    test(['a'], [['b']], false, 'basic 1 element array | inequal');
+    test(['a','b','c'], [['a','b','c']], true, '3 element array');
+    test(['a','b','c'], [['a','b','d']], false, '3 element array | inequal');
+
+    test(['a','b'], [{0:'a',1:'b',length:2}], false, 'object with length is not egal with array');
+
+    test([0], [[0]], true, 'arrays of numbers are equal');
+    test([undefined], [[undefined]], true, 'arrays of undefined are equal');
+    test([null], [[null]], true, 'arrays of null are equal');
+    test([NaN], [[NaN]], true, 'arrays of NaN are equal');
+    test(testGetSparseArray(4, 'a'), [testGetSparseArray(4, 'a')], true, 'spare arrays are equal');
+
+    test([], [[]], true, 'empty arrays are equal');
+    test([], [{}], false, 'empty array is not equal to empty object');
+
+    var args = (function(){ return arguments; })('a','b','c');
+    test(['a','b','c'], [args], false, 'array is not egal with arguments object');
+
+    var user1 = { name: 'Larry' };
+    var user2 = { name: 'David' };
+
+    test([user1, user2], [[user1, user2]], true, 'array of objects is equal');
+    test([user1, user2], [[user2, user1]], false, 'array of objects is not equal if not in the same order');
+    test([user1, user2], [[user1]], false, 'array of objects 2:1');
+    test([user1], [[user1, user2]], false, 'array of objects 1:2');
   });
 
 });

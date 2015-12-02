@@ -3,6 +3,10 @@ package('Function', function () {
 
   var clock;
 
+  function getTimers(fn) {
+    return testGetPrivateProp(fn, 'timers');
+  }
+
   setup(function() {
     clock = sinon.useFakeTimers();
   });
@@ -30,14 +34,14 @@ package('Function', function () {
       equal(one, 'one', 'first parameter');
       equal(two, 'two', 'second parameter');
     };
-    equal(fn.timers, undefined, 'timers object should not exist yet');
+    equal(getTimers(fn), undefined, 'timers object should not exist yet');
     ret = run(fn, 'delay', [20, 'one', 'two']);
-    equal(typeof fn.timers, 'object', 'timers object should be exposed');
+    equal(typeof getTimers(fn), 'object', 'timers object should be exposed');
     equal(typeof ret, 'function', 'returns the function');
     equal(count, 0, 'should not have run yet');
     clock.tick(20);
     equal(count, 1, 'should have run once');
-    equal(fn.timers.length, 1, 'timers are not cleared after execution');
+    equal(getTimers(fn).length, 1, 'timers are not cleared after execution');
 
     count = 0;
     fn = function() {
@@ -76,17 +80,17 @@ package('Function', function () {
     run(fn, 'delay', [10]);
 
     equal(count, 0, 'should not have been called yet');
-    equal(fn.timers.length, 2, 'should be 2 calls pending');
+    equal(getTimers(fn).length, 2, 'should be 2 calls pending');
 
     clock.tick(30);
 
     run(fn, 'cancel');
     equal(count, 1, 'should have called the function once');
-    equal(fn.timers.length, 0, 'should have no more calls pending');
+    equal(getTimers(fn).length, 0, 'should have no more calls pending');
 
     clock.tick(30);
     equal(count, 1, 'should still have only been called once');
-    equal(fn.timers.length, 0, 'should still be no more delays');
+    equal(getTimers(fn).length, 0, 'should still be no more delays');
 
 
     // Canceling after first call (Issue #346)
@@ -104,12 +108,12 @@ package('Function', function () {
     run(fn, 'delay', [20]);
 
     equal(count, 0, 'should not have been called yet');
-    equal(fn.timers.length, 6, 'should be 6 calls pending');
+    equal(getTimers(fn).length, 6, 'should be 6 calls pending');
 
     clock.tick(50);
 
     equal(count, 1, 'delays should have been canceled after 1');
-    equal(fn.timers.length, 0, 'should be no more pending calls');
+    equal(getTimers(fn).length, 0, 'should be no more pending calls');
 
 
     // Canceling n functions in
@@ -129,12 +133,12 @@ package('Function', function () {
     run(fn, 'delay', [20]);
 
     equal(count, 0, 'should not have been called yet');
-    equal(fn.timers.length, 6, 'should be 6 calls pending');
+    equal(getTimers(fn).length, 6, 'should be 6 calls pending');
 
     clock.tick(50);
 
     equal(count, 2, 'should have been called twice');
-    equal(fn.timers.length, 0, 'should be no more pending calls');
+    equal(getTimers(fn).length, 0, 'should be no more pending calls');
 
   });
 
@@ -200,17 +204,17 @@ package('Function', function () {
     fn();
 
     equal(count, 0, 'no calls made yet before cancel');
-    equal(fn.timers.length, 1, 'should have 1 pending call');
+    equal(getTimers(fn).length, 1, 'should have 1 pending call');
 
     run(fn, 'cancel');
 
     equal(count, 0, 'no calls made after cancel');
-    equal(fn.timers.length, 0, 'should have no more pending calls');
+    equal(getTimers(fn).length, 0, 'should have no more pending calls');
 
     clock.tick(10);
 
     equal(count, 0, 'lazy function should have been canceled');
-    equal(fn.timers.length, 0, 'should have no more pending calls');
+    equal(getTimers(fn).length, 0, 'should have no more pending calls');
 
 
     // Cancelling immediate lazy functions
@@ -224,12 +228,12 @@ package('Function', function () {
     fn();
 
     equal(count, 1, 'should have run once before cancel');
-    equal(fn.timers.length, 1, 'should have 1 pending call');
+    equal(getTimers(fn).length, 1, 'should have 1 pending call');
 
     run(fn, 'cancel');
 
     equal(count, 1, 'should still have only run once after cancel');
-    equal(fn.timers.length, 0, 'should have no more pending calls');
+    equal(getTimers(fn).length, 0, 'should have no more pending calls');
 
     clock.tick(10);
 
@@ -426,7 +430,19 @@ package('Function', function () {
 
 
   method('after', function() {
-    var fn, ret, count = 0, i = 1;
+
+    var count = 0, expected = true;
+    var fn = function() { count++; };
+    var onceFn = run(fn, 'once', []);
+    var single = run(onceFn, 'after', [3]);
+    for (var i = 0; i < 10; i++) {
+      var target = i < 3 ? 0 : 1;
+      if (count !== target) {
+        expected = correct;
+      }
+      single();
+    }
+    equal(expected, true, 'works in conjunction with once to only be called a single time');
 
     function assertCalledAfter(times, arg) {
       var i = 0;
@@ -450,13 +466,14 @@ package('Function', function () {
       equal(count, times, 'should have fired ' + times + ' times out of 10');
     }
 
+    var count = 0, i = 1;
     var expectedArguments = [
       [[1,'bop'], [2,'bop'], [3,'bop'], [4,'bop'], [5,'bop']],
       [[1,'bop'], [2,'bop'], [3,'bop'], [4,'bop'], [5,'bop'], [6,'bop']],
       [[1,'bop'], [2,'bop'], [3,'bop'], [4,'bop'], [5,'bop'], [6,'bop'], [7,'bop']],
       [[1,'bop'], [2,'bop'], [3,'bop'], [4,'bop'], [5,'bop'], [6,'bop'], [7,'bop'], [8,'bop']]
     ];
-    fn = run(function(args) {
+    var fn = run(function(args) {
       equal(args, expectedArguments[count], 'collects arguments called');
       equal(!!args[0].slice, true, 'arguments are converted to actual arrays');
       count++;
@@ -489,20 +506,24 @@ package('Function', function () {
     assertCalledOutOfTen(9,  [2]);
     assertCalledOutOfTen(8,  [3]);
 
-    assertCalledOutOfTen(10, [0, true]);
-    assertCalledOutOfTen(10, [1, true]);
-    assertCalledOutOfTen(9,  [2, true]);
-    assertCalledOutOfTen(8,  [3, true]);
-
-    assertCalledOutOfTen(1, [0, false]);
-    assertCalledOutOfTen(1, [1, false]);
-    assertCalledOutOfTen(1, [2, false]);
-    assertCalledOutOfTen(1, [3, false]);
+    assertCalledOutOfTen(10, [0]);
+    assertCalledOutOfTen(10, [1]);
+    assertCalledOutOfTen(9,  [2]);
+    assertCalledOutOfTen(8,  [3]);
 
     raisesError(function() { run(fn, 'after', [-1]); }, 'negative raises an error');
     raisesError(function() { run(fn, 'after', ['-1']); }, 'negative string raises an error');
     raisesError(function() { run(fn, 'after', [Infinity]); }, 'Infinity raises an error');
     raisesError(function() { run(fn, 'after', [-Infinity]); }, '-Infinity raises an error');
+
+
+    var count = 0;
+    var fn = function() { count++; };
+    var single = run(run(fn, 'once', []), 'after', [3]);
+    for (var i = 0; i < 10; i++) {
+      single();
+    }
+    equal(count, 1, 'works in conjunction with once to only be called a single time');
 
   });
 
@@ -869,6 +890,177 @@ package('Function', function () {
     var a = run(fn, 'partial', [undefined, 2]);
     var b = a.bind(object, 1, undefined, 4);
     equal(b(3, 5), [1, 2, undefined, 4, 3, 5], 'should not work with combinations of functions with placeholders');
+
+  });
+
+  method('lock', function() {
+
+    // Simple tricks for working with undefined in IE
+    var a = testGetArrayWithUndefined, u;
+
+    function getThreeNoLength(args) {
+      var arr = [];
+      for (var i = 0; i < 3; i++) {
+        arr[i] = args[i];
+      }
+      return arr;
+    }
+
+    function getAllWithLength(args) {
+      var arr = [];
+      for (var i = 0; i < args.length; i++) {
+        arr[i] = args[i];
+      }
+      return arr;
+    }
+
+    function takesNone() {
+      return getThreeNoLength(arguments);
+    }
+
+    function takesOne(a) {
+      return getThreeNoLength(arguments);
+    }
+
+    function takesTwo(a, b) {
+      return getThreeNoLength(arguments);
+    }
+
+    function takesNoneReturnsVaried() {
+      return getAllWithLength(arguments);
+    }
+
+    function takesTwoReturnsVaried(a, b) {
+      return getAllWithLength(arguments);
+    }
+
+    // Force 3 arguments as .length could be lying
+
+    var fn = run(takesNone, 'lock', []);
+    equal(fn(),      a(u, u, u), 'takes 0 | default | 0 args');
+    equal(fn(1),     a(u, u, u), 'takes 0 | default | 1 arg');
+    equal(fn(1,2,3), a(u, u, u), 'takes 0 | default | 3 args');
+
+    var fn = run(takesOne, 'lock', []);
+    equal(fn(),      a(u, u, u), 'takes 1 | default | 0 args');
+    equal(fn(1),     a(1, u, u), 'takes 1 | default | 1 arg');
+    equal(fn(1,2,3), a(1, u, u), 'takes 1 | default | 3 args');
+
+    var fn = run(takesTwo, 'lock', []);
+    equal(fn(),      a(u, u, u), 'takes 2 | default | 0 args');
+    equal(fn(1),     a(1, u, u), 'takes 2 | default | 1 arg');
+    equal(fn(1,2,3), a(1, 2, u), 'takes 2 | default | 3 args');
+
+    var fn = run(takesNone, 'lock', [1]);
+    equal(fn(),      a(u, u, u), 'takes 0 | manual 1 | 0 args');
+    equal(fn(1),     a(1, u, u), 'takes 0 | manual 1 | 1 arg');
+    equal(fn(1,2,3), a(1, u, u), 'takes 0 | manual 1 | 3 args');
+
+    var fn = run(takesOne, 'lock', [1]);
+    equal(fn(),      a(u, u, u), 'takes 1 | manual 1 | 0 args');
+    equal(fn(1),     a(1, u, u), 'takes 1 | manual 1 | 1 arg');
+    equal(fn(1,2,3), a(1, u, u), 'takes 1 | manual 1 | 3 args');
+
+    var fn = run(takesTwo, 'lock', [1]);
+    equal(fn(),      a(u, u, u), 'takes 2 | manual 1 | 0 args');
+    equal(fn(1),     a(1, u, u), 'takes 2 | manual 1 | 1 arg');
+    equal(fn(1,2,3), a(1, u, u), 'takes 2 | manual 1 | 3 args');
+
+
+    // Get all arguments by length as forcing 3 could mask
+    // real number called with .apply
+
+    var fn = run(takesNoneReturnsVaried, 'lock', []);
+    equal(fn(),      [], 'takes 0 returns varied | default | 0 args');
+    equal(fn(1),     [], 'takes 0 returns varied | default | 1 arg');
+    equal(fn(1,2,3), [], 'takes 0 returns varied | default | 3 args');
+
+    var fn = run(takesTwoReturnsVaried, 'lock', []);
+    equal(fn(),      [],    'takes 2 returns varied | default | 0 args');
+    equal(fn(1),     [1],   'takes 2 returns varied | default | 1 arg');
+    equal(fn(1,2,3), [1,2], 'takes 2 returns varied | default | 3 args');
+
+    var fn = run(takesNoneReturnsVaried, 'lock', [1]);
+    equal(fn(),      [],  'takes 0 returns varied | manaual 1 | 0 args');
+    equal(fn(1),     [1], 'takes 0 returns varied | manaual 1 | 1 arg');
+    equal(fn(1,2,3), [1], 'takes 0 returns varied | manaual 1 | 3 args');
+
+    var fn = run(takesTwoReturnsVaried, 'lock', [1]);
+    equal(fn(),      [],  'takes 2 returns varied | manual 1 | 0 args');
+    equal(fn(1),     [1], 'takes 2 returns varied | manual 1 | 1 arg');
+    equal(fn(1,2,3), [1], 'takes 2 returns varied | manual 1 | 3 args');
+
+
+    // Locking partial functions with curried arguments
+
+    var partial = run(takesNoneReturnsVaried, 'partial', ['a', 'b']);
+    var fn = run(partial, 'lock', []);
+    equal(fn(),        ['a','b'], 'filled 2 | default lock | 0 args');
+    equal(fn('c'),     ['a','b'], 'filled 2 | default lock | 1 arg');
+    equal(fn('c','d'), ['a','b'], 'filled 2 | default lock | 2 args');
+
+    var partial = run(takesNoneReturnsVaried, 'partial', ['a', 'b']);
+    var fn = run(partial, 'lock', [0]);
+    equal(fn(),        [], 'filled 2 | locked to 0 | 0 args');
+    equal(fn('c'),     [], 'filled 2 | locked to 0 | 1 arg');
+    equal(fn('c','d'), [], 'filled 2 | locked to 0 | 2 args');
+
+    var partial = run(takesNoneReturnsVaried, 'partial', ['a', 'b']);
+    var fn = run(partial, 'lock', [1]);
+    equal(fn(),        ['a'], 'filled 2 | locked to 1 | 0 args');
+    equal(fn('c'),     ['a'], 'filled 2 | locked to 1 | 1 arg');
+    equal(fn('c','d'), ['a'], 'filled 2 | locked to 1 | 2 args');
+
+    var partial = run(takesNoneReturnsVaried, 'partial', ['a', 'b']);
+    var fn = run(partial, 'lock', [3]);
+    equal(fn(),        ['a','b'],     'filled 2 | locked to 3 | 0 args');
+    equal(fn('c'),     ['a','b','c'], 'filled 2 | locked to 3 | 1 arg');
+    equal(fn('c','d'), ['a','b','c'], 'filled 2 | locked to 3 | 2 args');
+
+    var partial = run(takesNoneReturnsVaried, 'partial', []);
+    var fn = run(partial, 'lock', [1]);
+    equal(fn(),        [],    'filled 0 | locked to 1 | 0 args');
+    equal(fn('c'),     ['c'], 'filled 0 | locked to 1 | 1 arg');
+    equal(fn('c','d'), ['c'], 'filled 0 | locked to 1 | 2 args');
+
+
+    // Locking partial functions with curried arguments and holes
+
+    var partial = run(takesNoneReturnsVaried, 'partial', [undefined, 'b']);
+    var fn = run(partial, 'lock', []);
+    equal(fn(),        a( u, 'b'), 'filled 1 | 1 hole | default lock | 0 args');
+    equal(fn('c'),     a('c','b'), 'filled 1 | 1 hole | default lock | 1 arg');
+    equal(fn('c','d'), a('c','b'), 'filled 1 | 1 hole | default lock | 2 args');
+
+    var partial = run(takesNoneReturnsVaried, 'partial', [undefined, 'b']);
+    var fn = run(partial, 'lock', [1]);
+    equal(fn(),        a( u ), 'filled 1 | 1 hole | locked to 1 | 0 args');
+    equal(fn('c'),     a('c'), 'filled 1 | 1 hole | locked to 1 | 1 arg');
+    equal(fn('c','d'), a('c'), 'filled 1 | 1 hole | locked to 1 | 2 args');
+
+    var partial = run(takesNoneReturnsVaried, 'partial', [undefined, 'b']);
+    var fn = run(partial, 'lock', [3]);
+    equal(fn(),        a( u, 'b'),     'filled 1 | 1 hole | locked to 3 | 0 args');
+    equal(fn('c'),     a('c','b'),     'filled 1 | 1 hole | locked to 3 | 1 arg');
+    equal(fn('c','d'), a('c','b','d'), 'filled 1 | 1 hole | locked to 3 | 2 args');
+
+    var partial = run(takesNoneReturnsVaried, 'partial', [undefined, undefined]);
+    var fn = run(partial, 'lock', []);
+    equal(fn(),        a( u,  u ), 'filled 0 | 2 holes | default lock | 0 args');
+    equal(fn('c'),     a('c', u ), 'filled 0 | 2 holes | default lock | 1 arg');
+    equal(fn('c','d'), a('c','d'), 'filled 0 | 2 holes | default lock | 2 args');
+
+    var partial = run(takesNoneReturnsVaried, 'partial', [undefined, undefined]);
+    var fn = run(partial, 'lock', [1]);
+    equal(fn(),        a( u ), 'filled 0 | 2 holes | locked to 1 | 0 args');
+    equal(fn('c'),     a('c'), 'filled 0 | 2 holes | locked to 1 | 1 arg');
+    equal(fn('c','d'), a('c'), 'filled 0 | 2 holes | locked to 1 | 2 args');
+
+    var partial = run(takesNoneReturnsVaried, 'partial', [undefined, undefined]);
+    var fn = run(partial, 'lock', [3]);
+    equal(fn(),        a( u,  u ), 'filled 0 | 2 holes | locked to 3 | 0 args');
+    equal(fn('c'),     a('c', u ), 'filled 0 | 2 holes | locked to 3 | 1 arg');
+    equal(fn('c','d'), a('c','d'), 'filled 0 | 2 holes | locked to 3 | 2 args');
 
   });
 

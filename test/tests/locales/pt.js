@@ -1,14 +1,16 @@
 package('Dates Portuguese', function () {
   "use strict";
 
-  var now;
+  var now, then;
 
   setup(function() {
     now = new Date();
+    then = new Date(2010, 0, 5, 15, 52);
     testSetLocale('pt');
   });
 
   method('create', function() {
+
     dateEqual(testCreateDate('15 de maio 2011'), new Date(2011, 4, 15), 'basic Portuguese date');
     dateEqual(testCreateDate('5 de janeiro de 2012'), new Date(2012, 0, 5), '2012-01-05');
     dateEqual(testCreateDate('maio de 2011'), new Date(2011, 4), 'year and month');
@@ -69,20 +71,62 @@ package('Dates Portuguese', function () {
     dateEqual(testCreateDate('amanhã às 3:30'), run(getRelativeDate(null, null, 1), 'set', [{hours:3,minutes:30}, true]), 'tomorrow at 3:30');
 
 
+    // Numbers
+
+    dateEqual(testCreateDate('zero anos atrás'),   getRelativeDate(0),   'zero years ago');
+    dateEqual(testCreateDate('um ano atrás'),      getRelativeDate(-1),  'one year ago');
+    dateEqual(testCreateDate('dois anos atrás'),   getRelativeDate(-2),  'two years ago');
+    dateEqual(testCreateDate('três anos atrás'),   getRelativeDate(-3),  'three years ago');
+    dateEqual(testCreateDate('quatro anos atrás'), getRelativeDate(-4),  'four years ago');
+    dateEqual(testCreateDate('cinco anos atrás'),  getRelativeDate(-5),  'five years ago');
+    dateEqual(testCreateDate('seis anos atrás'),   getRelativeDate(-6),  'six years ago');
+    dateEqual(testCreateDate('sete anos atrás'),   getRelativeDate(-7),  'seven years ago');
+    dateEqual(testCreateDate('oito anos atrás'),   getRelativeDate(-8),  'eight years ago');
+    dateEqual(testCreateDate('nove anos atrás'),   getRelativeDate(-9),  'nine years ago');
+    dateEqual(testCreateDate('dez anos atrás'),    getRelativeDate(-10), 'ten years ago');
+
   });
 
   method('format', function() {
-    var then = new Date(2011, 7, 25, 15, 45, 50);
-    test(then, '25 de agosto de 2011 15:45', 'standard format');
-    test(then, ['{dd} de {month} {yyyy}'], '25 de agosto 2011', 'format');
 
-    // Format shortcuts
-    equal(run(then, 'format', ['long']), '25 de agosto de 2011 15:45', 'long format');
-    equal(run(then, 'long'), '25 de agosto de 2011 15:45', 'long shortcut');
-    equal(run(then, 'format', ['full']), 'Quinta-feira, 25 de agosto de 2011 15:45:50', 'full format');
-    equal(run(then, 'full'), 'Quinta-feira, 25 de agosto de 2011 15:45:50', 'full shortcut');
-    equal(run(then, 'format', ['short']), '25 de agosto de 2011', 'short format');
-    equal(run(then, 'short'), '25 de agosto de 2011', 'short shortcut');
+    test(then, '5 de janeiro de 2010 15:52', 'default format');
+
+    assertFormatShortcut(then, 'short', '05/01/2010');
+    assertFormatShortcut(then, 'medium', '5 de janeiro de 2010');
+    assertFormatShortcut(then, 'long', '5 de janeiro de 2010 15:52');
+    assertFormatShortcut(then, 'full', 'terça-feira, 5 de janeiro de 2010 15:52');
+    test(then, ['{time}'], '15:52', 'preferred time');
+    test(then, ['{stamp}'], 'ter 5 jan 2010 15:52', 'preferred stamp');
+    test(then, ['%c'], 'ter 5 jan 2010 15:52', '%c stamp');
+
+    test(new Date('January 3, 2010'), ['{w}'], '53', 'locale week number | Jan 3 2010');
+    test(new Date('January 3, 2010'), ['{ww}'], '53', 'locale week number padded | Jan 3 2010');
+    test(new Date('January 3, 2010'), ['{wo}'], '53rd', 'locale week number ordinal | Jan 3 2010');
+    test(new Date('January 4, 2010'), ['{w}'], '1', 'locale week number | Jan 4 2010');
+    test(new Date('January 4, 2010'), ['{ww}'], '01', 'locale week number padded | Jan 4 2010');
+    test(new Date('January 4, 2010'), ['{wo}'], '1st', 'locale week number ordinal | Jan 4 2010');
+
+    test(new Date(2015, 10, 8),  ['{Dow}'], 'dom', 'Sun');
+    test(new Date(2015, 10, 9),  ['{Dow}'], 'seg', 'Mon');
+    test(new Date(2015, 10, 10), ['{Dow}'], 'ter', 'Tue');
+    test(new Date(2015, 10, 11), ['{Dow}'], 'qua', 'Wed');
+    test(new Date(2015, 10, 12), ['{Dow}'], 'qui', 'Thu');
+    test(new Date(2015, 10, 13), ['{Dow}'], 'sex', 'Fri');
+    test(new Date(2015, 10, 14), ['{Dow}'], 'sáb', 'Sat');
+
+    test(new Date(2015, 0, 1),  ['{Mon}'], 'jan', 'Jan');
+    test(new Date(2015, 1, 1),  ['{Mon}'], 'fev', 'Feb');
+    test(new Date(2015, 2, 1),  ['{Mon}'], 'mar', 'Mar');
+    test(new Date(2015, 3, 1),  ['{Mon}'], 'abr', 'Apr');
+    test(new Date(2015, 4, 1),  ['{Mon}'], 'mai', 'May');
+    test(new Date(2015, 5, 1),  ['{Mon}'], 'jun', 'Jun');
+    test(new Date(2015, 6, 1),  ['{Mon}'], 'jul', 'Jul');
+    test(new Date(2015, 7, 1),  ['{Mon}'], 'ago', 'Aug');
+    test(new Date(2015, 8, 1),  ['{Mon}'], 'set', 'Sep');
+    test(new Date(2015, 9, 1),  ['{Mon}'], 'out', 'Oct');
+    test(new Date(2015, 10, 1), ['{Mon}'], 'nov', 'Nov');
+    test(new Date(2015, 11, 1), ['{Mon}'], 'dez', 'Dec');
+
   });
 
   method('relative', function() {
@@ -117,6 +161,10 @@ package('Dates Portuguese', function () {
     assertRelative('5 year from now', 'daqui a 5 anos');
   });
 
+  method('beginning/end', function() {
+    dateEqual(dateRun(new Date(2010, 0), 'beginningOfWeek'), new Date(2009, 11, 28), 'beginningOfWeek');
+    dateEqual(dateRun(new Date(2010, 0), 'endOfWeek'), new Date(2010, 0, 3, 23, 59, 59, 999), 'endOfWeek');
+  });
 
 });
 
