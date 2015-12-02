@@ -7,9 +7,9 @@ package('Date', function () {
   group('Locale Setup', function() {
 
     // Imaginary locale to test locale switching
-    testAddLocale('fo', {
+    Sugar.Date.addLocale('fo', {
       units: 'do,re,mi,fa,so,la,ti,do',
-      months: 'do,re,mi,fa,so,la,ti,do',
+      months: 'Do,Re,Mi,Fa,So,La,Ti,Do',
       parse: [
         '{year}kupo',
         '{month}mofo'
@@ -18,7 +18,7 @@ package('Date', function () {
       long: 'yeehaw'
     });
 
-    notEqual(testGetLocale().code, undefined, 'Current locale must be something... other libs may overwrite this');
+    notEqual(Sugar.Date.getLocale().code, undefined, 'Current locale must be something... other libs may overwrite this');
     testSetLocale('en');
 
   });
@@ -123,7 +123,7 @@ package('Date', function () {
     var d1 = new Date(2012, 11, 31);
     var d2 = testCreateDate('2012-12-31', { fromUTC: true });
     equal(d1 - d2, d1.getTimezoneOffset() * 60 * 1000, 'string created dates allow options object as last argument');
-    equal(d2._utc, false, 'UTC flag should not be set');
+    equal(testIsUTC(d2), false, 'UTC flag should not be set');
 
     var d1 = new Date(2012, 11, 31);
     var d2 = testCreateDate('2012-12-31', { fromUTC: false });
@@ -149,10 +149,10 @@ package('Date', function () {
     // setUTC option
 
     var d = testCreateDate(1440428400000, { setUTC: true });
-    equal(d._utc, true, 'setUTC should be allowed on a timestamp');
+    equal(testIsUTC(d), true, 'setUTC should be allowed on a timestamp');
 
     var d = testCreateDate({ month: 7, day: 25 }, { setUTC: true });
-    equal(d._utc, true, 'setUTC should be allowed on a parameter created date');
+    equal(testIsUTC(d), true, 'setUTC should be allowed on a parameter created date');
 
     var d1 = new Date(2012, 11, 31);
     var d2 = testCreateDate({ year: 2012, month: 11, date: 31 }, {
@@ -160,7 +160,7 @@ package('Date', function () {
       setUTC: true
     });
     equal(d1 - d2, d1.getTimezoneOffset() * 60 * 1000, 'both UTC flags should parsed as UTC');
-    equal(d2._utc, true, 'both UTC flags should also set UTC');
+    equal(testIsUTC(d2), true, 'both UTC flags should also set UTC');
 
     // Options objects without a date.
     equal(testCreateDate({ fromUTC: true }).getTime(), NaN, 'accidentally passing an options object without a date to parse is invalid');
@@ -373,7 +373,7 @@ package('Date', function () {
     dateEqual(testCreateDate('1994-11-05T08:15:30-05:00'), getUTCDate(1994, 11, 5, 13, 15, 30), 'Full example 1');
     dateEqual(testCreateDate('1994-11-05T13:15:30Z'), getUTCDate(1994, 11, 5, 13, 15, 30), 'Full example 1');
 
-    equal(testCreateDate('1994-11-05T13:15:30Z')._utc, false, 'does not forcefully set UTC flag');
+    equal(testIsUTC(testCreateDate('1994-11-05T13:15:30Z')), false, 'does not forcefully set UTC flag');
 
     dateEqual(testCreateDate('1776-05-23T02:45:08-08:30'), getUTCDate(1776, 5, 23, 11, 15, 8), 'Full example 3');
     dateEqual(testCreateDate('1776-05-23T02:45:08+08:30'), getUTCDate(1776, 5, 22, 18, 15, 8), 'Full example 4');
@@ -534,6 +534,9 @@ package('Date', function () {
     dateEqual(testCreateDate('end of this week'), getDateWithWeekdayAndOffset(6, 0, 23, 59, 59, 999), 'end of this week');
     dateEqual(testCreateDate('beginning of next week'), getDateWithWeekdayAndOffset(0, 7), 'beginning of next week');
     dateEqual(testCreateDate('the beginning of next week'), getDateWithWeekdayAndOffset(0, 7), 'the beginning of next week');
+
+    dateEqual(testCreateDate('beginning of the week', { locale: 'en-GB'}), testGetBeginningOfWeek(1), 'beginning of the week | locale overrides');
+    dateEqual(testCreateDate('end of this week', { locale: 'en-GB'}), testGetEndOfWeek(0), 'end of this week | locale overrides');
 
     dateEqual(testCreateDate('beginning of the month'), new Date(now.getFullYear(), now.getMonth()), 'beginning of the month');
     dateEqual(testCreateDate('beginning of this month'), new Date(now.getFullYear(), now.getMonth()), 'beginning of this month');
@@ -716,11 +719,11 @@ package('Date', function () {
     date2.setTime(date2.getTime() - (date2.getTimezoneOffset() * 60 * 1000));
 
     dateEqual(date1, date2, 'is equal to date with timezone subtracted');
-    equal(date1._utc, false, 'does not set internal flag');
+    equal(testIsUTC(date1), false, 'does not set internal flag');
 
     var d = run(new Date(2001, 5, 15), 'setUTC', [true]);
 
-    equal(d._utc, true, 'sets internal flag');
+    equal(testIsUTC(d), true, 'sets internal flag');
     dateEqual(d, new Date(2001, 5, 15), 'does not change date');
     dateEqual(dateRun(d, 'beginningOfMonth'), new Date(Date.UTC(2001, 5, 1)), 'the beginning of the month');
     dateEqual(dateRun(d, 'endOfMonth'), new Date(Date.UTC(2001, 5, 30, 23, 59, 59, 999)), 'the end of the month');
@@ -765,10 +768,11 @@ package('Date', function () {
 
     var d = run(testCreateUTCDate('2000-02-14'), 'setUTC', [true]);
 
-    equal(run(d, 'format'), 'February 14, 2000 12:00am', 'fomratting monday');
-    equal(run(d, 'full'), 'Monday February 14, 2000 12:00:00am', 'full format');
-    equal(run(d, 'long'), 'February 14, 2000 12:00am', 'long format');
-    equal(run(d, 'short'), 'February 14, 2000', 'short format');
+    equal(run(d, 'format'), 'February 14, 2000 12:00 AM', 'formatting monday');
+    equal(run(d, 'short'), '02/14/2000', 'short format');
+    equal(run(d, 'medium'), 'February 14, 2000', 'medium format');
+    equal(run(d, 'long'), 'February 14, 2000 12:00 AM', 'long format');
+    equal(run(d, 'full'), 'Monday, February 14, 2000 12:00 AM', 'full format');
 
     // UTC flag is now deprecated in comparison methods so instead we
     // need to run through Date#create.
@@ -779,12 +783,12 @@ package('Date', function () {
     equal(run(testCreateUTCDate('1 minute ago'), 'relative'), '1 minute ago', 'relative dates are unaffected');
 
     var d = run(run(new Date(2001, 5, 15), 'setUTC', [true]), 'setUTC', [false]);
-    equal(d._utc, false, 'utc flag can be set off');
+    equal(testIsUTC(d), false, 'utc flag can be set off');
 
     // Issue #235
 
     equal(run(run(run(testCreateDate(), 'setUTC', [true]), 'clone'), 'isUTC'), true, 'clone should preserve UTC');
-    equal(run(new Date(), 'clone')._utc, false, 'clone should never be UTC if flag not set');
+    equal(testIsUTC(run(new Date(), 'clone')), false, 'clone should never be UTC if flag not set');
     equal(run(testCreateDate(run(new Date(), 'setUTC', [true])), 'isUTC'), true, 'create should preserve UTC');
 
     var isCurrentlyGMT = new Date(2011, 0, 1).getTimezoneOffset() === 0;
@@ -1016,14 +1020,16 @@ package('Date', function () {
     var d1 = run(new Date(Date.UTC(2010, 7, 25)), 'setUTC', [true]);
     var d2 = run(d1, 'get', ['tomorrow']);
     dateEqual(d2, new Date(Date.UTC(2010, 7, 26)), 'date should be taken as UTC'); 
-    equal(d2._utc, true, 'utc flag should be preserved');
+    equal(testIsUTC(d2), true, 'utc flag should be preserved');
 
     var d1 = run(new Date(Date.UTC(2010, 7, 25)), 'setUTC', [true]);
     var d2 = run(d1, 'get', ['tomorrow', { fromUTC: false, setUTC: false }]);
     // d1 may be Aug 24th or Aug 25th depending on the timezone.
     dateEqual(d2, new Date(2010, 7, d1.getDate() + 1), 'fromUTC can override utc preservation');
-    equal(d2._utc, false, 'setUTC can override utc preservation');
+    equal(testIsUTC(d2), false, 'setUTC can override utc preservation');
 
+    test(new Date(1960, 5, 11), ["January 5th '50"], new Date(1950, 0, 5), 'year abbreviation in 1960 should be 20th century');
+    test(new Date(2070, 5, 11), ["January 5th '50"], new Date(2050, 0, 5), 'year abbreviation in 2070 should be 21st century');
   });
 
   method('set', function() {
@@ -1472,13 +1478,10 @@ package('Date', function () {
   method('format', function() {
     var d = new Date('August 5, 2010 13:45:02');
 
-    test(d, 'August 5, 2010 1:45pm', 'no arguments is standard format with no time');
+    test(d, 'August 5, 2010 1:45 PM', 'no arguments is standard format with no time');
     test(d, ['{ms}'], '0', 'ms');
-    test(d, ['{milliseconds}'], '0', 'milliseconds');
-    test(d, ['{f}'], '0', 'f');
-    test(d, ['{ff}'], '00', 'ff');
-    test(d, ['{fff}'], '000', 'fff');
-    test(d, ['{ffff}'], '0000', 'ffff');
+    test(d, ['{S}'], '0', 'S');
+    test(d, ['{SSS}'], '000', 'SSS');
     test(d, ['{s}'], '2', 's');
     test(d, ['{ss}'], '02', 'ss');
     test(d, ['{seconds}'], '2', 'seconds');
@@ -1496,27 +1499,106 @@ package('Date', function () {
     test(d, ['{dd}'], '05', 'dd');
     test(d, ['{date}'], '5', 'date');
     test(d, ['{day}'], '5', 'days');
+    test(d, ['{do}'], '5th', 'Day ordinal');
     test(d, ['{dow}'], 'thu', 'dow');
     test(d, ['{Dow}'], 'Thu', 'Dow');
-    test(d, ['{do}'], 'th', 'do');
-    test(d, ['{Do}'], 'Th', 'Do');
+    test(d, ['{e}'], '4', 'Day of week as number');
+    test(d, ['{eo}'], '4th', 'Day of week as ordinal number');
     test(d, ['{weekday}'], 'thursday', 'weekday');
     test(d, ['{Weekday}'], 'Thursday', 'Weekday');
+    test(d, ['{D}'], '217', 'Day of the year');
+    test(d, ['{DDD}'], '217', 'Day of the year padded');
+    test(d, ['{gg}'], '10', '2 digit week year');
+    test(d, ['{gggg}'], '2010', '4 digit week year');
+    test(d, ['{GG}'], '10', '2 digit ISO week year');
+    test(d, ['{GGGG}'], '2010', '4 digit ISO week year');
     test(d, ['{M}'], '8', 'M');
     test(d, ['{MM}'], '08', 'MM');
     test(d, ['{month}'], 'august', 'month');
     test(d, ['{Mon}'], 'Aug', 'Mon');
     test(d, ['{Month}'], 'August', 'Month');
+    test(d, ['{Mo}'], '8th', 'Month ordinal');
     test(d, ['{yy}'], '10', 'yy');
     test(d, ['{yyyy}'], '2010', 'yyyy');
     test(d, ['{year}'], '2010', 'year');
+    test(d, ['{Q}'], '3', 'Quarter');
     test(d, ['{t}'], 'p', 't');
     test(d, ['{T}'], 'P', 'T');
     test(d, ['{tt}'], 'pm', 'tt');
     test(d, ['{TT}'], 'PM', 'TT');
-    test(d, ['{ord}'], '5th', 'ord');
-    equal(!!run(d, 'format', ['{Z}']).match(testGetTimezoneHours(d)), true, 'Z');
-    equal(!!run(d, 'format', ['{ZZ}']).match(testGetTimezoneHours(d)), true, 'Z');
+    test(d, ['{w}'], '32', 'locale week number (English)');
+    test(d, ['{ww}'], '32', 'locale week number padded (English)');
+    test(d, ['{wo}'], '32nd', 'locale week number ordinal (English)');
+    test(d, ['{W}'], '31', 'ISO week number');
+    test(d, ['{WW}'], '31', 'ISO week number padded');
+    test(d, ['{Wo}'], '31st', 'ISO week number ordinal');
+    test(d, ['{X}'], Math.floor(d.getTime() / 1000).toString(), 'Unix timestamp');
+    test(d, ['{x}'], d.getTime().toString(), 'Unix millisecond timestamp');
+
+    test(d, ['{Z}'],  getExpectedTimezoneOffset(d, true), 'Z');
+    test(d, ['{ZZ}'], getExpectedTimezoneOffset(d), 'ZZ');
+
+    // Not all environments provide that so just make sure it returns the abbreviation or nothing.
+    equal(/\w{3}|^$/.test(run(d, 'format', ['{z}'])), true, 'Timezone abbreviation');
+
+    test(new Date('January 4, 2010'), ['{D}'], '4', 'Day of the year');
+    test(new Date('January 4, 2010'), ['{DDD}'], '004', 'Day of the year padded');
+
+    test(new Date('January 3, 2010'), ['{W}'], '53', 'ISO week number | Jan 3 2010');
+    test(new Date('January 3, 2010'), ['{WW}'], '53', 'ISO week number padded | Jan 3 2010');
+    test(new Date('January 3, 2010'), ['{Wo}'], '53rd', 'ISO week number ordinal | Jan 3 2010');
+    test(new Date('January 4, 2010'), ['{W}'], '1', 'ISO week number | Jan 4 2010');
+    test(new Date('January 4, 2010'), ['{WW}'], '01', 'ISO week number padded | Jan 4 2010');
+    test(new Date('January 4, 2010'), ['{Wo}'], '1st', 'ISO week number ordinal | Jan 4 2010');
+
+    test(new Date('December 26, 2009'), ['{w}'], '52', 'locale week number | Dec 26 2009');
+    test(new Date('December 26, 2009'), ['{ww}'], '52', 'locale week number padded | Dec 26 2009');
+    test(new Date('December 26, 2009'), ['{wo}'], '52nd', 'locale week number ordinal | Dec 26 2009');
+    test(new Date('December 27, 2009'), ['{w}'], '1', 'locale week number | Dec 27 2009');
+    test(new Date('December 27, 2009'), ['{ww}'], '01', 'locale week number padded | Dec 27 2009');
+    test(new Date('December 27, 2009'), ['{wo}'], '1st', 'locale week number ordinal | Dec 27 2009');
+
+    test(new Date('January 3, 2010'), ['{w}', 'en-GB'], '53', 'locale week number | Jan 3 2010 | UK');
+    test(new Date('January 3, 2010'), ['{ww}', 'en-GB'], '53', 'locale week number padded | Jan 3 2010 | UK');
+    test(new Date('January 3, 2010'), ['{wo}', 'en-GB'], '53rd', 'locale week number ordinal | Jan 3 2010 | UK');
+    test(new Date('January 4, 2010'), ['{w}', 'en-GB'], '1', 'locale week number | Jan 4 2010 | UK');
+    test(new Date('January 4, 2010'), ['{ww}', 'en-GB'], '01', 'locale week number padded | Jan 4 2010 | UK');
+    test(new Date('January 4, 2010'), ['{wo}', 'en-GB'], '1st', 'locale week number ordinal | Jan 4 2010 | UK');
+
+    test(new Date('December 26, 2009'), ['{gg}'], '09', '2 digit week year');
+    test(new Date('December 26, 2009'), ['{gggg}'], '2009', '4 digit week year');
+    test(new Date('December 27, 2009'), ['{gg}'], '10', '2 digit week year | next');
+    test(new Date('December 27, 2009'), ['{gggg}'], '2010', '4 digit week year | next');
+
+    test(new Date('December 28, 2008'), ['{gg}', 'en-GB'], '08', '2 digit week year | UK');
+    test(new Date('December 28, 2008'), ['{gggg}', 'en-GB'], '2008', '4 digit week year | UK');
+    test(new Date('December 29, 2008'), ['{gg}', 'en-GB'], '09', '2 digit week year | next | UK');
+    test(new Date('December 29, 2008'), ['{gggg}', 'en-GB'], '2009', '4 digit week year | next | UK');
+    test(new Date('January 3, 2010'),   ['{gg}', 'en-GB'], '09', '2 digit week year | prev | UK');
+    test(new Date('January 3, 2010'),   ['{gggg}', 'en-GB'], '2009', '4 digit week year | prev | UK');
+
+    test(new Date('December 28, 2008'), ['{GG}'], '08', '2 digit week year | ISO8601');
+    test(new Date('December 28, 2008'), ['{GGGG}'], '2008', '4 digit week year | ISO8601');
+    test(new Date('December 29, 2008'), ['{GG}'], '09', '2 digit week year | next | ISO8601');
+    test(new Date('December 29, 2008'), ['{GGGG}'], '2009', '4 digit week year | next | ISO8601');
+    test(new Date('January 3, 2010'),   ['{GG}'], '09', '2 digit week year | prev | ISO8601');
+    test(new Date('January 3, 2010'),   ['{GGGG}'], '2009', '4 digit week year | prev | ISO8601');
+
+    test(new Date(-60000000000000), ['{yy}'], '68', 'yy in year 0068 should be 2 digits');
+    test(new Date(-60000000000000), ['{yyyy}'], '0068', 'yyyy in year 0068 should be 4 digits');
+
+    test(new Date(2010,  0), ['{Q}'], '1', 'Jan is Q1');
+    test(new Date(2010,  1), ['{Q}'], '1', 'Feb is Q1');
+    test(new Date(2010,  2), ['{Q}'], '1', 'Mar is Q1');
+    test(new Date(2010,  3), ['{Q}'], '2', 'Apr is Q2');
+    test(new Date(2010,  4), ['{Q}'], '2', 'May is Q2');
+    test(new Date(2010,  5), ['{Q}'], '2', 'Jun is Q2');
+    test(new Date(2010,  6), ['{Q}'], '3', 'Jul is Q3');
+    test(new Date(2010,  7), ['{Q}'], '3', 'Aug is Q3');
+    test(new Date(2010,  8), ['{Q}'], '3', 'Sep is Q3');
+    test(new Date(2010,  9), ['{Q}'], '4', 'Oct is Q4');
+    test(new Date(2010, 10), ['{Q}'], '4', 'Nov is Q4');
+    test(new Date(2010, 11), ['{Q}'], '4', 'Dec is Q4');
 
     d = new Date('August 5, 2010 04:03:02');
 
@@ -1536,12 +1618,12 @@ package('Date', function () {
     test(d, ['{yyyy}-{MM}-{dd} {hh}:{mm}:{ss}Z'], '2010-08-05 04:03:02Z', 'ISO8601 UTC');
     test(d, ['{Month}, {yyyy}'], 'August, 2010', 'month and year');
 
-    var isotzd = getExpectedTimezoneOffset(d, true);
+    var tz = getExpectedTimezoneOffset(d, true);
     test(d, [Sugar.Date.ISO8601_DATE], '2010-08-05', 'ISO8601_DATE | constant');
-    test(d, [Sugar.Date.ISO8601_DATETIME], '2010-08-05T04:03:02.000'+isotzd, 'ISO8601_DATETIME | constant');
+    test(d, [Sugar.Date.ISO8601_DATETIME], '2010-08-05T04:03:02.000'+tz, 'ISO8601_DATETIME | constant');
 
     test(d, ['ISO8601_DATE'], '2010-08-05', 'ISO8601_DATE | string');
-    test(d, ['ISO8601_DATETIME'], '2010-08-05T04:03:02.000'+isotzd, 'ISO8601_DATETIME | string');
+    test(d, ['ISO8601_DATETIME'], '2010-08-05T04:03:02.000'+tz, 'ISO8601_DATETIME | string');
 
     // RFC
     var d = new Date('August 5, 2010 04:03:02');
@@ -1556,8 +1638,8 @@ package('Date', function () {
     var d = run(new Date('August 5, 2010 04:03:02'), 'setUTC', [true]);
     rfc1123 = testCapitalize(getWeekdayFromDate(d,true).slice(0,3))+', '+testPadNumber(d.getUTCDate(), 2)+' '+testCapitalize(getMonthFromDate(d,true).slice(0,3))+' '+d.getUTCFullYear()+' '+testPadNumber(d.getUTCHours(), 2)+':'+testPadNumber(d.getUTCMinutes(), 2)+':'+testPadNumber(d.getUTCSeconds(), 2)+' +0000';
     rfc1036 = testCapitalize(getWeekdayFromDate(d,true))+', '+testPadNumber(d.getUTCDate(), 2)+'-'+testCapitalize(getMonthFromDate(d,true).slice(0,3))+'-'+d.getUTCFullYear().toString().slice(2)+' '+testPadNumber(d.getUTCHours(), 2)+':'+testPadNumber(d.getUTCMinutes(), 2)+':'+testPadNumber(d.getUTCSeconds(), 2)+' +0000';
-    test(d, ['RFC1123'], rfc1123, 'Date#format | string constants | RFC1123 UTC');
-    test(d, ['RFC1036'], rfc1036, 'Date#format | string constants | RFC1036 UTC');
+    test(d, ['RFC1123'], rfc1123, 'string constants | RFC1123 UTC');
+    test(d, ['RFC1036'], rfc1036, 'string constants | RFC1036 UTC');
 
     // ISO8601 - UTC
     var d = run(new Date('August 5, 2010 04:03:02'), 'setUTC', [true]);
@@ -1567,6 +1649,125 @@ package('Date', function () {
 
     test(new Date(NaN), [Sugar.Date.ISO8601_DATETIME], 'Invalid Date', 'invalid');
 
+
+    // strftime tokens
+
+    var d = new Date('August 5, 2010 14:03:02');
+
+    test(d, ['%a'], 'Thu', 'Abbreviated weekday');
+    test(d, ['%A'], 'Thursday', 'Weekday');
+    test(d, ['%b'], 'Aug', 'Abbreviated month');
+    test(d, ['%B'], 'August', 'Month');
+    test(d, ['%c'], 'Thu Aug 5 2010 2:03 PM', 'Preferred stamp');
+    test(d, ['%C'], '20', 'Century as 2 digit string');
+    test(d, ['%d'], '05', 'Padded day of the month');
+    test(d, ['%D'], '08/05/10', 'American 2 digit abbreviation');
+    test(d, ['%e'], ' 5', 'Day of the month with space padding');
+    test(d, ['%F'], '2010-08-05', 'Common datestamp format');
+    test(d, ['%g'], '10', '2 digit week year');
+    test(d, ['%G'], '2010', '4 digit week year');
+    test(d, ['%h'], 'Aug', 'Abbreviated month');
+    test(d, ['%H'], '14', 'Hours in 24 hour');
+    test(d, ['%I'], '02', 'Hours in 12 hour');
+    test(d, ['%j'], '217', 'Day of the year');
+    test(d, ['%m'], '08', '2 digit month');
+    test(d, ['%M'], '03', '2 digit minute');
+    test(d, ['%p'], 'PM', 'PM');
+    test(d, ['%P'], 'pm', 'pm');
+    test(d, ['%r'], '02:03:02 PM', '12 hour clock time with seconds');
+    test(d, ['%R'], '14:03', '24 hour clock time without seconds');
+    test(d, ['%S'], '02', 'seconds');
+    test(d, ['%T'], '14:03:02', '24 hour clock time with seconds');
+    test(d, ['%u'], '4', 'ISO8601 day of week');
+    test(d, ['%U'], '31', 'Week number with first Sunday as first week');
+    test(d, ['%V'], '31', 'ISO week number');
+    test(d, ['%w'], '4', 'Day of the week (Sunday as 0)');
+    test(d, ['%W'], '31', 'Week number with first Monday we first week');
+    test(d, ['%x'], '08/05/2010', 'Locale based representation | date only');
+    test(d, ['%X'], '2:03 PM', 'Locale based representation | time only');
+    test(d, ['%Y'], '2010', 'Full year');
+
+    equal(/[+-]\d{4}/.test(run(d, 'format', ['%z'])), true, 'Timezone offset');
+    equal(/\w{3}/.test(run(d, 'format', ['%Z'])), true, 'Timezone abbreviation');
+
+    test(new Date('January 1, 2010'), ['%c', 'en-GB'], 'Fri 1 Jan 2010 0:00', 'Preferred stamp | UK');
+
+    test(new Date('December 28, 2008'), ['%g'], '08', '2 digit week year | ISO8601');
+    test(new Date('December 28, 2008'), ['%G'], '2008', '4 digit week year | ISO8601');
+    test(new Date('December 29, 2008'), ['%g'], '09', '2 digit week year | next | ISO8601');
+    test(new Date('December 29, 2008'), ['%G'], '2009', '4 digit week year | next | ISO8601');
+    test(new Date('January 3, 2010'),   ['%g'], '09', '2 digit week year | prev | ISO8601');
+    test(new Date('January 3, 2010'),   ['%G'], '2009', '4 digit week year | prev | ISO8601');
+
+    test(new Date('August 5, 2010 4:03:02'), ['%H'], '04', 'Padded hours in 24 hour');
+    test(new Date('August 5, 2010 23:59:59'), ['%j'], '217', 'Day of the year at end of day');
+    test(new Date('August 5, 2010 00:00:00'), ['%j'], '217', 'Day of the year at beginning of day');
+    test(new Date('August 5, 2008 00:00:00'), ['%j'], '218', 'Day of the year on leap year');
+    test(new Date('January 1, 2010 00:00:00'), ['%j'], '001', 'Padded day of the year');
+    test(new Date('December 31, 2010 23:59:59'), ['%j'], '365', 'Last second of the year');
+    test(new Date('August 5, 2010 4:00'), ['%p'], 'AM', 'AM');
+    test(new Date('August 5, 2010 4:00'), ['%P'], 'am', 'am');
+
+    test(new Date('January 3, 2010'), ['%u'], '7', 'ISO8601 day of week Sunday');
+    test(new Date('January 4, 2010'), ['%u'], '1', 'ISO8601 day of week Monday');
+
+    test(new Date('January 3, 2010'), ['%w'], '0', 'Day of week Sunday');
+    test(new Date('January 4, 2010'), ['%w'], '1', 'Day of week Monday');
+
+    test(new Date('January 1, 2010'), ['%U'], '00', 'Week of the year (Sunday first) 1st');
+    test(new Date('January 2, 2010'), ['%U'], '00', 'Week of the year (Sunday first) 2nd');
+    test(new Date('January 3, 2010'), ['%U'], '01', 'Week of the year (Sunday first) 3rd');
+    test(new Date('January 4, 2010'), ['%U'], '01', 'Week of the year (Sunday first) 4th');
+
+    test(new Date('January 1, 2010'), ['%V'], '53', 'ISO week of the year 1st');
+    test(new Date('January 2, 2010'), ['%V'], '53', 'ISO week of the year 2nd');
+    test(new Date('January 3, 2010'), ['%V'], '53', 'ISO week of the year 3rd');
+    test(new Date('January 4, 2010'), ['%V'], '01', 'ISO week of the year 4th');
+
+    test(new Date('January 1, 2010'), ['%W'], '00', 'Week of the year (Monday first) 1st');
+    test(new Date('January 2, 2010'), ['%W'], '00', 'Week of the year (Monday first) 2nd');
+    test(new Date('January 3, 2010'), ['%W'], '00', 'Week of the year (Monday first) 3rd');
+    test(new Date('January 4, 2010'), ['%W'], '01', 'Week of the year (Monday first) 4th');
+
+    test(new Date('May 1, 2010'), ['%b'], 'May', 'May');
+
+    test(new Date(-60000000000000), ['%y'], '68', '%y in year 0068 should be 2 digits');
+    test(new Date(-60000000000000), ['%Y'], '0068', '%Y in year 0068 should be 4 digits');
+
+    test(d, ['%Y%A'], '2010Thursday', 'tokens together');
+    test(d, ['%Y\n%A'], '2010\nThursday', 'can input newlines');
+    test(d, ['%Y\t%A'], '2010\tThursday', 'can input tabs');
+    test(d, ['%Y%%%A'], '2010%Thursday', 'can escape percent signs');
+
+
+    // Shortcuts
+
+    var then = new Date(2010, 0, 5, 15, 52);
+
+    assertFormatShortcut(then, 'short', '01/05/2010');
+    assertFormatShortcut(then, 'medium', 'January 5, 2010');
+    assertFormatShortcut(then, 'long', 'January 5, 2010 3:52 PM');
+    assertFormatShortcut(then, 'full', 'Tuesday, January 5, 2010 3:52 PM');
+    test(then, ['{time}'], '3:52 PM', 'preferred time');
+    test(then, ['{stamp}'], 'Tue Jan 5 2010 3:52 PM', 'preferred stamp');
+
+    assertFormatShortcut(then, 'short', '05/01/2010', 'en-GB');
+    assertFormatShortcut(then, 'medium', '5 January 2010', 'en-GB');
+    assertFormatShortcut(then, 'long', '5 January 2010 15:52', 'en-GB');
+    assertFormatShortcut(then, 'full', 'Tuesday, 5 January, 2010 15:52', 'en-GB');
+    test(then, ['{time}', 'en-GB'], '15:52', 'preferred time | UK');
+    test(then, ['{stamp}', 'en-GB'], 'Tue 5 Jan 2010 15:52', 'preferred stamp | UK');
+
+    assertFormatShortcut(then, 'short', '05/01/2010', 'en-AU');
+    assertFormatShortcut(then, 'medium', '5 January 2010', 'en-AU');
+    assertFormatShortcut(then, 'long', '5 January 2010 15:52', 'en-AU');
+    assertFormatShortcut(then, 'full', 'Tuesday, 5 January, 2010 15:52', 'en-AU');
+
+    assertFormatShortcut(then, 'short', '2010-01-05', 'en-CA');
+    assertFormatShortcut(then, 'medium', '5 January, 2010', 'en-CA');
+    assertFormatShortcut(then, 'long', '5 January, 2010 15:52', 'en-CA');
+    assertFormatShortcut(then, 'full', 'Tuesday, 5 January, 2010 15:52', 'en-CA');
+
     // Issue #262
     equal(/\d+-/.test(run(new Date(), 'format', ['{timezone}'])), false, 'Timezone format should not include hyphens')
 
@@ -1575,17 +1776,6 @@ package('Date', function () {
     test(new Date(1901, 0, 2), ['{yyyy}'], '1901', 'Zero padded year should respect yyyy format');
 
   });
-
-  group('Locale Specific Formats', function() {
-    var d = new Date('August 5, 2010 04:03:02');
-    equal(run(d, 'format', ['short']), 'August 5, 2010', 'Date#format | shortcuts | short');
-    equal(run(d, 'short'), 'August 5, 2010', 'Date#format | shortcuts | short method');
-    equal(run(d, 'format', ['long']), 'August 5, 2010 4:03am', 'Date#format | shortcuts | long');
-    equal(run(d, 'long'), 'August 5, 2010 4:03am', 'Date#format | shortcuts | long method');
-    equal(run(d, 'format', ['full']), 'Thursday August 5, 2010 4:03:02am', 'Date#format | shortcuts | full');
-    equal(run(d, 'full'), 'Thursday August 5, 2010 4:03:02am', 'Date#format | shortcuts | full method');
-  });
-
 
   method('getUTCOffset', function() {
     var d = new Date('August 5, 2010 04:03:02');
@@ -1651,7 +1841,7 @@ package('Date', function () {
       equal(unit, 0, 'still passes millisecond is zero');
     }]);
 
-    equal(run(testCreateDate('2002-02-17'), 'format', [function() {}]), 'February 17, 2002 12:00am', 'function that returns undefined defaults to standard format');
+    equal(run(testCreateDate('2002-02-17'), 'format', [function() {}]), 'February 17, 2002 12:00 AM', 'function that returns undefined defaults to standard format');
 
     equal(run(testCreateDate(), 'relative'), '1 second ago', '6 milliseconds ago');
 
@@ -1738,7 +1928,6 @@ package('Date', function () {
     test(testCreateDate('tuesday'), ['the beginning of the week'], false, 'tuesday is the beginning of the week');
     test(testCreateDate('tuesday'), ['the end of the week'], false, 'tuesday is the end of the week');
 
-    test(testCreateDate('sunday'), ['the beginning of the week'], true, 'sunday is the beginning of the week');
     test(testCreateDate('sunday'), ['the beginning of the week'], true, 'sunday is the beginning of the week');
 
     test(testCreateDate('tuesday'), ['tuesday'], true, 'tuesday is tuesday');
@@ -1876,33 +2065,6 @@ package('Date', function () {
     test(testCreateDate('1800'), false, '1800');
     test(testCreateDate('1900'), false, '1900');
     test(testCreateDate('2000'), true, '2000');
-  });
-
-  method('getISOWeek', function() {
-    var d;
-
-    d = new Date(2010,7,5,13,45,2,542);
-
-    test(d, 31, 'basic August 5th, 2010');
-    dateEqual(d, new Date(2010,7,5,13,45,2,542), 'should not modify the date');
-
-    test(new Date(2010, 0, 1), 53, 'January 1st, 2010');
-    test(new Date(2010, 0, 6), 1, 'January 6th, 2010');
-    test(new Date(2010, 0, 7), 1, 'January 7th, 2010');
-    test(new Date(2010, 0, 7, 23, 59, 59, 999), 1, 'January 7th, 2010 h23:59:59.999');
-    test(new Date(2010, 0, 8), 1, 'January 8th, 2010');
-    test(new Date(2010, 3, 15), 15, 'April 15th, 2010');
-
-    d = run(new Date(2010,7,5,13,45,2,542), 'setUTC', [true]);
-
-    test(d, d.getTimezoneOffset() > 615 ? 32 : 31, 'utc | basic');
-    test(new Date(2010, 0, 1), 53, 'utc | January 1st UTC is actually 2009');
-    test(new Date(2010, 0, 6), 1, 'utc | January 6th');
-    test(new Date(2010, 0, 7), 1, 'utc | January 7th');
-    test(new Date(2010, 0, 7, 23, 59, 59, 999), 1, 'utc | January 7th 23:59:59.999');
-    test(new Date(2010, 0, 8), 1, 'utc | January 8th');
-    test(new Date(2010, 3, 15), 15, 'utc | April 15th');
-
   });
 
   group('Since/Until', function() {
@@ -2062,6 +2224,9 @@ package('Date', function () {
     dateEqual(dateRun(d, 'endOfMonth'), new Date(2010, 7, 31, 23, 59, 59, 999), 'endOfMonth');
     dateEqual(dateRun(d, 'endOfYear'), new Date(2010, 11, 31, 23, 59, 59, 999), 'endOfYear');
 
+    dateEqual(dateRun(d, 'beginningOfWeek', ['en-GB']), new Date(2010, 7, 2), 'beginningOfWeek | optional locale code');
+    dateEqual(dateRun(d, 'endOfWeek', ['en-GB']), new Date(2010, 7, 8, 23, 59, 59, 999), 'endOfWeek | optional locale code');
+
     var d = new Date('January 1, 1979 01:33:42');
 
     dateEqual(dateRun(d, 'beginningOfDay'), new Date(1979, 0, 1), 'beginningOfDay | January 1, 1979');
@@ -2097,16 +2262,6 @@ package('Date', function () {
     dateEqual(dateRun(d, 'endOfWeek'), new Date(2012, 2, 3, 23, 59, 59, 999), 'endOfWeek | February 29, 2012');
     dateEqual(dateRun(d, 'endOfMonth'), new Date(2012, 1, 29, 23, 59, 59, 999), 'endOfMonth | February 29, 2012');
     dateEqual(dateRun(d, 'endOfYear'), new Date(2012, 11, 31, 23, 59, 59, 999), 'endOfYear | February 29, 2012');
-
-    dateEqual(dateRun(d, 'beginningOfDay', [true]), new Date(2012, 1, 29), 'beginningOfDay | reset if true | February 29, 2012');
-    dateEqual(dateRun(d, 'beginningOfWeek', [true]), new Date(2012, 1, 26), 'beginningOfWeek | reset if true | February 29, 2012');
-    dateEqual(dateRun(d, 'beginningOfMonth', [true]), new Date(2012, 1), 'beginningOfMonth | reset if true | February 29, 2012');
-    dateEqual(dateRun(d, 'beginningOfYear', [true]), new Date(2012, 0), 'beginningOfYear | reset if true | February 29, 2012');
-
-    dateEqual(dateRun(d, 'endOfDay', [true]), new Date(2012, 1, 29, 23, 59, 59, 999), 'endOfDay | reset if true | February 29, 2012');
-    dateEqual(dateRun(d, 'endOfWeek', [true]), new Date(2012, 2, 3, 23, 59, 59, 999), 'endOfWeek | reset if true | February 29, 2012');
-    dateEqual(dateRun(d, 'endOfMonth', [true]), new Date(2012, 1, 29, 23, 59, 59, 999), 'endOfMonth | reset if true | February 29, 2012');
-    dateEqual(dateRun(d, 'endOfYear', [true]), new Date(2012, 11, 31, 23, 59, 59, 999), 'endOfYear | reset if true | February 29, 2012');
 
     var d = run(testCreateUTCDate('January 1, 2010 02:00:00'), 'setUTC', [true]);
 
@@ -2564,16 +2719,13 @@ package('Date', function () {
     dateTest(getDateWithWeekdayAndOffset(2), ['monday', 'friday'], true, 'relative | tuesday is between monday and friday');
     dateTest(getDateWithWeekdayAndOffset(0,7), ['monday', 'friday'], false, 'relative | next week sunday is between monday and friday');
     dateTest(getDateWithWeekdayAndOffset(0,-7), ['monday', 'friday'], false, 'relative | last week sunday is between monday and friday');
-    dateTest(getDateWithWeekdayAndOffset(0), ['the beginning of this week','the beginning of last week'], false, 'relative | sunday is between the beginning of this week and the beginning of last week');
-    dateTest(getDateWithWeekdayAndOffset(0), ['the beginning of this week','the beginning of next week'], false, 'relative | sunday is between the beginning of this week and the beginning of next week');
+    dateTest(getDateWithWeekdayAndOffset(0), ['the beginning of this week','the beginning of last week'], true, 'relative | sunday is between the beginning of this week and the beginning of last week');
+    dateTest(getDateWithWeekdayAndOffset(0), ['the beginning of this week','the beginning of next week'], true, 'relative | sunday is between the beginning of this week and the beginning of next week');
     dateTest(getDateWithWeekdayAndOffset(0), ['the beginning of last week','the beginning of next week'], true, 'relative | sunday is between the beginning of last week and the beginning of next week');
     dateTest(getDateWithWeekdayAndOffset(0), ['the beginning of last week','the end of this week'], true, 'relative | sunday is between the beginning of last week and the end of this week');
 
-
-    dateTest(testCreateDate('yesterday'), ['yesterday', 'today'], false, 'today is between yesterday and today');
-    dateTest(testCreateDate('yesterday'), ['yesterday', 'today', 5], true, 'today is between yesterday and today with a 5ms margin');
-    dateTest(testCreateDate('tomorrow'), ['today', 'tomorrow'], false, 'tomrrow is between today and tomorrow');
-    dateTest(testCreateDate('tomorrow'), ['today', 'tomorrow', 5], true, 'tomrrow is between today and tomorrow with a 5ms margin');
+    dateTest(testCreateDate('yesterday'), ['yesterday', 'today'], true, 'today is between yesterday and today');
+    dateTest(testCreateDate('tomorrow'), ['today', 'tomorrow'], true, 'tomrrow is between today and tomorrow');
 
   });
 
@@ -2602,8 +2754,8 @@ package('Date', function () {
     run(Date, 'addFormat', ['on ze (\\d+)th of (january|february|march|april|may) lavigne', ['date','month'], 'en']);
     dateEqual(testCreateDate('on ze 18th of april lavigne', 'en'), new Date(thisYear, 3, 18), 'handles other formats');
 
-    equal(typeof testGetLocale(), 'object', 'current locale object is exposed in case needed');
-    equal(testGetLocale().code, 'en', 'adding the format did not change the current locale');
+    equal(typeof Sugar.Date.getLocale(), 'object', 'current locale object is exposed in case needed');
+    equal(Sugar.Date.getLocale().code, 'en', 'adding the format did not change the current locale');
 
   });
 
@@ -2622,9 +2774,10 @@ package('Date', function () {
     equal(run(new Date(2011, 5, 6), 'format', ['{Month}']), 'La', 'june is La');
 
     raisesError(function(){ testSetLocale(); }, 'no arguments raises error');
-    equal(testGetLocale().code, 'fo', 'setting locale with no arguments had no effect');
+    equal(Sugar.Date.getLocale().code, 'fo', 'setting locale with no arguments had no effect');
+
     equal(run(new Date(2011, 5, 6), 'format', ['{Month}']), 'La', 'will not change the locale if no argument passed');
-    equal(run(new Date(2011, 5, 6), 'format', ['', 'en']), 'June 6, 2011 12:00am', 'local locale should override global');
+    equal(run(new Date(2011, 5, 6), 'format', ['', 'en']), 'June 6, 2011 12:00 AM', 'local locale should override global');
     equal(run(testCreateDate('5 months ago', 'en'), 'relative', ['en']), '5 months ago', 'local locale should override global');
 
     raisesError(function(){ testSetLocale(''); }, '"" raises an invalid locale error');
@@ -2637,6 +2790,10 @@ package('Date', function () {
   });
 
   method('getISOWeek', function() {
+
+    var d = new Date(2010,7,5,13,45,2,542);
+    test(d, 31, 'basic August 5th, 2010');
+    dateEqual(d, new Date(2010,7,5,13,45,2,542), 'should not modify the date');
 
     test(new Date(2011, 0, 1), 52, 'January 1, 2011');
     test(new Date(2011, 0, 2), 52, 'January 2, 2011');
@@ -2659,6 +2816,22 @@ package('Date', function () {
     test(new Date(2014,  0,  2),  1, 'January 02, 2014');
     test(new Date(2014,  0,  5),  1, 'January 05, 2014');
     test(new Date(2014,  0,  6),  2, 'January 06, 2014');
+
+    test(new Date(2010, 0, 1), 53, 'January 1st, 2010');
+    test(new Date(2010, 0, 6), 1, 'January 6th, 2010');
+    test(new Date(2010, 0, 7), 1, 'January 7th, 2010');
+    test(new Date(2010, 0, 7, 23, 59, 59, 999), 1, 'January 7th, 2010 h23:59:59.999');
+    test(new Date(2010, 0, 8), 1, 'January 8th, 2010');
+    test(new Date(2010, 3, 15), 15, 'April 15th, 2010');
+
+    var d = run(new Date(2010,7,5,13,45,2,542), 'setUTC', [true]);
+    test(d, d.getTimezoneOffset() > 615 ? 32 : 31, 'utc | basic');
+    test(new Date(2010, 0, 1), 53, 'utc | January 1st UTC is actually 2009');
+    test(new Date(2010, 0, 6), 1, 'utc | January 6th');
+    test(new Date(2010, 0, 7), 1, 'utc | January 7th');
+    test(new Date(2010, 0, 7, 23, 59, 59, 999), 1, 'utc | January 7th 23:59:59.999');
+    test(new Date(2010, 0, 8), 1, 'utc | January 8th');
+    test(new Date(2010, 3, 15), 15, 'utc | April 15th');
 
   });
 
@@ -2713,17 +2886,33 @@ package('Date', function () {
 
   });
 
+  method('getAllLocales', function() {
+    var all = run(Date, 'getAllLocales');
+    equal(typeof all, 'object', 'Result should be an object');
+    equal(all['en'].code, 'en', 'English should be set');
+  });
 
-  group('Adding a locale', function() {
+  method('getAllLocaleCodes', function() {
+    var all = run(Date, 'getAllLocaleCodes');
+    equal(testIsArray(all), true, 'Result should be an array');
+    equal(all[0], 'en', 'English should be the first');
+  });
+
+  group('Adding locales', function() {
     testSetLocale('en');
-    testAddLocale('foobar', { months: ['a','b','c'] });
+    Sugar.Date.addLocale('bar', { months: ['a','b','c'] });
 
-    equal(testGetLocale().code, testGetLocale('en').code, 'adding a locale does not affect the current locale');
-    equal(testGetLocale('foobar').months[0], 'a', 'new locale has been added');
-    dateEqual(testCreateDate('a', 'foobar'), testCreateDate('January'), 'formats have been recognized');
+    equal(Sugar.Date.getLocale().code, Sugar.Date.getLocale('en').code, 'adding a locale does not affect the current locale');
+    equal(Sugar.Date.getLocale('bar').months[0], 'a', 'new locale has been added');
+    dateEqual(testCreateDate('a', 'bar'), testCreateDate('January'), 'formats have been recognized');
 
-    testAddLocale({ code: 'barbar', months: ['d','e','f'] });
+    Sugar.Date.addLocale({ code: 'barbar', months: ['d','e','f'] });
     dateEqual(testCreateDate('f', 'barbar'), testCreateDate('March'), 'can add locale with just object');
+
+    testSetLocale('bar');
+    Sugar.Date.removeLocale('bar');
+    equal(Sugar.Date.getLocale('bar'), undefined, 'should have removed the locale');
+    equal(Sugar.Date.getLocale() === Sugar.Date.getLocale('en'), true, 'current locale should be reset to English');
   });
 
 
@@ -2757,17 +2946,17 @@ package('Date', function () {
   });
 
 
-  group('newDateInternal', function() {
+  method('newDateInternal', function() {
 
     // Issue #342 handling offsets for comparison
 
-    Sugar.Date.newDateInternal = function() {
+    Sugar.Date.newDateInternal(function() {
       var d = new Date();
       // Honolulu time zone GMT-10:00
       var offset = (d.getTimezoneOffset() - (10 * 60)) * 60 * 1000;
       d.setTime(d.getTime() + offset);
       return d;
-    };
+    });
 
     var offset = 600 - new Date().getTimezoneOffset();
 
@@ -2798,16 +2987,16 @@ package('Date', function () {
 
     var AwesomeDate = function() {};
     AwesomeDate.prototype = new Date();
-    AwesomeDate.prototype.getMinutes = function() {
-    }
+    AwesomeDate.prototype.getMinutes = function() {};
 
-    Sugar.Date.newDateInternal = function() {
+    Sugar.Date.newDateInternal(function() {
       return new AwesomeDate();
-    }
+    });
 
     equal(testCreateDate() instanceof AwesomeDate, true, 'Result should be use in Date.create');
 
-    Sugar.Date.newDateInternal = null;
+    Sugar.Date.newDateInternal(null);
+    equal(testCreateDate() instanceof AwesomeDate, false, 'Internal function should have been reset');
 
   });
 

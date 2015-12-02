@@ -93,6 +93,8 @@ package('Date Ranges', function () {
     dateRangeEqual(getRange('from monday to thursday'), getRange('monday', 'thursday'), 'advanced text ranges | from');
     dateRangeEqual(getRange('from monday until thursday'), getRange('monday', 'thursday'), 'advanced text ranges | from..until');
     dateRangeEqual(getRange('tomorrow at 3pm for 30 minutes'), getRange('3pm tomorrow', '3:30pm tomorrow'), 'advanced text ranges | for');
+    dateRangeEqual(getRange('tomorrow from 3pm to 5pm'), getRange('3pm tomorrow', '5pm tomorrow'), 'advanced text ranges | from');
+    dateRangeEqual(getRange('monday 3pm to saturday 5pm'), getRange('3pm monday', '5pm saturday'), 'advanced text ranges | from different days');
     dateRangeEqual(getRange('1 hour starting at 3:15 monday'), getRange('3:15 monday', '4:15 monday'), 'advanced text ranges | starting at');
     dateRangeEqual(getRange('for 1 hour starting at 3:15 monday'), getRange('3:15 monday', '4:15 monday'), 'advanced text ranges | for..starting at');
     dateRangeEqual(getRange('foobar'), getRange(), 'invalid string is the same as no arguments');

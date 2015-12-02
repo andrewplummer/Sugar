@@ -175,9 +175,21 @@ package('Number', function () {
       count++;
       return count;
     };
-    var result = run(5, 'times', [callback, 'wasabi']);
-    equal(result, [1,2,3,4,5], 'result should be the collected return values of all calls');
+    var result = run(5, 'times', [callback]);
+    equal(result, [1,2,3,4,5], 'result should be the collected return values');
     equal(count, 5, 'iterated 5 times');
+
+    var fn = function() {};
+    var result = run(3, 'times', [fn]);
+    equal(result, undefined, 'Returning undefined should return nothing');
+
+    var fn = function(i) {
+      return i || undefined;
+    };
+    var result = run(3, 'times', [fn]);
+    equal(result, [1, 2], 'Mixed return values only collects non-undefined');
+
+    raisesError(function() { run(5, 'times', []); }, 'no callback raises error', TypeError);
   });
 
   method('isMultipleOf', function() {
@@ -344,9 +356,7 @@ package('Number', function () {
     test(-1000000.01, '-1,000,000.01');
     test(0.52, '0.52');
     test(9999999.99, '9,999,999.99');
-  });
 
-  method('format', function() {
     // These discrepancies are due to floating point variable limitations.
     equal(run(100046546510000.022435451, 'format').replace(/\.\d+$/, ''), '100,046,546,510,000');
     equal(run(-100046546510000.022435451, 'format').replace(/\.\d+$/, ''), '-100,046,546,510,000');
@@ -375,9 +385,7 @@ package('Number', function () {
 
     delete Sugar.Number.thousands;
     delete Sugar.Number.decimal;
-  });
 
-  method('format', function() {
     withArgs([2], function() {
       test(1, '1.00');
       test(10, '10.00');
@@ -397,9 +405,7 @@ package('Number', function () {
 
       test(2.435, '2.44');
     });
-  });
 
-  method('format', function() {
     withArgs([4], function() {
       test(1, '1.0000');
       test(10, '10.0000');
@@ -416,9 +422,7 @@ package('Number', function () {
       test(-100000, '-100,000.0000');
       test(-1000000, '-1,000,000.0000');
     });
-  });
 
-  method('format', function() {
     test(553599.435, [2], '553,599.44', 'to 2 places');
     test(553599.435, [1], '553,599.4', 'to 1 place');
     test(553599.435, [0], '553,599', 'to 0 places');
@@ -469,9 +473,7 @@ package('Number', function () {
     test(0.5, '0.8');
     test(2.5, '2.8');
     test(2553423, '26f64f');
-  });
 
-  method('hex', function() {
     withArgs([2], function() {
       test(0, '00');
       test(10, '0a');
@@ -479,9 +481,7 @@ package('Number', function () {
       test(0.5, '00.8');
       test(2.5, '02.8');
     });
-  });
 
-  method('hex', function() {
     withArgs([4], function() {
       test(0, '0000');
       test(10, '000a');
@@ -529,9 +529,7 @@ package('Number', function () {
     test(174958, '175k');
     test(1249584, '1m');
     test(1749584, '2m');
-  });
 
-  method('abbr', function() {
     withArgs([1], function() {
       test(1, '1', 'decimal 1 place | 1');
       test(12, '12', 'decimal 1 place | 12');
@@ -545,10 +543,7 @@ package('Number', function () {
       test(1249584, '1.2m', 'decimal 1 place | 1,249,584');
       test(1749584, '1.7m', 'decimal 1 place | 1,749,584');
     });
-  });
 
-
-  method('abbr', function() {
     withArgs([2], function() {
       test(1, '1', 'decimal 2 places | 1');
       test(12, '12', 'decimal 2 places | 12');
@@ -562,9 +557,7 @@ package('Number', function () {
       test(1249584, '1.25m', 'decimal 2 places | 1,249,584');
       test(1749584, '1.75m', 'decimal 2 places | 1,749,584');
     });
-  });
 
-  method('abbr', function() {
     withArgs([3], function() {
       test(1, '1', 'decimal 3 places | 1');
       test(12, '12', 'decimal 3 places | 12');
@@ -583,9 +576,7 @@ package('Number', function () {
       test(1749584, '1,75m', 'should respect global decimal marker');
       delete Sugar.Number.decimal;
     });
-  });
 
-  method('abbr', function() {
     withArgs([-1], function() {
       test(1, '0', 'decimal -1 places | 1');
       test(12, '10', 'decimal -1 places | 12');
@@ -599,9 +590,7 @@ package('Number', function () {
       test(1249584, '0m', 'decimal -1 places | 1,249,584');
       test(1749584, '0m', 'decimal -1 places | 1,749,584');
     });
-  });
 
-  method('abbr', function() {
     test(0.1, '0', '0.1');
     test(0.01, '0', '0.01');
     test(0.001, '0', '0.001');
@@ -610,9 +599,7 @@ package('Number', function () {
     test(0.000001, '0', '0.0000001');
     test(0.0000001, '0', '0.00000001');
     test(0.00000001, '0', '0.000000001');
-  });
 
-  method('abbr', function() {
     test(1.1, '1', '1.1');
     test(1.01, '1', '1.01');
     test(1.001, '1', '1.001');
@@ -621,16 +608,12 @@ package('Number', function () {
     test(1.000001, '1', '1.0000001');
     test(1.0000001, '1', '1.00000001');
     test(1.00000001, '1', '1.000000001');
-  });
 
-  method('abbr', function() {
     test(1000.004, '1k', '1000.004');
     test(10000.004, '10k', '10,000.004');
     test(100000.004, '100k', '100,000.004');
     test(1000000.004, '1m', '1,000,000.004');
-  });
 
-  method('abbr', function() {
     withArgs([2], function() {
       test(1000.004, '1k', '2 places | 1000.004');
       test(10000.004, '10k', '2 places | 10,000.004');
@@ -640,121 +623,40 @@ package('Number', function () {
   });
 
   method('metric', function() {
-    withArgs([0, false], function() {
 
-      test(1, '1');
-      test(10, '10');
-      test(100, '100');
-      test(1000, '1k');
-      test(10000, '10k');
-      test(100000, '100k');
-      test(1000000, '1M');
-      test(10000000, '10M');
-      test(100000000, '100M');
-      test(1000000000, '1G');
-      test(10000000000, '10G');
-      test(100000000000, '100G');
-      test(1000000000000, '1T');
-      test(10000000000000, '10T');
-      test(100000000000000, '100T');
-      test(1000000000000000, '1P');
-      test(10000000000000000, '10P');
-      test(100000000000000000, '100P');
+    test(1, '1');
+    test(10, '10');
+    test(100, '100');
+    test(1000, '1k');
+    test(10000, '10k');
+    test(100000, '100k');
+    test(1000000, '1,000k');
+    test(10000000, '10,000k');
+    test(100000000, '100,000k');
+    test(1000000000, '1,000,000k');
+    test(10000000000, '10,000,000k');
+    test(100000000000, '100,000,000k');
+    test(1000000000000, '1,000,000,000k');
+    test(10000000000000, '10,000,000,000k');
+    test(100000000000000, '100,000,000,000k');
+    test(1000000000000000, '1,000,000,000,000k');
+    test(10000000000000000, '10,000,000,000,000k');
+    test(100000000000000000, '100,000,000,000,000k');
 
-      test(1, '1', 'decimal | 1');
-      test(12, '12', 'decimal | 12');
-      test(124, '124', 'decimal | 124');
-      test(1249, '1k', 'decimal | 1,249');
-      test(1749, '2k', 'decimal | 1,749');
-      test(12495, '12k', 'decimal | 12,495');
-      test(17495, '17k', 'decimal | 17,495');
-      test(124958, '125k', 'decimal | 124,958');
-      test(174958, '175k', 'decimal | 174,958');
-      test(1249584, '1M', 'decimal | 1,249,584');
-      test(1749584, '2M', 'decimal | 1,749,584');
-      test(1249584000, '1G', 'decimal | 1,249,584,000');
-      test(1749584000, '2G', 'decimal | 1,749,584,000');
-    });
-  });
+    test(1, '1', 'decimal | 1');
+    test(12, '12', 'decimal | 12');
+    test(124, '124', 'decimal | 124');
+    test(1249, '1k', 'decimal | 1,249');
+    test(1749, '2k', 'decimal | 1,749');
+    test(12495, '12k', 'decimal | 12,495');
+    test(17495, '17k', 'decimal | 17,495');
+    test(124958, '125k', 'decimal | 124,958');
+    test(174958, '175k', 'decimal | 174,958');
+    test(1249584, '1,250k', 'decimal | 1,249,584');
+    test(1749584, '1,750k', 'decimal | 1,749,584');
+    test(1249584000, '1,249,584k', 'decimal | 1,249,584,000');
+    test(1749584000, '1,749,584k', 'decimal | 1,749,584,000');
 
-  method('metric', function() {
-    withArgs([1, false], function() {
-      test(1, '1', 'decimal 1 place | 1');
-      test(12, '12', 'decimal 1 place | 12');
-      test(124, '124', 'decimal 1 place | 124');
-      test(1249, '1.2k', 'decimal 1 place | 1,249');
-      test(1749, '1.7k', 'decimal 1 place | 1,749');
-      test(12495, '12.5k', 'decimal 1 place | 12,495');
-      test(17495, '17.5k', 'decimal 1 place | 17,495');
-      test(124958, '125k', 'decimal 1 place | 124,958');
-      test(174958, '175k', 'decimal 1 place | 174,958');
-      test(1249584, '1.2M', 'decimal 1 place | 1,249,584');
-      test(1749584, '1.7M', 'decimal 1 place | 1,749,584');
-      test(1249584000, '1.2G', 'decimal 1 place | 1,249,584,000');
-      test(1749584000, '1.7G', 'decimal 1 place | 1,749,584,000');
-
-      // Issue #422
-      Sugar.Number.decimal = ',';
-      test(3232, [1, 2], '3,2k', 'should respect global decimal marker');
-      delete Sugar.Number.decimal;
-    });
-  });
-
-  method('metric', function() {
-    withArgs([2, false], function() {
-      test(1, '1', 'decimal 2 places | 1');
-      test(12, '12', 'decimal 2 places | 12');
-      test(124, '124', 'decimal 2 places | 124');
-      test(1249, '1.25k', 'decimal 2 places | 1,249');
-      test(1749, '1.75k', 'decimal 2 places | 1,749');
-      test(12495, '12.5k', 'decimal 2 places | 12,495');
-      test(17495, '17.5k', 'decimal 2 places | 17,495');
-      test(124958, '124.96k', 'decimal 2 places | 124,958');
-      test(174958, '174.96k', 'decimal 2 places | 174,958');
-      test(1249584, '1.25M', 'decimal 2 places | 1,249,584');
-      test(1749584, '1.75M', 'decimal 2 places | 1,749,584');
-      test(1249584000, '1.25G', 'decimal 2 places | 1,249,584,000');
-      test(1749584000, '1.75G', 'decimal 2 places | 1,749,584,000');
-    });
-  });
-
-  method('metric', function() {
-    withArgs([3, false], function() {
-      test(1, '1', 'decimal 3 places | 1');
-      test(12, '12', 'decimal 3 places | 12');
-      test(124, '124', 'decimal 3 places | 124');
-      test(1249, '1.249k', 'decimal 3 places | 1,249');
-      test(1749, '1.749k', 'decimal 3 places | 1,749');
-      test(12495, '12.495k', 'decimal 3 places | 12,495');
-      test(17495, '17.495k', 'decimal 3 places | 17,495');
-      test(124958, '124.958k', 'decimal 3 places | 124,958');
-      test(174958, '174.958k', 'decimal 3 places | 174,958');
-      test(1249584, '1.25M', 'decimal 3 places | 1,249,584');
-      test(1749584, '1.75M', 'decimal 3 places | 1,749,584');
-      test(1249584000, '1.25G', 'decimal 3 places | 1,249,584,000');
-      test(1749584000, '1.75G', 'decimal 3 places | 1,749,584,000');
-    });
-  });
-
-  method('metric', function() {
-    withArgs([-1, false], function() {
-      test(1, '0', 'decimal -1 places | 1');
-      test(12, '10', 'decimal -1 places | 12');
-      test(124, '120', 'decimal -1 places | 124');
-      test(1249, '0k', 'decimal -1 places | 1,249');
-      test(1749, '0k', 'decimal -1 places | 1,749');
-      test(12495, '10k', 'decimal -1 places | 12,495');
-      test(17495, '20k', 'decimal -1 places | 17,495');
-      test(124958, '120k', 'decimal -1 places | 124,958');
-      test(174958, '170k', 'decimal -1 places | 174,958');
-      test(1249584, '0M', 'decimal -1 places | 1,249,584');
-      test(1749584, '0M', 'decimal -1 places | 1,749,584');
-      test(1249584000, '0G', 'decimal -1 places | 1,249,584,000');
-      test(1749584000, '0G', 'decimal -1 places | 1,749,584,000');
-    });
-  });
-
-  method('metric', function() {
     test(0.1000000000000, '100m',    'fractional | 0.1');
     test(0.0100000000000, '10m',     'fractional | 0.01');
     test(0.0010000000000, '1m',      'fractional | 0.001');
@@ -782,6 +684,8 @@ package('Number', function () {
     test(0.0000000000111, '0.01n',   'fractional | 0 places | 0.0000000000111');
     test(0.0000000000011, '0.001n',  'fractional | 0 places | 0.0000000000011');
     test(0.0000000000001, '0.0001n', 'fractional | 0 places | 0.0000000000001');
+
+    test(0.000000000000000001, '1e-9n', 'fractional | 0 places | 0.0000000000001');
 
     test(1.1111111111111, '1', 'fractional | 0 places | 1.1111111111111');
     test(1.0111111111111, '1', 'fractional | 0 places | 1.0111111111111');
@@ -811,10 +715,156 @@ package('Number', function () {
     test(1.0000000000011, '1', 'fractional | 0 places | 1.0000000000011');
     test(1.0000000000001, '1', 'fractional | 0 places | 1.0000000000001');
 
-  });
+    withArgs([0, 'all'], function() {
+      test(10000000, '10M');
+      test(100000000, '100M');
+      test(1000000000, '1G');
+      test(10000000000, '10G');
+      test(100000000000, '100G');
+      test(1000000000000, '1T');
+      test(10000000000000, '10T');
+      test(100000000000000, '100T');
+      test(1000000000000000, '1P');
+      test(10000000000000000, '10P');
+      test(100000000000000000, '100P');
 
-  method('metric', function() {
-    withArgs([2, false], function() {
+      test(1, '1', 'decimal | 1');
+      test(12, '12', 'decimal | 12');
+      test(124, '124', 'decimal | 124');
+      test(1249, '1K', 'decimal | 1,249');
+      test(1749, '2K', 'decimal | 1,749');
+      test(12495, '12K', 'decimal | 12,495');
+      test(17495, '17K', 'decimal | 17,495');
+      test(124958, '125K', 'decimal | 124,958');
+      test(174958, '175K', 'decimal | 174,958');
+      test(1249584, '1M', 'decimal | 1,249,584');
+      test(1749584, '2M', 'decimal | 1,749,584');
+      test(1249584000, '1G', 'decimal | 1,249,584,000');
+      test(1749584000, '2G', 'decimal | 1,749,584,000');
+    });
+
+    withArgs([1], function() {
+      test(1, '1', 'decimal 1 place | 1');
+      test(12, '12', 'decimal 1 place | 12');
+      test(124, '124', 'decimal 1 place | 124');
+      test(1249, '1.2k', 'decimal 1 place | 1,249');
+      test(1749, '1.7k', 'decimal 1 place | 1,749');
+      test(12495, '12.5k', 'decimal 1 place | 12,495');
+      test(17495, '17.5k', 'decimal 1 place | 17,495');
+      test(124958, '125k', 'decimal 1 place | 124,958');
+      test(174958, '175k', 'decimal 1 place | 174,958');
+      test(1249584, '1,249.6k', 'decimal 1 place | 1,249,584');
+
+      // Issue #422
+      Sugar.Number.decimal = ',';
+      test(3232, [1], '3,2k', 'should respect global decimal marker');
+      delete Sugar.Number.decimal;
+    });
+
+    withArgs([1, 'all'], function() {
+      test(1, '1', 'decimal 1 place | 1');
+      test(12, '12', 'decimal 1 place | 12');
+      test(124, '124', 'decimal 1 place | 124');
+      test(1249, '1.2K', 'decimal 1 place | 1,249');
+      test(1749, '1.7K', 'decimal 1 place | 1,749');
+      test(12495, '12.5K', 'decimal 1 place | 12,495');
+      test(17495, '17.5K', 'decimal 1 place | 17,495');
+      test(124958, '125K', 'decimal 1 place | 124,958');
+      test(174958, '175K', 'decimal 1 place | 174,958');
+      test(1249584, '1.2M', 'decimal 1 place | 1,249,584');
+      test(1749584, '1.7M', 'decimal 1 place | 1,749,584');
+      test(1249584000, '1.2G', 'decimal 1 place | 1,249,584,000');
+      test(1749584000, '1.7G', 'decimal 1 place | 1,749,584,000');
+    });
+
+    withArgs([2], function() {
+      test(1, '1', 'decimal 2 places | 1');
+      test(12, '12', 'decimal 2 places | 12');
+      test(124, '124', 'decimal 2 places | 124');
+      test(1249, '1.25k', 'decimal 2 places | 1,249');
+      test(1749, '1.75k', 'decimal 2 places | 1,749');
+      test(12495, '12.5k', 'decimal 2 places | 12,495');
+      test(17495, '17.5k', 'decimal 2 places | 17,495');
+      test(124958, '124.96k', 'decimal 2 places | 124,958');
+      test(174958, '174.96k', 'decimal 2 places | 174,958');
+      test(1249584, '1,249.58k', 'decimal 2 places | 1,249,584');
+    });
+
+    withArgs([2, 'all'], function() {
+      test(1, '1', 'decimal 2 places | 1');
+      test(12, '12', 'decimal 2 places | 12');
+      test(124, '124', 'decimal 2 places | 124');
+      test(1249, '1.25K', 'decimal 2 places | 1,249');
+      test(1749, '1.75K', 'decimal 2 places | 1,749');
+      test(12495, '12.5K', 'decimal 2 places | 12,495');
+      test(17495, '17.5K', 'decimal 2 places | 17,495');
+      test(124958, '124.96K', 'decimal 2 places | 124,958');
+      test(174958, '174.96K', 'decimal 2 places | 174,958');
+      test(1249584, '1.25M', 'decimal 2 places | 1,249,584');
+      test(1749584, '1.75M', 'decimal 2 places | 1,749,584');
+      test(1249584000, '1.25G', 'decimal 2 places | 1,249,584,000');
+      test(1749584000, '1.75G', 'decimal 2 places | 1,749,584,000');
+    });
+
+    withArgs([3], function() {
+      test(1, '1', 'decimal 3 places | 1');
+      test(12, '12', 'decimal 3 places | 12');
+      test(124, '124', 'decimal 3 places | 124');
+      test(1249, '1.249k', 'decimal 3 places | 1,249');
+      test(1749, '1.749k', 'decimal 3 places | 1,749');
+      test(12495, '12.495k', 'decimal 3 places | 12,495');
+      test(17495, '17.495k', 'decimal 3 places | 17,495');
+      test(124958, '124.958k', 'decimal 3 places | 124,958');
+      test(174958, '174.958k', 'decimal 3 places | 174,958');
+      test(1249584, '1,249.584k', 'decimal 3 places | 1,249,584');
+    });
+
+    withArgs([3, 'all'], function() {
+      test(1, '1', 'decimal 3 places | 1');
+      test(12, '12', 'decimal 3 places | 12');
+      test(124, '124', 'decimal 3 places | 124');
+      test(1249, '1.249K', 'decimal 3 places | 1,249');
+      test(1749, '1.749K', 'decimal 3 places | 1,749');
+      test(12495, '12.495K', 'decimal 3 places | 12,495');
+      test(17495, '17.495K', 'decimal 3 places | 17,495');
+      test(124958, '124.958K', 'decimal 3 places | 124,958');
+      test(174958, '174.958K', 'decimal 3 places | 174,958');
+      test(1249584, '1.25M', 'decimal 3 places | 1,249,584');
+      test(1749584, '1.75M', 'decimal 3 places | 1,749,584');
+      test(1249584000, '1.25G', 'decimal 3 places | 1,249,584,000');
+      test(1749584000, '1.75G', 'decimal 3 places | 1,749,584,000');
+    });
+
+    withArgs([-1], function() {
+      test(1, '0', 'decimal -1 places | 1');
+      test(12, '10', 'decimal -1 places | 12');
+      test(124, '120', 'decimal -1 places | 124');
+      test(1249, '0k', 'decimal -1 places | 1,249');
+      test(1749, '0k', 'decimal -1 places | 1,749');
+      test(12495, '10k', 'decimal -1 places | 12,495');
+      test(17495, '20k', 'decimal -1 places | 17,495');
+      test(124958, '120k', 'decimal -1 places | 124,958');
+      test(174958, '170k', 'decimal -1 places | 174,958');
+      test(1249584, '1,250k', 'decimal -1 places | 1,249,584');
+    });
+
+    withArgs([-1, 'all'], function() {
+      test(1, '0', 'decimal -1 places | 1');
+      test(12, '10', 'decimal -1 places | 12');
+      test(124, '120', 'decimal -1 places | 124');
+      test(1249, '0K', 'decimal -1 places | 1,249');
+      test(1749, '0K', 'decimal -1 places | 1,749');
+      test(12495, '10K', 'decimal -1 places | 12,495');
+      test(17495, '20K', 'decimal -1 places | 17,495');
+      test(124958, '120K', 'decimal -1 places | 124,958');
+      test(174958, '170K', 'decimal -1 places | 174,958');
+      test(1249584, '0M', 'decimal -1 places | 1,249,584');
+      test(1749584, '0M', 'decimal -1 places | 1,749,584');
+      test(1249584000, '0G', 'decimal -1 places | 1,249,584,000');
+      test(1749584000, '0G', 'decimal -1 places | 1,749,584,000');
+    });
+
+    withArgs([2], function() {
       test(0.1111111111111, '111.11m', 'fractional | 2 places | 0.1111111111111');
       test(0.0111111111111, '11.11m',  'fractional | 2 places | 0.0111111111111');
       test(0.0011111111111, '1.11m',   'fractional | 2 places | 0.0011111111111');
@@ -857,10 +907,7 @@ package('Number', function () {
       test(1.0000000000011, '1',    'fractional | 2 places | 1.0000000000011');
       test(1.0000000000001, '1',    'fractional | 2 places | 1.0000000000001');
     });
-  });
 
-
-  method('metric', function() {
     equal(run(0.0001)     + 'm', '100μm',       '100μm');
     equal(run(0.001)      + 'm', '1mm',         '1mm');
     equal(run(0.01)       + 'm', '10mm',        '10mm');
@@ -869,118 +916,185 @@ package('Number', function () {
     equal(run(1000)       + 'm', '1km',         '1km');
     equal(run(1000000)    + 'm', '1,000km',     '1,000km');
     equal(run(1000000000) + 'm', '1,000,000km', '1,000,000km');
-  });
 
-  method('metric', function() {
-    withArgs([0, 0], function() {
+    withArgs([0, '|'], function() {
       equal(run(1000000000) + 'm', '1,000,000,000m', 'limited to meters | 1,000,000,000m');
       equal(run(1000000)    + 'm', '1,000,000m',     'limited to meters | 1,000,000m');
       equal(run(1000)       + 'm', '1,000m',         'limited to meters | 1,000m');
       equal(run(1)          + 'm', '1m',             'limited to meters | 1m');
     });
-  });
 
-  method('metric', function() {
     test(12334.5880, '12k', 'fractional | 0 places | 12334.5880');
-    test(12334.5880, [3, false], '12.335k', 'fractional | 3 places | 12334.5880');
-    test(.588500, [9, false], '588.5m', 'fractional | 9 places | .5885');
-    test(.580085, [9, false], '580.085m', 'fractional | 9 places | .580085');
-    test(.580085, [7, false], '580.085m', 'fractional | 7 places | .580085');
-    test(.580085, [5, false], '580.085m', 'fractional | 5 places | .580085');
-    test(.580085, [3, false], '580.085m', 'fractional | 3 places | .580085');
-    test(.580085, [1, false], '580.1m', 'fractional | 1 places | .580085');
-    test(12323.424558, [3, 0], '12,323.425', 'limited and 3 decimals');
+    test(12334.5880, [3], '12.335k', 'fractional | 3 places | 12334.5880');
+    test(.588500, [9], '588.5m', 'fractional | 9 places | .5885');
+    test(.580085, [9], '580.085m', 'fractional | 9 places | .580085');
+    test(.580085, [7], '580.085m', 'fractional | 7 places | .580085');
+    test(.580085, [5], '580.085m', 'fractional | 5 places | .580085');
+    test(.580085, [3], '580.085m', 'fractional | 3 places | .580085');
+    test(.580085, [1], '580.1m', 'fractional | 1 places | .580085');
+    test(12323.424558, [3, '|'], '12,323.425', 'limited and 3 decimals');
 
-    equal(run(1, 'metric', [0, -1]) + 'm', '1,000mm', '1 meter is 1,000mm');
+    equal(run(1, 'metric', [0, '']) + 'm', '1m', 'no format uses short');
+    equal(run(1000, 'metric', [0, '|']) + 'm', '1,000m', 'simple placeholder limits');
+
+    equal(run(1, 'metric', [0, 'm']) + 'm', '1,000mm', 'millimeter max');
+    equal(run(1, 'metric', [0, 'μ_']) + 'm', '1,000,000μm', 'micrometer max');
+    equal(run(1, 'metric', [0, 'n__']) + 'm', '1,000,000,000nm', 'nanometer max');
+    equal(run(1, 'metric', [3, '_k']) + 'm', '0.001km', 'kilometer min');
+
+    equal(run(0.0000001, 'metric', [0, 'nμ_']) + 'm', '100nm', '100nm with micrometer max');
+    equal(run(0.0001,    'metric', [0, 'nμ_']) + 'm', '100μm', '100μm with micrometer max');
+
+    equal(run(1000000, 'metric', [3, '_KG']) + 'W', '1GW', 'minimum can format higher');
   });
 
 
   method('bytes', function() {
-    test(1,                  '1B' ,       '1B       ');
-    test(10,                 '10B' ,      '10B      ');
-    test(100,                '100B' ,     '100B     ');
-    test(1000,               '1kB' ,      '1kB      ');
-    test(10000,              '10kB' ,     '10kB     ');
-    test(100000,             '98kB' ,     '100kB    ');
-    test(1000000,            '1MB' ,      '1MB      ');
-    test(10000000,           '10MB' ,     '10MB     ');
-    test(100000000,          '95MB' ,     '100MB    ');
-    test(1000000000,         '1GB' ,      '1GB      ');
-    test(10000000000,        '9GB' ,      '10GB     ');
-    test(100000000000,       '93GB' ,     '100GB    ');
-    test(1000000000000,      '1TB' ,      '1TB      ');
-    test(10000000000000,     '9TB' ,      '10TB     ');
-    test(100000000000000,    '91TB' ,     '100TB    ');
-    test(1000000000000000,   '909TB' ,    '1,000TB  ');
-    test(10000000000000000,  '9,095TB' ,  '10,000TB ');
-    test(100000000000000000, '90,949TB' , '10,000TB ');
-  });
 
-  method('bytes', function() {
-    withArgs([0, false], function() {
-      test(1,                  '1B' ,   'no limit | 1B       ');
-      test(10,                 '10B' ,  'no limit | 10B      ');
-      test(100,                '100B' , 'no limit | 100B     ');
-      test(1000,               '1kB' ,  'no limit | 1kB      ');
-      test(10000,              '10kB' , 'no limit | 10kB     ');
-      test(100000,             '98kB' , 'no limit | 100kB    ');
-      test(1000000,            '1MB' ,  'no limit | 1MB      ');
-      test(10000000,           '10MB' , 'no limit | 10MB     ');
-      test(100000000,          '95MB' , 'no limit | 100MB    ');
-      test(1000000000,         '1GB' ,  'no limit | 1GB      ');
-      test(10000000000,        '9GB' ,  'no limit | 10GB     ');
-      test(100000000000,       '93GB' , 'no limit | 100GB    ');
-      test(1000000000000,      '1TB' ,  'no limit | 1TB      ');
-      test(10000000000000,     '9TB' ,  'no limit | 10TB     ');
-      test(100000000000000,    '91TB' , 'no limit | 100TB    ');
-      test(1000000000000000,   '1PB' ,  'no limit | 1,000TB  ');
-      test(10000000000000000,  '9PB' ,  'no limit | 10,000TB ');
-      test(100000000000000000, '89PB' , 'no limit | 10,000TB ');
+    test(1,                  '1B',   '1B   ');
+    test(10,                 '10B',  '10B  ');
+    test(100,                '100B', '100B ');
+    test(1000,               '1KB',  '1KB  ');
+    test(10000,              '10KB', '10KB ');
+    test(100000,             '98KB', '100KB');
+    test(1000000,            '1MB',  '1MB  ');
+    test(10000000,           '10MB', '10MB ');
+    test(100000000,          '95MB', '100MB');
+    test(1000000000,         '1GB',  '1GB  ');
+    test(10000000000,        '9GB',  '10GB ');
+    test(100000000000,       '93GB', '100GB');
+    test(1000000000000,      '1TB',  '1TB  ');
+    test(10000000000000,     '9TB',  '10TB ');
+    test(100000000000000,    '91TB', '100TB');
+    test(1000000000000000,   '1PB',  '1PB  ');
+    test(10000000000000000,  '9PB',  '9PB  ');
+    test(100000000000000000, '89PB', '89PB ');
+
+    withArgs([0], function() {
+      test(1,                  '1B',   '0 places | 1B   ');
+      test(10,                 '10B',  '0 places | 10B  ');
+      test(100,                '100B', '0 places | 100B ');
+      test(1000,               '1KB',  '0 places | 1KB  ');
+      test(10000,              '10KB', '0 places | 10KB ');
+      test(100000,             '98KB', '0 places | 100KB');
+      test(1000000,            '1MB',  '0 places | 1MB  ');
+      test(10000000,           '10MB', '0 places | 10MB ');
+      test(100000000,          '95MB', '0 places | 100MB');
+      test(1000000000,         '1GB',  '0 places | 1GB  ');
+      test(10000000000,        '9GB',  '0 places | 10GB ');
+      test(100000000000,       '93GB', '0 places | 100GB');
+      test(1000000000000,      '1TB',  '0 places | 1TB  ');
+      test(10000000000000,     '9TB',  '0 places | 10TB ');
+      test(100000000000000,    '91TB', '0 places | 100TB');
+      test(1000000000000000,   '1PB',  '0 places | 1PB  ');
+      test(10000000000000000,  '9PB',  '0 places | 9PB  ');
+      test(100000000000000000, '89PB', '0 places | 89BP ');
     });
-  });
 
-  method('bytes', function() {
-    withArgs([2, false], function() {
+    withArgs([2], function() {
 
-      test(1,                  '1B' ,      'no limit, 2 places | 1B       ');
-      test(10,                 '10B' ,     'no limit, 2 places | 10B      ');
-      test(100,                '100B' ,    'no limit, 2 places | 100B     ');
-      test(1000,               '0.98kB' ,  'no limit, 2 places | 1kB      ');
-      test(10000,              '9.77kB' ,  'no limit, 2 places | 10kB     ');
-      test(100000,             '97.66kB' , 'no limit, 2 places | 100kB    ');
-      test(1000000,            '0.95MB' ,  'no limit, 2 places | 1MB      ');
-      test(10000000,           '9.54MB' ,  'no limit, 2 places | 10MB     ');
-      test(100000000,          '95.37MB' , 'no limit, 2 places | 100MB    ');
-      test(1000000000,         '0.93GB' ,  'no limit, 2 places | 1GB      ');
-      test(10000000000,        '9.31GB' ,  'no limit, 2 places | 10GB     ');
-      test(100000000000,       '93.13GB' , 'no limit, 2 places | 100GB    ');
-      test(1000000000000,      '0.91TB' ,  'no limit, 2 places | 1TB      ');
-      test(10000000000000,     '9.09TB' ,  'no limit, 2 places | 10TB     ');
-      test(100000000000000,    '90.95TB' , 'no limit, 2 places | 100TB    ');
-      test(1000000000000000,   '0.89PB' ,  'no limit, 2 places | 1,000TB  ');
-      test(10000000000000000,  '8.88PB' ,  'no limit, 2 places | 10,000TB ');
-      test(100000000000000000, '88.82PB' , 'no limit, 2 places | 10,000TB ');
+      test(1,                  '1B',      '2 places | 1B   ');
+      test(10,                 '10B',     '2 places | 10B  ');
+      test(100,                '100B',    '2 places | 100B ');
+      test(1000,               '0.98KB',  '2 places | 1KB  ');
+      test(10000,              '9.77KB',  '2 places | 10KB ');
+      test(100000,             '97.66KB', '2 places | 100KB');
+      test(1000000,            '0.95MB',  '2 places | 1MB  ');
+      test(10000000,           '9.54MB',  '2 places | 10MB ');
+      test(100000000,          '95.37MB', '2 places | 100MB');
+      test(1000000000,         '0.93GB',  '2 places | 1GB  ');
+      test(10000000000,        '9.31GB',  '2 places | 10GB ');
+      test(100000000000,       '93.13GB', '2 places | 100GB');
+      test(1000000000000,      '0.91TB',  '2 places | 1TB  ');
+      test(10000000000000,     '9.09TB',  '2 places | 10TB ');
+      test(100000000000000,    '90.95TB', '2 places | 100TB');
+      test(1000000000000000,   '0.89PB',  '2 places | 1PB  ');
+      test(10000000000000000,  '8.88PB',  '2 places | 10PB ');
+      test(100000000000000000, '88.82PB', '2 places | 100PB');
 
       // Issue #422
       Sugar.Number.decimal = ',';
-      test(1000, '0,98kB' , 'should respect global decimal');
+      test(1000, '0,98KB', 'should respect global decimal');
       delete Sugar.Number.decimal;
 
     });
-  });
 
-  method('bytes', function() {
-    test(1024, '1kB', '1024 bytes is 1kB');
+    withArgs([0, true], function() {
+
+      test(1,                  '1B',    '2 places | si | 1B   ');
+      test(10,                 '10B',   '2 places | si | 10B  ');
+      test(100,                '100B',  '2 places | si | 100B ');
+      test(1000,               '1KB',   '2 places | si | 1KB  ');
+      test(10000,              '10KB',  '2 places | si | 10KB ');
+      test(100000,             '100KB', '2 places | si | 100KB');
+      test(1000000,            '1MB',   '2 places | si | 1MB  ');
+      test(10000000,           '10MB',  '2 places | si | 10MB ');
+      test(100000000,          '100MB', '2 places | si | 100MB');
+      test(1000000000,         '1GB',   '2 places | si | 1GB  ');
+      test(10000000000,        '10GB',  '2 places | si | 10GB ');
+      test(100000000000,       '100GB', '2 places | si | 100GB');
+      test(1000000000000,      '1TB',   '2 places | si | 1TB  ');
+      test(10000000000000,     '10TB',  '2 places | si | 10TB ');
+      test(100000000000000,    '100TB', '2 places | si | 100TB');
+      test(1000000000000000,   '1PB',   '2 places | si | 1PB  ');
+      test(10000000000000000,  '10PB',  '2 places | si | 10PB ');
+      test(100000000000000000, '100PB', '2 places | si | 100PB');
+
+    });
+
+    withArgs([0, false, 'binary'], function() {
+
+      test(1,                  '1B',    '0 places | custom units | 1B    ');
+      test(10,                 '10B',   '0 places | custom units | 10B   ');
+      test(100,                '100B',  '0 places | custom units | 100B  ');
+      test(1000,               '1KiB',  '0 places | custom units | 1KiB  ');
+      test(10000,              '10KiB', '0 places | custom units | 10KiB ');
+      test(100000,             '98KiB', '0 places | custom units | 100KiB');
+      test(1000000,            '1MiB',  '0 places | custom units | 1MiB  ');
+      test(10000000,           '10MiB', '0 places | custom units | 10MiB ');
+      test(100000000,          '95MiB', '0 places | custom units | 100MiB');
+      test(1000000000,         '1GiB',  '0 places | custom units | 1GiB  ');
+      test(10000000000,        '9GiB',  '0 places | custom units | 10GiB ');
+      test(100000000000,       '93GiB', '0 places | custom units | 100GiB');
+      test(1000000000000,      '1TiB',  '0 places | custom units | 1TiB  ');
+      test(10000000000000,     '9TiB',  '0 places | custom units | 10TiB ');
+      test(100000000000000,    '91TiB', '0 places | custom units | 100TiB');
+      test(1000000000000000,   '1PiB',  '0 places | custom units | 1PiB  ');
+      test(10000000000000000,  '9PiB',  '0 places | custom units | 10PiB ');
+      test(100000000000000000, '89PiB', '0 places | custom units | 100PiB');
+
+    });
+
+    withArgs([0, true, 'binary'], function() {
+
+      test(1,                  '1B',     '0 places | si | custom units | 1B    ');
+      test(10,                 '10B',    '0 places | si | custom units | 10B   ');
+      test(100,                '100B',   '0 places | si | custom units | 100B  ');
+      test(1000,               '1KiB',   '0 places | si | custom units | 1KiB  ');
+      test(10000,              '10KiB',  '0 places | si | custom units | 10KiB ');
+      test(100000,             '100KiB', '0 places | si | custom units | 100KiB');
+      test(1000000,            '1MiB',   '0 places | si | custom units | 1MiB  ');
+      test(10000000,           '10MiB',  '0 places | si | custom units | 10MiB ');
+      test(100000000,          '100MiB', '0 places | si | custom units | 100MiB');
+      test(1000000000,         '1GiB',   '0 places | si | custom units | 1GiB  ');
+      test(10000000000,        '10GiB',  '0 places | si | custom units | 10GiB ');
+      test(100000000000,       '100GiB', '0 places | si | custom units | 100GiB');
+      test(1000000000000,      '1TiB',   '0 places | si | custom units | 1TiB  ');
+      test(10000000000000,     '10TiB',  '0 places | si | custom units | 10TiB ');
+      test(100000000000000,    '100TiB', '0 places | si | custom units | 100TiB');
+      test(1000000000000000,   '1PiB',   '0 places | si | custom units | 1PiB  ');
+      test(10000000000000000,  '10PiB',  '0 places | si | custom units | 10PiB ');
+      test(100000000000000000, '100PiB', '0 places | si | custom units | 100PiB');
+
+    });
+
+    test(1024, '1KB', '1024 bytes is 1KB');
     test(1048576, '1MB', '2 places | 1048576 bytes is 1MB');
-    test(1024, [2], '1kB', '2 places | 1024 bytes is 1kB');
+    test(1024, [2], '1KB', '2 places | 1024 bytes is 1KB');
     test(1048576, [2], '1MB', '2 places | 1048576 bytes is 1MB');
-    test(1000, [6, 4, true], '1kB', 'should allow the standard metric definition');
-  });
 
-  method('bytes', function() {
-    equal(run(run(10, 'pow', [16]), 'bytes'), '9,095TB', '10 ^ 16 bytes');
-    equal(run(run(10, 'pow', [16]), 'bytes', [-2]), '9,100TB', '10 ^ 16 bytes | -2 places');
+    test(Math.pow(10, 16), '9PB', '10 ^ 16 bytes');
+    test(Math.pow(10, 16), [-2], '0PB', '10 ^ 16 bytes | -2 places');
   });
 
 });
-

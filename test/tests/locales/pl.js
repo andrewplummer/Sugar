@@ -1,10 +1,11 @@
 package('Dates Polish', function () {
   "use strict";
 
-  var now;
+  var now, then;
 
   setup(function() {
     now = new Date();
+    then = new Date(2010, 0, 5, 15, 52);
     testSetLocale('pl');
   });
 
@@ -108,35 +109,75 @@ package('Dates Polish', function () {
     //dateEqual(testCreateDate(''), getDateWithWeekdayAndOffset(5, -7), 'last friday');
     //dateEqual(testCreateDate(''), getDateWithWeekdayAndOffset(6, -7), 'last saturday');
 
+
     // Numbers
 
-    //dateEqual(testCreateDate(''),      getRelativeDate(-1), 'one years ago');
-    //dateEqual(testCreateDate(''),     getRelativeDate(-2), 'two years ago');
-    //dateEqual(testCreateDate(''),     getRelativeDate(-3), 'three years ago');
-    //dateEqual(testCreateDate(''),     getRelativeDate(-4), 'four years ago');
-    //dateEqual(testCreateDate(''),     getRelativeDate(-5), 'five years ago');
-    //dateEqual(testCreateDate(''),     getRelativeDate(-6), 'six years ago');
-    //dateEqual(testCreateDate(''), getRelativeDate(-7), 'seven years ago');
-    //dateEqual(testCreateDate(''), getRelativeDate(-8), 'eight years ago');
-    //dateEqual(testCreateDate(''),  getRelativeDate(-9), 'nine years ago');
-
+    dateEqual(testCreateDate('zero lat temu'),      getRelativeDate(0),   'zero years ago');
+    dateEqual(testCreateDate('jeden rok temu'),     getRelativeDate(-1),  'one year ago');
+    dateEqual(testCreateDate('dwa lata temu'),      getRelativeDate(-2),  'two years ago');
+    dateEqual(testCreateDate('trzy lata temu'),     getRelativeDate(-3),  'three years ago');
+    dateEqual(testCreateDate('cztery lata temu'),   getRelativeDate(-4),  'four years ago');
+    dateEqual(testCreateDate('pięć lata temu'),     getRelativeDate(-5),  'five years ago');
+    dateEqual(testCreateDate('sześć lata temu'),    getRelativeDate(-6),  'six years ago');
+    dateEqual(testCreateDate('siedem lata temu'),   getRelativeDate(-7),  'seven years ago');
+    dateEqual(testCreateDate('osiem lata temu'),    getRelativeDate(-8),  'eight years ago');
+    dateEqual(testCreateDate('dziewięć lata temu'), getRelativeDate(-9),  'nine years ago');
+    dateEqual(testCreateDate('dziesięć lata temu'), getRelativeDate(-10), 'ten years ago');
 
   });
 
   method('format', function() {
 
-    //equal(run(new Date(2011,  0, 25), 'format', ['{d} {month} {yyyy}']), '25 stycznia 1998');
-    //equal(run(new Date(2011,  1, 25), 'format', ['{d} {month} {yyyy}']), '25 lutego 1998');
-    //equal(run(new Date(2011,  2, 25), 'format', ['{d} {month} {yyyy}']), '25 marca 1998');
-    //equal(run(new Date(2011,  3, 25), 'format', ['{d} {month} {yyyy}']), '25 kwietnia 1998');
-    //equal(run(new Date(2011,  4, 25), 'format', ['{d} {month} {yyyy}']), '25 maja 1998 r');
-    //equal(run(new Date(2011,  5, 25), 'format', ['{d} {month} {yyyy}']), '25 czerwca 1998');
-    //equal(run(new Date(2011,  6, 25), 'format', ['{d} {month} {yyyy}']), '25 lipca 1998');
-    //equal(run(new Date(2011,  7, 25), 'format', ['{d} {month} {yyyy}']), '25 sierpnia 1998');
-    //equal(run(new Date(2011,  8, 25), 'format', ['{d} {month} {yyyy}']), '25 września 1998');
-    //equal(run(new Date(2011,  9, 25), 'format', ['{d} {month} {yyyy}']), '25 października 1998');
-    //equal(run(new Date(2011, 10, 25), 'format', ['{d} {month} {yyyy}']), '25 listopada 1998');
-    //equal(run(new Date(2011, 11, 25), 'format', ['{d} {month} {yyyy}']), '25 grudnia 1998');
+    test(then, '5 stycznia 2010 15:52', 'default format');
+
+    assertFormatShortcut(then, 'short', '05.01.2010');
+    assertFormatShortcut(then, 'medium', '5 stycznia 2010');
+    assertFormatShortcut(then, 'long', '5 stycznia 2010 15:52');
+    assertFormatShortcut(then, 'full', 'wtorek, 5 stycznia 2010 15:52');
+    test(then, ['{time}'], '15:52', 'preferred time');
+    test(then, ['{stamp}'], 'wt 5 sty 2010 15:52', 'preferred stamp');
+    test(then, ['%c'], 'wt 5 sty 2010 15:52', '%c stamp');
+
+    test(new Date(2011,  0, 25), ['{d} {month} {yyyy}'], '25 stycznia 2011',     'January');
+    test(new Date(2011,  1, 25), ['{d} {month} {yyyy}'], '25 lutego 2011',       'February');
+    test(new Date(2011,  2, 25), ['{d} {month} {yyyy}'], '25 marca 2011',        'March');
+    test(new Date(2011,  3, 25), ['{d} {month} {yyyy}'], '25 kwietnia 2011',     'April');
+    test(new Date(2011,  4, 25), ['{d} {month} {yyyy}'], '25 maja 2011',         'May');
+    test(new Date(2011,  5, 25), ['{d} {month} {yyyy}'], '25 czerwca 2011',      'June');
+    test(new Date(2011,  6, 25), ['{d} {month} {yyyy}'], '25 lipca 2011',        'July');
+    test(new Date(2011,  7, 25), ['{d} {month} {yyyy}'], '25 sierpnia 2011',     'August');
+    test(new Date(2011,  8, 25), ['{d} {month} {yyyy}'], '25 września 2011',     'September');
+    test(new Date(2011,  9, 25), ['{d} {month} {yyyy}'], '25 października 2011', 'October');
+    test(new Date(2011, 10, 25), ['{d} {month} {yyyy}'], '25 listopada 2011',    'November');
+    test(new Date(2011, 11, 25), ['{d} {month} {yyyy}'], '25 grudnia 2011',      'December');
+
+    test(new Date('January 3, 2010'), ['{w}'], '53', 'locale week number | Jan 3 2010');
+    test(new Date('January 3, 2010'), ['{ww}'], '53', 'locale week number padded | Jan 3 2010');
+    test(new Date('January 3, 2010'), ['{wo}'], '53rd', 'locale week number ordinal | Jan 3 2010');
+    test(new Date('January 4, 2010'), ['{w}'], '1', 'locale week number | Jan 4 2010');
+    test(new Date('January 4, 2010'), ['{ww}'], '01', 'locale week number padded | Jan 4 2010');
+    test(new Date('January 4, 2010'), ['{wo}'], '1st', 'locale week number ordinal | Jan 4 2010');
+
+    test(new Date(2015, 10, 8),  ['{Dow}'], 'nie', 'Sun');
+    test(new Date(2015, 10, 9),  ['{Dow}'], 'pon', 'Mon');
+    test(new Date(2015, 10, 10), ['{Dow}'], 'wt', 'Tue');
+    test(new Date(2015, 10, 11), ['{Dow}'], 'śr', 'Wed');
+    test(new Date(2015, 10, 12), ['{Dow}'], 'czw', 'Thu');
+    test(new Date(2015, 10, 13), ['{Dow}'], 'pt', 'Fri');
+    test(new Date(2015, 10, 14), ['{Dow}'], 'sb', 'Sat');
+
+    test(new Date(2015, 0, 1),  ['{Mon}'], 'sty', 'Jan');
+    test(new Date(2015, 1, 1),  ['{Mon}'], 'lut', 'Feb');
+    test(new Date(2015, 2, 1),  ['{Mon}'], 'mar', 'Mar');
+    test(new Date(2015, 3, 1),  ['{Mon}'], 'kwi', 'Apr');
+    test(new Date(2015, 4, 1),  ['{Mon}'], 'maj', 'May');
+    test(new Date(2015, 5, 1),  ['{Mon}'], 'cze', 'Jun');
+    test(new Date(2015, 6, 1),  ['{Mon}'], 'lip', 'Jul');
+    test(new Date(2015, 7, 1),  ['{Mon}'], 'sie', 'Aug');
+    test(new Date(2015, 8, 1),  ['{Mon}'], 'wrz', 'Sep');
+    test(new Date(2015, 9, 1),  ['{Mon}'], 'paź', 'Oct');
+    test(new Date(2015, 10, 1), ['{Mon}'], 'lis', 'Nov');
+    test(new Date(2015, 11, 1), ['{Mon}'], 'gru', 'Dec');
 
   });
 
@@ -188,6 +229,11 @@ package('Dates Polish', function () {
     assertRelative('5 months from now', 'za 5 miesięcy');
     assertRelative('5 years from now', 'za 5 lat');
 
+  });
+
+  method('beginning/end', function() {
+    dateEqual(dateRun(new Date(2010, 0), 'beginningOfWeek'), new Date(2009, 11, 28), 'beginningOfWeek');
+    dateEqual(dateRun(new Date(2010, 0), 'endOfWeek'), new Date(2010, 0, 3, 23, 59, 59, 999), 'endOfWeek');
   });
 
 

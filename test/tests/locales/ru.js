@@ -1,14 +1,16 @@
 package('Dates Russian', function () {
   "use strict";
 
-  var now;
+  var now, then;
 
   setup(function() {
     now = new Date();
+    then = new Date(2010, 0, 5, 15, 52);
     testSetLocale('ru');
   });
 
   method('create', function() {
+
     dateEqual(testCreateDate('15 мая 2011'), new Date(2011, 4, 15), 'basic Russian date');
     dateEqual(testCreateDate('2 мая 1989 года'), new Date(1989, 4, 2), 'format with year');
     dateEqual(testCreateDate('5 января 2012'), new Date(2012, 0, 5), '2012-01-05');
@@ -80,23 +82,72 @@ package('Dates Russian', function () {
 
     dateEqual(testCreateDate('Завтра в 3:30 утра'), run(getRelativeDate(null, null, 1), 'set', [{hours:3,minutes:30}, true]), 'tomorrow at 3:30');
 
+
+    // Numbers
+
+    dateEqual(testCreateDate('ноль лет назад'),    getRelativeDate(0),   'zero years ago');
+    dateEqual(testCreateDate('один год назад'),    getRelativeDate(-1),  'one year ago');
+    dateEqual(testCreateDate('два года назад'),    getRelativeDate(-2),  'two years ago');
+    dateEqual(testCreateDate('три года назад'),    getRelativeDate(-3),  'three years ago');
+    dateEqual(testCreateDate('четыре года назад'), getRelativeDate(-4),  'four years ago');
+    dateEqual(testCreateDate('пять лет назад'),    getRelativeDate(-5),  'five years ago');
+    dateEqual(testCreateDate('шесть лет назад'),   getRelativeDate(-6),  'six years ago');
+    dateEqual(testCreateDate('семь лет назад'),    getRelativeDate(-7),  'seven years ago');
+    dateEqual(testCreateDate('восемь лет назад'),  getRelativeDate(-8),  'eight years ago');
+    dateEqual(testCreateDate('девять лет назад'),  getRelativeDate(-9),  'nine years ago');
+    dateEqual(testCreateDate('десять лет назад'),  getRelativeDate(-10), 'ten years ago');
+
+
+    // Issue #524
+    dateEqual(testCreateDate('3 октября 2014 г.'), new Date(2014, 9, 3), 'Windows long format');
+
   });
 
   method('format', function() {
-    var then = new Date(2011, 7, 25, 15, 45, 50);
-    test(then, '25 августа 2011 года 15:45', 'standard format');
-    test(then, '25 августа 2011 года 15:45', 'standard format');
-    test(then, ['{dd} {month} {yyyy}'], '25 августа 2011', 'format');
-    test(then, ['{dd} {month2} {yyyy}'], '25 август 2011', 'format allows alternates');
 
-    // Format shortcuts
+    test(then, '5 января 2010 г., 15:52', 'default format');
 
-    equal(run(then, 'format', ['full']), 'Четверг 25 августа 2011 года 15:45:50', 'full format');
-    equal(run(then, 'full'), 'Четверг 25 августа 2011 года 15:45:50', 'full format');
-    equal(run(then, 'format', ['long']), '25 августа 2011 года 15:45', 'long format');
-    equal(run(then, 'long'), '25 августа 2011 года 15:45', 'long shortcut');
-    equal(run(then, 'format', ['short']), '25 августа 2011 года', 'short format');
-    equal(run(then, 'short'), '25 августа 2011 года', 'short shortcut');
+    assertFormatShortcut(then, 'short', '05.01.2010');
+    assertFormatShortcut(then, 'medium', '5 января 2010 г.');
+    assertFormatShortcut(then, 'long', '5 января 2010 г., 15:52');
+    assertFormatShortcut(then, 'full', 'вторник, 5 января 2010 г., 15:52');
+    test(then, ['{time}'], '15:52', 'preferred time');
+    test(then, ['{stamp}'], 'вт 5 янв 2010 15:52', 'preferred stamp');
+    test(then, ['%c'], 'вт 5 янв 2010 15:52', '%c stamp');
+
+    test(then, ['{d} {Month2} {yyyy}'], '5 янв 2010', 'alternate 2');
+    test(then, ['{d} {Month3} {yyyy}'], '5 январь 2010', 'alternate 3');
+    test(then, ['{d} {month2} {yyyy}'], '5 янв 2010', 'alternate 2 | lower');
+    test(then, ['{d} {month3} {yyyy}'], '5 январь 2010', 'alternate 3 | lower');
+
+    test(new Date('December 27, 2009'), ['{w}'], '52', 'locale week number | Dec 27 2009');
+    test(new Date('December 27, 2009'), ['{ww}'], '52', 'locale week number padded | Dec 27 2009');
+    test(new Date('December 27, 2009'), ['{wo}'], '52nd', 'locale week number ordinal | Dec 27 2009');
+    test(new Date('December 28, 2009'), ['{w}'], '1', 'locale week number | Dec 28 2009');
+    test(new Date('December 28, 2009'), ['{ww}'], '01', 'locale week number padded | Dec 28 2009');
+    test(new Date('December 28, 2009'), ['{wo}'], '1st', 'locale week number ordinal | Dec 28 2009');
+
+    test(new Date(2015, 10, 8),  ['{Dow}'], 'вс', 'Sun');
+    test(new Date(2015, 10, 9),  ['{Dow}'], 'пн', 'Mon');
+    test(new Date(2015, 10, 10), ['{Dow}'], 'вт', 'Tue');
+    test(new Date(2015, 10, 11), ['{Dow}'], 'ср', 'Wed');
+    test(new Date(2015, 10, 12), ['{Dow}'], 'чт', 'Thu');
+    test(new Date(2015, 10, 13), ['{Dow}'], 'пт', 'Fri');
+    test(new Date(2015, 10, 14), ['{Dow}'], 'сб', 'Sat');
+
+    test(new Date(2015, 0, 1),  ['{Mon}'], 'янв', 'Jan');
+    test(new Date(2015, 1, 1),  ['{Mon}'], 'фев', 'Feb');
+    test(new Date(2015, 2, 1),  ['{Mon}'], 'март', 'Mar');
+    test(new Date(2015, 3, 1),  ['{Mon}'], 'апр', 'Apr');
+    test(new Date(2015, 4, 1),  ['{Mon}'], 'май', 'May');
+    test(new Date(2015, 5, 1),  ['{Mon}'], 'июнь', 'Jun');
+    test(new Date(2015, 6, 1),  ['{Mon}'], 'июль', 'Jul');
+    test(new Date(2015, 7, 1),  ['{Mon}'], 'авг', 'Aug');
+    test(new Date(2015, 8, 1),  ['{Mon}'], 'сен', 'Sep');
+    test(new Date(2015, 9, 1),  ['{Mon}'], 'окт', 'Oct');
+    test(new Date(2015, 10, 1), ['{Mon}'], 'ноя', 'Nov');
+    test(new Date(2015, 11, 1), ['{Mon}'], 'дек', 'Dec');
+
   });
 
 
@@ -223,6 +274,11 @@ package('Dates Russian', function () {
 
     assertRelative('21 hours from now', 'через 21 час');
     assertRelative('22 hours from now', 'через 22 часа');
+  });
+
+  method('beginning/end', function() {
+    dateEqual(dateRun(new Date(2010, 0), 'beginningOfWeek'), new Date(2009, 11, 28), 'beginningOfWeek');
+    dateEqual(dateRun(new Date(2010, 0), 'endOfWeek'), new Date(2010, 0, 3, 23, 59, 59, 999), 'endOfWeek');
   });
 
 });

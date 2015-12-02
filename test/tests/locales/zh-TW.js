@@ -6,7 +6,7 @@ package('Dates Traditional Chinese', function () {
 
   setup(function() {
     now = new Date();
-    then = new Date(2011, 7, 25, 15, 45, 50);
+    then = new Date(2010, 0, 5, 15, 52);
     testSetLocale('zh-TW');
   });
 
@@ -79,17 +79,45 @@ package('Dates Traditional Chinese', function () {
   });
 
   method('format', function() {
-    test(then, '2011年8月25日 下午3:45', 'standard format');
-    test(then, '2011年8月25日 下午3:45', 'standard format');
-    test(then, ['{yyyy}年{MM}月{dd}日'], '2011年08月25日', 'format');
 
-    // Format shortcuts
-    equal(run(then, 'format', ['long']), '2011年8月25日 下午3:45', 'long format');
-    equal(run(then, 'long'), '2011年8月25日 下午3:45', 'long shortcut');
-    equal(run(then, 'format', ['full']), '2011年8月25日 星期四 下午3:45:50', 'full format');
-    equal(run(then, 'full'), '2011年8月25日 星期四 下午3:45:50', 'full format');
-    equal(run(then, 'format', ['short']), '2011年8月25日', 'short format');
-    equal(run(then, 'short'), '2011年8月25日', 'short format');
+    test(then, '2010年1月5日下午3點52分', 'default format');
+
+    assertFormatShortcut(then, 'short', '2010/01/05');
+    assertFormatShortcut(then, 'medium', '2010年1月5日');
+    assertFormatShortcut(then, 'long', '2010年1月5日下午3點52分');
+    assertFormatShortcut(then, 'full', '2010年1月5日星期二下午3點52分');
+    test(then, ['{time}'], '下午3點52分', 'preferred time');
+    test(then, ['{stamp}'], '2010年1月5日15:52二', 'preferred stamp');
+    test(then, ['%c'], '2010年1月5日15:52二', '%c stamp');
+
+    test(new Date('January 3, 2010'), ['{w}'], '53', 'locale week number | Jan 3 2010');
+    test(new Date('January 3, 2010'), ['{ww}'], '53', 'locale week number padded | Jan 3 2010');
+    test(new Date('January 3, 2010'), ['{wo}'], '53rd', 'locale week number ordinal | Jan 3 2010');
+    test(new Date('January 4, 2010'), ['{w}'], '1', 'locale week number | Jan 4 2010');
+    test(new Date('January 4, 2010'), ['{ww}'], '01', 'locale week number padded | Jan 4 2010');
+    test(new Date('January 4, 2010'), ['{wo}'], '1st', 'locale week number ordinal | Jan 4 2010');
+
+    test(new Date(2015, 10, 8),  ['{Dow}'], '日', 'Sun');
+    test(new Date(2015, 10, 9),  ['{Dow}'], '一', 'Mon');
+    test(new Date(2015, 10, 10), ['{Dow}'], '二', 'Tue');
+    test(new Date(2015, 10, 11), ['{Dow}'], '三', 'Wed');
+    test(new Date(2015, 10, 12), ['{Dow}'], '四', 'Thu');
+    test(new Date(2015, 10, 13), ['{Dow}'], '五', 'Fri');
+    test(new Date(2015, 10, 14), ['{Dow}'], '六', 'Sat');
+
+    test(new Date(2015, 0, 1),  ['{Mon}'], '1月', 'Jan');
+    test(new Date(2015, 1, 1),  ['{Mon}'], '2月', 'Feb');
+    test(new Date(2015, 2, 1),  ['{Mon}'], '3月', 'Mar');
+    test(new Date(2015, 3, 1),  ['{Mon}'], '4月', 'Apr');
+    test(new Date(2015, 4, 1),  ['{Mon}'], '5月', 'May');
+    test(new Date(2015, 5, 1),  ['{Mon}'], '6月', 'Jun');
+    test(new Date(2015, 6, 1),  ['{Mon}'], '7月', 'Jul');
+    test(new Date(2015, 7, 1),  ['{Mon}'], '8月', 'Aug');
+    test(new Date(2015, 8, 1),  ['{Mon}'], '9月', 'Sep');
+    test(new Date(2015, 9, 1),  ['{Mon}'], '10月', 'Oct');
+    test(new Date(2015, 10, 1), ['{Mon}'], '11月', 'Nov');
+    test(new Date(2015, 11, 1), ['{Mon}'], '12月', 'Dec');
+
   });
 
 
@@ -123,6 +151,11 @@ package('Dates Traditional Chinese', function () {
     assertRelative('5 day from now',    '5天後');
     assertRelative('5 week from now',   '1個月後');
     assertRelative('5 year from now',   '5年後');
+  });
+
+  method('beginning/end', function() {
+    dateEqual(dateRun(new Date(2010, 0), 'beginningOfWeek'), new Date(2009, 11, 28), 'beginningOfWeek');
+    dateEqual(dateRun(new Date(2010, 0), 'endOfWeek'), new Date(2010, 0, 3, 23, 59, 59, 999), 'endOfWeek');
   });
 
 });

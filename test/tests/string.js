@@ -62,14 +62,10 @@ package('String', function () {
 
   method('escapeHTML', function() {
 
-    test('<p>some text</p>', '&lt;p&gt;some text&lt;&#x2f;p&gt;', '<p>some text</p>');
+    test('<p>some text</p>', '&lt;p&gt;some text&lt;/p&gt;', '<p>some text</p>');
     test('war & peace & food', 'war &amp; peace &amp; food', 'war & peace');
     test('&amp;', '&amp;amp;', 'double escapes &amp;');
-    test('&lt;span&gt;already escaped, yo&lt;&#x2f;span&gt;', '&amp;lt;span&amp;gt;already escaped, yo&amp;lt;&amp;#x2f;span&amp;gt;', 'already escaped will be double-escaped');
-
-    test("hell's", 'hell&apos;s', "works on '");
-    test('I know that "feel" bro', 'I know that &quot;feel&quot; bro', 'works on "');
-    test('feel the /', 'feel the &#x2f;', 'works on /');
+    test('&lt;span&gt;already escaped, yo&lt;/span&gt;', '&amp;lt;span&amp;gt;already escaped, yo&amp;lt;/span&amp;gt;', 'already escaped will be double-escaped');
 
   });
 
@@ -653,9 +649,9 @@ package('String', function () {
     test('foop', [-5, false], '', 'negative | pos -5');
     test('foop', [-1224, false], '', 'negative | out of bounds');
 
-    test('wowzers', [0,2,4,6], ['w','w','e','s'], 'handles enumerated params');
-    test('wowzers', [0,2,4,6,18], ['w','w','e','s','e'], 'handles enumerated params');
-    test('wowzers', [0,2,4,6,18,false], ['w','w','e','s',''], 'handles enumerated params');
+    test('wowzers', [[0,2,4,6]], ['w','w','e','s'], 'handles enumerated params');
+    test('wowzers', [[0,2,4,6,18]], ['w','w','e','s','e'], 'handles enumerated params');
+    test('wowzers', [[0,2,4,6,18],false], ['w','w','e','s',''], 'handles enumerated params');
 
     test('', [3], '', 'blank');
     test('wasabi', [0], 'w', 'wasabi at pos 0');
@@ -829,7 +825,6 @@ package('String', function () {
     '<div class="outer">' +
     '<p>text with links, &quot;entities&quot; and bold tags</p>' +
     '</div>';
-    test(html, ['a', 'b'], stripped, 'stripped <a> and <b> tags');
     test(html, [['a', 'b']], stripped, 'array | stripped <a> and <b> tags');
 
 
@@ -837,7 +832,6 @@ package('String', function () {
     '<div class="outer">' +
     'text with links, &quot;entities&quot; and <b>bold</b> tags' +
     '</div>';
-    test(html, ['p', 'a'], stripped, 'stripped <p> and <a> tags');
     test(html, [['p', 'a']], stripped, 'array | stripped <p> and <a> tags');
 
 
@@ -866,7 +860,7 @@ package('String', function () {
 
     // Stipping self-closing tags
     test('<input type="text" class="blech" />', '', 'full input stripped');
-    test('<b>bold<b> and <i>italic</i> and <a>link</a>', ['b','i'], 'bold and italic and <a>link</a>', 'handles multi args');
+    test('<b>bold<b> and <i>italic</i> and <a>link</a>', [['b','i']], 'bold and italic and <a>link</a>', 'handles multi args');
 
     html =
     '<form action="poo.php" method="post">' +
@@ -879,10 +873,10 @@ package('String', function () {
 
     test(html, 'label for text:', 'form | all tags removed');
     test(html, ['input'], '<form action="poo.php" method="post"><p><label>label for text:</label></p></form>', 'form | input tags stripped');
-    test(html, ['input', 'p', 'form'], '<label>label for text:</label>', 'form | input, p, and form tags stripped');
+    test(html, [['input', 'p', 'form']], '<label>label for text:</label>', 'form | input, p, and form tags stripped');
 
     // Stripping namespaced tags
-    test('<xsl:template>foobar</xsl:template>', 'foobar', 'strips tags with xml namespaces');
+    test('<xsl:template>foobar</xsl:template>', [], 'foobar', 'strips tags with xml namespaces');
     test('<xsl:template>foobar</xsl:template>', ['xsl:template'], 'foobar', 'strips xsl:template');
     test('<xsl/template>foobar</xsl/template>', ['xsl/template'], 'foobar', 'strips xsl/template');
 
@@ -917,29 +911,31 @@ package('String', function () {
 
     // Issue #410 - replacing stripped tags
 
+    test('<span>foo</span>', ['all', '|'], '|foo|', 'can strip with just a string');
+
     var fn = function() { return 'bar'; };
-    test('<span>foo</span>', [fn], 'bar', 'replaces content with result of callback');
+    test('<span>foo</span>', ['all', fn], 'barfoobar', 'replaces content with result of callback');
 
     var fn = function() { return ''; };
-    test('<span>foo</span>', [fn], '', 'replaces content with empty string');
+    test('<span>foo</span>', ['all', fn], 'foo', 'replaces content with empty string');
 
     var fn = function() { return; };
-    test('<span>foo</span>', [fn], 'foo', 'returning undefined removes as normal');
+    test('<span>foo</span>', ['all', fn], 'foo', 'returning undefined removes as normal');
 
     var fn = function() { return 'wow'; };
-    test('<img src="cool.jpg" data-face="nice face!" />', [fn], 'wow', 'can replace self-closing tags');
+    test('<img src="cool.jpg" data-face="nice face!" />', ['all', fn], 'wow', 'can replace self-closing tags');
 
     var fn = function() { return 'wow'; };
-    test('<img src="cool.jpg" data-face="nice face!"> noway', [fn], 'wow noway', 'can replace void tag');
+    test('<img src="cool.jpg" data-face="nice face!"> noway', ['all', fn], 'wow noway', 'can replace void tag');
 
     var fn = function() { return 'wow'; };
-    test('<IMG SRC="cool.jpg" DATA-FACE="nice face!"> noway', [fn], 'wow noway', 'can replace void tag with caps');
+    test('<IMG SRC="cool.jpg" DATA-FACE="nice face!"> noway', ['all', fn], 'wow noway', 'can replace void tag with caps');
 
     var fn = function(a,b,c) { return c; };
-    test('<span></span>', [fn], '', 'attributes should be blank');
+    test('<span></span>', ['all', fn], '', 'attributes should be blank');
 
     var fn = function(a,b,c) { return c; };
-    test('<span class="orange"></span>', [fn], 'class="orange"', 'attributes should not be blank');
+    test('<span class="orange">foo</span>', ['all', fn], 'class="orange"fooclass="orange"', 'attributes should not be blank');
 
 
     var str = 'which <b>way</b> to go';
@@ -948,17 +944,9 @@ package('String', function () {
       equal(content, 'way', 'second argument should be the tag content');
       equal(attributes, '', 'third argument should be the attributes');
       equal(s, str, 'fourth argument should be the string');
-      return '|' + content + '|';
+      return '|';
     }
-    test(str, [fn], 'which |way| to go', 'stripped tag should be replaced');
-
-    var str = '<div>fun and</div><p>run</p><p>together</p>';
-    var fn = function(tag, content, s) {
-      if(tag === 'p') {
-        return ' ' + content;
-      }
-    }
-    test(str, ['p', fn], '<div>fun and</div> run together', 'can space out run-together tags');
+    test(str, ['all', fn], 'which |way| to go', 'stripped tag should be replaced');
 
     var str = '<span>very<span>nested<span>spans<span>are<span>we</span></span></span></span></span>';
     var expectedContent = [
@@ -974,10 +962,22 @@ package('String', function () {
       equal(content, expectedContent[count++], 'second argument should be the content');
       equal(attributes, '', 'third argument should be the attributes');
       equal(s, str, 'fourth argument should be the string');
+      return '|';
+    }
+    test(str, ['all', fn], '|very|nested|spans|are|we|||||', 'stripped tag should be replaced');
+    equal(count, 5, 'should have run 5 times');
+
+    var str = '<span>very</span>';
+    var fn = function(tag, content, attributes, s) {
       return content;
     }
-    test(str, [fn], 'verynestedspansarewe', 'stripped tag should be replaced');
-    equal(count, 5, 'should have run 5 times');
+    test(str, ['all', fn], 'veryveryvery', 'replacing with content will not endlessly recurse');
+
+    var str = '<span>very<span>';
+    var fn = function(tag, content, attributes, s) {
+      return content;
+    }
+    test(str, ['all', fn], 'very<span>veryvery<span>', 'malformed content will not infinitely recurse with replacements');
 
     var str = '<p>paragraph with <b>some bold text</b> and an image <img src="http://foobar.com/a/b/c/d.gif" alt="cool gif, bro" /> and thats all</p>';
     var expected = [
@@ -1005,7 +1005,7 @@ package('String', function () {
       equal(attributes, obj.attributes, 'third argument should be the attributes');
       equal(s, str, 'fourth argument should be the string');
     }
-    test(str, [fn], 'paragraph with some bold text and an image  and thats all', 'complex: all tags should be stripped');
+    test(str, ['all', fn], 'paragraph with some bold text and an image  and thats all', 'complex: all tags should be stripped');
     equal(count, 3, 'complex: should have run 3 times');
 
     var str = '<p>paragraph with <b>some bold text</b> and an image <img src="http://foobar.com/a/b/c/d.gif" alt="cool gif, bro"> and thats all</p>';
@@ -1048,13 +1048,11 @@ package('String', function () {
     '<div class="outer">' +
     '<p>text with , &quot;entities&quot; and  tags</p>' +
     '</div>';
-    test(html, ['a', 'b'], removed, '<a> and <b> tags removed');
     test(html, [['a', 'b']], removed, 'array | <a> and <b> tags removed');
 
 
     removed =
     '<div class="outer"></div>';
-    test(html, ['p', 'a'], removed, '<p> and <a> tags removed');
     test(html, [['p', 'a']], removed, 'array | <p> and <a> tags removed');
 
 
@@ -1084,7 +1082,7 @@ package('String', function () {
 
     test(html, '', 'form | removing all tags');
     test(html, ['input'], '<form action="poo.php" method="post"><p><label>label for text:</label></p></form>', 'form | removing input tags');
-    test(html, ['input', 'p', 'form'], '', 'form | removing input, p, and form tags');
+    test(html, [['input', 'p', 'form']], '', 'form | removing input, p, and form tags');
 
     // Stripping namespaced tags
     test('<xsl:template>foobar</xsl:template>', '', 'form | xml namespaced tags removed');
@@ -1092,7 +1090,7 @@ package('String', function () {
     test('<xsl/template>foobar</xsl/template>', ['xsl/template'], '', 'form | xsl/template removed');
     test('<xsl(template>foobar</xsl(template>', ['xsl(template'], '', 'form | xsl(template removed');
 
-    test('<b>bold</b> and <i>italic</i> and <a>link</a>', ['b','i'], ' and  and <a>link</a>', 'handles multi args');
+    test('<b>bold</b> and <i>italic</i> and <a>link</a>', [['b','i']], ' and  and <a>link</a>', 'handles multi args');
     test('', '', 'blank');
     test('chilled <b>monkey</b> brains', 'chilled  brains', 'chilled <b>monkey</b> brains');
 
@@ -1121,26 +1119,28 @@ package('String', function () {
 
     // Issue #410 - replacing stripped tags
 
+    test('<span>foo</span>', ['all', 'bar'], 'bar', 'can replace with just a string');
+
     var fn = function() { return 'bar'; };
-    test('<span>foo</span>', [fn], 'bar', 'replaces content with result of callback');
+    test('<span>foo</span>', ['all', fn], 'bar', 'replaces content with result of callback');
 
     var fn = function() { return ''; };
-    test('<span>foo</span>', [fn], '', 'replaces content with empty string');
+    test('<span>foo</span>', ['all', fn], '', 'replaces content with empty string');
 
     var fn = function() { return; };
-    test('<span>foo</span>', [fn], '', 'returning undefined strips as normal');
+    test('<span>foo</span>', ['all', fn], '', 'returning undefined strips as normal');
 
     var fn = function() { return 'wow'; };
-    test('<img src="cool.jpg" data-face="nice face!" />', [fn], 'wow', 'can replace self-closing tags');
+    test('<img src="cool.jpg" data-face="nice face!" />', ['all', fn], 'wow', 'can replace self-closing tags');
 
     var fn = function() { return 'wow'; };
-    test('<img src="cool.jpg" data-face="nice face!"> noway', [fn], 'wow noway', 'can replace void tag');
+    test('<img src="cool.jpg" data-face="nice face!"> noway', ['all', fn], 'wow noway', 'can replace void tag');
 
     var fn = function() { return 'wow'; };
-    test('<IMG SRC="cool.jpg" DATA-FACE="nice face!"> noway', [fn], 'wow noway', 'can replace void tag with caps');
+    test('<IMG SRC="cool.jpg" DATA-FACE="nice face!"> noway', ['all', fn], 'wow noway', 'can replace void tag with caps');
 
     var fn = function(a,b,c) { return c; };
-    test('<span></span>', [fn], '', 'attributes should be blank');
+    test('<span></span>', ['all', fn], '', 'attributes should be blank');
 
     var str = 'which <b>way</b> to go';
     var fn = function(tag, content, attributes, s) {
@@ -1149,7 +1149,7 @@ package('String', function () {
       equal(attributes, '', 'third argument should be the attributes');
       equal(s, str, 'fourth argument should be the string');
     }
-    test(str, [fn], 'which  to go', 'stripped tag should be replaced');
+    test(str, ['all', fn], 'which  to go', 'stripped tag should be replaced');
 
     var str = '<div>fun and</div><p>run</p><p>together</p>';
     var fn = function(tag, content, s) {
@@ -1175,7 +1175,7 @@ package('String', function () {
       equal(s, str, 'fourth argument should be the string');
       return content;
     }
-    test(str, [fn], 'verynestedspansarewe', 'stripped tag should be replaced');
+    test(str, ['all', fn], 'verynestedspansarewe', 'stripped tag should be replaced');
     equal(count, 5, 'should have run 5 times');
 
     var str = 'this is a <p>paragraph with <b>some bold text</b> and an image <img src="http://foobar.com/a/b/c/d.gif" alt="cool gif, bro" /> and thats all</p>';
@@ -1204,7 +1204,7 @@ package('String', function () {
       equal(attributes, obj.attributes, 'third argument should be the attributes');
       equal(s, str, 'fourth argument should be the string');
     }
-    test(str, [fn], 'this is a ', 'complex: outermost tag should be removed');
+    test(str, ['all', fn], 'this is a ', 'complex: outermost tag should be removed');
     equal(count, 1, 'complex: should have run 1 time');
 
     var str = '<p>paragraph with <b>some bold text</b> and an image <img src="http://foobar.com/a/b/c/d.gif" alt="cool gif, bro"> and thats all</p>';
@@ -1395,7 +1395,7 @@ package('String', function () {
     test('From {} to {}', ['foo', 'bar'], 'From {} to {}', 'requires keys to be passed');
     test('My quest is {name}', [{name:'partying'}], 'My quest is partying', 'allows keyword arguments as objects');
     testWithUndefined('Weight in tons {0.weight}', ['foo'], 'Weight in tons undefined', 'does not allow operators as part of format');
-    testWithUndefined('Units destroyed: {players[0]}', [{players: ['huey', 'duey']}], 'Units destroyed: undefined', 'Does not allow expressions in format');
+    testWithUndefined('Units destroyed: {players[0]}', [{players: ['huey', 'duey']}], 'Units destroyed: huey', 'allows bracket syntax');
 
     test('{0}, {1}, {2}', ['a', 'b', 'c'], 'a, b, c', 'simple enumeration');
     test('{}, {}, {}', ['a', 'b', 'c'], '{}, {}, {}', 'empty tokens');

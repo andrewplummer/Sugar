@@ -1,10 +1,11 @@
 package('Dates German', function () {
   "use strict";
 
-  var now;
+  var now, then;
 
   setup(function() {
     now = new Date();
+    then = new Date(2010, 0, 5, 15, 52);
     testSetLocale('de');
   });
 
@@ -105,26 +106,69 @@ package('Dates German', function () {
     dateEqual(testCreateDate('3:45 15. Mai 2011'), new Date(2011, 4, 15, 3, 45), 'time first format');
     dateEqual(testCreateDate('morgen um 3:30'), run(getRelativeDate(null, null, 1), 'set', [{hours:3,minutes:30}, true]), 'tomorrow at 3:30');
 
+    // Numbers
+
+    dateEqual(testCreateDate('vor null Jahre'),    getRelativeDate(0),   'zero years ago');
+    dateEqual(testCreateDate('vor einem Jahr'),    getRelativeDate(-1),  'one year ago');
+    dateEqual(testCreateDate('vor zwei Jahren'),   getRelativeDate(-2),  'two years ago');
+    dateEqual(testCreateDate('vor drei Jahren'),   getRelativeDate(-3),  'three years ago');
+    dateEqual(testCreateDate('vor vier Jahren'),   getRelativeDate(-4),  'four years ago');
+    dateEqual(testCreateDate('vor fuenf Jahren'),  getRelativeDate(-5),  'five years ago');
+    dateEqual(testCreateDate('vor sechs Jahren'),  getRelativeDate(-6),  'six years ago');
+    dateEqual(testCreateDate('vor sieben Jahren'), getRelativeDate(-7),  'seven years ago');
+    dateEqual(testCreateDate('vor acht Jahren'),   getRelativeDate(-8),  'eight years ago');
+    dateEqual(testCreateDate('vor neun Jahren'),   getRelativeDate(-9),  'nine years ago');
+    dateEqual(testCreateDate('vor zehn Jahren'),   getRelativeDate(-10), 'ten years ago');
+
   });
 
 
   method('format', function() {
-    var then = new Date(2011, 7, 25, 15, 45, 50);
 
-    equal(run(then, 'format'), '25. August 2011 15:45', 'format');
-    equal(run(then, 'format', ['{dd} {Month} {yyyy}']), '25 August 2011', 'format');
+    test(then, '5. Januar 2010 15:52', 'default format');
 
-    // Format shortcuts
-    equal(run(then, 'format', ['long']), '25. August 2011 15:45', 'long format');
-    equal(run(then, 'long'), '25. August 2011 15:45', 'long shortcut');
-    equal(run(then, 'format', ['full']), 'Donnerstag 25. August 2011 15:45:50', 'full format');
-    equal(run(then, 'full'), 'Donnerstag 25. August 2011 15:45:50', 'full shortcut');
-    equal(run(then, 'format', ['short']), '25. August 2011', 'short format');
-    equal(run(then, 'short'), '25. August 2011', 'short shortcut');
+    assertFormatShortcut(then, 'short', '05.01.2010');
+    assertFormatShortcut(then, 'medium', '5. Januar 2010');
+    assertFormatShortcut(then, 'long', '5. Januar 2010 15:52');
+    assertFormatShortcut(then, 'full', 'Dienstag, 5. Januar 2010 15:52');
+    test(then, ['{time}'], '15:52', 'preferred time');
+    test(then, ['{stamp}'], 'Di 5 Jan 2010 15:52', 'preferred stamp');
+    test(then, ['%c'], 'Di 5 Jan 2010 15:52', '%c stamp');
+
+    test(then, ['%A'], 'Dienstag', 'full weekday');
+
+    test(new Date('January 3, 2010'), ['{w}'], '53', 'locale week number | Jan 3 2010');
+    test(new Date('January 3, 2010'), ['{ww}'], '53', 'locale week number padded | Jan 3 2010');
+    test(new Date('January 3, 2010'), ['{wo}'], '53rd', 'locale week number ordinal | Jan 3 2010');
+    test(new Date('January 4, 2010'), ['{w}'], '1', 'locale week number | Jan 4 2010');
+    test(new Date('January 4, 2010'), ['{ww}'], '01', 'locale week number padded | Jan 4 2010');
+    test(new Date('January 4, 2010'), ['{wo}'], '1st', 'locale week number ordinal | Jan 4 2010');
+
+    test(new Date(2015, 10, 8),  ['{Dow}'], 'So', 'Sun');
+    test(new Date(2015, 10, 9),  ['{Dow}'], 'Mo', 'Mon');
+    test(new Date(2015, 10, 10), ['{Dow}'], 'Di', 'Tue');
+    test(new Date(2015, 10, 11), ['{Dow}'], 'Mi', 'Wed');
+    test(new Date(2015, 10, 12), ['{Dow}'], 'Do', 'Thu');
+    test(new Date(2015, 10, 13), ['{Dow}'], 'Fr', 'Fri');
+    test(new Date(2015, 10, 14), ['{Dow}'], 'Sa', 'Sat');
+    test(new Date(2015, 0, 1),  ['{Mon}'], 'Jan', 'Jan');
+    test(new Date(2015, 1, 1),  ['{Mon}'], 'Feb', 'Feb');
+    test(new Date(2015, 2, 1),  ['{Mon}'], 'März', 'Mar');
+    test(new Date(2015, 3, 1),  ['{Mon}'], 'Apr', 'Apr');
+    test(new Date(2015, 4, 1),  ['{Mon}'], 'Mai', 'May');
+    test(new Date(2015, 5, 1),  ['{Mon}'], 'Juni', 'Jun');
+    test(new Date(2015, 6, 1),  ['{Mon}'], 'Juli', 'Jul');
+    test(new Date(2015, 7, 1),  ['{Mon}'], 'Aug', 'Aug');
+    test(new Date(2015, 8, 1),  ['{Mon}'], 'Sept', 'Sep');
+    test(new Date(2015, 9, 1),  ['{Mon}'], 'Okt', 'Oct');
+    test(new Date(2015, 10, 1), ['{Mon}'], 'Nov', 'Nov');
+    test(new Date(2015, 11, 1), ['{Mon}'], 'Dez', 'Dec');
 
     // Issue #489
-    equal(run(then, 'format', ['{do}']), 'do', 'dow token should be 2 characters');
-    equal(run(then, 'format', ['{Do}']), 'Do', 'Dow token should be 2 characters');
+    equal(run(then, 'format', ['{dow}']), 'di', 'dow token should be 2 characters');
+    equal(run(then, 'format', ['{Dow}']), 'Di', 'Dow token should be 2 characters');
+    equal(run(then, 'format', ['%a']), 'Di', 'strftime token should be 2 characters');
+
   });
 
 
@@ -158,6 +202,11 @@ package('Dates German', function () {
     assertRelative('5 day from now',    'in 5 Tagen');
     assertRelative('5 week from now',   'in 1 Monat');
     assertRelative('5 year from now',   'in 5 Jahren');
+  });
+
+  method('beginning/end', function() {
+    dateEqual(dateRun(new Date(2010, 0), 'beginningOfWeek'), new Date(2009, 11, 28), 'beginningOfWeek');
+    dateEqual(dateRun(new Date(2010, 0), 'endOfWeek'), new Date(2010, 0, 3, 23, 59, 59, 999), 'endOfWeek');
   });
 
 });
