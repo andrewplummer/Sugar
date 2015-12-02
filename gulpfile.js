@@ -415,8 +415,8 @@ var NPM_PACKAGE_TEMPLATE = ['%requires%', '', '%body%', '', '%exports%'].join('\
 function modularize() {
 
   var TAB = '  ';
-  var NPM_DESTINATION = 'release/modularized';
-  var WHITELISTED = ['Math', 'Object', 'Array', 'RegExp', 'arguments', 'isFinite', 'TypeError', 'RangeError'];
+  var NPM_DESTINATION = 'release/npm/sugar';
+  var WHITELISTED = ['arguments'];
 
   var acorn = require('acorn');
 
@@ -571,7 +571,7 @@ function modularize() {
     }
 
     function isValidDependency(d) {
-      return d !== name && locals.indexOf(d) === -1 && WHITELISTED.indexOf(d) === -1;
+      return d !== name && locals.indexOf(d) === -1 && !global[d] && WHITELISTED.indexOf(d) === -1;
     }
 
     walk(n);
@@ -579,7 +579,8 @@ function modularize() {
   }
 
   function parseModule(module) {
-    var path = 'lib/' + module + '.js', commentsByEndLine = {}, counter = 1, currentNamespace, source, output, options;
+    var commentsByEndLine = {}, counter = 1, moduleMethods = [], currentNamespace, source, path;
+    path = 'lib/' + module + '.js'
 
     function onComment(block, text, start, stop, startLoc, endLoc) {
       var match;
@@ -587,7 +588,7 @@ function modularize() {
         text: text,
         block: block
       }
-      if (match = text.match(/@(package|namespace) (\w+)/)) {
+      if (match = text.match(/\@(package|namespace) (\w+)/)) {
         currentNamespace = match[2];
       }
     }
@@ -658,7 +659,7 @@ function modularize() {
         dependencies: deps,
         exports: 'Sugar'
       }
-      return sugarMethods[name];
+      moduleMethods.push(name);
     }
 
     function getGroupName(loc) {
@@ -730,6 +731,19 @@ function modularize() {
       delete topLevel[fnName];
     }
 
+    function writeModulePackage() {
+      if (!moduleMethods.length) {
+        return;
+      }
+      var body = moduleMethods.map(function(m) {
+        return "require('./" + module + '/' + m + "');";
+      }).join('\n');
+      writePackage(module, {
+        dependencies: ['Sugar'],
+        body: body
+      });
+    }
+
     source = fs.readFileSync(path, 'utf-8')
 
     output = acorn.parse(source, {
@@ -742,6 +756,7 @@ function modularize() {
       processTopLevelNode(node);
     });
 
+    writeModulePackage();
   }
 
   function writePackage(packageName, package) {
@@ -762,7 +777,7 @@ function modularize() {
         return '';
       }
       var requires = deps.map(function(dep) {
-        return dep + " = require('" + getPackageForDependency(dep) + "')";
+        return dep + " = require('" + getDependencyPath(dep) + "')";
       });
       return 'var ' + requires.join(',\n' + TAB + TAB) + ';';
     }
@@ -780,22 +795,42 @@ function modularize() {
       return 'module.exports = ' + compiled + ';';
     }
 
-    function getPackageForDependency(dep) {
-      if (dep === 'Sugar') {
-        return '../../../lib/core';
+    function getDependencyPath(dependencyName) {
+      var fullPath;
+      if (dependencyName === 'Sugar') {
+        var tmp =  '../../../lib/core';
+        if (package.module) {
+          tmp = '../' + tmp;
+        }
+        return tmp;
         // TODO: temporary until the core package is created.
         //return 'sugar-core';
       }
       // TODO: temporary until we map core vars into common
-      if (!hasOwn.call(topLevel, dep)) {
+      if (!hasOwn.call(topLevel, dependencyName)) {
         return '???????????????';
       }
-      var depPackage = topLevel[dep], module = depPackage.module;
-      var basePath = module === package.module ? './' : '../' + module;
-      return path.join(basePath, depPackage.type, dep);
+      var dependency = topLevel[dependencyName];
+      return getRequirePath(getRelativePath(package.module, dependency.module), getRelativePath(package.type, dependency.type), dependencyName);
     }
 
-    var outputPath = path.join(NPM_DESTINATION, package.module, package.type || '');
+    function getRequirePath() {
+      var requirePath = path.join.apply(null, arguments);
+      if (requirePath.charAt(0) !== '.') {
+        requirePath = './' + requirePath;
+      }
+      return requirePath;
+    }
+
+    function getRelativePath(from, to) {
+      if (from === to) {
+        return '';
+      } else {
+        return (from ? '../' : '') + (to ? to : '');
+      }
+    }
+
+    var outputPath = path.join(NPM_DESTINATION, package.module || '', package.type || '');
     var outputFilePath = path.join(outputPath, packageName + '.js');
     var outputBody = NPM_PACKAGE_TEMPLATE
       .replace(/%requires%/, getRequires())
