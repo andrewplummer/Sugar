@@ -413,7 +413,7 @@ function modularize() {
 
   var TAB = '  ';
   var NPM_DESTINATION = 'release/npm/sugar';
-  var WHITELISTED = ['arguments', 'undefined'];
+  var WHITELISTED = ['arguments', 'undefined', 'NaN'];
 
   var acorn = require('acorn');
 
@@ -617,12 +617,22 @@ function modularize() {
 
     function processTopLevelNode(node) {
       switch (true) {
+        case isUseStrict(node):           return;
         case isVariableDeclaration(node): return addVars(node);
         case isFunctionDeclaration(node): return addInternal(node);
         case isMethodBlock(node):         return processMethodBlock(node);
         case isSimilarMethodBlock(node):  return processSimilarMethodBlock(node);
-        case isBuildExpression(node):     return groupBuildExpression(node);
+        case isMemberAssignment(node):    return processTopLevelMemberAssignment(node);
+        case isAliasExpression(node):     return processAliasExpression(node);
+        case isBuildExpression(node):     return processBuildExpression(node);
+        default:
+          console.info(node);
+          throw new Error("Unknown Top Level Node: " + node.type);
       }
+    }
+
+    function isUseStrict(node) {
+      return node.type === 'ExpressionStatement' && node.expression.value === 'use strict';
     }
 
     function isVariableDeclaration(node) {
@@ -645,21 +655,38 @@ function modularize() {
              !!node.expression.callee.name.match(/^define(Static|Instance)Similar/);
     }
 
+    function isMemberAssignment(node) {
+      return node.type === 'ExpressionStatement' &&
+             node.expression.type === 'AssignmentExpression' &&
+             node.expression.left.type === 'MemberExpression';
+    }
+
     function isBuildExpression(node) {
       return node.type === 'ExpressionStatement' &&
              node.expression.type === 'CallExpression' &&
              !!node.expression.callee.name.match(/^build/);
     }
 
-    function getNodeBody(node, offset) {
+    function isAliasExpression(node) {
+      return node.type === 'ExpressionStatement' &&
+             node.expression.type === 'CallExpression' &&
+             node.expression.callee.name === 'alias';
+    }
+
+    function getNodeBody(node) {
       // Subtract the column to offset the first line's whitespace as well.
-      return source.slice(node.start - (offset ? node.loc.start.column : 0), node.end);
+      return source.slice(node.start - node.loc.start.column, node.end);
+    }
+
+    function getInnerNodeBody(node) {
+      // Only get the exact node body, no leading whitespace.
+      return source.slice(node.start, node.end);
     }
 
     function addTopLevel(name, node, type, exports) {
       var body;
       if (type === 'vars') {
-        body = getNodeBody(node).replace(/\s+=\s+/, ' = ');
+        body = getInnerNodeBody(node).replace(/\s+=\s+/, ' = ');
         var match = body.match(/^[\w.]+ = ([\w.]+)$/);
         if (match) {
           // If the var is just a simple property assignment,
@@ -667,10 +694,10 @@ function modularize() {
           exports = match[1];
           body = null;
         } else {
-          body = 'var ' + getNodeBody(node) + ';';
+          body = 'var ' + getInnerNodeBody(node) + ';';
         }
       } else {
-        body = getNodeBody(node, true);
+        body = getNodeBody(node);
       }
       if (exports === true) {
         exports = name;
@@ -702,7 +729,7 @@ function modularize() {
 
     function addSugarDefinedMethod(name, node, define) {
       var namespace = getNamespaceForLine(node.loc.start.line);
-      var isInstance = /instance/.test(define);
+      var isInstance = /^defineInstance/.test(define);
       var fullMethodName = getFullMethodName(namespace, name, isInstance);
       define = ['Sugar', namespace, define].join('.');
       var body = [define + '({', '', getNodeBody(node), '', '});'].join('\n');
@@ -758,7 +785,21 @@ function modularize() {
       });
     }
 
-    function groupBuildExpression(node) {
+    function processTopLevelMemberAssignment(node) {
+      var propNode = node.expression.left, name;
+      while (propNode.type === 'MemberExpression') {
+        propNode = propNode.object;
+      }
+      name = propNode.name;
+      var package = topLevel[name];
+      var deps = getDependencies(name, node.expression.right).filter(function(d) {
+        return d !== name;
+      });
+      package.dependencies = package.dependencies.concat(deps);
+      package.body += '\n' + getNodeBody(node);
+    }
+
+    function processBuildExpression(node) {
       var body;
       var fnName = node.expression.callee.name;
       var fnPackage = topLevel[fnName];
@@ -791,6 +832,27 @@ function modularize() {
       // The build function is neither depended on nor should
       // be output, so delete from the hash.
       delete topLevel[fnName];
+    }
+
+    function processAliasExpression(node) {
+      var namespace = getNamespaceForLine(node.loc.start.line);
+
+      var name = node.expression.arguments[1].value;
+      var sourceName = node.expression.arguments[2].value;
+
+      // The only aliases that sugar defines internally are instance for now.
+      var fullName = getFullMethodName(namespace, name, true);
+      var sourceFullName = getFullMethodName(namespace, sourceName, true);
+
+      sugarMethods[fullName] = {
+        name: name,
+        module: module,
+        body: getNodeBody(node),
+        requires: [sourceFullName],
+        path: namespace.toLowerCase(),
+        dependencies: getDependencies(name, node),
+        exports: ['Sugar', namespace, name].join('.'),
+      }
     }
 
     function writeModulePackage() {
@@ -902,20 +964,20 @@ function modularize() {
       if (dependencyName === 'Sugar') {
         return getSugarCorePath();
       }
-      // TODO: temporary until we map core vars into common
-      if (!hasOwn.call(topLevel, dependencyName)) {
-        console.info(package, dependencyName, topLevel[dependencyName]);
+      // Aliases may have dependencies on other sugar methods.
+      var dependency = topLevel[dependencyName] || sugarMethods[dependencyName];
+      if (!dependency) {
+        console.info(package, dependencyName, dependency);
         throw new Error('Missing dependency: ' + dependencyName);
       }
-      return getPathForRequire(getRelativePath(dependencyName));
+      return getPathForRequire(getRelativePath(dependency));
     }
 
-    function getRelativePath(dependencyName) {
+    function getRelativePath(dependency) {
       if (!package.path) {
         console.info(package);
       }
-      var dep = topLevel[dependencyName];
-      return path.join(path.relative(package.path, topLevel[dependencyName].path), dep.name);
+      return path.join(path.relative(package.path, dependency.path), dependency.name);
     }
 
     var outputPath = path.join(NPM_DESTINATION, package.path || '');
