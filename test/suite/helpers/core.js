@@ -1,10 +1,10 @@
-(function() {
+(function(context) {
 
   // The global context
-  var globalContext = typeof global !== 'undefined' && global.Object ? global : this;
+  var globalContext = typeof global !== 'undefined' && global.Object ? global : context;
   var nativeState;
 
-  var NATIVES = ['Boolean','Number','String','Array','Date','RegExp','Function', 'Object'];
+  var NATIVES = ['Number','String','Array','Date','RegExp','Function', 'Object'];
 
   function restoreNative(methodName, target, storedMethod) {
     if (target[methodName] !== storedMethod) {
@@ -133,4 +133,4 @@
     }
   }
 
-})();
+})(this);
