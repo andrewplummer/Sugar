@@ -419,11 +419,10 @@ function modularize() {
 
   var topLevel = {};
   var sugarMethods = {};
-  var hasOwn = Object.prototype.hasOwnProperty;
 
   function iter(obj, fn) {
     for (var key in obj) {
-      if(!hasOwn.call(obj, key)) continue;
+      if(!obj.hasOwnProperty(key)) continue;
       fn(key, obj[key]);
     };
   }
@@ -646,13 +645,13 @@ function modularize() {
     function isMethodBlock(node) {
       return node.type === 'ExpressionStatement' &&
              node.expression.type === 'CallExpression' &&
-             !!node.expression.callee.name.match(/^define(Static|Instance)$/);
+             !!node.expression.callee.name.match(/^define(Static|Instance)(WithArguments)?$/);
     }
 
     function isSimilarMethodBlock(node) {
       return node.type === 'ExpressionStatement' &&
              node.expression.type === 'CallExpression' &&
-             !!node.expression.callee.name.match(/^define(Static|Instance)Similar/);
+             !!node.expression.callee.name.match(/^define(Static|Instance)Similar$/);
     }
 
     function isMemberAssignment(node) {
@@ -864,7 +863,7 @@ function modularize() {
         }
       });
       writePackage(module, {
-        body: body.join('\n'),
+        body: body.sort().join('\n'),
         exports: 'core',
       });
     }
@@ -915,13 +914,14 @@ function modularize() {
       var blocks = [], deps = package.dependencies, requires = package.requires;
 
       if (deps && deps.length) {
+        sortByLength(deps);
         var namedRequiresBlock = deps.map(function(dep) {
           return dep + " = require('" + getDependencyPath(dep) + "')";
         });
         blocks.push('var ' + namedRequiresBlock.join(',\n' + TAB + TAB) + ';\n');
       }
       if (requires && requires.length) {
-        var unnamedRequiresBlock = requires.map(function(dep) {
+        var unnamedRequiresBlock = requires.sort().map(function(dep) {
           return "require('" + getDependencyPath(dep) + "');";
         });
         blocks.push(unnamedRequiresBlock.join('\n'));
@@ -948,6 +948,12 @@ function modularize() {
         compiled = ['{', mapped, '}'].join(',\n' + TAB);
       }
       return '\nmodule.exports = ' + compiled + ';';
+    }
+
+    function sortByLength(arr) {
+      arr.sort(function(a, b) {
+        return a.length - b.length;
+      });
     }
 
     function getBody() {
@@ -991,6 +997,7 @@ function modularize() {
   parseModule('regexp');
   parseModule('number');
   parseModule('range');
+  parseModule('function');
 
   iter(topLevel, writePackage);
   iter(sugarMethods, writeMethod);
