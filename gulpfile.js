@@ -662,6 +662,7 @@ function modularize() {
     function isMethodBlock(node) {
       return node.type === 'ExpressionStatement' &&
              node.expression.type === 'CallExpression' &&
+             node.expression.callee.name &&
              !!node.expression.callee.name.match(/^define(Static|Instance)(WithArguments)?$/);
     }
 
@@ -846,6 +847,10 @@ function modularize() {
         }
         return true;
       });
+
+      // TODO: something here!! if there is only 1 single exported package
+      // (declaredNames), then substitute that package for this one instead
+      // of aliasing...
 
       // The build function may also define methods within it, so we need
       // to step in, and create packages for those definitions if they exist.
@@ -1114,7 +1119,7 @@ function modularize() {
   parseModule('range');
   parseModule('function');
   parseModule('string');
-  //parseModule('inflections');
+  parseModule('inflections');
 
   iter(topLevel, writePackage);
   iter(sugarMethods, writeMethod);
