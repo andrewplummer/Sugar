@@ -413,7 +413,7 @@ function modularize() {
 
   var TAB = '  ';
   var NPM_DESTINATION = 'release/npm/sugar';
-  var WHITELISTED = ['arguments', 'undefined', 'NaN'];
+  var WHITELISTED = ['arguments', 'undefined', 'NaN', 'btoa', 'atob'];
 
   var acorn = require('acorn');
 
@@ -425,6 +425,10 @@ function modularize() {
       if(!obj.hasOwnProperty(key)) continue;
       fn(key, obj[key]);
     };
+  }
+
+  function downcase(str) {
+    return str.slice(0, 1).toLowerCase() + str.slice(1);
   }
 
   function getDependencies(name, n) {
@@ -483,6 +487,10 @@ function modularize() {
           pushLocals(node.params);
           walk(node.body.body);
           return;
+        case 'CatchClause':
+          pushLocal(node.param);
+          walk(node.body);
+          return;
         case 'MemberExpression':
           walk(node.object);
           // If the MemberExpression is computed syntax (a[b]) then
@@ -505,6 +513,11 @@ function modularize() {
         case 'ArrayExpression':
           walk(node.elements);
           return;
+        case 'TryStatement':
+          walk(node.block);
+          walk(node.handler);
+          walk(node.finalizer);
+          return;
         case 'BlockStatement':
           walk(node.body);
           return;
@@ -522,6 +535,10 @@ function modularize() {
         case 'WhileStatement':
           walk(node.test);
           walk(node.body);
+          return;
+        case 'DoWhileStatement':
+          walk(node.body);
+          walk(node.test);
           return;
         case 'VariableDeclaration':
           walk(node.declarations);
@@ -683,7 +700,7 @@ function modularize() {
     }
 
     function addTopLevel(name, node, type, exports) {
-      var body;
+      var core = false, body;
       if (type === 'vars') {
         body = getInnerNodeBody(node).replace(/\s+=\s+/, ' = ');
         var match = body.match(/^[\w.]+ = ([\w.]+)$/);
@@ -701,13 +718,21 @@ function modularize() {
       if (exports === true) {
         exports = name;
       }
+      var deps = getDependencies(name, node);
+      var sugarIndex = deps.indexOf('Sugar');
+      if (sugarIndex !== -1) {
+        deps.splice(sugarIndex, 1);
+        core = true;
+      }
       var package = {
+        node: node,
         name: name,
+        core: core,
         path: path.join(module, type),
         body: body,
         module: module,
         exports: exports,
-        dependencies: getDependencies(name, node),
+        dependencies: deps,
       };
       // "Top level" are all "globals", so no collisions
       // should occur by putting them in the same namespace.
@@ -732,14 +757,14 @@ function modularize() {
       var fullMethodName = getFullMethodName(namespace, name, isInstance);
       define = ['Sugar', namespace, define].join('.');
       var body = [define + '({', '', getNodeBody(node), '', '});'].join('\n');
-      var deps = ['Sugar'].concat(getDependencies(name, node));
       sugarMethods[fullMethodName] = {
+        core: true,
         name: name,
         body: body,
         module: module,
-        dependencies: deps,
         path: namespace.toLowerCase(),
-        exports: ['Sugar', namespace, name].join('.')
+        exports: ['Sugar', namespace, name].join('.'),
+        dependencies: getDependencies(name, node),
       };
     }
 
@@ -774,9 +799,9 @@ function modularize() {
       methodNames.forEach(function(methodName) {
         var fullMethodName = getFullMethodName(namespace, methodName, isInstance);
         sugarMethods[fullMethodName] = {
-          module: module,
+          core: true,
           name: methodName,
-          dependencies: ['Sugar'],
+          module: module,
           requires: [similarPackageName],
           path: namespace.toLowerCase(),
           exports: ['Sugar', namespace, methodName].join('.')
@@ -799,37 +824,71 @@ function modularize() {
     }
 
     function processBuildExpression(node) {
-      var body;
+
       var fnName = node.expression.callee.name;
       var fnPackage = topLevel[fnName];
 
-      var groupName = fnName.replace(/^build/, '');
-      var groupReg = RegExp('^' + groupName, 'i');
+      var groupName = downcase(fnName.replace(/^build/, ''));
 
-      var names = [];
-      var blocks = [];
-      var deps = fnPackage.dependencies;
+      var declareNames = [];
+      var declareBlock = [];
 
-      iter(topLevel, function(key, tl) {
-        if (groupReg.test(key)) {
-          var i = deps.indexOf(key);
-          deps.splice(i, 1);
-          tl.alias = groupName;
-          names.push(key);
-          blocks.push(tl.body);
+      // The build function may be building up variables, so look for
+      // unassigned variable definitions depended on by this function,
+      // pull them into this package, and alias them.
+      var deps = fnPackage.dependencies.filter(function(name) {
+        var package = topLevel[name];
+        if (package.body && package.body.match(/^var \w+;$/)) {
+          package.alias = groupName;
+          declareBlock.push(package.body);
+          declareNames.push(name);
+          return false;
+        }
+        return true;
+      });
+
+      // The build function may also define methods within it, so we need
+      // to step in, and create packages for those definitions if they exist.
+      fnPackage.node.body.body.forEach(function(node) {
+        if (isMethodBlock(node)) {
+          var define = node.expression.callee.name;
+          var methods = node.expression.arguments[1].properties;
+          methods.forEach(function(node) {
+            var name = node.key.value;
+            var namespace = getNamespaceForLine(node.loc.start.line);
+            var isInstance = /^defineInstance/.test(define);
+            var fullMethodName = getFullMethodName(namespace, name, isInstance);
+            sugarMethods[fullMethodName] = {
+              core: true,
+              name: name,
+              module: module,
+              requires: [groupName],
+              path: namespace.toLowerCase(),
+              exports: ['Sugar', namespace, name].join('.'),
+            }
+          });
         }
       });
-      body = blocks.concat(fnPackage.body).join('\n')
+
+      // This grouped package consists of any declared variables, the build
+      // function definition, and the build function call all rolled together.
+      var body = [declareBlock.join('\n'), fnPackage.body, getNodeBody(node)].join('\n\n');
+
+      // This function may be building multiple variables. If this is the case
+      // then they need to be exported separately. Otherwise, it exports nothing.
+      var exports = declareNames.length ? declareNames : null;
+
       topLevel[groupName] = {
         name: groupName,
         body: body,
-        exports: names,
         module: module,
+        exports: exports,
         dependencies: deps,
         path: path.join(module, 'vars'),
       };
-      // The build function is neither depended on nor should
-      // be output, so delete from the hash.
+
+      // Variables and methods built up by the build function are depended on
+      // but the build function itself is not, so it's safe to delete.
       delete topLevel[fnName];
     }
 
@@ -844,13 +903,14 @@ function modularize() {
       var sourceFullName = getFullMethodName(namespace, sourceName, true);
 
       sugarMethods[fullName] = {
+        core: true,
         name: name,
         module: module,
         body: getNodeBody(node),
         requires: [sourceFullName],
         path: namespace.toLowerCase(),
-        dependencies: getDependencies(name, node),
         exports: ['Sugar', namespace, name].join('.'),
+        dependencies: getDependencies(name, node),
       }
     }
 
@@ -908,25 +968,60 @@ function modularize() {
       return;
     }
 
-    function getRequires() {
-      // "dependencies" are named and need to be mapped to variables.
-      // "requires" must be required but do not need to be mapped.
-      var blocks = [], deps = package.dependencies, requires = package.requires;
+    // "dependencies" are named and need to be mapped to variables.
+    // "requires" must be required but do not need to be mapped.
+    var deps = prepareDeps(package.dependencies), requires = package.requires;
 
-      if (deps && deps.length) {
+    function prepareDeps(deps) {
+      if (deps) {
         sortByLength(deps);
+        return groupAliases(deps);
+      }
+    }
+
+    function getRequires() {
+      var blocks = [];
+
+      if (package.core) {
+        blocks.push('var Sugar = ' + getRequire(getSugarCorePath()) + ';\n');
+      }
+      if (deps && deps.length) {
         var namedRequiresBlock = deps.map(function(dep) {
-          return dep + " = require('" + getDependencyPath(dep) + "')";
+          return dep + ' = ' + getRequire(getDependencyPath(dep));
         });
         blocks.push('var ' + namedRequiresBlock.join(',\n' + TAB + TAB) + ';\n');
       }
       if (requires && requires.length) {
         var unnamedRequiresBlock = requires.sort().map(function(dep) {
-          return "require('" + getDependencyPath(dep) + "');";
+          return getRequire(getDependencyPath(dep)) + ';';
         });
         blocks.push(unnamedRequiresBlock.join('\n'));
       }
       return blocks.join('\n');
+    }
+
+    function getRequire(p) {
+      return "require('" + p + "')";
+    }
+
+    function getAssigns() {
+      var assigns = [];
+      if (deps && deps.length) {
+        deps.forEach(function(d) {
+          var package = topLevel[d];
+          var exports = package && package.exports;
+          if (exports && typeof exports === 'object' && exports.length > 1) {
+            exports.forEach(function(token) {
+              assigns.push([token, ' = ', package.name, '.', token].join(''));
+            });
+          }
+        });
+        if (assigns.length) {
+          sortByLength(assigns);
+          return 'var ' + assigns.join(',\n' + TAB + TAB) + ';\n';
+        }
+      }
+      return '';
     }
 
     function getExports() {
@@ -938,16 +1033,39 @@ function modularize() {
       }
 
       if (exports === 'core') {
-        compiled = "require('" + getSugarCorePath() + "')";
-      } else if (typeof exports === 'string') {
-        compiled = exports;
+        // Replace token "core" with either the sugar-core package
+        // or its local path.
+        exports = getRequire(getSugarCorePath());
+      }
+
+      if (typeof exports === 'string') {
+        exports = [exports];
+      }
+      if (exports.length === 1) {
+        compiled = exports[0];
       } else {
         mapped = exports.map(function(e) {
-          return "'"+ e +"':" + e;
+          return TAB + "'"+ e +"': " + e;
         });
-        compiled = ['{', mapped, '}'].join(',\n' + TAB);
+        sortByLength(mapped);
+        compiled = ['{', mapped.join(',\n'), '}'].join('\n');
       }
       return '\nmodule.exports = ' + compiled + ';';
+    }
+
+    function groupAliases(deps) {
+      var aliases = [];
+      deps = deps.filter(function(d) {
+        var package = topLevel[d];
+        if (package && package.alias) {
+          if (aliases.indexOf(package.alias) === -1) {
+            aliases.push(package.alias);
+          }
+          return false;
+        }
+        return true;
+      });
+      return deps.concat(aliases);
     }
 
     function sortByLength(arr) {
@@ -967,9 +1085,6 @@ function modularize() {
     }
 
     function getDependencyPath(dependencyName) {
-      if (dependencyName === 'Sugar') {
-        return getSugarCorePath();
-      }
       // Aliases may have dependencies on other sugar methods.
       var dependency = topLevel[dependencyName] || sugarMethods[dependencyName];
       if (!dependency) {
@@ -988,7 +1103,7 @@ function modularize() {
 
     var outputPath = path.join(NPM_DESTINATION, package.path || '');
     var outputFilePath = path.join(outputPath, packageName + '.js');
-    var outputBody = [getRequires(), getBody(), getExports()].join('\n');
+    var outputBody = [getRequires(), getAssigns(), getBody(), getExports()].join('\n');
     mkdirp.sync(outputPath);
     fs.writeFileSync(outputFilePath, outputBody, 'utf-8');
   }
@@ -998,6 +1113,8 @@ function modularize() {
   parseModule('number');
   parseModule('range');
   parseModule('function');
+  parseModule('string');
+  //parseModule('inflections');
 
   iter(topLevel, writePackage);
   iter(sugarMethods, writeMethod);

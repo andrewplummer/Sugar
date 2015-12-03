@@ -1,6 +1,8 @@
 package('Number', function () {
   "use strict";
 
+  var Sugar = testGetGlobal();
+
   method('random', function() {
     var rand;
 

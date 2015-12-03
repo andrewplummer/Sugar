@@ -10,6 +10,7 @@ require('../suite/helpers/core');
 require('../suite/helpers/date');
 require('../suite/helpers/object');
 
+var Sugar;
 var exitOnFail = true;
 
 function notice(message, logFn) {
@@ -39,6 +40,7 @@ module.exports = {
 
   loadPackage: function(path) {
     Sugar = reload(path);
+    testSetGlobal(Sugar);
   },
 
   run: function(mod, extended) {
