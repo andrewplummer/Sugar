@@ -1,6 +1,9 @@
 package('String | Inflections', function () {
+
   // Skipping strict mode here as testing
   // malformed utf-8 is part of these tests.
+
+  var Sugar = testGetGlobal();
 
   /* Note that the following methods are not implemented now and may not be:
    *

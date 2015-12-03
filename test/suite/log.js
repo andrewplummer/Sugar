@@ -53,7 +53,7 @@ logResults = function(runtime, results, testName, exitOnFail) {
     logRed(testName);
     logRed(totalAssertions + ' assertions, ' + totalFailures + ' failures, ' + time + 's');
     if (exitOnFail !== false) {
-      if (typeof quit !== undefined) {
+      if (typeof quit !== 'undefined') {
         quit();
       } else {
         process.exit(1);
