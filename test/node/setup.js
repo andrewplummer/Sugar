@@ -10,28 +10,7 @@ require('../suite/helpers/core');
 require('../suite/helpers/date');
 require('../suite/helpers/object');
 
-var npmPath;
 var exitOnFail = true;
-
-function getPackageName(name) {
-  return name === 'sugar' ? 'sugar' : 'sugar-' + name;
-}
-/*
-
-function getNpmPath(name) {
-  var packageName = getPackageName(name);
-  if (packageName === 'sugar') {
-    // In the root directory
-    return '../../sugar';
-  }
-  return '../../release/npm/' + packageName + '/' + packageName;
-}
-*/
-
-function getTestName(type, name) {
-  var packageName = getPackageName(name);
-  return type === 'extended' ? packageName + ' (extended)' : packageName;
-}
 
 function notice(message, logFn) {
   var cols = 36;
@@ -45,26 +24,30 @@ function notice(message, logFn) {
   console.info();
 }
 
+function getTestNameFromModule(mod) {
+  var match = mod.filename.match(/(\w+)\/([\w-]+)\.js$/);
+  var type = match[1];
+  var name = match[2];
+  return type === 'extended' ? name + ' (extended)' : name;
+}
+
 module.exports = {
 
   loadTest: function(name) {
     reload('../tests/' + name);
   },
 
-  setSource: function(path) {
-    npmPath = path;
+  loadPackage: function(path) {
+    Sugar = reload(path);
   },
 
   run: function(mod, extended) {
-    //var match = mod.filename.match(/(\w+)\/([\w-]+)\.js$/);
-    //var type = match[1];
-    //var name = match[2];
-    Sugar = reload(npmPath);
+    var testName = getTestNameFromModule(mod);
     if (extended) {
       Sugar();
     }
     function finished(runtime, results) {
-      logResults(runtime, results, getTestName(type, name), exitOnFail);
+      logResults(runtime, results, testName, exitOnFail);
     }
     runTests(finished, !!extended, 'node');
   },
