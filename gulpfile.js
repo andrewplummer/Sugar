@@ -825,35 +825,91 @@ function modularize() {
     }
 
     function processBuildExpression(node) {
+      var mainPackage;
 
-      var fnName = node.expression.callee.name;
-      var fnPackage = topLevel[fnName];
+      // Build functions can be used in a few different ways. They can build
+      // one or more variables for later use and can also define methods. The
+      // general strategy here is to first check for method definitions and
+      // add them, then check the number of undefined variables that require
+      // the function (ie. dependencies of the function that have a simple
+      // declare block but no assignment). If there is only one, then simply
+      // add the build function body, build function dependencies, and build
+      // function call itself to the variable package. If there is more than
+      // one variable being built, then create a new package based on the build
+      // function name, throw everything into it together, and alias all the
+      // variable packages to it.
 
-      var groupName = downcase(fnName.replace(/^build/, ''));
+      var fnPackage  = topLevel[node.expression.callee.name];
+      var fnCallBody = getNodeBody(node);
 
-      var declareNames = [];
-      var declareBlock = [];
+      var unassignedVars = [];
 
-      // The build function may be building up variables, so look for
-      // unassigned variable definitions depended on by this function,
-      // pull them into this package, and alias them.
+      // Do an initial runthrough of the dependencies to
+      // extract those that are unassigned into an array.
       var deps = fnPackage.dependencies.filter(function(name) {
         var package = topLevel[name];
-        if (package.body && package.body.match(/^var \w+;$/)) {
-          package.alias = groupName;
-          declareBlock.push(package.body);
-          declareNames.push(name);
+        if (package.node.type === 'VariableDeclarator' && !package.node.init) {
+          unassignedVars.push(package);
           return false;
         }
         return true;
       });
 
-      // TODO: something here!! if there is only 1 single exported package
-      // (declaredNames), then substitute that package for this one instead
-      // of aliasing...
+      if (unassignedVars.length === 0) {
 
-      // The build function may also define methods within it, so we need
-      // to step in, and create packages for those definitions if they exist.
+        // If there are no unassigned variables at all, then the build
+        // function is simply defining methods, so add the initializing
+        // call and set the final package to allow it to do this.
+
+        mainPackage = fnPackage;
+        fnPackage.body += fnCallBody;
+
+      } else if (unassignedVars.length === 1) {
+
+        // If there is only one unassigned variable then the build function
+        // and its initializing call can simply be added into the variable
+        // package. When a function requires that variable it will then be
+        // built.
+
+        var varPackage = unassignedVars[0];
+        varPackage.body += fnPackage.body + fnCallBody;
+        varPackage.dependencies = varPackage.dependencies.concat(deps);
+
+        mainPackage = varPackage;
+
+      } else if (unassignedVars.length > 1) {
+
+        // If there are more than one unassigned variables then we need to
+        // bundle them together and export multiple. Use the build function
+        // name to create the grouped package and alias the variable packages
+        // to point to it.
+
+        var groupName = downcase(fnPackage.name.replace(/^build/, ''));
+        var declares = [], exports = [];
+
+        unassignedVars.forEach(function(v) {
+          v.alias = groupName;
+          exports.push(v.name);
+          declares.push(v.body);
+        });
+
+        // The grouped package consists of any declared variables, the build
+        // function definition, and the initializing call all rolled together.
+        var body = [declares.join('\n'), fnPackage.body, fnCallBody].join('\n\n');
+
+        mainPackage = topLevel[groupName] = {
+          name: groupName,
+          body: body,
+          module: module,
+          exports: exports,
+          dependencies: deps,
+          path: path.join(module, 'vars'),
+        };
+
+      }
+
+      // The build function may define methods, so step
+      // into it and create method packages if necessary.
       fnPackage.node.body.body.forEach(function(node) {
         if (isMethodBlock(node)) {
           var define = node.expression.callee.name;
@@ -867,34 +923,13 @@ function modularize() {
               core: true,
               name: name,
               module: module,
-              requires: [groupName],
+              requires: [mainPackage.name],
               path: namespace.toLowerCase(),
               exports: ['Sugar', namespace, name].join('.'),
             }
           });
         }
       });
-
-      // This grouped package consists of any declared variables, the build
-      // function definition, and the build function call all rolled together.
-      var body = [declareBlock.join('\n'), fnPackage.body, getNodeBody(node)].join('\n\n');
-
-      // This function may be building multiple variables. If this is the case
-      // then they need to be exported separately. Otherwise, it exports nothing.
-      var exports = declareNames.length ? declareNames : null;
-
-      topLevel[groupName] = {
-        name: groupName,
-        body: body,
-        module: module,
-        exports: exports,
-        dependencies: deps,
-        path: path.join(module, 'vars'),
-      };
-
-      // Variables and methods built up by the build function are depended on
-      // but the build function itself is not, so it's safe to delete.
-      delete topLevel[fnName];
     }
 
     function processAliasExpression(node) {
@@ -1120,6 +1155,7 @@ function modularize() {
   parseModule('function');
   parseModule('string');
   parseModule('inflections');
+  parseModule('language');
 
   iter(topLevel, writePackage);
   iter(sugarMethods, writeMethod);
