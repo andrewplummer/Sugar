@@ -641,7 +641,6 @@ function modularize() {
         case isVariableDeclaration(node): return addVars(node);
         case isFunctionDeclaration(node): return addInternal(node);
         case isMethodBlock(node):         return processMethodBlock(node);
-        case isSimilarMethodBlock(node):  return processSimilarMethodBlock(node);
         case isMemberAssignment(node):    return processTopLevelMemberAssignment(node);
         case isAliasExpression(node):     return processAliasExpression(node);
         case isBuildExpression(node):     return processBuildExpression(node);
@@ -673,6 +672,7 @@ function modularize() {
     function isSimilarMethodBlock(node) {
       return node.type === 'ExpressionStatement' &&
              node.expression.type === 'CallExpression' &&
+             node.expression.callee.name &&
              !!node.expression.callee.name.match(/^define(Static|Instance)Similar$/);
     }
 
@@ -785,13 +785,32 @@ function modularize() {
       };
     }
 
-    function getGroupName(loc) {
-      var prevLineComment = commentsByEndLine[loc.start.line - 1];
-      if (prevLineComment) {
-        return prevLineComment.text.replace(/^\s+/, '').replace(/\s/g, '_').toLowerCase();
-      } else {
-        return getFallbackGroupName();
+    function getLastCommentForNode(node) {
+      var line = node.loc.start.line, comment;
+      while (!comment && line > 0) {
+        comment = commentsByEndLine[--line];
       }
+      return comment;
+    }
+
+    function getAllMethodNamesInPreviousComment(node) {
+      var names = [];
+      var comment = getLastCommentForNode(node);
+      var blocks = comment.text.split('***');
+      blocks.forEach(function(block) {
+        var match = block.match(/@set([\s\S]+)(?=[@\/])/);
+        if (match) {
+          var set = match[1];
+          set = set.replace(/^[\s*]*|[\s*]*$/g, '').replace(/[\s*]+/g, ',');
+          names = names.concat(set.split(','));
+        } else {
+          match = block.match(/@method (\w+)/);
+          if (match) {
+            names.push(match[1]);
+          }
+        }
+      });
+      return names;
     }
 
     function getFallbackGroupName() {
@@ -805,18 +824,6 @@ function modularize() {
         addSugarMethod(node.key.value, node, {
           body: true,
           define: defineName
-        });
-      });
-    }
-
-    function processSimilarMethodBlock(node) {
-      var methodNames = node.expression.arguments[1].value.split(',');
-      // TODO: give it a proper name via comments
-      var similarPackageName = getFallbackGroupName();
-      addTopLevel(similarPackageName, node, 'internal');
-      methodNames.forEach(function(methodName) {
-        addSugarMethod(methodName, node, {
-          requires: [similarPackageName]
         });
       });
     }
@@ -926,6 +933,13 @@ function modularize() {
           var methods = node.expression.arguments[1].properties;
           methods.forEach(function(node) {
             addSugarMethod(node.key.value, node, {
+              requires: [mainPackage.name]
+            });
+          });
+        } else if (isSimilarMethodBlock(node)) {
+          var methodNames = getAllMethodNamesInPreviousComment(node);
+          methodNames.forEach(function(name) {
+            addSugarMethod(name, node, {
               requires: [mainPackage.name]
             });
           });
@@ -1141,6 +1155,13 @@ function modularize() {
   parseModule('string');
   parseModule('inflections');
   parseModule('language');
+
+  //parseModule('array');  3
+  //parseModule('object'); 2
+  //parseModule('date');   1
+
+  //parseModule('es5'); + 1
+  //parseModule('es6'); + 2
 
   iter(topLevel, writePackage);
   iter(sugarMethods, writeMethod);
