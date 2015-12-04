@@ -595,13 +595,16 @@ function modularize() {
     var commentsByEndLine = {}, counter = 1, namespaceRanges = [], currentNamespaceRange, source, filePath;
 
     function onComment(block, text, start, stop, startLoc, endLoc) {
-      var match;
+      var matches;
       commentsByEndLine[endLoc.line] = {
         text: text,
         block: block
       }
-      if (match = text.match(/\@(package|namespace) (\w+)/)) {
-        namespaceBoundary(match[2], endLoc.line);
+      // Both @package and @namespace may be defined in the same comment block.
+      matches = text.match(/@(namespace|package) \w+/g);
+      if (matches) {
+        var namespace = matches[matches.length - 1].match(/@(namespace|package) (\w+)/)[2];
+        namespaceBoundary(namespace, endLoc.line);
       }
     }
 
@@ -617,8 +620,8 @@ function modularize() {
       }
     }
 
-    function getNamespaceForLine(line) {
-      var namespace;
+    function getNamespaceForNode(node) {
+      var line = node.loc.start.line, namespace;
       namespaceRanges.forEach(function(r) {
         if (r.line < line) {
           namespace = r.name;
@@ -627,8 +630,9 @@ function modularize() {
       return namespace;
     }
 
-    function getFullMethodName(namespace, methodName, isInstance) {
-      return namespace + (isInstance ? '#' : '.') + methodName;
+    function getFullMethodKey(node, name) {
+      var namespace = getNamespaceForNode(node);
+      return namespace + '|' + name;
     }
 
     function processTopLevelNode(node) {
@@ -752,20 +756,32 @@ function modularize() {
       addTopLevel(node.id.name, node, 'internal', true);
     }
 
-    function addSugarDefinedMethod(name, node, define) {
-      var namespace = getNamespaceForLine(node.loc.start.line);
-      var isInstance = /^defineInstance/.test(define);
-      var fullMethodName = getFullMethodName(namespace, name, isInstance);
-      define = ['Sugar', namespace, define].join('.');
-      var body = [define + '({', '', getNodeBody(node), '', '});'].join('\n');
-      sugarMethods[fullMethodName] = {
+    function addSugarMethod(name, node, opts) {
+      var namespace = getNamespaceForNode(node), body, deps;
+
+      if (opts.body) {
+        // If the method has a body then get its dependencies. A method may be
+        // empty if it is being built via a build expresssion or a "similar"
+        // block and only needs to require that package to be defined.
+        body = getNodeBody(node);
+        deps = getDependencies(name, node);
+
+        if (opts.define) {
+          // defineInstance/defineStatic, etc.
+          var init = ['Sugar', namespace, opts.define].join('.');
+          body = [ init + '({', '', body, '', '});'].join('\n');
+        }
+      }
+
+      sugarMethods[getFullMethodKey(node, name)] = {
         core: true,
         name: name,
         body: body,
         module: module,
+        dependencies: deps,
+        requires: opts.requires,
         path: namespace.toLowerCase(),
         exports: ['Sugar', namespace, name].join('.'),
-        dependencies: getDependencies(name, node),
       };
     }
 
@@ -783,30 +799,25 @@ function modularize() {
     }
 
     function processMethodBlock(node) {
-      var define = node.expression.callee.name;
+      var defineName = node.expression.callee.name;
       var methods = node.expression.arguments[1].properties;
       methods.forEach(function(node) {
-        addSugarDefinedMethod(node.key.value, node, define);
+        addSugarMethod(node.key.value, node, {
+          body: true,
+          define: defineName
+        });
       });
     }
 
     function processSimilarMethodBlock(node) {
-      var namespace = getNamespaceForLine(node.loc.start.line);
       var methodNames = node.expression.arguments[1].value.split(',');
-      var isInstance = /instance/.test(node.expression.callee.name);
       // TODO: give it a proper name via comments
       var similarPackageName = getFallbackGroupName();
       addTopLevel(similarPackageName, node, 'internal');
       methodNames.forEach(function(methodName) {
-        var fullMethodName = getFullMethodName(namespace, methodName, isInstance);
-        sugarMethods[fullMethodName] = {
-          core: true,
-          name: methodName,
-          module: module,
-          requires: [similarPackageName],
-          path: namespace.toLowerCase(),
-          exports: ['Sugar', namespace, methodName].join('.')
-        }
+        addSugarMethod(methodName, node, {
+          requires: [similarPackageName]
+        });
       });
     }
 
@@ -825,7 +836,7 @@ function modularize() {
     }
 
     function processBuildExpression(node) {
-      var mainPackage;
+      var mainPackage, fnPackage, fnCall, unassignedVars, deps;
 
       // Build functions can be used in a few different ways. They can build
       // one or more variables for later use and can also define methods. The
@@ -839,14 +850,14 @@ function modularize() {
       // function name, throw everything into it together, and alias all the
       // variable packages to it.
 
-      var fnPackage  = topLevel[node.expression.callee.name];
-      var fnCallBody = getNodeBody(node);
+      fnCall = getNodeBody(node);
+      fnPackage  = topLevel[node.expression.callee.name];
 
-      var unassignedVars = [];
+      unassignedVars = [];
 
       // Do an initial runthrough of the dependencies to
       // extract those that are unassigned into an array.
-      var deps = fnPackage.dependencies.filter(function(name) {
+      deps = fnPackage.dependencies.filter(function(name) {
         var package = topLevel[name];
         if (package.node.type === 'VariableDeclarator' && !package.node.init) {
           unassignedVars.push(package);
@@ -862,7 +873,7 @@ function modularize() {
         // call and set the final package to allow it to do this.
 
         mainPackage = fnPackage;
-        fnPackage.body += fnCallBody;
+        fnPackage.body = [fnPackage.body, fnCall].join('\n\n');
 
       } else if (unassignedVars.length === 1) {
 
@@ -872,7 +883,7 @@ function modularize() {
         // built.
 
         var varPackage = unassignedVars[0];
-        varPackage.body += fnPackage.body + fnCallBody;
+        varPackage.body = [varPackage.body, fnPackage.body, fnCall].join('\n\n');
         varPackage.dependencies = varPackage.dependencies.concat(deps);
 
         mainPackage = varPackage;
@@ -895,7 +906,7 @@ function modularize() {
 
         // The grouped package consists of any declared variables, the build
         // function definition, and the initializing call all rolled together.
-        var body = [declares.join('\n'), fnPackage.body, fnCallBody].join('\n\n');
+        var body = [declares.join('\n'), fnPackage.body, fnCall].join('\n\n');
 
         mainPackage = topLevel[groupName] = {
           name: groupName,
@@ -912,46 +923,23 @@ function modularize() {
       // into it and create method packages if necessary.
       fnPackage.node.body.body.forEach(function(node) {
         if (isMethodBlock(node)) {
-          var define = node.expression.callee.name;
           var methods = node.expression.arguments[1].properties;
           methods.forEach(function(node) {
-            var name = node.key.value;
-            var namespace = getNamespaceForLine(node.loc.start.line);
-            var isInstance = /^defineInstance/.test(define);
-            var fullMethodName = getFullMethodName(namespace, name, isInstance);
-            sugarMethods[fullMethodName] = {
-              core: true,
-              name: name,
-              module: module,
-              requires: [mainPackage.name],
-              path: namespace.toLowerCase(),
-              exports: ['Sugar', namespace, name].join('.'),
-            }
+            addSugarMethod(node.key.value, node, {
+              requires: [mainPackage.name]
+            });
           });
         }
       });
     }
 
     function processAliasExpression(node) {
-      var namespace = getNamespaceForLine(node.loc.start.line);
-
       var name = node.expression.arguments[1].value;
       var sourceName = node.expression.arguments[2].value;
-
-      // The only aliases that sugar defines internally are instance for now.
-      var fullName = getFullMethodName(namespace, name, true);
-      var sourceFullName = getFullMethodName(namespace, sourceName, true);
-
-      sugarMethods[fullName] = {
-        core: true,
-        name: name,
-        module: module,
-        body: getNodeBody(node),
-        requires: [sourceFullName],
-        path: namespace.toLowerCase(),
-        exports: ['Sugar', namespace, name].join('.'),
-        dependencies: getDependencies(name, node),
-      }
+      addSugarMethod(name, node, {
+        body: true,
+        requires: [getFullMethodKey(node, sourceName)],
+      });
     }
 
     function writeModulePackage() {
@@ -1135,9 +1123,6 @@ function modularize() {
     }
 
     function getRelativePath(dependency) {
-      if (!package.path) {
-        console.info(package);
-      }
       return path.join(path.relative(package.path, dependency.path), dependency.name);
     }
 
