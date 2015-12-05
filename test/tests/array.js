@@ -768,10 +768,10 @@ package('Array', function () {
     equal(count, 1, 'should immediately finish when it finds a match');
 
     count = 0;
-    Sugar.Array.find([1,2,3], function(n) {
+    run([1,2,3], 'find', [function(n) {
       count++;
       return n == 1;
-    });
+    }]);
     equal(count, 1, 'should also be mapped to global');
 
     raisesError(function() { run([1,2,3], 'find'); }, 'no argument raises a type error');
@@ -783,6 +783,7 @@ package('Array', function () {
       equal(Sugar.Array.findIndex, undefined, 'enhanced method should not exist if no native to call');
       return;
     }
+
     test(['a','b','c'], ['b'], 1, 'b in a,b,c');
     test(['a','b','c'], ['b', 0], 1, 'b in a,b,c from 0');
     test(['a','b','c'], ['a'], 0, 'a in a,b,c');
@@ -810,6 +811,7 @@ package('Array', function () {
   });
 
   method('findAll', function() {
+
     test(['a','b','c'], ['a'], ['a'], 'a');
     test(['a','a','c'], ['a'], ['a','a'], 'a,a');
     test(['a','b','c'], ['q'], [], 'q');
@@ -885,7 +887,7 @@ package('Array', function () {
 
     var undefinedContextObj = (function(){ return this; }).call(undefined);
     var fn = function() {
-      equal(this, undefinedContextObj, 'this argument should be undefined context');
+      equal(this, [1], 'this context should be the array');
     }
     run([1], 'findAll', [fn]);
 
@@ -1965,7 +1967,7 @@ package('Array', function () {
     equal(run(arr, 'sample', [4]).length, 4, '4');
     equal(run(arr, 'sample', [11]).length, 10, "can't sample more than the length of the array");
 
-    var arr2 = Sugar.Array.unique(run(arr, 'sample', [10]));
+    var arr2 = run(run(arr, 'sample', [10]), 'unique');
     equal(arr2.length, arr.length, "should not sample the same element twice");
 
     equal(run(arr, 'sample', [0]).length, 0, '0');
@@ -2073,13 +2075,13 @@ package('Array', function () {
       'anne'
     ];
 
-    test(Sugar.Array.shuffle(frenchNames), frenchNames, 'sorting french names');
+    test(run(frenchNames, 'shuffle'), frenchNames, 'sorting french names');
 
     var arr = [];
     for (var i = 0; i < frenchNames.length; i++) {
       arr.push(frenchNames[i].toUpperCase());
     }
-    test(Sugar.Array.shuffle(arr), arr, 'sorting french names in upper case');
+    test(run(arr, 'shuffle'), arr, 'sorting french names in upper case');
 
     // MSDN http://msdn.microsoft.com/en-us/library/cc194880.aspx
     arr = [
@@ -2135,7 +2137,7 @@ package('Array', function () {
       'Žal',
       'Žena'
     ];
-    test(Sugar.Array.shuffle(arr), arr, 'Default collation');
+    test(run(arr, 'shuffle'), arr, 'Default collation');
 
     arr = [
       'cweat',
@@ -2151,7 +2153,7 @@ package('Array', function () {
       'žweat',
       'žweet'
     ];
-    test(Sugar.Array.shuffle(arr), arr, 'Czech/Lithuanian order is respected');
+    test(run(arr, 'shuffle'), arr, 'Czech/Lithuanian order is respected');
 
     arr = [
       'cat',
@@ -2159,7 +2161,7 @@ package('Array', function () {
       'ðroll',
       'ebert'
     ];
-    test(Sugar.Array.shuffle(arr), arr, 'Icelandic ð order is respected');
+    test(run(arr, 'shuffle'), arr, 'Icelandic ð order is respected');
 
     arr = [
       'goth',
@@ -2169,7 +2171,7 @@ package('Array', function () {
       'şeparate',
       'tumble'
     ];
-    test(Sugar.Array.shuffle(arr), arr, 'Turkish order is respected');
+    test(run(arr, 'shuffle'), arr, 'Turkish order is respected');
 
     arr = [
       'ape',
@@ -2196,7 +2198,7 @@ package('Array', function () {
       'źebra',
       'żoo'
     ];
-    test(Sugar.Array.shuffle(arr), arr, 'Polish order is respected');
+    test(run(arr, 'shuffle'), arr, 'Polish order is respected');
 
     arr = [
       'cab',
@@ -2207,7 +2209,7 @@ package('Array', function () {
       'ølaf',
       'ålegra'
     ];
-    test(Sugar.Array.shuffle(arr), arr, 'Danish/Norwegian order is respected');
+    test(run(arr, 'shuffle'), arr, 'Danish/Norwegian order is respected');
 
     arr = [
       'llama',
@@ -2217,7 +2219,7 @@ package('Array', function () {
     // Compressions simply can't be handled without a complex collation system
     // as there is simply no way fundamentally to know what was intended as a
     // compression. For example "catch a llama" vs "catch Al Lama"
-    test(Sugar.Array.shuffle(arr), arr, 'Compressions are not handled');
+    test(run(arr, 'shuffle'), arr, 'Compressions are not handled');
 
     arr = [
       'àbel',
@@ -2273,7 +2275,7 @@ package('Array', function () {
       'üte',
       'utu'
     ];
-    test(Sugar.Array.shuffle(arr), arr, 'Standard Western-Latin equivalents are enforced');
+    test(run(arr, 'shuffle'), arr, 'Standard Western-Latin equivalents are enforced');
 
     // Swedish collation
     var swedishWords = [
