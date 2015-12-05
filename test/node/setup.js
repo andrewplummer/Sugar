@@ -29,7 +29,12 @@ function getTestNameFromModule(mod) {
   var match = mod.filename.match(/(\w+)\/([\w-]+)\.js$/);
   var type = match[1];
   var name = match[2];
-  return type === 'extended' ? name + ' (extended)' : name;
+  if (name === 'regexp') {
+    name = 'RegExp';
+  } else {
+    name = name.slice(0, 1).toUpperCase() + name.slice(1);
+  }
+  return type === 'extended' ? name + ' - Extended' : name;
 }
 
 module.exports = {
