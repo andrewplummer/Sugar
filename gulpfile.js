@@ -414,6 +414,12 @@ function modularize() {
   var TAB = '  ';
   var NPM_DESTINATION = 'release/npm/sugar';
   var WHITELISTED = ['arguments', 'undefined', 'NaN', 'btoa', 'atob'];
+  var BLOCK_DELIMITER = '\n\n';
+
+  var DECLARES_PREAMBLE = [
+    '// Exported function declarations are hoisted here',
+    '// to avoid problems with circular dependencies.'
+  ].join('\n');
 
   var acorn = require('acorn');
 
@@ -732,6 +738,7 @@ function modularize() {
       var package = {
         node: node,
         name: name,
+        type: type,
         core: core,
         path: path.join(module, type),
         body: body,
@@ -817,6 +824,11 @@ function modularize() {
       return 'group-' + counter++;
     }
 
+    function appendBlock(package, field, body) {
+      var existing = package[field];
+      package[field] = existing ? existing + '\n' + body : body;
+    }
+
     function processMethodBlock(node) {
       var defineName = node.expression.callee.name;
       var methods = node.expression.arguments[1].properties;
@@ -839,7 +851,7 @@ function modularize() {
         return d !== name;
       });
       package.dependencies = package.dependencies.concat(deps);
-      package.body += '\n' + getNodeBody(node);
+      appendBlock(package, 'body', getNodeBody(node));
     }
 
     function processBuildExpression(node) {
@@ -880,7 +892,8 @@ function modularize() {
         // call and set the final package to allow it to do this.
 
         mainPackage = fnPackage;
-        fnPackage.body = [fnPackage.body, fnCall].join('\n\n');
+        appendBlock(fnPackage, 'init', fnCall);
+        delete fnPackage.exports; // Nothing to export
 
       } else if (unassignedVars.length === 1) {
 
@@ -890,7 +903,8 @@ function modularize() {
         // built.
 
         var varPackage = unassignedVars[0];
-        varPackage.body = [varPackage.body, fnPackage.body, fnCall].join('\n\n');
+        varPackage.body = [varPackage.body, fnPackage.body].join(BLOCK_DELIMITER);
+        appendBlock(fnPackage, 'init', fnCall);
         varPackage.dependencies = varPackage.dependencies.concat(deps);
 
         mainPackage = varPackage;
@@ -903,6 +917,7 @@ function modularize() {
         // to point to it.
 
         var groupName = downcase(fnPackage.name.replace(/^build/, ''));
+
         var declares = [], exports = [];
 
         unassignedVars.forEach(function(v) {
@@ -913,11 +928,12 @@ function modularize() {
 
         // The grouped package consists of any declared variables, the build
         // function definition, and the initializing call all rolled together.
-        var body = [declares.join('\n'), fnPackage.body, fnCall].join('\n\n');
+        var body = [declares.join('\n'), fnPackage.body].join(BLOCK_DELIMITER);
 
         mainPackage = topLevel[groupName] = {
           name: groupName,
           body: body,
+          init: fnCall,
           module: module,
           exports: exports,
           dependencies: deps,
@@ -937,11 +953,26 @@ function modularize() {
             });
           });
         } else if (isSimilarMethodBlock(node)) {
-          var methodNames = getAllMethodNamesInPreviousComment(node);
+          var argNode = node.expression.arguments[1], methodNames;
+          if (argNode.type === 'Literal' && argNode.value) {
+            // If the argument to defineInstanceSimilar is a literal string,
+            // then we can pull the method names directly out of that.
+            methodNames = argNode.value.split(',');
+          } else {
+            // Otherwise, assume the method names appear in the previous
+            // comment block and get them from there.
+            methodNames = getAllMethodNamesInPreviousComment(node);
+          }
           methodNames.forEach(function(name) {
             addSugarMethod(name, node, {
               requires: [mainPackage.name]
             });
+          });
+        } else if (isAliasExpression(node)) {
+          var name = node.expression.arguments[1].value;
+          var sourceName = node.expression.arguments[2].value;
+          addSugarMethod(name, node, {
+            requires: [getFullMethodKey(node, sourceName), mainPackage.name]
           });
         }
       });
@@ -1092,7 +1123,7 @@ function modularize() {
         sortByLength(mapped);
         compiled = ['{', mapped.join(',\n'), '}'].join('\n');
       }
-      return '\nmodule.exports = ' + compiled + ';';
+      return 'module.exports = ' + compiled + ';';
     }
 
     function groupAliases(deps) {
@@ -1116,10 +1147,6 @@ function modularize() {
       });
     }
 
-    function getBody() {
-      return package.body || '';
-    }
-
     function getSugarCorePath() {
       // TODO: temporary until the core package is created.
       //return 'sugar-core';
@@ -1140,9 +1167,39 @@ function modularize() {
       return path.join(path.relative(package.path, dependency.path), dependency.name);
     }
 
+    function getBody() {
+      return package.body || '';
+    }
+
+    function getInit() {
+      return package.init || '';
+    }
+
+    function getOutputBody() {
+      if (package.type === 'internal' && package.exports) {
+        // If the package is an internal function, then to avoid issues with
+        // circular dependencies, hoist the package body and exports to the top
+        // with an explicit message about the situation. Remember here that if
+        // this is a "build" function, the initializer (buildXXX) still needs
+        // to be run after the requires block, as the package dependencies will
+        // not yet have been met.
+        var body = [DECLARES_PREAMBLE, getBody()].join('\n');
+        return join([body, getExports(), getRequires(), getAssigns(), getInit()]);
+      } else {
+        // If this is a normal package then export normally.
+        return join([getRequires(), getAssigns(), getBody(), getInit(), getExports()]);
+      }
+    }
+
+    function join(blocks) {
+      return blocks.filter(function(block) {
+        return block;
+      }).join(BLOCK_DELIMITER);
+    }
+
     var outputPath = path.join(NPM_DESTINATION, package.path || '');
     var outputFilePath = path.join(outputPath, packageName + '.js');
-    var outputBody = [getRequires(), getAssigns(), getBody(), getExports()].join('\n');
+    var outputBody = getOutputBody();
     mkdirp.sync(outputPath);
     fs.writeFileSync(outputFilePath, outputBody, 'utf-8');
   }
@@ -1155,8 +1212,8 @@ function modularize() {
   parseModule('string');
   parseModule('inflections');
   parseModule('language');
+  parseModule('array');
 
-  //parseModule('array');  3
   //parseModule('object'); 2
   //parseModule('date');   1
 

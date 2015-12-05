@@ -10,8 +10,6 @@
   // The global context
   var globalContext = typeof global !== 'undefined' ? global : this;
 
-  var Sugar = globalContext['Sugar'];
-
   // Has ability to use Object.defineProperty
   definePropertySupport = !!(Object.defineProperty && Object.defineProperties);
 
@@ -204,16 +202,9 @@
   }
 
   // Allowing a hook here to set the global object
-  // via the test suite to prevent undesired effects
-  // of throwing around globals in node.
+  // via the test suite as it is not a global in node.
   testSetGlobal = function(obj) {
     Sugar = obj;
-  }
-
-  // Need a way to also get the "global" object as it
-  // may not actually be global.
-  testGetGlobal = function() {
-    return Sugar;
   }
 
   function getTestsToRun() {
