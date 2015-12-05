@@ -904,7 +904,7 @@ function modularize() {
 
         var varPackage = unassignedVars[0];
         varPackage.body = [varPackage.body, fnPackage.body].join(BLOCK_DELIMITER);
-        appendBlock(fnPackage, 'init', fnCall);
+        appendBlock(varPackage, 'init', fnCall);
         varPackage.dependencies = varPackage.dependencies.concat(deps);
 
         mainPackage = varPackage;
