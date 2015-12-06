@@ -1425,6 +1425,7 @@ package('String', function () {
   });
 
   method('includes', function() {
+
     test('foo', ['foo'],  true, 'string still works');
     test('foo', [/foo/],  true, 'simple regex');
     test('foo', [/^foo/], true, 'with lead');
@@ -1451,6 +1452,13 @@ package('String', function () {
     test('foo', [/o/, 2],    true,  'with position 2 | match');
     test('foo', [/./, 3],    false, 'with position 3 | no match');
     test('foo', [/$/, 3],    true,  'with position 3 | match');
+
+    storeNativeState();
+
+    Sugar.String.extend('includes');
+    equal(String.prototype.includes.length, 1, 'should have argument length of 1');
+
+    restoreNativeState();
   });
 
 });
