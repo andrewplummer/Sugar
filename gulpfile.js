@@ -672,14 +672,14 @@ function modularize() {
       return node.type === 'ExpressionStatement' &&
              node.expression.type === 'CallExpression' &&
              node.expression.callee.name &&
-             !!node.expression.callee.name.match(/^define(Static|Instance)(WithArguments)?$/);
+             !!node.expression.callee.name.match(/^define(Static|Instance(AndStatic)?)(WithArguments)?$/);
     }
 
     function isSimilarMethodBlock(node) {
       return node.type === 'ExpressionStatement' &&
              node.expression.type === 'CallExpression' &&
              node.expression.callee.name &&
-             !!node.expression.callee.name.match(/^define(Static|Instance)Similar$/);
+             !!node.expression.callee.name.match(/^define(Static|Instance(AndStatic)?)Similar$/);
     }
 
     function isMemberAssignment(node) {
@@ -805,7 +805,7 @@ function modularize() {
       var comment = getLastCommentForNode(node);
       var blocks = comment.text.split('***');
       blocks.forEach(function(block) {
-        var match = block.match(/@set([\s\S]+)(?=[@\/])/);
+        var match = block.match(/@set([^@\/]+)/);
         if (match) {
           var set = match[1];
           set = set.replace(/^[\s*]*|[\s*]*$/g, '').replace(/[\s*]+/g, ',');
@@ -1027,7 +1027,7 @@ function modularize() {
     return path;
   }
 
-  function writeMethod(fullMethodName, package) {
+  function writeMethod(name, package) {
     // Need to write the package name, which is not
     // the same as it's fully qualified name in the
     // hash as we are avoiding namespace collisions.
@@ -1176,6 +1176,7 @@ function modularize() {
     }
 
     function getOutputBody() {
+      var strict = '"use strict";';
       if (package.type === 'internal' && package.exports) {
         // If the package is an internal function, then to avoid issues with
         // circular dependencies, hoist the package body and exports to the top
@@ -1184,10 +1185,10 @@ function modularize() {
         // to be run after the requires block, as the package dependencies will
         // not yet have been met.
         var body = [DECLARES_PREAMBLE, getBody()].join('\n');
-        return join([body, getExports(), getRequires(), getAssigns(), getInit()]);
+        return join([strict, body, getExports(), getRequires(), getAssigns(), getInit()]);
       } else {
         // If this is a normal package then export normally.
-        return join([getRequires(), getAssigns(), getBody(), getInit(), getExports()]);
+        return join([strict, getRequires(), getAssigns(), getBody(), getInit(), getExports()]);
       }
     }
 
@@ -1213,8 +1214,8 @@ function modularize() {
   parseModule('inflections');
   parseModule('language');
   parseModule('array');
+  parseModule('object');
 
-  //parseModule('object'); 2
   //parseModule('date');   1
 
   //parseModule('es5'); + 1
