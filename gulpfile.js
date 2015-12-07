@@ -409,6 +409,39 @@ gulp.task('npm:min', function() {
 // -------------- Modularize ----------------
 
 
+//  Rules:
+//
+//  1. This task will walk through the top level of the source code,
+//     separating packages for Sugar internals and method definitions,
+//     and creating a flat dependency tree. The top level may consist
+//     only of variable declarations and assignments, functions for
+//     internal use, Sugar method declarations with "defineInstance",
+//     etc, and "build" methods (more below). Variables in all caps
+//     will be considered "constants", otherwise "vars".
+//
+//  2. Any variable dependency built up programmatically must have
+//     an associated "build" method (begins with "build") that is
+//     top level. The built up variable must be assigned inside the
+//     build method.
+//
+//  3. Build methods may build multiple variables, but they must all
+//     be unassigned until inside the build method.
+//
+//  4. Build methods may define Sugar methods. These must use the normal
+//     "define" methods. If they use "defineInstanceSimilar", then the
+//     method names must either be a literal, comma separated string, or
+//     exist in the comment block immediately preceeding the build method,
+//     found either by @method or (more commonly) @set.
+//
+//  5. Build methods may not call defined Sugar methods. Refactor to use
+//     a top level internal method instead.
+//
+//  6. All Sugar methods found will be added to a "module" file that
+//     loads them all.
+//
+//  7. (TODO) Comments that appear no more than 2 lines before a top level
+//     dependency will be added to the exported package.
+
 function modularize() {
 
   var TAB = '  ';
@@ -417,7 +450,7 @@ function modularize() {
   var BLOCK_DELIMITER = '\n\n';
 
   var DECLARES_PREAMBLE = [
-    '// Exported function declarations are hoisted here',
+    '// Exported function declaration was hoisted here',
     '// to avoid problems with circular dependencies.'
   ].join('\n');
 
@@ -1215,8 +1248,7 @@ function modularize() {
   parseModule('language');
   parseModule('array');
   parseModule('object');
-
-  //parseModule('date');   1
+  parseModule('date');
 
   //parseModule('es5'); + 1
   //parseModule('es6'); + 2
