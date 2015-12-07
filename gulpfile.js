@@ -441,6 +441,11 @@ gulp.task('npm:min', function() {
 //
 //  7. (TODO) Comments that appear no more than 2 lines before a top level
 //     dependency will be added to the exported package.
+//
+//  8  Any top level variable must be set once and never reassigned, as
+//     the reference will be broken when being required by different
+//     packages. Instead use closures or objects to hold references.
+//
 
 function modularize() {
 
@@ -715,6 +720,12 @@ function modularize() {
              !!node.expression.callee.name.match(/^define(Static|Instance(AndStatic)?)Similar$/);
     }
 
+    function isReassignment(node) {
+      return node.type === 'ExpressionStatement' &&
+             node.expression.type === 'AssignmentExpression' &&
+             node.expression.left.type === 'Identifier';
+    }
+
     function isMemberAssignment(node) {
       return node.type === 'ExpressionStatement' &&
              node.expression.type === 'AssignmentExpression' &&
@@ -905,20 +916,28 @@ function modularize() {
       fnCall = getNodeBody(node);
       fnPackage  = topLevel[node.expression.callee.name];
 
-      unassignedVars = [];
+      //unassignedVars = [];
+      var assignedVars = [];
+
+      function isReassignedDependency(node) {
+        return isReassignment(node) &&
+               assignedVars.indexOf(node.expression.left.name) === -1 &&
+               fnPackage.dependencies.indexOf(node.expression.left.name) !== -1;
+      }
+
+      fnPackage.node.body.body.forEach(function(node) {
+        if (isReassignedDependency(node)) {
+          assignedVars.push(node.expression.left.name);
+        }
+      });
 
       // Do an initial runthrough of the dependencies to
       // extract those that are unassigned into an array.
       deps = fnPackage.dependencies.filter(function(name) {
-        var package = topLevel[name];
-        if (package.node.type === 'VariableDeclarator' && !package.node.init) {
-          unassignedVars.push(package);
-          return false;
-        }
-        return true;
+        return assignedVars.indexOf(name) === -1;
       });
 
-      if (unassignedVars.length === 0) {
+      if (assignedVars.length === 0) {
 
         // If there are no unassigned variables at all, then the build
         // function is simply defining methods, so add the initializing
@@ -928,50 +947,51 @@ function modularize() {
         appendBlock(fnPackage, 'init', fnCall);
         delete fnPackage.exports; // Nothing to export
 
-      } else if (unassignedVars.length === 1) {
+        // Still need the build package as it might be reused
+
+      } else if (assignedVars.length === 1) {
 
         // If there is only one unassigned variable then the build function
         // and its initializing call can simply be added into the variable
         // package. When a function requires that variable it will then be
         // built.
 
-        var varPackage = unassignedVars[0];
+        var varPackage = topLevel[assignedVars[0]];
         varPackage.body = [varPackage.body, fnPackage.body].join(BLOCK_DELIMITER);
         appendBlock(varPackage, 'init', fnCall);
         varPackage.dependencies = varPackage.dependencies.concat(deps);
 
         mainPackage = varPackage;
 
-      } else if (unassignedVars.length > 1) {
+        // no longer need the build package
+        delete topLevel[fnPackage.name];
+
+      } else if (assignedVars.length > 1) {
 
         // If there are more than one unassigned variables then we need to
         // bundle them together and export multiple. Use the build function
         // name to create the grouped package and alias the variable packages
         // to point to it.
 
-        var groupName = downcase(fnPackage.name.replace(/^build/, ''));
-
         var declares = [], exports = [];
 
-        unassignedVars.forEach(function(v) {
-          v.alias = groupName;
-          exports.push(v.name);
-          declares.push(v.body);
+        assignedVars.forEach(function(v) {
+          var varPackage = topLevel[v];
+          varPackage.alias = fnPackage.name;
+          exports.push(varPackage.name);
+          declares.push(varPackage.body);
         });
 
         // The grouped package consists of any declared variables, the build
         // function definition, and the initializing call all rolled together.
         var body = [declares.join('\n'), fnPackage.body].join(BLOCK_DELIMITER);
 
-        mainPackage = topLevel[groupName] = {
-          name: groupName,
-          body: body,
-          init: fnCall,
-          module: module,
-          exports: exports,
-          dependencies: deps,
-          path: path.join(module, 'vars'),
-        };
+        fnPackage.body = body;
+        fnPackage.init = fnCall;
+        fnPackage.exports = exports;
+        fnPackage.dependencies = deps;
+
+        mainPackage = fnPackage;
 
       }
 
@@ -1081,7 +1101,7 @@ function modularize() {
     function prepareDeps(deps) {
       if (deps) {
         sortByLength(deps);
-        return groupAliases(deps);
+        return deps;
       }
     }
 
@@ -1092,8 +1112,8 @@ function modularize() {
         blocks.push('var Sugar = ' + getRequire(getSugarCorePath()) + ';\n');
       }
       if (deps && deps.length) {
-        var namedRequiresBlock = deps.map(function(dep) {
-          return dep + ' = ' + getRequire(getDependencyPath(dep));
+        var namedRequiresBlock = groupAliases(deps).map(function(dep) {
+          return sanitizePackageName(dep) + ' = ' + getRequire(getDependencyPath(dep));
         });
         blocks.push('var ' + namedRequiresBlock.join(',\n' + TAB + TAB) + ';\n');
       }
@@ -1110,16 +1130,26 @@ function modularize() {
       return "require('" + p + "')";
     }
 
+    function dependencyNeedsAssign(package, dependencyName) {
+      var exports = package.exports;
+      return typeof exports === 'object' && exports.length > 1 && exports.indexOf(dependencyName) !== -1;
+    }
+
+    function getPackageOrAlias(name) {
+      var package = topLevel[name];
+      if (package.alias) {
+        package = topLevel[package.alias];
+      }
+      return package;
+    }
+
     function getAssigns() {
       var assigns = [];
       if (deps && deps.length) {
         deps.forEach(function(d) {
-          var package = topLevel[d];
-          var exports = package && package.exports;
-          if (exports && typeof exports === 'object' && exports.length > 1) {
-            exports.forEach(function(token) {
-              assigns.push([token, ' = ', package.name, '.', token].join(''));
-            });
+          var package = getPackageOrAlias(d);
+          if (dependencyNeedsAssign(package, d)) {
+            assigns.push([d, ' = ', sanitizePackageName(package.name), '.', d].join(''));
           }
         });
         if (assigns.length) {
@@ -1197,7 +1227,13 @@ function modularize() {
     }
 
     function getRelativePath(dependency) {
-      return path.join(path.relative(package.path, dependency.path), dependency.name);
+      return path.join(path.relative(package.path, dependency.path), sanitizePackageName(dependency.name));
+    }
+
+    function sanitizePackageName(name) {
+      return name.replace(/^build(\w)/, function(match, letter) {
+        return letter.toLowerCase();
+      });
     }
 
     function getBody() {
@@ -1210,7 +1246,8 @@ function modularize() {
 
     function getOutputBody() {
       var strict = '"use strict";';
-      if (package.type === 'internal' && package.exports) {
+      // TODO: WHAT TO DO ABOUT THIS????
+      if (false && package.type === 'internal' && package.exports) {
         // If the package is an internal function, then to avoid issues with
         // circular dependencies, hoist the package body and exports to the top
         // with an explicit message about the situation. Remember here that if
@@ -1232,7 +1269,7 @@ function modularize() {
     }
 
     var outputPath = path.join(NPM_DESTINATION, package.path || '');
-    var outputFilePath = path.join(outputPath, packageName + '.js');
+    var outputFilePath = path.join(outputPath, sanitizePackageName(packageName) + '.js');
     var outputBody = getOutputBody();
     mkdirp.sync(outputPath);
     fs.writeFileSync(outputFilePath, outputBody, 'utf-8');
