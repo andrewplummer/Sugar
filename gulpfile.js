@@ -475,7 +475,7 @@ function modularize() {
     return str.slice(0, 1).toLowerCase() + str.slice(1);
   }
 
-  function getDependencies(name, n) {
+  function getDependencies(name, node, localNodes) {
     var deps = [], locals = [];
 
     function log() {
@@ -491,7 +491,7 @@ function modularize() {
       }
     }
 
-    function pushLocals(nodes) {
+    function pushLocalNodes(nodes) {
       nodes.forEach(function(id) {
         pushLocal(id.name);
       });
@@ -504,12 +504,16 @@ function modularize() {
       }
     }
 
-    function walk(n) {
-      if (!n) {
+    function pushDependencies(arr) {
+      arr.forEach(pushDependency);
+    }
+
+    function walk(nodes) {
+      if (!nodes) {
         return;
       }
-      if (n.type) n = [n];
-      n.forEach(processNode);
+      if (nodes.type) nodes = [nodes];
+      nodes.forEach(processNode);
     }
 
     function processNode(node) {
@@ -524,12 +528,12 @@ function modularize() {
           return;
         case 'FunctionDeclaration':
           pushLocal(node.id.name);
-          pushLocals(node.params);
-          walk(node.body);
+          // Recursively get this function's local dependencies.
+          pushDependencies(getDependencies(name, node.body, node.params));
           return;
         case 'FunctionExpression':
-          pushLocals(node.params);
-          walk(node.body.body);
+          // so that flat local don't clobber them.
+          pushDependencies(getDependencies(name, node.body, node.params));
           return;
         case 'CatchClause':
           pushLocal(node.param);
@@ -631,7 +635,11 @@ function modularize() {
       return locals.indexOf(d) === -1 && !global[d] && WHITELISTED.indexOf(d) === -1;
     }
 
-    walk(n);
+    if (localNodes) {
+      pushLocalNodes(localNodes);
+    }
+
+    walk(node);
     return deps.filter(isValidDependency);
   }
 
