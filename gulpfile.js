@@ -1121,7 +1121,7 @@ function modularize() {
       }
       if (deps && deps.length) {
         var namedRequiresBlock = groupAliases(deps).map(function(dep) {
-          return sanitizePackageName(dep) + ' = ' + getRequire(getDependencyPath(dep));
+          return dep + ' = ' + getRequire(getDependencyPath(dep));
         });
         blocks.push('var ' + namedRequiresBlock.join(',\n' + TAB + TAB) + ';\n');
       }
@@ -1157,7 +1157,7 @@ function modularize() {
         deps.forEach(function(d) {
           var package = getPackageOrAlias(d);
           if (dependencyNeedsAssign(package, d)) {
-            assigns.push([d, ' = ', sanitizePackageName(package.name), '.', d].join(''));
+            assigns.push([d, ' = ', package.name, '.', d].join(''));
           }
         });
         if (assigns.length) {
@@ -1235,13 +1235,7 @@ function modularize() {
     }
 
     function getRelativePath(dependency) {
-      return path.join(path.relative(package.path, dependency.path), sanitizePackageName(dependency.name));
-    }
-
-    function sanitizePackageName(name) {
-      return name.replace(/^build(\w)/, function(match, letter) {
-        return letter.toLowerCase();
-      });
+      return path.join(path.relative(package.path, dependency.path), dependency.name);
     }
 
     function getBody() {
@@ -1277,7 +1271,7 @@ function modularize() {
     }
 
     var outputPath = path.join(NPM_DESTINATION, package.path || '');
-    var outputFilePath = path.join(outputPath, sanitizePackageName(packageName) + '.js');
+    var outputFilePath = path.join(outputPath, packageName + '.js');
     var outputBody = getOutputBody();
     mkdirp.sync(outputPath);
     fs.writeFileSync(outputFilePath, outputBody, 'utf-8');
