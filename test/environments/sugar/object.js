@@ -223,6 +223,7 @@ package('Object', function () {
       count++;
     }]);
     equal(count, 3, 'Object.keys | accepts a block | iterated properly');
+    equal(run(Object, 'keys', [obj, "Not a function"]), keys, "Object,keys | ignores second argument if not a function");
 
     strippedValues = obj.values().filter(function(m) { return typeof m != 'function'; });
     equal(strippedValues, values, "returns object's values");
