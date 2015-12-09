@@ -2314,7 +2314,6 @@ package('Date', function () {
 
     dateTest(d, ['years'],        yearZero, 'years');
     dateTest(d, ['months'],       new Date(2012, 0), 'months');
-    dateTest(d, ['weeks'],        new Date(2012, 0, 4), 'weeks | ISO8601');
     dateTest(d, ['days'],         new Date(2012, 1, 1), 'days');
     dateTest(d, ['hours'],        new Date(2012, 1, 29), 'hours');
     dateTest(d, ['minutes'],      new Date(2012, 1, 29, 22), 'minutes');
@@ -2323,7 +2322,6 @@ package('Date', function () {
 
     dateTest(d, ['year'],        yearZero, 'year');
     dateTest(d, ['month'],       new Date(2012, 0), 'month');
-    dateTest(d, ['week'],        new Date(2012, 0, 4), 'weeks | ISO8601');
     dateTest(d, ['day'],         new Date(2012, 1, 1), 'day');
     dateTest(d, ['hour'],        new Date(2012, 1, 29), 'hour');
     dateTest(d, ['minute'],      new Date(2012, 1, 29, 22), 'minute');
@@ -2332,6 +2330,8 @@ package('Date', function () {
 
     dateTest(d, ['date'],  new Date(2012, 1, 1), 'date');
     dateTest(d, ['flegh'], new Date(2012, 1, 29, 22, 15, 42), 'an unknown string will do nothing');
+    dateTest(d, ['weeks'], new Date(2012, 1, 29, 22, 15, 42), 'reset week | not considered meaningful');
+    dateTest(d, ['week'],  new Date(2012, 1, 29, 22, 15, 42), 'reset weeks | not considered meaningful');
 
     dateEqual(dateRun(d, 'addDays', [5, true]), new Date(2012, 2, 5), 'can also reset the time');
   });
