@@ -1619,36 +1619,32 @@ package('Date', function () {
     test(d, ['{Month}, {yyyy}'], 'August, 2010', 'month and year');
 
     var tz = getExpectedTimezoneOffset(d, true);
-    test(d, [Sugar.Date.ISO8601_DATE], '2010-08-05', 'ISO8601_DATE | constant');
-    test(d, [Sugar.Date.ISO8601_DATETIME], '2010-08-05T04:03:02.000'+tz, 'ISO8601_DATETIME | constant');
-
-    test(d, ['ISO8601_DATE'], '2010-08-05', 'ISO8601_DATE | string');
-    test(d, ['ISO8601_DATETIME'], '2010-08-05T04:03:02.000'+tz, 'ISO8601_DATETIME | string');
+    test(d, ['ISO8601'], '2010-08-05T04:03:02.000'+tz, 'ISO8601');
+    test(d, ['{ISO8601}'], '2010-08-05T04:03:02.000'+tz, 'ISO8601 | token');
 
     // RFC
     var d = new Date('August 5, 2010 04:03:02');
     var rfc1123 = testCapitalize(getWeekdayFromDate(d).slice(0,3))+', '+testPadNumber(d.getDate(), 2)+' '+testCapitalize(getMonthFromDate(d).slice(0,3))+' '+d.getFullYear()+' '+testPadNumber(d.getHours(), 2)+':'+testPadNumber(d.getMinutes(), 2)+':'+testPadNumber(d.getSeconds(), 2)+' '+ run(d, 'getUTCOffset');
     var rfc1036 = testCapitalize(getWeekdayFromDate(d))+', '+testPadNumber(d.getDate(), 2)+'-'+testCapitalize(getMonthFromDate(d).slice(0,3))+'-'+d.getFullYear().toString().slice(2)+' '+testPadNumber(d.getHours(), 2)+':'+testPadNumber(d.getMinutes(), 2)+':'+testPadNumber(d.getSeconds(), 2)+' '+run(d, 'getUTCOffset');
-    test(d, [Sugar.Date.RFC1123], rfc1123, 'RFC1123 | constant');
-    test(d, [Sugar.Date.RFC1036], rfc1036, 'RFC1036 | constant');
-    test(d, ['RFC1123'], rfc1123, 'RFC1123 | string');
-    test(d, ['RFC1036'], rfc1036, 'RFC1036 | string');
+    test(d, ['RFC1123'], rfc1123, 'RFC1123');
+    test(d, ['RFC1036'], rfc1036, 'RFC1036');
+    test(d, ['{RFC1123}'], rfc1123, 'RFC1123 | token');
+    test(d, ['{RFC1036}'], rfc1036, 'RFC1036 | token');
 
     // RFC - UTC
     var d = run(new Date('August 5, 2010 04:03:02'), 'setUTC', [true]);
     rfc1123 = testCapitalize(getWeekdayFromDate(d,true).slice(0,3))+', '+testPadNumber(d.getUTCDate(), 2)+' '+testCapitalize(getMonthFromDate(d,true).slice(0,3))+' '+d.getUTCFullYear()+' '+testPadNumber(d.getUTCHours(), 2)+':'+testPadNumber(d.getUTCMinutes(), 2)+':'+testPadNumber(d.getUTCSeconds(), 2)+' +0000';
     rfc1036 = testCapitalize(getWeekdayFromDate(d,true))+', '+testPadNumber(d.getUTCDate(), 2)+'-'+testCapitalize(getMonthFromDate(d,true).slice(0,3))+'-'+d.getUTCFullYear().toString().slice(2)+' '+testPadNumber(d.getUTCHours(), 2)+':'+testPadNumber(d.getUTCMinutes(), 2)+':'+testPadNumber(d.getUTCSeconds(), 2)+' +0000';
-    test(d, ['RFC1123'], rfc1123, 'string constants | RFC1123 UTC');
-    test(d, ['RFC1036'], rfc1036, 'string constants | RFC1036 UTC');
+    test(d, ['RFC1123'], rfc1123, 'RFC1123 UTC');
+    test(d, ['RFC1036'], rfc1036, 'RFC1036 UTC');
+    test(d, ['{RFC1123}'], rfc1123, 'RFC1123 UTC | token');
+    test(d, ['{RFC1036}'], rfc1036, 'RFC1036 UTC | token');
 
     // ISO8601 - UTC
     var d = run(new Date('August 5, 2010 04:03:02'), 'setUTC', [true]);
     var iso = d.getUTCFullYear()+'-'+testPadNumber(d.getUTCMonth()+1, 2)+'-'+testPadNumber(d.getUTCDate(), 2)+'T'+testPadNumber(d.getUTCHours(), 2)+':'+testPadNumber(d.getUTCMinutes(), 2)+':'+testPadNumber(d.getUTCSeconds(), 2)+'.'+testPadNumber(d.getUTCMilliseconds(), 3)+'Z';
-    test(d, [Sugar.Date.ISO8601_DATETIME], iso, 'ISO8601_DATETIME UTC | constant');
-    test(d, ['ISO8601_DATETIME'], iso, 'ISO8601_DATETIME UTC');
-
-    test(new Date(NaN), [Sugar.Date.ISO8601_DATETIME], 'Invalid Date', 'invalid');
-
+    test(d, ['ISO8601'], iso, 'ISO8601 UTC');
+    test(d, ['{ISO8601}'], iso, 'ISO8601 UTC | token');
 
     // strftime tokens
 
@@ -2849,8 +2845,8 @@ package('Date', function () {
   method('iso', function() {
 
     var d = new Date('August 5, 2010 04:03:02');
-    var expected = run(run(d, 'setUTC', [true], 'format', [Sugar.Date.ISO8601_DATETIME]));
-    test(d, expected, 'Date#iso is an alias for the ISO8601_DATETIME format in UTC');
+    var expected = run(run(d, 'setUTC', [true]), 'format', ['ISO8601']);
+    test(d, expected, 'Date#iso is an alias for the ISO8601 format in UTC');
 
     // Issue #146 - These tests were failing when system time was set to Friday, June 1, 2012 PDT
 
