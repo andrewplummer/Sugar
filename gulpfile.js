@@ -1052,11 +1052,12 @@ function modularize() {
       var body = [];
       iter(sugarMethods, function(name, package) {
         if (package.module === module) {
-          var requirePath = getPathForRequire(path.join(package.path, package.name));
+          var requirePath = getPathForRequire(path.join(package.name));
           body.push("require('"+ requirePath +"');");
         }
       });
-      writePackage(module, {
+      writePackage('index', {
+        path: module,
         body: body.sort().join('\n'),
         exports: 'core',
       });
@@ -1277,16 +1278,22 @@ function modularize() {
     fs.writeFileSync(outputFilePath, outputBody, 'utf-8');
   }
 
+  function cleanBuild() {
+    var rimraf = require('rimraf');
+    rimraf(NPM_DESTINATION);
+  }
+
+  cleanBuild();
   parseModule('common', false);
-  parseModule('regexp');
-  parseModule('number');
-  parseModule('range');
-  parseModule('function');
-  parseModule('string');
-  parseModule('inflections');
-  parseModule('language');
-  parseModule('array');
-  parseModule('object');
+  //parseModule('regexp');
+  //parseModule('number');
+  //parseModule('range');
+  //parseModule('function');
+  //parseModule('string');
+  //parseModule('inflections');
+  //parseModule('language');
+  //parseModule('array');
+  //parseModule('object');
   parseModule('date');
 
   //parseModule('es5'); + 1
