@@ -1,7 +1,5 @@
 var runner = require('../setup');
 
-runner.loadCore('../../lib/core');
-
 runner.loadPackage('../../release/npm/sugar/date');
 runner.loadPackage('../../release/npm/sugar/range');
 

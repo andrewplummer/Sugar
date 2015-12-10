@@ -10,7 +10,10 @@ require('../suite/helpers/core');
 require('../suite/helpers/date');
 require('../suite/helpers/object');
 
-var Sugar;
+// Move this to sugar-core when its ready
+var Sugar = require('../../lib/core');
+testSetGlobal(Sugar);
+
 var exitOnFail = true;
 
 function notice(message, logFn) {
@@ -38,13 +41,6 @@ function getTestNameFromModule(mod) {
 }
 
 module.exports = {
-
-
-  loadCore: function(path) {
-    Sugar = reload(path);
-    testSetGlobal(Sugar);
-  },
-
 
   loadTest: function(name) {
     reload('../tests/' + name);
