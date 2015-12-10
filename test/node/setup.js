@@ -39,13 +39,19 @@ function getTestNameFromModule(mod) {
 
 module.exports = {
 
+
+  loadCore: function(path) {
+    Sugar = reload(path);
+    testSetGlobal(Sugar);
+  },
+
+
   loadTest: function(name) {
     reload('../tests/' + name);
   },
 
   loadPackage: function(path) {
-    Sugar = reload(path);
-    testSetGlobal(Sugar);
+    reload(path);
   },
 
   run: function(mod, extended) {

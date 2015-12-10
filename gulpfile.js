@@ -1062,7 +1062,7 @@ function modularize() {
         }
       });
       modulePackage.body = body.sort().join('\n'),
-      writePackage('index', modulePackage);
+      writePackage(modulePackage);
     }
 
     filePath = 'lib/' + module + '.js'
@@ -1091,11 +1091,8 @@ function modularize() {
     return path;
   }
 
-  function writeMethod(name, package) {
-    // Need to write the package name, which is not
-    // the same as it's fully qualified name in the
-    // hash as we are avoiding namespace collisions.
-    writePackage(package.name, package);
+  function writeTopLevel(name, package) {
+    writePackage(package);
   }
 
   function getRequirePath(from, to) {
@@ -1106,7 +1103,7 @@ function modularize() {
     return p;
   }
 
-  function writePackage(packageName, package) {
+  function writePackage(package) {
 
     if (package.alias) {
       // Don't export alias packages.
@@ -1132,7 +1129,7 @@ function modularize() {
       }
       if (deps && deps.length) {
         var namedRequiresBlock = groupAliases(deps).map(function(dep) {
-          return dep + ' = ' + getRequire(getDependencyPath(dep));
+          return getAssignName(dep) + ' = ' + getRequire(getDependencyPath(dep));
         });
         blocks.push('var ' + namedRequiresBlock.join(',\n' + TAB + TAB) + ';\n');
       }
@@ -1145,6 +1142,11 @@ function modularize() {
       return blocks.join('\n');
     }
 
+
+    function getAssignName(str) {
+      return str.replace(/^\w+\|/, '');
+    }
+
     function getRequire(p) {
       return "require('" + p + "')";
     }
@@ -1155,7 +1157,7 @@ function modularize() {
     }
 
     function getPackageOrAlias(name) {
-      var package = topLevel[name];
+      var package = topLevel[name] || sugarMethods[name];
       if (package.alias) {
         package = topLevel[package.alias];
       }
@@ -1168,7 +1170,7 @@ function modularize() {
         deps.forEach(function(d) {
           var package = getPackageOrAlias(d);
           if (dependencyNeedsAssign(package, d)) {
-            assigns.push([d, ' = ', package.name, '.', d].join(''));
+            assigns.push([getAssignName(d), ' = ', package.name, '.', d].join(''));
           }
         });
         if (assigns.length) {
@@ -1237,7 +1239,7 @@ function modularize() {
 
     function getDependencyPath(dependencyName) {
       // Aliases may have dependencies on other sugar methods.
-      var dependency = topLevel[dependencyName] || sugarMethods[dependencyName];
+      var dependency = getPackageOrAlias(dependencyName);
       if (!dependency) {
         console.info(package, dependencyName, dependency);
         throw new Error('Missing dependency: ' + dependencyName);
@@ -1283,12 +1285,21 @@ function modularize() {
     fs.writeFileSync(outputPath, outputBody, 'utf-8');
   }
 
+  function writeLocale(l) {
+    writePackage({
+      path: path.join('locales', path.basename(l, '.js')),
+      body: fs.readFileSync(l, 'utf-8').replace(/^Sugar\.Date\./gm, ''),
+      dependencies: ['Date|addLocale'],
+    });
+  }
+
   function cleanBuild() {
     var rimraf = require('rimraf');
     rimraf.sync(NPM_DESTINATION);
   }
 
   cleanBuild();
+
   parseModule('common', false);
   parseModule('regexp');
   parseModule('number');
@@ -1301,11 +1312,13 @@ function modularize() {
   parseModule('object');
   parseModule('date');
 
+  glob.sync('lib/locales/*.js').forEach(writeLocale);
+
   //parseModule('es5'); + 1
   //parseModule('es6'); + 2
 
-  iter(topLevel, writePackage);
-  iter(sugarMethods, writeMethod);
+  iter(topLevel, writeTopLevel);
+  iter(sugarMethods, writeTopLevel);
 
 }
 
