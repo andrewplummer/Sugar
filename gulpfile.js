@@ -764,6 +764,7 @@ function modularize() {
 
     function addTopLevel(name, node, type, exports) {
       var core = false, body;
+      var pp = path.join(module, type, name);
       if (type === 'vars') {
         body = getInnerNodeBody(node).replace(/\s+=\s+/, ' = ');
         var match = body.match(/^[\w.]+ = ([\w.]+)$/);
@@ -788,11 +789,11 @@ function modularize() {
         core = true;
       }
       var package = {
+        path: pp,
         node: node,
         name: name,
         type: type,
         core: core,
-        path: path.join(module, type),
         body: body,
         module: module,
         exports: exports,
@@ -831,6 +832,7 @@ function modularize() {
           body = [ init + '({', '', body, '', '});'].join('\n');
         }
       }
+      var sp = path.join(namespace.toLowerCase(), name);
 
       sugarMethods[getFullMethodKey(node, name)] = {
         core: true,
@@ -839,7 +841,7 @@ function modularize() {
         module: module,
         dependencies: deps,
         requires: opts.requires,
-        path: namespace.toLowerCase(),
+        path: sp,
         exports: ['Sugar', namespace, name].join('.'),
       };
     }
@@ -1049,18 +1051,18 @@ function modularize() {
     }
 
     function writeModulePackage() {
-      var body = [];
-      iter(sugarMethods, function(name, package) {
-        if (package.module === module) {
-          var requirePath = getPathForRequire(path.join(package.name));
-          body.push("require('"+ requirePath +"');");
+      var body = [], modulePackage;
+      iter(sugarMethods, function(name, sugarMethod) {
+        if (sugarMethod.module === module) {
+          modulePackage = {
+            path: path.join(module, 'index'),
+            exports: 'core',
+          };
+          body.push("require('"+ getRequirePath(modulePackage, sugarMethod) +"');");
         }
       });
-      writePackage('index', {
-        path: module,
-        body: body.sort().join('\n'),
-        exports: 'core',
-      });
+      modulePackage.body = body.sort().join('\n'),
+      writePackage('index', modulePackage);
     }
 
     filePath = 'lib/' + module + '.js'
@@ -1094,6 +1096,14 @@ function modularize() {
     // the same as it's fully qualified name in the
     // hash as we are avoiding namespace collisions.
     writePackage(package.name, package);
+  }
+
+  function getRequirePath(from, to) {
+    var p = path.join(path.relative(path.dirname(from.path), path.dirname(to.path)), path.basename(to.path));
+    if (p.charAt(0) !== '.') {
+      p = './' + p;
+    }
+    return p;
   }
 
   function writePackage(packageName, package) {
@@ -1222,7 +1232,7 @@ function modularize() {
     function getSugarCorePath() {
       // TODO: temporary until the core package is created.
       //return 'sugar-core';
-      return path.relative(package.path || '', '../../../lib/core');
+      return path.join(path.relative(path.dirname(package.path), '../../../lib'), 'core');
     }
 
     function getDependencyPath(dependencyName) {
@@ -1232,11 +1242,7 @@ function modularize() {
         console.info(package, dependencyName, dependency);
         throw new Error('Missing dependency: ' + dependencyName);
       }
-      return getPathForRequire(getRelativePath(dependency));
-    }
-
-    function getRelativePath(dependency) {
-      return path.join(path.relative(package.path, dependency.path), dependency.name);
+      return getRequirePath(package, dependency);
     }
 
     function getBody() {
@@ -1271,29 +1277,28 @@ function modularize() {
       }).join(BLOCK_DELIMITER);
     }
 
-    var outputPath = path.join(NPM_DESTINATION, package.path || '');
-    var outputFilePath = path.join(outputPath, packageName + '.js');
+    var outputPath = path.join(NPM_DESTINATION, package.path + '.js');
     var outputBody = getOutputBody();
-    mkdirp.sync(outputPath);
-    fs.writeFileSync(outputFilePath, outputBody, 'utf-8');
+    mkdirp.sync(path.dirname(outputPath));
+    fs.writeFileSync(outputPath, outputBody, 'utf-8');
   }
 
   function cleanBuild() {
     var rimraf = require('rimraf');
-    rimraf(NPM_DESTINATION);
+    rimraf.sync(NPM_DESTINATION);
   }
 
   cleanBuild();
   parseModule('common', false);
-  //parseModule('regexp');
-  //parseModule('number');
-  //parseModule('range');
-  //parseModule('function');
-  //parseModule('string');
-  //parseModule('inflections');
-  //parseModule('language');
-  //parseModule('array');
-  //parseModule('object');
+  parseModule('regexp');
+  parseModule('number');
+  parseModule('range');
+  parseModule('function');
+  parseModule('string');
+  parseModule('inflections');
+  parseModule('language');
+  parseModule('array');
+  parseModule('object');
   parseModule('date');
 
   //parseModule('es5'); + 1
