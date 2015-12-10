@@ -55,22 +55,22 @@ package('Dates Korean', function () {
     dateEqual(testCreateDate('수요일 3:45'), run(getDateWithWeekdayAndOffset(3, 0), 'set', [{ hours: 3, minutes: 45 }, true]), 'wednesday with time 3:45');
 
     dateEqual(testCreateDate('지난 주'), getRelativeDate(null, null, -7), 'Last week');
-    dateEqual(testCreateDate('이번 주'), dstSafe(getRelativeDate(null, null, 0)), 'this week');
+    dateEqual(testCreateDate('이번 주'), getRelativeDate(null, null, 0), 'this week');
     dateEqual(testCreateDate('다음 주'), getRelativeDate(null, null, 7), 'Next week');
 
     dateEqual(testCreateDate('지난 달'), getRelativeDate(null, -1), 'last month');
     dateEqual(testCreateDate('이번 달'), getRelativeDate(null, 0), 'this month');
     dateEqual(testCreateDate('다음 달'), getRelativeDate(null, 1), 'Next month');
 
-    dateEqual(testCreateDate('작년'), getRelativeDate(-1), 'Last year');
-    dateEqual(testCreateDate('내년'), getRelativeDate(1), 'Next year');
+    dateEqual(testCreateDate('작년'),    getRelativeDate(-1), 'Last year');
+    dateEqual(testCreateDate('내년'),    getRelativeDate(1), 'Next year');
     dateEqual(testCreateDate('지난 해'), getRelativeDate(-1), 'Last year');
-    dateEqual(testCreateDate('올해'), dstSafe(getRelativeDate(0)), 'this year');
+    dateEqual(testCreateDate('올해'),    getRelativeDate(0), 'this year');
     dateEqual(testCreateDate('다음 해'), getRelativeDate(1), 'Next year');
 
 
     dateEqual(testCreateDate('지난 주 수요일'), getDateWithWeekdayAndOffset(3, -7), 'Last wednesday');
-    dateEqual(testCreateDate('이번 일요일'), getDateWithWeekdayAndOffset(0), 'this sunday');
+    dateEqual(testCreateDate('이번 일요일'),    getDateWithWeekdayAndOffset(0), 'this sunday');
     dateEqual(testCreateDate('다음 주 금요일'), getDateWithWeekdayAndOffset(5, 7), 'Next friday');
 
     // Numbers

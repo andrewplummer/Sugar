@@ -54,15 +54,19 @@ dateRangeEqual = function(a, b, message) {
 
 getRelativeDate = function(year, month, day, hours, minutes, seconds, milliseconds) {
   var d = this.getFullYear ? new Date(this.getTime()) : new Date();
+
   var setYear  = d.getFullYear() + (year || 0)
   var setMonth = d.getMonth() + (month || 0)
   var setDate  = d.getDate() + (day || 0);
+
   // Relative dates that have no more specificity than months only walk
   // the bounds of months, they can't traverse into a new month if the
   // target month doesn't have the same number of days.
   if(day === undefined && month !== undefined) {
     setDate = Math.min(setDate, testGetDaysInMonth(setYear, setMonth));
-    d.setDate(setDate);
+    if (setDate !== d.getDate()) {
+      d.setDate(setDate);
+    }
   }
   if (setYear !== d.getFullYear()) {
     d.setFullYear(setYear);
@@ -82,6 +86,7 @@ getRelativeDate = function(year, month, day, hours, minutes, seconds, millisecon
     ((seconds      || 0) * 1000) +
      (milliseconds || 0)
   );
+
   return d;
 }
 
@@ -251,44 +256,8 @@ assertAddUnitIsNumericallyEqual = function (d, method, add, message) {
   equal(run(new Date(d.getTime()), method, [add]) - d, add * mult, message);
 }
 
-// For some awesome reason, calling any "set" method on a newly created date
-// will have the effect of choosing the first ambiguous hour during a DST shift
-// backward. For example, if you are in Mountain Time on Nov 2nd 1:00am, a date
-// created with new Date() will be MST, but calling any set method on the date
-// will make it jump an hour back to MDT. Call this on inconsistent dates to
-// ensure that they are consistent.
-dstSafe = function(d) {
-  d.setFullYear(d.getFullYear());
-  return d;
-}
-
-// If a date cannot set itself back by an hour then it's possible that it was
-// shifted forward as the target time did not exist.
-mayHaveDSTShifted = function(d) {
-  var d2 = new Date(d.getTime()), h = d2.getHours();
-  d2.setHours(d.getHours() - 1);
-  return d2.getHours() === h;
-}
-
-// "relative" goes through the Date#since/until methods which need to step
-// through "set" methods for higher order units (anything above hours). Doing
-// this can occasionally result in a forward DST shift -- when a date will move
-// forward an hour because the target date does not exist (as it is during the
-// shift). While this can be compensated for internally when traversing, nothing
-// can be done if the date has already jumped forward. In other words,
-// "12 months ago" is not always "12 months ago" because at the point of the
-// date being created it may have shifted forward in time by 1 hour. These tests
-// should technically be rewritten to account for this, however the complexity
-// of timezones and locales makes this prohibitive. It is also impossible to be
-// sure that the shift is actually occurring or the date landed on was
-// coincidentally an hour after a DST shift. Note that this issue does not exist
-// in Fall as there are no gaps in the clock. Conversely "set" methods do not
-// work so absolute time needs to be used with "setTime".
 assertRelative = function(format, expected) {
-  var d = testCreateDate(format, 'en');
-  if (!mayHaveDSTShifted(d)) {
-    equal(run(d, 'relative'), expected, 'relative | ' + format);
-  }
+  equal(run(testCreateDate(format, 'en'), 'relative'), expected, 'relative | ' + format);
 }
 
 assertFormatShortcut = function (d, name, expected, localeCode) {
