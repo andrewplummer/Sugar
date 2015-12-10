@@ -95,12 +95,12 @@ package('Dates Finnish', function () {
     dateEqual(testCreateDate('seuraava kuukausi'),  getRelativeDate(null,  1), 'next month | seuraava');
     dateEqual(testCreateDate('ensi kuussa'),        getRelativeDate(null,  1), 'next month | ensi');
 
-    dateEqual(testCreateDate('viime vuosi'),  getRelativeDate(-1),         'last year | vuosi');
-    dateEqual(testCreateDate('viime vuonna'), getRelativeDate(-1),         'last year | vuonna');
-    dateEqual(testCreateDate('ensi vuosi'),   getRelativeDate(1),          'next year | vuosi');
-    dateEqual(testCreateDate('ensi vuonna'),  getRelativeDate(1),          'next year | vuonna');
-    dateEqual(testCreateDate('tämä vuosi'),   dstSafe(getRelativeDate(0)), 'this year | vuosi');
-    dateEqual(testCreateDate('tänä vuonna'),  dstSafe(getRelativeDate(0)), 'this year | vuonna');
+    dateEqual(testCreateDate('viime vuosi'),  getRelativeDate(-1), 'last year | vuosi');
+    dateEqual(testCreateDate('viime vuonna'), getRelativeDate(-1), 'last year | vuonna');
+    dateEqual(testCreateDate('ensi vuosi'),   getRelativeDate(1),  'next year | vuosi');
+    dateEqual(testCreateDate('ensi vuonna'),  getRelativeDate(1),  'next year | vuonna');
+    dateEqual(testCreateDate('tämä vuosi'),   getRelativeDate(0),  'this year | vuosi');
+    dateEqual(testCreateDate('tänä vuonna'),  getRelativeDate(0),  'this year | vuonna');
 
     dateEqual(testCreateDate('ensi maanantai'),    getDateWithWeekdayAndOffset(1, 7),  'next monday');
     dateEqual(testCreateDate('viime maanantai'),   getDateWithWeekdayAndOffset(1, -7), 'last monday');

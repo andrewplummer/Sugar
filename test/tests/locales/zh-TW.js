@@ -60,8 +60,8 @@ package('Dates Traditional Chinese', function () {
     dateEqual(testCreateDate('大後天'), run(getRelativeDate(null, null, 3), 'reset'), 'day after day after tomorrow');
 
     dateEqual(testCreateDate('上週'), getRelativeDate(null, null, -7), 'Last week');
-    dateEqual(testCreateDate('這週'), dstSafe(getRelativeDate(null, null, 0)), 'This week');
-    dateEqual(testCreateDate('下週'), getRelativeDate(null, null, 7), 'Next week');
+    dateEqual(testCreateDate('這週'), getRelativeDate(null, null, 0),  'This week');
+    dateEqual(testCreateDate('下週'), getRelativeDate(null, null, 7),  'Next week');
 
     dateEqual(testCreateDate('上個月'), getRelativeDate(null, -1), 'last month');
     dateEqual(testCreateDate('這個月'), getRelativeDate(null, 0), 'this month');
