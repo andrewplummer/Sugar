@@ -767,17 +767,8 @@ function modularize() {
     function addTopLevel(name, node, type, exports) {
       var core = false, body;
       var pp = path.join(module, type, name);
-      if (type === 'vars') {
-        body = getInnerNodeBody(node).replace(/\s+=\s+/, ' = ');
-        var match = body.match(/^[\w.]+ = ([\w.]+)$/);
-        if (match) {
-          // If the var is just a simple property assignment,
-          // then just set it directly to the exports.
-          exports = match[1];
-          body = null;
-        } else {
-          body = 'var ' + getInnerNodeBody(node) + ';';
-        }
+      if (type === 'vars' || type === 'constants') {
+        body = 'var ' + getInnerNodeBody(node) + ';';
       } else {
         body = getNodeBody(node);
       }
@@ -1300,7 +1291,7 @@ function modularize() {
     rimraf.sync(NPM_DESTINATION);
   }
 
-  function bundleDeps(sourcePackage) {
+  function bundleSingleDependencies(name, sourcePackage) {
 
     var bundlable = [];
 
@@ -1313,6 +1304,8 @@ function modularize() {
         }
       });
       sourcePackage.body = package.body + BLOCK_DELIMITER + sourcePackage.body;
+      sourcePackage.init = (package.init || '') + (sourcePackage.init || '');
+
       delete topLevel[package.name];
     }
 
@@ -1328,9 +1321,15 @@ function modularize() {
       return exists;
     }
 
-    sourcePackage.dependencies.forEach(function(d) {
-      if (!otherDependencyExists(topLevel, d) && !otherDependencyExists(sugarMethods, d)) {
-        bundlable.push(topLevel[d]);
+    function dependencyCanBeBundled(dep) {
+      return !otherDependencyExists(topLevel, dep) &&
+             !otherDependencyExists(sugarMethods, dep) &&
+             !topLevel[dep].alias;
+    }
+
+    sourcePackage.dependencies.forEach(function(dep) {
+      if (dependencyCanBeBundled(dep)) {
+        bundlable.push(topLevel[dep]);
       }
     });
 
@@ -1345,6 +1344,15 @@ function modularize() {
     });
 
     bundlable.forEach(bundleDependency);
+  }
+
+  function exportTopLevel() {
+    iter(topLevel, bundleSingleDependencies);
+    iter(topLevel, writeTopLevel);
+  }
+
+  function exportSugarMethods() {
+    iter(sugarMethods, writeTopLevel);
   }
 
   cleanBuild();
@@ -1366,11 +1374,8 @@ function modularize() {
   //parseModule('es5'); + 1
   //parseModule('es6'); + 2
 
-  bundleDeps(topLevel['handleDeepProperty']);
-  bundleDeps(topLevel['toQueryString']);
-
-  iter(topLevel, writeTopLevel);
-  iter(sugarMethods, writeTopLevel);
+  exportTopLevel();
+  exportSugarMethods();
 
 }
 
