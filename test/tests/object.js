@@ -342,7 +342,7 @@ package('Object', function () {
 
     var obj1 = { d: testClone(d1) };
     var obj2 = { d: testClone(d2) };
-    var result = run(Object, 'merge', [obj1, obj2]);
+    var result = run(obj1, 'merge', [obj2]);
     equal(result.d, d2, 'dates in non-deep merge should be equal by reference');
 
     var obj1 = { d: testClone(d1) };
@@ -359,29 +359,22 @@ package('Object', function () {
 
     var r1 = /foo/gi;
     var r2 = /bar/gi;
-    var result = run(r1, 'merge', [r2]);
-    equal(result, r2, 'regexes merged as objects are simply overwritten');
-    equal(result === r2, false, 'result is cloned');
 
     var obj1 = { r: r1 };
     var obj2 = { r: r2 };
-    var result = run(Object, 'merge', [obj1, obj2]);
+    var result = run(obj1, 'merge', [obj2]);
     equal(result.r, r2, 'regexes in non-deep merge should be equal by reference');
 
     var obj1 = { r: r1 };
     var obj2 = { r: r2 };
-    var opts = { deep: true };
-    var result = run(Object, 'merge', [obj1, obj2, opts]);
-    equal(result.r !== r2, true, 'regexes in deep merge should not be equal by reference');
-    equal(result.r.source, r2.source, 'regexes in deep merge should have same source');
-    equal(result.r.global, r2.global, 'regexes in deep merge should both have same global flag');
-    equal(result.r.ignoreCase, r2.ignoreCase, 'regexes in deep merge should both have same ignoreCase flag');
+    var result = run(obj1, 'merge', [obj2, {deep:true}]);
+    equal(result.r === r2, true, 'regexes in deep merge conflict should be overwritten by reference');
 
     var obj1 = { r: r1 };
     var obj2 = { r: r2 };
     var opts = { deep: true, resolve: false };
-    var result = run(Object, 'merge', [obj1, obj2, opts]);
-    equal(result.r === r1, true, 'resolve false should be original regex');
+    var result = run(obj1, 'merge', [obj2, opts]);
+    equal(result.r === r1, true, 'regex in deep merge conflict resolve false should be original regex');
 
 
     // Merging functions
@@ -389,11 +382,11 @@ package('Object', function () {
     var fn = function() {};
     fn.foo = 'bar';
     var opts = {};
-    var result = run(Object, 'merge', [function(){}, fn, opts])
+    var result = run(function(){}, 'merge', [fn, opts])
     equal(result.foo, 'bar', 'functions properties are merged');
 
     var opts = { deep: true };
-    var result = run(Object, 'merge', [{}, {a:{b:fn}}, opts])
+    var result = run({}, 'merge', [{a:{b:fn}}, opts])
     equal(result.a.b === fn, true, 'functions are not deep merged');
     equal(result.a.b.foo, 'bar', 'function property exists in merged object');
 
@@ -410,7 +403,7 @@ package('Object', function () {
     fn2.foo = 'b';
     var obj1 = { fn: fn1 };
     var obj2 = { fn: fn2 };
-    var result = run(Object, 'merge', [obj1, obj2, { deep: true }]);
+    var result = run(obj1, 'merge', [obj2, { deep: true }]);
     equal(result.fn(), 'b', 'override merge should choose function b');
     equal(result.fn.foo, 'b', 'override merge should choose function b | fn property');
 
@@ -425,7 +418,7 @@ package('Object', function () {
     fn2.foo = 'b';
     var obj1 = { fn: fn1 };
     var obj2 = { fn: fn2 };
-    var result = run(Object, 'merge', [obj1, obj2, { resolve: false }]);
+    var result = run(obj1, 'merge', [obj2, { resolve: false }]);
     equal(result.fn(), 'a', 'non-override merge should choose function a');
     equal(result.fn.foo, 'a', 'non-override merge should choose function a | fn property');
 
@@ -479,7 +472,7 @@ package('Object', function () {
       return 1;
     }
     var opts = { deep: true, resolve: fn };
-    var result = run(Object, 'merge', [{}, obj, opts]);
+    var result = run({}, 'merge', [obj, opts]);
     equal(count, 1, 'resolve function should have been called once');
     equal(result, {a:1}, 'returning defined value in resolve function should not traverse further into that object');
 
@@ -503,13 +496,13 @@ package('Object', function () {
 
       var opts = { descriptor: true };
       var obj = getAccessorObject();
-      var result = run(Object, 'merge', [{}, obj]);
+      var result = run({}, 'merge', [obj]);
       result.data.label = 'bar';
       equal(result.label, 'foo', 'basic merge does not support property descriptors');
 
       var opts = { descriptor: true };
       var obj = getAccessorObject();
-      var result = run(Object, 'merge',  [{}, obj, opts]);
+      var result = run({}, 'merge',  [obj, opts]);
       result.data.label = 'bar';
       equal(result.label, 'bar', 'property getter merged');
       result.label = 'car';
@@ -517,7 +510,7 @@ package('Object', function () {
 
       var opts = { deep: true, descriptor: true };
       var obj = { foo: getAccessorObject() }
-      var result = run(Object, 'merge',  [{}, obj, opts]);
+      var result = run({}, 'merge',  [obj, opts]);
       equal(result.foo !== obj.foo, true, 'object was deeply merged');
       result.foo.label = 'bar';
       equal(result.foo.data.label, 'bar', 'deep property setter merged');
@@ -525,41 +518,41 @@ package('Object', function () {
       var opts = { hidden: true };
       var obj1 = [1,2,3,4];
       var obj2 = [1,2,3];
-      var result = run(Object, 'merge',  [obj1, obj2, opts]);
+      var result = run(obj1, 'merge',  [obj2, opts]);
       equal(result, [1,2,3], 'merging non-enumerable properties includes array.length');
 
       var opts = { hidden: true, deep: true };
       var obj1 = { foo: [1,2,3,4] };
       var obj2 = { foo: [1,2,3] };
-      var result = run(Object, 'merge',  [obj1, obj2, opts]);
+      var result = run(obj1, 'merge',  [obj2, opts]);
       equal(result.foo, [1,2,3], 'deep merging non-enumerable properties includes array.length');
 
       // Non-enumerated properties
 
       var obj = getDescriptorObject();
-      var result = run(Object, 'merge',  [{}, obj]);
+      var result = run({}, 'merge',  [obj]);
       equal(result.foo, undefined, 'default non-enumerable property is not merged');
 
       var opts = { hidden: true };
       var obj = getDescriptorObject();
-      var result = run(Object, 'merge',  [{}, obj, opts]);
+      var result = run({}, 'merge',  [obj, opts]);
       equal(result.foo, 'bar', 'non-enumerable property merged with hidden flag on');
 
       var opts = { hidden: true };
       var obj = {
         yo: getDescriptorObject()
       }
-      var result = run(Object, 'merge',  [{}, obj, opts]);
+      var result = run({}, 'merge',  [obj, opts]);
       equal(result.yo.foo, 'bar', 'deep non-enumerable property merged with hidden flag on');
 
       var opts = { descriptor: true, hidden: true };
       var obj = getDescriptorObject();
-      var result = run(Object, 'merge',  [{}, obj, opts]);
+      var result = run({}, 'merge',  [obj, opts]);
       raisesError(function() { result.foo = 'moo'; }, 're-assignment of non-writable property raises error');
 
       var obj1 = getDescriptorObject();
       var obj2 = { foo: 'bar' }
-      raisesError(function() { run(Object, 'merge',  [obj1, obj2]); }, 'merging into read-only property raises error');
+      raisesError(function() { run(obj1, 'merge',  [obj2]); }, 'merging into read-only property raises error');
 
     }
 
@@ -594,7 +587,7 @@ package('Object', function () {
     }
 
     var Foo = function() {};
-    raisesError(function(){ run(Object, 'merge', [{}, {x: new Foo}, {deep:true}]); }, 'should raise an error if clone is not a basic object type');
+    raisesError(function(){ run({}, 'merge', [{x: new Foo}, {deep:true}]); }, 'should raise an error if clone is not a basic object type');
 
     var fn = function(key, a, b) {
       if (b instanceof Foo) {
@@ -619,7 +612,7 @@ package('Object', function () {
     // var a = {};
     // a.a = a;
     // var opts = { deep: true };
-    // raisesError(function() { run(Object, 'merge', [{}, a, opts]); }, 'does not work on cyclical objects', RangeError);
+    // raisesError(function() { run({}, 'merge', [a, opts]); }, 'does not work on cyclical objects', RangeError);
 
 
     // Complex
@@ -807,7 +800,7 @@ package('Object', function () {
     var obj3 = {c:'c'};
 
     var target = {};
-    var result = run(Object, 'mergeAll', [target, [obj1, obj2, obj3]]);
+    var result = run(target, 'mergeAll', [[obj1, obj2, obj3]]);
     equal(target, {a:'a',b:'b',c:'c'}, 'All objects should be merged into the result');
     equal(obj1, {a:'a'}, 'object 1 should be unchanged');
     equal(obj2, {b:'b'}, 'object 2 should be unchanged');
@@ -818,7 +811,7 @@ package('Object', function () {
     testStaticAndInstance({foo:3}, [[{foo:4},{foo:5}]], {foo:5}, 'last wins');
     testStaticAndInstance({foo:3}, [[{foo:4},{bar:5}],{resolve:false}], {foo:3,bar:5}, 'used as defaults');
 
-    var result = run(Object, 'mergeAll', [{}, [{one:obj1}],{deep:true}]);
+    var result = run({}, 'mergeAll', [[{one:obj1}],{deep:true}]);
     equal(result, {one:{a:'a'}}, true, 'object was merged');
     equal(result.one === obj1, false, 'object was deep merged');
 
@@ -830,7 +823,7 @@ package('Object', function () {
     if (definePropertySupport) {
       var obj1 = getAccessorObject('one');
       var obj2 = getAccessorObject('two');
-      var result = run(Object, 'mergeAll',  [{}, [obj1, obj2], {descriptor:true}]);
+      var result = run({}, 'mergeAll',  [[obj1, obj2], {descriptor:true}]);
       result.data.one = 'hoo';
       result.data.two = 'ha';
       equal(result.one + result.two, 'hooha', 'both descriptors were merged');
