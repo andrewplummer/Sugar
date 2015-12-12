@@ -467,7 +467,9 @@ function modularize() {
   function iter(obj, fn) {
     for (var key in obj) {
       if(!obj.hasOwnProperty(key)) continue;
-      fn(key, obj[key]);
+        if(fn(key, obj[key]) === false) {
+          break;
+        }
     };
   }
 
@@ -1298,6 +1300,53 @@ function modularize() {
     rimraf.sync(NPM_DESTINATION);
   }
 
+  function bundleDeps(sourcePackage) {
+
+    var bundlable = [];
+
+    function bundleDependency(package) {
+      var deps = sourcePackage.dependencies;
+      deps.splice(deps.indexOf(package.name), 1);
+      package.dependencies.forEach(function(d) {
+        if (d !== sourcePackage.name && deps.indexOf(d) === -1) {
+          deps.push(d);
+        }
+      });
+      sourcePackage.body = package.body + BLOCK_DELIMITER + sourcePackage.body;
+      delete topLevel[package.name];
+    }
+
+    function otherDependencyExists(packages, depName) {
+      var exists = false;
+      iter(packages, function(packageName, package) {
+        var deps = package.dependencies;
+        if (deps && deps.indexOf(depName) !== -1 && packageName !== sourcePackage.name) {
+          exists = true;
+          return false;
+        }
+      });
+      return exists;
+    }
+
+    sourcePackage.dependencies.forEach(function(d) {
+      if (!otherDependencyExists(topLevel, d) && !otherDependencyExists(sugarMethods, d)) {
+        bundlable.push(topLevel[d]);
+      }
+    });
+
+    bundlable.sort(function(a, b) {
+      if (a.type === b.type) {
+        return 0;
+      } else if (a.type === 'vars') {
+        return -1;
+      } else {
+        return 1;
+      }
+    });
+
+    bundlable.forEach(bundleDependency);
+  }
+
   cleanBuild();
 
   parseModule('common', false);
@@ -1316,6 +1365,9 @@ function modularize() {
 
   //parseModule('es5'); + 1
   //parseModule('es6'); + 2
+
+  bundleDeps(topLevel['handleDeepProperty']);
+  bundleDeps(topLevel['toQueryString']);
 
   iter(topLevel, writeTopLevel);
   iter(sugarMethods, writeTopLevel);
