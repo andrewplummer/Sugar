@@ -330,30 +330,38 @@ package('Object', function () {
 
     var d1 = new Date(2015, 9, 13);
     var d2 = new Date(2015, 9, 14);
-    test(d1, [d2], d1, 'dates merged as objects have no enumerable properties');
 
-    var obj1 = { d: d1 };
-    var obj2 = { d: d2 };
+    var result = run(testClone(d1), 'merge', [testClone(d2)]);
+    equal(result, d2, 'should merge one date into another');
+    equal(result === d2, false, 'result of date merge should not be the same object');
+
+    var d = testClone(d1);
+    var result = run(d, 'merge', [testClone(d2),{resolve:false}]);
+    equal(result === d, true, 'resolve false date should be original date object');
+    equal(result.getTime() === d1.getTime(), true, 'resolve false date merge should be untouched');
+
+    var obj1 = { d: testClone(d1) };
+    var obj2 = { d: testClone(d2) };
     var result = run(Object, 'merge', [obj1, obj2]);
     equal(result.d, d2, 'dates in non-deep merge should be equal by reference');
 
-    var obj1 = { d: d1 };
-    var obj2 = { d: d2 };
-    var opts = { deep: true };
-    var result = run(Object, 'merge', [obj1, obj2, opts]);
-    equal(result.d !== d2, true, 'dates in deep merge should not be equal by reference');
-    equal(result.d.getTime(), d2.getTime(), 'dates in deep merge should be equal by value');
+    var obj1 = { d: testClone(d1) };
+    var obj2 = { d: testClone(d2) };
+    var result = run(obj1, 'merge', [obj2,{deep:true}]);
+    equal(result.d === d2, false, 'dates in deep merge should not be equal by reference');
+    equal(result.d.getTime(), obj2.d.getTime(), 'Conflicted deep date should have time value of source');
 
-    var obj1 = { d: d1 };
-    var obj2 = { d: d2 };
-    var opts = { deep: true, resolve: false };
-    var result = run(Object, 'merge', [obj1, obj2, opts]);
-    equal(result.d === d1, true, 'resolve false should be original date');
-
+    var obj1 = { d: testClone(d1) };
+    var obj2 = { d: testClone(d2) };
+    var result = run(obj1, 'merge', [obj2,{deep:true,resolve:false}]);
+    equal(result.d === obj1.d, true, 'deep merged resolve false date should be original date object');
+    equal(result.d.getTime() === d1.getTime(), true, 'deep merged resolve false date merge should be untouched');
 
     var r1 = /foo/gi;
     var r2 = /bar/gi;
-    test(r1, [r2], r1, 'regexes merged as objects have no enumerable properties');
+    var result = run(r1, 'merge', [r2]);
+    equal(result, r2, 'regexes merged as objects are simply overwritten');
+    equal(result === r2, false, 'result is cloned');
 
     var obj1 = { r: r1 };
     var obj2 = { r: r2 };
@@ -557,7 +565,14 @@ package('Object', function () {
 
     // Non-standard merges
 
-    test('a', ['b'], 'a', 'two strings');
+    test(undefined, ['b'], 'b', 'merge string into undefined');
+    test(undefined, [{a:'a'}], {a:'a'}, 'merge object into undefined');
+    test(null, ['b'], 'b', 'merge string into null');
+    test(null, [{a:'a'}], {a:'a'}, 'merge object into null');
+    test('a', ['b'], 'b', 'merge string into string');
+    test('a', [{a:'a'}], {a:'a'}, 'merge object into string');
+    test(0, ['b'], 'b', 'merge string into 0');
+    test(0, [{a:'a'}], {a:'a'}, 'merge object into 0');
     test([1,2,3,4], [[4,5,6]], [4,5,6,4], 'two arrays');
 
     var a = [1];

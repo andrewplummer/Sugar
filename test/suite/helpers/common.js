@@ -22,35 +22,47 @@ testIsDate = function(obj) {
   return testGetClass(obj) === '[object Date]';
 }
 
+testIsFunction = function(obj) {
+  return testGetClass(obj) === '[object Function]';
+}
+
 testGetPrivateProp = function(obj, name) {
   return obj['_sugar_' + name];
 }
 
 testClone = function (obj) {
-  var klass = testGetClass(obj);
-  var result = testIsArray(obj, klass) ? [] : {}, key, val;
-  if (typeof obj === 'string' || typeof obj === 'number' || typeof obj === 'boolean') {
+  if (obj == null || typeof obj === 'string' || typeof obj === 'number' || typeof obj === 'boolean') {
+    return obj;
+  }
+  if (testIsDate(obj)) {
+    return new Date(obj.getTime());
+  } else if (testIsRegExp(obj)) {
+    return testCloneRegExp(obj);
+  } else if (testIsFunction(obj)) {
+    // Will not clone functions
     return obj;
   }
   if (obj && typeof obj.valueOf() === 'string' && obj.length > 0 && !obj.hasOwnProperty(0)) {
     testForceStringCoercion(obj);
   }
+  var result = testIsArray(obj) ? [] : {}, key;
   for(key in obj) {
     if(!obj.hasOwnProperty(key)) continue;
-    var val = obj[key];
-    if (testIsDate(val)) {
-      val = new Date(val.getTime());
-    } else if (testIsRegExp(val)) {
-      val = new RegExp(val);
-    } else if (val && typeof val === 'object') {
-      val = testClone(val);
-    }
-    result[key] = val;
+    result[key] = testClone(obj[key]);
   }
   if (obj && typeof obj === 'object' && obj.hasOwnProperty('toString')) {
     result['toString'] = obj['toString'];
   }
   return result;
+}
+
+testCloneRegExp = function(reg) {
+  var flags = '';
+  if (reg.global)     flags += 'g';
+  if (reg.ignoreCase) flags += 'i';
+  if (reg.multiline)  flags += 'm';
+  if (reg.sticky)     flags += 'y';
+  return RegExp(reg.source, flags);
 }
 
 testForceStringCoercion = function(obj) {
