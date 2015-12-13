@@ -453,6 +453,7 @@ function modularize() {
   var NPM_DESTINATION = 'release/npm/sugar';
   var WHITELISTED = ['arguments', 'undefined', 'NaN', 'btoa', 'atob'];
   var BLOCK_DELIMITER = '\n\n';
+  var POLYFILL_MODULE_REG = /^es[56]$/;
 
   var DECLARES_PREAMBLE = [
     '// Exported function declaration was hoisted here',
@@ -463,6 +464,7 @@ function modularize() {
 
   var topLevel = {};
   var sugarMethods = {};
+  var modulePackages = {};
 
   function iter(obj, fn) {
     for (var key in obj) {
@@ -684,9 +686,12 @@ function modularize() {
       return namespace;
     }
 
-    function getFullMethodKey(node, name) {
-      var namespace = getNamespaceForNode(node);
-      return namespace + '|' + name;
+    function getFullMethodKeyForNode(node, name) {
+      return getFullMethodKey(getNamespaceForNode(node), name);
+    }
+
+    function getFullMethodKey(namespace, name) {
+      return module + '|' + namespace + '|' + name;
     }
 
     function processTopLevelNode(node) {
@@ -720,7 +725,7 @@ function modularize() {
       return node.type === 'ExpressionStatement' &&
              node.expression.type === 'CallExpression' &&
              node.expression.callee.name &&
-             !!node.expression.callee.name.match(/^define(Static|Instance(AndStatic)?)(WithArguments)?$/);
+             !!node.expression.callee.name.match(/^define(Static|Instance(AndStatic)?)(Polyfill|WithArguments)?$/);
     }
 
     function isSimilarMethodBlock(node) {
@@ -765,8 +770,8 @@ function modularize() {
     }
 
     function addTopLevel(name, node, type, exports) {
-      var core = false, body;
-      var pp = path.join(module, type, name);
+      var core = false, body, packagePath;
+      packagePath = path.join(module, type, name);
       if (type === 'vars' || type === 'constants') {
         body = 'var ' + getInnerNodeBody(node) + ';';
       } else {
@@ -782,7 +787,6 @@ function modularize() {
         core = true;
       }
       var package = {
-        path: pp,
         node: node,
         name: name,
         type: type,
@@ -790,6 +794,7 @@ function modularize() {
         body: body,
         module: module,
         exports: exports,
+        path: packagePath,
         dependencies: deps,
       };
       // "Top level" are all "globals", so no collisions
@@ -810,7 +815,10 @@ function modularize() {
     }
 
     function addSugarMethod(name, node, opts) {
-      var namespace = getNamespaceForNode(node), body, deps;
+      var namespace, body, deps, exports, packagePath, isPolyfill;
+
+      namespace = getNamespaceForNode(node);
+      isPolyfill = !!module.match(POLYFILL_MODULE_REG);
 
       if (opts.body) {
         // If the method has a body then get its dependencies. A method may be
@@ -825,17 +833,27 @@ function modularize() {
           body = [ init + '({', '', body, '', '});'].join('\n');
         }
       }
-      var sp = path.join(namespace.toLowerCase(), name);
 
-      sugarMethods[getFullMethodKey(node, name)] = {
+      if (isPolyfill) {
+        // If the module is ES5 or ES6, then these methods are polyfills, so
+        // put them into their own directory to avoid collisions and also to
+        // be more explicit.
+        packagePath = path.join('polyfills', namespace.toLowerCase(), name);
+      } else {
+        packagePath = path.join(namespace.toLowerCase(), name);
+        exports = ['Sugar', namespace, name].join('.');
+      }
+
+      var methodKey = getFullMethodKeyForNode(node, name);
+      sugarMethods[methodKey] = {
         core: true,
         name: name,
         body: body,
         module: module,
+        exports: exports,
         dependencies: deps,
         requires: opts.requires,
-        path: sp,
-        exports: ['Sugar', namespace, name].join('.'),
+        path: packagePath,
       };
     }
 
@@ -1019,7 +1037,16 @@ function modularize() {
             // comment block and get them from there.
             methodNames = getAllMethodNamesInPreviousComment(node);
           }
+          var sugarDepReg = /^sugar(Object|Array|String|Number|RegExp|Function|Date|)$/;
+          var allDependencies = getDependencies(mainPackage.name, node.expression.arguments[2]);
+          var sugarDependencies = allDependencies.filter(function(dep) {
+            return sugarDepReg.test(dep);
+          });
           methodNames.forEach(function(name) {
+            sugarDependencies.forEach(function(dep) {
+              var namespace = dep.match(sugarDepReg)[1];
+              addRequiresToPackage(mainPackage, getFullMethodKey(namespace, name));
+            });
             addSugarMethod(name, node, {
               requires: [mainPackage.name]
             });
@@ -1027,9 +1054,11 @@ function modularize() {
         } else if (isAliasExpression(node)) {
           var name = node.expression.arguments[1].value;
           var sourceName = node.expression.arguments[2].value;
+          var sugarMethodName = getFullMethodKeyForNode(node, sourceName);
           addSugarMethod(name, node, {
-            requires: [getFullMethodKey(node, sourceName), mainPackage.name]
+            requires: [mainPackage.name]
           });
+          addRequiresToPackage(mainPackage, sugarMethodName);
         }
       });
     }
@@ -1039,23 +1068,24 @@ function modularize() {
       var sourceName = node.expression.arguments[2].value;
       addSugarMethod(name, node, {
         body: true,
-        requires: [getFullMethodKey(node, sourceName)],
+        requires: [getFullMethodKeyForNode(node, sourceName)],
       });
     }
 
     function writeModulePackage() {
       var body = [], modulePackage;
+      modulePackage = {
+        path: path.join(module, 'index'),
+        exports: 'core',
+      };
       iter(sugarMethods, function(name, sugarMethod) {
         if (sugarMethod.module === module) {
-          modulePackage = {
-            path: path.join(module, 'index'),
-            exports: 'core',
-          };
           body.push("require('"+ getRequirePath(modulePackage, sugarMethod) +"');");
         }
       });
-      modulePackage.body = body.sort().join('\n'),
+      modulePackage.body = body.sort().join('\n');
       writePackage(modulePackage);
+      modulePackages[module] = modulePackage;
     }
 
     filePath = 'lib/' + module + '.js'
@@ -1093,7 +1123,19 @@ function modularize() {
     if (p.charAt(0) !== '.') {
       p = './' + p;
     }
+    p = p.replace(/\/index$/, '');
     return p;
+  }
+
+  function addRequiresToPackage(package, add) {
+    addToPackage(package, 'requires', add);
+  }
+
+  function addToPackage(package, field, add) {
+    if (!package[field]) {
+      package[field] = [];
+    }
+    package[field] = package[field].concat(add);
   }
 
   function writePackage(package) {
@@ -1137,7 +1179,7 @@ function modularize() {
 
 
     function getAssignName(str) {
-      return str.replace(/^\w+\|/, '');
+      return str.replace(/\w+\|/g, '');
     }
 
     function getRequire(p) {
@@ -1282,7 +1324,7 @@ function modularize() {
     writePackage({
       path: path.join('locales', path.basename(l, '.js')),
       body: fs.readFileSync(l, 'utf-8').replace(/^Sugar\.Date\./gm, ''),
-      dependencies: ['Date|addLocale'],
+      dependencies: ['date|Date|addLocale'],
     });
   }
 
@@ -1355,6 +1397,35 @@ function modularize() {
     iter(sugarMethods, writeTopLevel);
   }
 
+  function exportMain() {
+    var modules = [];
+    var mainPackage = {
+      path: 'index',
+      exports: 'core',
+    };
+    iter(modulePackages, function(name, modulePackage) {
+      modules.push({
+        name: name,
+        body: "require('"+ getRequirePath(mainPackage, modulePackage) +"');"
+      });
+    });
+    modules.sort(function(a, b) {
+      var aPolyfill = !!a.name.match(POLYFILL_MODULE_REG);
+      var bPolyfill = !!b.name.match(POLYFILL_MODULE_REG);
+      if (aPolyfill === bPolyfill) {
+        return 0;
+      } else if (aPolyfill) {
+        return -1;
+      } else if (bPolyfill) {
+        return 1;
+      }
+    });
+    mainPackage.body = modules.map(function(m) {
+      return m.body;
+    }).join('\n');
+    writePackage(mainPackage);
+  }
+
   cleanBuild();
 
   parseModule('common', false);
@@ -1369,13 +1440,15 @@ function modularize() {
   parseModule('object');
   parseModule('date');
 
+  parseModule('es5');
+  parseModule('es6');
+
   glob.sync('lib/locales/*.js').forEach(writeLocale);
 
-  //parseModule('es5'); + 1
-  //parseModule('es6'); + 2
 
   exportTopLevel();
   exportSugarMethods();
+  exportMain();
 
 }
 
