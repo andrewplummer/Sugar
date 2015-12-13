@@ -818,18 +818,36 @@ function modularize() {
       }
     }
 
-    function getLastCommentForNode(node) {
-      var line = node.loc.start.line, comment;
+    function getLastCommentForNode(node, limit) {
+      var line = node.loc.start.line, count = 0, comment;
       while (!comment && line > 0) {
         comment = commentsByEndLine[--line];
+        count++;
+        if (limit && count == limit) {
+          break;
+        }
       }
-      return comment;
+      if (comment) {
+        if (!comment.block) {
+          var lines = [comment.text];
+          while (comment = commentsByEndLine[--line]) {
+            if (!comment.block) {
+              lines.unshift(comment.text);
+            }
+          }
+          return lines.map(function(l) {
+            return '\/\/ ' + l;
+          }).join('\n');
+        } else {
+          return '\/*' + comment.text + '*\/';
+        }
+      }
     }
 
     function getAllMethodNamesInPreviousComment(node) {
       var names = [];
       var comment = getLastCommentForNode(node);
-      var blocks = comment.text.split('***');
+      var blocks = comment.split('***');
       blocks.forEach(function(block) {
         var match = block.match(/@set([^@\/]+)/);
         if (match) {
@@ -888,6 +906,12 @@ function modularize() {
 
     function addTopLevel(name, node, type, isVar) {
       var body = isVar ? getVarBody(node) : getNodeBody(node);
+      if (!isVar) {
+        var comment = getLastCommentForNode(node, 1);
+        if (comment) {
+          body = [comment, body].join('\n');
+        }
+      }
       var package = {
         node: node,
         name: name,
