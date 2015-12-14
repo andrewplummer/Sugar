@@ -417,7 +417,7 @@ gulp.task('npm:min', function() {
 //      that require all methods defined in that module. Finally, it will create
 //      one main entry point for default modules. Local variables whose first
 //      letter is capital are separated into "constants", those with a lowercase
-//      first letter are "locals", and function definitions are "internal".
+//      first letter are "vars", and function definitions are "internal".
 //
 //  2.  Any function call in the top scope is considered to be a "build function".
 //      These are used to define similar methods or programmatically build up
@@ -427,12 +427,12 @@ gulp.task('npm:min', function() {
 //  3.  If a build function is used to build only a single variable, then it will
 //      add itself to that variable package and initialize itself before exporting.
 //
-//  4.  Variables defined in the same "var" block will be bundled together into a
-//      single package exporting multiple variables. Dependencies will be aliased
-//      to this bundled pacakge.
-//
-//  5.  Build functions that do not reassign any top scope variables will have no
+//  4.  Build functions that do not reassign any top scope variables will have no
 //      exports, but may be required by Sugar method defining packages.
+//
+//  5.  Variables defined in the same "var" block will be bundled together into a
+//      single package exporting multiple variables. Dependencies will be aliased
+//      to this bundled package.
 //
 //  6.  Defining methods inside a build function must use the standard core methods
 //      "defineInstance", "defineStatic", etc. When using "defineInstanceSimilar",
@@ -444,11 +444,12 @@ gulp.task('npm:min', function() {
 //  7.  Build methods may not call defined Sugar methods. Refactor to use a top
 //      level internal method instead.
 //
-//  8.  Simple, "hanging" circular dependencies (ie. "a" requires "b", "b" requires
-//      "a", but "b" is only required by "a" where "a" is also required elsewhere)
-//      will be detected and bundled together to avoid race conditions. However
-//      more complex circular dependences will break this system and should be
-//      refactored.
+//  8.  Packages only required in once place will be bundled together in a multi-
+//      pass bundling phase. This is designed to not only to simplify structure,
+//      but also to prevent circular dependencies to avoid race conditions (ie.
+//      "a" requires "b", "b" requires "a", but "b" is only required by "a" where
+//      "a" is also required elsewhere). However more complex circular dependences
+//      will break this system and should be refactored.
 //
 //  9.  Top level variables must be set once and never reassigned, as the
 //      reference will be broken when being required by different packages.
@@ -523,7 +524,6 @@ function modularize() {
     }
   }
 
-
   var appendDeps     = getPackageModifier('dependencies');
   var appendRequires = getPackageModifier('requires');
 
@@ -534,21 +534,6 @@ function modularize() {
   var prependInit    = getPackageModifier('init', true);
 
   var appendExports  = getPackageModifier('exports');
-
-
-  function addToPackage(package, field, add, before) {
-    if (!add || !add.length) {
-      return;
-    }
-    if (!package[field]) {
-      package[field] = [];
-    }
-    if (before) {
-      package[field] = add.concat(package[field]);
-    } else {
-      package[field] = package[field].concat(add);
-    }
-  }
 
   function getRequirePath(from, to) {
     var p = path.join(path.relative(path.dirname(from.path), path.dirname(to.path)), path.basename(to.path));
@@ -729,8 +714,9 @@ function modularize() {
     }
 
     function isValidDependency(d) {
-      // Remove any local variables, whitelisted tokens like "arguments" and "NaN',
-      // and anything found in the global context here (Array, Object, etc).
+      // Remove any local variables, whitelisted tokens like "arguments" or "NaN",
+      // and anything in the global scope. Cheating a bit here by using the node
+      // global scope instead of more whitelisted tokens.
       return locals.indexOf(d) === -1 && !global[d] && WHITELISTED.indexOf(d) === -1;
     }
 
@@ -738,29 +724,33 @@ function modularize() {
     return deps.filter(isValidDependency);
   }
 
-  function bundleSingleDependencies(name, sourcePackage) {
+  function bundleSingleDependencies(name, targetPackage) {
 
     var bundlable = [];
 
     function bundleDependency(package) {
-      var deps = sourcePackage.dependencies;
+      var deps = targetPackage.dependencies;
+
+      // First remove self from the target's dependencies,
+      // then add source dependencies to the target.
       deps.splice(deps.indexOf(package.name), 1);
       package.dependencies.forEach(function(d) {
-        if (d !== sourcePackage.name && deps.indexOf(d) === -1) {
-          appendDeps(sourcePackage, d);
+        if (d !== targetPackage.name && deps.indexOf(d) === -1) {
+          appendDeps(targetPackage, d);
         }
       });
-      var assigns = [];
+
       // If there are any direct exports in the package to be
       // bundled, then they need to be forced into the body of the
-      // bundlee instead as variable assignments.
+      // target instead as variable assignments.
+      var assigns = [];
       iter(package.directExports, function(name, statement) {
         assigns.push('var ' + name + ' = ' + statement + ';');
       });
 
-      prependBody(sourcePackage, assigns.join('\n'));
-      prependBody(sourcePackage, package.body);
-      prependInit(sourcePackage, package.init);
+      prependBody(targetPackage, assigns.join('\n'));
+      prependBody(targetPackage, package.body);
+      prependInit(targetPackage, package.init);
 
       delete topLevel[package.name];
     }
@@ -769,7 +759,7 @@ function modularize() {
       var exists = false;
       iter(packages, function(packageName, package) {
         var deps = package.dependencies;
-        if (deps && deps.indexOf(depName) !== -1 && packageName !== sourcePackage.name) {
+        if (deps && deps.indexOf(depName) !== -1 && packageName !== targetPackage.name) {
           exists = true;
           return false;
         }
@@ -783,14 +773,15 @@ function modularize() {
              !topLevel[dep].alias;
     }
 
-    if (sourcePackage.dependencies) {
-      sourcePackage.dependencies.forEach(function(dep) {
+    if (targetPackage.dependencies) {
+      targetPackage.dependencies.forEach(function(dep) {
         if (dependencyCanBeBundled(dep)) {
           bundlable.push(topLevel[dep]);
         }
       });
     }
 
+    // Bundle variable types in first.
     bundlable.sort(function(a, b) {
       if (a.type === b.type) {
         return 0;
@@ -1202,24 +1193,14 @@ function modularize() {
     }
 
     function processBuildExpression(node) {
-      var mainPackage, fnPackage, fnCall;
+      var mainPackage, fnPackage, fnCall, assignedVars;
 
       // Build functions can be used in a few different ways. They can build
       // one or more variables for later use and can also define methods. The
-      // general strategy here is to first check for method definitions and
-      // add them, then check the number of undefined variables that require
-      // the function (ie. dependencies of the function that have a simple
-      // declare block but no assignment). If there is only one, then simply
-      // add the build function body, build function dependencies, and build
-      // function call itself to the variable package. If there is more than
-      // one variable being built, then create a new package based on the build
-      // function name, throw everything into it together, and alias all the
-      // variable packages to it.
-
-      fnCall = getNodeBody(node);
-      fnPackage  = topLevel[node.expression.callee.name];
-
-      var assignedVars = [];
+      // general strategy here is to check for variable dependencies that get
+      // reassigned in the build function and remove them from the dependency
+      // list. Then depending on the number of reassigned variables, we can
+      // make a decision about how to bundle the package together.
 
       function isReassignedDependency(node) {
         return isReassignment(node) &&
@@ -1227,36 +1208,42 @@ function modularize() {
                fnPackage.dependencies.indexOf(node.expression.left.name) !== -1;
       }
 
+      fnCall = getNodeBody(node);
+      fnPackage = topLevel[node.expression.callee.name];
+      assignedVars = [];
+
       fnPackage.node.body.body.forEach(function(node) {
         if (isReassignedDependency(node)) {
           assignedVars.push(node.expression.left.name);
         }
       });
 
-      // Do an initial runthrough of the dependencies to
-      // extract those that are unassigned into an array.
+      // Remove the assigned dependencies from the
+      // package as they will be bundled together below.
       fnPackage.dependencies = fnPackage.dependencies.filter(function(name) {
         return assignedVars.indexOf(name) === -1;
       });
 
       if (assignedVars.length === 0) {
 
-        // If there are no unassigned variables at all, then the build
-        // function is simply defining methods, so add the initializing
-        // call and set the final package to allow it to do this.
+        // If there are no unassigned variables at all, then the build function
+        // is simply defining methods which will be parsed below, so simply add
+        // the initializing call to the package.
 
         mainPackage = fnPackage;
         appendInit(fnPackage, fnCall);
-        delete fnPackage.exports; // Nothing to export
 
-        // Still need the build package as it might be reused
+        // Nothing to export
+        delete fnPackage.exports;
+
+        // The build package will be required by any Sugar method it defines
+        // so do not delete the reference here.
 
       } else if (assignedVars.length === 1) {
 
-        // If there is only one unassigned variable then the build function
-        // and its initializing call can simply be added into the variable
-        // package. When a function requires that variable it will then be
-        // built.
+        // If there is only one assigned variable then the build function can
+        // simply be merged into that variable package. When a function requires
+        // that variable it will then be built.
 
         var varPackage = topLevel[assignedVars[0]];
         appendDeps(varPackage, fnPackage.dependencies);
@@ -1270,7 +1257,10 @@ function modularize() {
 
       } else if (assignedVars.length > 1) {
 
-        // Requiring that multiple assigned vars are part of a bundle.
+        // If there are multiple assigned variables then we are requiring that
+        // they be part of a bundle (a single "var" block), so merge the build
+        // function into the bundle.
+
         var bundle = topLevel[topLevel[assignedVars[0]].alias];
 
         if (!bundle) {
@@ -1306,16 +1296,7 @@ function modularize() {
             // comment block and get them from there.
             methodNames = getAllMethodNamesInPreviousComment(node);
           }
-          var sugarDepReg = /^sugar(Object|Array|String|Number|RegExp|Function|Date|)$/;
-          var allDependencies = getDependencies(mainPackage.name, node.expression.arguments[2]);
-          var sugarDependencies = allDependencies.filter(function(dep) {
-            return sugarDepReg.test(dep);
-          });
           methodNames.forEach(function(name) {
-            sugarDependencies.forEach(function(dep) {
-              var namespace = dep.match(sugarDepReg)[1];
-              appendRequires(mainPackage, getFullMethodKey(namespace, name));
-            });
             addSugarBuiltMethod(name, node, mainPackage);
           });
         } else if (isAliasExpression(node)) {
@@ -1365,7 +1346,7 @@ function modularize() {
   }
 
   function exportInternal() {
-    // Experimenting with two passes for better bundling
+    // Two passes seems to be enough to find all hanging deps.
     iter(topLevel, bundleSingleDependencies);
     iter(topLevel, bundleSingleDependencies);
     writePackages(topLevel);
@@ -1541,35 +1522,10 @@ function modularize() {
       return 'var ' + inner + ';';
     }
 
-    function getRequireSortValue(p) {
-      var val = 0;
-      val += +(p.type === 'constants');
-      val += +(p.type === 'vars');
-      val -= p.name.length;
-      return val;
-    }
-
     function getUnnamedRequires() {
       return requires.sort().map(function(dep) {
         return getDependencyRequire(dep, true);
       }).join('\n');
-    }
-
-    function getAssignName(str) {
-      return str.replace(/\w+\|/g, '');
-    }
-
-    function dependencyNeedsAssign(package, dependencyName) {
-      var exports = package.exports;
-      return typeof exports === 'object' && exports.length > 1 && exports.indexOf(dependencyName) !== -1;
-    }
-
-    function getPackageOrAlias(name) {
-      var package = topLevel[name] || sugarMethods[name];
-      if (package.alias) {
-        package = topLevel[package.alias];
-      }
-      return package;
     }
 
     function getAssigns() {
@@ -1587,6 +1543,23 @@ function modularize() {
         }
       }
       return '';
+    }
+
+    function getAssignName(str) {
+      return str.replace(/\w+\|/g, '');
+    }
+
+    function dependencyNeedsAssign(package, dependencyName) {
+      var exports = package.exports;
+      return typeof exports === 'object' && exports.length > 1 && exports.indexOf(dependencyName) !== -1;
+    }
+
+    function getPackageOrAlias(name) {
+      var package = topLevel[name] || sugarMethods[name];
+      if (package.alias) {
+        package = topLevel[package.alias];
+      }
+      return package;
     }
 
     function getExports() {
