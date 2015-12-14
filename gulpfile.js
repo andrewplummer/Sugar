@@ -946,14 +946,16 @@ function modularize() {
     }
 
     function addVariablePackage(node) {
-      var body, directExports;
+      var directExports;
       var name = node.id.name;
       var type = getVarType(name);
-      if (node.init && !node.init.properties) {
+      var body = getVarBodyForNode(node);
+      if (node.init && body.indexOf('\n') === -1) {
+        // Directly export one-liners,
+        // skipping the variable declaration.
         directExports = {};
         directExports[name] = getInnerNodeBody(node.init);
-      } else {
-        body = getVarBodyForNode(node);
+        body = null;
       }
       addTopLevel(name, node, type, body);
       topLevel[name].directExports = directExports;
