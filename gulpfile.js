@@ -909,6 +909,15 @@ function modularize() {
       return module + '|' + namespace + '|' + name;
     }
 
+    function getBundleName(node) {
+      var comment = getLastCommentForNode(node);
+      comment = comment.replace(/^[\s\/]+/, '');
+      var first = comment.charAt(0).toLowerCase();
+      return first + comment.slice(1).replace(/\s(\w)/g, function(m, letter) {
+        return letter.toUpperCase();
+      }).replace(/\W/g, '');
+    }
+
     function getVarBodyForNode(node) {
       return getVarBody(getInnerNodeBody(node).replace(/\s+=\s+/, ' = '));
     }
@@ -961,7 +970,7 @@ function modularize() {
     }
 
     function addVariableBundle(node) {
-      var name = getLastCommentForNode(node).replace(/\W/g, ''), type;
+      var name = getBundleName(node), type;
       var unassignedVars = [];
 
       var bundle = {
