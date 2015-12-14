@@ -427,9 +427,9 @@ gulp.task('npm:min', function() {
 //  3.  If a build function is used to build only a single variable, then it will
 //      add itself to that variable package and initialize itself before exporting.
 //
-//  4.  If multiple variables are built in this way, then the build function will
-//      become its own package, exporting multiple variables. The variable packages
-//      will then become aliases to the new package, and will not be exported.
+//  4.  Variables defined in the same "var" block will be bundled together into a
+//      single package exporting multiple variables. Dependencies will be aliased
+//      to this bundled pacakge.
 //
 //  5.  Build functions that do not reassign any top scope variables will have no
 //      exports, but may be required by Sugar method defining packages.
@@ -454,9 +454,6 @@ gulp.task('npm:min', function() {
 //      reference will be broken when being required by different packages.
 //      Instead use closures or objects to hold references.
 //
-//  10. (TODO) Comments that appear no more than 2 lines before a top level
-//      dependency will be added to the exported package.
-//
 
 function modularize() {
 
@@ -472,9 +469,7 @@ function modularize() {
     'Sugar': {
       type: 'core',
       name: 'Sugar',
-      // TODO: temporary until the core package is created.
-      //path: 'sugar-core',
-      path: '../../../lib/core',
+      path: getSugarCorePath(),
     }
   };
   var sugarMethods = {};
@@ -494,6 +489,13 @@ function modularize() {
 
   // --- Packages ---
 
+
+  function getSugarCorePath(package) {
+    // TODO: temporary until the core package is created.
+    //return 'sugar-core';
+    var base = package ? path.relative(path.dirname(package.path)) : '';
+    return path.join(base, '../../../lib', 'core');
+  }
 
   function getPackageModifier(field, prepend) {
 
@@ -564,8 +566,12 @@ function modularize() {
 
   // --- Dependencies ---
 
-  function getDependencies(name, node, localNodes) {
-    var deps = [], locals = [];
+  function getDependencies(name, node, locals) {
+    var deps = [];
+
+    if (!locals) {
+      locals = [];
+    }
 
     function log() {
       if (name === 'xxx') {
@@ -580,12 +586,6 @@ function modularize() {
       }
     }
 
-    function pushLocalNodes(nodes) {
-      nodes.forEach(function(id) {
-        pushLocal(id.name);
-      });
-    }
-
     function pushDependency(dep) {
       if (deps.indexOf(dep) === -1) {
         log("PUSHING DEPENDENCY", dep);
@@ -595,6 +595,12 @@ function modularize() {
 
     function pushDependencies(arr) {
       arr.forEach(pushDependency);
+    }
+
+    function getLocals(nodes) {
+      return nodes.map(function(id) {
+        return id.name;
+      });
     }
 
     function walk(nodes) {
@@ -619,12 +625,12 @@ function modularize() {
           pushLocal(node.id.name);
           // Recursively get this function's local dependencies.
           // so that flat locals don't clobber them.
-          pushDependencies(getDependencies(name, node.body, node.params));
+          pushDependencies(getDependencies(name, node.body, getLocals(node.params)));
           return;
         case 'FunctionExpression':
           // Recursively get this function's local dependencies.
           // so that flat locals don't clobber them.
-          pushDependencies(getDependencies(name, node.body, node.params));
+          pushDependencies(getDependencies(name, node.body, getLocals(node.params)));
           return;
         case 'CatchClause':
           pushLocal(node.param);
@@ -726,11 +732,6 @@ function modularize() {
       // Remove any local variables, whitelisted tokens like "arguments" and "NaN',
       // and anything found in the global context here (Array, Object, etc).
       return locals.indexOf(d) === -1 && !global[d] && WHITELISTED.indexOf(d) === -1;
-    }
-
-    if (localNodes) {
-      // TODO: make this "getLocals", then forward...
-      pushLocalNodes(localNodes);
     }
 
     walk(node);
@@ -964,10 +965,6 @@ function modularize() {
     function addFunctionPackage(node) {
       var name = node.id.name;
       var body = getNodeBody(node);
-      var comment = getLastCommentForNode(node, 1);
-      if (comment) {
-        body = [comment, body].join('\n');
-      }
       addTopLevel(name, node, 'internal', body);
     }
 
@@ -1448,15 +1445,7 @@ function modularize() {
 
     // "dependencies" are named and need to be mapped to variables.
     // "requires" must be required but do not need to be mapped.
-    var deps = prepareDeps(getArray('dependencies')), requires = getArray('requires');
-
-    // TODO: move this around??
-    function prepareDeps(deps) {
-      if (deps) {
-        sortByLength(deps);
-        return deps;
-      }
-    }
+    var deps = getArray('dependencies'), requires = getArray('requires');
 
     function getRequires() {
       var blocks = [];
@@ -1641,12 +1630,6 @@ function modularize() {
       arr.sort(function(a, b) {
         return a.length - b.length;
       });
-    }
-
-    function getSugarCorePath() {
-      // TODO: temporary until the core package is created.
-      //return 'sugar-core';
-      return path.join(path.relative(path.dirname(package.path), '../../../lib'), 'core');
     }
 
     function getDependency(dependencyName) {
