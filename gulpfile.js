@@ -910,11 +910,15 @@ function modularize() {
       return module + '|' + namespace + '|' + name;
     }
 
-    function getBundleName(node) {
-      var comment = getLastCommentForNode(node);
-      comment = comment.replace(/^[\s\/]+/, '');
-      var first = comment.charAt(0).toLowerCase();
-      return first + comment.slice(1).replace(/\s(\w)/g, function(m, letter) {
+    function getBundleName(node, type) {
+      var first, comment;
+      comment = getLastCommentForNode(node).replace(/^[\s\/]+/, '');
+      if (type === 'constants') {
+        comment = comment.charAt(0).toUpperCase() + comment.slice(1);
+      } else {
+        comment = comment.charAt(0).toLowerCase() + comment.slice(1).toLowerCase();
+      }
+      return comment.replace(/\s(\w)/g, function(m, letter) {
         return letter.toUpperCase();
       }).replace(/\W/g, '');
     }
@@ -969,16 +973,20 @@ function modularize() {
     }
 
     function addVariableBundle(node) {
-      var name = getBundleName(node), type;
       var unassignedVars = [];
+
+      // Assume all types in the bundle same and just take the first.
+      var type = getVarType(node.declarations[0].id.name);
+      var name = getBundleName(node, type);
 
       var bundle = {
         name: name,
         node: node,
+        type: type,
         directExports: {},
+        path: path.join(module, type, name),
         dependencies: getDependencies(name, node),
       };
-
 
       node.declarations.forEach(function(node) {
         var name = node.id.name;
@@ -999,11 +1007,6 @@ function modularize() {
       if (unassignedVars.length) {
         bundle.body = getVarBody(unassignedVars.join(', '));
       }
-
-      // Assuming all var types in the group are the same,
-      // so essentially just picking the last type.
-      bundle.type = type;
-      bundle.path = path.join(module, type, name);
 
       topLevel[name] = bundle;
     }
@@ -1362,6 +1365,8 @@ function modularize() {
   }
 
   function exportInternal() {
+    // Experimenting with two passes for better bundling
+    iter(topLevel, bundleSingleDependencies);
     iter(topLevel, bundleSingleDependencies);
     writePackages(topLevel);
   }
@@ -1484,6 +1489,10 @@ function modularize() {
           }
         }
 
+        function packageByLength(a, b) {
+          return a.name.length - b.name.length;
+        }
+
         packageNames.forEach(function(d) {
           var p = getDependency(d);
           switch (p.type) {
@@ -1501,8 +1510,14 @@ function modularize() {
         constants.sort(function(a, b) {
           var aLiteral = +!!a.name.match(/^[A-Z_]+$/);
           var bLiteral = +!!b.name.match(/^[A-Z_]+$/);
+          if (aLiteral === bLiteral) {
+            return packageByLength(a, b);
+          }
           return bLiteral - aLiteral;
         });
+
+        vars.sort(packageByLength);
+        internal.sort(packageByLength);
 
         var chunks = [];
         addChunk(chunks, first);
@@ -1560,6 +1575,7 @@ function modularize() {
     function getAssigns() {
       var assigns = [];
       if (deps && deps.length) {
+        sortByLength(deps);
         deps.forEach(function(d) {
           var package = getPackageOrAlias(d);
           if (dependencyNeedsAssign(package, d)) {
@@ -1567,7 +1583,6 @@ function modularize() {
           }
         });
         if (assigns.length) {
-          sortByLength(assigns);
           return 'var ' + assigns.join(',\n' + TAB + TAB) + ';\n';
         }
       }
