@@ -160,7 +160,7 @@ function showHelpMessage() {
       return util.colors.cyan(match.replace(/\|/g, ''));
     }
   });
-  console.info(msg);
+  console.log(msg);
 }
 
 function getFilename(name, min) {
@@ -717,7 +717,7 @@ function modularize() {
           // Pass on literals, {}, this, break, continue
           return;
         default:
-          console.info(node);
+          console.log(node);
           throw new Error("Unknown Node: " + node.type);
       }
     }
@@ -749,6 +749,15 @@ function modularize() {
           appendDeps(sourcePackage, d);
         }
       });
+      var assigns = [];
+      // If there are any direct exports in the package to be
+      // bundled, then they need to be forced into the body of the
+      // bundlee instead as variable assignments.
+      iter(package.directExports, function(name, statement) {
+        assigns.push('var ' + name + ' = ' + statement + ';');
+      });
+
+      prependBody(sourcePackage, assigns.join('\n'));
       prependBody(sourcePackage, package.body);
       prependInit(sourcePackage, package.init);
 
@@ -900,18 +909,19 @@ function modularize() {
       return module + '|' + namespace + '|' + name;
     }
 
-    function getVarBody(node) {
-      return 'var ' + getInnerNodeBody(node).replace(/\s+=\s+/, ' = ') + ';'
+    function getVarBodyForNode(node) {
+      return getVarBody(getInnerNodeBody(node).replace(/\s+=\s+/, ' = '));
     }
 
-    function addTopLevel(name, node, type, isVar) {
-      var body = isVar ? getVarBody(node) : getNodeBody(node);
-      if (!isVar) {
-        var comment = getLastCommentForNode(node, 1);
-        if (comment) {
-          body = [comment, body].join('\n');
-        }
-      }
+    function getVarBody(body) {
+      return 'var ' + body + ';'
+    }
+
+    function getVarType(name) {
+      return /^[A-Z]/.test(name) ? 'constants' : 'vars';
+    }
+
+    function addTopLevel(name, node, type, body) {
       var package = {
         node: node,
         name: name,
@@ -924,6 +934,70 @@ function modularize() {
       // "Top level" are all "globals", so no collisions
       // should occur by putting them in the same namespace.
       topLevel[name] = package;
+    }
+
+    function addVariablePackage(node) {
+      var body, directExports;
+      var name = node.id.name;
+      var type = getVarType(name);
+      if (node.init && !node.init.properties) {
+        directExports = {};
+        directExports[name] = getInnerNodeBody(node.init);
+      } else {
+        body = getVarBodyForNode(node);
+      }
+      addTopLevel(name, node, type, body);
+      topLevel[name].directExports = directExports;
+    }
+
+    function addFunctionPackage(node) {
+      var name = node.id.name;
+      var body = getNodeBody(node);
+      var comment = getLastCommentForNode(node, 1);
+      if (comment) {
+        body = [comment, body].join('\n');
+      }
+      addTopLevel(name, node, 'internal', body);
+    }
+
+    function addVariableBundle(node) {
+      var name = getLastCommentForNode(node).replace(/\W/g, ''), type;
+      var unassignedVars = [];
+
+      var bundle = {
+        name: name,
+        node: node,
+        directExports: {},
+        dependencies: getDependencies(name, node),
+      };
+
+
+      node.declarations.forEach(function(node) {
+        var name = node.id.name;
+        type = getVarType(name);
+        if (node.init) {
+          bundle.directExports[name] = getInnerNodeBody(node.init);
+        } else {
+          unassignedVars.push(getInnerNodeBody(node));
+        }
+        appendExports(bundle, name);
+        topLevel[name] = {
+          name: name,
+          node: node,
+          alias: bundle.name,
+        };
+      });
+
+      if (unassignedVars.length) {
+        bundle.body = getVarBody(unassignedVars.join(', '));
+      }
+
+      // Assuming all var types in the group are the same,
+      // so essentially just picking the last type.
+      bundle.type = type;
+      bundle.path = path.join(module, type, name);
+
+      topLevel[name] = bundle;
     }
 
     function addSugarPackage(name, node, opts) {
@@ -1009,7 +1083,7 @@ function modularize() {
         case isAliasExpression(node):     return processAliasExpression(node);
         case isFunctionCall(node):        return processBuildExpression(node);
         default:
-          console.info(node);
+          console.log(node);
           throw new Error("Unknown Top Level Node: " + node.type);
       }
     }
@@ -1071,15 +1145,15 @@ function modularize() {
     }
 
     function processVariableDeclaration(node) {
-      node.declarations.forEach(function(d) {
-        var name = d.id.name;
-        var type = /^[A-Z]/.test(name) ? 'constants' : 'vars';
-        addTopLevel(name, d, type, true);
-      });
+      if (node.declarations.length > 1) {
+        addVariableBundle(node);
+      } else {
+        addVariablePackage(node.declarations[0]);
+      }
     }
 
     function processFunctionDeclaration(node) {
-      addTopLevel(node.id.name, node, 'internal');
+      addFunctionPackage(node);
     }
 
     function processMethodBlock(node) {
@@ -1185,26 +1259,21 @@ function modularize() {
 
       } else if (assignedVars.length > 1) {
 
-        // If there are more than one unassigned variables then we need to
-        // bundle them together and export multiple. Use the build function
-        // name to create the grouped package and alias the variable packages
-        // to point to it.
-        var declares = [];
+        // Requiring that multiple assigned vars are part of a bundle.
+        var bundle = topLevel[topLevel[assignedVars[0]].alias];
 
-        assignedVars.forEach(function(v) {
-          var varPackage = topLevel[v];
-          varPackage.alias = fnPackage.name;
-          appendExports(fnPackage, varPackage.name);
-          declares.push(varPackage.body);
-        });
+        if (!bundle) {
+          throw new Error('Multiple assigns found without bundle:' + fnPackage.name);
+        }
 
-        // The grouped package consists of any declared variables, the build
-        // function definition, and the initializing call all rolled together.
-        prependBody(fnPackage, declares.join('\n'));
-        appendInit(fnPackage, fnCall);
+        appendDeps(bundle, fnPackage.dependencies);
+        appendBody(bundle, fnPackage.body);
+        appendInit(bundle, fnCall);
 
-        mainPackage = fnPackage;
+        mainPackage = bundle;
 
+        // no longer need the build package
+        delete topLevel[fnPackage.name];
       }
 
       // The build function may define methods, so step
@@ -1362,7 +1431,7 @@ function modularize() {
   function writePackage(package) {
 
     if (package.alias || package.type === 'core') {
-      // Don't export alias packages.
+      // Don't export alias packages or core.
       return;
     }
 
@@ -1370,6 +1439,7 @@ function modularize() {
     // "requires" must be required but do not need to be mapped.
     var deps = prepareDeps(getArray('dependencies')), requires = getArray('requires');
 
+    // TODO: move this around??
     function prepareDeps(deps) {
       if (deps) {
         sortByLength(deps);
@@ -1505,7 +1575,14 @@ function modularize() {
     }
 
     function getExports() {
-      var exports = package.exports, compiled, mapped;
+      var exports, directExports, compiled, mapped;
+
+      exports = package.exports;
+      directExports = package.directExports || {};
+
+      function getExportExpression(e) {
+        return directExports[e] || e;
+      }
 
       if (!exports) {
         // Some packages simply define methods and do not export.
@@ -1521,11 +1598,12 @@ function modularize() {
       if (typeof exports === 'string') {
         exports = [exports];
       }
+
       if (exports.length === 1) {
-        compiled = exports[0];
+        compiled = getExportExpression(exports[0]);
       } else {
         mapped = exports.map(function(e) {
-          return TAB + "'"+ e +"': " + e;
+          return TAB + "'"+ e +"': " + getExportExpression(e);
         });
         sortByLength(mapped);
         compiled = ['{', mapped.join(',\n'), '}'].join('\n');
@@ -1564,7 +1642,7 @@ function modularize() {
       // Aliases may have dependencies on other sugar methods.
       var dep = getPackageOrAlias(dependencyName);
       if (!dep) {
-        console.info(package, dependencyName, dep);
+        console.log(package, dependencyName, dep);
         throw new Error('Missing dependency: ' + dependencyName);
       }
       return dep;
@@ -1590,7 +1668,9 @@ function modularize() {
 
     function getText(field) {
       var val = package[field];
-      if (val && val.join) {
+      if (!val) {
+        val = '';
+      } else if (val.join) {
         val = val.join(BLOCK_DELIMITER);
       }
       return val;
