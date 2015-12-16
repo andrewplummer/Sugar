@@ -559,7 +559,6 @@ package('Array', function() {
 
     run(['a'], 'filter', [fn, 'this']);
 
-
     test([{name:'john',age:25},{name:'fred',age:85}], ['age'], [], 'simple string mistakenly passed for complex objects');
     test([{name:'john',age:25},{name:'fred',age:85}], [{name:'john',age:25}], [{name:'john',age:25}], 'filtering john');
     test([{name:'john',age:25},{name:'fred',age:85}], [{name:'fred',age:85}], [{name:'fred',age:85}], 'filtering fred');
@@ -682,6 +681,8 @@ package('Array', function() {
       return;
     }
 
+    raisesError(function() { run([1,2,3], 'findIndex'); }, 'no argument raises a type error');
+
     test(['a','b','c'], ['b'], 1, 'b in a,b,c');
     test(['a','b','c'], ['b', 0], 1, 'b in a,b,c from 0');
     test(['a','b','c'], ['a'], 0, 'a in a,b,c');
@@ -716,8 +717,8 @@ package('Array', function() {
     equal(run(arr, 'some', [match]), true, 'some');
     equal(run(arr, 'none', [match]), false, 'none');
     equal(run(arr, 'count', [match]), 1, 'count');
+    equal(run(arr, 'filter', [match]), [arr[0]], 'filter');
     equal(run(arr, 'find', [match]), arr[0], 'find');
-    equal(run(arr, 'findAll', [match]), [arr[0]], 'findAll');
     equal(run(arr, 'findIndex', [match]), 0, 'findIndex');
     equal(run(arr, 'exclude', [match]).length, 0, 'exclude');
 
@@ -1182,7 +1183,7 @@ package('Array', function() {
     run(x, 'find', [function() {
       count++;
     }]);
-    run(x, 'findAll', [function() {
+    run(x, 'filter', [function() {
       count++;
     }]);
 
@@ -1211,7 +1212,7 @@ package('Array', function() {
   });
 
   // TODO: anything here??
-  method('findAll', function() {
+  method('filter', function() {
 
     test(['a','b','c'], ['a'], ['a'], 'a');
     test(['a','a','c'], ['a'], ['a','a'], 'a,a');
@@ -1228,72 +1229,26 @@ package('Array', function() {
     test([[1,2],[2,3],[2,3]], [[2,3]], [[2,3],[2,3]], '[2,3],[2,3]');
     test(['foo','bar'], [/f+/], ['foo'], '/f+/');
     test(['foo','bar'], [/[a-f]/], ['foo','bar'], '/[a-f]/');
-    test(['foo','bar'], [/[a-f]/, 1], ['bar'], '/[a-f]/ from index 1');
-    test(['foo','bar'], [/[a-f]/, 1, true], ['bar','foo'], '/[a-f]/ from index 1');
     test(['foo','bar'], [ /q+/], [], '/q+/');
-    test([1,2,3], [function(e) { return e > 0; }, 0], [1,2,3], 'greater than 0 from index 0');
-    test([1,2,3], [function(e) { return e > 0; }, 1], [2,3], 'greater than 0 from index 1');
-    test([1,2,3], [function(e) { return e > 0; }, 2], [3], 'greater than 0 from index 2');
-    test([1,2,3], [function(e) { return e > 0; }, 3], [], 'greater than 0 from index 3');
-    test([1,2,3], [function(e) { return e > 0; }, 4], [], 'greater than 0 from index 4');
-    test([1,2,3], [function(e) { return e > 1; }, 0], [2,3], 'greater than 1 from index 0');
-    test([1,2,3], [function(e) { return e > 1; }, 1], [2,3], 'greater than 1 from index 1');
-    test([1,2,3], [function(e) { return e > 1; }, 2], [3], 'greater than 1 from index 2');
-    test([1,2,3], [function(e) { return e > 2; }, 0], [3], 'greater than 2 from index 0');
-    test([1,2,3], [function(e) { return e > 3; }, 0], [], 'greater than 3 from index 0');
-
-    test([1,2,3], [function(e) { return e > 0; }, 0, true], [1,2,3], 'looping | greater than 0 from index 0');
-    test([1,2,3], [function(e) { return e > 0; }, 1, true], [2,3,1], 'looping | greater than 0 from index 1');
-    test([1,2,3], [function(e) { return e > 0; }, 2, true], [3,1,2], 'looping | greater than 0 from index 2');
-    test([1,2,3], [function(e) { return e > 0; }, 3, true], [1,2,3], 'looping | greater than 0 from index 3');
-    test([1,2,3], [function(e) { return e > 1; }, 0, true], [2,3], 'looping | greater than 1 from index 0');
-    test([1,2,3], [function(e) { return e > 1; }, 1, true], [2,3], 'looping | greater than 1 from index 1');
-    test([1,2,3], [function(e) { return e > 1; }, 2, true], [3,2], 'looping | greater than 1 from index 2');
-    test([1,2,3], [function(e) { return e > 2; }, 0, true], [3], 'looping | greater than 2 from index 0');
-    test([1,2,3], [function(e) { return e > 3; }, 0, true], [], 'looping | greater than 3 from index 0');
 
     test([{a:10},{a:8},{a:3}], [function(e) { return e['a'] > 5; }, 0], [{a:10},{a:8}], 'key "a" is greater than 5');
-    test([{a:10},{a:8},{a:3}], [function(e) { return e['a'] > 5; }, 1], [{a:8}], 'key "a" is greater than 5 from index 1');
-    test([{a:10},{a:8},{a:3}], [function(e) { return e['a'] > 5; }, 2], [], 'key "a" is greater than 5 from index 2');
-
     test([{a:10},{a:8},{a:3}], [function(e) { return e['a'] > 5; }, 0, true], [{a:10},{a:8}], 'looping | key "a" is greater than 5');
-    test([{a:10},{a:8},{a:3}], [function(e) { return e['a'] > 5; }, 1, true], [{a:8},{a:10}], 'looping | key "a" is greater than 5 from index 1');
-    test([{a:10},{a:8},{a:3}], [function(e) { return e['a'] > 5; }, 2, true], [{a:10},{a:8}], 'looping | key "a" is greater than 5 from index 2');
-
     test([function() {}], [function(e) {}, 0], [], 'null function');
-    test([function() {}], [function(e) {}, 1], [], 'null function from index 1');
     test([null, null], [null, 0], [null, null], 'null');
-    test([null, null], [null, 1], [null], 'null from index 1');
-
     test([function() {}], [function(e) {}, 0, true], [], 'looping | null function');
-    test([function() {}], [function(e) {}, 1, true], [], 'looping | null function from index 1');
     test([null, null], [null, 0, true], [null, null], 'looping | null');
-    test([null, null], [null, 1, true], [null, null], 'looping | null from index 1');
-
-    // Example: finding last from an index. (reverse order). This means we don't need a findAllFromLastIndex
-    var arr = [1,2,3,4,5,6,7,8,9];
-    test(arr, [function(n) { return n % 3 == 0; }, 4], [6,9], 'n % 3 from index 4');
-    test(arr, [function(n) { return n % 3 == 0; }, 4, true], [6,9,3], 'looping | n % 3 from index 4');
-
-    arr.reverse();
-    test(arr, [function(n) { return n % 3 == 0; }, 4], [3], 'reversed | n % 3 from index 4 reversed');
-    test(arr, [function(n) { return n % 3 == 0; }, 4, true], [3,9,6], 'looping | reversed | n % 3 from index 4 reversed');
-
 
     var fn = function() {
       return false;
     }
 
-    test([fn], [fn], [fn], 'should find functions by reference');
+    test([fn], [fn], [], 'should not find functions by reference');
 
     var undefinedContextObj = (function(){ return this; }).call(undefined);
     var fn = function() {
-      equal(this, [1], 'this context should be the array');
+      equal(this, undefinedContextObj, 'this context should be the array');
     }
-    run([1], 'findAll', [fn]);
-
-    raisesError(function() { run([1,2,3], 'findIndex'); }, 'no argument raises a type error');
-
+    run([1], 'filter', [fn]);
 
     var people = [
       { name: 'jim',    age: 27, hair: 'brown'  },
@@ -1303,7 +1258,8 @@ package('Array', function() {
       { name: 'buddy',  age: 82, hair: { color: 'red', type: 'long', cost: 15, last_cut: new Date(2010, 4, 18) } }
     ];
 
-    test(people, [], 'complex | no arguments');
+    raisesError(function(){ run([], 'filter') }, 'no argument raises an error', TypeError);
+
     test(people, [{}], people, 'complex | empty object');
     test(people, ['age'], [], 'complex | string argument');
     test(people, [4], [], 'complex | number argument');
@@ -1372,11 +1328,11 @@ package('Array', function() {
     var count = 0;
     var fn = function(){ count ++; };
 
-    run([1,2,3], 'findAll', [fn]);
+    run([1,2,3], 'filter', [fn]);
     equal(count, 3, 'functions treated as callbacks when matching against non-functions');
 
     count = 0;
-    run([function() {}, function() {}, function() {}], 'findAll', [fn]);
+    run([function() {}, function() {}, function() {}], 'filter', [fn]);
     equal(count, 3, 'functions are not directly matched');
 
 
@@ -1389,12 +1345,67 @@ package('Array', function() {
       return el === fn2;
     }
 
-    equal(run([fn1, fn2, fn1], 'findAll', [matchFn1]), [fn1, fn1], 'functions can be matched inside the callback');
-    equal(run([fn1, fn2, fn1], 'findAll', [matchFn2]), [fn2], 'fn2 | functions can be matched inside the callback');
+    equal(run([fn1, fn2, fn1], 'filter', [matchFn1]), [fn1, fn1], 'functions can be matched inside the callback');
+    equal(run([fn1, fn2, fn1], 'filter', [matchFn2]), [fn2], 'fn2 | functions can be matched inside the callback');
+
+  });
+
+  method('filterFrom', function() {
+
+    test(['foo','bar'], [/[a-f]/, 1], ['bar'], '/[a-f]/ from index 1');
+    test(['foo','bar'], [/[a-f]/, 1, true], ['bar','foo'], '/[a-f]/ from index 1');
+    test([1,2,3], [function(e) { return e > 0; }, 0], [1,2,3], 'greater than 0 from index 0');
+    test([1,2,3], [function(e) { return e > 0; }, 1], [2,3], 'greater than 0 from index 1');
+    test([1,2,3], [function(e) { return e > 0; }, 2], [3], 'greater than 0 from index 2');
+    test([1,2,3], [function(e) { return e > 0; }, 3], [], 'greater than 0 from index 3');
+    test([1,2,3], [function(e) { return e > 0; }, 4], [], 'greater than 0 from index 4');
+    test([1,2,3], [function(e) { return e > 1; }, 0], [2,3], 'greater than 1 from index 0');
+    test([1,2,3], [function(e) { return e > 1; }, 1], [2,3], 'greater than 1 from index 1');
+    test([1,2,3], [function(e) { return e > 1; }, 2], [3], 'greater than 1 from index 2');
+    test([1,2,3], [function(e) { return e > 2; }, 0], [3], 'greater than 2 from index 0');
+    test([1,2,3], [function(e) { return e > 3; }, 0], [], 'greater than 3 from index 0');
+
+    test([1,2,3], [function(e) { return e > 0; }, 0, true], [1,2,3], 'looping | greater than 0 from index 0');
+    test([1,2,3], [function(e) { return e > 0; }, 1, true], [2,3,1], 'looping | greater than 0 from index 1');
+    test([1,2,3], [function(e) { return e > 0; }, 2, true], [3,1,2], 'looping | greater than 0 from index 2');
+    test([1,2,3], [function(e) { return e > 0; }, 3, true], [1,2,3], 'looping | greater than 0 from index 3');
+    test([1,2,3], [function(e) { return e > 1; }, 0, true], [2,3], 'looping | greater than 1 from index 0');
+    test([1,2,3], [function(e) { return e > 1; }, 1, true], [2,3], 'looping | greater than 1 from index 1');
+    test([1,2,3], [function(e) { return e > 1; }, 2, true], [3,2], 'looping | greater than 1 from index 2');
+    test([1,2,3], [function(e) { return e > 2; }, 0, true], [3], 'looping | greater than 2 from index 0');
+    test([1,2,3], [function(e) { return e > 3; }, 0, true], [], 'looping | greater than 3 from index 0');
+
+    test([{a:10},{a:8},{a:3}], [function(e) { return e['a'] > 5; }, 0], [{a:10},{a:8}], 'key "a" is greater than 5');
+    test([{a:10},{a:8},{a:3}], [function(e) { return e['a'] > 5; }, 1], [{a:8}], 'key "a" is greater than 5 from index 1');
+    test([{a:10},{a:8},{a:3}], [function(e) { return e['a'] > 5; }, 2], [], 'key "a" is greater than 5 from index 2');
+
+    test([{a:10},{a:8},{a:3}], [function(e) { return e['a'] > 5; }, 0, true], [{a:10},{a:8}], 'looping | key "a" is greater than 5');
+    test([{a:10},{a:8},{a:3}], [function(e) { return e['a'] > 5; }, 1, true], [{a:8},{a:10}], 'looping | key "a" is greater than 5 from index 1');
+    test([{a:10},{a:8},{a:3}], [function(e) { return e['a'] > 5; }, 2, true], [{a:10},{a:8}], 'looping | key "a" is greater than 5 from index 2');
+
+    test([function() {}], [function(e) {}, 0], [], 'null function');
+    test([function() {}], [function(e) {}, 1], [], 'null function from index 1');
+    test([null, null], [null, 0], [null, null], 'null');
+    test([null, null], [null, 1], [null], 'null from index 1');
+
+    test([function() {}], [function(e) {}, 0, true], [], 'looping | null function');
+    test([function() {}], [function(e) {}, 1, true], [], 'looping | null function from index 1');
+    test([null, null], [null, 0, true], [null, null], 'looping | null');
+    test([null, null], [null, 1, true], [null, null], 'looping | null from index 1');
+
+    // Example: finding last from an index. (reverse order). This means we don't need a filterFromLastIndex
+    var arr = [1,2,3,4,5,6,7,8,9];
+    test(arr, [function(n) { return n % 3 == 0; }, 4], [6,9], 'n % 3 from index 4');
+    test(arr, [function(n) { return n % 3 == 0; }, 4, true], [6,9,3], 'looping | n % 3 from index 4');
+
+    arr.reverse();
+    test(arr, [function(n) { return n % 3 == 0; }, 4], [3], 'reversed | n % 3 from index 4 reversed');
+    test(arr, [function(n) { return n % 3 == 0; }, 4, true], [3,9,6], 'looping | reversed | n % 3 from index 4 reversed');
 
   });
 
   method('findFrom', function() {
+
     test(['foo','bar'], [/^[a-f]/, 1], 'bar', '/a-f/ from index 1');
     test(['foo','bar','zak'], [/^[a-f]/, 2, true], 'foo', '/a-f/ from index 1 looping');
 
@@ -1557,7 +1568,7 @@ package('Object', function() {
     testStaticAndInstance({foo:'bar'}, [/b/], 'foo', 'uses multi-match');
   });
 
-  method('findAll', function() {
+  method('filter', function() {
     testStaticAndInstance(obj1, [function(key, value) { return key == 'foo'; }], {foo:3}, 'key is foo');
     testStaticAndInstance(obj1, [function(key, value) { return key.length > 3; }], {}, 'key length is greater than 3');
     testStaticAndInstance(obj1, [function(key, value) { return key.length > 0; }], obj1, 'key length is greater than 0');
@@ -1659,10 +1670,10 @@ package('Object', function() {
     equal(({a:1,b:2,c:2}).all(1), false, 'Object#all');
     equal(({a:1,b:2,c:2}).none(5), true, 'Object#none');
     equal(({a:1,b:2,c:3}).count(2), 1, 'Object#count');
+    equal(({a:1,b:2,c:3}).filter(3), {c:3}, 'Object#filter');
     equal(({a:1,b:2,c:3}).find(3), 'c', 'Object#find');
-    equal(({a:1,b:2,c:3}).findAll(3), {c:3}, 'Object#findAll');
 
-    equal(({a:'a',b:'b',c:'c'}).findAll(/[ac]/), {a:'a',c:'c'}, 'Object#findAll');
+    equal(({a:'a',b:'b',c:'c'}).filter(/[ac]/), {a:'a',c:'c'}, 'Object#filter');
     equal(({}).isEmpty(), true, 'Object#isEmpty');
     equal(({a:1}).isEmpty(), false, 'Object#isEmpty');
 

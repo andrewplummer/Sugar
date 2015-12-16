@@ -53,6 +53,12 @@ v2.0.0+
   - `Function#fill` was renamed to `Function#partial`. Additionally, it no longer accepts `null` as a placeholder. Use `undefined` instead.
 
 - Level: Major
+  - `Array#findAll` was replaced with `Array#filterFrom` in cases that require a start index. For cases without a start index, simply use `Array#filter` instead.
+
+- Level: Major
+  - `Object.findAll` was replaced with `Object.filter`, which simply wraps an enhanced `Array#filter`.
+
+- Level: Major
   - `Object.toQueryString` no longer uses square bracket syntax by default. To enable this pass `deep` in the options object which is now the second argument to the function. `namespace`, which was previously the second argument to this method, is now `prefix` in the same options object.
 
 - Level: Major
