@@ -66,6 +66,9 @@ v2.0.0
 - Modified `String#replaceTags` and `String#stripTags` to simplify argument signature and small performance boost.
 - Added `Array#isEqual`.
 - Renamed `RegExp#addFlag` and `RegExp#removeFlag` to `RegExp#addFlags` and `RegExp#removeFlags`, and ensured they work on multiple flags.
+- Created new package `enumerable`, and split out array methods.
+- Removed `Array#findAll` in favor of `Array#filter` and `Array#filterFrom`.
+- Replaced `Object.findAll` with `Object.filter`.
 
 
 v1.4.2
