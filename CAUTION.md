@@ -88,6 +88,9 @@ v2.0.0+
 - Level: Moderate
   - `Array#at` and `String#at` now no longer accept enumerated arguments. To get an multiple indexes, pass an array instead.
 
+- Level: Moderate
+  - Array natural sort options (`AlphanumericSortOrder`, `AlphanumericSortIgnore`, etc) now no longer have `Alphanumeric` in the name, and are now static accessor methods on `Sugar.Array` that either get or set the option depending on argument length. Lastly, `AlphanumericSort`, which simply exposed Sugar's internal sort algorithm is now `sortCollate`.
+
 - Level: Minor
   - `Date.create` no longer accepts enumerated parameters (2001, 5, 31, ...). Use the normal date constructor instead.
 
