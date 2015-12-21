@@ -257,10 +257,8 @@ package('Array', function () {
     test(['a','b','c'], [-4], [], '-4');
   });
 
-
-  // TODO: groupBy should stringify??
   method('groupBy', function() {
-    var grouped;
+
     var people = [
       { name: 'mary',   age: 52, hair: 'blonde' },
       { name: 'edmund', age: 27, hair: 'blonde' },
@@ -315,6 +313,7 @@ package('Array', function () {
       y: [{id:3,a:{b:{c:'y'}}}]
     };
     test(arr, ['a.b.c'], expected, 'grouping by deep dot operator');
+
   });
 
   method('inGroups', function() {
