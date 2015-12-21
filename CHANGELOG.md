@@ -69,6 +69,7 @@ v2.0.0
 - Created new package `enumerable`, and split out array methods.
 - Removed `Array#findAll` in favor of `Array#filter` and `Array#filterFrom`.
 - Replaced `Object.findAll` with `Object.filter`.
+- `Array#isEmpty` now only checks for zero length.
 
 
 v1.4.2

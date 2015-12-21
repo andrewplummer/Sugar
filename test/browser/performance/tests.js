@@ -28,7 +28,7 @@ arr = arr.concat(arr);
 var tests = [
   {
     fn: function(arg) {
-      return Sugar.Object.average(arg, 'response.content.votes');
+      return Sugar.Object.min(arg, 'id');
     },
     targets: [
       'jsonArray * 10000'
