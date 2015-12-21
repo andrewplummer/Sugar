@@ -85,18 +85,12 @@
 
   function getStringified(p) {
     var str, arr, isArray = p && p.join, arrayHasUndefined;
-    // JSON.stringify makes undefined into "null" in arrays
     if (p && p.getTime && p.setHours) {
       return p.toString();
     }
     arrayHasUndefined = isArray && $.inArray(undefined, p) !== -1;
     if(p && p.length > 5000) return 'One BIG ass array of length ' + p.length;
     if(typeof p === 'function') return 'function';
-    if(typeof JSON !== 'undefined' && JSON.stringify && !arrayHasUndefined) {
-      try {
-        return str = JSON.stringify(p);
-      } catch(e) {}
-    }
     if(typeof p !== 'object') return String(p);
     str = isArray ? '[' : '{';
     arr = [];
