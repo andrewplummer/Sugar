@@ -347,7 +347,7 @@
 
     klass = testInternalToString.call(one);
 
-    if(klass === '[object Date]') {
+    if(klass === '[object Date]' && two.getTime) {
       return one.getTime() === two.getTime();
     } else if(klass === '[object RegExp]') {
       return String(one) === String(two);
