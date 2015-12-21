@@ -1,49 +1,5 @@
 package('Array', function() {
-
-  var safeArray = testGetArrayWithUndefined;
-
-  var oneUndefined   = safeArray(undefined);
-  var twoUndefined   = safeArray(undefined, undefined);
-  var threeUndefined = safeArray(undefined, undefined, undefined);
-
-  var nestedUndefined = safeArray(oneUndefined);
-
-  var undefinedWith1 = [1];
-  undefinedWith1.push(undefined);
-
-  var undefinedWithNull = [null];
-  undefinedWithNull.push(undefined);
-
-
-  method('isEqual', function() {
-
-    test(['a'], [['a']], true, 'basic 1 element array');
-    test(['a'], [['b']], false, 'basic 1 element array | inequal');
-    test(['a','b','c'], [['a','b','c']], true, '3 element array');
-    test(['a','b','c'], [['a','b','d']], false, '3 element array | inequal');
-
-    test(['a','b'], [{0:'a',1:'b',length:2}], false, 'object with length is not egal with array');
-
-    test([0], [[0]], true, 'arrays of numbers are equal');
-    test([undefined], [[undefined]], true, 'arrays of undefined are equal');
-    test([null], [[null]], true, 'arrays of null are equal');
-    test([NaN], [[NaN]], true, 'arrays of NaN are equal');
-    test(testGetSparseArray(4, 'a'), [testGetSparseArray(4, 'a')], true, 'spare arrays are equal');
-
-    test([], [[]], true, 'empty arrays are equal');
-    test([], [{}], false, 'empty array is not equal to empty object');
-
-    var args = (function(){ return arguments; })('a','b','c');
-    test(['a','b','c'], [args], false, 'array is not egal with arguments object');
-
-    var user1 = { name: 'Larry' };
-    var user2 = { name: 'David' };
-
-    test([user1, user2], [[user1, user2]], true, 'array of objects is equal');
-    test([user1, user2], [[user2, user1]], false, 'array of objects is not equal if not in the same order');
-    test([user1, user2], [[user1]], false, 'array of objects 2:1');
-    test([user1], [[user1, user2]], false, 'array of objects 1:2');
-  });
+  "use strict";
 
   method('remove', function() {
     var fn;
@@ -629,11 +585,6 @@ package('Array', function() {
   });
 
   method('find', function() {
-    var count;
-    if (!Array.prototype.find) {
-      equal(Sugar.Array.find, undefined, 'enhanced method should not exist if no native to call');
-      return;
-    }
 
     test(['a','b','c'], ['a'], 'a', 'a');
     test(['a','a','c'], ['a'], 'a', 'first a');
@@ -657,14 +608,14 @@ package('Array', function() {
     test(safeArray(undefined, 'a'), safeArray(undefined, 1), undefined, 'undefined can be found');
 
 
-    count = 0;
+    var count = 0;
     [1,2,3].find(function(n) {
       count++;
       return n == 1;
     });
     equal(count, 1, 'should immediately finish when it finds a match');
 
-    count = 0;
+    var count = 0;
     run([1,2,3], 'find', [function(n) {
       count++;
       return n == 1;
@@ -873,6 +824,7 @@ package('Array', function() {
   });
 
   method('min', function() {
+
     test([12,87,55], 12, 'no argument');
     test([12,87,55], oneUndefined, 12, 'undefined');
     test([12,87,55], [null], 12, 'null');
@@ -963,52 +915,8 @@ package('Array', function() {
 
   });
 
-  method('most', function() {
-    var people = [
-      { name: 'jim',    age: 27, hair: 'brown'  },
-      { name: 'mary',   age: 52, hair: 'blonde' },
-      { name: 'ronnie', age: 13, hair: 'brown'  },
-      { name: 'edmund', age: 27, hair: 'blonde' }
-    ];
-
-    test([1,2,3], [null], 1, 'null | returns first');
-    test([1,2,3], oneUndefined, 1, 'undefined | returns first');
-    test([1,2,3], [4], 1, 'number | returns first');
-
-    equal(run(people, 'most', [function(person) { return person.age; }]).age, 27, 'age | age is 27');
-    test(people, [function(person) { return person.age; }, true], [{name:'jim',age:27,hair:'brown'},{name:'edmund',age:27,hair:'blonde'}], 'age | returns all');
-    test(people, [function(person) { return person.hair; }], {name:'jim',age:27,hair:'brown'}, 'hair');
-
-    test([], undefined, 'empty array');
-    test([1,2,3], 1, '1,2,3');
-    test([1,2,3,3], 3, '1,2,3,3');
-    test([1,1,2,3,3], 1, '1,1,2,3,3 | first');
-    test([1,1,2,3,3], [function(n) { return n; }, true], [1,1,3,3], '1,1,2,3,3 | all');
-    test(['a','b','c'], 'a', 'a,b,c');
-    test(['a','b','c','c'], 'c', 'a,b,c,c');
-    test(['a','a','b','c','c'], 'a', 'a,a,b,c,c | first');
-    test(['a','a','b','c','c'], [function(s){ return s; }, true], ['a','a','c','c'], 'a,a,b,c,c | all');
-
-    var fn = function(el,i,a) {
-      equal(this, [1], 'scope should be the array');
-      equal(i, 0, 'second param should be the index');
-      equal(a, [1], 'third param should also be the array');
-      return el;
-    };
-    run([1], 'most', [fn]);
-
-    var arr = [
-      {id:1,a:{b:{c:6}}},
-      {id:2,a:{b:{c:4}}},
-      {id:3,a:{b:{c:4}}},
-      {id:4,a:{b:{c:4}}}
-    ];
-    test(arr, ['a.b.c'], {id:2,a:{b:{c:4}}}, 'by deep dot operator');
-    test(arr, ['a.b.c', true], [{id:2,a:{b:{c:4}}},{id:3,a:{b:{c:4}}},{id:4,a:{b:{c:4}}}], 'by deep dot operator multiple');
-
-  });
-
   method('least', function() {
+
     var fn, arr;
     var people = [
       { name: 'jim',    age: 27, hair: 'brown'  },
@@ -1017,6 +925,7 @@ package('Array', function() {
       { name: 'edmund', age: 27, hair: 'blonde' }
     ];
 
+    test([1,2,3], [], 1, 'null');
     test([1,2,3], [null], 1, 'null');
     test([1,2,3], oneUndefined, 1, 'undefined');
     test([1,2,3], [4], 1, 'number');
@@ -1068,6 +977,50 @@ package('Array', function() {
     test(arr, ['a.b.c'], {id:1,a:{b:{c:6}}}, 'by deep dot operator');
     test(arr, ['a.b.c', true], [{id:1,a:{b:{c:6}}}], 'by deep dot operator multiple');
 
+  });
+
+  method('most', function() {
+    var people = [
+      { name: 'jim',    age: 27, hair: 'brown'  },
+      { name: 'mary',   age: 52, hair: 'blonde' },
+      { name: 'ronnie', age: 13, hair: 'brown'  },
+      { name: 'edmund', age: 27, hair: 'blonde' }
+    ];
+
+    test([1,2,3], [null], 1, 'null | returns first');
+    test([1,2,3], oneUndefined, 1, 'undefined | returns first');
+    test([1,2,3], [4], 1, 'number | returns first');
+
+    equal(run(people, 'most', [function(person) { return person.age; }]).age, 27, 'age | age is 27');
+    test(people, [function(person) { return person.age; }, true], [{name:'jim',age:27,hair:'brown'},{name:'edmund',age:27,hair:'blonde'}], 'age | returns all');
+    test(people, [function(person) { return person.hair; }], {name:'jim',age:27,hair:'brown'}, 'hair');
+
+    test([], undefined, 'empty array');
+    test([1,2,3], 1, '1,2,3');
+    test([1,2,3,3], 3, '1,2,3,3');
+    test([1,1,2,3,3], 1, '1,1,2,3,3 | first');
+    test([1,1,2,3,3], [function(n) { return n; }, true], [1,1,3,3], '1,1,2,3,3 | all');
+    test(['a','b','c'], 'a', 'a,b,c');
+    test(['a','b','c','c'], 'c', 'a,b,c,c');
+    test(['a','a','b','c','c'], 'a', 'a,a,b,c,c | first');
+    test(['a','a','b','c','c'], [function(s){ return s; }, true], ['a','a','c','c'], 'a,a,b,c,c | all');
+
+    var fn = function(el,i,a) {
+      equal(this, [1], 'scope should be the array');
+      equal(i, 0, 'second param should be the index');
+      equal(a, [1], 'third param should also be the array');
+      return el;
+    };
+    run([1], 'most', [fn]);
+
+    var arr = [
+      {id:1,a:{b:{c:6}}},
+      {id:2,a:{b:{c:4}}},
+      {id:3,a:{b:{c:4}}},
+      {id:4,a:{b:{c:4}}}
+    ];
+    test(arr, ['a.b.c'], {id:2,a:{b:{c:4}}}, 'by deep dot operator');
+    test(arr, ['a.b.c', true], [{id:2,a:{b:{c:4}}},{id:3,a:{b:{c:4}}},{id:4,a:{b:{c:4}}}], 'by deep dot operator multiple');
 
   });
 
@@ -1127,7 +1080,7 @@ package('Array', function() {
     test([1,2,3], 2, '1,2,3');
     test([1,2], 1.5, '1,2');
     test([1], 1, '1');
-    test([], undefined, 'no entries in array should be undefined');
+    test([], 0, 'no entries in array should be undefined');
 
     test([1.50,.0024,15.25,44.2], 8.375, 'decimals');
     test([0,0,0,0], 0, 'all zero');
@@ -1141,6 +1094,7 @@ package('Array', function() {
   });
 
   method('count', function() {
+    // TODO: check context!
     test([1,2,2,3], 4, 'no arugment numeric');
     test([1,2,2,3], [2], 2, 'count 2s');
     test(['a','b','c','c'], 4, 'no argument alphabet');
@@ -1461,9 +1415,9 @@ package('Object', function() {
   "use strict";
 
   var obj1 = {
-    foo: 3,
+    foo: 2,
     bar: 4,
-    moo: 5,
+    moo: 6,
     car: 6
   }
 
@@ -1485,7 +1439,8 @@ package('Object', function() {
   var obj4 = testClone(obj2); obj4['blue'] = {age:11};
   var deepObj4 = testClone(deepObj2); deepObj4['blue'] = {user:{age:11}};
 
-  method('any', function() {
+  method('some', function() {
+    testStaticAndInstance(obj1, [function(key, value) { return key == 'foo'; }], true, 'key is foo');
     testStaticAndInstance(obj1, [function(key, value, o) {
       equal(typeof key, 'string', 'first argument is always the key');
       equal(value, obj1[key],     'second argument is always the value');
@@ -1499,7 +1454,37 @@ package('Object', function() {
     testStaticAndInstance(obj1, [function(key, value) { return value > 0; }], true, 'value is greater than 0');
     testStaticAndInstance(obj1, [function(key, value) { return value > 5; }], true, 'value is greater than 5');
     testStaticAndInstance(obj1, [function(key, value) { return value > 6; }], false, 'value is greater than 6');
-    testStaticAndInstance(obj1, [5], true,  'shortcut | 5');
+    testStaticAndInstance(obj1, [2], true,  'shortcut | 2');
+    testStaticAndInstance(obj1, [7], false, 'shortcut | 7');
+  });
+
+  method('any', function() {
+    testStaticAndInstance(obj1, [function(key, value) { return key == 'foo'; }], true, 'key is foo');
+    testStaticAndInstance(obj1, [function(key, value, o) {
+      equal(typeof key, 'string', 'first argument is always the key');
+      equal(value, obj1[key],     'second argument is always the value');
+      equal(o, obj1,              'third argument is always the original object');
+      equal(this, obj1,           '"this" is always the original object');
+      return true;
+    }], true, 'placeholder for callback arguments');
+    testStaticAndInstance(obj1, [function(key, value) { return key == 'foo'; }], true, 'key is foo');
+    testStaticAndInstance(obj1, [function(key, value) { return key.length > 3; }], false, 'key length is greater than 3');
+    testStaticAndInstance(obj1, [function(key, value) { return key.length > 0; }], true, 'key length is greater than 0');
+    testStaticAndInstance(obj1, [function(key, value) { return value > 0; }], true, 'value is greater than 0');
+    testStaticAndInstance(obj1, [function(key, value) { return value > 5; }], true, 'value is greater than 5');
+    testStaticAndInstance(obj1, [function(key, value) { return value > 6; }], false, 'value is greater than 6');
+    testStaticAndInstance(obj1, [2], true,  'shortcut | 2');
+    testStaticAndInstance(obj1, [7], false, 'shortcut | 7');
+  });
+
+  method('every', function() {
+    testStaticAndInstance(obj1, [function(key, value) { return key == 'foo'; }], false, 'key is foo');
+    testStaticAndInstance(obj1, [function(key, value) { return key.length > 3; }], false, 'key length is greater than 3');
+    testStaticAndInstance(obj1, [function(key, value) { return key.length > 0; }], true, 'key length is greater than 0');
+    testStaticAndInstance(obj1, [function(key, value) { return value > 0; }], true, 'value is greater than 0');
+    testStaticAndInstance(obj1, [function(key, value) { return value > 5; }], false, 'value is greater than 5');
+    testStaticAndInstance(obj1, [function(key, value) { return value > 6; }], false, 'value is greater than 6');
+    testStaticAndInstance(obj1, [2], false,  'shortcut | 2');
     testStaticAndInstance(obj1, [7], false, 'shortcut | 7');
   });
 
@@ -1510,7 +1495,7 @@ package('Object', function() {
     testStaticAndInstance(obj1, [function(key, value) { return value > 0; }], true, 'value is greater than 0');
     testStaticAndInstance(obj1, [function(key, value) { return value > 5; }], false, 'value is greater than 5');
     testStaticAndInstance(obj1, [function(key, value) { return value > 6; }], false, 'value is greater than 6');
-    testStaticAndInstance(obj1, [5], false,  'shortcut | 5');
+    testStaticAndInstance(obj1, [2], false,  'shortcut | 2');
     testStaticAndInstance(obj1, [7], false, 'shortcut | 7');
   });
 
@@ -1521,7 +1506,7 @@ package('Object', function() {
     testStaticAndInstance(obj1, [function(key, value) { return value > 0; }], false, 'value is greater than 0');
     testStaticAndInstance(obj1, [function(key, value) { return value > 5; }], false, 'value is greater than 5');
     testStaticAndInstance(obj1, [function(key, value) { return value > 6; }], true, 'value is greater than 6');
-    testStaticAndInstance(obj1, [5], false,  'shortcut | 5');
+    testStaticAndInstance(obj1, [2], false,  'shortcut | 2');
     testStaticAndInstance(obj1, [7], true, 'shortcut | 7');
   });
 
@@ -1530,26 +1515,37 @@ package('Object', function() {
     testStaticAndInstance(obj1, [function(key, value) { return key.length > 3; }], 0, 'key length is greater than 3');
     testStaticAndInstance(obj1, [function(key, value) { return key.length > 0; }], 4, 'key length is greater than 0');
     testStaticAndInstance(obj1, [function(key, value) { return value > 0; }], 4, 'value is greater than 0');
-    testStaticAndInstance(obj1, [function(key, value) { return value > 5; }], 1, 'value is greater than 5');
+    testStaticAndInstance(obj1, [function(key, value) { return value > 5; }], 2, 'value is greater than 5');
     testStaticAndInstance(obj1, [function(key, value) { return value > 6; }], 0, 'value is greater than 6');
-    testStaticAndInstance(obj1, [5], 1,  'shortcut | 5');
+    testStaticAndInstance(obj1, [2], 1,  'shortcut | 2');
     testStaticAndInstance(obj1, [7], 0, 'shortcut | 7');
   });
 
   method('sum', function() {
     testStaticAndInstance(obj1, [], 18, 'no args is sum of values');
-    testStaticAndInstance(obj1, [function(key, value) { return value; }], 18, 'key is foo');
-    testStaticAndInstance(obj1, [function(key, value) { return key === 'foo' ? value : 0; }], 3, 'key is foo');
+    testStaticAndInstance(obj1, [function(key, value) { return value; }], 18, 'should sum values');
+    testStaticAndInstance(obj1, [function(key, value) { return key === 'foo' ? 0 : value; }], 16, 'without foo');
     testStaticAndInstance(obj2, ['age'], 110, 'accepts a string shortcut');
     testStaticAndInstance(deepObj2, ['user.age'], 110, 'accepts a deep string shortcut');
+    test([{age:2},{age:3}], ['age'], 5, 'called on arrays should still work');
   });
 
   method('average', function() {
     testStaticAndInstance(obj1, [], 4.5, 'no args is average of values');
-    testStaticAndInstance(obj1, [function(key, value) { return value; }], 4.5, 'key is foo');
-    testStaticAndInstance(obj1, [function(key, value) { return key === 'foo' ? value : 0; }], .75, 'key is foo');
+    testStaticAndInstance(obj1, [function(key, value) { return value; }], 4.5, 'should average values');
+    testStaticAndInstance(obj1, [function(key, value) { return key === 'foo' ? 0 : value; }], 4, 'without foo');
     testStaticAndInstance(obj2, ['age'], 27.5, 'accepts a string shortcut');
     testStaticAndInstance(deepObj2, ['user.age'], 27.5, 'accepts a deep string shortcut');
+    test([{age:2},{age:4}], ['age'], 3, 'called on arrays should still work');
+  });
+
+  method('median', function() {
+    testStaticAndInstance(obj1, [], 5, 'no args is average of values');
+    testStaticAndInstance(obj1, [function(key, value) { return value; }], 5, 'should average values');
+    testStaticAndInstance(obj1, [function(key, value) { return key === 'moo' ? 0 : value; }], 3, 'without moo');
+    testStaticAndInstance(obj2, ['age'], 27.5, 'accepts a string shortcut');
+    testStaticAndInstance(deepObj2, ['user.age'], 27.5, 'accepts a deep string shortcut');
+    test([{age:2},{age:2},{age:4}], ['age'], 2, 'called on arrays should still work');
   });
 
   method('find', function() {
@@ -1561,21 +1557,21 @@ package('Object', function() {
     testStaticAndInstance(obj1, [function(key, value) { return key.length > 3; }], undefined, 'key length is greater than 3');
     testStaticAndInstance(obj1, [function(key, value) { return key.length > 0; }], 'foo', 'key length is greater than 0');
     testStaticAndInstance(obj1, [function(key, value) { return value > 0; }], 'foo', 'value is greater than 0');
-    testStaticAndInstance(obj1, [function(key, value) { return value > 5; }], 'car', 'value is greater than 5');
+    testStaticAndInstance(obj1, [function(key, value) { return value > 5; }], 'moo', 'value is greater than 5');
     testStaticAndInstance(obj1, [function(key, value) { return value > 6; }], undefined, 'value is greater than 6');
-    testStaticAndInstance(obj1, [5], 'moo',  'shortcut | 5');
+    testStaticAndInstance(obj1, [2], 'foo',  'shortcut | 2');
     testStaticAndInstance(obj1, [7], undefined, 'shortcut | 7');
     testStaticAndInstance({foo:'bar'}, [/b/], 'foo', 'uses multi-match');
   });
 
   method('filter', function() {
-    testStaticAndInstance(obj1, [function(key, value) { return key == 'foo'; }], {foo:3}, 'key is foo');
+    testStaticAndInstance(obj1, [function(key, value) { return key == 'foo'; }], {foo:2}, 'key is foo');
     testStaticAndInstance(obj1, [function(key, value) { return key.length > 3; }], {}, 'key length is greater than 3');
     testStaticAndInstance(obj1, [function(key, value) { return key.length > 0; }], obj1, 'key length is greater than 0');
     testStaticAndInstance(obj1, [function(key, value) { return value > 0; }], obj1, 'value is greater than 0');
-    testStaticAndInstance(obj1, [function(key, value) { return value > 5; }], {car:6}, 'value is greater than 5');
+    testStaticAndInstance(obj1, [function(key, value) { return value > 5; }], {moo:6,car:6}, 'value is greater than 5');
     testStaticAndInstance(obj1, [function(key, value) { return value > 6; }], {}, 'value is greater than 6');
-    testStaticAndInstance(obj1, [5], {moo:5},  'shortcut | 5');
+    testStaticAndInstance(obj1, [2], {foo:2},  'shortcut | 2');
     testStaticAndInstance(obj1, [7], {}, 'shortcut | 7');
     testStaticAndInstance({foo:'bar',moo:'car'}, [/a/], {foo:'bar',moo:'car'}, 'uses multi-match');
   });
@@ -1584,24 +1580,28 @@ package('Object', function() {
     testStaticAndInstance(obj3, [], 'foo', 'no args is min of values');
     testStaticAndInstance(obj3, [function(key, value) { return value; }], 'foo', 'return value');
     testStaticAndInstance(obj3, [function(key, value) { return key.length; }], 'foo', 'return key.length');
-    testStaticAndInstance(obj3, [function(key, value) { return key.length; }, true], {foo:3,bar:4,moo:5,car:6}, 'return key.length');
+    testStaticAndInstance(obj3, [function(key, value) { return key.length; }, true], {foo:2,bar:4,moo:6,car:6}, 'return key.length');
     testStaticAndInstance(obj3, [function(key, value) { return key.charCodeAt(0); }, true], {bar: 4,blue:4}, 'all | return the char code of first letter');
     testStaticAndInstance(obj4, ['age'], 'foo', 'accepts a string shortcut');
     testStaticAndInstance(obj4, ['age', true], {foo: {age:11},blue:{age:11}}, 'all | accepts a string shortcut');
     testStaticAndInstance(deepObj2, ['user.age'], 'foo', 'accepts a deep string shortcut');
+    test([{age:2},{age:4}], ['age'], '0', 'called on arrays returns index');
+    test([{age:2},{age:2}], ['age', true], {'0':{age:2},'1':{age:2}}, 'all | called on arrays returns object');
   });
 
   method('max', function() {
-    testStaticAndInstance(obj3, [], 'car', 'no args is first object');
-    testStaticAndInstance(obj3, [function(key, value) { return value; }], 'car', 'return value');
+    testStaticAndInstance(obj3, [], 'moo', 'no args is first object');
+    testStaticAndInstance(obj3, [function(key, value) { return value; }], 'moo', 'return value');
     testStaticAndInstance(obj3, [function(key, value) { return key.length; }], 'blue', 'return key.length');
     testStaticAndInstance(obj3, [function(key, value) { return key.charCodeAt(0); }], 'moo', 'return the char code of first letter');
     testStaticAndInstance(obj4, ['age'], 'car', 'accepts a string shortcut');
-    testStaticAndInstance(obj3, [function(key, value) { return value; }, true], {car:6}, 'all | return value');
+    testStaticAndInstance(obj3, [function(key, value) { return value; }, true], {moo:6,car:6}, 'all | return value');
     testStaticAndInstance(obj3, [function(key, value) { return key.length; }, true], {blue:4}, 'all | return key.length');
-    testStaticAndInstance(obj3, [function(key, value) { return key.charCodeAt(0); }, true], {moo:5}, 'all | return the char code of first letter');
+    testStaticAndInstance(obj3, [function(key, value) { return key.charCodeAt(0); }, true], {moo:6}, 'all | return the char code of first letter');
     testStaticAndInstance(obj4, ['age', true], {car:{age:44}}, 'all | accepts a string shortcut');
     testStaticAndInstance(deepObj2, ['user.age'], 'car', 'accepts a deep string shortcut');
+    test([{age:2},{age:4}], ['age'], '1', 'called on arrays returns index');
+    test([{age:2},{age:4}], ['age', true], {'1':{age:4}}, 'all | called on arrays returns object');
   });
 
   method('least', function() {
@@ -1609,7 +1609,7 @@ package('Object', function() {
     testStaticAndInstance(obj3, [function(key, value) { return value; }], 'foo', 'return value');
     testStaticAndInstance(obj3, [function(key, value) { return key.length; }], 'blue', 'return key.length');
     testStaticAndInstance(obj4, ['age'], 'bar', 'accepts a string shortcut');
-    testStaticAndInstance(obj3, [function(key, value) { return value; }, true], {foo:3,moo:5,car:6}, 'all | return value');
+    testStaticAndInstance(obj3, [function(key, value) { return value; }, true], {foo:2}, 'all | return value');
     testStaticAndInstance(obj3, [function(key, value) { return key.length; }, true], {blue:4}, 'all | return key.length');
     testStaticAndInstance(obj4, ['age', true], {bar: {age:22},moo:{age:33},car:{age:44}}, 'all | accepts a string shortcut');
     testStaticAndInstance(deepObj4, ['user.age',true], {bar:{user:{age:22}},moo:{user:{age:33}},car:{user:{age:44}}}, 'all | accepts a deep string shortcut');
@@ -1621,8 +1621,8 @@ package('Object', function() {
     testStaticAndInstance(obj3, [function(key, value) { return key.length; }], 'foo', 'return key.length');
     testStaticAndInstance(obj3, [function(key, value) { return key.charCodeAt(0); }], 'bar', 'return the char code of first letter');
     testStaticAndInstance(obj4, ['age'], 'foo', 'accepts a string shortcut');
-    testStaticAndInstance(obj3, [function(key, value) { return value; }, true], {bar:4,blue:4}, 'all | return value');
-    testStaticAndInstance(obj3, [function(key, value) { return key.length; }, true], {foo:3,bar:4,moo:5,car:6}, 'all | return key.length');
+    testStaticAndInstance(obj3, [function(key, value) { return value; }, true], {bar:4,blue:4,moo:6,car:6}, 'all | return value');
+    testStaticAndInstance(obj3, [function(key, value) { return key.length; }, true], {foo:2,bar:4,moo:6,car:6}, 'all | return key.length');
     testStaticAndInstance(obj3, [function(key, value) { return key.charCodeAt(0); }, true], {bar: 4,blue:4}, 'all | return the char code of first letter');
     testStaticAndInstance(obj4, ['age', true], {foo: {age:11},blue:{age:11}}, 'all | accepts a string shortcut');
     testStaticAndInstance(deepObj4, ['user.age', true], {foo:{user:{age:11}},blue:{user:{age:11}}}, 'all | accepts a deep string shortcut');
@@ -1678,6 +1678,98 @@ package('Object', function() {
     equal(({a:1}).isEmpty(), false, 'Object#isEmpty');
 
     restoreNativeState();
+  });
+
+  method('map', function() {
+    var obj1 = {
+      foo: 3,
+      bar: 4,
+      moo: 5,
+      car: 6
+    }
+
+    var obj2 = {
+     foo: { age: 11 },
+     bar: { age: 22 },
+     moo: { age: 33 },
+     car: { age: 44 }
+    }
+
+    testStaticAndInstance(obj1, [function(k, v) { return v * 2; }], {foo:6,bar:8,moo:10,car:12}, 'function');
+    testStaticAndInstance(obj1, ['toString'], {foo:'3',bar:'4',moo:'5',car:'6'}, 'string shortcut');
+    testStaticAndInstance(obj1, [], obj1, 'no args');
+    testStaticAndInstance(obj2, [function(k, v) { return v.age; }], {foo:11,bar:22,moo:33,car:44}, 'mapping nested properties');
+    testStaticAndInstance(obj2, ['age'], {foo:11,bar:22,moo:33,car:44}, 'mapping nested properties with string shortcut');
+
+    var obj = {
+     foo:{a:{b:{c:11}}},
+     bar:{a:{b:{c:22}}},
+     moo:{a:{b:{c:33}}},
+     car:{a:{b:{c:44}}}
+    }
+
+    testStaticAndInstance(obj, ['a.b.c'], {foo:11,bar:22,moo:33,car:44}, 'mapping shortcut can go deep with dot syntax');
+
+  });
+
+  method('size', function() {
+    testStaticAndInstance({}, [], 0, 'empty object');
+    testStaticAndInstance({foo:'bar'}, [], 1, '1 property');
+    testStaticAndInstance({foo:'bar',moo:'car'}, [], 2, '2 properties');
+    testStaticAndInstance({foo:1}, [], 1, 'numbers');
+    testStaticAndInstance({foo:/bar/}, [], 1, 'regexes');
+    testStaticAndInstance({foo:function(){}}, [], 1, 'functions');
+    testStaticAndInstance({foo:{bar:'car'}}, [], 1, 'nested object');
+    testStaticAndInstance({foo:[1]}, [], 1, 'nested array');
+    testStaticAndInstance(['a'], [], 1, 'array');
+    testStaticAndInstance(['a','b'], [], 2, 'array 2 elements');
+    testStaticAndInstance(['a','b','c'], [], 3, 'array 3 elements');
+    testStaticAndInstance('foo', [], 3, 'string primitive');
+    testStaticAndInstance(new String('foo'), [], 3, 'string object');
+    testStaticAndInstance(1, [], 0, 'number primitive');
+    testStaticAndInstance(new Number(1), [], 0, 'number object');
+    testStaticAndInstance(true, [], 0, 'boolean primitive');
+    testStaticAndInstance(new Boolean(true), [], 0, 'boolean object');
+    testStaticAndInstance(null, [], 0, 'null');
+    testStaticAndInstance(undefined, [], 0, 'undefined');
+
+    var Foo = function(){};
+    testStaticAndInstance(new Foo, [], 0, 'class instances');
+
+    var Foo = function(a){ this.a = a; };
+    testStaticAndInstance(new Foo, [], 1, 'class instances with a single property');
+  });
+
+  method('each', function() {
+    var fn = function () {}, callback, result;
+    var d = new Date();
+    var obj = {
+      number: 3,
+      person: 'jim',
+      date: d,
+      func: fn
+    };
+
+    var keys = ['number','person','date','func'];
+    var values = [3, 'jim', d, fn];
+    var count = 0;
+
+    count = 0;
+    callback = function(key, value, o) {
+      equal(key, keys[count], 'accepts a function');
+      equal(value, values[count], 'accepts a function');
+      equal(o, obj, 'accepts a function | object is third param');
+      count++;
+    }
+    result = run(Object, 'each', [obj, callback]);
+    equal(count, 4, 'accepts a function | iterated properly');
+    equal(result, obj, 'accepts a function | result should equal object passed in');
+
+    raisesError(function(){
+      run(Object, 'each', [{foo:'bar'}]);
+    }, 'no iterator raises an error');
+
+    testStaticAndInstance(obj, [function () {}], obj, 'each returns itself');
   });
 
 });

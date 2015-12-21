@@ -113,6 +113,9 @@ v2.0.0+
   - `Object.clone` now clones both non-enumerable properties if they exist and the attribute accessors "get" and "set".
 
 - Level: Minor
+  - `Array#isEmpty` now does a simple check if the length is zero. To also check if `undefined`, `null`, or `NaN` are present, use `Array#compact` first.
+
+- Level: Minor
   - `Object.fromQueryString` now returns a plain object. If you want an extended object call `Object.extended` on the result.
 
 - Level: Minor

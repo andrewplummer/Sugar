@@ -1,30 +1,35 @@
 package('Array', function () {
   "use strict";
 
-  var safeArray = testGetArrayWithUndefined;
+  method('isEqual', function() {
 
-  var oneUndefined   = safeArray(undefined);
-  var twoUndefined   = safeArray(undefined, undefined);
-  var threeUndefined = safeArray(undefined, undefined, undefined);
+    test(['a'], [['a']], true, 'basic 1 element array');
+    test(['a'], [['b']], false, 'basic 1 element array | inequal');
+    test(['a','b','c'], [['a','b','c']], true, '3 element array');
+    test(['a','b','c'], [['a','b','d']], false, '3 element array | inequal');
 
-  var nestedUndefined = safeArray(oneUndefined);
+    test(['a','b'], [{0:'a',1:'b',length:2}], false, 'object with length is not egal with array');
 
-  var undefinedWith1 = [1];
-  undefinedWith1.push(undefined);
+    test([0], [[0]], true, 'arrays of numbers are equal');
+    test([undefined], [[undefined]], true, 'arrays of undefined are equal');
+    test([null], [[null]], true, 'arrays of null are equal');
+    test([NaN], [[NaN]], true, 'arrays of NaN are equal');
+    test(testGetSparseArray(4, 'a'), [testGetSparseArray(4, 'a')], true, 'spare arrays are equal');
 
-  var undefinedWithNull = [null];
-  undefinedWithNull.push(undefined);
+    test([], [[]], true, 'empty arrays are equal');
+    test([], [{}], false, 'empty array is not equal to empty object');
 
-  function assertRandomized(arr, iterFn) {
-    var allOne = true;
-    for (var i = 0; i < arr.length; i++) {
-      if (iterFn(i) !== 1) {
-        allOne = false;
-      }
-    }
-    // Note that there is a built-in 0.00000001% chance that this test will fail */
-    equal(allOne, false, 'sufficiently randomized');
-  }
+    var args = (function(){ return arguments; })('a','b','c');
+    test(['a','b','c'], [args], false, 'array is not egal with arguments object');
+
+    var user1 = { name: 'Larry' };
+    var user2 = { name: 'David' };
+
+    test([user1, user2], [[user1, user2]], true, 'array of objects is equal');
+    test([user1, user2], [[user2, user1]], false, 'array of objects is not equal if not in the same order');
+    test([user1, user2], [[user1]], false, 'array of objects 2:1');
+    test([user1], [[user1, user2]], false, 'array of objects 1:2');
+  });
 
   method('construct', function() {
 
@@ -34,7 +39,7 @@ package('Array', function () {
     test(Array, [3, square], [0,1,4], 'basic array construction');
     test(Array, ['3', square], [0,1,4], 'numeric string creates the array');
 
-    test(Array, [3], testGetArrayWithUndefined(undefined, undefined, undefined), 'no function becomes all undefined');
+    test(Array, [3], safeArray(undefined, undefined, undefined), 'no function becomes all undefined');
     test(Array, [0], [], '0 constructs an empty array');
     test(Array, [null], [], 'null constructs an empty array');
     test(Array, [3, parseInt], [0,1,2], 'works with parseInt');
@@ -253,6 +258,7 @@ package('Array', function () {
   });
 
 
+  // TODO: groupBy should stringify??
   method('groupBy', function() {
     var grouped;
     var people = [

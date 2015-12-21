@@ -895,8 +895,7 @@ package('Function', function () {
 
   method('lock', function() {
 
-    // Simple tricks for working with undefined in IE
-    var a = testGetArrayWithUndefined, u;
+    var u;
 
     function getThreeNoLength(args) {
       var arr = [];
@@ -937,34 +936,34 @@ package('Function', function () {
     // Force 3 arguments as .length could be lying
 
     var fn = run(takesNone, 'lock', []);
-    equal(fn(),      a(u, u, u), 'takes 0 | default | 0 args');
-    equal(fn(1),     a(u, u, u), 'takes 0 | default | 1 arg');
-    equal(fn(1,2,3), a(u, u, u), 'takes 0 | default | 3 args');
+    equal(fn(),      safeArray(u, u, u), 'takes 0 | default | 0 args');
+    equal(fn(1),     safeArray(u, u, u), 'takes 0 | default | 1 arg');
+    equal(fn(1,2,3), safeArray(u, u, u), 'takes 0 | default | 3 args');
 
     var fn = run(takesOne, 'lock', []);
-    equal(fn(),      a(u, u, u), 'takes 1 | default | 0 args');
-    equal(fn(1),     a(1, u, u), 'takes 1 | default | 1 arg');
-    equal(fn(1,2,3), a(1, u, u), 'takes 1 | default | 3 args');
+    equal(fn(),      safeArray(u, u, u), 'takes 1 | default | 0 args');
+    equal(fn(1),     safeArray(1, u, u), 'takes 1 | default | 1 arg');
+    equal(fn(1,2,3), safeArray(1, u, u), 'takes 1 | default | 3 args');
 
     var fn = run(takesTwo, 'lock', []);
-    equal(fn(),      a(u, u, u), 'takes 2 | default | 0 args');
-    equal(fn(1),     a(1, u, u), 'takes 2 | default | 1 arg');
-    equal(fn(1,2,3), a(1, 2, u), 'takes 2 | default | 3 args');
+    equal(fn(),      safeArray(u, u, u), 'takes 2 | default | 0 args');
+    equal(fn(1),     safeArray(1, u, u), 'takes 2 | default | 1 arg');
+    equal(fn(1,2,3), safeArray(1, 2, u), 'takes 2 | default | 3 args');
 
     var fn = run(takesNone, 'lock', [1]);
-    equal(fn(),      a(u, u, u), 'takes 0 | manual 1 | 0 args');
-    equal(fn(1),     a(1, u, u), 'takes 0 | manual 1 | 1 arg');
-    equal(fn(1,2,3), a(1, u, u), 'takes 0 | manual 1 | 3 args');
+    equal(fn(),      safeArray(u, u, u), 'takes 0 | manual 1 | 0 args');
+    equal(fn(1),     safeArray(1, u, u), 'takes 0 | manual 1 | 1 arg');
+    equal(fn(1,2,3), safeArray(1, u, u), 'takes 0 | manual 1 | 3 args');
 
     var fn = run(takesOne, 'lock', [1]);
-    equal(fn(),      a(u, u, u), 'takes 1 | manual 1 | 0 args');
-    equal(fn(1),     a(1, u, u), 'takes 1 | manual 1 | 1 arg');
-    equal(fn(1,2,3), a(1, u, u), 'takes 1 | manual 1 | 3 args');
+    equal(fn(),      safeArray(u, u, u), 'takes 1 | manual 1 | 0 args');
+    equal(fn(1),     safeArray(1, u, u), 'takes 1 | manual 1 | 1 arg');
+    equal(fn(1,2,3), safeArray(1, u, u), 'takes 1 | manual 1 | 3 args');
 
     var fn = run(takesTwo, 'lock', [1]);
-    equal(fn(),      a(u, u, u), 'takes 2 | manual 1 | 0 args');
-    equal(fn(1),     a(1, u, u), 'takes 2 | manual 1 | 1 arg');
-    equal(fn(1,2,3), a(1, u, u), 'takes 2 | manual 1 | 3 args');
+    equal(fn(),      safeArray(u, u, u), 'takes 2 | manual 1 | 0 args');
+    equal(fn(1),     safeArray(1, u, u), 'takes 2 | manual 1 | 1 arg');
+    equal(fn(1,2,3), safeArray(1, u, u), 'takes 2 | manual 1 | 3 args');
 
 
     // Get all arguments by length as forcing 3 could mask
@@ -1028,39 +1027,39 @@ package('Function', function () {
 
     var partial = run(takesNoneReturnsVaried, 'partial', [undefined, 'b']);
     var fn = run(partial, 'lock', []);
-    equal(fn(),        a( u, 'b'), 'filled 1 | 1 hole | default lock | 0 args');
-    equal(fn('c'),     a('c','b'), 'filled 1 | 1 hole | default lock | 1 arg');
-    equal(fn('c','d'), a('c','b'), 'filled 1 | 1 hole | default lock | 2 args');
+    equal(fn(),        safeArray( u, 'b'), 'filled 1 | 1 hole | default lock | 0 args');
+    equal(fn('c'),     safeArray('c','b'), 'filled 1 | 1 hole | default lock | 1 arg');
+    equal(fn('c','d'), safeArray('c','b'), 'filled 1 | 1 hole | default lock | 2 args');
 
     var partial = run(takesNoneReturnsVaried, 'partial', [undefined, 'b']);
     var fn = run(partial, 'lock', [1]);
-    equal(fn(),        a( u ), 'filled 1 | 1 hole | locked to 1 | 0 args');
-    equal(fn('c'),     a('c'), 'filled 1 | 1 hole | locked to 1 | 1 arg');
-    equal(fn('c','d'), a('c'), 'filled 1 | 1 hole | locked to 1 | 2 args');
+    equal(fn(),        safeArray( u ), 'filled 1 | 1 hole | locked to 1 | 0 args');
+    equal(fn('c'),     safeArray('c'), 'filled 1 | 1 hole | locked to 1 | 1 arg');
+    equal(fn('c','d'), safeArray('c'), 'filled 1 | 1 hole | locked to 1 | 2 args');
 
     var partial = run(takesNoneReturnsVaried, 'partial', [undefined, 'b']);
     var fn = run(partial, 'lock', [3]);
-    equal(fn(),        a( u, 'b'),     'filled 1 | 1 hole | locked to 3 | 0 args');
-    equal(fn('c'),     a('c','b'),     'filled 1 | 1 hole | locked to 3 | 1 arg');
-    equal(fn('c','d'), a('c','b','d'), 'filled 1 | 1 hole | locked to 3 | 2 args');
+    equal(fn(),        safeArray( u, 'b'),     'filled 1 | 1 hole | locked to 3 | 0 args');
+    equal(fn('c'),     safeArray('c','b'),     'filled 1 | 1 hole | locked to 3 | 1 arg');
+    equal(fn('c','d'), safeArray('c','b','d'), 'filled 1 | 1 hole | locked to 3 | 2 args');
 
     var partial = run(takesNoneReturnsVaried, 'partial', [undefined, undefined]);
     var fn = run(partial, 'lock', []);
-    equal(fn(),        a( u,  u ), 'filled 0 | 2 holes | default lock | 0 args');
-    equal(fn('c'),     a('c', u ), 'filled 0 | 2 holes | default lock | 1 arg');
-    equal(fn('c','d'), a('c','d'), 'filled 0 | 2 holes | default lock | 2 args');
+    equal(fn(),        safeArray( u,  u ), 'filled 0 | 2 holes | default lock | 0 args');
+    equal(fn('c'),     safeArray('c', u ), 'filled 0 | 2 holes | default lock | 1 arg');
+    equal(fn('c','d'), safeArray('c','d'), 'filled 0 | 2 holes | default lock | 2 args');
 
     var partial = run(takesNoneReturnsVaried, 'partial', [undefined, undefined]);
     var fn = run(partial, 'lock', [1]);
-    equal(fn(),        a( u ), 'filled 0 | 2 holes | locked to 1 | 0 args');
-    equal(fn('c'),     a('c'), 'filled 0 | 2 holes | locked to 1 | 1 arg');
-    equal(fn('c','d'), a('c'), 'filled 0 | 2 holes | locked to 1 | 2 args');
+    equal(fn(),        safeArray( u ), 'filled 0 | 2 holes | locked to 1 | 0 args');
+    equal(fn('c'),     safeArray('c'), 'filled 0 | 2 holes | locked to 1 | 1 arg');
+    equal(fn('c','d'), safeArray('c'), 'filled 0 | 2 holes | locked to 1 | 2 args');
 
     var partial = run(takesNoneReturnsVaried, 'partial', [undefined, undefined]);
     var fn = run(partial, 'lock', [3]);
-    equal(fn(),        a( u,  u ), 'filled 0 | 2 holes | locked to 3 | 0 args');
-    equal(fn('c'),     a('c', u ), 'filled 0 | 2 holes | locked to 3 | 1 arg');
-    equal(fn('c','d'), a('c','d'), 'filled 0 | 2 holes | locked to 3 | 2 args');
+    equal(fn(),        safeArray( u,  u ), 'filled 0 | 2 holes | locked to 3 | 0 args');
+    equal(fn('c'),     safeArray('c', u ), 'filled 0 | 2 holes | locked to 3 | 1 arg');
+    equal(fn('c','d'), safeArray('c','d'), 'filled 0 | 2 holes | locked to 3 | 2 args');
 
   });
 

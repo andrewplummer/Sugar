@@ -64,7 +64,7 @@ package('ES6', function () {
       visited.push(el);
     });
 
-    equal(visited, testGetArrayWithUndefined('a', undefined, 'b'), 'Array#find | should visit undefined indexes');
+    equal(visited, safeArray('a', undefined, 'b'), 'Array#find | should visit undefined indexes');
 
 
     arr = ['a'];
@@ -137,7 +137,7 @@ package('ES6', function () {
       visited.push(el);
     });
 
-    equal(visited, testGetArrayWithUndefined('a', undefined, 'b'), 'Array#findIndex | should visit undefined indexes');
+    equal(visited, safeArray('a', undefined, 'b'), 'Array#findIndex | should visit undefined indexes');
 
     arr = ['a'];
     visited = [];
@@ -905,7 +905,7 @@ package('ES6', function () {
     equal(Array.from([2]), [2], 'in array | number');
     equal(Array.from([true]), [true], 'in array | boolean');
     equal(Array.from([null]), [null], 'in array | null');
-    equal(Array.from([undefined]), testGetArrayWithUndefined(undefined), 'in array | undefined');
+    equal(Array.from([undefined]), safeArray(undefined), 'in array | undefined');
 
     equal(Array.from([1,2,3]), [1,2,3], 'passing an array');
     equal(Array.from([[1,2,3]]), [[1,2,3]], 'in array | is nested');
@@ -967,14 +967,14 @@ package('ES6', function () {
 
     var arr = [1, 2, 3];
     delete arr[1];
-    equal(Array.from(arr), testGetArrayWithUndefined(1, undefined, 3), 'fills in 1,,3');
-    equal(Array.from([4,, 6]), testGetArrayWithUndefined(4, undefined, 6), 'fills in 4,,6');
+    equal(Array.from(arr), safeArray(1, undefined, 3), 'fills in 1,,3');
+    equal(Array.from([4,, 6]), safeArray(4, undefined, 6), 'fills in 4,,6');
 
     Object.prototype[3] = 42;
     equal(Array.from({0:1,1:2,2:3,length:4}), [1, 2, 3, 42], 'it includes Object.prototype values when it is polluted');
     delete Object.prototype[3];
 
-    equal(Array.from({ length: 1 }), testGetArrayWithUndefined(void 0), 'works with empty array-like');
+    equal(Array.from({ length: 1 }), safeArray(void 0), 'works with empty array-like');
     equal(Array.from({ 0: 'a', 1: 'b', length: 2 }), ['a', 'b'], 'works with array-like');
 
 
