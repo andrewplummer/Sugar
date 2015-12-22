@@ -1403,10 +1403,18 @@ package('Array', function () {
       'att fästa'
     ];
 
-    Sugar.Array.sortEquivalents()['ö'] = null;
-    Sugar.Array.sortEquivalents()['ä'] = null;
+    // The equivalents table is an object so need to make a clone
+    // here to properly restore the state after this test finishes.
+    var equivalents = Sugar.Array.sortEquivalents();
+    var storedEquivalents = testClone(equivalents);
+
+    equivalents['ö'] = null;
+    equivalents['ä'] = null;
 
     test(swedishWords, swedishCollated, 'removing equivalents can restore sort order');
+
+    equivalents['ö'] = storedEquivalents['ö'];
+    equivalents['ä'] = storedEquivalents['ä'];
 
     // Capitals
 

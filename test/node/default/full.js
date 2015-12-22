@@ -1,7 +1,5 @@
 var runner = require('../setup');
 
-runner.resetPolyfills('es6');
-
 runner.loadPackage('../../release/npm/sugar');
 
 runner.loadPackage('../../release/npm/sugar/locales/ca.js');
@@ -26,8 +24,6 @@ runner.loadTest('core');
 runner.loadTest('array');
 runner.loadTest('date');
 runner.loadTest('equals');
-runner.loadTest('es5');
-runner.loadTest('es6');
 runner.loadTest('function');
 runner.loadTest('number');
 runner.loadTest('object');

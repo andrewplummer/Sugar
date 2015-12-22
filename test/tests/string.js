@@ -919,7 +919,7 @@ package('String', function () {
     var fn = function() { return ''; };
     test('<span>foo</span>', ['all', fn], 'foo', 'replaces content with empty string');
 
-    var fn = function() { return; };
+    var fn = function() {};
     test('<span>foo</span>', ['all', fn], 'foo', 'returning undefined removes as normal');
 
     var fn = function() { return 'wow'; };
@@ -1127,7 +1127,7 @@ package('String', function () {
     var fn = function() { return ''; };
     test('<span>foo</span>', ['all', fn], '', 'replaces content with empty string');
 
-    var fn = function() { return; };
+    var fn = function() {};
     test('<span>foo</span>', ['all', fn], '', 'returning undefined strips as normal');
 
     var fn = function() { return 'wow'; };

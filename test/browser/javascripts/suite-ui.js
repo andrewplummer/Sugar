@@ -97,9 +97,9 @@
     for(var key in p){
       if(!p.hasOwnProperty(key)) continue;
       if(p[key] === undefined) {
-        arr.push('undefined');
+        arr.push(key + ': undefined');
       } else {
-        arr.push(p[key]);
+        arr.push(key + ': ' + p[key]);
       }
     }
     str += arr.join(',');

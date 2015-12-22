@@ -28,13 +28,13 @@ assertRandomized = function(arr, iterFn) {
   equal(allOne, false, 'sufficiently randomized');
 }
 
-var oneUndefined    = safeArray(undefined);
-var twoUndefined    = safeArray(undefined, undefined);
-var threeUndefined  = safeArray(undefined, undefined, undefined);
-var nestedUndefined = safeArray(oneUndefined);
+oneUndefined    = safeArray(undefined);
+twoUndefined    = safeArray(undefined, undefined);
+threeUndefined  = safeArray(undefined, undefined, undefined);
+nestedUndefined = safeArray(oneUndefined);
 
-var undefinedWith1 = [1];
+undefinedWith1 = [1];
 undefinedWith1.push(undefined);
 
-var undefinedWithNull = [null];
+undefinedWithNull = [null];
 undefinedWithNull.push(undefined);

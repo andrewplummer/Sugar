@@ -24,7 +24,6 @@ package('Function', function () {
     run(fn, 'delay', []);
     clock.tick(1);
     equal(count, 1, 'no arguments should be equal to 1ms');
-    return;
 
     clock.reset();
     count = 0;

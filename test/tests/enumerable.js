@@ -465,10 +465,6 @@ package('Array', function() {
   });
 
   method('findIndex', function() {
-    if (!Array.prototype.findIndex) {
-      equal(Sugar.Array.findIndex, undefined, 'enhanced method should not exist if no native to call');
-      return;
-    }
 
     raisesError(function() { run([1,2,3], 'findIndex'); }, 'no argument raises a type error');
 
@@ -985,7 +981,6 @@ package('Array', function() {
     count = 0;
     fn = function() {
       count++;
-      return;
     }
     run(['a','b','c'], 'each', [fn]);
     equal(count, 3, 'returning undefined will not break the loop');
@@ -1406,6 +1401,12 @@ package('Array', function() {
 package('Object', function() {
   "use strict";
 
+  // Array.prototype.min may shadow Object.prototype.min,
+  // throwing off test results, so add a check for that here.
+  function arrayMinExtended() {
+    return 'min' in Array.prototype;
+  }
+
   var obj1 = {
     foo: 2,
     bar: 4,
@@ -1583,8 +1584,11 @@ package('Object', function() {
     testStaticAndInstance(obj4, ['age'], 'foo', 'accepts a string shortcut');
     testStaticAndInstance(obj4, ['age', true], {foo: {age:11},blue:{age:11}}, 'all | accepts a string shortcut');
     testStaticAndInstance(deepObj2, ['user.age'], 'foo', 'accepts a deep string shortcut');
-    test([{age:2},{age:4}], ['age'], '0', 'called on arrays returns index');
-    test([{age:2},{age:2}], ['age', true], {'0':{age:2},'1':{age:2}}, 'all | called on arrays returns object');
+
+    if (!arrayMinExtended()) {
+      test([{age:2},{age:4}], ['age'], '0', 'called on arrays returns index');
+      test([{age:2},{age:2}], ['age', true], {'0':{age:2},'1':{age:2}}, 'all | called on arrays returns object');
+    }
   });
 
   method('max', function() {
@@ -1598,8 +1602,11 @@ package('Object', function() {
     testStaticAndInstance(obj3, [function(key, value) { return key.charCodeAt(0); }, true], {moo:6}, 'all | return the char code of first letter');
     testStaticAndInstance(obj4, ['age', true], {car:{age:44}}, 'all | accepts a string shortcut');
     testStaticAndInstance(deepObj2, ['user.age'], 'car', 'accepts a deep string shortcut');
-    test([{age:2},{age:4}], ['age'], '1', 'called on arrays returns index');
-    test([{age:2},{age:4}], ['age', true], {'1':{age:4}}, 'all | called on arrays returns object');
+
+    if (!arrayMinExtended()) {
+      test([{age:2},{age:4}], ['age'], '1', 'called on arrays returns index');
+      test([{age:2},{age:4}], ['age', true], {'1':{age:4}}, 'all | called on arrays returns object');
+    }
   });
 
   method('least', function() {
@@ -1687,10 +1694,6 @@ package('Object', function() {
   });
 
   method('find', function() {
-    if (!Array.prototype.find) {
-      equal(Sugar.Object.find, undefined, 'enumerated method should not exist if no native to call');
-      return;
-    }
     testStaticAndInstance(obj1, [function(key, value) { return key == 'foo'; }], 'foo', 'key is foo');
     testStaticAndInstance(obj1, [function(key, value) { return key.length > 3; }], undefined, 'key length is greater than 3');
     testStaticAndInstance(obj1, [function(key, value) { return key.length > 0; }], 'foo', 'key length is greater than 0');
