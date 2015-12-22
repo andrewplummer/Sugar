@@ -81,7 +81,7 @@ testStaticAndInstance = function (subject, args, expected, message) {
   test(Object, [subject].concat(args), expected, message);
   if (Sugar.Object && Sugar.Object.extended) {
     var obj = run(Object, 'extended', [clonedSubject]);
-    equal(obj[getCurrentTest().name].apply(obj, args), expected, message + ' | extended');
+    equal(obj[getCurrentTest().name].apply(obj, args), expected, message + ' | extended object');
   }
 }
 

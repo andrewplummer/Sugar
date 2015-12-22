@@ -34,7 +34,7 @@
     "buffer": false
   },
   "scripts": {
-    "test": "node test/node/all.js"
+    "test": "node test/node"
   },
   "license": "MIT",
   "devDependencies": {

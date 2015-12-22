@@ -3,215 +3,204 @@ package('String | Inflections', function () {
   // Skipping strict mode here as testing
   // malformed utf-8 is part of these tests.
 
-  /* Note that the following methods are not implemented now and may not be:
-   *
-   *   String#demodulize
-   *   String#deconstantize
-   *   String#foreign_key
-   *   String#tableize
-   *   String#classify
-   */
-
-
   var SingularToPlural = {
-    "search"      : "searches",
-    "switch"      : "switches",
-    "fix"         : "fixes",
-    "box"         : "boxes",
-    "process"     : "processes",
-    "address"     : "addresses",
-    "case"        : "cases",
-    "stack"       : "stacks",
-    "wish"        : "wishes",
-    "fish"        : "fish",
-    "jeans"       : "jeans",
-    "funky jeans" : "funky jeans",
+    'search'      : 'searches',
+    'switch'      : 'switches',
+    'fix'         : 'fixes',
+    'box'         : 'boxes',
+    'process'     : 'processes',
+    'address'     : 'addresses',
+    'case'        : 'cases',
+    'stack'       : 'stacks',
+    'wish'        : 'wishes',
+    'fish'        : 'fish',
+    'jeans'       : 'jeans',
+    'funky jeans' : 'funky jeans',
 
-    "my money"    : "my money",
+    'my money'    : 'my money',
 
-    "category"    : "categories",
-    "query"       : "queries",
-    "ability"     : "abilities",
-    "agency"      : "agencies",
-    "movie"       : "movies",
+    'category'    : 'categories',
+    'query'       : 'queries',
+    'ability'     : 'abilities',
+    'agency'      : 'agencies',
+    'movie'       : 'movies',
 
-    "archive"     : "archives",
+    'archive'     : 'archives',
 
-    "index"       : "indexes",
+    'index'       : 'indexes',
 
-    "wife"        : "wives",
-    "save"        : "saves",
-    "half"        : "halves",
+    'wife'        : 'wives',
+    'save'        : 'saves',
+    'half'        : 'halves',
 
-    "move"        : "moves",
+    'move'        : 'moves',
 
-    "salesperson" : "salespeople",
-    "person"      : "people",
+    'salesperson' : 'salespeople',
+    'person'      : 'people',
 
-    "spokesman"   : "spokesmen",
-    "man"         : "men",
-    "woman"       : "women",
+    'spokesman'   : 'spokesmen',
+    'man'         : 'men',
+    'woman'       : 'women',
 
-    "basis"       : "bases",
-    "diagnosis"   : "diagnoses",
-    "diagnosis_a" : "diagnosis_as",
+    'basis'       : 'bases',
+    'diagnosis'   : 'diagnoses',
+    'diagnosis_a' : 'diagnosis_as',
 
-    "datum"       : "data",
-    "medium"      : "media",
-    "stadium"     : "stadia",
-    "analysis"    : "analyses",
+    'datum'       : 'data',
+    'medium'      : 'media',
+    'stadium'     : 'stadia',
+    'analysis'    : 'analyses',
 
-    "node_child"  : "node_children",
-    "child"       : "children",
+    'node_child'  : 'node_children',
+    'child'       : 'children',
 
-    "experience"  : "experiences",
-    "day"         : "days",
+    'experience'  : 'experiences',
+    'day'         : 'days',
 
-    "comment"     : "comments",
-    "foobar"      : "foobars",
-    "newsletter"  : "newsletters",
+    'comment'     : 'comments',
+    'foobar'      : 'foobars',
+    'newsletter'  : 'newsletters',
 
-    "old_news"    : "old_news",
-    "news"        : "news",
+    'old_news'    : 'old_news',
+    'news'        : 'news',
 
-    "series"      : "series",
-    "species"     : "species",
+    'series'      : 'series',
+    'species'     : 'species',
 
-    "quiz"        : "quizzes",
+    'quiz'        : 'quizzes',
 
-    "perspective" : "perspectives",
+    'perspective' : 'perspectives',
 
-    "ox"          : "oxen",
-    "photo"       : "photos",
-    "buffalo"     : "buffaloes",
-    "tomato"      : "tomatoes",
-    "dwarf"       : "dwarves",
-    "elf"         : "elves",
-    "information" : "information",
-    "equipment"   : "equipment",
-    "bus"         : "buses",
-    "status"      : "statuses",
-    "status_code" : "status_codes",
-    "mouse"       : "mice",
+    'ox'          : 'oxen',
+    'photo'       : 'photos',
+    'buffalo'     : 'buffaloes',
+    'tomato'      : 'tomatoes',
+    'dwarf'       : 'dwarves',
+    'elf'         : 'elves',
+    'information' : 'information',
+    'equipment'   : 'equipment',
+    'bus'         : 'buses',
+    'status'      : 'statuses',
+    'status_code' : 'status_codes',
+    'mouse'       : 'mice',
 
-    "louse"       : "lice",
-    "house"       : "houses",
-    "octopus"     : "octopi",
-    "virus"       : "viruses",
-    "alias"       : "aliases",
-    "portfolio"   : "portfolios",
+    'louse'       : 'lice',
+    'house'       : 'houses',
+    'octopus'     : 'octopi',
+    'virus'       : 'viruses',
+    'alias'       : 'aliases',
+    'portfolio'   : 'portfolios',
 
-    "vertex"      : "vertices",
-    "matrix"      : "matrices",
-    "matrix_fu"   : "matrix_fus",
+    'vertex'      : 'vertices',
+    'matrix'      : 'matrices',
+    'matrix_fu'   : 'matrix_fus',
 
-    "axis"        : "axes",
-    "testis"      : "testes",
-    "crisis"      : "crises",
+    'axis'        : 'axes',
+    'testis'      : 'testes',
+    'crisis'      : 'crises',
 
-    "rice"        : "rice",
-    "shoe"        : "shoes",
+    'rice'        : 'rice',
+    'shoe'        : 'shoes',
 
-    "horse"       : "horses",
-    "prize"       : "prizes",
-    "edge"        : "edges",
+    'horse'       : 'horses',
+    'prize'       : 'prizes',
+    'edge'        : 'edges',
 
-    "cow"         : "cows",
-    "database"    : "databases",
+    'cow'         : 'cows',
+    'database'    : 'databases',
 
     // regression tests against improper inflection regexes
-    "|ice"        : "|ices",
-    "|ouse"       : "|ouses",
+    '|ice'        : '|ices',
+    '|ouse'       : '|ouses',
 
 
     // Taken from Wikipedia
 
-    "kiss"    : "kisses",
-    "ass"     : "asses",
-    "mess"    : "messes",
-    "fuss"    : "fusses",
-    "phase"   : "phases",
-    "dish"    : "dishes",
-    "massage" : "massages",
-    "witch"   : "witches",
-    "judge"   : "judges",
+    'kiss'    : 'kisses',
+    'ass'     : 'asses',
+    'mess'    : 'messes',
+    'fuss'    : 'fusses',
+    'phase'   : 'phases',
+    'dish'    : 'dishes',
+    'massage' : 'massages',
+    'witch'   : 'witches',
+    'judge'   : 'judges',
 
-    "lap"     : "laps",
-    "cat"     : "cats",
-    "clock"   : "clocks",
-    "cuff"    : "cuffs",
-    "death"   : "deaths",
+    'lap'     : 'laps',
+    'cat'     : 'cats',
+    'clock'   : 'clocks',
+    'cuff'    : 'cuffs',
+    'death'   : 'deaths',
 
-    "boy"     : "boys",
-    "girl"    : "girls",
-    "chair"   : "chairs",
+    'boy'     : 'boys',
+    'girl'    : 'girls',
+    'chair'   : 'chairs',
 
-    "hero"    : "heroes",
-    "potato"  : "potatoes",
-    "volcano" : "volcanoes",
+    'hero'    : 'heroes',
+    'potato'  : 'potatoes',
+    'volcano' : 'volcanoes',
 
-    "cherry"  : "cherries",
-    "lady"    : "ladies",
-
-
-    "day"     : "days",
-    "monkey"  : "monkeys",
-    "canto"   : "cantos",
-    "homo"    : "homos",
-    "photo"   : "photos",
-    "zero"    : "zeros",
-    "piano"   : "pianos",
-    "portico" : "porticos",
-    "pro"     : "pros",
-    "quarto"  : "quartos",
-    "kimono"  : "kimonos",
+    'cherry'  : 'cherries',
+    'lady'    : 'ladies',
 
 
-    "bath"   : "baths",
-    "mouth"  : "mouths",
-    "calf"   : "calves",
-    "leaf"   : "leaves",
-    "knife"  : "knives",
-    "life"   : "lives",
-    "house"  : "houses",
-    "moth"   : "moths",
-    "proof"  : "proofs",
-    "dwarf"  : "dwarves",
-    "hoof"   : "hooves",
-    "elf"    : "elves",
-    "roof"   : "roofs",
+    'day'     : 'days',
+    'monkey'  : 'monkeys',
+    'canto'   : 'cantos',
+    'homo'    : 'homos',
+    'photo'   : 'photos',
+    'zero'    : 'zeros',
+    'piano'   : 'pianos',
+    'portico' : 'porticos',
+    'pro'     : 'pros',
+    'quarto'  : 'quartos',
+    'kimono'  : 'kimonos',
 
-    "aircraft"   : "aircraft",
-    "watercraft" : "watercraft",
-    "spacecraft" : "spacecraft",
-    "hovercraft" : "hovercraft",
 
-    "information" : "information",
-    "ox"          : "oxen",
-    "child"       : "children",
-    "foot"        : "feet",
-    "goose"       : "geese",
-    "louse"       : "lice",
-    "man"         : "men",
-    "mouse"       : "mice",
-    "tooth"       : "teeth",
-    "woman"       : "women",
-    "alumnus"     : "alumni",
-    "census"      : "censuses",
-    "focus"       : "foci",
-    "radius"      : "radii",
-    "fungus"      : "fungi",
-    "status"      : "statuses",
-    "syllabus"    : "syllabuses",
-    "human"       : "humans",
-    "fetus"       : "fetuses",
-    "genius"      : "geniuses",
-    "cactus"      : "cacti",
-    "deer"        : "deer",
-    "aviatrix"    : "aviatrices"
+    'bath'   : 'baths',
+    'mouth'  : 'mouths',
+    'calf'   : 'calves',
+    'leaf'   : 'leaves',
+    'knife'  : 'knives',
+    'life'   : 'lives',
+    'house'  : 'houses',
+    'moth'   : 'moths',
+    'proof'  : 'proofs',
+    'dwarf'  : 'dwarves',
+    'hoof'   : 'hooves',
+    'elf'    : 'elves',
+    'roof'   : 'roofs',
+
+    'aircraft'   : 'aircraft',
+    'watercraft' : 'watercraft',
+    'spacecraft' : 'spacecraft',
+    'hovercraft' : 'hovercraft',
+
+    'information' : 'information',
+    'ox'          : 'oxen',
+    'child'       : 'children',
+    'foot'        : 'feet',
+    'goose'       : 'geese',
+    'louse'       : 'lice',
+    'man'         : 'men',
+    'mouse'       : 'mice',
+    'tooth'       : 'teeth',
+    'woman'       : 'women',
+    'alumnus'     : 'alumni',
+    'census'      : 'censuses',
+    'focus'       : 'foci',
+    'radius'      : 'radii',
+    'fungus'      : 'fungi',
+    'status'      : 'statuses',
+    'syllabus'    : 'syllabuses',
+    'human'       : 'humans',
+    'fetus'       : 'fetuses',
+    'genius'      : 'geniuses',
+    'cactus'      : 'cacti',
+    'deer'        : 'deer',
+    'aviatrix'    : 'aviatrices'
 
   };
-
 
   var Irregulars = {
     'person' : 'people',
@@ -247,98 +236,102 @@ package('String | Inflections', function () {
 
     // Added test cases for non-titleized words
 
-    "the day of the jackal"        : "The Day of the Jackal",
-    "what color is your parachute?": "What Color Is Your Parachute?",
-    "a tale of two cities"         : "A Tale of Two Cities",
-    "where am i going to"          : "Where Am I Going To",
+    'the day of the jackal'        : 'The Day of the Jackal',
+    'what color is your parachute?': 'What Color Is Your Parachute?',
+    'a tale of two cities'         : 'A Tale of Two Cities',
+    'where am i going to'          : 'Where Am I Going To',
 
     // From the titleize docs
-    "man from the boondocks"       :  "Man from the Boondocks",
-    "x-men: the last stand"        :  "X Men: The Last Stand",
-    "i am a sentence. and so am i.":  "I Am a Sentence. And so Am I.",
-    "hello! and goodbye!"          :  "Hello! And Goodbye!",
-    "hello, and goodbye"           :  "Hello, and Goodbye",
-    "hello; and goodbye"           :  "Hello; And Goodbye",
-    'about "you" and "me"'         :  'About "You" and "Me"',
-    "TheManWithoutAPast"           :  "The Man Without a Past",
-    "raiders_of_the_lost_ark"      :  "Raiders of the Lost Ark"
+    'man from the boondocks'       :  'Man from the Boondocks',
+    'x-men: the last stand'        :  'X Men: The Last Stand',
+    'i am a sentence. and so am i.':  'I Am a Sentence. And so Am I.',
+    'hello! and goodbye!'          :  'Hello! And Goodbye!',
+    'hello, and goodbye'           :  'Hello, and Goodbye',
+    'hello; and goodbye'           :  'Hello; And Goodbye',
+    "about 'you' and 'me'"         :  "About 'You' and 'Me'",
+    'TheManWithoutAPast'           :  'The Man Without a Past',
+    'raiders_of_the_lost_ark'      :  'Raiders of the Lost Ark'
   }
 
   var CamelToUnderscore = {
-    "Product"               : "product",
-    "SpecialGuest"          : "special_guest",
-    "ApplicationController" : "application_controller",
-    "Area51Controller"      : "area51_controller"
+    'Product'               : 'product',
+    'SpecialGuest'          : 'special_guest',
+    'ApplicationController' : 'application_controller',
+    'Area51Controller'      : 'area51_controller'
   }
 
   var UnderscoreToLowerCamel = {
-    "product"                : "product",
-    "special_guest"          : "specialGuest",
-    "application_controller" : "applicationController",
-    "area51_controller"      : "area51Controller"
+    'product'                : 'product',
+    'special_guest'          : 'specialGuest',
+    'application_controller' : 'applicationController',
+    'area51_controller'      : 'area51Controller'
   }
 
   var CamelToUnderscoreWithoutReverse = {
-    "HTMLTidy"              : "html_tidy",
-    "HTMLTidyGenerator"     : "html_tidy_generator",
-    "FreeBSD"               : "free_bsd",
-    "HTML"                  : "html"
+    'HTMLTidy'              : 'html_tidy',
+    'HTMLTidyGenerator'     : 'html_tidy_generator',
+    'FreeBSD'               : 'free_bsd',
+    'HTML'                  : 'html'
   }
 
   var StringToParameterized = {
-    "Donald E. Knuth"                     : "donald-e-knuth",
-    "Random text with *(bad)* characters" : "random-text-with-bad-characters",
-    "Allow_Under_Scores"                  : "allow_under_scores",
-    "Trailing bad characters!@#"          : "trailing-bad-characters",
-    "!@#Leading bad characters"           : "leading-bad-characters",
-    "Squeeze   separators"                : "squeeze-separators",
-    "Test with + sign"                    : "test-with-sign",
-    "Test with malformed utf8 \251"       : "test-with-malformed-utf8"
+    'Donald E. Knuth'                     : 'donald-e-knuth',
+    'Random text with *(bad)* characters' : 'random-text-with-bad-characters',
+    'Allow_Under_Scores'                  : 'allow_under_scores',
+    'Trailing bad characters!@#'          : 'trailing-bad-characters',
+    '!@#Leading bad characters'           : 'leading-bad-characters',
+    'Squeeze   separators'                : 'squeeze-separators',
+    'Test with + sign'                    : 'test-with-sign',
+    'Test with malformed utf8 \251'       : 'test-with-malformed-utf8'
   }
 
   var StringToParameterizeWithNoSeparator = {
-    "Donald E. Knuth"                     : "donaldeknuth",
-    "With-some-dashes"                    : "with-some-dashes",
-    "Random text with *(bad)* characters" : "randomtextwithbadcharacters",
-    "Trailing bad characters!@#"          : "trailingbadcharacters",
-    "!@#Leading bad characters"           : "leadingbadcharacters",
-    "Squeeze   separators"                : "squeezeseparators",
-    "Test with + sign"                    : "testwithsign",
-    "Test with malformed utf8 \251"       : "testwithmalformedutf8"
+    'Donald E. Knuth'                     : 'donaldeknuth',
+    'With-some-dashes'                    : 'with-some-dashes',
+    'Random text with *(bad)* characters' : 'randomtextwithbadcharacters',
+    'Trailing bad characters!@#'          : 'trailingbadcharacters',
+    '!@#Leading bad characters'           : 'leadingbadcharacters',
+    'Squeeze   separators'                : 'squeezeseparators',
+    'Test with + sign'                    : 'testwithsign',
+    'Test with malformed utf8 \251'       : 'testwithmalformedutf8'
   }
 
   var StringToParameterizeWithUnderscore = {
-    "Donald E. Knuth"                     : "donald_e_knuth",
-    "Random text with *(bad)* characters" : "random_text_with_bad_characters",
-    "With-some-dashes"                    : "with-some-dashes",
-    "Retain_underscore"                   : "retain_underscore",
-    "Trailing bad characters!@#"          : "trailing_bad_characters",
-    "!@#Leading bad characters"           : "leading_bad_characters",
-    "Squeeze   separators"                : "squeeze_separators",
-    "Test with + sign"                    : "test_with_sign",
-    "Test with malformed utf8 \251"       : "test_with_malformed_utf8"
+    'Donald E. Knuth'                     : 'donald_e_knuth',
+    'Random text with *(bad)* characters' : 'random_text_with_bad_characters',
+    'With-some-dashes'                    : 'with-some-dashes',
+    'Retain_underscore'                   : 'retain_underscore',
+    'Trailing bad characters!@#'          : 'trailing_bad_characters',
+    '!@#Leading bad characters'           : 'leading_bad_characters',
+    'Squeeze   separators'                : 'squeeze_separators',
+    'Test with + sign'                    : 'test_with_sign',
+    'Test with malformed utf8 \251'       : 'test_with_malformed_utf8'
   }
 
   var StringToParameterizedAndNormalized = {
-    "Malmö"                               : "malmo",
-    "Garçons"                             : "garcons",
-    "Ops\331"                             : "opsu",
-    "Ærøskøbing"                          : "aeroskobing",
-    "Aßlar"                               : "asslar",
-    "Japanese: 日本語"                    : "japanese"
+    'Malmö'                               : 'malmo',
+    'Garçons'                             : 'garcons',
+    'Ops\331'                             : 'opsu',
+    'Ærøskøbing'                          : 'aeroskobing',
+    'Aßlar'                               : 'asslar',
+    'Japanese: 日本語'                    : 'japanese'
   }
 
   var UnderscoreToHuman = {
-    "employee_salary" : "Employee salary",
-    "employee_id"     : "Employee",
-    "underground"     : "Underground"
+    'employee_salary' : 'Employee salary',
+    'employee_id'     : 'Employee',
+    'underground'     : 'Underground'
   }
 
   var UnderscoresToDashes = {
-    "street"                : "street",
-    "street_address"        : "street-address",
-    "person_street_address" : "person-street-address"
+    'street'                : 'street',
+    'street_address'        : 'street-address',
+    'person_street_address' : 'person-street-address'
   }
+
+  teardown(function() {
+    Sugar.String.Inflector.reset();
+  });
 
   method('pluralize', function() {
     // Test pluralize plurals
@@ -384,7 +377,8 @@ package('String | Inflections', function () {
     var uncountable = 'ors';
     var countable = 'sponsor';
 
-    test(uncountable, uncountable, 'pluralize | uncountable | ors');
+    Sugar.String.Inflector.uncountable(uncountable);
+
     test(uncountable, run(uncountable, 'singularize'), 'singularize | uncountable | both are same');
 
     test(countable, 'sponsors', 'pluralize | countable | sponsors');
@@ -434,41 +428,41 @@ package('String | Inflections', function () {
 
   group('Acronyms', function() {
 
-    Sugar.String.Inflector.acronym("API");
-    Sugar.String.Inflector.acronym("HTML");
-    Sugar.String.Inflector.acronym("HTTP");
-    Sugar.String.Inflector.acronym("RESTful");
-    Sugar.String.Inflector.acronym("W3C");
-    Sugar.String.Inflector.acronym("PhD");
-    Sugar.String.Inflector.acronym("RoR");
-    Sugar.String.Inflector.acronym("SSL");
+    Sugar.String.Inflector.acronym('API');
+    Sugar.String.Inflector.acronym('HTML');
+    Sugar.String.Inflector.acronym('HTTP');
+    Sugar.String.Inflector.acronym('RESTful');
+    Sugar.String.Inflector.acronym('W3C');
+    Sugar.String.Inflector.acronym('PhD');
+    Sugar.String.Inflector.acronym('RoR');
+    Sugar.String.Inflector.acronym('SSL');
 
     // camelize             underscore            humanize              titleize
     [
-      ["API",               "api",                "API",                "API"],
-      ["APIController",     "api_controller",     "API controller",     "API Controller"],
+      ['API',               'api',                'API',                'API'],
+      ['APIController',     'api_controller',     'API controller',     'API Controller'],
 
       // Ruby specific inflections don't make sense here.
-      // ["Nokogiri::HTML",    "nokogiri/html",      "Nokogiri/HTML",      "Nokogiri/HTML"],
-      // ["HTTP::Get",         "http/get",           "HTTP/get",           "HTTP/Get"],
+      // ['Nokogiri::HTML',    'nokogiri/html',      'Nokogiri/HTML',      'Nokogiri/HTML'],
+      // ['HTTP::Get',         'http/get',           'HTTP/get',           'HTTP/Get'],
 
-      ["HTTPAPI",           "http_api",           "HTTP API",           "HTTP API"],
-      ["SSLError",          "ssl_error",          "SSL error",          "SSL Error"],
-      ["RESTful",           "restful",            "RESTful",            "RESTful"],
-      ["RESTfulController", "restful_controller", "RESTful controller", "RESTful Controller"],
-      ["IHeartW3C",         "i_heart_w3c",        "I heart W3C",        "I Heart W3C"],
-      ["PhDRequired",       "phd_required",       "PhD required",       "PhD Required"],
-      ["IRoRU",             "i_ror_u",            "I RoR u",            "I RoR U"],
-      ["RESTfulHTTPAPI",    "restful_http_api",   "RESTful HTTP API",   "RESTful HTTP API"],
+      ['HTTPAPI',           'http_api',           'HTTP API',           'HTTP API'],
+      ['SSLError',          'ssl_error',          'SSL error',          'SSL Error'],
+      ['RESTful',           'restful',            'RESTful',            'RESTful'],
+      ['RESTfulController', 'restful_controller', 'RESTful controller', 'RESTful Controller'],
+      ['IHeartW3C',         'i_heart_w3c',        'I heart W3C',        'I Heart W3C'],
+      ['PhDRequired',       'phd_required',       'PhD required',       'PhD Required'],
+      ['IRoRU',             'i_ror_u',            'I RoR u',            'I RoR U'],
+      ['RESTfulHTTPAPI',    'restful_http_api',   'RESTful HTTP API',   'RESTful HTTP API'],
 
       // misdirection
-      ["Capistrano",        "capistrano",         "Capistrano",       "Capistrano"],
-      ["CapiController",    "capi_controller",    "Capi controller",  "Capi Controller"],
-      ["HttpsApis",         "https_apis",         "Https apis",       "Https Apis"],
-      ["Html5",             "html5",              "Html5",            "Html5"],
-      ["Restfully",         "restfully",          "Restfully",        "Restfully"]
+      ['Capistrano',        'capistrano',         'Capistrano',       'Capistrano'],
+      ['CapiController',    'capi_controller',    'Capi controller',  'Capi Controller'],
+      ['HttpsApis',         'https_apis',         'Https apis',       'Https Apis'],
+      ['Html5',             'html5',              'Html5',            'Html5'],
+      ['Restfully',         'restfully',          'Restfully',        'Restfully']
       // This one confounds the JS implementation, but I argue that it isn't correct anyway.
-      // ["RoRails",           "ro_rails",           "Ro rails",         "Ro Rails"]
+      // ['RoRails',           'ro_rails',           'Ro rails',         'Ro Rails']
     ].forEach(function(set) {
       var camel = set[0], under = set[1], human = set[2], title = set[3];
       equal(run(under, 'camelize'), camel, 'camelize | under.camelize()')
@@ -484,18 +478,18 @@ package('String | Inflections', function () {
 
 
   method('camelize', function() {
-    Sugar.String.Inflector.acronym("API");
-    Sugar.String.Inflector.acronym("HTML");
+    Sugar.String.Inflector.acronym('API');
+    Sugar.String.Inflector.acronym('HTML');
     testIterateOverObject(CamelToUnderscore, function(camel, underscore) {
       test(underscore, camel, 'mixed cases')
     });
     test('Camel_Case', 'CamelCase', 'handles underscores');
 
-    Sugar.String.Inflector.acronym("LegacyApi")
-    test('legacyapi', "LegacyApi", 'LegacyApi')
-    test('legacy_api', "LegacyAPI", 'LegacyAPI')
-    test('some_legacyapi', "SomeLegacyApi", 'SomeLegacyApi')
-    test('nonlegacyapi', "Nonlegacyapi", 'Nonlegacyapi')
+    Sugar.String.Inflector.acronym('LegacyApi')
+    test('legacyapi', 'LegacyApi', 'LegacyApi')
+    test('legacy_api', 'LegacyAPI', 'LegacyAPI')
+    test('some_legacyapi', 'SomeLegacyApi', 'SomeLegacyApi')
+    test('nonlegacyapi', 'Nonlegacyapi', 'Nonlegacyapi')
 
     withArgs([false], function() {
       test('html_api', 'htmlAPI', 'html_api')
@@ -513,7 +507,10 @@ package('String | Inflections', function () {
   method('underscore', function() {
     // Make sure this test doesn't come before "camelize",
     // or it will affect the "html5" acronym which should not be active at that point.
-    Sugar.String.Inflector.acronym("HTML5");
+
+    Sugar.String.Inflector.acronym('HTML5');
+    Sugar.String.Inflector.acronym('API');
+
     test('HTML5HTMLAPI', 'html5_html_api', 'HTML5HTMLAPI')
     testIterateOverObject(CamelToUnderscore, function(camel, underscore) {
         test(camel, underscore, 'mixed cases')
@@ -563,7 +560,7 @@ package('String | Inflections', function () {
     test('jargon_cnt', 'Jargon count', 'Jargon count')
     test('prefx_request', 'Request', 'Request')
 
-    Sugar.String.Inflector.human("col_rpted_bugs", "Reported bugs")
+    Sugar.String.Inflector.human('col_rpted_bugs', 'Reported bugs')
 
     test('col_rpted_bugs', 'Reported bugs', 'Reported bugs')
     test('COL_rpted_bugs', 'Col rpted bugs', 'Col rpted bugs')

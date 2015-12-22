@@ -46,12 +46,14 @@ logResults = function(runtime, results, testName, exitOnFail) {
   };
   var time = (runtime / 1000);
   logLine();
+  var assertions = formatNumber(totalAssertions);
+  var failures   = formatNumber(totalFailures);
   if (totalFailures === 0) {
     logGreen(testName);
-    logGreen(totalAssertions + ' assertions, ' + totalFailures + ' failures, ' + time + 's');
+    logGreen(assertions + ' assertions, ' + failures + ' failures, ' + time + 's');
   } else {
     logRed(testName);
-    logRed(totalAssertions + ' assertions, ' + totalFailures + ' failures, ' + time + 's');
+    logRed(assertions + ' assertions, ' + failures + ' failures, ' + time + 's');
     if (exitOnFail !== false) {
       if (typeof quit !== 'undefined') {
         quit();
@@ -63,5 +65,10 @@ logResults = function(runtime, results, testName, exitOnFail) {
   globalFailures += totalFailures;
 }
 
-
-
+function formatNumber(n) {
+  var str = n.toFixed();
+  if (str.length > 3) {
+    str = str.slice(0, -3) + ',' + str.slice(-3);
+  }
+  return str;
+}

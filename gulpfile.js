@@ -1019,19 +1019,32 @@ function modularize() {
       }
       if (opts.deps) {
         appendDeps(package, getDependencies(name, node));
+        if (opts.flags) {
+          appendDeps(package, opts.flags);
+        }
       }
       if (opts.define) {
-        var init = ['Sugar', namespace, opts.define].join('.');
-        var body = [init + '({', '', getNodeBody(node), '', '});' ].join('\n');
-        appendBody(package, body);
+        appendBody(package, buildSugarDefineBlock(node, namespace, opts));
       } else if (opts.body) {
         appendBody(package, getNodeBody(node));
       }
     }
 
-    function addSugarMethod(name, node, define) {
+    function buildSugarDefineBlock(node, namespace, opts) {
+      var init = ['Sugar', namespace, opts.define].join('.');
+      if (opts.flags) {
+        var flags = ['[', opts.flags.join(', '), ']'].join('');
+        var close = ['}, ', flags, ');'].join('');
+      } else {
+        var close = '});'
+      }
+      return [init + '({', '', getNodeBody(node), '', close].join('\n');
+    }
+
+    function addSugarMethod(name, node, define, flags) {
       addSugarPackage(name, node, {
         deps: true,
+        flags: flags,
         export: true,
         define: define,
       });
@@ -1159,8 +1172,14 @@ function modularize() {
     }
 
     function processMethodBlock(node) {
+      var flags = node.expression.arguments[2];
+      if (flags) {
+        flags = flags.elements.map(function(node) {
+          return node.name;
+        });
+      }
       processDefineBlock(node, function(pNode, defineName) {
-        addSugarMethod(pNode.key.value, pNode, defineName);
+        addSugarMethod(pNode.key.value, pNode, defineName, flags);
       });
     }
 
@@ -1193,7 +1212,7 @@ function modularize() {
     }
 
     function processBuildExpression(node) {
-      var mainPackage, fnPackage, fnCall, assignedVars;
+      var mainPackage, fnPackage, fnCall, assignedVars, isHashBuild;
 
       // Build functions can be used in a few different ways. They can build
       // one or more variables for later use and can also define methods. The
@@ -1208,9 +1227,16 @@ function modularize() {
                fnPackage.dependencies.indexOf(node.expression.left.name) !== -1;
       }
 
+      function isMethodNameDeclaration(node) {
+        return node.declarations &&
+               node.declarations[0].id.name === 'methods';
+      }
+
       fnCall = getNodeBody(node);
       fnPackage = topLevel[node.expression.callee.name];
       assignedVars = [];
+
+      isHashBuild = /^buildHash/.test(fnPackage.name);
 
       fnPackage.node.body.body.forEach(function(node) {
         if (isReassignedDependency(node)) {
@@ -1280,7 +1306,16 @@ function modularize() {
       // The build function may define methods, so step
       // into it and create method packages if necessary.
       fnPackage.node.body.body.forEach(function(node) {
-        if (isMethodBlock(node)) {
+        // This is a somewhat hacky way to ensure that if
+        // Object.extend is required it will get all Hash
+        // methods, even though they are split among packages.
+        if (isHashBuild && isMethodNameDeclaration(node)) {
+          var methods = node.declarations[0].init.elements;
+          methods.map(function(node) {
+            appendRequires(mainPackage, getFullMethodKeyForNode(node, node.value));
+          });
+        } else if (isMethodBlock(node)) {
+          // TODO: can this be removed??
           var methods = node.expression.arguments[1].properties;
           methods.forEach(function(node) {
             addSugarBuiltMethod(node.key.value, node, mainPackage);
@@ -1300,6 +1335,7 @@ function modularize() {
             addSugarBuiltMethod(name, node, mainPackage);
           });
         } else if (isAliasExpression(node)) {
+          // TODO: can this also be removed??
           var name = node.expression.arguments[1].value;
           var sourceName = node.expression.arguments[2].value;
           var sugarMethodName = getFullMethodKeyForNode(node, sourceName);
@@ -1307,6 +1343,12 @@ function modularize() {
           appendRequires(mainPackage, sugarMethodName);
         }
       });
+
+      if (isHashBuild) {
+        var extendedPackage = sugarMethods['object|Object|extended'];
+        appendRequires(extendedPackage, fnPackage.name);
+      }
+
     }
 
     function processAliasExpression(node) {
@@ -1377,7 +1419,7 @@ function modularize() {
       var aLocal = a.path.slice(0, module.length) === module;
       var bLocal = b.path.slice(0, module.length) === module;
       if (aLocal === bLocal) {
-        return a.name < b.name ? -1 : 1;
+        return a.path < b.path ? -1 : 1;
       } else if (aLocal) {
         return -1;
       } else if (bLocal) {
@@ -1694,6 +1736,7 @@ function modularize() {
   parseModule('language');
   parseModule('array');
   parseModule('object');
+  parseModule('enumerable');
   parseModule('date');
 
   parseModule('es5', true);

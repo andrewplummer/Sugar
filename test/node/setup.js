@@ -8,6 +8,7 @@ require('../suite/log');
 require('../suite/helpers/common');
 require('../suite/helpers/core');
 require('../suite/helpers/date');
+require('../suite/helpers/array');
 require('../suite/helpers/object');
 
 // Move this to sugar-core when its ready
@@ -34,6 +35,8 @@ function getTestNameFromModule(mod) {
   var name = match[2];
   if (name === 'regexp') {
     name = 'RegExp';
+  } else if (name.match(/^es\d/)) {
+    name = name.toUpperCase();
   } else {
     name = name.slice(0, 1).toUpperCase() + name.slice(1);
   }
@@ -53,7 +56,7 @@ module.exports = {
   run: function(mod, extended) {
     var testName = getTestNameFromModule(mod);
     if (extended) {
-      Sugar();
+      Sugar.extendAll();
     }
     function finished(runtime, results) {
       logResults(runtime, results, testName, exitOnFail);
