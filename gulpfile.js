@@ -1094,7 +1094,7 @@ function modularize() {
         case isPolyfillBlock(node):       return processPolyfillBlock(node);
         case isVariableDeclaration(node): return processVariableDeclaration(node);
         case isFunctionDeclaration(node): return processFunctionDeclaration(node);
-        case isMemberAssignment(node):    return processTopLevelMemberAssignment(node); // TODO might not need this after moving Hash out
+        case isMemberAssignment(node):    return processTopLevelMemberAssignment(node);
         case isAliasExpression(node):     return processAliasExpression(node);
         case isFunctionCall(node):        return processBuildExpression(node);
         default:
@@ -1315,7 +1315,6 @@ function modularize() {
             appendRequires(mainPackage, getFullMethodKeyForNode(node, node.value));
           });
         } else if (isMethodBlock(node)) {
-          // TODO: can this be removed??
           var methods = node.expression.arguments[1].properties;
           methods.forEach(function(node) {
             addSugarBuiltMethod(node.key.value, node, mainPackage);
@@ -1335,7 +1334,6 @@ function modularize() {
             addSugarBuiltMethod(name, node, mainPackage);
           });
         } else if (isAliasExpression(node)) {
-          // TODO: can this also be removed??
           var name = node.expression.arguments[1].value;
           var sourceName = node.expression.arguments[2].value;
           var sugarMethodName = getFullMethodKeyForNode(node, sourceName);
