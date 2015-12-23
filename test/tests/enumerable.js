@@ -1434,6 +1434,85 @@ package('Object', function() {
   var deepObj4 = testClone(deepObj2); deepObj4['blue'] = {user:{age:11}};
 
 
+  method('select', function() {
+
+    var obj = {
+      one:   1,
+      two:   2,
+      three: 3,
+      four:  4,
+      five:  5
+    };
+
+    var obj2 = { foo: obj };
+
+    testStaticAndInstance(obj, ['one'], { one: 1 }, 'one key');
+    testStaticAndInstance(obj, ['foo'], {}, 'nonexistent key');
+    testStaticAndInstance(obj, ['one', 'two'], { one: 1 }, 'does not accept enumerated arguments');
+    testStaticAndInstance(obj, [['four', 'two']], { two: 2, four: 4 }, 'accepts multiple from array');
+    testStaticAndInstance(obj, [['one', 'foo']], { one: 1 }, 'one existing one non-existing');
+    testStaticAndInstance(obj, [['four', 'two']], { two: 2, four: 4 }, 'keys out of order');
+    testStaticAndInstance(obj, [/o/], { one: 1, two: 2, four: 4 }, 'regex');
+    testStaticAndInstance(obj, [/o$/], { two: 2 }, 'regex $');
+    testStaticAndInstance(obj, [/^o/], { one: 1 }, '^ regex');
+    testStaticAndInstance(obj, [/z/], {}, 'non-matching regex');
+    testStaticAndInstance(obj, [{one:1}], {one:1}, 'finding object keys');
+    testStaticAndInstance(obj, [{one:'foo'}], {one:1}, 'should match if keys exist');
+    testStaticAndInstance(obj, [{}], {}, 'empty object');
+    testStaticAndInstance(obj, [[/^o/, /^f/]], { one: 1, four: 4, five: 5 }, 'complex nested array of regexes');
+
+    testStaticAndInstance({a:1}, [{a:2}], {a:1}, 'selects keys in matcher object');
+    testStaticAndInstance({a:1,b:2}, [{a:2}], {a:1}, 'does not select keys not in matcher');
+    testStaticAndInstance({a:1}, [{a:2,b:3}], {a:1}, 'does not select keys not source');
+
+    equal(run(Object, 'select', [obj2, 'foo']).foo, obj, 'selected values should be equal by reference');
+
+    equal(typeof run(Object, 'select', [obj,  'one']).select, 'undefined', 'non-Hash should return non Hash');
+    equal(typeof run(Object, 'select', [obj,  ['two', 'three']]).select, 'undefined', 'non-Hash should return non Hash');
+
+    if (Sugar.Object.extended) {
+      var obj3 = Sugar.Object.extended(obj);
+      equal(typeof run(Object, 'select', [obj3, 'one']).select, 'function', 'Hash should return Hash');
+      equal(typeof run(Object, 'select', [obj3, ['two', 'three']]).select, 'function', 'Hash should return Hash');
+    }
+
+  });
+
+  method('reject', function() {
+
+    var obj = {
+      one:    1,
+      two:    2,
+      three:  3,
+      four:   4,
+      five:   5
+    };
+
+    var obj2 = { foo: obj };
+
+    testStaticAndInstance(obj, ['one'], { two: 2, three: 3, four: 4, five: 5 }, 'one key');
+    testStaticAndInstance(obj, ['foo'], obj, 'nonexistent key');
+    testStaticAndInstance(obj, ['one', 'two'], { two: 2, three: 3, four: 4, five: 5 }, 'does not accept enumerated arguments');
+    testStaticAndInstance(obj, [['four', 'two']], { one: 1, three: 3, five: 5 }, 'accepts multiple from array');
+    testStaticAndInstance(obj, [['one', 'foo']], { two: 2, three: 3, four: 4, five: 5 }, 'one existing one non-existing');
+    testStaticAndInstance(obj, [['four', 'two']], { one: 1, three: 3, five: 5 }, 'keys out of order');
+    testStaticAndInstance(obj, [/o/], { three: 3, five: 5 }, 'regex');
+    testStaticAndInstance(obj, [/o$/], { one: 1, three: 3, four: 4, five: 5 }, 'regex $');
+    testStaticAndInstance(obj, [/^o/], { two: 2, three: 3, four: 4, five: 5 }, '^ regex');
+    testStaticAndInstance(obj, [/z/], obj, 'non-matching regex');
+    testStaticAndInstance(obj, [{one:1}], {two:2,three:3,four:4,five:5}, 'rejects matching key');
+    testStaticAndInstance(obj, [{one:'foo'}], {two:2,three:3,four:4,five:5}, 'rejects matching key with different value');
+    testStaticAndInstance(obj, [{}], obj, 'empty object');
+    testStaticAndInstance(obj, [[/^o/, /^f/]], { two: 2, three: 3 }, 'complex nested array of regexes');
+
+    testStaticAndInstance({a:1}, [{a:2}], {}, 'rejects keys in matcher object');
+    testStaticAndInstance({a:1}, [{b:2}], {a:1}, 'does not reject keys not in matcher');
+    testStaticAndInstance({a:1}, [{b:1}], {a:1}, 'does not reject keys not source');
+
+    equal(run(Object, 'reject', [obj2, 'moo']).foo, obj, 'rejected values should be equal by reference');
+  });
+
+
   method('isEmpty', function() {
 
     testStaticAndInstance({}, [], true, 'object is empty');
