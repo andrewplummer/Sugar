@@ -70,6 +70,7 @@ v2.0.0
 - Removed `Array#findAll` in favor of `Array#filter` and `Array#filterFrom`.
 - Replaced `Object.findAll` with `Object.filter`.
 - `Array#isEmpty` now only checks for zero length.
+- Moved `Object.select` and `Object.reject` to enumerable package and updated to match objects on key existence.
 
 
 v1.4.2

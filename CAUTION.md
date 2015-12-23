@@ -91,6 +91,9 @@ v2.0.0+
 - Level: Moderate
   - Array natural sort options (`AlphanumericSortOrder`, `AlphanumericSortIgnore`, etc) now no longer have `Alphanumeric` in the name, and are now static accessor methods on `Sugar.Array` that either get or set the option depending on argument length. Lastly, `AlphanumericSort`, which simply exposed Sugar's internal sort algorithm is now `sortCollate`.
 
+- Level: Moderate
+  - `Object.select` and `Object.reject` now, when passed an object as a matcher, only check for key existence, not whether values also match or not. To do the "intersect" operation that these methods previously performed, `Object.filter`, `Object.remove`, or `Object.exclude` can instead be used.
+
 - Level: Minor
   - `Date.create` no longer accepts enumerated parameters (2001, 5, 31, ...). Use the normal date constructor instead.
 
