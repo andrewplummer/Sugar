@@ -1264,6 +1264,10 @@ package('Array', function() {
     test([{a:1,b:5},{a:2,b:5},{a:3,b:5}], [function(el) { return el['a']; }], 6, 'key "a"');
     test([{a:1,b:5},{a:2,b:5},{a:3,b:5}], ['a'], 6, 'shortcut for key "a"');
     test([{a:{b:5}},{a:{b:6}}], ['a.b'], 11, 'deep properties');
+
+    var arr = [1,2,3];
+    arr['foo'] = 5;
+    test(arr, 6, 'Should not enumerate over non-index properties');
   });
 
   method('average', function() {
