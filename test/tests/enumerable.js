@@ -672,7 +672,6 @@ package('Array', function() {
 
   });
 
-  // TODO: UMMMM???
   group('Array Inheritance', function() {
     var count;
 
@@ -718,7 +717,6 @@ package('Array', function() {
     // equal(count, 6, 'Array | objects that inherit from arrays can still iterate');
   });
 
-  // TODO: is this guy enumerable???
   method('isEmpty', function() {
 
     test([1,2,3], false, '1,2,3');
@@ -1245,7 +1243,6 @@ package('Array', function() {
   });
 
   method('count', function() {
-    // TODO: check context!
     test([1,2,2,3], 4, 'no arugment numeric');
     test([1,2,2,3], [2], 2, 'count 2s');
     test(['a','b','c','c'], 4, 'no argument alphabet');
