@@ -1380,7 +1380,6 @@ package('Array', function() {
 
   });
 
-
   method('exclude', function() {
     var arr, fn;
 
@@ -1835,6 +1834,76 @@ package('Object', function() {
     testStaticAndInstance(obj1, [function(key, value) { return value > 6; }], true, 'value is greater than 6');
     testStaticAndInstance(obj1, [2], false,  'shortcut | 2');
     testStaticAndInstance(obj1, [7], true, 'shortcut | 7');
+  });
+
+  method('remove', function() {
+
+    var obj = {foo:1,bar:2};
+    var result = run(Object, 'remove', [obj, 1]);
+    equal(obj, {bar:2}, 'Property should have been deleted');
+    equal(result === obj, true, 'Should have returned the object');
+
+    testStaticAndInstance({a:'a'}, [], {a:'a'}, 'no argument should do nothing');
+    testStaticAndInstance({one:'a',two:'a'}, ['a'], {}, 'should remove multiple');
+
+    var obj = {a:1,b:2,c:3,d:4,e:5};
+    var fn = function(key, val, o) {
+      return val % 2 === 0;
+    }
+    testStaticAndInstance(obj, [fn], {a:1,c:3,e:5}, 'allows function matcher');
+
+    var obj = {a:1};
+    var fn = function(key, val, o) {
+      equal(key, 'a', 'first param should be the key');
+      equal(val, 1, 'second param should be value');
+      equal(o, obj, 'third param should be the object');
+    }
+    run(Object, 'remove', [obj, fn]);
+
+    var fn = function() {};
+    testStaticAndInstance({foo:fn}, [fn], {}, 'can remove by reference');
+
+    var obj = {a:['a','b'],b:['b','c']};
+    testStaticAndInstance(obj, [['a','b']], {b:['b','c']}, 'allows nested arrays as equal match');
+
+    var obj = {foo:{a:'a'},bar:{a:'z'}};
+    testStaticAndInstance(obj, [{a:/[a-f]/}], {bar:{a:'z'}}, 'allows nested fuzzy matchers');
+
+  });
+
+  method('exclude', function() {
+
+    var obj = {foo:1,bar:2};
+    var result = run(Object, 'exclude', [obj, 1]);
+    equal(obj, {foo:1,bar:2}, 'Original object should be untouched');
+    equal(result, {bar:2}, 'Property should have been deleted');
+
+    testStaticAndInstance({a:'a'}, [], {a:'a'}, 'no argument should do nothing');
+    testStaticAndInstance({one:'a',two:'a'}, ['a'], {}, 'should remove multiple');
+
+    var obj = {a:1,b:2,c:3,d:4,e:5};
+    var fn = function(key, val, o) {
+      return val % 2 === 0;
+    }
+    testStaticAndInstance(obj, [fn], {a:1,c:3,e:5}, 'allows function matcher');
+
+    var obj = {a:1};
+    var fn = function(key, val, o) {
+      equal(key, 'a', 'first param should be the key');
+      equal(val, 1, 'second param should be value');
+      equal(o, obj, 'third param should be the object');
+    }
+    run(Object, 'exclude', [obj, fn]);
+
+    var fn = function() {};
+    testStaticAndInstance({foo:fn}, [fn], {}, 'can remove by reference');
+
+    var obj = {a:['a','b'],b:['b','c']};
+    testStaticAndInstance(obj, [['a','b']], {b:['b','c']}, 'allows nested arrays as equal match');
+
+    var obj = {foo:{a:'a'},bar:{a:'z'}};
+    testStaticAndInstance(obj, [{a:/[a-f]/}], {bar:{a:'z'}}, 'allows nested fuzzy matchers');
+
   });
 
   group('Enumerables on Object.prototype', function() {
