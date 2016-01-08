@@ -1041,6 +1041,24 @@ package('Array', function() {
     equal(count, 3, 'however, simply having an undefined in an array does not qualify it as sparse');
   });
 
+  method('forEachFrom', function() {
+
+    var arr = [2, 5, 9];
+    var fn = function(el, i, a) {
+      equal(el, arr[i], 'looping successfully');
+    };
+    run(arr, 'forEachFrom', [fn]);
+
+    var fn = function(el, i, a) {
+      equal(el, 'a', 'first parameter is the element');
+      equal(i, 0, 'second parameter is the index');
+      equal(a, ['a'], 'third parameter is the array');
+      equal(this, a, 'scope is also the array');
+    };
+    run(['a'], 'forEachFrom', [fn, 'this']);
+
+  });
+
   method('min', function() {
 
     test([12,87,55], 12, 'no argument');
