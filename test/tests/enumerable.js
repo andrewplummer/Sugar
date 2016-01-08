@@ -1358,9 +1358,7 @@ package('Array', function() {
     test([1,2,2,3], [function(el) { return el > 20; }], [1,2,2,3], 'remove all numbers greater than 20');
     test([{a:1},{a:2},{a:1}], [{a:1}], [{a:2}], 'remove all a:1');
     test([fn], [fn], [], 'can find via strict equality');
-    test([1,2,3], [[1,3]], [1,2,3], 'each argument is a separate element');
-    test([1,2,3], [1,3], [2], 'however multiple arguments still work');
-    test([[1,3],2], [[1,3]], [2], 'and those elements are still properly found');
+    test([1,[2,3]], [[2,3]], [1], 'removing nested arrays');
 
 
     fn = function(el,i,arr) {
@@ -1373,10 +1371,6 @@ package('Array', function() {
     var arr = [1,2,3];
     run(arr, 'remove', [2]);
     equal(arr, [1,3], 'should affect the original array');
-
-    var arr = [1,2,3];
-    run(arr, 'remove', [2,3]);
-    equal(arr, [1], 'can remove multiple elements');
 
   });
 
@@ -1394,11 +1388,8 @@ package('Array', function() {
     test([1,2,2,3], [function(el){ return el > 2; }], [1,2,2], 'exclude all numbers greater than 2');
     test([1,2,2,3], [function(el){ return el > 20; }], [1,2,2,3], 'exclude all numbers greater than 20');
     test([{a:1},{a:2},{a:1}], [{a:1}], [{a:2}], 'exclude all a:1');
-    test([1,2,2,3], [2,3], [1], 'can handle multiple arguments');
     test([fn], [fn], [], 'can find via strict equality');
-    test([1,2,3], [[1,3]], [1,2,3], 'each argument is a separate element');
-    test([1,2,3], [1,3], [2], 'however multiple arguments still work');
-    test([[1,3],2], [[1,3]], [2], 'and those elements are still properly found');
+    test([1,[2,3]], [[2,3]], [1], 'removing nested arrays');
 
     fn = function(el,i,arr){
       equal(el, 'a', 'first param should be the element');
