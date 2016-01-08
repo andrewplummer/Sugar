@@ -71,6 +71,8 @@ v2.0.0
 - Replaced `Object.findAll` with `Object.filter`.
 - `Array#isEmpty` now only checks for zero length.
 - Moved `Object.select` and `Object.reject` to enumerable package and updated to match objects on key existence.
+- Added `forEachFrom` alias for `each`.
+- Added `Object.remove` and `Object.exclude`.
 
 
 v1.4.2
