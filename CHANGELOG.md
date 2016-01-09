@@ -75,6 +75,7 @@ v2.0.0
 - Added `Object.remove` and `Object.exclude`.
 - Added `Array#append` to take the place of `Array#add`. `Array#add` now is non-destructive. `Array#insert` now aliases `append` instead of `add`.
 - Removed `Array#include` (now is identical to `Array#add`).
+- Added `Object.invert`.
 
 
 v1.4.2

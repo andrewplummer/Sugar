@@ -27,3 +27,8 @@ getDescriptorObject = function() {
     value: 'bar'
   });
 }
+
+assertIsHash = function(obj) {
+  // Simple way to check for extended objects
+  equal(typeof obj.keys === 'function' && typeof obj.values === 'function', true, 'obj is hash');
+}

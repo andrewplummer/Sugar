@@ -39,6 +39,22 @@ package('Object', function () {
 
   });
 
+  method('invert', function() {
+
+    assertIsHash(run(Sugar.Object.extended({foo:'bar'})));
+
+    testStaticAndInstance({foo:'bar'}, [], {bar:'foo'}, 'basic invert');
+    testStaticAndInstance({foo:{bar:'baz'}}, [], {'[object Object]':'foo'}, 'deep objects are simply stringified');
+    testStaticAndInstance({foo:['bar','baz']}, [], {'bar,baz':'foo'}, 'arrays are stringified');
+    testStaticAndInstance({foo:1,bar:1}, [], {1:'bar'}, 'collisions are overwritten by default');
+    testStaticAndInstance({length:15}, [], {15:'length'}, 'works with "length"');
+    testStaticAndInstance({foo:1,bar:1}, [true], {1:['foo','bar']}, 'collisions allow multi with flag');
+
+    var result = [{a:1},{b:2},{c:3}].map(Sugar.Object.invert);
+    equal(result, [{1:'a'},{2:'b'},{3:'c'}], 'can be iterated with map');
+
+  });
+
   method('isObject', function() {
     var Person = function() {};
     var p = new Person();
