@@ -2778,10 +2778,9 @@ package('Date', function () {
 
     raisesError(function(){ testSetLocale(''); }, '"" raises an invalid locale error');
     equal(run(new Date(2011, 5, 6), 'format', ['{Month}']), 'La', 'will not change the locale if blank string passed');
-    dateEqual(testCreateDate('2010-Jan-25', 'fo'), new Date(2010, 0, 25), 'Static input format always matches English months');
 
     raisesError(function(){ testSetLocale('pink'); }, 'Non-existent locales will raise an error');
-    equal(run(testCreateDate('2010-Jan-25'), 'format'), 'yeehaw', 'will not set the current locale to an invalid locale');
+    equal(run(testCreateDate('2011kupo'), 'format'), 'yeehaw', 'will not set the current locale to an invalid locale');
 
   });
 
