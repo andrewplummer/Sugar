@@ -1311,6 +1311,8 @@ package('Object', function () {
     equal((NaN).isRegExp(), false, 'Object#isRegExp | Object.prototype');
     equal((NaN).isNaN(), true, 'Object#isNaN | Object.prototype');
 
+    equal(({}).isEmpty(), true, 'Object#isEmpty');
+    equal(({a:1}).isEmpty(), false, 'Object#isEmpty');
 
     // Object#tap
 
