@@ -78,9 +78,9 @@ testForceStringCoercion = function(obj) {
 testStaticAndInstance = function (subject, args, expected, message) {
   // Clone here in case the first test modifies the subject!
   var clonedSubject = testClone(subject);
-  test(Object, [subject].concat(args), expected, message);
+  test(subject, args, expected, message);
   if (Sugar.Object && Sugar.Object.extended) {
-    var obj = run(Object, 'extended', [clonedSubject]);
+    var obj = Sugar.Object.extended(clonedSubject);
     equal(obj[getCurrentTest().name].apply(obj, args), expected, message + ' | extended object');
   }
 }

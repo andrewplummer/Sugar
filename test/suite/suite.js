@@ -169,10 +169,13 @@
     args = args || currentArgs || [];
     if(testExtended) {
       var globalObject = globalContext[currentTest.package.name], fn;
-      if(subject && subject[methodName]) {
-        // If the method exists on the subject, then it is the target
-        // to be called. This is true in normal prototype testing as well
-        // as for Sugar defined objects such as Ranges and Extended Objects.
+      var preferGlobal = globalObject === Object && subject !== Object;
+      if(subject && subject[methodName] && !preferGlobal) {
+        // Call any direct methods on the object if they exist. The only exception
+        // for this rule is if we are testing the Object package, then we want to
+        // go through Object.XXX even if there the method XXX exists in the object
+        // itself as this may produce a different result. Ex. [1].add(2) produces a
+        // different result than Object.add([1], 2)
         fn = subject[methodName];
       } else if(globalObject.prototype[methodName]) {
         // If the method is defined on the prototype of the global object,
