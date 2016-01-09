@@ -12,6 +12,7 @@ package('Array', function () {
 
     method('unique', function() {
       test([el1], [el1], 'DOM Elements | 1 element identical by reference');
+      test([[el1]], [[el1]], 'DOM Elements | deep nested');
       test([el1,el1], [el1], 'DOM Elements | 2 elements identical by reference');
       test([el1,el1,el1], [el1], 'DOM Elements | 3 elements identical by reference');
       test([el1,el2], [el1,el2], 'DOM Elements | 2 elements different by reference');
