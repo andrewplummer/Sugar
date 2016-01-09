@@ -34,7 +34,7 @@ package('Array', function () {
     test([undefined], [[undefined]], true, 'arrays of undefined are equal');
     test([null], [[null]], true, 'arrays of null are equal');
     test([NaN], [[NaN]], true, 'arrays of NaN are equal');
-    test(testGetSparseArray(4, 'a'), [testGetSparseArray(4, 'a')], true, 'spare arrays are equal');
+    test(testGetSparseArray(4, 'a'), [testGetSparseArray(4, 'a')], true, 'sparse arrays are equal');
 
     test([], [[]], true, 'empty arrays are equal');
     test([], [{}], false, 'empty array is not equal to empty object');
@@ -223,6 +223,7 @@ package('Array', function () {
     test([0,0,0], [0], '0,0,0');
     test(['a','b','c'], ['a','b','c'], 'a,b,c');
     test(['a','a','c'], ['a','c'], 'a,a,c');
+    test([NaN,NaN], [NaN], 'NaN');
 
     test([{ foo:'bar' }, { foo:'bar' }], [{foo:'bar'}], 'objects uniqued as well');
     test([{ first: 'John', last: 'Woo' }, { first: 'Reynold', last: 'Woo' }], [function(n){ return n.last; }], [{ first: 'John', last: 'Woo' }], 'can be uniqued via a mapping function');

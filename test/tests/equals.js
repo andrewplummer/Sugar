@@ -52,7 +52,6 @@ package('Object | Equality', function() {
     equal(callObjectEqual(new Number(63), {valueOf: function(){ return 63; }}), false, "Number objects and objects with a `valueOf` method are not equal");
   });
 
-
   group('Comparisons involving NaN', function() {
     equal(callObjectEqual(NaN, NaN), true, "`NaN` is equal to `NaN`");
     equal(callObjectEqual(61, NaN), false, "A number primitive is not equal to `NaN`");
@@ -140,21 +139,11 @@ package('Object | Equality', function() {
     equal(callObjectEqual(a, b), false, "Arrays of identical lengths containing different elements are not equal");
   });
 
-
   group('Sparse arrays', function() {
     equal(callObjectEqual(Array(3), Array(3)), true, "Sparse arrays of identical lengths are equal");
     equal(callObjectEqual(Array(3), Array(6)), false, "Sparse arrays of different lengths are not equal when both are empty");
-
-    // According to the Microsoft deviations spec, section 2.1.26, JScript 5.x treats `undefined`
-    // elements in arrays as elisions. Thus, sparse arrays and dense arrays containing `undefined`
-    // values are equivalent.
-    if (0 in [undefined]) {
-      equal(callObjectEqual(Array(3), [undefined, undefined, undefined]), true, "Sparse and dense arrays are equal");
-      equal(callObjectEqual([undefined, undefined, undefined], Array(3)), true, "Commutative equality is implemented for sparse and dense arrays");
-    }
-
+    equal(callObjectEqual(Array(3), safeArray(undefined, undefined, undefined)), true, "Sparse arrays are treated as dense");
   });
-
 
   group('Simple objects', function() {
     equal(callObjectEqual({a: "Curly", b: 1, c: true}, {a: "Curly", b: 1, c: true}), true, "Objects containing identical primitives are equal");
@@ -198,7 +187,7 @@ package('Object | Equality', function() {
   });
 
   group('Instances', function() {
-    equal(callObjectEqual(new First, new First), false, "Object instances are equal");
+    equal(callObjectEqual(new First, new First), false, "Object instances are not equal");
     equal(callObjectEqual(new First, new Second), false, "Objects with different constructors and identical own properties are not equal");
     equal(callObjectEqual({value: 1}, new First), false, "Object instances and objects sharing equivalent properties are not identical");
     equal(callObjectEqual({value: 2}, new Second), false, "The prototype chain of objects should not be examined");
