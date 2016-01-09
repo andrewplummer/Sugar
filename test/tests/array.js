@@ -251,6 +251,8 @@ package('Array', function () {
     // slow if not handling sparse arrays smartly.
     test(arr, [], ['a'], 'does not take O(n) for sparse arrays');
 
+    test([['a'], {0:'a'}], [], [['a'],{0:'a'}], 'cannot be fooled by array-like');
+
   });
 
   method('flatten', function() {
