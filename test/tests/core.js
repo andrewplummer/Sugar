@@ -372,7 +372,8 @@ package('Core', function() {
       Sugar.createNamespace('WeakMap');
       Sugar.WeakMap.defineInstance('deleteIf', function(map, key, check) {
         if (check) {
-          map.delete(key);
+          // Avoiding IE syntax errors
+          map['delete'](key);
         }
       });
 
