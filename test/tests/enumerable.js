@@ -665,7 +665,6 @@ package('Array', function() {
     equal(run(arr, 'filter', [match]), [arr[0]], 'filter');
     equal(run(arr, 'find', [match]), arr[0], 'find');
     equal(run(arr, 'findIndex', [match]), 0, 'findIndex');
-    equal(run(arr, 'exclude', [match]).length, 0, 'exclude');
 
   });
 
@@ -1644,8 +1643,6 @@ package('Object', function() {
     equal(({a:1,b:2,c:3}).find(3), 'c', 'Object#find');
 
     equal(({a:'a',b:'b',c:'c'}).filter(/[ac]/), {a:'a',c:'c'}, 'Object#filter');
-    equal(({}).isEmpty(), true, 'Object#isEmpty');
-    equal(({a:1}).isEmpty(), false, 'Object#isEmpty');
 
     restoreNativeState();
   });
