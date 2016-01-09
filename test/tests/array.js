@@ -1598,5 +1598,81 @@ package('Array', function () {
 
   });
 
+  method('isEmpty', function() {
+
+    test([1,2,3], false, '1,2,3');
+    test([], true, 'empty array');
+    test([null], false, '[null]');
+    test(oneUndefined, false, '[undefined]');
+    test([null,null], false, '[null,null]');
+    test(twoUndefined, false, '[undefined,undefined]');
+    test([false,false], false, '[false,false]');
+    test([0,0], false, '[0,0]');
+
+  });
+
+  method('remove', function() {
+    var fn;
+    fn = function() {};
+
+    test([1,2,2,3], [1,2,2,3], 'no argument numeric');
+    test([1,2,2,3], [2], [1,3], 'remove 2s');
+    test([0,1,2], [0], [1,2], 'finds 0');
+    test(['a','b','c','c'], ['a','b','c','c'], 'no argument alphabet');
+    test(['a','b','c','c'], ['c'], ['a','b'], 'remove "c"s');
+    test(['a','b','c','c'], [/[ac]/], ['b'], 'regex fuzzy matching');
+    test([1,2,2,3], [function(el) { return el % 2 == 0; }], [1,3], 'remove all odd numbers');
+    test([1,2,2,3], [function(el) { return el > 2; }], [1,2,2], 'remove all numbers greater than 2');
+    test([1,2,2,3], [function(el) { return el > 20; }], [1,2,2,3], 'remove all numbers greater than 20');
+    test([{a:1},{a:2},{a:1}], [{a:1}], [{a:2}], 'remove all a:1');
+    test([fn], [fn], [], 'can find via strict equality');
+    test([1,[2,3]], [[2,3]], [1], 'removing nested arrays');
+
+
+    fn = function(el,i,arr) {
+      equal(el, 'a', 'first param should be the element');
+      equal(i, 0, 'second param should be the index');
+      equal(arr, ['a'], 'third param should be the array');
+    }
+    run(['a'], 'remove', [fn]);
+
+    var arr = [1,2,3];
+    run(arr, 'remove', [2]);
+    equal(arr, [1,3], 'should affect the original array');
+
+  });
+
+  method('exclude', function() {
+    var arr, fn;
+
+    fn = function() {};
+
+    test([1,2,2,3], [1,2,2,3], 'no argument numeric');
+    test([1,2,2,3], [2], [1,3], 'exclude 2s');
+    test([0,1,2], [0], [1,2], 'finds 0');
+    test(['a','b','c','c'], ['a','b','c','c'], 'no argument alphabet');
+    test(['a','b','c','c'], ['c'], ['a','b'], 'exclude "c"s');
+    test(['a','b','c','c'], [/[ac]/], ['b'], 'regex fuzzy matching');
+    test([1,2,2,3], [function(el){ return el % 2 == 0; }], [1,3], 'exclude all odd numbers');
+    test([1,2,2,3], [function(el){ return el > 2; }], [1,2,2], 'exclude all numbers greater than 2');
+    test([1,2,2,3], [function(el){ return el > 20; }], [1,2,2,3], 'exclude all numbers greater than 20');
+    test([{a:1},{a:2},{a:1}], [{a:1}], [{a:2}], 'exclude all a:1');
+    test([fn], [fn], [], 'can find via strict equality');
+    test([1,[2,3]], [[2,3]], [1], 'removing nested arrays');
+
+    fn = function(el,i,arr){
+      equal(el, 'a', 'first param should be the element');
+      equal(i, 0, 'second param should be the index');
+      equal(arr, ['a'], 'third param should be the array');
+    }
+    run(['a'], 'exclude', [fn]);
+
+    arr = [1,2,3];
+    run(arr, 'exclude', [2]);
+    equal(arr, [1,2,3], 'should not affect the original array');
+
+  });
+
+
 });
 

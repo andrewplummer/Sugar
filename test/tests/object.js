@@ -2150,4 +2150,203 @@ package('Object', function () {
 
   });
 
+  method('remove', function() {
+
+    var obj = {foo:1,bar:2};
+    var result = run(Object, 'remove', [obj, 1]);
+    equal(obj, {bar:2}, 'Property should have been deleted');
+    equal(result === obj, true, 'Should have returned the object');
+
+    testStaticAndInstance({a:'a'}, [], {a:'a'}, 'no argument should do nothing');
+    testStaticAndInstance({one:'a',two:'a'}, ['a'], {}, 'should remove multiple');
+
+    var obj = {a:1,b:2,c:3,d:4,e:5};
+    var fn = function(key, val, o) {
+      return val % 2 === 0;
+    }
+    testStaticAndInstance(obj, [fn], {a:1,c:3,e:5}, 'allows function matcher');
+
+    var obj = {a:1};
+    var fn = function(key, val, o) {
+      equal(key, 'a', 'first param should be the key');
+      equal(val, 1, 'second param should be value');
+      equal(o, obj, 'third param should be the object');
+    }
+    run(Object, 'remove', [obj, fn]);
+
+    var fn = function() {};
+    testStaticAndInstance({foo:fn}, [fn], {}, 'can remove by reference');
+
+    var obj = {a:['a','b'],b:['b','c']};
+    testStaticAndInstance(obj, [['a','b']], {b:['b','c']}, 'allows nested arrays as equal match');
+
+    var obj = {foo:{a:'a'},bar:{a:'z'}};
+    testStaticAndInstance(obj, [{a:/[a-f]/}], {bar:{a:'z'}}, 'allows nested fuzzy matchers');
+
+  });
+
+  method('exclude', function() {
+
+    var obj = {foo:1,bar:2};
+    var result = run(Object, 'exclude', [obj, 1]);
+    equal(obj, {foo:1,bar:2}, 'Original object should be untouched');
+    equal(result, {bar:2}, 'Property should have been deleted');
+
+    testStaticAndInstance({a:'a'}, [], {a:'a'}, 'no argument should do nothing');
+    testStaticAndInstance({one:'a',two:'a'}, ['a'], {}, 'should remove multiple');
+
+    var obj = {a:1,b:2,c:3,d:4,e:5};
+    var fn = function(key, val, o) {
+      return val % 2 === 0;
+    }
+    testStaticAndInstance(obj, [fn], {a:1,c:3,e:5}, 'allows function matcher');
+
+    var obj = {a:1};
+    var fn = function(key, val, o) {
+      equal(key, 'a', 'first param should be the key');
+      equal(val, 1, 'second param should be value');
+      equal(o, obj, 'third param should be the object');
+    }
+    run(Object, 'exclude', [obj, fn]);
+
+    var fn = function() {};
+    testStaticAndInstance({foo:fn}, [fn], {}, 'can remove by reference');
+
+    var obj = {a:['a','b'],b:['b','c']};
+    testStaticAndInstance(obj, [['a','b']], {b:['b','c']}, 'allows nested arrays as equal match');
+
+    var obj = {foo:{a:'a'},bar:{a:'z'}};
+    testStaticAndInstance(obj, [{a:/[a-f]/}], {bar:{a:'z'}}, 'allows nested fuzzy matchers');
+
+  });
+
+  method('select', function() {
+
+    var obj = {
+      one:   1,
+      two:   2,
+      three: 3,
+      four:  4,
+      five:  5
+    };
+
+    var obj2 = { foo: obj };
+
+    testStaticAndInstance(obj, ['one'], { one: 1 }, 'one key');
+    testStaticAndInstance(obj, ['foo'], {}, 'nonexistent key');
+    testStaticAndInstance(obj, ['one', 'two'], { one: 1 }, 'does not accept enumerated arguments');
+    testStaticAndInstance(obj, [['four', 'two']], { two: 2, four: 4 }, 'accepts multiple from array');
+    testStaticAndInstance(obj, [['one', 'foo']], { one: 1 }, 'one existing one non-existing');
+    testStaticAndInstance(obj, [['four', 'two']], { two: 2, four: 4 }, 'keys out of order');
+    testStaticAndInstance(obj, [/o/], { one: 1, two: 2, four: 4 }, 'regex');
+    testStaticAndInstance(obj, [/o$/], { two: 2 }, 'regex $');
+    testStaticAndInstance(obj, [/^o/], { one: 1 }, '^ regex');
+    testStaticAndInstance(obj, [/z/], {}, 'non-matching regex');
+    testStaticAndInstance(obj, [{one:1}], {one:1}, 'finding object keys');
+    testStaticAndInstance(obj, [{one:'foo'}], {one:1}, 'should match if keys exist');
+    testStaticAndInstance(obj, [{}], {}, 'empty object');
+    testStaticAndInstance(obj, [[/^o/, /^f/]], { one: 1, four: 4, five: 5 }, 'complex nested array of regexes');
+
+    testStaticAndInstance({a:1}, [{a:2}], {a:1}, 'selects keys in matcher object');
+    testStaticAndInstance({a:1,b:2}, [{a:2}], {a:1}, 'does not select keys not in matcher');
+    testStaticAndInstance({a:1}, [{a:2,b:3}], {a:1}, 'does not select keys not source');
+
+    equal(run(Object, 'select', [obj2, 'foo']).foo, obj, 'selected values should be equal by reference');
+
+    equal(typeof run(Object, 'select', [obj,  'one']).select, 'undefined', 'non-Hash should return non Hash');
+    equal(typeof run(Object, 'select', [obj,  ['two', 'three']]).select, 'undefined', 'non-Hash should return non Hash');
+
+    if (Sugar.Object.extended) {
+      var obj3 = Sugar.Object.extended(obj);
+      equal(typeof run(Object, 'select', [obj3, 'one']).select, 'function', 'Hash should return Hash');
+      equal(typeof run(Object, 'select', [obj3, ['two', 'three']]).select, 'function', 'Hash should return Hash');
+    }
+
+  });
+
+  method('reject', function() {
+
+    var obj = {
+      one:    1,
+      two:    2,
+      three:  3,
+      four:   4,
+      five:   5
+    };
+
+    var obj2 = { foo: obj };
+
+    testStaticAndInstance(obj, ['one'], { two: 2, three: 3, four: 4, five: 5 }, 'one key');
+    testStaticAndInstance(obj, ['foo'], obj, 'nonexistent key');
+    testStaticAndInstance(obj, ['one', 'two'], { two: 2, three: 3, four: 4, five: 5 }, 'does not accept enumerated arguments');
+    testStaticAndInstance(obj, [['four', 'two']], { one: 1, three: 3, five: 5 }, 'accepts multiple from array');
+    testStaticAndInstance(obj, [['one', 'foo']], { two: 2, three: 3, four: 4, five: 5 }, 'one existing one non-existing');
+    testStaticAndInstance(obj, [['four', 'two']], { one: 1, three: 3, five: 5 }, 'keys out of order');
+    testStaticAndInstance(obj, [/o/], { three: 3, five: 5 }, 'regex');
+    testStaticAndInstance(obj, [/o$/], { one: 1, three: 3, four: 4, five: 5 }, 'regex $');
+    testStaticAndInstance(obj, [/^o/], { two: 2, three: 3, four: 4, five: 5 }, '^ regex');
+    testStaticAndInstance(obj, [/z/], obj, 'non-matching regex');
+    testStaticAndInstance(obj, [{one:1}], {two:2,three:3,four:4,five:5}, 'rejects matching key');
+    testStaticAndInstance(obj, [{one:'foo'}], {two:2,three:3,four:4,five:5}, 'rejects matching key with different value');
+    testStaticAndInstance(obj, [{}], obj, 'empty object');
+    testStaticAndInstance(obj, [[/^o/, /^f/]], { two: 2, three: 3 }, 'complex nested array of regexes');
+
+    testStaticAndInstance({a:1}, [{a:2}], {}, 'rejects keys in matcher object');
+    testStaticAndInstance({a:1}, [{b:2}], {a:1}, 'does not reject keys not in matcher');
+    testStaticAndInstance({a:1}, [{b:1}], {a:1}, 'does not reject keys not source');
+
+    equal(run(Object, 'reject', [obj2, 'moo']).foo, obj, 'rejected values should be equal by reference');
+  });
+
+  method('isEmpty', function() {
+
+    testStaticAndInstance({}, [], true, 'object is empty');
+    testStaticAndInstance({ broken: 'wear' }, [], false, 'object is not empty');
+    testStaticAndInstance({ length: 0 }, [], false, 'simple object with length property is not empty');
+    testStaticAndInstance({ foo: null }, [], false, 'null is still counted');
+    testStaticAndInstance({ foo: undefined }, [], false, 'undefined is still counted');
+    testStaticAndInstance({ foo: NaN }, [], false, 'undefined is still counted');
+    testStaticAndInstance([], [], true, 'empty array is empty');
+    testStaticAndInstance(null, [], true, 'null is empty');
+    testStaticAndInstance(undefined, [], true, 'undefined is empty');
+    testStaticAndInstance('', [], true, 'empty string is empty');
+    testStaticAndInstance(new String(''), [], true, 'empty string object is empty');
+    testStaticAndInstance('wasabi', [], false, 'non-empty string is not empty');
+    testStaticAndInstance(new String('wasabi'), [], false, 'non-empty string object is not empty');
+    testStaticAndInstance(NaN, [], true, 'NaN is empty');
+    testStaticAndInstance(8, [], true, '8 is empty');
+    testStaticAndInstance(new Number(8), [], true, '8 object is empty');
+
+  });
+
+  method('size', function() {
+
+    testStaticAndInstance({}, [], 0, 'empty object');
+    testStaticAndInstance({foo:'bar'}, [], 1, '1 property');
+    testStaticAndInstance({foo:'bar',moo:'car'}, [], 2, '2 properties');
+    testStaticAndInstance({foo:1}, [], 1, 'numbers');
+    testStaticAndInstance({foo:/bar/}, [], 1, 'regexes');
+    testStaticAndInstance({foo:function(){}}, [], 1, 'functions');
+    testStaticAndInstance({foo:{bar:'car'}}, [], 1, 'nested object');
+    testStaticAndInstance({foo:[1]}, [], 1, 'nested array');
+    testStaticAndInstance(['a'], [], 1, 'array');
+    testStaticAndInstance(['a','b'], [], 2, 'array 2 elements');
+    testStaticAndInstance(['a','b','c'], [], 3, 'array 3 elements');
+    testStaticAndInstance('foo', [], 3, 'string primitive');
+    testStaticAndInstance(new String('foo'), [], 3, 'string object');
+    testStaticAndInstance(1, [], 0, 'number primitive');
+    testStaticAndInstance(new Number(1), [], 0, 'number object');
+    testStaticAndInstance(true, [], 0, 'boolean primitive');
+    testStaticAndInstance(new Boolean(true), [], 0, 'boolean object');
+    testStaticAndInstance(null, [], 0, 'null');
+    testStaticAndInstance(undefined, [], 0, 'undefined');
+
+    var Foo = function(){};
+    testStaticAndInstance(new Foo, [], 0, 'class instances');
+
+    var Foo = function(a){ this.a = a; };
+    testStaticAndInstance(new Foo, [], 1, 'class instances with a single property');
+
+  });
+
 });
