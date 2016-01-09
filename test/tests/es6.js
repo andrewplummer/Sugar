@@ -879,7 +879,8 @@ package('ES6', function () {
     equal(Number.isNaN(Number(obj)), true, 'object with valueOf of NaN, converted to Number, is NaN');
     equal(Number.isNaN(obj), false, 'object with valueOf of NaN is not NaN');
 
-    equal(Number.isNaN(NaN), true, 'NaN is NaN');
+    equal(Number.isNaN(NaN), true, 'NaN responds');
+    equal(Number.isNaN(new Number(NaN)), false, 'wrapped NaN does not respond');
 
   });
 
