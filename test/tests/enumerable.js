@@ -1353,6 +1353,7 @@ package('Array', function() {
     test([0,1,2], [0], [1,2], 'finds 0');
     test(['a','b','c','c'], ['a','b','c','c'], 'no argument alphabet');
     test(['a','b','c','c'], ['c'], ['a','b'], 'remove "c"s');
+    test(['a','b','c','c'], [/[ac]/], ['b'], 'regex fuzzy matching');
     test([1,2,2,3], [function(el) { return el % 2 == 0; }], [1,3], 'remove all odd numbers');
     test([1,2,2,3], [function(el) { return el > 2; }], [1,2,2], 'remove all numbers greater than 2');
     test([1,2,2,3], [function(el) { return el > 20; }], [1,2,2,3], 'remove all numbers greater than 20');
@@ -1384,6 +1385,7 @@ package('Array', function() {
     test([0,1,2], [0], [1,2], 'finds 0');
     test(['a','b','c','c'], ['a','b','c','c'], 'no argument alphabet');
     test(['a','b','c','c'], ['c'], ['a','b'], 'exclude "c"s');
+    test(['a','b','c','c'], [/[ac]/], ['b'], 'regex fuzzy matching');
     test([1,2,2,3], [function(el){ return el % 2 == 0; }], [1,3], 'exclude all odd numbers');
     test([1,2,2,3], [function(el){ return el > 2; }], [1,2,2], 'exclude all numbers greater than 2');
     test([1,2,2,3], [function(el){ return el > 20; }], [1,2,2,3], 'exclude all numbers greater than 20');

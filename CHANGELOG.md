@@ -73,6 +73,8 @@ v2.0.0
 - Moved `Object.select` and `Object.reject` to enumerable package and updated to match objects on key existence.
 - Added `forEachFrom` alias for `each`.
 - Added `Object.remove` and `Object.exclude`.
+- Added `Array#append` to take the place of `Array#add`. `Array#add` now is non-destructive. `Array#insert` now aliases `append` instead of `add`.
+- Removed `Array#include` (now is identical to `Array#add`).
 
 
 v1.4.2
