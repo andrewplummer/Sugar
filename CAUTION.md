@@ -56,6 +56,12 @@ v2.0.0+
   - `Array#findAll` was replaced with `Array#filterFrom` in cases that require a start index. For cases without a start index, simply use `Array#filter` instead.
 
 - Level: Major
+  - `Array#add` is now non-destructive. To append to the array in place, use `Array#append`.
+
+- Level: Major
+  - `Array#include` was removed as it is now identical to `Array#add`.
+
+- Level: Major
   - `Object.findAll` was replaced with `Object.filter`, which simply wraps an enhanced `Array#filter`.
 
 - Level: Major

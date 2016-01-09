@@ -289,7 +289,6 @@ package('Object', function () {
     testStaticAndInstance({a:'a'}, [8], {a:'a'}, 'number has no properties');
     testStaticAndInstance({}, [{}], {}, 'empty object has no properties');
 
-
     // Merging with conflicts
 
     testStaticAndInstance({a:'a'}, [{a:'b'}], {a:'b'}, 'source should win by default');
@@ -790,6 +789,73 @@ package('Object', function () {
     var opts = { deep: true };
     test(Object, [{a:''}, {a:{b:1}}, opts], {a:{b:1}}, 'source object wins with empty string');
     test(Object, [{a:'1'}, {a:{b:1}}, opts], {a:{b:1}}, 'source object wins with number as string');
+
+  });
+
+  method('add', function() {
+
+    var obj = {foo:'foo'};
+    var result = run(Object, 'add', [obj, {bar:'bar'}]);
+    equal(result, {foo:'foo',bar:'bar'}, 'Objects added together');
+    equal(obj, {foo:'foo'}, 'Original object is unchanged');
+
+    // Basic no-conflict merging
+
+    testStaticAndInstance({a:'a'}, [{b:'b'}], {a:'a',b:'b'}, 'string');
+    testStaticAndInstance({a:'a'}, [{b:8}], {a:'a',b:8}, 'number');
+    testStaticAndInstance({a:'a'}, [{b:true}], {a:'a',b:true}, 'boolean');
+    testStaticAndInstance({a:'a'}, [{b:null}], {a:'a',b:null}, 'null');
+    testStaticAndInstance({a:'a'}, [{b:undefined}], {a:'a'}, 'undefined will not merge');
+    testStaticAndInstance({a:'a'}, [{b:NaN}], {a:'a',b:NaN}, 'NaN');
+    testStaticAndInstance({a:'a'}, [{b:Infinity}], {a:'a',b:Infinity}, 'NaN');
+
+    testStaticAndInstance({a:'a'}, [{b:[1]}], {a:'a',b:[1]}, 'array');
+    testStaticAndInstance({a:'a'}, [{b:{c:'c'}}], {a:'a',b:{c:'c'}}, 'object');
+
+    testStaticAndInstance({a:'a'}, ['aha'], {a:'a',0:'a',1:'h',2:'a'}, 'string has enumerated properties');
+    testStaticAndInstance({a:'a'}, [undefined], {a:'a'}, 'undefined has no properties');
+    testStaticAndInstance({a:'a'}, [NaN], {a:'a'}, 'undefined has no properties');
+    testStaticAndInstance({a:'a'}, [null], {a:'a'}, 'null has no properties');
+    testStaticAndInstance({a:'a'}, [8], {a:'a'}, 'number has no properties');
+    testStaticAndInstance({}, [{}], {}, 'empty object has no properties');
+
+    // Merging with conflicts
+
+    testStaticAndInstance({a:'a'}, [{a:'b'}], {a:'b'}, 'source should win by default');
+    testStaticAndInstance({a:'a'}, [{a:null}], {a:null}, 'null wins');
+    testStaticAndInstance({a:'a'}, [{a:false}], {a:false}, 'false wins');
+    testStaticAndInstance({a:'a'}, [{a:''}], {a:''}, 'empty string wins');
+    testStaticAndInstance({a:'a'}, [{a:[1]}], {a:[1]}, 'array wins');
+    testStaticAndInstance({a:'a'}, [{a:{b:'b'}}], {a:{b:'b'}}, 'object wins');
+    testStaticAndInstance({a:'a'}, [{a:undefined}], {a:'a'}, 'undefined does not win');
+
+    testStaticAndInstance({a:[1]}, [{a:[2]}], {a:[2]}, 'deep source array wins');
+    testStaticAndInstance({a:{b:'b'}}, [{a:{c:'c'}}], {a:{c:'c'}}, 'deep source object wins');
+
+    testStaticAndInstance({a:undefined}, [{a:1}], {a:1}, 'target undefined, source wins');
+    testStaticAndInstance({a:null}, [{a:1}], {a:1}, 'target null, source wins');
+    testStaticAndInstance({a:false}, [{a:1}], {a:1}, 'target false, source wins');
+    testStaticAndInstance({a:true}, [{a:1}], {a:1}, 'target true, source wins');
+    testStaticAndInstance({a:''}, [{a:1}], {a:1}, 'target empty string, source wins');
+
+    // Shallow merge, source wins
+
+    var opts = { resolve: false };
+    testStaticAndInstance({a:'a'}, [{a:'b'}, opts], {a:'a'}, 'target wins when resolve is false');
+    testStaticAndInstance({a:undefined}, [{a:1}, opts], {a:1}, 'source wins when target is undefined');
+    testStaticAndInstance({a:null}, [{a:1}, opts], {a:null}, 'target wins when null');
+    testStaticAndInstance({a:false}, [{a:1}, opts], {a:false}, 'target wins when false');
+    testStaticAndInstance({a:true}, [{a:1}, opts], {a:true}, 'target wins when true');
+    testStaticAndInstance({a:''}, [{a:1}, opts], {a:''}, 'target wins when empty string');
+
+    // Deep merge, target wins
+
+    var opts = { deep: true };
+    testStaticAndInstance({a:{b:'b'}}, [{a:{c:'c'}}, opts], {a:{b:'b',c:'c'}}, 'deeply merged');
+    testStaticAndInstance({a:[1,2]}, [{a:['a']}, opts], {a:['a',2]}, 'array deeply merged');
+    test([{a:'a'}], [[{b:'b'}], opts], [{a:'a',b:'b'}], 'objects in arrays deeply merged');
+
+    // Deferring more specific tests to Object.merge
 
   });
 
