@@ -355,4 +355,47 @@ package('Core', function() {
     Date = nativeDate;
   });
 
+  group('Creating new namespaces', function() {
+
+    Sugar.createNamespace('Boolean');
+    Sugar.Boolean.defineInstance('trueOnSundays', function(bool) {
+      return bool && new Date().getDay() === 0;
+    });
+    Sugar.Boolean.extend();
+    equal(Sugar.Boolean.trueOnSundays(true), new Date().getDay() === 0, 'Only true on sundays!');
+    equal(true.trueOnSundays(), new Date().getDay() === 0, 'Only true on sundays! | extended');
+
+    delete Boolean.prototype.trueOnSundays;
+    delete Sugar.Boolean;
+
+    if (typeof WeakMap !== 'undefined') {
+      Sugar.createNamespace('WeakMap');
+      Sugar.WeakMap.defineInstance('deleteIf', function(map, key, check) {
+        if (check) {
+          map.delete(key);
+        }
+      });
+
+      Sugar.WeakMap.extend();
+      var map = new WeakMap();
+      var key = new String('foo');
+
+      map.set(key, 'bar');
+      Sugar.WeakMap.deleteIf(map, key, false);
+      equal(map.get(key), 'bar', 'no delete');
+      Sugar.WeakMap.deleteIf(map, key, true);
+      equal(map.get(key), undefined, 'deleted');
+
+      map.set(key, 'bar');
+      map.deleteIf(key, false);
+      equal(map.get(key), 'bar', 'no delete | extended');
+      map.deleteIf(key, true);
+      equal(map.get(key), undefined, 'deleted | extended');
+
+      delete WeakMap.prototype.deleteIf;
+      delete Sugar.WeakMap;
+    }
+
+  });
+
 });
