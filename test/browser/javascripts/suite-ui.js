@@ -99,7 +99,11 @@
       if(p[key] === undefined) {
         arr.push(key + ': undefined');
       } else {
-        arr.push(key + ': ' + p[key]);
+        var val = p[key];
+        if (typeof val === 'string') {
+          val = '"' + val + '"';
+        }
+        arr.push(key + ': ' + val);
       }
     }
     str += arr.join(',');
