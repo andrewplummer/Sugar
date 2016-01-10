@@ -1,24 +1,24 @@
 var runner = require('../setup');
 
-runner.loadPackage('../../release/npm/sugar/date');
-runner.loadPackage('../../release/npm/sugar/range');
+runner.load('../../release/npm/sugar/date');
+runner.load('../../release/npm/sugar/range');
 
-runner.loadPackage('../../release/npm/sugar/locales/ca.js');
-runner.loadPackage('../../release/npm/sugar/locales/da.js');
-runner.loadPackage('../../release/npm/sugar/locales/de.js');
-runner.loadPackage('../../release/npm/sugar/locales/es.js');
-runner.loadPackage('../../release/npm/sugar/locales/fi.js');
-runner.loadPackage('../../release/npm/sugar/locales/fr.js');
-runner.loadPackage('../../release/npm/sugar/locales/it.js');
-runner.loadPackage('../../release/npm/sugar/locales/ja.js');
-runner.loadPackage('../../release/npm/sugar/locales/ko.js');
-runner.loadPackage('../../release/npm/sugar/locales/nl.js');
-runner.loadPackage('../../release/npm/sugar/locales/pl.js');
-runner.loadPackage('../../release/npm/sugar/locales/pt.js');
-runner.loadPackage('../../release/npm/sugar/locales/ru.js');
-runner.loadPackage('../../release/npm/sugar/locales/sv.js');
-runner.loadPackage('../../release/npm/sugar/locales/zh-CN.js');
-runner.loadPackage('../../release/npm/sugar/locales/zh-TW.js');
+runner.load('../../release/npm/sugar/locales/ca.js');
+runner.load('../../release/npm/sugar/locales/da.js');
+runner.load('../../release/npm/sugar/locales/de.js');
+runner.load('../../release/npm/sugar/locales/es.js');
+runner.load('../../release/npm/sugar/locales/fi.js');
+runner.load('../../release/npm/sugar/locales/fr.js');
+runner.load('../../release/npm/sugar/locales/it.js');
+runner.load('../../release/npm/sugar/locales/ja.js');
+runner.load('../../release/npm/sugar/locales/ko.js');
+runner.load('../../release/npm/sugar/locales/nl.js');
+runner.load('../../release/npm/sugar/locales/pl.js');
+runner.load('../../release/npm/sugar/locales/pt.js');
+runner.load('../../release/npm/sugar/locales/ru.js');
+runner.load('../../release/npm/sugar/locales/sv.js');
+runner.load('../../release/npm/sugar/locales/zh-CN.js');
+runner.load('../../release/npm/sugar/locales/zh-TW.js');
 
 // Tests
 runner.loadTest('date');
