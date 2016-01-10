@@ -1,28 +1,26 @@
 var runner = require('../setup');
 
-runner.load('../../release/npm/sugar/date');
-runner.load('../../release/npm/sugar/range');
+runner.load('../../release/npm/sugar-date');
 
-runner.load('../../release/npm/sugar/locales/ca.js');
-runner.load('../../release/npm/sugar/locales/da.js');
-runner.load('../../release/npm/sugar/locales/de.js');
-runner.load('../../release/npm/sugar/locales/es.js');
-runner.load('../../release/npm/sugar/locales/fi.js');
-runner.load('../../release/npm/sugar/locales/fr.js');
-runner.load('../../release/npm/sugar/locales/it.js');
-runner.load('../../release/npm/sugar/locales/ja.js');
-runner.load('../../release/npm/sugar/locales/ko.js');
-runner.load('../../release/npm/sugar/locales/nl.js');
-runner.load('../../release/npm/sugar/locales/pl.js');
-runner.load('../../release/npm/sugar/locales/pt.js');
-runner.load('../../release/npm/sugar/locales/ru.js');
-runner.load('../../release/npm/sugar/locales/sv.js');
-runner.load('../../release/npm/sugar/locales/zh-CN.js');
-runner.load('../../release/npm/sugar/locales/zh-TW.js');
+runner.load('../../release/npm/sugar-date/locales/ca.js');
+runner.load('../../release/npm/sugar-date/locales/da.js');
+runner.load('../../release/npm/sugar-date/locales/de.js');
+runner.load('../../release/npm/sugar-date/locales/es.js');
+runner.load('../../release/npm/sugar-date/locales/fi.js');
+runner.load('../../release/npm/sugar-date/locales/fr.js');
+runner.load('../../release/npm/sugar-date/locales/it.js');
+runner.load('../../release/npm/sugar-date/locales/ja.js');
+runner.load('../../release/npm/sugar-date/locales/ko.js');
+runner.load('../../release/npm/sugar-date/locales/nl.js');
+runner.load('../../release/npm/sugar-date/locales/pl.js');
+runner.load('../../release/npm/sugar-date/locales/pt.js');
+runner.load('../../release/npm/sugar-date/locales/ru.js');
+runner.load('../../release/npm/sugar-date/locales/sv.js');
+runner.load('../../release/npm/sugar-date/locales/zh-CN.js');
+runner.load('../../release/npm/sugar-date/locales/zh-TW.js');
 
 // Tests
 runner.loadTest('date');
-runner.loadTest('date-range');
 
 runner.loadTest('locales/ca.js');
 runner.loadTest('locales/da.js');
