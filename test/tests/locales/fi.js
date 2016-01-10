@@ -11,128 +11,128 @@ package('Dates Finnish', function () {
 
   method('create', function() {
 
-    dateEqual(testCreateDate('15. toukokuuta 2011'),          new Date(2011, 4, 15),              'basic Finnish date');
-    dateEqual(testCreateDate('tiistai 5. tammikuuta 2012'),   new Date(2012, 0, 5),               '2012-01-05');
-    dateEqual(testCreateDate('tiistaina 5. tammikuuta 2012'), new Date(2012, 0, 5),               '2012-01-05 (na)');
-    dateEqual(testCreateDate('toukokuu 2011'),                new Date(2011, 4),                  'year and month');
-    dateEqual(testCreateDate('15. toukokuuta'),               new Date(now.getFullYear(), 4, 15), 'month and date');
-    dateEqual(testCreateDate('2011'),                         new Date(2011, 0),                  'year');
+    equal(testCreateDate('15. toukokuuta 2011'),          new Date(2011, 4, 15),              'basic Finnish date');
+    equal(testCreateDate('tiistai 5. tammikuuta 2012'),   new Date(2012, 0, 5),               '2012-01-05');
+    equal(testCreateDate('tiistaina 5. tammikuuta 2012'), new Date(2012, 0, 5),               '2012-01-05 (na)');
+    equal(testCreateDate('toukokuu 2011'),                new Date(2011, 4),                  'year and month');
+    equal(testCreateDate('15. toukokuuta'),               new Date(now.getFullYear(), 4, 15), 'month and date');
+    equal(testCreateDate('2011'),                         new Date(2011, 0),                  'year');
 
-    dateEqual(testCreateDate('tiistai 5. tammikuuta 2012 klo 3.45'), new Date(2012, 0, 5,  3, 45), '2012-01-05 3.45');
-    dateEqual(testCreateDate('tiistaina 5. tammikuuta 2012 klo 3.45'), new Date(2012, 0, 5,  3, 45), '2012-01-05 3.45 (na)');
-    dateEqual(testCreateDate('tiistaina 5. tammikuuta 2012 klo 3.45.19'), new Date(2012, 0, 5,  3, 45, 19), '2012-01-05 3.45.19');
-    dateEqual(testCreateDate('tiistaina 5. tammikuuta 2012 klo 3.45.19,30'), new Date(2012, 0, 5,  3, 45, 19, 300), '2012-01-05 3.45.19,30');
+    equal(testCreateDate('tiistai 5. tammikuuta 2012 klo 3.45'), new Date(2012, 0, 5,  3, 45), '2012-01-05 3.45');
+    equal(testCreateDate('tiistaina 5. tammikuuta 2012 klo 3.45'), new Date(2012, 0, 5,  3, 45), '2012-01-05 3.45 (na)');
+    equal(testCreateDate('tiistaina 5. tammikuuta 2012 klo 3.45.19'), new Date(2012, 0, 5,  3, 45, 19), '2012-01-05 3.45.19');
+    equal(testCreateDate('tiistaina 5. tammikuuta 2012 klo 3.45.19,30'), new Date(2012, 0, 5,  3, 45, 19, 300), '2012-01-05 3.45.19,30');
 
-    dateEqual(testCreateDate('tiistai 5. tammikuuta 2012 klo 15:45'), new Date(2012, 0, 5, 15, 45), '2012-01-05 3:45pm');
-    dateEqual(testCreateDate('tiistaina 5. tammikuuta 2012 klo 15:45'), new Date(2012, 0, 5, 15, 45), '2012-01-05 3:45pm (na)');
+    equal(testCreateDate('tiistai 5. tammikuuta 2012 klo 15:45'), new Date(2012, 0, 5, 15, 45), '2012-01-05 3:45pm');
+    equal(testCreateDate('tiistaina 5. tammikuuta 2012 klo 15:45'), new Date(2012, 0, 5, 15, 45), '2012-01-05 3:45pm (na)');
 
-    dateEqual(testCreateDate('tiistaina 5. tammikuuta 2012 kello 15:45'), new Date(2012, 0, 5, 15, 45), 'also accepts "kello"');
+    equal(testCreateDate('tiistaina 5. tammikuuta 2012 kello 15:45'), new Date(2012, 0, 5, 15, 45), 'also accepts "kello"');
 
-    dateEqual(testCreateDate('tammikuu'),  new Date(now.getFullYear(),  0), 'January');
-    dateEqual(testCreateDate('helmikuu'),  new Date(now.getFullYear(),  1), 'February');
-    dateEqual(testCreateDate('maaliskuu'), new Date(now.getFullYear(),  2), 'March');
-    dateEqual(testCreateDate('huhtikuu'),  new Date(now.getFullYear(),  3), 'April');
-    dateEqual(testCreateDate('toukokuu'),  new Date(now.getFullYear(),  4), 'May');
-    dateEqual(testCreateDate('kesäkuu'),   new Date(now.getFullYear(),  5), 'June');
-    dateEqual(testCreateDate('heinäkuu'),  new Date(now.getFullYear(),  6), 'July');
-    dateEqual(testCreateDate('elokuu'),    new Date(now.getFullYear(),  7), 'August');
-    dateEqual(testCreateDate('syyskuu'),   new Date(now.getFullYear(),  8), 'September');
-    dateEqual(testCreateDate('lokakuu'),   new Date(now.getFullYear(),  9), 'October');
-    dateEqual(testCreateDate('marraskuu'), new Date(now.getFullYear(), 10), 'November');
-    dateEqual(testCreateDate('joulukuu'),  new Date(now.getFullYear(), 11), 'December');
+    equal(testCreateDate('tammikuu'),  new Date(now.getFullYear(),  0), 'January');
+    equal(testCreateDate('helmikuu'),  new Date(now.getFullYear(),  1), 'February');
+    equal(testCreateDate('maaliskuu'), new Date(now.getFullYear(),  2), 'March');
+    equal(testCreateDate('huhtikuu'),  new Date(now.getFullYear(),  3), 'April');
+    equal(testCreateDate('toukokuu'),  new Date(now.getFullYear(),  4), 'May');
+    equal(testCreateDate('kesäkuu'),   new Date(now.getFullYear(),  5), 'June');
+    equal(testCreateDate('heinäkuu'),  new Date(now.getFullYear(),  6), 'July');
+    equal(testCreateDate('elokuu'),    new Date(now.getFullYear(),  7), 'August');
+    equal(testCreateDate('syyskuu'),   new Date(now.getFullYear(),  8), 'September');
+    equal(testCreateDate('lokakuu'),   new Date(now.getFullYear(),  9), 'October');
+    equal(testCreateDate('marraskuu'), new Date(now.getFullYear(), 10), 'November');
+    equal(testCreateDate('joulukuu'),  new Date(now.getFullYear(), 11), 'December');
 
-    dateEqual(testCreateDate('sunnuntai'),   getDateWithWeekdayAndOffset(0), 'Sunday');    // su
-    dateEqual(testCreateDate('maanantai'),   getDateWithWeekdayAndOffset(1), 'Monday');    // ma
-    dateEqual(testCreateDate('tiistai'),     getDateWithWeekdayAndOffset(2), 'Tuesday');   // ti
-    dateEqual(testCreateDate('keskiviikko'), getDateWithWeekdayAndOffset(3), 'Wednesday'); // ke
-    dateEqual(testCreateDate('torstai'),     getDateWithWeekdayAndOffset(4), 'Thursday');  // to
-    dateEqual(testCreateDate('perjantai'),   getDateWithWeekdayAndOffset(5), 'Friday');    // pe
-    dateEqual(testCreateDate('lauantai'),    getDateWithWeekdayAndOffset(6), 'Saturday');  // la
+    equal(testCreateDate('sunnuntai'),   getDateWithWeekdayAndOffset(0), 'Sunday');    // su
+    equal(testCreateDate('maanantai'),   getDateWithWeekdayAndOffset(1), 'Monday');    // ma
+    equal(testCreateDate('tiistai'),     getDateWithWeekdayAndOffset(2), 'Tuesday');   // ti
+    equal(testCreateDate('keskiviikko'), getDateWithWeekdayAndOffset(3), 'Wednesday'); // ke
+    equal(testCreateDate('torstai'),     getDateWithWeekdayAndOffset(4), 'Thursday');  // to
+    equal(testCreateDate('perjantai'),   getDateWithWeekdayAndOffset(5), 'Friday');    // pe
+    equal(testCreateDate('lauantai'),    getDateWithWeekdayAndOffset(6), 'Saturday');  // la
 
-    dateEqual(testCreateDate('yksi millisekunti sitten'), getRelativeDate(null, null, null, null, null, null,-1), 'one millisecond ago');
-    dateEqual(testCreateDate('yksi sekunti sitten'),      getRelativeDate(null, null, null, null, null, -1), 'one second ago');
-    dateEqual(testCreateDate('yksi minuutti sitten'),     getRelativeDate(null, null, null, null, -1), 'one minute ago');
-    dateEqual(testCreateDate('yksi tunti sitten'),        getRelativeDate(null, null, null, -1), 'one hour ago');
-    dateEqual(testCreateDate('yksi päivä sitten'),        getRelativeDate(null, null, -1), 'one day ago');
-    dateEqual(testCreateDate('yksi viikko sitten'),       getRelativeDate(null, null, -7), 'one week ago');
-    dateEqual(testCreateDate('yksi kuukausi sitten'),     getRelativeDate(null, -1), 'one month ago');
-    dateEqual(testCreateDate('yksi vuosi sitten'),        getRelativeDate(-1), 'one year ago');
-    dateEqual(testCreateDate('millisekunti sitten'),      getRelativeDate(null, null, null, null, null, null,-1), 'one millisecond ago');
-    dateEqual(testCreateDate('sekunti sitten'),           getRelativeDate(null, null, null, null, null, -1), 'one second ago');
-    dateEqual(testCreateDate('minuutti sitten'),          getRelativeDate(null, null, null, null, -1), 'one minute ago');
-    dateEqual(testCreateDate('tunti sitten'),             getRelativeDate(null, null, null, -1), 'one hour ago');
-    dateEqual(testCreateDate('päivä sitten'),             getRelativeDate(null, null, -1), 'one day ago');
-    dateEqual(testCreateDate('viikko sitten'),            getRelativeDate(null, null, -7), 'one week ago');
-    dateEqual(testCreateDate('kuukausi sitten'),          getRelativeDate(null, -1), 'one month ago');
-    dateEqual(testCreateDate('vuosi sitten'),             getRelativeDate(-1), 'one year ago');
+    equal(testCreateDate('yksi millisekunti sitten'), getRelativeDate(null, null, null, null, null, null,-1), 'one millisecond ago');
+    equal(testCreateDate('yksi sekunti sitten'),      getRelativeDate(null, null, null, null, null, -1), 'one second ago');
+    equal(testCreateDate('yksi minuutti sitten'),     getRelativeDate(null, null, null, null, -1), 'one minute ago');
+    equal(testCreateDate('yksi tunti sitten'),        getRelativeDate(null, null, null, -1), 'one hour ago');
+    equal(testCreateDate('yksi päivä sitten'),        getRelativeDate(null, null, -1), 'one day ago');
+    equal(testCreateDate('yksi viikko sitten'),       getRelativeDate(null, null, -7), 'one week ago');
+    equal(testCreateDate('yksi kuukausi sitten'),     getRelativeDate(null, -1), 'one month ago');
+    equal(testCreateDate('yksi vuosi sitten'),        getRelativeDate(-1), 'one year ago');
+    equal(testCreateDate('millisekunti sitten'),      getRelativeDate(null, null, null, null, null, null,-1), 'one millisecond ago');
+    equal(testCreateDate('sekunti sitten'),           getRelativeDate(null, null, null, null, null, -1), 'one second ago');
+    equal(testCreateDate('minuutti sitten'),          getRelativeDate(null, null, null, null, -1), 'one minute ago');
+    equal(testCreateDate('tunti sitten'),             getRelativeDate(null, null, null, -1), 'one hour ago');
+    equal(testCreateDate('päivä sitten'),             getRelativeDate(null, null, -1), 'one day ago');
+    equal(testCreateDate('viikko sitten'),            getRelativeDate(null, null, -7), 'one week ago');
+    equal(testCreateDate('kuukausi sitten'),          getRelativeDate(null, -1), 'one month ago');
+    equal(testCreateDate('vuosi sitten'),             getRelativeDate(-1), 'one year ago');
 
-    dateEqual(testCreateDate('5 millisekunnin päästä'),   getRelativeDate(null, null, null, null, null, null,5), 'five milliseconds from now');
-    dateEqual(testCreateDate('5 sekunnin päästä'),        getRelativeDate(null, null, null, null, null, 5), 'five second from now');
-    dateEqual(testCreateDate('5 minuutin päästä'),        getRelativeDate(null, null, null, null, 5), 'five minute from now');
-    dateEqual(testCreateDate('5 tunnin päästä'),          getRelativeDate(null, null, null, 5), 'five hour from now');
-    dateEqual(testCreateDate('5 päivän päästä'),          getRelativeDate(null, null, 5), 'five day from now');
-    dateEqual(testCreateDate('5 viikon päästä'),          getRelativeDate(null, null, 35), 'five weeks from now');
-    dateEqual(testCreateDate('5 kuukauden päästä'),       getRelativeDate(null, 5), 'five months from now');
-    dateEqual(testCreateDate('5 vuoden päästä'),          getRelativeDate(5), 'five years from now');
+    equal(testCreateDate('5 millisekunnin päästä'),   getRelativeDate(null, null, null, null, null, null,5), 'five milliseconds from now');
+    equal(testCreateDate('5 sekunnin päästä'),        getRelativeDate(null, null, null, null, null, 5), 'five second from now');
+    equal(testCreateDate('5 minuutin päästä'),        getRelativeDate(null, null, null, null, 5), 'five minute from now');
+    equal(testCreateDate('5 tunnin päästä'),          getRelativeDate(null, null, null, 5), 'five hour from now');
+    equal(testCreateDate('5 päivän päästä'),          getRelativeDate(null, null, 5), 'five day from now');
+    equal(testCreateDate('5 viikon päästä'),          getRelativeDate(null, null, 35), 'five weeks from now');
+    equal(testCreateDate('5 kuukauden päästä'),       getRelativeDate(null, 5), 'five months from now');
+    equal(testCreateDate('5 vuoden päästä'),          getRelativeDate(5), 'five years from now');
 
-    dateEqual(testCreateDate('toissa päivänä'), run(getRelativeDate(null, null, -2), 'reset'), 'day before yesterday');
-    dateEqual(testCreateDate('eilen'),          run(getRelativeDate(null, null, -1), 'reset'), 'yesterday');
-    dateEqual(testCreateDate('tänään'),         run(getRelativeDate(null, null,  0), 'reset'), 'today');
-    dateEqual(testCreateDate('huomenna'),       run(getRelativeDate(null, null,  1), 'reset'), 'tomorrow');
-    dateEqual(testCreateDate('ylihuomenna'),    run(getRelativeDate(null, null,  2), 'reset'), 'day after tomorrow');
+    equal(testCreateDate('toissa päivänä'), run(getRelativeDate(null, null, -2), 'reset'), 'day before yesterday');
+    equal(testCreateDate('eilen'),          run(getRelativeDate(null, null, -1), 'reset'), 'yesterday');
+    equal(testCreateDate('tänään'),         run(getRelativeDate(null, null,  0), 'reset'), 'today');
+    equal(testCreateDate('huomenna'),       run(getRelativeDate(null, null,  1), 'reset'), 'tomorrow');
+    equal(testCreateDate('ylihuomenna'),    run(getRelativeDate(null, null,  2), 'reset'), 'day after tomorrow');
 
-    dateEqual(testCreateDate('viime viikko'),   getRelativeDate(null, null, -7), 'last week | viikko');
-    dateEqual(testCreateDate('viime viikolla'), getRelativeDate(null, null, -7), 'last week | viikolla');
-    dateEqual(testCreateDate('ensi viikko'),    getRelativeDate(null, null,  7), 'next week | viikko');
-    dateEqual(testCreateDate('ensi viikolla'),  getRelativeDate(null, null,  7), 'next week | viikolla');
-    dateEqual(testCreateDate('tällä viikolla'), getRelativeDate(null, null,  0), 'this week | viikolla');
-    dateEqual(testCreateDate('tämä viikko'),    getRelativeDate(null, null,  0), 'this week | viikko');
+    equal(testCreateDate('viime viikko'),   getRelativeDate(null, null, -7), 'last week | viikko');
+    equal(testCreateDate('viime viikolla'), getRelativeDate(null, null, -7), 'last week | viikolla');
+    equal(testCreateDate('ensi viikko'),    getRelativeDate(null, null,  7), 'next week | viikko');
+    equal(testCreateDate('ensi viikolla'),  getRelativeDate(null, null,  7), 'next week | viikolla');
+    equal(testCreateDate('tällä viikolla'), getRelativeDate(null, null,  0), 'this week | viikolla');
+    equal(testCreateDate('tämä viikko'),    getRelativeDate(null, null,  0), 'this week | viikko');
 
 
-    dateEqual(testCreateDate('tässä kuussa'),       getRelativeDate(null,  0), 'this month');
-    dateEqual(testCreateDate('viime kuussa'),       getRelativeDate(null, -1), 'last month | viime');
-    dateEqual(testCreateDate('edellinen kuukausi'), getRelativeDate(null, -1), 'last month | edellinen');
-    dateEqual(testCreateDate('seuraava kuukausi'),  getRelativeDate(null,  1), 'next month | seuraava');
-    dateEqual(testCreateDate('ensi kuussa'),        getRelativeDate(null,  1), 'next month | ensi');
+    equal(testCreateDate('tässä kuussa'),       getRelativeDate(null,  0), 'this month');
+    equal(testCreateDate('viime kuussa'),       getRelativeDate(null, -1), 'last month | viime');
+    equal(testCreateDate('edellinen kuukausi'), getRelativeDate(null, -1), 'last month | edellinen');
+    equal(testCreateDate('seuraava kuukausi'),  getRelativeDate(null,  1), 'next month | seuraava');
+    equal(testCreateDate('ensi kuussa'),        getRelativeDate(null,  1), 'next month | ensi');
 
-    dateEqual(testCreateDate('viime vuosi'),  getRelativeDate(-1), 'last year | vuosi');
-    dateEqual(testCreateDate('viime vuonna'), getRelativeDate(-1), 'last year | vuonna');
-    dateEqual(testCreateDate('ensi vuosi'),   getRelativeDate(1),  'next year | vuosi');
-    dateEqual(testCreateDate('ensi vuonna'),  getRelativeDate(1),  'next year | vuonna');
-    dateEqual(testCreateDate('tämä vuosi'),   getRelativeDate(0),  'this year | vuosi');
-    dateEqual(testCreateDate('tänä vuonna'),  getRelativeDate(0),  'this year | vuonna');
+    equal(testCreateDate('viime vuosi'),  getRelativeDate(-1), 'last year | vuosi');
+    equal(testCreateDate('viime vuonna'), getRelativeDate(-1), 'last year | vuonna');
+    equal(testCreateDate('ensi vuosi'),   getRelativeDate(1),  'next year | vuosi');
+    equal(testCreateDate('ensi vuonna'),  getRelativeDate(1),  'next year | vuonna');
+    equal(testCreateDate('tämä vuosi'),   getRelativeDate(0),  'this year | vuosi');
+    equal(testCreateDate('tänä vuonna'),  getRelativeDate(0),  'this year | vuonna');
 
-    dateEqual(testCreateDate('ensi maanantai'),    getDateWithWeekdayAndOffset(1, 7),  'next monday');
-    dateEqual(testCreateDate('viime maanantai'),   getDateWithWeekdayAndOffset(1, -7), 'last monday');
+    equal(testCreateDate('ensi maanantai'),    getDateWithWeekdayAndOffset(1, 7),  'next monday');
+    equal(testCreateDate('viime maanantai'),   getDateWithWeekdayAndOffset(1, -7), 'last monday');
 
-    dateEqual(testCreateDate('ensi maanantaina'),  getDateWithWeekdayAndOffset(1, 7),  'next monday | na');
-    dateEqual(testCreateDate('viime maanantaina'), getDateWithWeekdayAndOffset(1, -7), 'last monday | na');
+    equal(testCreateDate('ensi maanantaina'),  getDateWithWeekdayAndOffset(1, 7),  'next monday | na');
+    equal(testCreateDate('viime maanantaina'), getDateWithWeekdayAndOffset(1, -7), 'last monday | na');
 
-    dateEqual(testCreateDate('viime maanantaina klo 3.45'), run(getDateWithWeekdayAndOffset(1, -7), 'set', [{ hour: 3, minute: 45 }, true]), 'last monday 3:45');
-    dateEqual(testCreateDate('viime maanantai klo 3.45'),   run(getDateWithWeekdayAndOffset(1, -7), 'set', [{ hour: 3, minute: 45 }, true]), 'last monday 3:45 (na)');
-    dateEqual(testCreateDate('huomenna klo 3.30'),          run(getRelativeDate(null, null, 1), 'set', [{hours:3,minutes:30}, true]), 'tomorrow at 3:30');
+    equal(testCreateDate('viime maanantaina klo 3.45'), run(getDateWithWeekdayAndOffset(1, -7), 'set', [{ hour: 3, minute: 45 }, true]), 'last monday 3:45');
+    equal(testCreateDate('viime maanantai klo 3.45'),   run(getDateWithWeekdayAndOffset(1, -7), 'set', [{ hour: 3, minute: 45 }, true]), 'last monday 3:45 (na)');
+    equal(testCreateDate('huomenna klo 3.30'),          run(getRelativeDate(null, null, 1), 'set', [{hours:3,minutes:30}, true]), 'tomorrow at 3:30');
 
-    dateEqual(testCreateDate('viime sunnuntaina'),   getDateWithWeekdayAndOffset(0, -7), 'last sunday');
-    dateEqual(testCreateDate('viime maanantaina'),   getDateWithWeekdayAndOffset(1, -7), 'last monday');
-    dateEqual(testCreateDate('viime tiistaina'),     getDateWithWeekdayAndOffset(2, -7), 'last tuesday');
-    dateEqual(testCreateDate('viime keskiviikkona'), getDateWithWeekdayAndOffset(3, -7), 'last wednesday');
-    dateEqual(testCreateDate('viime torstaina'),     getDateWithWeekdayAndOffset(4, -7), 'last thursday');
-    dateEqual(testCreateDate('viime perjantaina'),   getDateWithWeekdayAndOffset(5, -7), 'last friday');
-    dateEqual(testCreateDate('viime lauantaina'),    getDateWithWeekdayAndOffset(6, -7), 'last saturday');
+    equal(testCreateDate('viime sunnuntaina'),   getDateWithWeekdayAndOffset(0, -7), 'last sunday');
+    equal(testCreateDate('viime maanantaina'),   getDateWithWeekdayAndOffset(1, -7), 'last monday');
+    equal(testCreateDate('viime tiistaina'),     getDateWithWeekdayAndOffset(2, -7), 'last tuesday');
+    equal(testCreateDate('viime keskiviikkona'), getDateWithWeekdayAndOffset(3, -7), 'last wednesday');
+    equal(testCreateDate('viime torstaina'),     getDateWithWeekdayAndOffset(4, -7), 'last thursday');
+    equal(testCreateDate('viime perjantaina'),   getDateWithWeekdayAndOffset(5, -7), 'last friday');
+    equal(testCreateDate('viime lauantaina'),    getDateWithWeekdayAndOffset(6, -7), 'last saturday');
 
 
     // Numbers
 
-    dateEqual(testCreateDate('nolla vuotta sitten'),     getRelativeDate(0),  'zero years ago');
-    dateEqual(testCreateDate('yksi vuosi sitten'),       getRelativeDate(-1), 'one years ago');
-    dateEqual(testCreateDate('kaksi vuotta sitten'),     getRelativeDate(-2), 'two years ago');
-    dateEqual(testCreateDate('kolme vuotta sitten'),     getRelativeDate(-3), 'three years ago');
-    dateEqual(testCreateDate('neljä vuotta sitten'),     getRelativeDate(-4), 'four years ago');
-    dateEqual(testCreateDate('viisi vuotta sitten'),     getRelativeDate(-5), 'five years ago');
-    dateEqual(testCreateDate('kuusi vuotta sitten'),     getRelativeDate(-6), 'six years ago');
-    dateEqual(testCreateDate('seitsemän vuotta sitten'), getRelativeDate(-7), 'seven years ago');
-    dateEqual(testCreateDate('kahdeksan vuotta sitten'), getRelativeDate(-8), 'eight years ago');
-    dateEqual(testCreateDate('yhdeksän vuotta sitten'),  getRelativeDate(-9), 'nine years ago');
+    equal(testCreateDate('nolla vuotta sitten'),     getRelativeDate(0),  'zero years ago');
+    equal(testCreateDate('yksi vuosi sitten'),       getRelativeDate(-1), 'one years ago');
+    equal(testCreateDate('kaksi vuotta sitten'),     getRelativeDate(-2), 'two years ago');
+    equal(testCreateDate('kolme vuotta sitten'),     getRelativeDate(-3), 'three years ago');
+    equal(testCreateDate('neljä vuotta sitten'),     getRelativeDate(-4), 'four years ago');
+    equal(testCreateDate('viisi vuotta sitten'),     getRelativeDate(-5), 'five years ago');
+    equal(testCreateDate('kuusi vuotta sitten'),     getRelativeDate(-6), 'six years ago');
+    equal(testCreateDate('seitsemän vuotta sitten'), getRelativeDate(-7), 'seven years ago');
+    equal(testCreateDate('kahdeksan vuotta sitten'), getRelativeDate(-8), 'eight years ago');
+    equal(testCreateDate('yhdeksän vuotta sitten'),  getRelativeDate(-9), 'nine years ago');
 
   });
 
@@ -253,8 +253,8 @@ package('Dates Finnish', function () {
   });
 
   method('beginning/end', function() {
-    dateEqual(dateRun(new Date(2010, 0), 'beginningOfWeek'), new Date(2009, 11, 28), 'beginningOfWeek');
-    dateEqual(dateRun(new Date(2010, 0), 'endOfWeek'), new Date(2010, 0, 3, 23, 59, 59, 999), 'endOfWeek');
+    equal(dateRun(new Date(2010, 0), 'beginningOfWeek'), new Date(2009, 11, 28), 'beginningOfWeek');
+    equal(dateRun(new Date(2010, 0), 'endOfWeek'), new Date(2010, 0, 3, 23, 59, 59, 999), 'endOfWeek');
   });
 
 });

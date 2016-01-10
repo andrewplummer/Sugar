@@ -351,7 +351,7 @@
     klass = testInternalToString.call(one);
 
     if(klass === '[object Date]' && two.getTime) {
-      return one.getTime() === two.getTime();
+      return dateIsEqual(one, two);
     } else if(klass === '[object RegExp]') {
       return String(one) === String(two);
     } else if(klass === '[object Array]') {
@@ -412,6 +412,17 @@
       }
     }
     return onep === twop && String(one) === String(two);
+  }
+
+  function dateIsEqual(a, b) {
+    var buffer = 50; // Number of milliseconds of "play" to make sure these tests pass.
+    if(typeof b == 'number') {
+      var d = new Date();
+      d.setTime(d.getTime() + b);
+      b = d;
+    }
+    var offset = Math.abs(a.getTime() - b.getTime());
+    return offset < buffer;
   }
 
   function sortOnStringValue(arr) {

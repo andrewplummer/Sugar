@@ -56,20 +56,20 @@ package('Date Ranges', function () {
   group('Creation', function() {
 
     var range = getRange(new Date(2010,6,10,9), new Date(2010,8,10,9));
-    dateEqual(range.start, new Date(2010,6,10,9), 'Start has not been modified');
-    dateEqual(range.end, new Date(2010,8,10,9), 'End has not been modified');
+    equal(range.start, new Date(2010,6,10,9), 'Start has not been modified');
+    equal(range.end, new Date(2010,8,10,9), 'End has not been modified');
 
     var range = getRange(new Date(2010,3,25));
-    dateEqual(range.start, new Date(2010,3,25), 'null end | start');
-    dateEqual(range.end, new Date(), 'null end is current time');
+    equal(range.start, new Date(2010,3,25), 'null end | start');
+    equal(range.end, new Date(), 'null end is current time');
 
     var range = getRange(null, new Date(2010,3,25));
-    dateEqual(range.start, new Date(0), 'null starts at epoch');
-    dateEqual(range.end, new Date(2010,3,25), 'start is reversed when null is current');
+    equal(range.start, new Date(0), 'null starts at epoch');
+    equal(range.end, new Date(2010,3,25), 'start is reversed when null is current');
 
     var range = getRange();
-    dateEqual(range.start, new Date(), 'both null | start');
-    dateEqual(range.end, new Date(), 'both null | end');
+    equal(range.start, new Date(), 'both null | start');
+    equal(range.end, new Date(), 'both null | end');
 
   });
 
@@ -85,8 +85,8 @@ package('Date Ranges', function () {
     var range = getRange('2001', '2003');
     var testStart = new Date(2001, 0);
     var testEnd   = new Date(2003, 0);
-    dateEqual(range.start, testStart, 'Date.range | strings | start is equal');
-    dateEqual(range.end,   testEnd, 'Date.range | strings | end is equal');
+    equal(range.start, testStart, 'Date.range | strings | start is equal');
+    equal(range.end,   testEnd, 'Date.range | strings | end is equal');
 
     // Issue #367 Advanced date ranges
     dateRangeEqual(getRange('monday to thursday'), getRange('monday', 'thursday'), 'advanced text ranges');
@@ -108,7 +108,7 @@ package('Date Ranges', function () {
 
     var expected = [new Date(2010,6,10,9), new Date(2010,7,10,9), new Date(2010,8,10,9)];
     var result = range.every('month', function(d, index) {
-      dateEqual(d, expected[count], 'date is first argument');
+      equal(d, expected[count], 'date is first argument');
       equal(index, count, 'index is second argument');
       count++;
     });
@@ -285,14 +285,14 @@ package('Date Ranges', function () {
   method('clamp', function() {
     var range = getRange(new Date(2010, 0), new Date(2011, 0));
 
-    dateEqual(range.clamp(new Date(2008, 0)), new Date(2010, 0), 'low');
-    dateEqual(range.clamp(new Date(2012, 0)), new Date(2011, 0), 'high');
-    dateEqual(range.clamp(new Date(2010, 6)), new Date(2010, 6), 'mid');
-    dateEqual(range.clamp(new Date(2010, 0)), new Date(2010, 0), 'low equal');
-    dateEqual(range.clamp(new Date(2011, 0)), new Date(2011, 0), 'high equal');
+    equal(range.clamp(new Date(2008, 0)), new Date(2010, 0), 'low');
+    equal(range.clamp(new Date(2012, 0)), new Date(2011, 0), 'high');
+    equal(range.clamp(new Date(2010, 6)), new Date(2010, 6), 'mid');
+    equal(range.clamp(new Date(2010, 0)), new Date(2010, 0), 'low equal');
+    equal(range.clamp(new Date(2011, 0)), new Date(2011, 0), 'high equal');
 
-    dateEqual(range.clamp(2), new Date(2010, 0), 'low number');
-    dateEqual(range.clamp(new Date(2013, 5).getTime()), new Date(2011, 0), 'high number');
+    equal(range.clamp(2), new Date(2010, 0), 'low number');
+    equal(range.clamp(new Date(2013, 5).getTime()), new Date(2011, 0), 'high number');
     equal(range.clamp(new Date(2010, 5).getTime()), new Date(2010, 5).getTime(), 'mid number');
   });
 

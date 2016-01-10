@@ -50,17 +50,17 @@ package('Date', function () {
     test(d, d.getTimezoneOffset() === 0, 'UTC cannot be forced');
 
     // UTC is still false even if the time is reset to the intended utc equivalent, as timezones can never be changed
-    dateEqual(run(Date, 'create'), new Date(), 'empty');
+    equal(run(Date, 'create'), new Date(), 'empty');
   });
 
   group('Create | Objects', function() {
-    dateEqual(testCreateDate({ year: 1998 }), new Date(1998, 0), '1998');
-    dateEqual(testCreateDate({ year: 1998, month: 1 }), new Date(1998,1), 'January, 1998');
-    dateEqual(testCreateDate({ year: 1998, month: 1, day: 23 }), new Date(1998,1,23), 'January 23, 1998');
-    dateEqual(testCreateDate({ year: 1998, month: 1, day: 23, hour: 11 }), new Date(1998,1,23,11), 'January 23, 1998 11am');
-    dateEqual(testCreateDate({ year: 1998, month: 1, day: 23, hour: 11, minutes: 54 }), new Date(1998,1,23,11,54), 'January 23, 1998 11:54am');
-    dateEqual(testCreateDate({ year: 1998, month: 1, day: 23, hour: 11, minutes: 54, seconds: 32 }), new Date(1998,1,23,11,54,32), 'January 23, 1998 11:54:32');
-    dateEqual(testCreateDate({ year: 1998, month: 1, day: 23, hour: 11, minutes: 54, seconds: 32, milliseconds: 454 }), new Date(1998,1,23,11,54,32,454), 'January 23, 1998 11:54:32.454');
+    equal(testCreateDate({ year: 1998 }), new Date(1998, 0), '1998');
+    equal(testCreateDate({ year: 1998, month: 1 }), new Date(1998,1), 'January, 1998');
+    equal(testCreateDate({ year: 1998, month: 1, day: 23 }), new Date(1998,1,23), 'January 23, 1998');
+    equal(testCreateDate({ year: 1998, month: 1, day: 23, hour: 11 }), new Date(1998,1,23,11), 'January 23, 1998 11am');
+    equal(testCreateDate({ year: 1998, month: 1, day: 23, hour: 11, minutes: 54 }), new Date(1998,1,23,11,54), 'January 23, 1998 11:54am');
+    equal(testCreateDate({ year: 1998, month: 1, day: 23, hour: 11, minutes: 54, seconds: 32 }), new Date(1998,1,23,11,54,32), 'January 23, 1998 11:54:32');
+    equal(testCreateDate({ year: 1998, month: 1, day: 23, hour: 11, minutes: 54, seconds: 32, milliseconds: 454 }), new Date(1998,1,23,11,54,32,454), 'January 23, 1998 11:54:32.454');
 
     var obj = { year: 1998 };
     testCreateDate(obj);
@@ -80,7 +80,7 @@ package('Date', function () {
 
   group('Create | Options', function() {
 
-    dateEqual(testCreateDate('8/10/50', { locale: 'en-GB'}), new Date(1950, 9, 8), 'locale accepted in the options');
+    equal(testCreateDate('8/10/50', { locale: 'en-GB'}), new Date(1950, 9, 8), 'locale accepted in the options');
 
     var now = new Date();
     var opt = {
@@ -109,13 +109,13 @@ package('Date', function () {
       past: true,
       future: true
     };
-    dateEqual(testCreateDate('Sunday',    opt), testCreateDate('Sunday'),    'past and future cancel | Sunday');
-    dateEqual(testCreateDate('Monday',    opt), testCreateDate('Monday'),    'past and future cancel | Monday');
-    dateEqual(testCreateDate('Tuesday',   opt), testCreateDate('Tuesday'),   'past and future cancel | Tuesday');
-    dateEqual(testCreateDate('Wednesday', opt), testCreateDate('Wednesday'), 'past and future cancel | Wednesday');
-    dateEqual(testCreateDate('Thursday',  opt), testCreateDate('Thursday'),  'past and future cancel | Thursday');
-    dateEqual(testCreateDate('Friday',    opt), testCreateDate('Friday'),    'past and future cancel | Friday');
-    dateEqual(testCreateDate('Saturday',  opt), testCreateDate('Saturday'),  'past and future cancel | Saturday');
+    equal(testCreateDate('Sunday',    opt), testCreateDate('Sunday'),    'past and future cancel | Sunday');
+    equal(testCreateDate('Monday',    opt), testCreateDate('Monday'),    'past and future cancel | Monday');
+    equal(testCreateDate('Tuesday',   opt), testCreateDate('Tuesday'),   'past and future cancel | Tuesday');
+    equal(testCreateDate('Wednesday', opt), testCreateDate('Wednesday'), 'past and future cancel | Wednesday');
+    equal(testCreateDate('Thursday',  opt), testCreateDate('Thursday'),  'past and future cancel | Thursday');
+    equal(testCreateDate('Friday',    opt), testCreateDate('Friday'),    'past and future cancel | Friday');
+    equal(testCreateDate('Saturday',  opt), testCreateDate('Saturday'),  'past and future cancel | Saturday');
 
 
     // fromUTC option
@@ -168,435 +168,435 @@ package('Date', function () {
   });
 
   group('Create | Simple', function() {
-    dateEqual(testCreateDate('1999'), new Date(1999, 0), 'Just the year');
-    dateEqual(testCreateDate('June'), new Date(thisYear, 5), 'Just the month');
-    dateEqual(testCreateDate('June 15'), new Date(thisYear, 5, 15), 'Month and day');
-    dateEqual(testCreateDate('June 15th'), new Date(thisYear, 5, 15), 'Month and ordinal day');
+    equal(testCreateDate('1999'), new Date(1999, 0), 'Just the year');
+    equal(testCreateDate('June'), new Date(thisYear, 5), 'Just the month');
+    equal(testCreateDate('June 15'), new Date(thisYear, 5, 15), 'Month and day');
+    equal(testCreateDate('June 15th'), new Date(thisYear, 5, 15), 'Month and ordinal day');
   });
 
   group('Create | American Style Slashes', function() {
-    dateEqual(testCreateDate('08/25'), new Date(thisYear, 7, 25), 'mm/dd');
-    dateEqual(testCreateDate('8/25'), new Date(thisYear, 7, 25), 'm/dd');
-    dateEqual(testCreateDate('08/25/1978'), new Date(1978, 7, 25), 'mm/dd/yyyy');
-    dateEqual(testCreateDate('8/25/1978'), new Date(1978, 7, 25), '/m/dd/yyyy');
-    dateEqual(testCreateDate('8/25/78'), new Date(1978, 7, 25), 'm/dd/yy');
-    dateEqual(testCreateDate('08/25/78'), new Date(1978, 7, 25), 'mm/dd/yy');
-    dateEqual(testCreateDate('8/25/01'), new Date(2001, 7, 25), 'm/dd/01');
-    dateEqual(testCreateDate('8/25/49'), new Date(2049, 7, 25), 'm/dd/49');
-    dateEqual(testCreateDate('8/25/50'), new Date(1950, 7, 25), 'm/dd/50');
+    equal(testCreateDate('08/25'), new Date(thisYear, 7, 25), 'mm/dd');
+    equal(testCreateDate('8/25'), new Date(thisYear, 7, 25), 'm/dd');
+    equal(testCreateDate('08/25/1978'), new Date(1978, 7, 25), 'mm/dd/yyyy');
+    equal(testCreateDate('8/25/1978'), new Date(1978, 7, 25), '/m/dd/yyyy');
+    equal(testCreateDate('8/25/78'), new Date(1978, 7, 25), 'm/dd/yy');
+    equal(testCreateDate('08/25/78'), new Date(1978, 7, 25), 'mm/dd/yy');
+    equal(testCreateDate('8/25/01'), new Date(2001, 7, 25), 'm/dd/01');
+    equal(testCreateDate('8/25/49'), new Date(2049, 7, 25), 'm/dd/49');
+    equal(testCreateDate('8/25/50'), new Date(1950, 7, 25), 'm/dd/50');
 
     // Abbreviated reverse slash format yy/mm/dd cannot exist because it clashes with forward
     // slash format dd/mm/yy (with european variant). This rule however, doesn't follow for dashes,
     // which is abbreviated ISO8601 format: yy-mm-dd
-    dateEqual(testCreateDate('01/02/03'), new Date(2003, 0, 2), 'Ambiguous 2 digit format mm/dd/yy');
+    equal(testCreateDate('01/02/03'), new Date(2003, 0, 2), 'Ambiguous 2 digit format mm/dd/yy');
 
     var d = testCreateDate('08/25/0001');
     d = new Date(d.getTime() - (d.getTimezoneOffset() * 60 * 1000));
-    dateEqual(d, new Date(-62115206400000), 'mm/dd/0001');
+    equal(d, new Date(-62115206400000), 'mm/dd/0001');
   });
 
   group('Create | American Style Dashes', function() {
-    dateEqual(testCreateDate('08-25-1978'), new Date(1978, 7, 25), 'mm-dd-yyyy');
-    dateEqual(testCreateDate('8-25-1978'), new Date(1978, 7, 25), 'm-dd-yyyy');
+    equal(testCreateDate('08-25-1978'), new Date(1978, 7, 25), 'mm-dd-yyyy');
+    equal(testCreateDate('8-25-1978'), new Date(1978, 7, 25), 'm-dd-yyyy');
 
     // dd-dd-dd is NOT a valid ISO 8601 representation as of 2004, hence this format will
     // revert to a little endian representation, where year truncation is allowed. See:
     // http://en.wikipedia.org/wiki/ISO_8601#Truncated_representations
-    dateEqual(testCreateDate('08-05-05'), new Date(2005, 7, 5), 'dd-dd-dd is an ISO8601 format');
+    equal(testCreateDate('08-05-05'), new Date(2005, 7, 5), 'dd-dd-dd is an ISO8601 format');
 
-    dateEqual(testCreateDate('06-2008'), new Date(2008, 5), 'Date#create | Full text | mm-yyyy');
-    dateEqual(testCreateDate('6-2008'), new Date(2008, 5), 'Date#create | Full text | m-yyyy');
+    equal(testCreateDate('06-2008'), new Date(2008, 5), 'Date#create | Full text | mm-yyyy');
+    equal(testCreateDate('6-2008'), new Date(2008, 5), 'Date#create | Full text | m-yyyy');
   });
 
   group('Create | American Style Dots', function() {
-    dateEqual(testCreateDate('08.25.1978'), new Date(1978, 7, 25), 'mm.dd.yyyy');
-    dateEqual(testCreateDate('8.25.1978'), new Date(1978, 7, 25), 'm.dd.yyyy');
+    equal(testCreateDate('08.25.1978'), new Date(1978, 7, 25), 'mm.dd.yyyy');
+    equal(testCreateDate('8.25.1978'), new Date(1978, 7, 25), 'm.dd.yyyy');
   });
 
   group('Create | European Style', function() {
-    dateEqual(testCreateDate('08/10', 'en-GB'), new Date(thisYear, 9, 8), 'dd/mm');
-    dateEqual(testCreateDate('8/10', 'en-GB'), new Date(thisYear, 9, 8), 'd/mm');
-    dateEqual(testCreateDate('08/10/1978', 'en-GB'), new Date(1978, 9, 8), 'dd/mm/yyyy');
-    dateEqual(testCreateDate('8/10/1978', 'en-GB'), new Date(1978, 9, 8), 'd/mm/yyyy');
-    dateEqual(testCreateDate('8/10/78', 'en-GB'), new Date(1978, 9, 8), 'd/mm/yy');
-    dateEqual(testCreateDate('08/10/78', 'en-GB'), new Date(1978, 9, 8), 'dd/mm/yy');
-    dateEqual(testCreateDate('8/10/01', 'en-GB'), new Date(2001, 9, 8), 'd/mm/01');
-    dateEqual(testCreateDate('8/10/49', 'en-GB'), new Date(2049, 9, 8), 'd/mm/49');
-    dateEqual(testCreateDate('8/10/50', 'en-GB'), new Date(1950, 9, 8), 'd/mm/50');
-    dateEqual(testCreateDate('08/10', 'en-AU'), new Date(thisYear, 9, 8), 'any English locale suffix should work and not use US format');
+    equal(testCreateDate('08/10', 'en-GB'), new Date(thisYear, 9, 8), 'dd/mm');
+    equal(testCreateDate('8/10', 'en-GB'), new Date(thisYear, 9, 8), 'd/mm');
+    equal(testCreateDate('08/10/1978', 'en-GB'), new Date(1978, 9, 8), 'dd/mm/yyyy');
+    equal(testCreateDate('8/10/1978', 'en-GB'), new Date(1978, 9, 8), 'd/mm/yyyy');
+    equal(testCreateDate('8/10/78', 'en-GB'), new Date(1978, 9, 8), 'd/mm/yy');
+    equal(testCreateDate('08/10/78', 'en-GB'), new Date(1978, 9, 8), 'dd/mm/yy');
+    equal(testCreateDate('8/10/01', 'en-GB'), new Date(2001, 9, 8), 'd/mm/01');
+    equal(testCreateDate('8/10/49', 'en-GB'), new Date(2049, 9, 8), 'd/mm/49');
+    equal(testCreateDate('8/10/50', 'en-GB'), new Date(1950, 9, 8), 'd/mm/50');
+    equal(testCreateDate('08/10', 'en-AU'), new Date(thisYear, 9, 8), 'any English locale suffix should work and not use US format');
 
     // Dashes
-    dateEqual(testCreateDate('08-10-1978', 'en-GB'), new Date(1978, 9, 8), 'mm-dd-yyyy');
+    equal(testCreateDate('08-10-1978', 'en-GB'), new Date(1978, 9, 8), 'mm-dd-yyyy');
 
     // Dots
-    dateEqual(testCreateDate('08.10.1978', 'en-GB'), new Date(1978, 9, 8), 'dd.mm.yyyy');
-    dateEqual(testCreateDate('8.10.1978', 'en-GB'), new Date(1978, 9, 8), 'd.mm.yyyy');
-    dateEqual(testCreateDate('08-05-05', 'en-GB'), new Date(2005, 4, 8), 'dd-dd-dd is NOT an ISO8601 format');
-    dateEqual(testCreateDate('8/10/85'), new Date(1985, 7, 10), 'American format will now revert back');
+    equal(testCreateDate('08.10.1978', 'en-GB'), new Date(1978, 9, 8), 'dd.mm.yyyy');
+    equal(testCreateDate('8.10.1978', 'en-GB'), new Date(1978, 9, 8), 'd.mm.yyyy');
+    equal(testCreateDate('08-05-05', 'en-GB'), new Date(2005, 4, 8), 'dd-dd-dd is NOT an ISO8601 format');
+    equal(testCreateDate('8/10/85'), new Date(1985, 7, 10), 'American format will now revert back');
 
     testSetLocale('en-GB');
-    dateEqual(testCreateDate('8/10/85'), new Date(1985, 9, 8), 'after global set');
+    equal(testCreateDate('8/10/85'), new Date(1985, 9, 8), 'after global set');
     testSetLocale('en');
-    dateEqual(testCreateDate('8/10/85'), new Date(1985, 7, 10), 'before global reset');
+    equal(testCreateDate('8/10/85'), new Date(1985, 7, 10), 'before global reset');
   });
 
   group('Create | IETF', function() {
     // Stolen with love from XDate
-    dateEqual(testCreateDate('Mon Sep 05 2011 12:30:00 GMT-0700 (PDT)'), getUTCDate(2011,9,5,19,30));
+    equal(testCreateDate('Mon Sep 05 2011 12:30:00 GMT-0700 (PDT)'), getUTCDate(2011,9,5,19,30));
   });
 
   group('Create | Reverse Full Slashes', function() {
 
     // Slashes
-    dateEqual(testCreateDate('1978/08/25'), new Date(1978, 7, 25), 'yyyy/mm/dd');
-    dateEqual(testCreateDate('1978/8/25'), new Date(1978, 7, 25), 'yyyy/m/dd');
-    dateEqual(testCreateDate('1978/08'), new Date(1978, 7), 'yyyy/mm');
-    dateEqual(testCreateDate('1978/8'), new Date(1978, 7), 'yyyy/m');
+    equal(testCreateDate('1978/08/25'), new Date(1978, 7, 25), 'yyyy/mm/dd');
+    equal(testCreateDate('1978/8/25'), new Date(1978, 7, 25), 'yyyy/m/dd');
+    equal(testCreateDate('1978/08'), new Date(1978, 7), 'yyyy/mm');
+    equal(testCreateDate('1978/8'), new Date(1978, 7), 'yyyy/m');
 
     // Dashes
-    dateEqual(testCreateDate('1978-08-25'), new Date(1978, 7, 25), 'yyyy-mm-dd');
-    dateEqual(testCreateDate('1978-08'), new Date(1978, 7), 'yyyy-mm');
-    dateEqual(testCreateDate('1978-8'), new Date(1978, 7), 'yyyy-m');
+    equal(testCreateDate('1978-08-25'), new Date(1978, 7, 25), 'yyyy-mm-dd');
+    equal(testCreateDate('1978-08'), new Date(1978, 7), 'yyyy-mm');
+    equal(testCreateDate('1978-8'), new Date(1978, 7), 'yyyy-m');
 
     // Dots
-    dateEqual(testCreateDate('1978.08.25'), new Date(1978, 7, 25), 'yyyy.mm.dd');
-    dateEqual(testCreateDate('1978.08'), new Date(1978, 7), 'yyyy.mm');
-    dateEqual(testCreateDate('1978.8'), new Date(1978, 7), 'yyyy.m');
-    dateEqual(testCreateDate('01-02-03', 'en-GB'), new Date(2003, 1, 1), 'Ambiguous 2 digit variant yy-mm-dd is NOT ISO 8601');
-    dateEqual(testCreateDate('01/02/03', 'en-GB'), new Date(2003, 1, 1), 'Ambiguous 2 digit European variant dd/mm/yy');
+    equal(testCreateDate('1978.08.25'), new Date(1978, 7, 25), 'yyyy.mm.dd');
+    equal(testCreateDate('1978.08'), new Date(1978, 7), 'yyyy.mm');
+    equal(testCreateDate('1978.8'), new Date(1978, 7), 'yyyy.m');
+    equal(testCreateDate('01-02-03', 'en-GB'), new Date(2003, 1, 1), 'Ambiguous 2 digit variant yy-mm-dd is NOT ISO 8601');
+    equal(testCreateDate('01/02/03', 'en-GB'), new Date(2003, 1, 1), 'Ambiguous 2 digit European variant dd/mm/yy');
 
   });
 
   group('Create | Text Month', function() {
-    dateEqual(testCreateDate('June 2008'), new Date(2008, 5), 'Month yyyy');
-    dateEqual(testCreateDate('June-2008'), new Date(2008, 5), 'Month-yyyy');
-    dateEqual(testCreateDate('June.2008'), new Date(2008, 5), 'Month.yyyy');
-    dateEqual(testCreateDate('June 1st, 2008'), new Date(2008, 5, 1), 'Month 1st, yyyy');
-    dateEqual(testCreateDate('June 2nd, 2008'), new Date(2008, 5, 2), 'Month 2nd, yyyy');
-    dateEqual(testCreateDate('June 3rd, 2008'), new Date(2008, 5, 3), 'Month 3rd, yyyy');
-    dateEqual(testCreateDate('June 4th, 2008'), new Date(2008, 5, 4), 'Month 4th, yyyy');
-    dateEqual(testCreateDate('June 15th, 2008'), new Date(2008, 5, 15), 'Month 15th, yyyy');
-    dateEqual(testCreateDate('June 1st 2008'), new Date(2008, 5, 1), 'Month 1st yyyy');
-    dateEqual(testCreateDate('June 2nd 2008'), new Date(2008, 5, 2), 'Month 2nd yyyy');
-    dateEqual(testCreateDate('June 3rd 2008'), new Date(2008, 5, 3), 'Month 3rd yyyy');
-    dateEqual(testCreateDate('June 4th 2008'), new Date(2008, 5, 4), 'Month 4th yyyy');
-    dateEqual(testCreateDate('June 15, 2008'), new Date(2008, 5, 15), 'Month dd, yyyy');
-    dateEqual(testCreateDate('June 15 2008'), new Date(2008, 5, 15), 'Month dd yyyy');
-    dateEqual(testCreateDate('15 July, 2008'), new Date(2008, 6, 15), 'dd Month, yyyy');
-    dateEqual(testCreateDate('15 July 2008'), new Date(2008, 6, 15), 'dd Month yyyy');
-    dateEqual(testCreateDate('juNe 1St 2008'), new Date(2008, 5, 1), 'Month 1st yyyy case insensitive');
+    equal(testCreateDate('June 2008'), new Date(2008, 5), 'Month yyyy');
+    equal(testCreateDate('June-2008'), new Date(2008, 5), 'Month-yyyy');
+    equal(testCreateDate('June.2008'), new Date(2008, 5), 'Month.yyyy');
+    equal(testCreateDate('June 1st, 2008'), new Date(2008, 5, 1), 'Month 1st, yyyy');
+    equal(testCreateDate('June 2nd, 2008'), new Date(2008, 5, 2), 'Month 2nd, yyyy');
+    equal(testCreateDate('June 3rd, 2008'), new Date(2008, 5, 3), 'Month 3rd, yyyy');
+    equal(testCreateDate('June 4th, 2008'), new Date(2008, 5, 4), 'Month 4th, yyyy');
+    equal(testCreateDate('June 15th, 2008'), new Date(2008, 5, 15), 'Month 15th, yyyy');
+    equal(testCreateDate('June 1st 2008'), new Date(2008, 5, 1), 'Month 1st yyyy');
+    equal(testCreateDate('June 2nd 2008'), new Date(2008, 5, 2), 'Month 2nd yyyy');
+    equal(testCreateDate('June 3rd 2008'), new Date(2008, 5, 3), 'Month 3rd yyyy');
+    equal(testCreateDate('June 4th 2008'), new Date(2008, 5, 4), 'Month 4th yyyy');
+    equal(testCreateDate('June 15, 2008'), new Date(2008, 5, 15), 'Month dd, yyyy');
+    equal(testCreateDate('June 15 2008'), new Date(2008, 5, 15), 'Month dd yyyy');
+    equal(testCreateDate('15 July, 2008'), new Date(2008, 6, 15), 'dd Month, yyyy');
+    equal(testCreateDate('15 July 2008'), new Date(2008, 6, 15), 'dd Month yyyy');
+    equal(testCreateDate('juNe 1St 2008'), new Date(2008, 5, 1), 'Month 1st yyyy case insensitive');
 
     // Issue #507 "sept"
-    dateEqual(testCreateDate('Sept 2015'), new Date(2015, 8, 1), 'Sept is handled');
+    equal(testCreateDate('Sept 2015'), new Date(2015, 8, 1), 'Sept is handled');
   });
 
   group('Create | Special Cases', function() {
-    dateEqual(testCreateDate(' July 4th, 1987 '), new Date(1987, 6, 4), 'Untrimmed full text');
-    dateEqual(testCreateDate('  7/4/1987 '), new Date(1987, 6, 4), 'Untrimmed American');
-    dateEqual(testCreateDate('   1987-07-04    '), new Date(1987, 6, 4), 'Untrimmed ISO8601');
+    equal(testCreateDate(' July 4th, 1987 '), new Date(1987, 6, 4), 'Untrimmed full text');
+    equal(testCreateDate('  7/4/1987 '), new Date(1987, 6, 4), 'Untrimmed American');
+    equal(testCreateDate('   1987-07-04    '), new Date(1987, 6, 4), 'Untrimmed ISO8601');
   });
 
   group('Create | Abbreviated Formats', function() {
-    dateEqual(testCreateDate('Dec 1st, 2008'), new Date(2008, 11, 1), 'without dot');
-    dateEqual(testCreateDate('Dec. 1st, 2008'), new Date(2008, 11, 1), 'with dot');
-    dateEqual(testCreateDate('1 Dec. 2008'), new Date(2008, 11, 1), 'reversed with dot');
-    dateEqual(testCreateDate('1 Dec., 2008'), new Date(2008, 11, 1), 'reversed with dot and comma');
-    dateEqual(testCreateDate('1 Dec, 2008'), new Date(2008, 11, 1), 'reversed with comma and no dot');
+    equal(testCreateDate('Dec 1st, 2008'), new Date(2008, 11, 1), 'without dot');
+    equal(testCreateDate('Dec. 1st, 2008'), new Date(2008, 11, 1), 'with dot');
+    equal(testCreateDate('1 Dec. 2008'), new Date(2008, 11, 1), 'reversed with dot');
+    equal(testCreateDate('1 Dec., 2008'), new Date(2008, 11, 1), 'reversed with dot and comma');
+    equal(testCreateDate('1 Dec, 2008'), new Date(2008, 11, 1), 'reversed with comma and no dot');
   });
 
   group('Create | Abbreviated with Text Month', function() {
-    dateEqual(testCreateDate('09-May-78'), new Date(1978, 4, 9), 'Little Endian | yy');
-    dateEqual(testCreateDate('09-May-1978'), new Date(1978, 4, 9), 'Little Endian | yyyy');
-    dateEqual(testCreateDate('1978-May-09'), new Date(1978, 4, 9), '');
-    dateEqual(testCreateDate('Wednesday July 3rd, 2008'), new Date(2008, 6, 3), 'With day of week');
-    dateEqual(testCreateDate('Wed July 3rd, 2008'), new Date(2008, 6, 3), 'With day of week abbreviated');
-    dateEqual(testCreateDate('Wed. July 3rd, 2008'), new Date(2008, 6, 3), 'With day of week abbreviated plus dot');
-    dateEqual(testCreateDate('Wed, 03 Jul 2008 08:00:00 EST'), new Date(Date.UTC(2008, 6, 3, 13)), 'RFC822');
+    equal(testCreateDate('09-May-78'), new Date(1978, 4, 9), 'Little Endian | yy');
+    equal(testCreateDate('09-May-1978'), new Date(1978, 4, 9), 'Little Endian | yyyy');
+    equal(testCreateDate('1978-May-09'), new Date(1978, 4, 9), '');
+    equal(testCreateDate('Wednesday July 3rd, 2008'), new Date(2008, 6, 3), 'With day of week');
+    equal(testCreateDate('Wed July 3rd, 2008'), new Date(2008, 6, 3), 'With day of week abbreviated');
+    equal(testCreateDate('Wed. July 3rd, 2008'), new Date(2008, 6, 3), 'With day of week abbreviated plus dot');
+    equal(testCreateDate('Wed, 03 Jul 2008 08:00:00 EST'), new Date(Date.UTC(2008, 6, 3, 13)), 'RFC822');
   });
 
   group('Create | ISO8601', function() {
-    dateEqual(testCreateDate('2001-1-1'), new Date(2001, 0, 1), 'not padded');
-    dateEqual(testCreateDate('2001-01-1'), new Date(2001, 0, 1), 'month padded');
-    dateEqual(testCreateDate('2001-01-01'), new Date(2001, 0, 1), 'month and day padded');
-    dateEqual(testCreateDate('2010-11-22'), new Date(2010, 10, 22), 'month and day padded 2010');
-    dateEqual(testCreateDate('20101122'), new Date(2010, 10, 22), 'digits strung together');
-    dateEqual(testCreateDate('17760523T024508+0830'), getUTCDate(1776,5,22,18,15,8), 'full datetime strung together');
-    dateEqual(testCreateDate('-0002-07-26'), new Date(-2, 6, 26), 'minus sign (bc)'); // BC
-    dateEqual(testCreateDate('+1978-04-17'), new Date(1978, 3, 17), 'plus sign (ad)'); // AD
+    equal(testCreateDate('2001-1-1'), new Date(2001, 0, 1), 'not padded');
+    equal(testCreateDate('2001-01-1'), new Date(2001, 0, 1), 'month padded');
+    equal(testCreateDate('2001-01-01'), new Date(2001, 0, 1), 'month and day padded');
+    equal(testCreateDate('2010-11-22'), new Date(2010, 10, 22), 'month and day padded 2010');
+    equal(testCreateDate('20101122'), new Date(2010, 10, 22), 'digits strung together');
+    equal(testCreateDate('17760523T024508+0830'), getUTCDate(1776,5,22,18,15,8), 'full datetime strung together');
+    equal(testCreateDate('-0002-07-26'), new Date(-2, 6, 26), 'minus sign (bc)'); // BC
+    equal(testCreateDate('+1978-04-17'), new Date(1978, 3, 17), 'plus sign (ad)'); // AD
   });
 
   group('Create | Date and Time', function() {
-    dateEqual(testCreateDate('08/25/1978 12:04'), new Date(1978, 7, 25, 12, 4), 'Slash format');
-    dateEqual(testCreateDate('08-25-1978 12:04'), new Date(1978, 7, 25, 12, 4), 'Dash format');
-    dateEqual(testCreateDate('1978/08/25 12:04'), new Date(1978, 7, 25, 12, 4), 'Reverse slash format');
-    dateEqual(testCreateDate('June 1st, 2008 12:04'), new Date(2008, 5, 1, 12, 4), 'Full text format');
+    equal(testCreateDate('08/25/1978 12:04'), new Date(1978, 7, 25, 12, 4), 'Slash format');
+    equal(testCreateDate('08-25-1978 12:04'), new Date(1978, 7, 25, 12, 4), 'Dash format');
+    equal(testCreateDate('1978/08/25 12:04'), new Date(1978, 7, 25, 12, 4), 'Reverse slash format');
+    equal(testCreateDate('June 1st, 2008 12:04'), new Date(2008, 5, 1, 12, 4), 'Full text format');
 
-    dateEqual(testCreateDate('08-25-1978 12:04:57'), new Date(1978, 7, 25, 12, 4, 57), 'with seconds');
-    dateEqual(testCreateDate('08-25-1978 12:04:57.322'), new Date(1978, 7, 25, 12, 4, 57, 322), 'with milliseconds');
+    equal(testCreateDate('08-25-1978 12:04:57'), new Date(1978, 7, 25, 12, 4, 57), 'with seconds');
+    equal(testCreateDate('08-25-1978 12:04:57.322'), new Date(1978, 7, 25, 12, 4, 57, 322), 'with milliseconds');
 
-    dateEqual(testCreateDate('08-25-1978 12pm'), new Date(1978, 7, 25, 12), 'with am/pm');
-    dateEqual(testCreateDate('08-25-1978 12:42pm'), new Date(1978, 7, 25, 12, 42), 'with minutes and am/pm');
-    dateEqual(testCreateDate('08-25-1978 12:42:32pm'), new Date(1978, 7, 25, 12, 42, 32), 'with seconds and am/pm');
-    dateEqual(testCreateDate('08-25-1978 12:42:32.488pm'), new Date(1978, 7, 25, 12, 42, 32, 488), 'with seconds and am/pm');
+    equal(testCreateDate('08-25-1978 12pm'), new Date(1978, 7, 25, 12), 'with am/pm');
+    equal(testCreateDate('08-25-1978 12:42pm'), new Date(1978, 7, 25, 12, 42), 'with minutes and am/pm');
+    equal(testCreateDate('08-25-1978 12:42:32pm'), new Date(1978, 7, 25, 12, 42, 32), 'with seconds and am/pm');
+    equal(testCreateDate('08-25-1978 12:42:32.488pm'), new Date(1978, 7, 25, 12, 42, 32, 488), 'with seconds and am/pm');
 
-    dateEqual(testCreateDate('08-25-1978 00:00am'), new Date(1978, 7, 25, 0, 0, 0, 0), 'with zero am');
-    dateEqual(testCreateDate('08-25-1978 00:00:00am'), new Date(1978, 7, 25, 0, 0, 0, 0), 'with seconds and zero am');
-    dateEqual(testCreateDate('08-25-1978 00:00:00.000am'), new Date(1978, 7, 25, 0, 0, 0, 0), 'with milliseconds and zero am');
+    equal(testCreateDate('08-25-1978 00:00am'), new Date(1978, 7, 25, 0, 0, 0, 0), 'with zero am');
+    equal(testCreateDate('08-25-1978 00:00:00am'), new Date(1978, 7, 25, 0, 0, 0, 0), 'with seconds and zero am');
+    equal(testCreateDate('08-25-1978 00:00:00.000am'), new Date(1978, 7, 25, 0, 0, 0, 0), 'with milliseconds and zero am');
 
-    dateEqual(testCreateDate('08-25-1978 1pm'), new Date(1978, 7, 25, 13), '1pm am/pm');
-    dateEqual(testCreateDate('08-25-1978 1:42pm'), new Date(1978, 7, 25, 13, 42), '1pm minutes and am/pm');
-    dateEqual(testCreateDate('08-25-1978 1:42:32pm'), new Date(1978, 7, 25, 13, 42, 32), '1pm seconds and am/pm');
-    dateEqual(testCreateDate('08-25-1978 1:42:32.488pm'), new Date(1978, 7, 25, 13, 42, 32, 488), '1pm seconds and am/pm');
+    equal(testCreateDate('08-25-1978 1pm'), new Date(1978, 7, 25, 13), '1pm am/pm');
+    equal(testCreateDate('08-25-1978 1:42pm'), new Date(1978, 7, 25, 13, 42), '1pm minutes and am/pm');
+    equal(testCreateDate('08-25-1978 1:42:32pm'), new Date(1978, 7, 25, 13, 42, 32), '1pm seconds and am/pm');
+    equal(testCreateDate('08-25-1978 1:42:32.488pm'), new Date(1978, 7, 25, 13, 42, 32, 488), '1pm seconds and am/pm');
 
-    dateEqual(testCreateDate('08-25-1978 1am'), new Date(1978, 7, 25, 1), '1am am/pm');
-    dateEqual(testCreateDate('08-25-1978 1:42am'), new Date(1978, 7, 25, 1, 42), '1am minutes and am/pm');
-    dateEqual(testCreateDate('08-25-1978 1:42:32am'), new Date(1978, 7, 25, 1, 42, 32), '1am seconds and am/pm');
-    dateEqual(testCreateDate('08-25-1978 1:42:32.488am'), new Date(1978, 7, 25, 1, 42, 32, 488), '1am seconds and am/pm');
+    equal(testCreateDate('08-25-1978 1am'), new Date(1978, 7, 25, 1), '1am am/pm');
+    equal(testCreateDate('08-25-1978 1:42am'), new Date(1978, 7, 25, 1, 42), '1am minutes and am/pm');
+    equal(testCreateDate('08-25-1978 1:42:32am'), new Date(1978, 7, 25, 1, 42, 32), '1am seconds and am/pm');
+    equal(testCreateDate('08-25-1978 1:42:32.488am'), new Date(1978, 7, 25, 1, 42, 32, 488), '1am seconds and am/pm');
 
-    dateEqual(testCreateDate('08-25-1978 11pm'), new Date(1978, 7, 25, 23), '11pm am/pm');
-    dateEqual(testCreateDate('08-25-1978 11:42pm'), new Date(1978, 7, 25, 23, 42), '11pm minutes and am/pm');
-    dateEqual(testCreateDate('08-25-1978 11:42:32pm'), new Date(1978, 7, 25, 23, 42, 32), '11pm seconds and am/pm');
-    dateEqual(testCreateDate('08-25-1978 11:42:32.488pm'), new Date(1978, 7, 25, 23, 42, 32, 488), '11pm seconds and am/pm');
+    equal(testCreateDate('08-25-1978 11pm'), new Date(1978, 7, 25, 23), '11pm am/pm');
+    equal(testCreateDate('08-25-1978 11:42pm'), new Date(1978, 7, 25, 23, 42), '11pm minutes and am/pm');
+    equal(testCreateDate('08-25-1978 11:42:32pm'), new Date(1978, 7, 25, 23, 42, 32), '11pm seconds and am/pm');
+    equal(testCreateDate('08-25-1978 11:42:32.488pm'), new Date(1978, 7, 25, 23, 42, 32, 488), '11pm seconds and am/pm');
 
-    dateEqual(testCreateDate('08-25-1978 11am'), new Date(1978, 7, 25, 11), '11am am/pm');
-    dateEqual(testCreateDate('08-25-1978 11:42am'), new Date(1978, 7, 25, 11, 42), '11am minutes and am/pm');
-    dateEqual(testCreateDate('08-25-1978 11:42:32am'), new Date(1978, 7, 25, 11, 42, 32), '11am seconds and am/pm');
-    dateEqual(testCreateDate('08-25-1978 11:42:32.488am'), new Date(1978, 7, 25, 11, 42, 32, 488), '11am seconds and am/pm');
+    equal(testCreateDate('08-25-1978 11am'), new Date(1978, 7, 25, 11), '11am am/pm');
+    equal(testCreateDate('08-25-1978 11:42am'), new Date(1978, 7, 25, 11, 42), '11am minutes and am/pm');
+    equal(testCreateDate('08-25-1978 11:42:32am'), new Date(1978, 7, 25, 11, 42, 32), '11am seconds and am/pm');
+    equal(testCreateDate('08-25-1978 11:42:32.488am'), new Date(1978, 7, 25, 11, 42, 32, 488), '11am seconds and am/pm');
   });
 
   group('Create | ISO8601', function() {
-    dateEqual(testCreateDate('2010-11-22T22:59Z'), getUTCDate(2010,11,22,22,59), 'full with UTC timezone');
-    dateEqual(testCreateDate('1997-07-16T19:20+00:00'), getUTCDate(1997, 7, 16, 19, 20), 'zero minutes with timezone');
-    dateEqual(testCreateDate('1997-07-16T19:20+01:00'), getUTCDate(1997, 7, 16, 18, 20), 'minutes with timezone');
-    dateEqual(testCreateDate('1997-07-16T19:20:30+01:00'), getUTCDate(1997, 7, 16, 18, 20, 30), 'seconds with timezone');
-    dateEqual(testCreateDate('1997-07-16T19:20:30.45+01:00'), getUTCDate(1997, 7, 16, 18, 20, 30, 450), 'milliseconds with timezone');
-    dateEqual(testCreateDate('1994-11-05T08:15:30-05:00'), getUTCDate(1994, 11, 5, 13, 15, 30), 'Full example 1');
-    dateEqual(testCreateDate('1994-11-05T13:15:30Z'), getUTCDate(1994, 11, 5, 13, 15, 30), 'Full example 1');
+    equal(testCreateDate('2010-11-22T22:59Z'), getUTCDate(2010,11,22,22,59), 'full with UTC timezone');
+    equal(testCreateDate('1997-07-16T19:20+00:00'), getUTCDate(1997, 7, 16, 19, 20), 'zero minutes with timezone');
+    equal(testCreateDate('1997-07-16T19:20+01:00'), getUTCDate(1997, 7, 16, 18, 20), 'minutes with timezone');
+    equal(testCreateDate('1997-07-16T19:20:30+01:00'), getUTCDate(1997, 7, 16, 18, 20, 30), 'seconds with timezone');
+    equal(testCreateDate('1997-07-16T19:20:30.45+01:00'), getUTCDate(1997, 7, 16, 18, 20, 30, 450), 'milliseconds with timezone');
+    equal(testCreateDate('1994-11-05T08:15:30-05:00'), getUTCDate(1994, 11, 5, 13, 15, 30), 'Full example 1');
+    equal(testCreateDate('1994-11-05T13:15:30Z'), getUTCDate(1994, 11, 5, 13, 15, 30), 'Full example 1');
 
     equal(testIsUTC(testCreateDate('1994-11-05T13:15:30Z')), false, 'does not forcefully set UTC flag');
 
-    dateEqual(testCreateDate('1776-05-23T02:45:08-08:30'), getUTCDate(1776, 5, 23, 11, 15, 8), 'Full example 3');
-    dateEqual(testCreateDate('1776-05-23T02:45:08+08:30'), getUTCDate(1776, 5, 22, 18, 15, 8), 'Full example 4');
-    dateEqual(testCreateDate('1776-05-23T02:45:08-0830'), getUTCDate(1776, 5, 23, 11, 15, 8), 'Full example 5');
-    dateEqual(testCreateDate('1776-05-23T02:45:08+0830'), getUTCDate(1776, 5, 22, 18, 15, 8), 'Full example 6');
+    equal(testCreateDate('1776-05-23T02:45:08-08:30'), getUTCDate(1776, 5, 23, 11, 15, 8), 'Full example 3');
+    equal(testCreateDate('1776-05-23T02:45:08+08:30'), getUTCDate(1776, 5, 22, 18, 15, 8), 'Full example 4');
+    equal(testCreateDate('1776-05-23T02:45:08-0830'), getUTCDate(1776, 5, 23, 11, 15, 8), 'Full example 5');
+    equal(testCreateDate('1776-05-23T02:45:08+0830'), getUTCDate(1776, 5, 22, 18, 15, 8), 'Full example 6');
 
     // No limit on the number of millisecond decimals, so....
-    dateEqual(testCreateDate('1997-07-16T19:20:30.4+01:00'), getUTCDate(1997, 7, 16, 18, 20, 30, 400), 'milliseconds have no limit 1');
-    dateEqual(testCreateDate('1997-07-16T19:20:30.46+01:00'), getUTCDate(1997, 7, 16, 18, 20, 30, 460), 'milliseconds have no limit 2');
-    dateEqual(testCreateDate('1997-07-16T19:20:30.462+01:00'), getUTCDate(1997, 7, 16, 18, 20, 30, 462), 'milliseconds have no limit 3');
-    dateEqual(testCreateDate('1997-07-16T19:20:30.4628+01:00'), getUTCDate(1997, 7, 16, 18, 20, 30, 463), 'milliseconds have no limit 4');
-    dateEqual(testCreateDate('1997-07-16T19:20:30.46284+01:00'), getUTCDate(1997, 7, 16, 18, 20, 30, 463), 'milliseconds have no limit 5');
+    equal(testCreateDate('1997-07-16T19:20:30.4+01:00'), getUTCDate(1997, 7, 16, 18, 20, 30, 400), 'milliseconds have no limit 1');
+    equal(testCreateDate('1997-07-16T19:20:30.46+01:00'), getUTCDate(1997, 7, 16, 18, 20, 30, 460), 'milliseconds have no limit 2');
+    equal(testCreateDate('1997-07-16T19:20:30.462+01:00'), getUTCDate(1997, 7, 16, 18, 20, 30, 462), 'milliseconds have no limit 3');
+    equal(testCreateDate('1997-07-16T19:20:30.4628+01:00'), getUTCDate(1997, 7, 16, 18, 20, 30, 463), 'milliseconds have no limit 4');
+    equal(testCreateDate('1997-07-16T19:20:30.46284+01:00'), getUTCDate(1997, 7, 16, 18, 20, 30, 463), 'milliseconds have no limit 5');
 
     // .NET output
-    dateEqual(testCreateDate('2012-04-23T07:58:42.7940000z'), getUTCDate(2012, 4, 23, 7, 58, 42, 794), '.NET long format');
+    equal(testCreateDate('2012-04-23T07:58:42.7940000z'), getUTCDate(2012, 4, 23, 7, 58, 42, 794), '.NET long format');
 
     // decimals in ISO8601 dates
-    dateEqual(testCreateDate('1997-07-16T14:30:40.5'), new Date(1997, 6, 16, 14, 30, 40, 500), 'decimals in seconds');
-    dateEqual(testCreateDate('1997-07-16T14:30.5'), new Date(1997, 6, 16, 14, 30, 30), 'decimals in minutes');
+    equal(testCreateDate('1997-07-16T14:30:40.5'), new Date(1997, 6, 16, 14, 30, 40, 500), 'decimals in seconds');
+    equal(testCreateDate('1997-07-16T14:30.5'), new Date(1997, 6, 16, 14, 30, 30), 'decimals in minutes');
 
     // Comma based decimals in ISO8601 dates
-    dateEqual(testCreateDate('1997-07-16T14:30:40,5'), new Date(1997, 6, 16, 14, 30, 40, 500), 'decimals in seconds');
-    dateEqual(testCreateDate('1997-07-16T14:30,5'), new Date(1997, 6, 16, 14, 30, 30), 'decimals in minutes');
+    equal(testCreateDate('1997-07-16T14:30:40,5'), new Date(1997, 6, 16, 14, 30, 40, 500), 'decimals in seconds');
+    equal(testCreateDate('1997-07-16T14:30,5'), new Date(1997, 6, 16, 14, 30, 30), 'decimals in minutes');
 
     // decimal hours in ISO dates
-    dateEqual(testCreateDate('1997-07-16T14.5'), new Date(1997, 6, 16, 14, 30), 'decimals in hours');
-    dateEqual(testCreateDate('1997-07-16T14,5'), new Date(1997, 6, 16, 14, 30), 'decimals in hours');
+    equal(testCreateDate('1997-07-16T14.5'), new Date(1997, 6, 16, 14, 30), 'decimals in hours');
+    equal(testCreateDate('1997-07-16T14,5'), new Date(1997, 6, 16, 14, 30), 'decimals in hours');
 
     // These are all the same moment...
-    dateEqual(testCreateDate('2001-04-03T18:30Z'), getUTCDate(2001,4,3,18,30), 'Synonymous dates with timezone 1');
-    dateEqual(testCreateDate('2001-04-03T22:30+04'), getUTCDate(2001,4,3,18,30), 'Synonymous dates with timezone 2');
-    dateEqual(testCreateDate('2001-04-03T1130-0700'), getUTCDate(2001,4,3,18,30), 'Synonymous dates with timezone 3');
-    dateEqual(testCreateDate('2001-04-03T15:00-03:30'), getUTCDate(2001,4,3,18,30), 'Synonymous dates with timezone 4');
+    equal(testCreateDate('2001-04-03T18:30Z'), getUTCDate(2001,4,3,18,30), 'Synonymous dates with timezone 1');
+    equal(testCreateDate('2001-04-03T22:30+04'), getUTCDate(2001,4,3,18,30), 'Synonymous dates with timezone 2');
+    equal(testCreateDate('2001-04-03T1130-0700'), getUTCDate(2001,4,3,18,30), 'Synonymous dates with timezone 3');
+    equal(testCreateDate('2001-04-03T15:00-03:30'), getUTCDate(2001,4,3,18,30), 'Synonymous dates with timezone 4');
 
     // Time
-    dateEqual(testCreateDate('1pm'), new Date(now.getFullYear(), now.getMonth(), now.getDate(), 13), '1pm');
-    dateEqual(testCreateDate('1:30pm'), new Date(now.getFullYear(), now.getMonth(), now.getDate(), 13, 30), '1:30pm');
-    dateEqual(testCreateDate('1:30:22pm'), new Date(now.getFullYear(), now.getMonth(), now.getDate(), 13, 30, 22), '1:30:22pm');
-    dateEqual(testCreateDate('1:30:22.432pm'), new Date(now.getFullYear(), now.getMonth(), now.getDate(), 13, 30, 22, 432), '1:30:22.432pm');
-    dateEqual(testCreateDate('17:48:03.947'), new Date(now.getFullYear(), now.getMonth(), now.getDate(), 17, 48, 3, 947), '17:48:03.947');
+    equal(testCreateDate('1pm'), new Date(now.getFullYear(), now.getMonth(), now.getDate(), 13), '1pm');
+    equal(testCreateDate('1:30pm'), new Date(now.getFullYear(), now.getMonth(), now.getDate(), 13, 30), '1:30pm');
+    equal(testCreateDate('1:30:22pm'), new Date(now.getFullYear(), now.getMonth(), now.getDate(), 13, 30, 22), '1:30:22pm');
+    equal(testCreateDate('1:30:22.432pm'), new Date(now.getFullYear(), now.getMonth(), now.getDate(), 13, 30, 22, 432), '1:30:22.432pm');
+    equal(testCreateDate('17:48:03.947'), new Date(now.getFullYear(), now.getMonth(), now.getDate(), 17, 48, 3, 947), '17:48:03.947');
 
   });
 
   group('Create | .NET JSON', function() {
-    dateEqual(testCreateDate('\/Date(628318530718)\/'), new Date(628318530718), 'basic');
-    dateEqual(testCreateDate('\/Date(1318287600+0100)\/'), new Date(1318287600), '+ date format with timezone');
-    dateEqual(testCreateDate('\/Date(1318287600-0700)\/'), new Date(1318287600), '- date format with timezone');
+    equal(testCreateDate('\/Date(628318530718)\/'), new Date(628318530718), 'basic');
+    equal(testCreateDate('\/Date(1318287600+0100)\/'), new Date(1318287600), '+ date format with timezone');
+    equal(testCreateDate('\/Date(1318287600-0700)\/'), new Date(1318287600), '- date format with timezone');
   });
 
   group('Create | Fuzzy Dates', function() {
 
-    dateEqual(testCreateDate('now'), new Date(), 'now');
-    dateEqual(testCreateDate('Now'), new Date(), 'Now');
-    dateEqual(testCreateDate('Just now'), new Date(), 'Just Now');
-    dateEqual(testCreateDate('today'), new Date(now.getFullYear(), now.getMonth(), now.getDate()), 'today');
-    dateEqual(testCreateDate('Today'), new Date(now.getFullYear(), now.getMonth(), now.getDate()), 'Today');
-    dateEqual(testCreateDate('yesterday'), new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1), 'yesterday');
-    dateEqual(testCreateDate('Yesterday'), new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1), 'Yesterday');
-    dateEqual(testCreateDate('tomorrow'), new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1), 'tomorrow');
-    dateEqual(testCreateDate('Tomorrow'), new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1), 'Tomorrow');
-    dateEqual(testCreateDate('4pm'), new Date(now.getFullYear(), now.getMonth(), now.getDate(), 16), '4pm');
-    dateEqual(testCreateDate('today at 4pm'), new Date(now.getFullYear(), now.getMonth(), now.getDate(), 16), 'Today at 4pm');
-    dateEqual(testCreateDate('today at 4 pm'), new Date(now.getFullYear(), now.getMonth(), now.getDate(), 16), 'Today at 4 pm');
-    dateEqual(testCreateDate('4pm today'), new Date(now.getFullYear(), now.getMonth(), now.getDate(), 16), '4pm today');
+    equal(testCreateDate('now'), new Date(), 'now');
+    equal(testCreateDate('Now'), new Date(), 'Now');
+    equal(testCreateDate('Just now'), new Date(), 'Just Now');
+    equal(testCreateDate('today'), new Date(now.getFullYear(), now.getMonth(), now.getDate()), 'today');
+    equal(testCreateDate('Today'), new Date(now.getFullYear(), now.getMonth(), now.getDate()), 'Today');
+    equal(testCreateDate('yesterday'), new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1), 'yesterday');
+    equal(testCreateDate('Yesterday'), new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1), 'Yesterday');
+    equal(testCreateDate('tomorrow'), new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1), 'tomorrow');
+    equal(testCreateDate('Tomorrow'), new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1), 'Tomorrow');
+    equal(testCreateDate('4pm'), new Date(now.getFullYear(), now.getMonth(), now.getDate(), 16), '4pm');
+    equal(testCreateDate('today at 4pm'), new Date(now.getFullYear(), now.getMonth(), now.getDate(), 16), 'Today at 4pm');
+    equal(testCreateDate('today at 4 pm'), new Date(now.getFullYear(), now.getMonth(), now.getDate(), 16), 'Today at 4 pm');
+    equal(testCreateDate('4pm today'), new Date(now.getFullYear(), now.getMonth(), now.getDate(), 16), '4pm today');
 
-    dateEqual(testCreateDate('The day after tomorrow'), new Date(now.getFullYear(), now.getMonth(), now.getDate() + 2), 'The day after tomorrow');
-    dateEqual(testCreateDate('The day before yesterday'), new Date(now.getFullYear(), now.getMonth(), now.getDate() - 2), 'The day before yesterday');
-    dateEqual(testCreateDate('One day after tomorrow'), new Date(now.getFullYear(), now.getMonth(), now.getDate() + 2), 'One day after tomorrow');
-    dateEqual(testCreateDate('One day before yesterday'), new Date(now.getFullYear(), now.getMonth(), now.getDate() - 2), 'One day before yesterday');
-    dateEqual(testCreateDate('Two days after tomorrow'), new Date(now.getFullYear(), now.getMonth(), now.getDate() + 3), 'Two days after tomorrow');
-    dateEqual(testCreateDate('Two days before yesterday'), new Date(now.getFullYear(), now.getMonth(), now.getDate() - 3), 'Two days before yesterday');
-    dateEqual(testCreateDate('Two days after today'), new Date(now.getFullYear(), now.getMonth(), now.getDate() + 2), 'Two days after today');
-    dateEqual(testCreateDate('Two days before today'), new Date(now.getFullYear(), now.getMonth(), now.getDate() - 2), 'Two days before today');
-    dateEqual(testCreateDate('Two days from today'), new Date(now.getFullYear(), now.getMonth(), now.getDate() + 2), 'Two days from today');
+    equal(testCreateDate('The day after tomorrow'), new Date(now.getFullYear(), now.getMonth(), now.getDate() + 2), 'The day after tomorrow');
+    equal(testCreateDate('The day before yesterday'), new Date(now.getFullYear(), now.getMonth(), now.getDate() - 2), 'The day before yesterday');
+    equal(testCreateDate('One day after tomorrow'), new Date(now.getFullYear(), now.getMonth(), now.getDate() + 2), 'One day after tomorrow');
+    equal(testCreateDate('One day before yesterday'), new Date(now.getFullYear(), now.getMonth(), now.getDate() - 2), 'One day before yesterday');
+    equal(testCreateDate('Two days after tomorrow'), new Date(now.getFullYear(), now.getMonth(), now.getDate() + 3), 'Two days after tomorrow');
+    equal(testCreateDate('Two days before yesterday'), new Date(now.getFullYear(), now.getMonth(), now.getDate() - 3), 'Two days before yesterday');
+    equal(testCreateDate('Two days after today'), new Date(now.getFullYear(), now.getMonth(), now.getDate() + 2), 'Two days after today');
+    equal(testCreateDate('Two days before today'), new Date(now.getFullYear(), now.getMonth(), now.getDate() - 2), 'Two days before today');
+    equal(testCreateDate('Two days from today'), new Date(now.getFullYear(), now.getMonth(), now.getDate() + 2), 'Two days from today');
 
-    dateEqual(testCreateDate('tWo dAyS after toMoRRoW'), new Date(now.getFullYear(), now.getMonth(), now.getDate() + 3), 'tWo dAyS after toMoRRoW');
-    dateEqual(testCreateDate('2 days after tomorrow'), new Date(now.getFullYear(), now.getMonth(), now.getDate() + 3), '2 days after tomorrow');
-    dateEqual(testCreateDate('2 day after tomorrow'), new Date(now.getFullYear(), now.getMonth(), now.getDate() + 3), '2 day after tomorrow');
-    dateEqual(testCreateDate('18 days after tomorrow'), new Date(now.getFullYear(), now.getMonth(), now.getDate() + 19), '18 days after tomorrow');
-    dateEqual(testCreateDate('18 day after tomorrow'), new Date(now.getFullYear(), now.getMonth(), now.getDate() + 19), '18 day after tomorrow');
+    equal(testCreateDate('tWo dAyS after toMoRRoW'), new Date(now.getFullYear(), now.getMonth(), now.getDate() + 3), 'tWo dAyS after toMoRRoW');
+    equal(testCreateDate('2 days after tomorrow'), new Date(now.getFullYear(), now.getMonth(), now.getDate() + 3), '2 days after tomorrow');
+    equal(testCreateDate('2 day after tomorrow'), new Date(now.getFullYear(), now.getMonth(), now.getDate() + 3), '2 day after tomorrow');
+    equal(testCreateDate('18 days after tomorrow'), new Date(now.getFullYear(), now.getMonth(), now.getDate() + 19), '18 days after tomorrow');
+    equal(testCreateDate('18 day after tomorrow'), new Date(now.getFullYear(), now.getMonth(), now.getDate() + 19), '18 day after tomorrow');
 
-    dateEqual(testCreateDate('2 years ago'), getRelativeDate(-2), '2 years ago');
-    dateEqual(testCreateDate('2 months ago'), getRelativeDate(null, -2), '2 months ago');
-    dateEqual(testCreateDate('2 weeks ago'), getRelativeDate(null, null, -14), '2 weeks ago');
-    dateEqual(testCreateDate('2 days ago'), getRelativeDate(null, null, -2), '2 days ago');
-    dateEqual(testCreateDate('2 hours ago'), getRelativeDate(null, null, null, -2), '2 hours ago');
-    dateEqual(testCreateDate('2 minutes ago'), getRelativeDate(null, null, null, null, -2), '2 minutes ago');
-    dateEqual(testCreateDate('2 seconds ago'), getRelativeDate(null, null, null, null, null, -2), '2 seconds ago');
-    dateEqual(testCreateDate('2 milliseconds ago'), getRelativeDate(null, null, null, null, null, null, -2), '2 milliseconds ago');
-    dateEqual(testCreateDate('a second ago'), getRelativeDate(null, null, null, null, null, -1), 'a second ago');
+    equal(testCreateDate('2 years ago'), getRelativeDate(-2), '2 years ago');
+    equal(testCreateDate('2 months ago'), getRelativeDate(null, -2), '2 months ago');
+    equal(testCreateDate('2 weeks ago'), getRelativeDate(null, null, -14), '2 weeks ago');
+    equal(testCreateDate('2 days ago'), getRelativeDate(null, null, -2), '2 days ago');
+    equal(testCreateDate('2 hours ago'), getRelativeDate(null, null, null, -2), '2 hours ago');
+    equal(testCreateDate('2 minutes ago'), getRelativeDate(null, null, null, null, -2), '2 minutes ago');
+    equal(testCreateDate('2 seconds ago'), getRelativeDate(null, null, null, null, null, -2), '2 seconds ago');
+    equal(testCreateDate('2 milliseconds ago'), getRelativeDate(null, null, null, null, null, null, -2), '2 milliseconds ago');
+    equal(testCreateDate('a second ago'), getRelativeDate(null, null, null, null, null, -1), 'a second ago');
 
-    dateEqual(testCreateDate('2 years from now'), getRelativeDate(2), '2 years from now');
-    dateEqual(testCreateDate('2 months from now'), getRelativeDate(null, 2), '2 months from now');
-    dateEqual(testCreateDate('2 weeks from now'), getRelativeDate(null, null, 14), '2 weeks from now');
-    dateEqual(testCreateDate('2 days from now'), getRelativeDate(null, null, 2), '2 days from now');
-    dateEqual(testCreateDate('2 hours from now'), getRelativeDate(null, null, null, 2), '2 hours from now');
-    dateEqual(testCreateDate('2 minutes from now'), getRelativeDate(null, null, null, null, 2), '2 minutes from now');
-    dateEqual(testCreateDate('2 seconds from now'), getRelativeDate(null, null, null, null, null, 2), '2 seconds from now');
-    dateEqual(testCreateDate('2 milliseconds from now'), getRelativeDate(null, null, null, null, null, null, 2), '2 milliseconds from now');
+    equal(testCreateDate('2 years from now'), getRelativeDate(2), '2 years from now');
+    equal(testCreateDate('2 months from now'), getRelativeDate(null, 2), '2 months from now');
+    equal(testCreateDate('2 weeks from now'), getRelativeDate(null, null, 14), '2 weeks from now');
+    equal(testCreateDate('2 days from now'), getRelativeDate(null, null, 2), '2 days from now');
+    equal(testCreateDate('2 hours from now'), getRelativeDate(null, null, null, 2), '2 hours from now');
+    equal(testCreateDate('2 minutes from now'), getRelativeDate(null, null, null, null, 2), '2 minutes from now');
+    equal(testCreateDate('2 seconds from now'), getRelativeDate(null, null, null, null, null, 2), '2 seconds from now');
+    equal(testCreateDate('2 milliseconds from now'), getRelativeDate(null, null, null, null, null, null, 2), '2 milliseconds from now');
 
-    dateEqual(testCreateDate('2 years later'), getRelativeDate(2), '2 years later');
-    dateEqual(testCreateDate('2 months later'), getRelativeDate(null, 2), '2 months later');
-    dateEqual(testCreateDate('2 weeks later'), getRelativeDate(null, null, 14), '2 weeks later');
-    dateEqual(testCreateDate('2 days later'), getRelativeDate(null, null, 2), '2 days later');
-    dateEqual(testCreateDate('2 hours later'), getRelativeDate(null, null, null, 2), '2 hours later');
-    dateEqual(testCreateDate('2 minutes later'), getRelativeDate(null, null, null, null, 2), '2 minutes later');
-    dateEqual(testCreateDate('2 seconds later'), getRelativeDate(null, null, null, null, null, 2), '2 seconds later');
-    dateEqual(testCreateDate('2 milliseconds later'), getRelativeDate(null, null, null, null, null, null, 2), '2 milliseconds later');
+    equal(testCreateDate('2 years later'), getRelativeDate(2), '2 years later');
+    equal(testCreateDate('2 months later'), getRelativeDate(null, 2), '2 months later');
+    equal(testCreateDate('2 weeks later'), getRelativeDate(null, null, 14), '2 weeks later');
+    equal(testCreateDate('2 days later'), getRelativeDate(null, null, 2), '2 days later');
+    equal(testCreateDate('2 hours later'), getRelativeDate(null, null, null, 2), '2 hours later');
+    equal(testCreateDate('2 minutes later'), getRelativeDate(null, null, null, null, 2), '2 minutes later');
+    equal(testCreateDate('2 seconds later'), getRelativeDate(null, null, null, null, null, 2), '2 seconds later');
+    equal(testCreateDate('2 milliseconds later'), getRelativeDate(null, null, null, null, null, null, 2), '2 milliseconds later');
 
     // Article trouble
-    dateEqual(testCreateDate('an hour ago'), getRelativeDate(null, null, null, -1), 'an hours ago');
-    dateEqual(testCreateDate('an hour from now'), getRelativeDate(null, null, null, 1), 'an hour from now');
+    equal(testCreateDate('an hour ago'), getRelativeDate(null, null, null, -1), 'an hours ago');
+    equal(testCreateDate('an hour from now'), getRelativeDate(null, null, null, 1), 'an hour from now');
 
-    dateEqual(testCreateDate('Monday'), getDateWithWeekdayAndOffset(1), 'Monday');
-    dateEqual(testCreateDate('The day after Monday'), getDateWithWeekdayAndOffset(2), 'The day after Monday');
-    dateEqual(testCreateDate('The day before Monday'), getDateWithWeekdayAndOffset(0), 'The day before Monday');
-    dateEqual(testCreateDate('2 days after monday'), getDateWithWeekdayAndOffset(3), '2 days after monday');
-    dateEqual(testCreateDate('2 days before monday'), getDateWithWeekdayAndOffset(6, -7), '2 days before monday');
-    dateEqual(testCreateDate('2 weeks after monday'), getDateWithWeekdayAndOffset(1, 14), '2 weeks after monday');
+    equal(testCreateDate('Monday'), getDateWithWeekdayAndOffset(1), 'Monday');
+    equal(testCreateDate('The day after Monday'), getDateWithWeekdayAndOffset(2), 'The day after Monday');
+    equal(testCreateDate('The day before Monday'), getDateWithWeekdayAndOffset(0), 'The day before Monday');
+    equal(testCreateDate('2 days after monday'), getDateWithWeekdayAndOffset(3), '2 days after monday');
+    equal(testCreateDate('2 days before monday'), getDateWithWeekdayAndOffset(6, -7), '2 days before monday');
+    equal(testCreateDate('2 weeks after monday'), getDateWithWeekdayAndOffset(1, 14), '2 weeks after monday');
 
-    dateEqual(testCreateDate('Next Monday'), getDateWithWeekdayAndOffset(1, 7), 'Next Monday');
-    dateEqual(testCreateDate('next week monday'), getDateWithWeekdayAndOffset(1, 7), 'next week monday');
-    dateEqual(testCreateDate('Next friDay'), getDateWithWeekdayAndOffset(5, 7), 'Next friDay');
-    dateEqual(testCreateDate('next week thursday'), getDateWithWeekdayAndOffset(4, 7), 'next week thursday');
+    equal(testCreateDate('Next Monday'), getDateWithWeekdayAndOffset(1, 7), 'Next Monday');
+    equal(testCreateDate('next week monday'), getDateWithWeekdayAndOffset(1, 7), 'next week monday');
+    equal(testCreateDate('Next friDay'), getDateWithWeekdayAndOffset(5, 7), 'Next friDay');
+    equal(testCreateDate('next week thursday'), getDateWithWeekdayAndOffset(4, 7), 'next week thursday');
 
-    dateEqual(testCreateDate('last Monday'), getDateWithWeekdayAndOffset(1, -7), 'last Monday');
-    dateEqual(testCreateDate('last week monday'), getDateWithWeekdayAndOffset(1, -7), 'last week monday');
-    dateEqual(testCreateDate('last friDay'), getDateWithWeekdayAndOffset(5, -7), 'last friDay');
-    dateEqual(testCreateDate('last week thursday'), getDateWithWeekdayAndOffset(4, -7), 'last week thursday');
-    dateEqual(testCreateDate('last Monday at 4pm'), getDateWithWeekdayAndOffset(1, -7, 16), 'last Monday at 4pm');
+    equal(testCreateDate('last Monday'), getDateWithWeekdayAndOffset(1, -7), 'last Monday');
+    equal(testCreateDate('last week monday'), getDateWithWeekdayAndOffset(1, -7), 'last week monday');
+    equal(testCreateDate('last friDay'), getDateWithWeekdayAndOffset(5, -7), 'last friDay');
+    equal(testCreateDate('last week thursday'), getDateWithWeekdayAndOffset(4, -7), 'last week thursday');
+    equal(testCreateDate('last Monday at 4pm'), getDateWithWeekdayAndOffset(1, -7, 16), 'last Monday at 4pm');
 
-    dateEqual(testCreateDate('this Monday'), getDateWithWeekdayAndOffset(1, 0), 'this Monday');
-    dateEqual(testCreateDate('this week monday'), getDateWithWeekdayAndOffset(1, 0), 'this week monday');
-    dateEqual(testCreateDate('this friDay'), getDateWithWeekdayAndOffset(5, 0), 'this friDay');
-    dateEqual(testCreateDate('this week thursday'), getDateWithWeekdayAndOffset(4, 0), 'this week thursday');
+    equal(testCreateDate('this Monday'), getDateWithWeekdayAndOffset(1, 0), 'this Monday');
+    equal(testCreateDate('this week monday'), getDateWithWeekdayAndOffset(1, 0), 'this week monday');
+    equal(testCreateDate('this friDay'), getDateWithWeekdayAndOffset(5, 0), 'this friDay');
+    equal(testCreateDate('this week thursday'), getDateWithWeekdayAndOffset(4, 0), 'this week thursday');
 
-    dateEqual(testCreateDate('Monday of last week'), getDateWithWeekdayAndOffset(1, -7), 'Monday of last week');
-    dateEqual(testCreateDate('saturday of next week'), getDateWithWeekdayAndOffset(6, 7), 'saturday of next week');
-    dateEqual(testCreateDate('Monday last week'), getDateWithWeekdayAndOffset(1, -7), 'Monday last week');
-    dateEqual(testCreateDate('saturday next week'), getDateWithWeekdayAndOffset(6, 7), 'saturday next week');
+    equal(testCreateDate('Monday of last week'), getDateWithWeekdayAndOffset(1, -7), 'Monday of last week');
+    equal(testCreateDate('saturday of next week'), getDateWithWeekdayAndOffset(6, 7), 'saturday of next week');
+    equal(testCreateDate('Monday last week'), getDateWithWeekdayAndOffset(1, -7), 'Monday last week');
+    equal(testCreateDate('saturday next week'), getDateWithWeekdayAndOffset(6, 7), 'saturday next week');
 
-    dateEqual(testCreateDate('Monday of this week'), getDateWithWeekdayAndOffset(1, 0), 'Monday of this week');
-    dateEqual(testCreateDate('saturday of this week'), getDateWithWeekdayAndOffset(6, 0), 'saturday of this week');
-    dateEqual(testCreateDate('Monday this week'), getDateWithWeekdayAndOffset(1, 0), 'Monday this week');
-    dateEqual(testCreateDate('saturday this week'), getDateWithWeekdayAndOffset(6, 0), 'saturday this week');
+    equal(testCreateDate('Monday of this week'), getDateWithWeekdayAndOffset(1, 0), 'Monday of this week');
+    equal(testCreateDate('saturday of this week'), getDateWithWeekdayAndOffset(6, 0), 'saturday of this week');
+    equal(testCreateDate('Monday this week'), getDateWithWeekdayAndOffset(1, 0), 'Monday this week');
+    equal(testCreateDate('saturday this week'), getDateWithWeekdayAndOffset(6, 0), 'saturday this week');
 
-    dateEqual(testCreateDate('Tue of last week'), getDateWithWeekdayAndOffset(2, -7), 'Tue of last week');
-    dateEqual(testCreateDate('Tue. of last week'), getDateWithWeekdayAndOffset(2, -7), 'Tue. of last week');
+    equal(testCreateDate('Tue of last week'), getDateWithWeekdayAndOffset(2, -7), 'Tue of last week');
+    equal(testCreateDate('Tue. of last week'), getDateWithWeekdayAndOffset(2, -7), 'Tue. of last week');
 
-    dateEqual(testCreateDate('Next week'), getRelativeDate(null, null, 7), 'Next week');
-    dateEqual(testCreateDate('Last week'), getRelativeDate(null, null, -7), 'Last week');
-    dateEqual(testCreateDate('Next month'), getRelativeDate(null, 1), 'Next month');
-    dateEqual(testCreateDate('Next year'), getRelativeDate(1), 'Next year');
-    dateEqual(testCreateDate('this year'), getRelativeDate(0), 'this year');
+    equal(testCreateDate('Next week'), getRelativeDate(null, null, 7), 'Next week');
+    equal(testCreateDate('Last week'), getRelativeDate(null, null, -7), 'Last week');
+    equal(testCreateDate('Next month'), getRelativeDate(null, 1), 'Next month');
+    equal(testCreateDate('Next year'), getRelativeDate(1), 'Next year');
+    equal(testCreateDate('this year'), getRelativeDate(0), 'this year');
 
-    dateEqual(testCreateDate('beginning of the week'), getDateWithWeekdayAndOffset(0), 'beginning of the week');
-    dateEqual(testCreateDate('beginning of this week'), getDateWithWeekdayAndOffset(0), 'beginning of this week');
-    dateEqual(testCreateDate('end of this week'), getDateWithWeekdayAndOffset(6, 0, 23, 59, 59, 999), 'end of this week');
-    dateEqual(testCreateDate('beginning of next week'), getDateWithWeekdayAndOffset(0, 7), 'beginning of next week');
-    dateEqual(testCreateDate('the beginning of next week'), getDateWithWeekdayAndOffset(0, 7), 'the beginning of next week');
+    equal(testCreateDate('beginning of the week'), getDateWithWeekdayAndOffset(0), 'beginning of the week');
+    equal(testCreateDate('beginning of this week'), getDateWithWeekdayAndOffset(0), 'beginning of this week');
+    equal(testCreateDate('end of this week'), getDateWithWeekdayAndOffset(6, 0, 23, 59, 59, 999), 'end of this week');
+    equal(testCreateDate('beginning of next week'), getDateWithWeekdayAndOffset(0, 7), 'beginning of next week');
+    equal(testCreateDate('the beginning of next week'), getDateWithWeekdayAndOffset(0, 7), 'the beginning of next week');
 
-    dateEqual(testCreateDate('beginning of the week', { locale: 'en-GB'}), testGetBeginningOfWeek(1), 'beginning of the week | locale overrides');
-    dateEqual(testCreateDate('end of this week', { locale: 'en-GB'}), testGetEndOfWeek(0), 'end of this week | locale overrides');
+    equal(testCreateDate('beginning of the week', { locale: 'en-GB'}), testGetBeginningOfWeek(1), 'beginning of the week | locale overrides');
+    equal(testCreateDate('end of this week', { locale: 'en-GB'}), testGetEndOfWeek(0), 'end of this week | locale overrides');
 
-    dateEqual(testCreateDate('beginning of the month'), new Date(now.getFullYear(), now.getMonth()), 'beginning of the month');
-    dateEqual(testCreateDate('beginning of this month'), new Date(now.getFullYear(), now.getMonth()), 'beginning of this month');
-    dateEqual(testCreateDate('beginning of next month'), new Date(now.getFullYear(), now.getMonth() + 1), 'beginning of next month');
-    dateEqual(testCreateDate('the beginning of next month'), new Date(now.getFullYear(), now.getMonth() + 1), 'the beginning of next month');
-    dateEqual(testCreateDate('the end of next month'), new Date(now.getFullYear(), now.getMonth() + 1, testGetDaysInMonth(now.getFullYear(), now.getMonth() + 1), 23, 59, 59, 999), 'the end of next month');
-    dateEqual(testCreateDate('the end of the month'), new Date(now.getFullYear(), now.getMonth(), testGetDaysInMonth(now.getFullYear(), now.getMonth()), 23, 59, 59, 999), 'the end of the month');
+    equal(testCreateDate('beginning of the month'), new Date(now.getFullYear(), now.getMonth()), 'beginning of the month');
+    equal(testCreateDate('beginning of this month'), new Date(now.getFullYear(), now.getMonth()), 'beginning of this month');
+    equal(testCreateDate('beginning of next month'), new Date(now.getFullYear(), now.getMonth() + 1), 'beginning of next month');
+    equal(testCreateDate('the beginning of next month'), new Date(now.getFullYear(), now.getMonth() + 1), 'the beginning of next month');
+    equal(testCreateDate('the end of next month'), new Date(now.getFullYear(), now.getMonth() + 1, testGetDaysInMonth(now.getFullYear(), now.getMonth() + 1), 23, 59, 59, 999), 'the end of next month');
+    equal(testCreateDate('the end of the month'), new Date(now.getFullYear(), now.getMonth(), testGetDaysInMonth(now.getFullYear(), now.getMonth()), 23, 59, 59, 999), 'the end of the month');
 
-    dateEqual(testCreateDate('the beginning of the year'), new Date(now.getFullYear(), 0), 'the beginning of the year');
-    dateEqual(testCreateDate('the beginning of this year'), new Date(now.getFullYear(), 0), 'the beginning of this year');
-    dateEqual(testCreateDate('the beginning of next year'), new Date(now.getFullYear() + 1, 0), 'the beginning of next year');
-    dateEqual(testCreateDate('the beginning of last year'), new Date(now.getFullYear() - 1, 0), 'the beginning of last year');
-    dateEqual(testCreateDate('the end of next year'), new Date(now.getFullYear() + 1, 11, 31, 23, 59, 59, 999), 'the end of next year');
-    dateEqual(testCreateDate('the end of last year'), new Date(now.getFullYear() - 1, 11, 31, 23, 59, 59, 999), 'the end of last year');
+    equal(testCreateDate('the beginning of the year'), new Date(now.getFullYear(), 0), 'the beginning of the year');
+    equal(testCreateDate('the beginning of this year'), new Date(now.getFullYear(), 0), 'the beginning of this year');
+    equal(testCreateDate('the beginning of next year'), new Date(now.getFullYear() + 1, 0), 'the beginning of next year');
+    equal(testCreateDate('the beginning of last year'), new Date(now.getFullYear() - 1, 0), 'the beginning of last year');
+    equal(testCreateDate('the end of next year'), new Date(now.getFullYear() + 1, 11, 31, 23, 59, 59, 999), 'the end of next year');
+    equal(testCreateDate('the end of last year'), new Date(now.getFullYear() - 1, 11, 31, 23, 59, 59, 999), 'the end of last year');
 
-    dateEqual(testCreateDate('the beginning of the day'), new Date(now.getFullYear(), now.getMonth(), now.getDate()), 'the beginning of the day');
+    equal(testCreateDate('the beginning of the day'), new Date(now.getFullYear(), now.getMonth(), now.getDate()), 'the beginning of the day');
 
-    dateEqual(testCreateDate('beginning of March'), new Date(now.getFullYear(), 2), 'beginning of March');
-    dateEqual(testCreateDate('end of March'), new Date(now.getFullYear(), 2, 31, 23, 59, 59, 999), 'end of March');
-    dateEqual(testCreateDate('the first day of March'), new Date(now.getFullYear(), 2), 'the first day of March');
-    dateEqual(testCreateDate('the last day of March'), new Date(now.getFullYear(), 2, 31), 'the last day of March');
-    dateEqual(testCreateDate('the last day of March 2010'), new Date(2010, 2, 31), 'the last day of March 2010');
-    dateEqual(testCreateDate('the last day of March, 2012'), new Date(2012, 2, 31), 'the last day of March, 2012');
+    equal(testCreateDate('beginning of March'), new Date(now.getFullYear(), 2), 'beginning of March');
+    equal(testCreateDate('end of March'), new Date(now.getFullYear(), 2, 31, 23, 59, 59, 999), 'end of March');
+    equal(testCreateDate('the first day of March'), new Date(now.getFullYear(), 2), 'the first day of March');
+    equal(testCreateDate('the last day of March'), new Date(now.getFullYear(), 2, 31), 'the last day of March');
+    equal(testCreateDate('the last day of March 2010'), new Date(2010, 2, 31), 'the last day of March 2010');
+    equal(testCreateDate('the last day of March, 2012'), new Date(2012, 2, 31), 'the last day of March, 2012');
 
-    dateEqual(testCreateDate('beginning of 1998'), new Date(1998, 0), 'beginning of 1998');
-    dateEqual(testCreateDate('end of 1998'), new Date(1998, 11, 31, 23, 59, 59, 999), 'end of 1998');
-    dateEqual(testCreateDate('the first day of 1998'), new Date(1998, 0), 'the first day of 1998');
-    dateEqual(testCreateDate('the last day of 1998'), new Date(1998, 11, 31), 'the last day of 1998');
+    equal(testCreateDate('beginning of 1998'), new Date(1998, 0), 'beginning of 1998');
+    equal(testCreateDate('end of 1998'), new Date(1998, 11, 31, 23, 59, 59, 999), 'end of 1998');
+    equal(testCreateDate('the first day of 1998'), new Date(1998, 0), 'the first day of 1998');
+    equal(testCreateDate('the last day of 1998'), new Date(1998, 11, 31), 'the last day of 1998');
 
-    dateEqual(testCreateDate('The 15th of last month.'), new Date(now.getFullYear(), now.getMonth() - 1, 15), 'The 15th of last month');
-    dateEqual(testCreateDate('January 30th of last year.'), new Date(now.getFullYear() - 1, 0, 30), 'January 30th of last year');
-    dateEqual(testCreateDate('January of last year.'), new Date(now.getFullYear() - 1, 0), 'January of last year');
+    equal(testCreateDate('The 15th of last month.'), new Date(now.getFullYear(), now.getMonth() - 1, 15), 'The 15th of last month');
+    equal(testCreateDate('January 30th of last year.'), new Date(now.getFullYear() - 1, 0, 30), 'January 30th of last year');
+    equal(testCreateDate('January of last year.'), new Date(now.getFullYear() - 1, 0), 'January of last year');
 
-    dateEqual(testCreateDate('First day of may'), new Date(now.getFullYear(), 4, 1), 'First day of may');
-    dateEqual(testCreateDate('Last day of may'), new Date(now.getFullYear(), 4, 31), 'Last day of may');
-    dateEqual(testCreateDate('Last day of next month'), new Date(now.getFullYear(), now.getMonth() + 1, testGetDaysInMonth(now.getFullYear(), now.getMonth() + 1)), 'Last day of next month');
-    dateEqual(testCreateDate('Last day of november'), new Date(now.getFullYear(), 10, 30), 'Last day of november');
+    equal(testCreateDate('First day of may'), new Date(now.getFullYear(), 4, 1), 'First day of may');
+    equal(testCreateDate('Last day of may'), new Date(now.getFullYear(), 4, 31), 'Last day of may');
+    equal(testCreateDate('Last day of next month'), new Date(now.getFullYear(), now.getMonth() + 1, testGetDaysInMonth(now.getFullYear(), now.getMonth() + 1)), 'Last day of next month');
+    equal(testCreateDate('Last day of november'), new Date(now.getFullYear(), 10, 30), 'Last day of november');
 
-    dateEqual(testCreateDate('the first day of next January'), new Date(now.getFullYear() + 1, 0, 1), 'the first day of next january');
+    equal(testCreateDate('the first day of next January'), new Date(now.getFullYear() + 1, 0, 1), 'the first day of next january');
 
-    dateEqual(testCreateDate('Next week'), getRelativeDate(null, null, 7), 'Next week');
+    equal(testCreateDate('Next week'), getRelativeDate(null, null, 7), 'Next week');
 
-    dateEqual(testCreateDate('Thursday of next week, 3:30pm'), getDateWithWeekdayAndOffset(4, 7, 15, 30), 'thursday of next week, 3:30pm');
+    equal(testCreateDate('Thursday of next week, 3:30pm'), getDateWithWeekdayAndOffset(4, 7, 15, 30), 'thursday of next week, 3:30pm');
 
 
-    dateEqual(testCreateDate('the 2nd Tuesday of June, 2012'), new Date(2012, 5, 12), 'the 2nd tuesday of June, 2012');
+    equal(testCreateDate('the 2nd Tuesday of June, 2012'), new Date(2012, 5, 12), 'the 2nd tuesday of June, 2012');
 
-    dateEqual(testCreateDate('the 1st Tuesday of November, 2012'), new Date(2012, 10, 6), 'the 1st tuesday of November');
-    dateEqual(testCreateDate('the 2nd Tuesday of November, 2012'), new Date(2012, 10, 13), 'the 2nd tuesday of November');
-    dateEqual(testCreateDate('the 3rd Tuesday of November, 2012'), new Date(2012, 10, 20), 'the 3rd tuesday of November');
-    dateEqual(testCreateDate('the 4th Tuesday of November, 2012'), new Date(2012, 10, 27), 'the 4th tuesday of November');
-    dateEqual(testCreateDate('the 5th Tuesday of November, 2012'), new Date(2012, 11, 4), 'the 5th tuesday of November');
-    dateEqual(testCreateDate('the 6th Tuesday of November, 2012'), new Date(2012, 11, 11), 'the 6th tuesday of November');
+    equal(testCreateDate('the 1st Tuesday of November, 2012'), new Date(2012, 10, 6), 'the 1st tuesday of November');
+    equal(testCreateDate('the 2nd Tuesday of November, 2012'), new Date(2012, 10, 13), 'the 2nd tuesday of November');
+    equal(testCreateDate('the 3rd Tuesday of November, 2012'), new Date(2012, 10, 20), 'the 3rd tuesday of November');
+    equal(testCreateDate('the 4th Tuesday of November, 2012'), new Date(2012, 10, 27), 'the 4th tuesday of November');
+    equal(testCreateDate('the 5th Tuesday of November, 2012'), new Date(2012, 11, 4), 'the 5th tuesday of November');
+    equal(testCreateDate('the 6th Tuesday of November, 2012'), new Date(2012, 11, 11), 'the 6th tuesday of November');
 
-    dateEqual(testCreateDate('the 1st Friday of February, 2012'), new Date(2012, 1, 3), 'the 1st Friday of February');
-    dateEqual(testCreateDate('the 2nd Friday of February, 2012'), new Date(2012, 1, 10), 'the 2nd Friday of February');
-    dateEqual(testCreateDate('the 3rd Friday of February, 2012'), new Date(2012, 1, 17), 'the 3rd Friday of February');
-    dateEqual(testCreateDate('the 4th Friday of February, 2012'), new Date(2012, 1, 24), 'the 4th Friday of February');
-    dateEqual(testCreateDate('the 5th Friday of February, 2012'), new Date(2012, 2, 2), 'the 5th Friday of February');
-    dateEqual(testCreateDate('the 6th Friday of February, 2012'), new Date(2012, 2, 9), 'the 6th Friday of February');
+    equal(testCreateDate('the 1st Friday of February, 2012'), new Date(2012, 1, 3), 'the 1st Friday of February');
+    equal(testCreateDate('the 2nd Friday of February, 2012'), new Date(2012, 1, 10), 'the 2nd Friday of February');
+    equal(testCreateDate('the 3rd Friday of February, 2012'), new Date(2012, 1, 17), 'the 3rd Friday of February');
+    equal(testCreateDate('the 4th Friday of February, 2012'), new Date(2012, 1, 24), 'the 4th Friday of February');
+    equal(testCreateDate('the 5th Friday of February, 2012'), new Date(2012, 2, 2), 'the 5th Friday of February');
+    equal(testCreateDate('the 6th Friday of February, 2012'), new Date(2012, 2, 9), 'the 6th Friday of February');
 
     var d = new Date(thisYear, 1);
     while(d.getDay() !== 5) {
@@ -607,19 +607,19 @@ package('Date', function () {
     equal(testCreateFutureDate('the 1st Friday of February').getFullYear(), now > d ? thisYear + 1 : thisYear, '1st friday of February should be this year or next');
     equal(testCreatePastDate('the 1st Friday of February').getFullYear(), now < d ? thisYear - 1 : thisYear, '1st friday of February should be this year or last');
 
-    dateEqual(testCreateDate('in 60 seconds'), getRelativeDate(null, null, null, null, 1), 'in 60 seconds');
-    dateEqual(testCreateDate('in 45 minutes'), getRelativeDate(null, null, null, null, 45), 'in 45 minutes');
-    dateEqual(testCreateDate('in 5 hours'), getRelativeDate(null, null, null, 5), 'in 5 hours');
-    dateEqual(testCreateDate('in 5 days'), getRelativeDate(null, null, 5), 'in 5 days');
-    dateEqual(testCreateDate('in 5 weeks'), getRelativeDate(null, null, 35), 'in 5 weeks');
-    dateEqual(testCreateDate('in 5 months'), getRelativeDate(null, 5), 'in 5 months');
-    dateEqual(testCreateDate('in 5 years'), getRelativeDate(5), 'in 5 years');
+    equal(testCreateDate('in 60 seconds'), getRelativeDate(null, null, null, null, 1), 'in 60 seconds');
+    equal(testCreateDate('in 45 minutes'), getRelativeDate(null, null, null, null, 45), 'in 45 minutes');
+    equal(testCreateDate('in 5 hours'), getRelativeDate(null, null, null, 5), 'in 5 hours');
+    equal(testCreateDate('in 5 days'), getRelativeDate(null, null, 5), 'in 5 days');
+    equal(testCreateDate('in 5 weeks'), getRelativeDate(null, null, 35), 'in 5 weeks');
+    equal(testCreateDate('in 5 months'), getRelativeDate(null, 5), 'in 5 months');
+    equal(testCreateDate('in 5 years'), getRelativeDate(5), 'in 5 years');
 
 
     // Issue #203
 
-    dateEqual(testCreateDate('The day after tomorrow 3:45pm', 'en'), new Date(now.getFullYear(), now.getMonth(), now.getDate() + 2, 15, 45), 'The day after tomorrow at 3:45pm');
-    dateEqual(testCreateDate('The day before yesterday at 11:15am', 'en'), new Date(now.getFullYear(), now.getMonth(), now.getDate() - 2, 11, 15), 'the day before yesterday at 11:15am');
+    equal(testCreateDate('The day after tomorrow 3:45pm', 'en'), new Date(now.getFullYear(), now.getMonth(), now.getDate() + 2, 15, 45), 'The day after tomorrow at 3:45pm');
+    equal(testCreateDate('The day before yesterday at 11:15am', 'en'), new Date(now.getFullYear(), now.getMonth(), now.getDate() - 2, 11, 15), 'the day before yesterday at 11:15am');
 
 
     var d = new Date();
@@ -629,8 +629,8 @@ package('Date', function () {
     d.setSeconds(0);
     d.setMilliseconds(0);
 
-    dateEqual(testCreateDate('the 28th'), d, 'the 28th');
-    dateEqual(testCreateDate('28th'), d, '28th');
+    equal(testCreateDate('the 28th'), d, 'the 28th');
+    equal(testCreateDate('28th'), d, '28th');
 
 
     var d = new Date();
@@ -640,77 +640,80 @@ package('Date', function () {
     d.setMinutes(0);
     d.setSeconds(0);
     d.setMilliseconds(0);
-    dateEqual(testCreateDate('the 28th of January'), d, 'the 28th of January');
-    dateEqual(testCreateDate('28th of January'), d, '28th of January');
+    equal(testCreateDate('the 28th of January'), d, 'the 28th of January');
+    equal(testCreateDate('28th of January'), d, '28th of January');
 
 
     // Issue #310
 
-    dateEqual(testCreateDate('6:30pm in 1 day'), run(getRelativeDate(null, null, 1), 'set', [{hours:18,minutes:30}, true]), '6:30pm in 1 day');
-    dateEqual(testCreateDate('6:30pm in 3 days'), run(getRelativeDate(null, null, 3), 'set', [{hours:18,minutes:30}, true]), '6:30pm in 3 days');
-    dateEqual(testCreateDate('6:30pm in -3 days'), run(getRelativeDate(null, null, -3), 'set', [{hours:18,minutes:30}, true]), '6:30pm in -3 days');
+    equal(testCreateDate('6:30pm in 1 day'), run(getRelativeDate(null, null, 1), 'set', [{hours:18,minutes:30}, true]), '6:30pm in 1 day');
+    equal(testCreateDate('6:30pm in 3 days'), run(getRelativeDate(null, null, 3), 'set', [{hours:18,minutes:30}, true]), '6:30pm in 3 days');
+    equal(testCreateDate('6:30pm in -3 days'), run(getRelativeDate(null, null, -3), 'set', [{hours:18,minutes:30}, true]), '6:30pm in -3 days');
 
-    dateEqual(testCreateDate('6:30pm 2 days ago'), run(getRelativeDate(null, null, -2), 'set', [{hours:18,minutes:30}, true]), '6:30pm in 2 days ago');
+    equal(testCreateDate('6:30pm 2 days ago'), run(getRelativeDate(null, null, -2), 'set', [{hours:18,minutes:30}, true]), '6:30pm in 2 days ago');
 
-    dateEqual(testCreateDate('21:00 in 2 weeks'), run(getRelativeDate(null, null, 14), 'set', [{hours:21}, true]), '21:00pm in 2 weeks');
-    dateEqual(testCreateDate('5:00am in a month'), run(getRelativeDate(null, 1), 'set', [{hours:5}, true]), '5:00am in a month');
-    dateEqual(testCreateDate('5am in a month'), run(getRelativeDate(null, 1), 'set', [{hours:5}, true]), '5am in a month');
-    dateEqual(testCreateDate('5:01am in a month'), run(getRelativeDate(null, 1), 'set', [{hours:5,minutes:1}, true]), '5:01am in a month');
+    equal(testCreateDate('21:00 in 2 weeks'), run(getRelativeDate(null, null, 14), 'set', [{hours:21}, true]), '21:00pm in 2 weeks');
+    equal(testCreateDate('5:00am in a month'), run(getRelativeDate(null, 1), 'set', [{hours:5}, true]), '5:00am in a month');
+    equal(testCreateDate('5am in a month'), run(getRelativeDate(null, 1), 'set', [{hours:5}, true]), '5am in a month');
+    equal(testCreateDate('5:01am in a month'), run(getRelativeDate(null, 1), 'set', [{hours:5,minutes:1}, true]), '5:01am in a month');
 
     equal(run(testCreateDate('5am in an hour'), 'isValid'), false, '5am in an hour is invalid');
     equal(run(testCreateDate('5am in a minute'), 'isValid'), false, '5am in a minute is invalid');
 
     // Issue #375 "end of yesterday"
 
-    dateEqual(testCreateDate('beginning of yesterday'), run(testCreateDate('yesterday'), 'beginningOfDay'), 'beginning of yesterday');
-    dateEqual(testCreateDate('end of yesterday'), run(testCreateDate('yesterday'), 'endOfDay'), 'end of yesterday');
-    dateEqual(testCreateDate('beginning of today'), run(testCreateDate('today'), 'beginningOfDay'), 'beginning of today');
-    dateEqual(testCreateDate('end of today'), run(testCreateDate('today'), 'endOfDay'), 'end of today');
-    dateEqual(testCreateDate('beginning of tomorrow'), run(testCreateDate('tomorrow'), 'beginningOfDay'), 'beginning of tomorrow');
-    dateEqual(testCreateDate('end of tomorrow'), run(testCreateDate('tomorrow'), 'endOfDay'), 'end of tomorrow');
+    equal(testCreateDate('beginning of yesterday'), run(testCreateDate('yesterday'), 'beginningOfDay'), 'beginning of yesterday');
+    equal(testCreateDate('end of yesterday'), run(testCreateDate('yesterday'), 'endOfDay'), 'end of yesterday');
+    equal(testCreateDate('beginning of today'), run(testCreateDate('today'), 'beginningOfDay'), 'beginning of today');
+    equal(testCreateDate('end of today'), run(testCreateDate('today'), 'endOfDay'), 'end of today');
+    equal(testCreateDate('beginning of tomorrow'), run(testCreateDate('tomorrow'), 'beginningOfDay'), 'beginning of tomorrow');
+    equal(testCreateDate('end of tomorrow'), run(testCreateDate('tomorrow'), 'endOfDay'), 'end of tomorrow');
 
     // Issue #431 "ten minutes ago"
-    dateEqual(testCreateDate('ten minutes ago'), getRelativeDate(null, null, null, null, -10), 'ten minutes ago');
-    dateEqual(testCreateDate('ten minutes from now'), getRelativeDate(null, null, null, null, 10), 'ten minutes from now');
+    equal(testCreateDate('ten minutes ago'), getRelativeDate(null, null, null, null, -10), 'ten minutes ago');
+    equal(testCreateDate('ten minutes from now'), getRelativeDate(null, null, null, null, 10), 'ten minutes from now');
 
     // Issue #509 "a/p" for "am/pm"
-    dateEqual(testCreateDate('yesterday at 3p'), new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1, 15), 'yesterday at 3p');
-    dateEqual(testCreateDate('yesterday at 3a'), new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1, 3), 'yesterday at 3a');
-    dateEqual(testCreateDate('yesterday at 3:00p'), new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1, 15), 'yesterday at 3:00p');
-    dateEqual(testCreateDate('yesterday at 3:00a'), new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1, 3), 'yesterday at 3:00a');
+    equal(testCreateDate('yesterday at 3p'), new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1, 15), 'yesterday at 3p');
+    equal(testCreateDate('yesterday at 3a'), new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1, 3), 'yesterday at 3a');
+    equal(testCreateDate('yesterday at 3:00p'), new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1, 15), 'yesterday at 3:00p');
+    equal(testCreateDate('yesterday at 3:00a'), new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1, 3), 'yesterday at 3:00a');
 
     // Issue #453 "tomorrow at noon"
-    dateEqual(testCreateDate('noon'), new Date(now.getFullYear(), now.getMonth(), now.getDate(), 12), 'noon');
-    dateEqual(testCreateDate('tomorrow at noon'), new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 12), 'tommorrow at noon');
-    dateEqual(testCreateDate('Monday at noon'), getDateWithWeekdayAndOffset(1, 0, 12), 'Monday at noon');
-    dateEqual(testCreateDate('next Saturday at noon'), getDateWithWeekdayAndOffset(6, 7, 12), 'next Saturday at noon');
-    dateEqual(testCreateDate('last Tuesday at noon'), getDateWithWeekdayAndOffset(2, -7, 12), 'last Tuesday at noon');
-    dateEqual(testCreateDate('midnight'), new Date(now.getFullYear(), now.getMonth(), now.getDate()), 'midnight');
-    dateEqual(testCreateDate('tomorrow at midnight'), new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1), 'tommorrow at midnight');
-    dateEqual(testCreateDate('Monday at midnight'), getDateWithWeekdayAndOffset(1, 0), 'Monday at midnight');
-    dateEqual(testCreateDate('next Saturday at midnight'), getDateWithWeekdayAndOffset(6, 7), 'next Saturday at midnight');
-    dateEqual(testCreateDate('last Tuesday at midnight'), getDateWithWeekdayAndOffset(2, -7), 'last Tuesday at midnight');
+    equal(testCreateDate('noon'), new Date(now.getFullYear(), now.getMonth(), now.getDate(), 12), 'noon');
+    equal(testCreateDate('tomorrow at noon'), new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 12), 'tommorrow at noon');
+    equal(testCreateDate('Monday at noon'), getDateWithWeekdayAndOffset(1, 0, 12), 'Monday at noon');
+    equal(testCreateDate('next Saturday at noon'), getDateWithWeekdayAndOffset(6, 7, 12), 'next Saturday at noon');
+    equal(testCreateDate('last Tuesday at noon'), getDateWithWeekdayAndOffset(2, -7, 12), 'last Tuesday at noon');
+    equal(testCreateDate('midnight'), new Date(now.getFullYear(), now.getMonth(), now.getDate()), 'midnight');
+    equal(testCreateDate('tomorrow at midnight'), new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1), 'tommorrow at midnight');
+    equal(testCreateDate('Monday at midnight'), getDateWithWeekdayAndOffset(1, 0), 'Monday at midnight');
+    equal(testCreateDate('next Saturday at midnight'), getDateWithWeekdayAndOffset(6, 7), 'next Saturday at midnight');
+    equal(testCreateDate('last Tuesday at midnight'), getDateWithWeekdayAndOffset(2, -7), 'last Tuesday at midnight');
 
 
     // Issue #455
-    dateEqual(testCreateDate('a week from Tuesday'), getDateWithWeekdayAndOffset(2, 7), 'a week from Tuesday');
-    dateEqual(testCreateDate('week from Tuesday'), getDateWithWeekdayAndOffset(2, 7), 'week from Tuesday');
-    dateEqual(testCreateDate('first of the month'), new Date(now.getFullYear(), now.getMonth()), 'first of the month');
+    equal(testCreateDate('a week from Tuesday'), getDateWithWeekdayAndOffset(2, 7), 'a week from Tuesday');
+    equal(testCreateDate('week from Tuesday'), getDateWithWeekdayAndOffset(2, 7), 'week from Tuesday');
+    equal(testCreateDate('first of the month'), new Date(now.getFullYear(), now.getMonth()), 'first of the month');
 
   });
 
 
   group('Create | UTC', function() {
 
-    dateEqual(testCreateUTCDate('February 29, 2012 22:15:42'), new Date(Date.UTC(2012, 1, 29, 22, 15, 42)), 'full text');
-    dateEqual(testCreateUTCDate('2012-05-31'), new Date(Date.UTC(2012, 4, 31)), 'dashed');
-    dateEqual(testCreateUTCDate('1998-02-23 11:54:32'), new Date(Date.UTC(1998,1,23,11,54,32)), 'dashed with time');
-    dateEqual(testCreateUTCDate({ year: 1998, month: 1, day: 23, hour: 11 }), new Date(Date.UTC(1998,1,23,11)), 'params');
-    dateEqual(testCreateUTCDate('08-25-1978 11:42:32.488am'), new Date(Date.UTC(1978, 7, 25, 11, 42, 32, 488)), 'full with ms');
-    dateEqual(testCreateUTCDate('1994-11-05T13:15:30Z'), new Date(Date.UTC(1994, 10, 5, 13, 15, 30)), '"Z" is still utc');
+    equal(testCreateUTCDate('February 29, 2012 22:15:42'), new Date(Date.UTC(2012, 1, 29, 22, 15, 42)), 'full text');
+    equal(testCreateUTCDate('2012-05-31'), new Date(Date.UTC(2012, 4, 31)), 'dashed');
+    equal(testCreateUTCDate('1998-02-23 11:54:32'), new Date(Date.UTC(1998,1,23,11,54,32)), 'dashed with time');
+    equal(testCreateUTCDate({ year: 1998, month: 1, day: 23, hour: 11 }), new Date(Date.UTC(1998,1,23,11)), 'params');
+    equal(testCreateUTCDate('08-25-1978 11:42:32.488am'), new Date(Date.UTC(1978, 7, 25, 11, 42, 32, 488)), 'full with ms');
+    equal(testCreateUTCDate('1994-11-05T13:15:30Z'), new Date(Date.UTC(1994, 10, 5, 13, 15, 30)), '"Z" is still utc');
 
     var d = testCreateUTCDate('two days ago');
-    dateEqual(d, getRelativeDate(null, null, -2, 0), 'relative dates are not UTC', now);
+    var expected = getRelativeDate(null, null, -2, 0);
+    var tzOffset = (expected.getTimezoneOffset() - new Date().getTimezoneOffset()) * 60 * 1000;
+    expected.setTime(expected.getTime() - tzOffset);
+    equal(d, expected, 'relative dates are not UTC');
 
     // New handling of UTC dates
 
@@ -718,15 +721,15 @@ package('Date', function () {
     var date2 = new Date(2001, 5, 15);
     date2.setTime(date2.getTime() - (date2.getTimezoneOffset() * 60 * 1000));
 
-    dateEqual(date1, date2, 'is equal to date with timezone subtracted');
+    equal(date1, date2, 'is equal to date with timezone subtracted');
     equal(testIsUTC(date1), false, 'does not set internal flag');
 
     var d = run(new Date(2001, 5, 15), 'setUTC', [true]);
 
     equal(testIsUTC(d), true, 'sets internal flag');
-    dateEqual(d, new Date(2001, 5, 15), 'does not change date');
-    dateEqual(dateRun(d, 'beginningOfMonth'), new Date(Date.UTC(2001, 5, 1)), 'the beginning of the month');
-    dateEqual(dateRun(d, 'endOfMonth'), new Date(Date.UTC(2001, 5, 30, 23, 59, 59, 999)), 'the end of the month');
+    equal(d, new Date(2001, 5, 15), 'does not change date');
+    equal(dateRun(d, 'beginningOfMonth'), new Date(Date.UTC(2001, 5, 1)), 'the beginning of the month');
+    equal(dateRun(d, 'endOfMonth'), new Date(Date.UTC(2001, 5, 30, 23, 59, 59, 999)), 'the end of the month');
     equal(run(d, 'minutesSince', [testCreateUTCDate('2001-06-15')]), d.getTimezoneOffset(), 'minutesSince is equal to the timezone offset');
 
     // In this example the date is flagged as UTC but was not parsed that way.
@@ -752,7 +755,7 @@ package('Date', function () {
 
     equal(run(d, 'format', ['{tz}']), '+0000', 'format UTC date will have +0000 offset');
     equal(run(d, 'getUTCOffset'), '+0000', 'getUTCOffset');
-    dateEqual(dateRun(d, 'advance', ['1 month']), new Date(Date.UTC(2001, 6, 15)), 'advancing');
+    equal(dateRun(d, 'advance', ['1 month']), new Date(Date.UTC(2001, 6, 15)), 'advancing');
 
     equal(run(run(testCreateUTCDate('2010-02-01'), 'setUTC', [true]), 'daysInMonth'), 28, 'should find correct days in month');
     equal(run(run(testCreateUTCDate('2000-01'), 'setUTC', [true]), 'isLeapYear'), true, 'isLeapYear accounts for utc dates');
@@ -796,12 +799,12 @@ package('Date', function () {
 
     // Issue #244
 
-    dateEqual(testCreateUTCDate('0999'), new Date(Date.UTC(999, 0)), '3 digit year 999 should be equal to ISO8601');
-    dateEqual(testCreateUTCDate('0123'), new Date(Date.UTC(123, 0)), '3 digit year 123 should be equal to ISO8601');
+    equal(testCreateUTCDate('0999'), new Date(Date.UTC(999, 0)), '3 digit year 999 should be equal to ISO8601');
+    equal(testCreateUTCDate('0123'), new Date(Date.UTC(123, 0)), '3 digit year 123 should be equal to ISO8601');
 
     var d = run(testCreateUTCDate({ year: 2013, month: 0, date: 14 }), 'setUTC', [true]);
     run(d, 'set', [{week:1}]);
-    dateEqual(d, new Date(Date.UTC(2012, 11, 31)), 'utc dates should not throw errors on week set');
+    equal(d, new Date(Date.UTC(2012, 11, 31)), 'utc dates should not throw errors on week set');
 
   });
 
@@ -809,21 +812,21 @@ package('Date', function () {
   group('Create | Other', function() {
 
     // Issue #98: System time set to January 31st
-    dateEqual(testCreateDate('2011-09-01T05:00:00Z'), getUTCDate(2011, 9, 1, 5), 'text format');
+    equal(testCreateDate('2011-09-01T05:00:00Z'), getUTCDate(2011, 9, 1, 5), 'text format');
 
     // Issue #152 times should be allowed in front
-    dateEqual(testCreateDate('3:45 2012-3-15'), new Date(2012, 2, 15, 3, 45), 'time in the front');
-    dateEqual(testCreateDate('3:45pm 2012-3-15'), new Date(2012, 2, 15, 15, 45), 'big endian with time');
-    dateEqual(testCreateDate('3:45pm 3/15/2012'), new Date(2012, 2, 15, 15, 45), 'crazy endian slashes with time');
-    dateEqual(testCreateDate('3:45pm 3/4/2012', 'en-GB'), new Date(2012, 3, 3, 15, 45), 'little endian slashes with time');
+    equal(testCreateDate('3:45 2012-3-15'), new Date(2012, 2, 15, 3, 45), 'time in the front');
+    equal(testCreateDate('3:45pm 2012-3-15'), new Date(2012, 2, 15, 15, 45), 'big endian with time');
+    equal(testCreateDate('3:45pm 3/15/2012'), new Date(2012, 2, 15, 15, 45), 'crazy endian slashes with time');
+    equal(testCreateDate('3:45pm 3/4/2012', 'en-GB'), new Date(2012, 3, 3, 15, 45), 'little endian slashes with time');
 
 
     // Issue #144 various time/date formats
     var d = getDateWithWeekdayAndOffset(4);
     d.setHours(15);
-    dateEqual(testCreateDate('6/30/2012 3:00 PM'), new Date(2012, 5, 30, 15), '6/30/2012 3:00 PM');
-    dateEqual(testCreateDate('Thursday at 3:00 PM'), d, 'Thursday at 3:00 PM');
-    dateEqual(testCreateDate('Thursday at 3:00PM'), d, 'Thursday at 3:00PM (no space)');
+    equal(testCreateDate('6/30/2012 3:00 PM'), new Date(2012, 5, 30, 15), '6/30/2012 3:00 PM');
+    equal(testCreateDate('Thursday at 3:00 PM'), d, 'Thursday at 3:00 PM');
+    equal(testCreateDate('Thursday at 3:00PM'), d, 'Thursday at 3:00PM (no space)');
 
 
     // Date.create should clone a date
@@ -842,47 +845,47 @@ package('Date', function () {
 
     // Issue #227
 
-    dateEqual(testCreateDate('0 January'), new Date(now.getFullYear() - 1, 11, 31), 'Date#addMonths | 0 January');
-    dateEqual(testCreateDate('1 January'), new Date(now.getFullYear(), 0, 1), 'Date#addMonths | 1 January');
-    dateEqual(testCreateDate('01 January'), new Date(now.getFullYear(), 0, 1), 'Date#addMonths | 01 January');
-    dateEqual(testCreateDate('15 January'), new Date(now.getFullYear(), 0, 15), 'Date#addMonths | 15 January');
-    dateEqual(testCreateDate('31 January'), new Date(now.getFullYear(), 0, 31), 'Date#addMonths | 31 January');
+    equal(testCreateDate('0 January'), new Date(now.getFullYear() - 1, 11, 31), 'Date#addMonths | 0 January');
+    equal(testCreateDate('1 January'), new Date(now.getFullYear(), 0, 1), 'Date#addMonths | 1 January');
+    equal(testCreateDate('01 January'), new Date(now.getFullYear(), 0, 1), 'Date#addMonths | 01 January');
+    equal(testCreateDate('15 January'), new Date(now.getFullYear(), 0, 15), 'Date#addMonths | 15 January');
+    equal(testCreateDate('31 January'), new Date(now.getFullYear(), 0, 31), 'Date#addMonths | 31 January');
 
-    dateEqual(testCreateDate('1 Jan'), new Date(now.getFullYear(), 0, 1), 'Date#addMonths | 1 Jan');
-    dateEqual(testCreateDate('01 Jan'), new Date(now.getFullYear(), 0, 1), 'Date#addMonths | 01 Jan');
-    dateEqual(testCreateDate('15 Jan'), new Date(now.getFullYear(), 0, 15), 'Date#addMonths | 15 Jan');
-    dateEqual(testCreateDate('31 Jan'), new Date(now.getFullYear(), 0, 31), 'Date#addMonths | 31 Jan');
+    equal(testCreateDate('1 Jan'), new Date(now.getFullYear(), 0, 1), 'Date#addMonths | 1 Jan');
+    equal(testCreateDate('01 Jan'), new Date(now.getFullYear(), 0, 1), 'Date#addMonths | 01 Jan');
+    equal(testCreateDate('15 Jan'), new Date(now.getFullYear(), 0, 15), 'Date#addMonths | 15 Jan');
+    equal(testCreateDate('31 Jan'), new Date(now.getFullYear(), 0, 31), 'Date#addMonths | 31 Jan');
 
-    dateEqual(testCreateDate('0 July'), new Date(now.getFullYear(), 5, 30), 'Date#addMonths | 0 July');
-    dateEqual(testCreateDate('1 July'), new Date(now.getFullYear(), 6, 1), 'Date#addMonths | 1 July');
-    dateEqual(testCreateDate('01 July'), new Date(now.getFullYear(), 6, 1), 'Date#addMonths | 01 July');
-    dateEqual(testCreateDate('15 July'), new Date(now.getFullYear(), 6, 15), 'Date#addMonths | 15 July');
-    dateEqual(testCreateDate('31 July'), new Date(now.getFullYear(), 6, 31), 'Date#addMonths | 31 July');
-    dateEqual(testCreateDate('32 July'), new Date(now.getFullYear(), 7, 1), 'Date#addMonths | 32 July');
+    equal(testCreateDate('0 July'), new Date(now.getFullYear(), 5, 30), 'Date#addMonths | 0 July');
+    equal(testCreateDate('1 July'), new Date(now.getFullYear(), 6, 1), 'Date#addMonths | 1 July');
+    equal(testCreateDate('01 July'), new Date(now.getFullYear(), 6, 1), 'Date#addMonths | 01 July');
+    equal(testCreateDate('15 July'), new Date(now.getFullYear(), 6, 15), 'Date#addMonths | 15 July');
+    equal(testCreateDate('31 July'), new Date(now.getFullYear(), 6, 31), 'Date#addMonths | 31 July');
+    equal(testCreateDate('32 July'), new Date(now.getFullYear(), 7, 1), 'Date#addMonths | 32 July');
 
-    dateEqual(testCreateDate('1 Dec'), new Date(now.getFullYear(), 11, 1), 'Date#addMonths | 1 Dec');
-    dateEqual(testCreateDate('01 Dec'), new Date(now.getFullYear(), 11, 1), 'Date#addMonths | 01 Dec');
-    dateEqual(testCreateDate('15 Dec'), new Date(now.getFullYear(), 11, 15), 'Date#addMonths | 15 Dec');
-    dateEqual(testCreateDate('31 Dec'), new Date(now.getFullYear(), 11, 31), 'Date#addMonths | 31 Dec');
+    equal(testCreateDate('1 Dec'), new Date(now.getFullYear(), 11, 1), 'Date#addMonths | 1 Dec');
+    equal(testCreateDate('01 Dec'), new Date(now.getFullYear(), 11, 1), 'Date#addMonths | 01 Dec');
+    equal(testCreateDate('15 Dec'), new Date(now.getFullYear(), 11, 15), 'Date#addMonths | 15 Dec');
+    equal(testCreateDate('31 Dec'), new Date(now.getFullYear(), 11, 31), 'Date#addMonths | 31 Dec');
 
-    dateEqual(testCreateDate('1 December'), new Date(now.getFullYear(), 11, 1), 'Date#addMonths | 1 December');
-    dateEqual(testCreateDate('01 December'), new Date(now.getFullYear(), 11, 1), 'Date#addMonths | 01 December');
-    dateEqual(testCreateDate('15 December'), new Date(now.getFullYear(), 11, 15), 'Date#addMonths | 15 December');
-    dateEqual(testCreateDate('31 December'), new Date(now.getFullYear(), 11, 31), 'Date#addMonths | 31 December');
-    dateEqual(testCreateDate('32 December'), new Date(now.getFullYear() + 1, 0, 1), 'Date#addMonths | 32 December');
+    equal(testCreateDate('1 December'), new Date(now.getFullYear(), 11, 1), 'Date#addMonths | 1 December');
+    equal(testCreateDate('01 December'), new Date(now.getFullYear(), 11, 1), 'Date#addMonths | 01 December');
+    equal(testCreateDate('15 December'), new Date(now.getFullYear(), 11, 15), 'Date#addMonths | 15 December');
+    equal(testCreateDate('31 December'), new Date(now.getFullYear(), 11, 31), 'Date#addMonths | 31 December');
+    equal(testCreateDate('32 December'), new Date(now.getFullYear() + 1, 0, 1), 'Date#addMonths | 32 December');
 
-    dateEqual(testCreateDate('1 January 3pm'), new Date(now.getFullYear(), 0, 1, 15), 'Date#addMonths | 1 January 3pm');
-    dateEqual(testCreateDate('1 January 3:45pm'), new Date(now.getFullYear(), 0, 1, 15, 45), 'Date#addMonths | 1 January 3:45pm');
+    equal(testCreateDate('1 January 3pm'), new Date(now.getFullYear(), 0, 1, 15), 'Date#addMonths | 1 January 3pm');
+    equal(testCreateDate('1 January 3:45pm'), new Date(now.getFullYear(), 0, 1, 15, 45), 'Date#addMonths | 1 January 3:45pm');
 
-    dateEqual(testCreateDate("'87"), new Date(1987, 0), "Date#create | '87");
-    dateEqual(testCreateDate("May '87"), new Date(1987, 4), "Date#create | May '87");
-    dateEqual(testCreateDate("14 May '87"), new Date(1987, 4, 14), "Date#create | 14 May '87");
+    equal(testCreateDate("'87"), new Date(1987, 0), "Date#create | '87");
+    equal(testCreateDate("May '87"), new Date(1987, 4), "Date#create | May '87");
+    equal(testCreateDate("14 May '87"), new Date(1987, 4, 14), "Date#create | 14 May '87");
 
     // Issue #224
     equal(run(testCreateDate(''), 'isValid'), false, 'empty strings are not valid');
 
     // Issue #387 null in date constructor
-    dateEqual(new Date(null), testCreateDate(null), 'null');
+    equal(new Date(null), testCreateDate(null), 'null');
 
   });
 
@@ -960,8 +963,8 @@ package('Date', function () {
   group('2-digit years', function() {
 
     // Issue #383 Date.past in 2-digit years
-    dateEqual(testCreatePastDate('12/20/23'), new Date(1923,11,20), 'Date.past | 1923-12-20');
-    dateEqual(testCreateFutureDate('12/20/98'), new Date(2098,11,20), 'Date.future | 2098-12-20');
+    equal(testCreatePastDate('12/20/23'), new Date(1923,11,20), 'Date.past | 1923-12-20');
+    equal(testCreateFutureDate('12/20/98'), new Date(2098,11,20), 'Date.future | 2098-12-20');
 
   });
 
@@ -1019,13 +1022,13 @@ package('Date', function () {
 
     var d1 = run(new Date(Date.UTC(2010, 7, 25)), 'setUTC', [true]);
     var d2 = run(d1, 'get', ['tomorrow']);
-    dateEqual(d2, new Date(Date.UTC(2010, 7, 26)), 'date should be taken as UTC'); 
+    equal(d2, new Date(Date.UTC(2010, 7, 26)), 'date should be taken as UTC'); 
     equal(testIsUTC(d2), true, 'utc flag should be preserved');
 
     var d1 = run(new Date(Date.UTC(2010, 7, 25)), 'setUTC', [true]);
     var d2 = run(d1, 'get', ['tomorrow', { fromUTC: false, setUTC: false }]);
     // d1 may be Aug 24th or Aug 25th depending on the timezone.
-    dateEqual(d2, new Date(2010, 7, d1.getDate() + 1), 'fromUTC can override utc preservation');
+    equal(d2, new Date(2010, 7, d1.getDate() + 1), 'fromUTC can override utc preservation');
     equal(testIsUTC(d2), false, 'setUTC can override utc preservation');
 
     test(new Date(1960, 5, 11), ["January 5th '50"], new Date(1950, 0, 5), 'year abbreviation in 1960 should be 20th century');
@@ -1163,7 +1166,7 @@ package('Date', function () {
     equal(d.getSeconds(), 0, 'does reset seconds');
     equal(d.getMilliseconds(), 0, 'does reset milliseconds');
 
-    dateEqual(run(new Date, 'set', [0]), new Date(0), 'handles timestamps');
+    equal(run(new Date, 'set', [0]), new Date(0), 'handles timestamps');
 
     var obj = { year: 1998 };
     var d = new Date();
@@ -1248,8 +1251,8 @@ package('Date', function () {
     equal(run(d, 'getWeekday'), 3, 'get | Wednesday');
     equal(d.getUTCDay(), 3, 'get | utc | Wednesday');
 
-    dateEqual(run(new Date(), 'advance', [{ weekday: 7 }]), new Date(), 'cannot advance by weekdays');
-    dateEqual(run(new Date(), 'rewind', [{ weekday: 7 }]), new Date(), 'cannot rewind by weekdays');
+    equal(run(new Date(), 'advance', [{ weekday: 7 }]), new Date(), 'cannot advance by weekdays');
+    equal(run(new Date(), 'rewind', [{ weekday: 7 }]), new Date(), 'cannot rewind by weekdays');
 
 
     // UTC Date
@@ -1319,11 +1322,11 @@ package('Date', function () {
 
     d = new Date('August 25, 2010 11:45:20');
     run(d, 'advance', [{ week: 1}]);
-    dateEqual(d, new Date(2010, 8, 1, 11, 45, 20), 'positive weeks supported');
+    equal(d, new Date(2010, 8, 1, 11, 45, 20), 'positive weeks supported');
     run(d, 'advance', [{ week: -2}]);
-    dateEqual(d, new Date(2010, 7, 18, 11, 45, 20), 'negative weeks supported');
+    equal(d, new Date(2010, 7, 18, 11, 45, 20), 'negative weeks supported');
 
-    dateEqual(run(new Date(), 'advance', [{ years: 1 }]), testCreateDate('one year from now'), 'advancing 1 year');
+    equal(run(new Date(), 'advance', [{ years: 1 }]), testCreateDate('one year from now'), 'advancing 1 year');
 
     test(new Date(2014, 3, 11), ['0 days'], new Date(2014, 3, 11), 'advancing 0 days should be a noop');
     test(new Date(2014, 3, 11), ['-1 days'], new Date(2014, 3, 10), 'advancing -1 days');
@@ -1385,11 +1388,11 @@ package('Date', function () {
 
     d = new Date('August 25, 2010 11:45:20');
     run(d, 'rewind', [{ week: 1}]);
-    dateEqual(d, new Date(2010, 7, 18, 11, 45, 20), 'positive weeks supported');
+    equal(d, new Date(2010, 7, 18, 11, 45, 20), 'positive weeks supported');
     run(d, 'rewind', [{ week: -1}]);
-    dateEqual(d, new Date(2010, 7, 25, 11, 45, 20), 'negative weeks supported');
+    equal(d, new Date(2010, 7, 25, 11, 45, 20), 'negative weeks supported');
 
-    dateEqual(run(new Date(), 'rewind', [{ years: 1 }]), testCreateDate('one year ago'), 'rewinding 1 year');
+    equal(run(new Date(), 'rewind', [{ years: 1 }]), testCreateDate('one year ago'), 'rewinding 1 year');
 
     var d = new Date();
     var dayInMs = 24 * 60 * 60 * 1000;
@@ -1398,7 +1401,7 @@ package('Date', function () {
     // Issue #492
     d = new Date('August 25, 2010 11:45:20');
     run(d, 'rewind', [{ week: 1, day: 1}]);
-    dateEqual(d, new Date(2010, 7, 17, 11, 45, 20), 'negative weeks supported');
+    equal(d, new Date(2010, 7, 17, 11, 45, 20), 'negative weeks supported');
   });
 
   method('daysInMonth', function() {
@@ -1441,15 +1444,15 @@ package('Date', function () {
     var d = new Date('August 25, 2010 11:45:20');
 
     run(d, 'setISOWeek', [1]);
-    dateEqual(d, new Date(2010,0,6,11,45,20), 'week 1');
+    equal(d, new Date(2010,0,6,11,45,20), 'week 1');
     run(d, 'setISOWeek', [15]);
-    dateEqual(d, new Date(2010,3,14,11,45,20), 'week 15');
+    equal(d, new Date(2010,3,14,11,45,20), 'week 15');
     run(d, 'setISOWeek', [27]);
-    dateEqual(d, new Date(2010,6,7,11,45,20), 'week 27');
+    equal(d, new Date(2010,6,7,11,45,20), 'week 27');
     run(d, 'setISOWeek', [52]);
-    dateEqual(d, new Date(2010,11,29,11,45,20), 'week 52');
+    equal(d, new Date(2010,11,29,11,45,20), 'week 52');
     run(d, 'setISOWeek');
-    dateEqual(d, new Date(2010,11,29,11,45,20), 'week stays set');
+    equal(d, new Date(2010,11,29,11,45,20), 'week stays set');
 
     d = testCreateDate('August 25, 2010 11:45:20', 'en');
     equal(run(d, 'setISOWeek', [1]), new Date(2010, 0, 6, 11, 45, 20).getTime(), 'returns a timestamp');
@@ -1457,13 +1460,13 @@ package('Date', function () {
     d = run(testCreateUTCDate('January 1, 2010 02:15:20'), 'setUTC', [true]);
 
     run(d, 'setISOWeek', [15]);
-    dateEqual(d, new Date(Date.UTC(2010,3,16,2,15,20)), 'utc | week 15');
+    equal(d, new Date(Date.UTC(2010,3,16,2,15,20)), 'utc | week 15');
     run(d, 'setISOWeek', [27]);
-    dateEqual(d, new Date(Date.UTC(2010,6,9,2,15,20)), 'utc | week 27');
+    equal(d, new Date(Date.UTC(2010,6,9,2,15,20)), 'utc | week 27');
     run(d, 'setISOWeek', [52]);
-    dateEqual(d, new Date(Date.UTC(2010,11,31,2,15,20)), 'utc | week 52');
+    equal(d, new Date(Date.UTC(2010,11,31,2,15,20)), 'utc | week 52');
     run(d, 'setISOWeek');
-    dateEqual(d, new Date(Date.UTC(2010,11,31,2,15,20)), 'utc | week stays set');
+    equal(d, new Date(Date.UTC(2010,11,31,2,15,20)), 'utc | week stays set');
 
     // Issue #251
 
@@ -2210,66 +2213,66 @@ package('Date', function () {
 
     var d = new Date('August 5, 2010 13:45:02');
 
-    dateEqual(dateRun(d, 'beginningOfDay'), new Date(2010, 7, 5), 'beginningOfDay');
-    dateEqual(dateRun(d, 'beginningOfWeek'), new Date(2010, 7, 1), 'beginningOfWeek');
-    dateEqual(dateRun(d, 'beginningOfMonth'), new Date(2010, 7), 'beginningOfMonth');
-    dateEqual(dateRun(d, 'beginningOfYear'), new Date(2010, 0), 'beginningOfYear');
+    equal(dateRun(d, 'beginningOfDay'), new Date(2010, 7, 5), 'beginningOfDay');
+    equal(dateRun(d, 'beginningOfWeek'), new Date(2010, 7, 1), 'beginningOfWeek');
+    equal(dateRun(d, 'beginningOfMonth'), new Date(2010, 7), 'beginningOfMonth');
+    equal(dateRun(d, 'beginningOfYear'), new Date(2010, 0), 'beginningOfYear');
 
-    dateEqual(dateRun(d, 'endOfDay'), new Date(2010, 7, 5, 23, 59, 59, 999), 'endOfDay');
-    dateEqual(dateRun(d, 'endOfWeek'), new Date(2010, 7, 7, 23, 59, 59, 999), 'endOfWeek');
-    dateEqual(dateRun(d, 'endOfMonth'), new Date(2010, 7, 31, 23, 59, 59, 999), 'endOfMonth');
-    dateEqual(dateRun(d, 'endOfYear'), new Date(2010, 11, 31, 23, 59, 59, 999), 'endOfYear');
+    equal(dateRun(d, 'endOfDay'), new Date(2010, 7, 5, 23, 59, 59, 999), 'endOfDay');
+    equal(dateRun(d, 'endOfWeek'), new Date(2010, 7, 7, 23, 59, 59, 999), 'endOfWeek');
+    equal(dateRun(d, 'endOfMonth'), new Date(2010, 7, 31, 23, 59, 59, 999), 'endOfMonth');
+    equal(dateRun(d, 'endOfYear'), new Date(2010, 11, 31, 23, 59, 59, 999), 'endOfYear');
 
-    dateEqual(dateRun(d, 'beginningOfWeek', ['en-GB']), new Date(2010, 7, 2), 'beginningOfWeek | optional locale code');
-    dateEqual(dateRun(d, 'endOfWeek', ['en-GB']), new Date(2010, 7, 8, 23, 59, 59, 999), 'endOfWeek | optional locale code');
+    equal(dateRun(d, 'beginningOfWeek', ['en-GB']), new Date(2010, 7, 2), 'beginningOfWeek | optional locale code');
+    equal(dateRun(d, 'endOfWeek', ['en-GB']), new Date(2010, 7, 8, 23, 59, 59, 999), 'endOfWeek | optional locale code');
 
     var d = new Date('January 1, 1979 01:33:42');
 
-    dateEqual(dateRun(d, 'beginningOfDay'), new Date(1979, 0, 1), 'beginningOfDay | January 1, 1979');
-    dateEqual(dateRun(d, 'beginningOfWeek'), new Date(1978, 11, 31), 'beginningOfWeek | January 1, 1979');
-    dateEqual(dateRun(d, 'beginningOfMonth'), new Date(1979, 0), 'beginningOfMonth | January 1, 1979');
-    dateEqual(dateRun(d, 'beginningOfYear'), new Date(1979, 0), 'beginningOfYear | January 1, 1979');
+    equal(dateRun(d, 'beginningOfDay'), new Date(1979, 0, 1), 'beginningOfDay | January 1, 1979');
+    equal(dateRun(d, 'beginningOfWeek'), new Date(1978, 11, 31), 'beginningOfWeek | January 1, 1979');
+    equal(dateRun(d, 'beginningOfMonth'), new Date(1979, 0), 'beginningOfMonth | January 1, 1979');
+    equal(dateRun(d, 'beginningOfYear'), new Date(1979, 0), 'beginningOfYear | January 1, 1979');
 
-    dateEqual(dateRun(d, 'endOfDay'), new Date(1979, 0, 1, 23, 59, 59, 999), 'endOfDay | January 1, 1979');
-    dateEqual(dateRun(d, 'endOfWeek'), new Date(1979, 0, 6, 23, 59, 59, 999), 'endOfWeek | January 1, 1979');
-    dateEqual(dateRun(d, 'endOfMonth'), new Date(1979, 0, 31, 23, 59, 59, 999), 'endOfMonth | January 1, 1979');
-    dateEqual(dateRun(d, 'endOfYear'), new Date(1979, 11, 31, 23, 59, 59, 999), 'endOfYear | January 1, 1979');
+    equal(dateRun(d, 'endOfDay'), new Date(1979, 0, 1, 23, 59, 59, 999), 'endOfDay | January 1, 1979');
+    equal(dateRun(d, 'endOfWeek'), new Date(1979, 0, 6, 23, 59, 59, 999), 'endOfWeek | January 1, 1979');
+    equal(dateRun(d, 'endOfMonth'), new Date(1979, 0, 31, 23, 59, 59, 999), 'endOfMonth | January 1, 1979');
+    equal(dateRun(d, 'endOfYear'), new Date(1979, 11, 31, 23, 59, 59, 999), 'endOfYear | January 1, 1979');
 
     var d = new Date('December 31, 1945 01:33:42');
 
-    dateEqual(dateRun(d, 'beginningOfDay'), new Date(1945, 11, 31), 'beginningOfDay | January 1, 1945');
-    dateEqual(dateRun(d, 'beginningOfWeek'), new Date(1945, 11, 30), 'beginningOfWeek | January 1, 1945');
-    dateEqual(dateRun(d, 'beginningOfMonth'), new Date(1945, 11), 'beginningOfMonth | January 1, 1945');
-    dateEqual(dateRun(d, 'beginningOfYear'), new Date(1945, 0), 'beginningOfYear | January 1, 1945');
+    equal(dateRun(d, 'beginningOfDay'), new Date(1945, 11, 31), 'beginningOfDay | January 1, 1945');
+    equal(dateRun(d, 'beginningOfWeek'), new Date(1945, 11, 30), 'beginningOfWeek | January 1, 1945');
+    equal(dateRun(d, 'beginningOfMonth'), new Date(1945, 11), 'beginningOfMonth | January 1, 1945');
+    equal(dateRun(d, 'beginningOfYear'), new Date(1945, 0), 'beginningOfYear | January 1, 1945');
 
-    dateEqual(dateRun(d, 'endOfDay'), new Date(1945, 11, 31, 23, 59, 59, 999), 'endOfDay | January 1, 1945');
-    dateEqual(dateRun(d, 'endOfWeek'), new Date(1946, 0, 5, 23, 59, 59, 999), 'endOfWeek | January 1, 1945');
-    dateEqual(dateRun(d, 'endOfMonth'), new Date(1945, 11, 31, 23, 59, 59, 999), 'endOfMonth | January 1, 1945');
-    dateEqual(dateRun(d, 'endOfYear'), new Date(1945, 11, 31, 23, 59, 59, 999), 'endOfYear | January 1, 1945');
+    equal(dateRun(d, 'endOfDay'), new Date(1945, 11, 31, 23, 59, 59, 999), 'endOfDay | January 1, 1945');
+    equal(dateRun(d, 'endOfWeek'), new Date(1946, 0, 5, 23, 59, 59, 999), 'endOfWeek | January 1, 1945');
+    equal(dateRun(d, 'endOfMonth'), new Date(1945, 11, 31, 23, 59, 59, 999), 'endOfMonth | January 1, 1945');
+    equal(dateRun(d, 'endOfYear'), new Date(1945, 11, 31, 23, 59, 59, 999), 'endOfYear | January 1, 1945');
 
     var d = new Date('February 29, 2012 22:15:42');
 
-    dateEqual(dateRun(d, 'beginningOfDay'), new Date(2012, 1, 29), 'beginningOfDay | February 29, 2012');
-    dateEqual(dateRun(d, 'beginningOfWeek'), new Date(2012, 1, 26), 'beginningOfWeek | February 29, 2012');
-    dateEqual(dateRun(d, 'beginningOfMonth'), new Date(2012, 1), 'beginningOfMonth | February 29, 2012');
-    dateEqual(dateRun(d, 'beginningOfYear'), new Date(2012, 0), 'beginningOfYear | February 29, 2012');
+    equal(dateRun(d, 'beginningOfDay'), new Date(2012, 1, 29), 'beginningOfDay | February 29, 2012');
+    equal(dateRun(d, 'beginningOfWeek'), new Date(2012, 1, 26), 'beginningOfWeek | February 29, 2012');
+    equal(dateRun(d, 'beginningOfMonth'), new Date(2012, 1), 'beginningOfMonth | February 29, 2012');
+    equal(dateRun(d, 'beginningOfYear'), new Date(2012, 0), 'beginningOfYear | February 29, 2012');
 
-    dateEqual(dateRun(d, 'endOfDay'), new Date(2012, 1, 29, 23, 59, 59, 999), 'endOfDay | February 29, 2012');
-    dateEqual(dateRun(d, 'endOfWeek'), new Date(2012, 2, 3, 23, 59, 59, 999), 'endOfWeek | February 29, 2012');
-    dateEqual(dateRun(d, 'endOfMonth'), new Date(2012, 1, 29, 23, 59, 59, 999), 'endOfMonth | February 29, 2012');
-    dateEqual(dateRun(d, 'endOfYear'), new Date(2012, 11, 31, 23, 59, 59, 999), 'endOfYear | February 29, 2012');
+    equal(dateRun(d, 'endOfDay'), new Date(2012, 1, 29, 23, 59, 59, 999), 'endOfDay | February 29, 2012');
+    equal(dateRun(d, 'endOfWeek'), new Date(2012, 2, 3, 23, 59, 59, 999), 'endOfWeek | February 29, 2012');
+    equal(dateRun(d, 'endOfMonth'), new Date(2012, 1, 29, 23, 59, 59, 999), 'endOfMonth | February 29, 2012');
+    equal(dateRun(d, 'endOfYear'), new Date(2012, 11, 31, 23, 59, 59, 999), 'endOfYear | February 29, 2012');
 
     var d = run(testCreateUTCDate('January 1, 2010 02:00:00'), 'setUTC', [true]);
 
-    dateEqual(dateRun(d, 'beginningOfDay'), new Date(Date.UTC(2010, 0)), 'beginningOfDay | utc');
-    dateEqual(dateRun(d, 'beginningOfWeek'), new Date(Date.UTC(2009, 11, 27)), 'beginningOfWeek | utc');
-    dateEqual(dateRun(d, 'beginningOfMonth'), new Date(Date.UTC(2010, 0)), 'beginningOfMonth | utc');
-    dateEqual(dateRun(d, 'beginningOfYear'), new Date(Date.UTC(2010, 0)), 'beginningOfYear | utc');
+    equal(dateRun(d, 'beginningOfDay'), new Date(Date.UTC(2010, 0)), 'beginningOfDay | utc');
+    equal(dateRun(d, 'beginningOfWeek'), new Date(Date.UTC(2009, 11, 27)), 'beginningOfWeek | utc');
+    equal(dateRun(d, 'beginningOfMonth'), new Date(Date.UTC(2010, 0)), 'beginningOfMonth | utc');
+    equal(dateRun(d, 'beginningOfYear'), new Date(Date.UTC(2010, 0)), 'beginningOfYear | utc');
 
-    dateEqual(dateRun(d, 'endOfDay'), new Date(Date.UTC(2010, 0, 1, 23, 59, 59, 999)), 'endOfDay | utc');
-    dateEqual(dateRun(d, 'endOfWeek'), new Date(Date.UTC(2010, 0, 2, 23, 59, 59, 999)), 'endOfWeek | utc');
-    dateEqual(dateRun(d, 'endOfMonth'), new Date(Date.UTC(2010, 0, 31, 23, 59, 59, 999)), 'endOfMonth | utc');
-    dateEqual(dateRun(d, 'endOfYear'), new Date(Date.UTC(2010, 11, 31, 23, 59, 59, 999)), 'endOfYear | utc');
+    equal(dateRun(d, 'endOfDay'), new Date(Date.UTC(2010, 0, 1, 23, 59, 59, 999)), 'endOfDay | utc');
+    equal(dateRun(d, 'endOfWeek'), new Date(Date.UTC(2010, 0, 2, 23, 59, 59, 999)), 'endOfWeek | utc');
+    equal(dateRun(d, 'endOfMonth'), new Date(Date.UTC(2010, 0, 31, 23, 59, 59, 999)), 'endOfMonth | utc');
+    equal(dateRun(d, 'endOfYear'), new Date(Date.UTC(2010, 11, 31, 23, 59, 59, 999)), 'endOfYear | utc');
 
   });
 
@@ -2277,27 +2280,27 @@ package('Date', function () {
 
     var d = new Date('February 29, 2012 22:15:42');
 
-    dateEqual(dateRun(d, 'addMilliseconds', [12]), new Date(2012, 1, 29, 22, 15, 42, 12), 'addMilliseconds');
-    dateEqual(dateRun(d, 'addSeconds', [12]), new Date(2012, 1, 29, 22, 15, 54), 'addSeconds');
-    dateEqual(dateRun(d, 'addMinutes', [12]), new Date(2012, 1, 29, 22, 27, 42), 'addMinutes');
-    dateEqual(dateRun(d, 'addHours', [12]), new Date(2012, 2, 1, 10, 15, 42), 'addHours');
-    dateEqual(dateRun(d, 'addDays', [12]), new Date(2012, 2, 12, 22, 15, 42), 'addDays');
-    dateEqual(dateRun(d, 'addWeeks', [12]), new Date(2012, 4, 23, 22, 15, 42), 'addWeeks');
-    dateEqual(dateRun(d, 'addMonths', [12]), new Date(2013, 1, 28, 22, 15, 42), 'addMonths');
-    dateEqual(dateRun(d, 'addYears', [12]), new Date(2024, 1, 29, 22, 15, 42), 'addYears');
+    equal(dateRun(d, 'addMilliseconds', [12]), new Date(2012, 1, 29, 22, 15, 42, 12), 'addMilliseconds');
+    equal(dateRun(d, 'addSeconds', [12]), new Date(2012, 1, 29, 22, 15, 54), 'addSeconds');
+    equal(dateRun(d, 'addMinutes', [12]), new Date(2012, 1, 29, 22, 27, 42), 'addMinutes');
+    equal(dateRun(d, 'addHours', [12]), new Date(2012, 2, 1, 10, 15, 42), 'addHours');
+    equal(dateRun(d, 'addDays', [12]), new Date(2012, 2, 12, 22, 15, 42), 'addDays');
+    equal(dateRun(d, 'addWeeks', [12]), new Date(2012, 4, 23, 22, 15, 42), 'addWeeks');
+    equal(dateRun(d, 'addMonths', [12]), new Date(2013, 1, 28, 22, 15, 42), 'addMonths');
+    equal(dateRun(d, 'addYears', [12]), new Date(2024, 1, 29, 22, 15, 42), 'addYears');
 
-    dateEqual(dateRun(d, 'addMilliseconds', [-12]), new Date(2012, 1, 29, 22, 15, 41, 988), 'addMilliseconds | negative');
-    dateEqual(dateRun(d, 'addSeconds', [-12]), new Date(2012, 1, 29, 22, 15, 30), 'addSeconds | negative');
-    dateEqual(dateRun(d, 'addMinutes', [-12]), new Date(2012, 1, 29, 22, 3, 42), 'addMinutes | negative');
-    dateEqual(dateRun(d, 'addHours', [-12]), new Date(2012, 1, 29, 10, 15, 42), 'addHours | negative');
-    dateEqual(dateRun(d, 'addDays', [-12]), new Date(2012, 1, 17, 22, 15, 42), 'addDays | negative');
-    dateEqual(dateRun(d, 'addWeeks', [-12]), new Date(2011, 11, 7, 22, 15, 42), 'addWeeks | negative');
-    dateEqual(dateRun(d, 'addMonths', [-12]), new Date(2011, 1, 28, 22, 15, 42), 'addMonths | negative');
-    dateEqual(dateRun(d, 'addYears', [-12]), new Date(2000, 1, 29, 22, 15, 42), 'addYears | negative');
+    equal(dateRun(d, 'addMilliseconds', [-12]), new Date(2012, 1, 29, 22, 15, 41, 988), 'addMilliseconds | negative');
+    equal(dateRun(d, 'addSeconds', [-12]), new Date(2012, 1, 29, 22, 15, 30), 'addSeconds | negative');
+    equal(dateRun(d, 'addMinutes', [-12]), new Date(2012, 1, 29, 22, 3, 42), 'addMinutes | negative');
+    equal(dateRun(d, 'addHours', [-12]), new Date(2012, 1, 29, 10, 15, 42), 'addHours | negative');
+    equal(dateRun(d, 'addDays', [-12]), new Date(2012, 1, 17, 22, 15, 42), 'addDays | negative');
+    equal(dateRun(d, 'addWeeks', [-12]), new Date(2011, 11, 7, 22, 15, 42), 'addWeeks | negative');
+    equal(dateRun(d, 'addMonths', [-12]), new Date(2011, 1, 28, 22, 15, 42), 'addMonths | negative');
+    equal(dateRun(d, 'addYears', [-12]), new Date(2000, 1, 29, 22, 15, 42), 'addYears | negative');
 
     // Issue #221
 
-    dateEqual(dateRun(new Date(2012, 0), 'addMonths', [-13]), new Date(2010, 11), 'Date#addMonths | Month traversal should not kick in when n < -12');
+    equal(dateRun(new Date(2012, 0), 'addMonths', [-13]), new Date(2010, 11), 'Date#addMonths | Month traversal should not kick in when n < -12');
 
   });
 
@@ -2329,7 +2332,7 @@ package('Date', function () {
     dateTest(d, ['weeks'], new Date(2012, 1, 29, 22, 15, 42), 'reset week | not considered meaningful');
     dateTest(d, ['week'],  new Date(2012, 1, 29, 22, 15, 42), 'reset weeks | not considered meaningful');
 
-    dateEqual(dateRun(d, 'addDays', [5, true]), new Date(2012, 2, 5), 'can also reset the time');
+    equal(dateRun(d, 'addDays', [5, true]), new Date(2012, 2, 5), 'can also reset the time');
   });
 
   group('isMethods', function() {
@@ -2745,10 +2748,10 @@ package('Date', function () {
   method('addFormat', function() {
 
     run(Date, 'addFormat', ['(\\d+)\\^\\^(\\d+)%%(\\d+), but at the (beginning|end)', ['date','year','month','edge']]);
-    dateEqual(testCreateDate('25^^2008%%02, but at the end'), new Date(2008, 1, 25, 23, 59, 59, 999), 'Date.addFormat | make your own crazy format!');
+    equal(testCreateDate('25^^2008%%02, but at the end'), new Date(2008, 1, 25, 23, 59, 59, 999), 'Date.addFormat | make your own crazy format!');
 
     run(Date, 'addFormat', ['on ze (\\d+)th of (january|february|march|april|may) lavigne', ['date','month'], 'en']);
-    dateEqual(testCreateDate('on ze 18th of april lavigne', 'en'), new Date(thisYear, 3, 18), 'handles other formats');
+    equal(testCreateDate('on ze 18th of april lavigne', 'en'), new Date(thisYear, 3, 18), 'handles other formats');
 
     equal(typeof Sugar.Date.getLocale(), 'object', 'current locale object is exposed in case needed');
     equal(Sugar.Date.getLocale().code, 'en', 'adding the format did not change the current locale');
@@ -2788,7 +2791,7 @@ package('Date', function () {
 
     var d = new Date(2010,7,5,13,45,2,542);
     test(d, 31, 'basic August 5th, 2010');
-    dateEqual(d, new Date(2010,7,5,13,45,2,542), 'should not modify the date');
+    equal(d, new Date(2010,7,5,13,45,2,542), 'should not modify the date');
 
     test(new Date(2011, 0, 1), 52, 'January 1, 2011');
     test(new Date(2011, 0, 2), 52, 'January 2, 2011');
@@ -2835,7 +2838,7 @@ package('Date', function () {
     // https://github.com/andrewplummer/Sugar/issues/119#issuecomment-4520966
 
     run(Date, 'addFormat', ['(\\d{2})(\\d{2})',['hour','minute']]);
-    dateEqual(testCreateDate('0615'), testCreateDate('06:15'), 'Overrides defined formats');
+    equal(testCreateDate('0615'), testCreateDate('06:15'), 'Overrides defined formats');
 
     // Not sure how nuts I want to get with this so for the sake of the tests just push the proper format back over the top...
     run(Date, 'addFormat', ['(\\d{4})', ['year']]);
@@ -2899,10 +2902,10 @@ package('Date', function () {
 
     equal(Sugar.Date.getLocale().code, Sugar.Date.getLocale('en').code, 'adding a locale does not affect the current locale');
     equal(Sugar.Date.getLocale('bar').months[0], 'a', 'new locale has been added');
-    dateEqual(testCreateDate('a', 'bar'), testCreateDate('January'), 'formats have been recognized');
+    equal(testCreateDate('a', 'bar'), testCreateDate('January'), 'formats have been recognized');
 
     Sugar.Date.addLocale({ code: 'barbar', months: ['d','e','f'] });
-    dateEqual(testCreateDate('f', 'barbar'), testCreateDate('March'), 'can add locale with just object');
+    equal(testCreateDate('f', 'barbar'), testCreateDate('March'), 'can add locale with just object');
 
     testSetLocale('bar');
     Sugar.Date.removeLocale('bar');
@@ -2958,7 +2961,7 @@ package('Date', function () {
     var d = testCreateDate();
     var expected = new Date();
     expected.setTime(expected.getTime() - (offset * 60 * 1000));
-    dateEqual(d, expected, 'now | offset was respected');
+    equal(d, expected, 'now | offset was respected');
 
     var d = testCreateDate('1 day ago');
     var expected = new Date();
@@ -2967,7 +2970,7 @@ package('Date', function () {
     // traverse across a DST boundary which could affect the offset.
     expected.setTime(expected.getTime() - (offset * 60 * 1000));
     expected.setDate(expected.getDate() - 1);
-    dateEqual(d, expected, '1 day ago | offset was respected');
+    equal(d, expected, '1 day ago | offset was respected');
 
     equal(testCreatePastDate('4pm').getTime() < (new Date().getTime() + (-offset * 60 * 1000)), true, 'past repsects global offset');
     equal(testCreateFutureDate('4pm').getTime() > (new Date().getTime() + (-offset * 60 * 1000)), true, 'future repsects global offset');
@@ -2999,16 +3002,16 @@ package('Date', function () {
 
     // If traversing into a new month don't reset the date if the date was also advanced
 
-    dateEqual(run(new Date(2011, 0, 31), 'advance', [{ month: 1 }]), new Date(2011, 1, 28), 'advanced by month will land on last day if the day does not exist');
-    dateEqual(run(new Date(2011, 0, 31), 'advance', [{ month: 1, day: 3 }]), new Date(2011, 2, 3), 'can still advance days after reset');
-    dateEqual(run(new Date(2011, 2, 31), 'rewind', [{ month: 1 }]), new Date(2011, 1, 28), 'rewind by month will land on last day if the day does not exist');
-    dateEqual(run(new Date(2011, 2, 31), 'rewind', [{ month: 1, day: 3 }]), new Date(2011, 1, 25), 'can still rewind days after reset');
-    dateEqual(run(new Date(2011, 0, 31), 'set', [{ month: 1 }]), new Date(2011, 1, 28), 'set does not cause month traversal');
-    dateEqual(run(new Date(2011, 0, 31), 'set', [{ month: 1, day: 3 }]), new Date(2011, 1, 3), 'set with day does not cause month traversal');
+    equal(run(new Date(2011, 0, 31), 'advance', [{ month: 1 }]), new Date(2011, 1, 28), 'advanced by month will land on last day if the day does not exist');
+    equal(run(new Date(2011, 0, 31), 'advance', [{ month: 1, day: 3 }]), new Date(2011, 2, 3), 'can still advance days after reset');
+    equal(run(new Date(2011, 2, 31), 'rewind', [{ month: 1 }]), new Date(2011, 1, 28), 'rewind by month will land on last day if the day does not exist');
+    equal(run(new Date(2011, 2, 31), 'rewind', [{ month: 1, day: 3 }]), new Date(2011, 1, 25), 'can still rewind days after reset');
+    equal(run(new Date(2011, 0, 31), 'set', [{ month: 1 }]), new Date(2011, 1, 28), 'set does not cause month traversal');
+    equal(run(new Date(2011, 0, 31), 'set', [{ month: 1, day: 3 }]), new Date(2011, 1, 3), 'set with day does not cause month traversal');
 
 
     var d = run(new Date(2010, 0, 31), 'set', [{ month: 1 }, true]);
-    dateEqual(d, new Date(2010, 1), 'reset dates will not accidentally traverse into a different month');
+    equal(d, new Date(2010, 1), 'reset dates will not accidentally traverse into a different month');
 
   });
 
@@ -3132,54 +3135,57 @@ package('Number', function () {
 
   group('Unit Before/After', function () {
 
-    dateEqual(run(1, 'secondAfter'), 1000, 'secondAfter | 1');
-    dateEqual(run(5, 'secondsAfter'), 5000, 'secondsAfter | 5');
-    dateEqual(run(10, 'minutesAfter'), 600000, 'minutesAfter | 10');
+    function assertBeforeAfter(ms, method, args, ems, message) {
+      equal(run(ms, method, args), getRelativeDate(null, null, null, null, null, null, ems), message);
+    }
+    //console.info(run(1, 'secondAfter'));
+    assertBeforeAfter(1, 'secondAfter', [], 1000, 'secondAfter | 1');
+    assertBeforeAfter(5, 'secondsAfter', [], 5000, 'secondsAfter | 5');
+    assertBeforeAfter(10, 'minutesAfter', [], 600000, 'minutesAfter | 10');
 
-    dateEqual(run(1, 'secondFromNow'), 1000, 'secondFromNow | 1');
-    dateEqual(run(5, 'secondsFromNow'), 5000, 'secondsFromNow | 5');
-    dateEqual(run(10, 'minutesFromNow'), 600000, 'minutesFromNow | 10');
+    assertBeforeAfter(1, 'secondFromNow', [], 1000, 'secondFromNow | 1');
+    assertBeforeAfter(5, 'secondsFromNow', [], 5000, 'secondsFromNow | 5');
+    assertBeforeAfter(10, 'minutesFromNow', [], 600000, 'minutesFromNow | 10');
 
-    dateEqual(run(1, 'secondAgo'), -1000, 'secondAgo | 1');
-    dateEqual(run(5, 'secondsAgo'), -5000, 'secondAgo | 5');
-    dateEqual(run(10, 'secondsAgo'), -10000, 'secondAgo | 10');
+    assertBeforeAfter(1, 'secondAgo', [], -1000, 'secondAgo | 1');
+    assertBeforeAfter(5, 'secondsAgo', [], -5000, 'secondAgo | 5');
+    assertBeforeAfter(10, 'secondsAgo', [], -10000, 'secondAgo | 10');
 
-    dateEqual(run(1, 'secondBefore'), -1000, 'secondBefore | 1');
-    dateEqual(run(5, 'secondsBefore'), -5000, 'secondBefore | 5');
-    dateEqual(run(10, 'secondsBefore'), -10000, 'secondBefore | 10');
+    assertBeforeAfter(1, 'secondBefore', [], -1000, 'secondBefore | 1');
+    assertBeforeAfter(5, 'secondsBefore', [], -5000, 'secondBefore | 5');
+    assertBeforeAfter(10, 'secondsBefore', [], -10000, 'secondBefore | 10');
 
-    dateEqual(run(5, 'minutesAfter', [run(5, 'minutesAgo')]), 0, 'minutesAfter | 5 minutes after 5 minutes ago');
-    dateEqual(run(10, 'minutesAfter', [run(5, 'minutesAgo')]), 1000 * 60 * 5, 'minutesAfter | 10 minutes after 5 minutes ago');
+    assertBeforeAfter(5, 'minutesAfter', [run(5, 'minutesAgo')], 0, 'minutesAfter | 5 minutes after 5 minutes ago');
+    assertBeforeAfter(10, 'minutesAfter', [run(5, 'minutesAgo')], 1000 * 60 * 5, 'minutesAfter | 10 minutes after 5 minutes ago');
 
-    dateEqual(run(5, 'minutesFromNow', [run(5, 'minutesAgo')]), 0, 'minutesFromNow | 5 minutes from now 5 minutes ago');
-    dateEqual(run(10, 'minutesFromNow', [run(5, 'minutesAgo')]), 1000 * 60 * 5, 'minutesFromNow | 10 minutes from now 5 minutes ago');
+    assertBeforeAfter(5, 'minutesFromNow', [run(5, 'minutesAgo')], 0, 'minutesFromNow | 5 minutes from now 5 minutes ago');
+    assertBeforeAfter(10, 'minutesFromNow', [run(5, 'minutesAgo')], 1000 * 60 * 5, 'minutesFromNow | 10 minutes from now 5 minutes ago');
 
-    dateEqual(run(5, 'minutesAgo', [run(5, 'minutesFromNow')]), 0, 'minutesAgo | 5 minutes ago 5 minutes from now');
-    dateEqual(run(10, 'minutesAgo', [run(5, 'minutesFromNow')]), -(1000 * 60 * 5), 'minutesAgo | 10 minutes ago 5 minutes from now');
+    assertBeforeAfter(5, 'minutesAgo', [run(5, 'minutesFromNow')], 0, 'minutesAgo | 5 minutes ago 5 minutes from now');
+    assertBeforeAfter(10, 'minutesAgo', [run(5, 'minutesFromNow')], -(1000 * 60 * 5), 'minutesAgo | 10 minutes ago 5 minutes from now');
 
-    dateEqual(run(5, 'minutesBefore', [run(5, 'minutesFromNow')]), 0, 'minutesBefore | 5 minutes before 5 minutes from now');
-    dateEqual(run(10, 'minutesBefore', [run(5, 'minutesFromNow')]), -(1000 * 60 * 5), 'minutesBefore | 10 minutes before 5 minutes from now');
-
+    assertBeforeAfter(5, 'minutesBefore', [run(5, 'minutesFromNow')], 0, 'minutesBefore | 5 minutes before 5 minutes from now');
+    assertBeforeAfter(10, 'minutesBefore', [run(5, 'minutesFromNow')], -(1000 * 60 * 5), 'minutesBefore | 10 minutes before 5 minutes from now');
 
     var christmas = new Date('December 25, 1972');
 
-    dateEqual(run(5, 'minutesBefore', [christmas]), getRelativeDate.call(christmas, null, null, null, null, -5), 'minutesBefore | 5 minutes before christmas');
-    dateEqual(run(5, 'minutesAfter', [christmas]), getRelativeDate.call(christmas, null, null, null, null, 5), 'minutesAfter | 5 minutes after christmas');
+    equal(run(5, 'minutesBefore', [christmas]), getRelativeDate.call(christmas, null, null, null, null, -5), 'minutesBefore | 5 minutes before christmas');
+    equal(run(5, 'minutesAfter', [christmas]), getRelativeDate.call(christmas, null, null, null, null, 5), 'minutesAfter | 5 minutes after christmas');
 
-    dateEqual(run(5, 'hoursBefore', [christmas]), getRelativeDate.call(christmas, null, null, null, -5), 'hoursBefore | 5 hours before christmas');
-    dateEqual(run(5, 'hoursAfter', [christmas]), getRelativeDate.call(christmas, null, null, null, 5), 'hoursAfter | 5 hours after christmas');
+    equal(run(5, 'hoursBefore', [christmas]), getRelativeDate.call(christmas, null, null, null, -5), 'hoursBefore | 5 hours before christmas');
+    equal(run(5, 'hoursAfter', [christmas]), getRelativeDate.call(christmas, null, null, null, 5), 'hoursAfter | 5 hours after christmas');
 
-    dateEqual(run(5, 'daysBefore', [christmas]), getRelativeDate.call(christmas, null, null, -5), 'daysBefore | 5 days before christmas');
-    dateEqual(run(5, 'daysAfter', [christmas]), getRelativeDate.call(christmas, null, null, 5), 'daysAfter | 5 days after christmas');
+    equal(run(5, 'daysBefore', [christmas]), getRelativeDate.call(christmas, null, null, -5), 'daysBefore | 5 days before christmas');
+    equal(run(5, 'daysAfter', [christmas]), getRelativeDate.call(christmas, null, null, 5), 'daysAfter | 5 days after christmas');
 
-    dateEqual(run(5, 'weeksBefore', [christmas]), getRelativeDate.call(christmas, null, null, -35), 'weeksBefore | 5 weeks before christmas');
-    dateEqual(run(5, 'weeksAfter', [christmas]), getRelativeDate.call(christmas, null, null, 35), 'weeksAfter | 5 weeks after christmas');
+    equal(run(5, 'weeksBefore', [christmas]), getRelativeDate.call(christmas, null, null, -35), 'weeksBefore | 5 weeks before christmas');
+    equal(run(5, 'weeksAfter', [christmas]), getRelativeDate.call(christmas, null, null, 35), 'weeksAfter | 5 weeks after christmas');
 
-    dateEqual(run(5, 'monthsBefore', [christmas]), getRelativeDate.call(christmas, null, -5), 'monthsBefore | 5 months before christmas');
-    dateEqual(run(5, 'monthsAfter', [christmas]), getRelativeDate.call(christmas, null, 5), 'monthsAfter | 5 months after christmas');
+    equal(run(5, 'monthsBefore', [christmas]), getRelativeDate.call(christmas, null, -5), 'monthsBefore | 5 months before christmas');
+    equal(run(5, 'monthsAfter', [christmas]), getRelativeDate.call(christmas, null, 5), 'monthsAfter | 5 months after christmas');
 
-    dateEqual(run(5, 'yearsBefore', [christmas]), getRelativeDate.call(christmas, -5), 'yearsBefore | 5 years before christmas');
-    dateEqual(run(5, 'yearsAfter', [christmas]), getRelativeDate.call(christmas, 5), 'yearsAfter | 5 years after christmas');
+    equal(run(5, 'yearsBefore', [christmas]), getRelativeDate.call(christmas, -5), 'yearsBefore | 5 years before christmas');
+    equal(run(5, 'yearsAfter', [christmas]), getRelativeDate.call(christmas, 5), 'yearsAfter | 5 years after christmas');
 
 
     // Hooking it all up!!
@@ -3190,39 +3196,39 @@ package('Number', function () {
     // 3. hours = 23
     // 4. PROFIT $$$
 
-    dateEqual(run(5, 'minutesBefore', ['April 2rd, 1998']), new Date(1998, 3, 1, 23, 55), 'minutesBefore | 5 minutes before April 3rd, 1998');
-    dateEqual(run(5, 'minutesAfter', ['January 2nd, 2005']), new Date(2005, 0, 2, 0, 5), 'minutesAfter | 5 minutes after January 2nd, 2005');
-    dateEqual(run(5, 'hoursBefore', ['the first day of 2005']), new Date(2004, 11, 31, 19), 'hoursBefore | 5 hours before the first day of 2005');
-    dateEqual(run(5, 'hoursAfter', ['the last day of 2006']), new Date(2006, 11, 31, 5), 'hoursAfter | 5 hours after the last day of 2006');
-    dateEqual(run(5, 'hoursAfter', ['the end of 2006']), new Date(2007, 0, 1, 4, 59, 59, 999), 'hoursAfter | 5 hours after the end of 2006');
+    equal(run(5, 'minutesBefore', ['April 2rd, 1998']), new Date(1998, 3, 1, 23, 55), 'minutesBefore | 5 minutes before April 3rd, 1998');
+    equal(run(5, 'minutesAfter', ['January 2nd, 2005']), new Date(2005, 0, 2, 0, 5), 'minutesAfter | 5 minutes after January 2nd, 2005');
+    equal(run(5, 'hoursBefore', ['the first day of 2005']), new Date(2004, 11, 31, 19), 'hoursBefore | 5 hours before the first day of 2005');
+    equal(run(5, 'hoursAfter', ['the last day of 2006']), new Date(2006, 11, 31, 5), 'hoursAfter | 5 hours after the last day of 2006');
+    equal(run(5, 'hoursAfter', ['the end of 2006']), new Date(2007, 0, 1, 4, 59, 59, 999), 'hoursAfter | 5 hours after the end of 2006');
 
 
     var expected = getDateWithWeekdayAndOffset(1, -7);
     expected.setDate(expected.getDate() - 5);
-    dateEqual(run(5, 'daysBefore', ['last week monday']), expected, 'daysBefore | 5 days before last week monday');
+    equal(run(5, 'daysBefore', ['last week monday']), expected, 'daysBefore | 5 days before last week monday');
 
     var expected = new Date(getDateWithWeekdayAndOffset(2, 7).getTime() + run(5, 'days'));
-    dateEqual(run(5, 'daysAfter', ['next tuesday']), expected, 'daysAfter | 5 days after next week tuesday');
+    equal(run(5, 'daysAfter', ['next tuesday']), expected, 'daysAfter | 5 days after next week tuesday');
 
     var expected = getRelativeDate(null, null, -35);
     expected.setHours(0);
     expected.setMinutes(0);
     expected.setSeconds(0);
     expected.setMilliseconds(0);
-    dateEqual(run(5, 'weeksBefore', ['today']), expected, 'weeksBefore | 5 weeks before today');
+    equal(run(5, 'weeksBefore', ['today']), expected, 'weeksBefore | 5 weeks before today');
 
     var expected = getRelativeDate(null, null, 35);
-    dateEqual(run(5, 'weeksAfter', ['now']), expected, 'weeksAfter | 5 weeks after now');
+    equal(run(5, 'weeksAfter', ['now']), expected, 'weeksAfter | 5 weeks after now');
 
     var expected = getRelativeDate(null, -5);
     expected.setHours(0);
     expected.setMinutes(0);
     expected.setSeconds(0);
     expected.setMilliseconds(0);
-    dateEqual(run(5, 'monthsBefore', ['today']), expected, 'monthsBefore | 5 months before today');
+    equal(run(5, 'monthsBefore', ['today']), expected, 'monthsBefore | 5 months before today');
 
     var expected = getRelativeDate(null, 5);
-    dateEqual(run(5, 'monthsAfter', ['now']), expected, 'monthsAfter | 5 months after now');
+    equal(run(5, 'monthsAfter', ['now']), expected, 'monthsAfter | 5 months after now');
 
   });
 
