@@ -92,7 +92,7 @@ package('Core', function() {
 
   group('Sugar Object namespace full', function () {
     Sugar.Object({
-      objectInstance: true
+      objectPrototype: true
     });
     assertAllMethodsMappedToNative(['Object']);
     assertNoMethodsMappedToNative(['Array', 'Boolean', 'Number', 'Date', 'String', 'RegExp', 'Function']);
@@ -100,7 +100,7 @@ package('Core', function() {
 
   group('Sugar Object extend full', function () {
     Sugar.Object.extend({
-      objectInstance: true
+      objectPrototype: true
     });
     assertAllMethodsMappedToNative(['Object']);
     assertNoMethodsMappedToNative(['Array', 'Boolean', 'Number', 'Date', 'String', 'RegExp', 'Function']);
@@ -239,7 +239,7 @@ package('Core', function() {
 
   group('Will extend to Object.prototype after namespace extend', function () {
     Sugar.Object.extend({
-      objectInstance: true
+      objectPrototype: true
     });
     defineCustom(Sugar.Object);
     equal(({}).foo(), 'foo!', 'foo has been mapped');
@@ -247,7 +247,7 @@ package('Core', function() {
 
   group('Will extend to Object.prototype on global call with true', function () {
     Sugar({
-      objectInstance: true
+      objectPrototype: true
     });
     defineCustom(Sugar.Object);
     equal(({}).foo(), 'foo!', 'foo has been mapped');
@@ -255,7 +255,7 @@ package('Core', function() {
 
   group('Will extend to Object.prototype on global extend with true', function () {
     Sugar.extendAll({
-      objectInstance: true
+      objectPrototype: true
     });
     defineCustom(Sugar.Object);
     equal(({}).foo(), 'foo!', 'foo has been mapped');
@@ -276,7 +276,7 @@ package('Core', function() {
     defineCustom(Sugar.Object);
     Sugar.Object.extend({
       methods: ['foo'],
-      objectInstance: true
+      objectPrototype: true
     });
     equal(Object.foo(), 'foo!', 'foo static has been mapped');
     equal(Object.bar, undefined, 'bar static has not been mapped');
