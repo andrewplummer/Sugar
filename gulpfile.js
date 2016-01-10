@@ -1495,8 +1495,13 @@ function createNpmPackages(p) {
           return;
         }
         packages.push(p);
-        if (p.dependencies) {
-          p.dependencies.forEach(function(name) {
+        checkDeps(p.requires);
+        checkDeps(p.dependencies);
+      }
+
+      function checkDeps(deps) {
+        if (deps) {
+          deps.forEach(function(name) {
             addPackage(getPackageOrAlias(name));
           });
         }
@@ -1815,16 +1820,6 @@ function createNpmPackages(p) {
     return package;
   }
 
-  function exportLocales(dir) {
-    glob.sync('lib/locales/*.js').forEach(function(l) {
-      writePackage({
-        path: path.join('locales', path.basename(l, '.js')),
-        body: fs.readFileSync(l, 'utf-8').replace(/^Sugar\.Date\./gm, ''),
-        dependencies: ['date|Date|addLocale'],
-      });
-    }, dir);
-  }
-
   function writePackage(package, dir) {
     if (!canExportPackage(package)) {
       return;
@@ -1845,21 +1840,43 @@ function createNpmPackages(p) {
 
   function moduleIncludedInPackage(npmPackageName, module, isEntryPoint) {
     var npmPackageModule = npmPackageName.replace(/^sugar-/, '');
+
+    if (module === 'es5') {
+      // The ES5 module is included in both the main and sugar-es5 packages, but
+      // in the main it is opt-in only.
+      return npmPackageName === 'sugar-es5' || (npmPackageName === 'sugar' && !isEntryPoint);
+    }
+
     return (
+
            // The main package includes all modules.
            npmPackageName === 'sugar' ||
 
            // Otherwise include the module if it matches the npm package name.
            npmPackageName === 'sugar-' + module ||
 
-           // The ES5 module is always included in the source code but opt-in.
-           (module === 'es5' && !isEntryPoint) ||
-
            // Later polyfill modules are not complete, so include only if they
            // have methods relevant to the npm package.
            (module === 'es6' && ES6_PACKAGES.indexOf(npmPackageModule) !== -1) ||
            (module === 'es7' && ES7_PACKAGES.indexOf(npmPackageModule) !== -1)
     );
+  }
+
+  function localesIncludedInPackage(npmPackageName) {
+    return npmPackageName === 'sugar' || npmPackageName === 'sugar-date';
+  }
+
+  function writeLocales(npmPackageName, dir) {
+    if (!localesIncludedInPackage(npmPackageName)) {
+      return;
+    }
+    glob.sync('lib/locales/*.js').forEach(function(l) {
+      writePackage({
+        path: path.join('locales', path.basename(l, '.js')),
+        body: fs.readFileSync(l, 'utf-8').replace(/^Sugar\.Date\./gm, ''),
+        dependencies: ['date|Date|addLocale'],
+      }, dir);
+    });
   }
 
   function createMainEntryPoint(npmPackageName, dir) {
@@ -1887,6 +1904,7 @@ function createNpmPackages(p) {
         }
       });
       createMainEntryPoint(npmPackageName, dir);
+      writeLocales(npmPackageName, dir);
       notify('Built ' + npmPackageName);
     });
   }
@@ -1900,8 +1918,6 @@ function createNpmPackages(p) {
   notify('Building packages...');
   buildPackages(baseDir);
 
-  //exportLocales();
-  //writePackage(mainPackage);
 }
 
 function getNpmPackages(p) {
@@ -2096,6 +2112,14 @@ function testWatch(all) {
   });
 }
 
+function testRunDefault() {
+  runTests();
+}
+
+function testRunAll() {
+  runTests(true);
+}
+
 function testWatchDefault() {
   testWatch(false);
 }
@@ -2122,10 +2146,10 @@ gulp.task('build:npm:all', buildNpmAll);
 gulp.task('precompile:dev', precompileDev);
 gulp.task('precompile:min', precompileMin);
 
-gulp.task('test', runTests);
-gulp.task('test:watch', testWatchDefault);
-gulp.task('test:watch:default', testWatchDefault);
-gulp.task('test:watch:all', testWatchAll);
+gulp.task('test',               testRunDefault);
+gulp.task('test:all',           testRunAll);
+gulp.task('test:watch',         testWatchDefault);
+gulp.task('test:watch:all',     testWatchAll);
 
 // TODO: REMOVE?
 gulp.task('npm', function() {
