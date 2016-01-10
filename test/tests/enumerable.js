@@ -819,6 +819,7 @@ package('Array', function() {
   });
 
   method('each', function() {
+
     var arr, fn, result, count, indexes;
 
     arr = [2, 5, 9];
@@ -971,21 +972,20 @@ package('Array', function() {
 
     var arr, expected, expectedIndexes, count, fn;
 
-    arr = ['a'];
+    var arr = ['a'];
     arr[Math.pow(2,32) - 2] = 'b';
-    expected = ['a','b'];
-    expectedIndexes = [0, Math.pow(2,32) - 2];
-    count = 0;
+    var expectedValues = ['a','b'];
+    var expectedIndexes = [0, Math.pow(2,32) - 2];
+    var count = 0;
     fn = function(el, i, a) {
-      equal(this, arr, 'sparse arrays | this object should be the array');
-      equal(el, expected[count], 'sparse arrays | first argument should be the current element');
-      equal(i, expectedIndexes[count], 'sparse arrays | second argument should be the current index');
-      equal(a, arr, 'sparse arrays | third argument should be the array');
+      equal(this, arr, 'sparse | this object should be the array');
+      equal(el, expectedValues[count], 'sparse | first argument should be the current element');
+      equal(i, expectedIndexes[count], 'sparse | second argument should be the current index');
+      equal(a, arr, 'sparse | third argument should be the array');
       count++;
     }
     run(arr, 'each', [fn]);
-    equal(count, 2, 'sparse arrays | count should match');
-
+    equal(count, 2, 'sparse | count should match');
 
     arr = [];
     arr[-2] = 'd';
@@ -993,35 +993,53 @@ package('Array', function() {
     arr[Math.pow(2,32)] = 'c';
     count = 0;
     fn = function(el, i) {
-      equal(el, 'f', 'sparse arrays | values outside range are not iterated over | el');
-      equal(i, 2, 'sparse arrays | values outside range are not iterated over | index');
+      equal(el, 'f', 'sparse | values outside range are not iterated over | el');
+      equal(i, 2, 'sparse | values outside range are not iterated over | index');
       count++;
     }
     run(arr, 'each', [fn]);
-    equal(count, 1, 'sparse arrays | values outside range are not iterated over | count');
+    equal(count, 1, 'sparse | values outside range are not iterated over | count');
 
-    arr = [];
+    var arr = [];
     arr[9] = 'd';
     arr[2] = 'f';
     arr[5] = 'c';
     count = 0;
-    expected = ['f','c','d'];
-    expectedIndexes = [2,5,9];
-    fn = function(el, i) {
-      equal(el, expected[count], 'sparse arrays | elements are in expected order');
-      equal(i, expectedIndexes[count], 'sparse arrays | index is in expected order');
-      count++;
+    var values = [];
+    var indexes = [];
+    var expectedValues = ['f','c','d'];
+    var expectedIndexes = [2,5,9];
+    fn = function(val, i) {
+      values.push(val);
+      indexes.push(i);
     }
     run(arr, 'each', [fn]);
-    equal(count, 3, 'sparse arrays | unordered array should match');
+    equal(values, expectedValues, 'sparse | unordered should produce correct values');
+    equal(indexes, expectedIndexes, 'sparse | unordered should produce correct indexes');
 
+    var arr = [];
+    arr[9] = 'd';
+    arr[2] = 'f';
+    arr[5] = 'c';
+    var values = [];
+    var indexes = [];
+    var expectedValues = ['d','f','c'];
+    var expectedIndexes = [9,2,5];
+    fn = function(val, i) {
+      values.push(val);
+      indexes.push(i);
+    }
+    run(arr, 'each', [fn, 7, true]);
+    equal(values, expectedValues, 'sparse | looping should return correct values');
+    equal(indexes, expectedIndexes, 'sparse | looping should return correct indexes');
 
     count = 0;
     fn = function() {
       count++;
     }
     run(threeUndefined, 'each', [fn]);
-    equal(count, 3, 'however, simply having an undefined in an array does not qualify it as sparse');
+    equal(count, 3, 'simply having an undefined in an array does not qualify it as sparse');
+
   });
 
   method('forEachFrom', function() {
