@@ -1,10 +1,11 @@
 var runner = require('../setup');
 
-runner.load('../../release/npm/sugar/string');
-runner.load('../../release/npm/sugar/range');
+runner.resetPolyfills('es6');
+
+runner.load('../../release/npm/sugar-string');
 
 // Tests
+runner.loadTest('es6');
 runner.loadTest('string');
-runner.loadTest('string-range');
 
 runner.run(module);
