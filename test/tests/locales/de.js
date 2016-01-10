@@ -10,115 +10,115 @@ package('Dates German', function () {
   });
 
   method('create', function() {
-    dateEqual(testCreateDate('15. Mai 2011'), new Date(2011, 4, 15), 'Date#create | basic German date');
-    dateEqual(testCreateDate('Dienstag, 5. Januar 2012'), new Date(2012, 0, 5), '2012-01-05');
-    dateEqual(testCreateDate('Mai 2011'), new Date(2011, 4), 'year and month');
-    dateEqual(testCreateDate('15. Mai'), new Date(now.getFullYear(), 4, 15), 'month and date');
-    dateEqual(testCreateDate('2011'), new Date(2011, 0), 'year');
+    equal(testCreateDate('15. Mai 2011'), new Date(2011, 4, 15), 'Date#create | basic German date');
+    equal(testCreateDate('Dienstag, 5. Januar 2012'), new Date(2012, 0, 5), '2012-01-05');
+    equal(testCreateDate('Mai 2011'), new Date(2011, 4), 'year and month');
+    equal(testCreateDate('15. Mai'), new Date(now.getFullYear(), 4, 15), 'month and date');
+    equal(testCreateDate('2011'), new Date(2011, 0), 'year');
 
-    dateEqual(testCreateDate('Dienstag, 5. Januar 2012 3:45'), new Date(2012, 0, 5, 3, 45), '2012-01-05 3:45');
-    dateEqual(testCreateDate('Dienstag, 5. Januar 2012 3:45pm'), new Date(2012, 0, 5, 15, 45), '2012-01-05 3:45pm');
+    equal(testCreateDate('Dienstag, 5. Januar 2012 3:45'), new Date(2012, 0, 5, 3, 45), '2012-01-05 3:45');
+    equal(testCreateDate('Dienstag, 5. Januar 2012 3:45pm'), new Date(2012, 0, 5, 15, 45), '2012-01-05 3:45pm');
 
-    dateEqual(testCreateDate('Januar'), new Date(now.getFullYear(), 0), 'January');
-    dateEqual(testCreateDate('Februar'), new Date(now.getFullYear(), 1), 'February');
-    dateEqual(testCreateDate('Marz'), new Date(now.getFullYear(), 2), 'March');
-    dateEqual(testCreateDate('März'), new Date(now.getFullYear(), 2), 'March');
-    dateEqual(testCreateDate('April'), new Date(now.getFullYear(), 3), 'April');
-    dateEqual(testCreateDate('Mai'), new Date(now.getFullYear(), 4), 'May');
-    dateEqual(testCreateDate('Juni'), new Date(now.getFullYear(), 5), 'June');
-    dateEqual(testCreateDate('Juli'), new Date(now.getFullYear(), 6), 'July');
-    dateEqual(testCreateDate('August'), new Date(now.getFullYear(), 7), 'August');
-    dateEqual(testCreateDate('September'), new Date(now.getFullYear(), 8), 'September');
-    dateEqual(testCreateDate('Oktober'), new Date(now.getFullYear(), 9), 'October');
-    dateEqual(testCreateDate('November'), new Date(now.getFullYear(), 10), 'November');
-    dateEqual(testCreateDate('Dezember'), new Date(now.getFullYear(), 11), 'December');
-
-
-    dateEqual(testCreateDate('Sonntag'), getDateWithWeekdayAndOffset(0), 'Sunday');
-    dateEqual(testCreateDate('Montag'), getDateWithWeekdayAndOffset(1), 'Monday');
-    dateEqual(testCreateDate('Dienstag'), getDateWithWeekdayAndOffset(2), 'Tuesday');
-    dateEqual(testCreateDate('Mittwoch'), getDateWithWeekdayAndOffset(3), 'Wednesday');
-    dateEqual(testCreateDate('Donnerstag'), getDateWithWeekdayAndOffset(4), 'Thursday');
-    dateEqual(testCreateDate('Freitag'), getDateWithWeekdayAndOffset(5), 'Friday');
-    dateEqual(testCreateDate('Samstag'), getDateWithWeekdayAndOffset(6), 'Saturday');
-
-    dateEqual(testCreateDate('einer Millisekunde vorher'), getRelativeDate(null, null, null, null, null, null,-1), 'one millisecond ago');
-    dateEqual(testCreateDate('eine Sekunde vorher'), getRelativeDate(null, null, null, null, null, -1), 'one second ago');
-    dateEqual(testCreateDate('einer Minute vorher'), getRelativeDate(null, null, null, null, -1), 'one minute ago');
-    dateEqual(testCreateDate('einer Stunde vorher'), getRelativeDate(null, null, null, -1), 'one hour ago');
-    dateEqual(testCreateDate('einen Tag vorher'), getRelativeDate(null, null, -1), 'one day ago');
-    dateEqual(testCreateDate('eine Woche vorher'), getRelativeDate(null, null, -7), 'one week ago');
-    dateEqual(testCreateDate('einen Monat vorher'), getRelativeDate(null, -1), 'one month ago');
-    dateEqual(testCreateDate('ein Jahr vorher'), getRelativeDate(-1), 'one year ago');
-
-    dateEqual(testCreateDate('vor einer Millisekunde'), getRelativeDate(null, null, null, null, null, null,-1), 'one millisecond ago');
-    dateEqual(testCreateDate('vor einer Sekunde'), getRelativeDate(null, null, null, null, null, -1), 'one second ago');
-    dateEqual(testCreateDate('vor einer Minute'), getRelativeDate(null, null, null, null, -1), 'one minute ago');
-    dateEqual(testCreateDate('vor einer Stunde'), getRelativeDate(null, null, null, -1), 'one hour ago');
-    dateEqual(testCreateDate('vor einem Tag'), getRelativeDate(null, null, -1), 'one day ago');
-    dateEqual(testCreateDate('vor einer Woche'), getRelativeDate(null, null, -7), 'one week ago');
-    dateEqual(testCreateDate('vor einem Monat'), getRelativeDate(null, -1), 'one month ago');
-    dateEqual(testCreateDate('vor einem Jahr'), getRelativeDate(-1), 'one year ago');
+    equal(testCreateDate('Januar'), new Date(now.getFullYear(), 0), 'January');
+    equal(testCreateDate('Februar'), new Date(now.getFullYear(), 1), 'February');
+    equal(testCreateDate('Marz'), new Date(now.getFullYear(), 2), 'March');
+    equal(testCreateDate('März'), new Date(now.getFullYear(), 2), 'March');
+    equal(testCreateDate('April'), new Date(now.getFullYear(), 3), 'April');
+    equal(testCreateDate('Mai'), new Date(now.getFullYear(), 4), 'May');
+    equal(testCreateDate('Juni'), new Date(now.getFullYear(), 5), 'June');
+    equal(testCreateDate('Juli'), new Date(now.getFullYear(), 6), 'July');
+    equal(testCreateDate('August'), new Date(now.getFullYear(), 7), 'August');
+    equal(testCreateDate('September'), new Date(now.getFullYear(), 8), 'September');
+    equal(testCreateDate('Oktober'), new Date(now.getFullYear(), 9), 'October');
+    equal(testCreateDate('November'), new Date(now.getFullYear(), 10), 'November');
+    equal(testCreateDate('Dezember'), new Date(now.getFullYear(), 11), 'December');
 
 
-    dateEqual(testCreateDate('in 5 Millisekunden'), getRelativeDate(null, null, null, null, null, null,5), 'five milliseconds from now');
-    dateEqual(testCreateDate('in 5 Sekunden'), getRelativeDate(null, null, null, null, null, 5), 'five second from now');
-    dateEqual(testCreateDate('in 5 Minuten'), getRelativeDate(null, null, null, null, 5), 'five minute from now');
-    dateEqual(testCreateDate('in 5 Stunden'), getRelativeDate(null, null, null, 5), 'five hour from now');
-    dateEqual(testCreateDate('in 5 Tagen'), getRelativeDate(null, null, 5), 'five day from now');
-    dateEqual(testCreateDate('in 5 Wochen'), getRelativeDate(null, null, 35), 'five weeks from now');
-    dateEqual(testCreateDate('in 5 Monaten'), getRelativeDate(null, 5), 'five months from now');
-    dateEqual(testCreateDate('in 5 Jahren'), getRelativeDate(5), 'five years from now');
+    equal(testCreateDate('Sonntag'), getDateWithWeekdayAndOffset(0), 'Sunday');
+    equal(testCreateDate('Montag'), getDateWithWeekdayAndOffset(1), 'Monday');
+    equal(testCreateDate('Dienstag'), getDateWithWeekdayAndOffset(2), 'Tuesday');
+    equal(testCreateDate('Mittwoch'), getDateWithWeekdayAndOffset(3), 'Wednesday');
+    equal(testCreateDate('Donnerstag'), getDateWithWeekdayAndOffset(4), 'Thursday');
+    equal(testCreateDate('Freitag'), getDateWithWeekdayAndOffset(5), 'Friday');
+    equal(testCreateDate('Samstag'), getDateWithWeekdayAndOffset(6), 'Saturday');
+
+    equal(testCreateDate('einer Millisekunde vorher'), getRelativeDate(null, null, null, null, null, null,-1), 'one millisecond ago');
+    equal(testCreateDate('eine Sekunde vorher'), getRelativeDate(null, null, null, null, null, -1), 'one second ago');
+    equal(testCreateDate('einer Minute vorher'), getRelativeDate(null, null, null, null, -1), 'one minute ago');
+    equal(testCreateDate('einer Stunde vorher'), getRelativeDate(null, null, null, -1), 'one hour ago');
+    equal(testCreateDate('einen Tag vorher'), getRelativeDate(null, null, -1), 'one day ago');
+    equal(testCreateDate('eine Woche vorher'), getRelativeDate(null, null, -7), 'one week ago');
+    equal(testCreateDate('einen Monat vorher'), getRelativeDate(null, -1), 'one month ago');
+    equal(testCreateDate('ein Jahr vorher'), getRelativeDate(-1), 'one year ago');
+
+    equal(testCreateDate('vor einer Millisekunde'), getRelativeDate(null, null, null, null, null, null,-1), 'one millisecond ago');
+    equal(testCreateDate('vor einer Sekunde'), getRelativeDate(null, null, null, null, null, -1), 'one second ago');
+    equal(testCreateDate('vor einer Minute'), getRelativeDate(null, null, null, null, -1), 'one minute ago');
+    equal(testCreateDate('vor einer Stunde'), getRelativeDate(null, null, null, -1), 'one hour ago');
+    equal(testCreateDate('vor einem Tag'), getRelativeDate(null, null, -1), 'one day ago');
+    equal(testCreateDate('vor einer Woche'), getRelativeDate(null, null, -7), 'one week ago');
+    equal(testCreateDate('vor einem Monat'), getRelativeDate(null, -1), 'one month ago');
+    equal(testCreateDate('vor einem Jahr'), getRelativeDate(-1), 'one year ago');
 
 
-    dateEqual(testCreateDate('vorgestern'), run(getRelativeDate(null, null, -2), 'reset'), 'day before yesterday');
-    dateEqual(testCreateDate('gestern'), run(getRelativeDate(null, null, -1), 'reset'), 'yesterday');
-    dateEqual(testCreateDate('heute'), run(getRelativeDate(null, null, 0), 'reset'), 'today');
-    dateEqual(testCreateDate('morgen'), run(getRelativeDate(null, null, 1), 'reset'), 'tomorrow');
-    dateEqual(testCreateDate('übermorgen'), run(getRelativeDate(null, null, 2), 'reset'), 'day after tomorrow');
-
-    dateEqual(testCreateDate('letzte Woche'), getRelativeDate(null, null, -7), 'Last week');
-    dateEqual(testCreateDate('nächste Woche'), getRelativeDate(null, null, 7), 'Next week');
-
-    dateEqual(testCreateDate('letzter Monat'), getRelativeDate(null, -1), 'last month letzter');
-    dateEqual(testCreateDate('letzten Monat'), getRelativeDate(null, -1), 'last month letzten');
-    dateEqual(testCreateDate('nächster Monat'), getRelativeDate(null, 1), 'Next month nachster');
-    dateEqual(testCreateDate('nächsten Monat'), getRelativeDate(null, 1), 'Next month nachsten');
-
-    dateEqual(testCreateDate('letztes Jahr'), getRelativeDate(-1), 'Last year');
-    dateEqual(testCreateDate('nächstes Jahr'), getRelativeDate(1), 'Next year');
+    equal(testCreateDate('in 5 Millisekunden'), getRelativeDate(null, null, null, null, null, null,5), 'five milliseconds from now');
+    equal(testCreateDate('in 5 Sekunden'), getRelativeDate(null, null, null, null, null, 5), 'five second from now');
+    equal(testCreateDate('in 5 Minuten'), getRelativeDate(null, null, null, null, 5), 'five minute from now');
+    equal(testCreateDate('in 5 Stunden'), getRelativeDate(null, null, null, 5), 'five hour from now');
+    equal(testCreateDate('in 5 Tagen'), getRelativeDate(null, null, 5), 'five day from now');
+    equal(testCreateDate('in 5 Wochen'), getRelativeDate(null, null, 35), 'five weeks from now');
+    equal(testCreateDate('in 5 Monaten'), getRelativeDate(null, 5), 'five months from now');
+    equal(testCreateDate('in 5 Jahren'), getRelativeDate(5), 'five years from now');
 
 
-    dateEqual(testCreateDate('kommenden Montag'), getDateWithWeekdayAndOffset(1, 7), 'kommenden Montag');
-    dateEqual(testCreateDate('nächster Montag'), getDateWithWeekdayAndOffset(1, 7), 'next monday');
-    dateEqual(testCreateDate('letztes Montag'), getDateWithWeekdayAndOffset(1, -7), 'last monday');
+    equal(testCreateDate('vorgestern'), run(getRelativeDate(null, null, -2), 'reset'), 'day before yesterday');
+    equal(testCreateDate('gestern'), run(getRelativeDate(null, null, -1), 'reset'), 'yesterday');
+    equal(testCreateDate('heute'), run(getRelativeDate(null, null, 0), 'reset'), 'today');
+    equal(testCreateDate('morgen'), run(getRelativeDate(null, null, 1), 'reset'), 'tomorrow');
+    equal(testCreateDate('übermorgen'), run(getRelativeDate(null, null, 2), 'reset'), 'day after tomorrow');
 
-    dateEqual(testCreateDate('letztes Montag 3:45'), run(getDateWithWeekdayAndOffset(1, -7), 'set', [{ hour: 3, minute: 45 }, true]), 'last monday 3:45');
+    equal(testCreateDate('letzte Woche'), getRelativeDate(null, null, -7), 'Last week');
+    equal(testCreateDate('nächste Woche'), getRelativeDate(null, null, 7), 'Next week');
+
+    equal(testCreateDate('letzter Monat'), getRelativeDate(null, -1), 'last month letzter');
+    equal(testCreateDate('letzten Monat'), getRelativeDate(null, -1), 'last month letzten');
+    equal(testCreateDate('nächster Monat'), getRelativeDate(null, 1), 'Next month nachster');
+    equal(testCreateDate('nächsten Monat'), getRelativeDate(null, 1), 'Next month nachsten');
+
+    equal(testCreateDate('letztes Jahr'), getRelativeDate(-1), 'Last year');
+    equal(testCreateDate('nächstes Jahr'), getRelativeDate(1), 'Next year');
+
+
+    equal(testCreateDate('kommenden Montag'), getDateWithWeekdayAndOffset(1, 7), 'kommenden Montag');
+    equal(testCreateDate('nächster Montag'), getDateWithWeekdayAndOffset(1, 7), 'next monday');
+    equal(testCreateDate('letztes Montag'), getDateWithWeekdayAndOffset(1, -7), 'last monday');
+
+    equal(testCreateDate('letztes Montag 3:45'), run(getDateWithWeekdayAndOffset(1, -7), 'set', [{ hour: 3, minute: 45 }, true]), 'last monday 3:45');
 
     // no accents
-    dateEqual(testCreateDate('ubermorgen'), run(getRelativeDate(null, null, 2), 'reset'), 'no accents | day after tomorrow');
-    dateEqual(testCreateDate('naechster Monat'), getRelativeDate(null, 1), 'no accents | Next month nachster');
-    dateEqual(testCreateDate('uebermorgen'), run(getRelativeDate(null, null, 2), 'reset'), 'no accents | day after tomorrow');
-    dateEqual(testCreateDate('naechster Monat'), getRelativeDate(null, 1), 'no accents | Next month nachster');
-    dateEqual(testCreateDate('naechsten Monat'), getRelativeDate(null, 1), 'no accents | Next month nachsten');
-    dateEqual(testCreateDate('naechstes Jahr'), getRelativeDate(1), 'no accents | Next year');
+    equal(testCreateDate('ubermorgen'), run(getRelativeDate(null, null, 2), 'reset'), 'no accents | day after tomorrow');
+    equal(testCreateDate('naechster Monat'), getRelativeDate(null, 1), 'no accents | Next month nachster');
+    equal(testCreateDate('uebermorgen'), run(getRelativeDate(null, null, 2), 'reset'), 'no accents | day after tomorrow');
+    equal(testCreateDate('naechster Monat'), getRelativeDate(null, 1), 'no accents | Next month nachster');
+    equal(testCreateDate('naechsten Monat'), getRelativeDate(null, 1), 'no accents | Next month nachsten');
+    equal(testCreateDate('naechstes Jahr'), getRelativeDate(1), 'no accents | Next year');
 
-    dateEqual(testCreateDate('3:45 15. Mai 2011'), new Date(2011, 4, 15, 3, 45), 'time first format');
-    dateEqual(testCreateDate('morgen um 3:30'), run(getRelativeDate(null, null, 1), 'set', [{hours:3,minutes:30}, true]), 'tomorrow at 3:30');
+    equal(testCreateDate('3:45 15. Mai 2011'), new Date(2011, 4, 15, 3, 45), 'time first format');
+    equal(testCreateDate('morgen um 3:30'), run(getRelativeDate(null, null, 1), 'set', [{hours:3,minutes:30}, true]), 'tomorrow at 3:30');
 
     // Numbers
 
-    dateEqual(testCreateDate('vor null Jahre'),    getRelativeDate(0),   'zero years ago');
-    dateEqual(testCreateDate('vor einem Jahr'),    getRelativeDate(-1),  'one year ago');
-    dateEqual(testCreateDate('vor zwei Jahren'),   getRelativeDate(-2),  'two years ago');
-    dateEqual(testCreateDate('vor drei Jahren'),   getRelativeDate(-3),  'three years ago');
-    dateEqual(testCreateDate('vor vier Jahren'),   getRelativeDate(-4),  'four years ago');
-    dateEqual(testCreateDate('vor fuenf Jahren'),  getRelativeDate(-5),  'five years ago');
-    dateEqual(testCreateDate('vor sechs Jahren'),  getRelativeDate(-6),  'six years ago');
-    dateEqual(testCreateDate('vor sieben Jahren'), getRelativeDate(-7),  'seven years ago');
-    dateEqual(testCreateDate('vor acht Jahren'),   getRelativeDate(-8),  'eight years ago');
-    dateEqual(testCreateDate('vor neun Jahren'),   getRelativeDate(-9),  'nine years ago');
-    dateEqual(testCreateDate('vor zehn Jahren'),   getRelativeDate(-10), 'ten years ago');
+    equal(testCreateDate('vor null Jahre'),    getRelativeDate(0),   'zero years ago');
+    equal(testCreateDate('vor einem Jahr'),    getRelativeDate(-1),  'one year ago');
+    equal(testCreateDate('vor zwei Jahren'),   getRelativeDate(-2),  'two years ago');
+    equal(testCreateDate('vor drei Jahren'),   getRelativeDate(-3),  'three years ago');
+    equal(testCreateDate('vor vier Jahren'),   getRelativeDate(-4),  'four years ago');
+    equal(testCreateDate('vor fuenf Jahren'),  getRelativeDate(-5),  'five years ago');
+    equal(testCreateDate('vor sechs Jahren'),  getRelativeDate(-6),  'six years ago');
+    equal(testCreateDate('vor sieben Jahren'), getRelativeDate(-7),  'seven years ago');
+    equal(testCreateDate('vor acht Jahren'),   getRelativeDate(-8),  'eight years ago');
+    equal(testCreateDate('vor neun Jahren'),   getRelativeDate(-9),  'nine years ago');
+    equal(testCreateDate('vor zehn Jahren'),   getRelativeDate(-10), 'ten years ago');
 
   });
 
@@ -205,8 +205,8 @@ package('Dates German', function () {
   });
 
   method('beginning/end', function() {
-    dateEqual(dateRun(new Date(2010, 0), 'beginningOfWeek'), new Date(2009, 11, 28), 'beginningOfWeek');
-    dateEqual(dateRun(new Date(2010, 0), 'endOfWeek'), new Date(2010, 0, 3, 23, 59, 59, 999), 'endOfWeek');
+    equal(dateRun(new Date(2010, 0), 'beginningOfWeek'), new Date(2009, 11, 28), 'beginningOfWeek');
+    equal(dateRun(new Date(2010, 0), 'endOfWeek'), new Date(2010, 0, 3, 23, 59, 59, 999), 'endOfWeek');
   });
 
 });

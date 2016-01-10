@@ -11,95 +11,95 @@ package('Dates Russian', function () {
 
   method('create', function() {
 
-    dateEqual(testCreateDate('15 мая 2011'), new Date(2011, 4, 15), 'basic Russian date');
-    dateEqual(testCreateDate('2 мая 1989 года'), new Date(1989, 4, 2), 'format with year');
-    dateEqual(testCreateDate('5 января 2012'), new Date(2012, 0, 5), '2012-01-05');
-    dateEqual(testCreateDate('Май 2011'), new Date(2011, 4), 'year and month');
-    dateEqual(testCreateDate('15 мая'), new Date(now.getFullYear(), 4, 15), 'month and date');
-    dateEqual(testCreateDate('2011'), new Date(2011, 0), 'year');
-    dateEqual(testCreateDate('Май'), new Date(now.getFullYear(), 4), 'month');
-    dateEqual(testCreateDate('понедельник'), getDateWithWeekdayAndOffset(1), 'Monday');
+    equal(testCreateDate('15 мая 2011'), new Date(2011, 4, 15), 'basic Russian date');
+    equal(testCreateDate('2 мая 1989 года'), new Date(1989, 4, 2), 'format with year');
+    equal(testCreateDate('5 января 2012'), new Date(2012, 0, 5), '2012-01-05');
+    equal(testCreateDate('Май 2011'), new Date(2011, 4), 'year and month');
+    equal(testCreateDate('15 мая'), new Date(now.getFullYear(), 4, 15), 'month and date');
+    equal(testCreateDate('2011'), new Date(2011, 0), 'year');
+    equal(testCreateDate('Май'), new Date(now.getFullYear(), 4), 'month');
+    equal(testCreateDate('понедельник'), getDateWithWeekdayAndOffset(1), 'Monday');
 
-    dateEqual(testCreateDate('15 мая 2011 3:45'), new Date(2011, 4, 15, 3, 45), 'basic Russian date 3:45');
-    dateEqual(testCreateDate('15 мая 2011 3:45 вечера'), new Date(2011, 4, 15, 15, 45), 'basic Russian date 3:45pm');
+    equal(testCreateDate('15 мая 2011 3:45'), new Date(2011, 4, 15, 3, 45), 'basic Russian date 3:45');
+    equal(testCreateDate('15 мая 2011 3:45 вечера'), new Date(2011, 4, 15, 15, 45), 'basic Russian date 3:45pm');
 
-    dateEqual(testCreateDate('одну миллисекунду назад'), getRelativeDate(null, null, null, null, null, null,-1), 'one millisecond ago');
-    dateEqual(testCreateDate('одну секунду назад'), getRelativeDate(null, null, null, null, null, -1), 'one second ago');
-    dateEqual(testCreateDate('одну минуту назад'), getRelativeDate(null, null, null, null, -1), 'one minute ago');
-    dateEqual(testCreateDate('один час назад'), getRelativeDate(null, null, null, -1), 'one hour ago');
-    dateEqual(testCreateDate('один день назад'), getRelativeDate(null, null, -1), 'one day ago');
-    dateEqual(testCreateDate('одну неделю назад'), getRelativeDate(null, null, -7), 'one week ago');
-    dateEqual(testCreateDate('один месяц назад'), getRelativeDate(null, -1), 'one month ago');
-    dateEqual(testCreateDate('один год назад'), getRelativeDate(-1), 'one year ago');
+    equal(testCreateDate('одну миллисекунду назад'), getRelativeDate(null, null, null, null, null, null,-1), 'one millisecond ago');
+    equal(testCreateDate('одну секунду назад'), getRelativeDate(null, null, null, null, null, -1), 'one second ago');
+    equal(testCreateDate('одну минуту назад'), getRelativeDate(null, null, null, null, -1), 'one minute ago');
+    equal(testCreateDate('один час назад'), getRelativeDate(null, null, null, -1), 'one hour ago');
+    equal(testCreateDate('один день назад'), getRelativeDate(null, null, -1), 'one day ago');
+    equal(testCreateDate('одну неделю назад'), getRelativeDate(null, null, -7), 'one week ago');
+    equal(testCreateDate('один месяц назад'), getRelativeDate(null, -1), 'one month ago');
+    equal(testCreateDate('один год назад'), getRelativeDate(-1), 'one year ago');
 
-    dateEqual(testCreateDate('две миллисекунды назад'), getRelativeDate(null, null, null, null, null, null,-2), 'two milliseconds ago');
-    dateEqual(testCreateDate('две секунды назад'), getRelativeDate(null, null, null, null, null, -2), 'two seconds ago');
-    dateEqual(testCreateDate('две минуты назад'), getRelativeDate(null, null, null, null, -2), 'two minutes ago');
-    dateEqual(testCreateDate('два часа назад'), getRelativeDate(null, null, null, -2), 'two hours ago');
-    dateEqual(testCreateDate('Два дня назад'), getRelativeDate(null, null, -2), 'two days ago');
-    dateEqual(testCreateDate('две недели назад'), getRelativeDate(null, null, -14), 'two weeks ago');
-    dateEqual(testCreateDate('два месяца назад'), getRelativeDate(null, -2), 'two months ago');
-    dateEqual(testCreateDate('два года назад'), getRelativeDate(-2), 'two years ago');
+    equal(testCreateDate('две миллисекунды назад'), getRelativeDate(null, null, null, null, null, null,-2), 'two milliseconds ago');
+    equal(testCreateDate('две секунды назад'), getRelativeDate(null, null, null, null, null, -2), 'two seconds ago');
+    equal(testCreateDate('две минуты назад'), getRelativeDate(null, null, null, null, -2), 'two minutes ago');
+    equal(testCreateDate('два часа назад'), getRelativeDate(null, null, null, -2), 'two hours ago');
+    equal(testCreateDate('Два дня назад'), getRelativeDate(null, null, -2), 'two days ago');
+    equal(testCreateDate('две недели назад'), getRelativeDate(null, null, -14), 'two weeks ago');
+    equal(testCreateDate('два месяца назад'), getRelativeDate(null, -2), 'two months ago');
+    equal(testCreateDate('два года назад'), getRelativeDate(-2), 'two years ago');
 
-    dateEqual(testCreateDate('восемь миллисекунд назад'), getRelativeDate(null, null, null, null, null, null,-8), 'eight milliseconds ago');
-    dateEqual(testCreateDate('восемь секунд назад'), getRelativeDate(null, null, null, null, null, -8), 'eight seconds ago');
-    dateEqual(testCreateDate('восемь минут назад'), getRelativeDate(null, null, null, null, -8), 'eight minutes ago');
-    dateEqual(testCreateDate('восемь часов назад'), getRelativeDate(null, null, null, -8), 'eight hours ago');
-    dateEqual(testCreateDate('восемь дней назад'), getRelativeDate(null, null, -8), 'eight days ago');
-    dateEqual(testCreateDate('восемь недель назад'), getRelativeDate(null, null, -56), 'eight weeks ago');
-    dateEqual(testCreateDate('восемь месяцев назад'), getRelativeDate(null, -8), 'eight months ago');
-    dateEqual(testCreateDate('восемь лет назад'), getRelativeDate(-8), 'eight years ago');
+    equal(testCreateDate('восемь миллисекунд назад'), getRelativeDate(null, null, null, null, null, null,-8), 'eight milliseconds ago');
+    equal(testCreateDate('восемь секунд назад'), getRelativeDate(null, null, null, null, null, -8), 'eight seconds ago');
+    equal(testCreateDate('восемь минут назад'), getRelativeDate(null, null, null, null, -8), 'eight minutes ago');
+    equal(testCreateDate('восемь часов назад'), getRelativeDate(null, null, null, -8), 'eight hours ago');
+    equal(testCreateDate('восемь дней назад'), getRelativeDate(null, null, -8), 'eight days ago');
+    equal(testCreateDate('восемь недель назад'), getRelativeDate(null, null, -56), 'eight weeks ago');
+    equal(testCreateDate('восемь месяцев назад'), getRelativeDate(null, -8), 'eight months ago');
+    equal(testCreateDate('восемь лет назад'), getRelativeDate(-8), 'eight years ago');
 
-    dateEqual(testCreateDate('через 5 миллисекунд'), getRelativeDate(null, null, null, null, null, null,5), 'five milliseconds from now');
-    dateEqual(testCreateDate('через 5 секунд'), getRelativeDate(null, null, null, null, null, 5), 'five second from now');
-    dateEqual(testCreateDate('через 5 минут'), getRelativeDate(null, null, null, null, 5), 'five minute from now');
-    dateEqual(testCreateDate('через 5 часов'), getRelativeDate(null, null, null, 5), 'five hour from now');
-    dateEqual(testCreateDate('через 5 дней'), getRelativeDate(null, null, 5), 'five days from now');
-    dateEqual(testCreateDate('через 5 недель'), getRelativeDate(null, null, 35), 'five weeks from now');
-    dateEqual(testCreateDate('через 5 месяцев'), getRelativeDate(null, 5), 'five months from now');
-    dateEqual(testCreateDate('через 5 лет'), getRelativeDate(5), 'five years from now');
+    equal(testCreateDate('через 5 миллисекунд'), getRelativeDate(null, null, null, null, null, null,5), 'five milliseconds from now');
+    equal(testCreateDate('через 5 секунд'), getRelativeDate(null, null, null, null, null, 5), 'five second from now');
+    equal(testCreateDate('через 5 минут'), getRelativeDate(null, null, null, null, 5), 'five minute from now');
+    equal(testCreateDate('через 5 часов'), getRelativeDate(null, null, null, 5), 'five hour from now');
+    equal(testCreateDate('через 5 дней'), getRelativeDate(null, null, 5), 'five days from now');
+    equal(testCreateDate('через 5 недель'), getRelativeDate(null, null, 35), 'five weeks from now');
+    equal(testCreateDate('через 5 месяцев'), getRelativeDate(null, 5), 'five months from now');
+    equal(testCreateDate('через 5 лет'), getRelativeDate(5), 'five years from now');
 
-    dateEqual(testCreateDate('позавчера'), run(getRelativeDate(null, null, -2), 'reset'), 'day before yesterday');
-    dateEqual(testCreateDate('Вчера'), run(getRelativeDate(null, null, -1), 'reset'), 'yesterday');
-    dateEqual(testCreateDate('Сегодня'), run(getRelativeDate(null, null, 0), 'reset'), 'today');
-    dateEqual(testCreateDate('Завтра'), run(getRelativeDate(null, null, 1), 'reset'), 'tomorrow');
-    dateEqual(testCreateDate('послезавтра'), run(getRelativeDate(null, null, 2), 'reset'), 'day after tomorrow');
+    equal(testCreateDate('позавчера'), run(getRelativeDate(null, null, -2), 'reset'), 'day before yesterday');
+    equal(testCreateDate('Вчера'), run(getRelativeDate(null, null, -1), 'reset'), 'yesterday');
+    equal(testCreateDate('Сегодня'), run(getRelativeDate(null, null, 0), 'reset'), 'today');
+    equal(testCreateDate('Завтра'), run(getRelativeDate(null, null, 1), 'reset'), 'tomorrow');
+    equal(testCreateDate('послезавтра'), run(getRelativeDate(null, null, 2), 'reset'), 'day after tomorrow');
 
-    dateEqual(testCreateDate('на прошлой неделе'), getRelativeDate(null, null, -7), 'Last week');
-    dateEqual(testCreateDate('на следующей неделе'), getRelativeDate(null, null, 7), 'Next week');
+    equal(testCreateDate('на прошлой неделе'), getRelativeDate(null, null, -7), 'Last week');
+    equal(testCreateDate('на следующей неделе'), getRelativeDate(null, null, 7), 'Next week');
 
-    dateEqual(testCreateDate('в прошлом месяце'), getRelativeDate(null, -1), 'last month');
-    dateEqual(testCreateDate('в следующем месяце'), getRelativeDate(null, 1), 'Next month');
+    equal(testCreateDate('в прошлом месяце'), getRelativeDate(null, -1), 'last month');
+    equal(testCreateDate('в следующем месяце'), getRelativeDate(null, 1), 'Next month');
 
-    dateEqual(testCreateDate('в прошлом году'), getRelativeDate(-1), 'Last year');
-    dateEqual(testCreateDate('в следующем году'), getRelativeDate(1), 'Next year');
+    equal(testCreateDate('в прошлом году'), getRelativeDate(-1), 'Last year');
+    equal(testCreateDate('в следующем году'), getRelativeDate(1), 'Next year');
 
 
-    dateEqual(testCreateDate('следующий понедельник'), getDateWithWeekdayAndOffset(1,  7), 'next monday');
-    dateEqual(testCreateDate('в прошлый вторник'), getDateWithWeekdayAndOffset(2, -7), 'last tuesday');
+    equal(testCreateDate('следующий понедельник'), getDateWithWeekdayAndOffset(1,  7), 'next monday');
+    equal(testCreateDate('в прошлый вторник'), getDateWithWeekdayAndOffset(2, -7), 'last tuesday');
 
-    dateEqual(testCreateDate('следующий понедельник 3:45 вечера'), run(getDateWithWeekdayAndOffset(1,7), 'set', [{ hour: 15, minute: 45 }, true]), 'next monday');
+    equal(testCreateDate('следующий понедельник 3:45 вечера'), run(getDateWithWeekdayAndOffset(1,7), 'set', [{ hour: 15, minute: 45 }, true]), 'next monday');
 
-    dateEqual(testCreateDate('Завтра в 3:30 утра'), run(getRelativeDate(null, null, 1), 'set', [{hours:3,minutes:30}, true]), 'tomorrow at 3:30');
+    equal(testCreateDate('Завтра в 3:30 утра'), run(getRelativeDate(null, null, 1), 'set', [{hours:3,minutes:30}, true]), 'tomorrow at 3:30');
 
 
     // Numbers
 
-    dateEqual(testCreateDate('ноль лет назад'),    getRelativeDate(0),   'zero years ago');
-    dateEqual(testCreateDate('один год назад'),    getRelativeDate(-1),  'one year ago');
-    dateEqual(testCreateDate('два года назад'),    getRelativeDate(-2),  'two years ago');
-    dateEqual(testCreateDate('три года назад'),    getRelativeDate(-3),  'three years ago');
-    dateEqual(testCreateDate('четыре года назад'), getRelativeDate(-4),  'four years ago');
-    dateEqual(testCreateDate('пять лет назад'),    getRelativeDate(-5),  'five years ago');
-    dateEqual(testCreateDate('шесть лет назад'),   getRelativeDate(-6),  'six years ago');
-    dateEqual(testCreateDate('семь лет назад'),    getRelativeDate(-7),  'seven years ago');
-    dateEqual(testCreateDate('восемь лет назад'),  getRelativeDate(-8),  'eight years ago');
-    dateEqual(testCreateDate('девять лет назад'),  getRelativeDate(-9),  'nine years ago');
-    dateEqual(testCreateDate('десять лет назад'),  getRelativeDate(-10), 'ten years ago');
+    equal(testCreateDate('ноль лет назад'),    getRelativeDate(0),   'zero years ago');
+    equal(testCreateDate('один год назад'),    getRelativeDate(-1),  'one year ago');
+    equal(testCreateDate('два года назад'),    getRelativeDate(-2),  'two years ago');
+    equal(testCreateDate('три года назад'),    getRelativeDate(-3),  'three years ago');
+    equal(testCreateDate('четыре года назад'), getRelativeDate(-4),  'four years ago');
+    equal(testCreateDate('пять лет назад'),    getRelativeDate(-5),  'five years ago');
+    equal(testCreateDate('шесть лет назад'),   getRelativeDate(-6),  'six years ago');
+    equal(testCreateDate('семь лет назад'),    getRelativeDate(-7),  'seven years ago');
+    equal(testCreateDate('восемь лет назад'),  getRelativeDate(-8),  'eight years ago');
+    equal(testCreateDate('девять лет назад'),  getRelativeDate(-9),  'nine years ago');
+    equal(testCreateDate('десять лет назад'),  getRelativeDate(-10), 'ten years ago');
 
 
     // Issue #524
-    dateEqual(testCreateDate('3 октября 2014 г.'), new Date(2014, 9, 3), 'Windows long format');
+    equal(testCreateDate('3 октября 2014 г.'), new Date(2014, 9, 3), 'Windows long format');
 
   });
 
@@ -277,8 +277,8 @@ package('Dates Russian', function () {
   });
 
   method('beginning/end', function() {
-    dateEqual(dateRun(new Date(2010, 0), 'beginningOfWeek'), new Date(2009, 11, 28), 'beginningOfWeek');
-    dateEqual(dateRun(new Date(2010, 0), 'endOfWeek'), new Date(2010, 0, 3, 23, 59, 59, 999), 'endOfWeek');
+    equal(dateRun(new Date(2010, 0), 'beginningOfWeek'), new Date(2009, 11, 28), 'beginningOfWeek');
+    equal(dateRun(new Date(2010, 0), 'endOfWeek'), new Date(2010, 0, 3, 23, 59, 59, 999), 'endOfWeek');
   });
 
 });

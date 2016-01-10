@@ -11,92 +11,92 @@ package('Dates Italian', function () {
 
   method('create', function() {
 
-    dateEqual(testCreateDate('15 Maggio 2011'), new Date(2011, 4, 15), 'Date#create | basic Italian date');
-    dateEqual(testCreateDate('Martedì, 5 Gennaio 2012'), new Date(2012, 0, 5), '2012-01-05');
-    dateEqual(testCreateDate('Maggio 2011'), new Date(2011, 4), 'year and month');
-    dateEqual(testCreateDate('15 Maggio'), new Date(now.getFullYear(), 4, 15), 'month and date');
-    dateEqual(testCreateDate('2011'), new Date(2011, 0), 'year');
-    dateEqual(testCreateDate('Maggio'), new Date(now.getFullYear(), 4), 'month');
-    dateEqual(testCreateDate('Lunedì'), getDateWithWeekdayAndOffset(1), 'Monday');
-    dateEqual(testCreateDate('Lun'), getDateWithWeekdayAndOffset(1), 'Monday abbreviated');
+    equal(testCreateDate('15 Maggio 2011'), new Date(2011, 4, 15), 'Date#create | basic Italian date');
+    equal(testCreateDate('Martedì, 5 Gennaio 2012'), new Date(2012, 0, 5), '2012-01-05');
+    equal(testCreateDate('Maggio 2011'), new Date(2011, 4), 'year and month');
+    equal(testCreateDate('15 Maggio'), new Date(now.getFullYear(), 4, 15), 'month and date');
+    equal(testCreateDate('2011'), new Date(2011, 0), 'year');
+    equal(testCreateDate('Maggio'), new Date(now.getFullYear(), 4), 'month');
+    equal(testCreateDate('Lunedì'), getDateWithWeekdayAndOffset(1), 'Monday');
+    equal(testCreateDate('Lun'), getDateWithWeekdayAndOffset(1), 'Monday abbreviated');
 
-    dateEqual(testCreateDate('Martedì, 5 Gennaio 2012 3:45'), new Date(2012, 0, 5, 3, 45), '2012-01-05 3:45');
-    dateEqual(testCreateDate('Martedì, 5 Gennaio 2012 3:45pm'), new Date(2012, 0, 5, 15, 45), '2012-01-05 3:45pm');
+    equal(testCreateDate('Martedì, 5 Gennaio 2012 3:45'), new Date(2012, 0, 5, 3, 45), '2012-01-05 3:45');
+    equal(testCreateDate('Martedì, 5 Gennaio 2012 3:45pm'), new Date(2012, 0, 5, 15, 45), '2012-01-05 3:45pm');
 
-    dateEqual(testCreateDate('un millisecondo fa'), getRelativeDate(null, null, null, null, null, null,-1), 'one millisecond ago');
-    dateEqual(testCreateDate('un secondo fa'), getRelativeDate(null, null, null, null, null, -1), 'one second ago');
-    dateEqual(testCreateDate('un minuto fa'), getRelativeDate(null, null, null, null, -1), 'one minuto ago');
-    dateEqual(testCreateDate("un'ora fa"), getRelativeDate(null, null, null, -1), 'one hour ago');
-    dateEqual(testCreateDate('un giorno fa'), getRelativeDate(null, null, -1), 'one day ago');
-    dateEqual(testCreateDate('una settimana fa'), getRelativeDate(null, null, -7), 'one week ago');
-    dateEqual(testCreateDate('un mese fa'), getRelativeDate(null, -1), 'one month ago');
-    dateEqual(testCreateDate('un anno fa'), getRelativeDate(-1), 'one year ago');
-
-
-    dateEqual(testCreateDate('5 millisecondi da adesso'), getRelativeDate(null, null, null, null, null, null,5), 'danni | five milliseconds from now');
-    dateEqual(testCreateDate('5 secondi da adesso'), getRelativeDate(null, null, null, null, null, 5), 'danni | five second from now');
-    dateEqual(testCreateDate('5 minuti da adesso'), getRelativeDate(null, null, null, null, 5), 'danni | five minuto from now');
-    dateEqual(testCreateDate('5 ore da adesso'), getRelativeDate(null, null, null, 5), 'danni | five hour from now');
-    dateEqual(testCreateDate('5 giorni da adesso'), getRelativeDate(null, null, 5), 'danni | five day from now');
-    dateEqual(testCreateDate('5 settimane da adesso'), getRelativeDate(null, null, 35), 'danni | five weeks from now');
-    dateEqual(testCreateDate('5 mesi da adesso'), getRelativeDate(null, 5), 'danni | five months from now');
-    dateEqual(testCreateDate('5 anni da adesso'), getRelativeDate(5), 'danni | five years from now');
+    equal(testCreateDate('un millisecondo fa'), getRelativeDate(null, null, null, null, null, null,-1), 'one millisecond ago');
+    equal(testCreateDate('un secondo fa'), getRelativeDate(null, null, null, null, null, -1), 'one second ago');
+    equal(testCreateDate('un minuto fa'), getRelativeDate(null, null, null, null, -1), 'one minuto ago');
+    equal(testCreateDate("un'ora fa"), getRelativeDate(null, null, null, -1), 'one hour ago');
+    equal(testCreateDate('un giorno fa'), getRelativeDate(null, null, -1), 'one day ago');
+    equal(testCreateDate('una settimana fa'), getRelativeDate(null, null, -7), 'one week ago');
+    equal(testCreateDate('un mese fa'), getRelativeDate(null, -1), 'one month ago');
+    equal(testCreateDate('un anno fa'), getRelativeDate(-1), 'one year ago');
 
 
-    dateEqual(testCreateDate('ieri'), run(getRelativeDate(null, null, -1), 'reset'), 'yesterday');
-    dateEqual(testCreateDate('oggi'), run(getRelativeDate(null, null, 0), 'reset'), 'today');
-    dateEqual(testCreateDate('domani'), run(getRelativeDate(null, null, 1), 'reset'), 'tomorrow');
-    dateEqual(testCreateDate('dopodomani'), run(getRelativeDate(null, null, 2), 'reset'), 'day after tomorrow');
+    equal(testCreateDate('5 millisecondi da adesso'), getRelativeDate(null, null, null, null, null, null,5), 'danni | five milliseconds from now');
+    equal(testCreateDate('5 secondi da adesso'), getRelativeDate(null, null, null, null, null, 5), 'danni | five second from now');
+    equal(testCreateDate('5 minuti da adesso'), getRelativeDate(null, null, null, null, 5), 'danni | five minuto from now');
+    equal(testCreateDate('5 ore da adesso'), getRelativeDate(null, null, null, 5), 'danni | five hour from now');
+    equal(testCreateDate('5 giorni da adesso'), getRelativeDate(null, null, 5), 'danni | five day from now');
+    equal(testCreateDate('5 settimane da adesso'), getRelativeDate(null, null, 35), 'danni | five weeks from now');
+    equal(testCreateDate('5 mesi da adesso'), getRelativeDate(null, 5), 'danni | five months from now');
+    equal(testCreateDate('5 anni da adesso'), getRelativeDate(5), 'danni | five years from now');
 
-    dateEqual(testCreateDate('la settimana scorsa'), getRelativeDate(null, null, -7), 'Last week');
-    dateEqual(testCreateDate('la settimana prossima'), getRelativeDate(null, null, 7), 'Next week');
 
-    dateEqual(testCreateDate('il mese scorso'), getRelativeDate(null, -1), 'last month');
-    dateEqual(testCreateDate('il mese prossimo'), getRelativeDate(null, 1), 'Next month');
+    equal(testCreateDate('ieri'), run(getRelativeDate(null, null, -1), 'reset'), 'yesterday');
+    equal(testCreateDate('oggi'), run(getRelativeDate(null, null, 0), 'reset'), 'today');
+    equal(testCreateDate('domani'), run(getRelativeDate(null, null, 1), 'reset'), 'tomorrow');
+    equal(testCreateDate('dopodomani'), run(getRelativeDate(null, null, 2), 'reset'), 'day after tomorrow');
 
-    dateEqual(testCreateDate("l'anno scorso"), getRelativeDate(-1), 'Last year');
-    dateEqual(testCreateDate("l'anno prossimo"), getRelativeDate(1), 'Next year');
+    equal(testCreateDate('la settimana scorsa'), getRelativeDate(null, null, -7), 'Last week');
+    equal(testCreateDate('la settimana prossima'), getRelativeDate(null, null, 7), 'Next week');
 
-    dateEqual(testCreateDate("prossimo lunedì"), getDateWithWeekdayAndOffset(1, 7), 'next monday');
-    dateEqual(testCreateDate("scorsa lunedì"), getDateWithWeekdayAndOffset(1, -7), 'last monday');
+    equal(testCreateDate('il mese scorso'), getRelativeDate(null, -1), 'last month');
+    equal(testCreateDate('il mese prossimo'), getRelativeDate(null, 1), 'Next month');
 
-    dateEqual(testCreateDate("scorsa lunedì 3:45"), run(getDateWithWeekdayAndOffset(1, -7), 'set', [{ hour: 3, minute: 45 }, true]), 'last monday 3:45');
+    equal(testCreateDate("l'anno scorso"), getRelativeDate(-1), 'Last year');
+    equal(testCreateDate("l'anno prossimo"), getRelativeDate(1), 'Next year');
+
+    equal(testCreateDate("prossimo lunedì"), getDateWithWeekdayAndOffset(1, 7), 'next monday');
+    equal(testCreateDate("scorsa lunedì"), getDateWithWeekdayAndOffset(1, -7), 'last monday');
+
+    equal(testCreateDate("scorsa lunedì 3:45"), run(getDateWithWeekdayAndOffset(1, -7), 'set', [{ hour: 3, minute: 45 }, true]), 'last monday 3:45');
 
     // No accents
-    dateEqual(testCreateDate('Martedi, 5 Gennaio 2012'), new Date(2012, 0, 5), 'no accents | 2012-01-05');
-    dateEqual(testCreateDate('Lunedi'), getDateWithWeekdayAndOffset(1), 'no accents | Monday');
+    equal(testCreateDate('Martedi, 5 Gennaio 2012'), new Date(2012, 0, 5), 'no accents | 2012-01-05');
+    equal(testCreateDate('Lunedi'), getDateWithWeekdayAndOffset(1), 'no accents | Monday');
 
     // Issue #152 Italian should not use a variant in any format
-    dateEqual(testCreateDate('15/3/2012 12:45'), new Date(2012, 2, 15, 12, 45), 'slash format with time');
-    dateEqual(testCreateDate('12:45 15/3/2012'), new Date(2012, 2, 15, 12, 45), 'slash format with time front');
+    equal(testCreateDate('15/3/2012 12:45'), new Date(2012, 2, 15, 12, 45), 'slash format with time');
+    equal(testCreateDate('12:45 15/3/2012'), new Date(2012, 2, 15, 12, 45), 'slash format with time front');
 
     // Issue #150 Fully qualified ISO codes should be allowed
-    dateEqual(testCreateDate('7 gennaio 2012', 'it_IT'), new Date(2012, 0, 7), 'it_IT');
-    dateEqual(testCreateDate('7 gennaio 2012', 'it-IT'), new Date(2012, 0, 7), 'it-IT');
+    equal(testCreateDate('7 gennaio 2012', 'it_IT'), new Date(2012, 0, 7), 'it_IT');
+    equal(testCreateDate('7 gennaio 2012', 'it-IT'), new Date(2012, 0, 7), 'it-IT');
 
     // Issue #150 Unrecognized locales will result in invalid dates, but will not throw an error
     // Update: Now it will fall back to the current locale.
     equal(run(testCreateDate('7 gennaio 2012', 'ux_UX'), 'isValid'), true, 'unknown locale code');
     equal(run(testCreateDate('2012/08/25', 'ux_UX'), 'isValid'), true, 'System intelligible formats are still parsed');
 
-    dateEqual(testCreateDate('17:32 18 agosto'), new Date(now.getFullYear(), 7, 18, 17, 32), 'August 18, 17:32');
+    equal(testCreateDate('17:32 18 agosto'), new Date(now.getFullYear(), 7, 18, 17, 32), 'August 18, 17:32');
 
-    dateEqual(testCreateDate('domani alle 3:30'), run(getRelativeDate(null, null, 1), 'set', [{hours:3,minutes:30}, true]), 'tomorrow at 3:30');
+    equal(testCreateDate('domani alle 3:30'), run(getRelativeDate(null, null, 1), 'set', [{hours:3,minutes:30}, true]), 'tomorrow at 3:30');
 
 
     // Numbers
 
-    dateEqual(testCreateDate('zero anni fa'),    getRelativeDate(0),   'zero years ago');
-    dateEqual(testCreateDate('un anno fa'),      getRelativeDate(-1),  'one year ago');
-    dateEqual(testCreateDate('due anni fa'),     getRelativeDate(-2),  'two years ago');
-    dateEqual(testCreateDate('tre anni fa'),     getRelativeDate(-3),  'three years ago');
-    dateEqual(testCreateDate('quattro anni fa'), getRelativeDate(-4),  'four years ago');
-    dateEqual(testCreateDate('cinque anni fa'),  getRelativeDate(-5),  'five years ago');
-    dateEqual(testCreateDate('sei anni fa'),     getRelativeDate(-6),  'six years ago');
-    dateEqual(testCreateDate('sette anni fa'),   getRelativeDate(-7),  'seven years ago');
-    dateEqual(testCreateDate('otto anni fa'),    getRelativeDate(-8),  'eight years ago');
-    dateEqual(testCreateDate('nove anni fa'),    getRelativeDate(-9),  'nine years ago');
-    dateEqual(testCreateDate('dieci anni fa'),   getRelativeDate(-10), 'ten years ago');
+    equal(testCreateDate('zero anni fa'),    getRelativeDate(0),   'zero years ago');
+    equal(testCreateDate('un anno fa'),      getRelativeDate(-1),  'one year ago');
+    equal(testCreateDate('due anni fa'),     getRelativeDate(-2),  'two years ago');
+    equal(testCreateDate('tre anni fa'),     getRelativeDate(-3),  'three years ago');
+    equal(testCreateDate('quattro anni fa'), getRelativeDate(-4),  'four years ago');
+    equal(testCreateDate('cinque anni fa'),  getRelativeDate(-5),  'five years ago');
+    equal(testCreateDate('sei anni fa'),     getRelativeDate(-6),  'six years ago');
+    equal(testCreateDate('sette anni fa'),   getRelativeDate(-7),  'seven years ago');
+    equal(testCreateDate('otto anni fa'),    getRelativeDate(-8),  'eight years ago');
+    equal(testCreateDate('nove anni fa'),    getRelativeDate(-9),  'nine years ago');
+    equal(testCreateDate('dieci anni fa'),   getRelativeDate(-10), 'ten years ago');
 
   });
 
@@ -177,8 +177,8 @@ package('Dates Italian', function () {
   });
 
   method('beginning/end', function() {
-    dateEqual(dateRun(new Date(2010, 0), 'beginningOfWeek'), new Date(2009, 11, 28), 'beginningOfWeek');
-    dateEqual(dateRun(new Date(2010, 0), 'endOfWeek'), new Date(2010, 0, 3, 23, 59, 59, 999), 'endOfWeek');
+    equal(dateRun(new Date(2010, 0), 'beginningOfWeek'), new Date(2009, 11, 28), 'beginningOfWeek');
+    equal(dateRun(new Date(2010, 0), 'endOfWeek'), new Date(2010, 0, 3, 23, 59, 59, 999), 'endOfWeek');
   });
 
 });

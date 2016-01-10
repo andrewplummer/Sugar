@@ -33,23 +33,9 @@ dateTest = function(d) {
   return test.apply(null, [Sugar.Date.clone(d)].concat(args));
 }
 
-dateEqual = function(a, b, message, tzReference) {
-  var buffer = 50, tzOffset = 0; // Number of milliseconds of "play" to make sure these tests pass.
-  if(typeof b == 'number') {
-    var d = new Date();
-    d.setTime(d.getTime() + b);
-    b = d;
-  }
-  if (tzReference) {
-    tzOffset = (b.getTimezoneOffset() - tzReference.getTimezoneOffset()) * 60 * 1000;
-  }
-  var offset = Math.abs(a.getTime() - (b.getTime() - tzOffset));
-  equal(offset < buffer, true, message + ' | expected: ' + testFormatDate(b) + ' got: ' + testFormatDate(a), null, 1);
-}
-
 dateRangeEqual = function(a, b, message) {
-  dateEqual(a.start, b.start, message);
-  dateEqual(a.end, b.end, message);
+  equal(a.start, b.start, message);
+  equal(a.end, b.end, message);
 }
 
 getRelativeDate = function(year, month, day, hours, minutes, seconds, milliseconds) {
