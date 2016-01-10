@@ -1,0 +1,25 @@
+{
+  "extends": "eslint:recommended",
+  "rules": {
+    "no-undef": 0,
+    "no-cond-assign": 0,
+    "no-irregular-whitespace": 0,
+    "no-unused-vars": [2, {"vars": "local", "varsIgnorePattern": "argLen|prop", "args": "after-used"}],
+    "quotes": [2, "single", "avoid-escape"],
+    "comma-spacing": 0,
+    "no-console": 0,
+    "camelcase": [2, {"properties": "never"}],
+    "no-multi-spaces": 0,
+    "dot-notation": 0,
+    "space-before-blocks": 2,
+    "linebreak-style": [2, "unix"],
+    "semi": [2, "always"]
+  },
+  "globals": {
+    "localStorage": false
+  },
+  "env": {
+    "es6": true,
+    "browser": true
+  }
+}
