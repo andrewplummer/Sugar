@@ -1743,6 +1743,7 @@ function modularize() {
 
   parseModule('es5', true);
   parseModule('es6', true);
+  parseModule('es7', true);
 
   exportLocales();
   exportInternal();
