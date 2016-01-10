@@ -172,13 +172,15 @@ function getFilename(name, min) {
 }
 
 function getVersion() {
-  return args.v || args.version || '';
+  var ver = args.v || args.version || 'edge';
+  if (ver.match(/^[\d.]+$/)) {
+    ver = 'v' + ver;
+  }
+  return ver;
 }
 
 function getLicense() {
-  var version = getVersion();
   return COPYRIGHT
-    .replace(/VERSION/, version.match(/[\d.]+/) ? 'v' + version : version)
     .replace(/YEAR/, new Date().getFullYear())
     .replace(/\n$/, '');
 }
@@ -198,6 +200,7 @@ function buildDevelopment(packages, path) {
     .pipe(concat(filename, { newLine: '' }))
     .pipe(replace(/^\s*'use strict';\n/g, ''))
     .pipe(replace(/^([\s\S]+)$/m, template))
+    .pipe(replace(/VERSION/gm, getVersion()))
     .pipe(gulp.dest('.'));
 }
 
@@ -238,7 +241,6 @@ function getDefaultFlags() {
     externs: 'lib/extras/externs.js',
   }
 }
-
 
 
 // -------------- Build ----------------
