@@ -6,40 +6,40 @@ runner.notice('Polyfill Packages');
 
 // Cannot practially run ES5 tests here as resetting
 // native methods breaks the node require system.
-require('./default/es6.js');
-require('./default/es7.js');
+runner.load('./default/es6.js');
+runner.load('./default/es7.js');
 
 runner.notice('Default Tests');
 
-require('./default/core.js');
-require('./default/array.js');
-require('./default/object.js');
-require('./default/enumerable.js');
-require('./default/date.js');
-require('./default/function.js');
-require('./default/inflections.js');
-require('./default/language.js');
-require('./default/number.js');
-require('./default/range.js');
-require('./default/regexp.js');
-require('./default/string.js');
-require('./default/sugar.js');
-require('./default/full.js');
+runner.load('./default/core.js');
+runner.load('./default/array.js');
+runner.load('./default/object.js');
+runner.load('./default/enumerable.js');
+runner.load('./default/date.js');
+runner.load('./default/function.js');
+runner.load('./default/inflections.js');
+runner.load('./default/language.js');
+runner.load('./default/number.js');
+runner.load('./default/range.js');
+runner.load('./default/regexp.js');
+runner.load('./default/string.js');
+runner.load('./default/sugar.js');
+runner.load('./default/full.js');
 
 runner.notice('Extended Tests');
 
-require('./extended/array.js');
-require('./extended/object.js');
-require('./extended/enumerable.js');
-require('./extended/date.js');
-require('./extended/function.js');
-require('./extended/inflections.js');
-require('./extended/language.js');
-require('./extended/number.js');
-require('./extended/range.js');
-require('./extended/regexp.js');
-require('./extended/string.js');
-require('./extended/sugar.js');
-require('./extended/full.js');
+runner.load('./extended/array.js');
+runner.load('./extended/object.js');
+runner.load('./extended/enumerable.js');
+runner.load('./extended/date.js');
+runner.load('./extended/function.js');
+runner.load('./extended/inflections.js');
+runner.load('./extended/language.js');
+runner.load('./extended/number.js');
+runner.load('./extended/range.js');
+runner.load('./extended/regexp.js');
+runner.load('./extended/string.js');
+runner.load('./extended/sugar.js');
+runner.load('./extended/full.js');
 
-runner.logTotals(true);
+runner.logTotals();

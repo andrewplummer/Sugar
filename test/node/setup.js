@@ -1,6 +1,4 @@
-// Test suite
-
-var reload = require('require-reload')(require);
+// Node test suite
 
 sinon = require('sinon');
 require('../suite/suite');
@@ -11,7 +9,7 @@ require('../suite/helpers/date');
 require('../suite/helpers/array');
 require('../suite/helpers/object');
 
-// Move this to sugar-core when its ready
+// TODO: Move this to sugar-core when its ready
 var Sugar = require('../../lib/core');
 testSetGlobal(Sugar);
 
@@ -27,6 +25,26 @@ function notice(message, logFn) {
   logFn(pad + message + pad);
   logFn(sep);
   console.info();
+}
+
+function load(path) {
+  if (path.match(/es[567]$/)) {
+    // Need to manually expire this as it's being
+    // linked to from inside the polyfill package.
+    resetPolyfillCache();
+  }
+  delete require.cache[require.resolve(path)]
+  return require(path);
+}
+
+function resetPolyfillCache() {
+  for (var path in require.cache) {
+    if(!require.cache.hasOwnProperty(path)) continue;
+    var path = require.resolve(path);
+    if (path.match(/polyfills\/\w+\/\w+\.js$/)) {
+      delete require.cache[path]
+    }
+  };
 }
 
 function getTestNameFromModule(mod) {
@@ -45,23 +63,31 @@ function getTestNameFromModule(mod) {
 
 module.exports = {
 
-  loadTest: function(name) {
-    reload('../tests/' + name);
+  load: function(path) {
+    return load(path);
   },
 
-  loadPackage: function(path) {
-    reload(path);
+  loadTest: function(name) {
+    return load('../tests/' + name);
   },
 
   run: function(mod, extended) {
+
     var testName = getTestNameFromModule(mod);
     if (extended) {
+      storeNativeState();
       Sugar.extendAll();
     }
     function finished(runtime, results) {
       logResults(runtime, results, testName, exitOnFail);
     }
     runTests(finished, !!extended, 'node');
+
+    if (extended) {
+      // Tests may be in a watcher, so restore native state
+      // after finished to prepare for next run.
+      restoreNativeState();
+    }
   },
 
   runExtended: function(mod) {
@@ -69,7 +95,7 @@ module.exports = {
   },
 
   resetPolyfills: function(name) {
-    reload('../suite/helpers/' + name + '-reset.js');
+    load('../suite/helpers/' + name + '-reset.js');
   },
 
   reset: function() {
@@ -80,15 +106,13 @@ module.exports = {
     exitOnFail = set;
   },
 
-  logTotals: function(exit) {
+  logTotals: function() {
     if (globalFailures) {
       notice('Fail! ' + globalFailures + ' failures', logRed);
-      if (exit) {
-        process.exit(1);
-      }
     } else {
       notice('Success! 0 failures', logBlue);
     }
+    globalFailures = 0;
   },
 
   notice: function(message) {
