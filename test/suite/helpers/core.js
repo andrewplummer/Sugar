@@ -2,7 +2,7 @@
 
   // The global context
   var globalContext = typeof global !== 'undefined' && global.Object ? global : context;
-  var nativeState;
+  var nativeStates = [];
 
   var NATIVES = ['Number','String','Array','Date','RegExp','Function', 'Object'];
 
@@ -80,7 +80,7 @@
   }
 
   storeNativeState = function() {
-    nativeState = {};
+    var nativeState = {};
     testIterateOverObject(Sugar, function(name, ns) {
       var state = nativeState[name] = {};
       nativeState[name + 'Active'] = ns.active;
@@ -98,6 +98,7 @@
         }
       });
     });
+    nativeStates.push(nativeState);
   }
 
   restoreNativeState = function() {
@@ -107,6 +108,9 @@
       methods: [],
       objectPrototype: false
     });
+
+    var nativeState = nativeStates.pop();
+
     for (var i = 0; i < NATIVES.length; i++) {
 
       var name        = NATIVES[i];
@@ -119,16 +123,16 @@
           // Only restore Sugar defined methods.
           return;
         }
-        var state = nativeState[name][methodName];
-        if (!state) {
+        var methodState = nativeState[name][methodName];
+        if (!methodState) {
           // If there is no stored state for this method, then
           // it's safe to assume that it was not there previously
           // and remove it completely. Do this by setting it's
           // state as undefined.
-          state = {};
+          methodState = {};
         }
-        restoreNative(methodName, nativeClass, state.static);
-        restoreNative(methodName, nativeClass.prototype, state.instance);
+        restoreNative(methodName, nativeClass, methodState.static);
+        restoreNative(methodName, nativeClass.prototype, methodState.instance);
       });
     }
   }
