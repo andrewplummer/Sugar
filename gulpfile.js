@@ -76,11 +76,12 @@ var COPYRIGHT = [
 
 var DEFAULT_PACKAGES = [
   'es6',
-  'array',
   'date',
   'range',
-  'function',
   'number',
+  'function',
+  'enumerable',
+  'array',
   'object',
   'regexp',
   'string'
