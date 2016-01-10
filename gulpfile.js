@@ -105,6 +105,46 @@ var ALL_PACKAGES = [
   'locales'
 ];
 
+// -------------- Compiler ----------------
+
+function compileModules(modules) {
+  var flags = getDefaultFlags();
+  flags.module = modules;
+  flags.module_output_path_prefix = PRECOMPILED_MIN_DIR;
+  return compiler(flags);
+}
+
+function compileSingle(path) {
+  var flags = getDefaultFlags();
+  flags.js_output_file = path;
+  return compiler(flags);
+}
+
+function getDefaultFlags() {
+  return {
+    jar: COMPIER_JAR_PATH,
+    compilation_level: 'ADVANCED_OPTIMIZATIONS',
+    jscomp_off: ['globalThis', 'misplacedTypeAnnotation', 'checkTypes'],
+    output_wrapper: getLicense() + "\n(function(){'use strict';%output%}).call(this);",
+    externs: 'lib/extras/externs.js',
+  }
+}
+
+// -------------- Util ----------------
+
+function notify(text) {
+  util.log(util.colors.cyan(text));
+}
+
+// -------------- Release ----------------
+
+function buildRelease() {
+  notify('Building release: ' + getVersion());
+  return merge(buildDevelopment('default'), buildMinified('default'));
+}
+
+// -------------- Build ----------------
+
 function getPackages() {
   return args.p || args.packages || 'default';
 }
@@ -217,54 +257,9 @@ function buildMinified(packages, path) {
   return gulp.src(files).pipe(compileSingle(filename));
 }
 
-// -------------- Compiler ----------------
+// -------------- precompile ----------------
 
-function compileModules(modules) {
-  var flags = getDefaultFlags();
-  flags.module = modules;
-  flags.module_output_path_prefix = PRECOMPILED_MIN_DIR;
-  return compiler(flags);
-}
-
-function compileSingle(path) {
-  var flags = getDefaultFlags();
-  flags.js_output_file = path;
-  return compiler(flags);
-}
-
-function getDefaultFlags() {
-  return {
-    jar: COMPIER_JAR_PATH,
-    compilation_level: 'ADVANCED_OPTIMIZATIONS',
-    jscomp_off: ['globalThis', 'misplacedTypeAnnotation', 'checkTypes'],
-    output_wrapper: getLicense() + "\n(function(){'use strict';%output%}).call(this);",
-    externs: 'lib/extras/externs.js',
-  }
-}
-
-
-// -------------- Build ----------------
-
-gulp.task('default', showHelpMessage);
-
-gulp.task('help', showHelpMessage);
-
-gulp.task('dev', function() {
-  return buildDevelopment(getPackages());
-});
-
-gulp.task('min', function(done) {
-  return buildMinified(getPackages());
-});
-
-gulp.task('release', function() {
-  util.log(util.colors.blue('-------------------------------'));
-  util.log(util.colors.blue('Building release:', getVersion()));
-  util.log(util.colors.blue('-------------------------------'));
-  return merge(buildDevelopment('default'), buildMinified('default'));
-});
-
-gulp.task('precompile:dev', function() {
+function precompileDev() {
   var files = getFiles('all').filter(function(path) {
     return !path.match(/locales/);
   });
@@ -272,14 +267,13 @@ gulp.task('precompile:dev', function() {
       .pipe(concat('locales.js', { newLine: '' })))
     .pipe(replace(/^\s*'use strict';\n/g, ''))
     .pipe(gulp.dest(PRECOMPILED_DEV_DIR));
-});
+}
 
-gulp.task('precompile:min', function() {
+function precompileMin() {
   var files = getFiles('all');
   var modules = getModules(files);
   return gulp.src(files).pipe(compileModules(modules));
-});
-
+}
 
 // -------------- npm ----------------
 
@@ -384,34 +378,6 @@ function getModuleBower(module, mainBower) {
   return JSON.stringify(bower, null, 2);
 }
 
-gulp.task('npm', function() {
-  var streams = [];
-  var mainPackage = require('./package.json');
-  var mainBower = require('./bower.json');
-  for (var i = 0; i < NPM_MODULES.length; i++) {
-    var module = NPM_MODULES[i];
-    var path = 'release/npm/' + module.name + '/';
-    mkdirp.sync(path);
-    fs.writeFileSync(path + 'package.json', getModulePackage(module, mainPackage));
-    fs.writeFileSync(path + 'bower.json', getModuleBower(module, mainBower));
-    streams.push(buildDevelopment(module.files, path + module.name));
-    streams.push(gulp.src(['LICENSE', 'README.md', 'CHANGELOG.md']).pipe(gulp.dest(path)));
-  }
-  return merge(streams);
-});
-
-gulp.task('npm:min', function() {
-  var streams = [];
-  for (var i = 0; i < NPM_MODULES.length; i++) {
-    var module = NPM_MODULES[i];
-    var path = 'release/npm/' + module.name + '/';
-    mkdirp.sync(path);
-    streams.push(buildMinified(module.files, path + module.name));
-  }
-  return merge(streams);
-});
-
-
 // -------------- Modularize ----------------
 
 
@@ -462,7 +428,7 @@ gulp.task('npm:min', function() {
 //      Instead use closures or objects to hold references.
 //
 
-function modularize() {
+function buildNpmModular() {
 
   var TAB = '  ';
   var NPM_DESTINATION = 'release/npm/sugar';
@@ -1728,6 +1694,8 @@ function modularize() {
     fs.writeFileSync(outputPath, outputBody, 'utf-8');
   }
 
+  notify('Building modularized...');
+
   cleanBuild();
 
   parseModule('common', false);
@@ -1754,33 +1722,11 @@ function modularize() {
 
 }
 
-gulp.task('modularize', function() {
-  modularize();
-});
-
-
-// -------------- Test ----------------
-
-
-gulp.task('test', function(cb) {
-  reload('./test/node/watch.js');
-  cb();
-});
-
-gulp.task('test-build', ['dev', 'npm'], function(cb) {
-  reload('./test/node/watch.js');
-  cb();
-});
-
-gulp.task('test:watch', function() {
-  gulp.watch(['lib/**/*.js'], ['test-build']);
-  gulp.watch(['test/**/*.js'], ['test']);
-});
-
 
 // -------------- Docs ----------------
 
-gulp.task('docs', function() {
+function buildDocs() {
+
   var files = getFiles('all', true), packages = {}, methodsByNamespace = {};
   var output = args.f || args.file || 'docs.json';
   var basename = path.basename(output);
@@ -1932,4 +1878,86 @@ gulp.task('docs', function() {
       cb();
     }))
     .pipe(gulp.dest(dirname));
+}
+
+
+// -------------- Test ----------------
+
+
+function runTests(all) {
+  reload(all ? './test/node/all' : './test/node');
+}
+
+function testWatch(all) {
+  gulp.watch(['lib/**/*.js'], function() {
+    buildNpmModular();
+    runTests(all);
+  });
+  gulp.watch(['test/**/*.js'], function() {
+    runTests(all);
+  });
+}
+
+function testWatchDefault() {
+  testWatch(false);
+}
+
+function testWatchAll() {
+  testWatch(true);
+}
+
+// -------------- Tasks ----------------
+
+gulp.task('default', showHelpMessage);
+gulp.task('help', showHelpMessage);
+gulp.task('docs', buildDocs);
+gulp.task('release', buildRelease);
+gulp.task('modularize', buildNpmModular);
+
+
+gulp.task('dev', function() {
+  return buildDevelopment(getPackages());
 });
+
+
+gulp.task('min', function(done) {
+  return buildMinified(getPackages());
+});
+
+gulp.task('precompile:dev', precompileDev);
+gulp.task('precompile:min', precompileMin);
+
+gulp.task('test', runTests);
+gulp.task('test:watch', testWatchDefault);
+gulp.task('test:watch:default', testWatchDefault);
+gulp.task('test:watch:all', testWatchAll);
+
+// TODO: REMOVE?
+gulp.task('npm', function() {
+  var streams = [];
+  var mainPackage = require('./package.json');
+  var mainBower = require('./bower.json');
+  for (var i = 0; i < NPM_MODULES.length; i++) {
+    var module = NPM_MODULES[i];
+    var path = 'release/npm/' + module.name + '/';
+    mkdirp.sync(path);
+    fs.writeFileSync(path + 'package.json', getModulePackage(module, mainPackage));
+    fs.writeFileSync(path + 'bower.json', getModuleBower(module, mainBower));
+    streams.push(buildDevelopment(module.files, path + module.name));
+    streams.push(gulp.src(['LICENSE', 'README.md', 'CHANGELOG.md']).pipe(gulp.dest(path)));
+  }
+  return merge(streams);
+});
+
+// TODO: REMOVE?
+gulp.task('npm:min', function() {
+  var streams = [];
+  for (var i = 0; i < NPM_MODULES.length; i++) {
+    var module = NPM_MODULES[i];
+    var path = 'release/npm/' + module.name + '/';
+    mkdirp.sync(path);
+    streams.push(buildMinified(module.files, path + module.name));
+  }
+  return merge(streams);
+});
+
