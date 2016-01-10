@@ -7,6 +7,7 @@ runner.notice('Polyfill Packages');
 // Cannot practially run ES5 tests here as resetting
 // native methods breaks the node require system.
 require('./default/es6.js');
+require('./default/es7.js');
 
 runner.notice('Default Tests');
 

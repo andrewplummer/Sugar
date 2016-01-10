@@ -38,6 +38,7 @@ var HELP_MESSAGE = [
   '    %Packages%',
   '',
   '      es6',
+  '      es7',
   '      array',
   '      date',
   '      function',
@@ -57,9 +58,9 @@ var HELP_MESSAGE = [
   '      added if ES5 compatibility is required in environments where it',
   '      does not exist (most commonly IE8 and below).',
   '',
-  '      ES6 package is default and includes minimal ES6 polyfills required',
-  '      by Sugar. This package can be removed if full ES6 support can be',
-  '      guaranteed, either natively or through a polyfill library.',
+  '      ES6/7 packages are default and include minimal polyfills required',
+  '      by Sugar. This package can be removed if support can be guaranteed,',
+  '      either natively or through a polyfill library.',
   '',
 ].join('\n');
 
@@ -76,6 +77,7 @@ var COPYRIGHT = [
 
 var DEFAULT_PACKAGES = [
   'es6',
+  'es7',
   'date',
   'range',
   'number',
@@ -89,6 +91,7 @@ var DEFAULT_PACKAGES = [
 
 var ALL_PACKAGES = [
   'es6',
+  'es7',
   'array',
   'date',
   'range',
