@@ -1639,7 +1639,7 @@ package('Object', function() {
   group('Enumerables on Object.prototype', function() {
     storeNativeState();
     Sugar.Object.extend({
-      objectInstance: true
+      objectPrototype: true
     });
 
     equal(({a:1,b:3,c:5}).sum(), 9, 'Object#sum');
