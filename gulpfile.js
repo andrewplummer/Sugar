@@ -151,6 +151,11 @@ function getDefaultFlags() {
 
 // -------------- Util ----------------
 
+function writeFile(outputPath, body) {
+  mkdirp.sync(path.dirname(outputPath));
+  fs.writeFileSync(outputPath, body, 'utf-8');
+}
+
 function notify(text) {
   util.log(util.colors.yellow(text));
 }
@@ -480,6 +485,10 @@ function getModuleBower(module, mainBower) {
 
 function buildNpmDefault() {
   createNpmPackages(args.p || args.packages || 'main');
+}
+
+function buildNpmCore() {
+  createNpmPackages('core');
 }
 
 function buildNpmAll() {
@@ -1831,13 +1840,13 @@ function createNpmPackages(p) {
     }
     var outputPath = path.join(dir, package.path + '.js');
     var outputBody = package.compiledBody;
-    mkdirp.sync(path.dirname(outputPath));
-    fs.writeFileSync(outputPath, outputBody, 'utf-8');
+    writeFile(outputPath, outputBody);
   }
 
-  function cleanBuild(baseDir) {
-    var rimraf = require('rimraf');
-    rimraf.sync(baseDir);
+  function needsDependencyTree() {
+    return npmPackages.some(function(p) {
+      return p !== 'sugar-core';
+    });
   }
 
   function moduleIncludedInPackage(npmPackageName, module, isEntryPoint) {
@@ -1904,10 +1913,26 @@ function createNpmPackages(p) {
     writePackage(package, dir);
   }
 
+  function cleanDirectory(dir) {
+    var rimraf = require('rimraf');
+    rimraf.sync(dir);
+  }
+
+  function buildCore() {
+    var body = fs.readFileSync('lib/core.js', 'utf-8');
+    var outputPath = path.join(baseDir, 'sugar-core', 'index.js');
+    cleanDirectory(path.dirname(outputPath));
+    writeFile(outputPath, body);
+  }
+
   function buildPackages() {
-    cleanBuild(baseDir);
     npmPackages.forEach(function(npmPackageName) {
+      if (npmPackageName === 'sugar-core') {
+        buildCore();
+        return;
+      }
       var dir = path.join(baseDir, npmPackageName)
+      cleanDirectory(dir);
       iter(packagesByModuleName, function(module, packages) {
         if (moduleIncludedInPackage(npmPackageName, module)) {
           packages.forEach(function(p) {
@@ -1924,8 +1949,10 @@ function createNpmPackages(p) {
   var baseDir = args.o || args.output || 'release/npm';
   var npmPackages = getNpmPackages(p);
 
-  notify('Building dependency tree...');
-  buildDependencyTree();
+  if (needsDependencyTree(npmPackages)) {
+    notify('Building dependency tree...');
+    buildDependencyTree();
+  }
 
   notify('Building packages...');
   buildPackages(baseDir);
@@ -1939,7 +1966,7 @@ function getNpmPackages(p) {
       packages = ['main'];
       break;
     case 'all':
-      packages = ['main'].concat(ALL_PACKAGES);
+      packages = ['core', 'main'].concat(ALL_PACKAGES);
       break;
     default:
       packages = p.split(',');
@@ -2152,8 +2179,9 @@ gulp.task('build',     buildDefault);
 gulp.task('build:dev', buildDevelopment);
 gulp.task('build:min', buildMinified);
 
-gulp.task('build:npm',     buildNpmDefault);
-gulp.task('build:npm:all', buildNpmAll);
+gulp.task('build:npm',      buildNpmDefault);
+gulp.task('build:npm:core', buildNpmCore);
+gulp.task('build:npm:all',  buildNpmAll);
 
 gulp.task('precompile:dev', precompileDev);
 gulp.task('precompile:min', precompileMin);
