@@ -7,6 +7,7 @@ var fs       = require('fs'),
     args     = require('yargs').argv,
     util     = require('gulp-util'),
     mkdirp   = require('mkdirp'),
+    // TODO: can we remove streams?
     merge    = require('merge-stream'),
     concat   = require('gulp-concat-util'),
     replace  = require('gulp-replace'),
@@ -2142,12 +2143,21 @@ function runTests(all) {
 }
 
 function testWatch(all) {
+
+  setTimeout(function() {
+    notify('Waiting');
+  });
+
   gulp.watch(['lib/**/*.js'], function() {
+    notify('Rebuilding');
     buildNpmPackages(all ? 'all' : 'core,main,es6,es7');
     runTests(all);
+    notify('Waiting');
   });
   gulp.watch(['test/**/*.js'], function() {
+    notify('Reloading tests');
     runTests(all);
+    notify('Waiting');
   });
 }
 
