@@ -23,50 +23,55 @@ var HELP_MESSAGE = [
   '',
   '    %Usage%',
   '',
-  '      gulp [TASK] [OPTIONS]',
+  '      |gulp| [TASK] [OPTIONS]',
   '',
   '    %Tasks%',
   '',
-  '      |build|                        Create development and minified build.',
-  '      |build:dev|                    Create development build (concatenate files only).',
-  '      |build:min|                    Create minified build (closure compiler).',
+  '      |build|                          Create development and minified build.',
+  '      |build:dev|                      Create development build (concatenate files only).',
+  '      |build:min|                      Create minified build (closure compiler).',
   '',
-  '      |build:npm|                    Builds npm packages ("sugar" by default).',
-  '      |build:npm:core|               Builds "sugar-core" npm package.',
-  '      |build:npm:all|                Builds all npm packages (slow).',
-  '      |build:npm:clean|              Cleans npm package output directory ("release/npm" by default).',
+  '      |build:npm|                      Builds npm packages ("sugar" by default).',
+  '      |build:npm:core|                 Builds "sugar-core" npm package.',
+  '      |build:npm:all|                  Builds all npm packages (slow).',
+  '      |build:npm:clean|                Cleans npm package output directory ("release/npm" by default).',
   '',
-  '      |build:bower|                  Builds bower packages ("sugar" by default).',
-  '      |build:bower:all|              Builds all bower packages (slow).',
-  '      |build:bower:clean|            Cleans bower package output directory ("release/bower" by default).',
+  '      |build:bower|                    Builds bower packages ("sugar" by default).',
+  '      |build:bower:all|                Builds all bower packages (slow).',
+  '      |build:bower:clean|              Cleans bower package output directory ("release/bower" by default).',
   '',
-  '      |test|                         Run default test suite.',
-  '      |test:all|                     Run all tests.',
+  '      |test|                           Run default test suite.',
+  '      |test:all|                       Run all tests.',
   '',
-  '      |watch|                        Watch for changes and reload default test suite.',
-  '      |watch:all|                    Watch for changes and reload all tests.',
+  '      |watch|                          Watch for changes and reload default test suite.',
+  '      |watch:all|                      Watch for changes and reload all tests.',
   '',
-  '      |release|                      Builds all bundles and npm packages.',
+  '      |release|                        Builds all bundles and npm packages.',
   '',
-  '      |docs|                         Builds docs as JSON.',
+  '      |docs|                           Builds docs as JSON.',
   '',
-  '      |help|                         Show this message.',
+  '      |help|                           Show this message.',
   '',
   '    %Options%',
   '',
-  '      -m, --modules MODULES        Comma separated modules to include (build task only).',
-  '                                   Modules below (non-default marked with |*|).',
+  '      -m, --modules                  Comma separated modules to include (build task only).',
+  '                                     Modules below (non-default marked with *).',
   '',
-  '      -l, --locales LOCALES        Comma separated date locales to include (build task only).',
-  '                                   English is included in the date module by default.',
+  '      -l, --locales                  Comma separated date locales to include (build task only).',
+  '                                     English is included in the date module by default.',
   '',
-  '      -p, --packages PACKAGES      Comma separated packages to build (npm and bower tasks only).',
-  '      -o, --output OUTPUT          Output path (default is "sugar.js" or "sugar.min.js").',
-  '      -v, --version VERSION        Version token to be exported into bundles.',
+  '      -p, --packages                 Comma separated packages to build (npm and bower tasks only).',
+  '',
+  '      -s, --source_map               Creates a source map when the compiler is invoked.',
+  '                                     Can be a path or "sugar.min.map" if blank.',
+  '',
+  '      -o, --output                   Output path (default is "sugar.js" or "sugar.min.js").',
+  '',
+  '      -v, --version                  Version token to be exported into bundles.',
   '',
   '    %Modules%',
   '',
-  '      es5 |*|',
+  '      es5 *',
   '      es6',
   '      es7',
   '      array',
@@ -77,8 +82,8 @@ var HELP_MESSAGE = [
   '      range',
   '      regexp',
   '      string',
-  '      language |*|',
-  '      inflections |*|',
+  '      language *',
+  '      inflections *',
   '',
   '    %Locales%',
   '',
@@ -105,16 +110,18 @@ function showHelpMessage() {
         return code + ': ' + name;
       }).join('\n      ');
     })
+    .replace(/\[\w+\]/g, function(match) {
+      return util.colors.dim(match);
+    })
     .replace(/%\w+%/g, function(match) {
       return util.colors.underline(match.replace(/%/g, ''));
     })
-  .replace(/\|.+\|/g, function(match) {
-    if(match === '|*|') {
+    .replace(/-\w, --\w+/g, function(match) {
+      return util.colors.yellow(match);
+    })
+    .replace(/\|.+\|/g, function(match) {
       return util.colors.yellow(match.replace(/\|/g, ''));
-    } else {
-      return util.colors.yellow(match.replace(/\|/g, ''));
-    }
-  });
+    });
   console.log(msg);
 }
 
@@ -133,8 +140,13 @@ function compileModules(modules, path) {
 function compileSingle(path) {
   var compiler = require('closure-compiler-stream');
 
+  var sourceMap = args.s || args.source_map;
+  if (sourceMap === true) sourceMap = path.replace(/\.js/, '.map');
+
   var flags = getDefaultFlags();
   flags.js_output_file = path;
+  flags.create_source_map = sourceMap;
+
   return compiler(flags);
 }
 
