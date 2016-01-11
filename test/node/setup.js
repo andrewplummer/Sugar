@@ -6,7 +6,6 @@ var path = require('path');
 // TODO: Move this to sugar-core when its ready
 var CORE_PACKAGE = '../../lib/core';
 
-var exitOnFail = true;
 var baseDir = path.resolve(__dirname, '../..');
 
 sinon = require('sinon');
@@ -119,7 +118,7 @@ module.exports = {
       Sugar.extendAll();
     }
     function finished(runtime, results) {
-      logResults(runtime, results, testName, exitOnFail);
+      logResults(runtime, results, testName);
     }
     runTests(finished, !!extended, 'node');
 
@@ -142,10 +141,6 @@ module.exports = {
 
   reset: function() {
     globalFailures = 0;
-  },
-
-  exitOnFail: function(set) {
-    exitOnFail = set;
   },
 
   logTotals: function() {
