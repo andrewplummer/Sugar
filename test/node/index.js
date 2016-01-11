@@ -1,7 +1,5 @@
 var runner = require('./setup');
 
-runner.exitOnFail(false);
-
 runner.notice('Core');
 runner.load('./default/core.js');
 

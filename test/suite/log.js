@@ -20,7 +20,7 @@ logLine = function() {
   console.log();
 }
 
-logResults = function(runtime, results, testName, exitOnFail) {
+logResults = function(runtime, results, testName) {
   var i, j, failure, totalAssertions = 0, totalFailures = 0, totalSkipped = 0;
   for (i = 0; i < results.length; i += 1) {
     totalAssertions += results[i].assertions;
@@ -58,13 +58,6 @@ logResults = function(runtime, results, testName, exitOnFail) {
     logRed(testName);
     skipped = totalSkipped ? skipped + ' skipped, ' : '';
     logRed(assertions + ' assertions, ' + failures + ' failures, ' + skipped + time + 's');
-    if (exitOnFail !== false) {
-      if (typeof quit !== 'undefined') {
-        quit();
-      } else {
-        process.exit(1);
-      }
-    }
   }
   globalFailures += totalFailures;
 }
