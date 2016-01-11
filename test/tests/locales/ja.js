@@ -1,4 +1,4 @@
-package('Dates Japanese', function () {
+namespace('Dates Japanese', function () {
   "use strict";
 
   var now, then;
@@ -195,7 +195,7 @@ package('Dates Japanese', function () {
 
 });
 
-package('Number | Japanese Dates', function() {
+namespace('Number | Japanese Dates', function() {
 
   method('duration', function() {
     test(run(5, 'hours'), ['ja'], '5時間', 'simple duration');

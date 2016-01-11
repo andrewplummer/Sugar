@@ -1,4 +1,4 @@
-package('Number', function () {
+namespace('Number', function () {
   "use strict";
 
   method('random', function() {

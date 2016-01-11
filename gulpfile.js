@@ -34,11 +34,11 @@ var HELP_MESSAGE = [
   '',
   '    %Options%',
   '',
-  '      -p, --packages PACKAGES      Comma separated packages to include (optional). Packages below (non-default marked with |*|).',
-  '      -l, --locales LOCALES        Comma separated date locale packages to include (optional, list below). English is included by default.',
+  '      -m, --modules MODULES        Comma separated modules to include (optional). Modules below (non-default marked with |*|).',
+  '      -l, --locales LOCALES        Comma separated date locales to include (optional, list below). English is included by default.',
   '      -o, --output OUTPUT          Output path (default is "sugar.js" or "sugar.min.js").',
   '',
-  '    %Packages%',
+  '    %Modules%',
   '',
   '      es6',
   '      es7',
@@ -61,13 +61,13 @@ var HELP_MESSAGE = [
   '',
   '    %Notes%',
   '',
-  '      ES5 package is no longer default in Sugar builds. It should be',
+  '      The es5 module is no longer default in Sugar builds. It should be',
   '      added if ES5 compatibility is required in environments where it',
   '      does not exist (most commonly IE8 and below).',
   '',
-  '      ES6/7 packages are default and include minimal polyfills required',
-  '      by Sugar. This package can be removed if support can be guaranteed,',
-  '      either natively or through a polyfill library.',
+  '      The es6/es7 modules are default and include minimal polyfills required',
+  '      by Sugar. They can be removed if support can be guaranteed, either',
+  '      natively or through a polyfill library.',
   '',
 ].join('\n');
 
@@ -83,7 +83,7 @@ var COPYRIGHT = [
 ].join('\n');
 
 // TODO: rename all these to modules??
-var DEFAULT_PACKAGES = [
+var DEFAULT_MODULES = [
   'es6',
   'es7',
   'date',
@@ -97,7 +97,7 @@ var DEFAULT_PACKAGES = [
   'string'
 ];
 
-var ALL_PACKAGES = [
+var ALL_MODULES = [
   'es5',
   'es6',
   'es7',
@@ -112,16 +112,6 @@ var ALL_PACKAGES = [
   'string',
   'inflections',
   'language'
-];
-
-var ES6_PACKAGES = [
-  'string',
-  'number',
-  'array'
-];
-
-var ES7_PACKAGES = [
-  'array'
 ];
 
 // -------------- Compiler ----------------
@@ -256,10 +246,10 @@ function getModuleNames(p) {
   var names;
   switch (p) {
     case 'all':
-      names = ALL_PACKAGES;
+      names = ALL_MODULES;
       break;
     case 'default':
-      names = DEFAULT_PACKAGES;
+      names = DEFAULT_MODULES;
       break;
     default:
       names = p.split(',');
@@ -300,19 +290,20 @@ function getAllLocales() {
 }
 
 // TODO: TRY TO REMOVE
-function getFiles(packages, skipLocales) {
+/*
+function getFiles(modules, skipLocales) {
   var arr, files = [];
-  if (packages === 'core') {
+  if (modules === 'core') {
     return ['lib/core.js'];
   }
   files.push('lib/core.js');
   files.push('lib/common.js');
-  arr = packages.split(',');
+  arr = modules.split(',');
   arr.forEach(function(name) {
     if (name === 'default') {
-      Array.prototype.push.apply(arr, DEFAULT_PACKAGES);
+      Array.prototype.push.apply(arr, DEFAULT_MODULES);
     } else if (name === 'all') {
-      Array.prototype.push.apply(arr, ALL_PACKAGES);
+      Array.prototype.push.apply(arr, ALL_MODULES);
     }
   });
   arr.forEach(function(p) {
@@ -324,6 +315,7 @@ function getFiles(packages, skipLocales) {
   });
   return files;
 }
+*/
 
 function getCompilerModules(files) {
   var modules = [], locales = [];
@@ -431,7 +423,7 @@ function buildPackageDist(packageName, dir, type) {
   var definition = PACKAGE_DEFINITIONS[packageName];
   var distDir    = getDistDirectory(packageName, dir, type);
 
-  function writePackaged(modules) {
+  function write(modules) {
     var streams = [];
     var devFilename = path.join(distDir, getDistFilename(packageName));
     var minFilename = path.join(distDir, getDistFilename(packageName, true));
@@ -444,7 +436,7 @@ function buildPackageDist(packageName, dir, type) {
     copyLocales('all', path.join(distDir, 'locales'));
   }
 
-  return writePackaged(definition.modules);
+  return write(definition.modules);
 }
 
 function getDistDirectory(packageName, dir, type) {
@@ -458,18 +450,16 @@ function getDistFilename(packageName, min) {
 function getPackageNames(p) {
   var packages;
   switch (p) {
-    case 'main':
-      packages = ['main'];
-      break;
     case 'all':
-      packages = ['core', 'main'].concat(ALL_PACKAGES);
+      packages = [];
+      iter(PACKAGE_DEFINITIONS, function(name) {
+        packages.push(name);
+      });
       break;
     default:
       packages = p.split(',');
   }
-  return packages.map(function(p) {
-    return p === 'main' ? 'sugar' : 'sugar-' + p;
-  });
+  return packages;
 }
 
 function getKeywords(name, keywords) {
@@ -595,11 +585,11 @@ function buildNpmClean() {
 }
 
 function buildNpmDefault() {
-  return buildNpmPackages(args.p || args.packages || 'main', true);
+  return buildNpmPackages(args.p || args.packages || 'sugar', true);
 }
 
 function buildNpmCore() {
-  return buildNpmPackages('core', true);
+  return buildNpmPackages('sugar-core', true);
 }
 
 function buildNpmAll() {
@@ -993,10 +983,10 @@ function buildNpmPackages(p, dist) {
           text: text,
           block: block
         }
-        // Both @package and @namespace may be defined in the same comment block.
-        matches = text.match(/@(namespace|package) \w+/g);
+        // Both @module and @namespace may be defined in the same comment block.
+        matches = text.match(/@(namespace|module) \w+/g);
         if (matches) {
-          var namespace = matches[matches.length - 1].match(/@(namespace|package) (\w+)/)[2];
+          var namespace = matches[matches.length - 1].match(/@(namespace|module) (\w+)/)[2];
           namespaceBoundary(namespace, endLoc.line);
         }
       }
@@ -1640,7 +1630,7 @@ function buildNpmPackages(p, dist) {
       packagesByModuleName[module] = packages;
     }
 
-    var moduleNames = ['common'].concat(ALL_PACKAGES);
+    var moduleNames = ['common'].concat(ALL_MODULES);
 
     // Parse all source files
     moduleNames.forEach(parseModule);
@@ -1842,8 +1832,7 @@ function buildNpmPackages(p, dist) {
       }
 
       if (exports === 'core') {
-        // Replace token "core" with either the sugar-core package
-        // or its local path.
+        // Replace token "core" with either the sugar-core package or its local path.
         exports = getDependencyRequire('Sugar');
       }
 
@@ -1962,19 +1951,19 @@ function buildNpmPackages(p, dist) {
     });
   }
 
-  function moduleIncludedInPackage(npmPackageName, module, isEntryPoint) {
-    var definition = PACKAGE_DEFINITIONS[npmPackageName];
+  function moduleIncludedInPackage(packageName, module, isEntryPoint) {
+    var definition = PACKAGE_DEFINITIONS[packageName];
     var modules = definition.modules.split(',');
     var extra = (definition.extra || '').split(',');
     return modules.indexOf(module) !== -1 || (extra.indexOf(module) !== -1 && !isEntryPoint);
   }
 
-  function localesIncludedInPackage(npmPackageName) {
-    return !!PACKAGE_DEFINITIONS[npmPackageName].locales;
+  function localesIncludedInPackage(packageName) {
+    return !!PACKAGE_DEFINITIONS[packageName].locales;
   }
 
-  function writeLocales(npmPackageName, dir) {
-    if (!localesIncludedInPackage(npmPackageName)) {
+  function writeLocales(packageName, dir) {
+    if (!localesIncludedInPackage(packageName)) {
       return;
     }
     var entryPoint = {
@@ -1996,26 +1985,27 @@ function buildNpmPackages(p, dist) {
     writePackage(entryPoint, dir);
   }
 
-  function createMainEntryPoint(npmPackageName, dir) {
+  function createMainEntryPoint(packageName, dir) {
     var package = {
       path: 'index',
       exports: 'core',
     };
     package.body = moduleEntryPoints.filter(function(p) {
-      return moduleIncludedInPackage(npmPackageName, p.module, true);
+      return moduleIncludedInPackage(packageName, p.module, true);
     }).map(function(p) {
       return getRequireStatement(package, p, true);
     }).join('\n');
     writePackage(package, dir);
   }
 
-  function buildCore(npmPackageName) {
+  function buildCore(packageName) {
 
-    var distDir = path.join(baseDir, npmPackageName);
-    var devFilename = path.join(distDir, getDistFilename(npmPackageName));
-    var minFilename = path.join(distDir, getDistFilename(npmPackageName, true));
+    var distDir = path.join(baseDir, packageName);
+    var devFilename = path.join(distDir, getDistFilename(packageName));
+    var minFilename = path.join(distDir, getDistFilename(packageName, true));
 
-    buildPackageMeta(npmPackageName, baseDir, 'npm');
+    notify('Building ' + packageName);
+    buildPackageMeta(packageName, baseDir, 'npm');
     writeFile(devFilename, readFile('lib/core.js'));
 
     if (dist) {
@@ -2024,25 +2014,25 @@ function buildNpmPackages(p, dist) {
   }
 
   function build() {
-    npmPackages.forEach(function(npmPackageName) {
-      if (npmPackageName === 'sugar-core') {
-        buildCore(npmPackageName);
+    npmPackages.forEach(function(packageName) {
+      if (packageName === 'sugar-core') {
+        buildCore(packageName);
         return;
       }
-      var dir = path.join(baseDir, npmPackageName)
+      var dir = path.join(baseDir, packageName)
       iter(packagesByModuleName, function(module, packages) {
-        if (moduleIncludedInPackage(npmPackageName, module)) {
+        if (moduleIncludedInPackage(packageName, module)) {
           packages.forEach(function(p) {
             writePackage(p, dir);
           });
         }
       });
-      notify('Building ' + npmPackageName);
-      createMainEntryPoint(npmPackageName, dir);
-      writeLocales(npmPackageName, dir);
-      buildPackageMeta(npmPackageName, baseDir, 'npm');
+      notify('Building ' + packageName);
+      createMainEntryPoint(packageName, dir);
+      writeLocales(packageName, dir);
+      buildPackageMeta(packageName, baseDir, 'npm');
       if (dist) {
-        streams.push(buildPackageDist(npmPackageName, baseDir, 'npm'));
+        streams.push(buildPackageDist(packageName, baseDir, 'npm'));
       }
     });
   }
@@ -2064,14 +2054,14 @@ function buildNpmPackages(p, dist) {
 
 function buildDocs() {
 
-  var files = getFiles('all', true), packages = {}, methodsByNamespace = {};
+  var files = getFiles('all', true), modules = {}, methodsByNamespace = {};
   var output = args.f || args.file || 'docs.json';
   var basename = path.basename(output);
   var dirname = path.dirname(output);
 
   return gulp.src(files)
     .pipe(through.obj(function(file, enc, cb) {
-      var text, lines, currentNamespace, currentPackage;
+      var text, lines, currentNamespace, currentModule;
 
       text = file.contents.toString('utf-8')
       lines = text.split('\n');
@@ -2160,12 +2150,12 @@ function buildDocs() {
         return zlib.gzipSync(readFile(path)).length;
       }
 
-      function getPackageSize(package) {
-        var name = package.replace(/\s/g, '_').toLowerCase();
+      function getModuleSize(module) {
+        var name = module.replace(/\s/g, '_').toLowerCase();
         var dPath = PRECOMPILED_DEV_DIR + name + '.js';
         var mPath = PRECOMPILED_MIN_DIR + name + '.js';
-        packages[package]['size'] = getFileSize(dPath);
-        packages[package]['min_size'] = getGzippedFileSize(mPath);
+        modules[module]['size'] = getFileSize(dPath);
+        modules[module]['min_size'] = getGzippedFileSize(mPath);
       }
 
       text.replace(/\*\*\*([\s\S]+?)[\s\n*]*(?=\*\*\*)/gm, function(m, tags) {
@@ -2173,14 +2163,14 @@ function buildDocs() {
         tags.replace(/@(\w+)\s?([^@]*)/g, function(all, key, val) {
           val = val.replace(/^[\s*]/gm, '').replace(/[\s*]+$/, '');
           switch(key) {
-            case 'package':
-              packages[val] = obj;
-              currentPackage = val;
-              if (DEFAULT_PACKAGES.indexOf(val.toLowerCase()) !== -1) {
+            case 'module':
+              modules[val] = obj;
+              currentModule = val;
+              if (DEFAULT_MODULES.indexOf(val.toLowerCase()) !== -1) {
                 obj['supplemental'] = true;
               }
               switchNamespace(val);
-              getPackageSize(val);
+              getModuleSize(val);
               break;
             case 'namespace':
               switchNamespace(val);
@@ -2188,7 +2178,7 @@ function buildDocs() {
             case 'method':
               var name = extractMethodNameAndArgs(obj, val);
               obj.line = getLineNumber(name);
-              obj.package = currentPackage;
+              obj.module = currentModule;
               currentNamespace[name] = obj;
               break;
             case 'set':
@@ -2208,7 +2198,7 @@ function buildDocs() {
     .pipe(concat(basename, { newLine: '' }))
     .pipe(through.obj(function(file, enc, cb) {
       file.contents = new Buffer(JSON.stringify({
-        packages: packages,
+        modules: modules,
         methodsByNamespace: methodsByNamespace
       }), "utf8");
       this.push(file);
@@ -2235,7 +2225,7 @@ function testWatch(all) {
   gulp.watch(['lib/**/*.js'], function() {
     notify('Rebuilding');
     buildDevelopment();
-    buildNpmPackages(all ? 'all' : 'core,main,es6,es7');
+    buildNpmPackages(all ? 'all' : 'sugar,sugar-core,sugar-es6,sugar-es7');
     runTests(all);
     notify('Waiting');
   });

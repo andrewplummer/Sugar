@@ -1,4 +1,4 @@
-package('Function', function () {
+namespace('Function', function () {
   "use strict";
 
   var clock;

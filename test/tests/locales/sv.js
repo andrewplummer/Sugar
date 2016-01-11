@@ -1,4 +1,4 @@
-package('Dates Swedish', function () {
+namespace('Dates Swedish', function () {
   "use strict";
 
   var now, then;
@@ -203,7 +203,7 @@ package('Dates Swedish', function () {
 
 });
 
-package('Number | Swedish Dates', function () {
+namespace('Number | Swedish Dates', function () {
 
   method('duration', function() {
     test(run(5, 'hours'), ['sv'], '5 timmar', 'simple duration');

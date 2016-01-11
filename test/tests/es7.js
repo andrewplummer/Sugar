@@ -1,4 +1,4 @@
-package('ES7', function () {
+namespace('ES7', function () {
   "use strict";
 
   method('includes', function() {

@@ -1,4 +1,4 @@
-package('Dates French', function () {
+namespace('Dates French', function () {
   "use strict";
 
   var now, then;
@@ -213,7 +213,7 @@ package('Dates French', function () {
 
 });
 
-package('Number | French Dates', function () {
+namespace('Number | French Dates', function () {
 
   method('duration', function() {
     test(run(5, 'hours'), ['fr'], '5 heures', 'simple duration');

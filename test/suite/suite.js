@@ -1,12 +1,12 @@
 (function() {
 
   var allTests = [];
-  var packages = [];
+  var namespaces = [];
   var testExtended;
   var currentTest;
   var currentArgs;
   var currentMethod;
-  var currentPackage;
+  var currentNamespace;
 
   // The global context
   var globalContext = typeof global !== 'undefined' ? global : this;
@@ -31,27 +31,27 @@
         throw new Error('Test ' + currentTest.name + ' has no tests.');
         continue;
       }
-      if (currentTest.package.setup) {
-        currentTest.package.setup();
+      if (currentTest.namespace.setup) {
+        currentTest.namespace.setup();
       }
       currentTest.fn();
-      if (currentTest.package.teardown) {
-        currentTest.package.teardown();
+      if (currentTest.namespace.teardown) {
+        currentTest.namespace.teardown();
       }
       currentTest = null;
     }
-    var runPackages = arrayFilter(packages, function(p) {
+    var runAll = arrayFilter(namespaces, function(p) {
       return p.assertions > 0;
     });
-    fn(new Date() - time, runPackages);
+    fn(new Date() - time, runAll);
     allTests = [];
-    packages = [];
+    namespaces = [];
   }
 
-  package = function (name, fn, focused) {
+  namespace = function (name, fn, focused) {
     var split;
     split = name.split(' | ');
-    currentPackage = {
+    currentNamespace = {
       name: split[0],
       subname: split[1],
       focused: !!focused,
@@ -59,21 +59,21 @@
       skipped: [],
       failures: []
     };
-    packages.push(currentPackage);
+    namespaces.push(currentNamespace);
     // Queue the tests...
     fn.call();
-    currentPackage = null;
+    currentNamespace = null;
   }
 
-  fpackage = function(name, fn) {
-    package(name, fn, true);
+  fnamespace = function(name, fn) {
+    namespace(name, fn, true);
   }
 
   // Noop
-  xpackage = function() {};
+  xnamespace = function() {};
 
   equal = function (actual, expected, message, stack) {
-    currentTest.package.assertions++;
+    currentTest.namespace.assertions++;
     if(!isEqual(actual, expected)) {
       addFailure(actual, expected, getFullMessage(message), stack);
     }
@@ -115,7 +115,7 @@
       name: name,
       focused: !!focused,
       ignored: !!ignored,
-      package: currentPackage
+      namespace: currentNamespace
     });
   }
 
@@ -133,11 +133,11 @@
   xgroup = xmethod;
 
   setup = function(fn) {
-    currentPackage.setup = fn;
+    currentNamespace.setup = fn;
   }
 
   teardown = function(fn) {
-    currentPackage.teardown = fn;
+    currentNamespace.teardown = fn;
   }
 
   withArgs = function(args, fn) {
@@ -147,10 +147,10 @@
   }
 
   withMethod = function(name, fn) {
-    var packageName = currentTest.package.name;
-    if (!Sugar[packageName][name]) {
-      var key = [packageName, currentTest.name, name].join(' | ')
-      currentTest.package.skipped.push(key);
+    var namespace = currentTest.namespace.name;
+    if (!Sugar[namespace][name]) {
+      var key = [namespace, currentTest.name, name].join(' | ')
+      currentTest.namespace.skipped.push(key);
       return;
     }
     currentMethod = name;
@@ -182,11 +182,11 @@
     methodName = methodName || currentMethod || currentTest.name;
     args = args || currentArgs || [];
     if(testExtended) {
-      var globalObject = globalContext[currentTest.package.name], fn;
+      var globalObject = globalContext[currentTest.namespace.name], fn;
       var preferGlobal = globalObject === Object && subject !== Object;
       if(subject && subject[methodName] && !preferGlobal) {
         // Call any direct methods on the object if they exist. The only exception
-        // for this rule is if we are testing the Object package, then we want to
+        // for this rule is if we are testing the Object namespace, then we want to
         // go through Object.XXX even if there the method XXX exists in the object
         // itself as this may produce a different result. Ex. [1].add(2) produces a
         // different result than Object.add([1], 2)
@@ -219,24 +219,24 @@
   }
 
   function getTestsToRun() {
-    var focusedPackagesExist = false;
+    var focusedNamespacesExist = false;
 
-    function packageIsActive(package) {
-      if (!focusedPackagesExist) {
+    function namespaceIsActive(namespace) {
+      if (!focusedNamespacesExist) {
         return true;
       }
-      return package.focused;
+      return namespace.focused;
     }
 
-    for (var i = 0; i < packages.length; i++) {
-      if (packages[i].focused) {
-        focusedPackagesExist = true;
+    for (var i = 0; i < namespaces.length; i++) {
+      if (namespaces[i].focused) {
+        focusedNamespacesExist = true;
         break;
       }
     }
 
     var focused = arrayFilter(allTests, function(t) {
-      return t.focused && packageIsActive(t.package);
+      return t.focused && namespaceIsActive(t.namespace);
     });
 
     if (focused.length) {
@@ -244,16 +244,15 @@
     }
 
     return arrayFilter(allTests, function(t) {
-      return !t.ignored && packageIsActive(t.package);
+      return !t.ignored && namespaceIsActive(t.namespace);
     });
   }
 
   function getSugarNamespace(subject) {
     var ns;
-    ns = Sugar[currentTest.package.name];
+    ns = Sugar[currentTest.namespace.name];
     if (ns) {
-      // If the current package name is the namespace,
-      // simply return it.
+      // If the current namespace name is the same, simply return it.
       return ns;
     }
     var global = matchGlobalClass(subject);
@@ -317,7 +316,7 @@
 
   function addFailure(actual, expected, message, stack, warning) {
     var meta = getMeta(stack);
-    currentTest.package.failures.push({
+    currentTest.namespace.failures.push({
       actual: actual,
       expected: expected,
       message: message,

@@ -1,4 +1,4 @@
-package('RegExp', function () {
+namespace('RegExp', function () {
   "use strict";
 
   method('escape', function() {

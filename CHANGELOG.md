@@ -13,7 +13,7 @@ v2.0.0
 - Removed `String#has` in favor of `String#contains` to be more in compliance with ES6. See CAUTION.md for details.
 - Added `Number.isNaN` shim.
 - Alphanumeric array options are now on the global object.
-- Moved `Object.map`, `Object.each`, and `Object.size` to the object package.
+- Moved `Object.map`, `Object.each`, and `Object.size` to the object module.
 - Removed `Object.reduce`.
 - Added `Object.isArguments`.
 - Changed `String#each` to allow breaking the loop with `false`.
@@ -66,17 +66,17 @@ v2.0.0
 - Modified `String#replaceTags` and `String#stripTags` to simplify argument signature and small performance boost.
 - Added `Array#isEqual`.
 - Renamed `RegExp#addFlag` and `RegExp#removeFlag` to `RegExp#addFlags` and `RegExp#removeFlags`, and ensured they work on multiple flags.
-- Created new package `enumerable`, and split out array methods.
+- Created new module `enumerable`, and split out array methods.
 - Removed `Array#findAll` in favor of `Array#filter` and `Array#filterFrom`.
 - Replaced `Object.findAll` with `Object.filter`.
 - `Array#isEmpty` now only checks for zero length.
-- Moved `Object.select` and `Object.reject` to enumerable package and updated to match objects on key existence.
+- Moved `Object.select` and `Object.reject` to enumerable module and updated to match objects on key existence.
 - Added `forEachFrom` alias for `each`.
 - Added `Object.remove` and `Object.exclude`.
 - Added `Array#append` to take the place of `Array#add`. `Array#add` now is non-destructive. `Array#insert` now aliases `append` instead of `add`.
 - Removed `Array#include` (now is identical to `Array#add`).
 - Added `Object.invert`.
-- Moved `String#titleize` to String package from Inflections.
+- Moved `String#titleize` to String module from Inflections.
 
 
 v1.4.2
@@ -106,7 +106,7 @@ v1.4.0
 ### API Changes ###
 
 - Adding generalized ranges for Numbers and Strings in addition to Dates.
-- Date ranges are now part of the Range package and are no longer dependent on the Date package.
+- Date ranges are now part of the Range module and are no longer dependent on the Date module.
 - Adding `clamp` for ranges and an alias for Number.
 - Adding `cap` for ranges and an alias for Number.
 - Added `String#truncateOnWords`. Part of the `String#truncate` functionality is now here.
@@ -292,21 +292,21 @@ v1.3
 
 ### API Changes ###
 
-- Sugar packages are now further split up and can easily be customized and repackaged. Aside from "core" there is the "es5" package that can be opted out of if <= IE8 support isn't an issue. DateRanges (below) are now their own package, as are inflections.
-- Date locales are now a separate package, only English is included in the base "date" package.
+- Sugar modules are now further split up and can easily be customized and repackaged. Aside from "core" there is the "es5" module that can be opted out of if <= IE8 support isn't an issue. DateRanges (below) are now their own module, as are inflections.
+- Date locales are now a separate module, only English is included in the base "date" module.
 - Enumerable methods are now available as class methods on Object, and instance methods on extended objects. This includes: map, any, all, none, count, sum, average, find, findAll, min, max, least, most, and reduce.
 - Added Object.size (also available to extended objects)
 - Array#min, Array#max, Array#least, and Array#most now return a single element by default with the option to return multiple elements.
 - Object.equals now considers identical objects vs. extended objects to be the same
-- Refactored Object.isEmpty to be an enumerable method in the Array package. This means that it will error on non-objects now.
-- Added "language" package.
-- String#normalize moved from Inflections to Language package
-- String#has[Script] moved from String to Language package
-- String#hankaku and String#zenkaku moved from String to Language package
-- String#hiragana and String#katakana moved from String to Language package
-- String#namespace moved from Inflections to String package
+- Refactored Object.isEmpty to be an enumerable method in the Array module. This means that it will error on non-objects now.
+- Added "language" module.
+- String#normalize moved from Inflections to Language module
+- String#has[Script] moved from String to Language module
+- String#hankaku and String#zenkaku moved from String to Language module
+- String#hiragana and String#katakana moved from String to Language module
+- String#namespace moved from Inflections to String module
 - String#parameterize now checks for normalize and also uses encodeURI for final output
-- String#split patching for regexes is now removed from the String package and is on its own in /lib/extra. It can be dropped in anywhere after Sugar is loaded.
+- String#split patching for regexes is now removed from the String module and is on its own in /lib/extra. It can be dropped in anywhere after Sugar is loaded.
 
 - Array#has is deprecated
 - Array#groupBy no longer returns extended objects
@@ -339,8 +339,7 @@ v1.3
 - Added support for time suffixes in Asian time strings (時 etc)
 - Added support for various relative formats in CKJ dates  (先週水曜日 etc)
 - Fixed inconsistently not allowing spaces before am/pm (Issue 144)
-
-- Added DateRange, accessed through Date.range as a separate package
+- Added DateRange, accessed through Date.range
 
 
 v1.2.5
@@ -390,7 +389,7 @@ v1.2.3
 - Added Array.AlphanumericSortIgnoreCase
 - Added Array.AlphanumericSortEquivalents
 - Object.merge defaults are now more sensible. shallow/deep is 3rd with shallow default and resolve is 4th
-- Added Number#duration to dates package.
+- Added Number#duration to dates module.
 - Bugfix for leaking globals.
 - Bugfix for String#compact (Issue 115)
 

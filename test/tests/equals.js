@@ -1,4 +1,4 @@
-package('Object | Equality', function() {
+namespace('Object | Equality', function() {
   "use strict";
 
   // These tests also shamelessly stolen from the Underscore.js test suite.

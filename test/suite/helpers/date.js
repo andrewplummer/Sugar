@@ -216,7 +216,7 @@ testGetTimezoneHours = function(d) {
 }
 
 // This helper method are necessary because setting/getting
-// the locale is sometimes performed outside the Date package,
+// the locale is sometimes performed outside the Date module,
 // giving no context for run().
 testSetLocale = function(code) {
   if (!Sugar.Date || !Sugar.Date.setLocale) return;

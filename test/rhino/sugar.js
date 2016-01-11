@@ -17,7 +17,7 @@ load('test/suite/helpers/object.js');
  * Additionally Rhino appears to allow overwriting non-writable attributes, so
  * tests that assert on those errors will fail.
  *
- * The function package cannot be used at all as it doesn't have a setTimeout
+ * The function module cannot be used at all as it doesn't have a setTimeout
  * method. A workaround for this can be found here:
  * http://stackoverflow.com/questions/2261705/how-to-run-a-javascript-function-asynchronously-without-using-settimeout
  *

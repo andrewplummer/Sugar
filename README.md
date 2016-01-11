@@ -7,7 +7,7 @@ http://sugarjs.com/
 
 ## Installing
 
-Pre-built scripts [sugar.min.js](sugar.min.js) and [sugar.js](sugar.js) can be immediately included in any project. Both are the standard build of Sugar that includes default packages. These pre-built scripts correspond to what is available on [customize](http://sugarjs.com/customize) page on the main site.
+Pre-built scripts [sugar.min.js](sugar.min.js) and [sugar.js](sugar.js) can be immediately included in any project. Both are the standard build of Sugar that includes default modules. These pre-built scripts correspond to what is available on [customize](http://sugarjs.com/customize) page on the main site.
 
 In node, simply use `npm install sugar` for the full build.
 
@@ -29,17 +29,18 @@ in all browsing environments (IE, etc) to ensure that it is stable, at least to 
 
 ## Custom Builds
 
-Sugar allows custom builds that let you opt in or out packages. This can be done [here](http://sugarjs.com/customize).
+Sugar allows custom builds that let you opt in or out modules. This can be done [here](http://sugarjs.com/customize).
 Custom builds can also be created with `script/create_build.rb`. With ruby installed, simply call:
 
 ```
-ruby script/create_build.rb --packages string,array
+gulp build:dev --modules string,array
+gulp build:min --modules string,array
 ```
 
-listing the packages you want to include. The advantage of using this
+listing the modules you want to include. The advantage of using this
 script is that it will perform all the minification on the fly, providing more fine-grained control by allowing you to
-manipulate the source code in [lib/](lib/) before building. If you want to remove specific methods from a package, you can do it this way.
-Be careful about removing dependencies however. Both [lib/core.js](lib/core.js) and [lib/common.js](lib/common.js) are required and will be added automatically. Be careful about removing methods in here as many methods are depended on by multiple packages.
+manipulate the source code in [lib/](lib/) before building. If you want to remove specific methods from a module, you can do it this way.
+Be careful about removing dependencies however. Both [lib/core.js](lib/core.js) and [lib/common.js](lib/common.js) are required and will be added automatically. Be careful about removing methods in here as many methods are depended on by multiple modules.
 
 
 ## Unit Tests Node
@@ -69,14 +70,14 @@ Sugar has the following localizations available:
 - Traditional Chinese (zh-TW)
 
 
-These files can be added separately or built into the main package on the [customize page](http://sugarjs.com/customize).
+These files can be added separately or built into the main bundle on the [customize page](http://sugarjs.com/customize).
 In addition to these major locales, custom locales can be added using:
 
 ```
 Date.addLocale(LOCALE_CODE, LOCALIZATION_OBJECT)
 ```
 
-Documentation for this available [here](http://sugarjs.com/dates). Also refer to [lib/locales](lib/locales) for examples of what kind of data and formats are required in localization objects. All localizations, including those not found in the main package will be kept here.
+Documentation for this available [here](http://sugarjs.com/dates). Also refer to [lib/locales](lib/locales) for examples of what kind of data and formats are required in localization objects. All localizations, including those not found in the main bundle will be kept here.
 
 
 

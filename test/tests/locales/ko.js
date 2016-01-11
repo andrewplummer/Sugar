@@ -1,4 +1,4 @@
-package('Dates Korean', function () {
+namespace('Dates Korean', function () {
   "use strict";
 
   var now, then;
@@ -176,7 +176,7 @@ package('Dates Korean', function () {
 
 });
 
-package('Number | Korean Dates', function () {
+namespace('Number | Korean Dates', function () {
 
   method('duration', function() {
     test(run(5, 'hours'), ['ko'], '5시간', 'simple duration');

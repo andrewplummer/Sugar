@@ -1,4 +1,4 @@
-package('String', function () {
+namespace('String', function () {
   "use strict";
 
   function getRange(from, to) {
