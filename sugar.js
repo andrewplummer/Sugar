@@ -187,7 +187,7 @@
   }
 
   function setGlobalProperties() {
-    setProperty(Sugar, 'VERSION', '2.0.0');
+    setProperty(Sugar, 'VERSION', 'edge');
 
     setProperty(Sugar, 'hasOwn', hasOwn);
     setProperty(Sugar, 'toString', toString);
