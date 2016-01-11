@@ -1,6 +1,5 @@
 {
   "name": "sugar",
-  "version": "2.0.0",
   "description": "A utility library that provides helpful methods for working effortlessly with native Javascript objects.",
   "keywords": [
     "sugar",
@@ -14,6 +13,7 @@
   ],
   "homepage": "http://sugarjs.com/",
   "author": "Andrew Plummer <plummer.andrew@gmail.com>",
+  "license": "MIT",
   "main": "sugar.js",
   "repository": {
     "type": "git",
@@ -36,8 +36,8 @@
   "scripts": {
     "test": "node test/node"
   },
-  "license": "MIT",
   "devDependencies": {
+    "acorn": "^2.7.0",
     "closure-compiler-stream": "^0.1.15",
     "glob": "^5.0.14",
     "gulp": "^3.9.0",
