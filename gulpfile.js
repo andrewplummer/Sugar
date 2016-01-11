@@ -651,10 +651,15 @@ function buildNpmPackages(p, dist) {
 
   // Top level internal functions
   var topLevel = {
+
+    // Change to relative path and "installed"
+    // to false to use local core.
+
     'Sugar': {
       type: 'core',
       name: 'Sugar',
-      path: getSugarCorePath(),
+      path: 'sugar-core',
+      installed: true,
     }
   };
 
@@ -1690,13 +1695,6 @@ function buildNpmPackages(p, dist) {
 
   // --- Creating Local Packages ---
 
-  function getSugarCorePath(package) {
-    // TODO: temporary until the core package is created.
-    return 'sugar-core';
-    var base = package ? path.relative(path.dirname(package.path)) : '';
-    return path.join(base, '../../../lib', 'core');
-  }
-
   function getPackageOrAlias(name) {
     var package = topLevel[name] || sugarMethods[name];
     if (package.alias) {
@@ -1706,6 +1704,9 @@ function buildNpmPackages(p, dist) {
   }
 
   function getRequirePath(from, to) {
+    if (to.installed) {
+      return to.path;
+    }
     var p = path.join(path.relative(path.dirname(from.path), path.dirname(to.path)), path.basename(to.path));
     if (p.charAt(0) !== '.') {
       p = './' + p;
@@ -1873,7 +1874,6 @@ function buildNpmPackages(p, dist) {
       }
 
       if (exports === 'core') {
-        // Replace token "core" with either the sugar-core package or its local path.
         exports = getDependencyRequire('Sugar');
       }
 

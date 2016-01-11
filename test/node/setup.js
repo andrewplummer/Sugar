@@ -3,9 +3,6 @@
 var fs = require('fs');
 var path = require('path');
 
-// TODO: Move this to sugar-core when its ready
-var CORE_PACKAGE = '../../lib/core';
-
 var baseDir = path.resolve(__dirname, '../..');
 
 sinon = require('sinon');
@@ -45,7 +42,7 @@ function load(loadPath) {
     return require(loadPath);
   } catch (e) {
     var match = loadPath.match(/(sugar(-\w+)?)$/);
-    if (match) {
+    if (e.code === 'MODULE_NOT_FOUND' && match) {
       var message = [
         '',
         ' Package "' + match[1] + '" does not exist!',
@@ -69,10 +66,18 @@ function loadLocaleTests() {
   });
 }
 
+function pathIsLocal(p) {
+  return p.indexOf(baseDir) === 0 && !/node_modules/.test(p);
+}
+
+function pathIsCore(p) {
+  return /sugar-core/.test(p);
+}
+
 function expireCache() {
   for (var path in require.cache) {
     if(!require.cache.hasOwnProperty(path)) continue;
-    if (path.indexOf(baseDir) === 0 && !path.match(/node_modules/)) {
+    if (pathIsLocal(path) || pathIsCore(path)) {
       // console.info('EXPIRING:', path);
       delete require.cache[path]
     }
@@ -108,7 +113,7 @@ module.exports = {
     // Set the global object so that the tests can access.
     // Local sugar is to allow testing of the concatenated
     // build instead of modular npm packages.
-    Sugar = localSugar || require(CORE_PACKAGE);
+    Sugar = localSugar || require('sugar-core');
 
     var testName = getTestNameFromModule(mod);
     if (extended) {
