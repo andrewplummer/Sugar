@@ -1,6 +1,8 @@
 var runner = require('../setup');
 
 runner.load('../../release/npm/sugar');
+runner.load('../../release/npm/sugar/inflections');
+runner.load('../../release/npm/sugar/language');
 runner.load('../../release/npm/sugar/locales');
 
 // Tests

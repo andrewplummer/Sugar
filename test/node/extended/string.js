@@ -7,5 +7,6 @@ runner.load('../../release/npm/sugar-string');
 // Tests
 runner.loadTest('es6');
 runner.loadTest('string');
+runner.loadTest('string-range');
 
 runner.runExtended(module);
