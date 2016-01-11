@@ -9,10339 +9,10339 @@
 (function() {
   'use strict';
 
-/***
- * @module Core
- * @description Core module allows custom methods to be defined on the Sugar global and extended onto natives later.
- ***/
+  /***
+   * @module Core
+   * @description Core module allows custom methods to be defined on the Sugar global and extended onto natives later.
+   ***/
 
-// The global to export.
-var Sugar;
+  // The global to export.
+  var Sugar;
 
-// The name of Sugar in the global namespace.
-var SUGAR_GLOBAL = 'Sugar';
+  // The name of Sugar in the global namespace.
+  var SUGAR_GLOBAL = 'Sugar';
 
-// Natives by name.
-var NATIVES = ['Number','String','Array','Date','RegExp','Function','Object'];
+  // Natives by name.
+  var NATIVES = ['Number','String','Array','Date','RegExp','Function','Object'];
 
-// Property descriptors exist in IE8 but will error when trying to define a property on native objects.
-// IE8 does not have defineProperies, however, so this check saves a try/catch block.
-var PROPERTY_DESCRIPTOR_SUPPORT = !!(Object.defineProperty && Object.defineProperties);
+  // Property descriptors exist in IE8 but will error when trying to define a property on native objects.
+  // IE8 does not have defineProperies, however, so this check saves a try/catch block.
+  var PROPERTY_DESCRIPTOR_SUPPORT = !!(Object.defineProperty && Object.defineProperties);
 
-// Static method flag
-var STATIC   = 0x1;
+  // Static method flag
+  var STATIC   = 0x1;
 
-// Instance method flag
-var INSTANCE = 0x2;
+  // Instance method flag
+  var INSTANCE = 0x2;
 
-// defineProperty with a simple shim
-var defineProperty = PROPERTY_DESCRIPTOR_SUPPORT ? Object.defineProperty : definePropertyShim;
+  // defineProperty with a simple shim
+  var defineProperty = PROPERTY_DESCRIPTOR_SUPPORT ? Object.defineProperty : definePropertyShim;
 
-// The global context. Rhino shadows "global" with it's own keyword so do an extra check to be sure
-// that it's actually the global context.
-var globalContext = typeof global !== 'undefined' && global.Object ? global : this;
+  // The global context. Rhino shadows "global" with it's own keyword so do an extra check to be sure
+  // that it's actually the global context.
+  var globalContext = typeof global !== 'undefined' && global.Object ? global : this;
 
-// Is the environment node?
-var hasExports = typeof module !== 'undefined' && module.exports;
+  // Is the environment node?
+  var hasExports = typeof module !== 'undefined' && module.exports;
 
-// Internal hasOwnProperty
-var internalHasOwnProperty = Object.prototype.hasOwnProperty;
+  // Internal hasOwnProperty
+  var internalHasOwnProperty = Object.prototype.hasOwnProperty;
 
-// Whether object instance methods can be mapped to the prototype.
-var allowObjectPrototype = false;
+  // Whether object instance methods can be mapped to the prototype.
+  var allowObjectPrototype = false;
 
 
-function setupGlobal() {
-  var existingSugar = globalContext[SUGAR_GLOBAL];
-  // Re-use already defined Sugar global object
-  // but only if not using exports!
-  if (!hasExports && existingSugar) {
-    Sugar = existingSugar;
-    return;
-  }
-  Sugar = function(arg) {
-    for (var i = 0; i < NATIVES.length; i++) {
-      Sugar[NATIVES[i]].extend(arg);
-    }
-  };
-
-  // There are 2 identical methods for extending with Sugar:
-  // 1. Sugar.extendAll();
-  // 2. require('sugar')();
-  // The "extend" method is more explicit and preferred, but the
-  // namespace itself is also available for cleaner npm modules.
-  setProperty(Sugar, 'extendAll', Sugar);
-  iterateOverObject(NATIVES, function(i, name) {
-    createNamespace(name, name === 'Object');
-  });
-  if (hasExports) {
-    module.exports = Sugar;
-  } else {
-    globalContext[SUGAR_GLOBAL] = Sugar;
-  }
-  setGlobalProperties();
-}
-
-function createNamespace(name, isObject) {
-
-  var toString = function() {
-    // Print out something nicer than just a garbage function.
-    return SUGAR_GLOBAL + name;
-  }
-
-  var namespace = function(arg) {
-    var staticMethods = {}, instanceMethods = {}, opts = {}, methodsByName;
-
-    function disallowedByFlags(flags) {
-      if (!flags) return;
-      for (var i = 0; i < flags.length; i++) {
-        if (opts[flags[i]] === false) {
-          return true;
-        }
-      }
-    }
-
-    function canExtendPrototype(method) {
-      return (!isObject || allowObjectPrototype) && !disallowedByFlags(method.flags);
-    }
-
-    if (typeof arg === 'string') {
-      methodsByName = [arg];
-    } else if (arg && arg.length) {
-      methodsByName = arg;
-    } else if (arg) {
-      opts = arg;
-      methodsByName = opts.methods;
-      if (isObject && typeof opts.objectPrototype === 'boolean') {
-        // Store "objectPrototype" flag for future reference.
-        allowObjectPrototype = opts.objectPrototype;
-      }
-    }
-
-    iterateOverObject(methodsByName || namespace, function(methodName, method) {
-      if (methodsByName) {
-        // If we have method names passed in an array,
-        // then we need to flip the key and value here
-        // and find the method in the Sugar namespace.
-        methodName = method;
-        method = namespace[methodName];
-      }
-      if (hasOwn(method, 'instance') && canExtendPrototype(method)) {
-        instanceMethods[methodName] = method.instance;
-      }
-      if(hasOwn(method, 'static')) {
-        staticMethods[methodName] = method;
-      }
-    });
-    extendNative(globalContext[name], staticMethods);
-    extendNative(globalContext[name].prototype, instanceMethods);
-    if (!methodsByName) {
-      // If there are no method names passed, then
-      // all methods in the namespace will be extended
-      // to the native. This includes all future defined
-      // methods, so add a flag here to check later.
-      setProperty(namespace, 'active', true);
-    }
-    // return self
-    return namespace;
-  };
-
-  function defineWithOptionCollect(methodName, instance, args) {
-    setProperty(namespace, methodName, function(arg1, arg2, arg3) {
-      var opts = collectDefineOptions(arg1, arg2, arg3);
-      defineMethods(namespace, opts.methods, instance, args, opts.last);
-    });
-  }
-
-  // Extending by namespace:
-  // 1. Sugar.Array.extend();
-  // 2. require('sugar-array')();
-  Sugar[name] = namespace;
-  setProperty(namespace, 'extend', namespace);
-  setProperty(namespace, 'toString', toString);
-
-  defineWithOptionCollect('defineStatic', STATIC);
-  defineWithOptionCollect('defineInstance', INSTANCE);
-  defineWithOptionCollect('defineInstanceAndStatic', INSTANCE | STATIC);
-  defineWithOptionCollect('defineStaticWithArguments', STATIC, true);
-  defineWithOptionCollect('defineInstanceWithArguments', INSTANCE, true);
-
-  setProperty(namespace, 'alias', function(name, source) {
-    var method = typeof source === 'string' ? namespace[source] : source;
-    setProperty(namespace, name, method, true);
-  });
-
-  setProperty(namespace, 'defineStaticPolyfill', function(arg1, arg2, arg3) {
-    var opts = collectDefineOptions(arg1, arg2, arg3);
-    extendNative(globalContext[name], opts.methods, true, opts.last);
-  });
-
-  setProperty(namespace, 'defineInstancePolyfill', function(arg1, arg2, arg3) {
-    var opts = collectDefineOptions(arg1, arg2, arg3);
-    extendNative(globalContext[name].prototype, collectDefineOptions(arg1, arg2).methods, true, opts.last);
-  });
-
-}
-
-function toString() {
-  return SUGAR_GLOBAL;
-}
-
-function setGlobalProperties() {
-  setProperty(Sugar, 'VERSION', 'edge');
-
-  setProperty(Sugar, 'hasOwn', hasOwn);
-  setProperty(Sugar, 'toString', toString);
-  setProperty(Sugar, 'setProperty', setProperty);
-  setProperty(Sugar, 'defineProperty', defineProperty);
-  setProperty(Sugar, 'createNamespace', createNamespace);
-  setProperty(Sugar, 'iterateOverObject', iterateOverObject);
-  setProperty(Sugar, 'wrapInstanceMethod', wrapInstanceMethod);
-}
-
-function extendNative(extendee, source, polyfill, override) {
-  iterateOverObject(source, function(name, method) {
-    if (polyfill && !override && extendee[name]) {
-      // Polyfill exists, so bail.
+  function setupGlobal() {
+    var existingSugar = globalContext[SUGAR_GLOBAL];
+    // Re-use already defined Sugar global object
+    // but only if not using exports!
+    if (!hasExports && existingSugar) {
+      Sugar = existingSugar;
       return;
     }
-    setProperty(extendee, name, method);
-  });
-}
-
-function definePropertyShim(obj, prop, descriptor) {
-  obj[prop] = descriptor.value;
-}
-
-
-// Defining Methods
-
-function defineMethods(sugarNamespace, methods, instance, args, flags) {
-  iterateOverObject(methods, function(methodName, method) {
-    var instanceMethod, staticMethod = method;
-    if (args) {
-      staticMethod = wrapMethodWithArguments(method);
-    }
-    if (flags) {
-      staticMethod.flags = flags;
-    }
-    setProperty(sugarNamespace, methodName, staticMethod, true);
-
-    // A method may define its own custom implementation, so
-    // make sure that's not the case before creating one.
-    if (instance & INSTANCE && !method.instance) {
-      instanceMethod = wrapInstanceMethod(method, args);
-      setProperty(staticMethod, 'instance', instanceMethod);
-    }
-
-    if (instance & STATIC) {
-      setProperty(staticMethod, 'static', true);
-    }
-
-    if (sugarNamespace.active) {
-      // If the namespace has been activated (all methods mapped)
-      // then map this method as well.
-      sugarNamespace(methodName);
-    }
-  });
-}
-
-function collectDefineOptions(arg1, arg2, arg3) {
-  var methods, last;
-  if (typeof arg1 === 'string') {
-    methods = {};
-    methods[arg1] = arg2;
-    last = arg3;
-  } else {
-    methods = arg1;
-    last = arg2;
-  }
-  return {
-    last: last,
-    methods: methods
-  };
-}
-
-
-function wrapInstanceMethod(fn, args) {
-  return args ? wrapMethodWithArguments(fn, true) : wrapInstanceMethodFixed(fn);
-}
-
-function wrapMethodWithArguments(fn, instance) {
-  // Functions accepting enumerated arguments will always have "args" as the
-  // last argument, so subtract one from the function length to get the point
-  // at which to start collecting arguments. If this is an instance method on
-  // a prototype, then "this" will be pushed into the arguments array so start
-  // collecting 1 argument earlier.
-  var startCollect = fn.length - 1 - (instance ? 1 : 0);
-  return function() {
-    var args = [], collectedArgs = [], len;
-    if (instance) {
-      args.push(this);
-    }
-    len = Math.max(arguments.length, startCollect);
-    // Optimized: no leaking arguments
-    for (var i = 0; i < len; i++) {
-      if (i < startCollect) {
-        args.push(arguments[i]);
-      } else {
-        collectedArgs.push(arguments[i]);
+    Sugar = function(arg) {
+      for (var i = 0; i < NATIVES.length; i++) {
+        Sugar[NATIVES[i]].extend(arg);
       }
-    }
-    args.push(collectedArgs);
-    return fn.apply(null, args);
-  };
-}
-
-function wrapInstanceMethodFixed(fn) {
-  switch(fn.length) {
-    // Wrapped instance methods will always be passed the instance
-    // as the first argument, but requiring the argument to be defined
-    // may cause confusion here, so return the same wrapped function regardless.
-    case 0:
-    case 1:
-      return function() {
-        return fn(this);
-      };
-    case 2:
-      return function(a) {
-        return fn(this, a);
-      };
-    case 3:
-      return function(a, b) {
-        return fn(this, a, b);
-      };
-    case 4:
-      return function(a, b, c) {
-        return fn(this, a, b, c);
-      };
-    case 5:
-      return function(a, b, c, d) {
-        return fn(this, a, b, c, d);
-      };
-  }
-}
-
-// Util
-
-function setProperty(target, name, value, enumerable) {
-  defineProperty(target, name, {
-    value: value,
-    enumerable: !!enumerable,
-    configurable: true,
-    writable: true
-  });
-}
-
-function iterateOverObject(obj, fn) {
-  for(var key in obj) {
-    if (!hasOwn(obj, key)) continue;
-    if (fn.call(obj, key, obj[key], obj) === false) break;
-  }
-}
-
-function hasOwn(obj, prop) {
-  return !!obj && internalHasOwnProperty.call(obj, prop);
-}
-
-setupGlobal();
-'use strict';
-
-
-/***
- * @module Common
- * @description Internal utility and common methods.
- ***/
-
-// Flag allowing native methods to be enhanced
-var ENHANCEMENTS_FLAG = 'enhance';
-
-// Excludes object as this is more nuanced.
-var TYPE_CHECK_NAMES = ['Boolean','Number','String','Array','Date','RegExp','Function'];
-
-// Do strings have no keys?
-var NO_KEYS_IN_STRING_OBJECTS = !('0' in Object('a'));
-
-// Classes that can be matched by value
-var MATCHED_BY_VALUE_REG = /^\[object Date|Array|String|Number|RegExp|Boolean|Arguments\]$/;
-
-// Prefix for private properties
-var PRIVATE_PROP_PREFIX = '_sugar_';
-
-// Matches 1..2 style ranges in properties
-var PROPERTY_RANGE_REG = /^(.*?)\[([-\d]*)\.\.([-\d]*)\](.*)$/;
-
-// WhiteSpace/LineTerminator as defined in ES5.1 plus Unicode characters in the Space, Separator category.
-var TRIM_CHARS = '\u0009\u000A\u000B\u000C\u000D\u0020\u00A0\u1680\u180E\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u202F\u205F\u2028\u2029\u3000\uFEFF';
-
-var HALF_WIDTH_ZERO = 0x30;
-var FULL_WIDTH_ZERO = 0xff10;
-
-var HALF_WIDTH_PERIOD   = '.';
-var FULL_WIDTH_PERIOD   = '．';
-var HALF_WIDTH_COMMA    = ',';
-
-// Namespace aliases
-var sugarObject   = Sugar.Object,
-    sugarArray    = Sugar.Array,
-    sugarDate     = Sugar.Date,
-    sugarString   = Sugar.String,
-    sugarNumber   = Sugar.Number,
-    sugarFunction = Sugar.Function,
-    sugarRegExp   = Sugar.RegExp;
-
-// Internal toString
-var internalToString = Object.prototype.toString;
-
-// Core utility aliases
-var hasOwn             = Sugar.hasOwn,
-    setProperty        = Sugar.setProperty,
-    defineProperty     = Sugar.defineProperty,
-    iterateOverObject  = Sugar.iterateOverObject,
-    wrapInstanceMethod = Sugar.wrapInstanceMethod;
-
-
-// Type Checks
-var isBoolean, isNumber, isString, isArray, isDate, isRegExp, isFunction, isSet;
-
-function buildClassChecks() {
-
-  function buildClassCheck(klass) {
-    return klass === 'Array' && Array.isArray || function(obj, cached) {
-      return isClass(obj, klass, cached);
     };
-  }
 
-  function buildPrimitiveClassCheck(klass) {
-    var type = klass.toLowerCase();
-    return function(obj) {
-      var t = typeof obj;
-      return t === type || t === 'object' && isClass(obj, klass);
-    };
-  }
-
-  isBoolean  = buildPrimitiveClassCheck(TYPE_CHECK_NAMES[0]);
-  isNumber   = buildPrimitiveClassCheck(TYPE_CHECK_NAMES[1]);
-  isString   = buildPrimitiveClassCheck(TYPE_CHECK_NAMES[2]);
-
-  isArray    = buildClassCheck(TYPE_CHECK_NAMES[3]);
-  isDate     = buildClassCheck(TYPE_CHECK_NAMES[4]);
-  isRegExp   = buildClassCheck(TYPE_CHECK_NAMES[5]);
-  isSet      = buildClassCheck('Set');
-
-  // Wanted to enhance performance here by using simply "typeof"
-  // but Firefox has two major issues that make this impossible,
-  // one fixed, the other not, so perform a full class check here.
-  //
-  // 1. Regexes can be typeof "function" in FF < 3
-  //    https://bugzilla.mozilla.org/show_bug.cgi?id=61911 (fixed)
-  //
-  // 2. HTMLEmbedElement and HTMLObjectElement are be typeof "function"
-  //    https://bugzilla.mozilla.org/show_bug.cgi?id=268945 (won't fix)
-  isFunction = buildClassCheck(TYPE_CHECK_NAMES[6]);
-
-}
-
-function isClass(obj, klass, cached) {
-  var k = cached || className(obj);
-  return k === '[object '+ klass +']';
-}
-
-function className(obj) {
-  return internalToString.call(obj);
-}
-
-// Wrapping the core's "define" methods to
-// save a few bytes in the minified script.
-
-function wrapNamespace(method) {
-  return function(sugarNamespace, arg1, arg2) {
-    sugarNamespace[method](arg1, arg2);
-  };
-}
-
-// Define aliases
-var alias                       = wrapNamespace('alias'),
-    defineStatic                = wrapNamespace('defineStatic'),
-    defineInstance              = wrapNamespace('defineInstance'),
-    defineStaticPolyfill        = wrapNamespace('defineStaticPolyfill'),
-    defineInstancePolyfill      = wrapNamespace('defineInstancePolyfill'),
-    defineInstanceAndStatic     = wrapNamespace('defineInstanceAndStatic'),
-    defineStaticWithArguments   = wrapNamespace('defineStaticWithArguments'),
-    defineInstanceWithArguments = wrapNamespace('defineInstanceWithArguments');
-
-function defineInstanceSimilar(sugarNamespace, set, fn, flags) {
-  defineInstance(sugarNamespace, collectSimilarMethods(set, fn), flags);
-}
-
-function defineInstanceAndStaticSimilar(sugarNamespace, set, fn, flags) {
-  defineInstanceAndStatic(sugarNamespace, collectSimilarMethods(set, fn), flags);
-}
-
-function collectSimilarMethods(set, fn) {
-  var methods = {};
-  if (isString(set)) {
-    set = commaSplit(set);
-  }
-  iterateOverObject(set, function(i, name) {
-    fn(methods, name, i);
-  });
-  return methods;
-}
-
-// This song and dance is to fix methods to a different length
-// from what they actually accept in order to stay in line with
-// spec. Additinally passing argument length, as some methods
-// throw assertion errors based on this (undefined check is not
-// enough). Fortunately for now spec is such that passing 3
-// actual arguments covers all requirements. Note that passing
-// the argument length also forces the compiler to not rewrite
-// length of the compiled function.
-function fixArgumentLength(fn) {
-  var staticFn = function(a) {
-    var args = arguments;
-    return fn(a, args[1], args[2], args.length - 1);
-  };
-  staticFn.instance = function(b) {
-    var args = arguments;
-    return fn(this, b, args[1], args.length);
-  };
-  return staticFn;
-}
-
-function defineAccessor(namespace, name, global) {
-  var local, accessor;
-  accessor = function(val) {
-    if (arguments.length > 0) {
-      local = val;
-    }
-    return local != null ? local : global;
-  };
-  defineStatic(namespace, name, accessor);
-  return accessor;
-}
-
-// Argument helpers
-
-function assertCallable(fn) {
-  if (!isFunction(fn)) {
-    throw new TypeError('Function is not callable');
-  }
-}
-
-function assertWritable(obj) {
-  if (isPrimitiveType(obj)) {
-    // If strict mode is active then primitives will throw an
-    // error when attempting to write properties. We can't be
-    // sure if strict mode is available, so pre-emptively
-    // throw an error here to ensure consistent behavior.
-    throw new TypeError('Property cannot be written.');
-  }
-}
-
-
-// Coerces an object to a positive integer.
-// Does not allow NaN, or Infinity.
-function coercePositiveInteger(n) {
-  n = +n || 0;
-  if (n < 0 || !isNumber(n) || !isFinite(n)) {
-    throw new RangeError('Invalid number');
-  }
-  return trunc(n);
-}
-
-
-// General helpers
-
-function isDefined(o) {
-  return o !== undefined;
-}
-
-function isUndefined(o) {
-  return o === undefined;
-}
-
-function privatePropertyAccessor(key) {
-  var privateKey = PRIVATE_PROP_PREFIX + key;
-  return function(obj, val) {
-    if (arguments.length > 1) {
-      setProperty(obj, privateKey, val);
-      return obj;
-    }
-    return obj[privateKey];
-  };
-}
-
-// Fuzzy matching helpers
-
-function getMatcher(f, k) {
-  if (!isPrimitiveType(f)) {
-    var klass = className(f);
-    if (isRegExp(f, klass)) {
-      // Match against a RegExp
-      return regexMatcher(f);
-    } else if (isDate(f, klass)) {
-      // Match against a date. isEqual below should also
-      // catch this but matching directly up front for speed.
-      return dateMatcher(f);
-    } else if (isFunction(f, klass)) {
-      // Match against a filtering function
-      if (k) {
-        return invertedArgsFunctionMatcher(f);
-      } else {
-        return functionMatcher(f);
-      }
-    } else if (isPlainObject(f, klass)) {
-      // Match against a fuzzy hash or array.
-      return fuzzyMatcher(f, k);
-    }
-  }
-  // Default is standard isEqual
-  return defaultMatcher(f);
-}
-
-function defaultMatcher(f) {
-  return function(el) {
-    return isEqual(el, f);
-  };
-}
-
-function regexMatcher(reg) {
-  reg = RegExp(reg);
-  return function(el) {
-    return reg.test(el);
-  };
-}
-
-function dateMatcher(d) {
-  var ms = d.getTime();
-  return function(el) {
-    return !!(el && el.getTime) && el.getTime() === ms;
-  };
-}
-
-function functionMatcher(fn) {
-  return function(el, i, arr) {
-    // Return true up front if match by reference
-    return el === fn || fn.call(arr, el, i, arr);
-  };
-}
-
-function invertedArgsFunctionMatcher(fn) {
-  return function(value, key, obj) {
-    // Return true up front if match by reference
-    return value === fn || fn.call(obj, key, value, obj);
-  };
-}
-
-function fuzzyMatcher(obj, k) {
-  var matchers = {};
-  return function(el, i, arr) {
-    var matched = true;
-    if (!isObjectType(el)) {
-      return false;
-    }
-    iterateOverObject(obj, function(key, val) {
-      matchers[key] = matchers[key] || getMatcher(val, k);
-      if (matchers[key].call(arr, el[key], i, arr) === false) {
-        matched = false;
-      }
-      return matched;
+    // There are 2 identical methods for extending with Sugar:
+    // 1. Sugar.extendAll();
+    // 2. require('sugar')();
+    // The "extend" method is more explicit and preferred, but the
+    // namespace itself is also available for cleaner npm modules.
+    setProperty(Sugar, 'extendAll', Sugar);
+    iterateOverObject(NATIVES, function(i, name) {
+      createNamespace(name, name === 'Object');
     });
-    return matched;
-  };
-}
-
-// Object helpers
-
-var getKeys = Object.keys;
-
-function deepGetProperty(obj, key) {
-  return handleDeepProperty(obj, key);
-}
-
-function deepSetProperty(obj, key, val) {
-  handleDeepProperty(obj, key, true, false, val);
-  return obj;
-}
-
-function handleDeepProperty(obj, key, fill, fillLast, val) {
-  var ns = obj || undefined, bs, ps, cbi, set, isLast, isPush, isIndex, nextIsIndex;
-  if (key == null) return;
-  key = String(key);
-
-  // Bail early here to save a few cycles as objects can often be
-  // inadvertently passed as keys, and happen to have a bracket syntax.
-  if (key === '[object Object]') {
-    return ns[key];
-  }
-
-  if (key.indexOf('..') !== -1) {
-    return handleArrayIndexRange(obj, key, val);
-  }
-  bs = key.split('[');
-  set = isDefined(val);
-
-  for (var i = 0, blen = bs.length; i < blen; i++) {
-    ps = periodSplit(bs[i]);
-
-    for (var j = 0, plen = ps.length; j < plen; j++) {
-      key = ps[j];
-
-      // Is this the last key?
-      isLast = i === blen - 1 && j === plen - 1;
-
-      // Index of the closing ]
-      cbi = key.indexOf(']');
-
-      // Is the key an array index?
-      isIndex = cbi !== -1;
-
-      // Is this array push syntax "[]"?
-      isPush = set && cbi === 0;
-
-      // If the bracket split was successful and this is the last element
-      // in the dot split, then we know the next key will be an array index.
-      nextIsIndex = blen > 1 && j === plen - 1;
-
-      if (isPush) {
-        // Set the index to the end of the array
-        key = ns.length;
-      } else if (isIndex) {
-        // Remove the closing ]
-        key = key.slice(0, -1);
-      }
-
-      // If the array index is less than 0, then
-      // add its length to allow negative indexes.
-      if (isIndex && key < 0) {
-        key = +key + ns.length;
-      }
-
-      // Bracket keys may look like users[5] or just [5], so the leading
-      // characters are optional. We can enter the namespace if this is the
-      // 2nd part, if there is only 1 part, or if there is an explicit key.
-      if (i || key || blen === 1) {
-
-        // Non-existent namespaces are only filled if they are intermediate
-        // (not at the end) or explicitly filling the last.
-        if (fill && (!isLast || fillLast) && !(key in ns)) {
-          // For our purposes, last only needs to be an array.
-          ns[key] = nextIsIndex || (fillLast && isLast) ? [] : {};
-        }
-
-        if (set && isLast) {
-          assertWritable(ns);
-          ns[key] = val;
-        }
-
-        ns = ns && ns[key];
-      }
-
+    if (hasExports) {
+      module.exports = Sugar;
+    } else {
+      globalContext[SUGAR_GLOBAL] = Sugar;
     }
-  }
-  return ns;
-}
-
-// Get object property with support for 0..1 style range notation.
-function handleArrayIndexRange(obj, key, val) {
-  var match, start, end, leading, trailing, set;
-  set = isDefined(val);
-  match = key.match(PROPERTY_RANGE_REG);
-  if (!match) {
-    return;
-  }
-  leading  = match[1];
-  trailing = match[4];
-  start    = match[2] ? +match[2] : 0;
-  end      = match[3] ? +match[3] : obj.length;
-
-  // A range of 0..1 is inclusive, so we need to add 1 to the end. If this
-  // pushes the index from -1 to 0, then set it to the full length of the
-  // array, otherwise it will return nothing.
-  end = end === -1 ? obj.length : end + 1;
-
-  if (leading) {
-    obj = handleDeepProperty(obj, leading, set ? true : false, true);
+    setGlobalProperties();
   }
 
-  if (set) {
-    for (var i = start; i < end; i++) {
-      handleDeepProperty(obj, i + trailing, true, false, val);
+  function createNamespace(name, isObject) {
+
+    var toString = function() {
+      // Print out something nicer than just a garbage function.
+      return SUGAR_GLOBAL + name;
     }
-  } else {
-    obj = obj.slice(start, end);
 
-    // If there are trailing properties, then they need to be mapped for each
-    // element in the array.
-    if (trailing) {
-      if (trailing.charAt(0) === HALF_WIDTH_PERIOD) {
-        // Need to chomp the period if one is trailing after the range. We
-        // can't do this at the regex level because it will be required if
-        // we're setting the value as it needs to be concatentated together
-        // with the array index to be set.
-        trailing = trailing.slice(1);
+    var namespace = function(arg) {
+      var staticMethods = {}, instanceMethods = {}, opts = {}, methodsByName;
+
+      function disallowedByFlags(flags) {
+        if (!flags) return;
+        for (var i = 0; i < flags.length; i++) {
+          if (opts[flags[i]] === false) {
+            return true;
+          }
+        }
       }
-      return obj.map(function(el) {
-        return handleDeepProperty(el, trailing);
+
+      function canExtendPrototype(method) {
+        return (!isObject || allowObjectPrototype) && !disallowedByFlags(method.flags);
+      }
+
+      if (typeof arg === 'string') {
+        methodsByName = [arg];
+      } else if (arg && arg.length) {
+        methodsByName = arg;
+      } else if (arg) {
+        opts = arg;
+        methodsByName = opts.methods;
+        if (isObject && typeof opts.objectPrototype === 'boolean') {
+          // Store "objectPrototype" flag for future reference.
+          allowObjectPrototype = opts.objectPrototype;
+        }
+      }
+
+      iterateOverObject(methodsByName || namespace, function(methodName, method) {
+        if (methodsByName) {
+          // If we have method names passed in an array,
+          // then we need to flip the key and value here
+          // and find the method in the Sugar namespace.
+          methodName = method;
+          method = namespace[methodName];
+        }
+        if (hasOwn(method, 'instance') && canExtendPrototype(method)) {
+          instanceMethods[methodName] = method.instance;
+        }
+        if(hasOwn(method, 'static')) {
+          staticMethods[methodName] = method;
+        }
+      });
+      extendNative(globalContext[name], staticMethods);
+      extendNative(globalContext[name].prototype, instanceMethods);
+      if (!methodsByName) {
+        // If there are no method names passed, then
+        // all methods in the namespace will be extended
+        // to the native. This includes all future defined
+        // methods, so add a flag here to check later.
+        setProperty(namespace, 'active', true);
+      }
+      // return self
+      return namespace;
+    };
+
+    function defineWithOptionCollect(methodName, instance, args) {
+      setProperty(namespace, methodName, function(arg1, arg2, arg3) {
+        var opts = collectDefineOptions(arg1, arg2, arg3);
+        defineMethods(namespace, opts.methods, instance, args, opts.last);
       });
     }
+
+    // Extending by namespace:
+    // 1. Sugar.Array.extend();
+    // 2. require('sugar-array')();
+    Sugar[name] = namespace;
+    setProperty(namespace, 'extend', namespace);
+    setProperty(namespace, 'toString', toString);
+
+    defineWithOptionCollect('defineStatic', STATIC);
+    defineWithOptionCollect('defineInstance', INSTANCE);
+    defineWithOptionCollect('defineInstanceAndStatic', INSTANCE | STATIC);
+    defineWithOptionCollect('defineStaticWithArguments', STATIC, true);
+    defineWithOptionCollect('defineInstanceWithArguments', INSTANCE, true);
+
+    setProperty(namespace, 'alias', function(name, source) {
+      var method = typeof source === 'string' ? namespace[source] : source;
+      setProperty(namespace, name, method, true);
+    });
+
+    setProperty(namespace, 'defineStaticPolyfill', function(arg1, arg2, arg3) {
+      var opts = collectDefineOptions(arg1, arg2, arg3);
+      extendNative(globalContext[name], opts.methods, true, opts.last);
+    });
+
+    setProperty(namespace, 'defineInstancePolyfill', function(arg1, arg2, arg3) {
+      var opts = collectDefineOptions(arg1, arg2, arg3);
+      extendNative(globalContext[name].prototype, collectDefineOptions(arg1, arg2).methods, true, opts.last);
+    });
+
   }
-  return obj;
-}
 
-function hasProperty(obj, prop) {
-  return !isPrimitiveType(obj) && prop in obj;
-}
-
-function isObjectType(obj, type) {
-  return !!obj && (type || typeof obj) === 'object';
-}
-
-function isPrimitiveType(obj, type) {
-  type = type || typeof obj;
-  return obj == null || type === 'string' || type === 'number' || type === 'boolean';
-}
-
-function isPlainObject(obj, klass) {
-  if (!isObjectType(obj) || !isClass(obj, 'Object', klass) || !hasValidPlainObjectPrototype(obj)) {
-    return false;
+  function toString() {
+    return SUGAR_GLOBAL;
   }
-  // Allowing internally defined Hash to report back as a plain object as well.
-  if (isHash(obj)) {
+
+  function setGlobalProperties() {
+    setProperty(Sugar, 'VERSION', '2.0.0');
+
+    setProperty(Sugar, 'hasOwn', hasOwn);
+    setProperty(Sugar, 'toString', toString);
+    setProperty(Sugar, 'setProperty', setProperty);
+    setProperty(Sugar, 'defineProperty', defineProperty);
+    setProperty(Sugar, 'createNamespace', createNamespace);
+    setProperty(Sugar, 'iterateOverObject', iterateOverObject);
+    setProperty(Sugar, 'wrapInstanceMethod', wrapInstanceMethod);
+  }
+
+  function extendNative(extendee, source, polyfill, override) {
+    iterateOverObject(source, function(name, method) {
+      if (polyfill && !override && extendee[name]) {
+        // Polyfill exists, so bail.
+        return;
+      }
+      setProperty(extendee, name, method);
+    });
+  }
+
+  function definePropertyShim(obj, prop, descriptor) {
+    obj[prop] = descriptor.value;
+  }
+
+
+  // Defining Methods
+
+  function defineMethods(sugarNamespace, methods, instance, args, flags) {
+    iterateOverObject(methods, function(methodName, method) {
+      var instanceMethod, staticMethod = method;
+      if (args) {
+        staticMethod = wrapMethodWithArguments(method);
+      }
+      if (flags) {
+        staticMethod.flags = flags;
+      }
+      setProperty(sugarNamespace, methodName, staticMethod, true);
+
+      // A method may define its own custom implementation, so
+      // make sure that's not the case before creating one.
+      if (instance & INSTANCE && !method.instance) {
+        instanceMethod = wrapInstanceMethod(method, args);
+        setProperty(staticMethod, 'instance', instanceMethod);
+      }
+
+      if (instance & STATIC) {
+        setProperty(staticMethod, 'static', true);
+      }
+
+      if (sugarNamespace.active) {
+        // If the namespace has been activated (all methods mapped)
+        // then map this method as well.
+        sugarNamespace(methodName);
+      }
+    });
+  }
+
+  function collectDefineOptions(arg1, arg2, arg3) {
+    var methods, last;
+    if (typeof arg1 === 'string') {
+      methods = {};
+      methods[arg1] = arg2;
+      last = arg3;
+    } else {
+      methods = arg1;
+      last = arg2;
+    }
+    return {
+      last: last,
+      methods: methods
+    };
+  }
+
+
+  function wrapInstanceMethod(fn, args) {
+    return args ? wrapMethodWithArguments(fn, true) : wrapInstanceMethodFixed(fn);
+  }
+
+  function wrapMethodWithArguments(fn, instance) {
+    // Functions accepting enumerated arguments will always have "args" as the
+    // last argument, so subtract one from the function length to get the point
+    // at which to start collecting arguments. If this is an instance method on
+    // a prototype, then "this" will be pushed into the arguments array so start
+    // collecting 1 argument earlier.
+    var startCollect = fn.length - 1 - (instance ? 1 : 0);
+    return function() {
+      var args = [], collectedArgs = [], len;
+      if (instance) {
+        args.push(this);
+      }
+      len = Math.max(arguments.length, startCollect);
+      // Optimized: no leaking arguments
+      for (var i = 0; i < len; i++) {
+        if (i < startCollect) {
+          args.push(arguments[i]);
+        } else {
+          collectedArgs.push(arguments[i]);
+        }
+      }
+      args.push(collectedArgs);
+      return fn.apply(null, args);
+    };
+  }
+
+  function wrapInstanceMethodFixed(fn) {
+    switch(fn.length) {
+      // Wrapped instance methods will always be passed the instance
+      // as the first argument, but requiring the argument to be defined
+      // may cause confusion here, so return the same wrapped function regardless.
+      case 0:
+      case 1:
+        return function() {
+          return fn(this);
+        };
+      case 2:
+        return function(a) {
+          return fn(this, a);
+        };
+      case 3:
+        return function(a, b) {
+          return fn(this, a, b);
+        };
+      case 4:
+        return function(a, b, c) {
+          return fn(this, a, b, c);
+        };
+      case 5:
+        return function(a, b, c, d) {
+          return fn(this, a, b, c, d);
+        };
+    }
+  }
+
+  // Util
+
+  function setProperty(target, name, value, enumerable) {
+    defineProperty(target, name, {
+      value: value,
+      enumerable: !!enumerable,
+      configurable: true,
+      writable: true
+    });
+  }
+
+  function iterateOverObject(obj, fn) {
+    for(var key in obj) {
+      if (!hasOwn(obj, key)) continue;
+      if (fn.call(obj, key, obj[key], obj) === false) break;
+    }
+  }
+
+  function hasOwn(obj, prop) {
+    return !!obj && internalHasOwnProperty.call(obj, prop);
+  }
+
+  setupGlobal();
+  'use strict';
+
+
+  /***
+   * @module Common
+   * @description Internal utility and common methods.
+   ***/
+
+  // Flag allowing native methods to be enhanced
+  var ENHANCEMENTS_FLAG = 'enhance';
+
+  // Excludes object as this is more nuanced.
+  var TYPE_CHECK_NAMES = ['Boolean','Number','String','Array','Date','RegExp','Function'];
+
+  // Do strings have no keys?
+  var NO_KEYS_IN_STRING_OBJECTS = !('0' in Object('a'));
+
+  // Classes that can be matched by value
+  var MATCHED_BY_VALUE_REG = /^\[object Date|Array|String|Number|RegExp|Boolean|Arguments\]$/;
+
+  // Prefix for private properties
+  var PRIVATE_PROP_PREFIX = '_sugar_';
+
+  // Matches 1..2 style ranges in properties
+  var PROPERTY_RANGE_REG = /^(.*?)\[([-\d]*)\.\.([-\d]*)\](.*)$/;
+
+  // WhiteSpace/LineTerminator as defined in ES5.1 plus Unicode characters in the Space, Separator category.
+  var TRIM_CHARS = '\u0009\u000A\u000B\u000C\u000D\u0020\u00A0\u1680\u180E\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u202F\u205F\u2028\u2029\u3000\uFEFF';
+
+  var HALF_WIDTH_ZERO = 0x30;
+  var FULL_WIDTH_ZERO = 0xff10;
+
+  var HALF_WIDTH_PERIOD   = '.';
+  var FULL_WIDTH_PERIOD   = '．';
+  var HALF_WIDTH_COMMA    = ',';
+
+  // Namespace aliases
+  var sugarObject   = Sugar.Object,
+      sugarArray    = Sugar.Array,
+      sugarDate     = Sugar.Date,
+      sugarString   = Sugar.String,
+      sugarNumber   = Sugar.Number,
+      sugarFunction = Sugar.Function,
+      sugarRegExp   = Sugar.RegExp;
+
+  // Internal toString
+  var internalToString = Object.prototype.toString;
+
+  // Core utility aliases
+  var hasOwn             = Sugar.hasOwn,
+      setProperty        = Sugar.setProperty,
+      defineProperty     = Sugar.defineProperty,
+      iterateOverObject  = Sugar.iterateOverObject,
+      wrapInstanceMethod = Sugar.wrapInstanceMethod;
+
+
+  // Type Checks
+  var isBoolean, isNumber, isString, isArray, isDate, isRegExp, isFunction, isSet;
+
+  function buildClassChecks() {
+
+    function buildClassCheck(klass) {
+      return klass === 'Array' && Array.isArray || function(obj, cached) {
+        return isClass(obj, klass, cached);
+      };
+    }
+
+    function buildPrimitiveClassCheck(klass) {
+      var type = klass.toLowerCase();
+      return function(obj) {
+        var t = typeof obj;
+        return t === type || t === 'object' && isClass(obj, klass);
+      };
+    }
+
+    isBoolean  = buildPrimitiveClassCheck(TYPE_CHECK_NAMES[0]);
+    isNumber   = buildPrimitiveClassCheck(TYPE_CHECK_NAMES[1]);
+    isString   = buildPrimitiveClassCheck(TYPE_CHECK_NAMES[2]);
+
+    isArray    = buildClassCheck(TYPE_CHECK_NAMES[3]);
+    isDate     = buildClassCheck(TYPE_CHECK_NAMES[4]);
+    isRegExp   = buildClassCheck(TYPE_CHECK_NAMES[5]);
+    isSet      = buildClassCheck('Set');
+
+    // Wanted to enhance performance here by using simply "typeof"
+    // but Firefox has two major issues that make this impossible,
+    // one fixed, the other not, so perform a full class check here.
+    //
+    // 1. Regexes can be typeof "function" in FF < 3
+    //    https://bugzilla.mozilla.org/show_bug.cgi?id=61911 (fixed)
+    //
+    // 2. HTMLEmbedElement and HTMLObjectElement are be typeof "function"
+    //    https://bugzilla.mozilla.org/show_bug.cgi?id=268945 (won't fix)
+    isFunction = buildClassCheck(TYPE_CHECK_NAMES[6]);
+
+  }
+
+  function isClass(obj, klass, cached) {
+    var k = cached || className(obj);
+    return k === '[object '+ klass +']';
+  }
+
+  function className(obj) {
+    return internalToString.call(obj);
+  }
+
+  // Wrapping the core's "define" methods to
+  // save a few bytes in the minified script.
+
+  function wrapNamespace(method) {
+    return function(sugarNamespace, arg1, arg2) {
+      sugarNamespace[method](arg1, arg2);
+    };
+  }
+
+  // Define aliases
+  var alias                       = wrapNamespace('alias'),
+      defineStatic                = wrapNamespace('defineStatic'),
+      defineInstance              = wrapNamespace('defineInstance'),
+      defineStaticPolyfill        = wrapNamespace('defineStaticPolyfill'),
+      defineInstancePolyfill      = wrapNamespace('defineInstancePolyfill'),
+      defineInstanceAndStatic     = wrapNamespace('defineInstanceAndStatic'),
+      defineStaticWithArguments   = wrapNamespace('defineStaticWithArguments'),
+      defineInstanceWithArguments = wrapNamespace('defineInstanceWithArguments');
+
+  function defineInstanceSimilar(sugarNamespace, set, fn, flags) {
+    defineInstance(sugarNamespace, collectSimilarMethods(set, fn), flags);
+  }
+
+  function defineInstanceAndStaticSimilar(sugarNamespace, set, fn, flags) {
+    defineInstanceAndStatic(sugarNamespace, collectSimilarMethods(set, fn), flags);
+  }
+
+  function collectSimilarMethods(set, fn) {
+    var methods = {};
+    if (isString(set)) {
+      set = commaSplit(set);
+    }
+    iterateOverObject(set, function(i, name) {
+      fn(methods, name, i);
+    });
+    return methods;
+  }
+
+  // This song and dance is to fix methods to a different length
+  // from what they actually accept in order to stay in line with
+  // spec. Additinally passing argument length, as some methods
+  // throw assertion errors based on this (undefined check is not
+  // enough). Fortunately for now spec is such that passing 3
+  // actual arguments covers all requirements. Note that passing
+  // the argument length also forces the compiler to not rewrite
+  // length of the compiled function.
+  function fixArgumentLength(fn) {
+    var staticFn = function(a) {
+      var args = arguments;
+      return fn(a, args[1], args[2], args.length - 1);
+    };
+    staticFn.instance = function(b) {
+      var args = arguments;
+      return fn(this, b, args[1], args.length);
+    };
+    return staticFn;
+  }
+
+  function defineAccessor(namespace, name, global) {
+    var local, accessor;
+    accessor = function(val) {
+      if (arguments.length > 0) {
+        local = val;
+      }
+      return local != null ? local : global;
+    };
+    defineStatic(namespace, name, accessor);
+    return accessor;
+  }
+
+  // Argument helpers
+
+  function assertCallable(fn) {
+    if (!isFunction(fn)) {
+      throw new TypeError('Function is not callable');
+    }
+  }
+
+  function assertWritable(obj) {
+    if (isPrimitiveType(obj)) {
+      // If strict mode is active then primitives will throw an
+      // error when attempting to write properties. We can't be
+      // sure if strict mode is available, so pre-emptively
+      // throw an error here to ensure consistent behavior.
+      throw new TypeError('Property cannot be written.');
+    }
+  }
+
+
+  // Coerces an object to a positive integer.
+  // Does not allow NaN, or Infinity.
+  function coercePositiveInteger(n) {
+    n = +n || 0;
+    if (n < 0 || !isNumber(n) || !isFinite(n)) {
+      throw new RangeError('Invalid number');
+    }
+    return trunc(n);
+  }
+
+
+  // General helpers
+
+  function isDefined(o) {
+    return o !== undefined;
+  }
+
+  function isUndefined(o) {
+    return o === undefined;
+  }
+
+  function privatePropertyAccessor(key) {
+    var privateKey = PRIVATE_PROP_PREFIX + key;
+    return function(obj, val) {
+      if (arguments.length > 1) {
+        setProperty(obj, privateKey, val);
+        return obj;
+      }
+      return obj[privateKey];
+    };
+  }
+
+  // Fuzzy matching helpers
+
+  function getMatcher(f, k) {
+    if (!isPrimitiveType(f)) {
+      var klass = className(f);
+      if (isRegExp(f, klass)) {
+        // Match against a RegExp
+        return regexMatcher(f);
+      } else if (isDate(f, klass)) {
+        // Match against a date. isEqual below should also
+        // catch this but matching directly up front for speed.
+        return dateMatcher(f);
+      } else if (isFunction(f, klass)) {
+        // Match against a filtering function
+        if (k) {
+          return invertedArgsFunctionMatcher(f);
+        } else {
+          return functionMatcher(f);
+        }
+      } else if (isPlainObject(f, klass)) {
+        // Match against a fuzzy hash or array.
+        return fuzzyMatcher(f, k);
+      }
+    }
+    // Default is standard isEqual
+    return defaultMatcher(f);
+  }
+
+  function defaultMatcher(f) {
+    return function(el) {
+      return isEqual(el, f);
+    };
+  }
+
+  function regexMatcher(reg) {
+    reg = RegExp(reg);
+    return function(el) {
+      return reg.test(el);
+    };
+  }
+
+  function dateMatcher(d) {
+    var ms = d.getTime();
+    return function(el) {
+      return !!(el && el.getTime) && el.getTime() === ms;
+    };
+  }
+
+  function functionMatcher(fn) {
+    return function(el, i, arr) {
+      // Return true up front if match by reference
+      return el === fn || fn.call(arr, el, i, arr);
+    };
+  }
+
+  function invertedArgsFunctionMatcher(fn) {
+    return function(value, key, obj) {
+      // Return true up front if match by reference
+      return value === fn || fn.call(obj, key, value, obj);
+    };
+  }
+
+  function fuzzyMatcher(obj, k) {
+    var matchers = {};
+    return function(el, i, arr) {
+      var matched = true;
+      if (!isObjectType(el)) {
+        return false;
+      }
+      iterateOverObject(obj, function(key, val) {
+        matchers[key] = matchers[key] || getMatcher(val, k);
+        if (matchers[key].call(arr, el[key], i, arr) === false) {
+          matched = false;
+        }
+        return matched;
+      });
+      return matched;
+    };
+  }
+
+  // Object helpers
+
+  var getKeys = Object.keys;
+
+  function deepGetProperty(obj, key) {
+    return handleDeepProperty(obj, key);
+  }
+
+  function deepSetProperty(obj, key, val) {
+    handleDeepProperty(obj, key, true, false, val);
+    return obj;
+  }
+
+  function handleDeepProperty(obj, key, fill, fillLast, val) {
+    var ns = obj || undefined, bs, ps, cbi, set, isLast, isPush, isIndex, nextIsIndex;
+    if (key == null) return;
+    key = String(key);
+
+    // Bail early here to save a few cycles as objects can often be
+    // inadvertently passed as keys, and happen to have a bracket syntax.
+    if (key === '[object Object]') {
+      return ns[key];
+    }
+
+    if (key.indexOf('..') !== -1) {
+      return handleArrayIndexRange(obj, key, val);
+    }
+    bs = key.split('[');
+    set = isDefined(val);
+
+    for (var i = 0, blen = bs.length; i < blen; i++) {
+      ps = periodSplit(bs[i]);
+
+      for (var j = 0, plen = ps.length; j < plen; j++) {
+        key = ps[j];
+
+        // Is this the last key?
+        isLast = i === blen - 1 && j === plen - 1;
+
+        // Index of the closing ]
+        cbi = key.indexOf(']');
+
+        // Is the key an array index?
+        isIndex = cbi !== -1;
+
+        // Is this array push syntax "[]"?
+        isPush = set && cbi === 0;
+
+        // If the bracket split was successful and this is the last element
+        // in the dot split, then we know the next key will be an array index.
+        nextIsIndex = blen > 1 && j === plen - 1;
+
+        if (isPush) {
+          // Set the index to the end of the array
+          key = ns.length;
+        } else if (isIndex) {
+          // Remove the closing ]
+          key = key.slice(0, -1);
+        }
+
+        // If the array index is less than 0, then
+        // add its length to allow negative indexes.
+        if (isIndex && key < 0) {
+          key = +key + ns.length;
+        }
+
+        // Bracket keys may look like users[5] or just [5], so the leading
+        // characters are optional. We can enter the namespace if this is the
+        // 2nd part, if there is only 1 part, or if there is an explicit key.
+        if (i || key || blen === 1) {
+
+          // Non-existent namespaces are only filled if they are intermediate
+          // (not at the end) or explicitly filling the last.
+          if (fill && (!isLast || fillLast) && !(key in ns)) {
+            // For our purposes, last only needs to be an array.
+            ns[key] = nextIsIndex || (fillLast && isLast) ? [] : {};
+          }
+
+          if (set && isLast) {
+            assertWritable(ns);
+            ns[key] = val;
+          }
+
+          ns = ns && ns[key];
+        }
+
+      }
+    }
+    return ns;
+  }
+
+  // Get object property with support for 0..1 style range notation.
+  function handleArrayIndexRange(obj, key, val) {
+    var match, start, end, leading, trailing, set;
+    set = isDefined(val);
+    match = key.match(PROPERTY_RANGE_REG);
+    if (!match) {
+      return;
+    }
+    leading  = match[1];
+    trailing = match[4];
+    start    = match[2] ? +match[2] : 0;
+    end      = match[3] ? +match[3] : obj.length;
+
+    // A range of 0..1 is inclusive, so we need to add 1 to the end. If this
+    // pushes the index from -1 to 0, then set it to the full length of the
+    // array, otherwise it will return nothing.
+    end = end === -1 ? obj.length : end + 1;
+
+    if (leading) {
+      obj = handleDeepProperty(obj, leading, set ? true : false, true);
+    }
+
+    if (set) {
+      for (var i = start; i < end; i++) {
+        handleDeepProperty(obj, i + trailing, true, false, val);
+      }
+    } else {
+      obj = obj.slice(start, end);
+
+      // If there are trailing properties, then they need to be mapped for each
+      // element in the array.
+      if (trailing) {
+        if (trailing.charAt(0) === HALF_WIDTH_PERIOD) {
+          // Need to chomp the period if one is trailing after the range. We
+          // can't do this at the regex level because it will be required if
+          // we're setting the value as it needs to be concatentated together
+          // with the array index to be set.
+          trailing = trailing.slice(1);
+        }
+        return obj.map(function(el) {
+          return handleDeepProperty(el, trailing);
+        });
+      }
+    }
+    return obj;
+  }
+
+  function hasProperty(obj, prop) {
+    return !isPrimitiveType(obj) && prop in obj;
+  }
+
+  function isObjectType(obj, type) {
+    return !!obj && (type || typeof obj) === 'object';
+  }
+
+  function isPrimitiveType(obj, type) {
+    type = type || typeof obj;
+    return obj == null || type === 'string' || type === 'number' || type === 'boolean';
+  }
+
+  function isPlainObject(obj, klass) {
+    if (!isObjectType(obj) || !isClass(obj, 'Object', klass) || !hasValidPlainObjectPrototype(obj)) {
+      return false;
+    }
+    // Allowing internally defined Hash to report back as a plain object as well.
+    if (isHash(obj)) {
+      return true;
+    }
+    // Plain objects are generally defined as having enumerated properties
+    // all their own, however in early IE environments without defineProperty,
+    // there may also be enumerated methods in the prototype chain, so check
+    // for both of these cases.
+    for (var key in obj) {
+      if (!hasOwn(obj, key) && obj[key] !== Object.prototype[key]) {
+        return false;
+      }
+    }
     return true;
   }
-  // Plain objects are generally defined as having enumerated properties
-  // all their own, however in early IE environments without defineProperty,
-  // there may also be enumerated methods in the prototype chain, so check
-  // for both of these cases.
-  for (var key in obj) {
-    if (!hasOwn(obj, key) && obj[key] !== Object.prototype[key]) {
-      return false;
+
+  function hasValidPlainObjectPrototype(obj) {
+    var hasToString = 'toString' in obj;
+    var hasConstructor = 'constructor' in obj;
+    // An object created with Object.create(null) has no methods in the
+    // prototype chain, so check if any are missing. The additional hasToString
+    // check is for false positives on some host objects in old IE which have
+    // toString but no constructor. If the object has an inherited constructor,
+    // then check if it is Object (the "isPrototypeOf" tapdance here is a more
+    // robust way of ensuring this if the global has been hijacked). Note that
+    // accessing the constructor directly (without "in" or "hasOwnProperty")
+    // will throw a permissions error in IE8 on cross-domain windows.
+    return (!hasConstructor && !hasToString) ||
+            (hasConstructor && !hasOwn(obj, 'constructor') &&
+             hasOwn(obj.constructor.prototype, 'isPrototypeOf'));
+  }
+
+  function simpleRepeat(n, fn) {
+    for (var i = 0; i < n; i++) {
+      fn(i);
     }
   }
-  return true;
-}
 
-function hasValidPlainObjectPrototype(obj) {
-  var hasToString = 'toString' in obj;
-  var hasConstructor = 'constructor' in obj;
-  // An object created with Object.create(null) has no methods in the
-  // prototype chain, so check if any are missing. The additional hasToString
-  // check is for false positives on some host objects in old IE which have
-  // toString but no constructor. If the object has an inherited constructor,
-  // then check if it is Object (the "isPrototypeOf" tapdance here is a more
-  // robust way of ensuring this if the global has been hijacked). Note that
-  // accessing the constructor directly (without "in" or "hasOwnProperty")
-  // will throw a permissions error in IE8 on cross-domain windows.
-  return (!hasConstructor && !hasToString) ||
-          (hasConstructor && !hasOwn(obj, 'constructor') &&
-           hasOwn(obj.constructor.prototype, 'isPrototypeOf'));
-}
-
-function simpleRepeat(n, fn) {
-  for (var i = 0; i < n; i++) {
-    fn(i);
+  function simpleClone(obj) {
+    return simpleMerge({}, obj);
   }
-}
 
-function simpleClone(obj) {
-  return simpleMerge({}, obj);
-}
-
-function simpleMerge(target, source) {
-  iterateOverObject(source, function(key) {
-    target[key] = source[key];
-  });
-  return target;
-}
-
-// Make primtives types like strings into objects.
-function coercePrimitiveToObject(obj) {
-  if (isPrimitiveType(obj)) {
-    obj = Object(obj);
-  }
-  if (NO_KEYS_IN_STRING_OBJECTS && isString(obj)) {
-    forceStringCoercion(obj);
-  }
-  return obj;
-}
-
-// Force strings to have their indexes set in
-// environments that don't do this automatically.
-function forceStringCoercion(obj) {
-  var i = 0, chr;
-  while (chr = obj.charAt(i)) {
-    obj[i++] = chr;
-  }
-}
-
-// Equality helpers
-
-function isEqual(a, b, stack) {
-  var aClass, bClass;
-  if (a === b) {
-    // Return quickly up front when matching by reference,
-    // but be careful about 0 !== -0.
-    return a !== 0 || 1 / a === 1 / b;
-  }
-  aClass = className(a);
-  bClass = className(b);
-  if (aClass !== bClass) {
-    return false;
-  }
-  if (isSet(a, aClass) && isSet(b, bClass)) {
-    return setIsEqual(a, b);
-  } else if (canCompareValue(a, aClass) && canCompareValue(b, bClass)) {
-    return objectIsEqual(a, b, aClass, stack);
-  }
-  return false;
-}
-
-function canCompareValue(obj, klass) {
-  // Only known objects are matched by value. This is notably excluding functions, DOM Elements, and instances of
-  // user-created classes. The latter can arguably be matched by value, but distinguishing between these and
-  // host objects -- which should never be compared by value -- is very tricky so not dealing with it here.
-  klass = klass || className(obj);
-  return MATCHED_BY_VALUE_REG.test(klass) || isPlainObject(obj, klass);
-}
-
-function objectIsEqual(a, b, aClass, stack) {
-  var aType = typeof a, bType = typeof b, propsEqual, lenEqual, arrayLike, count;
-  if (aType !== bType) {
-    return false;
-  }
-  if (isObjectType(a, aType)) {
-    count = 0;
-    propsEqual = true;
-    arrayLike = isArrayLike(a, aClass);
-    iterateWithCyclicCheck(a, arrayLike, false, stack, function(key, val, cyc, stack) {
-      if (!cyc && (!(key in b) || !isEqual(val, b[key], stack))) {
-        propsEqual = false;
-      }
-      count++;
-      return propsEqual;
+  function simpleMerge(target, source) {
+    iterateOverObject(source, function(key) {
+      target[key] = source[key];
     });
-    lenEqual = arrayLike ? a.length === b.length : count === getKeys(b).length;
-    if (!propsEqual || !lenEqual) {
+    return target;
+  }
+
+  // Make primtives types like strings into objects.
+  function coercePrimitiveToObject(obj) {
+    if (isPrimitiveType(obj)) {
+      obj = Object(obj);
+    }
+    if (NO_KEYS_IN_STRING_OBJECTS && isString(obj)) {
+      forceStringCoercion(obj);
+    }
+    return obj;
+  }
+
+  // Force strings to have their indexes set in
+  // environments that don't do this automatically.
+  function forceStringCoercion(obj) {
+    var i = 0, chr;
+    while (chr = obj.charAt(i)) {
+      obj[i++] = chr;
+    }
+  }
+
+  // Equality helpers
+
+  function isEqual(a, b, stack) {
+    var aClass, bClass;
+    if (a === b) {
+      // Return quickly up front when matching by reference,
+      // but be careful about 0 !== -0.
+      return a !== 0 || 1 / a === 1 / b;
+    }
+    aClass = className(a);
+    bClass = className(b);
+    if (aClass !== bClass) {
       return false;
     }
-  }
-  // Stringifying the value handles NaN, wrapped primitives, and dates in one go.
-  return a.valueOf().toString() === b.valueOf().toString();
-}
-
-function setIsEqual(s1, s2) {
-  var equal = true;
-  // iOS8 supports sets but has an incomplete implementation of Iterators so
-  // avoiding .next syntax here. Also can't use for..of as it would be a
-  // syntax error in ES5 environments.
-  s1.forEach(function(v) {
-    if (equal && !s2.has(v)) {
-      equal = false;
+    if (isSet(a, aClass) && isSet(b, bClass)) {
+      return setIsEqual(a, b);
+    } else if (canCompareValue(a, aClass) && canCompareValue(b, bClass)) {
+      return objectIsEqual(a, b, aClass, stack);
     }
-  });
-  return equal && s1.size === s2.size;
-}
-
-function stringify(obj, stack) {
-  var type = typeof obj, arrayLike, klass, value;
-
-  // Return quickly for primitives to save cycles
-  if (isPrimitiveType(obj, type) && !isRealNaN(obj)) {
-    return type + obj;
+    return false;
   }
 
-  klass = className(obj);
-  arrayLike = isArrayLike(obj, klass);
-
-  if (arrayLike || isPlainObject(obj, klass)) {
-    value = stringifyDeep(obj, arrayLike, stack);
-  } else if (1 / obj === -Infinity) {
-    value = '-0';
-  } else if (obj.valueOf) {
-    value = obj.valueOf();
+  function canCompareValue(obj, klass) {
+    // Only known objects are matched by value. This is notably excluding functions, DOM Elements, and instances of
+    // user-created classes. The latter can arguably be matched by value, but distinguishing between these and
+    // host objects -- which should never be compared by value -- is very tricky so not dealing with it here.
+    klass = klass || className(obj);
+    return MATCHED_BY_VALUE_REG.test(klass) || isPlainObject(obj, klass);
   }
-  return type + klass + value;
-}
 
-function stringifyDeep(obj, arrayLike, stack) {
-  var result = '';
-  iterateWithCyclicCheck(obj, arrayLike, true, stack, function(key, val, cyc, stack) {
-    result += cyc ? 'CYC' : key + stringify(val, stack);
-  });
-  return result;
-}
+  function objectIsEqual(a, b, aClass, stack) {
+    var aType = typeof a, bType = typeof b, propsEqual, lenEqual, arrayLike, count;
+    if (aType !== bType) {
+      return false;
+    }
+    if (isObjectType(a, aType)) {
+      count = 0;
+      propsEqual = true;
+      arrayLike = isArrayLike(a, aClass);
+      iterateWithCyclicCheck(a, arrayLike, false, stack, function(key, val, cyc, stack) {
+        if (!cyc && (!(key in b) || !isEqual(val, b[key], stack))) {
+          propsEqual = false;
+        }
+        count++;
+        return propsEqual;
+      });
+      lenEqual = arrayLike ? a.length === b.length : count === getKeys(b).length;
+      if (!propsEqual || !lenEqual) {
+        return false;
+      }
+    }
+    // Stringifying the value handles NaN, wrapped primitives, and dates in one go.
+    return a.valueOf().toString() === b.valueOf().toString();
+  }
 
-function iterateWithCyclicCheck(obj, arrayLike, sortedKeys, stack, fn) {
+  function setIsEqual(s1, s2) {
+    var equal = true;
+    // iOS8 supports sets but has an incomplete implementation of Iterators so
+    // avoiding .next syntax here. Also can't use for..of as it would be a
+    // syntax error in ES5 environments.
+    s1.forEach(function(v) {
+      if (equal && !s2.has(v)) {
+        equal = false;
+      }
+    });
+    return equal && s1.size === s2.size;
+  }
 
-  function next(key, val) {
-    var cyc = false;
+  function stringify(obj, stack) {
+    var type = typeof obj, arrayLike, klass, value;
 
-    // Allowing a step into the structure before triggering this check to save
-    // cycles on standard JSON structures and also to try as hard as possible to
-    // catch basic properties that may have been modified.
-    if (stack.length > 1) {
-      var i = stack.length;
-      while (i--) {
-        if (stack[i] === val) {
-          cyc = true;
+    // Return quickly for primitives to save cycles
+    if (isPrimitiveType(obj, type) && !isRealNaN(obj)) {
+      return type + obj;
+    }
+
+    klass = className(obj);
+    arrayLike = isArrayLike(obj, klass);
+
+    if (arrayLike || isPlainObject(obj, klass)) {
+      value = stringifyDeep(obj, arrayLike, stack);
+    } else if (1 / obj === -Infinity) {
+      value = '-0';
+    } else if (obj.valueOf) {
+      value = obj.valueOf();
+    }
+    return type + klass + value;
+  }
+
+  function stringifyDeep(obj, arrayLike, stack) {
+    var result = '';
+    iterateWithCyclicCheck(obj, arrayLike, true, stack, function(key, val, cyc, stack) {
+      result += cyc ? 'CYC' : key + stringify(val, stack);
+    });
+    return result;
+  }
+
+  function iterateWithCyclicCheck(obj, arrayLike, sortedKeys, stack, fn) {
+
+    function next(key, val) {
+      var cyc = false;
+
+      // Allowing a step into the structure before triggering this check to save
+      // cycles on standard JSON structures and also to try as hard as possible to
+      // catch basic properties that may have been modified.
+      if (stack.length > 1) {
+        var i = stack.length;
+        while (i--) {
+          if (stack[i] === val) {
+            cyc = true;
+          }
+        }
+      }
+
+      stack.push(val);
+      fn(key, val, cyc, stack);
+      stack.pop();
+    }
+
+    function iterateArrayLike(arr) {
+      for (var i = 0; i < arr.length; i++) {
+        if (i in arr) {
+          next(i, arr[i]);
         }
       }
     }
 
-    stack.push(val);
-    fn(key, val, cyc, stack);
-    stack.pop();
-  }
-
-  function iterateArrayLike(arr) {
-    for (var i = 0; i < arr.length; i++) {
-      if (i in arr) {
-        next(i, arr[i]);
+    function iterateWithSortedKeys() {
+      // Sorted keys is required for stringify, where object order
+      // does not matter but stringified order does.
+      var arr = getKeys(obj).sort(), key;
+      for (var i = 0; i < arr.length; i++) {
+        key = arr[i];
+        next(arr[i], obj[key]);
       }
     }
-  }
 
-  function iterateWithSortedKeys() {
-    // Sorted keys is required for stringify, where object order
-    // does not matter but stringified order does.
-    var arr = getKeys(obj).sort(), key;
-    for (var i = 0; i < arr.length; i++) {
-      key = arr[i];
-      next(arr[i], obj[key]);
-    }
-  }
-
-  // This method for checking for cyclic structures was egregiously stolen from
-  // the ingenious method by @kitcambridge from the Underscore script:
-  // https://github.com/documentcloud/underscore/issues/240
-  if (!stack) stack = [];
-
-  if (arrayLike) {
-    iterateArrayLike(obj);
-  } else if (sortedKeys) {
-    iterateWithSortedKeys();
-  } else {
-    iterateOverObject(obj, next);
-  }
-}
-
-
-// Array helpers
-
-function isArrayIndex(n) {
-  return n >>> 0 == n && n != 0xFFFFFFFF;
-}
-
-function isArrayLike(obj, klass) {
-  return isArray(obj, klass) || isArgumentsObject(obj, klass);
-}
-
-function isArgumentsObject(obj, klass) {
-  klass = klass || className(obj);
-  // .callee exists on Arguments objects in < IE8
-  return hasProperty(obj, 'length') && (klass === '[object Arguments]' || !!obj.callee);
-}
-
-function iterateOverSparseArray(arr, fn, fromIndex, loop) {
-  var indexes = getSparseArrayIndexes(arr, fromIndex, loop), index;
-  for (var i = 0, len = indexes.length; i < len; i++) {
-    index = indexes[i];
-    fn.call(arr, arr[index], index, arr);
-  }
-  return arr;
-}
-
-// It's unclear whether or not sparse arrays qualify as "simple enumerables".
-// If they are not, however, the wrapping function will be deoptimized, so
-// isolate here (also to share between es5 and array modules).
-function getSparseArrayIndexes(arr, fromIndex, loop, fromRight) {
-  var indexes = [], i;
-  for (i in arr) {
-    if (isArrayIndex(i) && (loop || (fromRight ? i <= fromIndex : i >= fromIndex))) {
-      indexes.push(+i);
-    }
-  }
-  indexes.sort(function(a, b) {
-    var aLoop = a > fromIndex;
-    var bLoop = b > fromIndex;
-    if (aLoop !== bLoop) {
-      return aLoop ? -1 : 1;
-    }
-    return a - b;
-  });
-  return indexes;
-}
-
-function getEntriesForIndexes(obj, find, loop, isString) {
-  var result, length = obj.length;
-  if (!isArray(find)) {
-    return entryAtIndex(obj, find, length, loop, isString);
-  }
-  result = [];
-  forEach(find, function(index) {
-    result.push(entryAtIndex(obj, index, length, loop, isString));
-  });
-  return result;
-}
-
-function entryAtIndex(obj, index, length, loop, isString) {
-  if (index && loop !== false) {
-    index = index % length;
-    if (index < 0) index = length + index;
-  }
-  return isString ? obj.charAt(index) : obj[index];
-}
-
-function mapWithShortcuts(el, f, context, mapArgs) {
-  if (!f) {
-    return el;
-  } else if (f.apply) {
-    return f.apply(context, mapArgs || []);
-  } else if (isArray(f)) {
-    return f.map(function(m) {
-      return mapWithShortcuts(el, m, context, mapArgs);
-    });
-  } else if (isFunction(el[f])) {
-    return el[f].call(el);
-  } else {
-    return deepGetProperty(el, f);
-  }
-}
-
-function commaSplit(arr) {
-  return arr.split(HALF_WIDTH_COMMA);
-}
-
-function periodSplit(arr) {
-  return arr.split(HALF_WIDTH_PERIOD);
-}
-
-function forEach(arr, fn) {
-  for (var i = 0, len = arr.length; i < len; i++) {
-    if (!(i in arr)) {
-      return iterateOverSparseArray(arr, fn, i);
-    }
-    fn(arr[i], i);
-  }
-}
-
-function filter(arr, fn) {
-  var result = [];
-  for (var i = 0, len = arr.length; i < len; i++) {
-    var el = arr[i];
-    if (i in arr && fn(el, i)) {
-      result.push(el);
-    }
-  }
-  return result;
-}
-
-function some(arr, fn) {
-  for (var i = 0, len = arr.length; i < len; i++) {
-    if (i in arr && fn(arr[i], i)) {
-      return true;
-    }
-  }
-  return false;
-}
-
-function map(arr, fn) {
-  var result = [];
-  for (var i = 0, len = arr.length; i < len; i++) {
-    if (i in arr) {
-      result.push(fn(arr[i], i));
-    }
-  }
-  return result;
-}
-
-function indexOf(arr, el) {
-  for (var i = 0, len = arr.length; i < len; i++) {
-    if (i in arr && arr[i] === el) return i;
-  }
-  return -1;
-}
-
-// Number helpers
-
-var trunc = Math.trunc || function(n) {
-  if (n === 0 || !isFinite(n)) return n;
-  return n < 0 ? ceil(n) : floor(n);
-};
-
-function isRealNaN(obj) {
-  // This is only true of NaN
-  return obj != null && obj !== obj;
-}
-
-function withPrecision(val, precision, fn) {
-  var multiplier = pow(10, abs(precision || 0));
-  fn = fn || round;
-  if (precision < 0) multiplier = 1 / multiplier;
-  return fn(val * multiplier) / multiplier;
-}
-
-function padNumber(num, place, sign, base, replacement) {
-  var str = abs(num).toString(base || 10);
-  str = repeatString(replacement || '0', place - str.replace(/\.\d+/, '').length) + str;
-  if (sign || num < 0) {
-    str = (num < 0 ? '-' : '+') + str;
-  }
-  return str;
-}
-
-function getOrdinalSuffix(num) {
-  if (num >= 11 && num <= 13) {
-    return 'th';
-  } else {
-    switch(num % 10) {
-      case 1:  return 'st';
-      case 2:  return 'nd';
-      case 3:  return 'rd';
-      default: return 'th';
-    }
-  }
-}
-
-// Fullwidth number helpers
-var fullWidthNumberReg, fullWidthNumberMap, fullWidthNumbers;
-
-function buildFullWidthNumber() {
-  var digit;
-  fullWidthNumberMap = {};
-  fullWidthNumbers = '';
-  for (var i = 0; i <= 9; i++) {
-    digit = chr(i + FULL_WIDTH_ZERO);
-    fullWidthNumbers += digit;
-    fullWidthNumberMap[digit] = chr(i + HALF_WIDTH_ZERO);
-  }
-  fullWidthNumberMap[HALF_WIDTH_COMMA] = '';
-  fullWidthNumberMap[FULL_WIDTH_PERIOD] = HALF_WIDTH_PERIOD;
-  // Mapping this to itself to capture it easily
-  // in stringToNumber to detect decimals later.
-  fullWidthNumberMap[HALF_WIDTH_PERIOD] = HALF_WIDTH_PERIOD;
-  fullWidthNumberReg = RegExp('[' + fullWidthNumbers + FULL_WIDTH_PERIOD + HALF_WIDTH_COMMA + HALF_WIDTH_PERIOD + ']', 'g');
-}
-
-// Takes into account full-width characters, commas, and decimals.
-function stringToNumber(str, base) {
-  var sanitized, isDecimal;
-  sanitized = str.replace(fullWidthNumberReg, function(chr) {
-    var replacement = fullWidthNumberMap[chr];
-    if (replacement === HALF_WIDTH_PERIOD) {
-      isDecimal = true;
-    }
-    return replacement;
-  });
-  return isDecimal ? parseFloat(sanitized) : parseInt(sanitized, base || 10);
-}
-
-// Math aliases
-var abs   = Math.abs,
-    pow   = Math.pow,
-    min   = Math.min,
-    max   = Math.max,
-    ceil  = Math.ceil,
-    floor = Math.floor,
-    round = Math.round;
-
-
-// String helpers
-
-var chr = String.fromCharCode;
-
-function trim(str) {
-  return str.trim();
-}
-
-function repeatString(str, num) {
-  var result = '';
-  str = str.toString();
-  while (num > 0) {
-    if (num & 1) {
-      result += str;
-    }
-    if (num >>= 1) {
-      str += str;
-    }
-  }
-  return result;
-}
-
-function simpleCapitalize(str) {
-  return str.slice(0,1).toUpperCase() + str.slice(1).toLowerCase();
-}
-
-function capitalizeWithoutDowncasing(word) {
-  return word.replace(/^\W*[a-z]/, function(w) {
-    return w.toUpperCase();
-  });
-}
-
-// RegExp helpers
-
-function getRegExpFlags(reg, add) {
-  var flags = '';
-  add = add || '';
-  function checkFlag(prop, flag) {
-    if (prop || add.indexOf(flag) > -1) {
-      flags += flag;
-    }
-  }
-  checkFlag(reg.multiline, 'm');
-  checkFlag(reg.ignoreCase, 'i');
-  checkFlag(reg.global, 'g');
-  checkFlag(reg.sticky, 'y');
-  return flags;
-}
-
-function escapeRegExp(str) {
-  if (!isString(str)) str = String(str);
-  return str.replace(/([\\\/\'*+?|()\[\]{}.^$-])/g,'\\$1');
-}
-
-
-// Date helpers
-
-var _utc = privatePropertyAccessor('utc');
-
-function callDateGet(d, method) {
-  return d['get' + (_utc(d) ? 'UTC' : '') + method]();
-}
-
-function callDateSet(d, method, value) {
-  if (value === callDateGet(d, method, value)) {
-    // Do not set the date if the value is the same as what is currently set.
-    // Setting should in theory be a noop, but causes unintentional timezone
-    // shifts when in the middle of a DST fallback.
-    return d.getTime();
-  }
-  return d['set' + (_utc(d) ? 'UTC' : '') + method](value);
-}
-
-
-// Hash definition
-
-function Hash(obj) {
-  // Not using simpleMerge here due to an odd compiler bug when building
-  // modules that don't use Hash where this constructor still gets required
-  // after the simpleMerge token has already been removed.
-  for (var key in obj) {
-    if(!hasOwn(obj, key)) continue;
-    this[key] = obj[key];
-  };
-}
-
-function isHash(obj) {
-  return obj instanceof Hash;
-}
-
-Hash.prototype.constructor = Object;
-
-
-buildClassChecks();
-buildFullWidthNumber();
-'use strict';
-
-/***
- * @module ES6
- * @description Methods that provide some basic ES6 compatibility. This module is intended to provide the base for Sugar functionality, not as a full polyfill suite.
- *
- ***/
-
-/*** @namespace String */
-
-function getCoercedStringSubject(obj) {
-  if (obj == null) {
-    throw new TypeError('String required.');
-  }
-  return String(obj);
-}
-
-function getCoercedSearchString(obj) {
-  if (isRegExp(obj)) {
-    throw new TypeError();
-  }
-  return String(obj);
-}
-
-defineInstancePolyfill(sugarString, {
-
-  /***
-   * @method includes(<search>, [pos] = 0)
-   * @returns Boolean
-   * @short Returns true if <search> is contained within the string.
-   * @extra Search begins at [pos], which defaults to the beginning of the string. Sugar enhances this method to allow matching a regex.
-   * @polyfill
-   * @example
-   *
-   *   'jumpy'.includes('py')      -> true
-   *   'broken'.includes('ken', 3) -> true
-   *   'broken'.includes('bro', 3) -> false
-   *
-   ***/
-  'includes': function(searchString) {
-    // Force compiler to respect argument length.
-    var argLen = arguments.length, pos = arguments[1];
-    var str = getCoercedStringSubject(this);
-    searchString = getCoercedSearchString(searchString);
-    return str.indexOf(searchString, pos) !== -1;
-  },
-
-  /***
-   * @method startsWith(<search>, [pos] = 0)
-   * @returns Boolean
-   * @short Returns true if the string starts with <search>, which must be a string.
-   * @extra Search begins at [pos], which defaults to the entire string length.
-   * @polyfill
-   * @example
-   *
-   *   'hello'.startsWith('hell')   -> true
-   *   'hello'.startsWith('HELL')   -> false
-   *   'hello'.startsWith('ell', 1) -> true
-   *
-   ***/
-  'startsWith': function(searchString) {
-    // Force compiler to respect argument length.
-    var argLen = arguments.length, position = arguments[1];
-    var str, start, pos, len, searchLength;
-    str = getCoercedStringSubject(this);
-    searchString = getCoercedSearchString(searchString);
-    pos = +position || 0;
-    len = str.length;
-    start = min(max(pos, 0), len);
-    searchLength = searchString.length;
-    if (searchLength + start > len) {
-      return false;
-    }
-    if (str.substr(start, searchLength) === searchString) {
-      return true;
-    }
-    return false;
-  },
-
-  /***
-   * @method endsWith(<search>, [pos] = length)
-   * @returns Boolean
-   * @short Returns true if the string ends with <search>, which must be a string.
-   * @extra Search ends at [pos], which defaults to the entire string length.
-   * @polyfill
-   * @example
-   *
-   *   'jumpy'.endsWith('py')    -> true
-   *   'jumpy'.endsWith('MPY')   -> false
-   *   'jumpy'.endsWith('mp', 4) -> false
-   *
-   ***/
-  'endsWith': function(searchString) {
-    // Force compiler to respect argument length.
-    var argLen = arguments.length, endPosition = arguments[1];
-    var str, start, end, pos, len, searchLength;
-    str = getCoercedStringSubject(this);
-    searchString = getCoercedSearchString(searchString);
-    len = str.length;
-    pos = len;
-    if (isDefined(endPosition)) {
-      pos = +endPosition || 0;
-    }
-    end = min(max(pos, 0), len);
-    searchLength = searchString.length;
-    start = end - searchLength;
-    if (start < 0) {
-      return false;
-    }
-    if (str.substr(start, searchLength) === searchString) {
-      return true;
-    }
-    return false;
-  },
-
-  /***
-   * @method repeat([num] = 0)
-   * @returns String
-   * @short Returns the string repeated [num] times.
-   * @polyfill
-   * @example
-   *
-   *   'jumpy'.repeat(2) -> 'jumpyjumpy'
-   *   'a'.repeat(5)     -> 'aaaaa'
-   *   'a'.repeat(0)     -> ''
-   *
-   ***/
-  'repeat': function(num) {
-    num = coercePositiveInteger(num);
-    return repeatString(this, num);
-  }
-
-});
-
-
-/*** @namespace Number */
-
-defineStaticPolyfill(sugarNumber, {
-
-  /***
-   * @method Number.isNaN(<value>)
-   * @returns Boolean
-   * @short Returns true only if the number is %NaN%.
-   * @extra This is differs from the global %isNaN%, which returns true for anything that is not a number.
-   * @polyfill
-   * @example
-   *
-   *   Number.isNaN(NaN) -> true
-   *   Number.isNaN('n') -> false
-   *
-   ***/
-  'isNaN': function(obj) {
-    return isRealNaN(obj);
-  }
-
-});
-
-
-
-/*** @namespace Array */
-
-function getCoercedObject(obj) {
-  if (obj == null) {
-    throw new TypeError('Object required.');
-  }
-  return coercePrimitiveToObject(obj);
-}
-
-defineStaticPolyfill(sugarArray, {
-
-  /***
-   * @method Array.from(<a>, [map], [context])
-   * @returns Mixed
-   * @short Creates an array from an array-like object.
-   * @extra If a function is passed for [map], it will be map each element of the array. [context] is the %this% object if passed.
-   * @polyfill
-   * @example
-   *
-   *   Array.from({0:'a',1:'b',length:2}); -> ['a','b']
-   *
-   ***/
-  'from': function(a) {
-    // Force compiler to respect argument length.
-    var argLen = arguments.length, map = arguments[1], context = arguments[2];
-    var len, arr;
-    if (isDefined(map)) {
-      assertCallable(map);
-    }
-    a = getCoercedObject(a);
-    len = trunc(max(0, a.length || 0));
-    if (!isArrayIndex(len)) {
-      throw new RangeError('Invalid array length');
-    }
-    if (isFunction(this)) {
-      arr = new this(len);
-      arr.length = len;
+    // This method for checking for cyclic structures was egregiously stolen from
+    // the ingenious method by @kitcambridge from the Underscore script:
+    // https://github.com/documentcloud/underscore/issues/240
+    if (!stack) stack = [];
+
+    if (arrayLike) {
+      iterateArrayLike(obj);
+    } else if (sortedKeys) {
+      iterateWithSortedKeys();
     } else {
-      arr = new Array(len);
+      iterateOverObject(obj, next);
     }
-    for (var i = 0; i < len; i++) {
-      setProperty(arr, i, isDefined(map) ? map.call(context, a[i], i) : a[i], true);
+  }
+
+
+  // Array helpers
+
+  function isArrayIndex(n) {
+    return n >>> 0 == n && n != 0xFFFFFFFF;
+  }
+
+  function isArrayLike(obj, klass) {
+    return isArray(obj, klass) || isArgumentsObject(obj, klass);
+  }
+
+  function isArgumentsObject(obj, klass) {
+    klass = klass || className(obj);
+    // .callee exists on Arguments objects in < IE8
+    return hasProperty(obj, 'length') && (klass === '[object Arguments]' || !!obj.callee);
+  }
+
+  function iterateOverSparseArray(arr, fn, fromIndex, loop) {
+    var indexes = getSparseArrayIndexes(arr, fromIndex, loop), index;
+    for (var i = 0, len = indexes.length; i < len; i++) {
+      index = indexes[i];
+      fn.call(arr, arr[index], index, arr);
     }
     return arr;
   }
 
-});
-
-defineInstancePolyfill(sugarArray, {
-
-  'find': function(f) {
-    // Force compiler to respect argument length.
-    var argLen = arguments.length, context = arguments[1];
-    assertCallable(f);
-    for (var i = 0, len = this.length; i < len; i++) {
-      if (f.call(context, this[i], i, this)) {
-        return this[i];
+  // It's unclear whether or not sparse arrays qualify as "simple enumerables".
+  // If they are not, however, the wrapping function will be deoptimized, so
+  // isolate here (also to share between es5 and array modules).
+  function getSparseArrayIndexes(arr, fromIndex, loop, fromRight) {
+    var indexes = [], i;
+    for (i in arr) {
+      if (isArrayIndex(i) && (loop || (fromRight ? i <= fromIndex : i >= fromIndex))) {
+        indexes.push(+i);
       }
     }
-  },
+    indexes.sort(function(a, b) {
+      var aLoop = a > fromIndex;
+      var bLoop = b > fromIndex;
+      if (aLoop !== bLoop) {
+        return aLoop ? -1 : 1;
+      }
+      return a - b;
+    });
+    return indexes;
+  }
 
-  'findIndex': function(f) {
-    // Force compiler to respect argument length.
-    var argLen = arguments.length, context = arguments[1];
-    assertCallable(f);
-    for (var i = 0, len = this.length; i < len; i++) {
-      if (f.call(context, this[i], i, this)) {
-        return i;
+  function getEntriesForIndexes(obj, find, loop, isString) {
+    var result, length = obj.length;
+    if (!isArray(find)) {
+      return entryAtIndex(obj, find, length, loop, isString);
+    }
+    result = [];
+    forEach(find, function(index) {
+      result.push(entryAtIndex(obj, index, length, loop, isString));
+    });
+    return result;
+  }
+
+  function entryAtIndex(obj, index, length, loop, isString) {
+    if (index && loop !== false) {
+      index = index % length;
+      if (index < 0) index = length + index;
+    }
+    return isString ? obj.charAt(index) : obj[index];
+  }
+
+  function mapWithShortcuts(el, f, context, mapArgs) {
+    if (!f) {
+      return el;
+    } else if (f.apply) {
+      return f.apply(context, mapArgs || []);
+    } else if (isArray(f)) {
+      return f.map(function(m) {
+        return mapWithShortcuts(el, m, context, mapArgs);
+      });
+    } else if (isFunction(el[f])) {
+      return el[f].call(el);
+    } else {
+      return deepGetProperty(el, f);
+    }
+  }
+
+  function commaSplit(arr) {
+    return arr.split(HALF_WIDTH_COMMA);
+  }
+
+  function periodSplit(arr) {
+    return arr.split(HALF_WIDTH_PERIOD);
+  }
+
+  function forEach(arr, fn) {
+    for (var i = 0, len = arr.length; i < len; i++) {
+      if (!(i in arr)) {
+        return iterateOverSparseArray(arr, fn, i);
+      }
+      fn(arr[i], i);
+    }
+  }
+
+  function filter(arr, fn) {
+    var result = [];
+    for (var i = 0, len = arr.length; i < len; i++) {
+      var el = arr[i];
+      if (i in arr && fn(el, i)) {
+        result.push(el);
       }
     }
-    return -1;
+    return result;
   }
 
-});
-'use strict';
-
-/***
- * @module ES7
- * @description Methods that provide some basic ES7 compatibility. This module is intended to provide the base for Sugar functionality, not as a full polyfill suite.
- *
- ***/
-
-/*** @namespace Array */
-
-
-function sameValueZero(a, b) {
-  if (isRealNaN(a)) {
-    return isRealNaN(b);
-  }
-  return a === b ? a !== 0 || 1 / a === 1 / b : false;
-}
-
-defineInstancePolyfill(sugarArray, {
-
-  /***
-   * @method includes(<search>, [fromIndex] = 0)
-   * @returns Boolean
-   * @short Returns true if <search> is contained within the array.
-   * @extra Search begins at [fromIndex], which defaults to the beginning of the array.
-   * @polyfill
-   * @example
-   *
-   *   [1,2,3].includes(2)    -> true
-   *   [1,2,3].includes(4)    -> false
-   *   [1,2,3].includes(2, 3) -> false
-   *
-   ***/
-  'includes': function(search) {
-    // Force compiler to respect argument length.
-    var argLen = arguments.length, fromIndex = arguments[1];
-    var arr = this, len;
-    if (isString(arr)) return arr.includes(search, fromIndex);
-    fromIndex = fromIndex ? fromIndex.valueOf() : 0;
-    len = arr.length;
-    if (fromIndex < 0) {
-      fromIndex = max(0, fromIndex + len);
-    }
-    for (var i = fromIndex; i < len; i++) {
-      if (sameValueZero(search, arr[i])) {
+  function some(arr, fn) {
+    for (var i = 0, len = arr.length; i < len; i++) {
+      if (i in arr && fn(arr[i], i)) {
         return true;
       }
     }
     return false;
   }
 
-});
-'use strict';
-
-/***
- * @module Date
- * @dependency core
- * @description Date parsing and formatting, relative formats like "1 minute ago", Number methods like "daysAgo", locale support with default English locale definition.
- *
- ***/
-
-var TIME_FORMAT = ['ampm','hour','minute','second','ampm','utc','offsetSign','offsetHours','offsetMinutes','ampm'];
-var LOCALE_FIELDS = ['months','weekdays','units','numbers','articles','tokens','timeMarker','ampm','timeSuffixes','parse','timeParse','modifiers'];
-
-var DECIMAL_REG       = '(?:[,.]\\d+)?';
-var REQUIRED_TIME_REG = '({t})?\\s*(\\d{1,2}{d})(?:{h}([0-5]\\d{d})?{m}(?::?([0-5]\\d'+DECIMAL_REG+'){s})?\\s*(?:({t})|(Z)|(?:([+-])(\\d{2,2})(?::?(\\d{2,2}))?)?)?|\\s*({t}))';
-
-var COMPILED_FORMAT_REG = /(\{\w+\})|%\w+|%%|[^{}%]+/g;
-var DATE_FORMAT_TOKEN_REG = /\{(\w+)\}|%(%|\w+)/;
-
-var TIMEZONE_ABBREVIATION_REG = /(\w{3})[()\s\d]*$/;
-
-var MINUTE = 60 * 1000;
-
-var CONSTANT_FORMATS = {
-  'ISO8601': '{yyyy}-{MM}-{dd}T{HH}:{mm}:{ss}.{SSS}{Z}',
-  'RFC1123': '{Dow}, {dd} {Mon} {yyyy} {HH}:{mm}:{ss} {tz}',
-  'RFC1036': '{Weekday}, {dd}-{Mon}-{yy} {HH}:{mm}:{ss} {tz}'
-};
-
-// ISO Defaults
-var ISO_FIRST_DAY_OF_WEEK = 1,
-    ISO_FIRST_DAY_OF_WEEK_YEAR = 4;
-
-// CJK digits
-var cjkDigitMap, cjkDigitReg;
-
-// A hash of date units by name
-var dateUnitsByName;
-
-// Output formats are lazily compiled, so store references here.
-var compiledOutputFormats = {};
-
-// Format tokens by name
-var ldmlTokens = {},
-    strfTokens = {};
-
-// Core formats common to every locale
-var CoreDateFormats = [
-  {
-    iso: true,
-    time: true,
-    match: 'yearSign,year,month,date',
-    src:'([+-])?(\\d{4,4})[-.\\/]?{fullMonth}[-.]?(\\d{1,2})?'
-  },
-  {
-    time: true,
-    variant: true,
-    match: 'date,month,year',
-    src: '(\\d{1,2})[-.\\/]{fullMonth}(?:[-.\\/](\\d{2,4}))?'
-  },
-  {
-    match: 'month,year',
-    src: '{fullMonth}[-.](\\d{4,4})'
-  },
-  {
-    match: 'timestamp',
-    src: '\\/Date\\((\\d+(?:[+-]\\d{4,4})?)\\)\\/'
+  function map(arr, fn) {
+    var result = [];
+    for (var i = 0, len = arr.length; i < len; i++) {
+      if (i in arr) {
+        result.push(fn(arr[i], i));
+      }
+    }
+    return result;
   }
-];
 
-var FormatTokensBase = [
-  {
-    ldml: 'Dow',
-    strf: 'a',
-    lowerToken: 'dow',
-    get: function(d, localeCode) {
-      return localeManager.get(localeCode).getAbbreviatedWeekdayName(getWeekday(d));
+  function indexOf(arr, el) {
+    for (var i = 0, len = arr.length; i < len; i++) {
+      if (i in arr && arr[i] === el) return i;
     }
-  },
-  {
-    ldml: 'Weekday',
-    strf: 'A',
-    lowerToken: 'weekday',
-    get: function(d, localeCode) {
-      return localeManager.get(localeCode).getWeekdayName(getWeekday(d));
+    return -1;
+  }
+
+  // Number helpers
+
+  var trunc = Math.trunc || function(n) {
+    if (n === 0 || !isFinite(n)) return n;
+    return n < 0 ? ceil(n) : floor(n);
+  };
+
+  function isRealNaN(obj) {
+    // This is only true of NaN
+    return obj != null && obj !== obj;
+  }
+
+  function withPrecision(val, precision, fn) {
+    var multiplier = pow(10, abs(precision || 0));
+    fn = fn || round;
+    if (precision < 0) multiplier = 1 / multiplier;
+    return fn(val * multiplier) / multiplier;
+  }
+
+  function padNumber(num, place, sign, base, replacement) {
+    var str = abs(num).toString(base || 10);
+    str = repeatString(replacement || '0', place - str.replace(/\.\d+/, '').length) + str;
+    if (sign || num < 0) {
+      str = (num < 0 ? '-' : '+') + str;
     }
-  },
-  {
-    ldml: 'Mon',
-    strf: 'b,h',
-    lowerToken: 'mon',
-    get: function(d, localeCode) {
-      return localeManager.get(localeCode).getAbbreviatedMonthName(getMonth(d));
+    return str;
+  }
+
+  function getOrdinalSuffix(num) {
+    if (num >= 11 && num <= 13) {
+      return 'th';
+    } else {
+      switch(num % 10) {
+        case 1:  return 'st';
+        case 2:  return 'nd';
+        case 3:  return 'rd';
+        default: return 'th';
+      }
     }
-  },
-  {
-    ldml: 'Month',
-    strf: 'B',
-    lowerToken: 'month',
-    allowAlternates: true,
-    get: function(d, localeCode, alternate) {
-      return localeManager.get(localeCode).getMonthName(getMonth(d), alternate);
+  }
+
+  // Fullwidth number helpers
+  var fullWidthNumberReg, fullWidthNumberMap, fullWidthNumbers;
+
+  function buildFullWidthNumber() {
+    var digit;
+    fullWidthNumberMap = {};
+    fullWidthNumbers = '';
+    for (var i = 0; i <= 9; i++) {
+      digit = chr(i + FULL_WIDTH_ZERO);
+      fullWidthNumbers += digit;
+      fullWidthNumberMap[digit] = chr(i + HALF_WIDTH_ZERO);
     }
-  },
-  {
-    strf: 'C',
-    get: function(d) {
-      return getYear(d).toString().slice(0, 2);
+    fullWidthNumberMap[HALF_WIDTH_COMMA] = '';
+    fullWidthNumberMap[FULL_WIDTH_PERIOD] = HALF_WIDTH_PERIOD;
+    // Mapping this to itself to capture it easily
+    // in stringToNumber to detect decimals later.
+    fullWidthNumberMap[HALF_WIDTH_PERIOD] = HALF_WIDTH_PERIOD;
+    fullWidthNumberReg = RegExp('[' + fullWidthNumbers + FULL_WIDTH_PERIOD + HALF_WIDTH_COMMA + HALF_WIDTH_PERIOD + ']', 'g');
+  }
+
+  // Takes into account full-width characters, commas, and decimals.
+  function stringToNumber(str, base) {
+    var sanitized, isDecimal;
+    sanitized = str.replace(fullWidthNumberReg, function(chr) {
+      var replacement = fullWidthNumberMap[chr];
+      if (replacement === HALF_WIDTH_PERIOD) {
+        isDecimal = true;
+      }
+      return replacement;
+    });
+    return isDecimal ? parseFloat(sanitized) : parseInt(sanitized, base || 10);
+  }
+
+  // Math aliases
+  var abs   = Math.abs,
+      pow   = Math.pow,
+      min   = Math.min,
+      max   = Math.max,
+      ceil  = Math.ceil,
+      floor = Math.floor,
+      round = Math.round;
+
+
+  // String helpers
+
+  var chr = String.fromCharCode;
+
+  function trim(str) {
+    return str.trim();
+  }
+
+  function repeatString(str, num) {
+    var result = '';
+    str = str.toString();
+    while (num > 0) {
+      if (num & 1) {
+        result += str;
+      }
+      if (num >>= 1) {
+        str += str;
+      }
     }
-  },
-  {
-    ldml: 'd,date,day',
-    strf: 'd',
-    strfPadding: 2,
-    ldmlPaddedToken: 'dd',
-    ordinalToken: 'do',
-    get: function(d) {
-      return getDate(d);
+    return result;
+  }
+
+  function simpleCapitalize(str) {
+    return str.slice(0,1).toUpperCase() + str.slice(1).toLowerCase();
+  }
+
+  function capitalizeWithoutDowncasing(word) {
+    return word.replace(/^\W*[a-z]/, function(w) {
+      return w.toUpperCase();
+    });
+  }
+
+  // RegExp helpers
+
+  function getRegExpFlags(reg, add) {
+    var flags = '';
+    add = add || '';
+    function checkFlag(prop, flag) {
+      if (prop || add.indexOf(flag) > -1) {
+        flags += flag;
+      }
     }
-  },
-  {
-    strf: 'e',
-    get: function(d) {
-      return padNumber(getDate(d), 2, false, 10, ' ');
-    }
-  },
-  {
-    ldml: 'H,24hr',
-    strf: 'H',
-    strfPadding: 2,
-    ldmlPaddedToken: 'HH',
-    get: function(d) {
-      return getHours(d);
-    }
-  },
-  {
-    ldml: 'h,hours,12hr',
-    strf: 'I',
-    strfPadding: 2,
-    ldmlPaddedToken: 'hh',
-    get: function(d) {
-      return getHours(d) % 12 || 12;
-    }
-  },
-  {
-    ldml: 'D',
-    strf: 'j',
-    strfPadding: 3,
-    ldmlPaddedToken: 'DDD',
-    get: function(d) {
-      var s = resetUnitAndLower(cloneDate(d), 'month');
-      return daysSince(d, s) + 1;
-    }
-  },
-  {
-    ldml: 'M',
-    strf: 'm',
-    strfPadding: 2,
-    ordinalToken: 'Mo',
-    ldmlPaddedToken: 'MM',
-    get: function(d) {
-      return getMonth(d) + 1;
-    }
-  },
-  {
-    ldml: 'm,minutes',
-    strf: 'M',
-    strfPadding: 2,
-    ldmlPaddedToken: 'mm',
-    get: function(d) {
-      return callDateGet(d, 'Minutes');
-    }
-  },
-  {
-    ldml: 'Q',
-    get: function(d) {
-      return ceil((getMonth(d) + 1) / 3);
-    }
-  },
-  {
-    ldml: 'TT',
-    strf: 'p',
-    get: function(d, localeCode) {
-      return getMeridianForDate(d, localeCode);
-    }
-  },
-  {
-    ldml: 'tt',
-    strf: 'P',
-    get: function(d, localeCode) {
-      return getMeridianForDate(d, localeCode).toLowerCase();
-    }
-  },
-  {
-    ldml: 'T',
-    lowerToken: 't',
-    get: function(d, localeCode) {
-      return getMeridianForDate(d, localeCode).charAt(0);
-    }
-  },
-  {
-    ldml: 's,seconds',
-    strf: 'S',
-    strfPadding: 2,
-    ldmlPaddedToken: 'ss',
-    get: function(d) {
-      return callDateGet(d, 'Seconds');
-    }
-  },
-  {
-    ldml: 'S,ms',
-    strfPadding: 3,
-    ldmlPaddedToken: 'SSS',
-    get: function(d) {
-      return callDateGet(d, 'Milliseconds');
-    }
-  },
-  {
-    ldml: 'e',
-    strf: 'u',
-    ordinalToken: 'eo',
-    get: function(d) {
-      return getWeekday(d) || 7;
-    }
-  },
-  {
-    strf: 'U',
-    strfPadding: 2,
-    get: function(d) {
-      // Sunday first, 0-53
-      return getWeekNumber(d, false, 0);
-    }
-  },
-  {
-    ldml: 'W',
-    strf: 'V',
-    strfPadding: 2,
-    ordinalToken: 'Wo',
-    ldmlPaddedToken: 'WW',
-    get: function(d) {
-      // Monday first, 1-53 (ISO8601)
-      return getWeekNumber(d, true);
-    }
-  },
-  {
-    strf: 'w',
-    get: function(d) {
-      return getWeekday(d);
-    }
-  },
-  {
-    ldml: 'w',
-    ordinalToken: 'wo',
-    ldmlPaddedToken: 'ww',
-    get: function(d, localeCode) {
-      var loc = localeManager.get(localeCode);
-      // Locale dependent, 1-53
-      return getWeekNumber(d, true, loc.getFirstDayOfWeek(localeCode), loc.getFirstDayOfWeekYear(localeCode));
-    }
-  },
-  {
-    strf: 'W',
-    strfPadding: 2,
-    get: function(d) {
-      // Monday first, 0-53
-      return getWeekNumber(d, false);
-    }
-  },
-  {
-    ldmlPaddedToken: 'gggg',
-    ldmlTwoDigitToken: 'gg',
-    get: function(d, localeCode) {
-      return getWeekYear(d, localeCode);
-    }
-  },
-  {
-    strf: 'G',
-    strfPadding: 4,
-    strfTwoDigitToken: 'g',
-    ldmlPaddedToken: 'GGGG',
-    ldmlTwoDigitToken: 'GG',
-    get: function(d, localeCode) {
-      return getWeekYear(d, localeCode, true);
-    }
-  },
-  {
-    ldml: 'year',
-    ldmlPaddedToken: 'yyyy',
-    ldmlTwoDigitToken: 'yy',
-    strf: 'Y',
-    strfPadding: 4,
-    strfTwoDigitToken: 'y',
-    get: function(d) {
-      return getYear(d);
-    }
-  },
-  {
-    ldml: 'tz,ZZ',
-    strf: 'z',
-    get: function(d) {
-      return getUTCOffset(d);
-    }
-  },
-  {
-    ldml: 'X',
-    get: function(d) {
-      return trunc(d.getTime() / 1000);
-    }
-  },
-  {
-    ldml: 'x',
-    get: function(d) {
+    checkFlag(reg.multiline, 'm');
+    checkFlag(reg.ignoreCase, 'i');
+    checkFlag(reg.global, 'g');
+    checkFlag(reg.sticky, 'y');
+    return flags;
+  }
+
+  function escapeRegExp(str) {
+    if (!isString(str)) str = String(str);
+    return str.replace(/([\\\/\'*+?|()\[\]{}.^$-])/g,'\\$1');
+  }
+
+
+  // Date helpers
+
+  var _utc = privatePropertyAccessor('utc');
+
+  function callDateGet(d, method) {
+    return d['get' + (_utc(d) ? 'UTC' : '') + method]();
+  }
+
+  function callDateSet(d, method, value) {
+    if (value === callDateGet(d, method, value)) {
+      // Do not set the date if the value is the same as what is currently set.
+      // Setting should in theory be a noop, but causes unintentional timezone
+      // shifts when in the middle of a DST fallback.
       return d.getTime();
     }
-  },
-  {
-    ldml: 'Z',
-    get: function(d) {
-      return getUTCOffset(d, true);
-    }
-  },
-  {
-    ldml: 'z',
-    strf: 'Z',
-    get: function(d) {
-      // Note that this is not accurate in all browsing environments!
-      // https://github.com/moment/moment/issues/162
-      // It will continue to be supported for Node and usage with the
-      // understanding that it may be blank.
-      var match = d.toString().match(TIMEZONE_ABBREVIATION_REG);
-      return match ? match[1]: '';
-    }
-  },
-  {
-    strf: 'D',
-    alias: '%m/%d/%y'
-  },
-  {
-    strf: 'F',
-    alias: '%Y-%m-%d'
-  },
-  {
-    strf: 'r',
-    alias: '%I:%M:%S %p'
-  },
-  {
-    strf: 'R',
-    alias: '%H:%M'
-  },
-  {
-    strf: 'T',
-    alias: '%H:%M:%S'
-  },
-  {
-    strf: 'x',
-    alias: '{short}'
-  },
-  {
-    strf: 'X',
-    alias: '{time}'
-  },
-  {
-    strf: 'c',
-    alias: '{stamp}'
+    return d['set' + (_utc(d) ? 'UTC' : '') + method](value);
   }
-];
 
-var DateUnits = [
-  {
-    name: 'millisecond',
-    method: 'Milliseconds',
-    multiplier: 1,
-    start: 0,
-    end: 999
-  },
-  {
-    name: 'second',
-    method: 'Seconds',
-    multiplier: 1000,
-    start: 0,
-    end: 59
-  },
-  {
-    name: 'minute',
-    method: 'Minutes',
-    multiplier: 60 * 1000,
-    start: 0,
-    end: 59
-  },
-  {
-    name: 'hour',
-    method: 'Hours',
-    multiplier: 60 * 60 * 1000,
-    start: 0,
-    end: 23
-  },
-  {
-    name: 'day',
-    method: 'Date',
-    higher: true,
-    resetValue: 1,
-    multiplier: 24 * 60 * 60 * 1000,
-    start: 1,
-    end: function(d) {
-      return daysInMonth(d);
-    }
-  },
-  {
-    name: 'week',
-    method: 'ISOWeek',
-    higher: true,
-    resetValue: 1,
-    multiplier: 7 * 24 * 60 * 60 * 1000
-  },
-  {
-    name: 'month',
-    method: 'Month',
-    higher: true,
-    multiplier: 30.4375 * 24 * 60 * 60 * 1000,
-    start: 0,
-    end: 11
-  },
-  {
-    name: 'year',
-    method: 'FullYear',
-    higher: true,
-    multiplier: 365.25 * 24 * 60 * 60 * 1000,
-    start: 0
+
+  // Hash definition
+
+  function Hash(obj) {
+    // Not using simpleMerge here due to an odd compiler bug when building
+    // modules that don't use Hash where this constructor still gets required
+    // after the simpleMerge token has already been removed.
+    for (var key in obj) {
+      if(!hasOwn(obj, key)) continue;
+      this[key] = obj[key];
+    };
   }
-];
 
-// General helpers
-
-function tzOffset(d) {
-  return d.getTimezoneOffset();
-}
-
-function arrayToAlternates(arr) {
-  return filter(arr, function(el) {
-    return !!el;
-  }).join('|');
-}
-
-function getNewDate() {
-  return _newDateInternal()();
-}
-
-function defaultNewDate() {
-  return new Date;
-}
-
-function cloneDate(d) {
-  // Rhino environments have a bug where new Date(d) truncates
-  // milliseconds so need to call getTime() here.
-  var clone = new Date(d.getTime());
-  _utc(clone, !!_utc(d));
-  return clone;
-}
-
-function getHours(d) {
-  return callDateGet(d, 'Hours');
-}
-
-function getWeekday(d) {
-  return callDateGet(d, 'Day');
-}
-
-function getDate(d) {
-  return callDateGet(d, 'Date');
-}
-
-function getMonth(d) {
-  return callDateGet(d, 'Month');
-}
-
-function getYear(d) {
-  return callDateGet(d, 'FullYear');
-}
-
-function setDate(d, val) {
-  return callDateSet(d, 'Date', val);
-}
-
-function setMonth(d, val) {
-  return callDateSet(d, 'Month', val);
-}
-
-function setYear(d, val) {
-  return callDateSet(d, 'FullYear', val);
-}
-
-// Normal callDateSet method with ability
-// to handle ISOWeek setting as well.
-function callDateSetWithWeek(d, method, value) {
-  if (method === 'ISOWeek') {
-    return setISOWeekNumber(d, value);
-  } else {
-    return callDateSet(d, method, value);
+  function isHash(obj) {
+    return obj instanceof Hash;
   }
-}
 
-function isValid(d) {
-  return !isNaN(d.getTime());
-}
+  Hash.prototype.constructor = Object;
 
-// UTC helpers
 
-function isUTC(d) {
-  return !!_utc(d) || tzOffset(d) === 0;
-}
+  buildClassChecks();
+  buildFullWidthNumber();
+  'use strict';
 
-function getUTCOffset(d, iso) {
-  var offset = _utc(d) ? 0 : tzOffset(d);
-  var colon  = iso === true ? ':' : '';
-  if (!offset && iso) return 'Z';
-  return padNumber(trunc(-offset / 60), 2, true) + colon + padNumber(abs(offset % 60), 2);
-}
+  /***
+   * @module ES6
+   * @description Methods that provide some basic ES6 compatibility. This module is intended to provide the base for Sugar functionality, not as a full polyfill suite.
+   *
+   ***/
 
-// Date argument helpers
+  /*** @namespace String */
 
-function collectDateArguments(args, duration) {
-  var arg1 = args[0], arg2 = args[1];
-  if (duration && isString(arg1)) {
-    return [getDateParamsFromString(arg1), arg2];
-  } else if (isNumber(arg1) && isNumber(arg2)) {
-    return collectParamsFromArguments(args);
-  } else {
-    if (isObjectType(arg1)) {
-      args[0] = simpleClone(arg1);
+  function getCoercedStringSubject(obj) {
+    if (obj == null) {
+      throw new TypeError('String required.');
     }
+    return String(obj);
+  }
+
+  function getCoercedSearchString(obj) {
+    if (isRegExp(obj)) {
+      throw new TypeError();
+    }
+    return String(obj);
+  }
+
+  defineInstancePolyfill(sugarString, {
+
+    /***
+     * @method includes(<search>, [pos] = 0)
+     * @returns Boolean
+     * @short Returns true if <search> is contained within the string.
+     * @extra Search begins at [pos], which defaults to the beginning of the string. Sugar enhances this method to allow matching a regex.
+     * @polyfill
+     * @example
+     *
+     *   'jumpy'.includes('py')      -> true
+     *   'broken'.includes('ken', 3) -> true
+     *   'broken'.includes('bro', 3) -> false
+     *
+     ***/
+    'includes': function(searchString) {
+      // Force compiler to respect argument length.
+      var argLen = arguments.length, pos = arguments[1];
+      var str = getCoercedStringSubject(this);
+      searchString = getCoercedSearchString(searchString);
+      return str.indexOf(searchString, pos) !== -1;
+    },
+
+    /***
+     * @method startsWith(<search>, [pos] = 0)
+     * @returns Boolean
+     * @short Returns true if the string starts with <search>, which must be a string.
+     * @extra Search begins at [pos], which defaults to the entire string length.
+     * @polyfill
+     * @example
+     *
+     *   'hello'.startsWith('hell')   -> true
+     *   'hello'.startsWith('HELL')   -> false
+     *   'hello'.startsWith('ell', 1) -> true
+     *
+     ***/
+    'startsWith': function(searchString) {
+      // Force compiler to respect argument length.
+      var argLen = arguments.length, position = arguments[1];
+      var str, start, pos, len, searchLength;
+      str = getCoercedStringSubject(this);
+      searchString = getCoercedSearchString(searchString);
+      pos = +position || 0;
+      len = str.length;
+      start = min(max(pos, 0), len);
+      searchLength = searchString.length;
+      if (searchLength + start > len) {
+        return false;
+      }
+      if (str.substr(start, searchLength) === searchString) {
+        return true;
+      }
+      return false;
+    },
+
+    /***
+     * @method endsWith(<search>, [pos] = length)
+     * @returns Boolean
+     * @short Returns true if the string ends with <search>, which must be a string.
+     * @extra Search ends at [pos], which defaults to the entire string length.
+     * @polyfill
+     * @example
+     *
+     *   'jumpy'.endsWith('py')    -> true
+     *   'jumpy'.endsWith('MPY')   -> false
+     *   'jumpy'.endsWith('mp', 4) -> false
+     *
+     ***/
+    'endsWith': function(searchString) {
+      // Force compiler to respect argument length.
+      var argLen = arguments.length, endPosition = arguments[1];
+      var str, start, end, pos, len, searchLength;
+      str = getCoercedStringSubject(this);
+      searchString = getCoercedSearchString(searchString);
+      len = str.length;
+      pos = len;
+      if (isDefined(endPosition)) {
+        pos = +endPosition || 0;
+      }
+      end = min(max(pos, 0), len);
+      searchLength = searchString.length;
+      start = end - searchLength;
+      if (start < 0) {
+        return false;
+      }
+      if (str.substr(start, searchLength) === searchString) {
+        return true;
+      }
+      return false;
+    },
+
+    /***
+     * @method repeat([num] = 0)
+     * @returns String
+     * @short Returns the string repeated [num] times.
+     * @polyfill
+     * @example
+     *
+     *   'jumpy'.repeat(2) -> 'jumpyjumpy'
+     *   'a'.repeat(5)     -> 'aaaaa'
+     *   'a'.repeat(0)     -> ''
+     *
+     ***/
+    'repeat': function(num) {
+      num = coercePositiveInteger(num);
+      return repeatString(this, num);
+    }
+
+  });
+
+
+  /*** @namespace Number */
+
+  defineStaticPolyfill(sugarNumber, {
+
+    /***
+     * @method Number.isNaN(<value>)
+     * @returns Boolean
+     * @short Returns true only if the number is %NaN%.
+     * @extra This is differs from the global %isNaN%, which returns true for anything that is not a number.
+     * @polyfill
+     * @example
+     *
+     *   Number.isNaN(NaN) -> true
+     *   Number.isNaN('n') -> false
+     *
+     ***/
+    'isNaN': function(obj) {
+      return isRealNaN(obj);
+    }
+
+  });
+
+
+
+  /*** @namespace Array */
+
+  function getCoercedObject(obj) {
+    if (obj == null) {
+      throw new TypeError('Object required.');
+    }
+    return coercePrimitiveToObject(obj);
+  }
+
+  defineStaticPolyfill(sugarArray, {
+
+    /***
+     * @method Array.from(<a>, [map], [context])
+     * @returns Mixed
+     * @short Creates an array from an array-like object.
+     * @extra If a function is passed for [map], it will be map each element of the array. [context] is the %this% object if passed.
+     * @polyfill
+     * @example
+     *
+     *   Array.from({0:'a',1:'b',length:2}); -> ['a','b']
+     *
+     ***/
+    'from': function(a) {
+      // Force compiler to respect argument length.
+      var argLen = arguments.length, map = arguments[1], context = arguments[2];
+      var len, arr;
+      if (isDefined(map)) {
+        assertCallable(map);
+      }
+      a = getCoercedObject(a);
+      len = trunc(max(0, a.length || 0));
+      if (!isArrayIndex(len)) {
+        throw new RangeError('Invalid array length');
+      }
+      if (isFunction(this)) {
+        arr = new this(len);
+        arr.length = len;
+      } else {
+        arr = new Array(len);
+      }
+      for (var i = 0; i < len; i++) {
+        setProperty(arr, i, isDefined(map) ? map.call(context, a[i], i) : a[i], true);
+      }
+      return arr;
+    }
+
+  });
+
+  defineInstancePolyfill(sugarArray, {
+
+    'find': function(f) {
+      // Force compiler to respect argument length.
+      var argLen = arguments.length, context = arguments[1];
+      assertCallable(f);
+      for (var i = 0, len = this.length; i < len; i++) {
+        if (f.call(context, this[i], i, this)) {
+          return this[i];
+        }
+      }
+    },
+
+    'findIndex': function(f) {
+      // Force compiler to respect argument length.
+      var argLen = arguments.length, context = arguments[1];
+      assertCallable(f);
+      for (var i = 0, len = this.length; i < len; i++) {
+        if (f.call(context, this[i], i, this)) {
+          return i;
+        }
+      }
+      return -1;
+    }
+
+  });
+  'use strict';
+
+  /***
+   * @module ES7
+   * @description Methods that provide some basic ES7 compatibility. This module is intended to provide the base for Sugar functionality, not as a full polyfill suite.
+   *
+   ***/
+
+  /*** @namespace Array */
+
+
+  function sameValueZero(a, b) {
+    if (isRealNaN(a)) {
+      return isRealNaN(b);
+    }
+    return a === b ? a !== 0 || 1 / a === 1 / b : false;
+  }
+
+  defineInstancePolyfill(sugarArray, {
+
+    /***
+     * @method includes(<search>, [fromIndex] = 0)
+     * @returns Boolean
+     * @short Returns true if <search> is contained within the array.
+     * @extra Search begins at [fromIndex], which defaults to the beginning of the array.
+     * @polyfill
+     * @example
+     *
+     *   [1,2,3].includes(2)    -> true
+     *   [1,2,3].includes(4)    -> false
+     *   [1,2,3].includes(2, 3) -> false
+     *
+     ***/
+    'includes': function(search) {
+      // Force compiler to respect argument length.
+      var argLen = arguments.length, fromIndex = arguments[1];
+      var arr = this, len;
+      if (isString(arr)) return arr.includes(search, fromIndex);
+      fromIndex = fromIndex ? fromIndex.valueOf() : 0;
+      len = arr.length;
+      if (fromIndex < 0) {
+        fromIndex = max(0, fromIndex + len);
+      }
+      for (var i = fromIndex; i < len; i++) {
+        if (sameValueZero(search, arr[i])) {
+          return true;
+        }
+      }
+      return false;
+    }
+
+  });
+  'use strict';
+
+  /***
+   * @module Date
+   * @dependency core
+   * @description Date parsing and formatting, relative formats like "1 minute ago", Number methods like "daysAgo", locale support with default English locale definition.
+   *
+   ***/
+
+  var TIME_FORMAT = ['ampm','hour','minute','second','ampm','utc','offsetSign','offsetHours','offsetMinutes','ampm'];
+  var LOCALE_FIELDS = ['months','weekdays','units','numbers','articles','tokens','timeMarker','ampm','timeSuffixes','parse','timeParse','modifiers'];
+
+  var DECIMAL_REG       = '(?:[,.]\\d+)?';
+  var REQUIRED_TIME_REG = '({t})?\\s*(\\d{1,2}{d})(?:{h}([0-5]\\d{d})?{m}(?::?([0-5]\\d'+DECIMAL_REG+'){s})?\\s*(?:({t})|(Z)|(?:([+-])(\\d{2,2})(?::?(\\d{2,2}))?)?)?|\\s*({t}))';
+
+  var COMPILED_FORMAT_REG = /(\{\w+\})|%\w+|%%|[^{}%]+/g;
+  var DATE_FORMAT_TOKEN_REG = /\{(\w+)\}|%(%|\w+)/;
+
+  var TIMEZONE_ABBREVIATION_REG = /(\w{3})[()\s\d]*$/;
+
+  var MINUTE = 60 * 1000;
+
+  var CONSTANT_FORMATS = {
+    'ISO8601': '{yyyy}-{MM}-{dd}T{HH}:{mm}:{ss}.{SSS}{Z}',
+    'RFC1123': '{Dow}, {dd} {Mon} {yyyy} {HH}:{mm}:{ss} {tz}',
+    'RFC1036': '{Weekday}, {dd}-{Mon}-{yy} {HH}:{mm}:{ss} {tz}'
+  };
+
+  // ISO Defaults
+  var ISO_FIRST_DAY_OF_WEEK = 1,
+      ISO_FIRST_DAY_OF_WEEK_YEAR = 4;
+
+  // CJK digits
+  var cjkDigitMap, cjkDigitReg;
+
+  // A hash of date units by name
+  var dateUnitsByName;
+
+  // Output formats are lazily compiled, so store references here.
+  var compiledOutputFormats = {};
+
+  // Format tokens by name
+  var ldmlTokens = {},
+      strfTokens = {};
+
+  // Core formats common to every locale
+  var CoreDateFormats = [
+    {
+      iso: true,
+      time: true,
+      match: 'yearSign,year,month,date',
+      src:'([+-])?(\\d{4,4})[-.\\/]?{fullMonth}[-.]?(\\d{1,2})?'
+    },
+    {
+      time: true,
+      variant: true,
+      match: 'date,month,year',
+      src: '(\\d{1,2})[-.\\/]{fullMonth}(?:[-.\\/](\\d{2,4}))?'
+    },
+    {
+      match: 'month,year',
+      src: '{fullMonth}[-.](\\d{4,4})'
+    },
+    {
+      match: 'timestamp',
+      src: '\\/Date\\((\\d+(?:[+-]\\d{4,4})?)\\)\\/'
+    }
+  ];
+
+  var FormatTokensBase = [
+    {
+      ldml: 'Dow',
+      strf: 'a',
+      lowerToken: 'dow',
+      get: function(d, localeCode) {
+        return localeManager.get(localeCode).getAbbreviatedWeekdayName(getWeekday(d));
+      }
+    },
+    {
+      ldml: 'Weekday',
+      strf: 'A',
+      lowerToken: 'weekday',
+      get: function(d, localeCode) {
+        return localeManager.get(localeCode).getWeekdayName(getWeekday(d));
+      }
+    },
+    {
+      ldml: 'Mon',
+      strf: 'b,h',
+      lowerToken: 'mon',
+      get: function(d, localeCode) {
+        return localeManager.get(localeCode).getAbbreviatedMonthName(getMonth(d));
+      }
+    },
+    {
+      ldml: 'Month',
+      strf: 'B',
+      lowerToken: 'month',
+      allowAlternates: true,
+      get: function(d, localeCode, alternate) {
+        return localeManager.get(localeCode).getMonthName(getMonth(d), alternate);
+      }
+    },
+    {
+      strf: 'C',
+      get: function(d) {
+        return getYear(d).toString().slice(0, 2);
+      }
+    },
+    {
+      ldml: 'd,date,day',
+      strf: 'd',
+      strfPadding: 2,
+      ldmlPaddedToken: 'dd',
+      ordinalToken: 'do',
+      get: function(d) {
+        return getDate(d);
+      }
+    },
+    {
+      strf: 'e',
+      get: function(d) {
+        return padNumber(getDate(d), 2, false, 10, ' ');
+      }
+    },
+    {
+      ldml: 'H,24hr',
+      strf: 'H',
+      strfPadding: 2,
+      ldmlPaddedToken: 'HH',
+      get: function(d) {
+        return getHours(d);
+      }
+    },
+    {
+      ldml: 'h,hours,12hr',
+      strf: 'I',
+      strfPadding: 2,
+      ldmlPaddedToken: 'hh',
+      get: function(d) {
+        return getHours(d) % 12 || 12;
+      }
+    },
+    {
+      ldml: 'D',
+      strf: 'j',
+      strfPadding: 3,
+      ldmlPaddedToken: 'DDD',
+      get: function(d) {
+        var s = resetUnitAndLower(cloneDate(d), 'month');
+        return daysSince(d, s) + 1;
+      }
+    },
+    {
+      ldml: 'M',
+      strf: 'm',
+      strfPadding: 2,
+      ordinalToken: 'Mo',
+      ldmlPaddedToken: 'MM',
+      get: function(d) {
+        return getMonth(d) + 1;
+      }
+    },
+    {
+      ldml: 'm,minutes',
+      strf: 'M',
+      strfPadding: 2,
+      ldmlPaddedToken: 'mm',
+      get: function(d) {
+        return callDateGet(d, 'Minutes');
+      }
+    },
+    {
+      ldml: 'Q',
+      get: function(d) {
+        return ceil((getMonth(d) + 1) / 3);
+      }
+    },
+    {
+      ldml: 'TT',
+      strf: 'p',
+      get: function(d, localeCode) {
+        return getMeridianForDate(d, localeCode);
+      }
+    },
+    {
+      ldml: 'tt',
+      strf: 'P',
+      get: function(d, localeCode) {
+        return getMeridianForDate(d, localeCode).toLowerCase();
+      }
+    },
+    {
+      ldml: 'T',
+      lowerToken: 't',
+      get: function(d, localeCode) {
+        return getMeridianForDate(d, localeCode).charAt(0);
+      }
+    },
+    {
+      ldml: 's,seconds',
+      strf: 'S',
+      strfPadding: 2,
+      ldmlPaddedToken: 'ss',
+      get: function(d) {
+        return callDateGet(d, 'Seconds');
+      }
+    },
+    {
+      ldml: 'S,ms',
+      strfPadding: 3,
+      ldmlPaddedToken: 'SSS',
+      get: function(d) {
+        return callDateGet(d, 'Milliseconds');
+      }
+    },
+    {
+      ldml: 'e',
+      strf: 'u',
+      ordinalToken: 'eo',
+      get: function(d) {
+        return getWeekday(d) || 7;
+      }
+    },
+    {
+      strf: 'U',
+      strfPadding: 2,
+      get: function(d) {
+        // Sunday first, 0-53
+        return getWeekNumber(d, false, 0);
+      }
+    },
+    {
+      ldml: 'W',
+      strf: 'V',
+      strfPadding: 2,
+      ordinalToken: 'Wo',
+      ldmlPaddedToken: 'WW',
+      get: function(d) {
+        // Monday first, 1-53 (ISO8601)
+        return getWeekNumber(d, true);
+      }
+    },
+    {
+      strf: 'w',
+      get: function(d) {
+        return getWeekday(d);
+      }
+    },
+    {
+      ldml: 'w',
+      ordinalToken: 'wo',
+      ldmlPaddedToken: 'ww',
+      get: function(d, localeCode) {
+        var loc = localeManager.get(localeCode);
+        // Locale dependent, 1-53
+        return getWeekNumber(d, true, loc.getFirstDayOfWeek(localeCode), loc.getFirstDayOfWeekYear(localeCode));
+      }
+    },
+    {
+      strf: 'W',
+      strfPadding: 2,
+      get: function(d) {
+        // Monday first, 0-53
+        return getWeekNumber(d, false);
+      }
+    },
+    {
+      ldmlPaddedToken: 'gggg',
+      ldmlTwoDigitToken: 'gg',
+      get: function(d, localeCode) {
+        return getWeekYear(d, localeCode);
+      }
+    },
+    {
+      strf: 'G',
+      strfPadding: 4,
+      strfTwoDigitToken: 'g',
+      ldmlPaddedToken: 'GGGG',
+      ldmlTwoDigitToken: 'GG',
+      get: function(d, localeCode) {
+        return getWeekYear(d, localeCode, true);
+      }
+    },
+    {
+      ldml: 'year',
+      ldmlPaddedToken: 'yyyy',
+      ldmlTwoDigitToken: 'yy',
+      strf: 'Y',
+      strfPadding: 4,
+      strfTwoDigitToken: 'y',
+      get: function(d) {
+        return getYear(d);
+      }
+    },
+    {
+      ldml: 'tz,ZZ',
+      strf: 'z',
+      get: function(d) {
+        return getUTCOffset(d);
+      }
+    },
+    {
+      ldml: 'X',
+      get: function(d) {
+        return trunc(d.getTime() / 1000);
+      }
+    },
+    {
+      ldml: 'x',
+      get: function(d) {
+        return d.getTime();
+      }
+    },
+    {
+      ldml: 'Z',
+      get: function(d) {
+        return getUTCOffset(d, true);
+      }
+    },
+    {
+      ldml: 'z',
+      strf: 'Z',
+      get: function(d) {
+        // Note that this is not accurate in all browsing environments!
+        // https://github.com/moment/moment/issues/162
+        // It will continue to be supported for Node and usage with the
+        // understanding that it may be blank.
+        var match = d.toString().match(TIMEZONE_ABBREVIATION_REG);
+        return match ? match[1]: '';
+      }
+    },
+    {
+      strf: 'D',
+      alias: '%m/%d/%y'
+    },
+    {
+      strf: 'F',
+      alias: '%Y-%m-%d'
+    },
+    {
+      strf: 'r',
+      alias: '%I:%M:%S %p'
+    },
+    {
+      strf: 'R',
+      alias: '%H:%M'
+    },
+    {
+      strf: 'T',
+      alias: '%H:%M:%S'
+    },
+    {
+      strf: 'x',
+      alias: '{short}'
+    },
+    {
+      strf: 'X',
+      alias: '{time}'
+    },
+    {
+      strf: 'c',
+      alias: '{stamp}'
+    }
+  ];
+
+  var DateUnits = [
+    {
+      name: 'millisecond',
+      method: 'Milliseconds',
+      multiplier: 1,
+      start: 0,
+      end: 999
+    },
+    {
+      name: 'second',
+      method: 'Seconds',
+      multiplier: 1000,
+      start: 0,
+      end: 59
+    },
+    {
+      name: 'minute',
+      method: 'Minutes',
+      multiplier: 60 * 1000,
+      start: 0,
+      end: 59
+    },
+    {
+      name: 'hour',
+      method: 'Hours',
+      multiplier: 60 * 60 * 1000,
+      start: 0,
+      end: 23
+    },
+    {
+      name: 'day',
+      method: 'Date',
+      higher: true,
+      resetValue: 1,
+      multiplier: 24 * 60 * 60 * 1000,
+      start: 1,
+      end: function(d) {
+        return daysInMonth(d);
+      }
+    },
+    {
+      name: 'week',
+      method: 'ISOWeek',
+      higher: true,
+      resetValue: 1,
+      multiplier: 7 * 24 * 60 * 60 * 1000
+    },
+    {
+      name: 'month',
+      method: 'Month',
+      higher: true,
+      multiplier: 30.4375 * 24 * 60 * 60 * 1000,
+      start: 0,
+      end: 11
+    },
+    {
+      name: 'year',
+      method: 'FullYear',
+      higher: true,
+      multiplier: 365.25 * 24 * 60 * 60 * 1000,
+      start: 0
+    }
+  ];
+
+  // General helpers
+
+  function tzOffset(d) {
+    return d.getTimezoneOffset();
+  }
+
+  function arrayToAlternates(arr) {
+    return filter(arr, function(el) {
+      return !!el;
+    }).join('|');
+  }
+
+  function getNewDate() {
+    return _newDateInternal()();
+  }
+
+  function defaultNewDate() {
+    return new Date;
+  }
+
+  function cloneDate(d) {
+    // Rhino environments have a bug where new Date(d) truncates
+    // milliseconds so need to call getTime() here.
+    var clone = new Date(d.getTime());
+    _utc(clone, !!_utc(d));
+    return clone;
+  }
+
+  function getHours(d) {
+    return callDateGet(d, 'Hours');
+  }
+
+  function getWeekday(d) {
+    return callDateGet(d, 'Day');
+  }
+
+  function getDate(d) {
+    return callDateGet(d, 'Date');
+  }
+
+  function getMonth(d) {
+    return callDateGet(d, 'Month');
+  }
+
+  function getYear(d) {
+    return callDateGet(d, 'FullYear');
+  }
+
+  function setDate(d, val) {
+    return callDateSet(d, 'Date', val);
+  }
+
+  function setMonth(d, val) {
+    return callDateSet(d, 'Month', val);
+  }
+
+  function setYear(d, val) {
+    return callDateSet(d, 'FullYear', val);
+  }
+
+  // Normal callDateSet method with ability
+  // to handle ISOWeek setting as well.
+  function callDateSetWithWeek(d, method, value) {
+    if (method === 'ISOWeek') {
+      return setISOWeekNumber(d, value);
+    } else {
+      return callDateSet(d, method, value);
+    }
+  }
+
+  function isValid(d) {
+    return !isNaN(d.getTime());
+  }
+
+  // UTC helpers
+
+  function isUTC(d) {
+    return !!_utc(d) || tzOffset(d) === 0;
+  }
+
+  function getUTCOffset(d, iso) {
+    var offset = _utc(d) ? 0 : tzOffset(d);
+    var colon  = iso === true ? ':' : '';
+    if (!offset && iso) return 'Z';
+    return padNumber(trunc(-offset / 60), 2, true) + colon + padNumber(abs(offset % 60), 2);
+  }
+
+  // Date argument helpers
+
+  function collectDateArguments(args, duration) {
+    var arg1 = args[0], arg2 = args[1];
+    if (duration && isString(arg1)) {
+      return [getDateParamsFromString(arg1), arg2];
+    } else if (isNumber(arg1) && isNumber(arg2)) {
+      return collectParamsFromArguments(args);
+    } else {
+      if (isObjectType(arg1)) {
+        args[0] = simpleClone(arg1);
+      }
+      return args;
+    }
+  }
+
+  function collectParamsFromArguments(args) {
+    var obj = {}, u = dateUnitsByName['year'];
+    while (u && isNumber(args[0])) {
+      obj[u.name] = args[0];
+      args.splice(0, 1);
+      u = u.lower;
+    }
+    args.unshift(obj);
     return args;
   }
-}
 
-function collectParamsFromArguments(args) {
-  var obj = {}, u = dateUnitsByName['year'];
-  while (u && isNumber(args[0])) {
-    obj[u.name] = args[0];
-    args.splice(0, 1);
-    u = u.lower;
-  }
-  args.unshift(obj);
-  return args;
-}
-
-function getDateParamsFromString(str) {
-  var match, num, params = {};
-  match = str.match(/^(-?\d+)?\s?(\w+?)s?$/i);
-  if (match) {
-    if (isUndefined(num)) {
-      num = +match[1];
-      if (isNaN(num)) {
-        num = 1;
+  function getDateParamsFromString(str) {
+    var match, num, params = {};
+    match = str.match(/^(-?\d+)?\s?(\w+?)s?$/i);
+    if (match) {
+      if (isUndefined(num)) {
+        num = +match[1];
+        if (isNaN(num)) {
+          num = 1;
+        }
       }
+      params[match[2].toLowerCase()] = num;
     }
-    params[match[2].toLowerCase()] = num;
+    return params;
   }
-  return params;
-}
 
-// Date iteration helpers
+  // Date iteration helpers
 
-// Milliseconds -> Years
-function iterateOverDateUnits(fn, from, to) {
-  var i = from || 0, inc, unit, result;
-  if (isUndefined(to)) to = 7;
-  inc = i > to ? -1 : 1;
-  while (result !== false) {
-    unit = DateUnits[i];
-    result = fn(unit.name, unit, i);
-    if (i === to) {
-      break;
-    }
-    i += inc;
-  }
-}
-
-// Years -> Milliseconds
-function iterateOverDateUnitsReverse(fn) {
-  iterateOverDateUnits(fn, 7, 0);
-}
-
-// Days -> Years
-function iterateOverHigherDateUnits(fn) {
-  iterateOverDateUnits(fn, 4, 7);
-}
-
-// Seconds -> Hours
-function iterateOverLowerDateUnits(fn) {
-  iterateOverDateUnits(fn, 1, 3);
-}
-
-// Date shifting helpers
-
-function advanceDate(d, unit, num, reset) {
-  var set = {};
-  set[unit] = num;
-  return updateDate(d, set, reset, 1);
-}
-
-function advanceDateWithArgs(d, args, dir) {
-  var set = collectDateArguments(args, true);
-  return updateDate(d, set[0], set[1], dir);
-}
-
-// Ex. "hours" -> "milliseconds"
-function resetUnitAndLower(d, unit) {
-  return setUnitAndLowerToEdge(d, dateUnitsByName[unit || 'hours']);
-}
-
-// Ex. set "month" to either 0 or 11. Note that "moveToEdgeOfUnit" is similar
-// to this, only one unit higher, ie moving to the beginning of the year is
-// equivalent to setting the months to 0. However, this method does not support
-// weeks, as 1) this decouples locale considerations, and 2) although moving to
-// the edge of a week shifts the day, moving the day as a unit implies months
-// as the higher unit, not weeks. Making this separation means we can handle
-// weeks only if required.
-function setUnitAndLowerToEdge(d, u, end) {
-  while (u) {
-    var val = end ? u.end : u.start;
-    if (isFunction(val)) {
-      val = val(d);
-    }
-    callDateSet(d, u.method, val);
-    u = u.lower;
-  }
-  return d;
-}
-
-function getDateParam(params, key) {
-  return isDefined(params[key]) ? params[key] : params[key + 's'];
-}
-
-function dateParamIsDefined(params, key) {
-  return isDefined(getDateParam(params, key));
-}
-
-function resetTime(d) {
-  callDateSet(d, 'Hours', 0);
-  callDateSet(d, 'Minutes', 0);
-  callDateSet(d, 'Seconds', 0);
-  callDateSet(d, 'Milliseconds', 0);
-  return d;
-}
-
-function setWeekday(d, dow, forward) {
-  if (!isNumber(dow)) return;
-  // Dates like "the 2nd Tuesday of June" need to be set forward
-  // so make sure that the day of the week reflects that here.
-  if (forward && dow % 7 < getWeekday(d)) {
-    dow += 7;
-  }
-  return setDate(d, getDate(d) + dow - getWeekday(d));
-}
-
-function moveToEdgeOfUnit(d, unit, localeCode, edgeOfWeek, end) {
-  var lower;
-  if (unit === 'week') {
-    edgeOfWeek(d, localeManager.get(localeCode).getFirstDayOfWeek());
-    lower = dateUnitsByName['hours'];
-  } else {
-    lower = dateUnitsByName[unit].lower;
-  }
-  return setUnitAndLowerToEdge(d, lower, end);
-}
-
-function moveToBeginningOfUnit(d, unit, localeCode) {
-  return moveToEdgeOfUnit(d, unit, localeCode, moveToBeginningOfWeek);
-}
-
-function moveToEndOfUnit(d, unit, localeCode) {
-  return moveToEdgeOfUnit(d, unit, localeCode, moveToEndOfWeek, true);
-}
-
-function daysSince(d1, d2) {
-  return getTimeDistanceForUnit(d1, d2, dateUnitsByName['day']);
-}
-
-function getTimeDistanceForUnit(d1, d2, u) {
-  var fwd = d2 > d1, num, tmp;
-  if (!fwd) {
-    tmp = d2;
-    d2  = d1;
-    d1  = tmp;
-  }
-  num = d2 - d1;
-  if (u.multiplier > 1) {
-    num = trunc(num / u.multiplier);
-  }
-  // For higher order with potential ambiguity, use the numeric calculation
-  // as a starting point, then iterate until we pass the target date.
-  if (u.higher) {
-    d1 = cloneDate(d1);
-    advanceDate(d1, u.name, num);
-    while (d1 < d2) {
-      advanceDate(d1, u.name, 1);
-      if (d1 > d2) {
+  // Milliseconds -> Years
+  function iterateOverDateUnits(fn, from, to) {
+    var i = from || 0, inc, unit, result;
+    if (isUndefined(to)) to = 7;
+    inc = i > to ? -1 : 1;
+    while (result !== false) {
+      unit = DateUnits[i];
+      result = fn(unit.name, unit, i);
+      if (i === to) {
         break;
       }
-      num += 1;
+      i += inc;
     }
   }
-  return fwd ? -num : num;
-}
 
-// Date parsing helpers
+  // Years -> Milliseconds
+  function iterateOverDateUnitsReverse(fn) {
+    iterateOverDateUnits(fn, 7, 0);
+  }
 
-function getFormatMatch(match, arr) {
-  var obj = {}, value, num;
-  forEach(arr, function(key, i) {
-    value = match[i + 1];
-    if (isUndefined(value) || value === '') return;
-    if (key === 'year') {
-      obj.yearAsString = value.replace(/'/, '');
-    }
-    num = parseFloat(value.replace(/'/, '').replace(/,/, HALF_WIDTH_PERIOD));
-    obj[key] = !isNaN(num) ? num : value.toLowerCase();
-  });
-  return obj;
-}
+  // Days -> Years
+  function iterateOverHigherDateUnits(fn) {
+    iterateOverDateUnits(fn, 4, 7);
+  }
 
-function cleanDateInput(str) {
-  str = trim(str).replace(/^just (?=now)|\.+$/i, '');
-  return convertAsianDigits(str);
-}
+  // Seconds -> Hours
+  function iterateOverLowerDateUnits(fn) {
+    iterateOverDateUnits(fn, 1, 3);
+  }
 
-function convertAsianDigits(str) {
-  return str.replace(cjkDigitReg, function(full, disallowed, match) {
-    var sum = 0, place = 1, lastWasHolder, lastHolder;
-    if (disallowed) return full;
-    forEach(match.split('').reverse(), function(letter) {
-      var value = cjkDigitMap[letter], holder = value > 9;
-      if (holder) {
-        if (lastWasHolder) sum += place;
-        place *= value / (lastHolder || 1);
-        lastHolder = value;
-      } else {
-        if (lastWasHolder === false) {
-          place *= 10;
-        }
-        sum += place * value;
+  // Date shifting helpers
+
+  function advanceDate(d, unit, num, reset) {
+    var set = {};
+    set[unit] = num;
+    return updateDate(d, set, reset, 1);
+  }
+
+  function advanceDateWithArgs(d, args, dir) {
+    var set = collectDateArguments(args, true);
+    return updateDate(d, set[0], set[1], dir);
+  }
+
+  // Ex. "hours" -> "milliseconds"
+  function resetUnitAndLower(d, unit) {
+    return setUnitAndLowerToEdge(d, dateUnitsByName[unit || 'hours']);
+  }
+
+  // Ex. set "month" to either 0 or 11. Note that "moveToEdgeOfUnit" is similar
+  // to this, only one unit higher, ie moving to the beginning of the year is
+  // equivalent to setting the months to 0. However, this method does not support
+  // weeks, as 1) this decouples locale considerations, and 2) although moving to
+  // the edge of a week shifts the day, moving the day as a unit implies months
+  // as the higher unit, not weeks. Making this separation means we can handle
+  // weeks only if required.
+  function setUnitAndLowerToEdge(d, u, end) {
+    while (u) {
+      var val = end ? u.end : u.start;
+      if (isFunction(val)) {
+        val = val(d);
       }
-      lastWasHolder = holder;
-    });
-    if (lastWasHolder) sum += place;
-    return sum;
-  });
-}
-
-function getDateOptions(opt) {
-  var options = isString(opt) ? { locale: opt } : opt || {};
-  options.prefer = +!!options.future - +!!options.past;
-  return options;
-}
-
-function getExtendedDate(contextDate, d, opt) {
-
-  var date, set, options, baseLocale, afterCallbacks, weekdayForward;
-
-  afterCallbacks = [];
-  options = getDateOptions(opt);
-
-  function afterDateSet(fn) {
-    afterCallbacks.push(fn);
+      callDateSet(d, u.method, val);
+      u = u.lower;
+    }
+    return d;
   }
 
-  function fireCallbacks() {
-    forEach(afterCallbacks, function(fn) {
-      fn.call();
-    });
+  function getDateParam(params, key) {
+    return isDefined(params[key]) ? params[key] : params[key + 's'];
   }
 
-  function getWeekdayWithMultiplier(w) {
-    var num = set.num && !set.unit ? set.num : 1;
-    return (7 * (num - 1)) + w;
+  function dateParamIsDefined(params, key) {
+    return isDefined(getDateParam(params, key));
   }
 
-
-  function handleRelativeUnit(loc) {
-    var unitName, unitIndex, num, tmp;
-    num = loc.getNumber(set.num);
-    unitIndex = loc.getUnitIndex(set.unit);
-    unitName  = English.unitsLower[unitIndex];
-
-    // Relative date units such as "tomorrow" have already had their
-    // "day" set above so assume 0 shift UNLESS they have a "sign"
-    // such as the form "the day after tomorrow", in which case it
-    // will need to be added below.
-    if (!set.sign && unitIndex === 4) {
-      num = 0;
-    }
-
-    // Formats like "the 15th of last month" or "6:30pm of next week"
-    // contain absolute units in addition to relative ones, so separate
-    // them here, remove them from the params, and set up a callback to
-    // set them after the relative ones have been set.
-    separateAbsoluteUnits(unitIndex);
-
-    if (set.shift) {
-      // Shift and unit, ie "next month", "last week", etc.
-      num *= (tmp = loc.modifiersByName[set.shift]) ? tmp.value : 0;
-    }
-
-    if (set.sign && (tmp = loc.modifiersByName[set.sign])) {
-      // Unit and sign, ie "months ago", "weeks from now", etc.
-      num *= tmp.value;
-    }
-
-    if (isDefined(set.weekday)) {
-      // Units can be with non-relative dates, set here. ie "the day after monday"
-      updateDate(date, { weekday: set.weekday }, true);
-      delete set.weekday;
-    }
-
-    // Finally shift the unit.
-    set[unitName] = (set[unitName] || 0) + num;
+  function resetTime(d) {
+    callDateSet(d, 'Hours', 0);
+    callDateSet(d, 'Minutes', 0);
+    callDateSet(d, 'Seconds', 0);
+    callDateSet(d, 'Milliseconds', 0);
+    return d;
   }
 
-  function separateAbsoluteUnits(unitIndex) {
-    var params;
-    iterateOverDateUnits(function(name, u, i) {
-      if (name === 'day') name = 'date';
-      if (dateParamIsDefined(set, name)) {
-        // If there is a time unit set that is more specific than
-        // the matched unit we have a string like "5:30am in 2 minutes",
-        // which is meaningless, so invalidate the date.
-        if (i >= unitIndex) {
-          invalidateDate(date);
-          return false;
+  function setWeekday(d, dow, forward) {
+    if (!isNumber(dow)) return;
+    // Dates like "the 2nd Tuesday of June" need to be set forward
+    // so make sure that the day of the week reflects that here.
+    if (forward && dow % 7 < getWeekday(d)) {
+      dow += 7;
+    }
+    return setDate(d, getDate(d) + dow - getWeekday(d));
+  }
+
+  function moveToEdgeOfUnit(d, unit, localeCode, edgeOfWeek, end) {
+    var lower;
+    if (unit === 'week') {
+      edgeOfWeek(d, localeManager.get(localeCode).getFirstDayOfWeek());
+      lower = dateUnitsByName['hours'];
+    } else {
+      lower = dateUnitsByName[unit].lower;
+    }
+    return setUnitAndLowerToEdge(d, lower, end);
+  }
+
+  function moveToBeginningOfUnit(d, unit, localeCode) {
+    return moveToEdgeOfUnit(d, unit, localeCode, moveToBeginningOfWeek);
+  }
+
+  function moveToEndOfUnit(d, unit, localeCode) {
+    return moveToEdgeOfUnit(d, unit, localeCode, moveToEndOfWeek, true);
+  }
+
+  function daysSince(d1, d2) {
+    return getTimeDistanceForUnit(d1, d2, dateUnitsByName['day']);
+  }
+
+  function getTimeDistanceForUnit(d1, d2, u) {
+    var fwd = d2 > d1, num, tmp;
+    if (!fwd) {
+      tmp = d2;
+      d2  = d1;
+      d1  = tmp;
+    }
+    num = d2 - d1;
+    if (u.multiplier > 1) {
+      num = trunc(num / u.multiplier);
+    }
+    // For higher order with potential ambiguity, use the numeric calculation
+    // as a starting point, then iterate until we pass the target date.
+    if (u.higher) {
+      d1 = cloneDate(d1);
+      advanceDate(d1, u.name, num);
+      while (d1 < d2) {
+        advanceDate(d1, u.name, 1);
+        if (d1 > d2) {
+          break;
         }
-        // ...otherwise set the params to set the absolute date
-        // as a callback after the relative date has been set.
-        params = params || {};
-        params[name] = getDateParam(set, name);
-        delete set[name];
+        num += 1;
       }
+    }
+    return fwd ? -num : num;
+  }
+
+  // Date parsing helpers
+
+  function getFormatMatch(match, arr) {
+    var obj = {}, value, num;
+    forEach(arr, function(key, i) {
+      value = match[i + 1];
+      if (isUndefined(value) || value === '') return;
+      if (key === 'year') {
+        obj.yearAsString = value.replace(/'/, '');
+      }
+      num = parseFloat(value.replace(/'/, '').replace(/,/, HALF_WIDTH_PERIOD));
+      obj[key] = !isNaN(num) ? num : value.toLowerCase();
     });
-    if (params) {
-      afterDateSet(function() {
-        updateDate(date, params, true);
+    return obj;
+  }
+
+  function cleanDateInput(str) {
+    str = trim(str).replace(/^just (?=now)|\.+$/i, '');
+    return convertAsianDigits(str);
+  }
+
+  function convertAsianDigits(str) {
+    return str.replace(cjkDigitReg, function(full, disallowed, match) {
+      var sum = 0, place = 1, lastWasHolder, lastHolder;
+      if (disallowed) return full;
+      forEach(match.split('').reverse(), function(letter) {
+        var value = cjkDigitMap[letter], holder = value > 9;
+        if (holder) {
+          if (lastWasHolder) sum += place;
+          place *= value / (lastHolder || 1);
+          lastHolder = value;
+        } else {
+          if (lastWasHolder === false) {
+            place *= 10;
+          }
+          sum += place * value;
+        }
+        lastWasHolder = holder;
+      });
+      if (lastWasHolder) sum += place;
+      return sum;
+    });
+  }
+
+  function getDateOptions(opt) {
+    var options = isString(opt) ? { locale: opt } : opt || {};
+    options.prefer = +!!options.future - +!!options.past;
+    return options;
+  }
+
+  function getExtendedDate(contextDate, d, opt) {
+
+    var date, set, options, baseLocale, afterCallbacks, weekdayForward;
+
+    afterCallbacks = [];
+    options = getDateOptions(opt);
+
+    function afterDateSet(fn) {
+      afterCallbacks.push(fn);
+    }
+
+    function fireCallbacks() {
+      forEach(afterCallbacks, function(fn) {
+        fn.call();
       });
     }
+
+    function getWeekdayWithMultiplier(w) {
+      var num = set.num && !set.unit ? set.num : 1;
+      return (7 * (num - 1)) + w;
+    }
+
+
+    function handleRelativeUnit(loc) {
+      var unitName, unitIndex, num, tmp;
+      num = loc.getNumber(set.num);
+      unitIndex = loc.getUnitIndex(set.unit);
+      unitName  = English.unitsLower[unitIndex];
+
+      // Relative date units such as "tomorrow" have already had their
+      // "day" set above so assume 0 shift UNLESS they have a "sign"
+      // such as the form "the day after tomorrow", in which case it
+      // will need to be added below.
+      if (!set.sign && unitIndex === 4) {
+        num = 0;
+      }
+
+      // Formats like "the 15th of last month" or "6:30pm of next week"
+      // contain absolute units in addition to relative ones, so separate
+      // them here, remove them from the params, and set up a callback to
+      // set them after the relative ones have been set.
+      separateAbsoluteUnits(unitIndex);
+
+      if (set.shift) {
+        // Shift and unit, ie "next month", "last week", etc.
+        num *= (tmp = loc.modifiersByName[set.shift]) ? tmp.value : 0;
+      }
+
+      if (set.sign && (tmp = loc.modifiersByName[set.sign])) {
+        // Unit and sign, ie "months ago", "weeks from now", etc.
+        num *= tmp.value;
+      }
+
+      if (isDefined(set.weekday)) {
+        // Units can be with non-relative dates, set here. ie "the day after monday"
+        updateDate(date, { weekday: set.weekday }, true);
+        delete set.weekday;
+      }
+
+      // Finally shift the unit.
+      set[unitName] = (set[unitName] || 0) + num;
+    }
+
+    function separateAbsoluteUnits(unitIndex) {
+      var params;
+      iterateOverDateUnits(function(name, u, i) {
+        if (name === 'day') name = 'date';
+        if (dateParamIsDefined(set, name)) {
+          // If there is a time unit set that is more specific than
+          // the matched unit we have a string like "5:30am in 2 minutes",
+          // which is meaningless, so invalidate the date.
+          if (i >= unitIndex) {
+            invalidateDate(date);
+            return false;
+          }
+          // ...otherwise set the params to set the absolute date
+          // as a callback after the relative date has been set.
+          params = params || {};
+          params[name] = getDateParam(set, name);
+          delete set[name];
+        }
+      });
+      if (params) {
+        afterDateSet(function() {
+          updateDate(date, params, true);
+        });
+      }
+    }
+
+    function setUnitEdge(loc) {
+      var modifier = loc.modifiersByName[set.edge], localeCode, unit;
+      localeCode = options.locale;
+      iterateOverHigherDateUnits(function(name) {
+        if (isDefined(set[name])) {
+          unit = name;
+          return false;
+        }
+      });
+      if (unit === 'year') {
+        set.specificity = 'month';
+      } else if (unit === 'month' || unit === 'week') {
+        set.specificity = 'day';
+      }
+      if (modifier.value < 0) {
+        moveToEndOfUnit(date, unit, localeCode);
+      } else {
+        moveToBeginningOfUnit(date, unit, localeCode);
+      }
+      // This value of -2 is arbitrary but it's a nice clean way to hook into this system.
+      if (modifier.value === -2) {
+        resetTime(date);
+      }
+    }
+
+    function handleAmericanVariant() {
+      var tmp = set.month;
+      set.month = set.date;
+      set.date  = tmp;
+    }
+
+    function handleLocalizedRelativeDay(loc, mod) {
+      resetTime(date);
+      set.unit = loc.unitsLower[4];
+      set.day = mod.value;
+    }
+
+    function handleLocalizedWeekday(loc, weekday) {
+      // If the day is a weekday, then set that instead.
+      delete set.day;
+      delete set.weekday;
+      set.weekday = getWeekdayWithMultiplier(weekday);
+      // The unit is now set to "day" so that shifting can occur.
+      if (set.shift && !set.unit) {
+        set.unit = loc.unitsLower[5];
+      }
+      if (set.num && set.month) {
+        // If we have "the 2nd Tuesday of June", then pass the "weekdayForward" flag
+        // along to updateDate so that the date does not accidentally traverse into
+        // the previous month. This needs to be independent of the "prefer" flag because
+        // we are only ensuring that the weekday is in the future, not the entire date.
+        weekdayForward = true;
+      }
+    }
+
+    function handleTimezoneOffset() {
+      // Adjust for timezone offset
+      _utc(date, true);
+      set.offsetMinutes = set.offsetMinutes || 0;
+      set.offsetMinutes += set.offsetHours * 60;
+      if (set.offsetSign === '-') {
+        set.offsetMinutes *= -1;
+      }
+      set.minute -= set.offsetMinutes;
+    }
+
+    function handleFractionalTime() {
+      iterateOverLowerDateUnits(function(name, u) {
+        var value = set[name] || 0, fraction = value % 1;
+        if (fraction) {
+          set[u.lower.name] = round(fraction * (name === 'second' ? 1000 : 60));
+          set[name] = trunc(value);
+        }
+      });
+    }
+
+    // Clone date will set the utc flag, but it will
+    // be overriden later, so set option flags instead.
+    function cloneDateByFlag(d) {
+      var clone = new Date(d.getTime());
+      if (_utc(d) && !isDefined(options.fromUTC)) {
+        options.fromUTC = true;
+      }
+      if (_utc(d) && !isDefined(options.setUTC)) {
+        options.setUTC = true;
+      }
+      return clone;
+    }
+
+    if (contextDate && d) {
+      // If a context date is passed, (in the case of "get"
+      // and "[unit]FromNow") then use it as the starting point.
+      date = cloneDateByFlag(contextDate);
+    } else {
+      date = getNewDate();
+    }
+
+    _utc(date, options.fromUTC);
+
+    if (isDate(d)) {
+      date = cloneDateByFlag(d);
+    } else if (isObjectType(d)) {
+      set = simpleClone(d);
+      updateDate(date, set, true);
+    } else if (isNumber(d) || d === null) {
+      date.setTime(d);
+    } else if (isString(d)) {
+
+      // The act of getting the locale will pre-initialize
+      // if it is missing and add the required formats.
+      baseLocale = localeManager.get(options.locale);
+
+      // Clean the input and convert CJK based numerals if they exist.
+      d = cleanDateInput(d);
+
+      if (baseLocale) {
+        iterateOverObject(baseLocale.getFormats(), function(i, dif) {
+          var match = d.match(dif.reg), loc, tmp;
+          if (match) {
+
+            loc = dif.locale;
+            set = getFormatMatch(match, dif.to, loc);
+            loc.cachedFormat = dif;
+
+            if (set.utc) {
+              _utc(date, true);
+            }
+
+            if (set.timestamp) {
+              set = set.timestamp;
+              return false;
+            }
+
+            if (dif.variant && !isString(set.month) && (isString(set.date) || baseLocale.isMDY())) {
+              handleAmericanVariant();
+            }
+
+            if (hasAbbreviatedYear(set)) {
+              // If the year is 2 digits then get the implied century.
+              set.year = getYearFromAbbreviation(date, set.year);
+            }
+
+            if (set.month) {
+              // Set the month which may be localized.
+              set.month = loc.getMonthValue(set.month);
+              if (set.shift && !set.unit) set.unit = loc.unitsLower[7];
+            }
+
+            if (set.hours && (tmp = loc.modifiersByName[set.hours])) {
+              // Set hour tokens like "noon"
+              set.hours = tmp.value;
+            }
+
+            if (set.day && (tmp = loc.modifiersByName[set.day])) {
+              // Relative day localizations such as "today" and "tomorrow".
+              handleLocalizedRelativeDay(loc, tmp);
+            } else if ((tmp = loc.getWeekdayValue(set.weekday || set.day)) > -1) {
+              handleLocalizedWeekday(loc, tmp);
+            }
+
+            if (set.date && !isNumber(set.date)) {
+              set.date = loc.getNumericDate(set.date);
+            }
+
+            if (loc.matchPM(set.ampm) && set.hour < 12) {
+              // If the time is 1pm-11pm advance the time by 12 hours.
+              set.hour += 12;
+            } else if (loc.matchAM(set.ampm) && set.hour === 12) {
+              // If it is 12:00am then set the hour to 0.
+              set.hour = 0;
+            }
+
+            if (isNumber(set.offsetHours) || isNumber(set.offsetMinutes)) {
+              handleTimezoneOffset();
+            }
+
+            if (set.unit) {
+              handleRelativeUnit(loc);
+            }
+
+            if (set.edge) {
+              // If there is an "edge" it needs to be set after the
+              // other fields are set. ie "the end of February"
+              afterDateSet(function() {
+                setUnitEdge(loc);
+              });
+            }
+
+            if (set.yearSign === '-') {
+              set.year *= -1;
+            }
+
+            handleFractionalTime();
+
+            return false;
+          }
+        });
+      }
+      if (!set) {
+        // The Date constructor does something tricky like checking the number
+        // of arguments so simply passing in undefined won't work.
+        if (!/^now$/i.test(d)) {
+          date = new Date(d);
+        }
+        if (options.fromUTC) {
+          // Falling back to system date here which cannot be parsed as UTC,
+          // so if we're forcing UTC then simply add the offset.
+          date.setTime(date.getTime() + (tzOffset(date) * MINUTE));
+        }
+      } else if (set.unit) {
+        // If a set contains a unit ("days", "months", etc.), then it is relative to the current date.
+        updateDate(date, set, false, 1);
+      } else {
+        if (_utc(date)) {
+          // UTC times can traverse into other days or even months,
+          // so preemtively reset the time here to prevent this.
+          resetTime(date);
+        }
+        updateDate(date, set, true, 0, options.prefer, weekdayForward);
+      }
+      fireCallbacks();
+    }
+    // A date created by parsing a string presumes that the format *itself* is UTC, but
+    // not that the date, once created, should be manipulated as such. In other words,
+    // if you are creating a date object from a server time "2012-11-15T12:00:00Z",
+    // in the majority of cases you are using it to create a date that will, after creation,
+    // be manipulated as local, so reset the utc flag here unless "setUTC" is also set.
+    _utc(date, !!options.setUTC);
+    return {
+      date: date,
+      set: set
+    };
   }
 
-  function setUnitEdge(loc) {
-    var modifier = loc.modifiersByName[set.edge], localeCode, unit;
-    localeCode = options.locale;
-    iterateOverHigherDateUnits(function(name) {
-      if (isDefined(set[name])) {
-        unit = name;
+  function hasAbbreviatedYear(obj) {
+    return obj.yearAsString && obj.yearAsString.length === 2;
+  }
+
+  // If the year is two digits, add the most appropriate century prefix.
+  function getYearFromAbbreviation(d, year) {
+    return round(getYear(d) / 100) * 100 - round(year / 100) * 100 + year;
+  }
+
+  function setISOWeekNumber(d, num) {
+    if (isNumber(num)) {
+      // Consciously avoiding updateDate here to prevent circular dependencies.
+      var isoWeek = cloneDate(d), dow = getWeekday(d);
+      moveToFirstDayOfWeekYear(isoWeek, ISO_FIRST_DAY_OF_WEEK, ISO_FIRST_DAY_OF_WEEK_YEAR);
+      setDate(isoWeek, getDate(isoWeek) + 7 * (num - 1));
+      setYear(d, getYear(isoWeek));
+      setMonth(d, getMonth(isoWeek));
+      setDate(d, getDate(isoWeek));
+      setWeekday(d, dow || 7);
+    }
+    return d.getTime();
+  }
+
+  function getWeekNumber(d, allowPrevious, firstDayOfWeek, firstDayOfWeekYear) {
+    var isoWeek, n = 0;
+    if (isUndefined(firstDayOfWeek)) {
+      firstDayOfWeek = ISO_FIRST_DAY_OF_WEEK;
+    }
+    if (isUndefined(firstDayOfWeekYear)) {
+      firstDayOfWeekYear = ISO_FIRST_DAY_OF_WEEK_YEAR;
+    }
+    // Moving to the end of the week allows for forward year traversal, ie
+    // Dec 29 2014 is actually week 01 of 2015.
+    isoWeek = moveToEndOfWeek(cloneDate(d), firstDayOfWeek);
+    moveToFirstDayOfWeekYear(isoWeek, firstDayOfWeek, firstDayOfWeekYear);
+    if (allowPrevious && d < isoWeek) {
+      // If the date is still before the start of the year, then it should be
+      // the last week of the previous year, ie Jan 1 2016 is actually week 53
+      // of 2015, so move to the beginning of the week to traverse the year.
+      isoWeek = moveToBeginningOfWeek(cloneDate(d), firstDayOfWeek);
+      moveToFirstDayOfWeekYear(isoWeek, firstDayOfWeek, firstDayOfWeekYear);
+    }
+    while (isoWeek <= d) {
+      // Doing a very simple walk to get the week number.
+      setDate(isoWeek, getDate(isoWeek) + 7);
+      n++;
+    }
+    return n;
+  }
+
+  function getWeekYear(d, localeCode, iso) {
+    var year = getYear(d), month = getMonth(d), firstDayOfWeek, firstDayOfWeekYear, week, loc;
+    if (month === 0 || month === 11) {
+      if (!iso) {
+        loc = localeManager.get(localeCode);
+        firstDayOfWeek = loc.getFirstDayOfWeek(localeCode);
+        firstDayOfWeekYear = loc.getFirstDayOfWeekYear(localeCode);
+      }
+      week = getWeekNumber(d, false, firstDayOfWeek, firstDayOfWeekYear);
+      if (month === 0 && week === 0) {
+        year -= 1;
+      } else if (month === 11 && week === 1) {
+        year += 1;
+      }
+    }
+    return year;
+  }
+
+  function moveToEndOfWeek(d, firstDayOfWeek) {
+    var target = firstDayOfWeek - 1;
+    setWeekday(d, ceil((getWeekday(d) - target) / 7) * 7 + target);
+    return d;
+  }
+
+  function moveToBeginningOfWeek(d, firstDayOfWeek) {
+    setWeekday(d, floor((getWeekday(d) - firstDayOfWeek) / 7) * 7 + firstDayOfWeek);
+    return d;
+  }
+
+  function moveToFirstDayOfWeekYear(d, firstDayOfWeek, firstDayOfWeekYear) {
+    resetUnitAndLower(d, 'month');
+    setDate(d, firstDayOfWeekYear);
+    moveToBeginningOfWeek(d, firstDayOfWeek);
+  }
+
+  function daysInMonth(d) {
+    return 32 - callDateGet(new Date(getYear(d), getMonth(d), 32), 'Date');
+  }
+
+  // Gets an "adjusted date unit" which is a way of representing
+  // the largest possible meaningful unit. In other words, if passed
+  // 3600000, this will return an array which represents "1 hour".
+  function getAdjustedUnit(ms, fn) {
+    var unitIndex = 0, value = 0;
+    iterateOverDateUnitsReverse(function(name, u, i) {
+      value = abs(fn(u));
+      if (value >= 1) {
+        unitIndex = i;
         return false;
       }
     });
-    if (unit === 'year') {
-      set.specificity = 'month';
-    } else if (unit === 'month' || unit === 'week') {
-      set.specificity = 'day';
-    }
-    if (modifier.value < 0) {
-      moveToEndOfUnit(date, unit, localeCode);
-    } else {
-      moveToBeginningOfUnit(date, unit, localeCode);
-    }
-    // This value of -2 is arbitrary but it's a nice clean way to hook into this system.
-    if (modifier.value === -2) {
-      resetTime(date);
-    }
+    return [value, unitIndex, ms];
   }
 
-  function handleAmericanVariant() {
-    var tmp = set.month;
-    set.month = set.date;
-    set.date  = tmp;
-  }
-
-  function handleLocalizedRelativeDay(loc, mod) {
-    resetTime(date);
-    set.unit = loc.unitsLower[4];
-    set.day = mod.value;
-  }
-
-  function handleLocalizedWeekday(loc, weekday) {
-    // If the day is a weekday, then set that instead.
-    delete set.day;
-    delete set.weekday;
-    set.weekday = getWeekdayWithMultiplier(weekday);
-    // The unit is now set to "day" so that shifting can occur.
-    if (set.shift && !set.unit) {
-      set.unit = loc.unitsLower[5];
-    }
-    if (set.num && set.month) {
-      // If we have "the 2nd Tuesday of June", then pass the "weekdayForward" flag
-      // along to updateDate so that the date does not accidentally traverse into
-      // the previous month. This needs to be independent of the "prefer" flag because
-      // we are only ensuring that the weekday is in the future, not the entire date.
-      weekdayForward = true;
-    }
-  }
-
-  function handleTimezoneOffset() {
-    // Adjust for timezone offset
-    _utc(date, true);
-    set.offsetMinutes = set.offsetMinutes || 0;
-    set.offsetMinutes += set.offsetHours * 60;
-    if (set.offsetSign === '-') {
-      set.offsetMinutes *= -1;
-    }
-    set.minute -= set.offsetMinutes;
-  }
-
-  function handleFractionalTime() {
-    iterateOverLowerDateUnits(function(name, u) {
-      var value = set[name] || 0, fraction = value % 1;
-      if (fraction) {
-        set[u.lower.name] = round(fraction * (name === 'second' ? 1000 : 60));
-        set[name] = trunc(value);
-      }
+  // Gets the adjusted unit based on simple division by
+  // date unit multiplier.
+  function getAdjustedUnitForNumber(ms) {
+    return getAdjustedUnit(ms, function(unit) {
+      return trunc(withPrecision(ms / unit.multiplier, 1));
     });
   }
 
-  // Clone date will set the utc flag, but it will
-  // be overriden later, so set option flags instead.
-  function cloneDateByFlag(d) {
-    var clone = new Date(d.getTime());
-    if (_utc(d) && !isDefined(options.fromUTC)) {
-      options.fromUTC = true;
+  // Gets the adjusted unit using the [unit]FromNow methods,
+  // which use internal date methods that neatly avoid vaguely
+  // defined units of time (days in month, leap years, etc).
+  function getAdjustedUnitForDate(d) {
+    var ms = d - new Date();
+    if (d > new Date) {
+
+      // This adjustment is solely to allow
+      // Date.create('1 year from now').relative() to remain
+      // "1 year from now" instead of "11 months from now",
+      // as it would be due to the fact that the internal
+      // "now" date in "relative" is created slightly after
+      // that in "create".
+      d = new Date(d.getTime() + 10);
     }
-    if (_utc(d) && !isDefined(options.setUTC)) {
+    return getAdjustedUnit(ms, function(u) {
+      return abs(getTimeDistanceForUnit(d, getNewDate(), u));
+    });
+  }
+
+  function getMeridianForDate(d, localeCode) {
+    var hours = getHours(d);
+    return localeManager.get(localeCode).get('ampm')[trunc(hours / 12)] || '';
+  }
+
+  // Date formatting helpers
+
+  function getCompiledTokens(str) {
+    var compiled = [];
+    forEach(str.match(COMPILED_FORMAT_REG), function(p) {
+      var match = p.match(DATE_FORMAT_TOKEN_REG), token, format;
+      if (match) {
+        token = match[1] || match[2];
+        format = match[1] ? ldmlTokens[token] : strfTokens[token];
+        if (format) {
+          compiled.push(format);
+        } else {
+          compiled.push(token);
+        }
+        return;
+      }
+      compiled.push(p);
+    });
+    return compiled;
+  }
+
+  function executeCompiledOutputFormat(d, format, localeCode) {
+    var compiledFormat, length, i, t, result = '';
+    compiledFormat = compiledOutputFormats[format];
+    if (!compiledFormat) {
+      compiledFormat = compiledOutputFormats[format] = getCompiledTokens(format);
+    }
+    for(i = 0, length = compiledFormat.length; i < length; i++) {
+      t = compiledFormat[i];
+      result += isFunction(t) ? t(d, localeCode) : t;
+    }
+    return result;
+  }
+
+  function formatDate(d, format, relative, localeCode) {
+    var adu;
+    if (!isValid(d)) {
+      return 'Invalid Date';
+    } else if (isFunction(format)) {
+      adu = getAdjustedUnitForDate(d);
+      format = format.apply(d, adu.concat(localeManager.get(localeCode)));
+    }
+    if (!format && relative) {
+      adu = adu || getAdjustedUnitForDate(d);
+      // Adjust up if time is in ms, as this doesn't
+      // look very good for a standard relative date.
+      if (adu[1] === 0) {
+        adu[1] = 1;
+        adu[0] = 1;
+      }
+      return localeManager.get(localeCode).getRelativeFormat(adu);
+    }
+    return executeCompiledOutputFormat(d, getDateFormat(format), localeCode);
+  }
+
+  function getDateFormat(format) {
+    return CONSTANT_FORMATS[format] || format || '{long}';
+  }
+
+  // Date comparison helpers
+
+  function fullCompareDate(date, d, margin) {
+    var tmp;
+    if (!isValid(date)) return;
+    if (isString(d)) {
+      d = trim(d).toLowerCase();
+      switch(true) {
+        case d === 'future':    return date.getTime() > getNewDate().getTime();
+        case d === 'past':      return date.getTime() < getNewDate().getTime();
+        case d === 'today':     return compareDay(date);
+        case d === 'tomorrow':  return compareDay(date,  1);
+        case d === 'yesterday': return compareDay(date, -1);
+        case d === 'weekday':   return getWeekday(date) > 0 && getWeekday(date) < 6;
+        case d === 'weekend':   return getWeekday(date) === 0 || getWeekday(date) === 6;
+        case (tmp = indexOf(English.weekdaysLower, d) % 7) > -1: return getWeekday(date) === tmp;
+        case (tmp = indexOf(English.monthsLower, d) % 12) > -1:  return getMonth(date) === tmp;
+      }
+    }
+    return compareDate(date, d, margin);
+  }
+
+  function compareDate(date, d, margin, options) {
+    var p, t, min, max, override, loMargin = 0, hiMargin = 0;
+
+    function getMaxBySpecificity() {
+      var params = getDateParamsFromString('1 ' + p.set.specificity);
+      return updateDate(cloneDate(p.date), params, false, 1).getTime() - 1;
+    }
+
+    if (_utc(date)) {
+      options = options || {};
+      options.fromUTC = true;
       options.setUTC = true;
+    }
+    p = getExtendedDate(null, d, options);
+
+    if (margin > 0) {
+      loMargin = hiMargin = margin;
+      override = true;
+    }
+    if (!isValid(p.date)) return false;
+    if (p.set && p.set.specificity) {
+      if (p.set.edge || p.set.shift) {
+        moveToBeginningOfUnit(p.date, p.set.specificity);
+      }
+      if (p.set.specificity === 'month') {
+        max = moveToEndOfUnit(cloneDate(p.date), p.set.specificity).getTime();
+      } else {
+        max = getMaxBySpecificity();
+      }
+      if (!override && p.set.sign && p.set.specificity !== 'millisecond') {
+        // If the time is relative, there can occasionally be an disparity between the relative date
+        // and "now", which it is being compared to, so set an extra margin to account for this.
+        loMargin = 50;
+        hiMargin = -50;
+      }
+    }
+    t   = date.getTime();
+    min = p.date.getTime();
+    max = max || min;
+    var timezoneShift = getTimezoneShift(date, p);
+    if (timezoneShift) {
+      min -= timezoneShift;
+      max -= timezoneShift;
+    }
+    return t >= (min - loMargin) && t <= (max + hiMargin);
+  }
+
+  function compareDay(d, shift) {
+    var comp = getNewDate();
+    if (shift) {
+      setDate(comp, getDate(comp) + shift);
+    }
+    return getYear(d) === getYear(comp) &&
+           getMonth(d) === getMonth(comp) &&
+           getDate(d) === getDate(comp);
+  }
+
+  function getTimezoneShift(d, p) {
+    // If there is any specificity in the date then we're implicitly not
+    // checking absolute time, so ignore timezone shifts.
+    if (p.set && p.set.specificity) {
+      return 0;
+    }
+    return (tzOffset(p.date) - tzOffset(d)) * MINUTE;
+  }
+
+  function updateDate(d, params, reset, advance, prefer, weekdayForward) {
+    var specificityIndex, noop = true;
+
+    function getParam(key) {
+      return getDateParam(params, key);
+    }
+
+    function paramExists(key) {
+      return dateParamIsDefined(params, key);
+    }
+
+    function uniqueParamExists(key, isDay) {
+      return paramExists(key) || (isDay && paramExists('weekday') && !paramExists('month'));
+    }
+
+    function canDisambiguate() {
+      switch(prefer) {
+        case -1: return d > getNewDate();
+        case  1: return d < getNewDate();
+      }
+    }
+
+    function setUnit(u, advance, value) {
+      var name = u.name, method = u.method, checkMonth;
+      if (isUndefined(value)) return;
+
+      noop = false;
+      checkMonth = name === 'month' && getDate(d) > 28;
+
+      // If we are advancing or rewinding, then we need we need to set the
+      // absolute time if the unit is "hours" or less. This is due to the fact
+      // that setting by method is ambiguous during DST shifts. For example,
+      // 1:00am on November 1st 2015 occurs twice in North American timezones
+      // with DST, the second time being after the clocks are rolled back at
+      // 2:00am. When springing forward this is automatically handled as there
+      // is no 2:00am so the date automatically jumps to 3:00am. However, when
+      // rolling back, setHours(2) will always choose the first "2am" even if
+      // the date is currently set to the second, causing unintended jumps.
+      // This ambiguity is unavoidable when setting dates as the notation is
+      // ambiguous. However when advancing, we clearly want the resulting date
+      // to be an acutal hour ahead, which can only accomplished by setting the
+      // absolute time. Conversely, any unit higher than "hours" MUST use the
+      // internal set methods, as they are ambiguous as absolute units of time.
+      // Years may be 365 or 366 days depending on leap years, months are all
+      // over the place, and even days may be 23-25 hours depending on DST shifts.
+      // Finally, the kind of jumping described above will happen if ANY "set"
+      // method is called on the date, so compensating for this in callDateSet
+      // by not calling any set methods if the value is the same.
+      if (advance && !u.higher) {
+        d.setTime(d.getTime() + (value * advance * u.multiplier));
+        return;
+      } else if (advance) {
+        if (name === 'week') {
+          value *= 7;
+          method = 'Date';
+        }
+        value = (value * advance) + callDateGet(d, method);
+      }
+      callDateSetWithWeek(d, method, value);
+      if (checkMonth && monthHasShifted(d, value)) {
+        // As we are setting the units in reverse order, there is a chance that
+        // our date may accidentally traverse into a new month, such as setting
+        // { month: 1, date 15 } on January 31st. Check for this here and reset
+        // the date to the last day of the previous month if this has happened.
+        setDate(d, 0);
+      }
+    }
+
+    if (isNumber(params) && advance) {
+      // If param is a number and we're advancing, the number is presumed to be milliseconds.
+      params = { milliseconds: params };
+    } else if (isNumber(params)) {
+      // Otherwise just set the timestamp and return.
+      d.setTime(params);
+      return d;
+    }
+
+    // "date" can also be passed for the day
+    if (isDefined(params.date)) {
+      params.day = params.date;
+    }
+
+    // Reset any unit lower than the least specific unit set. Do not do this for
+    // weeks or for years. This needs to be performed before actually setting the
+    // date because the order needs to be reversed in order to get the lowest
+    // specificity, also because higher order units can be overridden by lower
+    // order units, such as setting hour: 3, minute: 345, etc.
+    iterateOverDateUnits(function(name, u, i) {
+      var isDay = name === 'day';
+      if (uniqueParamExists(name, isDay)) {
+        params.specificity = name;
+        specificityIndex = i;
+        return false;
+      } else if (reset && name !== 'week' && (!isDay || !paramExists('week'))) {
+        // Days are relative to months, not weeks, so don't reset if a week exists.
+        callDateSet(d, u.method, u.resetValue || 0);
+      }
+    });
+
+    // Now actually set or advance the date in order, higher units first.
+    iterateOverDateUnitsReverse(function(name, u) {
+      setUnit(u, advance, getParam(name));
+    });
+
+
+    // If a weekday is included in the params and no 'date' parameter is
+    // overriding, set it here after all other units have been set. Note that
+    // the date has to be perfectly set before disambiguation so that a proper
+    // comparison can be made.
+    if (!advance && !paramExists('day') && paramExists('weekday')) {
+      setWeekday(d, getParam('weekday'), weekdayForward);
+    }
+
+    // If no action has been taken on the date
+    // then it should be considered invalid.
+    if (noop && !params.specificity) {
+      invalidateDate(d);
+      return d;
+    }
+
+    // If past or future is preferred, then the process of "disambiguation" will
+    // ensure that an ambiguous time/date ("4pm", "thursday", "June", etc.) will
+    // be in the past or future. Weeks are only considered ambiguous if there is
+    // a weekday, ie. "thursday" is an ambiguous week, but "the 4th" is an
+    // ambiguous month.
+    if (canDisambiguate()) {
+      iterateOverDateUnits(function(name, u) {
+        var ambiguous = u.higher && (name !== 'week' || paramExists('weekday'));
+        if (ambiguous && !uniqueParamExists(name, name === 'day')) {
+          setUnit(u, prefer, 1);
+          return false;
+        } else if (name === 'year' && hasAbbreviatedYear(params)) {
+          setUnit(dateUnitsByName['year'], 100 * prefer, 1);
+        }
+      }, specificityIndex + 1);
+    }
+    return d;
+  }
+
+  function monthHasShifted(d, targetMonth) {
+    if (targetMonth < 0) {
+      targetMonth = targetMonth % 12 + 12;
+    }
+    return targetMonth % 12 !== getMonth(d);
+  }
+
+  function createDate(contextDate, d, options) {
+    return getExtendedDate(contextDate, d, options).date;
+  }
+
+  function invalidateDate(d) {
+    d.setTime(NaN);
+  }
+
+  function buildDateUnits() {
+    dateUnitsByName = {};
+    forEach(DateUnits, function(u, i) {
+      var name = u.name;
+      // Skip week entirely.
+      if (name !== 'week') {
+        dateUnitsByName[name] = u;
+        dateUnitsByName[name + 's'] = u;
+        // Build a chain of lower units.
+        u.lower = DateUnits[i - (name === 'month' ? 2 : 1)];
+      }
+    });
+    dateUnitsByName['date'] = dateUnitsByName['day'];
+  }
+
+  /***
+   * @method [units]Since([d], [options])
+   * @returns Number
+   * @short Returns the time since [d].
+   * @extra [d] will accept a date object, timestamp, or text format. If not specified, [d] is assumed to be now. %[unit]Ago% is provided as an alias to make this more readable when [d] is assumed to be the current date. See %date_options% for options.
+
+   * @set
+   *   millisecondsSince
+   *   secondsSince
+   *   minutesSince
+   *   hoursSince
+   *   daysSince
+   *   weeksSince
+   *   monthsSince
+   *   yearsSince
+   *
+   * @example
+   *
+   *   Date.create().millisecondsSince('1 hour ago') -> 3,600,000
+   *   Date.create().daysSince('1 week ago')         -> 7
+   *   Date.create().yearsSince('15 years ago')      -> 15
+   *   Date.create('15 years ago').yearsAgo()        -> 15
+   *
+   ***
+   * @method [units]Ago()
+   * @returns Number
+   * @short Returns the time ago in the appropriate unit.
+   *
+   * @set
+   *   millisecondsAgo
+   *   secondsAgo
+   *   minutesAgo
+   *   hoursAgo
+   *   daysAgo
+   *   weeksAgo
+   *   monthsAgo
+   *   yearsAgo
+   *
+   * @example
+   *
+   *   Date.create('last year').millisecondsAgo() -> 3,600,000
+   *   Date.create('last year').daysAgo()         -> 7
+   *   Date.create('last year').yearsAgo()        -> 15
+   *
+   ***
+   * @method [units]Until([d], [options])
+   * @returns Number
+   * @short Returns the time until [d].
+   * @extra [d] will accept a date object, timestamp, or text format. If not specified, [d] is assumed to be now. %[unit]FromNow% is provided as an alias to make this more readable when [d] is assumed to be the current date. See %date_options% for options.
+
+   *
+   * @set
+   *   millisecondsUntil
+   *   secondsUntil
+   *   minutesUntil
+   *   hoursUntil
+   *   daysUntil
+   *   weeksUntil
+   *   monthsUntil
+   *   yearsUntil
+   *
+   * @example
+   *
+   *   Date.create().millisecondsUntil('1 hour from now') -> 3,600,000
+   *   Date.create().daysUntil('1 week from now')         -> 7
+   *   Date.create().yearsUntil('15 years from now')      -> 15
+   *   Date.create('15 years from now').yearsFromNow()    -> 15
+   *
+   ***
+   * @method [units]FromNow()
+   * @returns Number
+   * @short Returns the time from now in the appropriate unit.
+   *
+   * @set
+   *   millisecondsFromNow
+   *   secondsFromNow
+   *   minutesFromNow
+   *   hoursFromNow
+   *   daysFromNow
+   *   weeksFromNow
+   *   monthsFromNow
+   *   yearsFromNow
+   *
+   * @example
+   *
+   *   Date.create('next year').millisecondsFromNow() -> 3,600,000
+   *   Date.create('next year').daysFromNow()         -> 7
+   *   Date.create('next year').yearsFromNow()        -> 15
+   *
+   ***
+   * @method add[Units](<num>, [reset] = false)
+   * @returns Date
+   * @short Adds <num> of the unit to the date. If [reset] is true, all lower units will be reset.
+   * @extra Note that "months" is ambiguous as a unit of time. If the target date falls on a day that does not exist (ie. August 31 -> February 31), the date will be shifted to the last day of the month. Don't use %addMonths% if you need precision.
+   *
+   * @set
+   *   addMilliseconds
+   *   addSeconds
+   *   addMinutes
+   *   addHours
+   *   addDays
+   *   addWeeks
+   *   addMonths
+   *   addYears
+   *
+   * @example
+   *
+   *   Date.create().addMilliseconds(5) -> current time + 5 milliseconds
+   *   Date.create().addDays(5)         -> current time + 5 days
+   *   Date.create().addYears(5)        -> current time + 5 years
+   *
+   ***
+   * @method isLast[Unit]()
+   * @returns Boolean
+   * @short Returns true if the date is last week/month/year.
+   *
+   * @set
+   *   isLastWeek
+   *   isLastMonth
+   *   isLastYear
+   *
+   * @example
+   *
+   *   Date.create('yesterday').isLastWeek()  -> true or false?
+   *   Date.create('yesterday').isLastMonth() -> probably not...
+   *   Date.create('yesterday').isLastYear()  -> even less likely...
+   *
+   ***
+   * @method isThis[Unit]()
+   * @returns Boolean
+   * @short Returns true if the date is this week/month/year.
+   *
+   * @set
+   *   isThisWeek
+   *   isThisMonth
+   *   isThisYear
+   *
+   * @example
+   *
+   *   Date.create('tomorrow').isThisWeek()  -> true or false?
+   *   Date.create('tomorrow').isThisMonth() -> probably...
+   *   Date.create('tomorrow').isThisYear()  -> signs point to yes...
+   *
+   ***
+   * @method isNext[Unit]()
+   * @returns Boolean
+   * @short Returns true if the date is next week/month/year.
+   *
+   * @set
+   *   isNextWeek
+   *   isNextMonth
+   *   isNextYear
+   *
+   * @example
+   *
+   *   Date.create('tomorrow').isNextWeek()  -> true or false?
+   *   Date.create('tomorrow').isNextMonth() -> probably not...
+   *   Date.create('tomorrow').isNextYear()  -> even less likely...
+   *
+   ***
+   * @method beginningOf[Unit]([locale])
+   * @returns Date
+   * @short Sets the date to the beginning of the appropriate unit.
+   * @extra Takes an optional locale code as "week" varies by locale, otherwise uses the current locale.
+   *
+   * @set
+   *   beginningOfDay
+   *   beginningOfWeek
+   *   beginningOfMonth
+   *   beginningOfYear
+   *
+   * @example
+   *
+   *   Date.create().beginningOfDay()   -> the beginning of today (resets the time)
+   *   Date.create().beginningOfWeek()  -> the beginning of the week
+   *   Date.create().beginningOfMonth() -> the beginning of the month
+   *   Date.create().beginningOfYear()  -> the beginning of the year
+   *
+   ***
+   * @method endOf[Unit]([locale])
+   * @returns Date
+   * @short Sets the date to the end of the appropriate unit.
+   * @extra Takes an optional locale code as "week" varies by locale, otherwise uses the current locale.
+   *
+   * @set
+   *   endOfDay
+   *   endOfWeek
+   *   endOfMonth
+   *   endOfYear
+   *
+   * @example
+   *
+   *   Date.create().endOfDay()   -> the end of today (sets the time to 23:59:59.999)
+   *   Date.create().endOfWeek()  -> the end of the week
+   *   Date.create().endOfMonth() -> the end of the month
+   *   Date.create().endOfYear()  -> the end of the year
+   *
+   ***/
+  function buildDateUnitMethods() {
+
+    defineInstanceSimilar(sugarDate, DateUnits, function(methods, u, i) {
+      var name = u.name, caps = simpleCapitalize(name);
+
+      if (i > 4) {
+        forEach(['Last','This','Next'], function(shift) {
+          methods['is' + shift + caps] = function(d) {
+            return compareDate(d, shift + ' ' + name, 0, { locale: 'en' });
+          };
+        });
+      }
+      if (i > 3) {
+        methods['beginningOf' + caps] = function(d, localeCode) {
+          return moveToBeginningOfUnit(d, name, localeCode);
+        };
+        methods['endOf' + caps] = function(d, localeCode) {
+          return moveToEndOfUnit(d, name, localeCode);
+        };
+      }
+
+      methods['add' + caps + 's'] = function(d, num, reset) {
+        return advanceDate(d, name, num, reset);
+      };
+
+      var since = function(date, d, options) {
+        return getTimeDistanceForUnit(date, createDate(date, d, options), u);
+      };
+      var until = function(date, d, options) {
+        return getTimeDistanceForUnit(createDate(date, d, options), date, u);
+      };
+
+      methods[u.name + 'sAgo']   = methods[u.name + 'sUntil']   = until;
+      methods[u.name + 'sSince'] = methods[u.name + 'sFromNow'] = since;
+
+      buildNumberMethods(u, u.multiplier);
+    });
+
+  }
+
+  function buildFormatTokens() {
+
+    function addFormats(target, tokens, fn) {
+      if (tokens) {
+        forEach(commaSplit(tokens), function(token) {
+          target[token] = fn;
+        });
+      }
+    }
+
+    function buildLowercase(get) {
+      return function(d, localeCode) {
+        return get(d, localeCode).toLowerCase();
+      };
+    }
+
+    function buildOrdinal(get) {
+      return function(d, localeCode) {
+        var n = get(d, localeCode);
+        return n + localeManager.get(localeCode).getOrdinal(n);
+      };
+    }
+
+    function buildPadded(get, padding) {
+      return function(d, localeCode) {
+        return padNumber(get(d, localeCode), padding);
+      };
+    }
+
+    function buildTwoDigits(get) {
+      return function(d, localeCode) {
+        return get(d, localeCode) % 100;
+      };
+    }
+
+    function buildAlias(alias) {
+      return function(d, localeCode) {
+        return executeCompiledOutputFormat(d, alias, localeCode);
+      };
+    }
+
+    function buildAlternates(f) {
+      for (var n = 1; n <= 5; n++) {
+        buildAlternate(f, n);
+      }
+    }
+
+    function buildAlternate(f, n) {
+      var alternate = function(d, localeCode) {
+        return f.get(d, localeCode, n);
+      };
+      addFormats(ldmlTokens, f.ldml + n, alternate);
+      if (f.lowerToken) {
+        ldmlTokens[f.lowerToken + n] = buildLowercase(alternate);
+      }
+    }
+
+    function getIdentityFormat(name) {
+      return function(d, localeCode) {
+        var loc = localeManager.get(localeCode);
+        return executeCompiledOutputFormat(d, loc[name], localeCode);
+      };
+    }
+
+    forEach(FormatTokensBase, function(f) {
+      var get = f.get, getPadded;
+      if (f.lowerToken) {
+        ldmlTokens[f.lowerToken] = buildLowercase(get);
+      }
+      if (f.ordinalToken) {
+        ldmlTokens[f.ordinalToken] = buildOrdinal(get, f);
+      }
+      if (f.ldmlPaddedToken) {
+        ldmlTokens[f.ldmlPaddedToken] = buildPadded(get, f.ldmlPaddedToken.length);
+      }
+      if (f.ldmlTwoDigitToken) {
+        ldmlTokens[f.ldmlTwoDigitToken] = buildPadded(buildTwoDigits(get), 2);
+      }
+      if (f.strfTwoDigitToken) {
+        strfTokens[f.strfTwoDigitToken] = buildPadded(buildTwoDigits(get), 2);
+      }
+      if (f.strfPadding) {
+        getPadded = buildPadded(get, f.strfPadding);
+      }
+      if (f.alias) {
+        get = buildAlias(f.alias);
+      }
+      if (f.allowAlternates) {
+        buildAlternates(f);
+      }
+      addFormats(ldmlTokens, f.ldml, get);
+      addFormats(strfTokens, f.strf, getPadded || get);
+    });
+
+    iterateOverObject(CONSTANT_FORMATS, function(name, src) {
+      addFormats(ldmlTokens, name, buildAlias(src));
+    });
+
+    defineInstanceSimilar(sugarDate, 'short,medium,long,full', function(methods, name) {
+      var fn = getIdentityFormat(name);
+      addFormats(ldmlTokens, name, fn);
+      methods[name] = fn;
+    });
+
+    addFormats(ldmlTokens, 'time', getIdentityFormat('time'));
+    addFormats(ldmlTokens, 'stamp', getIdentityFormat('stamp'));
+  }
+
+  function buildCJKDigits() {
+    cjkDigitMap = {};
+    var digits = '〇一二三四五六七八九十百千万';
+    forEach(digits.split(''), function(digit, value) {
+      if (value > 9) {
+        value = pow(10, value - 9);
+      }
+      cjkDigitMap[digit] = value;
+    });
+    simpleMerge(cjkDigitMap, fullWidthNumberMap);
+    // CJK numerals may also be included in phrases which are text-based rather
+    // than actual numbers such as Chinese weekdays (上周三), and "the day before
+    // yesterday" (一昨日) in Japanese, so don't match these.
+    cjkDigitReg = RegExp('([期週周])?([' + digits + fullWidthNumbers + ']+)(?!昨)', 'g');
+  }
+
+   /***
+   * @method is[Day]()
+   * @returns Boolean
+   * @short Returns true if the date falls on that day.
+   * @extra Also available: %isYesterday%, %isToday%, %isTomorrow%, %isWeekday%, and %isWeekend%.
+   *
+   * @set
+   *   isToday
+   *   isYesterday
+   *   isTomorrow
+   *   isWeekday
+   *   isWeekend
+   *   isSunday
+   *   isMonday
+   *   isTuesday
+   *   isWednesday
+   *   isThursday
+   *   isFriday
+   *   isSaturday
+   *
+   * @example
+   *
+   *   Date.create('tomorrow').isToday() -> false
+   *   Date.create('thursday').isTomorrow() -> ?
+   *   Date.create('yesterday').isWednesday() -> ?
+   *   Date.create('today').isWeekend() -> ?
+   *
+   ***
+   * @method isFuture()
+   * @returns Boolean
+   * @short Returns true if the date is in the future.
+   * @example
+   *
+   *   Date.create('next week').isFuture() -> true
+   *   Date.create('last week').isFuture() -> false
+   *
+   ***
+   * @method isPast()
+   * @returns Boolean
+   * @short Returns true if the date is in the past.
+   * @example
+   *
+   *   Date.create('last week').isPast() -> true
+   *   Date.create('next week').isPast() -> false
+   *
+   ***/
+  function buildRelativeAliases() {
+    var special  = commaSplit('Today,Yesterday,Tomorrow,Weekday,Weekend,Future,Past');
+    var weekdays = English.weekdays.slice(0, 7);
+    var months   = English.months.slice(0, 12);
+    defineInstanceSimilar(sugarDate, special.concat(weekdays).concat(months), function(methods, name) {
+      methods['is'+ name] = function(d) {
+        return fullCompareDate(d, name);
+      };
+    });
+  }
+
+  /**
+   * @method Date.newDateInternal([fn])
+   * @returns Mixed
+   * @short Gets or sets Sugar's internal date constructor.
+   * @extra Many methods construct a `new Date()` internally as a reference point (`isToday`, relative formats like `tomorrow`, etc). You can override this here if you need it to be something else. Most commonly, this allows you to return a shifted date to simulate a specific timezone, as dates in Javascript are always local. Setting to `null` restores the default.
+   *
+   **/
+
+  var _newDateInternal = defineAccessor(sugarDate, 'newDateInternal', defaultNewDate);
+
+  defineStatic(sugarDate, {
+
+     /***
+     * @method Date.create(<d>, [options])
+     * @returns Date
+     * @short Alternate date constructor which accepts many different text formats, a timestamp, or another date.
+     * @extra If no argument is given, the date is assumed to be now.
+     * @options
+     *
+     *   locale   A locale code to parse the date in. This can also be passed as
+     *            the second argument to this method. Default is the current
+     *            locale, which is English if none is set.
+     *            (Default = 'en')
+     *
+     *   past     If `true`, ambiguous dates like `Sunday` will be parsed as
+     *            `last Sunday`. Note that this does not guarantee that non-
+     *            ambiguous dates will be in the past.
+     *            (Default = `false`)
+     *
+     *   future   If `true`, ambiguous dates like `Sunday` will be parsed as
+     *            `next Sunday`. Note that this does not guarantee that non-
+     *            ambiguous dates will be in the future.
+     *            (Default = `false`)
+     *
+     *   fromUTC  If `true`, the date will be parsed as UTC time (no timezone
+     *            offset). This is useful for server timestamps, etc.
+     *            (Default = `false`)
+     *
+     *   setUTC   If `true` this will set the date's internal `utc` flag, which
+     *            tells it to use UTC based methods like `setUTCHours` when
+     *            handling the date. Note that this is different from `fromUTC`
+     *            which parses a date string as being UTC time, but creates a
+     *            standard local Javascript date object. Also note that native
+     *            methods like `setHours` will still return a local non-UTC value.
+     *            (Default = `false`)
+     *
+     * @example
+     *
+     *   Date.create('July')          -> July of this year
+     *   Date.create('1776')          -> 1776
+     *   Date.create('today')         -> today
+     *   Date.create('wednesday')     -> This wednesday
+     *   Date.create('next friday')   -> Next friday
+     *   Date.create('July 4, 1776')  -> July 4, 1776
+     *   Date.create(-446806800000)   -> November 5, 1955
+     *   Date.create(1776, 6, 4)      -> July 4, 1776
+     *   Date.create('1776年07月04日', 'ja') -> July 4, 1776
+     *   Date.create('Thursday at 3:00pm', '{ fromUTC: true }) -> Thursday at 3:00pm UTC time
+     *
+     ***/
+    'create': function(d, options) {
+      return createDate(null, d, options);
+    },
+
+     /***
+     * @method Date.getLocale([code] = current)
+     * @returns Locale
+     * @short Gets the locale for the given code, or the current locale.
+     * @extra The resulting locale object can be manipulated to provide more control over date localizations. For more about locales, see %date_format%.
+     *
+     ***/
+    'getLocale': function(code) {
+      return localeManager.get(code, !code);
+    },
+
+     /***
+     * @method Date.getAllLocales()
+     * @returns Object
+     * @short Returns all available locales.
+     *
+     ***/
+    'getAllLocales': function() {
+      return localeManager.getAll();
+    },
+
+     /***
+     * @method Date.getAllLocaleCodes()
+     * @returns Array
+     * @short Returns all available locale names as an array of strings.
+     *
+     ***/
+    'getAllLocaleCodes': function() {
+      return getKeys(localeManager.getAll());
+    },
+
+     /***
+     * @method Date.setLocale(<code>)
+     * @returns Locale
+     * @short Sets the current locale to be used with dates.
+     * @extra Sugar has native support for 17 major locales. In addition, you can define a new locale with %Date.addLocale%. For more see %date_format%.
+     *
+     ***/
+    'setLocale': function(code) {
+      return localeManager.set(code);
+    },
+
+     /***
+     * @method Date.addLocale(<code>, <set>)
+     * @returns Locale
+     * @short Adds a locale <set> to the locales understood by Sugar.
+     * @extra For more see %date_format%.
+     *
+     ***/
+    'addLocale': function(code, set) {
+      return localeManager.add(code, set);
+    },
+
+     /***
+     * @method Date.removeLocale(<code>)
+     * @returns Locale
+     * @short Deletes the the locale by <code> from Sugar's known locales.
+     *
+     ***/
+    'removeLocale': function(code) {
+      return localeManager.remove(code);
+    },
+
+    /**
+     * @method Date.addFormat(<format>, <match>, [code] = null)
+     * @returns Nothing
+     * @short Manually adds a new date input format.
+     * @extra This method allows fine grained control for alternate formats. <format> is a string that can have regex tokens inside. <match> is an array of the tokens that each regex capturing group will map to, for example %year%, %date%, etc. For more, see %date_format%.
+     *
+     **/
+    'addFormat': function(format, match, localeCode) {
+      localeManager.get(localeCode).addRawFormat(format, match);
+    }
+
+
+  });
+
+  defineInstanceWithArguments(sugarDate, {
+
+     /***
+     * @method set(<set>, [reset] = false)
+     * @returns Date
+     * @short Sets the date object.
+     * @extra This method can accept multiple formats including a single number as a timestamp, an object, or enumerated parameters (as with the Date constructor). If [reset] is %true%, any units more specific than those passed will be reset. If a month is set to a date that does not exist, it will rewind to the last day of the month.
+     *
+     * @example
+     *
+     *   new Date().set({ year: 2011, month: 11, day: 31 }) -> December 31, 2011
+     *   new Date().set(2011, 11, 31)                       -> December 31, 2011
+     *   new Date().set(86400000)                           -> 1 day after Jan 1, 1970
+     *   new Date().set({ year: 2004, month: 6 }, true)     -> June 1, 2004, 00:00:00.000
+     *
+     ***/
+    'set': function(d, args) {
+      args = collectDateArguments(args);
+      return updateDate(d, args[0], args[1]);
+    },
+
+     /***
+     * @method advance(<set>, [reset] = false)
+     * @returns Date
+     * @short Sets the date forward.
+     * @extra This method can accept multiple formats including an object, a string in the format %3 days%, a single number as milliseconds, or enumerated parameters (as with the Date constructor). If [reset] is %true%, any units more specific than those passed will be reset. For more see %date_format%.
+     * @example
+     *
+     *   new Date().advance({ year: 2 }) -> 2 years in the future
+     *   new Date().advance('2 days')    -> 2 days in the future
+     *   new Date().advance(0, 2, 3)     -> 2 months 3 days in the future
+     *   new Date().advance(86400000)    -> 1 day in the future
+     *
+     ***/
+    'advance': function(d, args) {
+      return advanceDateWithArgs(d, args, 1);
+    },
+
+     /***
+     * @method rewind(<set>, [reset] = false)
+     * @returns Date
+     * @short Sets the date back.
+     * @extra This method can accept multiple formats including a single number as a timestamp, an object, or enumerated parameters (as with the Date constructor). If [reset] is %true%, any units more specific than those passed will be reset. For more see %date_format%.
+     * @example
+     *
+     *   new Date().rewind({ year: 2 }) -> 2 years in the past
+     *   new Date().rewind(0, 2, 3)     -> 2 months 3 days in the past
+     *   new Date().rewind(86400000)    -> 1 day in the past
+     *
+     ***/
+    'rewind': function(d, args) {
+      return advanceDateWithArgs(d, args, -1);
+    }
+
+  });
+
+  defineInstance(sugarDate, {
+
+     /***
+     * @method get(<d>, [options])
+     * @returns Date
+     * @short Gets a new date using the current one as a starting point.
+     * @extra This method is identical to %Date.create%, except that relative formats like `next month` are relative to the date instance rather than the current date.
+     * @options
+     *
+     *   locale   A locale code to parse the date in. This can also be passed as
+     *            the second argument to this method. Default is the current
+     *            locale, which is English if none is set.
+     *            (Default = 'en')
+     *
+     *   past     If `true`, ambiguous dates like `Sunday` will be before the
+     *            context date. Note that this does not guarantee that non-
+     *            ambiguous dates will be before it.
+     *            (Default = `false`)
+     *
+     *   future   If `true`, ambiguous dates like `Sunday` will be after the
+     *            context date. Note that this does not guarantee that non-
+     *            ambiguous dates will be after it.
+     *            (Default = `false`)
+     *
+     *   fromUTC  If `true`, the date will be parsed as UTC time (no timezone
+     *            offset). This is useful for server timestamps, etc.
+     *            (Default = `false`)
+     *
+     *   setUTC   If `true` this will set the date's internal `utc` flag, which
+     *            tells it to use UTC based methods like `setUTCHours` when
+     *            handling the date. Note that this is different from `fromUTC`
+     *            which parses a date string as being UTC time, but creates a
+     *            standard local Javascript date object. Also note that native
+     *            methods like `setHours` will still return a local non-UTC value.
+     *            (Default = `false`)
+     *
+     * @example
+     *
+     *   new Date(2010, 0).get('next week')      -> 1 week after 2010-01-01
+     *   new Date(2004, 4).get('2 years before') -> 2 years before May, 2004
+     *
+     ***/
+    'get': function(date, d, options) {
+      return createDate(date, d, options);
+    },
+
+     /***
+     * @method setWeekday(<dow>)
+     * @returns Nothing
+     * @short Sets the weekday of the date.
+     * @extra In order to maintain a parallel with %getWeekday% (which itself is an alias for Javascript native %getDay%), Sunday is considered day %0%. This contrasts with ISO8601 standard (used in %getISOWeek% and %setISOWeek%) which places Sunday at the end of the week (day 7). This effectively means that passing %0% to this method while in the middle of a week will rewind the date, where passing %7% will advance it.
+     *
+     * @example
+     *
+     *   d = new Date(); d.setWeekday(1); d; -> Monday of this week
+     *   d = new Date(); d.setWeekday(6); d; -> Saturday of this week
+     *
+     ***/
+    'setWeekday': function(d, dow) {
+      return setWeekday(d, dow);
+    },
+
+     /***
+     * @method setISOWeek(<num>)
+     * @returns Nothing
+     * @short Sets the week (of the year) as defined by the ISO8601 standard.
+     * @extra Note that this standard places Sunday at the end of the week (day 7).
+     *
+     * @example
+     *
+     *   d = new Date(); d.setISOWeek(15); d; -> 15th week of the year
+     *
+     ***/
+    'setISOWeek': function(d, num) {
+      return setISOWeekNumber(d, num);
+    },
+
+     /***
+     * @method getISOWeek()
+     * @returns Number
+     * @short Gets the date's week (of the year) as defined by the ISO8601 standard.
+     * @extra Note that this standard places Sunday at the end of the week (day 7). If %utc% is set on the date, the week will be according to UTC time.
+     *
+     * @example
+     *
+     *   new Date().getISOWeek() -> today's week of the year
+     *
+     ***/
+    'getISOWeek': function(d) {
+      return getWeekNumber(d, true);
+    },
+
+     /***
+     * @method beginningOfISOWeek()
+     * @returns Date
+     * @short Set the date to the beginning of week as defined by this ISO8601 standard.
+     * @extra Note that this standard places Monday at the start of the week.
+     * @example
+     *
+     *   Date.create().beginningOfISOWeek() -> Monday
+     *
+     ***/
+    'beginningOfISOWeek': function(d) {
+      var day = getWeekday(d);
+      if (day === 0) {
+        day = -6;
+      } else if (day !== 1) {
+        day = 1;
+      }
+      setWeekday(d, day);
+      return resetTime(d);
+    },
+
+     /***
+     * @method endOfISOWeek()
+     * @returns Date
+     * @short Set the date to the end of week as defined by this ISO8601 standard.
+     * @extra Note that this standard places Sunday at the end of the week.
+     * @example
+     *
+     *   Date.create().endOfISOWeek() -> Sunday
+     *
+     ***/
+    'endOfISOWeek': function(d) {
+      if (getWeekday(d) !== 0) {
+        setWeekday(d, 7);
+      }
+      return moveToEndOfUnit(d, 'day');
+    },
+
+     /***
+     * @method getUTCOffset([iso])
+     * @returns String
+     * @short Returns a string representation of the offset from UTC time. If [iso] is true the offset will be in ISO8601 format.
+     * @example
+     *
+     *   new Date().getUTCOffset()     -> "+0900"
+     *   new Date().getUTCOffset(true) -> "+09:00"
+     *
+     ***/
+    'getUTCOffset': function(d, iso) {
+      return getUTCOffset(d, iso);
+    },
+
+     /***
+     * @method setUTC([on] = false)
+     * @returns Date
+     * @short Sets the internal utc flag for the date. When on, UTC based methods like `setUTCHours` will be called internally.
+     * @extra Note that native methods like `setHours` will still a local non-UTC value.
+     * @example
+     *
+     *   new Date().setUTC(true)
+     *   new Date().setUTC(false)
+     *
+     ***/
+    'setUTC': function(d, on) {
+      return _utc(d, on);
+    },
+
+     /***
+     * @method isUTC()
+     * @returns Boolean
+     * @short Returns true if the date has no timezone offset.
+     * @extra This will also return true for dates whose internal utc flag is set with %setUTC%. Note that even if the utc flag is set, %getTimezoneOffset% will always report the same thing as Javascript always reports that based on the environment's locale.
+     * @example
+     *
+     *   new Date().isUTC()              -> true or false?
+     *   new Date().setUTC(true).isUTC() -> true
+     *
+     ***/
+    'isUTC': function(d) {
+      return isUTC(d);
+    },
+
+     /***
+     * @method isValid()
+     * @returns Boolean
+     * @short Returns true if the date is valid.
+     * @example
+     *
+     *   new Date().isValid()         -> true
+     *   new Date('flexor').isValid() -> false
+     *
+     ***/
+    'isValid': function(d) {
+      return isValid(d);
+    },
+
+     /***
+     * @method isAfter(<d>, [margin] = 0)
+     * @returns Boolean
+     * @short Returns true if the date is after the <d>.
+     * @extra [margin] is to allow extra margin of error (in ms). <d> will accept a date object, timestamp, or text format. If not specified, <d> is assumed to be now. See %date_format% for more.
+     * @example
+     *
+     *   new Date().isAfter('tomorrow')  -> false
+     *   new Date().isAfter('yesterday') -> true
+     *
+     ***/
+    'isAfter': function(date, d, margin) {
+      return date.getTime() > createDate(null, d).getTime() - (margin || 0);
+    },
+
+     /***
+     * @method isBefore(<d>, [margin] = 0)
+     * @returns Boolean
+     * @short Returns true if the date is before <d>.
+     * @extra [margin] is to allow extra margin of error (in ms). <d> will accept a date object, timestamp, or text format. If not specified, <d> is assumed to be now. See %date_format% for more.
+     * @example
+     *
+     *   new Date().isBefore('tomorrow')  -> true
+     *   new Date().isBefore('yesterday') -> false
+     *
+     ***/
+    'isBefore': function(date, d, margin) {
+      return date.getTime() < createDate(null, d).getTime() + (margin || 0);
+    },
+
+     /***
+     * @method isBetween(<d1>, <d2>, [margin] = 0)
+     * @returns Boolean
+     * @short Returns true if the date is later or equal to <d1> and before or equal to <d2>.
+     * @extra [margin] is to allow extra margin of error (in ms). <d1> and <d2> will accept a date object, timestamp, or text format. If not specified, they are assumed to be now. See %date_format% for more.
+     * @example
+     *
+     *   new Date().isBetween('yesterday', 'tomorrow')    -> true
+     *   new Date().isBetween('last year', '2 years ago') -> false
+     *
+     ***/
+    'isBetween': function(date, d1, d2, margin) {
+      var t  = date.getTime();
+      var t1 = createDate(null, d1).getTime();
+      var t2 = createDate(null, d2).getTime();
+      var lo = min(t1, t2);
+      var hi = max(t1, t2);
+      margin = margin || 0;
+      return (lo - margin <= t) && (hi + margin >= t);
+    },
+
+     /***
+     * @method isLeapYear()
+     * @returns Boolean
+     * @short Returns true if the date is a leap year.
+     * @example
+     *
+     *   Date.create('2000').isLeapYear() -> true
+     *
+     ***/
+    'isLeapYear': function(d) {
+      var year = getYear(d);
+      return (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
+    },
+
+     /***
+     * @method daysInMonth()
+     * @returns Number
+     * @short Returns the number of days in the date's month.
+     * @example
+     *
+     *   Date.create('May').daysInMonth()            -> 31
+     *   Date.create('February, 2000').daysInMonth() -> 29
+     *
+     ***/
+    'daysInMonth': function(d) {
+      return daysInMonth(d);
+    },
+
+     /***
+     * @method format(<format>, [locale] = currentLocale)
+     * @returns String
+     * @short Formats and outputs the date.
+     * @extra <format> can be a number of pre-determined formats or a string of tokens. Locale-specific formats are %short%, %long%, and %full% which have their own aliases and can be called with %date.short()%, etc. If <format> is not specified the %long% format is assumed. [locale] specifies a locale code to use (if not specified the current locale is used). See %date_format% for more details.
+     *
+     * @set
+     *   short
+     *   medium
+     *   long
+     *   full
+     *
+     * @example
+     *
+     *   Date.create().format()                                   -> ex. July 4, 2003
+     *   Date.create().format('{Weekday} {d} {Month}, {yyyy}')    -> ex. Monday July 4, 2003
+     *   Date.create().format('{hh}:{mm}')                        -> ex. 15:57
+     *   Date.create().format('{12hr}:{mm}{tt}')                  -> ex. 3:57pm
+     *   Date.create().format('ISO8601')                          -> ex. 2011-07-05 12:24:55.528Z
+     *   Date.create('last week').format('short', 'ja')           -> ex. 先週
+     *   Date.create('yesterday').format(function(value,unit,ms,loc) {
+     *     // value = 1, unit = 3, ms = -86400000, loc = [current locale object]
+     *   });                                                      -> ex. 1 day ago
+     *
+     ***/
+    'format': function(d, f, localeCode) {
+      return formatDate(d, f, false, localeCode);
+    },
+
+     /***
+     * @method relative([fn], [locale] = currentLocale)
+     * @returns String
+     * @short Returns a relative date string offset to the current time.
+     * @extra [fn] can be passed to provide for more granular control over the resulting string. [fn] is passed 4 arguments: the adjusted value, unit, offset in milliseconds, and a locale object. As an alternate syntax, [locale] can also be passed as the first (and only) parameter. For more, see %date_format%.
+     * @example
+     *
+     *   Date.create('90 seconds ago').relative() -> 1 minute ago
+     *   Date.create('January').relative()        -> ex. 5 months ago
+     *   Date.create('January').relative('ja')    -> 3ヶ月前
+     *   Date.create('120 minutes ago').relative(function(val,unit,ms,loc) {
+     *     // value = 2, unit = 3, ms = -7200, loc = [current locale object]
+     *   });                                      -> ex. 5 months ago
+     *
+     ***/
+    'relative': function(d, fn, localeCode) {
+      if (isString(fn)) {
+        localeCode = fn;
+        fn = null;
+      }
+      return formatDate(d, fn, true, localeCode);
+    },
+
+     /***
+     * @method is(<f>, [margin] = 0)
+     * @returns Boolean
+     * @short Returns true if the date is <f>.
+     * @extra <f> will accept a date object, timestamp, or text format. %is% additionally understands more generalized expressions like month/weekday names, 'today', etc, and compares to the precision implied in <f>. [margin] allows an extra margin of error in milliseconds. For more, see %date_format%.
+     * @example
+     *
+     *   Date.create().is('July')               -> true or false?
+     *   Date.create().is('1776')               -> false
+     *   Date.create().is('today')              -> true
+     *   Date.create().is('weekday')            -> true or false?
+     *   Date.create().is('July 4, 1776')       -> false
+     *   Date.create().is(-6106093200000)       -> false
+     *   Date.create().is(new Date(1776, 6, 4)) -> false
+     *
+     ***/
+    'is': function(date, d, margin) {
+      return fullCompareDate(date, d, margin);
+    },
+
+     /***
+     * @method reset([unit] = 'hours')
+     * @returns Date
+     * @short Resets the unit passed and all smaller units. Default is "hours", effectively resetting the time.
+     * @example
+     *
+     *   Date.create().reset('day')   -> Beginning of today
+     *   Date.create().reset('month') -> 1st of the month
+     *
+     ***/
+    'reset': function(d, unit) {
+      return resetUnitAndLower(d, unit);
+    },
+
+     /***
+     * @method clone()
+     * @returns Date
+     * @short Clones the date.
+     * @example
+     *
+     *   Date.create().clone() -> Copy of now
+     *
+     ***/
+    'clone': function(d) {
+      return cloneDate(d);
+    },
+
+     /***
+     * @method iso()
+     * @alias toISOString
+     *
+     ***/
+    'iso': function(d) {
+      return d.toISOString();
+    },
+
+     /***
+     * @method getWeekday()
+     * @returns Number
+     * @short Alias for %getDay%.
+     * @set
+     *   getUTCWeekday
+     *
+     * @example
+     *
+     +   Date.create().getWeekday();    -> (ex.) 3
+     +   Date.create().getUTCWeekday();    -> (ex.) 3
+     *
+     ***/
+    'getWeekday': function(d) {
+      return getWeekday(d);
+    },
+
+    'getUTCWeekday': function(d) {
+      return d.getUTCDay();
+    }
+
+  });
+
+
+  /***
+   * @namespace Number
+   *
+   ***/
+
+  /***
+   * @method [unit]()
+   * @returns Number
+   * @short Takes the number as a corresponding unit of time and converts to milliseconds.
+   * @extra Method names can be singular or plural.  Note that as "a month" is ambiguous as a unit of time, %months% will be equivalent to 30.4375 days, the average number in a month. Be careful using %months% if you need exact precision.
+   *
+   * @set
+   *   millisecond
+   *   milliseconds
+   *   second
+   *   seconds
+   *   minute
+   *   minutes
+   *   hour
+   *   hours
+   *   day
+   *   days
+   *   week
+   *   weeks
+   *   month
+   *   months
+   *   year
+   *   years
+   *
+   * @example
+   *
+   *   (5).milliseconds() -> 5
+   *   (10).hours()       -> 36000000
+   *   (1).day()          -> 86400000
+   *
+   ***
+   * @method [unit]Before([d], [options])
+   * @returns Date
+   * @short Returns a date that is <n> units before [d], where <n> is the number.
+   * @extra [d] will accept a date object, timestamp, or text format. Note that "months" is ambiguous as a unit of time. If the target date falls on a day that does not exist (ie. August 31 -> February 31), the date will be shifted to the last day of the month. Be careful using %monthsBefore% if you need exact precision. See %date_options% for options.
+
+   *
+   * @set
+   *   millisecondBefore
+   *   millisecondsBefore
+   *   secondBefore
+   *   secondsBefore
+   *   minuteBefore
+   *   minutesBefore
+   *   hourBefore
+   *   hoursBefore
+   *   dayBefore
+   *   daysBefore
+   *   weekBefore
+   *   weeksBefore
+   *   monthBefore
+   *   monthsBefore
+   *   yearBefore
+   *   yearsBefore
+   *
+   * @example
+   *
+   *   (5).daysBefore('tuesday')          -> 5 days before tuesday of this week
+   *   (1).yearBefore('January 23, 1997') -> January 23, 1996
+   *
+   ***
+   * @method [unit]Ago()
+   * @returns Date
+   * @short Returns a date that is <n> units ago.
+   * @extra Note that "months" is ambiguous as a unit of time. If the target date falls on a day that does not exist (ie. August 31 -> February 31), the date will be shifted to the last day of the month. Be careful using %monthsAgo% if you need exact precision.
+   *
+   * @set
+   *   millisecondAgo
+   *   millisecondsAgo
+   *   secondAgo
+   *   secondsAgo
+   *   minuteAgo
+   *   minutesAgo
+   *   hourAgo
+   *   hoursAgo
+   *   dayAgo
+   *   daysAgo
+   *   weekAgo
+   *   weeksAgo
+   *   monthAgo
+   *   monthsAgo
+   *   yearAgo
+   *   yearsAgo
+   *
+   * @example
+   *
+   *   (5).weeksAgo() -> 5 weeks ago
+   *   (1).yearAgo()  -> January 23, 1996
+   *
+   ***
+   * @method [unit]After([d], [options])
+   * @returns Date
+   * @short Returns a date <n> units after [d], where <n> is the number.
+   * @extra [d] will accept a date object, timestamp, or text format. Note that "months" is ambiguous as a unit of time. If the target date falls on a day that does not exist (ie. August 31 -> February 31), the date will be shifted to the last day of the month. Be careful using %monthsAfter% if you need exact precision. See %date_options% for options.
+   *
+   * @set
+   *   millisecondAfter
+   *   millisecondsAfter
+   *   secondAfter
+   *   secondsAfter
+   *   minuteAfter
+   *   minutesAfter
+   *   hourAfter
+   *   hoursAfter
+   *   dayAfter
+   *   daysAfter
+   *   weekAfter
+   *   weeksAfter
+   *   monthAfter
+   *   monthsAfter
+   *   yearAfter
+   *   yearsAfter
+   *
+   * @example
+   *
+   *   (5).daysAfter('tuesday')          -> 5 days after tuesday of this week
+   *   (1).yearAfter('January 23, 1997') -> January 23, 1998
+   *
+   ***
+   * @method [unit]FromNow()
+   * @returns Date
+   * @short Returns a date <n> units from now.
+   * @extra Note that "months" is ambiguous as a unit of time. If the target date falls on a day that does not exist (ie. August 31 -> February 31), the date will be shifted to the last day of the month. Be careful using %monthsFromNow% if you need exact precision.
+   *
+   * @set
+   *   millisecondFromNow
+   *   millisecondsFromNow
+   *   secondFromNow
+   *   secondsFromNow
+   *   minuteFromNow
+   *   minutesFromNow
+   *   hourFromNow
+   *   hoursFromNow
+   *   dayFromNow
+   *   daysFromNow
+   *   weekFromNow
+   *   weeksFromNow
+   *   monthFromNow
+   *   monthsFromNow
+   *   yearFromNow
+   *   yearsFromNow
+   *
+   * @example
+   *
+   *   (5).weeksFromNow() -> 5 weeks ago
+   *   (1).yearFromNow()  -> January 23, 1998
+   *
+   ***/
+  function buildNumberMethods(u, multiplier) {
+    var base, after, before, name = u.name, methods = {};
+    base = function(n) {
+      return round(n * multiplier);
+    };
+    after = function(n, d, options) {
+      return advanceDate(createDate(null, d, options), u.name, n);
+    };
+    before = function(n, d, options) {
+      return advanceDate(createDate(null, d, options), u.name, -n);
+    };
+    methods[name] = base;
+    methods[name + 's'] = base;
+    methods[name + 'Before'] = before;
+    methods[name + 'sBefore'] = before;
+    methods[name + 'Ago'] = before;
+    methods[name + 'sAgo'] = before;
+    methods[name + 'After'] = after;
+    methods[name + 'sAfter'] = after;
+    methods[name + 'FromNow'] = after;
+    methods[name + 'sFromNow'] = after;
+    defineInstance(sugarNumber, methods);
+  }
+
+  defineInstance(sugarNumber, {
+
+     /***
+     * @method duration([locale] = currentLocale)
+     * @returns String
+     * @short Takes the number as milliseconds and returns a unit-adjusted localized string.
+     * @extra This method is the same as %Date#relative% without the localized equivalent of "from now" or "ago". [locale] can be passed as the first (and only) parameter. Note that this method is only available when the dates module is included.
+     * @example
+     *
+     *   (500).duration() -> '500 milliseconds'
+     *   (1200).duration() -> '1 second'
+     *   (75).minutes().duration() -> '1 hour'
+     *   (75).minutes().duration('es') -> '1 hora'
+     *
+     ***/
+    'duration': function(n, localeCode) {
+      return localeManager.get(localeCode).getDuration(n);
+    }
+
+  });
+
+  /***
+   * @module Locales
+   * @dependency date
+   * @description Locale definitions French (fr), Italian (it), Spanish (es), Portuguese (pt), German (de), Russian (ru), Polish (pl), Swedish (sv), Japanese (ja), Korean (ko), Simplified Chinese (zh-CN), and Traditional Chinese (zh-TW). Locales can also be included individually. See @date_locales for more.
+   *
+   ***/
+
+  function getEnglishVariant(v) {
+    return simpleMerge(simpleClone(EnglishLocaleBaseDefinition), v);
+  }
+
+
+  function LocaleManager(loc) {
+    this.locales = {};
+    this.add(loc);
+  }
+
+  LocaleManager.prototype = {
+
+    get: function(code, fallback) {
+      var loc = this.locales[code];
+      if (!loc && LazyLoadedLocales[code]) {
+        loc = this.add(code, LazyLoadedLocales[code]);
+      } else if (!loc && code) {
+        loc = this.locales[code.slice(0, 2)];
+      }
+      return loc || fallback === false ? loc : this.current;
+    },
+
+    getAll: function() {
+      return this.locales;
+    },
+
+    set: function(code) {
+      var loc = this.get(code, false);
+      if (!loc) {
+        throw new TypeError('Invalid Locale: ' + code);
+      }
+      return this.current = loc;
+    },
+
+    add: function(code, def) {
+      if (!def) {
+        def = code;
+        code = def.code;
+      } else {
+        def.code = code;
+      }
+      var loc = new Locale(def);
+      this.locales[code] = loc;
+      if (!this.current) {
+        this.current = loc;
+      }
+      return loc;
+    },
+
+    remove: function(code) {
+      if (this.current.code === code) {
+        this.current = this.get('en');
+      }
+      return delete this.locales[code];
+    }
+
+  };
+
+  function Locale(def) {
+    this.init(def);
+  }
+
+  Locale.prototype = {
+
+    get: function(prop) {
+      return this[prop] || '';
+    },
+
+    fetch: function(prop, args) {
+      return isFunction(prop) ? prop.apply(this, args || []) : prop;
+    },
+
+    getMonthValue: function(n) {
+      if (isNumber(n)) {
+        return n - 1;
+      } else if (n) {
+        return indexOf(this.monthsLower, n) % 12;
+      }
+      return -1;
+    },
+
+    getWeekdayValue: function(n) {
+      if (n) {
+        return indexOf(this.weekdaysLower, n) % 7;
+      }
+      return -1;
+    },
+
+    getMonthName: function(n, mult) {
+      if (mult) {
+        n += (mult - 1) * 12;
+      }
+      return this.months[n];
+    },
+
+    getAbbreviatedMonthName: function(n) {
+      return this.getAbbreviatedName(this.months, n, 12);
+    },
+
+    getWeekdayName: function(n) {
+      return this.weekdays[n];
+    },
+
+    getAbbreviatedWeekdayName: function(n) {
+      return this.getAbbreviatedName(this.weekdays, n, 7);
+    },
+
+    getAbbreviatedName: function(arr, n, offset) {
+      return arr[n + offset] || arr[n];
+    },
+
+    getNumber: function(n, digit) {
+      var mapped = this.ordinalNumberMap[n];
+      if (isNumber(mapped)) {
+        if (digit) {
+          mapped = mapped % 10;
+        }
+        return mapped;
+      }
+      return isNumber(n) ? n : 1;
+    },
+
+    getOrdinal: function(n) {
+      var suffix = this.fetch(this.ordinalSuffix, [n]);
+      return suffix || getOrdinalSuffix(n);
+    },
+
+    getNumericDate: function(n) {
+      var self = this;
+      return n.replace(RegExp(this.num, 'g'), function(d) {
+        var num = self.getNumber(d, true);
+        return num || '';
+      });
+    },
+
+    getUnitIndex: function(n) {
+      return indexOf(this.unitsLower, n) % 8;
+    },
+
+    getRelativeFormat: function(adu) {
+      return this.convertAdjustedToFormat(adu, adu[2] > 0 ? 'future' : 'past');
+    },
+
+    getDuration: function(ms) {
+      return this.convertAdjustedToFormat(getAdjustedUnitForNumber(max(0, ms)), 'duration');
+    },
+
+    getFirstDayOfWeek: function() {
+      var val = this.firstDayOfWeek;
+      return isDefined(val) ? val : ISO_FIRST_DAY_OF_WEEK;
+    },
+
+    getFirstDayOfWeekYear: function() {
+      return this.firstDayOfWeekYear || ISO_FIRST_DAY_OF_WEEK_YEAR;
+    },
+
+    isMDY: function() {
+      // mm/dd/yyyy format.
+      return !!this.mdy;
+    },
+
+    matchAM: function(str) {
+      return this.matchMeridian(str, 0);
+    },
+
+    matchPM: function(str) {
+      return this.matchMeridian(str, 1);
+    },
+
+    matchMeridian: function(str, index) {
+      return some(this.get('ampmLower'), function(token, i) {
+        return token === str && (i % 2) === index;
+      });
+    },
+
+    convertAdjustedToFormat: function(adu, mode) {
+      var sign, unit, mult,
+          num    = adu[0],
+          u      = adu[1],
+          ms     = adu[2],
+          format = this[mode] || this.relative;
+      if (isFunction(format)) {
+        return format.call(this, num, u, ms, mode);
+      }
+      mult = !this.plural || num === 1 ? 0 : 1;
+      unit = this.units[mult * 8 + u] || this.units[u];
+      sign = filter(this.modifiers, function(m) { return m.name == 'sign' && m.value == (ms > 0 ? 1 : -1); })[0];
+      return format.replace(/\{(.*?)\}/g, function(full, match) {
+        switch(match) {
+          case 'num': return num;
+          case 'unit': return unit;
+          case 'sign': return sign.src;
+        }
+      });
+    },
+
+    getFormats: function() {
+      return this.cachedFormat ? [this.cachedFormat].concat(this.compiledFormats) : this.compiledFormats;
+    },
+
+    addFormat: function(src, allowsTime, match, variant, iso) {
+      var to = match || [], loc = this, time, timeMarkers, lastIsNumeral;
+
+      src = src.replace(/\s+/g, '[,. ]*');
+      src = src.replace(/\{([^,]+?)\}/g, function(all, k) {
+        var value, result,
+            opt   = k.match(/\?$/),
+            nc    = k.match(/^(\d+)\??$/),
+            slice = k.match(/(\d)(?:-(\d))?/),
+            key   = k.replace(/[^a-z]+$/, '');
+        if (nc) {
+          value = loc.get('tokens')[nc[1]];
+        } else if (loc[key]) {
+          value = loc[key];
+        } else if (loc[key + 's']) {
+          value = loc[key + 's'];
+          if (slice) {
+            value = filter(value, function(m, i) {
+              var mod = i % (loc.units ? 8 : value.length);
+              return mod >= slice[1] && mod <= (slice[2] || slice[1]);
+            });
+          }
+          value = arrayToAlternates(value);
+        }
+        if (!value) {
+          return '';
+        }
+        if (nc) {
+          result = '(?:' + value + ')';
+        } else {
+          if (!match) {
+            to.push(key);
+          }
+          result = '(' + value + ')';
+        }
+        if (opt) {
+          result += '?';
+        }
+        return result;
+      });
+      if (allowsTime) {
+        time = loc.prepareTimeFormat(iso);
+        timeMarkers = ['T','[\\s\\u3000]'].concat(loc.get('timeMarker'));
+        lastIsNumeral = /\\d\{\d,\d\}\)+\??$/.test(src);
+        loc.addRawFormat('(?:' + time + ')[,\\s\\u3000]+?' + src, TIME_FORMAT.concat(to), variant);
+        loc.addRawFormat(src + '(?:[,\\s]*(?:' + timeMarkers.join('|') + (lastIsNumeral ? '+' : '*') +')' + time + ')?', to.concat(TIME_FORMAT), variant);
+      } else {
+        loc.addRawFormat(src, to, variant);
+      }
+    },
+
+    addRawFormat: function(format, match, variant) {
+      this.compiledFormats.unshift({
+        variant: !!variant,
+        locale: this,
+        reg: RegExp('^' + format + '$', 'i'),
+        to: match
+      });
+    },
+
+    addTimeFormat: function() {
+      this.addFormat(this.prepareTimeFormat(), false, TIME_FORMAT);
+    },
+
+    prepareTimeFormat: function(iso) {
+      var loc = this, timeSuffixMapping = {'h':0,'m':1,'s':2};
+      return REQUIRED_TIME_REG.replace(/{([a-z])}/g, function(full, token) {
+        // The ISO format allows times without ":",
+        // so make sure that these markers are optional.
+        var add, separators = [],
+            isHourSuffix = token === 'h',
+            tokenIsRequired = isHourSuffix && !iso;
+        if (token === 'd') {
+          // ISO8601 allows decimals in both hours and minutes,
+          // so add that suffix if the format is marked as iso
+          return iso ? DECIMAL_REG : '';
+        } else if (token === 't') {
+          return loc.get('ampm').join('|');
+        } else {
+          if (isHourSuffix) {
+            separators.push(':');
+          }
+          if (add = loc.timeSuffixes[timeSuffixMapping[token]]) {
+            separators.push(add + '\\s*');
+          }
+          return separators.length === 0 ? '' : '(?:' + separators.join('|') + ')' + (tokenIsRequired ? '' : '?');
+        }
+      });
+    },
+
+    init: function(def) {
+      var loc = this;
+
+      function initFormats() {
+        loc.compiledFormats = [];
+      }
+
+      function initDefinition() {
+        simpleMerge(loc, def);
+      }
+
+      function initArrayFields() {
+        forEach(LOCALE_FIELDS, function(name) {
+          var val = loc[name];
+          if (isString(val)) {
+            loc[name] = commaSplit(val);
+          } else if (!val) {
+            loc[name] = [];
+          }
+        });
+      }
+
+      function eachAlternate(str, fn) {
+        str = map(str.split('+'), function(split) {
+          return split.replace(/(.+):(.+)$/, function(full, base, suffixes) {
+            return map(suffixes.split('|'), function(suffix) {
+              return base + suffix;
+            }).join('|');
+          });
+        }).join('|');
+        return forEach(str.split('|'), fn);
+      }
+
+      function setArray(name, multiple) {
+        var arr = [];
+        forEach(loc[name], function(full, i) {
+          eachAlternate(full, function(alt, j) {
+            arr[j * multiple + i] = alt;
+          });
+        });
+        loc[name] = arr;
+        loc[name + 'Lower'] = arr.map(function(t) {
+          return t.toLowerCase();
+        });
+      }
+
+      function getDigit(start, stop, allowNumbers) {
+        var str = '\\d{' + start + HALF_WIDTH_COMMA + stop + '}';
+        if (allowNumbers) str += '|(?:' + arrayToAlternates(loc.get('numbers')) + ')+';
+        return str;
+      }
+
+      function getNum() {
+        var numbers = loc.get('numbers');
+        var arr = ['-?\\d+'].concat(loc.get('articles'));
+        if (numbers) {
+          arr = arr.concat(numbers);
+        }
+        return arrayToAlternates(arr);
+      }
+
+      function setDefault(name, value) {
+        loc[name] = loc[name] || value;
+      }
+
+      function buildNumbers() {
+        var map = loc.ordinalNumberMap = {}, all = [];
+        forEach(loc.numbers, function(full, i) {
+          eachAlternate(full, function(alt) {
+            all.push(alt);
+            map[alt] = i;
+          });
+        });
+        loc.numbers = all;
+      }
+
+      function buildModifiers() {
+        var arr = [];
+        loc.modifiersByName = {};
+        forEach(loc.modifiers, function(modifier) {
+          var name = modifier.name;
+          eachAlternate(modifier.src, function(t) {
+            var locEntry = loc[name];
+            loc.modifiersByName[t] = modifier;
+            arr.push({ name: name, src: t, value: modifier.value });
+            loc[name] = locEntry ? locEntry + '|' + t : t;
+          });
+        });
+        loc.day += '|' + arrayToAlternates(loc.weekdaysLower);
+        loc.modifiers = arr;
+      }
+
+      initFormats();
+      initDefinition();
+      initArrayFields();
+
+      buildNumbers();
+
+      setArray('months', 12);
+      setArray('weekdays', 7);
+      setArray('units', 8);
+      setArray('ampm', 2);
+
+      setDefault('date', getDigit(1,2, loc.digitDate));
+      setDefault('year', "'\\d{2}|" + getDigit(4,4));
+      setDefault('num', getNum());
+
+      buildModifiers();
+
+      if (loc.monthSuffix) {
+        loc.month = getDigit(1,2);
+        loc.months = map(commaSplit('1,2,3,4,5,6,7,8,9,10,11,12'), function(n) {
+          return n + loc.monthSuffix;
+        });
+      }
+      loc.fullMonth = getDigit(1,2) + '|' + arrayToAlternates(loc.months);
+
+      // The order of these formats is very important. Order is reversed so
+      // formats that are initialized later will take precedence. This generally
+      // means that more specific formats should come later, however, the {year}
+      // format should come before {day}, as 2011 needs to be parsed as a year
+      // (2011) and not date (20) + hours (11), etc.
+
+      loc.addTimeFormat();
+
+      loc.addFormat('{day}', true);
+      loc.addFormat('{month}' + (loc.monthSuffix || ''));
+      loc.addFormat('{year}' + (loc.yearSuffix || ''));
+
+      forEach(loc.parse, function(src) {
+        loc.addFormat(src);
+      });
+
+      forEach(loc.timeParse, function(src) {
+        loc.addFormat(src, true);
+      });
+
+      forEach(CoreDateFormats, function(df) {
+        var match = commaSplit(df.match);
+        loc.addFormat(df.src, df.time, match, df.variant, df.iso);
+      });
+
+    }
+
+  };
+
+  var EnglishLocaleBaseDefinition = {
+    'code':       'en',
+    'timeMarker': 'at',
+    'ampm':       'AM,PM,a,p',
+    'months':     'Jan:uary|,Feb:ruary|,Mar:ch|,Apr:il|,May,Jun:e|,Jul:y|,Aug:ust|,Sep:tember|t|,Oct:ober|,Nov:ember|,Dec:ember|',
+    'weekdays':   'Sun:day|,Mon:day|,Tue:sday|,Wed:nesday|,Thu:rsday|,Fri:day|,Sat:urday|',
+    'units':      'millisecond:|s,second:|s,minute:|s,hour:|s,day:|s,week:|s,month:|s,year:|s',
+    'numbers':    'zero,one,two,three,four,five,six,seven,eight,nine,ten',
+    'articles':   'a,an,the',
+    'tokens':     'the,st|nd|rd|th,of',
+    'time':       '{H}:{mm}',
+    'past':       '{num} {unit} {sign}',
+    'future':     '{num} {unit} {sign}',
+    'duration':   '{num} {unit}',
+    'plural':     true,
+    'modifiers': [
+      { 'name': 'hours', 'src': 'midnight', 'value': 0 },
+      { 'name': 'hours', 'src': 'noon', 'value': 12 },
+      { 'name': 'day',   'src': 'yesterday', 'value': -1 },
+      { 'name': 'day',   'src': 'today', 'value': 0 },
+      { 'name': 'day',   'src': 'tomorrow', 'value': 1 },
+      { 'name': 'sign',  'src': 'ago|before', 'value': -1 },
+      { 'name': 'sign',  'src': 'from now|after|from|in|later', 'value': 1 },
+      { 'name': 'edge',  'src': 'last day', 'value': -2 },
+      { 'name': 'edge',  'src': 'end', 'value': -1 },
+      { 'name': 'edge',  'src': 'first day|first|beginning', 'value': 1 },
+      { 'name': 'shift', 'src': 'last', 'value': -1 },
+      { 'name': 'shift', 'src': 'the|this', 'value': 0 },
+      { 'name': 'shift', 'src': 'next', 'value': 1 }
+    ],
+    'parse': [
+      '{month} {year}',
+      '{shift} {unit=5-7}',
+      '{0?} {date}{1}',
+      '{shift?} {day?} {timeMarker?} {hours}',
+      '{0?} {edge} of {shift?} {unit=4-7?} {month?} {year?}'
+    ],
+    'timeParse': [
+      '{num} {unit} {sign}',
+      '{sign} {num} {unit}',
+      '{0} {num}{1} {day} of {month} {year?}',
+      '{weekday?} {month} {date}{1?} {year?}',
+      '{date} {month} {year}',
+      '{date} {month}',
+      '{shift} {weekday}',
+      '{shift} week {weekday}',
+      '{weekday} {2?} {shift} week',
+      '{num?} {unit=4-5} {sign} {day}',
+      '{0?} {date}{1} of {month}',
+      '{0?}{month?} {date?}{1?} of {shift} {unit=6-7}',
+      '{edge} of {day}'
+    ]
+  };
+
+  var AmericanEnglishDefinition = getEnglishVariant({
+    'mdy': true,
+    'firstDayOfWeek': 0,
+    'firstDayOfWeekYear': 1,
+    'short':  '{MM}/{dd}/{yyyy}',
+    'medium': '{Month} {d}, {yyyy}',
+    'long':   '{Month} {d}, {yyyy} {time}',
+    'full':   '{Weekday}, {Month} {d}, {yyyy} {time}',
+    'stamp':  '{Dow} {Mon} {d} {yyyy} {time}',
+    'time':   '{h}:{mm} {TT}'
+  });
+
+  var BritishEnglishDefinition = getEnglishVariant({
+    'short':  '{dd}/{MM}/{yyyy}',
+    'medium': '{d} {Month} {yyyy}',
+    'long':   '{d} {Month} {yyyy} {H}:{mm}',
+    'full':   '{Weekday}, {d} {Month}, {yyyy} {time}',
+    'stamp':  '{Dow} {d} {Mon} {yyyy} {time}'
+  });
+
+  var CanadianEnglishDefinition = getEnglishVariant({
+    'short':  '{yyyy}-{MM}-{dd}',
+    'medium': '{d} {Month}, {yyyy}',
+    'long':   '{d} {Month}, {yyyy} {H}:{mm}',
+    'full':   '{Weekday}, {d} {Month}, {yyyy} {time}',
+    'stamp':  '{Dow} {d} {Mon} {yyyy} {time}'
+  });
+
+  var LazyLoadedLocales = {
+    'en-US': AmericanEnglishDefinition,
+    'en-GB': BritishEnglishDefinition,
+    'en-AU': BritishEnglishDefinition,
+    'en-CA': CanadianEnglishDefinition
+  };
+
+  // Sorry about this guys
+  var English = new Locale(AmericanEnglishDefinition);
+
+  var localeManager = new LocaleManager(English);
+
+  buildDateUnits();
+  buildCJKDigits();
+  buildFormatTokens();
+  buildDateUnitMethods();
+  buildRelativeAliases();
+  'use strict';
+
+  /***
+   * @module Range
+   * @dependency core
+   * @description Ranges allow creating spans of numbers, strings, or dates. They can enumerate over specific points within that range, and be manipulated and compared.
+   *
+   ***/
+
+  var DURATION_UNITS           = 'year|month|week|day|hour|minute|(?:milli)?second';
+  var FULL_CAPTURED_DURATION   = '((?:\\d+)?\\s*(?:' + DURATION_UNITS + '))s?';
+
+  // Duration Formats
+  var DURATION_REG             = RegExp('(\\d+)?\\s*('+ DURATION_UNITS +')s?', 'i'),
+      RANGE_REG_FROM_TO        = /(?:from)?\s*(.+)\s+(?:to|until)\s+(.+)$/i,
+      RANGE_REG_REAR_DURATION  = RegExp('(.+)\\s*for\\s*' + FULL_CAPTURED_DURATION, 'i'),
+      RANGE_REG_FRONT_DURATION = RegExp('(?:for)?\\s*'+ FULL_CAPTURED_DURATION +'\\s*(?:starting)?\\s*at\\s*(.+)', 'i');
+
+  var MULTIPLIERS = {
+    'Hours': 60 * 60 * 1000,
+    'Minutes': 60 * 1000,
+    'Seconds': 1000,
+    'Milliseconds': 1
+  };
+
+  var PrimitiveRangeConstructor = function(start, end) {
+    return new Range(start, end);
+  };
+
+  var DateRangeConstructor = function(start, end) {
+    if (arguments.length === 1 && isString(start)) {
+      return createDateRangeFromString(start);
+    }
+    return new Range(getDateForRange(start), getDateForRange(end));
+  };
+
+  function Range(start, end) {
+    this.start = cloneRangeMember(start);
+    this.end   = cloneRangeMember(end);
+  }
+
+  function getRangeMemberNumericValue(m) {
+    return isString(m) ? m.charCodeAt(0) : m;
+  }
+
+  function getRangeMemberPrimitiveValue(m) {
+    if (m == null) return m;
+    return isDate(m) ? m.getTime() : m.valueOf();
+  }
+
+  function getPrecision(n) {
+    var split = periodSplit(n.toString());
+    return split[1] ? split[1].length : 0;
+  }
+
+  function getGreaterPrecision(n1, n2) {
+    return max(getPrecision(n1), getPrecision(n2));
+  }
+
+  function getDateForRange(d) {
+    if (isDate(d)) {
+      return d;
+    } else if (sugarDate.create) {
+      return sugarDate.create(d);
+    } else {
+      // Needed as argument numbers are checked internally here.
+      return d === undefined ? new Date() : new Date(d);
+    }
+  }
+
+  function createDateRangeFromString(str) {
+    var match, datetime, duration, dio, start, end;
+    if (sugarDate.get && (match = str.match(RANGE_REG_FROM_TO))) {
+      start = getDateForRange(match[1].replace('from', 'at'));
+      end = sugarDate.get(start, match[2]);
+      return new Range(start, end);
+    }
+    if (match = str.match(RANGE_REG_FRONT_DURATION)) {
+      duration = match[1];
+      datetime = match[2];
+    }
+    if (match = str.match(RANGE_REG_REAR_DURATION)) {
+      datetime = match[1];
+      duration = match[2];
+    }
+    if (datetime && duration) {
+      start = getDateForRange(datetime);
+      dio = getDateIncrementObject(duration);
+      end = incrementDate(start, dio[0], dio[1]);
+    }
+    return new Range(getDateForRange(start), getDateForRange(end));
+  }
+
+  function cloneRangeMember(m) {
+    if (isDate(m)) {
+      return new Date(m.getTime());
+    } else {
+      return getRangeMemberPrimitiveValue(m);
+    }
+  }
+
+  function isValidRangeMember(m) {
+    var val = getRangeMemberPrimitiveValue(m);
+    return (!!val || val === 0) && valueIsNotInfinite(m);
+  }
+
+  function valueIsNotInfinite(m) {
+    return m !== -Infinity && m !== Infinity;
+  }
+
+  function getDateIncrementObject(amt) {
+    var match, val, unit;
+    if (isNumber(amt)) {
+      return [amt, 'Milliseconds'];
+    }
+    match = amt.match(DURATION_REG);
+    val = +match[1] || 1;
+    unit = simpleCapitalize(match[2]);
+    if (unit.match(/hour|minute|second/i)) {
+      unit += 's';
+    } else if (unit === 'Year') {
+      unit = 'FullYear';
+    } else if (unit === 'Day') {
+      unit = 'Date';
+    }
+    return [val, unit];
+  }
+
+  function incrementDate(src, amount, unit) {
+    var mult = MULTIPLIERS[unit], d;
+    if (mult) {
+      d = new Date(src.getTime() + (amount * mult));
+    } else {
+      d = new Date(src);
+      callDateSet(d, unit, callDateGet(src, unit) + amount);
+    }
+    return d;
+  }
+
+  function incrementString(current, amount) {
+    return chr(current.charCodeAt(0) + amount);
+  }
+
+  function incrementNumber(current, amount, precision) {
+    return withPrecision(current + amount, precision);
+  }
+
+  Range.prototype = {
+
+    /***
+     * @method toString()
+     * @returns String
+     * @short Returns a string representation of the range.
+     * @example
+     *
+     *   Number.range(1, 5).toString()                               -> 1..5
+     *   Date.range(new Date(2003, 0), new Date(2005, 0)).toString() -> January 1, 2003..January 1, 2005
+     *
+     ***/
+    'toString': function() {
+      return this.isValid() ? this.start + '..' + this.end : 'Invalid Range';
+    },
+
+    /***
+     * @method isValid()
+     * @returns Boolean
+     * @short Returns true if the range is valid, false otherwise.
+     * @example
+     *
+     *   Date.range(new Date(2003, 0), new Date(2005, 0)).isValid() -> true
+     *   Number.range(NaN, NaN).isValid()                           -> false
+     *
+     ***/
+    'isValid': function() {
+      return isValidRangeMember(this.start) && isValidRangeMember(this.end) && typeof this.start === typeof this.end;
+    },
+
+    /***
+     * @method span()
+     * @returns Number
+     * @short Returns the span of the range. If the range is a date range, the value is in milliseconds.
+     * @extra The span includes both the start and the end.
+     * @example
+     *
+     *   Number.range(5, 10).span()                              -> 6
+     *   Date.range(new Date(2003, 0), new Date(2005, 0)).span() -> 94694400000
+     *
+     ***/
+    'span': function() {
+      return this.isValid() ? abs(
+        getRangeMemberNumericValue(this.end) - getRangeMemberNumericValue(this.start)
+      ) + 1 : NaN;
+    },
+
+    /***
+     * @method contains(<obj>)
+     * @returns Boolean
+     * @short Returns true if <obj> is contained inside the range. <obj> may be a value or another range.
+     * @example
+     *
+     *   Number.range(5, 10).contains(7)                                              -> true
+     *   Date.range(new Date(2003, 0), new Date(2005, 0)).contains(new Date(2004, 0)) -> true
+     *
+     ***/
+    'contains': function(obj) {
+      if (obj == null) return false;
+      if (obj.start && obj.end) {
+        return obj.start >= this.start && obj.start <= this.end &&
+               obj.end   >= this.start && obj.end   <= this.end;
+      } else {
+        return obj >= this.start && obj <= this.end;
+      }
+    },
+
+    /***
+     * @method every(<amount>, [fn])
+     * @returns Array
+     * @short Iterates through the range for every <amount>, calling [fn] if it is passed. Returns an array of each increment visited.
+     * @extra In the case of date ranges, <amount> can also be a string, in which case it will increment a number of  units. Note that %(2).months()% first resolves to a number, which will be interpreted as milliseconds and is an approximation, so stepping through the actual months by passing %"2 months"% is usually preferable.
+     * @example
+     *
+     *   Number.range(2, 8).every(2)                                       -> [2,4,6,8]
+     *   Date.range(new Date(2003, 1), new Date(2003,3)).every("2 months") -> [...]
+     *
+     ***/
+    'every': function(amount, fn) {
+      var increment,
+          precision,
+          dio,
+          unit,
+          start   = this.start,
+          end     = this.end,
+          inverse = end < start,
+          current = start,
+          index   = 0,
+          result  = [];
+
+      if (!this.isValid()) {
+        return [];
+      }
+      if (isFunction(amount)) {
+        fn = amount;
+        amount = null;
+      }
+      amount = amount || 1;
+      if (isNumber(start)) {
+        precision = getGreaterPrecision(start, amount);
+        increment = function() {
+          return incrementNumber(current, amount, precision);
+        };
+      } else if (isString(start)) {
+        increment = function() {
+          return incrementString(current, amount);
+        };
+      } else if (isDate(start)) {
+        dio    = getDateIncrementObject(amount);
+        amount = dio[0];
+        unit   = dio[1];
+        increment = function() {
+          return incrementDate(current, amount, unit);
+        };
+      }
+      // Avoiding infinite loops
+      if (inverse && amount > 0) {
+        amount *= -1;
+      }
+      while(inverse ? current >= end : current <= end) {
+        result.push(current);
+        if (fn) {
+          fn(current, index);
+        }
+        current = increment();
+        index++;
+      }
+      return result;
+    },
+
+    /***
+     * @method toArray()
+     * @returns Array
+     * @short Creates an array from the range.
+     * @extra If the range is a date range, every millisecond between the start and end dates will be returned. To control this use %every% instead.
+     * @example
+     *
+     *   Number.range(1, 5).toArray() -> [1,2,3,4,5]
+     *   Date.range(new Date(2003, 1), new Date(2003,3)).toArray() -> [...]
+     *
+     ***/
+    'toArray': function() {
+      return this.every();
+    },
+
+    /***
+     * @method union(<range>)
+     * @returns Range
+     * @short Returns a new range with the earliest starting point as its start, and the latest ending point as its end. If the two ranges do not intersect this will effectively remove the "gap" between them.
+     * @example
+     *
+     *   Number.range(1, 3).union(Number.range(2, 5)) -> 1..5
+     *   Date.range(new Date(2003, 1), new Date(2005, 1)).union(Date.range(new Date(2004, 1), new Date(2006, 1))) -> Jan 1, 2003..Jan 1, 2006
+     *
+     ***/
+    'union': function(range) {
+      return new Range(
+        this.start < range.start ? this.start : range.start,
+        this.end   > range.end   ? this.end   : range.end
+      );
+    },
+
+    /***
+     * @method intersect(<range>)
+     * @returns Range
+     * @short Returns a new range with the latest starting point as its start, and the earliest ending point as its end. If the two ranges do not intersect this will effectively produce an invalid range.
+     * @example
+     *
+     *   Number.range(1, 5).intersect(Number.range(4, 8)) -> 4..5
+     *   Date.range(new Date(2003, 1), new Date(2005, 1)).intersect(Date.range(new Date(2004, 1), new Date(2006, 1))) -> Jan 1, 2004..Jan 1, 2005
+     *
+     ***/
+    'intersect': function(range) {
+      if (range.start > this.end || range.end < this.start) {
+        return new Range(NaN, NaN);
+      }
+      return new Range(
+        this.start > range.start ? this.start : range.start,
+        this.end   < range.end   ? this.end   : range.end
+      );
+    },
+
+    /***
+     * @method clone()
+     * @returns Range
+     * @short Clones the range.
+     * @extra Members of the range will also be cloned.
+     * @example
+     *
+     *   Number.range(1, 5).clone() -> Returns a copy of the range.
+     *
+     ***/
+    'clone': function() {
+      return new Range(this.start, this.end);
+    },
+
+    /***
+     * @method clamp(<obj>)
+     * @returns Mixed
+     * @short Clamps <obj> to be within the range if it falls outside.
+     * @example
+     *
+     *   Number.range(1, 5).clamp(8) -> 5
+     *   Date.range(new Date(2010, 0), new Date(2012, 0)).clamp(new Date(2013, 0)) -> 2012-01
+     *
+     ***/
+    'clamp': function(obj) {
+      var clamped,
+          start = this.start,
+          end = this.end,
+          min = end < start ? end : start,
+          max = start > end ? start : end;
+      if (obj < min) {
+        clamped = min;
+      } else if (obj > max) {
+        clamped = max;
+      } else {
+        clamped = obj;
+      }
+      return cloneRangeMember(clamped);
+    }
+
+  };
+
+  /***
+   * @namespace Number
+   *
+   ***/
+
+  defineStatic(sugarNumber, {
+
+    /***
+     * @method Number.range([start], [end])
+     * @returns Range
+     * @short Creates a new range between [start] and [end]. See %ranges% for more.
+     * @example
+     *
+     *   Number.range(5, 10)
+     *
+     ***/
+    'range': PrimitiveRangeConstructor
+
+  });
+
+  defineInstance(sugarNumber, {
+
+    /***
+     * @method upto(<num>, [fn], [step] = 1)
+     * @returns Array
+     * @short Returns an array containing numbers from the number up to <num>.
+     * @extra Optionally calls [fn] callback for each number in that array. [step] allows multiples greater than 1.
+     * @example
+     *
+     *   (2).upto(6) -> [2, 3, 4, 5, 6]
+     *   (2).upto(6, function(n) {
+     *     // This function is called 5 times receiving n as the value.
+     *   });
+     *   (2).upto(8, null, 2) -> [2, 4, 6, 8]
+     *
+     ***/
+    'upto': function(n, num, fn, step) {
+      return new Range(n, num).every(step, fn);
+    },
+
+     /***
+     * @method clamp([start] = Infinity, [end] = Infinity)
+     * @returns Number
+     * @short Constrains the number so that it is between [start] and [end].
+     * @extra This will build a range object that has an equivalent %clamp% method.
+     * @example
+     *
+     *   (3).clamp(50, 100)  -> 50
+     *   (85).clamp(50, 100) -> 85
+     *
+     ***/
+    'clamp': function(n, start, end) {
+      return new Range(start, end).clamp(n);
+    },
+
+     /***
+     * @method cap([max] = Infinity)
+     * @returns Number
+     * @short Constrains the number so that it is no greater than [max].
+     * @extra This will build a range object that has an equivalent %cap% method.
+     * @example
+     *
+     *   (100).cap(80) -> 80
+     *
+     ***/
+    'cap': function(n, max) {
+      return new Range(undefined, max).clamp(n);
+    }
+
+  });
+
+  /***
+   * @method downto(<num>, [fn], [step] = 1)
+   * @returns Array
+   * @short Returns an array containing numbers from the number down to <num>.
+   * @extra Optionally calls [fn] callback for each number in that array. [step] allows multiples greater than 1.
+   * @example
+   *
+   *   (8).downto(3) -> [8, 7, 6, 5, 4, 3]
+   *   (8).downto(3, function(n) {
+   *     // This function is called 6 times receiving n as the value.
+   *   });
+   *   (8).downto(2, null, 2) -> [8, 6, 4, 2]
+   *
+   ***/
+  alias(sugarNumber, 'downto', 'upto');
+
+
+  /***
+   * @namespace String
+   *
+   ***/
+  defineStatic(sugarString, {
+
+    /***
+     * @method String.range([start], [end])
+     * @returns Range
+     * @short Creates a new range between [start] and [end]. See %ranges% for more.
+     * @example
+     *
+     *   String.range('a', 'z')
+     *
+     ***/
+    'range': PrimitiveRangeConstructor
+
+  });
+
+
+  /***
+   * @namespace Date
+   *
+   ***/
+  defineStatic(sugarDate,   {
+
+    /***
+     * @method Date.range([start], [end])
+     * @returns Range
+     * @short Creates a new range between [start] and [end].
+     * @extra If either [start] or [end] are null, they will default to the current date. See %ranges% for more.
+     * @example
+     *
+     *   Date.range('today', 'tomorrow')
+     *
+     ***/
+    'range': DateRangeConstructor
+
+  });
+  'use strict';
+
+  /***
+   * @module Number
+   * @dependency core
+   * @description Number formatting, rounding (with precision). Aliases to Math methods.
+   *
+   ***/
+
+  // Abbreviation Units
+  var BASIC_UNITS         = '|kmbt',
+      MEMORY_UNITS        = '|KMGTPE',
+      MEMORY_BINARY_UNITS = '|,Ki,Mi,Gi,Ti,Pi,Ei',
+      METRIC_UNITS_SHORT  = 'nμm|k',
+      METRIC_UNITS_FULL   = 'yzafpnμm|KMGTPEZY';
+
+  function getThousands() {
+    var str = sugarNumber.thousands;
+    return isString(str) ? str : HALF_WIDTH_COMMA;
+  }
+
+  function getDecimal() {
+    var str = sugarNumber.decimal;
+    return isString(str) ? str : HALF_WIDTH_PERIOD;
+  }
+
+  function abbreviateNumber(num, precision, ustr, bytes) {
+    var fixed        = num.toFixed(20),
+        decimalPlace = fixed.search(/\./),
+        numeralPlace = fixed.search(/[1-9]/),
+        significant  = decimalPlace - numeralPlace,
+        units, unit, mid, i, divisor;
+    if (significant > 0) {
+      significant -= 1;
+    }
+    units = commaSplit(ustr);
+    if (units.length === 1) {
+      units = ustr.split('');
+    }
+    mid = units.indexOf('|');
+    if (mid === -1) {
+      // Skipping the placeholder means the units should start from zero,
+      // otherwise assume they end at zero.
+      mid = units[0] === '_' ? 0 : units.length;
+    }
+    i = max(min(floor(significant / 3), units.length - mid - 1), -mid);
+    unit = units[i + mid];
+    while (unit === '_') {
+      i += i < 0 ? -1 : 1;
+      unit = units[i + mid];
+    }
+    if (unit === '|') {
+      unit = '';
+    }
+    if (significant < -9) {
+      precision = abs(significant) - 9;
+    }
+    divisor = bytes ? pow(2, 10 * i) : pow(10, i * 3);
+    return numberFormat(withPrecision(num / divisor, precision || 0)) + unit;
+  }
+
+  function numberFormat(num, place) {
+    var i, str, split, integer, fraction, result = '';
+    var thousands = getThousands();
+    var decimal   = getDecimal();
+    str      = (isNumber(place) ? withPrecision(num, place || 0).toFixed(max(place, 0)) : num.toString()).replace(/^-/, '');
+    split    = periodSplit(str);
+    integer  = split[0];
+    fraction = split[1];
+    if (/e/.test(str)) {
+      result = str;
+    } else {
+      for(i = integer.length; i > 0; i -= 3) {
+        if (i < integer.length) {
+          result = thousands + result;
+        }
+        result = integer.slice(max(0, i - 3), i) + result;
+      }
+    }
+    if (fraction) {
+      result += decimal + repeatString('0', (place || 0) - fraction.length) + fraction;
+    }
+    return (num < 0 ? '-' : '') + result;
+  }
+
+  function isInteger(n) {
+    return n % 1 === 0;
+  }
+
+  function isMultipleOf(n1, n2) {
+    return n1 % n2 === 0;
+  }
+
+  function createRoundingFunction(fn) {
+    return function(n, precision) {
+      return precision ? withPrecision(n, precision, fn) : fn(n);
+    };
+  }
+
+  defineStatic(sugarNumber, {
+
+    /***
+     * @method Number.random([n1], [n2])
+     * @returns Number
+     * @short Returns a random integer between [n1] and [n2].
+     * @extra If only 1 number is passed, the other will be 0. If none are passed, the number will be either 0 or 1.
+     * @example
+     *
+     *   Number.random(50, 100) -> ex. 85
+     *   Number.random(50)      -> ex. 27
+     *   Number.random()        -> ex. 0
+     *
+     ***/
+    'random': function(n1, n2) {
+      var minNum, maxNum;
+      if (arguments.length == 1) n2 = n1, n1 = 0;
+      minNum = min(n1 || 0, isUndefined(n2) ? 1 : n2);
+      maxNum = max(n1 || 0, isUndefined(n2) ? 1 : n2) + 1;
+      return trunc((Math.random() * (maxNum - minNum)) + minNum);
+    }
+
+  });
+
+  defineInstance(sugarNumber, {
+
+    /***
+     * @method isInteger()
+     * @returns Boolean
+     * @short Returns true if the number has no trailing decimal.
+     * @example
+     *
+     *   (420).isInteger() -> true
+     *   (4.5).isInteger() -> false
+     *
+     ***/
+    'isInteger': function(n) {
+      return isInteger(n);
+    },
+
+    /***
+     * @method isOdd()
+     * @returns Boolean
+     * @short Returns true if the number is odd.
+     * @example
+     *
+     *   (3).isOdd()  -> true
+     *   (18).isOdd() -> false
+     *
+     ***/
+    'isOdd': function(n) {
+      return isInteger(n) && !isMultipleOf(n, 2);
+    },
+
+    /***
+     * @method isEven()
+     * @returns Boolean
+     * @short Returns true if the number is even.
+     * @example
+     *
+     *   (6).isEven()  -> true
+     *   (17).isEven() -> false
+     *
+     ***/
+    'isEven': function(n) {
+      return isMultipleOf(n, 2);
+    },
+
+    /***
+     * @method isMultipleOf(<num>)
+     * @returns Boolean
+     * @short Returns true if the number is a multiple of <num>.
+     * @example
+     *
+     *   (6).isMultipleOf(2)  -> true
+     *   (17).isMultipleOf(2) -> false
+     *   (32).isMultipleOf(4) -> true
+     *   (34).isMultipleOf(4) -> false
+     *
+     ***/
+    'isMultipleOf': function(n, num) {
+      return isMultipleOf(n, num);
+    },
+
+    /***
+     * @method log(<base> = Math.E)
+     * @returns Number
+     * @short Returns the logarithm of the number with base <base>, or natural logarithm of the number if <base> is undefined.
+     * @example
+     *
+     *   (64).log(2) -> 6
+     *   (9).log(3)  -> 2
+     *   (5).log()   -> 1.6094379124341003
+     *
+     ***/
+    'log': function(n, base) {
+      return Math.log(n) / (base ? Math.log(base) : 1);
+    },
+
+    /***
+     * @method abbr([precision] = 0)
+     * @returns String
+     * @short Returns an abbreviated form of the number ("k" for thousand, "m" for million, etc).
+     * @extra [precision] will round to the given precision. %Sugar.Number.thousands% and %Sugar.Number.decimal% allow custom markers to be used.
+     * @example
+     *
+     *   (1000).abbr()    -> "1k"
+     *   (1000000).abbr() -> "1m"
+     *   (1280).abbr(1)   -> "1.3k"
+     *
+     ***/
+    'abbr': function(n, precision) {
+      return abbreviateNumber(n, precision, BASIC_UNITS);
+    },
+
+    /***
+     * @method metric([precision] = 0, [units] = "nμm|k")
+     * @returns String
+     * @short Returns the number as a string in metric notation.
+     * @extra [precision] will round to the given precision (can be negative). [units] is a string that determines both the unit notation and the min/max unit allowed. The default is natural notation for common units (meters, grams, etc). "all" can be passed for [units] and is a shortcut to all standard SI units. For more see %number abbreviations%.
+     *
+     * @example
+     *
+     *   (1000).metric()            -> "1k"
+     *   (1000000).metric()         -> "1,000k"
+     *   (1000000).metric(0, 'all') -> "1M"
+     *   (1249).metric(2) + 'g'     -> "1.25kg"
+     *   (0.025).metric() + 'm'     -> "25mm"
+     *
+     ***/
+    'metric': function(n, precision, units) {
+      if (units === 'all') {
+        units = METRIC_UNITS_FULL;
+      } else if (!units) {
+        units = METRIC_UNITS_SHORT;
+      }
+      return abbreviateNumber(n, precision, units);
+    },
+
+    /***
+     * @method bytes([precision] = 0, [si] = false, [units] = '|KMGTPE')
+     * @returns String
+     * @short Returns an abbreviated form of the number, with 'B' on the end for "bytes".
+     * @extra [precision] will round to the given precision. If [si] is %true%, the standard SI units of 1000 will be used instead of 1024. [units] is a string that determines both the unit notation and the min/max unit allowed. For more see %number abbreviations%.
+     * @example
+     *
+     *   (1000).bytes()                 -> "1kB"
+     *   (1000).bytes(2)                -> "0.98kB"
+     *   ((10).pow(20)).bytes()         -> "90,949,470TB"
+     *   ((10).pow(20)).bytes(0, false) -> "87EB"
+     *
+     ***/
+    'bytes': function(n, precision, si, units) {
+      if (units === 'binary') {
+        units = MEMORY_BINARY_UNITS;
+      } else if(!units) {
+        units = MEMORY_UNITS;
+      }
+      return abbreviateNumber(n, precision, units, !si) + 'B';
+    },
+
+    /***
+     * @method format([place] = 0)
+     * @returns String
+     * @short Formats the number to a readable string.
+     * @extra If [place] is %undefined%, the place will automatically be determined. %Sugar.Number.thousands% and %Sugar.Number.decimal% allow custom markers to be used.
+     * @example
+     *
+     *   (56782).format()    -> '56,782'
+     *   (56782).format(2)   -> '56,782.00'
+     *   (4388.43).format(2) -> '4,388.43'
+     *
+     ***/
+    'format': function(n, place) {
+      return numberFormat(n, place);
+    },
+
+    /***
+     * @method hex([pad] = 1)
+     * @returns String
+     * @short Converts the number to hexidecimal.
+     * @extra [pad] will pad the resulting string to that many places.
+     * @example
+     *
+     *   (255).hex()   -> 'ff';
+     *   (255).hex(4)  -> '00ff';
+     *   (23654).hex() -> '5c66';
+     *
+     ***/
+    'hex': function(n, pad) {
+      return padNumber(n, pad || 1, false, 16);
+    },
+
+    /***
+     * @method times(<fn>)
+     * @returns Mixed
+     * @short Calls <fn> a number of times equivalent to the number.
+     * @extra Any non-undefined return values of <fn> will be collected and returned in an array.
+     * @example
+     *
+     *   (8).times(function(i) {
+     *     // This function is called 8 times.
+     *   });
+     *
+     ***/
+    'times': function(n, fn) {
+      var arr, result;
+      for(var i = 0; i < n; i++) {
+        result = fn.call(n, i);
+        if (isDefined(result)) {
+          if (!arr) {
+            arr = [];
+          }
+          arr.push(result);
+        }
+      }
+      return arr;
+    },
+
+    /***
+     * @method chr()
+     * @returns String
+     * @short Returns a string at the code point of the number.
+     * @example
+     *
+     *   (65).chr() -> "A"
+     *   (75).chr() -> "K"
+     *
+     ***/
+    'chr': function(n) {
+      return chr(n);
+    },
+
+    /***
+     * @method pad(<place> = 0, [sign] = false, [base] = 10)
+     * @returns String
+     * @short Pads a number with "0" to <place>.
+     * @extra [sign] allows you to force the sign as well (+05, etc). [base] can change the base for numeral conversion.
+     * @example
+     *
+     *   (5).pad(2)        -> '05'
+     *   (-5).pad(4)       -> '-0005'
+     *   (82).pad(3, true) -> '+082'
+     *
+     ***/
+    'pad': function(n, place, sign, base) {
+      return padNumber(n, place, sign, base);
+    },
+
+    /***
+     * @method ordinalize()
+     * @returns String
+     * @short Returns an ordinalized (English) string, i.e. "1st", "2nd", etc.
+     * @example
+     *
+     *   (1).ordinalize() -> '1st';
+     *   (2).ordinalize() -> '2nd';
+     *   (8).ordinalize() -> '8th';
+     *
+     ***/
+    'ordinalize': function(n) {
+      var num = abs(n), last = +num.toString().slice(-2);
+      return n + getOrdinalSuffix(last);
+    },
+
+    /***
+     * @method toNumber()
+     * @returns Number
+     * @short Identity function for compatibilty.
+     * @example
+     *
+     *   (420).toNumber() -> 420
+     *
+     ***/
+    'toNumber': function(n) {
+      return n;
+    },
+
+    /***
+     * @method round(<precision> = 0)
+     * @returns Number
+     * @short Shortcut for %Math.round% that also allows a <precision>.
+     *
+     * @example
+     *
+     *   (3.241).round()  -> 3
+     *   (-3.841).round() -> -4
+     *   (3.241).round(2) -> 3.24
+     *   (3748).round(-2) -> 3800
+     *
+     ***/
+    'round': createRoundingFunction(round),
+
+    /***
+     * @method ceil(<precision> = 0)
+     * @returns Number
+     * @short Shortcut for %Math.ceil% that also allows a <precision>.
+     *
+     * @example
+     *
+     *   (3.241).ceil()  -> 4
+     *   (-3.241).ceil() -> -3
+     *   (3.241).ceil(2) -> 3.25
+     *   (3748).ceil(-2) -> 3800
+     *
+     ***/
+    'ceil': createRoundingFunction(ceil),
+
+    /***
+     * @method floor(<precision> = 0)
+     * @returns Number
+     * @short Shortcut for %Math.floor% that also allows a <precision>.
+     *
+     * @example
+     *
+     *   (3.241).floor()  -> 3
+     *   (-3.841).floor() -> -4
+     *   (3.241).floor(2) -> 3.24
+     *   (3748).floor(-2) -> 3700
+     *
+     ***/
+    'floor': createRoundingFunction(floor)
+
+  });
+
+  /***
+   * @method [math]()
+   * @returns Number
+   * @short Math related functions are mapped as shortcuts to numbers and are identical. Note that %Number#log% provides some special defaults.
+   *
+   * @set
+   *   abs
+   *   sin
+   *   asin
+   *   cos
+   *   acos
+   *   tan
+   *   atan
+   *   sqrt
+   *   exp
+   *   pow
+   *
+   * @example
+   *
+   *   (3).pow(3) -> 27
+   *   (-3).abs() -> 3
+   *   (1024).sqrt() -> 32
+   *
+   ***/
+  function buildMathAliases() {
+    defineInstanceSimilar(sugarNumber, 'abs,pow,sin,asin,cos,acos,tan,atan,exp,pow,sqrt', function(methods, name) {
+      methods[name] = function(n, arg) {
+        // Note that .valueOf() here is only required due to a
+        // very strange bug in iOS7 that only occurs occasionally
+        // in which Math.abs() called on non-primitive numbers
+        // returns a completely different number (Issue #400)
+        return Math[name](n.valueOf(), arg);
+      };
+    });
+  }
+
+  buildMathAliases();
+  'use strict';
+
+  /***
+   * @module Function
+   * @dependency core
+   * @description Lazy, throttled, and memoized functions, delayed functions and handling of timers, argument currying.
+   *
+   ***/
+
+  var _lock     = privatePropertyAccessor('lock');
+  var _timers   = privatePropertyAccessor('timers');
+  var _partial  = privatePropertyAccessor('partial');
+  var _canceled = privatePropertyAccessor('canceled');
+
+  function setDelay(fn, ms, after, scope, args) {
+    // Delay of infinity is never called of course...
+    ms = coercePositiveInteger(ms || 0);
+    if (!_timers(fn)) {
+      _timers(fn, []);
+    }
+    // This is a workaround for <= IE8, which apparently has the
+    // ability to call timeouts in the queue on the same tick (ms?)
+    // even if functionally they have already been cleared.
+    _canceled(fn, false);
+    _timers(fn).push(setTimeout(function() {
+      if (!_canceled(fn)) {
+        after.apply(scope, args || []);
+      }
+    }, ms));
+  }
+
+  function cancelFunction(fn) {
+    var timers = _timers(fn), timer;
+    if (isArray(timers)) {
+      while(timer = timers.shift()) {
+        clearTimeout(timer);
+      }
+    }
+    _canceled(fn, true);
+    return fn;
+  }
+
+  function createLazyFunction(fn, ms, immediate, limit) {
+    var queue = [], locked = false, execute, rounded, perExecution, result;
+    ms = ms || 1;
+    limit = limit || Infinity;
+    rounded = ceil(ms);
+    perExecution = round(rounded / ms) || 1;
+    execute = function() {
+      var queueLength = queue.length, maxPerRound;
+      if (queueLength == 0) return;
+      // Allow fractions of a millisecond by calling
+      // multiple times per actual timeout execution
+      maxPerRound = max(queueLength - perExecution, 0);
+      while(queueLength > maxPerRound) {
+        // Getting uber-meta here...
+        result = Function.prototype.apply.apply(fn, queue.shift());
+        queueLength--;
+      }
+      setDelay(lazy, rounded, function() {
+        locked = false;
+        execute();
+      });
+    };
+    function lazy() {
+      // If the execution has locked and it's immediate, then
+      // allow 1 less in the queue as 1 call has already taken place.
+      if (queue.length < limit - (locked && immediate ? 1 : 0)) {
+        // Optimized: no leaking arguments
+        var args = []; for(var $i = 0, $len = arguments.length; $i < $len; $i++) args.push(arguments[$i]);
+        queue.push([this, args]);
+      }
+      if (!locked) {
+        locked = true;
+        if (immediate) {
+          execute();
+        } else {
+          setDelay(lazy, rounded, execute);
+        }
+      }
+      // Return the memoized result
+      return result;
+    }
+    return lazy;
+  }
+
+  function stringifyArguments() {
+    var str = '';
+    for (var i = 0; i < arguments.length; i++) {
+      str += stringify(arguments[i]);
+    }
+    return str;
+  }
+
+  function createMemoizedFunction(fn, hashFn) {
+    var cache = {}, key;
+    if (!hashFn) {
+      hashFn = stringifyArguments;
+    } else if(isString(hashFn)) {
+      key = hashFn;
+      hashFn = function(arg) {
+        return deepGetProperty(arg, key);
+      };
+    }
+    return function memoized() {
+      var key = hashFn.apply(this, arguments);
+      if (hasOwn(cache, key)) {
+        return cache[key];
+      }
+      return cache[key] = fn.apply(this, arguments);
+    };
+  }
+
+  var createInstanceFromPrototype = Object.create || function(prototype) {
+    var ctor = function() {};
+    ctor.prototype = prototype;
+    return new ctor;
+  };
+
+  defineInstance(sugarFunction, {
+
+     /***
+     * @method lazy([ms] = 1, [immediate] = false, [limit] = Infinity)
+     * @returns Function
+     * @short Creates a lazy function that, when called repeatedly, will queue execution and wait [ms] milliseconds to execute.
+     * @extra If [immediate] is %true%, first execution will happen immediately, then lock. If [limit] is a fininte number, calls past [limit] will be ignored while execution is locked. Compare this to %throttle%, which will execute only once per [ms] milliseconds. Note that [ms] can also be a fraction. Calling %cancel% on a lazy function will clear the entire queue. For more see %functions%.
+     * @example
+     *
+     *   (function() {
+     *     // Executes immediately.
+     *   }).lazy()();
+     *   (3).times(function() {
+     *     // Executes 3 times, with each execution 20ms later than the last.
+     *   }.lazy(20));
+     *   (100).times(function() {
+     *     // Executes 50 times, with each execution 20ms later than the last.
+     *   }.lazy(20, false, 50));
+     *
+     ***/
+    'lazy': function(fn, ms, immediate, limit) {
+      return createLazyFunction(fn, ms, immediate, limit);
+    },
+
+     /***
+     * @method throttle([ms] = 1)
+     * @returns Function
+     * @short Creates a "throttled" version of the function that will only be executed once per <ms> milliseconds.
+     * @extra This is functionally equivalent to calling %lazy% with a [limit] of %1% and [immediate] as %true%. %throttle% is appropriate when you want to make sure a function is only executed at most once for a given duration. For more see %functions%.
+     * @example
+     *
+     *   (3).times(function() {
+     *     // called only once. will wait 50ms until it responds again
+     *   }.throttle(50));
+     *
+     ***/
+    'throttle': function(fn, ms) {
+      return createLazyFunction(fn, ms, true, 1);
+    },
+
+     /***
+     * @method debounce([ms] = 1)
+     * @returns Function
+     * @short Creates a "debounced" function that postpones its execution until after <ms> milliseconds have passed.
+     * @extra This method is useful to execute a function after things have "settled down". A good example of this is when a user tabs quickly through form fields, execution of a heavy operation should happen after a few milliseconds when they have "settled" on a field. For more see %functions%.
+     * @example
+     *
+     *   var fn = (function(arg1) {
+     *     // called once 50ms later
+     *   }).debounce(50); fn(); fn(); fn();
+     *
+     ***/
+    'debounce': function(fn, ms) {
+      function debounced() {
+        // Optimized: no leaking arguments
+        var args = []; for(var $i = 0, $len = arguments.length; $i < $len; $i++) args.push(arguments[$i]);
+        cancelFunction(debounced);
+        setDelay(debounced, ms, fn, this, args);
+      }
+      return debounced;
+    },
+
+     /***
+     * @method cancel()
+     * @returns Function
+     * @short Cancels a delayed function scheduled to be run.
+     * @extra %delay%, %lazy%, %throttle%, and %debounce% can all set delays.
+     * @example
+     *
+     *   (function() {
+     *     alert('hay'); -> Never called
+     *   }).delay(500).cancel();
+     *
+     ***/
+    'cancel': function(fn) {
+      return cancelFunction(fn);
+    },
+
+     /***
+     * @method after(<n>)
+     * @returns Function
+     * @short Creates a function that will execute after <n> calls.
+     * @extra %after% is useful for running a final callback after a specific number of operations, often when the order in which the operations will complete is unknown. The created function will be passed an array of the arguments that it has collected from each after <n>.
+     * @example
+     *
+     *   var fn = (function() {
+     *     // Will be executed once
+     *   }).after(3); fn(); fn(); fn();
+     *
+     ***/
+    'after': function(fn, num) {
+      var count = 0, collectedArgs = [];
+      num = coercePositiveInteger(num);
+      return function() {
+        // Optimized: no leaking arguments
+        var args = []; for(var $i = 0, $len = arguments.length; $i < $len; $i++) args.push(arguments[$i]);
+        collectedArgs.push(args);
+        count++;
+        if (count >= num) {
+          return fn.call(this, collectedArgs);
+        }
+      };
+    },
+
+     /***
+     * @method once()
+     * @returns Function
+     * @short Creates a function that will execute only once and store the result.
+     * @extra %once% is useful for creating functions that will cache the result of an expensive operation and use it on subsequent calls. Also it can be useful for creating initialization functions that only need to be run once.
+     * @example
+     *
+     *   var fn = (function() {
+     *     // Will be executed once only
+     *   }).once(); fn(); fn(); fn();
+     *
+     ***/
+    'once': function(fn) {
+      // noop always returns "undefined" as the cache key.
+      return createMemoizedFunction(fn, function() {});
+    },
+
+     /***
+     * @method memoize([hashFn])
+     * @returns Function
+     * @short Creates a function that will cache results for unique calls.
+     * @extra %memoize% can be thought of as a more power %once%. Where %once% will only call a function once ever, memoized functions will be called once per unique call. A "unique call" is determined by the return value of [hashFn], which is passed the arguments of each call. If [hashFn] is undefined, it will stringify all arguments, such that any different argument signature will result in a unique call. Passing a string for [hashFn] is a shortcut that will get that property from the first argument. This operation supports %deep_properties%.
+     * @example
+     *
+     *   var fn = (function() {
+     *     // Will be executed twice, returning the memoized
+     *     // result of the first call again on the last.
+     *   }).memoize(); fn(1); fn(2); fn(1);
+     *
+     ***/
+    'memoize': function(fn, hashFn) {
+      return createMemoizedFunction(fn, hashFn);
+    },
+
+     /***
+     * @method lock([n])
+     * @returns Function
+     * @short Locks the number of arguments accepted by the function.
+     * @extra If not passed, [n] will be the length of the function. This method can be called on functions created by %partial%, in which case it will lock the total arguments during execution.
+     * @example
+     *
+     *   parseInt.lock(1)('10', 16); -> 10 (only 1 argument passed to parseInt)
+     *   (function() {
+     *     console.info(arguments.length); // Should be 2
+     *   }).lock(2)('a','b','c');
+     *
+     ***/
+    'lock': function(fn, n) {
+      var lockedFn;
+      if (_partial(fn)) {
+        _lock(fn, isNumber(n) ? n : null);
+        return fn;
+      }
+      lockedFn = function() {
+        arguments.length = min(_lock(lockedFn), arguments.length);
+        return fn.apply(this, arguments);
+      };
+      _lock(lockedFn, isNumber(n) ? n : fn.length);
+      return lockedFn;
+    }
+
+  });
+
+
+  defineInstanceWithArguments(sugarFunction, {
+
+     /***
+     * @method partial(<arg1>, <arg2>, ...)
+     * @returns Function
+     * @short Returns a new version of the function which has part of its arguments pre-emptively filled in, also known as "currying".
+     * @extra %undefined% can be passed as any argument, and is a placeholder that will be replaced with arguments passed when the function is executed. This allows currying of arguments even when they occur toward the end of an argument list (the example demonstrates this more clearly).
+     * @example
+     *
+     *   var delayOneSecond = setTimeout.partial(undefined, 1000);
+     *   delayOneSecond(function() {
+     *     // Will be executed 1s later
+     *   });
+     *
+     ***/
+    'partial': function(fn, curriedArgs) {
+      var curriedLen = curriedArgs.length;
+      var partialFn = function() {
+        var argIndex = 0, applyArgs = [], self = this, lock = _lock(partialFn), result, i;
+        for (i = 0; i < curriedLen; i++) {
+          var arg = curriedArgs[i];
+          if (isDefined(arg)) {
+            applyArgs[i] = arg;
+          } else {
+            applyArgs[i] = arguments[argIndex++];
+          }
+        }
+        for (i = argIndex; i < arguments.length; i++) {
+          applyArgs.push(arguments[i]);
+        }
+        if (lock === null) {
+          lock = curriedLen;
+        }
+        if (isNumber(lock)) {
+          applyArgs.length = min(applyArgs.length, lock);
+        }
+        // If the bound "this" object is an instance of the partialed
+        // function, then "new" was used, so preserve the prototype
+        // so that constructor functions can also be partialed.
+        if (self instanceof partialFn) {
+          self = createInstanceFromPrototype(fn.prototype);
+          result = fn.apply(self, applyArgs);
+          // An explicit return value is allowed from constructors
+          // as long as they are of "object" type, so return the
+          // correct result here accordingly.
+          return isObjectType(result) ? result : self;
+        }
+        return fn.apply(self, applyArgs);
+      };
+      _partial(partialFn, true);
+      return partialFn;
+    },
+
+     /***
+     * @method delay([ms] = 1, [arg1], ...)
+     * @returns Function
+     * @short Executes the function after <ms> milliseconds.
+     * @extra Returns a reference to itself. %delay% is also a way to execute non-blocking operations that will wait until the CPU is free. Delayed functions can be canceled using the %cancel% method. Can also curry arguments passed in after <ms>.
+     * @example
+     *
+     *   (function(arg1) {
+     *     // called 1s later
+     *   }).delay(1000, 'arg1');
+     *
+     ***/
+    'delay': function(fn, ms, args) {
+      setDelay(fn, ms, fn, fn, args);
+      return fn;
+    },
+
+     /***
+     * @method every([ms] = 1, [arg1], ...)
+     * @returns Function
+     * @short Executes the function every <ms> milliseconds.
+     * @extra Returns a reference to itself. %every% uses %setTimeout%, which means that you are guaranteed a period of idle time equal to [ms] after execution has finished. Compare this to %setInterval% which will try to run a function every [ms], even when execution itself takes up a portion of that time. In most cases avoiding %setInterval% is better as calls won't "back up" when the CPU is under strain, however this also means that calls are less likely to happen at exact intervals of [ms], so the use case here should be considered. Additionally, %every% can curry arguments passed in after [ms], and also be canceled with %cancel%.
+     * @example
+     *
+     *   (function(arg1) {
+     *     // called every 1s
+     *   }).every(1000, 'arg1');
+     *
+     ***/
+    'every': function(fn, ms, args) {
+      function execute () {
+        // Set the delay first here, so that cancel
+        // can be called within the executing function.
+        setDelay(fn, ms, execute);
+        fn.apply(fn, args);
+      }
+      setDelay(fn, ms, execute);
+      return fn;
+    }
+
+  });
+  'use strict';
+
+  /***
+   * @module Enumerable
+   * @dependency core
+   * @description Counting, mapping, and finding methods on both arrays and objects.
+   *
+   ***/
+
+  function sum(obj, map, k) {
+    var sum = 0;
+    enumerateWithMapping(obj, map, function(val) {
+      sum += val;
+    }, k);
+    return sum;
+  }
+
+  function average(obj, map, k) {
+    var sum = 0, count = 0;
+    enumerateWithMapping(obj, map, function(val) {
+      sum += val;
+      count++;
+    }, k);
+    // Prevent divide by 0
+    return sum / (count || 1);
+  }
+
+  function median(obj, map, k) {
+    var result = [], middle, len;
+    enumerateWithMapping(obj, map, function(val) {
+      result.push(val);
+    }, k);
+    len = result.length;
+    if (!len) return 0;
+    result.sort(function(a, b) {
+      return a - b;
+    });
+    middle = trunc(len / 2);
+    return len % 2 ? result[middle] : (result[middle - 1] + result[middle]) / 2;
+  }
+
+  function getMinOrMax(obj, map, all, max, k) {
+    var result = [], edge;
+    enumerateWithMapping(obj, map, function(val, key) {
+      if (isUndefined(val)) {
+        throw new TypeError('Cannot compare with undefined');
+      }
+      if (val === edge) {
+        result.push(key);
+      } else if (isUndefined(edge) || (max && val > edge) || (!max && val < edge)) {
+        result = [key];
+        edge = val;
+      }
+    }, k);
+    return getReducedMinMaxResult(result, obj, all, k);
+  }
+
+  function getLeastOrMost(obj, map, all, most, k) {
+    var groupedByValue = {}, result, minMaxResult;
+    enumerateWithMapping(obj, map, function(val, key) {
+      var str = stringify(val);
+      var arr = groupedByValue[str] || [];
+      arr.push(key);
+      groupedByValue[str] = arr;
+    }, k);
+    minMaxResult = getMinOrMax(groupedByValue, 'length', all, most, true);
+    if (all) {
+      result = [];
+      // Flatten result
+      iterateOverObject(minMaxResult, function(key, val) {
+        result = result.concat(val);
+      });
+    } else {
+      result = groupedByValue[minMaxResult];
+    }
+    return getReducedMinMaxResult(result, obj, all, k);
+  }
+
+
+  // Support
+
+  function getReducedMinMaxResult(result, obj, all, k) {
+    if (k && all) {
+      // The method has returned an array of keys so use this array
+      // to build up the resulting object in the form we want it in.
+      return result.reduce(function(o, key) {
+        o[key] = obj[key];
+        return o;
+      }, {});
+    } else if (result && !all) {
+      result = result[0];
+    }
+    return result;
+  }
+
+  function enumerateWithMapping(obj, map, fn, k) {
+    iterateOverObject(obj, function(key, val) {
+      if (!k && !isArrayIndex(key)) {
+        return;
+      }
+      var args = k ? [key, val, obj] : [val, +key, obj];
+      var mapped = mapWithShortcuts(val, map, obj, args);
+      fn(mapped, k ? key : val);
+    });
+  }
+
+  /***
+   * @namespace Array
+   *
+   ***/
+
+  // Flag allowing native array methods to be enhanced
+  var ARRAY_ENHANCEMENTS_FLAG = 'enhanceArray';
+
+  // Enhanced Natives
+  var enhancedMap       = wrapMapWithShortcuts(),
+      enhancedFind      = wrapNativeWithMatcher('find'),
+      enhancedSome      = wrapNativeWithMatcher('some'),
+      enhancedEvery     = wrapNativeWithMatcher('every'),
+      enhancedFilter    = wrapNativeWithMatcher('filter'),
+      enhancedFindIndex = wrapNativeWithMatcher('findIndex');
+
+  function arrayEach(arr, fn, fromIndex, loop) {
+    var index, i, length = +arr.length;
+    if (fromIndex < 0) fromIndex = max(0, arr.length + fromIndex);
+    i = isNaN(fromIndex) ? 0 : fromIndex;
+    if (loop === true) {
+      length += i;
+    }
+    while(i < length) {
+      index = i % arr.length;
+      if (!(index in arr)) {
+        return iterateOverSparseArray(arr, fn, i, loop);
+      } else if (fn.call(arr, arr[index], index, arr) === false) {
+        break;
+      }
+      i++;
+    }
+    return arr;
+  }
+
+  function arrayFindFrom(arr, f, fromIndex, loop, all, findIndex) {
+    var result = [], matcher;
+    if (arr.length > 0) {
+      matcher = getMatcher(f);
+      arrayEach(arr, function(el, i) {
+        if (matcher.call(arr, el, i, arr)) {
+          result.push(findIndex ? i : el);
+          return all;
+        }
+      }, fromIndex, loop);
+    }
+    return all ? result : result[0];
+  }
+
+  function arrayNone(arr, f, context, argLen) {
+    return !enhancedSome(arr, f, context, argLen);
+  }
+
+  function arrayCount(arr, f) {
+    if (isUndefined(f)) return arr.length;
+    return enhancedFilter(arr, f).length;
+  }
+
+  // Support
+
+  function wrapMapWithShortcuts() {
+    var nativeMap = Array.prototype.map;
+    return function(arr, map, context) {
+      var args = [];
+      if (isFunction(map)) {
+        args.push(map);
+      } else if (map) {
+        args.push(function(el, index) {
+          return mapWithShortcuts(el, map, context, [el, index, arr]);
+        });
+      }
+      args.push(context);
+      return nativeMap.apply(arr, args);
+    };
+  }
+
+  function wrapNativeWithMatcher(name) {
+    var nativeFn = Array.prototype[name];
+    return function(arr, f, context, argLen) {
+      var args = [], matcher;
+      if (argLen === 0) {
+        throw new TypeError('First argument required');
+      }
+      if (isFunction(f)) {
+        args.push(f);
+      } else {
+        matcher = getMatcher(f);
+        args.push(function(el, index, arr) {
+          return matcher(el, index, arr);
+        });
+      }
+      args.push(context);
+      return nativeFn.apply(arr, args);
+    };
+  }
+
+  defineInstance(sugarArray, {
+
+    /***
+     * @method map(<map>, [context])
+     * @returns Array
+     * @short Maps the array to another array whose elements are those returned by <map>.
+     * @extra [context] is the %this% object. Sugar enhances this method to accept a string for <map>, which is a shortcut for a function that gets that property (or invokes a function) on each element. This string allows `deep mapping`.
+     * @polyfill es5
+     * @callback
+     *
+     *   el  The element of the current iteration.
+     *   i   The index of the current iteration.
+     *   arr A reference to the array.
+     *
+     * @example
+     *
+     *   [1,2,3].map(function(n) {
+     *     return n * 3;
+     *   });                                  -> [3,6,9]
+     *   ['one','two','three'].map(function(n) {
+     *     return n.length;
+     *   });                                  -> [3,3,5]
+     *   ['one','two','three'].map('length')  -> [3,3,5]
+     *
+     ***/
+    'map': fixArgumentLength(enhancedMap),
+
+    /***
+     * @method every(<f>, [context])
+     * @returns Boolean
+     * @short Returns true if <f> is true for all elements of the array.
+     * @extra [context] is the %this% object. Sugar enhances this method with `matching shortcuts`.
+     * @polyfill es5
+     * @alias all
+     * @example
+     *
+     +   ['a','a','a'].every(function(n) {
+     *     return n == 'a';
+     *   });
+     *   ['a','a','a'].every('a')   -> true
+     *   [{a:2},{a:2}].every({a:2}) -> true
+     ***/
+    'every': fixArgumentLength(enhancedEvery),
+
+    /***
+     * @method some(<f>, [context])
+     * @returns Boolean
+     * @short Returns true if <f> is true for any element in the array.
+     * @extra [context] is the %this% object. Sugar enhances this method with `matching shortcuts`.
+     * @polyfill es5
+     * @alias any
+     * @example
+     *
+     +   ['a','b','c'].some(function(n) {
+     *     return n == 'a';
+     *   });
+     +   ['a','b','c'].some(function(n) {
+     *     return n == 'd';
+     *   });
+     *   ['a','b','c'].some('a')   -> true
+     *   [{a:2},{b:5}].some({a:2}) -> true
+     ***/
+    'some': fixArgumentLength(enhancedSome),
+
+    /***
+     * @method filter(<f>, [context])
+     * @returns Array
+     * @short Returns any elements in the array for which <f> is true.
+     * @extra [context] is the %this% object. Sugar enhances this method with `matching shortcuts`.
+     * @polyfill es5
+     * @example
+     *
+     +   [1,2,3].filter(function(n) {
+     *     return n > 1;
+     *   });
+     *   [1,2,2,4].filter(2) -> 2
+     *
+     ***/
+    'filter': fixArgumentLength(enhancedFilter),
+
+    /***
+     * @method find(<f>, [context])
+     * @returns Mixed
+     * @short Returns the first element in the array for which <f> is true.
+     * @extra [context] is the %this% object. Sugar enhances this method with `matching shortcuts`.
+     * @polyfill es6
+     * @example
+     *
+     *   [{a:1,b:2},{a:1,b:3},{a:1,b:4}].find(function(n) {
+     *     return n['a'] == 1;
+     *   });                                  -> {a:1,b:3}
+     *   ['cuba','japan','canada'].find(/^c/) -> 'cuba'
+     *
+     ***/
+    'find': fixArgumentLength(enhancedFind),
+
+    /***
+     * @method findIndex(<f>, [context])
+     * @returns Number
+     * @short Returns the index of the first element in the array for which <f> is true, or -1 if none.
+     * @extra [context] is the %this% object. Sugar enhances this method with `matching shortcuts`.
+     * @polyfill es6
+     * @example
+     *
+     *   [1,2,3,4].findIndex(function(n) {
+     *     return n % 2 == 0;
+     *   }); -> 1
+     *   [1,2,3,4].findIndex(3);               -> 2
+     *   ['one','two','three'].findIndex(/t/); -> 1
+     *
+     ***/
+    'findIndex': fixArgumentLength(enhancedFindIndex)
+
+  }, [ENHANCEMENTS_FLAG, ARRAY_ENHANCEMENTS_FLAG]);
+
+  /***
+   * @method all()
+   * @alias every
+   *
+   ***/
+  alias(sugarArray, 'all', 'every');
+
+  /***
+   * @method any()
+   * @alias some
+   *
+   ***/
+  alias(sugarArray, 'any', 'some');
+
+
+  defineInstance(sugarArray, {
+
+    /***
+     * @method none(<f>)
+     * @returns Boolean
+     * @short Returns true if none of the elements in the array match <f>.
+     * @extra <f> will match a string, number, array, object, or alternately test against a function or regex. This method implements `matching shortcuts`.
+     * @example
+     *
+     *   [1,2,3].none(5)         -> true
+     *   ['a','b','c'].none(/b/) -> false
+     *   [{a:1},{b:2}].none(function(n) {
+     *     return n['a'] > 1;
+     *   });                     -> true
+     *
+     ***/
+    'none': fixArgumentLength(arrayNone),
+
+    /***
+     * @method findFrom(<f>, [fromIndex] = 0, [loop] = false)
+     * @returns Array
+     * @short Returns any element that matches <f>, beginning from [fromIndex].
+     * @extra <f> will match a string, number, array, object, or alternately test against a function or regex. Will continue from index = 0 if [loop] is true. This method implements `matching shortcuts`.
+     * @example
+     *
+     *   ['cuba','japan','canada'].findFrom(/^c/, 2) -> 'canada'
+     *
+     ***/
+    'findFrom': function(arr, f, fromIndex, loop) {
+      return arrayFindFrom(arr, f, fromIndex, loop);
+    },
+
+    /***
+     * @method filterFrom(<f>, [fromIndex] = 0, [loop] = false)
+     * @returns Array
+     * @short Returns any elements that match <f>, beginning from [fromIndex].
+     * @extra <f> will match a string, number, array, object, or alternately test against a function or regex. Will continue from index = 0 if [loop] is true. This method implements `matching shortcuts`.
+     * @example
+     *
+     *   ['cuba','canada','chile'].filterFrom(/^c/, 2)       -> ['canada','chile']
+     *   ['cuba','canada','chile'].filterFrom(/^c/, 2, true) -> ['canada','chile','cuba']
+     *
+     ***/
+    'filterFrom': function(arr, f, fromIndex, loop) {
+      return arrayFindFrom(arr, f, fromIndex, loop, true);
+    },
+
+    /***
+     * @method findIndexFrom(<f>, [fromIndex] = 0, [loop] = false)
+     * @returns Array
+     * @short Returns the index of any element that matches <f>, beginning from [fromIndex].
+     * @extra <f> will match a string, number, array, object, or alternately test against a function or regex. Will continue from index = 0 if [loop] is true. This method implements `matching shortcuts`.
+     * @example
+     *
+     *   ['cuba','japan','canada'].findIndexFrom(/^c/, 2) -> 2
+     *
+     ***/
+    'findIndexFrom': function(arr, f, fromIndex, loop) {
+      var index = arrayFindFrom(arr, f, fromIndex, loop, false, true);
+      return isUndefined(index) ? -1 : index;
+    },
+
+    /***
+     * @method each(<fn>, [index] = 0, [loop] = false)
+     * @returns Array
+     * @short Runs <fn> against each element in the array. Enhanced version of %Array#forEach%.
+     * @extra If <fn> returns %false% at any time it will break out of the loop. If [index] is passed, <fn> will begin at that index and work its way to the end. If [loop] is true, it will then start over from the beginning of the array and continue until it reaches [index] - 1.
+     * @alias forEachFrom
+     * @callback
+     *
+     *   el  The element of the current iteration.
+     *   i   The index of the current iteration.
+     *   arr A reference to the array.
+     *
+     * @example
+     *
+     *   [1,2,3,4].each(function(n) {
+     *     // Called 4 times: 1, 2, 3, 4
+     *   });
+     *   [1,2,3,4].each(function(n) {
+     *     // Called 4 times: 3, 4, 1, 2
+     *   }, 2, true);
+     *
+     ***/
+    'each': function(arr, fn, index, loop) {
+      return arrayEach(arr, fn, index, loop);
+    },
+
+    /***
+     * @method min([map], [all] = false)
+     * @returns Mixed
+     * @short Returns the element in the array with the lowest value.
+     * @extra [map] may be a function mapping the value to be checked or a string acting as a shortcut. If [all] is true, will return all min values in an array.
+     * @example
+     *
+     *   [1,2,3].min()                          -> 1
+     *   ['fee','fo','fum'].min('length')       -> 'fo'
+     *   ['fee','fo','fum'].min('length', true) -> ['fo']
+     *   ['fee','fo','fum'].min(function(n) {
+     *     return n.length;
+     *   });                              -> ['fo']
+     *   [{a:3,a:2}].min(function(n) {
+     *     return n['a'];
+     *   });                              -> [{a:2}]
+     *
+     ***/
+    'min': function(arr, map, all) {
+      return getMinOrMax(arr, map, all);
+    },
+
+    /***
+     * @method max([map], [all] = false)
+     * @returns Mixed
+     * @short Returns the element in the array with the greatest value.
+     * @extra [map] may be a function mapping the value to be checked or a string acting as a shortcut. If [all] is true, will return all max values in an array.
+     * @example
+     *
+     *   [1,2,3].max()                          -> 3
+     *   ['fee','fo','fum'].max('length')       -> 'fee'
+     *   ['fee','fo','fum'].max('length', true) -> ['fee']
+     *   [{a:3,a:2}].max(function(n) {
+     *     return n['a'];
+     *   });                              -> {a:3}
+     *
+     ***/
+    'max': function(arr, map, all) {
+      return getMinOrMax(arr, map, all, true);
+    },
+
+    /***
+     * @method least([map], [all] = false)
+     * @returns Array
+     * @short Returns the elements in the array with the least commonly occuring value.
+     * @extra [map] may be a function mapping the value to be checked or a string acting as a shortcut. If [all] is true, will return multiple values in an array.
+     * @example
+     *
+     *   [3,2,2].least() -> 3
+     *   ['fe','fo','fum'].least('length', true) -> ['fum']
+     *   [{age:35,name:'ken'},{age:12,name:'bob'},{age:12,name:'ted'}].least(function(n) {
+     *     return n.age;
+     *   }, true); -> [{age:35, name:'ken'}]
+     *
+     ***/
+    'least': function(arr, map, all) {
+      return getLeastOrMost(arr, map, all);
+    },
+
+    /***
+     * @method most([map], [all] = false)
+     * @returns Array
+     * @short Returns the elements in the array with the most commonly occuring value.
+     * @extra [map] may be a function mapping the value to be checked or a string acting as a shortcut. If [all] is true, will return multiple values in an array.
+     * @example
+     *
+     *   [3,2,2].most(2) -> 2
+     *   ['fe','fo','fum'].most('length', true) -> ['fe','fo']
+     *   [{age:35,name:'ken'},{age:12,name:'bob'},{age:12,name:'ted'}].most(function(n) {
+     *     return n.age;
+     *   }, true); -> [{age:12,name:'bob'},{age:12,name:'ted'}]
+     *
+     ***/
+    'most': function(arr, map, all) {
+      return getLeastOrMost(arr, map, all, true);
+    },
+
+    /***
+     * @method count(<f>)
+     * @returns Number
+     * @short Counts all elements in the array that match <f>.
+     * @extra <f> will match a string, number, array, object, or alternately test against a function or regex. This method implements `matching shortcuts`.
+     * @example
+     *
+     *   ['a','b','a'].count('a') -> 2
+     *   ['a','b','c'].count(/b/) -> 1
+     *   [{a:1},{b:2}].count(function(n) {
+     *     return n['a'] > 1;
+     *   });                      -> 0
+     *
+     ***/
+    'count': function(arr, f) {
+      return arrayCount(arr, f);
+    },
+
+    /***
+     * @method sum([map])
+     * @returns Number
+     * @short Sums all values in the array.
+     * @extra [map] may be a function mapping the value to be summed or a string acting as a shortcut.
+     * @example
+     *
+     *   [1,2,2].sum() -> 5
+     *   [{age:35},{age:13}].sum(function(n) {
+     *     return n.age;
+     *   }); -> 48
+     *   [{age:35},{age:13}].sum('age') -> 48
+     *
+     ***/
+    'sum': function(arr, map) {
+      return sum(arr, map);
+    },
+
+    /***
+     * @method average([map])
+     * @returns Number
+     * @short Gets the mean average for all values in the array.
+     * @extra [map] may be a function mapping the value to be averaged or a string acting as a shortcut.
+     * @example
+     *
+     *   [1,2,3].average() -> 2
+     *   [{age:35},{age:11}].average(function(n) {
+     *     return n.age;
+     *   }); -> 23
+     *   [{age:35},{age:11}].average('age') -> 23
+     *
+     ***/
+    'average': function(arr, map) {
+      return average(arr, map);
+    },
+
+    /***
+     * @method median([map])
+     * @returns Number
+     * @short Gets the median average for all values in the array.
+     * @extra [map] may be a function mapping the value to be averaged or a string acting as a shortcut.
+     * @example
+     *
+     *   [1,2,2].median() -> 2
+     *   [{a:1},{a:2},{a:2}].median('a') -> 2
+     *
+     ***/
+    'median': function(arr, map) {
+      return median(arr, map);
+    }
+
+  });
+
+  /***
+   * @method forEachFrom()
+   * @alias each
+   *
+   ***/
+  alias(sugarArray, 'forEachFrom', 'each');
+
+
+
+  /***
+   * @namespace Object
+   *
+   ***/
+
+
+  // Object matchers
+  var objectSome  = wrapObjectMatcher('some'),
+      objectFind  = wrapObjectMatcher('find'),
+      objectEvery = wrapObjectMatcher('every');
+
+
+  function objectEach(obj, fn) {
+    assertCallable(fn);
+    iterateOverObject(obj, fn);
+    return obj;
+  }
+
+  function objectMap(obj, map) {
+    var result = {};
+    iterateOverObject(obj, function(key, val) {
+      result[key] = mapWithShortcuts(val, map, obj, [key, val, obj]);
+    });
+    return result;
+  }
+
+  function objectNone(obj, f) {
+    return !objectSome(obj, f);
+  }
+
+  function objectFilter(obj, f) {
+    var matcher = getMatcher(f, true), result = {};
+    iterateOverObject(obj, function(key, val) {
+      if (matcher(val, key, obj)) {
+        result[key] = val;
+      }
+    });
+    return result;
+  }
+
+  function objectCount(obj, f) {
+    var matcher = getMatcher(f, true), count = 0;
+    iterateOverObject(obj, function(key, val) {
+      if (matcher(val, key, obj)) {
+        count++;
+      }
+    });
+    return count;
+  }
+
+  // Support
+
+  function wrapObjectMatcher(name) {
+    var nativeFn = Array.prototype[name];
+    return function(obj, f) {
+      var matcher = getMatcher(f, true);
+      return nativeFn.call(getKeys(obj), function(key) {
+        return matcher(obj[key], key, obj);
+      });
+    };
+  }
+
+  defineInstanceAndStatic(sugarObject, {
+
+    /***
+     * @method Object.map(<obj>, <map>)
+     * @returns Object
+     * @short Maps the object to another object whose properties are those returned by <map>.
+     * @extra <map> can also be a string, which is a shortcut for a function that gets that property (or invokes a function) on each element. This string allows `deep mapping`.
+     * @callback
+     *
+     *   key The key of the current iteration.
+     *   val The value of the current iteration.
+     *   obj A reference to the object.
+     *
+     * @example
+     *
+     *   Object.map({ foo: 'bar' }, function(lhs, rhs) {
+     *     return 'ha';
+     *   }); -> Returns { foo: 'ha' }
+     *
+     ***/
+    'map': function(obj, map) {
+      return objectMap(obj, map);
+    },
+
+    /***
+     * @method Object.each(<obj>, <fn>)
+     * @returns Object
+     * @short Runs <fn> against each property in the object.
+     * @extra Does not iterate over inherited properties. If <fn> returns `false` at any time it will break out of the loop. Returns <obj>.
+     * @callback
+     *
+     *   key The key of the current iteration.
+     *   val The value of the current iteration.
+     *   obj A reference to the object.
+     *
+     * @example
+     *
+     *   Object.each({ foo: 'bar' }, function(k, v) {
+     *     console.log('key is ', k, ' and value is ', v);
+     *   });
+     *
+     ***/
+    'each': function(obj, fn) {
+      return objectEach(obj, fn);
+    },
+
+    /***
+     * @method Object.sum(<obj>, [map])
+     * @returns Number
+     * @short Sums all properties in the object.
+     * @extra [map] may be a function mapping the value to be summed or a string acting as a shortcut.
+     * @callback
+     *
+     *   key The key of the current iteration.
+     *   val The value of the current iteration.
+     *   obj A reference to the object.
+     *
+     * @example
+     *
+     *   Object.sum({a:35,b:13}); -> 48
+     *
+     ***/
+    'sum': function(obj, map) {
+      return sum(obj, map, true);
+    },
+
+    /***
+     * @method Object.average(<obj>, [map])
+     * @returns Number
+     * @short Gets the mean average of all properties in the object.
+     * @extra [map] may be a function mapping the value to be averaged or a string acting as a shortcut.
+     * @callback
+     *
+     *   key The key of the current iteration.
+     *   val The value of the current iteration.
+     *   obj A reference to the object.
+     *
+     * @example
+     *
+     *   Object.average({a:35,b:11}); -> 23
+     *
+     ***/
+    'average': function(obj, map) {
+      return average(obj, map, true);
+    },
+
+    /***
+     * @method Object.median(<obj>, [map])
+     * @returns Number
+     * @short Gets the median average of all properties in the object.
+     * @extra [map] may be a function mapping the value to be averaged or a string acting as a shortcut.
+     * @callback
+     *
+     *   key The key of the current iteration.
+     *   val The value of the current iteration.
+     *   obj A reference to the object.
+     *
+     * @example
+     *
+     *   Object.median({a:1,b:2,c:2}) -> 2
+     *
+     ***/
+    'median': function(obj, map) {
+      return median(obj, map, true);
+    },
+
+    /***
+     * @method Object.min(<obj>, [map], [all] = false)
+     * @returns Mixed
+     * @short Returns the key of the property in the object with the lowest value.
+     * @extra If [all] is true, will return an object with all properties in the object with the lowest value. [map] may be a function mapping the value to be checked or a string acting as a shortcut.
+     * @callback
+     *
+     *   key The key of the current iteration.
+     *   val The value of the current iteration.
+     *   obj A reference to the object.
+     *
+     * @example
+     *
+     *   Object.min({a:1,b:2,c:3})                    -> 'a'
+     *   Object.min({a:'aaa',b:'bb',c:'c'}, 'length') -> 'c'
+     *   Object.min({a:1,b:1,c:3}, null, true)        -> {a:1,b:1}
+     *
+     ***/
+    'min': function(obj, map, all) {
+      return getMinOrMax(obj, map, all, false, true);
+    },
+
+    /***
+     * @method Object.max(<obj>, [map], [all] = false)
+     * @returns Mixed
+     * @short Returns the key of the property in the object with the highest value.
+     * @extra If [all] is true, will return an object with all properties in the object with the highest value. [map] may be a function mapping the value to be checked or a string acting as a shortcut.
+     * @callback
+     *
+     *   key The key of the current iteration.
+     *   val The value of the current iteration.
+     *   obj A reference to the object.
+     *
+     * @example
+     *
+     *   Object.max({a:1,b:2,c:3})                    -> 'c'
+     *   Object.max({a:'aaa',b:'bb',c:'c'}, 'length') -> 'a'
+     *   Object.max({a:1,b:3,c:3}, null, true)        -> {b:3,c:3}
+     *
+     ***/
+    'max': function(obj, map, all) {
+      return getMinOrMax(obj, map, all, true, true);
+    },
+
+    /***
+     * @method Object.least(<obj>, [map], [all] = false)
+     * @returns Mixed
+     * @short Returns the key of the property in the object with the least commonly occuring value.
+     * @extra If [all] is true, will return an object with all properties in the object with the least common value. [map] may be a function mapping the value to be checked or a string acting as a shortcut.
+     * @callback
+     *
+     *   key The key of the current iteration.
+     *   val The value of the current iteration.
+     *   obj A reference to the object.
+     *
+     * @example
+     *
+     *   Object.least({a:1,b:3,c:3})                   -> 'a'
+     *   Object.least({a:'aa',b:'bb',c:'c'}, 'length') -> 'c'
+     *   Object.least({a:1,b:3,c:3}, null, true)       -> {a:1}
+     *
+     ***/
+    'least': function(obj, map, all) {
+      return getLeastOrMost(obj, map, all, false, true);
+    },
+
+    /***
+     * @method Object.most(<obj>, [map], [all] = false)
+     * @returns Mixed
+     * @short Returns the key of the property in the object with the most commonly occuring value.
+     * @extra If [all] is true, will return an object with all properties in the object with the most common value. [map] may be a function mapping the value to be checked or a string acting as a shortcut.
+     * @callback
+     *
+     *   key The key of the current iteration.
+     *   val The value of the current iteration.
+     *   obj A reference to the object.
+     *
+     * @example
+     *
+     *   Object.most({a:1,b:3,c:3})                   -> 'b'
+     *   Object.most({a:'aa',b:'bb',c:'c'}, 'length') -> 'a'
+     *   Object.most({a:1,b:3,c:3}, null, true)       -> {b:3,c:3}
+     *
+     ***/
+    'most': function(obj, map, all) {
+      return getLeastOrMost(obj, map, all, true, true);
+    },
+
+    /***
+     * @method Object.some(<obj>, <f>)
+     * @returns Boolean
+     * @short Returns true if <f> is true for any property in the object.
+     * @extra This method implements `matching shortcuts`.
+     * @alias any
+     * @example
+     *
+     *   Object.some({a:1,b:2}, function(key, val) {
+     *     return val == 1;
+     *   }); -> true
+     *   Object.some({a:1,b:2}, 1); -> true
+     *
+     ***/
+    'some': objectSome,
+
+    /***
+     * @method Object.every(<obj>, <f>)
+     * @returns Boolean
+     * @short Returns true if <f> is true for all properties in the object.
+     * @extra This method implements `matching shortcuts`.
+     * @alias all
+     * @example
+     *
+     *   Object.every({a:1,b:2}, function(key, val) {
+     *     return val > 0;
+     *   }); -> true
+     *   Object.every({a:'a',b:'b'}, /[a-z]/); -> true
+     *
+     ***/
+    'every': objectEvery,
+
+    /***
+     * @method Object.find(<obj>, <f>)
+     * @returns Boolean
+     * @short Returns the first key in the object for which <f> is true.
+     * @extra This method implements `matching shortcuts`. Note that "first" is implementation-dependent. If order is important an array should be used instead.
+     * @example
+     *
+     *   Object.find({a:1,b:2}, function(key, val) {
+     *     return val == 2;
+     *   }); -> 'b'
+     *   Object.find({a:'a',b:'b'}, /[a-z]/); -> 'a'
+     *
+     ***/
+    'find': objectFind,
+
+    /***
+     * @method Object.filter(<obj>, <f>)
+     * @returns Array
+     * @short Returns an object with all properties in <obj> for which <f> is true.
+     * @extra This method implements `matching shortcuts`.
+     * @example
+     *
+     *   Object.filter({a:1,b:2}, function(key, val) {
+     *     return val == 1;
+     *   }); -> {a:1}
+     *   Object.filter({a:'a',b:'b',z:'z'}, /[a-f]/); -> {a:'a',b:'b'}
+     *
+     ***/
+    'filter': function(obj, f) {
+      return objectFilter(obj, f);
+    },
+
+    /***
+     * @method Object.count(<obj>, <f>)
+     * @returns Number
+     * @short Counts all properties in the object that match <f>.
+     * @extra <f> will match a string, number, array, object, or alternately test against a function or regex. This method implements `matching shortcuts`.
+     * @example
+     *
+     *   Object.count({a:'a',b:'b',c:'a'}, 'a') -> 2
+     *   Object.count({a:1,b:2}].count(function(key, val) {
+     *     return val > 1;
+     *   }); -> 1
+     *
+     ***/
+    'count': function(obj, f) {
+      return objectCount(obj, f);
+    },
+
+    /***
+     * @method Object.none(<obj>, <f>)
+     * @returns Boolean
+     * @short Returns true if none of the properties in the object match <f>.
+     * @extra This method implements `matching shortcuts`.
+     * @example
+     *
+     *   Object.none({a:1,b:2}, function(key, val) {
+     *     return val == 1;
+     *   }); -> false
+     *   Object.none({a:1,b:2}, 3); -> true
+     *
+     ***/
+    'none': function(obj, f) {
+      return objectNone(obj, f);
+    }
+
+  });
+
+  /***
+   * @method Object.all()
+   * @alias Object.every
+   *
+   ***/
+  alias(sugarObject, 'all', 'every');
+
+  /***
+   * @method Object.any()
+   * @alias Object.some
+   *
+   ***/
+  alias(sugarObject, 'any', 'some');
+
+
+  function buildHashEnumerable() {
+
+    var methods = [
+      'map','some','any','every','all','none','find','filter',
+      'each','count','sum','average','median',
+      'min','max','most','least'
+    ];
+
+    forEach(methods, function(name) {
+      setProperty(Hash.prototype, name, sugarObject[name].instance);
+    });
+
+  }
+
+  buildHashEnumerable();
+  'use strict';
+
+  /***
+   * @module Array
+   * @dependency core
+   * @description Array manipulation and traversal, alphanumeric sorting and collation.
+   *
+   ***/
+
+  var HALF_WIDTH_NINE = 0x39;
+  var FULL_WIDTH_NINE = 0xff19;
+
+
+  function arrayClone(arr) {
+    var clone = [], i = arr.length;
+    while(i--) {
+      if (i in arr) {
+        clone[i] = arr[i];
+      }
     }
     return clone;
   }
 
-  if (contextDate && d) {
-    // If a context date is passed, (in the case of "get"
-    // and "[unit]FromNow") then use it as the starting point.
-    date = cloneDateByFlag(contextDate);
-  } else {
-    date = getNewDate();
-  }
-
-  _utc(date, options.fromUTC);
-
-  if (isDate(d)) {
-    date = cloneDateByFlag(d);
-  } else if (isObjectType(d)) {
-    set = simpleClone(d);
-    updateDate(date, set, true);
-  } else if (isNumber(d) || d === null) {
-    date.setTime(d);
-  } else if (isString(d)) {
-
-    // The act of getting the locale will pre-initialize
-    // if it is missing and add the required formats.
-    baseLocale = localeManager.get(options.locale);
-
-    // Clean the input and convert CJK based numerals if they exist.
-    d = cleanDateInput(d);
-
-    if (baseLocale) {
-      iterateOverObject(baseLocale.getFormats(), function(i, dif) {
-        var match = d.match(dif.reg), loc, tmp;
-        if (match) {
-
-          loc = dif.locale;
-          set = getFormatMatch(match, dif.to, loc);
-          loc.cachedFormat = dif;
-
-          if (set.utc) {
-            _utc(date, true);
-          }
-
-          if (set.timestamp) {
-            set = set.timestamp;
-            return false;
-          }
-
-          if (dif.variant && !isString(set.month) && (isString(set.date) || baseLocale.isMDY())) {
-            handleAmericanVariant();
-          }
-
-          if (hasAbbreviatedYear(set)) {
-            // If the year is 2 digits then get the implied century.
-            set.year = getYearFromAbbreviation(date, set.year);
-          }
-
-          if (set.month) {
-            // Set the month which may be localized.
-            set.month = loc.getMonthValue(set.month);
-            if (set.shift && !set.unit) set.unit = loc.unitsLower[7];
-          }
-
-          if (set.hours && (tmp = loc.modifiersByName[set.hours])) {
-            // Set hour tokens like "noon"
-            set.hours = tmp.value;
-          }
-
-          if (set.day && (tmp = loc.modifiersByName[set.day])) {
-            // Relative day localizations such as "today" and "tomorrow".
-            handleLocalizedRelativeDay(loc, tmp);
-          } else if ((tmp = loc.getWeekdayValue(set.weekday || set.day)) > -1) {
-            handleLocalizedWeekday(loc, tmp);
-          }
-
-          if (set.date && !isNumber(set.date)) {
-            set.date = loc.getNumericDate(set.date);
-          }
-
-          if (loc.matchPM(set.ampm) && set.hour < 12) {
-            // If the time is 1pm-11pm advance the time by 12 hours.
-            set.hour += 12;
-          } else if (loc.matchAM(set.ampm) && set.hour === 12) {
-            // If it is 12:00am then set the hour to 0.
-            set.hour = 0;
-          }
-
-          if (isNumber(set.offsetHours) || isNumber(set.offsetMinutes)) {
-            handleTimezoneOffset();
-          }
-
-          if (set.unit) {
-            handleRelativeUnit(loc);
-          }
-
-          if (set.edge) {
-            // If there is an "edge" it needs to be set after the
-            // other fields are set. ie "the end of February"
-            afterDateSet(function() {
-              setUnitEdge(loc);
-            });
-          }
-
-          if (set.yearSign === '-') {
-            set.year *= -1;
-          }
-
-          handleFractionalTime();
-
-          return false;
-        }
-      });
-    }
-    if (!set) {
-      // The Date constructor does something tricky like checking the number
-      // of arguments so simply passing in undefined won't work.
-      if (!/^now$/i.test(d)) {
-        date = new Date(d);
-      }
-      if (options.fromUTC) {
-        // Falling back to system date here which cannot be parsed as UTC,
-        // so if we're forcing UTC then simply add the offset.
-        date.setTime(date.getTime() + (tzOffset(date) * MINUTE));
-      }
-    } else if (set.unit) {
-      // If a set contains a unit ("days", "months", etc.), then it is relative to the current date.
-      updateDate(date, set, false, 1);
-    } else {
-      if (_utc(date)) {
-        // UTC times can traverse into other days or even months,
-        // so preemtively reset the time here to prevent this.
-        resetTime(date);
-      }
-      updateDate(date, set, true, 0, options.prefer, weekdayForward);
-    }
-    fireCallbacks();
-  }
-  // A date created by parsing a string presumes that the format *itself* is UTC, but
-  // not that the date, once created, should be manipulated as such. In other words,
-  // if you are creating a date object from a server time "2012-11-15T12:00:00Z",
-  // in the majority of cases you are using it to create a date that will, after creation,
-  // be manipulated as local, so reset the utc flag here unless "setUTC" is also set.
-  _utc(date, !!options.setUTC);
-  return {
-    date: date,
-    set: set
-  };
-}
-
-function hasAbbreviatedYear(obj) {
-  return obj.yearAsString && obj.yearAsString.length === 2;
-}
-
-// If the year is two digits, add the most appropriate century prefix.
-function getYearFromAbbreviation(d, year) {
-  return round(getYear(d) / 100) * 100 - round(year / 100) * 100 + year;
-}
-
-function setISOWeekNumber(d, num) {
-  if (isNumber(num)) {
-    // Consciously avoiding updateDate here to prevent circular dependencies.
-    var isoWeek = cloneDate(d), dow = getWeekday(d);
-    moveToFirstDayOfWeekYear(isoWeek, ISO_FIRST_DAY_OF_WEEK, ISO_FIRST_DAY_OF_WEEK_YEAR);
-    setDate(isoWeek, getDate(isoWeek) + 7 * (num - 1));
-    setYear(d, getYear(isoWeek));
-    setMonth(d, getMonth(isoWeek));
-    setDate(d, getDate(isoWeek));
-    setWeekday(d, dow || 7);
-  }
-  return d.getTime();
-}
-
-function getWeekNumber(d, allowPrevious, firstDayOfWeek, firstDayOfWeekYear) {
-  var isoWeek, n = 0;
-  if (isUndefined(firstDayOfWeek)) {
-    firstDayOfWeek = ISO_FIRST_DAY_OF_WEEK;
-  }
-  if (isUndefined(firstDayOfWeekYear)) {
-    firstDayOfWeekYear = ISO_FIRST_DAY_OF_WEEK_YEAR;
-  }
-  // Moving to the end of the week allows for forward year traversal, ie
-  // Dec 29 2014 is actually week 01 of 2015.
-  isoWeek = moveToEndOfWeek(cloneDate(d), firstDayOfWeek);
-  moveToFirstDayOfWeekYear(isoWeek, firstDayOfWeek, firstDayOfWeekYear);
-  if (allowPrevious && d < isoWeek) {
-    // If the date is still before the start of the year, then it should be
-    // the last week of the previous year, ie Jan 1 2016 is actually week 53
-    // of 2015, so move to the beginning of the week to traverse the year.
-    isoWeek = moveToBeginningOfWeek(cloneDate(d), firstDayOfWeek);
-    moveToFirstDayOfWeekYear(isoWeek, firstDayOfWeek, firstDayOfWeekYear);
-  }
-  while (isoWeek <= d) {
-    // Doing a very simple walk to get the week number.
-    setDate(isoWeek, getDate(isoWeek) + 7);
-    n++;
-  }
-  return n;
-}
-
-function getWeekYear(d, localeCode, iso) {
-  var year = getYear(d), month = getMonth(d), firstDayOfWeek, firstDayOfWeekYear, week, loc;
-  if (month === 0 || month === 11) {
-    if (!iso) {
-      loc = localeManager.get(localeCode);
-      firstDayOfWeek = loc.getFirstDayOfWeek(localeCode);
-      firstDayOfWeekYear = loc.getFirstDayOfWeekYear(localeCode);
-    }
-    week = getWeekNumber(d, false, firstDayOfWeek, firstDayOfWeekYear);
-    if (month === 0 && week === 0) {
-      year -= 1;
-    } else if (month === 11 && week === 1) {
-      year += 1;
-    }
-  }
-  return year;
-}
-
-function moveToEndOfWeek(d, firstDayOfWeek) {
-  var target = firstDayOfWeek - 1;
-  setWeekday(d, ceil((getWeekday(d) - target) / 7) * 7 + target);
-  return d;
-}
-
-function moveToBeginningOfWeek(d, firstDayOfWeek) {
-  setWeekday(d, floor((getWeekday(d) - firstDayOfWeek) / 7) * 7 + firstDayOfWeek);
-  return d;
-}
-
-function moveToFirstDayOfWeekYear(d, firstDayOfWeek, firstDayOfWeekYear) {
-  resetUnitAndLower(d, 'month');
-  setDate(d, firstDayOfWeekYear);
-  moveToBeginningOfWeek(d, firstDayOfWeek);
-}
-
-function daysInMonth(d) {
-  return 32 - callDateGet(new Date(getYear(d), getMonth(d), 32), 'Date');
-}
-
-// Gets an "adjusted date unit" which is a way of representing
-// the largest possible meaningful unit. In other words, if passed
-// 3600000, this will return an array which represents "1 hour".
-function getAdjustedUnit(ms, fn) {
-  var unitIndex = 0, value = 0;
-  iterateOverDateUnitsReverse(function(name, u, i) {
-    value = abs(fn(u));
-    if (value >= 1) {
-      unitIndex = i;
-      return false;
-    }
-  });
-  return [value, unitIndex, ms];
-}
-
-// Gets the adjusted unit based on simple division by
-// date unit multiplier.
-function getAdjustedUnitForNumber(ms) {
-  return getAdjustedUnit(ms, function(unit) {
-    return trunc(withPrecision(ms / unit.multiplier, 1));
-  });
-}
-
-// Gets the adjusted unit using the [unit]FromNow methods,
-// which use internal date methods that neatly avoid vaguely
-// defined units of time (days in month, leap years, etc).
-function getAdjustedUnitForDate(d) {
-  var ms = d - new Date();
-  if (d > new Date) {
-
-    // This adjustment is solely to allow
-    // Date.create('1 year from now').relative() to remain
-    // "1 year from now" instead of "11 months from now",
-    // as it would be due to the fact that the internal
-    // "now" date in "relative" is created slightly after
-    // that in "create".
-    d = new Date(d.getTime() + 10);
-  }
-  return getAdjustedUnit(ms, function(u) {
-    return abs(getTimeDistanceForUnit(d, getNewDate(), u));
-  });
-}
-
-function getMeridianForDate(d, localeCode) {
-  var hours = getHours(d);
-  return localeManager.get(localeCode).get('ampm')[trunc(hours / 12)] || '';
-}
-
-// Date formatting helpers
-
-function getCompiledTokens(str) {
-  var compiled = [];
-  forEach(str.match(COMPILED_FORMAT_REG), function(p) {
-    var match = p.match(DATE_FORMAT_TOKEN_REG), token, format;
-    if (match) {
-      token = match[1] || match[2];
-      format = match[1] ? ldmlTokens[token] : strfTokens[token];
-      if (format) {
-        compiled.push(format);
-      } else {
-        compiled.push(token);
-      }
-      return;
-    }
-    compiled.push(p);
-  });
-  return compiled;
-}
-
-function executeCompiledOutputFormat(d, format, localeCode) {
-  var compiledFormat, length, i, t, result = '';
-  compiledFormat = compiledOutputFormats[format];
-  if (!compiledFormat) {
-    compiledFormat = compiledOutputFormats[format] = getCompiledTokens(format);
-  }
-  for(i = 0, length = compiledFormat.length; i < length; i++) {
-    t = compiledFormat[i];
-    result += isFunction(t) ? t(d, localeCode) : t;
-  }
-  return result;
-}
-
-function formatDate(d, format, relative, localeCode) {
-  var adu;
-  if (!isValid(d)) {
-    return 'Invalid Date';
-  } else if (isFunction(format)) {
-    adu = getAdjustedUnitForDate(d);
-    format = format.apply(d, adu.concat(localeManager.get(localeCode)));
-  }
-  if (!format && relative) {
-    adu = adu || getAdjustedUnitForDate(d);
-    // Adjust up if time is in ms, as this doesn't
-    // look very good for a standard relative date.
-    if (adu[1] === 0) {
-      adu[1] = 1;
-      adu[0] = 1;
-    }
-    return localeManager.get(localeCode).getRelativeFormat(adu);
-  }
-  return executeCompiledOutputFormat(d, getDateFormat(format), localeCode);
-}
-
-function getDateFormat(format) {
-  return CONSTANT_FORMATS[format] || format || '{long}';
-}
-
-// Date comparison helpers
-
-function fullCompareDate(date, d, margin) {
-  var tmp;
-  if (!isValid(date)) return;
-  if (isString(d)) {
-    d = trim(d).toLowerCase();
-    switch(true) {
-      case d === 'future':    return date.getTime() > getNewDate().getTime();
-      case d === 'past':      return date.getTime() < getNewDate().getTime();
-      case d === 'today':     return compareDay(date);
-      case d === 'tomorrow':  return compareDay(date,  1);
-      case d === 'yesterday': return compareDay(date, -1);
-      case d === 'weekday':   return getWeekday(date) > 0 && getWeekday(date) < 6;
-      case d === 'weekend':   return getWeekday(date) === 0 || getWeekday(date) === 6;
-      case (tmp = indexOf(English.weekdaysLower, d) % 7) > -1: return getWeekday(date) === tmp;
-      case (tmp = indexOf(English.monthsLower, d) % 12) > -1:  return getMonth(date) === tmp;
-    }
-  }
-  return compareDate(date, d, margin);
-}
-
-function compareDate(date, d, margin, options) {
-  var p, t, min, max, override, loMargin = 0, hiMargin = 0;
-
-  function getMaxBySpecificity() {
-    var params = getDateParamsFromString('1 ' + p.set.specificity);
-    return updateDate(cloneDate(p.date), params, false, 1).getTime() - 1;
-  }
-
-  if (_utc(date)) {
-    options = options || {};
-    options.fromUTC = true;
-    options.setUTC = true;
-  }
-  p = getExtendedDate(null, d, options);
-
-  if (margin > 0) {
-    loMargin = hiMargin = margin;
-    override = true;
-  }
-  if (!isValid(p.date)) return false;
-  if (p.set && p.set.specificity) {
-    if (p.set.edge || p.set.shift) {
-      moveToBeginningOfUnit(p.date, p.set.specificity);
-    }
-    if (p.set.specificity === 'month') {
-      max = moveToEndOfUnit(cloneDate(p.date), p.set.specificity).getTime();
-    } else {
-      max = getMaxBySpecificity();
-    }
-    if (!override && p.set.sign && p.set.specificity !== 'millisecond') {
-      // If the time is relative, there can occasionally be an disparity between the relative date
-      // and "now", which it is being compared to, so set an extra margin to account for this.
-      loMargin = 50;
-      hiMargin = -50;
-    }
-  }
-  t   = date.getTime();
-  min = p.date.getTime();
-  max = max || min;
-  var timezoneShift = getTimezoneShift(date, p);
-  if (timezoneShift) {
-    min -= timezoneShift;
-    max -= timezoneShift;
-  }
-  return t >= (min - loMargin) && t <= (max + hiMargin);
-}
-
-function compareDay(d, shift) {
-  var comp = getNewDate();
-  if (shift) {
-    setDate(comp, getDate(comp) + shift);
-  }
-  return getYear(d) === getYear(comp) &&
-         getMonth(d) === getMonth(comp) &&
-         getDate(d) === getDate(comp);
-}
-
-function getTimezoneShift(d, p) {
-  // If there is any specificity in the date then we're implicitly not
-  // checking absolute time, so ignore timezone shifts.
-  if (p.set && p.set.specificity) {
-    return 0;
-  }
-  return (tzOffset(p.date) - tzOffset(d)) * MINUTE;
-}
-
-function updateDate(d, params, reset, advance, prefer, weekdayForward) {
-  var specificityIndex, noop = true;
-
-  function getParam(key) {
-    return getDateParam(params, key);
-  }
-
-  function paramExists(key) {
-    return dateParamIsDefined(params, key);
-  }
-
-  function uniqueParamExists(key, isDay) {
-    return paramExists(key) || (isDay && paramExists('weekday') && !paramExists('month'));
-  }
-
-  function canDisambiguate() {
-    switch(prefer) {
-      case -1: return d > getNewDate();
-      case  1: return d < getNewDate();
-    }
-  }
-
-  function setUnit(u, advance, value) {
-    var name = u.name, method = u.method, checkMonth;
-    if (isUndefined(value)) return;
-
-    noop = false;
-    checkMonth = name === 'month' && getDate(d) > 28;
-
-    // If we are advancing or rewinding, then we need we need to set the
-    // absolute time if the unit is "hours" or less. This is due to the fact
-    // that setting by method is ambiguous during DST shifts. For example,
-    // 1:00am on November 1st 2015 occurs twice in North American timezones
-    // with DST, the second time being after the clocks are rolled back at
-    // 2:00am. When springing forward this is automatically handled as there
-    // is no 2:00am so the date automatically jumps to 3:00am. However, when
-    // rolling back, setHours(2) will always choose the first "2am" even if
-    // the date is currently set to the second, causing unintended jumps.
-    // This ambiguity is unavoidable when setting dates as the notation is
-    // ambiguous. However when advancing, we clearly want the resulting date
-    // to be an acutal hour ahead, which can only accomplished by setting the
-    // absolute time. Conversely, any unit higher than "hours" MUST use the
-    // internal set methods, as they are ambiguous as absolute units of time.
-    // Years may be 365 or 366 days depending on leap years, months are all
-    // over the place, and even days may be 23-25 hours depending on DST shifts.
-    // Finally, the kind of jumping described above will happen if ANY "set"
-    // method is called on the date, so compensating for this in callDateSet
-    // by not calling any set methods if the value is the same.
-    if (advance && !u.higher) {
-      d.setTime(d.getTime() + (value * advance * u.multiplier));
-      return;
-    } else if (advance) {
-      if (name === 'week') {
-        value *= 7;
-        method = 'Date';
-      }
-      value = (value * advance) + callDateGet(d, method);
-    }
-    callDateSetWithWeek(d, method, value);
-    if (checkMonth && monthHasShifted(d, value)) {
-      // As we are setting the units in reverse order, there is a chance that
-      // our date may accidentally traverse into a new month, such as setting
-      // { month: 1, date 15 } on January 31st. Check for this here and reset
-      // the date to the last day of the previous month if this has happened.
-      setDate(d, 0);
-    }
-  }
-
-  if (isNumber(params) && advance) {
-    // If param is a number and we're advancing, the number is presumed to be milliseconds.
-    params = { milliseconds: params };
-  } else if (isNumber(params)) {
-    // Otherwise just set the timestamp and return.
-    d.setTime(params);
-    return d;
-  }
-
-  // "date" can also be passed for the day
-  if (isDefined(params.date)) {
-    params.day = params.date;
-  }
-
-  // Reset any unit lower than the least specific unit set. Do not do this for
-  // weeks or for years. This needs to be performed before actually setting the
-  // date because the order needs to be reversed in order to get the lowest
-  // specificity, also because higher order units can be overridden by lower
-  // order units, such as setting hour: 3, minute: 345, etc.
-  iterateOverDateUnits(function(name, u, i) {
-    var isDay = name === 'day';
-    if (uniqueParamExists(name, isDay)) {
-      params.specificity = name;
-      specificityIndex = i;
-      return false;
-    } else if (reset && name !== 'week' && (!isDay || !paramExists('week'))) {
-      // Days are relative to months, not weeks, so don't reset if a week exists.
-      callDateSet(d, u.method, u.resetValue || 0);
-    }
-  });
-
-  // Now actually set or advance the date in order, higher units first.
-  iterateOverDateUnitsReverse(function(name, u) {
-    setUnit(u, advance, getParam(name));
-  });
-
-
-  // If a weekday is included in the params and no 'date' parameter is
-  // overriding, set it here after all other units have been set. Note that
-  // the date has to be perfectly set before disambiguation so that a proper
-  // comparison can be made.
-  if (!advance && !paramExists('day') && paramExists('weekday')) {
-    setWeekday(d, getParam('weekday'), weekdayForward);
-  }
-
-  // If no action has been taken on the date
-  // then it should be considered invalid.
-  if (noop && !params.specificity) {
-    invalidateDate(d);
-    return d;
-  }
-
-  // If past or future is preferred, then the process of "disambiguation" will
-  // ensure that an ambiguous time/date ("4pm", "thursday", "June", etc.) will
-  // be in the past or future. Weeks are only considered ambiguous if there is
-  // a weekday, ie. "thursday" is an ambiguous week, but "the 4th" is an
-  // ambiguous month.
-  if (canDisambiguate()) {
-    iterateOverDateUnits(function(name, u) {
-      var ambiguous = u.higher && (name !== 'week' || paramExists('weekday'));
-      if (ambiguous && !uniqueParamExists(name, name === 'day')) {
-        setUnit(u, prefer, 1);
-        return false;
-      } else if (name === 'year' && hasAbbreviatedYear(params)) {
-        setUnit(dateUnitsByName['year'], 100 * prefer, 1);
-      }
-    }, specificityIndex + 1);
-  }
-  return d;
-}
-
-function monthHasShifted(d, targetMonth) {
-  if (targetMonth < 0) {
-    targetMonth = targetMonth % 12 + 12;
-  }
-  return targetMonth % 12 !== getMonth(d);
-}
-
-function createDate(contextDate, d, options) {
-  return getExtendedDate(contextDate, d, options).date;
-}
-
-function invalidateDate(d) {
-  d.setTime(NaN);
-}
-
-function buildDateUnits() {
-  dateUnitsByName = {};
-  forEach(DateUnits, function(u, i) {
-    var name = u.name;
-    // Skip week entirely.
-    if (name !== 'week') {
-      dateUnitsByName[name] = u;
-      dateUnitsByName[name + 's'] = u;
-      // Build a chain of lower units.
-      u.lower = DateUnits[i - (name === 'month' ? 2 : 1)];
-    }
-  });
-  dateUnitsByName['date'] = dateUnitsByName['day'];
-}
-
-/***
- * @method [units]Since([d], [options])
- * @returns Number
- * @short Returns the time since [d].
- * @extra [d] will accept a date object, timestamp, or text format. If not specified, [d] is assumed to be now. %[unit]Ago% is provided as an alias to make this more readable when [d] is assumed to be the current date. See %date_options% for options.
-
- * @set
- *   millisecondsSince
- *   secondsSince
- *   minutesSince
- *   hoursSince
- *   daysSince
- *   weeksSince
- *   monthsSince
- *   yearsSince
- *
- * @example
- *
- *   Date.create().millisecondsSince('1 hour ago') -> 3,600,000
- *   Date.create().daysSince('1 week ago')         -> 7
- *   Date.create().yearsSince('15 years ago')      -> 15
- *   Date.create('15 years ago').yearsAgo()        -> 15
- *
- ***
- * @method [units]Ago()
- * @returns Number
- * @short Returns the time ago in the appropriate unit.
- *
- * @set
- *   millisecondsAgo
- *   secondsAgo
- *   minutesAgo
- *   hoursAgo
- *   daysAgo
- *   weeksAgo
- *   monthsAgo
- *   yearsAgo
- *
- * @example
- *
- *   Date.create('last year').millisecondsAgo() -> 3,600,000
- *   Date.create('last year').daysAgo()         -> 7
- *   Date.create('last year').yearsAgo()        -> 15
- *
- ***
- * @method [units]Until([d], [options])
- * @returns Number
- * @short Returns the time until [d].
- * @extra [d] will accept a date object, timestamp, or text format. If not specified, [d] is assumed to be now. %[unit]FromNow% is provided as an alias to make this more readable when [d] is assumed to be the current date. See %date_options% for options.
-
- *
- * @set
- *   millisecondsUntil
- *   secondsUntil
- *   minutesUntil
- *   hoursUntil
- *   daysUntil
- *   weeksUntil
- *   monthsUntil
- *   yearsUntil
- *
- * @example
- *
- *   Date.create().millisecondsUntil('1 hour from now') -> 3,600,000
- *   Date.create().daysUntil('1 week from now')         -> 7
- *   Date.create().yearsUntil('15 years from now')      -> 15
- *   Date.create('15 years from now').yearsFromNow()    -> 15
- *
- ***
- * @method [units]FromNow()
- * @returns Number
- * @short Returns the time from now in the appropriate unit.
- *
- * @set
- *   millisecondsFromNow
- *   secondsFromNow
- *   minutesFromNow
- *   hoursFromNow
- *   daysFromNow
- *   weeksFromNow
- *   monthsFromNow
- *   yearsFromNow
- *
- * @example
- *
- *   Date.create('next year').millisecondsFromNow() -> 3,600,000
- *   Date.create('next year').daysFromNow()         -> 7
- *   Date.create('next year').yearsFromNow()        -> 15
- *
- ***
- * @method add[Units](<num>, [reset] = false)
- * @returns Date
- * @short Adds <num> of the unit to the date. If [reset] is true, all lower units will be reset.
- * @extra Note that "months" is ambiguous as a unit of time. If the target date falls on a day that does not exist (ie. August 31 -> February 31), the date will be shifted to the last day of the month. Don't use %addMonths% if you need precision.
- *
- * @set
- *   addMilliseconds
- *   addSeconds
- *   addMinutes
- *   addHours
- *   addDays
- *   addWeeks
- *   addMonths
- *   addYears
- *
- * @example
- *
- *   Date.create().addMilliseconds(5) -> current time + 5 milliseconds
- *   Date.create().addDays(5)         -> current time + 5 days
- *   Date.create().addYears(5)        -> current time + 5 years
- *
- ***
- * @method isLast[Unit]()
- * @returns Boolean
- * @short Returns true if the date is last week/month/year.
- *
- * @set
- *   isLastWeek
- *   isLastMonth
- *   isLastYear
- *
- * @example
- *
- *   Date.create('yesterday').isLastWeek()  -> true or false?
- *   Date.create('yesterday').isLastMonth() -> probably not...
- *   Date.create('yesterday').isLastYear()  -> even less likely...
- *
- ***
- * @method isThis[Unit]()
- * @returns Boolean
- * @short Returns true if the date is this week/month/year.
- *
- * @set
- *   isThisWeek
- *   isThisMonth
- *   isThisYear
- *
- * @example
- *
- *   Date.create('tomorrow').isThisWeek()  -> true or false?
- *   Date.create('tomorrow').isThisMonth() -> probably...
- *   Date.create('tomorrow').isThisYear()  -> signs point to yes...
- *
- ***
- * @method isNext[Unit]()
- * @returns Boolean
- * @short Returns true if the date is next week/month/year.
- *
- * @set
- *   isNextWeek
- *   isNextMonth
- *   isNextYear
- *
- * @example
- *
- *   Date.create('tomorrow').isNextWeek()  -> true or false?
- *   Date.create('tomorrow').isNextMonth() -> probably not...
- *   Date.create('tomorrow').isNextYear()  -> even less likely...
- *
- ***
- * @method beginningOf[Unit]([locale])
- * @returns Date
- * @short Sets the date to the beginning of the appropriate unit.
- * @extra Takes an optional locale code as "week" varies by locale, otherwise uses the current locale.
- *
- * @set
- *   beginningOfDay
- *   beginningOfWeek
- *   beginningOfMonth
- *   beginningOfYear
- *
- * @example
- *
- *   Date.create().beginningOfDay()   -> the beginning of today (resets the time)
- *   Date.create().beginningOfWeek()  -> the beginning of the week
- *   Date.create().beginningOfMonth() -> the beginning of the month
- *   Date.create().beginningOfYear()  -> the beginning of the year
- *
- ***
- * @method endOf[Unit]([locale])
- * @returns Date
- * @short Sets the date to the end of the appropriate unit.
- * @extra Takes an optional locale code as "week" varies by locale, otherwise uses the current locale.
- *
- * @set
- *   endOfDay
- *   endOfWeek
- *   endOfMonth
- *   endOfYear
- *
- * @example
- *
- *   Date.create().endOfDay()   -> the end of today (sets the time to 23:59:59.999)
- *   Date.create().endOfWeek()  -> the end of the week
- *   Date.create().endOfMonth() -> the end of the month
- *   Date.create().endOfYear()  -> the end of the year
- *
- ***/
-function buildDateUnitMethods() {
-
-  defineInstanceSimilar(sugarDate, DateUnits, function(methods, u, i) {
-    var name = u.name, caps = simpleCapitalize(name);
-
-    if (i > 4) {
-      forEach(['Last','This','Next'], function(shift) {
-        methods['is' + shift + caps] = function(d) {
-          return compareDate(d, shift + ' ' + name, 0, { locale: 'en' });
-        };
-      });
-    }
-    if (i > 3) {
-      methods['beginningOf' + caps] = function(d, localeCode) {
-        return moveToBeginningOfUnit(d, name, localeCode);
-      };
-      methods['endOf' + caps] = function(d, localeCode) {
-        return moveToEndOfUnit(d, name, localeCode);
-      };
-    }
-
-    methods['add' + caps + 's'] = function(d, num, reset) {
-      return advanceDate(d, name, num, reset);
-    };
-
-    var since = function(date, d, options) {
-      return getTimeDistanceForUnit(date, createDate(date, d, options), u);
-    };
-    var until = function(date, d, options) {
-      return getTimeDistanceForUnit(createDate(date, d, options), date, u);
-    };
-
-    methods[u.name + 'sAgo']   = methods[u.name + 'sUntil']   = until;
-    methods[u.name + 'sSince'] = methods[u.name + 'sFromNow'] = since;
-
-    buildNumberMethods(u, u.multiplier);
-  });
-
-}
-
-function buildFormatTokens() {
-
-  function addFormats(target, tokens, fn) {
-    if (tokens) {
-      forEach(commaSplit(tokens), function(token) {
-        target[token] = fn;
-      });
-    }
-  }
-
-  function buildLowercase(get) {
-    return function(d, localeCode) {
-      return get(d, localeCode).toLowerCase();
-    };
-  }
-
-  function buildOrdinal(get) {
-    return function(d, localeCode) {
-      var n = get(d, localeCode);
-      return n + localeManager.get(localeCode).getOrdinal(n);
-    };
-  }
-
-  function buildPadded(get, padding) {
-    return function(d, localeCode) {
-      return padNumber(get(d, localeCode), padding);
-    };
-  }
-
-  function buildTwoDigits(get) {
-    return function(d, localeCode) {
-      return get(d, localeCode) % 100;
-    };
-  }
-
-  function buildAlias(alias) {
-    return function(d, localeCode) {
-      return executeCompiledOutputFormat(d, alias, localeCode);
-    };
-  }
-
-  function buildAlternates(f) {
-    for (var n = 1; n <= 5; n++) {
-      buildAlternate(f, n);
-    }
-  }
-
-  function buildAlternate(f, n) {
-    var alternate = function(d, localeCode) {
-      return f.get(d, localeCode, n);
-    };
-    addFormats(ldmlTokens, f.ldml + n, alternate);
-    if (f.lowerToken) {
-      ldmlTokens[f.lowerToken + n] = buildLowercase(alternate);
-    }
-  }
-
-  function getIdentityFormat(name) {
-    return function(d, localeCode) {
-      var loc = localeManager.get(localeCode);
-      return executeCompiledOutputFormat(d, loc[name], localeCode);
-    };
-  }
-
-  forEach(FormatTokensBase, function(f) {
-    var get = f.get, getPadded;
-    if (f.lowerToken) {
-      ldmlTokens[f.lowerToken] = buildLowercase(get);
-    }
-    if (f.ordinalToken) {
-      ldmlTokens[f.ordinalToken] = buildOrdinal(get, f);
-    }
-    if (f.ldmlPaddedToken) {
-      ldmlTokens[f.ldmlPaddedToken] = buildPadded(get, f.ldmlPaddedToken.length);
-    }
-    if (f.ldmlTwoDigitToken) {
-      ldmlTokens[f.ldmlTwoDigitToken] = buildPadded(buildTwoDigits(get), 2);
-    }
-    if (f.strfTwoDigitToken) {
-      strfTokens[f.strfTwoDigitToken] = buildPadded(buildTwoDigits(get), 2);
-    }
-    if (f.strfPadding) {
-      getPadded = buildPadded(get, f.strfPadding);
-    }
-    if (f.alias) {
-      get = buildAlias(f.alias);
-    }
-    if (f.allowAlternates) {
-      buildAlternates(f);
-    }
-    addFormats(ldmlTokens, f.ldml, get);
-    addFormats(strfTokens, f.strf, getPadded || get);
-  });
-
-  iterateOverObject(CONSTANT_FORMATS, function(name, src) {
-    addFormats(ldmlTokens, name, buildAlias(src));
-  });
-
-  defineInstanceSimilar(sugarDate, 'short,medium,long,full', function(methods, name) {
-    var fn = getIdentityFormat(name);
-    addFormats(ldmlTokens, name, fn);
-    methods[name] = fn;
-  });
-
-  addFormats(ldmlTokens, 'time', getIdentityFormat('time'));
-  addFormats(ldmlTokens, 'stamp', getIdentityFormat('stamp'));
-}
-
-function buildCJKDigits() {
-  cjkDigitMap = {};
-  var digits = '〇一二三四五六七八九十百千万';
-  forEach(digits.split(''), function(digit, value) {
-    if (value > 9) {
-      value = pow(10, value - 9);
-    }
-    cjkDigitMap[digit] = value;
-  });
-  simpleMerge(cjkDigitMap, fullWidthNumberMap);
-  // CJK numerals may also be included in phrases which are text-based rather
-  // than actual numbers such as Chinese weekdays (上周三), and "the day before
-  // yesterday" (一昨日) in Japanese, so don't match these.
-  cjkDigitReg = RegExp('([期週周])?([' + digits + fullWidthNumbers + ']+)(?!昨)', 'g');
-}
-
- /***
- * @method is[Day]()
- * @returns Boolean
- * @short Returns true if the date falls on that day.
- * @extra Also available: %isYesterday%, %isToday%, %isTomorrow%, %isWeekday%, and %isWeekend%.
- *
- * @set
- *   isToday
- *   isYesterday
- *   isTomorrow
- *   isWeekday
- *   isWeekend
- *   isSunday
- *   isMonday
- *   isTuesday
- *   isWednesday
- *   isThursday
- *   isFriday
- *   isSaturday
- *
- * @example
- *
- *   Date.create('tomorrow').isToday() -> false
- *   Date.create('thursday').isTomorrow() -> ?
- *   Date.create('yesterday').isWednesday() -> ?
- *   Date.create('today').isWeekend() -> ?
- *
- ***
- * @method isFuture()
- * @returns Boolean
- * @short Returns true if the date is in the future.
- * @example
- *
- *   Date.create('next week').isFuture() -> true
- *   Date.create('last week').isFuture() -> false
- *
- ***
- * @method isPast()
- * @returns Boolean
- * @short Returns true if the date is in the past.
- * @example
- *
- *   Date.create('last week').isPast() -> true
- *   Date.create('next week').isPast() -> false
- *
- ***/
-function buildRelativeAliases() {
-  var special  = commaSplit('Today,Yesterday,Tomorrow,Weekday,Weekend,Future,Past');
-  var weekdays = English.weekdays.slice(0, 7);
-  var months   = English.months.slice(0, 12);
-  defineInstanceSimilar(sugarDate, special.concat(weekdays).concat(months), function(methods, name) {
-    methods['is'+ name] = function(d) {
-      return fullCompareDate(d, name);
-    };
-  });
-}
-
-/**
- * @method Date.newDateInternal([fn])
- * @returns Mixed
- * @short Gets or sets Sugar's internal date constructor.
- * @extra Many methods construct a `new Date()` internally as a reference point (`isToday`, relative formats like `tomorrow`, etc). You can override this here if you need it to be something else. Most commonly, this allows you to return a shifted date to simulate a specific timezone, as dates in Javascript are always local. Setting to `null` restores the default.
- *
- **/
-
-var _newDateInternal = defineAccessor(sugarDate, 'newDateInternal', defaultNewDate);
-
-defineStatic(sugarDate, {
-
-   /***
-   * @method Date.create(<d>, [options])
-   * @returns Date
-   * @short Alternate date constructor which accepts many different text formats, a timestamp, or another date.
-   * @extra If no argument is given, the date is assumed to be now.
-   * @options
-   *
-   *   locale   A locale code to parse the date in. This can also be passed as
-   *            the second argument to this method. Default is the current
-   *            locale, which is English if none is set.
-   *            (Default = 'en')
-   *
-   *   past     If `true`, ambiguous dates like `Sunday` will be parsed as
-   *            `last Sunday`. Note that this does not guarantee that non-
-   *            ambiguous dates will be in the past.
-   *            (Default = `false`)
-   *
-   *   future   If `true`, ambiguous dates like `Sunday` will be parsed as
-   *            `next Sunday`. Note that this does not guarantee that non-
-   *            ambiguous dates will be in the future.
-   *            (Default = `false`)
-   *
-   *   fromUTC  If `true`, the date will be parsed as UTC time (no timezone
-   *            offset). This is useful for server timestamps, etc.
-   *            (Default = `false`)
-   *
-   *   setUTC   If `true` this will set the date's internal `utc` flag, which
-   *            tells it to use UTC based methods like `setUTCHours` when
-   *            handling the date. Note that this is different from `fromUTC`
-   *            which parses a date string as being UTC time, but creates a
-   *            standard local Javascript date object. Also note that native
-   *            methods like `setHours` will still return a local non-UTC value.
-   *            (Default = `false`)
-   *
-   * @example
-   *
-   *   Date.create('July')          -> July of this year
-   *   Date.create('1776')          -> 1776
-   *   Date.create('today')         -> today
-   *   Date.create('wednesday')     -> This wednesday
-   *   Date.create('next friday')   -> Next friday
-   *   Date.create('July 4, 1776')  -> July 4, 1776
-   *   Date.create(-446806800000)   -> November 5, 1955
-   *   Date.create(1776, 6, 4)      -> July 4, 1776
-   *   Date.create('1776年07月04日', 'ja') -> July 4, 1776
-   *   Date.create('Thursday at 3:00pm', '{ fromUTC: true }) -> Thursday at 3:00pm UTC time
-   *
-   ***/
-  'create': function(d, options) {
-    return createDate(null, d, options);
-  },
-
-   /***
-   * @method Date.getLocale([code] = current)
-   * @returns Locale
-   * @short Gets the locale for the given code, or the current locale.
-   * @extra The resulting locale object can be manipulated to provide more control over date localizations. For more about locales, see %date_format%.
-   *
-   ***/
-  'getLocale': function(code) {
-    return localeManager.get(code, !code);
-  },
-
-   /***
-   * @method Date.getAllLocales()
-   * @returns Object
-   * @short Returns all available locales.
-   *
-   ***/
-  'getAllLocales': function() {
-    return localeManager.getAll();
-  },
-
-   /***
-   * @method Date.getAllLocaleCodes()
-   * @returns Array
-   * @short Returns all available locale names as an array of strings.
-   *
-   ***/
-  'getAllLocaleCodes': function() {
-    return getKeys(localeManager.getAll());
-  },
-
-   /***
-   * @method Date.setLocale(<code>)
-   * @returns Locale
-   * @short Sets the current locale to be used with dates.
-   * @extra Sugar has native support for 17 major locales. In addition, you can define a new locale with %Date.addLocale%. For more see %date_format%.
-   *
-   ***/
-  'setLocale': function(code) {
-    return localeManager.set(code);
-  },
-
-   /***
-   * @method Date.addLocale(<code>, <set>)
-   * @returns Locale
-   * @short Adds a locale <set> to the locales understood by Sugar.
-   * @extra For more see %date_format%.
-   *
-   ***/
-  'addLocale': function(code, set) {
-    return localeManager.add(code, set);
-  },
-
-   /***
-   * @method Date.removeLocale(<code>)
-   * @returns Locale
-   * @short Deletes the the locale by <code> from Sugar's known locales.
-   *
-   ***/
-  'removeLocale': function(code) {
-    return localeManager.remove(code);
-  },
-
-  /**
-   * @method Date.addFormat(<format>, <match>, [code] = null)
-   * @returns Nothing
-   * @short Manually adds a new date input format.
-   * @extra This method allows fine grained control for alternate formats. <format> is a string that can have regex tokens inside. <match> is an array of the tokens that each regex capturing group will map to, for example %year%, %date%, etc. For more, see %date_format%.
-   *
-   **/
-  'addFormat': function(format, match, localeCode) {
-    localeManager.get(localeCode).addRawFormat(format, match);
-  }
-
-
-});
-
-defineInstanceWithArguments(sugarDate, {
-
-   /***
-   * @method set(<set>, [reset] = false)
-   * @returns Date
-   * @short Sets the date object.
-   * @extra This method can accept multiple formats including a single number as a timestamp, an object, or enumerated parameters (as with the Date constructor). If [reset] is %true%, any units more specific than those passed will be reset. If a month is set to a date that does not exist, it will rewind to the last day of the month.
-   *
-   * @example
-   *
-   *   new Date().set({ year: 2011, month: 11, day: 31 }) -> December 31, 2011
-   *   new Date().set(2011, 11, 31)                       -> December 31, 2011
-   *   new Date().set(86400000)                           -> 1 day after Jan 1, 1970
-   *   new Date().set({ year: 2004, month: 6 }, true)     -> June 1, 2004, 00:00:00.000
-   *
-   ***/
-  'set': function(d, args) {
-    args = collectDateArguments(args);
-    return updateDate(d, args[0], args[1]);
-  },
-
-   /***
-   * @method advance(<set>, [reset] = false)
-   * @returns Date
-   * @short Sets the date forward.
-   * @extra This method can accept multiple formats including an object, a string in the format %3 days%, a single number as milliseconds, or enumerated parameters (as with the Date constructor). If [reset] is %true%, any units more specific than those passed will be reset. For more see %date_format%.
-   * @example
-   *
-   *   new Date().advance({ year: 2 }) -> 2 years in the future
-   *   new Date().advance('2 days')    -> 2 days in the future
-   *   new Date().advance(0, 2, 3)     -> 2 months 3 days in the future
-   *   new Date().advance(86400000)    -> 1 day in the future
-   *
-   ***/
-  'advance': function(d, args) {
-    return advanceDateWithArgs(d, args, 1);
-  },
-
-   /***
-   * @method rewind(<set>, [reset] = false)
-   * @returns Date
-   * @short Sets the date back.
-   * @extra This method can accept multiple formats including a single number as a timestamp, an object, or enumerated parameters (as with the Date constructor). If [reset] is %true%, any units more specific than those passed will be reset. For more see %date_format%.
-   * @example
-   *
-   *   new Date().rewind({ year: 2 }) -> 2 years in the past
-   *   new Date().rewind(0, 2, 3)     -> 2 months 3 days in the past
-   *   new Date().rewind(86400000)    -> 1 day in the past
-   *
-   ***/
-  'rewind': function(d, args) {
-    return advanceDateWithArgs(d, args, -1);
-  }
-
-});
-
-defineInstance(sugarDate, {
-
-   /***
-   * @method get(<d>, [options])
-   * @returns Date
-   * @short Gets a new date using the current one as a starting point.
-   * @extra This method is identical to %Date.create%, except that relative formats like `next month` are relative to the date instance rather than the current date.
-   * @options
-   *
-   *   locale   A locale code to parse the date in. This can also be passed as
-   *            the second argument to this method. Default is the current
-   *            locale, which is English if none is set.
-   *            (Default = 'en')
-   *
-   *   past     If `true`, ambiguous dates like `Sunday` will be before the
-   *            context date. Note that this does not guarantee that non-
-   *            ambiguous dates will be before it.
-   *            (Default = `false`)
-   *
-   *   future   If `true`, ambiguous dates like `Sunday` will be after the
-   *            context date. Note that this does not guarantee that non-
-   *            ambiguous dates will be after it.
-   *            (Default = `false`)
-   *
-   *   fromUTC  If `true`, the date will be parsed as UTC time (no timezone
-   *            offset). This is useful for server timestamps, etc.
-   *            (Default = `false`)
-   *
-   *   setUTC   If `true` this will set the date's internal `utc` flag, which
-   *            tells it to use UTC based methods like `setUTCHours` when
-   *            handling the date. Note that this is different from `fromUTC`
-   *            which parses a date string as being UTC time, but creates a
-   *            standard local Javascript date object. Also note that native
-   *            methods like `setHours` will still return a local non-UTC value.
-   *            (Default = `false`)
-   *
-   * @example
-   *
-   *   new Date(2010, 0).get('next week')      -> 1 week after 2010-01-01
-   *   new Date(2004, 4).get('2 years before') -> 2 years before May, 2004
-   *
-   ***/
-  'get': function(date, d, options) {
-    return createDate(date, d, options);
-  },
-
-   /***
-   * @method setWeekday(<dow>)
-   * @returns Nothing
-   * @short Sets the weekday of the date.
-   * @extra In order to maintain a parallel with %getWeekday% (which itself is an alias for Javascript native %getDay%), Sunday is considered day %0%. This contrasts with ISO8601 standard (used in %getISOWeek% and %setISOWeek%) which places Sunday at the end of the week (day 7). This effectively means that passing %0% to this method while in the middle of a week will rewind the date, where passing %7% will advance it.
-   *
-   * @example
-   *
-   *   d = new Date(); d.setWeekday(1); d; -> Monday of this week
-   *   d = new Date(); d.setWeekday(6); d; -> Saturday of this week
-   *
-   ***/
-  'setWeekday': function(d, dow) {
-    return setWeekday(d, dow);
-  },
-
-   /***
-   * @method setISOWeek(<num>)
-   * @returns Nothing
-   * @short Sets the week (of the year) as defined by the ISO8601 standard.
-   * @extra Note that this standard places Sunday at the end of the week (day 7).
-   *
-   * @example
-   *
-   *   d = new Date(); d.setISOWeek(15); d; -> 15th week of the year
-   *
-   ***/
-  'setISOWeek': function(d, num) {
-    return setISOWeekNumber(d, num);
-  },
-
-   /***
-   * @method getISOWeek()
-   * @returns Number
-   * @short Gets the date's week (of the year) as defined by the ISO8601 standard.
-   * @extra Note that this standard places Sunday at the end of the week (day 7). If %utc% is set on the date, the week will be according to UTC time.
-   *
-   * @example
-   *
-   *   new Date().getISOWeek() -> today's week of the year
-   *
-   ***/
-  'getISOWeek': function(d) {
-    return getWeekNumber(d, true);
-  },
-
-   /***
-   * @method beginningOfISOWeek()
-   * @returns Date
-   * @short Set the date to the beginning of week as defined by this ISO8601 standard.
-   * @extra Note that this standard places Monday at the start of the week.
-   * @example
-   *
-   *   Date.create().beginningOfISOWeek() -> Monday
-   *
-   ***/
-  'beginningOfISOWeek': function(d) {
-    var day = getWeekday(d);
-    if (day === 0) {
-      day = -6;
-    } else if (day !== 1) {
-      day = 1;
-    }
-    setWeekday(d, day);
-    return resetTime(d);
-  },
-
-   /***
-   * @method endOfISOWeek()
-   * @returns Date
-   * @short Set the date to the end of week as defined by this ISO8601 standard.
-   * @extra Note that this standard places Sunday at the end of the week.
-   * @example
-   *
-   *   Date.create().endOfISOWeek() -> Sunday
-   *
-   ***/
-  'endOfISOWeek': function(d) {
-    if (getWeekday(d) !== 0) {
-      setWeekday(d, 7);
-    }
-    return moveToEndOfUnit(d, 'day');
-  },
-
-   /***
-   * @method getUTCOffset([iso])
-   * @returns String
-   * @short Returns a string representation of the offset from UTC time. If [iso] is true the offset will be in ISO8601 format.
-   * @example
-   *
-   *   new Date().getUTCOffset()     -> "+0900"
-   *   new Date().getUTCOffset(true) -> "+09:00"
-   *
-   ***/
-  'getUTCOffset': function(d, iso) {
-    return getUTCOffset(d, iso);
-  },
-
-   /***
-   * @method setUTC([on] = false)
-   * @returns Date
-   * @short Sets the internal utc flag for the date. When on, UTC based methods like `setUTCHours` will be called internally.
-   * @extra Note that native methods like `setHours` will still a local non-UTC value.
-   * @example
-   *
-   *   new Date().setUTC(true)
-   *   new Date().setUTC(false)
-   *
-   ***/
-  'setUTC': function(d, on) {
-    return _utc(d, on);
-  },
-
-   /***
-   * @method isUTC()
-   * @returns Boolean
-   * @short Returns true if the date has no timezone offset.
-   * @extra This will also return true for dates whose internal utc flag is set with %setUTC%. Note that even if the utc flag is set, %getTimezoneOffset% will always report the same thing as Javascript always reports that based on the environment's locale.
-   * @example
-   *
-   *   new Date().isUTC()              -> true or false?
-   *   new Date().setUTC(true).isUTC() -> true
-   *
-   ***/
-  'isUTC': function(d) {
-    return isUTC(d);
-  },
-
-   /***
-   * @method isValid()
-   * @returns Boolean
-   * @short Returns true if the date is valid.
-   * @example
-   *
-   *   new Date().isValid()         -> true
-   *   new Date('flexor').isValid() -> false
-   *
-   ***/
-  'isValid': function(d) {
-    return isValid(d);
-  },
-
-   /***
-   * @method isAfter(<d>, [margin] = 0)
-   * @returns Boolean
-   * @short Returns true if the date is after the <d>.
-   * @extra [margin] is to allow extra margin of error (in ms). <d> will accept a date object, timestamp, or text format. If not specified, <d> is assumed to be now. See %date_format% for more.
-   * @example
-   *
-   *   new Date().isAfter('tomorrow')  -> false
-   *   new Date().isAfter('yesterday') -> true
-   *
-   ***/
-  'isAfter': function(date, d, margin) {
-    return date.getTime() > createDate(null, d).getTime() - (margin || 0);
-  },
-
-   /***
-   * @method isBefore(<d>, [margin] = 0)
-   * @returns Boolean
-   * @short Returns true if the date is before <d>.
-   * @extra [margin] is to allow extra margin of error (in ms). <d> will accept a date object, timestamp, or text format. If not specified, <d> is assumed to be now. See %date_format% for more.
-   * @example
-   *
-   *   new Date().isBefore('tomorrow')  -> true
-   *   new Date().isBefore('yesterday') -> false
-   *
-   ***/
-  'isBefore': function(date, d, margin) {
-    return date.getTime() < createDate(null, d).getTime() + (margin || 0);
-  },
-
-   /***
-   * @method isBetween(<d1>, <d2>, [margin] = 0)
-   * @returns Boolean
-   * @short Returns true if the date is later or equal to <d1> and before or equal to <d2>.
-   * @extra [margin] is to allow extra margin of error (in ms). <d1> and <d2> will accept a date object, timestamp, or text format. If not specified, they are assumed to be now. See %date_format% for more.
-   * @example
-   *
-   *   new Date().isBetween('yesterday', 'tomorrow')    -> true
-   *   new Date().isBetween('last year', '2 years ago') -> false
-   *
-   ***/
-  'isBetween': function(date, d1, d2, margin) {
-    var t  = date.getTime();
-    var t1 = createDate(null, d1).getTime();
-    var t2 = createDate(null, d2).getTime();
-    var lo = min(t1, t2);
-    var hi = max(t1, t2);
-    margin = margin || 0;
-    return (lo - margin <= t) && (hi + margin >= t);
-  },
-
-   /***
-   * @method isLeapYear()
-   * @returns Boolean
-   * @short Returns true if the date is a leap year.
-   * @example
-   *
-   *   Date.create('2000').isLeapYear() -> true
-   *
-   ***/
-  'isLeapYear': function(d) {
-    var year = getYear(d);
-    return (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
-  },
-
-   /***
-   * @method daysInMonth()
-   * @returns Number
-   * @short Returns the number of days in the date's month.
-   * @example
-   *
-   *   Date.create('May').daysInMonth()            -> 31
-   *   Date.create('February, 2000').daysInMonth() -> 29
-   *
-   ***/
-  'daysInMonth': function(d) {
-    return daysInMonth(d);
-  },
-
-   /***
-   * @method format(<format>, [locale] = currentLocale)
-   * @returns String
-   * @short Formats and outputs the date.
-   * @extra <format> can be a number of pre-determined formats or a string of tokens. Locale-specific formats are %short%, %long%, and %full% which have their own aliases and can be called with %date.short()%, etc. If <format> is not specified the %long% format is assumed. [locale] specifies a locale code to use (if not specified the current locale is used). See %date_format% for more details.
-   *
-   * @set
-   *   short
-   *   medium
-   *   long
-   *   full
-   *
-   * @example
-   *
-   *   Date.create().format()                                   -> ex. July 4, 2003
-   *   Date.create().format('{Weekday} {d} {Month}, {yyyy}')    -> ex. Monday July 4, 2003
-   *   Date.create().format('{hh}:{mm}')                        -> ex. 15:57
-   *   Date.create().format('{12hr}:{mm}{tt}')                  -> ex. 3:57pm
-   *   Date.create().format('ISO8601')                          -> ex. 2011-07-05 12:24:55.528Z
-   *   Date.create('last week').format('short', 'ja')           -> ex. 先週
-   *   Date.create('yesterday').format(function(value,unit,ms,loc) {
-   *     // value = 1, unit = 3, ms = -86400000, loc = [current locale object]
-   *   });                                                      -> ex. 1 day ago
-   *
-   ***/
-  'format': function(d, f, localeCode) {
-    return formatDate(d, f, false, localeCode);
-  },
-
-   /***
-   * @method relative([fn], [locale] = currentLocale)
-   * @returns String
-   * @short Returns a relative date string offset to the current time.
-   * @extra [fn] can be passed to provide for more granular control over the resulting string. [fn] is passed 4 arguments: the adjusted value, unit, offset in milliseconds, and a locale object. As an alternate syntax, [locale] can also be passed as the first (and only) parameter. For more, see %date_format%.
-   * @example
-   *
-   *   Date.create('90 seconds ago').relative() -> 1 minute ago
-   *   Date.create('January').relative()        -> ex. 5 months ago
-   *   Date.create('January').relative('ja')    -> 3ヶ月前
-   *   Date.create('120 minutes ago').relative(function(val,unit,ms,loc) {
-   *     // value = 2, unit = 3, ms = -7200, loc = [current locale object]
-   *   });                                      -> ex. 5 months ago
-   *
-   ***/
-  'relative': function(d, fn, localeCode) {
-    if (isString(fn)) {
-      localeCode = fn;
-      fn = null;
-    }
-    return formatDate(d, fn, true, localeCode);
-  },
-
-   /***
-   * @method is(<f>, [margin] = 0)
-   * @returns Boolean
-   * @short Returns true if the date is <f>.
-   * @extra <f> will accept a date object, timestamp, or text format. %is% additionally understands more generalized expressions like month/weekday names, 'today', etc, and compares to the precision implied in <f>. [margin] allows an extra margin of error in milliseconds. For more, see %date_format%.
-   * @example
-   *
-   *   Date.create().is('July')               -> true or false?
-   *   Date.create().is('1776')               -> false
-   *   Date.create().is('today')              -> true
-   *   Date.create().is('weekday')            -> true or false?
-   *   Date.create().is('July 4, 1776')       -> false
-   *   Date.create().is(-6106093200000)       -> false
-   *   Date.create().is(new Date(1776, 6, 4)) -> false
-   *
-   ***/
-  'is': function(date, d, margin) {
-    return fullCompareDate(date, d, margin);
-  },
-
-   /***
-   * @method reset([unit] = 'hours')
-   * @returns Date
-   * @short Resets the unit passed and all smaller units. Default is "hours", effectively resetting the time.
-   * @example
-   *
-   *   Date.create().reset('day')   -> Beginning of today
-   *   Date.create().reset('month') -> 1st of the month
-   *
-   ***/
-  'reset': function(d, unit) {
-    return resetUnitAndLower(d, unit);
-  },
-
-   /***
-   * @method clone()
-   * @returns Date
-   * @short Clones the date.
-   * @example
-   *
-   *   Date.create().clone() -> Copy of now
-   *
-   ***/
-  'clone': function(d) {
-    return cloneDate(d);
-  },
-
-   /***
-   * @method iso()
-   * @alias toISOString
-   *
-   ***/
-  'iso': function(d) {
-    return d.toISOString();
-  },
-
-   /***
-   * @method getWeekday()
-   * @returns Number
-   * @short Alias for %getDay%.
-   * @set
-   *   getUTCWeekday
-   *
-   * @example
-   *
-   +   Date.create().getWeekday();    -> (ex.) 3
-   +   Date.create().getUTCWeekday();    -> (ex.) 3
-   *
-   ***/
-  'getWeekday': function(d) {
-    return getWeekday(d);
-  },
-
-  'getUTCWeekday': function(d) {
-    return d.getUTCDay();
-  }
-
-});
-
-
-/***
- * @namespace Number
- *
- ***/
-
-/***
- * @method [unit]()
- * @returns Number
- * @short Takes the number as a corresponding unit of time and converts to milliseconds.
- * @extra Method names can be singular or plural.  Note that as "a month" is ambiguous as a unit of time, %months% will be equivalent to 30.4375 days, the average number in a month. Be careful using %months% if you need exact precision.
- *
- * @set
- *   millisecond
- *   milliseconds
- *   second
- *   seconds
- *   minute
- *   minutes
- *   hour
- *   hours
- *   day
- *   days
- *   week
- *   weeks
- *   month
- *   months
- *   year
- *   years
- *
- * @example
- *
- *   (5).milliseconds() -> 5
- *   (10).hours()       -> 36000000
- *   (1).day()          -> 86400000
- *
- ***
- * @method [unit]Before([d], [options])
- * @returns Date
- * @short Returns a date that is <n> units before [d], where <n> is the number.
- * @extra [d] will accept a date object, timestamp, or text format. Note that "months" is ambiguous as a unit of time. If the target date falls on a day that does not exist (ie. August 31 -> February 31), the date will be shifted to the last day of the month. Be careful using %monthsBefore% if you need exact precision. See %date_options% for options.
-
- *
- * @set
- *   millisecondBefore
- *   millisecondsBefore
- *   secondBefore
- *   secondsBefore
- *   minuteBefore
- *   minutesBefore
- *   hourBefore
- *   hoursBefore
- *   dayBefore
- *   daysBefore
- *   weekBefore
- *   weeksBefore
- *   monthBefore
- *   monthsBefore
- *   yearBefore
- *   yearsBefore
- *
- * @example
- *
- *   (5).daysBefore('tuesday')          -> 5 days before tuesday of this week
- *   (1).yearBefore('January 23, 1997') -> January 23, 1996
- *
- ***
- * @method [unit]Ago()
- * @returns Date
- * @short Returns a date that is <n> units ago.
- * @extra Note that "months" is ambiguous as a unit of time. If the target date falls on a day that does not exist (ie. August 31 -> February 31), the date will be shifted to the last day of the month. Be careful using %monthsAgo% if you need exact precision.
- *
- * @set
- *   millisecondAgo
- *   millisecondsAgo
- *   secondAgo
- *   secondsAgo
- *   minuteAgo
- *   minutesAgo
- *   hourAgo
- *   hoursAgo
- *   dayAgo
- *   daysAgo
- *   weekAgo
- *   weeksAgo
- *   monthAgo
- *   monthsAgo
- *   yearAgo
- *   yearsAgo
- *
- * @example
- *
- *   (5).weeksAgo() -> 5 weeks ago
- *   (1).yearAgo()  -> January 23, 1996
- *
- ***
- * @method [unit]After([d], [options])
- * @returns Date
- * @short Returns a date <n> units after [d], where <n> is the number.
- * @extra [d] will accept a date object, timestamp, or text format. Note that "months" is ambiguous as a unit of time. If the target date falls on a day that does not exist (ie. August 31 -> February 31), the date will be shifted to the last day of the month. Be careful using %monthsAfter% if you need exact precision. See %date_options% for options.
- *
- * @set
- *   millisecondAfter
- *   millisecondsAfter
- *   secondAfter
- *   secondsAfter
- *   minuteAfter
- *   minutesAfter
- *   hourAfter
- *   hoursAfter
- *   dayAfter
- *   daysAfter
- *   weekAfter
- *   weeksAfter
- *   monthAfter
- *   monthsAfter
- *   yearAfter
- *   yearsAfter
- *
- * @example
- *
- *   (5).daysAfter('tuesday')          -> 5 days after tuesday of this week
- *   (1).yearAfter('January 23, 1997') -> January 23, 1998
- *
- ***
- * @method [unit]FromNow()
- * @returns Date
- * @short Returns a date <n> units from now.
- * @extra Note that "months" is ambiguous as a unit of time. If the target date falls on a day that does not exist (ie. August 31 -> February 31), the date will be shifted to the last day of the month. Be careful using %monthsFromNow% if you need exact precision.
- *
- * @set
- *   millisecondFromNow
- *   millisecondsFromNow
- *   secondFromNow
- *   secondsFromNow
- *   minuteFromNow
- *   minutesFromNow
- *   hourFromNow
- *   hoursFromNow
- *   dayFromNow
- *   daysFromNow
- *   weekFromNow
- *   weeksFromNow
- *   monthFromNow
- *   monthsFromNow
- *   yearFromNow
- *   yearsFromNow
- *
- * @example
- *
- *   (5).weeksFromNow() -> 5 weeks ago
- *   (1).yearFromNow()  -> January 23, 1998
- *
- ***/
-function buildNumberMethods(u, multiplier) {
-  var base, after, before, name = u.name, methods = {};
-  base = function(n) {
-    return round(n * multiplier);
-  };
-  after = function(n, d, options) {
-    return advanceDate(createDate(null, d, options), u.name, n);
-  };
-  before = function(n, d, options) {
-    return advanceDate(createDate(null, d, options), u.name, -n);
-  };
-  methods[name] = base;
-  methods[name + 's'] = base;
-  methods[name + 'Before'] = before;
-  methods[name + 'sBefore'] = before;
-  methods[name + 'Ago'] = before;
-  methods[name + 'sAgo'] = before;
-  methods[name + 'After'] = after;
-  methods[name + 'sAfter'] = after;
-  methods[name + 'FromNow'] = after;
-  methods[name + 'sFromNow'] = after;
-  defineInstance(sugarNumber, methods);
-}
-
-defineInstance(sugarNumber, {
-
-   /***
-   * @method duration([locale] = currentLocale)
-   * @returns String
-   * @short Takes the number as milliseconds and returns a unit-adjusted localized string.
-   * @extra This method is the same as %Date#relative% without the localized equivalent of "from now" or "ago". [locale] can be passed as the first (and only) parameter. Note that this method is only available when the dates module is included.
-   * @example
-   *
-   *   (500).duration() -> '500 milliseconds'
-   *   (1200).duration() -> '1 second'
-   *   (75).minutes().duration() -> '1 hour'
-   *   (75).minutes().duration('es') -> '1 hora'
-   *
-   ***/
-  'duration': function(n, localeCode) {
-    return localeManager.get(localeCode).getDuration(n);
-  }
-
-});
-
-/***
- * @module Locales
- * @dependency date
- * @description Locale definitions French (fr), Italian (it), Spanish (es), Portuguese (pt), German (de), Russian (ru), Polish (pl), Swedish (sv), Japanese (ja), Korean (ko), Simplified Chinese (zh-CN), and Traditional Chinese (zh-TW). Locales can also be included individually. See @date_locales for more.
- *
- ***/
-
-function getEnglishVariant(v) {
-  return simpleMerge(simpleClone(EnglishLocaleBaseDefinition), v);
-}
-
-
-function LocaleManager(loc) {
-  this.locales = {};
-  this.add(loc);
-}
-
-LocaleManager.prototype = {
-
-  get: function(code, fallback) {
-    var loc = this.locales[code];
-    if (!loc && LazyLoadedLocales[code]) {
-      loc = this.add(code, LazyLoadedLocales[code]);
-    } else if (!loc && code) {
-      loc = this.locales[code.slice(0, 2)];
-    }
-    return loc || fallback === false ? loc : this.current;
-  },
-
-  getAll: function() {
-    return this.locales;
-  },
-
-  set: function(code) {
-    var loc = this.get(code, false);
-    if (!loc) {
-      throw new TypeError('Invalid Locale: ' + code);
-    }
-    return this.current = loc;
-  },
-
-  add: function(code, def) {
-    if (!def) {
-      def = code;
-      code = def.code;
-    } else {
-      def.code = code;
-    }
-    var loc = new Locale(def);
-    this.locales[code] = loc;
-    if (!this.current) {
-      this.current = loc;
-    }
-    return loc;
-  },
-
-  remove: function(code) {
-    if (this.current.code === code) {
-      this.current = this.get('en');
-    }
-    return delete this.locales[code];
-  }
-
-};
-
-function Locale(def) {
-  this.init(def);
-}
-
-Locale.prototype = {
-
-  get: function(prop) {
-    return this[prop] || '';
-  },
-
-  fetch: function(prop, args) {
-    return isFunction(prop) ? prop.apply(this, args || []) : prop;
-  },
-
-  getMonthValue: function(n) {
-    if (isNumber(n)) {
-      return n - 1;
-    } else if (n) {
-      return indexOf(this.monthsLower, n) % 12;
-    }
-    return -1;
-  },
-
-  getWeekdayValue: function(n) {
-    if (n) {
-      return indexOf(this.weekdaysLower, n) % 7;
-    }
-    return -1;
-  },
-
-  getMonthName: function(n, mult) {
-    if (mult) {
-      n += (mult - 1) * 12;
-    }
-    return this.months[n];
-  },
-
-  getAbbreviatedMonthName: function(n) {
-    return this.getAbbreviatedName(this.months, n, 12);
-  },
-
-  getWeekdayName: function(n) {
-    return this.weekdays[n];
-  },
-
-  getAbbreviatedWeekdayName: function(n) {
-    return this.getAbbreviatedName(this.weekdays, n, 7);
-  },
-
-  getAbbreviatedName: function(arr, n, offset) {
-    return arr[n + offset] || arr[n];
-  },
-
-  getNumber: function(n, digit) {
-    var mapped = this.ordinalNumberMap[n];
-    if (isNumber(mapped)) {
-      if (digit) {
-        mapped = mapped % 10;
-      }
-      return mapped;
-    }
-    return isNumber(n) ? n : 1;
-  },
-
-  getOrdinal: function(n) {
-    var suffix = this.fetch(this.ordinalSuffix, [n]);
-    return suffix || getOrdinalSuffix(n);
-  },
-
-  getNumericDate: function(n) {
-    var self = this;
-    return n.replace(RegExp(this.num, 'g'), function(d) {
-      var num = self.getNumber(d, true);
-      return num || '';
-    });
-  },
-
-  getUnitIndex: function(n) {
-    return indexOf(this.unitsLower, n) % 8;
-  },
-
-  getRelativeFormat: function(adu) {
-    return this.convertAdjustedToFormat(adu, adu[2] > 0 ? 'future' : 'past');
-  },
-
-  getDuration: function(ms) {
-    return this.convertAdjustedToFormat(getAdjustedUnitForNumber(max(0, ms)), 'duration');
-  },
-
-  getFirstDayOfWeek: function() {
-    var val = this.firstDayOfWeek;
-    return isDefined(val) ? val : ISO_FIRST_DAY_OF_WEEK;
-  },
-
-  getFirstDayOfWeekYear: function() {
-    return this.firstDayOfWeekYear || ISO_FIRST_DAY_OF_WEEK_YEAR;
-  },
-
-  isMDY: function() {
-    // mm/dd/yyyy format.
-    return !!this.mdy;
-  },
-
-  matchAM: function(str) {
-    return this.matchMeridian(str, 0);
-  },
-
-  matchPM: function(str) {
-    return this.matchMeridian(str, 1);
-  },
-
-  matchMeridian: function(str, index) {
-    return some(this.get('ampmLower'), function(token, i) {
-      return token === str && (i % 2) === index;
-    });
-  },
-
-  convertAdjustedToFormat: function(adu, mode) {
-    var sign, unit, mult,
-        num    = adu[0],
-        u      = adu[1],
-        ms     = adu[2],
-        format = this[mode] || this.relative;
-    if (isFunction(format)) {
-      return format.call(this, num, u, ms, mode);
-    }
-    mult = !this.plural || num === 1 ? 0 : 1;
-    unit = this.units[mult * 8 + u] || this.units[u];
-    sign = filter(this.modifiers, function(m) { return m.name == 'sign' && m.value == (ms > 0 ? 1 : -1); })[0];
-    return format.replace(/\{(.*?)\}/g, function(full, match) {
-      switch(match) {
-        case 'num': return num;
-        case 'unit': return unit;
-        case 'sign': return sign.src;
-      }
-    });
-  },
-
-  getFormats: function() {
-    return this.cachedFormat ? [this.cachedFormat].concat(this.compiledFormats) : this.compiledFormats;
-  },
-
-  addFormat: function(src, allowsTime, match, variant, iso) {
-    var to = match || [], loc = this, time, timeMarkers, lastIsNumeral;
-
-    src = src.replace(/\s+/g, '[,. ]*');
-    src = src.replace(/\{([^,]+?)\}/g, function(all, k) {
-      var value, result,
-          opt   = k.match(/\?$/),
-          nc    = k.match(/^(\d+)\??$/),
-          slice = k.match(/(\d)(?:-(\d))?/),
-          key   = k.replace(/[^a-z]+$/, '');
-      if (nc) {
-        value = loc.get('tokens')[nc[1]];
-      } else if (loc[key]) {
-        value = loc[key];
-      } else if (loc[key + 's']) {
-        value = loc[key + 's'];
-        if (slice) {
-          value = filter(value, function(m, i) {
-            var mod = i % (loc.units ? 8 : value.length);
-            return mod >= slice[1] && mod <= (slice[2] || slice[1]);
-          });
-        }
-        value = arrayToAlternates(value);
-      }
-      if (!value) {
-        return '';
-      }
-      if (nc) {
-        result = '(?:' + value + ')';
-      } else {
-        if (!match) {
-          to.push(key);
-        }
-        result = '(' + value + ')';
-      }
-      if (opt) {
-        result += '?';
-      }
-      return result;
-    });
-    if (allowsTime) {
-      time = loc.prepareTimeFormat(iso);
-      timeMarkers = ['T','[\\s\\u3000]'].concat(loc.get('timeMarker'));
-      lastIsNumeral = /\\d\{\d,\d\}\)+\??$/.test(src);
-      loc.addRawFormat('(?:' + time + ')[,\\s\\u3000]+?' + src, TIME_FORMAT.concat(to), variant);
-      loc.addRawFormat(src + '(?:[,\\s]*(?:' + timeMarkers.join('|') + (lastIsNumeral ? '+' : '*') +')' + time + ')?', to.concat(TIME_FORMAT), variant);
-    } else {
-      loc.addRawFormat(src, to, variant);
-    }
-  },
-
-  addRawFormat: function(format, match, variant) {
-    this.compiledFormats.unshift({
-      variant: !!variant,
-      locale: this,
-      reg: RegExp('^' + format + '$', 'i'),
-      to: match
-    });
-  },
-
-  addTimeFormat: function() {
-    this.addFormat(this.prepareTimeFormat(), false, TIME_FORMAT);
-  },
-
-  prepareTimeFormat: function(iso) {
-    var loc = this, timeSuffixMapping = {'h':0,'m':1,'s':2};
-    return REQUIRED_TIME_REG.replace(/{([a-z])}/g, function(full, token) {
-      // The ISO format allows times without ":",
-      // so make sure that these markers are optional.
-      var add, separators = [],
-          isHourSuffix = token === 'h',
-          tokenIsRequired = isHourSuffix && !iso;
-      if (token === 'd') {
-        // ISO8601 allows decimals in both hours and minutes,
-        // so add that suffix if the format is marked as iso
-        return iso ? DECIMAL_REG : '';
-      } else if (token === 't') {
-        return loc.get('ampm').join('|');
-      } else {
-        if (isHourSuffix) {
-          separators.push(':');
-        }
-        if (add = loc.timeSuffixes[timeSuffixMapping[token]]) {
-          separators.push(add + '\\s*');
-        }
-        return separators.length === 0 ? '' : '(?:' + separators.join('|') + ')' + (tokenIsRequired ? '' : '?');
-      }
-    });
-  },
-
-  init: function(def) {
-    var loc = this;
-
-    function initFormats() {
-      loc.compiledFormats = [];
-    }
-
-    function initDefinition() {
-      simpleMerge(loc, def);
-    }
-
-    function initArrayFields() {
-      forEach(LOCALE_FIELDS, function(name) {
-        var val = loc[name];
-        if (isString(val)) {
-          loc[name] = commaSplit(val);
-        } else if (!val) {
-          loc[name] = [];
-        }
-      });
-    }
-
-    function eachAlternate(str, fn) {
-      str = map(str.split('+'), function(split) {
-        return split.replace(/(.+):(.+)$/, function(full, base, suffixes) {
-          return map(suffixes.split('|'), function(suffix) {
-            return base + suffix;
-          }).join('|');
-        });
-      }).join('|');
-      return forEach(str.split('|'), fn);
-    }
-
-    function setArray(name, multiple) {
-      var arr = [];
-      forEach(loc[name], function(full, i) {
-        eachAlternate(full, function(alt, j) {
-          arr[j * multiple + i] = alt;
-        });
-      });
-      loc[name] = arr;
-      loc[name + 'Lower'] = arr.map(function(t) {
-        return t.toLowerCase();
-      });
-    }
-
-    function getDigit(start, stop, allowNumbers) {
-      var str = '\\d{' + start + HALF_WIDTH_COMMA + stop + '}';
-      if (allowNumbers) str += '|(?:' + arrayToAlternates(loc.get('numbers')) + ')+';
-      return str;
-    }
-
-    function getNum() {
-      var numbers = loc.get('numbers');
-      var arr = ['-?\\d+'].concat(loc.get('articles'));
-      if (numbers) {
-        arr = arr.concat(numbers);
-      }
-      return arrayToAlternates(arr);
-    }
-
-    function setDefault(name, value) {
-      loc[name] = loc[name] || value;
-    }
-
-    function buildNumbers() {
-      var map = loc.ordinalNumberMap = {}, all = [];
-      forEach(loc.numbers, function(full, i) {
-        eachAlternate(full, function(alt) {
-          all.push(alt);
-          map[alt] = i;
-        });
-      });
-      loc.numbers = all;
-    }
-
-    function buildModifiers() {
-      var arr = [];
-      loc.modifiersByName = {};
-      forEach(loc.modifiers, function(modifier) {
-        var name = modifier.name;
-        eachAlternate(modifier.src, function(t) {
-          var locEntry = loc[name];
-          loc.modifiersByName[t] = modifier;
-          arr.push({ name: name, src: t, value: modifier.value });
-          loc[name] = locEntry ? locEntry + '|' + t : t;
-        });
-      });
-      loc.day += '|' + arrayToAlternates(loc.weekdaysLower);
-      loc.modifiers = arr;
-    }
-
-    initFormats();
-    initDefinition();
-    initArrayFields();
-
-    buildNumbers();
-
-    setArray('months', 12);
-    setArray('weekdays', 7);
-    setArray('units', 8);
-    setArray('ampm', 2);
-
-    setDefault('date', getDigit(1,2, loc.digitDate));
-    setDefault('year', "'\\d{2}|" + getDigit(4,4));
-    setDefault('num', getNum());
-
-    buildModifiers();
-
-    if (loc.monthSuffix) {
-      loc.month = getDigit(1,2);
-      loc.months = map(commaSplit('1,2,3,4,5,6,7,8,9,10,11,12'), function(n) {
-        return n + loc.monthSuffix;
-      });
-    }
-    loc.fullMonth = getDigit(1,2) + '|' + arrayToAlternates(loc.months);
-
-    // The order of these formats is very important. Order is reversed so
-    // formats that are initialized later will take precedence. This generally
-    // means that more specific formats should come later, however, the {year}
-    // format should come before {day}, as 2011 needs to be parsed as a year
-    // (2011) and not date (20) + hours (11), etc.
-
-    loc.addTimeFormat();
-
-    loc.addFormat('{day}', true);
-    loc.addFormat('{month}' + (loc.monthSuffix || ''));
-    loc.addFormat('{year}' + (loc.yearSuffix || ''));
-
-    forEach(loc.parse, function(src) {
-      loc.addFormat(src);
-    });
-
-    forEach(loc.timeParse, function(src) {
-      loc.addFormat(src, true);
-    });
-
-    forEach(CoreDateFormats, function(df) {
-      var match = commaSplit(df.match);
-      loc.addFormat(df.src, df.time, match, df.variant, df.iso);
-    });
-
-  }
-
-};
-
-var EnglishLocaleBaseDefinition = {
-  'code':       'en',
-  'timeMarker': 'at',
-  'ampm':       'AM,PM,a,p',
-  'months':     'Jan:uary|,Feb:ruary|,Mar:ch|,Apr:il|,May,Jun:e|,Jul:y|,Aug:ust|,Sep:tember|t|,Oct:ober|,Nov:ember|,Dec:ember|',
-  'weekdays':   'Sun:day|,Mon:day|,Tue:sday|,Wed:nesday|,Thu:rsday|,Fri:day|,Sat:urday|',
-  'units':      'millisecond:|s,second:|s,minute:|s,hour:|s,day:|s,week:|s,month:|s,year:|s',
-  'numbers':    'zero,one,two,three,four,five,six,seven,eight,nine,ten',
-  'articles':   'a,an,the',
-  'tokens':     'the,st|nd|rd|th,of',
-  'time':       '{H}:{mm}',
-  'past':       '{num} {unit} {sign}',
-  'future':     '{num} {unit} {sign}',
-  'duration':   '{num} {unit}',
-  'plural':     true,
-  'modifiers': [
-    { 'name': 'hours', 'src': 'midnight', 'value': 0 },
-    { 'name': 'hours', 'src': 'noon', 'value': 12 },
-    { 'name': 'day',   'src': 'yesterday', 'value': -1 },
-    { 'name': 'day',   'src': 'today', 'value': 0 },
-    { 'name': 'day',   'src': 'tomorrow', 'value': 1 },
-    { 'name': 'sign',  'src': 'ago|before', 'value': -1 },
-    { 'name': 'sign',  'src': 'from now|after|from|in|later', 'value': 1 },
-    { 'name': 'edge',  'src': 'last day', 'value': -2 },
-    { 'name': 'edge',  'src': 'end', 'value': -1 },
-    { 'name': 'edge',  'src': 'first day|first|beginning', 'value': 1 },
-    { 'name': 'shift', 'src': 'last', 'value': -1 },
-    { 'name': 'shift', 'src': 'the|this', 'value': 0 },
-    { 'name': 'shift', 'src': 'next', 'value': 1 }
-  ],
-  'parse': [
-    '{month} {year}',
-    '{shift} {unit=5-7}',
-    '{0?} {date}{1}',
-    '{shift?} {day?} {timeMarker?} {hours}',
-    '{0?} {edge} of {shift?} {unit=4-7?} {month?} {year?}'
-  ],
-  'timeParse': [
-    '{num} {unit} {sign}',
-    '{sign} {num} {unit}',
-    '{0} {num}{1} {day} of {month} {year?}',
-    '{weekday?} {month} {date}{1?} {year?}',
-    '{date} {month} {year}',
-    '{date} {month}',
-    '{shift} {weekday}',
-    '{shift} week {weekday}',
-    '{weekday} {2?} {shift} week',
-    '{num?} {unit=4-5} {sign} {day}',
-    '{0?} {date}{1} of {month}',
-    '{0?}{month?} {date?}{1?} of {shift} {unit=6-7}',
-    '{edge} of {day}'
-  ]
-};
-
-var AmericanEnglishDefinition = getEnglishVariant({
-  'mdy': true,
-  'firstDayOfWeek': 0,
-  'firstDayOfWeekYear': 1,
-  'short':  '{MM}/{dd}/{yyyy}',
-  'medium': '{Month} {d}, {yyyy}',
-  'long':   '{Month} {d}, {yyyy} {time}',
-  'full':   '{Weekday}, {Month} {d}, {yyyy} {time}',
-  'stamp':  '{Dow} {Mon} {d} {yyyy} {time}',
-  'time':   '{h}:{mm} {TT}'
-});
-
-var BritishEnglishDefinition = getEnglishVariant({
-  'short':  '{dd}/{MM}/{yyyy}',
-  'medium': '{d} {Month} {yyyy}',
-  'long':   '{d} {Month} {yyyy} {H}:{mm}',
-  'full':   '{Weekday}, {d} {Month}, {yyyy} {time}',
-  'stamp':  '{Dow} {d} {Mon} {yyyy} {time}'
-});
-
-var CanadianEnglishDefinition = getEnglishVariant({
-  'short':  '{yyyy}-{MM}-{dd}',
-  'medium': '{d} {Month}, {yyyy}',
-  'long':   '{d} {Month}, {yyyy} {H}:{mm}',
-  'full':   '{Weekday}, {d} {Month}, {yyyy} {time}',
-  'stamp':  '{Dow} {d} {Mon} {yyyy} {time}'
-});
-
-var LazyLoadedLocales = {
-  'en-US': AmericanEnglishDefinition,
-  'en-GB': BritishEnglishDefinition,
-  'en-AU': BritishEnglishDefinition,
-  'en-CA': CanadianEnglishDefinition
-};
-
-// Sorry about this guys
-var English = new Locale(AmericanEnglishDefinition);
-
-var localeManager = new LocaleManager(English);
-
-buildDateUnits();
-buildCJKDigits();
-buildFormatTokens();
-buildDateUnitMethods();
-buildRelativeAliases();
-'use strict';
-
-/***
- * @module Range
- * @dependency core
- * @description Ranges allow creating spans of numbers, strings, or dates. They can enumerate over specific points within that range, and be manipulated and compared.
- *
- ***/
-
-var DURATION_UNITS           = 'year|month|week|day|hour|minute|(?:milli)?second';
-var FULL_CAPTURED_DURATION   = '((?:\\d+)?\\s*(?:' + DURATION_UNITS + '))s?';
-
-// Duration Formats
-var DURATION_REG             = RegExp('(\\d+)?\\s*('+ DURATION_UNITS +')s?', 'i'),
-    RANGE_REG_FROM_TO        = /(?:from)?\s*(.+)\s+(?:to|until)\s+(.+)$/i,
-    RANGE_REG_REAR_DURATION  = RegExp('(.+)\\s*for\\s*' + FULL_CAPTURED_DURATION, 'i'),
-    RANGE_REG_FRONT_DURATION = RegExp('(?:for)?\\s*'+ FULL_CAPTURED_DURATION +'\\s*(?:starting)?\\s*at\\s*(.+)', 'i');
-
-var MULTIPLIERS = {
-  'Hours': 60 * 60 * 1000,
-  'Minutes': 60 * 1000,
-  'Seconds': 1000,
-  'Milliseconds': 1
-};
-
-var PrimitiveRangeConstructor = function(start, end) {
-  return new Range(start, end);
-};
-
-var DateRangeConstructor = function(start, end) {
-  if (arguments.length === 1 && isString(start)) {
-    return createDateRangeFromString(start);
-  }
-  return new Range(getDateForRange(start), getDateForRange(end));
-};
-
-function Range(start, end) {
-  this.start = cloneRangeMember(start);
-  this.end   = cloneRangeMember(end);
-}
-
-function getRangeMemberNumericValue(m) {
-  return isString(m) ? m.charCodeAt(0) : m;
-}
-
-function getRangeMemberPrimitiveValue(m) {
-  if (m == null) return m;
-  return isDate(m) ? m.getTime() : m.valueOf();
-}
-
-function getPrecision(n) {
-  var split = periodSplit(n.toString());
-  return split[1] ? split[1].length : 0;
-}
-
-function getGreaterPrecision(n1, n2) {
-  return max(getPrecision(n1), getPrecision(n2));
-}
-
-function getDateForRange(d) {
-  if (isDate(d)) {
-    return d;
-  } else if (sugarDate.create) {
-    return sugarDate.create(d);
-  } else {
-    // Needed as argument numbers are checked internally here.
-    return d === undefined ? new Date() : new Date(d);
-  }
-}
-
-function createDateRangeFromString(str) {
-  var match, datetime, duration, dio, start, end;
-  if (sugarDate.get && (match = str.match(RANGE_REG_FROM_TO))) {
-    start = getDateForRange(match[1].replace('from', 'at'));
-    end = sugarDate.get(start, match[2]);
-    return new Range(start, end);
-  }
-  if (match = str.match(RANGE_REG_FRONT_DURATION)) {
-    duration = match[1];
-    datetime = match[2];
-  }
-  if (match = str.match(RANGE_REG_REAR_DURATION)) {
-    datetime = match[1];
-    duration = match[2];
-  }
-  if (datetime && duration) {
-    start = getDateForRange(datetime);
-    dio = getDateIncrementObject(duration);
-    end = incrementDate(start, dio[0], dio[1]);
-  }
-  return new Range(getDateForRange(start), getDateForRange(end));
-}
-
-function cloneRangeMember(m) {
-  if (isDate(m)) {
-    return new Date(m.getTime());
-  } else {
-    return getRangeMemberPrimitiveValue(m);
-  }
-}
-
-function isValidRangeMember(m) {
-  var val = getRangeMemberPrimitiveValue(m);
-  return (!!val || val === 0) && valueIsNotInfinite(m);
-}
-
-function valueIsNotInfinite(m) {
-  return m !== -Infinity && m !== Infinity;
-}
-
-function getDateIncrementObject(amt) {
-  var match, val, unit;
-  if (isNumber(amt)) {
-    return [amt, 'Milliseconds'];
-  }
-  match = amt.match(DURATION_REG);
-  val = +match[1] || 1;
-  unit = simpleCapitalize(match[2]);
-  if (unit.match(/hour|minute|second/i)) {
-    unit += 's';
-  } else if (unit === 'Year') {
-    unit = 'FullYear';
-  } else if (unit === 'Day') {
-    unit = 'Date';
-  }
-  return [val, unit];
-}
-
-function incrementDate(src, amount, unit) {
-  var mult = MULTIPLIERS[unit], d;
-  if (mult) {
-    d = new Date(src.getTime() + (amount * mult));
-  } else {
-    d = new Date(src);
-    callDateSet(d, unit, callDateGet(src, unit) + amount);
-  }
-  return d;
-}
-
-function incrementString(current, amount) {
-  return chr(current.charCodeAt(0) + amount);
-}
-
-function incrementNumber(current, amount, precision) {
-  return withPrecision(current + amount, precision);
-}
-
-Range.prototype = {
-
-  /***
-   * @method toString()
-   * @returns String
-   * @short Returns a string representation of the range.
-   * @example
-   *
-   *   Number.range(1, 5).toString()                               -> 1..5
-   *   Date.range(new Date(2003, 0), new Date(2005, 0)).toString() -> January 1, 2003..January 1, 2005
-   *
-   ***/
-  'toString': function() {
-    return this.isValid() ? this.start + '..' + this.end : 'Invalid Range';
-  },
-
-  /***
-   * @method isValid()
-   * @returns Boolean
-   * @short Returns true if the range is valid, false otherwise.
-   * @example
-   *
-   *   Date.range(new Date(2003, 0), new Date(2005, 0)).isValid() -> true
-   *   Number.range(NaN, NaN).isValid()                           -> false
-   *
-   ***/
-  'isValid': function() {
-    return isValidRangeMember(this.start) && isValidRangeMember(this.end) && typeof this.start === typeof this.end;
-  },
-
-  /***
-   * @method span()
-   * @returns Number
-   * @short Returns the span of the range. If the range is a date range, the value is in milliseconds.
-   * @extra The span includes both the start and the end.
-   * @example
-   *
-   *   Number.range(5, 10).span()                              -> 6
-   *   Date.range(new Date(2003, 0), new Date(2005, 0)).span() -> 94694400000
-   *
-   ***/
-  'span': function() {
-    return this.isValid() ? abs(
-      getRangeMemberNumericValue(this.end) - getRangeMemberNumericValue(this.start)
-    ) + 1 : NaN;
-  },
-
-  /***
-   * @method contains(<obj>)
-   * @returns Boolean
-   * @short Returns true if <obj> is contained inside the range. <obj> may be a value or another range.
-   * @example
-   *
-   *   Number.range(5, 10).contains(7)                                              -> true
-   *   Date.range(new Date(2003, 0), new Date(2005, 0)).contains(new Date(2004, 0)) -> true
-   *
-   ***/
-  'contains': function(obj) {
-    if (obj == null) return false;
-    if (obj.start && obj.end) {
-      return obj.start >= this.start && obj.start <= this.end &&
-             obj.end   >= this.start && obj.end   <= this.end;
-    } else {
-      return obj >= this.start && obj <= this.end;
-    }
-  },
-
-  /***
-   * @method every(<amount>, [fn])
-   * @returns Array
-   * @short Iterates through the range for every <amount>, calling [fn] if it is passed. Returns an array of each increment visited.
-   * @extra In the case of date ranges, <amount> can also be a string, in which case it will increment a number of  units. Note that %(2).months()% first resolves to a number, which will be interpreted as milliseconds and is an approximation, so stepping through the actual months by passing %"2 months"% is usually preferable.
-   * @example
-   *
-   *   Number.range(2, 8).every(2)                                       -> [2,4,6,8]
-   *   Date.range(new Date(2003, 1), new Date(2003,3)).every("2 months") -> [...]
-   *
-   ***/
-  'every': function(amount, fn) {
-    var increment,
-        precision,
-        dio,
-        unit,
-        start   = this.start,
-        end     = this.end,
-        inverse = end < start,
-        current = start,
-        index   = 0,
-        result  = [];
-
-    if (!this.isValid()) {
-      return [];
-    }
-    if (isFunction(amount)) {
-      fn = amount;
-      amount = null;
-    }
-    amount = amount || 1;
-    if (isNumber(start)) {
-      precision = getGreaterPrecision(start, amount);
-      increment = function() {
-        return incrementNumber(current, amount, precision);
-      };
-    } else if (isString(start)) {
-      increment = function() {
-        return incrementString(current, amount);
-      };
-    } else if (isDate(start)) {
-      dio    = getDateIncrementObject(amount);
-      amount = dio[0];
-      unit   = dio[1];
-      increment = function() {
-        return incrementDate(current, amount, unit);
-      };
-    }
-    // Avoiding infinite loops
-    if (inverse && amount > 0) {
-      amount *= -1;
-    }
-    while(inverse ? current >= end : current <= end) {
-      result.push(current);
-      if (fn) {
-        fn(current, index);
-      }
-      current = increment();
-      index++;
-    }
-    return result;
-  },
-
-  /***
-   * @method toArray()
-   * @returns Array
-   * @short Creates an array from the range.
-   * @extra If the range is a date range, every millisecond between the start and end dates will be returned. To control this use %every% instead.
-   * @example
-   *
-   *   Number.range(1, 5).toArray() -> [1,2,3,4,5]
-   *   Date.range(new Date(2003, 1), new Date(2003,3)).toArray() -> [...]
-   *
-   ***/
-  'toArray': function() {
-    return this.every();
-  },
-
-  /***
-   * @method union(<range>)
-   * @returns Range
-   * @short Returns a new range with the earliest starting point as its start, and the latest ending point as its end. If the two ranges do not intersect this will effectively remove the "gap" between them.
-   * @example
-   *
-   *   Number.range(1, 3).union(Number.range(2, 5)) -> 1..5
-   *   Date.range(new Date(2003, 1), new Date(2005, 1)).union(Date.range(new Date(2004, 1), new Date(2006, 1))) -> Jan 1, 2003..Jan 1, 2006
-   *
-   ***/
-  'union': function(range) {
-    return new Range(
-      this.start < range.start ? this.start : range.start,
-      this.end   > range.end   ? this.end   : range.end
-    );
-  },
-
-  /***
-   * @method intersect(<range>)
-   * @returns Range
-   * @short Returns a new range with the latest starting point as its start, and the earliest ending point as its end. If the two ranges do not intersect this will effectively produce an invalid range.
-   * @example
-   *
-   *   Number.range(1, 5).intersect(Number.range(4, 8)) -> 4..5
-   *   Date.range(new Date(2003, 1), new Date(2005, 1)).intersect(Date.range(new Date(2004, 1), new Date(2006, 1))) -> Jan 1, 2004..Jan 1, 2005
-   *
-   ***/
-  'intersect': function(range) {
-    if (range.start > this.end || range.end < this.start) {
-      return new Range(NaN, NaN);
-    }
-    return new Range(
-      this.start > range.start ? this.start : range.start,
-      this.end   < range.end   ? this.end   : range.end
-    );
-  },
-
-  /***
-   * @method clone()
-   * @returns Range
-   * @short Clones the range.
-   * @extra Members of the range will also be cloned.
-   * @example
-   *
-   *   Number.range(1, 5).clone() -> Returns a copy of the range.
-   *
-   ***/
-  'clone': function() {
-    return new Range(this.start, this.end);
-  },
-
-  /***
-   * @method clamp(<obj>)
-   * @returns Mixed
-   * @short Clamps <obj> to be within the range if it falls outside.
-   * @example
-   *
-   *   Number.range(1, 5).clamp(8) -> 5
-   *   Date.range(new Date(2010, 0), new Date(2012, 0)).clamp(new Date(2013, 0)) -> 2012-01
-   *
-   ***/
-  'clamp': function(obj) {
-    var clamped,
-        start = this.start,
-        end = this.end,
-        min = end < start ? end : start,
-        max = start > end ? start : end;
-    if (obj < min) {
-      clamped = min;
-    } else if (obj > max) {
-      clamped = max;
-    } else {
-      clamped = obj;
-    }
-    return cloneRangeMember(clamped);
-  }
-
-};
-
-/***
- * @namespace Number
- *
- ***/
-
-defineStatic(sugarNumber, {
-
-  /***
-   * @method Number.range([start], [end])
-   * @returns Range
-   * @short Creates a new range between [start] and [end]. See %ranges% for more.
-   * @example
-   *
-   *   Number.range(5, 10)
-   *
-   ***/
-  'range': PrimitiveRangeConstructor
-
-});
-
-defineInstance(sugarNumber, {
-
-  /***
-   * @method upto(<num>, [fn], [step] = 1)
-   * @returns Array
-   * @short Returns an array containing numbers from the number up to <num>.
-   * @extra Optionally calls [fn] callback for each number in that array. [step] allows multiples greater than 1.
-   * @example
-   *
-   *   (2).upto(6) -> [2, 3, 4, 5, 6]
-   *   (2).upto(6, function(n) {
-   *     // This function is called 5 times receiving n as the value.
-   *   });
-   *   (2).upto(8, null, 2) -> [2, 4, 6, 8]
-   *
-   ***/
-  'upto': function(n, num, fn, step) {
-    return new Range(n, num).every(step, fn);
-  },
-
-   /***
-   * @method clamp([start] = Infinity, [end] = Infinity)
-   * @returns Number
-   * @short Constrains the number so that it is between [start] and [end].
-   * @extra This will build a range object that has an equivalent %clamp% method.
-   * @example
-   *
-   *   (3).clamp(50, 100)  -> 50
-   *   (85).clamp(50, 100) -> 85
-   *
-   ***/
-  'clamp': function(n, start, end) {
-    return new Range(start, end).clamp(n);
-  },
-
-   /***
-   * @method cap([max] = Infinity)
-   * @returns Number
-   * @short Constrains the number so that it is no greater than [max].
-   * @extra This will build a range object that has an equivalent %cap% method.
-   * @example
-   *
-   *   (100).cap(80) -> 80
-   *
-   ***/
-  'cap': function(n, max) {
-    return new Range(undefined, max).clamp(n);
-  }
-
-});
-
-/***
- * @method downto(<num>, [fn], [step] = 1)
- * @returns Array
- * @short Returns an array containing numbers from the number down to <num>.
- * @extra Optionally calls [fn] callback for each number in that array. [step] allows multiples greater than 1.
- * @example
- *
- *   (8).downto(3) -> [8, 7, 6, 5, 4, 3]
- *   (8).downto(3, function(n) {
- *     // This function is called 6 times receiving n as the value.
- *   });
- *   (8).downto(2, null, 2) -> [8, 6, 4, 2]
- *
- ***/
-alias(sugarNumber, 'downto', 'upto');
-
-
-/***
- * @namespace String
- *
- ***/
-defineStatic(sugarString, {
-
-  /***
-   * @method String.range([start], [end])
-   * @returns Range
-   * @short Creates a new range between [start] and [end]. See %ranges% for more.
-   * @example
-   *
-   *   String.range('a', 'z')
-   *
-   ***/
-  'range': PrimitiveRangeConstructor
-
-});
-
-
-/***
- * @namespace Date
- *
- ***/
-defineStatic(sugarDate,   {
-
-  /***
-   * @method Date.range([start], [end])
-   * @returns Range
-   * @short Creates a new range between [start] and [end].
-   * @extra If either [start] or [end] are null, they will default to the current date. See %ranges% for more.
-   * @example
-   *
-   *   Date.range('today', 'tomorrow')
-   *
-   ***/
-  'range': DateRangeConstructor
-
-});
-'use strict';
-
-/***
- * @module Number
- * @dependency core
- * @description Number formatting, rounding (with precision). Aliases to Math methods.
- *
- ***/
-
-// Abbreviation Units
-var BASIC_UNITS         = '|kmbt',
-    MEMORY_UNITS        = '|KMGTPE',
-    MEMORY_BINARY_UNITS = '|,Ki,Mi,Gi,Ti,Pi,Ei',
-    METRIC_UNITS_SHORT  = 'nμm|k',
-    METRIC_UNITS_FULL   = 'yzafpnμm|KMGTPEZY';
-
-function getThousands() {
-  var str = sugarNumber.thousands;
-  return isString(str) ? str : HALF_WIDTH_COMMA;
-}
-
-function getDecimal() {
-  var str = sugarNumber.decimal;
-  return isString(str) ? str : HALF_WIDTH_PERIOD;
-}
-
-function abbreviateNumber(num, precision, ustr, bytes) {
-  var fixed        = num.toFixed(20),
-      decimalPlace = fixed.search(/\./),
-      numeralPlace = fixed.search(/[1-9]/),
-      significant  = decimalPlace - numeralPlace,
-      units, unit, mid, i, divisor;
-  if (significant > 0) {
-    significant -= 1;
-  }
-  units = commaSplit(ustr);
-  if (units.length === 1) {
-    units = ustr.split('');
-  }
-  mid = units.indexOf('|');
-  if (mid === -1) {
-    // Skipping the placeholder means the units should start from zero,
-    // otherwise assume they end at zero.
-    mid = units[0] === '_' ? 0 : units.length;
-  }
-  i = max(min(floor(significant / 3), units.length - mid - 1), -mid);
-  unit = units[i + mid];
-  while (unit === '_') {
-    i += i < 0 ? -1 : 1;
-    unit = units[i + mid];
-  }
-  if (unit === '|') {
-    unit = '';
-  }
-  if (significant < -9) {
-    precision = abs(significant) - 9;
-  }
-  divisor = bytes ? pow(2, 10 * i) : pow(10, i * 3);
-  return numberFormat(withPrecision(num / divisor, precision || 0)) + unit;
-}
-
-function numberFormat(num, place) {
-  var i, str, split, integer, fraction, result = '';
-  var thousands = getThousands();
-  var decimal   = getDecimal();
-  str      = (isNumber(place) ? withPrecision(num, place || 0).toFixed(max(place, 0)) : num.toString()).replace(/^-/, '');
-  split    = periodSplit(str);
-  integer  = split[0];
-  fraction = split[1];
-  if (/e/.test(str)) {
-    result = str;
-  } else {
-    for(i = integer.length; i > 0; i -= 3) {
-      if (i < integer.length) {
-        result = thousands + result;
-      }
-      result = integer.slice(max(0, i - 3), i) + result;
-    }
-  }
-  if (fraction) {
-    result += decimal + repeatString('0', (place || 0) - fraction.length) + fraction;
-  }
-  return (num < 0 ? '-' : '') + result;
-}
-
-function isInteger(n) {
-  return n % 1 === 0;
-}
-
-function isMultipleOf(n1, n2) {
-  return n1 % n2 === 0;
-}
-
-function createRoundingFunction(fn) {
-  return function(n, precision) {
-    return precision ? withPrecision(n, precision, fn) : fn(n);
-  };
-}
-
-defineStatic(sugarNumber, {
-
-  /***
-   * @method Number.random([n1], [n2])
-   * @returns Number
-   * @short Returns a random integer between [n1] and [n2].
-   * @extra If only 1 number is passed, the other will be 0. If none are passed, the number will be either 0 or 1.
-   * @example
-   *
-   *   Number.random(50, 100) -> ex. 85
-   *   Number.random(50)      -> ex. 27
-   *   Number.random()        -> ex. 0
-   *
-   ***/
-  'random': function(n1, n2) {
-    var minNum, maxNum;
-    if (arguments.length == 1) n2 = n1, n1 = 0;
-    minNum = min(n1 || 0, isUndefined(n2) ? 1 : n2);
-    maxNum = max(n1 || 0, isUndefined(n2) ? 1 : n2) + 1;
-    return trunc((Math.random() * (maxNum - minNum)) + minNum);
-  }
-
-});
-
-defineInstance(sugarNumber, {
-
-  /***
-   * @method isInteger()
-   * @returns Boolean
-   * @short Returns true if the number has no trailing decimal.
-   * @example
-   *
-   *   (420).isInteger() -> true
-   *   (4.5).isInteger() -> false
-   *
-   ***/
-  'isInteger': function(n) {
-    return isInteger(n);
-  },
-
-  /***
-   * @method isOdd()
-   * @returns Boolean
-   * @short Returns true if the number is odd.
-   * @example
-   *
-   *   (3).isOdd()  -> true
-   *   (18).isOdd() -> false
-   *
-   ***/
-  'isOdd': function(n) {
-    return isInteger(n) && !isMultipleOf(n, 2);
-  },
-
-  /***
-   * @method isEven()
-   * @returns Boolean
-   * @short Returns true if the number is even.
-   * @example
-   *
-   *   (6).isEven()  -> true
-   *   (17).isEven() -> false
-   *
-   ***/
-  'isEven': function(n) {
-    return isMultipleOf(n, 2);
-  },
-
-  /***
-   * @method isMultipleOf(<num>)
-   * @returns Boolean
-   * @short Returns true if the number is a multiple of <num>.
-   * @example
-   *
-   *   (6).isMultipleOf(2)  -> true
-   *   (17).isMultipleOf(2) -> false
-   *   (32).isMultipleOf(4) -> true
-   *   (34).isMultipleOf(4) -> false
-   *
-   ***/
-  'isMultipleOf': function(n, num) {
-    return isMultipleOf(n, num);
-  },
-
-  /***
-   * @method log(<base> = Math.E)
-   * @returns Number
-   * @short Returns the logarithm of the number with base <base>, or natural logarithm of the number if <base> is undefined.
-   * @example
-   *
-   *   (64).log(2) -> 6
-   *   (9).log(3)  -> 2
-   *   (5).log()   -> 1.6094379124341003
-   *
-   ***/
-  'log': function(n, base) {
-    return Math.log(n) / (base ? Math.log(base) : 1);
-  },
-
-  /***
-   * @method abbr([precision] = 0)
-   * @returns String
-   * @short Returns an abbreviated form of the number ("k" for thousand, "m" for million, etc).
-   * @extra [precision] will round to the given precision. %Sugar.Number.thousands% and %Sugar.Number.decimal% allow custom markers to be used.
-   * @example
-   *
-   *   (1000).abbr()    -> "1k"
-   *   (1000000).abbr() -> "1m"
-   *   (1280).abbr(1)   -> "1.3k"
-   *
-   ***/
-  'abbr': function(n, precision) {
-    return abbreviateNumber(n, precision, BASIC_UNITS);
-  },
-
-  /***
-   * @method metric([precision] = 0, [units] = "nμm|k")
-   * @returns String
-   * @short Returns the number as a string in metric notation.
-   * @extra [precision] will round to the given precision (can be negative). [units] is a string that determines both the unit notation and the min/max unit allowed. The default is natural notation for common units (meters, grams, etc). "all" can be passed for [units] and is a shortcut to all standard SI units. For more see %number abbreviations%.
-   *
-   * @example
-   *
-   *   (1000).metric()            -> "1k"
-   *   (1000000).metric()         -> "1,000k"
-   *   (1000000).metric(0, 'all') -> "1M"
-   *   (1249).metric(2) + 'g'     -> "1.25kg"
-   *   (0.025).metric() + 'm'     -> "25mm"
-   *
-   ***/
-  'metric': function(n, precision, units) {
-    if (units === 'all') {
-      units = METRIC_UNITS_FULL;
-    } else if (!units) {
-      units = METRIC_UNITS_SHORT;
-    }
-    return abbreviateNumber(n, precision, units);
-  },
-
-  /***
-   * @method bytes([precision] = 0, [si] = false, [units] = '|KMGTPE')
-   * @returns String
-   * @short Returns an abbreviated form of the number, with 'B' on the end for "bytes".
-   * @extra [precision] will round to the given precision. If [si] is %true%, the standard SI units of 1000 will be used instead of 1024. [units] is a string that determines both the unit notation and the min/max unit allowed. For more see %number abbreviations%.
-   * @example
-   *
-   *   (1000).bytes()                 -> "1kB"
-   *   (1000).bytes(2)                -> "0.98kB"
-   *   ((10).pow(20)).bytes()         -> "90,949,470TB"
-   *   ((10).pow(20)).bytes(0, false) -> "87EB"
-   *
-   ***/
-  'bytes': function(n, precision, si, units) {
-    if (units === 'binary') {
-      units = MEMORY_BINARY_UNITS;
-    } else if(!units) {
-      units = MEMORY_UNITS;
-    }
-    return abbreviateNumber(n, precision, units, !si) + 'B';
-  },
-
-  /***
-   * @method format([place] = 0)
-   * @returns String
-   * @short Formats the number to a readable string.
-   * @extra If [place] is %undefined%, the place will automatically be determined. %Sugar.Number.thousands% and %Sugar.Number.decimal% allow custom markers to be used.
-   * @example
-   *
-   *   (56782).format()    -> '56,782'
-   *   (56782).format(2)   -> '56,782.00'
-   *   (4388.43).format(2) -> '4,388.43'
-   *
-   ***/
-  'format': function(n, place) {
-    return numberFormat(n, place);
-  },
-
-  /***
-   * @method hex([pad] = 1)
-   * @returns String
-   * @short Converts the number to hexidecimal.
-   * @extra [pad] will pad the resulting string to that many places.
-   * @example
-   *
-   *   (255).hex()   -> 'ff';
-   *   (255).hex(4)  -> '00ff';
-   *   (23654).hex() -> '5c66';
-   *
-   ***/
-  'hex': function(n, pad) {
-    return padNumber(n, pad || 1, false, 16);
-  },
-
-  /***
-   * @method times(<fn>)
-   * @returns Mixed
-   * @short Calls <fn> a number of times equivalent to the number.
-   * @extra Any non-undefined return values of <fn> will be collected and returned in an array.
-   * @example
-   *
-   *   (8).times(function(i) {
-   *     // This function is called 8 times.
-   *   });
-   *
-   ***/
-  'times': function(n, fn) {
-    var arr, result;
-    for(var i = 0; i < n; i++) {
-      result = fn.call(n, i);
-      if (isDefined(result)) {
-        if (!arr) {
-          arr = [];
-        }
-        arr.push(result);
-      }
-    }
+  function arrayAppend(arr, el, index) {
+    index = +index;
+    if (isNaN(index)) {
+      index = arr.length;
+    }
+    arr.splice.apply(arr, [index, 0].concat(el));
     return arr;
-  },
-
-  /***
-   * @method chr()
-   * @returns String
-   * @short Returns a string at the code point of the number.
-   * @example
-   *
-   *   (65).chr() -> "A"
-   *   (75).chr() -> "K"
-   *
-   ***/
-  'chr': function(n) {
-    return chr(n);
-  },
-
-  /***
-   * @method pad(<place> = 0, [sign] = false, [base] = 10)
-   * @returns String
-   * @short Pads a number with "0" to <place>.
-   * @extra [sign] allows you to force the sign as well (+05, etc). [base] can change the base for numeral conversion.
-   * @example
-   *
-   *   (5).pad(2)        -> '05'
-   *   (-5).pad(4)       -> '-0005'
-   *   (82).pad(3, true) -> '+082'
-   *
-   ***/
-  'pad': function(n, place, sign, base) {
-    return padNumber(n, place, sign, base);
-  },
-
-  /***
-   * @method ordinalize()
-   * @returns String
-   * @short Returns an ordinalized (English) string, i.e. "1st", "2nd", etc.
-   * @example
-   *
-   *   (1).ordinalize() -> '1st';
-   *   (2).ordinalize() -> '2nd';
-   *   (8).ordinalize() -> '8th';
-   *
-   ***/
-  'ordinalize': function(n) {
-    var num = abs(n), last = +num.toString().slice(-2);
-    return n + getOrdinalSuffix(last);
-  },
-
-  /***
-   * @method toNumber()
-   * @returns Number
-   * @short Identity function for compatibilty.
-   * @example
-   *
-   *   (420).toNumber() -> 420
-   *
-   ***/
-  'toNumber': function(n) {
-    return n;
-  },
-
-  /***
-   * @method round(<precision> = 0)
-   * @returns Number
-   * @short Shortcut for %Math.round% that also allows a <precision>.
-   *
-   * @example
-   *
-   *   (3.241).round()  -> 3
-   *   (-3.841).round() -> -4
-   *   (3.241).round(2) -> 3.24
-   *   (3748).round(-2) -> 3800
-   *
-   ***/
-  'round': createRoundingFunction(round),
-
-  /***
-   * @method ceil(<precision> = 0)
-   * @returns Number
-   * @short Shortcut for %Math.ceil% that also allows a <precision>.
-   *
-   * @example
-   *
-   *   (3.241).ceil()  -> 4
-   *   (-3.241).ceil() -> -3
-   *   (3.241).ceil(2) -> 3.25
-   *   (3748).ceil(-2) -> 3800
-   *
-   ***/
-  'ceil': createRoundingFunction(ceil),
-
-  /***
-   * @method floor(<precision> = 0)
-   * @returns Number
-   * @short Shortcut for %Math.floor% that also allows a <precision>.
-   *
-   * @example
-   *
-   *   (3.241).floor()  -> 3
-   *   (-3.841).floor() -> -4
-   *   (3.241).floor(2) -> 3.24
-   *   (3748).floor(-2) -> 3700
-   *
-   ***/
-  'floor': createRoundingFunction(floor)
-
-});
-
-/***
- * @method [math]()
- * @returns Number
- * @short Math related functions are mapped as shortcuts to numbers and are identical. Note that %Number#log% provides some special defaults.
- *
- * @set
- *   abs
- *   sin
- *   asin
- *   cos
- *   acos
- *   tan
- *   atan
- *   sqrt
- *   exp
- *   pow
- *
- * @example
- *
- *   (3).pow(3) -> 27
- *   (-3).abs() -> 3
- *   (1024).sqrt() -> 32
- *
- ***/
-function buildMathAliases() {
-  defineInstanceSimilar(sugarNumber, 'abs,pow,sin,asin,cos,acos,tan,atan,exp,pow,sqrt', function(methods, name) {
-    methods[name] = function(n, arg) {
-      // Note that .valueOf() here is only required due to a
-      // very strange bug in iOS7 that only occurs occasionally
-      // in which Math.abs() called on non-primitive numbers
-      // returns a completely different number (Issue #400)
-      return Math[name](n.valueOf(), arg);
-    };
-  });
-}
-
-buildMathAliases();
-'use strict';
-
-/***
- * @module Function
- * @dependency core
- * @description Lazy, throttled, and memoized functions, delayed functions and handling of timers, argument currying.
- *
- ***/
-
-var _lock     = privatePropertyAccessor('lock');
-var _timers   = privatePropertyAccessor('timers');
-var _partial  = privatePropertyAccessor('partial');
-var _canceled = privatePropertyAccessor('canceled');
-
-function setDelay(fn, ms, after, scope, args) {
-  // Delay of infinity is never called of course...
-  ms = coercePositiveInteger(ms || 0);
-  if (!_timers(fn)) {
-    _timers(fn, []);
-  }
-  // This is a workaround for <= IE8, which apparently has the
-  // ability to call timeouts in the queue on the same tick (ms?)
-  // even if functionally they have already been cleared.
-  _canceled(fn, false);
-  _timers(fn).push(setTimeout(function() {
-    if (!_canceled(fn)) {
-      after.apply(scope, args || []);
-    }
-  }, ms));
-}
-
-function cancelFunction(fn) {
-  var timers = _timers(fn), timer;
-  if (isArray(timers)) {
-    while(timer = timers.shift()) {
-      clearTimeout(timer);
-    }
-  }
-  _canceled(fn, true);
-  return fn;
-}
-
-function createLazyFunction(fn, ms, immediate, limit) {
-  var queue = [], locked = false, execute, rounded, perExecution, result;
-  ms = ms || 1;
-  limit = limit || Infinity;
-  rounded = ceil(ms);
-  perExecution = round(rounded / ms) || 1;
-  execute = function() {
-    var queueLength = queue.length, maxPerRound;
-    if (queueLength == 0) return;
-    // Allow fractions of a millisecond by calling
-    // multiple times per actual timeout execution
-    maxPerRound = max(queueLength - perExecution, 0);
-    while(queueLength > maxPerRound) {
-      // Getting uber-meta here...
-      result = Function.prototype.apply.apply(fn, queue.shift());
-      queueLength--;
-    }
-    setDelay(lazy, rounded, function() {
-      locked = false;
-      execute();
-    });
-  };
-  function lazy() {
-    // If the execution has locked and it's immediate, then
-    // allow 1 less in the queue as 1 call has already taken place.
-    if (queue.length < limit - (locked && immediate ? 1 : 0)) {
-      // Optimized: no leaking arguments
-      var args = []; for(var $i = 0, $len = arguments.length; $i < $len; $i++) args.push(arguments[$i]);
-      queue.push([this, args]);
-    }
-    if (!locked) {
-      locked = true;
-      if (immediate) {
-        execute();
-      } else {
-        setDelay(lazy, rounded, execute);
-      }
-    }
-    // Return the memoized result
-    return result;
-  }
-  return lazy;
-}
-
-function stringifyArguments() {
-  var str = '';
-  for (var i = 0; i < arguments.length; i++) {
-    str += stringify(arguments[i]);
-  }
-  return str;
-}
-
-function createMemoizedFunction(fn, hashFn) {
-  var cache = {}, key;
-  if (!hashFn) {
-    hashFn = stringifyArguments;
-  } else if(isString(hashFn)) {
-    key = hashFn;
-    hashFn = function(arg) {
-      return deepGetProperty(arg, key);
-    };
-  }
-  return function memoized() {
-    var key = hashFn.apply(this, arguments);
-    if (hasOwn(cache, key)) {
-      return cache[key];
-    }
-    return cache[key] = fn.apply(this, arguments);
-  };
-}
-
-var createInstanceFromPrototype = Object.create || function(prototype) {
-  var ctor = function() {};
-  ctor.prototype = prototype;
-  return new ctor;
-};
-
-defineInstance(sugarFunction, {
-
-   /***
-   * @method lazy([ms] = 1, [immediate] = false, [limit] = Infinity)
-   * @returns Function
-   * @short Creates a lazy function that, when called repeatedly, will queue execution and wait [ms] milliseconds to execute.
-   * @extra If [immediate] is %true%, first execution will happen immediately, then lock. If [limit] is a fininte number, calls past [limit] will be ignored while execution is locked. Compare this to %throttle%, which will execute only once per [ms] milliseconds. Note that [ms] can also be a fraction. Calling %cancel% on a lazy function will clear the entire queue. For more see %functions%.
-   * @example
-   *
-   *   (function() {
-   *     // Executes immediately.
-   *   }).lazy()();
-   *   (3).times(function() {
-   *     // Executes 3 times, with each execution 20ms later than the last.
-   *   }.lazy(20));
-   *   (100).times(function() {
-   *     // Executes 50 times, with each execution 20ms later than the last.
-   *   }.lazy(20, false, 50));
-   *
-   ***/
-  'lazy': function(fn, ms, immediate, limit) {
-    return createLazyFunction(fn, ms, immediate, limit);
-  },
-
-   /***
-   * @method throttle([ms] = 1)
-   * @returns Function
-   * @short Creates a "throttled" version of the function that will only be executed once per <ms> milliseconds.
-   * @extra This is functionally equivalent to calling %lazy% with a [limit] of %1% and [immediate] as %true%. %throttle% is appropriate when you want to make sure a function is only executed at most once for a given duration. For more see %functions%.
-   * @example
-   *
-   *   (3).times(function() {
-   *     // called only once. will wait 50ms until it responds again
-   *   }.throttle(50));
-   *
-   ***/
-  'throttle': function(fn, ms) {
-    return createLazyFunction(fn, ms, true, 1);
-  },
-
-   /***
-   * @method debounce([ms] = 1)
-   * @returns Function
-   * @short Creates a "debounced" function that postpones its execution until after <ms> milliseconds have passed.
-   * @extra This method is useful to execute a function after things have "settled down". A good example of this is when a user tabs quickly through form fields, execution of a heavy operation should happen after a few milliseconds when they have "settled" on a field. For more see %functions%.
-   * @example
-   *
-   *   var fn = (function(arg1) {
-   *     // called once 50ms later
-   *   }).debounce(50); fn(); fn(); fn();
-   *
-   ***/
-  'debounce': function(fn, ms) {
-    function debounced() {
-      // Optimized: no leaking arguments
-      var args = []; for(var $i = 0, $len = arguments.length; $i < $len; $i++) args.push(arguments[$i]);
-      cancelFunction(debounced);
-      setDelay(debounced, ms, fn, this, args);
-    }
-    return debounced;
-  },
-
-   /***
-   * @method cancel()
-   * @returns Function
-   * @short Cancels a delayed function scheduled to be run.
-   * @extra %delay%, %lazy%, %throttle%, and %debounce% can all set delays.
-   * @example
-   *
-   *   (function() {
-   *     alert('hay'); -> Never called
-   *   }).delay(500).cancel();
-   *
-   ***/
-  'cancel': function(fn) {
-    return cancelFunction(fn);
-  },
-
-   /***
-   * @method after(<n>)
-   * @returns Function
-   * @short Creates a function that will execute after <n> calls.
-   * @extra %after% is useful for running a final callback after a specific number of operations, often when the order in which the operations will complete is unknown. The created function will be passed an array of the arguments that it has collected from each after <n>.
-   * @example
-   *
-   *   var fn = (function() {
-   *     // Will be executed once
-   *   }).after(3); fn(); fn(); fn();
-   *
-   ***/
-  'after': function(fn, num) {
-    var count = 0, collectedArgs = [];
-    num = coercePositiveInteger(num);
-    return function() {
-      // Optimized: no leaking arguments
-      var args = []; for(var $i = 0, $len = arguments.length; $i < $len; $i++) args.push(arguments[$i]);
-      collectedArgs.push(args);
-      count++;
-      if (count >= num) {
-        return fn.call(this, collectedArgs);
-      }
-    };
-  },
-
-   /***
-   * @method once()
-   * @returns Function
-   * @short Creates a function that will execute only once and store the result.
-   * @extra %once% is useful for creating functions that will cache the result of an expensive operation and use it on subsequent calls. Also it can be useful for creating initialization functions that only need to be run once.
-   * @example
-   *
-   *   var fn = (function() {
-   *     // Will be executed once only
-   *   }).once(); fn(); fn(); fn();
-   *
-   ***/
-  'once': function(fn) {
-    // noop always returns "undefined" as the cache key.
-    return createMemoizedFunction(fn, function() {});
-  },
-
-   /***
-   * @method memoize([hashFn])
-   * @returns Function
-   * @short Creates a function that will cache results for unique calls.
-   * @extra %memoize% can be thought of as a more power %once%. Where %once% will only call a function once ever, memoized functions will be called once per unique call. A "unique call" is determined by the return value of [hashFn], which is passed the arguments of each call. If [hashFn] is undefined, it will stringify all arguments, such that any different argument signature will result in a unique call. Passing a string for [hashFn] is a shortcut that will get that property from the first argument. This operation supports %deep_properties%.
-   * @example
-   *
-   *   var fn = (function() {
-   *     // Will be executed twice, returning the memoized
-   *     // result of the first call again on the last.
-   *   }).memoize(); fn(1); fn(2); fn(1);
-   *
-   ***/
-  'memoize': function(fn, hashFn) {
-    return createMemoizedFunction(fn, hashFn);
-  },
-
-   /***
-   * @method lock([n])
-   * @returns Function
-   * @short Locks the number of arguments accepted by the function.
-   * @extra If not passed, [n] will be the length of the function. This method can be called on functions created by %partial%, in which case it will lock the total arguments during execution.
-   * @example
-   *
-   *   parseInt.lock(1)('10', 16); -> 10 (only 1 argument passed to parseInt)
-   *   (function() {
-   *     console.info(arguments.length); // Should be 2
-   *   }).lock(2)('a','b','c');
-   *
-   ***/
-  'lock': function(fn, n) {
-    var lockedFn;
-    if (_partial(fn)) {
-      _lock(fn, isNumber(n) ? n : null);
-      return fn;
-    }
-    lockedFn = function() {
-      arguments.length = min(_lock(lockedFn), arguments.length);
-      return fn.apply(this, arguments);
-    };
-    _lock(lockedFn, isNumber(n) ? n : fn.length);
-    return lockedFn;
   }
 
-});
-
-
-defineInstanceWithArguments(sugarFunction, {
-
-   /***
-   * @method partial(<arg1>, <arg2>, ...)
-   * @returns Function
-   * @short Returns a new version of the function which has part of its arguments pre-emptively filled in, also known as "currying".
-   * @extra %undefined% can be passed as any argument, and is a placeholder that will be replaced with arguments passed when the function is executed. This allows currying of arguments even when they occur toward the end of an argument list (the example demonstrates this more clearly).
-   * @example
-   *
-   *   var delayOneSecond = setTimeout.partial(undefined, 1000);
-   *   delayOneSecond(function() {
-   *     // Will be executed 1s later
-   *   });
-   *
-   ***/
-  'partial': function(fn, curriedArgs) {
-    var curriedLen = curriedArgs.length;
-    var partialFn = function() {
-      var argIndex = 0, applyArgs = [], self = this, lock = _lock(partialFn), result, i;
-      for (i = 0; i < curriedLen; i++) {
-        var arg = curriedArgs[i];
-        if (isDefined(arg)) {
-          applyArgs[i] = arg;
-        } else {
-          applyArgs[i] = arguments[argIndex++];
-        }
-      }
-      for (i = argIndex; i < arguments.length; i++) {
-        applyArgs.push(arguments[i]);
-      }
-      if (lock === null) {
-        lock = curriedLen;
-      }
-      if (isNumber(lock)) {
-        applyArgs.length = min(applyArgs.length, lock);
-      }
-      // If the bound "this" object is an instance of the partialed
-      // function, then "new" was used, so preserve the prototype
-      // so that constructor functions can also be partialed.
-      if (self instanceof partialFn) {
-        self = createInstanceFromPrototype(fn.prototype);
-        result = fn.apply(self, applyArgs);
-        // An explicit return value is allowed from constructors
-        // as long as they are of "object" type, so return the
-        // correct result here accordingly.
-        return isObjectType(result) ? result : self;
-      }
-      return fn.apply(self, applyArgs);
-    };
-    _partial(partialFn, true);
-    return partialFn;
-  },
-
-   /***
-   * @method delay([ms] = 1, [arg1], ...)
-   * @returns Function
-   * @short Executes the function after <ms> milliseconds.
-   * @extra Returns a reference to itself. %delay% is also a way to execute non-blocking operations that will wait until the CPU is free. Delayed functions can be canceled using the %cancel% method. Can also curry arguments passed in after <ms>.
-   * @example
-   *
-   *   (function(arg1) {
-   *     // called 1s later
-   *   }).delay(1000, 'arg1');
-   *
-   ***/
-  'delay': function(fn, ms, args) {
-    setDelay(fn, ms, fn, fn, args);
-    return fn;
-  },
-
-   /***
-   * @method every([ms] = 1, [arg1], ...)
-   * @returns Function
-   * @short Executes the function every <ms> milliseconds.
-   * @extra Returns a reference to itself. %every% uses %setTimeout%, which means that you are guaranteed a period of idle time equal to [ms] after execution has finished. Compare this to %setInterval% which will try to run a function every [ms], even when execution itself takes up a portion of that time. In most cases avoiding %setInterval% is better as calls won't "back up" when the CPU is under strain, however this also means that calls are less likely to happen at exact intervals of [ms], so the use case here should be considered. Additionally, %every% can curry arguments passed in after [ms], and also be canceled with %cancel%.
-   * @example
-   *
-   *   (function(arg1) {
-   *     // called every 1s
-   *   }).every(1000, 'arg1');
-   *
-   ***/
-  'every': function(fn, ms, args) {
-    function execute () {
-      // Set the delay first here, so that cancel
-      // can be called within the executing function.
-      setDelay(fn, ms, execute);
-      fn.apply(fn, args);
-    }
-    setDelay(fn, ms, execute);
-    return fn;
-  }
-
-});
-'use strict';
-
-/***
- * @module Enumerable
- * @dependency core
- * @description Counting, mapping, and finding methods on both arrays and objects.
- *
- ***/
-
-function sum(obj, map, k) {
-  var sum = 0;
-  enumerateWithMapping(obj, map, function(val) {
-    sum += val;
-  }, k);
-  return sum;
-}
-
-function average(obj, map, k) {
-  var sum = 0, count = 0;
-  enumerateWithMapping(obj, map, function(val) {
-    sum += val;
-    count++;
-  }, k);
-  // Prevent divide by 0
-  return sum / (count || 1);
-}
-
-function median(obj, map, k) {
-  var result = [], middle, len;
-  enumerateWithMapping(obj, map, function(val) {
-    result.push(val);
-  }, k);
-  len = result.length;
-  if (!len) return 0;
-  result.sort(function(a, b) {
-    return a - b;
-  });
-  middle = trunc(len / 2);
-  return len % 2 ? result[middle] : (result[middle - 1] + result[middle]) / 2;
-}
-
-function getMinOrMax(obj, map, all, max, k) {
-  var result = [], edge;
-  enumerateWithMapping(obj, map, function(val, key) {
-    if (isUndefined(val)) {
-      throw new TypeError('Cannot compare with undefined');
-    }
-    if (val === edge) {
-      result.push(key);
-    } else if (isUndefined(edge) || (max && val > edge) || (!max && val < edge)) {
-      result = [key];
-      edge = val;
-    }
-  }, k);
-  return getReducedMinMaxResult(result, obj, all, k);
-}
-
-function getLeastOrMost(obj, map, all, most, k) {
-  var groupedByValue = {}, result, minMaxResult;
-  enumerateWithMapping(obj, map, function(val, key) {
-    var str = stringify(val);
-    var arr = groupedByValue[str] || [];
-    arr.push(key);
-    groupedByValue[str] = arr;
-  }, k);
-  minMaxResult = getMinOrMax(groupedByValue, 'length', all, most, true);
-  if (all) {
-    result = [];
-    // Flatten result
-    iterateOverObject(minMaxResult, function(key, val) {
-      result = result.concat(val);
-    });
-  } else {
-    result = groupedByValue[minMaxResult];
-  }
-  return getReducedMinMaxResult(result, obj, all, k);
-}
-
-
-// Support
-
-function getReducedMinMaxResult(result, obj, all, k) {
-  if (k && all) {
-    // The method has returned an array of keys so use this array
-    // to build up the resulting object in the form we want it in.
-    return result.reduce(function(o, key) {
-      o[key] = obj[key];
-      return o;
-    }, {});
-  } else if (result && !all) {
-    result = result[0];
-  }
-  return result;
-}
-
-function enumerateWithMapping(obj, map, fn, k) {
-  iterateOverObject(obj, function(key, val) {
-    if (!k && !isArrayIndex(key)) {
-      return;
-    }
-    var args = k ? [key, val, obj] : [val, +key, obj];
-    var mapped = mapWithShortcuts(val, map, obj, args);
-    fn(mapped, k ? key : val);
-  });
-}
-
-/***
- * @namespace Array
- *
- ***/
-
-// Flag allowing native array methods to be enhanced
-var ARRAY_ENHANCEMENTS_FLAG = 'enhanceArray';
-
-// Enhanced Natives
-var enhancedMap       = wrapMapWithShortcuts(),
-    enhancedFind      = wrapNativeWithMatcher('find'),
-    enhancedSome      = wrapNativeWithMatcher('some'),
-    enhancedEvery     = wrapNativeWithMatcher('every'),
-    enhancedFilter    = wrapNativeWithMatcher('filter'),
-    enhancedFindIndex = wrapNativeWithMatcher('findIndex');
-
-function arrayEach(arr, fn, fromIndex, loop) {
-  var index, i, length = +arr.length;
-  if (fromIndex < 0) fromIndex = max(0, arr.length + fromIndex);
-  i = isNaN(fromIndex) ? 0 : fromIndex;
-  if (loop === true) {
-    length += i;
-  }
-  while(i < length) {
-    index = i % arr.length;
-    if (!(index in arr)) {
-      return iterateOverSparseArray(arr, fn, i, loop);
-    } else if (fn.call(arr, arr[index], index, arr) === false) {
-      break;
-    }
-    i++;
-  }
-  return arr;
-}
-
-function arrayFindFrom(arr, f, fromIndex, loop, all, findIndex) {
-  var result = [], matcher;
-  if (arr.length > 0) {
-    matcher = getMatcher(f);
-    arrayEach(arr, function(el, i) {
-      if (matcher.call(arr, el, i, arr)) {
-        result.push(findIndex ? i : el);
-        return all;
-      }
-    }, fromIndex, loop);
-  }
-  return all ? result : result[0];
-}
-
-function arrayNone(arr, f, context, argLen) {
-  return !enhancedSome(arr, f, context, argLen);
-}
-
-function arrayCount(arr, f) {
-  if (isUndefined(f)) return arr.length;
-  return enhancedFilter(arr, f).length;
-}
-
-// Support
-
-function wrapMapWithShortcuts() {
-  var nativeMap = Array.prototype.map;
-  return function(arr, map, context) {
-    var args = [];
-    if (isFunction(map)) {
-      args.push(map);
-    } else if (map) {
-      args.push(function(el, index) {
-        return mapWithShortcuts(el, map, context, [el, index, arr]);
-      });
-    }
-    args.push(context);
-    return nativeMap.apply(arr, args);
-  };
-}
-
-function wrapNativeWithMatcher(name) {
-  var nativeFn = Array.prototype[name];
-  return function(arr, f, context, argLen) {
-    var args = [], matcher;
-    if (argLen === 0) {
-      throw new TypeError('First argument required');
-    }
-    if (isFunction(f)) {
-      args.push(f);
-    } else {
-      matcher = getMatcher(f);
-      args.push(function(el, index, arr) {
-        return matcher(el, index, arr);
-      });
-    }
-    args.push(context);
-    return nativeFn.apply(arr, args);
-  };
-}
-
-defineInstance(sugarArray, {
-
-  /***
-   * @method map(<map>, [context])
-   * @returns Array
-   * @short Maps the array to another array whose elements are those returned by <map>.
-   * @extra [context] is the %this% object. Sugar enhances this method to accept a string for <map>, which is a shortcut for a function that gets that property (or invokes a function) on each element. This string allows `deep mapping`.
-   * @polyfill es5
-   * @callback
-   *
-   *   el  The element of the current iteration.
-   *   i   The index of the current iteration.
-   *   arr A reference to the array.
-   *
-   * @example
-   *
-   *   [1,2,3].map(function(n) {
-   *     return n * 3;
-   *   });                                  -> [3,6,9]
-   *   ['one','two','three'].map(function(n) {
-   *     return n.length;
-   *   });                                  -> [3,3,5]
-   *   ['one','two','three'].map('length')  -> [3,3,5]
-   *
-   ***/
-  'map': fixArgumentLength(enhancedMap),
-
-  /***
-   * @method every(<f>, [context])
-   * @returns Boolean
-   * @short Returns true if <f> is true for all elements of the array.
-   * @extra [context] is the %this% object. Sugar enhances this method with `matching shortcuts`.
-   * @polyfill es5
-   * @alias all
-   * @example
-   *
-   +   ['a','a','a'].every(function(n) {
-   *     return n == 'a';
-   *   });
-   *   ['a','a','a'].every('a')   -> true
-   *   [{a:2},{a:2}].every({a:2}) -> true
-   ***/
-  'every': fixArgumentLength(enhancedEvery),
-
-  /***
-   * @method some(<f>, [context])
-   * @returns Boolean
-   * @short Returns true if <f> is true for any element in the array.
-   * @extra [context] is the %this% object. Sugar enhances this method with `matching shortcuts`.
-   * @polyfill es5
-   * @alias any
-   * @example
-   *
-   +   ['a','b','c'].some(function(n) {
-   *     return n == 'a';
-   *   });
-   +   ['a','b','c'].some(function(n) {
-   *     return n == 'd';
-   *   });
-   *   ['a','b','c'].some('a')   -> true
-   *   [{a:2},{b:5}].some({a:2}) -> true
-   ***/
-  'some': fixArgumentLength(enhancedSome),
-
-  /***
-   * @method filter(<f>, [context])
-   * @returns Array
-   * @short Returns any elements in the array for which <f> is true.
-   * @extra [context] is the %this% object. Sugar enhances this method with `matching shortcuts`.
-   * @polyfill es5
-   * @example
-   *
-   +   [1,2,3].filter(function(n) {
-   *     return n > 1;
-   *   });
-   *   [1,2,2,4].filter(2) -> 2
-   *
-   ***/
-  'filter': fixArgumentLength(enhancedFilter),
-
-  /***
-   * @method find(<f>, [context])
-   * @returns Mixed
-   * @short Returns the first element in the array for which <f> is true.
-   * @extra [context] is the %this% object. Sugar enhances this method with `matching shortcuts`.
-   * @polyfill es6
-   * @example
-   *
-   *   [{a:1,b:2},{a:1,b:3},{a:1,b:4}].find(function(n) {
-   *     return n['a'] == 1;
-   *   });                                  -> {a:1,b:3}
-   *   ['cuba','japan','canada'].find(/^c/) -> 'cuba'
-   *
-   ***/
-  'find': fixArgumentLength(enhancedFind),
-
-  /***
-   * @method findIndex(<f>, [context])
-   * @returns Number
-   * @short Returns the index of the first element in the array for which <f> is true, or -1 if none.
-   * @extra [context] is the %this% object. Sugar enhances this method with `matching shortcuts`.
-   * @polyfill es6
-   * @example
-   *
-   *   [1,2,3,4].findIndex(function(n) {
-   *     return n % 2 == 0;
-   *   }); -> 1
-   *   [1,2,3,4].findIndex(3);               -> 2
-   *   ['one','two','three'].findIndex(/t/); -> 1
-   *
-   ***/
-  'findIndex': fixArgumentLength(enhancedFindIndex)
-
-}, [ENHANCEMENTS_FLAG, ARRAY_ENHANCEMENTS_FLAG]);
-
-/***
- * @method all()
- * @alias every
- *
- ***/
-alias(sugarArray, 'all', 'every');
-
-/***
- * @method any()
- * @alias some
- *
- ***/
-alias(sugarArray, 'any', 'some');
-
-
-defineInstance(sugarArray, {
-
-  /***
-   * @method none(<f>)
-   * @returns Boolean
-   * @short Returns true if none of the elements in the array match <f>.
-   * @extra <f> will match a string, number, array, object, or alternately test against a function or regex. This method implements `matching shortcuts`.
-   * @example
-   *
-   *   [1,2,3].none(5)         -> true
-   *   ['a','b','c'].none(/b/) -> false
-   *   [{a:1},{b:2}].none(function(n) {
-   *     return n['a'] > 1;
-   *   });                     -> true
-   *
-   ***/
-  'none': fixArgumentLength(arrayNone),
-
-  /***
-   * @method findFrom(<f>, [fromIndex] = 0, [loop] = false)
-   * @returns Array
-   * @short Returns any element that matches <f>, beginning from [fromIndex].
-   * @extra <f> will match a string, number, array, object, or alternately test against a function or regex. Will continue from index = 0 if [loop] is true. This method implements `matching shortcuts`.
-   * @example
-   *
-   *   ['cuba','japan','canada'].findFrom(/^c/, 2) -> 'canada'
-   *
-   ***/
-  'findFrom': function(arr, f, fromIndex, loop) {
-    return arrayFindFrom(arr, f, fromIndex, loop);
-  },
-
-  /***
-   * @method filterFrom(<f>, [fromIndex] = 0, [loop] = false)
-   * @returns Array
-   * @short Returns any elements that match <f>, beginning from [fromIndex].
-   * @extra <f> will match a string, number, array, object, or alternately test against a function or regex. Will continue from index = 0 if [loop] is true. This method implements `matching shortcuts`.
-   * @example
-   *
-   *   ['cuba','canada','chile'].filterFrom(/^c/, 2)       -> ['canada','chile']
-   *   ['cuba','canada','chile'].filterFrom(/^c/, 2, true) -> ['canada','chile','cuba']
-   *
-   ***/
-  'filterFrom': function(arr, f, fromIndex, loop) {
-    return arrayFindFrom(arr, f, fromIndex, loop, true);
-  },
-
-  /***
-   * @method findIndexFrom(<f>, [fromIndex] = 0, [loop] = false)
-   * @returns Array
-   * @short Returns the index of any element that matches <f>, beginning from [fromIndex].
-   * @extra <f> will match a string, number, array, object, or alternately test against a function or regex. Will continue from index = 0 if [loop] is true. This method implements `matching shortcuts`.
-   * @example
-   *
-   *   ['cuba','japan','canada'].findIndexFrom(/^c/, 2) -> 2
-   *
-   ***/
-  'findIndexFrom': function(arr, f, fromIndex, loop) {
-    var index = arrayFindFrom(arr, f, fromIndex, loop, false, true);
-    return isUndefined(index) ? -1 : index;
-  },
-
-  /***
-   * @method each(<fn>, [index] = 0, [loop] = false)
-   * @returns Array
-   * @short Runs <fn> against each element in the array. Enhanced version of %Array#forEach%.
-   * @extra If <fn> returns %false% at any time it will break out of the loop. If [index] is passed, <fn> will begin at that index and work its way to the end. If [loop] is true, it will then start over from the beginning of the array and continue until it reaches [index] - 1.
-   * @alias forEachFrom
-   * @callback
-   *
-   *   el  The element of the current iteration.
-   *   i   The index of the current iteration.
-   *   arr A reference to the array.
-   *
-   * @example
-   *
-   *   [1,2,3,4].each(function(n) {
-   *     // Called 4 times: 1, 2, 3, 4
-   *   });
-   *   [1,2,3,4].each(function(n) {
-   *     // Called 4 times: 3, 4, 1, 2
-   *   }, 2, true);
-   *
-   ***/
-  'each': function(arr, fn, index, loop) {
-    return arrayEach(arr, fn, index, loop);
-  },
-
-  /***
-   * @method min([map], [all] = false)
-   * @returns Mixed
-   * @short Returns the element in the array with the lowest value.
-   * @extra [map] may be a function mapping the value to be checked or a string acting as a shortcut. If [all] is true, will return all min values in an array.
-   * @example
-   *
-   *   [1,2,3].min()                          -> 1
-   *   ['fee','fo','fum'].min('length')       -> 'fo'
-   *   ['fee','fo','fum'].min('length', true) -> ['fo']
-   *   ['fee','fo','fum'].min(function(n) {
-   *     return n.length;
-   *   });                              -> ['fo']
-   *   [{a:3,a:2}].min(function(n) {
-   *     return n['a'];
-   *   });                              -> [{a:2}]
-   *
-   ***/
-  'min': function(arr, map, all) {
-    return getMinOrMax(arr, map, all);
-  },
-
-  /***
-   * @method max([map], [all] = false)
-   * @returns Mixed
-   * @short Returns the element in the array with the greatest value.
-   * @extra [map] may be a function mapping the value to be checked or a string acting as a shortcut. If [all] is true, will return all max values in an array.
-   * @example
-   *
-   *   [1,2,3].max()                          -> 3
-   *   ['fee','fo','fum'].max('length')       -> 'fee'
-   *   ['fee','fo','fum'].max('length', true) -> ['fee']
-   *   [{a:3,a:2}].max(function(n) {
-   *     return n['a'];
-   *   });                              -> {a:3}
-   *
-   ***/
-  'max': function(arr, map, all) {
-    return getMinOrMax(arr, map, all, true);
-  },
-
-  /***
-   * @method least([map], [all] = false)
-   * @returns Array
-   * @short Returns the elements in the array with the least commonly occuring value.
-   * @extra [map] may be a function mapping the value to be checked or a string acting as a shortcut. If [all] is true, will return multiple values in an array.
-   * @example
-   *
-   *   [3,2,2].least() -> 3
-   *   ['fe','fo','fum'].least('length', true) -> ['fum']
-   *   [{age:35,name:'ken'},{age:12,name:'bob'},{age:12,name:'ted'}].least(function(n) {
-   *     return n.age;
-   *   }, true); -> [{age:35, name:'ken'}]
-   *
-   ***/
-  'least': function(arr, map, all) {
-    return getLeastOrMost(arr, map, all);
-  },
-
-  /***
-   * @method most([map], [all] = false)
-   * @returns Array
-   * @short Returns the elements in the array with the most commonly occuring value.
-   * @extra [map] may be a function mapping the value to be checked or a string acting as a shortcut. If [all] is true, will return multiple values in an array.
-   * @example
-   *
-   *   [3,2,2].most(2) -> 2
-   *   ['fe','fo','fum'].most('length', true) -> ['fe','fo']
-   *   [{age:35,name:'ken'},{age:12,name:'bob'},{age:12,name:'ted'}].most(function(n) {
-   *     return n.age;
-   *   }, true); -> [{age:12,name:'bob'},{age:12,name:'ted'}]
-   *
-   ***/
-  'most': function(arr, map, all) {
-    return getLeastOrMost(arr, map, all, true);
-  },
-
-  /***
-   * @method count(<f>)
-   * @returns Number
-   * @short Counts all elements in the array that match <f>.
-   * @extra <f> will match a string, number, array, object, or alternately test against a function or regex. This method implements `matching shortcuts`.
-   * @example
-   *
-   *   ['a','b','a'].count('a') -> 2
-   *   ['a','b','c'].count(/b/) -> 1
-   *   [{a:1},{b:2}].count(function(n) {
-   *     return n['a'] > 1;
-   *   });                      -> 0
-   *
-   ***/
-  'count': function(arr, f) {
-    return arrayCount(arr, f);
-  },
-
-  /***
-   * @method sum([map])
-   * @returns Number
-   * @short Sums all values in the array.
-   * @extra [map] may be a function mapping the value to be summed or a string acting as a shortcut.
-   * @example
-   *
-   *   [1,2,2].sum() -> 5
-   *   [{age:35},{age:13}].sum(function(n) {
-   *     return n.age;
-   *   }); -> 48
-   *   [{age:35},{age:13}].sum('age') -> 48
-   *
-   ***/
-  'sum': function(arr, map) {
-    return sum(arr, map);
-  },
-
-  /***
-   * @method average([map])
-   * @returns Number
-   * @short Gets the mean average for all values in the array.
-   * @extra [map] may be a function mapping the value to be averaged or a string acting as a shortcut.
-   * @example
-   *
-   *   [1,2,3].average() -> 2
-   *   [{age:35},{age:11}].average(function(n) {
-   *     return n.age;
-   *   }); -> 23
-   *   [{age:35},{age:11}].average('age') -> 23
-   *
-   ***/
-  'average': function(arr, map) {
-    return average(arr, map);
-  },
-
-  /***
-   * @method median([map])
-   * @returns Number
-   * @short Gets the median average for all values in the array.
-   * @extra [map] may be a function mapping the value to be averaged or a string acting as a shortcut.
-   * @example
-   *
-   *   [1,2,2].median() -> 2
-   *   [{a:1},{a:2},{a:2}].median('a') -> 2
-   *
-   ***/
-  'median': function(arr, map) {
-    return median(arr, map);
-  }
-
-});
-
-/***
- * @method forEachFrom()
- * @alias each
- *
- ***/
-alias(sugarArray, 'forEachFrom', 'each');
-
-
-
-/***
- * @namespace Object
- *
- ***/
-
-
-// Object matchers
-var objectSome  = wrapObjectMatcher('some'),
-    objectFind  = wrapObjectMatcher('find'),
-    objectEvery = wrapObjectMatcher('every');
-
-
-function objectEach(obj, fn) {
-  assertCallable(fn);
-  iterateOverObject(obj, fn);
-  return obj;
-}
-
-function objectMap(obj, map) {
-  var result = {};
-  iterateOverObject(obj, function(key, val) {
-    result[key] = mapWithShortcuts(val, map, obj, [key, val, obj]);
-  });
-  return result;
-}
-
-function objectNone(obj, f) {
-  return !objectSome(obj, f);
-}
-
-function objectFilter(obj, f) {
-  var matcher = getMatcher(f, true), result = {};
-  iterateOverObject(obj, function(key, val) {
-    if (matcher(val, key, obj)) {
-      result[key] = val;
-    }
-  });
-  return result;
-}
-
-function objectCount(obj, f) {
-  var matcher = getMatcher(f, true), count = 0;
-  iterateOverObject(obj, function(key, val) {
-    if (matcher(val, key, obj)) {
-      count++;
-    }
-  });
-  return count;
-}
-
-// Support
-
-function wrapObjectMatcher(name) {
-  var nativeFn = Array.prototype[name];
-  return function(obj, f) {
-    var matcher = getMatcher(f, true);
-    return nativeFn.call(getKeys(obj), function(key) {
-      return matcher(obj[key], key, obj);
-    });
-  };
-}
-
-defineInstanceAndStatic(sugarObject, {
-
-  /***
-   * @method Object.map(<obj>, <map>)
-   * @returns Object
-   * @short Maps the object to another object whose properties are those returned by <map>.
-   * @extra <map> can also be a string, which is a shortcut for a function that gets that property (or invokes a function) on each element. This string allows `deep mapping`.
-   * @callback
-   *
-   *   key The key of the current iteration.
-   *   val The value of the current iteration.
-   *   obj A reference to the object.
-   *
-   * @example
-   *
-   *   Object.map({ foo: 'bar' }, function(lhs, rhs) {
-   *     return 'ha';
-   *   }); -> Returns { foo: 'ha' }
-   *
-   ***/
-  'map': function(obj, map) {
-    return objectMap(obj, map);
-  },
-
-  /***
-   * @method Object.each(<obj>, <fn>)
-   * @returns Object
-   * @short Runs <fn> against each property in the object.
-   * @extra Does not iterate over inherited properties. If <fn> returns `false` at any time it will break out of the loop. Returns <obj>.
-   * @callback
-   *
-   *   key The key of the current iteration.
-   *   val The value of the current iteration.
-   *   obj A reference to the object.
-   *
-   * @example
-   *
-   *   Object.each({ foo: 'bar' }, function(k, v) {
-   *     console.log('key is ', k, ' and value is ', v);
-   *   });
-   *
-   ***/
-  'each': function(obj, fn) {
-    return objectEach(obj, fn);
-  },
-
-  /***
-   * @method Object.sum(<obj>, [map])
-   * @returns Number
-   * @short Sums all properties in the object.
-   * @extra [map] may be a function mapping the value to be summed or a string acting as a shortcut.
-   * @callback
-   *
-   *   key The key of the current iteration.
-   *   val The value of the current iteration.
-   *   obj A reference to the object.
-   *
-   * @example
-   *
-   *   Object.sum({a:35,b:13}); -> 48
-   *
-   ***/
-  'sum': function(obj, map) {
-    return sum(obj, map, true);
-  },
-
-  /***
-   * @method Object.average(<obj>, [map])
-   * @returns Number
-   * @short Gets the mean average of all properties in the object.
-   * @extra [map] may be a function mapping the value to be averaged or a string acting as a shortcut.
-   * @callback
-   *
-   *   key The key of the current iteration.
-   *   val The value of the current iteration.
-   *   obj A reference to the object.
-   *
-   * @example
-   *
-   *   Object.average({a:35,b:11}); -> 23
-   *
-   ***/
-  'average': function(obj, map) {
-    return average(obj, map, true);
-  },
-
-  /***
-   * @method Object.median(<obj>, [map])
-   * @returns Number
-   * @short Gets the median average of all properties in the object.
-   * @extra [map] may be a function mapping the value to be averaged or a string acting as a shortcut.
-   * @callback
-   *
-   *   key The key of the current iteration.
-   *   val The value of the current iteration.
-   *   obj A reference to the object.
-   *
-   * @example
-   *
-   *   Object.median({a:1,b:2,c:2}) -> 2
-   *
-   ***/
-  'median': function(obj, map) {
-    return median(obj, map, true);
-  },
-
-  /***
-   * @method Object.min(<obj>, [map], [all] = false)
-   * @returns Mixed
-   * @short Returns the key of the property in the object with the lowest value.
-   * @extra If [all] is true, will return an object with all properties in the object with the lowest value. [map] may be a function mapping the value to be checked or a string acting as a shortcut.
-   * @callback
-   *
-   *   key The key of the current iteration.
-   *   val The value of the current iteration.
-   *   obj A reference to the object.
-   *
-   * @example
-   *
-   *   Object.min({a:1,b:2,c:3})                    -> 'a'
-   *   Object.min({a:'aaa',b:'bb',c:'c'}, 'length') -> 'c'
-   *   Object.min({a:1,b:1,c:3}, null, true)        -> {a:1,b:1}
-   *
-   ***/
-  'min': function(obj, map, all) {
-    return getMinOrMax(obj, map, all, false, true);
-  },
-
-  /***
-   * @method Object.max(<obj>, [map], [all] = false)
-   * @returns Mixed
-   * @short Returns the key of the property in the object with the highest value.
-   * @extra If [all] is true, will return an object with all properties in the object with the highest value. [map] may be a function mapping the value to be checked or a string acting as a shortcut.
-   * @callback
-   *
-   *   key The key of the current iteration.
-   *   val The value of the current iteration.
-   *   obj A reference to the object.
-   *
-   * @example
-   *
-   *   Object.max({a:1,b:2,c:3})                    -> 'c'
-   *   Object.max({a:'aaa',b:'bb',c:'c'}, 'length') -> 'a'
-   *   Object.max({a:1,b:3,c:3}, null, true)        -> {b:3,c:3}
-   *
-   ***/
-  'max': function(obj, map, all) {
-    return getMinOrMax(obj, map, all, true, true);
-  },
-
-  /***
-   * @method Object.least(<obj>, [map], [all] = false)
-   * @returns Mixed
-   * @short Returns the key of the property in the object with the least commonly occuring value.
-   * @extra If [all] is true, will return an object with all properties in the object with the least common value. [map] may be a function mapping the value to be checked or a string acting as a shortcut.
-   * @callback
-   *
-   *   key The key of the current iteration.
-   *   val The value of the current iteration.
-   *   obj A reference to the object.
-   *
-   * @example
-   *
-   *   Object.least({a:1,b:3,c:3})                   -> 'a'
-   *   Object.least({a:'aa',b:'bb',c:'c'}, 'length') -> 'c'
-   *   Object.least({a:1,b:3,c:3}, null, true)       -> {a:1}
-   *
-   ***/
-  'least': function(obj, map, all) {
-    return getLeastOrMost(obj, map, all, false, true);
-  },
-
-  /***
-   * @method Object.most(<obj>, [map], [all] = false)
-   * @returns Mixed
-   * @short Returns the key of the property in the object with the most commonly occuring value.
-   * @extra If [all] is true, will return an object with all properties in the object with the most common value. [map] may be a function mapping the value to be checked or a string acting as a shortcut.
-   * @callback
-   *
-   *   key The key of the current iteration.
-   *   val The value of the current iteration.
-   *   obj A reference to the object.
-   *
-   * @example
-   *
-   *   Object.most({a:1,b:3,c:3})                   -> 'b'
-   *   Object.most({a:'aa',b:'bb',c:'c'}, 'length') -> 'a'
-   *   Object.most({a:1,b:3,c:3}, null, true)       -> {b:3,c:3}
-   *
-   ***/
-  'most': function(obj, map, all) {
-    return getLeastOrMost(obj, map, all, true, true);
-  },
-
-  /***
-   * @method Object.some(<obj>, <f>)
-   * @returns Boolean
-   * @short Returns true if <f> is true for any property in the object.
-   * @extra This method implements `matching shortcuts`.
-   * @alias any
-   * @example
-   *
-   *   Object.some({a:1,b:2}, function(key, val) {
-   *     return val == 1;
-   *   }); -> true
-   *   Object.some({a:1,b:2}, 1); -> true
-   *
-   ***/
-  'some': objectSome,
-
-  /***
-   * @method Object.every(<obj>, <f>)
-   * @returns Boolean
-   * @short Returns true if <f> is true for all properties in the object.
-   * @extra This method implements `matching shortcuts`.
-   * @alias all
-   * @example
-   *
-   *   Object.every({a:1,b:2}, function(key, val) {
-   *     return val > 0;
-   *   }); -> true
-   *   Object.every({a:'a',b:'b'}, /[a-z]/); -> true
-   *
-   ***/
-  'every': objectEvery,
-
-  /***
-   * @method Object.find(<obj>, <f>)
-   * @returns Boolean
-   * @short Returns the first key in the object for which <f> is true.
-   * @extra This method implements `matching shortcuts`. Note that "first" is implementation-dependent. If order is important an array should be used instead.
-   * @example
-   *
-   *   Object.find({a:1,b:2}, function(key, val) {
-   *     return val == 2;
-   *   }); -> 'b'
-   *   Object.find({a:'a',b:'b'}, /[a-z]/); -> 'a'
-   *
-   ***/
-  'find': objectFind,
-
-  /***
-   * @method Object.filter(<obj>, <f>)
-   * @returns Array
-   * @short Returns an object with all properties in <obj> for which <f> is true.
-   * @extra This method implements `matching shortcuts`.
-   * @example
-   *
-   *   Object.filter({a:1,b:2}, function(key, val) {
-   *     return val == 1;
-   *   }); -> {a:1}
-   *   Object.filter({a:'a',b:'b',z:'z'}, /[a-f]/); -> {a:'a',b:'b'}
-   *
-   ***/
-  'filter': function(obj, f) {
-    return objectFilter(obj, f);
-  },
-
-  /***
-   * @method Object.count(<obj>, <f>)
-   * @returns Number
-   * @short Counts all properties in the object that match <f>.
-   * @extra <f> will match a string, number, array, object, or alternately test against a function or regex. This method implements `matching shortcuts`.
-   * @example
-   *
-   *   Object.count({a:'a',b:'b',c:'a'}, 'a') -> 2
-   *   Object.count({a:1,b:2}].count(function(key, val) {
-   *     return val > 1;
-   *   }); -> 1
-   *
-   ***/
-  'count': function(obj, f) {
-    return objectCount(obj, f);
-  },
-
-  /***
-   * @method Object.none(<obj>, <f>)
-   * @returns Boolean
-   * @short Returns true if none of the properties in the object match <f>.
-   * @extra This method implements `matching shortcuts`.
-   * @example
-   *
-   *   Object.none({a:1,b:2}, function(key, val) {
-   *     return val == 1;
-   *   }); -> false
-   *   Object.none({a:1,b:2}, 3); -> true
-   *
-   ***/
-  'none': function(obj, f) {
-    return objectNone(obj, f);
-  }
-
-});
-
-/***
- * @method Object.all()
- * @alias Object.every
- *
- ***/
-alias(sugarObject, 'all', 'every');
-
-/***
- * @method Object.any()
- * @alias Object.some
- *
- ***/
-alias(sugarObject, 'any', 'some');
-
-
-function buildHashEnumerable() {
-
-  var methods = [
-    'map','some','any','every','all','none','find','filter',
-    'each','count','sum','average','median',
-    'min','max','most','least'
-  ];
-
-  forEach(methods, function(name) {
-    setProperty(Hash.prototype, name, sugarObject[name].instance);
-  });
-
-}
-
-buildHashEnumerable();
-'use strict';
-
-/***
- * @module Array
- * @dependency core
- * @description Array manipulation and traversal, alphanumeric sorting and collation.
- *
- ***/
-
-var HALF_WIDTH_NINE = 0x39;
-var FULL_WIDTH_NINE = 0xff19;
-
-
-function arrayClone(arr) {
-  var clone = [], i = arr.length;
-  while(i--) {
-    if (i in arr) {
-      clone[i] = arr[i];
-    }
-  }
-  return clone;
-}
-
-function arrayAppend(arr, el, index) {
-  index = +index;
-  if (isNaN(index)) {
-    index = arr.length;
-  }
-  arr.splice.apply(arr, [index, 0].concat(el));
-  return arr;
-}
-
-function arrayRemove(arr, f) {
-  var matcher = getMatcher(f), i = 0;
-  while(i < arr.length) {
-    if (matcher(arr[i], i, arr)) {
-      arr.splice(i, 1);
-    } else {
-      i++;
-    }
-  }
-  return arr;
-}
-
-function arrayExclude(arr, f) {
-  var result = [], matcher = getMatcher(f);
-  for (var i = 0; i < arr.length; i++) {
-    if (!matcher(arr[i], i, arr)) {
-      result.push(arr[i]);
-    }
-  }
-  return result;
-}
-
-function arrayUnique(arr, map) {
-  var result = [], o = {}, transformed;
-  forEach(arr, function(el, i) {
-    transformed = map ? mapWithShortcuts(el, map, arr, [el, i, arr]) : el;
-    if (!checkForElementInHashAndSet(o, transformed)) {
-      result.push(el);
-    }
-  });
-  return result;
-}
-
-function arrayFlatten(arr, level, current) {
-  level = level || Infinity;
-  current = current || 0;
-  var result = [];
-  forEach(arr, function(el) {
-    if (isArray(el) && current < level) {
-      result = result.concat(arrayFlatten(el, level, current + 1));
-    } else {
-      result.push(el);
-    }
-  });
-  return result;
-}
-
-function arrayCompact(arr, all) {
-  var result = [];
-  forEach(arr, function(el) {
-    if (all && el) {
-      result.push(el);
-    } else if (!all && el != null && el.valueOf() === el.valueOf()) {
-      result.push(el);
-    }
-  });
-  return result;
-}
-
-function arrayShuffle(arr) {
-  arr = arrayClone(arr);
-  var i = arr.length, j, x;
-  while(i) {
-    j = (Math.random() * i) | 0;
-    x = arr[--i];
-    arr[i] = arr[j];
-    arr[j] = x;
-  }
-  return arr;
-}
-
-function arrayGroupBy(arr, map, fn) {
-  var result = {}, key;
-  forEach(arr, function(el, index) {
-    key = mapWithShortcuts(el, map, arr, [el, index, arr]);
-    if (!result[key]) result[key] = [];
-    result[key].push(el);
-  });
-  if (fn) {
-    iterateOverObject(result, fn);
-  }
-  return result;
-}
-
-function arrayIntersectOrSubtract(arr1, args, subtract) {
-  var result = [], o = {}, arr2 = [].concat.apply([], args);
-  forEach(arr2, function(el) {
-    checkForElementInHashAndSet(o, el);
-  });
-  forEach(arr1, function(el) {
-    var stringified = stringify(el),
-        isReference = !canCompareValue(el);
-    // Add the result to the array if:
-    // 1. We're subtracting intersections or it doesn't already exist in the result and
-    // 2. It exists in the compared array and we're adding, or it doesn't exist and we're removing.
-    if (elementExistsInHash(o, stringified, el, isReference) !== subtract) {
-      discardElementFromHash(o, stringified, el, isReference);
-      result.push(el);
-    }
-  });
-  return result;
-}
-
-// Array diff helpers
-
-function elementExistsInHash(hash, key, el, isReference) {
-  var exists;
-  if (isReference) {
-    if (!hash[key]) {
-      hash[key] = [];
-    }
-    exists = indexOf(hash[key], el) !== -1;
-  } else {
-    exists = hasOwn(hash, key);
-  }
-  return exists;
-}
-
-function checkForElementInHashAndSet(hash, el) {
-  var stringified = stringify(el),
-      isReference = !canCompareValue(el),
-      exists      = elementExistsInHash(hash, stringified, el, isReference);
-  if (isReference) {
-    hash[stringified].push(el);
-  } else {
-    hash[stringified] = el;
-  }
-  return exists;
-}
-
-function discardElementFromHash(hash, key, element, isReference) {
-  var arr, i = 0;
-  if (isReference) {
-    arr = hash[key];
+  function arrayRemove(arr, f) {
+    var matcher = getMatcher(f), i = 0;
     while(i < arr.length) {
-      if (arr[i] === element) {
+      if (matcher(arr[i], i, arr)) {
         arr.splice(i, 1);
       } else {
-        i += 1;
+        i++;
       }
     }
-  } else {
-    delete hash[key];
+    return arr;
   }
-}
 
-// Collation helpers
+  function arrayExclude(arr, f) {
+    var result = [], matcher = getMatcher(f);
+    for (var i = 0; i < arr.length; i++) {
+      if (!matcher(arr[i], i, arr)) {
+        result.push(arr[i]);
+      }
+    }
+    return result;
+  }
 
-function compareValue(aVal, bVal) {
-  var cmp, i, collate;
-  if (isString(aVal) && isString(bVal)) {
-    collate = _sortCollate();
-    return collate(aVal, bVal);
-  } else if (isArray(aVal) && isArray(bVal)) {
-    if (aVal.length < bVal.length) {
+  function arrayUnique(arr, map) {
+    var result = [], o = {}, transformed;
+    forEach(arr, function(el, i) {
+      transformed = map ? mapWithShortcuts(el, map, arr, [el, i, arr]) : el;
+      if (!checkForElementInHashAndSet(o, transformed)) {
+        result.push(el);
+      }
+    });
+    return result;
+  }
+
+  function arrayFlatten(arr, level, current) {
+    level = level || Infinity;
+    current = current || 0;
+    var result = [];
+    forEach(arr, function(el) {
+      if (isArray(el) && current < level) {
+        result = result.concat(arrayFlatten(el, level, current + 1));
+      } else {
+        result.push(el);
+      }
+    });
+    return result;
+  }
+
+  function arrayCompact(arr, all) {
+    var result = [];
+    forEach(arr, function(el) {
+      if (all && el) {
+        result.push(el);
+      } else if (!all && el != null && el.valueOf() === el.valueOf()) {
+        result.push(el);
+      }
+    });
+    return result;
+  }
+
+  function arrayShuffle(arr) {
+    arr = arrayClone(arr);
+    var i = arr.length, j, x;
+    while(i) {
+      j = (Math.random() * i) | 0;
+      x = arr[--i];
+      arr[i] = arr[j];
+      arr[j] = x;
+    }
+    return arr;
+  }
+
+  function arrayGroupBy(arr, map, fn) {
+    var result = {}, key;
+    forEach(arr, function(el, index) {
+      key = mapWithShortcuts(el, map, arr, [el, index, arr]);
+      if (!result[key]) result[key] = [];
+      result[key].push(el);
+    });
+    if (fn) {
+      iterateOverObject(result, fn);
+    }
+    return result;
+  }
+
+  function arrayIntersectOrSubtract(arr1, args, subtract) {
+    var result = [], o = {}, arr2 = [].concat.apply([], args);
+    forEach(arr2, function(el) {
+      checkForElementInHashAndSet(o, el);
+    });
+    forEach(arr1, function(el) {
+      var stringified = stringify(el),
+          isReference = !canCompareValue(el);
+      // Add the result to the array if:
+      // 1. We're subtracting intersections or it doesn't already exist in the result and
+      // 2. It exists in the compared array and we're adding, or it doesn't exist and we're removing.
+      if (elementExistsInHash(o, stringified, el, isReference) !== subtract) {
+        discardElementFromHash(o, stringified, el, isReference);
+        result.push(el);
+      }
+    });
+    return result;
+  }
+
+  // Array diff helpers
+
+  function elementExistsInHash(hash, key, el, isReference) {
+    var exists;
+    if (isReference) {
+      if (!hash[key]) {
+        hash[key] = [];
+      }
+      exists = indexOf(hash[key], el) !== -1;
+    } else {
+      exists = hasOwn(hash, key);
+    }
+    return exists;
+  }
+
+  function checkForElementInHashAndSet(hash, el) {
+    var stringified = stringify(el),
+        isReference = !canCompareValue(el),
+        exists      = elementExistsInHash(hash, stringified, el, isReference);
+    if (isReference) {
+      hash[stringified].push(el);
+    } else {
+      hash[stringified] = el;
+    }
+    return exists;
+  }
+
+  function discardElementFromHash(hash, key, element, isReference) {
+    var arr, i = 0;
+    if (isReference) {
+      arr = hash[key];
+      while(i < arr.length) {
+        if (arr[i] === element) {
+          arr.splice(i, 1);
+        } else {
+          i += 1;
+        }
+      }
+    } else {
+      delete hash[key];
+    }
+  }
+
+  // Collation helpers
+
+  function compareValue(aVal, bVal) {
+    var cmp, i, collate;
+    if (isString(aVal) && isString(bVal)) {
+      collate = _sortCollate();
+      return collate(aVal, bVal);
+    } else if (isArray(aVal) && isArray(bVal)) {
+      if (aVal.length < bVal.length) {
+        return -1;
+      } else if (aVal.length > bVal.length) {
+        return 1;
+      } else {
+        for(i = 0; i < aVal.length; i++) {
+          cmp = compareValue(aVal[i], bVal[i]);
+          if (cmp !== 0) {
+            return cmp;
+          }
+        }
+        return 0;
+      }
+    } else if (aVal < bVal) {
       return -1;
-    } else if (aVal.length > bVal.length) {
+    } else if (aVal > bVal) {
       return 1;
     } else {
-      for(i = 0; i < aVal.length; i++) {
-        cmp = compareValue(aVal[i], bVal[i]);
-        if (cmp !== 0) {
-          return cmp;
-        }
-      }
       return 0;
     }
-  } else if (aVal < bVal) {
-    return -1;
-  } else if (aVal > bVal) {
-    return 1;
-  } else {
-    return 0;
+
   }
 
-}
-
-function codeIsNumeral(code) {
-  return (code >= HALF_WIDTH_ZERO && code <= HALF_WIDTH_NINE) ||
-         (code >= FULL_WIDTH_ZERO && code <= FULL_WIDTH_NINE);
-}
-
-function collateStrings(a, b) {
-  var aValue, bValue, aChar, bChar, aEquiv, bEquiv, index = 0, tiebreaker = 0;
-
-  var sortOrder       = _sortOrder();
-  var sortIgnore      = _sortIgnore();
-  var naturalSort     = _sortNatural();
-  var sortIgnoreCase  = _sortIgnoreCase();
-  var sortEquivalents = _sortEquivalents();
-
-  a = getCollationReadyString(a, sortIgnore, sortIgnoreCase);
-  b = getCollationReadyString(b, sortIgnore, sortIgnoreCase);
-
-  do {
-
-    aChar  = getCollationCharacter(a, index, sortEquivalents);
-    bChar  = getCollationCharacter(b, index, sortEquivalents);
-    aValue = getSortOrderIndex(aChar, sortOrder);
-    bValue = getSortOrderIndex(bChar, sortOrder);
-
-    if (aValue === -1 || bValue === -1) {
-      aValue = a.charCodeAt(index) || null;
-      bValue = b.charCodeAt(index) || null;
-      if (naturalSort && codeIsNumeral(aValue) && codeIsNumeral(bValue)) {
-        aValue = stringToNumber(a.slice(index));
-        bValue = stringToNumber(b.slice(index));
-      }
-    } else {
-      aEquiv = aChar !== a.charAt(index);
-      bEquiv = bChar !== b.charAt(index);
-      if (aEquiv !== bEquiv && tiebreaker === 0) {
-        tiebreaker = aEquiv - bEquiv;
-      }
-    }
-    index += 1;
-  } while(aValue != null && bValue != null && aValue === bValue);
-  if (aValue === bValue) return tiebreaker;
-  return aValue - bValue;
-}
-
-function getCollationReadyString(str, sortIgnore, sortIgnoreCase) {
-  if (!isString(str)) str = String(str);
-  if (sortIgnoreCase) {
-    str = str.toLowerCase();
-  }
-  if (sortIgnore) {
-    str = str.replace(sortIgnore, '');
-  }
-  return str;
-}
-
-function getCollationCharacter(str, index, sortEquivalents) {
-  var chr = str.charAt(index);
-  return sortEquivalents[chr] || chr;
-}
-
-function getSortOrderIndex(chr, sortOrder) {
-  if (!chr) {
-    return null;
-  } else {
-    return sortOrder.indexOf(chr);
-  }
-}
-
-function getSortOrder() {
-  var order = 'AÁÀÂÃĄBCĆČÇDĎÐEÉÈĚÊËĘFGĞHıIÍÌİÎÏJKLŁMNŃŇÑOÓÒÔPQRŘSŚŠŞTŤUÚÙŮÛÜVWXYÝZŹŻŽÞÆŒØÕÅÄÖ';
-  return map(order.split(''), function(str) {
-    return str + str.toLowerCase();
-  }).join('');
-}
-
-function getSortEquivalents() {
-  var equivalents = {};
-  forEach(commaSplit('AÁÀÂÃÄ,CÇ,EÉÈÊË,IÍÌİÎÏ,OÓÒÔÕÖ,Sß,UÚÙÛÜ'), function(set) {
-    var first = set.charAt(0);
-    forEach(set.slice(1).split(''), function(chr) {
-      equivalents[chr] = first;
-      equivalents[chr.toLowerCase()] = first.toLowerCase();
-    });
-  });
-  return equivalents;
-}
-
-
-/***
- * @method Array.sortIgnore([reg])
- * @returns Mixed
- * @short Gets or sets a regex that will ignore matches when sorting (for example punctuation).
- * @extra Used by `Array#sortBy`. (Default is `null`)
- *
- ***
- * @method Array.sortIgnoreCase([bool])
- * @returns Mixed
- * @short Gets or sets a boolean that converts strings to lowercase when sorting.
- * @extra Used by `Array#sortBy`. (Default is `true`);
- *
- ***
- * @method Array.sortNatural([bool])
- * @returns Mixed
- * @short Gets or sets a boolean that turns on natural sort mode.
- * @extra Used by `Array#sortBy`. "Natural sort" means that numerals like "10" will be sorted naturally after "9" instead of after "1". (Default is `true`)
- *
- ***
- * @method Array.sortCollate([fn])
- * @returns Mixed
- * @short Gets or sets the collation function used when sorting strings.
- * @extra Used by `Array#sortBy`. The default is a natural string sort based on other `sort` options. Setting the collation function directly here will override all these options. Setting to `null` restores the default.
- *
- ***
- * @method Array.sortOrder([str])
- * @returns Mixed
- * @short Gets or sets the base order as a string of characters to apply when sorting.
- * @extra Used by `Array#sortBy`. The default is an order natural to most major world languages, but can be modified as needed. Setting to `null` restores the default.
- *
- ***
- * @method Array.sortEquivalents([obj])
- * @returns Mixed
- * @short Gets or sets a table of characters that should be considered equivalent when sorting (for example "é" and "e").
- * @extra Used by `Array#sortBy`. The default table produces a natural sort order for most world languages, however can be modified for others. For example, setting "ä" and "ö" to `null` in the table would produce a perfect Scandanavian sort order. Setting [obj] to `null` restores the default, however if the table is mutated changes will persist.
- *
- ***/
-
-var _sortIgnore      = defineAccessor(sugarArray, 'sortIgnore');
-var _sortNatural     = defineAccessor(sugarArray, 'sortNatural', true);
-var _sortIgnoreCase  = defineAccessor(sugarArray, 'sortIgnoreCase', true);
-
-var _sortOrder       = defineAccessor(sugarArray, 'sortOrder', getSortOrder());
-var _sortCollate     = defineAccessor(sugarArray, 'sortCollate', collateStrings);
-var _sortEquivalents = defineAccessor(sugarArray, 'sortEquivalents', getSortEquivalents());
-
-
-defineStatic(sugarArray, {
-
-  /***
-   *
-   * @method Array.construct(<n>, <fn>)
-   * @returns Array
-   * @short Constructs an array of <n> length from the values of <fn>, which is passed a single index argument.
-   * @example
-   *
-   *   Array.construct(3, parseInt) -> [0, 1, 2]
-   *   Array.construct(3, function(i) {
-   *     return i * i;
-   *   }); -> [0, 1, 4]
-   *
-   ***/
-  'construct': function(n, fn) {
-    return Array.from(new Array(+n), function(el, i) {
-      return fn && fn(i);
-    });
+  function codeIsNumeral(code) {
+    return (code >= HALF_WIDTH_ZERO && code <= HALF_WIDTH_NINE) ||
+           (code >= FULL_WIDTH_ZERO && code <= FULL_WIDTH_NINE);
   }
 
-});
-
-defineInstance(sugarArray, {
-
-  /***
-   * @method isEmpty()
-   * @returns Boolean
-   * @short Returns true if the array has a length of zero.
-   * @example
-   *
-   *   [].isEmpty()    -> true
-   *   ['a'].isEmpty() -> false
-   *
-   ***/
-  'isEmpty': function(arr) {
-    return arr.length === 0;
-  },
-
-  /***
-   * @method isEqual(<arr>)
-   * @returns Boolean
-   * @short Returns true if the array equal to <arr>.
-   * @extra %isEqual% in Sugar is "egal", meaning the values are equal if they are "not observably distinguishable". This method is identical to, and a shortcut for `Object.isEqual()`.
-   * @example
-   *
-   *   ['a','b'].isEqual(['a','b'])           -> true
-   *   ['a','b'].isEqual(['a','c'])           -> false
-   *   [{user:'Dave'}].isEqual({user:'Dave'}) -> true
-   *
-   ***/
-  'isEqual': function(a, b) {
-    return isEqual(a, b);
-  },
-
-  /***
-   * @method clone()
-   * @returns Array
-   * @short Makes a shallow clone of the array.
-   * @example
-   *
-   *   [1,2,3].clone() -> [1,2,3]
-   *
-   ***/
-  'clone': function(arr) {
-    return arrayClone(arr);
-  },
-
-  /***
-   * @method at(<index>, [loop] = true)
-   * @returns Mixed
-   * @short Gets the element(s) at a given index.
-   * @extra When [loop] is true, overshooting the end of the array (or the beginning) will begin counting from the other end. If <index> is an array, multiple elements will be returned.
-   * @example
-   *
-   *   [1,2,3].at(0)        -> 1
-   *   [1,2,3].at(2)        -> 3
-   *   [1,2,3].at(4)        -> 2
-   *   [1,2,3].at(4, false) -> null
-   *   [1,2,3].at(-1)       -> 3
-   *   [1,2,3].at([0, 1])   -> [1, 2]
-   *
-   ***/
-  'at': function(arr, index, loop) {
-    return getEntriesForIndexes(arr, index, loop);
-  },
-
-  /***
-   * @method append(<item>, [index])
-   * @returns Array
-   * @short Appends <item> to the array.
-   * @extra If [index] is specified, it will append at [index], otherwise appends to the end of the array. `append` behaves like `concat` in that if <el> is an array it will be joined, not inserted. This method will change the array! Use `add` for a non-destructive alias. Also, `insert` is provided as an alias that reads better when using an index.
-   * @example
-   *
-   *   [1,2,3,4].append(5)       -> [1,2,3,4,5]
-   *   [1,2,3,4].append([5,6,7]) -> [1,2,3,4,5,6,7]
-   *   [1,2,3,4].insert(8, 1) -> [1,8,2,3,4]
-   *
-   ***/
-  'append': function(arr, item, index) {
-    return arrayAppend(arr, item, index);
-  },
-
-  /***
-   * @method add(<item>, [index])
-   * @returns Array
-   * @short Adds <item> to the array and returns the result as a new array.
-   * @extra If <item> is also an array, it will be joined to the array instead of inserted, making this essentially a more readable alias for `concat` with the added ability to specify the index to add at.
-   * @example
-   *
-   *   [1,2,3,4].add(5)       -> [1,2,3,4,5]
-   *   [1,2,3,4].add(8, 1)    -> [1,8,2,3,4]
-   *   [1,2,3,4].add([5,6,7]) -> [1,2,3,4,5,6,7]
-   *
-   ***/
-  'add': function(arr, item, index) {
-    return arrayAppend(arrayClone(arr), item, index);
-  },
-
-  /***
-   * @method removeAt(<start>, [end])
-   * @returns Array
-   * @short Removes element at <start>. If [end] is specified, removes the range between <start> and [end]. This method will change the array! If you don't intend the array to be changed use %clone% first.
-   * @example
-   *
-   *   ['a','b','c'].removeAt(0) -> ['b','c']
-   *   [1,2,3,4].removeAt(1, 3)  -> [1]
-   *
-   ***/
-  'removeAt': function(arr, start, end) {
-    if (isUndefined(start)) return arr;
-    if (isUndefined(end))   end = start;
-    arr.splice(start, end - start + 1);
-    return arr;
-  },
-
-  /***
-   * @method unique([map])
-   * @returns Array
-   * @short Removes all duplicate elements in the array.
-   * @extra [map] may be a function mapping the value to be uniqued on or a string acting as a shortcut. This is most commonly used when you have a key that ensures the object's uniqueness, and don't need to check all fields. This method will also correctly operate on arrays of objects.
-   * @example
-   *
-   *   [1,2,2,3].unique()                 -> [1,2,3]
-   *   [{foo:'bar'},{foo:'bar'}].unique() -> [{foo:'bar'}]
-   *   [{foo:'bar'},{foo:'bar'}].unique(function(obj){
-   *     return obj.foo;
-   *   }); -> [{foo:'bar'}]
-   *   [{foo:'bar'},{foo:'bar'}].unique('foo') -> [{foo:'bar'}]
-   *
-   ***/
-  'unique': function(arr, map) {
-    return arrayUnique(arr, map);
-  },
-
-  /***
-   * @method flatten([limit] = Infinity)
-   * @returns Array
-   * @short Returns a flattened, one-dimensional copy of the array.
-   * @extra You can optionally specify a [limit], which will only flatten that depth.
-   * @example
-   *
-   *   [[1], 2, [3]].flatten()      -> [1,2,3]
-   *   [['a'],[],'b','c'].flatten() -> ['a','b','c']
-   *
-   ***/
-  'flatten': function(arr, limit) {
-    return arrayFlatten(arr, limit);
-  },
-
-  /***
-   * @method first([num] = 1)
-   * @returns Mixed
-   * @short Returns the first element(s) in the array.
-   * @extra When <num> is passed, returns the first <num> elements in the array.
-   * @example
-   *
-   *   [1,2,3].first()        -> 1
-   *   [1,2,3].first(2)       -> [1,2]
-   *
-   ***/
-  'first': function(arr, num) {
-    if (isUndefined(num)) return arr[0];
-    if (num < 0) num = 0;
-    return arr.slice(0, num);
-  },
-
-  /***
-   * @method last([num] = 1)
-   * @returns Mixed
-   * @short Returns the last element(s) in the array.
-   * @extra When <num> is passed, returns the last <num> elements in the array.
-   * @example
-   *
-   *   [1,2,3].last()        -> 3
-   *   [1,2,3].last(2)       -> [2,3]
-   *
-   ***/
-  'last': function(arr, num) {
-    if (isUndefined(num)) return arr[arr.length - 1];
-    var start = arr.length - num < 0 ? 0 : arr.length - num;
-    return arr.slice(start);
-  },
-
-  /***
-   * @method from(<index>)
-   * @returns Array
-   * @short Returns a slice of the array from <index>.
-   * @example
-   *
-   *   [1,2,3].from(1)  -> [2,3]
-   *   [1,2,3].from(2)  -> [3]
-   *
-   ***/
-  'from': function(arr, num) {
-    return arr.slice(num);
-  },
-
-  /***
-   * @method to(<index>)
-   * @returns Array
-   * @short Returns a slice of the array up to <index>.
-   * @example
-   *
-   *   [1,3,5].to(1)  -> [1]
-   *   [1,3,5].to(2)  -> [1,3]
-   *
-   ***/
-  'to': function(arr, num) {
-    if (isUndefined(num)) num = arr.length;
-    return arr.slice(0, num);
-  },
-
-  /***
-   * @method compact([all] = false)
-   * @returns Array
-   * @short Removes all instances of %undefined%, %null%, and %NaN% from the array.
-   * @extra If [all] is %true%, all "falsy" elements will be removed. This includes empty strings, 0, and false.
-   * @example
-   *
-   *   [1,null,2,undefined,3].compact() -> [1,2,3]
-   *   [1,'',2,false,3].compact()       -> [1,'',2,false,3]
-   *   [1,'',2,false,3].compact(true)   -> [1,2,3]
-   *   [null, [null, 'bye']].compact()  -> ['hi', [null, 'bye']]
-   *
-   ***/
-  'compact': function(arr, all) {
-    return arrayCompact(arr, all);
-  },
-
-  /***
-   * @method groupBy(<map>, [fn])
-   * @returns Object
-   * @short Groups the array by <map>.
-   * @extra Will return an object with keys equal to the grouped values. <map> may be a mapping function, or a string acting as a shortcut. Optionally calls [fn] for each group.
-   * @example
-   *
-   *   ['fee','fi','fum'].groupBy('length') -> { 2: ['fi'], 3: ['fee','fum'] }
-   *   [{age:35,name:'ken'},{age:15,name:'bob'}].groupBy(function(n) {
-   *     return n.age;
-   *   });                                  -> { 35: [{age:35,name:'ken'}], 15: [{age:15,name:'bob'}] }
-   *
-   ***/
-  'groupBy': function(arr, map, fn) {
-    return arrayGroupBy(arr, map, fn);
-  },
-
-  /***
-   * @method inGroups(<num>, [padding] = None)
-   * @returns Array
-   * @short Groups the array into <num> arrays.
-   * @extra [padding] specifies a value with which to pad the last array so that they are all equal length.
-   * @example
-   *
-   *   [1,2,3,4,5,6,7].inGroups(3)         -> [ [1,2,3], [4,5,6], [7] ]
-   *   [1,2,3,4,5,6,7].inGroups(3, 'none') -> [ [1,2,3], [4,5,6], [7,'none','none'] ]
-   *
-   ***/
-  'inGroups': function(arr, num, padding) {
-    var pad = isDefined(padding);
-    var result = [];
-    var divisor = ceil(arr.length / num);
-    simpleRepeat(num, function(i) {
-      var index = i * divisor;
-      var group = arr.slice(index, index + divisor);
-      if (pad && group.length < divisor) {
-        simpleRepeat(divisor - group.length, function() {
-          group.push(padding);
-        });
-      }
-      result.push(group);
-    });
-    return result;
-  },
-
-  /***
-   * @method inGroupsOf(<num>, [padding] = None)
-   * @returns Array
-   * @short Groups the array into arrays of <num> elements each.
-   * @extra [padding] specifies a value with which to pad the last array so that they are all equal length.
-   * @example
-   *
-   *   [1,2,3,4,5,6,7].inGroupsOf(4)         -> [ [1,2,3,4], [5,6,7] ]
-   *   [1,2,3,4,5,6,7].inGroupsOf(4, 'none') -> [ [1,2,3,4], [5,6,7,'none'] ]
-   *
-   ***/
-  'inGroupsOf': function(arr, num, padding) {
-    var result = [], len = arr.length, group;
-    if (len === 0 || num === 0) return arr;
-    if (isUndefined(num)) num = 1;
-    if (isUndefined(padding)) padding = null;
-    simpleRepeat(ceil(len / num), function(i) {
-      group = arr.slice(num * i, num * i + num);
-      while(group.length < num) {
-        group.push(padding);
-      }
-      result.push(group);
-    });
-    return result;
-  },
-
-  /***
-   * @method shuffle()
-   * @returns Array
-   * @short Returns a copy of the array with the elements randomized.
-   * @extra Uses Fisher-Yates algorithm.
-   * @example
-   *
-   *   [1,2,3,4].shuffle()  -> [?,?,?,?]
-   *
-   ***/
-  'shuffle': function(arr) {
-    return arrayShuffle(arr);
-  },
-
-  /***
-   * @method sample([num] = 1, [remove] = false)
-   * @returns Mixed
-   * @short Returns a random element from the array.
-   * @extra If [num] is passed, will return an array of [num] elements. If [remove] is true, sampled elements will also be removed from the array. [remove] can also be passed in place of [num].
-   * @example
-   *
-   *   [1,2,3,4,5].sample()  -> // Random element
-   *   [1,2,3,4,5].sample(3) -> // Array of 3 random elements
-   *
-   ***/
-  'sample': function(arr, arg1, arg2) {
-    var result = [], num, remove, single;
-    if (isBoolean(arg1)) {
-      remove = arg1;
-    } else {
-      num = arg1;
-      remove = arg2;
-    }
-    if (isUndefined(num)) {
-      num = 1;
-      single = true;
-    }
-    if (!remove) {
-      arr = arrayClone(arr);
-    }
-    num = min(num, arr.length);
-    for (var i = 0, index; i < num; i++) {
-      index = trunc(Math.random() * arr.length);
-      result.push(arr[index]);
-      arr.splice(index, 1);
-    }
-    return single ? result[0] : result;
-  },
-
-  /***
-   * @method sortBy(<map>, [desc] = false)
-   * @returns Array
-   * @short Returns a copy of the array sorted by <map>.
-   * @extra <map> may be a function, a string acting as a shortcut, an array (comparison by multiple values), or blank (direct comparison of array values). [desc] will sort the array in descending order. When the field being sorted on is a string, the resulting order will be determined by an internal collation algorithm that is optimized for major Western languages, but can be customized. For more information see %array_sorting%.
-   * @example
-   *
-   *   ['world','a','new'].sortBy('length')       -> ['a','new','world']
-   *   ['world','a','new'].sortBy('length', true) -> ['world','new','a']
-   *   [{age:72},{age:13}].sortBy(function(n) {
-   *     return n.age;
-   *   }); -> [{age:13},{age:72}]
-   *
-   ***/
-  'sortBy': function(arr, map, desc) {
-    arr = arrayClone(arr);
-    arr.sort(function(a, b) {
-      var aProperty = mapWithShortcuts(a, map, arr, [a]);
-      var bProperty = mapWithShortcuts(b, map, arr, [b]);
-      return compareValue(aProperty, bProperty) * (desc ? -1 : 1);
-    });
-    return arr;
-  },
-
-  /***
-   * @method remove(<f>)
-   * @returns Array
-   * @short Removes any element in the array that matches <f>.
-   * @extra This method will change the array! Use `exclude` for a non-destructive alias. This method implements `matching shortcuts`.
-   * @example
-   *
-   *   [1,2,3].remove(3)         -> [1,2]
-   *   ['a','b','c'].remove(/b/) -> ['a','c']
-   *   [{a:1},{b:2}].remove(function(n) {
-   *     return n['a'] == 1;
-   *   }); -> [{b:2}]
-   *
-   ***/
-  'remove': function(arr, f) {
-    return arrayRemove(arr, f);
-  },
-
-  /***
-   * @method exclude(<f>)
-   * @returns Array
-   * @short Returns a new array with every element matching <f> removed.
-   * @extra This is a non-destructive alias for `remove`. It will not change the original array. This method implements `matching shortcuts`.
-   * @example
-   *
-   *   [1,2,3].exclude(3)         -> [1,2]
-   *   ['a','b','c'].exclude(/b/) -> ['a','c']
-   *   [{a:1},{b:2}].exclude(function(n) {
-   *     return n['a'] == 1;
-   *   }); -> [{b:2}]
-   *
-   ***/
-  'exclude': function(arr, f) {
-    return arrayExclude(arr, f);
-  }
-
-});
-
-
-defineInstanceWithArguments(sugarArray, {
-
-  /***
-   * @method union([a1], [a2], ...)
-   * @returns Array
-   * @short Returns an array containing all elements in all arrays with duplicates removed.
-   * @extra This method will also correctly operate on arrays of objects.
-   * @example
-   *
-   *   [1,3,5].union([5,7,9])     -> [1,3,5,7,9]
-   *   ['a','b'].union(['b','c']) -> ['a','b','c']
-   *
-   ***/
-  'union': function(arr, args) {
-    return arrayUnique([].concat.apply(arr, args));
-  },
-
-  /***
-   * @method intersect([a1], [a2], ...)
-   * @returns Array
-   * @short Returns an array containing the elements all arrays have in common.
-   * @extra This method will also correctly operate on arrays of objects.
-   * @example
-   *
-   *   [1,3,5].intersect([5,7,9])   -> [5]
-   *   ['a','b'].intersect('b','c') -> ['b']
-   *
-   ***/
-  'intersect': function(arr, args) {
-    return arrayIntersectOrSubtract(arr, args, false);
-  },
-
-  /***
-   * @method subtract([a1], [a2], ...)
-   * @returns Array
-   * @short Subtracts from the array all elements in [a1], [a2], etc.
-   * @extra This method will also correctly operate on arrays of objects.
-   * @example
-   *
-   *   [1,3,5].subtract([5,7,9])   -> [1,3]
-   *   [1,3,5].subtract([3],[5])   -> [1]
-   *   ['a','b'].subtract('b','c') -> ['a']
-   *
-   ***/
-  'subtract': function(arr, args) {
-    return arrayIntersectOrSubtract(arr, args, true);
-  },
-
-  /***
-   * @method zip([arr1], [arr2], ...)
-   * @returns Array
-   * @short Merges multiple arrays together.
-   * @extra This method "zips up" smaller arrays into one large whose elements are "all elements at index 0", "all elements at index 1", etc. Useful when you have associated data that is split over separated arrays. If the arrays passed have more elements than the original array, they will be discarded. If they have fewer elements, the missing elements will filled with %null%.
-   * @example
-   *
-   *   [1,2,3].zip([4,5,6])                                       -> [[1,2], [3,4], [5,6]]
-   *   ['Martin','John'].zip(['Luther','F.'], ['King','Kennedy']) -> [['Martin','Luther','King'], ['John','F.','Kennedy']]
-   *
-   ***/
-  'zip': function(arr, args) {
-    return arr.map(function(el, i) {
-      return [el].concat(map(args, function(k) {
-        return (i in k) ? k[i] : null;
-      }));
-    });
-  }
-
-});
-
-/***
- * @method insert()
- * @alias append
- *
- ***/
-alias(sugarArray, 'insert', 'append');
-'use strict';
-
-/***
- * @module Object
- * @dependency core
- * @description Object manipulation, type checking (isNumber, isString, ...), %extended objects% with hash-like methods available as instance methods.
- *
- * Much thanks to kangax for his informative aricle about how problems with instanceof and constructor
- * http://perfectionkills.com/instanceof-considered-harmful-or-how-to-write-a-robust-isarray/
- *
- ***/
-
-var DONT_ENUM_PROPS = [
-  'valueOf',
-  'toString',
-  'constructor',
-  'isPrototypeOf',
-  'hasOwnProperty',
-  'toLocaleString',
-  'propertyIsEnumerable'
-];
-
-// Matches bracket-style query strings like user[name]
-var DEEP_QUERY_STRING_REG = /^(.+?)(\[.*\])$/;
-
-// Matches any character not allowed in a decimal number.
-var NON_DECIMAL_REG = /[^\d.-]/;
-
-// Native methods for merging by descriptor when available.
-var getOwnPropertyNames      = Object.getOwnPropertyNames;
-var getOwnPropertyDescriptor = Object.getOwnPropertyDescriptor;
-
-// Iterate over an object with support
-// for the DontEnum bug in < IE9
-var iterateOverObjectSafe;
-
-function buildSafeIterate() {
-  var hasDontEnumBug = true, prop;
-  for (prop in { toString: true }) hasDontEnumBug = false;
-  iterateOverObjectSafe = hasDontEnumBug ? iterateOverObjectDontEnum : iterateOverObject;
-}
-
-function iterateOverObjectDontEnum(obj, fn) {
-  iterateOverObject(obj, fn);
-  forEach(DONT_ENUM_PROPS, function(key) {
-    if (hasOwn(obj, key)) {
-      fn.call(obj, key, obj[key], obj);
-    }
-  });
-}
-
-
-// Query Strings | Creating
-
-function toQueryStringWithOptions(obj, options) {
-  options = options || {};
-  if (isUndefined(options.separator)) {
-    options.separator = '_';
-  }
-  return toQueryString(obj, options.deep, options.transform, options.prefix || '', options.separator);
-}
-
-function toQueryString(obj, deep, transform, prefix, separator) {
-  if (isArray(obj)) {
-    return collectArrayAsQueryString(obj, deep, transform, prefix, separator);
-  } else if (isObjectType(obj) && obj.toString === internalToString) {
-    return collectObjectAsQueryString(obj, deep, transform, prefix, separator);
-  } else if (prefix) {
-    return getURIComponentValue(obj, prefix, transform);
-  }
-  return '';
-}
-
-function collectArrayAsQueryString(arr, deep, transform, prefix, separator) {
-  return map(arr, function(el) {
-    var key = prefix + (prefix && deep ? '[]' : '');
-    if (!key && !isObjectType(el)) {
-      // If there is no key, then the values of the array should be
-      // considered as null keys, so use them instead;
-      return sanitizeURIComponent(el);
-    }
-    return toQueryString(el, deep, transform, key, separator);
-  }).join('&');
-}
-
-function collectObjectAsQueryString(obj, deep, transform, prefix, separator) {
-  var result = [];
-  iterateOverObject(obj, function(key, value) {
-    var fullKey;
-    if (prefix && deep) {
-      fullKey = prefix + '[' + key + ']';
-    } else if (prefix) {
-      fullKey = prefix + separator + key;
-    } else {
-      fullKey = key;
-    }
-    result.push(toQueryString(value, deep, transform, fullKey, separator));
-  });
-  return result.join('&');
-}
-
-function getURIComponentValue(obj, prefix, transform) {
-  var value;
-  if (transform) {
-    value = transform(prefix, obj);
-  } else if (isDate(obj)) {
-    value = obj.getTime();
-  } else {
-    value = obj;
-  }
-  return sanitizeURIComponent(prefix) + '=' + sanitizeURIComponent(value);
-}
-
-function sanitizeURIComponent(obj) {
-  // undefined, null, and NaN are represented as a blank string,
-  // while false and 0 are stringified.
-  return !obj && obj !== false && obj !== 0 ? '' : encodeURIComponent(obj);
-}
-
-
-// Query Strings | Parsing
-
-function fromQueryStringWithOptions(obj, options) {
-  var str = String(obj || '').replace(/^.*?\?/, ''), result = {};
-  options = options || {};
-  if (str) {
-    forEach(str.split('&'), function(p) {
-      var split = p.split('=');
-      var key = decodeURIComponent(split[0]);
-      var val = split.length === 2 ? decodeURIComponent(split[1]) : '';
-      parseQueryComponent(result, key, val, options.deep, options.auto !== false, options.separator, options.transform);
-    });
-  }
-  return result;
-}
-
-function parseQueryComponent(obj, key, value, deep, auto, separator, transform) {
-  var match;
-  if (separator) {
-    key = mapQuerySeparatorToKeys(key, separator);
-    deep = true;
-  }
-  if (deep === true && (match = key.match(DEEP_QUERY_STRING_REG))) {
-    parseDeepQueryComponent(obj, match, value, deep, auto, separator, transform);
-  } else {
-    setQueryProperty(obj, key, value, auto, transform);
-  }
-}
-
-function parseDeepQueryComponent(obj, match, value, deep, auto, separator, transform) {
-  var key = match[1];
-  var inner = match[2].slice(1, -1).split('][');
-  forEach(inner, function(k) {
-    if (!obj[key]) {
-      obj[key] = k ? {} : [];
-    }
-    obj = obj[key];
-    key = k ? k : obj.length.toString();
-  });
-  setQueryProperty(obj, key, value, auto, transform);
-}
-
-function mapQuerySeparatorToKeys(key, separator) {
-  var split = key.split(separator), result = split[0];
-  for (var i = 1, len = split.length; i < len; i++) {
-    result += '[' + split[i] + ']';
-  }
-  return result;
-}
-
-function setQueryProperty(obj, key, value, auto, transform) {
-  var fnValue;
-  if (transform) {
-    fnValue = transform(key, value, obj);
-  }
-  if (isDefined(fnValue)) {
-    value = fnValue;
-  } else if (auto) {
-    value = getQueryValueAuto(obj, key, value);
-  }
-  obj[key] = value;
-}
-
-function getQueryValueAuto(obj, key, value) {
-  if (!value) {
-    return null;
-  } else if (value === 'true') {
-    return true;
-  } else if (value === 'false') {
-    return false;
-  }
-  var num = +value;
-  if (!isNaN(num) && stringIsDecimal(value)) {
-    return num;
-  }
-  var existing = obj[key];
-  if (value && existing) {
-    return isArray(existing) ? existing.concat(value) : [existing, value];
-  }
-  return value;
-}
-
-function stringIsDecimal(str) {
-  return str !== '' && !NON_DECIMAL_REG.test(str);
-}
-
-
-// Object Merging
-
-function mergeWithOptions(target, source, opts) {
-  opts = opts || {};
-  return objectMerge(target, source, opts.deep, opts.resolve, opts.hidden, opts.descriptor);
-}
-
-function defaults(target, sources, opts) {
-  opts = opts || {};
-  opts.resolve = opts.resolve || false;
-  return mergeAll(target, sources, opts);
-}
-
-function mergeAll(target, sources, opts) {
-  if (!isArray(sources)) {
-    sources = [sources];
-  }
-  forEach(sources, function(source) {
-    return mergeWithOptions(target, source, opts);
-  });
-  return target;
-}
-
-function iterateOverProperties(hidden, obj, fn) {
-  if (getOwnPropertyNames && hidden) {
-    iterateOverPropertyNames(obj, fn);
-  } else {
-    iterateOverObjectSafe(obj, fn);
-  }
-}
-
-function iterateOverPropertyNames(obj, fn) {
-  var names = getOwnPropertyNames(obj), name;
-  for (var i = 0, len = names.length; i < len; i++) {
-    name = names[i];
-    fn(name, obj[name]);
-  }
-}
-
-function mergeByPropertyDescriptor(target, source, prop, sourceVal) {
-  var descriptor = getOwnPropertyDescriptor(source, prop);
-  if (isDefined(descriptor.value)) {
-    descriptor.value = sourceVal;
-  }
-  defineProperty(target, prop, descriptor);
-}
-
-function objectMerge(target, source, deep, resolve, hidden, descriptor) {
-  var resolveByFunction = isFunction(resolve), resolveConflicts = resolve !== false;
-
-  if (isUndefined(target)) {
-    target = getNewObjectForMerge(source);
-  } else if (resolveConflicts && isDate(target) && isDate(source)) {
-    // A date's timestamp is a property that can only be reached through its
-    // methods, so actively set it up front if both are dates.
-    target.setTime(source.getTime());
-  }
-
-  if (isPrimitiveType(target)) {
-    // Will not merge into a primitive type, so simply override.
-    return source;
-  }
-
-  // If the source object is a primitive
-  // type then coerce it into an object.
-  if (isPrimitiveType(source)) {
-    source = coercePrimitiveToObject(source);
-  }
-
-  iterateOverProperties(hidden, source, function(prop) {
-    var sourceVal, targetVal, resolved, goDeep, result;
-
-    sourceVal = source[prop];
-
-    // We are iterating over properties of the source, so hasOwnProperty on
-    // it is guaranteed to always be true. However, the target may happen to
-    // have properties in its prototype chain that should not be considered
-    // as conflicts.
-    if (hasOwn(target, prop)) {
-      targetVal = target[prop];
-    }
-
-    if (resolveByFunction) {
-      result = resolve(prop, targetVal, sourceVal, target, source);
-      if (isUndefined(result)) {
-        // Result is undefined so do not merge this property.
-        return;
-      } else if (isDefined(result) && result !== Sugar) {
-        // If the source returns anything except undefined, then the conflict
-        // has been resolved, so don't continue traversing into the object. If
-        // the returned value is the Sugar global object, then allowing Sugar
-        // to resolve the conflict, so continue on.
-        sourceVal = result;
-        resolved = true;
-      }
-    } else if (isUndefined(sourceVal)) {
-      // Will not merge undefined.
-      return;
-    }
-
-    // Regex properties are read-only, so intentionally disallowing deep
-    // merging for now. Instead merge by reference even if deep.
-    goDeep = !resolved && deep && isObjectType(sourceVal) && !isRegExp(sourceVal);
-
-    if (!goDeep && !resolveConflicts && isDefined(targetVal)) {
-      return;
-    }
-
-    if (goDeep) {
-      sourceVal = objectMerge(targetVal, sourceVal, deep, resolve, hidden, descriptor);
-    }
-
-    // getOwnPropertyNames is standing in as
-    // a test for property descriptor support
-    if (getOwnPropertyNames && descriptor) {
-      mergeByPropertyDescriptor(target, source, prop, sourceVal);
-    } else {
-      target[prop] = sourceVal;
-    }
-
-  });
-  return target;
-}
-
-function getNewObjectForMerge(source) {
-  var klass = className(source);
-  // Primitive types, dates, and regexes have no "empty" state. If they exist
-  // at all, then they have an associated value. As we are only creating new
-  // objects when they don't exist in the target, these values can come alone
-  // for the ride when created.
-  if (isPrimitiveType(source)) {
-    return source;
-  } else if (isDate(source, klass)) {
-    return new Date(source.getTime());
-  } else if (isRegExp(source, klass)) {
-    return RegExp(source.source, getRegExpFlags(source));
-  } else if (isHash(source)) {
-    return new Hash;
-  } else if (isArray(source, klass)) {
-    return [];
-  } else if (isPlainObject(source, klass)) {
-    return {};
-  }
-  // If the object is not of a known type, then simply merging its
-  // properties into a plain object will result in something different
-  // (it will not respond to instanceof operator etc). Similarly we don't
-  // want to call a constructor here as we can't know for sure what the
-  // original constructor was called with (Events etc), so throw an
-  // error here instead. Non-standard types can be handled if either they
-  // already exist and simply have their properties merged, if the merge
-  // is not deep so their references will simply be copied over, or if a
-  // resolve function is used to assist the merge.
-  throw new TypeError('Must be a basic data type');
-}
-
-function clone(source, deep) {
-  var target = getNewObjectForMerge(source);
-  return objectMerge(target, source, deep, true, true, true);
-}
-
-
-// Keys/Values
-
-function objectSize(obj) {
-  return keysWithObjectCoercion(obj).length;
-}
-
-function keysWithObjectCoercion(obj) {
-  return getKeys(coercePrimitiveToObject(obj));
-}
-
-function getKeysWithCallback(obj, fn) {
-  var keys = getKeys(obj);
-  if (isFunction(fn)) {
-    forEach(keys, function(key) {
-      fn.call(obj, key, obj[key]);
-    });
-  }
-  return keys;
-}
-
-function getValuesWithCallback(obj, fn) {
-  var values = [];
-  iterateOverObject(obj, function(k, v) {
-    values.push(v);
-    if (isFunction(fn)) {
-      fn.call(obj,v);
-    }
-  });
-  return values;
-}
-
-function tap(obj, arg) {
-  var fn = arg;
-  if (!isFunction(arg)) {
-    fn = function() {
-      if (arg) obj[arg]();
-    };
-  }
-  fn.call(obj, obj);
-  return obj;
-}
-
-// Select/Reject
-
-function objectSelect(obj, f) {
-  return selectFromObject(obj, f, true);
-}
-
-function objectReject(obj, f) {
-  return selectFromObject(obj, f, false);
-}
-
-function selectFromObject(obj, f, select) {
-  var match, result = isHash(obj) ? new Hash : {};
-  f = [].concat(f);
-  iterateOverObject(obj, function(key, value) {
-    match = false;
-    for (var i = 0; i < f.length; i++) {
-      if (matchInObject(f[i], key)) {
-        match = true;
-      }
-    }
-    if (match === select) {
-      result[key] = value;
-    }
-  });
-  return result;
-}
-
-function matchInObject(match, key) {
-  if (isRegExp(match)) {
-    return match.test(key);
-  } else if (isObjectType(match)) {
-    return key in match;
-  } else {
-    return key === String(match);
-  }
-}
-
-// Remove/Exclude
-
-function objectRemove(obj, f) {
-  var matcher = getMatcher(f, true);
-  iterateOverObject(obj, function(key, val) {
-    if (matcher(val, key, obj)) {
-      delete obj[key];
-    }
-  });
-  return obj;
-}
-
-function objectExclude(obj, f) {
-  var result = {};
-  var matcher = getMatcher(f, true);
-  iterateOverObject(obj, function(key, val) {
-    if (!matcher(val, key, obj)) {
-      result[key] = val;
-    }
-  });
-  return result;
-}
-
-
-defineStatic(sugarObject, {
-
-  /***
-   * @method Object.extended(<obj> = {})
-   * @returns Extended object
-   * @short Creates a new object, equivalent to %new Object()% or %{}%, but with extended methods.
-   * @extra See %extended objects% for more.
-   * @example
-   *
-   *   Object.extended()
-   *   Object.extended({ happy:true, pappy:false }).keys() -> ['happy','pappy']
-   *   Object.extended({ happy:true, pappy:false }).values() -> [true, false]
-   *
-   ***/
-  'extended': function(obj) {
-    return new Hash(coercePrimitiveToObject(obj));
-  },
-
-  /***
-   * @method Object.get(<obj>, <prop>)
-   * @returns Mixed
-   * @short Gets a property of <obj>. If <prop> contains dot notation, the nested property will be returned.
-   * @example
-   *
-   *   Object.get({a:'b'}, 'a');       -> 'b'
-   *   Object.get({a:{b:'c'}}, 'a.b'); -> 'c'
-   *
-   ***/
-  'get': function(obj, prop) {
-    return deepGetProperty(obj, prop);
-  },
-
-  /***
-   * @method Object.set(<obj>, <key>, <val>)
-   * @returns Object
-   * @short Sets a property on <obj>. If <key> contains dot notation, the nested property will be set.
-   * @extra The original object passed will be returned.
-   * @example
-   *
-   *   Object.set({}, 'a', 'c');   -> {a:'c'}
-   *   Object.get({}, 'a.b', 'c'); -> {a:{b:'c'}}
-   *
-   ***/
-  'set': function(obj, key, val) {
-    return deepSetProperty(obj, key, val);
-  },
-
-  /***
-   * @method Object.fromQueryString(<str>, [options])
-   * @returns Object
-   * @short Converts the query string of a URL into an object.
-   * @extra Options can be passed with [options] for more control over the result.
-   * @options
-   *
-   *   deep:       If the string contains "deep" syntax (`foo[]`), this will
-   *               be automatically converted to an array. (Default `false`)
-   *
-   *   auto:       If `true`, booleans (`true`/`false`), numbers, and arrays
-   *               (repeated keys) will be automatically cast to native
-   *               values. (Default `true`)
-   *
-   *   transform:  A function whose return value becomes the final value.
-   *               Receives `key` and `value` arguments. (No Default)
-   *
-   *   separator:  If passed, keys will be split on this string to extract
-   *               deep values. (Default `null`)
-   *
-   * @example
-   *
-   *   Object.fromQueryString('foo=bar&broken=wear')          -> { foo: 'bar', broken: 'wear' }
-   *   Object.fromQueryString('foo[]=1&foo[]=2')              -> { foo: ['1','2'] }
-   *   Object.fromQueryString('user_foo=bar',{separator:'_'}) -> { user: { foo: 'bar' } }
-   *
-   ***/
-  'fromQueryString': function(obj, options) {
-    return fromQueryStringWithOptions(obj, options);
-  }
-
-});
-
-
-defineInstanceAndStatic(sugarObject, {
-
-  /***
-   * @method Object.keys(<obj>, [fn])
-   * @returns Array
-   * @short Returns an array containing the keys in <obj>. Optionally calls [fn] for each key.
-   * @extra This method is provided for browsers that don't support it natively, and additionally is enhanced to accept the callback [fn]. Returned keys are in no particular order. %keys% is available as an instance method on %extended objects%.
-   * @example
-   *
-   *   Object.keys({ broken: 'wear' }) -> ['broken']
-   *   Object.keys({ broken: 'wear' }, function(key, value) {
-   *     // Called once for each key.
-   *   });
-   *   Object.extended({ broken: 'wear' }).keys() -> ['broken']
-   *
-   ***/
-  'keys': fixArgumentLength(getKeysWithCallback),
-
-  /***
-   * @method Object.size(<obj>)
-   * @returns Number
-   * @short Returns the number of properties in <obj>.
-   * @example
-   *
-   *   Object.size({foo:'bar'}) -> 1
-   *
-   ***/
-  'size': function(obj) {
-    return objectSize(obj);
-  },
-
-  /***
-   * @method Object.isEmpty(<obj>)
-   * @returns Boolean
-   * @short Returns true if the number of properties in <obj> is zero.
-   * @example
-   *
-   *   Object.isEmpty({})    -> true
-   *   Object.isEmpty({a:1}) -> false
-   *
-   ***/
-  'isEmpty': function(obj) {
-    return objectSize(obj) === 0;
-  },
-
-  /***
-   * @method Object.toQueryString(<obj>, [options])
-   * @returns Object
-   * @short Converts the object into a query string.
-   * @extra Accepts deep objects and arrays. Options can be passed with [options] for more control over the result. For more see %query strings%.
-   * @options
-   *
-   *   deep:       If `true`, non-standard "deep" syntax (`foo[]`) will be
-   *               used for output. Note that `separator` will be ignored,
-   *               as this option overrides shallow syntax. (Default `false`)
-   *
-   *   prefix:     If passed, this string will be prefixed to all keys,
-   *               separated by the `separator`. (Default `''`).
-   *
-   *   transform:  A function whose return value becomes the final value
-   *               in the string. Receives `key` and `value` arguments.
-   *               (No Default)
-   *
-   *   separator:  A string that is used to separate keys, either for deep
-   *               objects, or when `prefix` is passed.(Default `_`).
-   *
-   * @example
-   *
-   *   Object.toQueryString({foo:'bar'})                  -> 'foo=bar'
-   *   Object.toQueryString({foo:['a','b']})              -> 'foo=a&foo=b'
-   *   Object.toQueryString({foo:['a','b']}, {deep:true}) -> 'foo[]=a&foo[]=b'
-   *
-   ***/
-  'toQueryString': function(obj, options) {
-    return toQueryStringWithOptions(obj, options);
-  },
-
-  /***
-   * @method Object.isEqual(<a>, <b>)
-   * @returns Boolean
-   * @short Returns true if <a> and <b> are equal.
-   * @extra %isEqual% in Sugar is "egal", meaning the values are equal if they are "not observably distinguishable".
-   * @example
-   *
-   *   Object.isEqual({a:2}, {a:2}) -> true
-   *   Object.isEqual({a:2}, {a:3}) -> false
-   *   Object.extended({a:2}).isEqual({a:3}) -> false
-   *
-   ***/
-  'isEqual': function(a, b) {
-    return isEqual(a, b);
-  },
-
-  /***
-   * @method Object.merge(<target>, <source>, [options])
-   * @returns Merged object
-   * @short Merges properties from <source> into <target>.
-   * @extra Supports %extended objects%.
-   * @options
-   *
-   *   deep:        If `true` deep properties are merged recursively.
-   *                (Default = `false`)
-   *
-   *   resolve:     Determines which property wins in the case of conflicts.
-   *                If `true`, <source> wins. If `false`, <target> wins. If a
-   *                function is passed, its return value will decide the result.
-   *                Any non-undefined return value will resolve the conflict
-   *                for that property (will not continue if `deep`). Returning
-   *                `undefined` will do nothing (no merge). Finally, returning
-   *                the global object `Sugar` will allow Sugar to handle the
-   *                merge as normal. Resolve functions are passed the arguments:
-   *                `key`, `targetValue`, `sourceValue`, `target`, `source`.
-   *                (Default = `true`)
-   *
-   *   hidden:      If `true`, non-enumerable properties will be merged as well.
-   *                (Default = `false`)
-   *
-   *   descriptor:  If `true`, properties will be merged by property descriptor.
-   *                Use this option to merge getters or setters, or to preserve
-   *                `enumerable`, `configurable`, etc.
-   *                (Default = `false`)
-   *
-   * @example
-   *
-   *   Object.merge({one:1},{two:2})                 -> {one:1,two:2}
-   *   Object.merge({one:1},{one:9,two:2})           -> {one:9,two:2}
-   *   Object.merge({x:{a:1}},{x:{b:2}},{deep:true}) -> {x:{a:1,b:2}}
-   +   Object.merge({one:1},{one:2},{resolve:function(key, a, b) {
-   *     return a + b;
-   *   }}); -> {one:3}
-   *
-   ***/
-  'merge': function(target, source, opts) {
-    return mergeWithOptions(target, source, opts);
-  },
-
-  /***
-   * @method Object.mergeAll(<target>, <sources>, [options])
-   * @returns Merged object
-   * @short Merges properties from multiple <sources> into <target>.
-   * @extra Supports %extended objects%.
-   * @options
-   *
-   *   deep:        If `true` deep properties are merged recursively.
-   *                (Default = `false`)
-   *
-   *   resolve:     Determines which property wins in the case of conflicts.
-   *                If `true`, <source> wins. If `false`, <target> wins. If a
-   *                function is passed, its return value will decide the result.
-   *                Any non-undefined return value will resolve the conflict
-   *                for that property (will not continue if `deep`). Returning
-   *                `undefined` will do nothing (no merge). Finally, returning
-   *                the global object `Sugar` will allow Sugar to handle the
-   *                merge as normal. Resolve functions are passed the arguments:
-   *                `key`, `targetValue`, `sourceValue`, `target`, `source`.
-   *                (Default = `true`)
-   *
-   *   hidden:      If `true`, non-enumerable properties will be merged as well.
-   *                (Default = `false`)
-   *
-   *   descriptor:  If `true`, properties will be merged by property descriptor.
-   *                Use this option to merge getters or setters, or to preserve
-   *                `enumerable`, `configurable`, etc.
-   *                (Default = `false`)
-   *
-   * @example
-   *
-   *   Object.mergeAll({one:1},[{two:2},{three:3}])                 -> {one:9,two:2}
-   *   Object.mergeAll({x:{a:1}},[{x:{b:2}},{x:{c:3}}],{deep:true}) -> {x:{a:1,b:2,c:3}}
-   *
-   ***/
-  'mergeAll': function(target, sources, opts) {
-    return mergeAll(target, sources, opts);
-  },
-
-  /***
-   * @method Object.add(<obj1>, <obj2>, [options])
-   * @returns Object
-   * @short Merges properties from <obj1> and <obj2> together and returns a new object.
-   * @extra Supports %extended objects%.
-   * @example
-   *
-   *   Object.add({one:1},{two:2})                 -> {one:1,two:2}
-   *   Object.add({one:1},{one:9,two:2})           -> {one:9,two:2}
-   *   Object.add({x:{a:1}},{x:{b:2}},{deep:true}) -> {x:{a:1,b:2}}
-   +   Object.add({one:1},{one:2},{resolve:function(key, a, b) {
-   *     return a + b;
-   *   }}); -> {one:3}
-   *
-   ***/
-  'add': function(obj1, obj2, opts) {
-    return mergeWithOptions(clone(obj1), obj2, opts);
-  },
-
-  /***
-   * @method Object.defaults(<target>, <sources>, [options])
-   * @returns Merged object
-   * @short Merges properties from one or multiple <sources> into <target> while preserving <target>'s properties.
-   * @extra Supports %extended objects%.
-   * @options
-   *
-   *   deep:        If `true` deep properties are merged recursively.
-   *                (Default = `false`)
-   *
-   *   resolve:     Determines which property wins in the case of conflicts.
-   *                If `true`, <source> wins. If `false`, <target> wins. If a
-   *                function is passed, its return value will decide the result.
-   *                Any non-undefined return value will resolve the conflict
-   *                for that property (will not continue if `deep`). Returning
-   *                `undefined` will do nothing (no merge). Finally, returning
-   *                the global object `Sugar` will allow Sugar to handle the
-   *                merge as normal. Resolve functions are passed the arguments:
-   *                `key`, `targetValue`, `sourceValue`, `target`, `source`.
-   *                (Default = `true`)
-   *
-   *   hidden:      If `true`, non-enumerable properties will be merged as well.
-   *                (Default = `false`)
-   *
-   *   descriptor:  If `true`, properties will be merged by property descriptor.
-   *                Use this option to merge getters or setters, or to preserve
-   *                `enumerable`, `configurable`, etc.
-   *                (Default = `false`)
-   *
-   * @example
-   *
-   *   Object.defaults({one:1},[{one:9},{two:2}])                   -> {one:1,two:2}
-   *   Object.defaults({x:{a:1}},[{x:{a:9}},{x:{b:2}}],{deep:true}) -> {x:{a:1,b:2}}
-   *
-   ***/
-  'defaults': function(target, sources, opts) {
-    return defaults(target, sources, opts);
-  },
-
-  /***
-   * @method Object.clone(<obj>, [deep] = false)
-   * @returns Cloned object
-   * @short Creates a clone (copy) of <obj>.
-   * @extra Default is a shallow clone, unless [deep] is true. Supports %extended objects%.
-   * @example
-   *
-   *   Object.clone({foo:'bar'})            -> { foo: 'bar' }
-   *   Object.clone()                       -> {}
-   *   Object.extended({foo:'bar'}).clone() -> { foo: 'bar' }
-   *
-   ***/
-  'clone': function(obj, deep) {
-    return clone(obj, deep);
-  },
-
-  /***
-   * @method Object.values(<obj>, [fn])
-   * @returns Array
-   * @short Returns an array containing the values in <obj>. Optionally calls [fn] for each value.
-   * @extra Returned values are in no particular order. %values% is available as an instance method on %extended objects%.
-   * @example
-   *
-   *   Object.values({ broken: 'wear' }) -> ['wear']
-   *   Object.values({ broken: 'wear' }, function(value) {
-   *     // Called once for each value.
-   *   });
-   *   Object.extended({ broken: 'wear' }).values() -> ['wear']
-   *
-   ***/
-  'values': function(obj, fn) {
-    return getValuesWithCallback(obj, fn);
-  },
-
-  /***
-   * @method Object.invert(<obj>, [multi] = false)
-   * @returns Object
-   * @short Creates a new object with the keys and values of <obj> swapped.
-   * @extra If [multi] is true, values will be an array of all keys, othewise collisions will be overwritten.
-   * @example
-   *
-   *   Object.invert({foo:'bar'})     -> {bar:'foo'}
-   *   Object.invert({a:1,b:1}, true) -> {1:['a','b']}
-   *
-   ***/
-  'invert': function(obj, multi) {
-    var result = {};
-    multi = multi === true;
-    iterateOverObject(obj, function(key, val) {
-      if (result[val] && multi) {
-        result[val].push(key);
-      } else if (multi) {
-        result[val] = [key];
+  function collateStrings(a, b) {
+    var aValue, bValue, aChar, bChar, aEquiv, bEquiv, index = 0, tiebreaker = 0;
+
+    var sortOrder       = _sortOrder();
+    var sortIgnore      = _sortIgnore();
+    var naturalSort     = _sortNatural();
+    var sortIgnoreCase  = _sortIgnoreCase();
+    var sortEquivalents = _sortEquivalents();
+
+    a = getCollationReadyString(a, sortIgnore, sortIgnoreCase);
+    b = getCollationReadyString(b, sortIgnore, sortIgnoreCase);
+
+    do {
+
+      aChar  = getCollationCharacter(a, index, sortEquivalents);
+      bChar  = getCollationCharacter(b, index, sortEquivalents);
+      aValue = getSortOrderIndex(aChar, sortOrder);
+      bValue = getSortOrderIndex(bChar, sortOrder);
+
+      if (aValue === -1 || bValue === -1) {
+        aValue = a.charCodeAt(index) || null;
+        bValue = b.charCodeAt(index) || null;
+        if (naturalSort && codeIsNumeral(aValue) && codeIsNumeral(bValue)) {
+          aValue = stringToNumber(a.slice(index));
+          bValue = stringToNumber(b.slice(index));
+        }
       } else {
-        result[val] = key;
+        aEquiv = aChar !== a.charAt(index);
+        bEquiv = bChar !== b.charAt(index);
+        if (aEquiv !== bEquiv && tiebreaker === 0) {
+          tiebreaker = aEquiv - bEquiv;
+        }
       }
-    });
-    if (isHash(obj)) {
-      result = new Hash(result);
-    }
-    return result;
-  },
-
-  /***
-   * @method Object.tap(<obj>, <fn>)
-   * @returns Object
-   * @short Runs <fn> and returns <obj>.
-   * @extra  A string can also be used as a shortcut to a method. This method is used to run an intermediary function in the middle of method chaining. As a standalone method on the Object class it doesn't have too much use. The power of %tap% comes when using %extended objects% or modifying the Object prototype with %Sugar.Object.extend()%.
-   * @example
-   *
-   *   Sugar.Object.extend();
-   *   [2,4,6].map(Math.exp).tap(function(arr) {
-   *     arr.pop()
-   *   });
-   *   [2,4,6].map(Math.exp).tap('pop').map(Math.round); ->  [7,55]
-   *
-   ***/
-  'tap': function(obj, arg) {
-    return tap(obj, arg);
-  },
-
-  /***
-   * @method Object.has(<obj>, <key>)
-   * @returns Boolean
-   * @short Checks if <obj> has <key> using hasOwnProperty from Object.prototype.
-   * @extra This method is considered safer than %Object#hasOwnProperty% when using objects as hashes. See http://www.devthought.com/2012/01/18/an-object-is-not-a-hash/ for more.
-   * @example
-   *
-   *   Object.has({ foo: 'bar' }, 'foo') -> true
-   *   Object.has({ foo: 'bar' }, 'baz') -> false
-   *   Object.has({ hasOwnProperty: true }, 'foo') -> false
-   *
-   ***/
-  'has': function(obj, key) {
-    return hasOwn(obj, key);
-  },
-
-  /***
-   * @method Object.isArguments(<obj>)
-   * @returns Boolean
-   * @short Returns true if <obj> is an arguments object.
-   *
-   * @example
-   *
-   *   Object.arguments([1]) -> false
-   *
-   ***/
-  'isArguments': function(obj) {
-    return isArgumentsObject(obj);
-  },
-
-  /***
-   * @method Object.isNaN(<obj>)
-   * @returns Boolean
-   * @short Returns true if <obj> is `NaN`.
-   * @extra This is different from `isNaN`, which returns true for anything that is "not a number".
-   *
-   * @example
-   *
-   *   Object.isNaN(NaN) -> true
-   *   Object.isNaN('5') -> false
-   *
-   ***/
-  'isNaN': function(obj) {
-    // Note that Object.isNaN intentionally unwraps non-primitives, but Number.isNaN
-    // does not (ES6 spec). The reason for this is that certain environments (< IE9)
-    // will auto-wrap instances, so opting for cross-platform consistency here.
-    return isRealNaN(obj && obj.valueOf());
-  },
-
-  /***
-   * @method Object.isObject(<obj>)
-   * @returns Boolean
-   * @short Returns true if <obj> is a plain Javascript object.
-   * @extra Does not include instances of classes or "host" objects, such as Elements, Events, etc.
-   *
-   * @example
-   *
-   *   Object.isObject({ broken:'wear' }) -> true
-   *
-   ***/
-  'isObject': function(obj) {
-    return isPlainObject(obj);
-  },
-
-  /***
-   * @method Object.remove(<obj>, <f>)
-   * @returns Object
-   * @short Deletes all properties in <obj> matching <f>.
-   * @extra This method implements `matching shortcuts`.
-   * @example
-   *
-   *   Object.remove({a:'a',b:'b'}, 'a');           -> {b:'b'}
-   *   Object.remove({a:'a',b:'b',z:'z'}, /[a-f]/); -> {z:'z'}
-   *
-   ***/
-  'remove': function(obj, f) {
-    return objectRemove(obj, f);
-  },
-
-  /***
-   * @method Object.exclude(<obj>, <f>)
-   * @returns Object
-   * @short Returns a new object with all properties matching <f> removed.
-   * @extra This is a non-destructive version of `remove`. This method implements `matching shortcuts`.
-   * @example
-   *
-   *   Object.exclude({a:'a',b:'b'}, 'a');           -> {b:'b'}
-   *   Object.exclude({a:'a',b:'b',z:'z'}, /[a-f]/); -> {z:'z'}
-   *
-   ***/
-  'exclude': function(obj, f) {
-    return objectExclude(obj, f);
-  },
-
-  /***
-   * @method Object.select(<obj>, <find>)
-   * @returns Object
-   * @short Builds a new object containing the keys specified in <find>.
-   * @extra When <find> is a string, a single key will be selected. Arrays or objects will match multiple keys, and a regex will match keys by regex. %select% is available as an instance method on %extended objects%.
-   * @example
-   *
-   *   Object.select({a:1,b:2}, 'a')           -> {a:1}
-   *   Object.select({a:1,b:2}, ['a', 'b'])    -> {a:1,b:2}
-   *   Object.select({a:1,b:2}, /[a-z]/)       -> {a:1,b:2}
-   *   Object.select({a:1,b:2}, {a:'a',b:'b'}) -> {a:1,b:2}
-   *
-   ***/
-  'select': function(obj, f) {
-    return objectSelect(obj, f);
-  },
-
-  /***
-   * @method Object.reject(<obj>, <find>)
-   * @returns Object
-   * @short Builds a new object containing all keys except those in <find>.
-   * @extra When <find> is a string, a single key will be rejected. Arrays or objects will match multiple keys, and a regex will match keys by regex. %reject% is available as an instance method on %extended objects%.
-   * @example
-   *
-   *   Object.reject({a:1,b:2}, 'a')        -> {b:2}
-   *   Object.reject({a:1,b:2}, /[a-z]/)    -> {}
-   *   Object.reject({a:1,b:2}, {a:'a'})    -> {b:2}
-   *   Object.reject({a:1,b:2}, ['a', 'b']) -> {}
-   *
-   ***/
-  'reject': function(obj, f) {
-    return objectReject(obj, f);
+      index += 1;
+    } while(aValue != null && bValue != null && aValue === bValue);
+    if (aValue === bValue) return tiebreaker;
+    return aValue - bValue;
   }
 
-});
+  function getCollationReadyString(str, sortIgnore, sortIgnoreCase) {
+    if (!isString(str)) str = String(str);
+    if (sortIgnoreCase) {
+      str = str.toLowerCase();
+    }
+    if (sortIgnore) {
+      str = str.replace(sortIgnore, '');
+    }
+    return str;
+  }
 
-/***
- * @method Object.is[Type](<obj>)
- * @returns Boolean
- * @short Returns true if <obj> is an object of that type.
- * @extra %isObject% will return true only for plain objects (not for instances of classes or native browser objects). Note also that %isNaN% will ONLY return true if the object IS %NaN%. It does not mean the same as browser native %isNaN%, which returns true for anything that is "not a number".
- *
- * @set
- *   isArray
- *   isBoolean
- *   isDate
- *   isFunction
- *   isNumber
- *   isString
- *   isRegExp
- *
- * @example
- *
- *   Object.isArray([1,2,3])   -> true
- *   Object.isDate(3)          -> false
- *   Object.isRegExp(/wasabi/) -> true
- *
- ***/
-function buildTypeCheckMethods() {
-  var checks = [isBoolean, isNumber, isString, isArray, isDate, isRegExp, isFunction];
-  defineInstanceAndStaticSimilar(sugarObject, TYPE_CHECK_NAMES, function(methods, name, i) {
-    methods['is' + name] = checks[i];
+  function getCollationCharacter(str, index, sortEquivalents) {
+    var chr = str.charAt(index);
+    return sortEquivalents[chr] || chr;
+  }
+
+  function getSortOrderIndex(chr, sortOrder) {
+    if (!chr) {
+      return null;
+    } else {
+      return sortOrder.indexOf(chr);
+    }
+  }
+
+  function getSortOrder() {
+    var order = 'AÁÀÂÃĄBCĆČÇDĎÐEÉÈĚÊËĘFGĞHıIÍÌİÎÏJKLŁMNŃŇÑOÓÒÔPQRŘSŚŠŞTŤUÚÙŮÛÜVWXYÝZŹŻŽÞÆŒØÕÅÄÖ';
+    return map(order.split(''), function(str) {
+      return str + str.toLowerCase();
+    }).join('');
+  }
+
+  function getSortEquivalents() {
+    var equivalents = {};
+    forEach(commaSplit('AÁÀÂÃÄ,CÇ,EÉÈÊË,IÍÌİÎÏ,OÓÒÔÕÖ,Sß,UÚÙÛÜ'), function(set) {
+      var first = set.charAt(0);
+      forEach(set.slice(1).split(''), function(chr) {
+        equivalents[chr] = first;
+        equivalents[chr.toLowerCase()] = first.toLowerCase();
+      });
+    });
+    return equivalents;
+  }
+
+
+  /***
+   * @method Array.sortIgnore([reg])
+   * @returns Mixed
+   * @short Gets or sets a regex that will ignore matches when sorting (for example punctuation).
+   * @extra Used by `Array#sortBy`. (Default is `null`)
+   *
+   ***
+   * @method Array.sortIgnoreCase([bool])
+   * @returns Mixed
+   * @short Gets or sets a boolean that converts strings to lowercase when sorting.
+   * @extra Used by `Array#sortBy`. (Default is `true`);
+   *
+   ***
+   * @method Array.sortNatural([bool])
+   * @returns Mixed
+   * @short Gets or sets a boolean that turns on natural sort mode.
+   * @extra Used by `Array#sortBy`. "Natural sort" means that numerals like "10" will be sorted naturally after "9" instead of after "1". (Default is `true`)
+   *
+   ***
+   * @method Array.sortCollate([fn])
+   * @returns Mixed
+   * @short Gets or sets the collation function used when sorting strings.
+   * @extra Used by `Array#sortBy`. The default is a natural string sort based on other `sort` options. Setting the collation function directly here will override all these options. Setting to `null` restores the default.
+   *
+   ***
+   * @method Array.sortOrder([str])
+   * @returns Mixed
+   * @short Gets or sets the base order as a string of characters to apply when sorting.
+   * @extra Used by `Array#sortBy`. The default is an order natural to most major world languages, but can be modified as needed. Setting to `null` restores the default.
+   *
+   ***
+   * @method Array.sortEquivalents([obj])
+   * @returns Mixed
+   * @short Gets or sets a table of characters that should be considered equivalent when sorting (for example "é" and "e").
+   * @extra Used by `Array#sortBy`. The default table produces a natural sort order for most world languages, however can be modified for others. For example, setting "ä" and "ö" to `null` in the table would produce a perfect Scandanavian sort order. Setting [obj] to `null` restores the default, however if the table is mutated changes will persist.
+   *
+   ***/
+
+  var _sortIgnore      = defineAccessor(sugarArray, 'sortIgnore');
+  var _sortNatural     = defineAccessor(sugarArray, 'sortNatural', true);
+  var _sortIgnoreCase  = defineAccessor(sugarArray, 'sortIgnoreCase', true);
+
+  var _sortOrder       = defineAccessor(sugarArray, 'sortOrder', getSortOrder());
+  var _sortCollate     = defineAccessor(sugarArray, 'sortCollate', collateStrings);
+  var _sortEquivalents = defineAccessor(sugarArray, 'sortEquivalents', getSortEquivalents());
+
+
+  defineStatic(sugarArray, {
+
+    /***
+     *
+     * @method Array.construct(<n>, <fn>)
+     * @returns Array
+     * @short Constructs an array of <n> length from the values of <fn>, which is passed a single index argument.
+     * @example
+     *
+     *   Array.construct(3, parseInt) -> [0, 1, 2]
+     *   Array.construct(3, function(i) {
+     *     return i * i;
+     *   }); -> [0, 1, 4]
+     *
+     ***/
+    'construct': function(n, fn) {
+      return Array.from(new Array(+n), function(el, i) {
+        return fn && fn(i);
+      });
+    }
+
   });
-}
 
-function buildHashBase() {
+  defineInstance(sugarArray, {
 
-  var methods = [
-    'isEmpty','size','invert',
-    'merge','mergeAll','defaults','clone',
-    'add','remove','exclude','select','reject',
-    'has','keys','values','tap','isEqual','toQueryString'
+    /***
+     * @method isEmpty()
+     * @returns Boolean
+     * @short Returns true if the array has a length of zero.
+     * @example
+     *
+     *   [].isEmpty()    -> true
+     *   ['a'].isEmpty() -> false
+     *
+     ***/
+    'isEmpty': function(arr) {
+      return arr.length === 0;
+    },
+
+    /***
+     * @method isEqual(<arr>)
+     * @returns Boolean
+     * @short Returns true if the array equal to <arr>.
+     * @extra %isEqual% in Sugar is "egal", meaning the values are equal if they are "not observably distinguishable". This method is identical to, and a shortcut for `Object.isEqual()`.
+     * @example
+     *
+     *   ['a','b'].isEqual(['a','b'])           -> true
+     *   ['a','b'].isEqual(['a','c'])           -> false
+     *   [{user:'Dave'}].isEqual({user:'Dave'}) -> true
+     *
+     ***/
+    'isEqual': function(a, b) {
+      return isEqual(a, b);
+    },
+
+    /***
+     * @method clone()
+     * @returns Array
+     * @short Makes a shallow clone of the array.
+     * @example
+     *
+     *   [1,2,3].clone() -> [1,2,3]
+     *
+     ***/
+    'clone': function(arr) {
+      return arrayClone(arr);
+    },
+
+    /***
+     * @method at(<index>, [loop] = true)
+     * @returns Mixed
+     * @short Gets the element(s) at a given index.
+     * @extra When [loop] is true, overshooting the end of the array (or the beginning) will begin counting from the other end. If <index> is an array, multiple elements will be returned.
+     * @example
+     *
+     *   [1,2,3].at(0)        -> 1
+     *   [1,2,3].at(2)        -> 3
+     *   [1,2,3].at(4)        -> 2
+     *   [1,2,3].at(4, false) -> null
+     *   [1,2,3].at(-1)       -> 3
+     *   [1,2,3].at([0, 1])   -> [1, 2]
+     *
+     ***/
+    'at': function(arr, index, loop) {
+      return getEntriesForIndexes(arr, index, loop);
+    },
+
+    /***
+     * @method append(<item>, [index])
+     * @returns Array
+     * @short Appends <item> to the array.
+     * @extra If [index] is specified, it will append at [index], otherwise appends to the end of the array. `append` behaves like `concat` in that if <el> is an array it will be joined, not inserted. This method will change the array! Use `add` for a non-destructive alias. Also, `insert` is provided as an alias that reads better when using an index.
+     * @example
+     *
+     *   [1,2,3,4].append(5)       -> [1,2,3,4,5]
+     *   [1,2,3,4].append([5,6,7]) -> [1,2,3,4,5,6,7]
+     *   [1,2,3,4].insert(8, 1) -> [1,8,2,3,4]
+     *
+     ***/
+    'append': function(arr, item, index) {
+      return arrayAppend(arr, item, index);
+    },
+
+    /***
+     * @method add(<item>, [index])
+     * @returns Array
+     * @short Adds <item> to the array and returns the result as a new array.
+     * @extra If <item> is also an array, it will be joined to the array instead of inserted, making this essentially a more readable alias for `concat` with the added ability to specify the index to add at.
+     * @example
+     *
+     *   [1,2,3,4].add(5)       -> [1,2,3,4,5]
+     *   [1,2,3,4].add(8, 1)    -> [1,8,2,3,4]
+     *   [1,2,3,4].add([5,6,7]) -> [1,2,3,4,5,6,7]
+     *
+     ***/
+    'add': function(arr, item, index) {
+      return arrayAppend(arrayClone(arr), item, index);
+    },
+
+    /***
+     * @method removeAt(<start>, [end])
+     * @returns Array
+     * @short Removes element at <start>. If [end] is specified, removes the range between <start> and [end]. This method will change the array! If you don't intend the array to be changed use %clone% first.
+     * @example
+     *
+     *   ['a','b','c'].removeAt(0) -> ['b','c']
+     *   [1,2,3,4].removeAt(1, 3)  -> [1]
+     *
+     ***/
+    'removeAt': function(arr, start, end) {
+      if (isUndefined(start)) return arr;
+      if (isUndefined(end))   end = start;
+      arr.splice(start, end - start + 1);
+      return arr;
+    },
+
+    /***
+     * @method unique([map])
+     * @returns Array
+     * @short Removes all duplicate elements in the array.
+     * @extra [map] may be a function mapping the value to be uniqued on or a string acting as a shortcut. This is most commonly used when you have a key that ensures the object's uniqueness, and don't need to check all fields. This method will also correctly operate on arrays of objects.
+     * @example
+     *
+     *   [1,2,2,3].unique()                 -> [1,2,3]
+     *   [{foo:'bar'},{foo:'bar'}].unique() -> [{foo:'bar'}]
+     *   [{foo:'bar'},{foo:'bar'}].unique(function(obj){
+     *     return obj.foo;
+     *   }); -> [{foo:'bar'}]
+     *   [{foo:'bar'},{foo:'bar'}].unique('foo') -> [{foo:'bar'}]
+     *
+     ***/
+    'unique': function(arr, map) {
+      return arrayUnique(arr, map);
+    },
+
+    /***
+     * @method flatten([limit] = Infinity)
+     * @returns Array
+     * @short Returns a flattened, one-dimensional copy of the array.
+     * @extra You can optionally specify a [limit], which will only flatten that depth.
+     * @example
+     *
+     *   [[1], 2, [3]].flatten()      -> [1,2,3]
+     *   [['a'],[],'b','c'].flatten() -> ['a','b','c']
+     *
+     ***/
+    'flatten': function(arr, limit) {
+      return arrayFlatten(arr, limit);
+    },
+
+    /***
+     * @method first([num] = 1)
+     * @returns Mixed
+     * @short Returns the first element(s) in the array.
+     * @extra When <num> is passed, returns the first <num> elements in the array.
+     * @example
+     *
+     *   [1,2,3].first()        -> 1
+     *   [1,2,3].first(2)       -> [1,2]
+     *
+     ***/
+    'first': function(arr, num) {
+      if (isUndefined(num)) return arr[0];
+      if (num < 0) num = 0;
+      return arr.slice(0, num);
+    },
+
+    /***
+     * @method last([num] = 1)
+     * @returns Mixed
+     * @short Returns the last element(s) in the array.
+     * @extra When <num> is passed, returns the last <num> elements in the array.
+     * @example
+     *
+     *   [1,2,3].last()        -> 3
+     *   [1,2,3].last(2)       -> [2,3]
+     *
+     ***/
+    'last': function(arr, num) {
+      if (isUndefined(num)) return arr[arr.length - 1];
+      var start = arr.length - num < 0 ? 0 : arr.length - num;
+      return arr.slice(start);
+    },
+
+    /***
+     * @method from(<index>)
+     * @returns Array
+     * @short Returns a slice of the array from <index>.
+     * @example
+     *
+     *   [1,2,3].from(1)  -> [2,3]
+     *   [1,2,3].from(2)  -> [3]
+     *
+     ***/
+    'from': function(arr, num) {
+      return arr.slice(num);
+    },
+
+    /***
+     * @method to(<index>)
+     * @returns Array
+     * @short Returns a slice of the array up to <index>.
+     * @example
+     *
+     *   [1,3,5].to(1)  -> [1]
+     *   [1,3,5].to(2)  -> [1,3]
+     *
+     ***/
+    'to': function(arr, num) {
+      if (isUndefined(num)) num = arr.length;
+      return arr.slice(0, num);
+    },
+
+    /***
+     * @method compact([all] = false)
+     * @returns Array
+     * @short Removes all instances of %undefined%, %null%, and %NaN% from the array.
+     * @extra If [all] is %true%, all "falsy" elements will be removed. This includes empty strings, 0, and false.
+     * @example
+     *
+     *   [1,null,2,undefined,3].compact() -> [1,2,3]
+     *   [1,'',2,false,3].compact()       -> [1,'',2,false,3]
+     *   [1,'',2,false,3].compact(true)   -> [1,2,3]
+     *   [null, [null, 'bye']].compact()  -> ['hi', [null, 'bye']]
+     *
+     ***/
+    'compact': function(arr, all) {
+      return arrayCompact(arr, all);
+    },
+
+    /***
+     * @method groupBy(<map>, [fn])
+     * @returns Object
+     * @short Groups the array by <map>.
+     * @extra Will return an object with keys equal to the grouped values. <map> may be a mapping function, or a string acting as a shortcut. Optionally calls [fn] for each group.
+     * @example
+     *
+     *   ['fee','fi','fum'].groupBy('length') -> { 2: ['fi'], 3: ['fee','fum'] }
+     *   [{age:35,name:'ken'},{age:15,name:'bob'}].groupBy(function(n) {
+     *     return n.age;
+     *   });                                  -> { 35: [{age:35,name:'ken'}], 15: [{age:15,name:'bob'}] }
+     *
+     ***/
+    'groupBy': function(arr, map, fn) {
+      return arrayGroupBy(arr, map, fn);
+    },
+
+    /***
+     * @method inGroups(<num>, [padding] = None)
+     * @returns Array
+     * @short Groups the array into <num> arrays.
+     * @extra [padding] specifies a value with which to pad the last array so that they are all equal length.
+     * @example
+     *
+     *   [1,2,3,4,5,6,7].inGroups(3)         -> [ [1,2,3], [4,5,6], [7] ]
+     *   [1,2,3,4,5,6,7].inGroups(3, 'none') -> [ [1,2,3], [4,5,6], [7,'none','none'] ]
+     *
+     ***/
+    'inGroups': function(arr, num, padding) {
+      var pad = isDefined(padding);
+      var result = [];
+      var divisor = ceil(arr.length / num);
+      simpleRepeat(num, function(i) {
+        var index = i * divisor;
+        var group = arr.slice(index, index + divisor);
+        if (pad && group.length < divisor) {
+          simpleRepeat(divisor - group.length, function() {
+            group.push(padding);
+          });
+        }
+        result.push(group);
+      });
+      return result;
+    },
+
+    /***
+     * @method inGroupsOf(<num>, [padding] = None)
+     * @returns Array
+     * @short Groups the array into arrays of <num> elements each.
+     * @extra [padding] specifies a value with which to pad the last array so that they are all equal length.
+     * @example
+     *
+     *   [1,2,3,4,5,6,7].inGroupsOf(4)         -> [ [1,2,3,4], [5,6,7] ]
+     *   [1,2,3,4,5,6,7].inGroupsOf(4, 'none') -> [ [1,2,3,4], [5,6,7,'none'] ]
+     *
+     ***/
+    'inGroupsOf': function(arr, num, padding) {
+      var result = [], len = arr.length, group;
+      if (len === 0 || num === 0) return arr;
+      if (isUndefined(num)) num = 1;
+      if (isUndefined(padding)) padding = null;
+      simpleRepeat(ceil(len / num), function(i) {
+        group = arr.slice(num * i, num * i + num);
+        while(group.length < num) {
+          group.push(padding);
+        }
+        result.push(group);
+      });
+      return result;
+    },
+
+    /***
+     * @method shuffle()
+     * @returns Array
+     * @short Returns a copy of the array with the elements randomized.
+     * @extra Uses Fisher-Yates algorithm.
+     * @example
+     *
+     *   [1,2,3,4].shuffle()  -> [?,?,?,?]
+     *
+     ***/
+    'shuffle': function(arr) {
+      return arrayShuffle(arr);
+    },
+
+    /***
+     * @method sample([num] = 1, [remove] = false)
+     * @returns Mixed
+     * @short Returns a random element from the array.
+     * @extra If [num] is passed, will return an array of [num] elements. If [remove] is true, sampled elements will also be removed from the array. [remove] can also be passed in place of [num].
+     * @example
+     *
+     *   [1,2,3,4,5].sample()  -> // Random element
+     *   [1,2,3,4,5].sample(3) -> // Array of 3 random elements
+     *
+     ***/
+    'sample': function(arr, arg1, arg2) {
+      var result = [], num, remove, single;
+      if (isBoolean(arg1)) {
+        remove = arg1;
+      } else {
+        num = arg1;
+        remove = arg2;
+      }
+      if (isUndefined(num)) {
+        num = 1;
+        single = true;
+      }
+      if (!remove) {
+        arr = arrayClone(arr);
+      }
+      num = min(num, arr.length);
+      for (var i = 0, index; i < num; i++) {
+        index = trunc(Math.random() * arr.length);
+        result.push(arr[index]);
+        arr.splice(index, 1);
+      }
+      return single ? result[0] : result;
+    },
+
+    /***
+     * @method sortBy(<map>, [desc] = false)
+     * @returns Array
+     * @short Returns a copy of the array sorted by <map>.
+     * @extra <map> may be a function, a string acting as a shortcut, an array (comparison by multiple values), or blank (direct comparison of array values). [desc] will sort the array in descending order. When the field being sorted on is a string, the resulting order will be determined by an internal collation algorithm that is optimized for major Western languages, but can be customized. For more information see %array_sorting%.
+     * @example
+     *
+     *   ['world','a','new'].sortBy('length')       -> ['a','new','world']
+     *   ['world','a','new'].sortBy('length', true) -> ['world','new','a']
+     *   [{age:72},{age:13}].sortBy(function(n) {
+     *     return n.age;
+     *   }); -> [{age:13},{age:72}]
+     *
+     ***/
+    'sortBy': function(arr, map, desc) {
+      arr = arrayClone(arr);
+      arr.sort(function(a, b) {
+        var aProperty = mapWithShortcuts(a, map, arr, [a]);
+        var bProperty = mapWithShortcuts(b, map, arr, [b]);
+        return compareValue(aProperty, bProperty) * (desc ? -1 : 1);
+      });
+      return arr;
+    },
+
+    /***
+     * @method remove(<f>)
+     * @returns Array
+     * @short Removes any element in the array that matches <f>.
+     * @extra This method will change the array! Use `exclude` for a non-destructive alias. This method implements `matching shortcuts`.
+     * @example
+     *
+     *   [1,2,3].remove(3)         -> [1,2]
+     *   ['a','b','c'].remove(/b/) -> ['a','c']
+     *   [{a:1},{b:2}].remove(function(n) {
+     *     return n['a'] == 1;
+     *   }); -> [{b:2}]
+     *
+     ***/
+    'remove': function(arr, f) {
+      return arrayRemove(arr, f);
+    },
+
+    /***
+     * @method exclude(<f>)
+     * @returns Array
+     * @short Returns a new array with every element matching <f> removed.
+     * @extra This is a non-destructive alias for `remove`. It will not change the original array. This method implements `matching shortcuts`.
+     * @example
+     *
+     *   [1,2,3].exclude(3)         -> [1,2]
+     *   ['a','b','c'].exclude(/b/) -> ['a','c']
+     *   [{a:1},{b:2}].exclude(function(n) {
+     *     return n['a'] == 1;
+     *   }); -> [{b:2}]
+     *
+     ***/
+    'exclude': function(arr, f) {
+      return arrayExclude(arr, f);
+    }
+
+  });
+
+
+  defineInstanceWithArguments(sugarArray, {
+
+    /***
+     * @method union([a1], [a2], ...)
+     * @returns Array
+     * @short Returns an array containing all elements in all arrays with duplicates removed.
+     * @extra This method will also correctly operate on arrays of objects.
+     * @example
+     *
+     *   [1,3,5].union([5,7,9])     -> [1,3,5,7,9]
+     *   ['a','b'].union(['b','c']) -> ['a','b','c']
+     *
+     ***/
+    'union': function(arr, args) {
+      return arrayUnique([].concat.apply(arr, args));
+    },
+
+    /***
+     * @method intersect([a1], [a2], ...)
+     * @returns Array
+     * @short Returns an array containing the elements all arrays have in common.
+     * @extra This method will also correctly operate on arrays of objects.
+     * @example
+     *
+     *   [1,3,5].intersect([5,7,9])   -> [5]
+     *   ['a','b'].intersect('b','c') -> ['b']
+     *
+     ***/
+    'intersect': function(arr, args) {
+      return arrayIntersectOrSubtract(arr, args, false);
+    },
+
+    /***
+     * @method subtract([a1], [a2], ...)
+     * @returns Array
+     * @short Subtracts from the array all elements in [a1], [a2], etc.
+     * @extra This method will also correctly operate on arrays of objects.
+     * @example
+     *
+     *   [1,3,5].subtract([5,7,9])   -> [1,3]
+     *   [1,3,5].subtract([3],[5])   -> [1]
+     *   ['a','b'].subtract('b','c') -> ['a']
+     *
+     ***/
+    'subtract': function(arr, args) {
+      return arrayIntersectOrSubtract(arr, args, true);
+    },
+
+    /***
+     * @method zip([arr1], [arr2], ...)
+     * @returns Array
+     * @short Merges multiple arrays together.
+     * @extra This method "zips up" smaller arrays into one large whose elements are "all elements at index 0", "all elements at index 1", etc. Useful when you have associated data that is split over separated arrays. If the arrays passed have more elements than the original array, they will be discarded. If they have fewer elements, the missing elements will filled with %null%.
+     * @example
+     *
+     *   [1,2,3].zip([4,5,6])                                       -> [[1,2], [3,4], [5,6]]
+     *   ['Martin','John'].zip(['Luther','F.'], ['King','Kennedy']) -> [['Martin','Luther','King'], ['John','F.','Kennedy']]
+     *
+     ***/
+    'zip': function(arr, args) {
+      return arr.map(function(el, i) {
+        return [el].concat(map(args, function(k) {
+          return (i in k) ? k[i] : null;
+        }));
+      });
+    }
+
+  });
+
+  /***
+   * @method insert()
+   * @alias append
+   *
+   ***/
+  alias(sugarArray, 'insert', 'append');
+  'use strict';
+
+  /***
+   * @module Object
+   * @dependency core
+   * @description Object manipulation, type checking (isNumber, isString, ...), %extended objects% with hash-like methods available as instance methods.
+   *
+   * Much thanks to kangax for his informative aricle about how problems with instanceof and constructor
+   * http://perfectionkills.com/instanceof-considered-harmful-or-how-to-write-a-robust-isarray/
+   *
+   ***/
+
+  var DONT_ENUM_PROPS = [
+    'valueOf',
+    'toString',
+    'constructor',
+    'isPrototypeOf',
+    'hasOwnProperty',
+    'toLocaleString',
+    'propertyIsEnumerable'
   ];
 
-  forEach(methods, function(name) {
-    setProperty(Hash.prototype, name, sugarObject[name].instance);
+  // Matches bracket-style query strings like user[name]
+  var DEEP_QUERY_STRING_REG = /^(.+?)(\[.*\])$/;
+
+  // Matches any character not allowed in a decimal number.
+  var NON_DECIMAL_REG = /[^\d.-]/;
+
+  // Native methods for merging by descriptor when available.
+  var getOwnPropertyNames      = Object.getOwnPropertyNames;
+  var getOwnPropertyDescriptor = Object.getOwnPropertyDescriptor;
+
+  // Iterate over an object with support
+  // for the DontEnum bug in < IE9
+  var iterateOverObjectSafe;
+
+  function buildSafeIterate() {
+    var hasDontEnumBug = true, prop;
+    for (prop in { toString: true }) hasDontEnumBug = false;
+    iterateOverObjectSafe = hasDontEnumBug ? iterateOverObjectDontEnum : iterateOverObject;
+  }
+
+  function iterateOverObjectDontEnum(obj, fn) {
+    iterateOverObject(obj, fn);
+    forEach(DONT_ENUM_PROPS, function(key) {
+      if (hasOwn(obj, key)) {
+        fn.call(obj, key, obj[key], obj);
+      }
+    });
+  }
+
+
+  // Query Strings | Creating
+
+  function toQueryStringWithOptions(obj, options) {
+    options = options || {};
+    if (isUndefined(options.separator)) {
+      options.separator = '_';
+    }
+    return toQueryString(obj, options.deep, options.transform, options.prefix || '', options.separator);
+  }
+
+  function toQueryString(obj, deep, transform, prefix, separator) {
+    if (isArray(obj)) {
+      return collectArrayAsQueryString(obj, deep, transform, prefix, separator);
+    } else if (isObjectType(obj) && obj.toString === internalToString) {
+      return collectObjectAsQueryString(obj, deep, transform, prefix, separator);
+    } else if (prefix) {
+      return getURIComponentValue(obj, prefix, transform);
+    }
+    return '';
+  }
+
+  function collectArrayAsQueryString(arr, deep, transform, prefix, separator) {
+    return map(arr, function(el) {
+      var key = prefix + (prefix && deep ? '[]' : '');
+      if (!key && !isObjectType(el)) {
+        // If there is no key, then the values of the array should be
+        // considered as null keys, so use them instead;
+        return sanitizeURIComponent(el);
+      }
+      return toQueryString(el, deep, transform, key, separator);
+    }).join('&');
+  }
+
+  function collectObjectAsQueryString(obj, deep, transform, prefix, separator) {
+    var result = [];
+    iterateOverObject(obj, function(key, value) {
+      var fullKey;
+      if (prefix && deep) {
+        fullKey = prefix + '[' + key + ']';
+      } else if (prefix) {
+        fullKey = prefix + separator + key;
+      } else {
+        fullKey = key;
+      }
+      result.push(toQueryString(value, deep, transform, fullKey, separator));
+    });
+    return result.join('&');
+  }
+
+  function getURIComponentValue(obj, prefix, transform) {
+    var value;
+    if (transform) {
+      value = transform(prefix, obj);
+    } else if (isDate(obj)) {
+      value = obj.getTime();
+    } else {
+      value = obj;
+    }
+    return sanitizeURIComponent(prefix) + '=' + sanitizeURIComponent(value);
+  }
+
+  function sanitizeURIComponent(obj) {
+    // undefined, null, and NaN are represented as a blank string,
+    // while false and 0 are stringified.
+    return !obj && obj !== false && obj !== 0 ? '' : encodeURIComponent(obj);
+  }
+
+
+  // Query Strings | Parsing
+
+  function fromQueryStringWithOptions(obj, options) {
+    var str = String(obj || '').replace(/^.*?\?/, ''), result = {};
+    options = options || {};
+    if (str) {
+      forEach(str.split('&'), function(p) {
+        var split = p.split('=');
+        var key = decodeURIComponent(split[0]);
+        var val = split.length === 2 ? decodeURIComponent(split[1]) : '';
+        parseQueryComponent(result, key, val, options.deep, options.auto !== false, options.separator, options.transform);
+      });
+    }
+    return result;
+  }
+
+  function parseQueryComponent(obj, key, value, deep, auto, separator, transform) {
+    var match;
+    if (separator) {
+      key = mapQuerySeparatorToKeys(key, separator);
+      deep = true;
+    }
+    if (deep === true && (match = key.match(DEEP_QUERY_STRING_REG))) {
+      parseDeepQueryComponent(obj, match, value, deep, auto, separator, transform);
+    } else {
+      setQueryProperty(obj, key, value, auto, transform);
+    }
+  }
+
+  function parseDeepQueryComponent(obj, match, value, deep, auto, separator, transform) {
+    var key = match[1];
+    var inner = match[2].slice(1, -1).split('][');
+    forEach(inner, function(k) {
+      if (!obj[key]) {
+        obj[key] = k ? {} : [];
+      }
+      obj = obj[key];
+      key = k ? k : obj.length.toString();
+    });
+    setQueryProperty(obj, key, value, auto, transform);
+  }
+
+  function mapQuerySeparatorToKeys(key, separator) {
+    var split = key.split(separator), result = split[0];
+    for (var i = 1, len = split.length; i < len; i++) {
+      result += '[' + split[i] + ']';
+    }
+    return result;
+  }
+
+  function setQueryProperty(obj, key, value, auto, transform) {
+    var fnValue;
+    if (transform) {
+      fnValue = transform(key, value, obj);
+    }
+    if (isDefined(fnValue)) {
+      value = fnValue;
+    } else if (auto) {
+      value = getQueryValueAuto(obj, key, value);
+    }
+    obj[key] = value;
+  }
+
+  function getQueryValueAuto(obj, key, value) {
+    if (!value) {
+      return null;
+    } else if (value === 'true') {
+      return true;
+    } else if (value === 'false') {
+      return false;
+    }
+    var num = +value;
+    if (!isNaN(num) && stringIsDecimal(value)) {
+      return num;
+    }
+    var existing = obj[key];
+    if (value && existing) {
+      return isArray(existing) ? existing.concat(value) : [existing, value];
+    }
+    return value;
+  }
+
+  function stringIsDecimal(str) {
+    return str !== '' && !NON_DECIMAL_REG.test(str);
+  }
+
+
+  // Object Merging
+
+  function mergeWithOptions(target, source, opts) {
+    opts = opts || {};
+    return objectMerge(target, source, opts.deep, opts.resolve, opts.hidden, opts.descriptor);
+  }
+
+  function defaults(target, sources, opts) {
+    opts = opts || {};
+    opts.resolve = opts.resolve || false;
+    return mergeAll(target, sources, opts);
+  }
+
+  function mergeAll(target, sources, opts) {
+    if (!isArray(sources)) {
+      sources = [sources];
+    }
+    forEach(sources, function(source) {
+      return mergeWithOptions(target, source, opts);
+    });
+    return target;
+  }
+
+  function iterateOverProperties(hidden, obj, fn) {
+    if (getOwnPropertyNames && hidden) {
+      iterateOverPropertyNames(obj, fn);
+    } else {
+      iterateOverObjectSafe(obj, fn);
+    }
+  }
+
+  function iterateOverPropertyNames(obj, fn) {
+    var names = getOwnPropertyNames(obj), name;
+    for (var i = 0, len = names.length; i < len; i++) {
+      name = names[i];
+      fn(name, obj[name]);
+    }
+  }
+
+  function mergeByPropertyDescriptor(target, source, prop, sourceVal) {
+    var descriptor = getOwnPropertyDescriptor(source, prop);
+    if (isDefined(descriptor.value)) {
+      descriptor.value = sourceVal;
+    }
+    defineProperty(target, prop, descriptor);
+  }
+
+  function objectMerge(target, source, deep, resolve, hidden, descriptor) {
+    var resolveByFunction = isFunction(resolve), resolveConflicts = resolve !== false;
+
+    if (isUndefined(target)) {
+      target = getNewObjectForMerge(source);
+    } else if (resolveConflicts && isDate(target) && isDate(source)) {
+      // A date's timestamp is a property that can only be reached through its
+      // methods, so actively set it up front if both are dates.
+      target.setTime(source.getTime());
+    }
+
+    if (isPrimitiveType(target)) {
+      // Will not merge into a primitive type, so simply override.
+      return source;
+    }
+
+    // If the source object is a primitive
+    // type then coerce it into an object.
+    if (isPrimitiveType(source)) {
+      source = coercePrimitiveToObject(source);
+    }
+
+    iterateOverProperties(hidden, source, function(prop) {
+      var sourceVal, targetVal, resolved, goDeep, result;
+
+      sourceVal = source[prop];
+
+      // We are iterating over properties of the source, so hasOwnProperty on
+      // it is guaranteed to always be true. However, the target may happen to
+      // have properties in its prototype chain that should not be considered
+      // as conflicts.
+      if (hasOwn(target, prop)) {
+        targetVal = target[prop];
+      }
+
+      if (resolveByFunction) {
+        result = resolve(prop, targetVal, sourceVal, target, source);
+        if (isUndefined(result)) {
+          // Result is undefined so do not merge this property.
+          return;
+        } else if (isDefined(result) && result !== Sugar) {
+          // If the source returns anything except undefined, then the conflict
+          // has been resolved, so don't continue traversing into the object. If
+          // the returned value is the Sugar global object, then allowing Sugar
+          // to resolve the conflict, so continue on.
+          sourceVal = result;
+          resolved = true;
+        }
+      } else if (isUndefined(sourceVal)) {
+        // Will not merge undefined.
+        return;
+      }
+
+      // Regex properties are read-only, so intentionally disallowing deep
+      // merging for now. Instead merge by reference even if deep.
+      goDeep = !resolved && deep && isObjectType(sourceVal) && !isRegExp(sourceVal);
+
+      if (!goDeep && !resolveConflicts && isDefined(targetVal)) {
+        return;
+      }
+
+      if (goDeep) {
+        sourceVal = objectMerge(targetVal, sourceVal, deep, resolve, hidden, descriptor);
+      }
+
+      // getOwnPropertyNames is standing in as
+      // a test for property descriptor support
+      if (getOwnPropertyNames && descriptor) {
+        mergeByPropertyDescriptor(target, source, prop, sourceVal);
+      } else {
+        target[prop] = sourceVal;
+      }
+
+    });
+    return target;
+  }
+
+  function getNewObjectForMerge(source) {
+    var klass = className(source);
+    // Primitive types, dates, and regexes have no "empty" state. If they exist
+    // at all, then they have an associated value. As we are only creating new
+    // objects when they don't exist in the target, these values can come alone
+    // for the ride when created.
+    if (isPrimitiveType(source)) {
+      return source;
+    } else if (isDate(source, klass)) {
+      return new Date(source.getTime());
+    } else if (isRegExp(source, klass)) {
+      return RegExp(source.source, getRegExpFlags(source));
+    } else if (isHash(source)) {
+      return new Hash;
+    } else if (isArray(source, klass)) {
+      return [];
+    } else if (isPlainObject(source, klass)) {
+      return {};
+    }
+    // If the object is not of a known type, then simply merging its
+    // properties into a plain object will result in something different
+    // (it will not respond to instanceof operator etc). Similarly we don't
+    // want to call a constructor here as we can't know for sure what the
+    // original constructor was called with (Events etc), so throw an
+    // error here instead. Non-standard types can be handled if either they
+    // already exist and simply have their properties merged, if the merge
+    // is not deep so their references will simply be copied over, or if a
+    // resolve function is used to assist the merge.
+    throw new TypeError('Must be a basic data type');
+  }
+
+  function clone(source, deep) {
+    var target = getNewObjectForMerge(source);
+    return objectMerge(target, source, deep, true, true, true);
+  }
+
+
+  // Keys/Values
+
+  function objectSize(obj) {
+    return keysWithObjectCoercion(obj).length;
+  }
+
+  function keysWithObjectCoercion(obj) {
+    return getKeys(coercePrimitiveToObject(obj));
+  }
+
+  function getKeysWithCallback(obj, fn) {
+    var keys = getKeys(obj);
+    if (isFunction(fn)) {
+      forEach(keys, function(key) {
+        fn.call(obj, key, obj[key]);
+      });
+    }
+    return keys;
+  }
+
+  function getValuesWithCallback(obj, fn) {
+    var values = [];
+    iterateOverObject(obj, function(k, v) {
+      values.push(v);
+      if (isFunction(fn)) {
+        fn.call(obj,v);
+      }
+    });
+    return values;
+  }
+
+  function tap(obj, arg) {
+    var fn = arg;
+    if (!isFunction(arg)) {
+      fn = function() {
+        if (arg) obj[arg]();
+      };
+    }
+    fn.call(obj, obj);
+    return obj;
+  }
+
+  // Select/Reject
+
+  function objectSelect(obj, f) {
+    return selectFromObject(obj, f, true);
+  }
+
+  function objectReject(obj, f) {
+    return selectFromObject(obj, f, false);
+  }
+
+  function selectFromObject(obj, f, select) {
+    var match, result = isHash(obj) ? new Hash : {};
+    f = [].concat(f);
+    iterateOverObject(obj, function(key, value) {
+      match = false;
+      for (var i = 0; i < f.length; i++) {
+        if (matchInObject(f[i], key)) {
+          match = true;
+        }
+      }
+      if (match === select) {
+        result[key] = value;
+      }
+    });
+    return result;
+  }
+
+  function matchInObject(match, key) {
+    if (isRegExp(match)) {
+      return match.test(key);
+    } else if (isObjectType(match)) {
+      return key in match;
+    } else {
+      return key === String(match);
+    }
+  }
+
+  // Remove/Exclude
+
+  function objectRemove(obj, f) {
+    var matcher = getMatcher(f, true);
+    iterateOverObject(obj, function(key, val) {
+      if (matcher(val, key, obj)) {
+        delete obj[key];
+      }
+    });
+    return obj;
+  }
+
+  function objectExclude(obj, f) {
+    var result = {};
+    var matcher = getMatcher(f, true);
+    iterateOverObject(obj, function(key, val) {
+      if (!matcher(val, key, obj)) {
+        result[key] = val;
+      }
+    });
+    return result;
+  }
+
+
+  defineStatic(sugarObject, {
+
+    /***
+     * @method Object.extended(<obj> = {})
+     * @returns Extended object
+     * @short Creates a new object, equivalent to %new Object()% or %{}%, but with extended methods.
+     * @extra See %extended objects% for more.
+     * @example
+     *
+     *   Object.extended()
+     *   Object.extended({ happy:true, pappy:false }).keys() -> ['happy','pappy']
+     *   Object.extended({ happy:true, pappy:false }).values() -> [true, false]
+     *
+     ***/
+    'extended': function(obj) {
+      return new Hash(coercePrimitiveToObject(obj));
+    },
+
+    /***
+     * @method Object.get(<obj>, <prop>)
+     * @returns Mixed
+     * @short Gets a property of <obj>. If <prop> contains dot notation, the nested property will be returned.
+     * @example
+     *
+     *   Object.get({a:'b'}, 'a');       -> 'b'
+     *   Object.get({a:{b:'c'}}, 'a.b'); -> 'c'
+     *
+     ***/
+    'get': function(obj, prop) {
+      return deepGetProperty(obj, prop);
+    },
+
+    /***
+     * @method Object.set(<obj>, <key>, <val>)
+     * @returns Object
+     * @short Sets a property on <obj>. If <key> contains dot notation, the nested property will be set.
+     * @extra The original object passed will be returned.
+     * @example
+     *
+     *   Object.set({}, 'a', 'c');   -> {a:'c'}
+     *   Object.get({}, 'a.b', 'c'); -> {a:{b:'c'}}
+     *
+     ***/
+    'set': function(obj, key, val) {
+      return deepSetProperty(obj, key, val);
+    },
+
+    /***
+     * @method Object.fromQueryString(<str>, [options])
+     * @returns Object
+     * @short Converts the query string of a URL into an object.
+     * @extra Options can be passed with [options] for more control over the result.
+     * @options
+     *
+     *   deep:       If the string contains "deep" syntax (`foo[]`), this will
+     *               be automatically converted to an array. (Default `false`)
+     *
+     *   auto:       If `true`, booleans (`true`/`false`), numbers, and arrays
+     *               (repeated keys) will be automatically cast to native
+     *               values. (Default `true`)
+     *
+     *   transform:  A function whose return value becomes the final value.
+     *               Receives `key` and `value` arguments. (No Default)
+     *
+     *   separator:  If passed, keys will be split on this string to extract
+     *               deep values. (Default `null`)
+     *
+     * @example
+     *
+     *   Object.fromQueryString('foo=bar&broken=wear')          -> { foo: 'bar', broken: 'wear' }
+     *   Object.fromQueryString('foo[]=1&foo[]=2')              -> { foo: ['1','2'] }
+     *   Object.fromQueryString('user_foo=bar',{separator:'_'}) -> { user: { foo: 'bar' } }
+     *
+     ***/
+    'fromQueryString': function(obj, options) {
+      return fromQueryStringWithOptions(obj, options);
+    }
+
   });
 
-}
 
-function buildHashGetSet() {
+  defineInstanceAndStatic(sugarObject, {
 
-  var methods = ['get', 'set'];
+    /***
+     * @method Object.keys(<obj>, [fn])
+     * @returns Array
+     * @short Returns an array containing the keys in <obj>. Optionally calls [fn] for each key.
+     * @extra This method is provided for browsers that don't support it natively, and additionally is enhanced to accept the callback [fn]. Returned keys are in no particular order. %keys% is available as an instance method on %extended objects%.
+     * @example
+     *
+     *   Object.keys({ broken: 'wear' }) -> ['broken']
+     *   Object.keys({ broken: 'wear' }, function(key, value) {
+     *     // Called once for each key.
+     *   });
+     *   Object.extended({ broken: 'wear' }).keys() -> ['broken']
+     *
+     ***/
+    'keys': fixArgumentLength(getKeysWithCallback),
 
-  forEach(methods, function(name) {
-    setProperty(Hash.prototype, name, wrapInstanceMethod(sugarObject[name]));
+    /***
+     * @method Object.size(<obj>)
+     * @returns Number
+     * @short Returns the number of properties in <obj>.
+     * @example
+     *
+     *   Object.size({foo:'bar'}) -> 1
+     *
+     ***/
+    'size': function(obj) {
+      return objectSize(obj);
+    },
+
+    /***
+     * @method Object.isEmpty(<obj>)
+     * @returns Boolean
+     * @short Returns true if the number of properties in <obj> is zero.
+     * @example
+     *
+     *   Object.isEmpty({})    -> true
+     *   Object.isEmpty({a:1}) -> false
+     *
+     ***/
+    'isEmpty': function(obj) {
+      return objectSize(obj) === 0;
+    },
+
+    /***
+     * @method Object.toQueryString(<obj>, [options])
+     * @returns Object
+     * @short Converts the object into a query string.
+     * @extra Accepts deep objects and arrays. Options can be passed with [options] for more control over the result. For more see %query strings%.
+     * @options
+     *
+     *   deep:       If `true`, non-standard "deep" syntax (`foo[]`) will be
+     *               used for output. Note that `separator` will be ignored,
+     *               as this option overrides shallow syntax. (Default `false`)
+     *
+     *   prefix:     If passed, this string will be prefixed to all keys,
+     *               separated by the `separator`. (Default `''`).
+     *
+     *   transform:  A function whose return value becomes the final value
+     *               in the string. Receives `key` and `value` arguments.
+     *               (No Default)
+     *
+     *   separator:  A string that is used to separate keys, either for deep
+     *               objects, or when `prefix` is passed.(Default `_`).
+     *
+     * @example
+     *
+     *   Object.toQueryString({foo:'bar'})                  -> 'foo=bar'
+     *   Object.toQueryString({foo:['a','b']})              -> 'foo=a&foo=b'
+     *   Object.toQueryString({foo:['a','b']}, {deep:true}) -> 'foo[]=a&foo[]=b'
+     *
+     ***/
+    'toQueryString': function(obj, options) {
+      return toQueryStringWithOptions(obj, options);
+    },
+
+    /***
+     * @method Object.isEqual(<a>, <b>)
+     * @returns Boolean
+     * @short Returns true if <a> and <b> are equal.
+     * @extra %isEqual% in Sugar is "egal", meaning the values are equal if they are "not observably distinguishable".
+     * @example
+     *
+     *   Object.isEqual({a:2}, {a:2}) -> true
+     *   Object.isEqual({a:2}, {a:3}) -> false
+     *   Object.extended({a:2}).isEqual({a:3}) -> false
+     *
+     ***/
+    'isEqual': function(a, b) {
+      return isEqual(a, b);
+    },
+
+    /***
+     * @method Object.merge(<target>, <source>, [options])
+     * @returns Merged object
+     * @short Merges properties from <source> into <target>.
+     * @extra Supports %extended objects%.
+     * @options
+     *
+     *   deep:        If `true` deep properties are merged recursively.
+     *                (Default = `false`)
+     *
+     *   resolve:     Determines which property wins in the case of conflicts.
+     *                If `true`, <source> wins. If `false`, <target> wins. If a
+     *                function is passed, its return value will decide the result.
+     *                Any non-undefined return value will resolve the conflict
+     *                for that property (will not continue if `deep`). Returning
+     *                `undefined` will do nothing (no merge). Finally, returning
+     *                the global object `Sugar` will allow Sugar to handle the
+     *                merge as normal. Resolve functions are passed the arguments:
+     *                `key`, `targetValue`, `sourceValue`, `target`, `source`.
+     *                (Default = `true`)
+     *
+     *   hidden:      If `true`, non-enumerable properties will be merged as well.
+     *                (Default = `false`)
+     *
+     *   descriptor:  If `true`, properties will be merged by property descriptor.
+     *                Use this option to merge getters or setters, or to preserve
+     *                `enumerable`, `configurable`, etc.
+     *                (Default = `false`)
+     *
+     * @example
+     *
+     *   Object.merge({one:1},{two:2})                 -> {one:1,two:2}
+     *   Object.merge({one:1},{one:9,two:2})           -> {one:9,two:2}
+     *   Object.merge({x:{a:1}},{x:{b:2}},{deep:true}) -> {x:{a:1,b:2}}
+     +   Object.merge({one:1},{one:2},{resolve:function(key, a, b) {
+     *     return a + b;
+     *   }}); -> {one:3}
+     *
+     ***/
+    'merge': function(target, source, opts) {
+      return mergeWithOptions(target, source, opts);
+    },
+
+    /***
+     * @method Object.mergeAll(<target>, <sources>, [options])
+     * @returns Merged object
+     * @short Merges properties from multiple <sources> into <target>.
+     * @extra Supports %extended objects%.
+     * @options
+     *
+     *   deep:        If `true` deep properties are merged recursively.
+     *                (Default = `false`)
+     *
+     *   resolve:     Determines which property wins in the case of conflicts.
+     *                If `true`, <source> wins. If `false`, <target> wins. If a
+     *                function is passed, its return value will decide the result.
+     *                Any non-undefined return value will resolve the conflict
+     *                for that property (will not continue if `deep`). Returning
+     *                `undefined` will do nothing (no merge). Finally, returning
+     *                the global object `Sugar` will allow Sugar to handle the
+     *                merge as normal. Resolve functions are passed the arguments:
+     *                `key`, `targetValue`, `sourceValue`, `target`, `source`.
+     *                (Default = `true`)
+     *
+     *   hidden:      If `true`, non-enumerable properties will be merged as well.
+     *                (Default = `false`)
+     *
+     *   descriptor:  If `true`, properties will be merged by property descriptor.
+     *                Use this option to merge getters or setters, or to preserve
+     *                `enumerable`, `configurable`, etc.
+     *                (Default = `false`)
+     *
+     * @example
+     *
+     *   Object.mergeAll({one:1},[{two:2},{three:3}])                 -> {one:9,two:2}
+     *   Object.mergeAll({x:{a:1}},[{x:{b:2}},{x:{c:3}}],{deep:true}) -> {x:{a:1,b:2,c:3}}
+     *
+     ***/
+    'mergeAll': function(target, sources, opts) {
+      return mergeAll(target, sources, opts);
+    },
+
+    /***
+     * @method Object.add(<obj1>, <obj2>, [options])
+     * @returns Object
+     * @short Merges properties from <obj1> and <obj2> together and returns a new object.
+     * @extra Supports %extended objects%.
+     * @example
+     *
+     *   Object.add({one:1},{two:2})                 -> {one:1,two:2}
+     *   Object.add({one:1},{one:9,two:2})           -> {one:9,two:2}
+     *   Object.add({x:{a:1}},{x:{b:2}},{deep:true}) -> {x:{a:1,b:2}}
+     +   Object.add({one:1},{one:2},{resolve:function(key, a, b) {
+     *     return a + b;
+     *   }}); -> {one:3}
+     *
+     ***/
+    'add': function(obj1, obj2, opts) {
+      return mergeWithOptions(clone(obj1), obj2, opts);
+    },
+
+    /***
+     * @method Object.defaults(<target>, <sources>, [options])
+     * @returns Merged object
+     * @short Merges properties from one or multiple <sources> into <target> while preserving <target>'s properties.
+     * @extra Supports %extended objects%.
+     * @options
+     *
+     *   deep:        If `true` deep properties are merged recursively.
+     *                (Default = `false`)
+     *
+     *   resolve:     Determines which property wins in the case of conflicts.
+     *                If `true`, <source> wins. If `false`, <target> wins. If a
+     *                function is passed, its return value will decide the result.
+     *                Any non-undefined return value will resolve the conflict
+     *                for that property (will not continue if `deep`). Returning
+     *                `undefined` will do nothing (no merge). Finally, returning
+     *                the global object `Sugar` will allow Sugar to handle the
+     *                merge as normal. Resolve functions are passed the arguments:
+     *                `key`, `targetValue`, `sourceValue`, `target`, `source`.
+     *                (Default = `true`)
+     *
+     *   hidden:      If `true`, non-enumerable properties will be merged as well.
+     *                (Default = `false`)
+     *
+     *   descriptor:  If `true`, properties will be merged by property descriptor.
+     *                Use this option to merge getters or setters, or to preserve
+     *                `enumerable`, `configurable`, etc.
+     *                (Default = `false`)
+     *
+     * @example
+     *
+     *   Object.defaults({one:1},[{one:9},{two:2}])                   -> {one:1,two:2}
+     *   Object.defaults({x:{a:1}},[{x:{a:9}},{x:{b:2}}],{deep:true}) -> {x:{a:1,b:2}}
+     *
+     ***/
+    'defaults': function(target, sources, opts) {
+      return defaults(target, sources, opts);
+    },
+
+    /***
+     * @method Object.clone(<obj>, [deep] = false)
+     * @returns Cloned object
+     * @short Creates a clone (copy) of <obj>.
+     * @extra Default is a shallow clone, unless [deep] is true. Supports %extended objects%.
+     * @example
+     *
+     *   Object.clone({foo:'bar'})            -> { foo: 'bar' }
+     *   Object.clone()                       -> {}
+     *   Object.extended({foo:'bar'}).clone() -> { foo: 'bar' }
+     *
+     ***/
+    'clone': function(obj, deep) {
+      return clone(obj, deep);
+    },
+
+    /***
+     * @method Object.values(<obj>, [fn])
+     * @returns Array
+     * @short Returns an array containing the values in <obj>. Optionally calls [fn] for each value.
+     * @extra Returned values are in no particular order. %values% is available as an instance method on %extended objects%.
+     * @example
+     *
+     *   Object.values({ broken: 'wear' }) -> ['wear']
+     *   Object.values({ broken: 'wear' }, function(value) {
+     *     // Called once for each value.
+     *   });
+     *   Object.extended({ broken: 'wear' }).values() -> ['wear']
+     *
+     ***/
+    'values': function(obj, fn) {
+      return getValuesWithCallback(obj, fn);
+    },
+
+    /***
+     * @method Object.invert(<obj>, [multi] = false)
+     * @returns Object
+     * @short Creates a new object with the keys and values of <obj> swapped.
+     * @extra If [multi] is true, values will be an array of all keys, othewise collisions will be overwritten.
+     * @example
+     *
+     *   Object.invert({foo:'bar'})     -> {bar:'foo'}
+     *   Object.invert({a:1,b:1}, true) -> {1:['a','b']}
+     *
+     ***/
+    'invert': function(obj, multi) {
+      var result = {};
+      multi = multi === true;
+      iterateOverObject(obj, function(key, val) {
+        if (result[val] && multi) {
+          result[val].push(key);
+        } else if (multi) {
+          result[val] = [key];
+        } else {
+          result[val] = key;
+        }
+      });
+      if (isHash(obj)) {
+        result = new Hash(result);
+      }
+      return result;
+    },
+
+    /***
+     * @method Object.tap(<obj>, <fn>)
+     * @returns Object
+     * @short Runs <fn> and returns <obj>.
+     * @extra  A string can also be used as a shortcut to a method. This method is used to run an intermediary function in the middle of method chaining. As a standalone method on the Object class it doesn't have too much use. The power of %tap% comes when using %extended objects% or modifying the Object prototype with %Sugar.Object.extend()%.
+     * @example
+     *
+     *   Sugar.Object.extend();
+     *   [2,4,6].map(Math.exp).tap(function(arr) {
+     *     arr.pop()
+     *   });
+     *   [2,4,6].map(Math.exp).tap('pop').map(Math.round); ->  [7,55]
+     *
+     ***/
+    'tap': function(obj, arg) {
+      return tap(obj, arg);
+    },
+
+    /***
+     * @method Object.has(<obj>, <key>)
+     * @returns Boolean
+     * @short Checks if <obj> has <key> using hasOwnProperty from Object.prototype.
+     * @extra This method is considered safer than %Object#hasOwnProperty% when using objects as hashes. See http://www.devthought.com/2012/01/18/an-object-is-not-a-hash/ for more.
+     * @example
+     *
+     *   Object.has({ foo: 'bar' }, 'foo') -> true
+     *   Object.has({ foo: 'bar' }, 'baz') -> false
+     *   Object.has({ hasOwnProperty: true }, 'foo') -> false
+     *
+     ***/
+    'has': function(obj, key) {
+      return hasOwn(obj, key);
+    },
+
+    /***
+     * @method Object.isArguments(<obj>)
+     * @returns Boolean
+     * @short Returns true if <obj> is an arguments object.
+     *
+     * @example
+     *
+     *   Object.arguments([1]) -> false
+     *
+     ***/
+    'isArguments': function(obj) {
+      return isArgumentsObject(obj);
+    },
+
+    /***
+     * @method Object.isNaN(<obj>)
+     * @returns Boolean
+     * @short Returns true if <obj> is `NaN`.
+     * @extra This is different from `isNaN`, which returns true for anything that is "not a number".
+     *
+     * @example
+     *
+     *   Object.isNaN(NaN) -> true
+     *   Object.isNaN('5') -> false
+     *
+     ***/
+    'isNaN': function(obj) {
+      // Note that Object.isNaN intentionally unwraps non-primitives, but Number.isNaN
+      // does not (ES6 spec). The reason for this is that certain environments (< IE9)
+      // will auto-wrap instances, so opting for cross-platform consistency here.
+      return isRealNaN(obj && obj.valueOf());
+    },
+
+    /***
+     * @method Object.isObject(<obj>)
+     * @returns Boolean
+     * @short Returns true if <obj> is a plain Javascript object.
+     * @extra Does not include instances of classes or "host" objects, such as Elements, Events, etc.
+     *
+     * @example
+     *
+     *   Object.isObject({ broken:'wear' }) -> true
+     *
+     ***/
+    'isObject': function(obj) {
+      return isPlainObject(obj);
+    },
+
+    /***
+     * @method Object.remove(<obj>, <f>)
+     * @returns Object
+     * @short Deletes all properties in <obj> matching <f>.
+     * @extra This method implements `matching shortcuts`.
+     * @example
+     *
+     *   Object.remove({a:'a',b:'b'}, 'a');           -> {b:'b'}
+     *   Object.remove({a:'a',b:'b',z:'z'}, /[a-f]/); -> {z:'z'}
+     *
+     ***/
+    'remove': function(obj, f) {
+      return objectRemove(obj, f);
+    },
+
+    /***
+     * @method Object.exclude(<obj>, <f>)
+     * @returns Object
+     * @short Returns a new object with all properties matching <f> removed.
+     * @extra This is a non-destructive version of `remove`. This method implements `matching shortcuts`.
+     * @example
+     *
+     *   Object.exclude({a:'a',b:'b'}, 'a');           -> {b:'b'}
+     *   Object.exclude({a:'a',b:'b',z:'z'}, /[a-f]/); -> {z:'z'}
+     *
+     ***/
+    'exclude': function(obj, f) {
+      return objectExclude(obj, f);
+    },
+
+    /***
+     * @method Object.select(<obj>, <find>)
+     * @returns Object
+     * @short Builds a new object containing the keys specified in <find>.
+     * @extra When <find> is a string, a single key will be selected. Arrays or objects will match multiple keys, and a regex will match keys by regex. %select% is available as an instance method on %extended objects%.
+     * @example
+     *
+     *   Object.select({a:1,b:2}, 'a')           -> {a:1}
+     *   Object.select({a:1,b:2}, ['a', 'b'])    -> {a:1,b:2}
+     *   Object.select({a:1,b:2}, /[a-z]/)       -> {a:1,b:2}
+     *   Object.select({a:1,b:2}, {a:'a',b:'b'}) -> {a:1,b:2}
+     *
+     ***/
+    'select': function(obj, f) {
+      return objectSelect(obj, f);
+    },
+
+    /***
+     * @method Object.reject(<obj>, <find>)
+     * @returns Object
+     * @short Builds a new object containing all keys except those in <find>.
+     * @extra When <find> is a string, a single key will be rejected. Arrays or objects will match multiple keys, and a regex will match keys by regex. %reject% is available as an instance method on %extended objects%.
+     * @example
+     *
+     *   Object.reject({a:1,b:2}, 'a')        -> {b:2}
+     *   Object.reject({a:1,b:2}, /[a-z]/)    -> {}
+     *   Object.reject({a:1,b:2}, {a:'a'})    -> {b:2}
+     *   Object.reject({a:1,b:2}, ['a', 'b']) -> {}
+     *
+     ***/
+    'reject': function(obj, f) {
+      return objectReject(obj, f);
+    }
+
   });
 
-}
-
-buildSafeIterate();
-buildHashBase();
-buildHashGetSet();
-buildTypeCheckMethods();
-'use strict';
-
-/***
- * @module RegExp
- * @dependency core
- * @description Escaping regexes and manipulating their flags.
- *
- * Note here that methods on the RegExp class like .exec and .test will fail in the current version of SpiderMonkey being
- * used by CouchDB when using shorthand regex notation like /foo/. This is the reason for the intermixed use of shorthand
- * and compiled regexes here. If you're using JS in CouchDB, it is safer to ALWAYS compile your regexes from a string.
- *
- ***/
-
-defineStatic(sugarRegExp, {
-
- /***
-  * @method RegExp.escape(<str> = '')
-  * @returns String
-  * @short Escapes all RegExp tokens in a string.
-  * @example
-  *
-  *   RegExp.escape('really?')      -> 'really\?'
-  *   RegExp.escape('yes.')         -> 'yes\.'
-  *   RegExp.escape('(not really)') -> '\(not really\)'
-  *
-  ***/
-  'escape': function(str) {
-    return escapeRegExp(str);
+  /***
+   * @method Object.is[Type](<obj>)
+   * @returns Boolean
+   * @short Returns true if <obj> is an object of that type.
+   * @extra %isObject% will return true only for plain objects (not for instances of classes or native browser objects). Note also that %isNaN% will ONLY return true if the object IS %NaN%. It does not mean the same as browser native %isNaN%, which returns true for anything that is "not a number".
+   *
+   * @set
+   *   isArray
+   *   isBoolean
+   *   isDate
+   *   isFunction
+   *   isNumber
+   *   isString
+   *   isRegExp
+   *
+   * @example
+   *
+   *   Object.isArray([1,2,3])   -> true
+   *   Object.isDate(3)          -> false
+   *   Object.isRegExp(/wasabi/) -> true
+   *
+   ***/
+  function buildTypeCheckMethods() {
+    var checks = [isBoolean, isNumber, isString, isArray, isDate, isRegExp, isFunction];
+    defineInstanceAndStaticSimilar(sugarObject, TYPE_CHECK_NAMES, function(methods, name, i) {
+      methods['is' + name] = checks[i];
+    });
   }
 
-});
+  function buildHashBase() {
 
-defineInstance(sugarRegExp, {
+    var methods = [
+      'isEmpty','size','invert',
+      'merge','mergeAll','defaults','clone',
+      'add','remove','exclude','select','reject',
+      'has','keys','values','tap','isEqual','toQueryString'
+    ];
 
- /***
-  * @method getFlags()
-  * @returns String
-  * @short Returns the flags of the regex as a string.
-  * @example
-  *
-  *   /texty/gim.getFlags() -> 'gim'
-  *
-  ***/
-  'getFlags': function(r) {
-    return getRegExpFlags(r);
-  },
+    forEach(methods, function(name) {
+      setProperty(Hash.prototype, name, sugarObject[name].instance);
+    });
 
- /***
-  * @method setFlags(<flags>)
-  * @returns RegExp
-  * @short Sets the flags on a regex and retuns a copy.
-  * @example
-  *
-  *   /texty/.setFlags('gim') -> now has global, ignoreCase, and multiline set
-  *
-  ***/
-  'setFlags': function(r, flags) {
-    return RegExp(r.source, flags);
-  },
-
- /***
-  * @method addFlags(<flags>)
-  * @returns RegExp
-  * @short Adds any flag in the <flags> string to the regex.
-  * @example
-  *
-  *   /texty/.addFlags('g')  -> /texty/g
-  *   /texty/.addFlags('im') -> /texty/im
-  *
-  ***/
-  'addFlags': function(r, flags) {
-    return RegExp(r.source, getRegExpFlags(r, flags));
-  },
-
- /***
-  * @method removeFlags(<flags>)
-  * @returns RegExp
-  * @short Removes any flag in the <flags> string from the regex.
-  * @example
-  *
-  *   /texty/gim.removeFlags('g')  -> /texty/im
-  *   /texty/gim.removeFlags('im') -> /texty/g
-  *
-  ***/
-  'removeFlags': function(r, flags) {
-    var reg = RegExp('[' + flags + ']', 'g');
-    return RegExp(r.source, getRegExpFlags(r).replace(reg, ''));
   }
 
-});
-'use strict';
+  function buildHashGetSet() {
 
-/***
- * @module String
- * @dependency core
- * @description String manupulation, escaping, encoding, truncation, and conversion.
- *
- ***/
+    var methods = ['get', 'set'];
 
-// Flag allowing native string methods to be enhanced
-var STRING_ENHANCEMENTS_FLAG = 'enhanceString';
+    forEach(methods, function(name) {
+      setProperty(Hash.prototype, name, wrapInstanceMethod(sugarObject[name]));
+    });
 
-// Regex matching any HTML entity.
-var HTML_ENTITY_REG = /&#?(x)?([\w\d]{0,5});/gi;
-
-// Very basic HTML escaping regex.
-var HTML_ESCAPE_REG = /[&<>]/g;
-
-// Special HTML entities.
-var HTML_SPECIAL_ENTITIES = {
-  'lt':    '<',
-  'gt':    '>',
-  'amp':   '&',
-  'nbsp':  ' ',
-  'quot':  '"',
-  'apos':  "'"
-};
-
-var STRING_FORMAT_TOKEN_REG = /(\{\{)|(\}\}?)|(\{\})|\{([^}]+)(\}?)/g;
-
-// Words that should not be capitalized in titles
-var DOWNCASED_WORDS = [
-  'and', 'or', 'nor', 'a', 'an', 'the', 'so', 'but', 'to', 'of', 'at',
-  'by', 'from', 'into', 'on', 'onto', 'off', 'out', 'in', 'over',
-  'with', 'for'
-];
-
-// HTML tags that do not have inner content.
-var HTML_VOID_ELEMENTS = [
-  'area','base','br','col','command','embed','hr','img',
-  'input','keygen','link','meta','param','source','track','wbr'
-];
-
-var LEFT_TRIM_REG  = RegExp('^['+ TRIM_CHARS +']+');
-var RIGHT_TRIM_REG = RegExp('['+ TRIM_CHARS +']+$');
-var TRUNC_REG      = RegExp('(?=[' + TRIM_CHARS + '])');
-
-
-var nativeIncludes = String.prototype.includes;
-
-// Base64
-var encodeBase64, decodeBase64;
-
-var specialEntities;
-
-function getAcronym(str) {
-  var inflector = sugarString.Inflector;
-  var word = inflector && inflector.acronyms[str];
-  if (isString(word)) {
-    return word;
   }
-}
 
-function padString(num, padding) {
-  return repeatString(isDefined(padding) ? padding : ' ', num);
-}
+  buildSafeIterate();
+  buildHashBase();
+  buildHashGetSet();
+  buildTypeCheckMethods();
+  'use strict';
 
-function spacify(str) {
-  return underscore(str).replace(/_/g, ' ');
-}
+  /***
+   * @module RegExp
+   * @dependency core
+   * @description Escaping regexes and manipulating their flags.
+   *
+   * Note here that methods on the RegExp class like .exec and .test will fail in the current version of SpiderMonkey being
+   * used by CouchDB when using shorthand regex notation like /foo/. This is the reason for the intermixed use of shorthand
+   * and compiled regexes here. If you're using JS in CouchDB, it is safer to ALWAYS compile your regexes from a string.
+   *
+   ***/
 
-function truncateString(str, length, from, ellipsis, split) {
-  var str1, str2, len1, len2;
-  if (str.length <= length) {
-    return str.toString();
+  defineStatic(sugarRegExp, {
+
+   /***
+    * @method RegExp.escape(<str> = '')
+    * @returns String
+    * @short Escapes all RegExp tokens in a string.
+    * @example
+    *
+    *   RegExp.escape('really?')      -> 'really\?'
+    *   RegExp.escape('yes.')         -> 'yes\.'
+    *   RegExp.escape('(not really)') -> '\(not really\)'
+    *
+    ***/
+    'escape': function(str) {
+      return escapeRegExp(str);
+    }
+
+  });
+
+  defineInstance(sugarRegExp, {
+
+   /***
+    * @method getFlags()
+    * @returns String
+    * @short Returns the flags of the regex as a string.
+    * @example
+    *
+    *   /texty/gim.getFlags() -> 'gim'
+    *
+    ***/
+    'getFlags': function(r) {
+      return getRegExpFlags(r);
+    },
+
+   /***
+    * @method setFlags(<flags>)
+    * @returns RegExp
+    * @short Sets the flags on a regex and retuns a copy.
+    * @example
+    *
+    *   /texty/.setFlags('gim') -> now has global, ignoreCase, and multiline set
+    *
+    ***/
+    'setFlags': function(r, flags) {
+      return RegExp(r.source, flags);
+    },
+
+   /***
+    * @method addFlags(<flags>)
+    * @returns RegExp
+    * @short Adds any flag in the <flags> string to the regex.
+    * @example
+    *
+    *   /texty/.addFlags('g')  -> /texty/g
+    *   /texty/.addFlags('im') -> /texty/im
+    *
+    ***/
+    'addFlags': function(r, flags) {
+      return RegExp(r.source, getRegExpFlags(r, flags));
+    },
+
+   /***
+    * @method removeFlags(<flags>)
+    * @returns RegExp
+    * @short Removes any flag in the <flags> string from the regex.
+    * @example
+    *
+    *   /texty/gim.removeFlags('g')  -> /texty/im
+    *   /texty/gim.removeFlags('im') -> /texty/g
+    *
+    ***/
+    'removeFlags': function(r, flags) {
+      var reg = RegExp('[' + flags + ']', 'g');
+      return RegExp(r.source, getRegExpFlags(r).replace(reg, ''));
+    }
+
+  });
+  'use strict';
+
+  /***
+   * @module String
+   * @dependency core
+   * @description String manupulation, escaping, encoding, truncation, and conversion.
+   *
+   ***/
+
+  // Flag allowing native string methods to be enhanced
+  var STRING_ENHANCEMENTS_FLAG = 'enhanceString';
+
+  // Regex matching any HTML entity.
+  var HTML_ENTITY_REG = /&#?(x)?([\w\d]{0,5});/gi;
+
+  // Very basic HTML escaping regex.
+  var HTML_ESCAPE_REG = /[&<>]/g;
+
+  // Special HTML entities.
+  var HTML_SPECIAL_ENTITIES = {
+    'lt':    '<',
+    'gt':    '>',
+    'amp':   '&',
+    'nbsp':  ' ',
+    'quot':  '"',
+    'apos':  "'"
+  };
+
+  var STRING_FORMAT_TOKEN_REG = /(\{\{)|(\}\}?)|(\{\})|\{([^}]+)(\}?)/g;
+
+  // Words that should not be capitalized in titles
+  var DOWNCASED_WORDS = [
+    'and', 'or', 'nor', 'a', 'an', 'the', 'so', 'but', 'to', 'of', 'at',
+    'by', 'from', 'into', 'on', 'onto', 'off', 'out', 'in', 'over',
+    'with', 'for'
+  ];
+
+  // HTML tags that do not have inner content.
+  var HTML_VOID_ELEMENTS = [
+    'area','base','br','col','command','embed','hr','img',
+    'input','keygen','link','meta','param','source','track','wbr'
+  ];
+
+  var LEFT_TRIM_REG  = RegExp('^['+ TRIM_CHARS +']+');
+  var RIGHT_TRIM_REG = RegExp('['+ TRIM_CHARS +']+$');
+  var TRUNC_REG      = RegExp('(?=[' + TRIM_CHARS + '])');
+
+
+  var nativeIncludes = String.prototype.includes;
+
+  // Base64
+  var encodeBase64, decodeBase64;
+
+  var specialEntities;
+
+  function getAcronym(str) {
+    var inflector = sugarString.Inflector;
+    var word = inflector && inflector.acronyms[str];
+    if (isString(word)) {
+      return word;
+    }
   }
-  ellipsis = isUndefined(ellipsis) ? '...' : ellipsis;
-  switch(from) {
-    case 'left':
-      str2 = split ? truncateOnWord(str, length, true) : str.slice(str.length - length);
-      return ellipsis + str2;
-    case 'middle':
-      len1 = ceil(length / 2);
-      len2 = floor(length / 2);
-      str1 = split ? truncateOnWord(str, len1) : str.slice(0, len1);
-      str2 = split ? truncateOnWord(str, len2, true) : str.slice(str.length - len2);
-      return str1 + ellipsis + str2;
-    default:
-      str1 = split ? truncateOnWord(str, length) : str.slice(0, length);
-      return str1 + ellipsis;
-  }
-}
 
-function stringEach(str, search, fn) {
-  var i, len, chunks, chunk, ret, result = [];
-  if (isFunction(search)) {
-    fn = search;
-    search = /[\s\S]/g;
-  } else if (!search) {
-    search = /[\s\S]/g;
-  } else if (isString(search)) {
-    search = RegExp(escapeRegExp(search), 'gi');
-  } else if (isRegExp(search)) {
-    search = RegExp(search.source, getRegExpFlags(search, 'g'));
+  function padString(num, padding) {
+    return repeatString(isDefined(padding) ? padding : ' ', num);
   }
-  // Can't use exec as we need to pass the entire array into
-  // the callback if it exists.
-  chunks = str.match(search);
-  // < IE9 has enumable properties on regex matches that will
-  // confuse for..in loops, so need to dump to an array.
-  if (chunks) {
-    for(i = 0, len = chunks.length; i < len; i++) {
-      chunk = chunks[i];
-      result[i] = chunk;
-      if (fn) {
-        ret = fn.call(str, chunk, i, chunks);
-        if (ret === false) {
-          break;
-        } else if (isDefined(ret)) {
-          result[i] = ret;
+
+  function spacify(str) {
+    return underscore(str).replace(/_/g, ' ');
+  }
+
+  function truncateString(str, length, from, ellipsis, split) {
+    var str1, str2, len1, len2;
+    if (str.length <= length) {
+      return str.toString();
+    }
+    ellipsis = isUndefined(ellipsis) ? '...' : ellipsis;
+    switch(from) {
+      case 'left':
+        str2 = split ? truncateOnWord(str, length, true) : str.slice(str.length - length);
+        return ellipsis + str2;
+      case 'middle':
+        len1 = ceil(length / 2);
+        len2 = floor(length / 2);
+        str1 = split ? truncateOnWord(str, len1) : str.slice(0, len1);
+        str2 = split ? truncateOnWord(str, len2, true) : str.slice(str.length - len2);
+        return str1 + ellipsis + str2;
+      default:
+        str1 = split ? truncateOnWord(str, length) : str.slice(0, length);
+        return str1 + ellipsis;
+    }
+  }
+
+  function stringEach(str, search, fn) {
+    var i, len, chunks, chunk, ret, result = [];
+    if (isFunction(search)) {
+      fn = search;
+      search = /[\s\S]/g;
+    } else if (!search) {
+      search = /[\s\S]/g;
+    } else if (isString(search)) {
+      search = RegExp(escapeRegExp(search), 'gi');
+    } else if (isRegExp(search)) {
+      search = RegExp(search.source, getRegExpFlags(search, 'g'));
+    }
+    // Can't use exec as we need to pass the entire array into
+    // the callback if it exists.
+    chunks = str.match(search);
+    // < IE9 has enumable properties on regex matches that will
+    // confuse for..in loops, so need to dump to an array.
+    if (chunks) {
+      for(i = 0, len = chunks.length; i < len; i++) {
+        chunk = chunks[i];
+        result[i] = chunk;
+        if (fn) {
+          ret = fn.call(str, chunk, i, chunks);
+          if (ret === false) {
+            break;
+          } else if (isDefined(ret)) {
+            result[i] = ret;
+          }
         }
       }
     }
-  }
-  return result;
-}
-
-function eachWord(str, fn) {
-  return stringEach(trim(str), /\S+/g, fn);
-}
-
-function stringCodes(str, fn) {
-  var codes = [], i, len;
-  for(i = 0, len = str.length; i < len; i++) {
-    var code = str.charCodeAt(i);
-    codes.push(code);
-    if (fn) fn.call(str, code, i);
-  }
-  return codes;
-}
-
-function underscore(str) {
-  var inflector = sugarString.Inflector;
-  return str
-    .replace(/[-\s]+/g, '_')
-    .replace(inflector && inflector.acronymRegExp, function(acronym, index) {
-      return (index > 0 ? '_' : '') + acronym.toLowerCase();
-    })
-    .replace(/([A-Z\d]+)([A-Z][a-z])/g,'$1_$2')
-    .replace(/([a-z\d])([A-Z])/g,'$1_$2')
-    .toLowerCase();
-}
-
-function capitalize(str, all) {
-  var lastResponded;
-  // Identical to /[^']/g. Trying not to break Github's syntax highlighter.
-  return str.toLowerCase().replace(all ? /[^\u0027]/g : /^\S/, function(lower) {
-    var upper = lower.toUpperCase(), result;
-    result = lastResponded ? lower : upper;
-    lastResponded = upper !== lower;
     return result;
-  });
-}
-
-function reverseString(str) {
-  return str.split('').reverse().join('');
-}
-
-function truncateOnWord(str, limit, fromLeft) {
-  if (fromLeft) {
-    return reverseString(truncateOnWord(reverseString(str), limit));
   }
-  var words = str.split(TRUNC_REG);
-  var count = 0;
-  return filter(words, function(word) {
-    count += word.length;
-    return count <= limit;
-  }).join('');
-}
 
-function unescapeHTML(str) {
-  return str.replace(HTML_ENTITY_REG, function(full, hex, code) {
-    var special = HTML_SPECIAL_ENTITIES[code];
-    return special || chr(hex ? parseInt(code, 16) : +code);
-  });
-}
-
-function tagIsVoid(tag) {
-  return indexOf(HTML_VOID_ELEMENTS, tag.toLowerCase()) !== -1;
-}
-
-function stringReplaceAll(str, f, replace) {
-  var i = 0, tokens;
-  if (isString(f)) {
-    f = RegExp(escapeRegExp(f), 'g');
-  } else if (f && !f.global) {
-    f = RegExp(f.source, getRegExpFlags(f, 'g'));
+  function eachWord(str, fn) {
+    return stringEach(trim(str), /\S+/g, fn);
   }
-  if (!replace) {
-    replace = '';
-  } else {
-    tokens = replace;
-    replace = function() {
-      var t = tokens[i++];
-      return t != null ? t : '';
-    };
-  }
-  return str.replace(f, replace);
-}
 
-function replaceTags(str, find, replacement, strip) {
-  var tags = isString(find) ? [find] : find, reg;
-  tags = map(tags || [], function(t) {
-    return escapeRegExp(t);
-  }).join('|');
-  reg = RegExp('<(\\/)?(' + (tags.replace('all', '') || '[^\\s>]+') + ')(\\s+[^<>]*?)?\\s*(\\/)?>', 'gi');
-  return runTagReplacements(str.toString(), reg, strip, replacement);
-}
-
-function runTagReplacements(str, reg, strip, replacement, fullString) {
-
-  var match;
-  var result = '';
-  var currentIndex = 0;
-  var currentlyOpenTagName;
-  var currentlyOpenTagAttributes;
-  var currentlyOpenTagCount = 0;
-
-  function processTag(index, tagName, attributes, tagLength, isVoid) {
-    var content = str.slice(currentIndex, index), s = '', r = '';
-    if (isString(replacement)) {
-      r = replacement;
-    } else if (replacement) {
-      r = replacement.call(fullString, tagName, content, attributes, fullString) || '';
+  function stringCodes(str, fn) {
+    var codes = [], i, len;
+    for(i = 0, len = str.length; i < len; i++) {
+      var code = str.charCodeAt(i);
+      codes.push(code);
+      if (fn) fn.call(str, code, i);
     }
-    if (strip) {
-      s = r;
+    return codes;
+  }
+
+  function underscore(str) {
+    var inflector = sugarString.Inflector;
+    return str
+      .replace(/[-\s]+/g, '_')
+      .replace(inflector && inflector.acronymRegExp, function(acronym, index) {
+        return (index > 0 ? '_' : '') + acronym.toLowerCase();
+      })
+      .replace(/([A-Z\d]+)([A-Z][a-z])/g,'$1_$2')
+      .replace(/([a-z\d])([A-Z])/g,'$1_$2')
+      .toLowerCase();
+  }
+
+  function capitalize(str, all) {
+    var lastResponded;
+    // Identical to /[^']/g. Trying not to break Github's syntax highlighter.
+    return str.toLowerCase().replace(all ? /[^\u0027]/g : /^\S/, function(lower) {
+      var upper = lower.toUpperCase(), result;
+      result = lastResponded ? lower : upper;
+      lastResponded = upper !== lower;
+      return result;
+    });
+  }
+
+  function reverseString(str) {
+    return str.split('').reverse().join('');
+  }
+
+  function truncateOnWord(str, limit, fromLeft) {
+    if (fromLeft) {
+      return reverseString(truncateOnWord(reverseString(str), limit));
+    }
+    var words = str.split(TRUNC_REG);
+    var count = 0;
+    return filter(words, function(word) {
+      count += word.length;
+      return count <= limit;
+    }).join('');
+  }
+
+  function unescapeHTML(str) {
+    return str.replace(HTML_ENTITY_REG, function(full, hex, code) {
+      var special = HTML_SPECIAL_ENTITIES[code];
+      return special || chr(hex ? parseInt(code, 16) : +code);
+    });
+  }
+
+  function tagIsVoid(tag) {
+    return indexOf(HTML_VOID_ELEMENTS, tag.toLowerCase()) !== -1;
+  }
+
+  function stringReplaceAll(str, f, replace) {
+    var i = 0, tokens;
+    if (isString(f)) {
+      f = RegExp(escapeRegExp(f), 'g');
+    } else if (f && !f.global) {
+      f = RegExp(f.source, getRegExpFlags(f, 'g'));
+    }
+    if (!replace) {
+      replace = '';
     } else {
-      content = r;
+      tokens = replace;
+      replace = function() {
+        var t = tokens[i++];
+        return t != null ? t : '';
+      };
     }
-    if (content) {
-      content = runTagReplacements(content, reg, strip, replacement, fullString);
-    }
-    result += s + content + (isVoid ? '' : s);
-    currentIndex = index + (tagLength || 0);
+    return str.replace(f, replace);
   }
 
-  fullString = fullString || str;
-  reg = RegExp(reg.source, 'gi');
+  function replaceTags(str, find, replacement, strip) {
+    var tags = isString(find) ? [find] : find, reg;
+    tags = map(tags || [], function(t) {
+      return escapeRegExp(t);
+    }).join('|');
+    reg = RegExp('<(\\/)?(' + (tags.replace('all', '') || '[^\\s>]+') + ')(\\s+[^<>]*?)?\\s*(\\/)?>', 'gi');
+    return runTagReplacements(str.toString(), reg, strip, replacement);
+  }
 
-  while(match = reg.exec(str)) {
+  function runTagReplacements(str, reg, strip, replacement, fullString) {
 
-    var tagName         = match[2];
-    var attributes      = (match[3]|| '').slice(1);
-    var isClosingTag    = !!match[1];
-    var isSelfClosing   = !!match[4];
-    var tagLength       = match[0].length;
-    var isVoid          = tagIsVoid(tagName);
-    var isOpeningTag    = !isClosingTag && !isSelfClosing && !isVoid;
-    var isSameAsCurrent = tagName === currentlyOpenTagName;
+    var match;
+    var result = '';
+    var currentIndex = 0;
+    var currentlyOpenTagName;
+    var currentlyOpenTagAttributes;
+    var currentlyOpenTagCount = 0;
 
-    if (!currentlyOpenTagName) {
-      result += str.slice(currentIndex, match.index);
-      currentIndex = match.index;
+    function processTag(index, tagName, attributes, tagLength, isVoid) {
+      var content = str.slice(currentIndex, index), s = '', r = '';
+      if (isString(replacement)) {
+        r = replacement;
+      } else if (replacement) {
+        r = replacement.call(fullString, tagName, content, attributes, fullString) || '';
+      }
+      if (strip) {
+        s = r;
+      } else {
+        content = r;
+      }
+      if (content) {
+        content = runTagReplacements(content, reg, strip, replacement, fullString);
+      }
+      result += s + content + (isVoid ? '' : s);
+      currentIndex = index + (tagLength || 0);
     }
 
-    if (isOpeningTag) {
+    fullString = fullString || str;
+    reg = RegExp(reg.source, 'gi');
+
+    while(match = reg.exec(str)) {
+
+      var tagName         = match[2];
+      var attributes      = (match[3]|| '').slice(1);
+      var isClosingTag    = !!match[1];
+      var isSelfClosing   = !!match[4];
+      var tagLength       = match[0].length;
+      var isVoid          = tagIsVoid(tagName);
+      var isOpeningTag    = !isClosingTag && !isSelfClosing && !isVoid;
+      var isSameAsCurrent = tagName === currentlyOpenTagName;
+
       if (!currentlyOpenTagName) {
-        currentlyOpenTagName = tagName;
-        currentlyOpenTagAttributes = attributes;
-        currentlyOpenTagCount++;
-        currentIndex += tagLength;
-      } else if (isSameAsCurrent) {
-        currentlyOpenTagCount++;
+        result += str.slice(currentIndex, match.index);
+        currentIndex = match.index;
       }
-    } else if (isClosingTag && isSameAsCurrent) {
-      currentlyOpenTagCount--;
-      if (currentlyOpenTagCount === 0) {
-        processTag(match.index, currentlyOpenTagName, currentlyOpenTagAttributes, tagLength, isVoid);
-        currentlyOpenTagName       = null;
-        currentlyOpenTagAttributes = null;
+
+      if (isOpeningTag) {
+        if (!currentlyOpenTagName) {
+          currentlyOpenTagName = tagName;
+          currentlyOpenTagAttributes = attributes;
+          currentlyOpenTagCount++;
+          currentIndex += tagLength;
+        } else if (isSameAsCurrent) {
+          currentlyOpenTagCount++;
+        }
+      } else if (isClosingTag && isSameAsCurrent) {
+        currentlyOpenTagCount--;
+        if (currentlyOpenTagCount === 0) {
+          processTag(match.index, currentlyOpenTagName, currentlyOpenTagAttributes, tagLength, isVoid);
+          currentlyOpenTagName       = null;
+          currentlyOpenTagAttributes = null;
+        }
+      } else if (!currentlyOpenTagName) {
+        processTag(match.index, tagName, attributes, tagLength, isVoid);
       }
-    } else if (!currentlyOpenTagName) {
-      processTag(match.index, tagName, attributes, tagLength, isVoid);
     }
-  }
-  if (currentlyOpenTagName) {
-    processTag(str.length, currentlyOpenTagName, currentlyOpenTagAttributes);
-  }
-  result += str.slice(currentIndex);
-  return result;
-}
-
-function numberOrIndex(str, n, from) {
-  if (isString(n)) {
-    n = str.indexOf(n);
-    if (n === -1) {
-      n = from ? str.length : 0;
+    if (currentlyOpenTagName) {
+      processTag(str.length, currentlyOpenTagName, currentlyOpenTagAttributes);
     }
+    result += str.slice(currentIndex);
+    return result;
   }
-  return n;
-}
 
-function buildBase64() {
-  var encodeAscii, decodeAscii;
-
-  function catchEncodingError(fn) {
-    return function(str) {
-      try {
-        return fn(str);
-      } catch(e) {
-        return '';
+  function numberOrIndex(str, n, from) {
+    if (isString(n)) {
+      n = str.indexOf(n);
+      if (n === -1) {
+        n = from ? str.length : 0;
       }
-    };
+    }
+    return n;
   }
 
-  if (typeof Buffer !== 'undefined') {
+  function buildBase64() {
+    var encodeAscii, decodeAscii;
+
+    function catchEncodingError(fn) {
+      return function(str) {
+        try {
+          return fn(str);
+        } catch(e) {
+          return '';
+        }
+      };
+    }
+
+    if (typeof Buffer !== 'undefined') {
+      encodeBase64 = function(str) {
+        return new Buffer(str).toString('base64');
+      };
+      decodeBase64 = function(str) {
+        return new Buffer(str, 'base64').toString('utf8');
+      };
+      return;
+    }
+    if (typeof btoa !== 'undefined') {
+      encodeAscii = catchEncodingError(btoa);
+      decodeAscii = catchEncodingError(atob);
+    } else {
+      var key = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
+      var base64reg = /[^A-Za-z0-9\+\/\=]/g;
+      encodeAscii = function(str) {
+        var output = '';
+        var chr1, chr2, chr3;
+        var enc1, enc2, enc3, enc4;
+        var i = 0;
+        do {
+          chr1 = str.charCodeAt(i++);
+          chr2 = str.charCodeAt(i++);
+          chr3 = str.charCodeAt(i++);
+          enc1 = chr1 >> 2;
+          enc2 = ((chr1 & 3) << 4) | (chr2 >> 4);
+          enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);
+          enc4 = chr3 & 63;
+          if (isNaN(chr2)) {
+            enc3 = enc4 = 64;
+          } else if (isNaN(chr3)) {
+            enc4 = 64;
+          }
+          output = output + key.charAt(enc1) + key.charAt(enc2) + key.charAt(enc3) + key.charAt(enc4);
+          chr1 = chr2 = chr3 = '';
+          enc1 = enc2 = enc3 = enc4 = '';
+        } while (i < str.length);
+        return output;
+      };
+      decodeAscii = function(input) {
+        var output = '';
+        var chr1, chr2, chr3;
+        var enc1, enc2, enc3, enc4;
+        var i = 0;
+        if (input.match(base64reg)) {
+          return '';
+        }
+        input = input.replace(/[^A-Za-z0-9\+\/\=]/g, '');
+        do {
+          enc1 = key.indexOf(input.charAt(i++));
+          enc2 = key.indexOf(input.charAt(i++));
+          enc3 = key.indexOf(input.charAt(i++));
+          enc4 = key.indexOf(input.charAt(i++));
+          chr1 = (enc1 << 2) | (enc2 >> 4);
+          chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);
+          chr3 = ((enc3 & 3) << 6) | enc4;
+          output = output + chr(chr1);
+          if (enc3 != 64) {
+            output = output + chr(chr2);
+          }
+          if (enc4 != 64) {
+            output = output + chr(chr3);
+          }
+          chr1 = chr2 = chr3 = '';
+          enc1 = enc2 = enc3 = enc4 = '';
+        } while (i < input.length);
+        return output;
+      };
+    }
     encodeBase64 = function(str) {
-      return new Buffer(str).toString('base64');
+      return encodeAscii(unescape(encodeURIComponent(str)));
     };
     decodeBase64 = function(str) {
-      return new Buffer(str, 'base64').toString('utf8');
-    };
-    return;
-  }
-  if (typeof btoa !== 'undefined') {
-    encodeAscii = catchEncodingError(btoa);
-    decodeAscii = catchEncodingError(atob);
-  } else {
-    var key = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
-    var base64reg = /[^A-Za-z0-9\+\/\=]/g;
-    encodeAscii = function(str) {
-      var output = '';
-      var chr1, chr2, chr3;
-      var enc1, enc2, enc3, enc4;
-      var i = 0;
-      do {
-        chr1 = str.charCodeAt(i++);
-        chr2 = str.charCodeAt(i++);
-        chr3 = str.charCodeAt(i++);
-        enc1 = chr1 >> 2;
-        enc2 = ((chr1 & 3) << 4) | (chr2 >> 4);
-        enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);
-        enc4 = chr3 & 63;
-        if (isNaN(chr2)) {
-          enc3 = enc4 = 64;
-        } else if (isNaN(chr3)) {
-          enc4 = 64;
-        }
-        output = output + key.charAt(enc1) + key.charAt(enc2) + key.charAt(enc3) + key.charAt(enc4);
-        chr1 = chr2 = chr3 = '';
-        enc1 = enc2 = enc3 = enc4 = '';
-      } while (i < str.length);
-      return output;
-    };
-    decodeAscii = function(input) {
-      var output = '';
-      var chr1, chr2, chr3;
-      var enc1, enc2, enc3, enc4;
-      var i = 0;
-      if (input.match(base64reg)) {
-        return '';
-      }
-      input = input.replace(/[^A-Za-z0-9\+\/\=]/g, '');
-      do {
-        enc1 = key.indexOf(input.charAt(i++));
-        enc2 = key.indexOf(input.charAt(i++));
-        enc3 = key.indexOf(input.charAt(i++));
-        enc4 = key.indexOf(input.charAt(i++));
-        chr1 = (enc1 << 2) | (enc2 >> 4);
-        chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);
-        chr3 = ((enc3 & 3) << 6) | enc4;
-        output = output + chr(chr1);
-        if (enc3 != 64) {
-          output = output + chr(chr2);
-        }
-        if (enc4 != 64) {
-          output = output + chr(chr3);
-        }
-        chr1 = chr2 = chr3 = '';
-        enc1 = enc2 = enc3 = enc4 = '';
-      } while (i < input.length);
-      return output;
+      return decodeURIComponent(escape(decodeAscii(str)));
     };
   }
-  encodeBase64 = function(str) {
-    return encodeAscii(unescape(encodeURIComponent(str)));
-  };
-  decodeBase64 = function(str) {
-    return decodeURIComponent(escape(decodeAscii(str)));
-  };
-}
 
-function buildSpecialEntities() {
-  specialEntities = {};
-  iterateOverObject(HTML_SPECIAL_ENTITIES, function(k, v) {
-    specialEntities[v] = '&' + k + ';';
+  function buildSpecialEntities() {
+    specialEntities = {};
+    iterateOverObject(HTML_SPECIAL_ENTITIES, function(k, v) {
+      specialEntities[v] = '&' + k + ';';
+    });
+  }
+
+  function callIncludesWithRegexSupport(str, search, position) {
+    if (!isRegExp(search)) {
+      return nativeIncludes.call(str, search, position);
+    }
+    if (position) {
+      str = str.slice(position);
+    }
+    return search.test(str);
+  }
+
+  defineInstance(sugarString, {
+
+    // Enhancment to String#includes to allow a regex.
+    'includes': fixArgumentLength(callIncludesWithRegexSupport)
+
+  }, [ENHANCEMENTS_FLAG, STRING_ENHANCEMENTS_FLAG]);
+
+  defineInstance(sugarString, {
+
+    /***
+     * @method at(<index>, [loop] = true)
+     * @returns String or Array
+     * @short Gets the character(s) at a given index.
+     * @extra When [loop] is true, overshooting the end of the string (or the beginning) will begin counting from the other end. If <index> is an array, multiple elements will be returned.
+     * @example
+     *
+     *   'jumpy'.at(0)             -> 'j'
+     *   'jumpy'.at(2)             -> 'm'
+     *   'jumpy'.at(5)             -> 'j'
+     *   'jumpy'.at(5, false)      -> ''
+     *   'jumpy'.at(-1)            -> 'y'
+     *   'lucky charms'.at([2, 4]) -> ['u','k']
+     *
+     ***/
+    'at': function(str, index, loop) {
+      return getEntriesForIndexes(str, index, loop, true);
+    },
+
+     /***
+      * @method escapeURL([param] = false)
+      * @returns String
+      * @short Escapes characters in a string to make a valid URL.
+      * @extra If [param] is true, it will also escape valid URL characters for use as a URL parameter.
+      * @example
+      *
+      *   'http://foo.com/"bar"'.escapeURL()     -> 'http://foo.com/%22bar%22'
+      *   'http://foo.com/"bar"'.escapeURL(true) -> 'http%3A%2F%2Ffoo.com%2F%22bar%22'
+      *
+      ***/
+    'escapeURL': function(str, param) {
+      return param ? encodeURIComponent(str) : encodeURI(str);
+    },
+
+     /***
+      * @method unescapeURL([partial] = false)
+      * @returns String
+      * @short Restores escaped characters in a URL escaped string.
+      * @extra If [partial] is true, it will only unescape non-valid URL characters. [partial] is included here for completeness, but should very rarely be needed.
+      * @example
+      *
+      *   'http%3A%2F%2Ffoo.com%2Fthe%20bar'.unescapeURL()     -> 'http://foo.com/the bar'
+      *   'http%3A%2F%2Ffoo.com%2Fthe%20bar'.unescapeURL(true) -> 'http%3A%2F%2Ffoo.com%2Fthe bar'
+      *
+      ***/
+    'unescapeURL': function(str, param) {
+      return param ? decodeURI(str) : decodeURIComponent(str);
+    },
+
+     /***
+      * @method escapeHTML()
+      * @returns String
+      * @short Converts HTML characters to their entity equivalents.
+      * @example
+      *
+      *   '<p>some text</p>'.escapeHTML() -> '&lt;p&gt;some text&lt;/p&gt;'
+      *   'one & two'.escapeHTML()        -> 'one &amp; two'
+      *
+      ***/
+    'escapeHTML': function(str) {
+      return str.replace(HTML_ESCAPE_REG, function(chr) {
+        return specialEntities[chr];
+      });
+    },
+
+     /***
+      * @method unescapeHTML()
+      * @returns String
+      * @short Restores escaped HTML characters.
+      * @example
+      *
+      *   '&lt;p&gt;some text&lt;/p&gt;'.unescapeHTML() -> '<p>some text</p>'
+      *   'one &amp; two'.unescapeHTML()                -> 'one & two'
+      *
+      ***/
+    'unescapeHTML': function(str) {
+      return unescapeHTML(str);
+    },
+
+    /***
+     * @method stripTags([tag] = 'all', [replace])
+     * @returns String
+     * @short Strips HTML tags from the string.
+     * @extra [tag] may be an array of tags or 'all', in which case all tags will be stripped. [replace] will replace what was stripped, and may be a string or a function to handle replacements. Function arguments are %tag name%, %tag content%, %tag attributes%, and the %string% itself. If this function returns a string, then it will be used for the replacement. If it returns %undefined%, the tags will be stripped normally.
+     * @example
+     *
+     *   '<p>just <b>some</b> text</p>'.stripTags()    -> 'just some text'
+     *   '<p>just <b>some</b> text</p>'.stripTags('p') -> 'just <b>some</b> text'
+     *   '<p>hi!</p>'.stripTags('p', function('all', content) {
+     *     return '|' + content + '|';
+     *   }); -> '|hi!|'
+     *
+     ***/
+    'stripTags': function(str, tag, replace) {
+      return replaceTags(str, tag, replace, true);
+    },
+
+    /***
+     * @method removeTags([tag] = 'all', [replace])
+     * @returns String
+     * @short Removes HTML tags and their contents from the string.
+     * @extra [tag] may be an array of tags or 'all', in which case all tags will be removed. [replace] will replace what was removed, and may be a string or a function to handle replacements. Function arguments are %tag name%, %tag content%, %tag attributes%, and the %string% itself. If this function returns a string, then it will be used for the replacement. If it returns %undefined%, the tags will be removed normally.
+     * @example
+     *
+     *   '<p>just <b>some</b> text</p>'.removeTags()    -> ''
+     *   '<p>just <b>some</b> text</p>'.removeTags('b') -> '<p>just text</p>'
+     *   '<p>hi!</p>'.removeTags('p', function('all', content) {
+     *     return 'bye!';
+     *   }); -> 'bye!'
+     *
+     ***/
+    'removeTags': function(str, tag, replace) {
+      return replaceTags(str, tag, replace, false);
+    },
+
+     /***
+      * @method encodeBase64()
+      * @returns String
+      * @short Encodes the string into base64 encoding.
+      * @extra This method wraps native methods when available, and uses a custom implementation when not available. It can also handle Unicode string encodings.
+      * @example
+      *
+      *   'gonna get encoded!'.encodeBase64()  -> 'Z29ubmEgZ2V0IGVuY29kZWQh'
+      *   'http://twitter.com/'.encodeBase64() -> 'aHR0cDovL3R3aXR0ZXIuY29tLw=='
+      *
+      ***/
+    'encodeBase64': function(str) {
+      return encodeBase64(str);
+    },
+
+     /***
+      * @method decodeBase64()
+      * @returns String
+      * @short Decodes the string from base64 encoding.
+      * @extra This method wraps native methods when available, and uses a custom implementation when not available. It can also handle Unicode string encodings.
+      * @example
+      *
+      *   'aHR0cDovL3R3aXR0ZXIuY29tLw=='.decodeBase64() -> 'http://twitter.com/'
+      *   'anVzdCBnb3QgZGVjb2RlZA=='.decodeBase64()     -> 'just got decoded!'
+      *
+      ***/
+    'decodeBase64': function(str) {
+      return decodeBase64(str);
+    },
+
+    /***
+     * @method each([search], [fn])
+     * @returns Array
+     * @short Runs callback [fn] against each occurence of [search] or each character if [search] is not provided.
+     * @extra Returns an array of matches. [search] may be either a string or regex, and defaults to every character in the string. If [fn] returns false at any time it will break out of the loop.
+     * @example
+     *
+     *   'jumpy'.each() -> ['j','u','m','p','y']
+     *   'jumpy'.each(/[r-z]/) -> ['u','y']
+     *   'jumpy'.each(/[r-z]/, function(m) {
+     *     // Called twice: "u", "y"
+     *   });
+     *
+     ***/
+    'each': function(str, search, fn) {
+      return stringEach(str, search, fn);
+    },
+
+    /***
+     * @method shift(<n>)
+     * @returns Array
+     * @short Shifts each character in the string <n> places in the character map.
+     * @example
+     *
+     *   'a'.shift(1)  -> 'b'
+     *   'ク'.shift(1) -> 'グ'
+     *
+     ***/
+    'shift': function(str, n) {
+      var result = '';
+      n = n || 0;
+      stringCodes(str, function(c) {
+        result += chr(c + n);
+      });
+      return result;
+    },
+
+    /***
+     * @method codes([fn])
+     * @returns Array
+     * @short Runs callback [fn] against each character code in the string. Returns an array of character codes.
+     * @example
+     *
+     *   'jumpy'.codes() -> [106,117,109,112,121]
+     *   'jumpy'.codes(function(c) {
+     *     // Called 5 times: 106, 117, 109, 112, 121
+     *   });
+     *
+     ***/
+    'codes': function(str, fn) {
+      return stringCodes(str, fn);
+    },
+
+    /***
+     * @method chars([fn])
+     * @returns Array
+     * @short Runs callback [fn] against each character in the string. Returns an array of characters.
+     * @example
+     *
+     *   'jumpy'.chars() -> ['j','u','m','p','y']
+     *   'jumpy'.chars(function(c) {
+     *     // Called 5 times: "j","u","m","p","y"
+     *   });
+     *
+     ***/
+    'chars': function(str, search, fn) {
+      return stringEach(str, search, fn);
+    },
+
+    /***
+     * @method words([fn])
+     * @returns Array
+     * @short Runs callback [fn] against each word in the string. Returns an array of words.
+     * @extra A "word" here is defined as any sequence of non-whitespace characters.
+     * @example
+     *
+     *   'broken wear'.words() -> ['broken','wear']
+     *   'broken wear'.words(function(w) {
+     *     // Called twice: "broken", "wear"
+     *   });
+     *
+     ***/
+    'words': function(str, fn) {
+      return stringEach(trim(str), /\S+/g, fn);
+    },
+
+    /***
+     * @method lines([fn])
+     * @returns Array
+     * @short Runs callback [fn] against each line in the string. Returns an array of lines.
+     * @example
+     *
+     *   'broken wear\nand\njumpy jump'.lines() -> ['broken wear','and','jumpy jump']
+     *   'broken wear\nand\njumpy jump'.lines(function(l) {
+     *     // Called three times: "broken wear", "and", "jumpy jump"
+     *   });
+     *
+     ***/
+    'lines': function(str, fn) {
+      return stringEach(trim(str), /^.*$/gm, fn);
+    },
+
+    /***
+     * @method paragraphs([fn])
+     * @returns Array
+     * @short Runs callback [fn] against each paragraph in the string. Returns an array of paragraphs.
+     * @extra A paragraph here is defined as a block of text bounded by two or more line breaks.
+     * @example
+     *
+     *   'Once upon a time.\n\nIn the land of oz...'.paragraphs() -> ['Once upon a time.','In the land of oz...']
+     *   'Once upon a time.\n\nIn the land of oz...'.paragraphs(function(p) {
+     *     // Called twice: "Once upon a time.", "In teh land of oz..."
+     *   });
+     *
+     ***/
+    'paragraphs': function(str, fn) {
+      var paragraphs = trim(str).split(/[\r\n]{2,}/);
+      paragraphs = map(paragraphs, function(p) {
+        if (fn) var s = fn.call(p);
+        return s ? s : p;
+      });
+      return paragraphs;
+    },
+
+    /***
+     * @method isBlank()
+     * @returns Boolean
+     * @short Returns true if the string has a length of 0 or contains only whitespace.
+     * @example
+     *
+     *   ''.isBlank()      -> true
+     *   '   '.isBlank()   -> true
+     *   'noway'.isBlank() -> false
+     *
+     ***/
+    'isBlank': function(str) {
+      return trim(str).length === 0;
+    },
+
+    /***
+     * @method add(<str>, [index] = length)
+     * @returns String
+     * @short Adds <str> at [index]. Negative values are also allowed.
+     * @extra %insert% is provided as an alias, and is generally more readable when using an index.
+     * @example
+     *
+     *   'schfifty'.add(' five')      -> schfifty five
+     *   'dopamine'.insert('e', 3)       -> dopeamine
+     *   'spelling eror'.insert('r', -3) -> spelling error
+     *
+     ***/
+    'add': function(str, addStr, index) {
+      index = isUndefined(index) ? str.length : index;
+      return str.slice(0, index) + addStr + str.slice(index);
+    },
+
+    /***
+     * @method remove(<f>)
+     * @returns String
+     * @short Removes the first occurrence of <f> in the string.
+     * @extra <f> can be a either case-sensitive string or a regex. In either case only the first match will be removed. To remove multiple occurrences, use %removeAll%.
+     * @example
+     *
+     *   'schfifty five'.remove('f')      -> 'schifty five'
+     *   'schfifty five'.remove(/[a-f]/g) -> 'shfifty five'
+     *
+     ***/
+    'remove': function(str, f) {
+      return str.replace(f, '');
+    },
+
+    /***
+     * @method removeAll(<f>)
+     * @returns String
+     * @short Removes any occurences of <f> in the string.
+     * @extra <f> can be either a case-sensitive string or a regex. In either case all matches will be removed. To remove only a single occurence, use %remove%.
+     * @example
+     *
+     *   'schfifty five'.removeAll('f')     -> 'schity ive'
+     *   'schfifty five'.removeAll(/[a-f]/) -> 'shity iv'
+     *
+     ***/
+    'removeAll': function(str, f) {
+      return stringReplaceAll(str, f);
+    },
+
+    /***
+     * @method reverse()
+     * @returns String
+     * @short Reverses the string.
+     * @example
+     *
+     *   'jumpy'.reverse()        -> 'ypmuj'
+     *   'lucky charms'.reverse() -> 'smrahc ykcul'
+     *
+     ***/
+    'reverse': function(str) {
+      return reverseString(str);
+    },
+
+    /***
+     * @method compact()
+     * @returns String
+     * @short Compacts all white space in the string to a single space and trims the ends.
+     * @example
+     *
+     *   'too \n much \n space'.compact() -> 'too much space'
+     *   'enough \n '.compact()           -> 'enought'
+     *
+     ***/
+    'compact': function(str) {
+      return trim(str).replace(/([\r\n\s　])+/g, function(match, whitespace) {
+        return whitespace === '　' ? whitespace : ' ';
+      });
+    },
+
+    /***
+     * @method from([index] = 0)
+     * @returns String
+     * @short Returns a section of the string starting from [index].
+     * @example
+     *
+     *   'lucky charms'.from()   -> 'lucky charms'
+     *   'lucky charms'.from(7)  -> 'harms'
+     *
+     ***/
+    'from': function(str, from) {
+      return str.slice(numberOrIndex(str, from, true));
+    },
+
+    /***
+     * @method to([index] = end)
+     * @returns String
+     * @short Returns a section of the string ending at [index].
+     * @example
+     *
+     *   'lucky charms'.to()   -> 'lucky charms'
+     *   'lucky charms'.to(7)  -> 'lucky ch'
+     *
+     ***/
+    'to': function(str, to) {
+      if (isUndefined(to)) to = str.length;
+      return str.slice(0, numberOrIndex(str, to));
+    },
+
+    /***
+     * @method dasherize()
+     * @returns String
+     * @short Converts underscores and camel casing to hypens.
+     * @example
+     *
+     *   'a_farewell_to_arms'.dasherize() -> 'a-farewell-to-arms'
+     *   'capsLock'.dasherize()           -> 'caps-lock'
+     *
+     ***/
+    'dasherize': function(str) {
+      return underscore(str).replace(/_/g, '-');
+    },
+
+    /***
+     * @method underscore()
+     * @returns String
+     * @short Converts hyphens and camel casing to underscores.
+     * @example
+     *
+     *   'a-farewell-to-arms'.underscore() -> 'a_farewell_to_arms'
+     *   'capsLock'.underscore()           -> 'caps_lock'
+     *
+     ***/
+    'underscore': function(str) {
+      return underscore(str);
+    },
+
+    /***
+     * @method camelize([first] = true)
+     * @returns String
+     * @short Converts underscores and hyphens to camel case. If [first] is true the first letter will also be capitalized.
+     * @extra If the Inflections module is included acryonyms can also be defined that will be used when camelizing.
+     * @example
+     *
+     *   'caps_lock'.camelize()              -> 'CapsLock'
+     *   'moz-border-radius'.camelize()      -> 'MozBorderRadius'
+     *   'moz-border-radius'.camelize(false) -> 'mozBorderRadius'
+     *
+     ***/
+    'camelize': function(str, first) {
+      return underscore(str).replace(/(^|_)([^_]+)/g, function(match, pre, word, index) {
+        var acronym = getAcronym(word), cap = first !== false || index > 0;
+        if (acronym) return cap ? acronym : acronym.toLowerCase();
+        return cap ? capitalize(word) : word;
+      });
+    },
+
+    /***
+     * @method spacify()
+     * @returns String
+     * @short Converts camel case, underscores, and hyphens to a properly spaced string.
+     * @example
+     *
+     *   'camelCase'.spacify()                         -> 'camel case'
+     *   'an-ugly-string'.spacify()                    -> 'an ugly string'
+     *   'oh-no_youDid-not'.spacify().capitalize(true) -> 'something else'
+     *
+     ***/
+    'spacify': function(str) {
+      return underscore(str).replace(/_/g, ' ');
+    },
+
+    /***
+     * @method titleize()
+     * @returns String
+     * @short Creates a title version of the string.
+     * @extra Capitalizes all the words and replaces some characters in the string to create a nicer looking title. String#titleize is meant for creating pretty output.
+     * @example
+     *
+     *   'man from the boondocks'.titleize() -> 'Man from the Boondocks'
+     *   'x-men: the last stand'.titleize() -> 'X Men: The Last Stand'
+     *   'TheManWithoutAPast'.titleize() -> 'The Man Without a Past'
+     *   'raiders_of_the_lost_ark'.titleize() -> 'Raiders of the Lost Ark'
+     *
+     ***/
+    'titleize': function(str) {
+      var fullStopPunctuation = /[.:;!]$/, hasPunctuation, lastHadPunctuation, isFirstOrLast;
+      str = spacify(str);
+      if (sugarString.Inflector) {
+        str = Inflector.humanize(str);
+      }
+      return eachWord(str, function(word, index, words) {
+        hasPunctuation = fullStopPunctuation.test(word);
+        isFirstOrLast = index == 0 || index == words.length - 1 || hasPunctuation || lastHadPunctuation;
+        lastHadPunctuation = hasPunctuation;
+        if (isFirstOrLast || indexOf(DOWNCASED_WORDS, word) === -1) {
+          return capitalizeWithoutDowncasing(word, true);
+        } else {
+          return word;
+        }
+      }).join(' ');
+    },
+
+    /***
+     * @method truncate(<length>, [from] = 'right', [ellipsis] = '...')
+     * @returns String
+     * @short Truncates a string.
+     * @extra [from] can be %'right'%, %'left'%, or %'middle'%. If the string is shorter than <length>, [ellipsis] will not be added.
+     * @example
+     *
+     *   'sittin on the dock of the bay'.truncate(18)           -> 'just sittin on the do...'
+     *   'sittin on the dock of the bay'.truncate(18, 'left')   -> '...the dock of the bay'
+     *   'sittin on the dock of the bay'.truncate(18, 'middle') -> 'just sitt...of the bay'
+     *
+     ***/
+    'truncate': function(str, length, from, ellipsis) {
+      return truncateString(str, length, from, ellipsis);
+    },
+
+    /***
+     * @method truncateOnWord(<length>, [from] = 'right', [ellipsis] = '...')
+     * @returns String
+     * @short Truncates a string without splitting up words.
+     * @extra [from] can be %'right'%, %'left'%, or %'middle'%. If the string is shorter than <length>, [ellipsis] will not be added.
+     * @example
+     *
+     *   'here we go'.truncateOnWord(5)               -> 'here...'
+     *   'here we go'.truncateOnWord(5, 'left')       -> '...we go'
+     *
+     ***/
+    'truncateOnWord': function(str, length, from, ellipsis) {
+      return truncateString(str, length, from, ellipsis, true);
+    },
+
+    /***
+     * @method pad[Side](<num> = null, [padding] = ' ')
+     * @returns String
+     * @short Pads the string out with [padding] to be exactly <num> characters.
+     *
+     * @set
+     *   pad
+     *   padLeft
+     *   padRight
+     *
+     * @example
+     *
+     *   'wasabi'.pad(8)           -> ' wasabi '
+     *   'wasabi'.padLeft(8)       -> '  wasabi'
+     *   'wasabi'.padRight(8)      -> 'wasabi  '
+     *   'wasabi'.padRight(8, '-') -> 'wasabi--'
+     *
+     ***/
+    'pad': function(str, num, padding) {
+      var half, front, back;
+      num   = coercePositiveInteger(num);
+      half  = max(0, num - str.length) / 2;
+      front = floor(half);
+      back  = ceil(half);
+      return padString(front, padding) + str + padString(back, padding);
+    },
+
+    'padLeft': function(str, num, padding) {
+      num = coercePositiveInteger(num);
+      return padString(max(0, num - str.length), padding) + str;
+    },
+
+    'padRight': function(str, num, padding) {
+      num = coercePositiveInteger(num);
+      return str + padString(max(0, num - str.length), padding);
+    },
+
+    /***
+     * @method first([n] = 1)
+     * @returns String
+     * @short Returns the first [n] characters of the string.
+     * @example
+     *
+     *   'lucky charms'.first()   -> 'l'
+     *   'lucky charms'.first(3)  -> 'luc'
+     *
+     ***/
+    'first': function(str, num) {
+      if (isUndefined(num)) num = 1;
+      return str.substr(0, num);
+    },
+
+    /***
+     * @method last([n] = 1)
+     * @returns String
+     * @short Returns the last [n] characters of the string.
+     * @example
+     *
+     *   'lucky charms'.last()   -> 's'
+     *   'lucky charms'.last(3)  -> 'rms'
+     *
+     ***/
+    'last': function(str, num) {
+      if (isUndefined(num)) num = 1;
+      var start = str.length - num < 0 ? 0 : str.length - num;
+      return str.substr(start);
+    },
+
+    /***
+     * @method toNumber([base] = 10)
+     * @returns Number
+     * @short Converts the string into a number.
+     * @extra Any value with a "." fill be converted to a floating point value, otherwise an integer.
+     * @example
+     *
+     *   '153'.toNumber()    -> 153
+     *   '12,000'.toNumber() -> 12000
+     *   '10px'.toNumber()   -> 10
+     *   'ff'.toNumber(16)   -> 255
+     *
+     ***/
+    'toNumber': function(str, base) {
+      return stringToNumber(str, base);
+    },
+
+    /***
+     * @method capitalize([all] = false)
+     * @returns String
+     * @short Capitalizes the first character in the string and downcases all other letters.
+     * @extra If [all] is true, all words in the string will be capitalized.
+     * @example
+     *
+     *   'hello'.capitalize()           -> 'Hello'
+     *   'hello kitty'.capitalize()     -> 'Hello kitty'
+     *   'hello kitty'.capitalize(true) -> 'Hello Kitty'
+     *
+     *
+     ***/
+    'capitalize': function(str, all) {
+      return capitalize(str, all);
+    },
+
+    /***
+     * @method trim[Side]()
+     * @returns String
+     * @short Removes leading or trailing whitespace from the string.
+     * @extra Whitespace is defined as line breaks, tabs, and any character in the "Space, Separator" Unicode category, conforming to the the ES5 spec.
+     *
+     * @set
+     *   trimLeft
+     *   trimRight
+     *
+     * @example
+     *
+     *   '   wasabi   '.trimLeft()  -> 'wasabi   '
+     *   '   wasabi   '.trimRight() -> '   wasabi'
+     *
+     ***/
+
+    'trimLeft': function(str) {
+      return str.replace(LEFT_TRIM_REG, '');
+    },
+
+    'trimRight': function(str) {
+      return str.replace(RIGHT_TRIM_REG, '');
+    }
+
   });
-}
 
-function callIncludesWithRegexSupport(str, search, position) {
-  if (!isRegExp(search)) {
-    return nativeIncludes.call(str, search, position);
-  }
-  if (position) {
-    str = str.slice(position);
-  }
-  return search.test(str);
-}
 
-defineInstance(sugarString, {
+  defineInstanceWithArguments(sugarString, {
 
-  // Enhancment to String#includes to allow a regex.
-  'includes': fixArgumentLength(callIncludesWithRegexSupport)
+    /***
+     * @method replaceAll(<f>, [str1], [str2], ...)
+     * @returns String
+     * @short Replaces all occurences of <f> with arguments passed.
+     * @extra This method is intended to be a quick way to perform multiple string replacements quickly when the replacement token differs depending on position. <f> can be either a case-sensitive string or a regex. In either case all matches will be replaced.
+     * @example
+     *
+     *   '-x -y -z'.replaceAll('-', 1, 2, 3) -> '1x 2y 3z'
+     *   'first and second'.replaceAll(/first|second/, '1st', 2nd') -> '1st and 2nd'
+     *
+     ***/
+    'replaceAll': function(str, f, args) {
+      return stringReplaceAll(str, f, args);
+    },
 
-}, [ENHANCEMENTS_FLAG, STRING_ENHANCEMENTS_FLAG]);
-
-defineInstance(sugarString, {
-
-  /***
-   * @method at(<index>, [loop] = true)
-   * @returns String or Array
-   * @short Gets the character(s) at a given index.
-   * @extra When [loop] is true, overshooting the end of the string (or the beginning) will begin counting from the other end. If <index> is an array, multiple elements will be returned.
-   * @example
-   *
-   *   'jumpy'.at(0)             -> 'j'
-   *   'jumpy'.at(2)             -> 'm'
-   *   'jumpy'.at(5)             -> 'j'
-   *   'jumpy'.at(5, false)      -> ''
-   *   'jumpy'.at(-1)            -> 'y'
-   *   'lucky charms'.at([2, 4]) -> ['u','k']
-   *
-   ***/
-  'at': function(str, index, loop) {
-    return getEntriesForIndexes(str, index, loop, true);
-  },
-
-   /***
-    * @method escapeURL([param] = false)
-    * @returns String
-    * @short Escapes characters in a string to make a valid URL.
-    * @extra If [param] is true, it will also escape valid URL characters for use as a URL parameter.
-    * @example
-    *
-    *   'http://foo.com/"bar"'.escapeURL()     -> 'http://foo.com/%22bar%22'
-    *   'http://foo.com/"bar"'.escapeURL(true) -> 'http%3A%2F%2Ffoo.com%2F%22bar%22'
-    *
-    ***/
-  'escapeURL': function(str, param) {
-    return param ? encodeURIComponent(str) : encodeURI(str);
-  },
-
-   /***
-    * @method unescapeURL([partial] = false)
-    * @returns String
-    * @short Restores escaped characters in a URL escaped string.
-    * @extra If [partial] is true, it will only unescape non-valid URL characters. [partial] is included here for completeness, but should very rarely be needed.
-    * @example
-    *
-    *   'http%3A%2F%2Ffoo.com%2Fthe%20bar'.unescapeURL()     -> 'http://foo.com/the bar'
-    *   'http%3A%2F%2Ffoo.com%2Fthe%20bar'.unescapeURL(true) -> 'http%3A%2F%2Ffoo.com%2Fthe bar'
-    *
-    ***/
-  'unescapeURL': function(str, param) {
-    return param ? decodeURI(str) : decodeURIComponent(str);
-  },
-
-   /***
-    * @method escapeHTML()
-    * @returns String
-    * @short Converts HTML characters to their entity equivalents.
-    * @example
-    *
-    *   '<p>some text</p>'.escapeHTML() -> '&lt;p&gt;some text&lt;/p&gt;'
-    *   'one & two'.escapeHTML()        -> 'one &amp; two'
-    *
-    ***/
-  'escapeHTML': function(str) {
-    return str.replace(HTML_ESCAPE_REG, function(chr) {
-      return specialEntities[chr];
-    });
-  },
-
-   /***
-    * @method unescapeHTML()
-    * @returns String
-    * @short Restores escaped HTML characters.
-    * @example
-    *
-    *   '&lt;p&gt;some text&lt;/p&gt;'.unescapeHTML() -> '<p>some text</p>'
-    *   'one &amp; two'.unescapeHTML()                -> 'one & two'
-    *
-    ***/
-  'unescapeHTML': function(str) {
-    return unescapeHTML(str);
-  },
-
-  /***
-   * @method stripTags([tag] = 'all', [replace])
-   * @returns String
-   * @short Strips HTML tags from the string.
-   * @extra [tag] may be an array of tags or 'all', in which case all tags will be stripped. [replace] will replace what was stripped, and may be a string or a function to handle replacements. Function arguments are %tag name%, %tag content%, %tag attributes%, and the %string% itself. If this function returns a string, then it will be used for the replacement. If it returns %undefined%, the tags will be stripped normally.
-   * @example
-   *
-   *   '<p>just <b>some</b> text</p>'.stripTags()    -> 'just some text'
-   *   '<p>just <b>some</b> text</p>'.stripTags('p') -> 'just <b>some</b> text'
-   *   '<p>hi!</p>'.stripTags('p', function('all', content) {
-   *     return '|' + content + '|';
-   *   }); -> '|hi!|'
-   *
-   ***/
-  'stripTags': function(str, tag, replace) {
-    return replaceTags(str, tag, replace, true);
-  },
-
-  /***
-   * @method removeTags([tag] = 'all', [replace])
-   * @returns String
-   * @short Removes HTML tags and their contents from the string.
-   * @extra [tag] may be an array of tags or 'all', in which case all tags will be removed. [replace] will replace what was removed, and may be a string or a function to handle replacements. Function arguments are %tag name%, %tag content%, %tag attributes%, and the %string% itself. If this function returns a string, then it will be used for the replacement. If it returns %undefined%, the tags will be removed normally.
-   * @example
-   *
-   *   '<p>just <b>some</b> text</p>'.removeTags()    -> ''
-   *   '<p>just <b>some</b> text</p>'.removeTags('b') -> '<p>just text</p>'
-   *   '<p>hi!</p>'.removeTags('p', function('all', content) {
-   *     return 'bye!';
-   *   }); -> 'bye!'
-   *
-   ***/
-  'removeTags': function(str, tag, replace) {
-    return replaceTags(str, tag, replace, false);
-  },
-
-   /***
-    * @method encodeBase64()
-    * @returns String
-    * @short Encodes the string into base64 encoding.
-    * @extra This method wraps native methods when available, and uses a custom implementation when not available. It can also handle Unicode string encodings.
-    * @example
-    *
-    *   'gonna get encoded!'.encodeBase64()  -> 'Z29ubmEgZ2V0IGVuY29kZWQh'
-    *   'http://twitter.com/'.encodeBase64() -> 'aHR0cDovL3R3aXR0ZXIuY29tLw=='
-    *
-    ***/
-  'encodeBase64': function(str) {
-    return encodeBase64(str);
-  },
-
-   /***
-    * @method decodeBase64()
-    * @returns String
-    * @short Decodes the string from base64 encoding.
-    * @extra This method wraps native methods when available, and uses a custom implementation when not available. It can also handle Unicode string encodings.
-    * @example
-    *
-    *   'aHR0cDovL3R3aXR0ZXIuY29tLw=='.decodeBase64() -> 'http://twitter.com/'
-    *   'anVzdCBnb3QgZGVjb2RlZA=='.decodeBase64()     -> 'just got decoded!'
-    *
-    ***/
-  'decodeBase64': function(str) {
-    return decodeBase64(str);
-  },
-
-  /***
-   * @method each([search], [fn])
-   * @returns Array
-   * @short Runs callback [fn] against each occurence of [search] or each character if [search] is not provided.
-   * @extra Returns an array of matches. [search] may be either a string or regex, and defaults to every character in the string. If [fn] returns false at any time it will break out of the loop.
-   * @example
-   *
-   *   'jumpy'.each() -> ['j','u','m','p','y']
-   *   'jumpy'.each(/[r-z]/) -> ['u','y']
-   *   'jumpy'.each(/[r-z]/, function(m) {
-   *     // Called twice: "u", "y"
-   *   });
-   *
-   ***/
-  'each': function(str, search, fn) {
-    return stringEach(str, search, fn);
-  },
-
-  /***
-   * @method shift(<n>)
-   * @returns Array
-   * @short Shifts each character in the string <n> places in the character map.
-   * @example
-   *
-   *   'a'.shift(1)  -> 'b'
-   *   'ク'.shift(1) -> 'グ'
-   *
-   ***/
-  'shift': function(str, n) {
-    var result = '';
-    n = n || 0;
-    stringCodes(str, function(c) {
-      result += chr(c + n);
-    });
-    return result;
-  },
-
-  /***
-   * @method codes([fn])
-   * @returns Array
-   * @short Runs callback [fn] against each character code in the string. Returns an array of character codes.
-   * @example
-   *
-   *   'jumpy'.codes() -> [106,117,109,112,121]
-   *   'jumpy'.codes(function(c) {
-   *     // Called 5 times: 106, 117, 109, 112, 121
-   *   });
-   *
-   ***/
-  'codes': function(str, fn) {
-    return stringCodes(str, fn);
-  },
-
-  /***
-   * @method chars([fn])
-   * @returns Array
-   * @short Runs callback [fn] against each character in the string. Returns an array of characters.
-   * @example
-   *
-   *   'jumpy'.chars() -> ['j','u','m','p','y']
-   *   'jumpy'.chars(function(c) {
-   *     // Called 5 times: "j","u","m","p","y"
-   *   });
-   *
-   ***/
-  'chars': function(str, search, fn) {
-    return stringEach(str, search, fn);
-  },
-
-  /***
-   * @method words([fn])
-   * @returns Array
-   * @short Runs callback [fn] against each word in the string. Returns an array of words.
-   * @extra A "word" here is defined as any sequence of non-whitespace characters.
-   * @example
-   *
-   *   'broken wear'.words() -> ['broken','wear']
-   *   'broken wear'.words(function(w) {
-   *     // Called twice: "broken", "wear"
-   *   });
-   *
-   ***/
-  'words': function(str, fn) {
-    return stringEach(trim(str), /\S+/g, fn);
-  },
-
-  /***
-   * @method lines([fn])
-   * @returns Array
-   * @short Runs callback [fn] against each line in the string. Returns an array of lines.
-   * @example
-   *
-   *   'broken wear\nand\njumpy jump'.lines() -> ['broken wear','and','jumpy jump']
-   *   'broken wear\nand\njumpy jump'.lines(function(l) {
-   *     // Called three times: "broken wear", "and", "jumpy jump"
-   *   });
-   *
-   ***/
-  'lines': function(str, fn) {
-    return stringEach(trim(str), /^.*$/gm, fn);
-  },
-
-  /***
-   * @method paragraphs([fn])
-   * @returns Array
-   * @short Runs callback [fn] against each paragraph in the string. Returns an array of paragraphs.
-   * @extra A paragraph here is defined as a block of text bounded by two or more line breaks.
-   * @example
-   *
-   *   'Once upon a time.\n\nIn the land of oz...'.paragraphs() -> ['Once upon a time.','In the land of oz...']
-   *   'Once upon a time.\n\nIn the land of oz...'.paragraphs(function(p) {
-   *     // Called twice: "Once upon a time.", "In teh land of oz..."
-   *   });
-   *
-   ***/
-  'paragraphs': function(str, fn) {
-    var paragraphs = trim(str).split(/[\r\n]{2,}/);
-    paragraphs = map(paragraphs, function(p) {
-      if (fn) var s = fn.call(p);
-      return s ? s : p;
-    });
-    return paragraphs;
-  },
-
-  /***
-   * @method isBlank()
-   * @returns Boolean
-   * @short Returns true if the string has a length of 0 or contains only whitespace.
-   * @example
-   *
-   *   ''.isBlank()      -> true
-   *   '   '.isBlank()   -> true
-   *   'noway'.isBlank() -> false
-   *
-   ***/
-  'isBlank': function(str) {
-    return trim(str).length === 0;
-  },
-
-  /***
-   * @method add(<str>, [index] = length)
-   * @returns String
-   * @short Adds <str> at [index]. Negative values are also allowed.
-   * @extra %insert% is provided as an alias, and is generally more readable when using an index.
-   * @example
-   *
-   *   'schfifty'.add(' five')      -> schfifty five
-   *   'dopamine'.insert('e', 3)       -> dopeamine
-   *   'spelling eror'.insert('r', -3) -> spelling error
-   *
-   ***/
-  'add': function(str, addStr, index) {
-    index = isUndefined(index) ? str.length : index;
-    return str.slice(0, index) + addStr + str.slice(index);
-  },
-
-  /***
-   * @method remove(<f>)
-   * @returns String
-   * @short Removes the first occurrence of <f> in the string.
-   * @extra <f> can be a either case-sensitive string or a regex. In either case only the first match will be removed. To remove multiple occurrences, use %removeAll%.
-   * @example
-   *
-   *   'schfifty five'.remove('f')      -> 'schifty five'
-   *   'schfifty five'.remove(/[a-f]/g) -> 'shfifty five'
-   *
-   ***/
-  'remove': function(str, f) {
-    return str.replace(f, '');
-  },
-
-  /***
-   * @method removeAll(<f>)
-   * @returns String
-   * @short Removes any occurences of <f> in the string.
-   * @extra <f> can be either a case-sensitive string or a regex. In either case all matches will be removed. To remove only a single occurence, use %remove%.
-   * @example
-   *
-   *   'schfifty five'.removeAll('f')     -> 'schity ive'
-   *   'schfifty five'.removeAll(/[a-f]/) -> 'shity iv'
-   *
-   ***/
-  'removeAll': function(str, f) {
-    return stringReplaceAll(str, f);
-  },
-
-  /***
-   * @method reverse()
-   * @returns String
-   * @short Reverses the string.
-   * @example
-   *
-   *   'jumpy'.reverse()        -> 'ypmuj'
-   *   'lucky charms'.reverse() -> 'smrahc ykcul'
-   *
-   ***/
-  'reverse': function(str) {
-    return reverseString(str);
-  },
-
-  /***
-   * @method compact()
-   * @returns String
-   * @short Compacts all white space in the string to a single space and trims the ends.
-   * @example
-   *
-   *   'too \n much \n space'.compact() -> 'too much space'
-   *   'enough \n '.compact()           -> 'enought'
-   *
-   ***/
-  'compact': function(str) {
-    return trim(str).replace(/([\r\n\s　])+/g, function(match, whitespace) {
-      return whitespace === '　' ? whitespace : ' ';
-    });
-  },
-
-  /***
-   * @method from([index] = 0)
-   * @returns String
-   * @short Returns a section of the string starting from [index].
-   * @example
-   *
-   *   'lucky charms'.from()   -> 'lucky charms'
-   *   'lucky charms'.from(7)  -> 'harms'
-   *
-   ***/
-  'from': function(str, from) {
-    return str.slice(numberOrIndex(str, from, true));
-  },
-
-  /***
-   * @method to([index] = end)
-   * @returns String
-   * @short Returns a section of the string ending at [index].
-   * @example
-   *
-   *   'lucky charms'.to()   -> 'lucky charms'
-   *   'lucky charms'.to(7)  -> 'lucky ch'
-   *
-   ***/
-  'to': function(str, to) {
-    if (isUndefined(to)) to = str.length;
-    return str.slice(0, numberOrIndex(str, to));
-  },
-
-  /***
-   * @method dasherize()
-   * @returns String
-   * @short Converts underscores and camel casing to hypens.
-   * @example
-   *
-   *   'a_farewell_to_arms'.dasherize() -> 'a-farewell-to-arms'
-   *   'capsLock'.dasherize()           -> 'caps-lock'
-   *
-   ***/
-  'dasherize': function(str) {
-    return underscore(str).replace(/_/g, '-');
-  },
-
-  /***
-   * @method underscore()
-   * @returns String
-   * @short Converts hyphens and camel casing to underscores.
-   * @example
-   *
-   *   'a-farewell-to-arms'.underscore() -> 'a_farewell_to_arms'
-   *   'capsLock'.underscore()           -> 'caps_lock'
-   *
-   ***/
-  'underscore': function(str) {
-    return underscore(str);
-  },
-
-  /***
-   * @method camelize([first] = true)
-   * @returns String
-   * @short Converts underscores and hyphens to camel case. If [first] is true the first letter will also be capitalized.
-   * @extra If the Inflections module is included acryonyms can also be defined that will be used when camelizing.
-   * @example
-   *
-   *   'caps_lock'.camelize()              -> 'CapsLock'
-   *   'moz-border-radius'.camelize()      -> 'MozBorderRadius'
-   *   'moz-border-radius'.camelize(false) -> 'mozBorderRadius'
-   *
-   ***/
-  'camelize': function(str, first) {
-    return underscore(str).replace(/(^|_)([^_]+)/g, function(match, pre, word, index) {
-      var acronym = getAcronym(word), cap = first !== false || index > 0;
-      if (acronym) return cap ? acronym : acronym.toLowerCase();
-      return cap ? capitalize(word) : word;
-    });
-  },
-
-  /***
-   * @method spacify()
-   * @returns String
-   * @short Converts camel case, underscores, and hyphens to a properly spaced string.
-   * @example
-   *
-   *   'camelCase'.spacify()                         -> 'camel case'
-   *   'an-ugly-string'.spacify()                    -> 'an ugly string'
-   *   'oh-no_youDid-not'.spacify().capitalize(true) -> 'something else'
-   *
-   ***/
-  'spacify': function(str) {
-    return underscore(str).replace(/_/g, ' ');
-  },
-
-  /***
-   * @method titleize()
-   * @returns String
-   * @short Creates a title version of the string.
-   * @extra Capitalizes all the words and replaces some characters in the string to create a nicer looking title. String#titleize is meant for creating pretty output.
-   * @example
-   *
-   *   'man from the boondocks'.titleize() -> 'Man from the Boondocks'
-   *   'x-men: the last stand'.titleize() -> 'X Men: The Last Stand'
-   *   'TheManWithoutAPast'.titleize() -> 'The Man Without a Past'
-   *   'raiders_of_the_lost_ark'.titleize() -> 'Raiders of the Lost Ark'
-   *
-   ***/
-  'titleize': function(str) {
-    var fullStopPunctuation = /[.:;!]$/, hasPunctuation, lastHadPunctuation, isFirstOrLast;
-    str = spacify(str);
-    if (sugarString.Inflector) {
-      str = Inflector.humanize(str);
-    }
-    return eachWord(str, function(word, index, words) {
-      hasPunctuation = fullStopPunctuation.test(word);
-      isFirstOrLast = index == 0 || index == words.length - 1 || hasPunctuation || lastHadPunctuation;
-      lastHadPunctuation = hasPunctuation;
-      if (isFirstOrLast || indexOf(DOWNCASED_WORDS, word) === -1) {
-        return capitalizeWithoutDowncasing(word, true);
-      } else {
-        return word;
+    /***
+     * @method format(<obj1>, <obj2>, ...)
+     * @returns String
+     * @short Replaces tokens in the string marked with `{...}` with variables.
+     * @extra If a single object is passed, its properties can be accessed by keyword like `{name}`. If multiple objects or a non-object are passed, they can be accessed by the argument position like `{0}`. Deep properties can be accessed using deep property format. Braces in the string can be escaped by repeating them. For more see ???
+     * @example
+     *
+     *   'Welcome, Mr. {name}.'.format({ name: 'Franklin' })            -> 'Welcome, Mr. Franklin.'
+     *   'You are {0} years old today.'.format(14)                      -> 'You are 14 years old today.'
+     *   '{0.name} and {1.name}'.format({name:'Cheech'},{name:'Chong'}) -> 'Cheech and Chong'
+     *
+     ***/
+    'format': function(str, args) {
+      var arg1 = args[0] && args[0].valueOf();
+      // Unwrap if a single object is passed in.
+      if (args.length === 1 && isObjectType(arg1)) {
+        args = arg1;
       }
-    }).join(' ');
-  },
-
-  /***
-   * @method truncate(<length>, [from] = 'right', [ellipsis] = '...')
-   * @returns String
-   * @short Truncates a string.
-   * @extra [from] can be %'right'%, %'left'%, or %'middle'%. If the string is shorter than <length>, [ellipsis] will not be added.
-   * @example
-   *
-   *   'sittin on the dock of the bay'.truncate(18)           -> 'just sittin on the do...'
-   *   'sittin on the dock of the bay'.truncate(18, 'left')   -> '...the dock of the bay'
-   *   'sittin on the dock of the bay'.truncate(18, 'middle') -> 'just sitt...of the bay'
-   *
-   ***/
-  'truncate': function(str, length, from, ellipsis) {
-    return truncateString(str, length, from, ellipsis);
-  },
-
-  /***
-   * @method truncateOnWord(<length>, [from] = 'right', [ellipsis] = '...')
-   * @returns String
-   * @short Truncates a string without splitting up words.
-   * @extra [from] can be %'right'%, %'left'%, or %'middle'%. If the string is shorter than <length>, [ellipsis] will not be added.
-   * @example
-   *
-   *   'here we go'.truncateOnWord(5)               -> 'here...'
-   *   'here we go'.truncateOnWord(5, 'left')       -> '...we go'
-   *
-   ***/
-  'truncateOnWord': function(str, length, from, ellipsis) {
-    return truncateString(str, length, from, ellipsis, true);
-  },
-
-  /***
-   * @method pad[Side](<num> = null, [padding] = ' ')
-   * @returns String
-   * @short Pads the string out with [padding] to be exactly <num> characters.
-   *
-   * @set
-   *   pad
-   *   padLeft
-   *   padRight
-   *
-   * @example
-   *
-   *   'wasabi'.pad(8)           -> ' wasabi '
-   *   'wasabi'.padLeft(8)       -> '  wasabi'
-   *   'wasabi'.padRight(8)      -> 'wasabi  '
-   *   'wasabi'.padRight(8, '-') -> 'wasabi--'
-   *
-   ***/
-  'pad': function(str, num, padding) {
-    var half, front, back;
-    num   = coercePositiveInteger(num);
-    half  = max(0, num - str.length) / 2;
-    front = floor(half);
-    back  = ceil(half);
-    return padString(front, padding) + str + padString(back, padding);
-  },
-
-  'padLeft': function(str, num, padding) {
-    num = coercePositiveInteger(num);
-    return padString(max(0, num - str.length), padding) + str;
-  },
-
-  'padRight': function(str, num, padding) {
-    num = coercePositiveInteger(num);
-    return str + padString(max(0, num - str.length), padding);
-  },
-
-  /***
-   * @method first([n] = 1)
-   * @returns String
-   * @short Returns the first [n] characters of the string.
-   * @example
-   *
-   *   'lucky charms'.first()   -> 'l'
-   *   'lucky charms'.first(3)  -> 'luc'
-   *
-   ***/
-  'first': function(str, num) {
-    if (isUndefined(num)) num = 1;
-    return str.substr(0, num);
-  },
-
-  /***
-   * @method last([n] = 1)
-   * @returns String
-   * @short Returns the last [n] characters of the string.
-   * @example
-   *
-   *   'lucky charms'.last()   -> 's'
-   *   'lucky charms'.last(3)  -> 'rms'
-   *
-   ***/
-  'last': function(str, num) {
-    if (isUndefined(num)) num = 1;
-    var start = str.length - num < 0 ? 0 : str.length - num;
-    return str.substr(start);
-  },
-
-  /***
-   * @method toNumber([base] = 10)
-   * @returns Number
-   * @short Converts the string into a number.
-   * @extra Any value with a "." fill be converted to a floating point value, otherwise an integer.
-   * @example
-   *
-   *   '153'.toNumber()    -> 153
-   *   '12,000'.toNumber() -> 12000
-   *   '10px'.toNumber()   -> 10
-   *   'ff'.toNumber(16)   -> 255
-   *
-   ***/
-  'toNumber': function(str, base) {
-    return stringToNumber(str, base);
-  },
-
-  /***
-   * @method capitalize([all] = false)
-   * @returns String
-   * @short Capitalizes the first character in the string and downcases all other letters.
-   * @extra If [all] is true, all words in the string will be capitalized.
-   * @example
-   *
-   *   'hello'.capitalize()           -> 'Hello'
-   *   'hello kitty'.capitalize()     -> 'Hello kitty'
-   *   'hello kitty'.capitalize(true) -> 'Hello Kitty'
-   *
-   *
-   ***/
-  'capitalize': function(str, all) {
-    return capitalize(str, all);
-  },
-
-  /***
-   * @method trim[Side]()
-   * @returns String
-   * @short Removes leading or trailing whitespace from the string.
-   * @extra Whitespace is defined as line breaks, tabs, and any character in the "Space, Separator" Unicode category, conforming to the the ES5 spec.
-   *
-   * @set
-   *   trimLeft
-   *   trimRight
-   *
-   * @example
-   *
-   *   '   wasabi   '.trimLeft()  -> 'wasabi   '
-   *   '   wasabi   '.trimRight() -> '   wasabi'
-   *
-   ***/
-
-  'trimLeft': function(str) {
-    return str.replace(LEFT_TRIM_REG, '');
-  },
-
-  'trimRight': function(str) {
-    return str.replace(RIGHT_TRIM_REG, '');
-  }
-
-});
-
-
-defineInstanceWithArguments(sugarString, {
-
-  /***
-   * @method replaceAll(<f>, [str1], [str2], ...)
-   * @returns String
-   * @short Replaces all occurences of <f> with arguments passed.
-   * @extra This method is intended to be a quick way to perform multiple string replacements quickly when the replacement token differs depending on position. <f> can be either a case-sensitive string or a regex. In either case all matches will be replaced.
-   * @example
-   *
-   *   '-x -y -z'.replaceAll('-', 1, 2, 3) -> '1x 2y 3z'
-   *   'first and second'.replaceAll(/first|second/, '1st', 2nd') -> '1st and 2nd'
-   *
-   ***/
-  'replaceAll': function(str, f, args) {
-    return stringReplaceAll(str, f, args);
-  },
-
-  /***
-   * @method format(<obj1>, <obj2>, ...)
-   * @returns String
-   * @short Replaces tokens in the string marked with `{...}` with variables.
-   * @extra If a single object is passed, its properties can be accessed by keyword like `{name}`. If multiple objects or a non-object are passed, they can be accessed by the argument position like `{0}`. Deep properties can be accessed using deep property format. Braces in the string can be escaped by repeating them. For more see ???
-   * @example
-   *
-   *   'Welcome, Mr. {name}.'.format({ name: 'Franklin' })            -> 'Welcome, Mr. Franklin.'
-   *   'You are {0} years old today.'.format(14)                      -> 'You are 14 years old today.'
-   *   '{0.name} and {1.name}'.format({name:'Cheech'},{name:'Chong'}) -> 'Cheech and Chong'
-   *
-   ***/
-  'format': function(str, args) {
-    var arg1 = args[0] && args[0].valueOf();
-    // Unwrap if a single object is passed in.
-    if (args.length === 1 && isObjectType(arg1)) {
-      args = arg1;
+      return str.replace(STRING_FORMAT_TOKEN_REG, function(match, open, close, empty, key, closeKey) {
+        if (empty) {
+          // {}
+          return empty;
+        } else if (open) {
+          // {{
+          return open.charAt(0);
+        } else if (close && close.length === 2) {
+          // }}
+          return close.charAt(0);
+        } else if (close) {
+          // Unclosed }
+          throw new Error('Unmatched } in format string.');
+        } else if (key && !closeKey) {
+          // Unclosed {
+          throw new Error('Unmatched { in format string.');
+        }
+        return deepGetProperty(args, key);
+      });
     }
-    return str.replace(STRING_FORMAT_TOKEN_REG, function(match, open, close, empty, key, closeKey) {
-      if (empty) {
-        // {}
-        return empty;
-      } else if (open) {
-        // {{
-        return open.charAt(0);
-      } else if (close && close.length === 2) {
-        // }}
-        return close.charAt(0);
-      } else if (close) {
-        // Unclosed }
-        throw new Error('Unmatched } in format string.');
-      } else if (key && !closeKey) {
-        // Unclosed {
-        throw new Error('Unmatched { in format string.');
-      }
-      return deepGetProperty(args, key);
-    });
-  }
 
-});
+  });
 
 
-/***
- * @method insert()
- * @alias add
- *
- ***/
-alias(sugarString, 'insert', 'add');
+  /***
+   * @method insert()
+   * @alias add
+   *
+   ***/
+  alias(sugarString, 'insert', 'add');
 
-buildBase64();
-buildSpecialEntities();
+  buildBase64();
+  buildSpecialEntities();
 
 }).call(this);
