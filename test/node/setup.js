@@ -19,14 +19,25 @@ require('../suite/helpers/array');
 require('../suite/helpers/object');
 
 function notice(message, logFn) {
-  var cols = Math.max(36, message.length + 1);
-  var pad = new Array(Math.floor((cols - message.length) / 2)).join(' ');
+  message = ' ' + message + ' ';
+  var cols = Math.max(38, message.length);
+  var offset = message.length % 2;
+  var half = Math.floor((cols - message.length) / 2);
+  var lPad = new Array(half + offset).join(' ');
+  var rPad = new Array(half + 1).join(' ');
   var sep = new Array(cols).join('-');
   console.info();
+  logFn(sep);
+  logFn(lPad + message + rPad);
+  logFn(sep);
+}
+
+function noticeOneLine(message, logFn) {
+  var cols = Math.max(30, message.length + 1);
+  var pad = new Array(cols - message.length).join('-');
   console.info();
-  logFn(sep);
-  logFn(pad + message + pad);
-  logFn(sep);
+  console.info();
+  logFn('-------- ' + message + ' ' + pad);
   console.info();
 }
 
@@ -35,13 +46,13 @@ function load(loadPath) {
     return require(loadPath);
   } catch (e) {
     var match = loadPath.match(/(sugar(-\w+)?)$/);
-    if (false && match) {
+    if (match) {
       var message = [
         '',
-        '     Package "' + match[1] + '" does not exist!',
+        ' Package "' + match[1] + '" does not exist!',
         (match[2] ?
-        '     Run "gulp build:npm:all" to build all packages.' :
-        '     Run "gulp build:npm" to build it.'
+        ' Run "gulp build:npm:all" to build all packages.' :
+        ' Run "gulp build:npm" to build it.'
         ),
         '',
       ].join('\n');
@@ -99,8 +110,8 @@ module.exports = {
 
   run: function(mod, extended) {
 
-    var Sugar = require(CORE_PACKAGE);
-    testSetGlobal(Sugar);
+    // Set the global object so that the tests can access.
+    Sugar = require(CORE_PACKAGE);
 
     var testName = getTestNameFromModule(mod);
     if (extended) {
@@ -117,6 +128,7 @@ module.exports = {
       // after finished to prepare for next run.
       restoreNativeState();
     }
+    Sugar = null;
     expireCache();
   },
 
@@ -146,7 +158,7 @@ module.exports = {
   },
 
   notice: function(message) {
-    notice(message, logYellow);
+    notice(message, logBlue);
   }
 
 };

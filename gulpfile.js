@@ -157,7 +157,7 @@ function writeFile(outputPath, body) {
 }
 
 function notify(text) {
-  util.log(util.colors.yellow(text));
+  util.log(util.colors.yellow(text + '...'));
 }
 
 function uniq(arr) {
@@ -484,18 +484,18 @@ function getModuleBower(module, mainBower) {
 // -------------- NPM ----------------
 
 function buildNpmDefault() {
-  createNpmPackages(args.p || args.packages || 'main');
+  buildNpmPackages(args.p || args.packages || 'main');
 }
 
 function buildNpmCore() {
-  createNpmPackages('core');
+  buildNpmPackages('core');
 }
 
 function buildNpmAll() {
-  createNpmPackages('all');
+  buildNpmPackages('all');
 }
 
-function createNpmPackages(p) {
+function buildNpmPackages(p) {
 
   function getMethodKey(module, namespace, name) {
     return module + '|' + namespace + '|' + name;
@@ -1940,9 +1940,9 @@ function createNpmPackages(p) {
           });
         }
       });
+      notify('Building ' + npmPackageName);
       createMainEntryPoint(npmPackageName, dir);
       writeLocales(npmPackageName, dir);
-      notify('Built ' + npmPackageName);
     });
   }
 
@@ -1950,11 +1950,10 @@ function createNpmPackages(p) {
   var npmPackages = getNpmPackages(p);
 
   if (needsDependencyTree(npmPackages)) {
-    notify('Building dependency tree...');
+    notify('Building dependency tree');
     buildDependencyTree();
   }
 
-  notify('Building packages...');
   buildPackages(baseDir);
 
 }
@@ -2138,12 +2137,13 @@ function buildDocs() {
 
 
 function runTests(all) {
+  notify(['Running', all ? 'all' : 'default', 'tests'].join(' '));
   reload(all ? './test/node/all' : './test/node');
 }
 
 function testWatch(all) {
   gulp.watch(['lib/**/*.js'], function() {
-    createNpmPackage();
+    buildNpmPackages(all ? 'all' : 'core,main,es6,es7');
     runTests(all);
   });
   gulp.watch(['test/**/*.js'], function() {
