@@ -116,6 +116,7 @@
 
     var totalTests = 0;
     var totalAssertions = 0;
+    var totalSkipped = 0;
     var totalFailed = 0;
 
     arrayEach(packages, function(p) {
@@ -124,6 +125,7 @@
       totalTests++;
       totalAssertions += p.assertions;
       totalFailed += p.failures.length;
+      totalSkipped += p.skipped.length;
       tip += '<h5>' + p.name + (p.subname ? ' | ' + p.subname : '') + '</h5>';
       if(p.failures.length > 0) {
         arrayEach(p.failures, function(f) {
@@ -153,9 +155,10 @@
     });
 
     $('#stats').html([
-      '<span class="failures">' + totalFailed + ' ' + (totalFailed == 1 ? 'failure' : 'failures') + '</span>',
       '<span class="tests">' + totalTests + ' ' + (totalTests == 1 ? 'test' : 'tests') + '</span>',
       '<span class="assertions">' + commaSeparate(totalAssertions) + ' ' + (totalAssertions == 1 ? 'assertion' : 'assertions') + '</span>',
+      '<span class="failures">' + totalFailed + ' ' + (totalFailed == 1 ? 'failure' : 'failures') + '</span>',
+      '<span class="skipped">' + (totalSkipped > 0 ? '(' + totalSkipped + ' skipped)' : '') + '</span>',
       '<span class="runtime">Completed in ' + runtime / 1000 + ' seconds</span>'
     ].join(''));
     $('#tests').html(testHtml);

@@ -222,37 +222,6 @@ package('String | Inflections', function () {
     'jeans'
   ];
 
-  var MixtureToTitleCase = {
-    'active_record'       : 'Active Record',
-    'ActiveRecord'        : 'Active Record',
-    'action web service'  : 'Action Web Service',
-    'Action Web Service'  : 'Action Web Service',
-    'Action web service'  : 'Action Web Service',
-    'actionwebservice'    : 'Actionwebservice',
-    'Actionwebservice'    : 'Actionwebservice',
-    "david's code"        : "David's Code",
-    "David's code"        : "David's Code",
-    "david's Code"        : "David's Code",
-
-    // Added test cases for non-titleized words
-
-    'the day of the jackal'        : 'The Day of the Jackal',
-    'what color is your parachute?': 'What Color Is Your Parachute?',
-    'a tale of two cities'         : 'A Tale of Two Cities',
-    'where am i going to'          : 'Where Am I Going To',
-
-    // From the titleize docs
-    'man from the boondocks'       :  'Man from the Boondocks',
-    'x-men: the last stand'        :  'X Men: The Last Stand',
-    'i am a sentence. and so am i.':  'I Am a Sentence. And so Am I.',
-    'hello! and goodbye!'          :  'Hello! And Goodbye!',
-    'hello, and goodbye'           :  'Hello, and Goodbye',
-    'hello; and goodbye'           :  'Hello; And Goodbye',
-    "about 'you' and 'me'"         :  "About 'You' and 'Me'",
-    'TheManWithoutAPast'           :  'The Man Without a Past',
-    'raiders_of_the_lost_ark'      :  'Raiders of the Lost Ark'
-  }
-
   var CamelToUnderscore = {
     'Product'               : 'product',
     'SpecialGuest'          : 'special_guest',
@@ -321,12 +290,6 @@ package('String | Inflections', function () {
     'employee_salary' : 'Employee salary',
     'employee_id'     : 'Employee',
     'underground'     : 'Underground'
-  }
-
-  var UnderscoresToDashes = {
-    'street'                : 'street',
-    'street_address'        : 'street-address',
-    'person_street_address' : 'person-street-address'
   }
 
   teardown(function() {
@@ -420,12 +383,6 @@ package('String | Inflections', function () {
     equal(run('meecrab', 'singularize'), 'wasabi', 'custom plural -> singular');
   });
 
-  method('titleize', function() {
-    testIterateOverObject(MixtureToTitleCase, function(before, titleized) {
-      test(before, titleized, 'mixed cases')
-    });
-  });
-
   group('Acronyms', function() {
 
     Sugar.String.Inflector.acronym('API');
@@ -465,61 +422,72 @@ package('String | Inflections', function () {
       // ['RoRails',           'ro_rails',           'Ro rails',         'Ro Rails']
     ].forEach(function(set) {
       var camel = set[0], under = set[1], human = set[2], title = set[3];
-      equal(run(under, 'camelize'), camel, 'camelize | under.camelize()')
-      equal(run(camel, 'camelize'), camel, 'camelize | camel.camelize()')
-      equal(run(under, 'underscore'), under, 'underscore | under.underscore()')
-      equal(run(camel, 'underscore'), under, 'underscore | camel.underscore()')
-      equal(run(under, 'titleize'), title, 'titleize | under.titleize()')
-      equal(run(camel, 'titleize'), title, 'titleize | camel.titleize()')
       equal(run(under, 'humanize'), human, 'humanize | under.humanize()')
-    });
 
-  });
-
-
-  method('camelize', function() {
-    Sugar.String.Inflector.acronym('API');
-    Sugar.String.Inflector.acronym('HTML');
-    testIterateOverObject(CamelToUnderscore, function(camel, underscore) {
-      test(underscore, camel, 'mixed cases')
-    });
-    test('Camel_Case', 'CamelCase', 'handles underscores');
-
-    Sugar.String.Inflector.acronym('LegacyApi')
-    test('legacyapi', 'LegacyApi', 'LegacyApi')
-    test('legacy_api', 'LegacyAPI', 'LegacyAPI')
-    test('some_legacyapi', 'SomeLegacyApi', 'SomeLegacyApi')
-    test('nonlegacyapi', 'Nonlegacyapi', 'Nonlegacyapi')
-
-    withArgs([false], function() {
-      test('html_api', 'htmlAPI', 'html_api')
-      test('htmlAPI', 'htmlAPI', 'htmlAPI')
-      test('HTMLAPI', 'htmlAPI', 'HTMLAPI')
-      testIterateOverObject(UnderscoreToLowerCamel, function(under, lowerCamel) {
-        // Sugar differs from ActiveSupport here in that the first character is upcased by default
-        test(under, lowerCamel, 'lower camel')
+      withMethod('camelize', function() {
+        test(under, camel, 'camelize | under.camelize()')
+        test(camel, camel, 'camelize | camel.camelize()')
       });
-      test('Capital', 'capital', 'downcases the first letter');
+
+      withMethod('underscore', function() {
+        test(under, under, 'underscore | under.underscore()')
+        test(camel, under, 'underscore | camel.underscore()')
+      });
+
+      withMethod('titleize', function() {
+        test(under, title, 'titleize | under.titleize()')
+        test(camel, title, 'titleize | camel.titleize()')
+      });
+
+    });
+
+    withMethod('camelize', function() {
+
+      Sugar.String.Inflector.acronym('API');
+      Sugar.String.Inflector.acronym('HTML');
+      testIterateOverObject(CamelToUnderscore, function(camel, underscore) {
+        test(underscore, camel, 'mixed cases')
+      });
+      test('Camel_Case', 'CamelCase', 'handles underscores');
+
+      Sugar.String.Inflector.acronym('LegacyApi')
+      test('legacyapi', 'LegacyApi', 'LegacyApi')
+      test('legacy_api', 'LegacyAPI', 'LegacyAPI')
+      test('some_legacyapi', 'SomeLegacyApi', 'SomeLegacyApi')
+      test('nonlegacyapi', 'Nonlegacyapi', 'Nonlegacyapi')
+
+      withArgs([false], function() {
+        test('html_api', 'htmlAPI', 'html_api')
+        test('htmlAPI', 'htmlAPI', 'htmlAPI')
+        test('HTMLAPI', 'htmlAPI', 'HTMLAPI')
+        testIterateOverObject(UnderscoreToLowerCamel, function(under, lowerCamel) {
+          // Sugar differs from ActiveSupport here in that the first character is upcased by default
+          test(under, lowerCamel, 'lower camel')
+        });
+        test('Capital', 'capital', 'downcases the first letter');
+      });
+
+    });
+
+    withMethod('underscore', function() {
+
+      // Make sure this test doesn't come before "camelize",
+      // or it will affect the "html5" acronym which should not be active at that point.
+
+      Sugar.String.Inflector.acronym('HTML5');
+      Sugar.String.Inflector.acronym('API');
+
+      test('HTML5HTMLAPI', 'html5_html_api', 'HTML5HTMLAPI')
+      testIterateOverObject(CamelToUnderscore, function(camel, underscore) {
+          test(camel, underscore, 'mixed cases')
+      });
+      testIterateOverObject(CamelToUnderscoreWithoutReverse, function(camel, underscore) {
+          test(camel, underscore, 'mixed cases without reverse')
+      });
+
     });
 
   });
-
-  method('underscore', function() {
-    // Make sure this test doesn't come before "camelize",
-    // or it will affect the "html5" acronym which should not be active at that point.
-
-    Sugar.String.Inflector.acronym('HTML5');
-    Sugar.String.Inflector.acronym('API');
-
-    test('HTML5HTMLAPI', 'html5_html_api', 'HTML5HTMLAPI')
-    testIterateOverObject(CamelToUnderscore, function(camel, underscore) {
-        test(camel, underscore, 'mixed cases')
-    });
-    testIterateOverObject(CamelToUnderscoreWithoutReverse, function(camel, underscore) {
-        test(camel, underscore, 'mixed cases without reverse')
-    });
-  });
-
 
   method('parameterize', function() {
 
@@ -564,18 +532,6 @@ package('String | Inflections', function () {
 
     test('col_rpted_bugs', 'Reported bugs', 'Reported bugs')
     test('COL_rpted_bugs', 'Col rpted bugs', 'Col rpted bugs')
-
-  });
-
-  method('dasherize', function() {
-
-    testIterateOverObject(UnderscoresToDashes, function(under, dasherized) {
-        test(under, dasherized, 'basic')
-    });
-
-    testIterateOverObject(UnderscoresToDashes, function(under, dasherized) {
-        equal(run(run(under, 'dasherize'), 'underscore'), under, 'reverse')
-    });
 
   });
 

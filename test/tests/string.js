@@ -743,6 +743,17 @@ package('String', function () {
     test('aManAPlanACanalPanama', 'a-man-a-plan-a-canal-panama', 'single characters');
     test('', '', 'blank');
     test('noFingWay', 'no-fing-way', 'noFingWay');
+
+    test('street', 'street', 'street | basic');
+    test('street_address', 'street-address', 'street-address | basic');
+    test('person_street_address', 'person-street-address', 'person-street-address | basic');
+
+    withMethod('underscore', function() {
+      equal(run(run('street', 'dasherize'), 'underscore'), 'street', 'street | reversed')
+      equal(run(run('street_address', 'dasherize'), 'underscore'), 'street_address', 'street_address | reversed')
+      equal(run(run('person_street_address', 'dasherize'), 'underscore'), 'person_street_address', 'street_address | reversed')
+    });
+
   });
 
 
@@ -777,6 +788,7 @@ package('String', function () {
 
 
   method('underscore', function() {
+
     test('hopOnPop', 'hop_on_pop', 'camel-case');
     test('HopOnPop', 'hop_on_pop', 'camel-case capital first');
     test('HOPONPOP', 'hoponpop', 'all caps');
@@ -789,8 +801,8 @@ package('String', function () {
 
     test('', '', 'blank');
     test('noFingWay', 'no_fing_way', 'noFingWay');
-  });
 
+  });
 
   method('spacify', function() {
     test('hopOnPop', 'hop on pop', 'camel-case');
@@ -1459,6 +1471,44 @@ package('String', function () {
     equal(String.prototype.includes.length, 1, 'should have argument length of 1');
 
     restoreNativeState();
+  });
+
+  method('titleize', function() {
+
+    var MixtureToTitleCase = {
+      'active_record'       : 'Active Record',
+      'ActiveRecord'        : 'Active Record',
+      'action web service'  : 'Action Web Service',
+      'Action Web Service'  : 'Action Web Service',
+      'Action web service'  : 'Action Web Service',
+      'actionwebservice'    : 'Actionwebservice',
+      'Actionwebservice'    : 'Actionwebservice',
+      "david's code"        : "David's Code",
+      "David's code"        : "David's Code",
+      "david's Code"        : "David's Code",
+
+      // Added test cases for non-titleized words
+
+      'the day of the jackal'        : 'The Day of the Jackal',
+      'what color is your parachute?': 'What Color Is Your Parachute?',
+      'a tale of two cities'         : 'A Tale of Two Cities',
+      'where am i going to'          : 'Where Am I Going To',
+
+      // From the titleize docs
+      'man from the boondocks'       :  'Man from the Boondocks',
+      'x-men: the last stand'        :  'X Men: The Last Stand',
+      'i am a sentence. and so am i.':  'I Am a Sentence. And so Am I.',
+      'hello! and goodbye!'          :  'Hello! And Goodbye!',
+      'hello, and goodbye'           :  'Hello, and Goodbye',
+      'hello; and goodbye'           :  'Hello; And Goodbye',
+      "about 'you' and 'me'"         :  "About 'You' and 'Me'",
+      'TheManWithoutAPast'           :  'The Man Without a Past',
+      'raiders_of_the_lost_ark'      :  'Raiders of the Lost Ark'
+    }
+
+    testIterateOverObject(MixtureToTitleCase, function(before, titleized) {
+      test(before, titleized, 'mixed cases')
+    });
   });
 
 });

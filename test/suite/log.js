@@ -21,10 +21,11 @@ logLine = function() {
 }
 
 logResults = function(runtime, results, testName, exitOnFail) {
-  var i, j, failure, totalAssertions = 0, totalFailures = 0;
+  var i, j, failure, totalAssertions = 0, totalFailures = 0, totalSkipped = 0;
   for (i = 0; i < results.length; i += 1) {
     totalAssertions += results[i].assertions;
     totalFailures += results[i].failures.length;
+    totalSkipped += results[i].skipped.length;
     for(j = 0; j < results[i].failures.length; j++) {
       failure = results[i].failures[j];
       logLine();
@@ -48,12 +49,15 @@ logResults = function(runtime, results, testName, exitOnFail) {
   logLine();
   var assertions = formatNumber(totalAssertions);
   var failures   = formatNumber(totalFailures);
+  var skipped   = formatNumber(totalSkipped);
   if (totalFailures === 0) {
     logGreen(testName);
-    logGreen(assertions + ' assertions, ' + failures + ' failures, ' + time + 's');
+    skipped = totalSkipped ? skipped + ' skipped, ' : '';
+    logGreen(assertions + ' assertions, ' + failures + ' failures, ' + skipped + time + 's');
   } else {
     logRed(testName);
-    logRed(assertions + ' assertions, ' + failures + ' failures, ' + time + 's');
+    skipped = totalSkipped ? skipped + ' skipped, ' : '';
+    logRed(assertions + ' assertions, ' + failures + ' failures, ' + skipped + time + 's');
     if (exitOnFail !== false) {
       if (typeof quit !== 'undefined') {
         quit();

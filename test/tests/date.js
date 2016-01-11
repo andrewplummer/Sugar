@@ -1789,7 +1789,7 @@ package('Date', function () {
 
     var dyn = function(value, unit, ms, loc) {
       // One year
-      if(ms < -(365 * 24 * 60 * 60 * 1000)) {
+      if (ms < -(365 * 24 * 60 * 60 * 1000)) {
         return simpleDateFormat;
       }
     }
