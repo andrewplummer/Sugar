@@ -33,17 +33,23 @@
 
   function getTestName() {
     var path = getSplitPath();
-    var testName = capitalize(path[2]);
+    var testName = path[2];
     var isExtended = path[0] === 'extended';
     var isMin = path[1] === 'min';
-    if (isExtended || isMin) {
-      var tokens = [];
-      if (isExtended) {
-        tokens.push('extended');
-      }
-      if (isMin) {
-        tokens.push('minified');
-      }
+    var isNpm = testName.match(/^sugar(-\w+)$/);
+    var tokens = [];
+    if (isNpm) {
+      tokens.push('npm');
+    } else {
+      testName = capitalize(testName);
+    }
+    if (isExtended) {
+      tokens.push('extended');
+    }
+    if (isMin) {
+      tokens.push('minified');
+    }
+    if (tokens.length) {
       testName += ' (' + tokens.join(' | ') + ')';
     }
     return testName;
@@ -52,7 +58,7 @@
   function createHTML() {
     var testName = getTestName();
     var testLink = '<a target="_top" href="' + document.location.pathname + '">' + testName + '</a>';
-    document.title = 'Sugar ' + testName;
+    document.title = testName;
     $(document.body).append([
       '<div class="set">',
         '<h4 class="name">' + testLink + '</h4>',
