@@ -16,7 +16,7 @@ testSetGlobal(Sugar);
 var exitOnFail = true;
 
 function notice(message, logFn) {
-  var cols = 36;
+  var cols = Math.max(36, message.length + 1);
   var pad = new Array(Math.floor((cols - message.length) / 2)).join(' ');
   var sep = new Array(cols).join('-');
   console.info();
@@ -33,8 +33,29 @@ function load(path) {
     // linked to from inside the polyfill package.
     resetPolyfillCache();
   }
-  delete require.cache[require.resolve(path)]
-  return require(path);
+  if (path.match(/foobar/)) {
+    fs.lstatSync(COMPIER_JAR_PATH);
+  }
+  try {
+    return require(path);
+  } catch (e) {
+    var match = path.match(/(sugar(-\w+)?)$/);
+    if (match) {
+      var message = [
+        '',
+        '     Package "' + match[1] + '" does not exist!',
+        (match[2] ?
+        '     Run "gulp build:npm:all" to build all packages.' :
+        '     Run "gulp build:npm" to build it.'
+        ),
+        '',
+      ].join('\n');
+      logYellow(message);
+      process.exit();
+    } else {
+      throw e;
+    }
+  }
 }
 
 function loadLocaleTests() {
