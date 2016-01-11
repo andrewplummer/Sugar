@@ -152,6 +152,10 @@ function getDefaultFlags() {
 
 // -------------- Util ----------------
 
+function readFile(path) {
+  return fs.readFileSync(path, 'utf-8');
+}
+
 function writeFile(outputPath, body) {
   mkdirp.sync(path.dirname(outputPath));
   fs.writeFileSync(outputPath, body, 'utf-8');
@@ -325,7 +329,7 @@ function showHelpMessage() {
     .replace(/%LOCALE_LIST%/g, function(match) {
       return getAllLocales().map(function(l) {
         var code = l.match(/([\w-]+)\.js$/)[1];
-        var name = fs.readFileSync(l, 'utf-8').match(/\* (.+) locale definition/i)[1];
+        var name = readFile(l).match(/\* (.+) locale definition/i)[1];
         return code + ': ' + name;
       }).join('\n      ');
     })
@@ -815,7 +819,7 @@ function buildNpmPackages(p) {
       var commentsByEndLine = {}, namespaceRanges = [], currentNamespaceRange;
 
       var filePath = 'lib/' + module + '.js'
-      var source = fs.readFileSync(filePath, 'utf-8')
+      var source = readFile(filePath)
 
       // --- Comments ---
 
@@ -1833,7 +1837,7 @@ function buildNpmPackages(p) {
     glob.sync('lib/locales/*.js').forEach(function(l) {
       var package = {
         path: path.join('locales', path.basename(l, '.js')),
-        body: fs.readFileSync(l, 'utf-8').replace(/^Sugar\.Date\./gm, ''),
+        body: readFile(l).replace(/^Sugar\.Date\./gm, ''),
         dependencies: ['date|Date|addLocale'],
       };
       writePackage(package, dir);
@@ -1854,8 +1858,16 @@ function buildNpmPackages(p) {
       writeFile(path.join(baseDir, npmPackageName, type + '.json'), json);
     }
 
+    function copyMeta(srcPath) {
+      writeFile(path.join(baseDir, npmPackageName, srcPath), readFile(srcPath));
+    }
+
     buildJSON('package');
     buildJSON('bower');
+    copyMeta('LICENSE');
+    copyMeta('README.md');
+    copyMeta('CHANGELOG.md');
+    copyMeta('CAUTION.md');
   }
 
   function createMainEntryPoint(npmPackageName, dir) {
@@ -1877,11 +1889,10 @@ function buildNpmPackages(p) {
   }
 
   function buildCore(npmPackageName) {
-    var body = fs.readFileSync('lib/core.js', 'utf-8');
     var outputPath = path.join(baseDir, npmPackageName, 'index.js');
     cleanDirectory(path.dirname(outputPath));
     buildMeta(npmPackageName);
-    writeFile(outputPath, body);
+    writeFile(outputPath, readFile('lib/core.js'));
   }
 
   function buildPackages() {
@@ -2074,7 +2085,7 @@ function buildDocs() {
       }
 
       function getGzippedFileSize(path) {
-        return zlib.gzipSync(fs.readFileSync(path, 'utf-8')).length;
+        return zlib.gzipSync(readFile(path)).length;
       }
 
       function getPackageSize(package) {
