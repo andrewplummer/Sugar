@@ -140,7 +140,7 @@ function compileSingle(path) {
 
 function getDefaultFlags() {
   return {
-    jar: COMPIER_JAR_PATH,
+    jar: COMPILER_JAR_PATH,
     compilation_level: 'ADVANCED_OPTIMIZATIONS',
     jscomp_off: ['globalThis', 'misplacedTypeAnnotation', 'checkTypes'],
     output_wrapper: getLicense() + "\n(function(){'use strict';%output%}).call(this);",
@@ -269,12 +269,16 @@ function createDevelopmentBuild(outputPath, p, l) {
   return gulp.src(modules.concat(locales))
     .pipe(concat(filename, { newLine: '' }))
     .pipe(replace(/^\s*'use strict';\n/g, ''))
+    .pipe(replace(/^(?=.)/gm, '  '))
     .pipe(replace(/^([\s\S]+)$/m, template))
-    .pipe(replace(/edge/gm, getVersion()))
+    .pipe(replace(/edge/, getVersion()))
     .pipe(gulp.dest(path.dirname(outputPath)));
 }
 
 function createMinifiedBuild(outputPath, p, l) {
+
+  var through = require('through2');
+
   var modules  = getModuleNames(p);
   var locales  = getLocales(l);
   try {
@@ -283,7 +287,17 @@ function createMinifiedBuild(outputPath, p, l) {
     util.log(util.colors.red('Closure compiler missing!'), 'Run', util.colors.yellow('bower install'));
     return;
   }
-  return gulp.src(modules.concat(locales)).pipe(compileSingle(outputPath));
+  return gulp.src(modules.concat(locales))
+    .pipe(compileSingle(outputPath))
+    .pipe(through.obj(function(file, enc, cb) {
+      setTimeout(function() {
+        // Extremely hacky way of replacing the version in the compiler output
+        // due to the fact that closure-compiler-stream doesn't return a reference
+        // to the final writeStream.
+        writeFile(file.path, readFile(file.path).replace(/edge/, getVersion()));
+      }, 100);
+      cb();
+    }));
 }
 
 function getModuleNames(p) {
@@ -298,7 +312,11 @@ function getModuleNames(p) {
     default:
       names = p.split(',');
   }
-  return uniq(['core', 'common'].concat(names)).map(function(name) {
+  if (!names.length || names[0] !== 'core') {
+    names.unshift('common');
+  }
+  names.unshift('core');
+  return uniq(names).map(function(name) {
     return path.join('lib', name.toLowerCase() + '.js');
   });
 }
@@ -1674,7 +1692,7 @@ function buildNpmPackages(p, dist) {
 
   function getSugarCorePath(package) {
     // TODO: temporary until the core package is created.
-    //return 'sugar-core';
+    return 'sugar-core';
     var base = package ? path.relative(path.dirname(package.path)) : '';
     return path.join(base, '../../../lib', 'core');
   }
@@ -2029,7 +2047,7 @@ function buildNpmPackages(p, dist) {
 
     notify('Building ' + packageName);
     buildPackageMeta(packageName, baseDir, 'npm');
-    writeFile(devFilename, readFile('lib/core.js'));
+    createDevelopmentBuild(devFilename, 'core');
 
     if (dist) {
       streams.push(createMinifiedBuild(minFilename, 'core'));
