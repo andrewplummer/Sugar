@@ -420,24 +420,40 @@ function buildPackageMeta(packageName, dir, type) {
   copyMeta('CAUTION.md');
 }
 
+function copyLocales(l, dir) {
+  mkdirp.sync(dir);
+  getLocales(l).forEach(function(src) {
+    writeFile(path.join(dir, path.basename(src)), readFile(src));
+  });
+}
+
 function buildPackageDist(packageName, dir, type) {
+
   var definition = PACKAGE_DEFINITIONS[packageName];
-  var modules = definition.modules;
-  var locales = definition.locales ? 'all' : '';
-  createDevelopmentBuild(getFullDistFilename(packageName, dir, type), modules, locales);
-  return createMinifiedBuild(getFullDistFilename(packageName, dir, type, true), modules, locales);
-}
+  var distDir    = getDistDirectory(packageName, dir, type);
 
-function getFullDistFilename(packageName, dir, type, min) {
-  if (type === 'bower') {
-    return path.join(dir, packageName, getDistFilename(packageName, min));
-  } else {
-    return path.join(dir, packageName, 'dist', getDistFilename('sugar', min));
+  function writePackaged(modules) {
+    var streams = [];
+    var devFilename = path.join(distDir, getDistFilename(packageName));
+    var minFilename = path.join(distDir, getDistFilename(packageName, true));
+    streams = streams.concat(createDevelopmentBuild(devFilename, modules));
+    streams = streams.concat(createMinifiedBuild(minFilename, modules));
+    return streams;
   }
+
+  if (definition.locales) {
+    copyLocales('all', path.join(distDir, 'locales'));
+  }
+
+  return writePackaged(definition.modules);
 }
 
-function getDistFilename(name, min) {
-  return name + (min ? '.min' : '') + '.js';
+function getDistDirectory(packageName, dir, type) {
+  return path.join(dir, packageName, type === 'bower' ? '' : 'dist');
+}
+
+function getDistFilename(packageName, min) {
+  return packageName + (min ? '.min' : '') + '.js';
 }
 
 function getPackageNames(p) {
@@ -472,13 +488,15 @@ function getPackageJSON(name, basePackage, localPackage) {
   package.name = name;
   package.keywords = getKeywords(name, package.keywords);
   package.description += ' ' + localPackage.description;
-  delete package.main;
   delete package.files;
   delete package.scripts;
   delete package.devDependencies;
 
   // Add sugar-core as a dependency
-  if (name !== 'sugar-core') {
+  if (name === 'sugar-core') {
+    package.main = 'sugar-core.js';
+  } else {
+    delete package.main;
     package.dependencies = {
       'sugar-core': '^' + package.version
     }
@@ -505,7 +523,6 @@ function getBowerJSON(name, baseBower, localBower) {
 var PACKAGE_DEFINITIONS = {
   'sugar': {
     locales: true,
-    extra: 'es5,inflections,language',
     modules: 'es6,es7,string,number,array,enumerable,object,date,range,function,regexp',
     description: 'This build includes all Sugar modules, polyfills, and optional date locales.',
   },
@@ -571,6 +588,12 @@ var PACKAGE_DEFINITIONS = {
     description: 'This build includes helpers for detecting language by character block, full-width <-> half-width character conversion, and Hiragana and Katakana conversions.',
   }
 };
+
+function buildNpmClean() {
+  var dir = args.o || args.output || 'release/npm';
+  var rimraf = require('rimraf');
+  rimraf.sync(dir);
+}
 
 function buildNpmDefault() {
   return buildNpmPackages(args.p || args.packages || 'main', true);
@@ -1948,7 +1971,7 @@ function buildNpmPackages(p, dist) {
   }
 
   function localesIncludedInPackage(npmPackageName) {
-    return npmPackageName === 'sugar' || npmPackageName === 'sugar-date';
+    return !!PACKAGE_DEFINITIONS[npmPackageName].locales;
   }
 
   function writeLocales(npmPackageName, dir) {
@@ -1987,16 +2010,18 @@ function buildNpmPackages(p, dist) {
     writePackage(package, dir);
   }
 
-  function cleanDirectory(dir) {
-    var rimraf = require('rimraf');
-    rimraf.sync(dir);
-  }
-
   function buildCore(npmPackageName) {
-    var outputPath = path.join(baseDir, npmPackageName, 'index.js');
-    cleanDirectory(path.dirname(outputPath));
+
+    var distDir = path.join(baseDir, npmPackageName);
+    var devFilename = path.join(distDir, getDistFilename(npmPackageName));
+    var minFilename = path.join(distDir, getDistFilename(npmPackageName, true));
+
     buildPackageMeta(npmPackageName, baseDir, 'npm');
-    writeFile(outputPath, readFile('lib/core.js'));
+    writeFile(devFilename, readFile('lib/core.js'));
+
+    if (dist) {
+      streams.push(createMinifiedBuild(minFilename, 'core'));
+    }
   }
 
   function build() {
@@ -2006,7 +2031,6 @@ function buildNpmPackages(p, dist) {
         return;
       }
       var dir = path.join(baseDir, npmPackageName)
-      cleanDirectory(dir);
       iter(packagesByModuleName, function(module, packages) {
         if (moduleIncludedInPackage(npmPackageName, module)) {
           packages.forEach(function(p) {
@@ -2250,9 +2274,10 @@ gulp.task('build',     buildDefault);
 gulp.task('build:dev', buildDevelopment);
 gulp.task('build:min', buildMinified);
 
-gulp.task('build:npm',      buildNpmDefault);
-gulp.task('build:npm:core', buildNpmCore);
-gulp.task('build:npm:all',  buildNpmAll);
+gulp.task('build:npm',       buildNpmDefault);
+gulp.task('build:npm:clean', buildNpmClean);
+gulp.task('build:npm:core',  buildNpmCore);
+gulp.task('build:npm:all',   buildNpmAll);
 
 gulp.task('precompile:dev', precompileDev);
 gulp.task('precompile:min', precompileMin);
