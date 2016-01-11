@@ -37,6 +37,13 @@ function load(path) {
   return require(path);
 }
 
+function loadLocaleTests() {
+  var path = require('path'), fs = require('fs');
+  fs.readdirSync(path.join(__dirname, '../tests/locales')).forEach(function(file) {
+    load(path.relative(__dirname, path.join('./test/tests/locales', file)));
+  });
+}
+
 function resetPolyfillCache() {
   for (var path in require.cache) {
     if(!require.cache.hasOwnProperty(path)) continue;
@@ -69,6 +76,10 @@ module.exports = {
 
   loadTest: function(name) {
     return load('../tests/' + name);
+  },
+
+  loadLocaleTests: function() {
+    loadLocaleTests();
   },
 
   run: function(mod, extended) {
