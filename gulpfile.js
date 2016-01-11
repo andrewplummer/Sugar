@@ -17,6 +17,106 @@ function buildRelease() {
   return merge(buildDevelopment('default'), buildMinified('default'));
 }
 
+// -------------- help ----------------
+
+var HELP_MESSAGE = [
+  '',
+  '    %Usage%',
+  '',
+  '      gulp [TASK] [OPTIONS]',
+  '',
+  '    %Tasks%',
+  '',
+  '      |build|                        Create development and minified build.',
+  '      |build:dev|                    Create development build (concatenate files only).',
+  '      |build:min|                    Create minified build (closure compiler).',
+  '',
+  '      |build:npm|                    Builds npm packages ("sugar" by default).',
+  '      |build:npm:core|               Builds "sugar-core" npm package.',
+  '      |build:npm:all|                Builds all npm packages (slow).',
+  '      |build:npm:clean|              Cleans npm package output directory ("release/npm" by default).',
+  '',
+  '      |build:bower|                  Builds bower packages ("sugar" by default).',
+  '      |build:bower:all|              Builds all bower packages (slow).',
+  '      |build:bower:clean|            Cleans bower package output directory ("release/bower" by default).',
+  '',
+  '      |test|                         Run default test suite.',
+  '      |test:all|                     Run all tests.',
+  '',
+  '      |watch|                        Watch for changes and reload default test suite.',
+  '      |watch:all|                    Watch for changes and reload all tests.',
+  '',
+  '      |release|                      Builds all bundles and npm packages.',
+  '',
+  '      |docs|                         Builds docs as JSON.',
+  '',
+  '      |help|                         Show this message.',
+  '',
+  '    %Options%',
+  '',
+  '      -m, --modules MODULES        Comma separated modules to include (build task only).',
+  '                                   Modules below (non-default marked with |*|).',
+  '',
+  '      -l, --locales LOCALES        Comma separated date locales to include (build task only).',
+  '                                   English is included in the date module by default.',
+  '',
+  '      -p, --packages PACKAGES      Comma separated packages to build (npm and bower tasks only).',
+  '      -o, --output OUTPUT          Output path (default is "sugar.js" or "sugar.min.js").',
+  '      -v, --version VERSION        Version token to be exported into bundles.',
+  '',
+  '    %Modules%',
+  '',
+  '      es5 |*|',
+  '      es6',
+  '      es7',
+  '      array',
+  '      date',
+  '      function',
+  '      number',
+  '      object',
+  '      range',
+  '      regexp',
+  '      string',
+  '      language |*|',
+  '      inflections |*|',
+  '',
+  '    %Locales%',
+  '',
+  '      %LOCALE_LIST%',
+  '',
+  '    %Notes%',
+  '',
+  '      The es5 module is no longer default in Sugar builds. It should be',
+  '      added if ES5 compatibility is required in environments where it',
+  '      does not exist (most commonly IE8 and below).',
+  '',
+  '      The es6/es7 modules are default and include minimal polyfills required',
+  '      by Sugar. They can be removed if support can be guaranteed, either',
+  '      natively or through a polyfill library.',
+  '',
+].join('\n');
+
+function showHelpMessage() {
+  var msg = HELP_MESSAGE
+    .replace(/%LOCALE_LIST%/g, function(match) {
+      return getAllLocales().map(function(l) {
+        var code = l.match(/([\w-]+)\.js$/)[1];
+        var name = readFile(l).match(/\* (.+) locale definition/i)[1];
+        return code + ': ' + name;
+      }).join('\n      ');
+    })
+    .replace(/%\w+%/g, function(match) {
+      return util.colors.underline(match.replace(/%/g, ''));
+    })
+  .replace(/\|.+\|/g, function(match) {
+    if(match === '|*|') {
+      return util.colors.yellow(match.replace(/\|/g, ''));
+    } else {
+      return util.colors.yellow(match.replace(/\|/g, ''));
+    }
+  });
+  console.log(msg);
+}
 
 // -------------- Compiler ----------------
 
@@ -133,7 +233,7 @@ function buildDefault() {
 
 function buildDevelopment() {
   var filename = args.o || args.output || 'sugar.js';
-  var modules = args.p || args.modules || 'default';
+  var modules = args.m || args.modules || 'default';
   var locales = args.l || args.locales;
   notify('Exporting ' + getBuildMessage(filename, modules, locales));
   createDevelopmentBuild(filename, modules, locales);
@@ -141,7 +241,7 @@ function buildDevelopment() {
 
 function buildMinified() {
   var filename = args.o || args.output || 'sugar.min.js';
-  var modules = args.p || args.modules || 'default';
+  var modules = args.m || args.modules || 'default';
   var locales = args.l || args.locales;
   notify('Minifying: ' + getBuildMessage(filename, modules, locales));
   createMinifiedBuild(filename, modules, locales);
@@ -277,83 +377,6 @@ function getCompilerModules(files) {
     modules.push(['locales:' + locales.length + ':core'].concat(locales));
   }
   return modules;
-}
-
-// -------------- help ----------------
-
-var HELP_MESSAGE = [
-  '',
-  '    %Usage%',
-  '',
-  '      gulp [TASK] [OPTIONS]',
-  '',
-  '    %Tasks%',
-  '',
-  '      |build|                        Create development and minified build.',
-  '      |build:dev|                    Create development build (concatenate files only).',
-  '      |build:min|                    Create minified build.',
-  '',
-  '      |help|                         Show this message.',
-  '',
-  '    %Options%',
-  '',
-  '      -m, --modules MODULES        Comma separated modules to include (optional). Modules below (non-default marked with |*|).',
-  '      -l, --locales LOCALES        Comma separated date locales to include (optional, list below). English is included by default.',
-  '      -o, --output OUTPUT          Output path (default is "sugar.js" or "sugar.min.js").',
-  '',
-  '    %Modules%',
-  '',
-  '      es6',
-  '      es7',
-  '      array',
-  '      date',
-  '      function',
-  '      number',
-  '      object',
-  '      range',
-  '      regexp',
-  '      string',
-  '      es5 |*|',
-  '      locales |*|',
-  '      language |*|',
-  '      inflections |*|',
-  '',
-  '    %Locales%',
-  '',
-  '      %LOCALE_LIST%',
-  '',
-  '    %Notes%',
-  '',
-  '      The es5 module is no longer default in Sugar builds. It should be',
-  '      added if ES5 compatibility is required in environments where it',
-  '      does not exist (most commonly IE8 and below).',
-  '',
-  '      The es6/es7 modules are default and include minimal polyfills required',
-  '      by Sugar. They can be removed if support can be guaranteed, either',
-  '      natively or through a polyfill library.',
-  '',
-].join('\n');
-
-function showHelpMessage() {
-  var msg = HELP_MESSAGE
-    .replace(/%LOCALE_LIST%/g, function(match) {
-      return getAllLocales().map(function(l) {
-        var code = l.match(/([\w-]+)\.js$/)[1];
-        var name = readFile(l).match(/\* (.+) locale definition/i)[1];
-        return code + ': ' + name;
-      }).join('\n      ');
-    })
-    .replace(/%\w+%/g, function(match) {
-      return util.colors.underline(match.replace(/%/g, ''));
-    })
-  .replace(/\|.+\|/g, function(match) {
-    if(match === '|*|') {
-      return util.colors.yellow(match.replace(/\|/g, ''));
-    } else {
-      return util.colors.cyan(match.replace(/\|/g, ''));
-    }
-  });
-  console.log(msg);
 }
 
 // -------------- precompile ----------------
@@ -2275,38 +2298,9 @@ gulp.task('build:npm:all',   buildNpmAll);
 gulp.task('precompile:dev', precompileDev);
 gulp.task('precompile:min', precompileMin);
 
-gulp.task('test',               testRunDefault);
-gulp.task('test:all',           testRunAll);
-gulp.task('test:watch',         testWatchDefault);
-gulp.task('test:watch:all',     testWatchAll);
+gulp.task('test',           testRunDefault);
+gulp.task('test:all',       testRunAll);
 
-
-// TODO: REMOVE?
-//gulp.task('npm', function() {
-  //var streams = [];
-  //var mainPackage = require('./package.json');
-  //var mainBower = require('./bower.json');
-  //for (var i = 0; i < NPM_MODULES.length; i++) {
-    //var module = NPM_MODULES[i];
-    //var path = 'release/npm/' + module.name + '/';
-    //mkdirp.sync(path);
-    //fs.writeFileSync(path + 'package.json', getModulePackage(module, mainPackage));
-    //fs.writeFileSync(path + 'bower.json', getModuleBower(module, mainBower));
-    //streams.push(buildDevelopment(module.files, path + module.name));
-    //streams.push(gulp.src(['LICENSE', 'README.md', 'CHANGELOG.md']).pipe(gulp.dest(path)));
-  //}
-  //return merge(streams);
-//});
-
-// TODO: REMOVE?
-//gulp.task('npm:min', function() {
-  //var streams = [];
-  //for (var i = 0; i < NPM_MODULES.length; i++) {
-    //var module = NPM_MODULES[i];
-    //var path = 'release/npm/' + module.name + '/';
-    //mkdirp.sync(path);
-    //streams.push(buildMinified(module.files, path + module.name));
-  //}
-  //return merge(streams);
-//});
+gulp.task('watch',     testWatchDefault);
+gulp.task('watch:all', testWatchAll);
 
