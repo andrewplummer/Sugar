@@ -73,7 +73,7 @@ var HELP_MESSAGE = [
 
 var COPYRIGHT = [
   '/*',
-  ' *  Sugar Library VERSION',
+  ' *  Sugar Library edge',
   ' *',
   ' *  Freely distributable and licensed under the MIT-style license.',
   ' *  Copyright (c) YEAR Andrew Plummer',
@@ -226,7 +226,7 @@ function createDevelopmentBuild(outputPath, p, l) {
     .pipe(concat(filename, { newLine: '' }))
     .pipe(replace(/^\s*'use strict';\n/g, ''))
     .pipe(replace(/^([\s\S]+)$/m, template))
-    .pipe(replace(/VERSION/gm, getVersion()))
+    .pipe(replace(/edge/gm, getVersion()))
     .pipe(gulp.dest(path.dirname(outputPath)));
 }
 
@@ -273,7 +273,7 @@ function getLocales(l) {
 function getLicense() {
   return COPYRIGHT
     .replace(/YEAR/, new Date().getFullYear())
-    .replace(/VERSION/, getVersion(true))
+    .replace(/edge/, getVersion(true))
     .replace(/\n$/, '');
 }
 
