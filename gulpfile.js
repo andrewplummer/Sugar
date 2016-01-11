@@ -488,6 +488,14 @@ function buildNpmAll() {
 
 function createNpmPackages(p) {
 
+  function getMethodKey(module, namespace, name) {
+    return module + '|' + namespace + '|' + name;
+  }
+
+  function getSugarMethod(module, namespace, name) {
+    return sugarMethods[getMethodKey(module, namespace, name)];
+  }
+
   // Top level internal functions
   var topLevel = {
     'Sugar': {
@@ -945,12 +953,8 @@ function createNpmPackages(p) {
 
       // --- Packages ---
 
-      function getFullMethodKeyForNode(node, name) {
-        return getFullMethodKey(getNamespaceForNode(node), name);
-      }
-
-      function getFullMethodKey(namespace, name) {
-        return module + '|' + namespace + '|' + name;
+      function getMethodKeyForNode(node, name) {
+        return getMethodKey(module, getNamespaceForNode(node), name);
       }
 
       function getBundleName(node, type) {
@@ -1056,7 +1060,6 @@ function createNpmPackages(p) {
       }
 
       function addSugarPackage(name, node, opts) {
-        var methodKey = getFullMethodKeyForNode(node, name);
         var namespace = getNamespaceForNode(node);
         var package = {
           name: name,
@@ -1081,7 +1084,7 @@ function createNpmPackages(p) {
         } else if (opts.body) {
           appendBody(package, getNodeBody(node));
         }
-        sugarMethods[methodKey] = package;
+        sugarMethods[getMethodKeyForNode(node, name)] = package;
       }
 
       function buildSugarDefineBlock(node, namespace, opts) {
@@ -1118,7 +1121,7 @@ function createNpmPackages(p) {
           deps: true,
           body: true,
           export: true,
-          requires: getFullMethodKeyForNode(node, sourceName),
+          requires: getMethodKeyForNode(node, sourceName),
         });
       }
 
@@ -1366,7 +1369,7 @@ function createNpmPackages(p) {
           if (isHashBuild && isMethodNameDeclaration(node)) {
             var methods = node.declarations[0].init.elements;
             methods.map(function(node) {
-              appendRequires(mainPackage, getFullMethodKeyForNode(node, node.value));
+              appendRequires(mainPackage, getMethodKeyForNode(node, node.value));
             });
           } else if (isMethodBlock(node)) {
             var methods = node.expression.arguments[1].properties;
@@ -1390,14 +1393,13 @@ function createNpmPackages(p) {
           } else if (isAliasExpression(node)) {
             var name = node.expression.arguments[1].value;
             var sourceName = node.expression.arguments[2].value;
-            var sugarMethodName = getFullMethodKeyForNode(node, sourceName);
             addSugarBuiltMethod(name, node, mainPackage);
-            appendRequires(mainPackage, sugarMethodName);
+            appendRequires(mainPackage, getMethodKeyForNode(node, sourceName));
           }
         });
 
         if (isHashBuild) {
-          var extendedPackage = sugarMethods['object|Object|extended'];
+          var extendedPackage = getSugarMethod('object', 'Object', 'extended');
           appendRequires(extendedPackage, fnPackage.name);
         }
 
@@ -1870,13 +1872,23 @@ function createNpmPackages(p) {
     if (!localesIncludedInPackage(npmPackageName)) {
       return;
     }
+    var entryPoint = {
+      path: 'locales/index',
+    };
+    var entryPointBody = [];
     glob.sync('lib/locales/*.js').forEach(function(l) {
-      writePackage({
+      var package = {
         path: path.join('locales', path.basename(l, '.js')),
         body: fs.readFileSync(l, 'utf-8').replace(/^Sugar\.Date\./gm, ''),
         dependencies: ['date|Date|addLocale'],
-      }, dir);
+      };
+      writePackage(package, dir);
+      entryPointBody.push(getRequireStatement(entryPoint, package, true));
     });
+    var getAll = getSugarMethod('date', 'Date', 'getAllLocales');
+    entryPoint.exports = getRequireStatement(entryPoint, getAll) + '()';
+    entryPoint.body = entryPointBody.join('\n');
+    writePackage(entryPoint, dir);
   }
 
   function createMainEntryPoint(npmPackageName, dir) {
@@ -2131,8 +2143,8 @@ function testWatchAll() {
 // -------------- Tasks ----------------
 
 gulp.task('default', showHelpMessage);
-gulp.task('help', showHelpMessage);
-gulp.task('docs', buildDocs);
+gulp.task('help',    showHelpMessage);
+gulp.task('docs',    buildDocs);
 gulp.task('release', buildRelease);
 
 
