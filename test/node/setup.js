@@ -1,5 +1,14 @@
 // Node test suite
 
+var fs = require('fs');
+var path = require('path');
+
+// TODO: Move this to sugar-core when its ready
+var CORE_PACKAGE = '../../lib/core';
+
+var exitOnFail = true;
+var baseDir = path.resolve(__dirname, '../..');
+
 sinon = require('sinon');
 require('../suite/suite');
 require('../suite/log');
@@ -8,12 +17,6 @@ require('../suite/helpers/core');
 require('../suite/helpers/date');
 require('../suite/helpers/array');
 require('../suite/helpers/object');
-
-// TODO: Move this to sugar-core when its ready
-var Sugar = require('../../lib/core');
-testSetGlobal(Sugar);
-
-var exitOnFail = true;
 
 function notice(message, logFn) {
   var cols = Math.max(36, message.length + 1);
@@ -27,20 +30,12 @@ function notice(message, logFn) {
   console.info();
 }
 
-function load(path) {
-  if (path.match(/es[567]$/)) {
-    // Need to manually expire this as it's being
-    // linked to from inside the polyfill package.
-    resetPolyfillCache();
-  }
-  if (path.match(/foobar/)) {
-    fs.lstatSync(COMPIER_JAR_PATH);
-  }
+function load(loadPath) {
   try {
-    return require(path);
+    return require(loadPath);
   } catch (e) {
-    var match = path.match(/(sugar(-\w+)?)$/);
-    if (match) {
+    var match = loadPath.match(/(sugar(-\w+)?)$/);
+    if (false && match) {
       var message = [
         '',
         '     Package "' + match[1] + '" does not exist!',
@@ -59,17 +54,16 @@ function load(path) {
 }
 
 function loadLocaleTests() {
-  var path = require('path'), fs = require('fs');
   fs.readdirSync(path.join(__dirname, '../tests/locales')).forEach(function(file) {
     load(path.relative(__dirname, path.join('./test/tests/locales', file)));
   });
 }
 
-function resetPolyfillCache() {
+function expireCache() {
   for (var path in require.cache) {
     if(!require.cache.hasOwnProperty(path)) continue;
-    var path = require.resolve(path);
-    if (path.match(/polyfills\/\w+\/\w+\.js$/)) {
+    if (path.indexOf(baseDir) === 0 && !path.match(/node_modules/)) {
+      // console.info('EXPIRING:', path);
       delete require.cache[path]
     }
   };
@@ -105,6 +99,9 @@ module.exports = {
 
   run: function(mod, extended) {
 
+    var Sugar = require(CORE_PACKAGE);
+    testSetGlobal(Sugar);
+
     var testName = getTestNameFromModule(mod);
     if (extended) {
       storeNativeState();
@@ -120,6 +117,7 @@ module.exports = {
       // after finished to prepare for next run.
       restoreNativeState();
     }
+    expireCache();
   },
 
   runExtended: function(mod) {
