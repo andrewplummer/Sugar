@@ -5,6 +5,7 @@
   var testExtended;
   var currentTest;
   var currentArgs;
+  var currentMethod;
   var currentPackage;
 
   // The global context
@@ -55,6 +56,7 @@
       subname: split[1],
       focused: !!focused,
       assertions: 0,
+      skipped: [],
       failures: []
     };
     packages.push(currentPackage);
@@ -144,6 +146,18 @@
     currentArgs = null;
   }
 
+  withMethod = function(name, fn) {
+    var packageName = currentTest.package.name;
+    if (!Sugar[packageName][name]) {
+      var key = [packageName, currentTest.name, name].join(' | ')
+      currentTest.package.skipped.push(key);
+      return;
+    }
+    currentMethod = name;
+    fn();
+    currentMethod = null;
+  }
+
   test = function (subject) {
     var args, expected, message;
     switch(arguments.length) {
@@ -165,7 +179,7 @@
   }
 
   run = function (subject, methodName, args) {
-    methodName = methodName || currentTest.name;
+    methodName = methodName || currentMethod || currentTest.name;
     args = args || currentArgs || [];
     if(testExtended) {
       var globalObject = globalContext[currentTest.package.name], fn;

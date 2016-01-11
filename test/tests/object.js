@@ -530,7 +530,7 @@ package('Object', function () {
     var obj2 = {a:{b:{c:{one:7,three:9}}}};
     var expected = {a:{b:{c:{one:12,two:10,three:9}}}};
     var fn = function(prop, a, b) {
-      if(typeof a === 'number' || typeof b === 'number') {
+      if (typeof a === 'number' || typeof b === 'number') {
         return (a || 0) + (b || 0);
       }
       return Sugar;
@@ -694,9 +694,9 @@ package('Object', function () {
     }
 
     var fn = function(key, a, b) {
-      if(key == 'str') {
+      if (key == 'str') {
         return 'conflict!';
-      } else if(key == 'num') {
+      } else if (key == 'num') {
         return a + b;
       } else {
         return b;
@@ -1140,7 +1140,7 @@ package('Object', function () {
 
     // Issue #396 cloning objects with accessors.
 
-    if(definePropertySupport) {
+    if (definePropertySupport) {
       var template = {
         data: { label: 'original label' }
       };
@@ -1164,7 +1164,7 @@ package('Object', function () {
     raisesError(function(){ run(Object, 'clone', [new Foo]); }, 'should raise an error if clone is not a basic object type');
 
     // Issue #256
-    if(Sugar.Date.clone) {
+    if (Sugar.Date.clone) {
       var date = Sugar.Date.setUTC(new Date(), true);
       equal(testIsUTC(date), true, 'utc flag is set');
       equal(testIsUTC(run(Object, 'clone', [date])), true, 'should preserve utc flag when set');
@@ -1332,7 +1332,7 @@ package('Object', function () {
     equal([1,2,3,4,5].tap('pop').map(map), expected, 'Object#tap | string shortcut | pop the array');
     equal([1,2].tap(function() { this.push(3, 4); }).map(map), expected, 'Object#tap | push to the array');
     equal([1,2].tap('push', 3, 4).map(map), [2,4], 'Object#tap | string shortcut | passing arguments is not supported');
-    equal([1,2,3,4].tap(function(){ if(this[this.length - 1] === 5) this.pop(); }).map(map), expected, 'Object#tap | checking last');
+    equal([1,2,3,4].tap(function(){ if (this[this.length - 1] === 5) this.pop(); }).map(map), expected, 'Object#tap | checking last');
 
 
     var obj = { foo: 'bar' };
@@ -1419,7 +1419,7 @@ package('Object', function () {
     test(Object, {}, 'will not die if no arguments');
     equal(run(Object, 'fromQueryString', ['foo=bar&moo=car']).keys, undefined, 'should not be extended');
 
-    if(typeof window !== 'undefined') {
+    if (typeof window !== 'undefined') {
       equal(typeof run(Object, 'fromQueryString', [window.location]), 'object', 'can handle just window.location');
     }
 
@@ -1565,7 +1565,7 @@ package('Object', function () {
     equal(run(Object, 'tap', [[1,2,3,4,5], 'pop']).map(map), expected, 'string shortcut | pop the array');
     equal(run(Object, 'tap', [[1,2], function() { this.push(3, 4); }]).map(map), expected, 'push to the array');
     equal(run(Object, 'tap', [[1,2], 'push', 3, 4]).map(map), [2,4], 'string shortcut | not supported');
-    equal(run(Object, 'tap', [[1,2,3,4], function(){ if(this[this.length - 1] === 5) this.pop(); }]).map(map), expected, 'checking last');
+    equal(run(Object, 'tap', [[1,2,3,4], function(){ if (this[this.length - 1] === 5) this.pop(); }]).map(map), expected, 'checking last');
 
 
     var obj = { foo: 'bar' };
@@ -2308,11 +2308,11 @@ package('Object', function () {
     equal(typeof run(Object, 'select', [obj,  'one']).select, 'undefined', 'non-Hash should return non Hash');
     equal(typeof run(Object, 'select', [obj,  ['two', 'three']]).select, 'undefined', 'non-Hash should return non Hash');
 
-    if (Sugar.Object.extended) {
+    withMethod('extended', function() {
       var obj3 = Sugar.Object.extended(obj);
       equal(typeof run(Object, 'select', [obj3, 'one']).select, 'function', 'Hash should return Hash');
       equal(typeof run(Object, 'select', [obj3, ['two', 'three']]).select, 'function', 'Hash should return Hash');
-    }
+    });
 
   });
 

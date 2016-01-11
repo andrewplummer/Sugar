@@ -136,6 +136,9 @@ v2.0.0+
 - Level: Minor
   - `String#stripTags` and `String#removeTags` no longer accept enumerated arguments. Simply pass an array of tags to remove multiple.
 
+- Level: Minor
+  - `String#titleize` was moved from the Inflections package to String.
+
 - Level: Very Minor
   - `Array#map`, `Array#unique`, `Array#groupBy`, `Array#min`, `Array#max`, `Array#least`, `Array#most`, `Array#sortBy`: Mapping shortcut strings now accept deep matchers with the dot `.` token. If you have objects that use `.` in the keys and are using these methods, be careful as this now makes the methods try to go deep. Pass a function instead to map as before.
 
