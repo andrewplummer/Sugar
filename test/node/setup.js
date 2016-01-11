@@ -83,14 +83,10 @@ function getTestNameFromModule(mod) {
   var match = mod.filename.match(/(\w+)\/([\w-]+)\.js$/);
   var type = match[1];
   var name = match[2];
-  if (name === 'regexp') {
-    name = 'RegExp';
-  } else if (name.match(/^es\d/)) {
-    name = name.toUpperCase();
-  } else {
-    name = name.slice(0, 1).toUpperCase() + name.slice(1);
+  if (name === 'default') {
+    name = 'Bundled (sugar.js)';
   }
-  return type === 'extended' ? name + ' - Extended' : name;
+  return name;
 }
 
 module.exports = {
@@ -107,10 +103,12 @@ module.exports = {
     loadLocaleTests();
   },
 
-  run: function(mod, extended) {
+  run: function(mod, extended, localSugar) {
 
     // Set the global object so that the tests can access.
-    Sugar = require(CORE_PACKAGE);
+    // Local sugar is to allow testing of the concatenated
+    // build instead of modular npm packages.
+    Sugar = localSugar || require(CORE_PACKAGE);
 
     var testName = getTestNameFromModule(mod);
     if (extended) {
@@ -131,8 +129,8 @@ module.exports = {
     expireCache();
   },
 
-  runExtended: function(mod) {
-    this.run(mod, true);
+  runExtended: function(mod, localSugar) {
+    this.run(mod, true, localSugar);
   },
 
   resetPolyfills: function(name) {
