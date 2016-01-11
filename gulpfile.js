@@ -1,129 +1,38 @@
-// TODO: require on demand??
 var fs       = require('fs'),
     gulp     = require('gulp'),
     glob     = require('glob'),
-    zlib     = require('zlib'),
     path     = require('path'),
     args     = require('yargs').argv,
     util     = require('gulp-util'),
     mkdirp   = require('mkdirp'),
     merge    = require('merge-stream'),
     concat   = require('gulp-concat-util'),
-    replace  = require('gulp-replace'),
-    through  = require('through2'),
-    reload   = require('require-reload')(require),
-    compiler = require('closure-compiler-stream');
+    replace  = require('gulp-replace');
 
-var COMPIER_JAR_PATH = 'bower_components/closure-compiler/compiler.jar';
-var PRECOMPILED_MIN_DIR = 'release/precompiled/minified/';
-var PRECOMPILED_DEV_DIR = 'release/precompiled/development/';
 
-var HELP_MESSAGE = [
-  '',
-  '    %Usage%',
-  '',
-  '      gulp [TASK] [OPTIONS]',
-  '',
-  '    %Tasks%',
-  '',
-  '      |build|                        Create development and minified build.',
-  '      |build:dev|                    Create development build (concatenate files only).',
-  '      |build:min|                    Create minified build.',
-  '',
-  '      |help|                         Show this message.',
-  '',
-  '    %Options%',
-  '',
-  '      -m, --modules MODULES        Comma separated modules to include (optional). Modules below (non-default marked with |*|).',
-  '      -l, --locales LOCALES        Comma separated date locales to include (optional, list below). English is included by default.',
-  '      -o, --output OUTPUT          Output path (default is "sugar.js" or "sugar.min.js").',
-  '',
-  '    %Modules%',
-  '',
-  '      es6',
-  '      es7',
-  '      array',
-  '      date',
-  '      function',
-  '      number',
-  '      object',
-  '      range',
-  '      regexp',
-  '      string',
-  '      es5 |*|',
-  '      locales |*|',
-  '      language |*|',
-  '      inflections |*|',
-  '',
-  '    %Locales%',
-  '',
-  '      %LOCALE_LIST%',
-  '',
-  '    %Notes%',
-  '',
-  '      The es5 module is no longer default in Sugar builds. It should be',
-  '      added if ES5 compatibility is required in environments where it',
-  '      does not exist (most commonly IE8 and below).',
-  '',
-  '      The es6/es7 modules are default and include minimal polyfills required',
-  '      by Sugar. They can be removed if support can be guaranteed, either',
-  '      natively or through a polyfill library.',
-  '',
-].join('\n');
+// -------------- Release ----------------
 
-var COPYRIGHT = [
-  '/*',
-  ' *  Sugar Library edge',
-  ' *',
-  ' *  Freely distributable and licensed under the MIT-style license.',
-  ' *  Copyright (c) YEAR Andrew Plummer',
-  ' *  http://sugarjs.com/',
-  ' *',
-  ' * ---------------------------- */'
-].join('\n');
+function buildRelease() {
+  notify('Building release: ' + getVersion());
+  return merge(buildDevelopment('default'), buildMinified('default'));
+}
 
-// TODO: rename all these to modules??
-var DEFAULT_MODULES = [
-  'es6',
-  'es7',
-  'date',
-  'range',
-  'number',
-  'function',
-  'enumerable',
-  'array',
-  'object',
-  'regexp',
-  'string'
-];
-
-var ALL_MODULES = [
-  'es5',
-  'es6',
-  'es7',
-  'date',
-  'range',
-  'number',
-  'function',
-  'array',
-  'object',
-  'enumerable',
-  'regexp',
-  'string',
-  'inflections',
-  'language'
-];
 
 // -------------- Compiler ----------------
 
-function compileModules(modules) {
+var COMPILER_JAR_PATH = 'bower_components/closure-compiler/compiler.jar';
+
+function compileModules(modules, path) {
+  var compiler = require('closure-compiler-stream');
   var flags = getDefaultFlags();
   flags.module = modules;
-  flags.module_output_path_prefix = PRECOMPILED_MIN_DIR;
+  flags.module_output_path_prefix = path;
   return compiler(flags);
 }
 
 function compileSingle(path) {
+  var compiler = require('closure-compiler-stream');
+
   var flags = getDefaultFlags();
   flags.js_output_file = path;
   return compiler(flags);
@@ -173,14 +82,49 @@ function iter(obj, fn) {
   };
 }
 
-// -------------- Release ----------------
-
-function buildRelease() {
-  notify('Building release: ' + getVersion());
-  return merge(buildDevelopment('default'), buildMinified('default'));
-}
-
 // -------------- Build ----------------
+
+var COPYRIGHT = [
+  '/*',
+  ' *  Sugar Library edge',
+  ' *',
+  ' *  Freely distributable and licensed under the MIT-style license.',
+  ' *  Copyright (c) YEAR Andrew Plummer',
+  ' *  http://sugarjs.com/',
+  ' *',
+  ' * ---------------------------- */'
+].join('\n');
+
+var DEFAULT_MODULES = [
+  'es6',
+  'es7',
+  'date',
+  'range',
+  'number',
+  'function',
+  'enumerable',
+  'array',
+  'object',
+  'regexp',
+  'string'
+];
+
+var ALL_MODULES = [
+  'es5',
+  'es6',
+  'es7',
+  'date',
+  'range',
+  'number',
+  'function',
+  'array',
+  'object',
+  'enumerable',
+  'regexp',
+  'string',
+  'inflections',
+  'language'
+];
 
 function buildDefault() {
   buildDevelopment();
@@ -234,7 +178,7 @@ function createMinifiedBuild(outputPath, p, l) {
   var modules  = getModuleNames(p);
   var locales  = getLocales(l);
   try {
-    fs.lstatSync(COMPIER_JAR_PATH);
+    fs.lstatSync(COMPILER_JAR_PATH);
   } catch(e) {
     util.log(util.colors.red('Closure compiler missing!'), 'Run', util.colors.yellow('bower install'));
     return;
@@ -337,6 +281,59 @@ function getCompilerModules(files) {
 
 // -------------- help ----------------
 
+var HELP_MESSAGE = [
+  '',
+  '    %Usage%',
+  '',
+  '      gulp [TASK] [OPTIONS]',
+  '',
+  '    %Tasks%',
+  '',
+  '      |build|                        Create development and minified build.',
+  '      |build:dev|                    Create development build (concatenate files only).',
+  '      |build:min|                    Create minified build.',
+  '',
+  '      |help|                         Show this message.',
+  '',
+  '    %Options%',
+  '',
+  '      -m, --modules MODULES        Comma separated modules to include (optional). Modules below (non-default marked with |*|).',
+  '      -l, --locales LOCALES        Comma separated date locales to include (optional, list below). English is included by default.',
+  '      -o, --output OUTPUT          Output path (default is "sugar.js" or "sugar.min.js").',
+  '',
+  '    %Modules%',
+  '',
+  '      es6',
+  '      es7',
+  '      array',
+  '      date',
+  '      function',
+  '      number',
+  '      object',
+  '      range',
+  '      regexp',
+  '      string',
+  '      es5 |*|',
+  '      locales |*|',
+  '      language |*|',
+  '      inflections |*|',
+  '',
+  '    %Locales%',
+  '',
+  '      %LOCALE_LIST%',
+  '',
+  '    %Notes%',
+  '',
+  '      The es5 module is no longer default in Sugar builds. It should be',
+  '      added if ES5 compatibility is required in environments where it',
+  '      does not exist (most commonly IE8 and below).',
+  '',
+  '      The es6/es7 modules are default and include minimal polyfills required',
+  '      by Sugar. They can be removed if support can be guaranteed, either',
+  '      natively or through a polyfill library.',
+  '',
+].join('\n');
+
 function showHelpMessage() {
   var msg = HELP_MESSAGE
     .replace(/%LOCALE_LIST%/g, function(match) {
@@ -361,6 +358,9 @@ function showHelpMessage() {
 
 // -------------- precompile ----------------
 
+var PRECOMPILED_MIN_DIR = 'release/precompiled/minified/';
+var PRECOMPILED_DEV_DIR = 'release/precompiled/development/';
+
 function precompileDev() {
   var files = getFiles('all').filter(function(path) {
     return !path.match(/locales/);
@@ -374,7 +374,7 @@ function precompileDev() {
 function precompileMin() {
   var files = getFiles('all');
   var modules = getCompilerModules(files);
-  return gulp.src(files).pipe(compileModules(modules));
+  return gulp.src(files).pipe(compileModules(modules, PRECOMPILED_MIN_DIR));
 }
 
 // -------------- package util ----------------
@@ -2054,6 +2054,8 @@ function buildNpmPackages(p, dist) {
 
 function buildDocs() {
 
+  var through  = require('through2');
+
   var files = getFiles('all', true), modules = {}, methodsByNamespace = {};
   var output = args.f || args.file || 'docs.json';
   var basename = path.basename(output);
@@ -2147,7 +2149,7 @@ function buildDocs() {
       }
 
       function getGzippedFileSize(path) {
-        return zlib.gzipSync(readFile(path)).length;
+        return require('zlib').gzipSync(readFile(path)).length;
       }
 
       function getModuleSize(module) {
@@ -2212,8 +2214,9 @@ function buildDocs() {
 
 
 function runTests(all) {
+  var testPath = all ? './test/node/all' : './test/node';
   notify(['Running', all ? 'all' : 'default', 'tests'].join(' '));
-  reload(all ? './test/node/all' : './test/node');
+  require(testPath);
 }
 
 function testWatch(all) {
