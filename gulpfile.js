@@ -201,7 +201,7 @@ function buildDevelopment() {
   var filename = args.o || args.output || 'sugar.js';
   var modules = args.p || args.modules || 'default';
   var locales = args.l || args.locales;
-  notify('Exporting: ' + getBuildMessage(filename, modules, locales));
+  notify('Exporting ' + getBuildMessage(filename, modules, locales));
   createDevelopmentBuild(filename, modules, locales);
 }
 
@@ -214,11 +214,10 @@ function buildMinified() {
 }
 
 function getBuildMessage(filename, modules, locales) {
-  var message = modules;
+  var message = filename;
   if (locales) {
     message += ' with locales ' + locales;
   }
-  message += ' as ' + filename;
   return message;
 }
 
@@ -2235,6 +2234,7 @@ function testWatch(all) {
 
   gulp.watch(['lib/**/*.js'], function() {
     notify('Rebuilding');
+    buildDevelopment();
     buildNpmPackages(all ? 'all' : 'core,main,es6,es7');
     runTests(all);
     notify('Waiting');
