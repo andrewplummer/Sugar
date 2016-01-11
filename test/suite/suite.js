@@ -218,12 +218,6 @@
     return currentTest;
   }
 
-  // Allowing a hook here to set the global object
-  // via the test suite as it is not a global in node.
-  testSetGlobal = function(obj) {
-    Sugar = obj;
-  }
-
   function getTestsToRun() {
     var focusedPackagesExist = false;
 

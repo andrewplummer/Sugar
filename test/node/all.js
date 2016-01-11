@@ -2,19 +2,16 @@ var runner = require('./setup');
 
 runner.exitOnFail(false);
 
-runner.notice('Core Tests');
-
+runner.notice('Core');
 runner.load('./default/core.js');
 
-runner.notice('Polyfill Tests');
-
+runner.notice('Polyfills');
 // Cannot practially run ES5 tests here as resetting
 // native methods breaks the node require system.
 runner.load('./default/es6.js');
 runner.load('./default/es7.js');
 
-runner.notice('Packages (Default)');
-
+runner.notice('Default');
 runner.load('./default/array.js');
 runner.load('./default/object.js');
 runner.load('./default/enumerable.js');
@@ -28,8 +25,7 @@ runner.load('./default/regexp.js');
 runner.load('./default/string.js');
 runner.load('./default/sugar.js');
 
-runner.notice('Packages (Extended)');
-
+runner.notice('Extended');
 runner.load('./extended/array.js');
 runner.load('./extended/object.js');
 runner.load('./extended/enumerable.js');
