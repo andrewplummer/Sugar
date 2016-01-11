@@ -1,6 +1,6 @@
 var runner = require('../setup');
 
-runner.load('../../release/npm/sugar/regexp');
+runner.load('../../release/npm/sugar-regexp');
 
 // Tests
 runner.loadTest('regexp');

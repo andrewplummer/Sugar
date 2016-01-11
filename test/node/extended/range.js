@@ -1,6 +1,6 @@
 var runner = require('../setup');
 
-runner.load('../../release/npm/sugar/range');
+runner.load('../../release/npm/sugar-range');
 
 // Tests
 runner.loadTest('date-range');
