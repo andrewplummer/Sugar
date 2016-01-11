@@ -1,4 +1,4 @@
-package('Object', function () {
+namespace('Object', function () {
   "use strict";
 
   // The scope when none is set. Needs to be set here

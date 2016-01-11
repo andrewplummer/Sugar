@@ -1,4 +1,4 @@
-package('Array', function () {
+namespace('Array', function () {
   "use strict";
 
   method('construct', function() {

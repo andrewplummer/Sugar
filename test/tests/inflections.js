@@ -1,4 +1,4 @@
-package('String | Inflections', function () {
+namespace('String | Inflections', function () {
 
   // Skipping strict mode here as testing
   // malformed utf-8 is part of these tests.

@@ -10,8 +10,8 @@
   'use strict';
 
 /***
- * @package Core
- * @description Core package allows custom methods to be defined on the Sugar global and extended onto natives later.
+ * @module Core
+ * @description Core module allows custom methods to be defined on the Sugar global and extended onto natives later.
  ***/
 
 // The global to export.
@@ -348,7 +348,7 @@ setupGlobal();
 
 
 /***
- * @package Common
+ * @module Common
  * @description Internal utility and common methods.
  ***/
 
@@ -1054,7 +1054,7 @@ function iterateOverSparseArray(arr, fn, fromIndex, loop) {
 
 // It's unclear whether or not sparse arrays qualify as "simple enumerables".
 // If they are not, however, the wrapping function will be deoptimized, so
-// isolate here (also to share between es5 and array packages).
+// isolate here (also to share between es5 and array modules).
 function getSparseArrayIndexes(arr, fromIndex, loop, fromRight) {
   var indexes = [], i;
   for (i in arr) {
@@ -1325,7 +1325,7 @@ function callDateSet(d, method, value) {
 
 function Hash(obj) {
   // Not using simpleMerge here due to an odd compiler bug when building
-  // packages that don't use Hash where this constructor still gets required
+  // modules that don't use Hash where this constructor still gets required
   // after the simpleMerge token has already been removed.
   for (var key in obj) {
     if(!hasOwn(obj, key)) continue;
@@ -1345,8 +1345,8 @@ buildFullWidthNumber();
 'use strict';
 
 /***
- * @package ES6
- * @description Methods that provide some basic ES6 compatibility. This package is intended to provide the base for Sugar functionality, not as a full polyfill suite.
+ * @module ES6
+ * @description Methods that provide some basic ES6 compatibility. This module is intended to provide the base for Sugar functionality, not as a full polyfill suite.
  *
  ***/
 
@@ -1578,8 +1578,8 @@ defineInstancePolyfill(sugarArray, {
 'use strict';
 
 /***
- * @package ES7
- * @description Methods that provide some basic ES7 compatibility. This package is intended to provide the base for Sugar functionality, not as a full polyfill suite.
+ * @module ES7
+ * @description Methods that provide some basic ES7 compatibility. This module is intended to provide the base for Sugar functionality, not as a full polyfill suite.
  *
  ***/
 
@@ -1630,7 +1630,7 @@ defineInstancePolyfill(sugarArray, {
 'use strict';
 
 /***
- * @package Date
+ * @module Date
  * @dependency core
  * @description Date parsing and formatting, relative formats like "1 minute ago", Number methods like "daysAgo", locale support with default English locale definition.
  *
@@ -3675,7 +3675,7 @@ defineStatic(sugarDate, {
    * @method Date.setLocale(<code>)
    * @returns Locale
    * @short Sets the current locale to be used with dates.
-   * @extra Sugar has support for 13 locales that are available through the "Date Locales" package. In addition you can define a new locale with %Date.addLocale%. For more see %date_format%.
+   * @extra Sugar has native support for 17 major locales. In addition, you can define a new locale with %Date.addLocale%. For more see %date_format%.
    *
    ***/
   'setLocale': function(code) {
@@ -4355,7 +4355,7 @@ defineInstance(sugarNumber, {
    * @method duration([locale] = currentLocale)
    * @returns String
    * @short Takes the number as milliseconds and returns a unit-adjusted localized string.
-   * @extra This method is the same as %Date#relative% without the localized equivalent of "from now" or "ago". [locale] can be passed as the first (and only) parameter. Note that this method is only available when the dates package is included.
+   * @extra This method is the same as %Date#relative% without the localized equivalent of "from now" or "ago". [locale] can be passed as the first (and only) parameter. Note that this method is only available when the dates module is included.
    * @example
    *
    *   (500).duration() -> '500 milliseconds'
@@ -4371,7 +4371,7 @@ defineInstance(sugarNumber, {
 });
 
 /***
- * @package Locales
+ * @module Locales
  * @dependency date
  * @description Locale definitions French (fr), Italian (it), Spanish (es), Portuguese (pt), German (de), Russian (ru), Polish (pl), Swedish (sv), Japanese (ja), Korean (ko), Simplified Chinese (zh-CN), and Traditional Chinese (zh-TW). Locales can also be included individually. See @date_locales for more.
  *
@@ -4915,7 +4915,7 @@ buildRelativeAliases();
 'use strict';
 
 /***
- * @package Range
+ * @module Range
  * @dependency core
  * @description Ranges allow creating spans of numbers, strings, or dates. They can enumerate over specific points within that range, and be manipulated and compared.
  *
@@ -5413,7 +5413,7 @@ defineStatic(sugarDate,   {
 'use strict';
 
 /***
- * @package Number
+ * @module Number
  * @dependency core
  * @description Number formatting, rounding (with precision). Aliases to Math methods.
  *
@@ -5874,7 +5874,7 @@ buildMathAliases();
 'use strict';
 
 /***
- * @package Function
+ * @module Function
  * @dependency core
  * @description Lazy, throttled, and memoized functions, delayed functions and handling of timers, argument currying.
  *
@@ -6255,7 +6255,7 @@ defineInstanceWithArguments(sugarFunction, {
 'use strict';
 
 /***
- * @package Enumerable
+ * @module Enumerable
  * @dependency core
  * @description Counting, mapping, and finding methods on both arrays and objects.
  *
@@ -7218,7 +7218,7 @@ buildHashEnumerable();
 'use strict';
 
 /***
- * @package Array
+ * @module Array
  * @dependency core
  * @description Array manipulation and traversal, alphanumeric sorting and collation.
  *
@@ -8070,7 +8070,7 @@ alias(sugarArray, 'insert', 'append');
 'use strict';
 
 /***
- * @package Object
+ * @module Object
  * @dependency core
  * @description Object manipulation, type checking (isNumber, isString, ...), %extended objects% with hash-like methods available as instance methods.
  *
@@ -9124,7 +9124,7 @@ buildTypeCheckMethods();
 'use strict';
 
 /***
- * @package RegExp
+ * @module RegExp
  * @dependency core
  * @description Escaping regexes and manipulating their flags.
  *
@@ -9214,7 +9214,7 @@ defineInstance(sugarRegExp, {
 'use strict';
 
 /***
- * @package String
+ * @module String
  * @dependency core
  * @description String manupulation, escaping, encoding, truncation, and conversion.
  *
@@ -10052,7 +10052,7 @@ defineInstance(sugarString, {
    * @method camelize([first] = true)
    * @returns String
    * @short Converts underscores and hyphens to camel case. If [first] is true the first letter will also be capitalized.
-   * @extra If the Inflections package is included acryonyms can also be defined that will be used when camelizing.
+   * @extra If the Inflections module is included acryonyms can also be defined that will be used when camelizing.
    * @example
    *
    *   'caps_lock'.camelize()              -> 'CapsLock'

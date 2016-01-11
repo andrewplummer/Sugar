@@ -1,4 +1,4 @@
-package('ES6', function () {
+namespace('ES6', function () {
   "use strict";
 
   // Only true in strict mode

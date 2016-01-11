@@ -117,7 +117,7 @@
     return str;
   };
 
-  function testsFinished(runtime, packages) {
+  function testsFinished(runtime, namespaces) {
     var testHtml = '', tipHtml = '';
 
     var totalTests = 0;
@@ -125,7 +125,7 @@
     var totalSkipped = 0;
     var totalFailed = 0;
 
-    arrayEach(packages, function(p) {
+    arrayEach(namespaces, function(p) {
       var li = '', tip = '', className = '';
 
       totalTests++;

@@ -1,4 +1,4 @@
-package('Dates Catalan', function () {
+namespace('Dates Catalan', function () {
   "use strict";
 
   var now, then;
@@ -61,7 +61,7 @@ package('Dates Catalan', function () {
 
 });
 
-package('Number | Catalan Dates', function () {
+namespace('Number | Catalan Dates', function () {
   method('duration', function() {
     // TODO: write me!
   });

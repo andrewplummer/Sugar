@@ -1,4 +1,4 @@
-package('Dates Italian', function () {
+namespace('Dates Italian', function () {
   "use strict";
 
   var now, then;
@@ -183,7 +183,7 @@ package('Dates Italian', function () {
 
 });
 
-package('Number | Italian Dates', function () {
+namespace('Number | Italian Dates', function () {
 
   method('duration', function() {
     test(run(5, 'hours'), ['it'], '5 ore', 'simple duration');

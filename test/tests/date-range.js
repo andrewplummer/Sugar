@@ -1,4 +1,4 @@
-package('Date Ranges', function () {
+namespace('Date Ranges', function () {
   "use strict";
 
   function getRange() {

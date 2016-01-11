@@ -1,4 +1,4 @@
-package('Core', function() {
+namespace('Core', function() {
   "use strict";
 
   function defineCustom(target, isStatic) {

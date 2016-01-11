@@ -1,4 +1,4 @@
-package('Dates Polish', function () {
+namespace('Dates Polish', function () {
   "use strict";
 
   var now, then;
@@ -239,7 +239,7 @@ package('Dates Polish', function () {
 
 });
 
-package('Number | Polish Dates', function () {
+namespace('Number | Polish Dates', function () {
 
   method('duration', function() {
     testSetLocale('pl');

@@ -1,4 +1,4 @@
-package('Dates Russian', function () {
+namespace('Dates Russian', function () {
   "use strict";
 
   var now, then;
@@ -283,7 +283,7 @@ package('Dates Russian', function () {
 
 });
 
-package('Number | Russian Dates', function () {
+namespace('Number | Russian Dates', function () {
 
   method('duration', function() {
     test(run(5, 'hours'), ['ru'], '5 часов', 'simple duration');

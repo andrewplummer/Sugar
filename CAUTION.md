@@ -41,7 +41,7 @@ v2.0.0+
   - `Array#randomize` was renamed to `Array#shuffle`.
 
 - Level: Major
-  - `Array.create` was removed. Use ES6 method `Array.from` instead. Sugar provides this as a polyfill in the default package.
+  - `Array.create` was removed. Use ES6 method `Array.from` instead. Sugar provides this as a polyfill in the default bundle.
 
 - Level: Major
   - `Object.watch` was removed. This method was the only part of Sugar that was not 100% compatible in all environments, and was an overly simplistic solution to a difficult problem that others have done better (see discussions around Object.observe and polling). As a quick and dirty solution, this will be made available as a [plugin](https://github.com/andrewplummer/sugar-plugins). Also includes `Object.unwatch`.
@@ -119,7 +119,7 @@ v2.0.0+
   - `Date.SugarNewDate` is now `Sugar.Date.newDateInternal`. This method is always on the `Sugar` global (not `Date`).
 
 - Level: Minor
-  - `Object.map`, `Object.each`, and `Object.size` were moved to the Object package from the Array package. If you were using these methods and making custom builds you may have to include the Object package now as well.
+  - `Object.map`, `Object.each`, and `Object.size` were moved to the Object module from the Array module. If you were using these methods and making custom builds you may have to include the Object module now as well.
 
 - Level: Minor
   - `Date#unitSince` (`Date#hoursSince`, etc) now assumes that the passed in format is UTC if the context date is also flagged as UTC (if you're using `setUTC`). This behavior can be overriden by passing `{ fromUTC: false }` to these methods.
@@ -137,7 +137,7 @@ v2.0.0+
   - `String#stripTags` and `String#removeTags` no longer accept enumerated arguments. Simply pass an array of tags to remove multiple.
 
 - Level: Minor
-  - `String#titleize` was moved from the Inflections package to String.
+  - `String#titleize` was moved from the Inflections module to String.
 
 - Level: Very Minor
   - `Array#map`, `Array#unique`, `Array#groupBy`, `Array#min`, `Array#max`, `Array#least`, `Array#most`, `Array#sortBy`: Mapping shortcut strings now accept deep matchers with the dot `.` token. If you have objects that use `.` in the keys and are using these methods, be careful as this now makes the methods try to go deep. Pass a function instead to map as before.
@@ -202,7 +202,7 @@ v1.4.0+
   - `String#normalize` is now deprecated, but still available as a separate script in the `lib/plugins` directory.
 
 - Level: Moderate
-  - Date ranges are now their own package (the "range" package), are not dependent on the Date package, and work on numbers and strings as well.
+  - Date ranges are now their own module (the "range" module), and are not dependent on the Date module, and work on numbers and strings as well.
 
 - Level: Minor
   - Enumerable methods on object will now coerce primitive types. This means that `Object.findAll('foo')` will now treat `'foo'` as `new String('foo')`. This is reversed from the previous behavior which would error on primitive types and coerce objects to primitive types where possible.
@@ -323,7 +323,7 @@ v1.3+
 
 
 - Level: Major
-  - Date locales are now moved into a separate package. This means that now with the default download package, setting the date locale to anything other than English will throw an error. If you require locales other than English, please include them from [the customize page](http://sugarjs.com/customize).
+  - Date locales are now moved into a separate module. This means that now with the default download, setting the date locale to anything other than English will throw an error. If you require locales other than English, please include them from [the customize page](http://sugarjs.com/customize).
 
 - Level: Major
   - `Array#min`, `Array#max`, `Array#least`, and `Array#most` now return a single value instead of an array. If you need to get "all min" or "all max" values, then pass `true` as the second argument to these methods.

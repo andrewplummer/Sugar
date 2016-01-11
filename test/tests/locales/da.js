@@ -1,4 +1,4 @@
-package('Dates Danish', function () {
+namespace('Dates Danish', function () {
   "use strict";
 
   var now, then;
@@ -165,7 +165,7 @@ package('Dates Danish', function () {
 
 });
 
-package('Number | Danish Dates', function () {
+namespace('Number | Danish Dates', function () {
   method('duration', function() {
     test(run(5, 'hours'), ['da'], '5 timer', 'simple duration');
   });

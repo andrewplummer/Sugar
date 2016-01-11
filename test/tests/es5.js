@@ -1,4 +1,4 @@
-package('ES5', function () {
+namespace('ES5', function () {
   "use strict";
 
   // The scope when none is set.

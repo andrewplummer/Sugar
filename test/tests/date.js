@@ -1,4 +1,4 @@
-package('Date', function () {
+namespace('Date', function () {
   "use strict";
 
   var now = new Date();
@@ -3054,7 +3054,7 @@ package('Date', function () {
 
 });
 
-package('Number', function () {
+namespace('Number', function () {
 
   group('Unit Aliases', function() {
 

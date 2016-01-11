@@ -1,4 +1,4 @@
-package('Dates Traditional Chinese', function () {
+namespace('Dates Traditional Chinese', function () {
   "use strict";
 
   var now;
@@ -160,7 +160,7 @@ package('Dates Traditional Chinese', function () {
 
 });
 
-package('Number | Chinese (Simplified) Dates', function () {
+namespace('Number | Chinese (Simplified) Dates', function () {
 
   method('duration', function() {
     test(run(5, 'hours'), ['zh-TW'], '5小時', 'simple duration');

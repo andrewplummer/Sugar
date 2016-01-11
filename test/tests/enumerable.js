@@ -1,4 +1,4 @@
-package('Array', function() {
+namespace('Array', function() {
   "use strict";
 
   method('map', function() {
@@ -1347,7 +1347,7 @@ package('Array', function() {
 
 });
 
-package('Object', function() {
+namespace('Object', function() {
   "use strict";
 
   // Array.prototype.min may shadow Object.prototype.min,
