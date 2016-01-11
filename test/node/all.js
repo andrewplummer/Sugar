@@ -4,11 +4,14 @@ runner.exitOnFail(false);
 
 runner.notice('Core Tests');
 
+runner.load('./default/core.js');
+
+runner.notice('Polyfill Tests');
+
 // Cannot practially run ES5 tests here as resetting
 // native methods breaks the node require system.
 runner.load('./default/es6.js');
 runner.load('./default/es7.js');
-runner.load('./default/core.js');
 
 runner.notice('Packages (Default)');
 
