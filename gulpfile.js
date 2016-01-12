@@ -35,8 +35,8 @@ gulp.task('build:bower:all',   buildBowerAll);
 gulp.task('precompile:dev', precompileDev);
 gulp.task('precompile:min', precompileMin);
 
-gulp.task('test',           testRunDefault);
-gulp.task('test:all',       testRunAll);
+gulp.task('test',      testRunDefault);
+gulp.task('test:all',  testRunAll);
 
 gulp.task('watch',     testWatchDefault);
 gulp.task('watch:all', testWatchAll);
@@ -497,7 +497,7 @@ function getVersion(prefix) {
 }
 
 function getAllLocales() {
-  return glob.sync('lib/locales/*.js');
+  return glob.sync('locales/*.js');
 }
 
 // TODO: TRY TO REMOVE
@@ -519,7 +519,7 @@ function getFiles(modules, skipLocales) {
   });
   arr.forEach(function(p) {
     if (p === 'locales' && !skipLocales) {
-      files = files.concat(glob.sync('lib/locales/*.js'));
+      files = files.concat(glob.sync('locales/*.js'));
     } else {
       files.push('lib/' + p + '.js');
     }
@@ -555,7 +555,7 @@ function precompileDev() {
   var files = getFiles('all').filter(function(path) {
     return !path.match(/locales/);
   });
-  return merge(gulp.src(files), gulp.src('lib/locales/*.js')
+  return merge(gulp.src(files), gulp.src('locales/*.js')
       .pipe(concat('locales.js', { newLine: '' })))
     .pipe(replace(/^\s*'use strict';\n/g, ''))
     .pipe(gulp.dest(PRECOMPILED_DEV_DIR));
@@ -2068,7 +2068,7 @@ function buildNpmPackages(p, dist) {
       path: 'locales/index',
     };
     var entryPointBody = [];
-    glob.sync('lib/locales/*.js').forEach(function(l) {
+    glob.sync('locales/*.js').forEach(function(l) {
       var package = {
         path: path.join('locales', path.basename(l, '.js')),
         body: readFile(l).replace(/^Sugar\.Date\./gm, ''),

@@ -685,9 +685,9 @@ namespace('Date', function () {
     equal(testCreateDate('Monday at noon'), getDateWithWeekdayAndOffset(1, 0, 12), 'Monday at noon');
     equal(testCreateDate('next Saturday at noon'), getDateWithWeekdayAndOffset(6, 7, 12), 'next Saturday at noon');
     equal(testCreateDate('last Tuesday at noon'), getDateWithWeekdayAndOffset(2, -7, 12), 'last Tuesday at noon');
-    equal(testCreateDate('midnight'), resetTime(getRelativeDate(null, null, 1)), 'midnight');
-    equal(testCreateDate('midnight tonight'), resetTime(getRelativeDate(null, null, 1)), 'midnight');
-    equal(testCreateDate('tomorrow at midnight'), resetTime(getRelativeDate(null, null, 2)), 'tommorrow at midnight');
+    equal(testCreateDate('midnight'), testResetTime(getRelativeDate(null, null, 1)), 'midnight');
+    equal(testCreateDate('midnight tonight'), testResetTime(getRelativeDate(null, null, 1)), 'midnight');
+    equal(testCreateDate('tomorrow at midnight'), testResetTime(getRelativeDate(null, null, 2)), 'tommorrow at midnight');
     equal(testCreateDate('Monday at midnight'), getDateWithWeekdayAndOffset(1, 0), 'Monday at midnight');
     equal(testCreateDate('next Saturday at midnight'), getDateWithWeekdayAndOffset(7, 7), 'next Saturday at midnight');
     equal(testCreateDate('last Tuesday at midnight'), getDateWithWeekdayAndOffset(3, -7), 'last Tuesday at midnight');
