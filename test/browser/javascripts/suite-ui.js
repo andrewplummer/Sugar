@@ -161,9 +161,9 @@
     });
 
     $('#stats').html([
-      '<span class="tests">' + totalTests + ' ' + (totalTests == 1 ? 'test' : 'tests') + '</span>',
-      '<span class="assertions">' + commaSeparate(totalAssertions) + ' ' + (totalAssertions == 1 ? 'assertion' : 'assertions') + '</span>',
       '<span class="failures">' + totalFailed + ' ' + (totalFailed == 1 ? 'failure' : 'failures') + '</span>',
+      '<span class="assertions">' + commaSeparate(totalAssertions) + ' ' + (totalAssertions == 1 ? 'assertion' : 'assertions') + '</span>',
+      '<span class="tests">' + totalTests + ' ' + (totalTests == 1 ? 'test' : 'tests') + '</span>',
       '<span class="skipped">' + (totalSkipped > 0 ? '(' + totalSkipped + ' skipped)' : '') + '</span>',
       '<span class="runtime">Completed in ' + runtime / 1000 + ' seconds</span>'
     ].join(''));
