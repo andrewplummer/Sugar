@@ -125,6 +125,77 @@ function showHelpMessage() {
   console.log(msg);
 }
 
+// -------------- npm,bower pakcage definitions ----------------
+
+var PACKAGE_DEFINITIONS = {
+  'sugar': {
+    locales: true,
+    modules: 'es6,es7,string,number,array,enumerable,object,date,range,function,regexp',
+    description: 'This build includes default Sugar modules and optional date locales.',
+  },
+  'sugar-core': {
+    modules: 'core',
+    description: 'This build is the core module, which allows custom methods to be defined and extended later.',
+  },
+  'sugar-es5': {
+    modules: 'es5',
+    description: 'This build includes all ES5 polyfills not included in the default build.',
+  },
+  'sugar-es6': {
+    modules: 'es6',
+    description: 'This build includes all ES6 polyfills bundled with Sugar. Currently this is String#includes, String#startsWith, String#endsWith, String#repeat, Number.isNaN, Array#find, Array#findIndex, and Array.from.',
+  },
+  'sugar-es7': {
+    modules: 'es7',
+    description: 'This build includes all ES7 polyfills bundled with Sugar. Currently this is only Array#includes.',
+  },
+  'sugar-string': {
+    modules: 'es6,string,range',
+    description: 'This build includes methods for string manipulation, escaping, encoding, truncation, and conversion.',
+  },
+  'sugar-number': {
+    modules: 'es6,number,range',
+    description: 'This build includes methods for number formatting, rounding (with precision), and aliases to Math methods.',
+  },
+  'sugar-enumerable': {
+    modules: 'es6,es7,enumerable',
+    description: 'This build includes methods common to arrays and objects, such as matching elements/properties, mapping, counting, and averaging. Also included are polyfills for methods that enhance arrays: Array#find, Array#findIndex, Array#includes.',
+  },
+  'sugar-array': {
+    modules: 'array',
+    description: 'This build includes methods for array manipulation, grouping, randomizing, and alphanumeric sorting and collation.',
+  },
+  'sugar-object': {
+    modules: 'object',
+    description: 'This build includes methods for object manipulation, type checking (isNumber, isString, etc) and extended objects with hash-like methods. Note that Object.prototype is not extended by default. See the README for more.',
+  },
+  'sugar-date': {
+    locales: true,
+    modules: 'date,range',
+    description: 'This build includes methods for date parsing and formatting, relative formats like "1 minute ago", number methods like "daysAgo", and optional date locales.',
+  },
+  'sugar-range': {
+    modules: 'range',
+    description: 'This build includes number, string, and date ranges. Ranges can be iterated over, compared, and manipulated.',
+  },
+  'sugar-function': {
+    modules: 'function',
+    description: 'This build includes methods for lazy, throttled, and memoized functions, delayed functions, timers, and argument currying.',
+  },
+  'sugar-regexp': {
+    modules: 'regexp',
+    description: 'This build includes methods for escaping regexes and manipulating their flags.',
+  },
+  'sugar-inflections': {
+    modules: 'inflections',
+    description: 'This build includes methods for pluralization similar to ActiveSupport including uncountable words and acronyms, humanized and URL-friendly strings.',
+  },
+  'sugar-language': {
+    modules: 'language',
+    description: 'This build includes helpers for detecting language by character block, full-width <-> half-width character conversion, and Hiragana and Katakana conversions.',
+  }
+};
+
 // -------------- Compiler ----------------
 
 var COMPILER_JAR_PATH = 'bower_components/closure-compiler/compiler.jar';
@@ -432,32 +503,12 @@ function precompileMin() {
 
 // -------------- package util ----------------
 
-var basePackage, baseBower;
-
-function buildPackageMeta(packageName, dir, type) {
-
-  var definition = PACKAGE_DEFINITIONS[packageName];
-
-  basePackage = basePackage || require('./package.json');
-  baseBower = baseBower || require('./bower.json');
-
-  function buildJSON(base) {
-    var json, filename;
-    if (type === 'bower') {
-      filename = 'bower.json';
-      json = getBowerJSON(packageName, baseBower, definition);
-    } else {
-      filename = 'package.json';
-      json = getPackageJSON(packageName, basePackage, definition);
-    }
-    writeFile(path.join(dir, packageName, filename), json);
-  }
+function copyPackageMeta(outputDir) {
 
   function copyMeta(srcPath) {
-    writeFile(path.join(dir, packageName, srcPath), readFile(srcPath));
+    writeFile(path.join(outputDir, path.basename(srcPath)), readFile(srcPath));
   }
 
-  buildJSON();
   copyMeta('LICENSE');
   copyMeta('README.md');
   copyMeta('CHANGELOG.md');
@@ -471,29 +522,24 @@ function copyLocales(l, dir) {
   });
 }
 
-function buildPackageDist(packageName, dir, type) {
+function buildPackageDist(packageName, outputDir) {
 
   var definition = PACKAGE_DEFINITIONS[packageName];
-  var distDir    = getDistDirectory(packageName, dir, type);
 
   function write(modules) {
     var streams = [];
-    var devFilename = path.join(distDir, getDistFilename(packageName));
-    var minFilename = path.join(distDir, getDistFilename(packageName, true));
+    var devFilename = path.join(outputDir, getDistFilename(packageName));
+    var minFilename = path.join(outputDir, getDistFilename(packageName, true));
     streams = streams.concat(createDevelopmentBuild(devFilename, modules));
     streams = streams.concat(createMinifiedBuild(minFilename, modules));
     return streams;
   }
 
   if (definition.locales) {
-    copyLocales('all', path.join(distDir, 'locales'));
+    copyLocales('all', path.join(outputDir, 'locales'));
   }
 
   return write(definition.modules);
-}
-
-function getDistDirectory(packageName, dir, type) {
-  return path.join(dir, packageName, type === 'bower' ? '' : 'dist');
 }
 
 function getDistFilename(packageName, min) {
@@ -524,112 +570,45 @@ function getKeywords(name, keywords) {
   return keywords;
 }
 
-function getPackageJSON(name, basePackage, localPackage) {
-  var package = JSON.parse(JSON.stringify(basePackage));
-  package.version = getVersion();
-  package.name = name;
-  package.keywords = getKeywords(name, package.keywords);
-  package.description += ' ' + localPackage.description;
-  delete package.files;
-  delete package.scripts;
-  delete package.devDependencies;
+function exportPackageJson(packageName, outputDir) {
+
+  var def = PACKAGE_DEFINITIONS[packageName];
+  var json = JSON.parse(JSON.stringify(require('./package.json')));
+  json.version = getVersion();
+  json.name = packageName;
+  json.keywords = getKeywords(packageName, json.keywords);
+  json.description += ' ' + def.description;
+  delete json.files;
+  delete json.scripts;
+  delete json.devDependencies;
 
   // Add sugar-core as a dependency
-  if (name === 'sugar-core') {
-    package.main = 'sugar-core.js';
+  if (packageName === 'sugar-core') {
+    json.main = 'sugar-core.js';
   } else {
-    package.main = 'index.js';
-    package.dependencies = {
-      'sugar-core': '^' + package.version
+    json.main = 'index.js';
+    json.dependencies = {
+      'sugar-core': '^' + json.version
     }
   }
-
-  return JSON.stringify(package, null, 2);
+  writeFile(path.join(outputDir, 'package.json'), JSON.stringify(json, null, 2));
 }
 
-function getBowerJSON(name, baseBower, localBower) {
-  var bower = JSON.parse(JSON.stringify(baseBower));
-  bower.name = name;
-  bower.main = name + '.min.js';
+function exportBowerJson(packageName, outputDir) {
+  var def = PACKAGE_DEFINITIONS[packageName];
+  var json = JSON.parse(JSON.stringify(require('./bower.json')));
+  json.name = packageName;
+  json.main = packageName + '.js';
   // Bower throws a warning if "ignore" isn't defined.
-  bower.ignore = [];
-  bower.keywords = getKeywords(name, bower.keywords);
-  bower.description += ' ' + localBower.description;
-  delete bower.devDependencies;
-  return JSON.stringify(bower, null, 2);
+  json.ignore = [];
+  json.keywords = getKeywords(packageName, json.keywords);
+  json.description += ' ' + def.description;
+  delete json.devDependencies;
+  writeFile(path.join(outputDir, 'bower.json'), JSON.stringify(json, null, 2));
 }
 
 // -------------- npm ----------------
 
-
-var PACKAGE_DEFINITIONS = {
-  'sugar': {
-    locales: true,
-    modules: 'es6,es7,string,number,array,enumerable,object,date,range,function,regexp',
-    description: 'This build includes all Sugar modules, polyfills, and optional date locales.',
-  },
-  'sugar-core': {
-    modules: 'core',
-    description: 'This build is the core module, which allows custom methods to be defined and extended later.',
-  },
-  'sugar-es5': {
-    modules: 'es5',
-    description: 'This build includes all ES5 polyfills not included in the default build.',
-  },
-  'sugar-es6': {
-    modules: 'es6',
-    description: 'This build includes all ES6 polyfills bundled with Sugar. Currently this is String#includes, String#startsWith, String#endsWith, String#repeat, Number.isNaN, Array#find, Array#findIndex, and Array.from.',
-  },
-  'sugar-es7': {
-    modules: 'es7',
-    description: 'This build includes all ES7 polyfills bundled with Sugar. Currently this is only Array#includes.',
-  },
-  'sugar-string': {
-    modules: 'es6,string,range',
-    description: 'This build includes methods for string manipulation, escaping, encoding, truncation, and conversion.',
-  },
-  'sugar-number': {
-    modules: 'es6,number,range',
-    description: 'This build includes methods for number formatting, rounding (with precision), and aliases to Math methods.',
-  },
-  'sugar-enumerable': {
-    modules: 'es6,es7,enumerable',
-    description: 'This build includes methods common to arrays and objects, such as matching elements/properties, mapping, counting, and averaging. Also included are polyfills for methods that enhance arrays: Array#find, Array#findIndex, Array#includes.',
-  },
-  'sugar-array': {
-    modules: 'array',
-    description: 'This build includes methods for array manipulation, grouping, randomizing, and alphanumeric sorting and collation.',
-  },
-  'sugar-object': {
-    modules: 'object',
-    description: 'This build includes methods for object manipulation, type checking (isNumber, isString, etc) and extended objects with hash-like methods. Note that Object.prototype is not extended by default. See the README for more.',
-  },
-  'sugar-date': {
-    locales: true,
-    modules: 'date,range',
-    description: 'This build includes methods for date parsing and formatting, relative formats like "1 minute ago", number methods like "daysAgo", and optional date locales.',
-  },
-  'sugar-range': {
-    modules: 'range',
-    description: 'This build includes number, string, and date ranges. Ranges can be iterated over, compared, and manipulated.',
-  },
-  'sugar-function': {
-    modules: 'function',
-    description: 'This build includes methods for lazy, throttled, and memoized functions, delayed functions, timers, and argument currying.',
-  },
-  'sugar-regexp': {
-    modules: 'regexp',
-    description: 'This build includes methods for escaping regexes and manipulating their flags.',
-  },
-  'sugar-inflections': {
-    modules: 'inflections',
-    description: 'This build includes methods for pluralization similar to ActiveSupport including uncountable words and acronyms, humanized and URL-friendly strings.',
-  },
-  'sugar-language': {
-    modules: 'language',
-    description: 'This build includes helpers for detecting language by character block, full-width <-> half-width character conversion, and Hiragana and Katakana conversions.',
-  }
-};
 
 function buildNpmClean() {
   var dir = args.o || args.output || 'release/npm';
@@ -2015,7 +1994,7 @@ function buildNpmPackages(p, dist) {
     return !!PACKAGE_DEFINITIONS[packageName].locales;
   }
 
-  function writeLocales(packageName, dir) {
+  function writeNpmLocales(packageName, dir) {
     if (!localesIncludedInPackage(packageName)) {
       return;
     }
@@ -2053,12 +2032,13 @@ function buildNpmPackages(p, dist) {
 
   function buildCore(packageName) {
 
-    var distDir = path.join(baseDir, packageName);
-    var devFilename = path.join(distDir, getDistFilename(packageName));
-    var minFilename = path.join(distDir, getDistFilename(packageName, true));
+    var outputDir = path.join(baseDir, packageName);
+    var devFilename = path.join(outputDir, getDistFilename(packageName));
+    var minFilename = path.join(outputDir, getDistFilename(packageName, true));
 
     notify('Building ' + packageName);
-    buildPackageMeta(packageName, baseDir, 'npm');
+    exportPackageJson(packageName, outputDir);
+    copyPackageMeta(outputDir);
     createDevelopmentBuild(devFilename, 'core');
 
     if (dist) {
@@ -2066,39 +2046,80 @@ function buildNpmPackages(p, dist) {
     }
   }
 
-  function build() {
-    npmPackages.forEach(function(packageName) {
-      if (packageName === 'sugar-core') {
-        buildCore(packageName);
-        return;
-      }
-      var dir = path.join(baseDir, packageName)
-      iter(packagesByModuleName, function(module, packages) {
-        if (moduleIncludedInPackage(packageName, module)) {
-          packages.forEach(function(p) {
-            writePackage(p, dir);
-          });
-        }
-      });
-      notify('Building ' + packageName);
-      createMainEntryPoint(packageName, dir);
-      writeLocales(packageName, dir);
-      buildPackageMeta(packageName, baseDir, 'npm');
-      if (dist) {
-        streams.push(buildPackageDist(packageName, baseDir, 'npm'));
+  function exportPackage(packageName) {
+    if (packageName === 'sugar-core') {
+      buildCore(packageName);
+      return;
+    }
+    var outputDir = path.join(baseDir, packageName)
+    iter(packagesByModuleName, function(module, packages) {
+      if (moduleIncludedInPackage(packageName, module)) {
+        packages.forEach(function(p) {
+          writePackage(p, dir);
+        });
       }
     });
+    notify('Building ' + packageName);
+    createMainEntryPoint(packageName, outputDir);
+    writeNpmLocales(packageName, outputDir);
+    exportPackageJson(packageName, outputDir);
+    copyPackageMeta(outputDir);
+
+    if (dist) {
+      streams.push(buildPackageDist(packageName, path.join(outputDir, 'dist')));
+    }
   }
 
   var baseDir = args.o || args.output || 'release/npm';
-  var npmPackages = getPackageNames(p);
+  var packageNames = getPackageNames(p);
 
-  if (needsDependencyTree(npmPackages)) {
+  if (needsDependencyTree(packageNames)) {
     notify('Building dependency tree');
     buildDependencyTree();
   }
 
-  build(baseDir);
+  packageNames.forEach(exportPackage);
+
+  return merge(streams);
+}
+
+
+// -------------- bower ----------------
+
+
+function buildBowerClean() {
+  var dir = args.o || args.output || 'release/bower';
+  var rimraf = require('rimraf');
+  rimraf.sync(dir);
+}
+
+function buildBowerDefault() {
+  return buildBowerPackages(args.p || args.packages || 'sugar', true);
+}
+
+function buildBowerCore() {
+  return buildBowerPackages('sugar-core', true);
+}
+
+function buildBowerAll() {
+  return buildBowerPackages('all', true);
+}
+
+function buildBowerPackages(p) {
+
+  var streams = [];
+  var packageNames = getPackageNames(p);
+  var baseDir = args.o || args.output || 'release/bower';
+
+  function exportPackage(packageName) {
+    var outputDir = path.join(baseDir, packageName);
+    notify('Building ' + packageName);
+    exportBowerJson(packageName, outputDir);
+    copyPackageMeta(outputDir);
+    streams.push(buildPackageDist(packageName, outputDir));
+  }
+
+  packageNames.forEach(exportPackage);
 
   return merge(streams);
 }
@@ -2324,6 +2345,11 @@ gulp.task('build:npm',       buildNpmDefault);
 gulp.task('build:npm:clean', buildNpmClean);
 gulp.task('build:npm:core',  buildNpmCore);
 gulp.task('build:npm:all',   buildNpmAll);
+
+gulp.task('build:bower',       buildBowerDefault);
+gulp.task('build:bower:clean', buildBowerClean);
+gulp.task('build:bower:core',  buildBowerCore);
+gulp.task('build:bower:all',   buildBowerAll);
 
 gulp.task('precompile:dev', precompileDev);
 gulp.task('precompile:min', precompileMin);
