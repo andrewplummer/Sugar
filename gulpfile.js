@@ -10,11 +10,51 @@ var fs       = require('fs'),
     replace  = require('gulp-replace');
 
 
+// -------------- Tasks ----------------
+
+gulp.task('default', showHelpMessage);
+gulp.task('help',    showHelpMessage);
+gulp.task('docs',    buildDocs);
+gulp.task('release', buildRelease);
+
+gulp.task('build',     buildDefault);
+gulp.task('build:dev', buildDevelopment);
+gulp.task('build:min', buildMinified);
+gulp.task('build:all', buildAll);
+
+gulp.task('build:npm',       buildNpmDefault);
+gulp.task('build:npm:clean', buildNpmClean);
+gulp.task('build:npm:core',  buildNpmCore);
+gulp.task('build:npm:all',   buildNpmAll);
+
+gulp.task('build:bower',       buildBowerDefault);
+gulp.task('build:bower:clean', buildBowerClean);
+gulp.task('build:bower:core',  buildBowerCore);
+gulp.task('build:bower:all',   buildBowerAll);
+
+gulp.task('precompile:dev', precompileDev);
+gulp.task('precompile:min', precompileMin);
+
+gulp.task('test',           testRunDefault);
+gulp.task('test:all',       testRunAll);
+
+gulp.task('watch',     testWatchDefault);
+gulp.task('watch:all', testWatchAll);
+
 // -------------- Release ----------------
 
 function buildRelease() {
-  notify('Building release: ' + getVersion());
-  return merge(buildDevelopment('default'), buildMinified('default'));
+  var version = getVersion(), run = true;
+  if (!version.match(/^\d.\d+\.\d+$/)) {
+    util.log(util.colors.red('Release requires a valid x.x.x version!'));
+    run = false;
+  }
+  if (typeof args.b !== 'string') {
+    util.log(util.colors.red('Release requires an explicit bower output directory (use -b).'));
+    run = false;
+  }
+  if (!run) process.exit();
+  return buildAll();
 }
 
 // -------------- help ----------------
@@ -30,6 +70,7 @@ var HELP_MESSAGE = [
   '      |build|                          Create development and minified build.',
   '      |build:dev|                      Create development build (concatenate files only).',
   '      |build:min|                      Create minified build (closure compiler).',
+  '      |build:all|                      Runs "build" and creates all npm/bower packages.',
   '',
   '      |build:npm|                      Builds npm packages ("sugar" by default).',
   '      |build:npm:core|                 Builds "sugar-core" npm package.',
@@ -46,7 +87,7 @@ var HELP_MESSAGE = [
   '      |watch|                          Watch for changes and reload default test suite.',
   '      |watch:all|                      Watch for changes and reload all tests.',
   '',
-  '      |release|                        Builds all bundles and npm packages.',
+  '      |release|                        Create a release. Same as "build:all" but requires a version.',
   '',
   '      |docs|                           Builds docs as JSON.',
   '',
@@ -54,13 +95,14 @@ var HELP_MESSAGE = [
   '',
   '    %Options%',
   '',
-  '      -m, --modules                  Comma separated modules to include (build task only).',
+  '      -m, --modules                  Comma separated modules to include (dev,min tasks only).',
   '                                     Modules below (non-default marked with *).',
   '',
-  '      -l, --locales                  Comma separated date locales to include (build task only).',
+  '      -l, --locales                  Comma separated date locales to include (dev,min tasks only).',
   '                                     English is included in the date module by default.',
   '',
-  '      -p, --packages                 Comma separated packages to build (npm and bower tasks only).',
+  '      -p, --packages                 Comma separated packages to build (npm,bower tasks only).',
+  '                                     Same as modules with "sugar-" prefixed, plus "sugar-core".',
   '',
   '      -s, --source_map               Creates a source map when the compiler is invoked.',
   '                                     Can be a path or "sugar.min.map" if blank.',
@@ -89,6 +131,22 @@ var HELP_MESSAGE = [
   '',
   '      %LOCALE_LIST%',
   '',
+  '      Note that locales are included in the "sugar" and "sugar-date" packages',
+  '      individually, but bundled together with the main files. If you have',
+  '      specific locales you want to pre-package together, use the --locales',
+  '      option to include them in your build.',
+  '',
+  '    %Custom Builds%',
+  '',
+  '      The npm build tasks split out all methods and dependencies in the',
+  '      source code so that they can be consumed individually. The result',
+  '      of these tasks will be identical to the packages hosted on npm.',
+  '      For more information on how to include them, see the README.',
+  '',
+  '      Bower packages contain just the bundled scripts in the "dist/" directory.',
+  '      As bower requires a public git endpoint, the result of these tasks will be',
+  '      identical to the modularized repos hosted on Github.',
+  '',
   '    %Notes%',
   '',
   '      The es5 module is no longer default in Sugar builds. It should be',
@@ -113,7 +171,7 @@ function showHelpMessage() {
     .replace(/\[\w+\]/g, function(match) {
       return util.colors.dim(match);
     })
-    .replace(/%\w+%/g, function(match) {
+    .replace(/%.+%/g, function(match) {
       return util.colors.underline(match.replace(/%/g, ''));
     })
     .replace(/-\w, --\w+/g, function(match) {
@@ -310,8 +368,16 @@ var ALL_MODULES = [
 ];
 
 function buildDefault() {
-  buildDevelopment();
-  buildMinified();
+  return merge(buildDevelopment(), buildMinified());
+}
+
+function buildAll() {
+  return merge(
+    buildDevelopment(),
+    buildMinified(),
+    buildBowerAll(),
+    buildNpmAll()
+  );
 }
 
 function buildDevelopment() {
@@ -319,7 +385,7 @@ function buildDevelopment() {
   var modules = args.m || args.modules || 'default';
   var locales = args.l || args.locales;
   notify('Exporting ' + getBuildMessage(filename, modules, locales));
-  createDevelopmentBuild(filename, modules, locales);
+  return createDevelopmentBuild(filename, modules, locales);
 }
 
 function buildMinified() {
@@ -327,7 +393,7 @@ function buildMinified() {
   var modules = args.m || args.modules || 'default';
   var locales = args.l || args.locales;
   notify('Minifying: ' + getBuildMessage(filename, modules, locales));
-  createMinifiedBuild(filename, modules, locales);
+  return createMinifiedBuild(filename, modules, locales);
 }
 
 function getBuildMessage(filename, modules, locales) {
@@ -1977,8 +2043,8 @@ function buildNpmPackages(p, dist) {
     writeFile(outputPath, outputBody);
   }
 
-  function needsDependencyTree() {
-    return npmPackages.some(function(p) {
+  function needsDependencyTree(packageNames) {
+    return packageNames.some(function(p) {
       return p !== 'sugar-core';
     });
   }
@@ -2039,7 +2105,7 @@ function buildNpmPackages(p, dist) {
     notify('Building ' + packageName);
     exportPackageJson(packageName, outputDir);
     copyPackageMeta(outputDir);
-    createDevelopmentBuild(devFilename, 'core');
+    streams.push(createDevelopmentBuild(devFilename, 'core'));
 
     if (dist) {
       streams.push(createMinifiedBuild(minFilename, 'core'));
@@ -2055,7 +2121,7 @@ function buildNpmPackages(p, dist) {
     iter(packagesByModuleName, function(module, packages) {
       if (moduleIncludedInPackage(packageName, module)) {
         packages.forEach(function(p) {
-          writePackage(p, dir);
+          writePackage(p, outputDir);
         });
       }
     });
@@ -2109,7 +2175,7 @@ function buildBowerPackages(p) {
 
   var streams = [];
   var packageNames = getPackageNames(p);
-  var baseDir = args.o || args.output || 'release/bower';
+  var baseDir = args.b || args.o || args.output || 'release/bower';
 
   function exportPackage(packageName) {
     var outputDir = path.join(baseDir, packageName);
@@ -2328,35 +2394,4 @@ function testWatchDefault() {
 function testWatchAll() {
   testWatch(true);
 }
-
-// -------------- Tasks ----------------
-
-gulp.task('default', showHelpMessage);
-gulp.task('help',    showHelpMessage);
-gulp.task('docs',    buildDocs);
-gulp.task('release', buildRelease);
-
-
-gulp.task('build',     buildDefault);
-gulp.task('build:dev', buildDevelopment);
-gulp.task('build:min', buildMinified);
-
-gulp.task('build:npm',       buildNpmDefault);
-gulp.task('build:npm:clean', buildNpmClean);
-gulp.task('build:npm:core',  buildNpmCore);
-gulp.task('build:npm:all',   buildNpmAll);
-
-gulp.task('build:bower',       buildBowerDefault);
-gulp.task('build:bower:clean', buildBowerClean);
-gulp.task('build:bower:core',  buildBowerCore);
-gulp.task('build:bower:all',   buildBowerAll);
-
-gulp.task('precompile:dev', precompileDev);
-gulp.task('precompile:min', precompileMin);
-
-gulp.task('test',           testRunDefault);
-gulp.task('test:all',       testRunAll);
-
-gulp.task('watch',     testWatchDefault);
-gulp.task('watch:all', testWatchAll);
 
