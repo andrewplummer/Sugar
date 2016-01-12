@@ -17,10 +17,11 @@ gulp.task('help',    showHelpMessage);
 gulp.task('docs',    buildDocs);
 gulp.task('release', buildRelease);
 
-gulp.task('build',     buildDefault);
-gulp.task('build:dev', buildDevelopment);
-gulp.task('build:min', buildMinified);
-gulp.task('build:all', buildAll);
+gulp.task('build',       buildDefault);
+gulp.task('build:dev',   buildDevelopment);
+gulp.task('build:min',   buildMinified);
+gulp.task('build:all',   buildAll);
+gulp.task('build:clean', buildClean);
 
 gulp.task('build:npm',       buildNpmDefault);
 gulp.task('build:npm:clean', buildNpmClean);
@@ -380,6 +381,11 @@ function buildAll() {
     buildBowerAll(),
     buildNpmAll()
   );
+}
+
+function buildClean() {
+  buildNpmClean();
+  buildBowerClean();
 }
 
 function buildDevelopment() {
@@ -2104,7 +2110,7 @@ function buildNpmPackages(p, dist) {
     var devFilename = path.join(outputDir, getDistFilename(packageName));
     var minFilename = path.join(outputDir, getDistFilename(packageName, true));
 
-    notify('Building ' + packageName);
+    notify('Building npm ' + packageName);
     exportPackageJson(packageName, outputDir);
     copyPackageMeta(outputDir);
     streams.push(createDevelopmentBuild(devFilename, 'core'));
@@ -2127,7 +2133,7 @@ function buildNpmPackages(p, dist) {
         });
       }
     });
-    notify('Building ' + packageName);
+    notify('Building npm ' + packageName);
     createMainEntryPoint(packageName, outputDir);
     writeNpmLocales(packageName, outputDir);
     exportPackageJson(packageName, outputDir);
@@ -2185,7 +2191,7 @@ function buildBowerPackages(p) {
       return;
     }
     var outputDir = path.join(baseDir, packageName);
-    notify('Building ' + packageName);
+    notify('Building bower ' + packageName);
     exportBowerJson(packageName, outputDir);
     copyPackageMeta(outputDir);
     streams.push(buildPackageDist(packageName, outputDir));
