@@ -17,7 +17,7 @@
   "main": "sugar.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/andrewplummer/Sugar.git"
+    "url": "git:https://github.com/andrewplummer/Sugar.git"
   },
   "bugs": {
     "url": "https://github.com/andrewplummer/Sugar/issues"

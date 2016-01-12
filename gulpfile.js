@@ -538,7 +538,7 @@ function getPackageJSON(name, basePackage, localPackage) {
   if (name === 'sugar-core') {
     package.main = 'sugar-core.js';
   } else {
-    delete package.main;
+    package.main = 'index.js';
     package.dependencies = {
       'sugar-core': '^' + package.version
     }
