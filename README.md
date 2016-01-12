@@ -77,7 +77,7 @@ In addition to these major locales, custom locales can be added using:
 Date.addLocale(LOCALE_CODE, LOCALIZATION_OBJECT)
 ```
 
-Documentation for this available [here](http://sugarjs.com/dates). Also refer to [lib/locales](lib/locales) for examples of what kind of data and formats are required in localization objects. All localizations, including those not found in the main bundle will be kept here.
+Documentation for this available [here](http://sugarjs.com/dates). Also refer to [locales](locales) for examples of what kind of data and formats are required in localization objects. All localizations, including those not found in the main bundle will be kept here.
 
 
 
