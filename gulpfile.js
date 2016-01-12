@@ -77,7 +77,7 @@ var HELP_MESSAGE = [
   '      |build:npm:all|                  Builds all npm packages (slow).',
   '      |build:npm:clean|                Cleans npm package output directory ("release/npm" by default).',
   '',
-  '      |build:bower|                    Builds bower packages ("sugar" by default).',
+  '      |build:bower|                    Builds bower packages (none by default).',
   '      |build:bower:all|                Builds all bower packages (slow).',
   '      |build:bower:clean|              Cleans bower package output directory ("release/bower" by default).',
   '',
@@ -145,7 +145,8 @@ var HELP_MESSAGE = [
   '',
   '      Bower packages contain just the bundled scripts in the "dist/" directory.',
   '      As bower requires a public git endpoint, the result of these tasks will be',
-  '      identical to the modularized repos hosted on Github.',
+  '      identical to the modularized repos hosted on Github. This also means that',
+  '      there is no "sugar" package for bower as it is identical to the main repo.',
   '',
   '    %Notes%',
   '',
@@ -190,6 +191,7 @@ var PACKAGE_DEFINITIONS = {
     locales: true,
     modules: 'es6,es7,string,number,array,enumerable,object,date,range,function,regexp',
     description: 'This build includes default Sugar modules and optional date locales.',
+    bower: false, // Same as main repo
   },
   'sugar-core': {
     modules: 'core',
@@ -2178,6 +2180,10 @@ function buildBowerPackages(p) {
   var baseDir = args.b || args.o || args.output || 'release/bower';
 
   function exportPackage(packageName) {
+    var def = PACKAGE_DEFINITIONS[packageName];
+    if (def.bower === false) {
+      return;
+    }
     var outputDir = path.join(baseDir, packageName);
     notify('Building ' + packageName);
     exportBowerJson(packageName, outputDir);
