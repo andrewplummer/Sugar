@@ -10,84 +10,132 @@ namespace('Dates Japanese', function () {
   });
 
   method('create', function() {
+
     equal(testCreateDate('2011年5月15日'), new Date(2011, 4, 15), 'Date#create | basic Japanese date');
     equal(testCreateDate('2011年5月15日'), new Date(2011, 4, 15), 'Date#create | once a language has been initialized it will always be recognized');
 
     equal(testCreateDate('2011年5月'), new Date(2011, 4), 'year and month');
     equal(testCreateDate('5月15日'), new Date(now.getFullYear(), 4, 15), 'month and date');
     equal(testCreateDate('2011年'), new Date(2011, 0), 'year');
+    equal(testCreateDate('2011年度'), new Date(2011, 0), 'year variant');
     equal(testCreateDate('5月'), new Date(now.getFullYear(), 4), 'month');
     equal(testCreateDate('15日'), new Date(now.getFullYear(), now.getMonth(), 15), 'date');
     equal(testCreateDate('月曜日'), getDateWithWeekdayAndOffset(1), 'Monday');
+    equal(testCreateDate('月曜'), getDateWithWeekdayAndOffset(1), 'Monday');
     equal(testCreateDate('九日'), new Date(now.getFullYear(), now.getMonth(), 9), 'the 9th');
     equal(testCreateDate('二十五日'), new Date(now.getFullYear(), now.getMonth(), 25), 'the 25th');
     equal(testCreateDate('3時45分'), run(new Date(), 'set', [{ hour: 3, minute: 45 }, true]), 'just time');
 
     equal(testCreateDate('一ミリ秒前'), getRelativeDate(null, null, null, null, null, null,-1), 'one millisecond ago');
-    equal(testCreateDate('一秒前'), getRelativeDate(null, null, null, null, null, -1), 'one second ago');
-    equal(testCreateDate('一分前'), getRelativeDate(null, null, null, null, -1), 'one minute ago');
-    equal(testCreateDate('一時間前'), getRelativeDate(null, null, null, -1), 'one hour ago');
-    equal(testCreateDate('一日前'), getRelativeDate(null, null, -1), 'one day ago');
-    equal(testCreateDate('一週間前'), getRelativeDate(null, null, -7), 'one week ago');
-    equal(testCreateDate('一ヶ月前'), getRelativeDate(null, -1), 'one month ago ヵ');
-    equal(testCreateDate('一ヵ月前'), getRelativeDate(null, -1), 'one month ago ヶ');
-    equal(testCreateDate('一年前'), getRelativeDate(-1), 'one year ago');
-
+    equal(testCreateDate('一秒前'),     getRelativeDate(null, null, null, null, null, -1), 'one second ago');
+    equal(testCreateDate('一分前'),     getRelativeDate(null, null, null, null, -1), 'one minute ago');
+    equal(testCreateDate('一時間前'),   getRelativeDate(null, null, null, -1), 'one hour ago');
+    equal(testCreateDate('一日前'),     getRelativeDate(null, null, -1), 'one day ago');
+    equal(testCreateDate('一週間前'),   getRelativeDate(null, null, -7), 'one week ago');
+    equal(testCreateDate('一ヶ月前'),   getRelativeDate(null, -1), 'one month ago ヵ');
+    equal(testCreateDate('一ヵ月前'),   getRelativeDate(null, -1), 'one month ago ヶ');
+    equal(testCreateDate('一年前'),     getRelativeDate(-1), 'one year ago');
 
     equal(testCreateDate('2ミリ秒前'), getRelativeDate(null, null, null, null, null, null,-2), 'two millisecond ago');
-    equal(testCreateDate('2秒前'), getRelativeDate(null, null, null, null, null, -2), 'two second ago');
-    equal(testCreateDate('2分前'), getRelativeDate(null, null, null, null, -2), 'two minute ago');
-    equal(testCreateDate('2時間前'), getRelativeDate(null, null, null, -2), 'two hour ago');
-    equal(testCreateDate('2日前'), getRelativeDate(null, null, -2), 'two day ago');
-    equal(testCreateDate('2週間前'), getRelativeDate(null, null, -14), 'two weeks ago');
-    equal(testCreateDate('2ヶ月前'), getRelativeDate(null, -2), 'two month ago ヵ');
-    equal(testCreateDate('2ヵ月前'), getRelativeDate(null, -2), 'two month ago ヶ');
-    equal(testCreateDate('2年前'), getRelativeDate(-2), 'two years ago');
+    equal(testCreateDate('2秒前'),     getRelativeDate(null, null, null, null, null, -2), 'two second ago');
+    equal(testCreateDate('2分前'),     getRelativeDate(null, null, null, null, -2), 'two minute ago');
+    equal(testCreateDate('2時間前'),   getRelativeDate(null, null, null, -2), 'two hour ago');
+    equal(testCreateDate('2日前'),     getRelativeDate(null, null, -2), 'two day ago');
+    equal(testCreateDate('2週間前'),   getRelativeDate(null, null, -14), 'two weeks ago');
+    equal(testCreateDate('2ヶ月前'),   getRelativeDate(null, -2), 'two month ago ヵ');
+    equal(testCreateDate('2ヵ月前'),   getRelativeDate(null, -2), 'two month ago ヶ');
+    equal(testCreateDate('2年前'),     getRelativeDate(-2), 'two years ago');
 
     equal(testCreateDate('5ミリ秒後'), getRelativeDate(null, null, null, null, null, null, 5), 'five millisecond from now');
-    equal(testCreateDate('5秒後'), getRelativeDate(null, null, null, null, null, 5), 'five second from now');
-    equal(testCreateDate('5分後'), getRelativeDate(null, null, null, null, 5), 'five minute from now');
-    equal(testCreateDate('5時間後'), getRelativeDate(null, null, null, 5), 'five hour from now');
-    equal(testCreateDate('5日後'), getRelativeDate(null, null, 5), 'five day from now');
-    equal(testCreateDate('5週間後'), getRelativeDate(null, null, 35), 'five weeks from now');
-    equal(testCreateDate('5ヶ月後'), getRelativeDate(null, 5), 'five month from now ヵ');
-    equal(testCreateDate('5ヵ月後'), getRelativeDate(null, 5), 'five month from now ヶ');
-    equal(testCreateDate('5年後'), getRelativeDate(5), 'five years from now');
+    equal(testCreateDate('5秒後'),     getRelativeDate(null, null, null, null, null, 5), 'five second from now');
+    equal(testCreateDate('5分後'),     getRelativeDate(null, null, null, null, 5), 'five minute from now');
+    equal(testCreateDate('5時間後'),   getRelativeDate(null, null, null, 5), 'five hour from now');
+    equal(testCreateDate('5日後'),     getRelativeDate(null, null, 5), 'five day from now');
+    equal(testCreateDate('5週間後'),   getRelativeDate(null, null, 35), 'five weeks from now');
+    equal(testCreateDate('5ヶ月後'),   getRelativeDate(null, 5), 'five month from now ヵ');
+    equal(testCreateDate('5ヵ月後'),   getRelativeDate(null, 5), 'five month from now ヶ');
+    equal(testCreateDate('5年後'),     getRelativeDate(5), 'five years from now');
 
     equal(testCreateDate('２０１１年５月２５日'), new Date(2011, 4, 25), 'full-width chars');
 
     equal(testCreateDate('５ミリ秒後'), getRelativeDate(null, null, null, null, null, null, 5), 'five millisecond from now');
-    equal(testCreateDate('５秒後'), getRelativeDate(null, null, null, null, null, 5), 'five second from now');
-    equal(testCreateDate('５分後'), getRelativeDate(null, null, null, null, 5), 'five minute from now');
-    equal(testCreateDate('５時間後'), getRelativeDate(null, null, null, 5), 'five hour from now');
-    equal(testCreateDate('５日後'), getRelativeDate(null, null, 5), 'five day from now');
-    equal(testCreateDate('５週間後'), getRelativeDate(null, null, 35), 'five weeks from now');
-    equal(testCreateDate('５ヶ月後'), getRelativeDate(null, 5), 'five month from now ヵ');
-    equal(testCreateDate('５ヵ月後'), getRelativeDate(null, 5), 'five month from now ヶ');
-    equal(testCreateDate('５年後'), getRelativeDate(5), 'five years from now');
+    equal(testCreateDate('５秒後'),     getRelativeDate(null, null, null, null, null, 5), 'five second from now');
+    equal(testCreateDate('５分後'),     getRelativeDate(null, null, null, null, 5), 'five minute from now');
+    equal(testCreateDate('５時間後'),   getRelativeDate(null, null, null, 5), 'five hour from now');
+    equal(testCreateDate('５日後'),     getRelativeDate(null, null, 5), 'five day from now');
+    equal(testCreateDate('５週間後'),   getRelativeDate(null, null, 35), 'five weeks from now');
+    equal(testCreateDate('５ヶ月後'),   getRelativeDate(null, 5), 'five month from now ヵ');
+    equal(testCreateDate('５ヵ月後'),   getRelativeDate(null, 5), 'five month from now ヶ');
+    equal(testCreateDate('５年後'),     getRelativeDate(5), 'five years from now');
 
+    equal(testCreateDate('一昨々日'), testResetTime(getRelativeDate(null, null,-3)), 'two days before yesterday 1');
+    equal(testCreateDate('前々々日'), testResetTime(getRelativeDate(null, null,-3)), 'two days before yesterday 2');
+    equal(testCreateDate('おととい'), testResetTime(getRelativeDate(null, null,-2)), 'the day before yesterday 1');
+    equal(testCreateDate('一昨日'),   testResetTime(getRelativeDate(null, null,-2)), 'the day before yesterday 2');
+    equal(testCreateDate('前々日'),   testResetTime(getRelativeDate(null, null,-2)), 'the day before yesterday 3');
+    equal(testCreateDate('昨日'),     testResetTime(getRelativeDate(null, null,-1)), 'yesterday 1');
+    equal(testCreateDate('前日'),     testResetTime(getRelativeDate(null, null,-1)), 'yesterday 2');
+    equal(testCreateDate('今日'),     testResetTime(getRelativeDate(null, null, 0)), 'today 1');
+    equal(testCreateDate('当日'),     testResetTime(getRelativeDate(null, null, 0)), 'today 2');
+    equal(testCreateDate('本日'),     testResetTime(getRelativeDate(null, null, 0)), 'today 3');
+    equal(testCreateDate('明日'),     testResetTime(getRelativeDate(null, null, 1)), 'tomorrow 1');
+    equal(testCreateDate('翌日'),     testResetTime(getRelativeDate(null, null, 1)), 'tomorrow 2');
+    equal(testCreateDate('次日'),     testResetTime(getRelativeDate(null, null, 1)), 'tomorrow 3');
+    equal(testCreateDate('明後日'),   testResetTime(getRelativeDate(null, null, 2)), 'the day after tomorrow 1');
+    equal(testCreateDate('翌々日'),   testResetTime(getRelativeDate(null, null, 2)), 'the day after tomorrow 2');
+    equal(testCreateDate('明々後日'), testResetTime(getRelativeDate(null, null, 3)), 'two days after tomorrow 1');
+    equal(testCreateDate('翌々々日'), testResetTime(getRelativeDate(null, null, 3)), 'two days after tomorrow 2');
 
-    equal(testCreateDate('おととい'), run(getRelativeDate(null, null, -2), 'reset'), 'おととい');
-    equal(testCreateDate('一昨日'), run(getRelativeDate(null, null, -2), 'reset'), '一昨日');
-    equal(testCreateDate('昨日'), run(getRelativeDate(null, null, -1), 'reset'), 'yesterday');
-    equal(testCreateDate('今日'), run(getRelativeDate(null, null, 0), 'reset'), 'today');
-    equal(testCreateDate('明日'), run(getRelativeDate(null, null, 1), 'reset'), 'tomorrow');
-    equal(testCreateDate('明後日'), run(getRelativeDate(null, null, 2), 'reset'), '明後日');
-    equal(testCreateDate('明々後日'), run(getRelativeDate(null, null, 3), 'reset'), '明々後日');
+    equal(testCreateDate('先週'),     getRelativeDate(null, null,-7), 'last week');
+    equal(testCreateDate('来週'),     getRelativeDate(null, null, 7), 'next week');
 
+    equal(testCreateDate('先々月'),   getRelativeDate(null,-2), 'two months ago');
+    equal(testCreateDate('先月'),     getRelativeDate(null,-1), 'last month 1');
+    equal(testCreateDate('前月'),     getRelativeDate(null,-1), 'last month 2');
+    equal(testCreateDate('今月'),     getRelativeDate(null, 0), 'this month');
+    equal(testCreateDate('本月'),     getRelativeDate(null, 0), 'this month');
+    equal(testCreateDate('来月'),     getRelativeDate(null, 1), 'next month 1');
+    equal(testCreateDate('次月'),     getRelativeDate(null, 1), 'next month 2');
+    equal(testCreateDate('再来月'),   getRelativeDate(null, 2), 'two months from now');
 
-    equal(testCreateDate('先週'), getRelativeDate(null, null, -7), 'Last week');
-    equal(testCreateDate('来週'), getRelativeDate(null, null, 7), 'Next week');
+    equal(testCreateDate('一昨々年'), getRelativeDate(-3), 'three years ago 1');
+    equal(testCreateDate('前々々年'), getRelativeDate(-3), 'three years ago 2');
+    equal(testCreateDate('一昨年'),   getRelativeDate(-2), 'two years ago 1');
+    equal(testCreateDate('前々年'),   getRelativeDate(-2), 'two years ago 2');
+    equal(testCreateDate('去年'),     getRelativeDate(-1), 'last year 1');
+    equal(testCreateDate('先年'),     getRelativeDate(-1), 'last year 2');
+    equal(testCreateDate('昨年'),     getRelativeDate(-1), 'last year 3');
+    equal(testCreateDate('前年'),     getRelativeDate(-1), 'last year 3');
+    equal(testCreateDate('今年'),     getRelativeDate( 0), 'this year 1');
+    equal(testCreateDate('本年'),     getRelativeDate( 0), 'this year 2');
+    equal(testCreateDate('来年'),     getRelativeDate( 1), 'next year 1');
+    equal(testCreateDate('翌年'),     getRelativeDate( 1), 'next year 2');
+    equal(testCreateDate('次年'),     getRelativeDate( 1), 'next year 3');
+    equal(testCreateDate('再来年'),   getRelativeDate( 2), 'two years from now 1');
+    equal(testCreateDate('さ来年'),   getRelativeDate( 2), 'two years from now 2');
+    equal(testCreateDate('明後年'),   getRelativeDate( 2), 'two years from now 3');
+    equal(testCreateDate('翌々年'),   getRelativeDate( 2), 'two years from now 4');
+    equal(testCreateDate('次々年度'), getRelativeDate( 2), 'two years from now 5');
+    equal(testCreateDate('明々後年'), getRelativeDate( 3), 'three years from now 1');
+    equal(testCreateDate('翌々々年'), getRelativeDate( 3), 'three years from now 2');
 
-    equal(testCreateDate('先月'), getRelativeDate(null, -1), 'Next month');
-    equal(testCreateDate('来月'), getRelativeDate(null, 1), 'Next month');
+    equal(testCreateDate('３月始'),   new Date(now.getFullYear(), 2), 'beginning of March 1');
+    equal(testCreateDate('３月頭'),   new Date(now.getFullYear(), 2), 'beginning of March 2');
+    equal(testCreateDate('３月初日'), new Date(now.getFullYear(), 2), 'first day of March');
 
-    equal(testCreateDate('去年'), getRelativeDate(-1), 'Last year');
-    equal(testCreateDate('来年'), getRelativeDate(1), 'Next year');
+    equal(testCreateDate('３月末'),   testGetEndOfMonth(now.getFullYear(), 2), 'end of March 1');
+    equal(testCreateDate('３月尻'),   testGetEndOfMonth(now.getFullYear(), 2), 'end of March 2');
+    equal(testCreateDate('３月末日'), new Date(now.getFullYear(), 2, 31), 'last day of March');
 
+    equal(testCreateDate('来月末'),         testGetEndOfRelativeMonth(1), 'end of next month');
+    equal(testCreateDate('来月２５日'),     new Date(now.getFullYear(), now.getMonth() + 1, 25), '25th of next month');
+    equal(testCreateDate('来年３月'),       new Date(now.getFullYear() + 1, 2), 'March of next year');
+    equal(testCreateDate('来年３月２５日'), new Date(now.getFullYear() + 1, 2, 25), 'March 25th of next year');
+    equal(testCreateDate('来年３月末'),     new Date(now.getFullYear() + 1, 2, 31, 23, 59, 59, 999), 'end of March next year');
 
-    equal(testCreateDate('先週水曜日'), getDateWithWeekdayAndOffset(3, -7), 'Last wednesday');
-    equal(testCreateDate('来週金曜日'), getDateWithWeekdayAndOffset(5, 7), 'Next friday');
+    equal(testCreateDate('先週水曜日'),      getDateWithWeekdayAndOffset(3, -7),        'Last wednesday');
+    equal(testCreateDate('来週金曜日'),      getDateWithWeekdayAndOffset(5, 7),         'Next friday');
+    equal(testCreateDate('来週水曜日15:35'), getDateWithWeekdayAndOffset(3, 7, 15, 35), 'next wednesday at 3:35pm');
 
     equal(testCreateDate('2011年5月15日 3:45:59'), new Date(2011, 4, 15, 3, 45, 59), 'full date with time');
     equal(testCreateDate('2011年5月15日 3時45分'), new Date(2011, 4, 15, 3, 45, 0), 'full date with kanji markers');

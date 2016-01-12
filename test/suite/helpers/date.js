@@ -104,6 +104,24 @@ getDateWithWeekdayAndOffset = function(weekday, offset, hours, minutes, seconds,
   return d;
 }
 
+testGetEndOfMonth = function(year, month) {
+  var day = testGetDaysInMonth(year, month);
+  return new Date(year, month, day, 23, 59, 59, 999);
+}
+
+testGetEndOfRelativeMonth = function(month) {
+  var now = new Date();
+  return testGetEndOfMonth(now.getFullYear(), now.getMonth() + month);
+}
+
+testResetTime = function(d) {
+  d.setHours(0);
+  d.setMinutes(0);
+  d.setSeconds(0);
+  d.setMilliseconds(0);
+  return d;
+}
+
 testGetBeginningOfWeek = function(startWeekday) {
   var d = new Date();
   var dow = d.getDay();
