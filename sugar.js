@@ -2255,8 +2255,16 @@
     return d;
   }
 
+  function dateParamKey(params, key) {
+    return isDefined(params[key]) ? key : key + 's';
+  }
+
   function getDateParam(params, key) {
-    return isDefined(params[key]) ? params[key] : params[key + 's'];
+    return params[dateParamKey(params, key)];
+  }
+
+  function deleteDateParam(params, key) {
+    delete params[dateParamKey(params, key)];
   }
 
   function dateParamIsDefined(params, key) {
@@ -2411,10 +2419,10 @@
       unitName  = English.unitsLower[unitIndex];
 
       // Relative date units such as "tomorrow" have already had their
-      // "day" set above so assume 0 shift UNLESS they have a "sign"
-      // such as the form "the day after tomorrow", in which case it
-      // will need to be added below.
-      if (!set.sign && unitIndex === 4) {
+      // "day" set above so assume 0 shift unless they are explicitly
+      // using a shift or have a have a "sign" such as the form
+      // "the day after tomorrow".
+      if (!set.sign && !set.shift && unitIndex === 4) {
         num = 0;
       }
 
@@ -2422,11 +2430,14 @@
       // contain absolute units in addition to relative ones, so separate
       // them here, remove them from the params, and set up a callback to
       // set them after the relative ones have been set.
-      separateAbsoluteUnits(unitIndex);
+      separateAbsoluteUnits(loc, unitIndex);
 
       if (set.shift) {
         // Shift and unit, ie "next month", "last week", etc.
-        num *= (tmp = loc.modifiersByName[set.shift]) ? tmp.value : 0;
+        tmp = loc.modifiersByName[set.shift];
+        if (tmp) {
+          num *= tmp.value;
+        }
       }
 
       if (set.sign && (tmp = loc.modifiersByName[set.sign])) {
@@ -2444,7 +2455,7 @@
       set[unitName] = (set[unitName] || 0) + num;
     }
 
-    function separateAbsoluteUnits(unitIndex) {
+    function separateAbsoluteUnits(loc, unitIndex) {
       var params;
       iterateOverDateUnits(function(name, u, i) {
         if (name === 'day') name = 'date';
@@ -2460,29 +2471,37 @@
           // as a callback after the relative date has been set.
           params = params || {};
           params[name] = getDateParam(set, name);
-          delete set[name];
+          deleteDateParam(set, name);
         }
       });
       if (params) {
         afterDateSet(function() {
           updateDate(date, params, true);
         });
+        if (set.edge) {
+          // Allow formats like "the end of March of next year"
+          params.edge = set.edge;
+          afterDateSet(function() {
+            setUnitEdge(loc, params);
+          });
+          delete set.edge;
+        }
       }
     }
 
-    function setUnitEdge(loc) {
-      var modifier = loc.modifiersByName[set.edge], localeCode, unit;
+    function setUnitEdge(loc, params) {
+      var modifier = loc.modifiersByName[params.edge], localeCode, unit;
       localeCode = options.locale;
       iterateOverHigherDateUnits(function(name) {
-        if (isDefined(set[name])) {
+        if (isDefined(params[name])) {
           unit = name;
           return false;
         }
       });
       if (unit === 'year') {
-        set.specificity = 'month';
+        params.specificity = 'month';
       } else if (unit === 'month' || unit === 'week') {
-        set.specificity = 'day';
+        params.specificity = 'day';
       }
       if (modifier.value < 0) {
         moveToEndOfUnit(date, unit, localeCode);
@@ -2654,7 +2673,7 @@
               // If there is an "edge" it needs to be set after the
               // other fields are set. ie "the end of February"
               afterDateSet(function() {
-                setUnitEdge(loc);
+                setUnitEdge(loc, set);
               });
             }
 
@@ -4418,7 +4437,7 @@
       } else {
         def.code = code;
       }
-      var loc = new Locale(def);
+      var loc = def.compiledFormats ? def : new Locale(def);
       this.locales[code] = loc;
       if (!this.current) {
         this.current = loc;
@@ -4829,10 +4848,10 @@
     'duration':   '{num} {unit}',
     'plural':     true,
     'modifiers': [
-      { 'name': 'hours', 'src': 'midnight', 'value': 0 },
       { 'name': 'hours', 'src': 'noon', 'value': 12 },
+      { 'name': 'hours', 'src': 'midnight', 'value': 24 },
       { 'name': 'day',   'src': 'yesterday', 'value': -1 },
-      { 'name': 'day',   'src': 'today', 'value': 0 },
+      { 'name': 'day',   'src': 'today|tonight', 'value': 0 },
       { 'name': 'day',   'src': 'tomorrow', 'value': 1 },
       { 'name': 'sign',  'src': 'ago|before', 'value': -1 },
       { 'name': 'sign',  'src': 'from now|after|from|in|later', 'value': 1 },
@@ -4847,6 +4866,7 @@
       '{month} {year}',
       '{shift} {unit=5-7}',
       '{0?} {date}{1}',
+      '{hours} {day}',
       '{shift?} {day?} {timeMarker?} {hours}',
       '{0?} {edge} of {shift?} {unit=4-7?} {month?} {year?}'
     ],
@@ -4904,7 +4924,6 @@
 
   // Sorry about this guys
   var English = new Locale(AmericanEnglishDefinition);
-
   var localeManager = new LocaleManager(English);
 
   buildDateUnits();
