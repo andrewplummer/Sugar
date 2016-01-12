@@ -105,8 +105,9 @@ var HELP_MESSAGE = [
   '      -p, --packages                 Comma separated packages to build (npm,bower tasks only).',
   '                                     Same as modules with "sugar-" prefixed, plus "sugar-core".',
   '',
-  '      -s, --source_map               Creates a source map when the compiler is invoked.',
-  '                                     Can be a path or "sugar.min.map" if blank.',
+  '      -s, --source_map               Compiler source map file. Default is "sugar.min.map".',
+  '',
+  '      -n, --no_source_map            Do not output a source map.',
   '',
   '      -o, --output                   Output path (default is "sugar.js" or "sugar.min.js").',
   '',
@@ -271,14 +272,11 @@ function compileModules(modules, path) {
 
 function compileSingle(path) {
   var compiler = require('closure-compiler-stream');
-
-  var sourceMap = args.s || args.source_map;
-  if (sourceMap === true) sourceMap = path.replace(/\.js/, '.map');
-
   var flags = getDefaultFlags();
   flags.js_output_file = path;
-  flags.create_source_map = sourceMap;
-
+  if (!args.no_source_map) {
+    flags.create_source_map = args.s || args.source_map || path.replace(/\.js/, '.map');
+  }
   return compiler(flags);
 }
 
