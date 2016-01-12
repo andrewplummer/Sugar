@@ -17,6 +17,9 @@ gulp.task('help',    showHelpMessage);
 gulp.task('docs',    buildDocs);
 gulp.task('release', buildRelease);
 
+gulp.task('dev', buildDefault);
+gulp.task('min', buildMinified);
+
 gulp.task('build',       buildDefault);
 gulp.task('build:dev',   buildDevelopment);
 gulp.task('build:min',   buildMinified);
@@ -87,6 +90,9 @@ var HELP_MESSAGE = [
   '',
   '      |watch|                          Watch for changes and reload default test suite.',
   '      |watch:all|                      Watch for changes and reload all tests.',
+  '',
+  '      |dev|                            Shortcut for build:dev',
+  '      |min|                            Shortcut for build:min',
   '',
   '      |release|                        Create a release. Same as "build:all" but requires a version.',
   '',
