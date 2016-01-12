@@ -55,7 +55,7 @@ namespace('Dates Danish', function () {
     equal(testCreateDate('næste måned'), getRelativeDate(null, 1), 'Next month');
     equal(testCreateDate('sidste år'), getRelativeDate(-1), 'Last year');
     equal(testCreateDate('næste år'), getRelativeDate(1), 'Next year');
-    equal(testCreateDate('sidste mandag'), getDateWithWeekdayAndOffset(1,  -7), 'last monday');
+    equal(testCreateDate('sidste mandag'), getDateWithWeekdayAndOffset(1, -7), 'last monday');
     equal(testCreateDate('næste mandag'), getDateWithWeekdayAndOffset(1, 7), 'next monday');
     equal(testCreateDate('i går'), run(getRelativeDate(null, null, -1), 'reset'), 'yesterday');
     equal(testCreateDate('i overmorgen'), run(getRelativeDate(null, null, 2), 'reset'), 'day after tomorrow');
@@ -65,7 +65,6 @@ namespace('Dates Danish', function () {
     equal(testCreateDate('næste måned'), getRelativeDate(null, 1), 'Next month');
     equal(testCreateDate('sidste år'), getRelativeDate(-1), 'Last year');
     equal(testCreateDate('næste år'), getRelativeDate(1), 'Next year');
-
 
     // Numbers
 

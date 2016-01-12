@@ -425,35 +425,36 @@ namespace('Date', function () {
 
   group('Create | Fuzzy Dates', function() {
 
-    equal(testCreateDate('now'), new Date(), 'now');
-    equal(testCreateDate('Now'), new Date(), 'Now');
+    equal(testCreateDate('now'),      new Date(), 'now');
+    equal(testCreateDate('Now'),      new Date(), 'Now');
     equal(testCreateDate('Just now'), new Date(), 'Just Now');
-    equal(testCreateDate('today'), new Date(now.getFullYear(), now.getMonth(), now.getDate()), 'today');
-    equal(testCreateDate('Today'), new Date(now.getFullYear(), now.getMonth(), now.getDate()), 'Today');
-    equal(testCreateDate('yesterday'), new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1), 'yesterday');
-    equal(testCreateDate('Yesterday'), new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1), 'Yesterday');
-    equal(testCreateDate('tomorrow'), new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1), 'tomorrow');
-    equal(testCreateDate('Tomorrow'), new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1), 'Tomorrow');
-    equal(testCreateDate('4pm'), new Date(now.getFullYear(), now.getMonth(), now.getDate(), 16), '4pm');
-    equal(testCreateDate('today at 4pm'), new Date(now.getFullYear(), now.getMonth(), now.getDate(), 16), 'Today at 4pm');
+    equal(testCreateDate('today'),    testResetTime(new Date()), 'today');
+    equal(testCreateDate('Today'),    testResetTime(new Date()), 'Today');
+
+    equal(testCreateDate('4pm'),           new Date(now.getFullYear(), now.getMonth(), now.getDate(), 16), '4pm');
+    equal(testCreateDate('today at 4pm'),  new Date(now.getFullYear(), now.getMonth(), now.getDate(), 16), 'Today at 4pm');
     equal(testCreateDate('today at 4 pm'), new Date(now.getFullYear(), now.getMonth(), now.getDate(), 16), 'Today at 4 pm');
-    equal(testCreateDate('4pm today'), new Date(now.getFullYear(), now.getMonth(), now.getDate(), 16), '4pm today');
+    equal(testCreateDate('4pm today'),     new Date(now.getFullYear(), now.getMonth(), now.getDate(), 16), '4pm today');
 
-    equal(testCreateDate('The day after tomorrow'), new Date(now.getFullYear(), now.getMonth(), now.getDate() + 2), 'The day after tomorrow');
-    equal(testCreateDate('The day before yesterday'), new Date(now.getFullYear(), now.getMonth(), now.getDate() - 2), 'The day before yesterday');
-    equal(testCreateDate('One day after tomorrow'), new Date(now.getFullYear(), now.getMonth(), now.getDate() + 2), 'One day after tomorrow');
-    equal(testCreateDate('One day before yesterday'), new Date(now.getFullYear(), now.getMonth(), now.getDate() - 2), 'One day before yesterday');
-    equal(testCreateDate('Two days after tomorrow'), new Date(now.getFullYear(), now.getMonth(), now.getDate() + 3), 'Two days after tomorrow');
-    equal(testCreateDate('Two days before yesterday'), new Date(now.getFullYear(), now.getMonth(), now.getDate() - 3), 'Two days before yesterday');
-    equal(testCreateDate('Two days after today'), new Date(now.getFullYear(), now.getMonth(), now.getDate() + 2), 'Two days after today');
-    equal(testCreateDate('Two days before today'), new Date(now.getFullYear(), now.getMonth(), now.getDate() - 2), 'Two days before today');
-    equal(testCreateDate('Two days from today'), new Date(now.getFullYear(), now.getMonth(), now.getDate() + 2), 'Two days from today');
+    equal(testCreateDate('yesterday'), testResetTime(getRelativeDate(null, null, -1)), 'yesterday');
+    equal(testCreateDate('Yesterday'), testResetTime(getRelativeDate(null, null, -1)), 'Yesterday');
+    equal(testCreateDate('tomorrow'),  testResetTime(getRelativeDate(null, null,  1)), 'tomorrow');
+    equal(testCreateDate('Tomorrow'),  testResetTime(getRelativeDate(null, null,  1)), 'Tomorrow');
 
-    equal(testCreateDate('tWo dAyS after toMoRRoW'), new Date(now.getFullYear(), now.getMonth(), now.getDate() + 3), 'tWo dAyS after toMoRRoW');
-    equal(testCreateDate('2 days after tomorrow'), new Date(now.getFullYear(), now.getMonth(), now.getDate() + 3), '2 days after tomorrow');
-    equal(testCreateDate('2 day after tomorrow'), new Date(now.getFullYear(), now.getMonth(), now.getDate() + 3), '2 day after tomorrow');
-    equal(testCreateDate('18 days after tomorrow'), new Date(now.getFullYear(), now.getMonth(), now.getDate() + 19), '18 days after tomorrow');
-    equal(testCreateDate('18 day after tomorrow'), new Date(now.getFullYear(), now.getMonth(), now.getDate() + 19), '18 day after tomorrow');
+    equal(testCreateDate('Two days before yesterday'), testResetTime(getRelativeDate(null, null,-3)), 'Two days before yesterday');
+    equal(testCreateDate('Two days before today'),     testResetTime(getRelativeDate(null, null,-2)), 'Two days before today');
+    equal(testCreateDate('The day before yesterday'),  testResetTime(getRelativeDate(null, null,-2)), 'The day before yesterday');
+    equal(testCreateDate('One day before yesterday'),  testResetTime(getRelativeDate(null, null,-2)), 'One day before yesterday');
+    equal(testCreateDate('The day after tomorrow'),    testResetTime(getRelativeDate(null, null, 2)), 'The day after tomorrow');
+    equal(testCreateDate('One day after tomorrow'),    testResetTime(getRelativeDate(null, null, 2)), 'One day after tomorrow');
+    equal(testCreateDate('Two days after today'),      testResetTime(getRelativeDate(null, null, 2)), 'Two days after today');
+    equal(testCreateDate('Two days from today'),       testResetTime(getRelativeDate(null, null, 2)), 'Two days from today');
+    equal(testCreateDate('Two days after tomorrow'),   testResetTime(getRelativeDate(null, null, 3)), 'Two days after tomorrow');
+    equal(testCreateDate('tWo dAyS after toMoRRoW'),   testResetTime(getRelativeDate(null, null, 3)), 'tWo dAyS after toMoRRoW');
+    equal(testCreateDate('2 days after tomorrow'),     testResetTime(getRelativeDate(null, null, 3)), '2 days after tomorrow');
+    equal(testCreateDate('2 day after tomorrow'),      testResetTime(getRelativeDate(null, null, 3)), '2 day after tomorrow');
+    equal(testCreateDate('18 days after tomorrow'),    testResetTime(getRelativeDate(null, null, 19)), '18 days after tomorrow');
+    equal(testCreateDate('18 day after tomorrow'),     testResetTime(getRelativeDate(null, null, 19)), '18 day after tomorrow');
 
     equal(testCreateDate('2 years ago'), getRelativeDate(-2), '2 years ago');
     equal(testCreateDate('2 months ago'), getRelativeDate(null, -2), '2 months ago');
@@ -464,7 +465,6 @@ namespace('Date', function () {
     equal(testCreateDate('2 seconds ago'), getRelativeDate(null, null, null, null, null, -2), '2 seconds ago');
     equal(testCreateDate('2 milliseconds ago'), getRelativeDate(null, null, null, null, null, null, -2), '2 milliseconds ago');
     equal(testCreateDate('a second ago'), getRelativeDate(null, null, null, null, null, -1), 'a second ago');
-
     equal(testCreateDate('2 years from now'), getRelativeDate(2), '2 years from now');
     equal(testCreateDate('2 months from now'), getRelativeDate(null, 2), '2 months from now');
     equal(testCreateDate('2 weeks from now'), getRelativeDate(null, null, 14), '2 weeks from now');
@@ -542,8 +542,8 @@ namespace('Date', function () {
     equal(testCreateDate('beginning of this month'), new Date(now.getFullYear(), now.getMonth()), 'beginning of this month');
     equal(testCreateDate('beginning of next month'), new Date(now.getFullYear(), now.getMonth() + 1), 'beginning of next month');
     equal(testCreateDate('the beginning of next month'), new Date(now.getFullYear(), now.getMonth() + 1), 'the beginning of next month');
-    equal(testCreateDate('the end of next month'), new Date(now.getFullYear(), now.getMonth() + 1, testGetDaysInMonth(now.getFullYear(), now.getMonth() + 1), 23, 59, 59, 999), 'the end of next month');
-    equal(testCreateDate('the end of the month'), new Date(now.getFullYear(), now.getMonth(), testGetDaysInMonth(now.getFullYear(), now.getMonth()), 23, 59, 59, 999), 'the end of the month');
+    equal(testCreateDate('the end of next month'), testGetEndOfRelativeMonth(1), 'the end of next month');
+    equal(testCreateDate('the end of the month'), testGetEndOfRelativeMonth(0), 'the end of the month');
 
     equal(testCreateDate('the beginning of the year'), new Date(now.getFullYear(), 0), 'the beginning of the year');
     equal(testCreateDate('the beginning of this year'), new Date(now.getFullYear(), 0), 'the beginning of this year');
@@ -2708,9 +2708,10 @@ namespace('Date', function () {
     dateTest(new Date(1998,2), ['January, 1998', 'February, 1998'], false, 'string | March, 1998 is not between January, 1998 and February, 1998');
 
     dateTest(new Date(1999,5), ['1998','1999'], false, 'Ambiguous periods are hard coded to the ms, there is no "implied specificity" as with Date#is');
-    dateTest(new Date(), ['yesterday','tomorrow'], true, 'relative | now is between today and tomorrow');
-    dateTest(getRelativeDate(1), ['yesterday','tomorrow'], false, 'relative | last year is between today and tomorrow');
-    dateTest(getRelativeDate(null, 1), ['yesterday','tomorrow'], false, 'relative | last month is between today and tomorrow');
+
+    dateTest(new Date(),                     ['yesterday','tomorrow'], true, 'relative | now is between today and tomorrow');
+    dateTest(getRelativeDate(1),             ['yesterday','tomorrow'], false, 'relative | last year is between today and tomorrow');
+    dateTest(getRelativeDate(null, 1),       ['yesterday','tomorrow'], false, 'relative | last month is between today and tomorrow');
     dateTest(getRelativeDate(null, null, 0), ['today','tomorrow'], true, 'relative | right now is between today and tomorrow');
     dateTest(getRelativeDate(null, null, 1), ['today','tomorrow'], false, 'relative | tomorrow is between today and tomorrow');
 
