@@ -1460,5 +1460,38 @@ package('Object', function () {
     testStaticAndInstance(obj, [function () {}], obj, 'each returns itself');
   });
 
+  method('keys', function() {
+
+     var called = false;
+     var fn = function(key, val) {
+       equal(key, 'foo', 'First argument should be key');
+       equal(val, 'bar', 'Second argument should be value');
+       called = true;
+     }
+     run(Object, 'keys', [{foo:'bar'}, fn]);
+     equal(called, true, 'Callback should have been called');
+
+     // Issue #525
+     var result = [{foo:'foo'},{bar:'bar'}].map(Object.keys);
+     equal(result, [['foo'],['bar']], 'non-function argument should not be called');
+
+   });
+
+   method('values', function() {
+
+     test({foo:'bar'}, ['bar'], 'Values should be received');
+
+     var called = false;
+     var fn = function(key, val) {
+       called = true;
+     }
+     var result = run(Object, 'values', [{foo:'bar'}, fn]);
+     equal(called, true, 'Callback should have been called');
+
+     // Issue #525
+     var result = [{foo:'foo'},{bar:'bar'}].map(Object.values);
+     equal(result, [['foo'],['bar']], 'non-function argument should not be called');
+
+   });
 
 });
