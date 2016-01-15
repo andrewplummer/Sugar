@@ -60,6 +60,7 @@ Sugar has the following localizations available:
 - Italian (it)
 - Japanese (ja)
 - Korean (ko)
+- Norwegian (no)
 - Polish (pl)
 - Portuguese (pt)
 - Russian (ru)
