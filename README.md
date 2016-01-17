@@ -52,6 +52,7 @@ Use the `npm test` command to run unit tests.
 
 Sugar has the following localizations available:
 
+- Catalan (ca)
 - Danish (da)
 - Dutch (nl)
 - English (en)
@@ -61,6 +62,7 @@ Sugar has the following localizations available:
 - Italian (it)
 - Japanese (ja)
 - Korean (ko)
+- Norwegian (no)
 - Polish (pl)
 - Portuguese (pt)
 - Russian (ru)
