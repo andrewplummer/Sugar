@@ -399,4 +399,14 @@ namespace('Core', function() {
 
   });
 
+  group('Extending with exceptions', function() {
+    defineCustom(Sugar.String);
+    Sugar.String.extend({
+      except: ['foo']
+    });
+    equal(''.foo, undefined, 'foo was not mapped');
+    equal(''.bar(), 'bar!', 'bar was mapped');
+    equal(''.moo(), 'moo!', 'moo was mapped');
+  });
+
 });
