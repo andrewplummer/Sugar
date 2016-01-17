@@ -28,7 +28,33 @@ getDescriptorObject = function() {
   });
 }
 
-assertIsHash = function(obj) {
+testStaticAndInstance = function (subject, args, expected, message) {
+
+  function testExtended(flag, message) {
+    var obj = Sugar.Object.extended(testClone(subject), flag);
+    var result = obj[getCurrentTest().name].apply(obj, args);
+    if (testIsHash(result) && result.unwrap) {
+      result = result.unwrap();
+    }
+    equal(result, expected, message);
+  }
+
+  if (Sugar.Object && Sugar.Object.extended) {
+    testExtended(false, 'extended');
+    testExtended(true, 'non-shadowable extended');
+    //var hash = Sugar.Object.extended(clonedSubject);
+    //equal(hash[getCurrentTest().name].apply(hash, args), expected, message + ' | extended object');
+    //var nshash = Sugar.Object.extended(clonedSubject, true);
+    //equal(nshash[getCurrentTest().name].apply(nshash, args), expected, message + ' | non-shadowable extended object');
+  }
+  test(subject, args, expected, message);
+}
+
+testIsHash = function(obj) {
   // Simple way to check for extended objects
-  equal(typeof obj.keys === 'function' && typeof obj.values === 'function', true, 'obj is hash');
+  return obj && typeof obj.keys === 'function' && typeof obj.values === 'function';
+}
+
+assertIsHash = function(obj) {
+  equal(testIsHash(obj), true, 'obj is hash');
 }
