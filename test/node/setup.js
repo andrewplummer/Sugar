@@ -8,10 +8,10 @@ var baseDir = path.resolve(__dirname, '../..');
 sinon = require('sinon');
 require('../suite/suite');
 require('../suite/log');
-require('../suite/helpers/common');
 require('../suite/helpers/core');
-require('../suite/helpers/date');
+require('../suite/helpers/common');
 require('../suite/helpers/array');
+require('../suite/helpers/date');
 require('../suite/helpers/object');
 
 function notice(message, logFn) {
