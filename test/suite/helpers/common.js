@@ -75,16 +75,6 @@ testForceStringCoercion = function(obj) {
   };
 }
 
-testStaticAndInstance = function (subject, args, expected, message) {
-  // Clone here in case the first test modifies the subject!
-  var clonedSubject = testClone(subject);
-  test(subject, args, expected, message);
-  if (Sugar.Object && Sugar.Object.extended) {
-    var obj = Sugar.Object.extended(clonedSubject);
-    equal(obj[getCurrentTest().name].apply(obj, args), expected, message + ' | extended object');
-  }
-}
-
 // iOS 8 supports Set but not the iterable constructor syntax (it simply adds
 // the array as a set member instead). So this helper method helps creates sets
 // from arguments.

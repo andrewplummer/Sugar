@@ -41,7 +41,7 @@ namespace('Object', function () {
 
   method('invert', function() {
 
-    assertIsHash(run(Sugar.Object.extended({foo:'bar'})));
+    assertIsHash(Sugar.Object.extended({foo:'bar'}).invert());
 
     testStaticAndInstance({foo:'bar'}, [], {bar:'foo'}, 'basic invert');
     testStaticAndInstance({foo:{bar:'baz'}}, [], {'[object Object]':'foo'}, 'deep objects are simply stringified');
@@ -314,6 +314,59 @@ namespace('Object', function () {
     // Object.extended hasOwnProperty issue #97
     // see: http://www.devthought.com/2012/01/18/an-object-is-not-a-hash/
     run(Object, 'extended', [{ hasOwnProperty: true }]);
+
+  });
+
+  group('Non-Shadowable Hashes', function() {
+
+    var obj = {
+      foo: 'bar',
+      moo: 'car'
+    }
+
+    var hash = run(Object, 'extended', [obj, true]);
+
+    equal('foo' in hash, false, 'Non-shadowable hash properties are not directly accessible');
+    equal(hash.get('foo'), 'bar', 'Non-shadowable hash properties are accessible through get');
+
+    hash.set('foo', 'baz');
+    equal('foo' in hash, false, 'Non-shadowable hash properties are accessible after setting');
+    equal(hash.get('foo'), 'baz', 'Non-shadowable hash retains set properties');
+
+    var hash1 = run(Object, 'extended', [{foo:'bar'}, true]);
+    var hash2 = run(Object, 'extended', [{foo:'bar'}, true]);
+    equal(hash1.isEqual(hash2), true, 'Non-shadowable hashes are egal with equivalent non-shadowable');
+
+    var hash1 = run(Object, 'extended', [{foo:'bar'}]);
+    var hash2 = run(Object, 'extended', [{foo:'bar'}, true]);
+    equal(hash1.isEqual(hash2), false, 'Regular hashes are not egal with non-shadowable');
+
+    var hash1 = run(Object, 'extended', [{foo:'bar'}, true]);
+    var hash2 = run(Object, 'extended', [{foo:'bar'}]);
+    equal(hash1.isEqual(hash2), false, 'Non-shadowable are not egal with regular hashes');
+
+    var hash1 = run(Object, 'extended', [{foo:'bar'}, true]);
+    var hash2 = run(Object, 'extended', [{foo:'bar'}, true]);
+    equal(run(Object, 'isEqual', [hash1, hash2]), true, 'Comparing non-shadowable hashes directly through Object.isEqual');
+
+    var hash1 = run(Object, 'extended', [{foo:'foo'}]);
+    var hash2 = run(Object, 'extended', [{bar:'bar'}]);
+    var result = hash1.merge(hash2);
+    equal(result.get('bar'), 'bar', 'regular hash merge produces hash');
+    equal(result['bar'], 'bar', 'regular hash merge has public property "bar"');
+
+    var hash1 = run(Object, 'extended', [{foo:'foo'}, true]);
+    var hash2 = run(Object, 'extended', [{bar:'bar'}]);
+    var result = hash1.merge(hash2);
+    equal('foo' in result || 'bar' in result, false, 'non-shadowable with merged hash produces non-shadowable');
+    equal(hash1.get('foo'), 'foo', 'non-shadowable with merged hash has original property');
+    equal(hash1.get('bar'), 'bar', 'non-shadowable with merged hash has merged property');
+
+    var hash1 = run(Object, 'extended', [{foo:'foo'}]);
+    var hash2 = run(Object, 'extended', [{bar:'bar'}, true]);
+    var result = hash1.merge(hash2);
+    equal(hash1['foo'], 'foo', 'hash with merged non-shadowable has direct original property');
+    equal(hash1['bar'], 'bar', 'hash with merged non-shadowable has direct merged property');
 
   });
 
@@ -663,6 +716,16 @@ namespace('Object', function () {
     // var opts = { deep: true };
     // raisesError(function() { run({}, 'merge', [a, opts]); }, 'does not work on cyclical objects', RangeError);
 
+    // Deep hashes
+    var obj = {a:Sugar.Object.extended({foo:'bar'})};
+    var result = run({}, 'merge', [obj, {deep:true}])
+    assertIsHash(result.a);
+    equal(result.a.foo, 'bar', 'deep merged hash has foo property');
+
+    // Deep hashes
+    var obj = {a:Sugar.Object.extended({foo:'bar'}, true)};
+    var result = run({}, 'merge', [obj, {deep:true}])
+    equal(result.a.get('foo'), 'bar', 'deep merged non-shadowable has foo property');
 
     // Complex
 
@@ -1182,11 +1245,11 @@ namespace('Object', function () {
 
     test(Object, [{x: 1, y: undefined}, {x: 1, z: 2}], false, 'undefined keys');
 
-    equal(run(Object, 'extended', [{ broken: 'wear' }]).isEqual({ broken: 'wear' }), true, 'extended | are equal to plain objects');
-    equal(run(Object, 'extended', [{ broken: 'wear' }]).isEqual({ broken: 'jumpy' }), false, 'extended | objects are not equal');
-    equal(run(Object, 'extended', [{}]).isEqual({}), true, 'extended | empty extended objects are equal to empty plain objects');
-    equal(run(Object, 'extended', [{}]).isEqual({ broken: 'wear' }), false, 'extended | 1st empty');
-    equal(run(Object, 'extended', [{ broken: 'wear' }]).isEqual({}), false, 'extended | 2nd empty');
+    var obj = run(Object, 'extended', [{ broken: 'wear' }]);
+    equal(obj.isEqual({ broken: 'wear' }), false, 'extended are not egal with plain objects');
+
+    var obj = run(Object, 'extended', []);
+    equal(obj.isEqual({}), false, 'extended plain objects are not egal with plain objects');
 
     var obj1 = { foo: 'bar' };
     test(Object, [{ a: obj1, b: obj1 }, { a: obj1, b: obj1 }], true, 'multiple references will not choke');
@@ -2310,8 +2373,7 @@ namespace('Object', function () {
 
     withMethod('extended', function() {
       var obj3 = Sugar.Object.extended(obj);
-      equal(typeof run(Object, 'select', [obj3, 'one']).select, 'function', 'Hash should return Hash');
-      equal(typeof run(Object, 'select', [obj3, ['two', 'three']]).select, 'function', 'Hash should return Hash');
+      assertIsHash(obj3.select('one'));
     });
 
   });
