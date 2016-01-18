@@ -83,13 +83,7 @@ v2.0.0+
   - Alphanumeric array options are now defined on the global object `Sugar.Array` instead of `Array` itself.
 
 - Level: Moderate
-  - `String#map` was removed. This functionality can easily be replicated by mapping an array, and even more succinctly by using `Function#partial`.
-
-- Level: Moderate
   - `String#normalize` is now renamed to `String#toAscii` to comply with the ES6 spec.
-
-- Level: Moderate
-  - `Date#beginning/endOfWeek` is now locale dependent, as different locales have different definitions of the start of a week. Currently, this is Monday except for en-US and ja, which are Sunday.
 
 - Level: Moderate
   - `Array#at` and `String#at` now no longer accept enumerated arguments. To get an multiple indexes, pass an array instead.
