@@ -47,7 +47,7 @@ namespace('Core', function() {
   });
 
   group('Sugar extend', function () {
-    Sugar.extendAll();
+    Sugar.extend();
     assertAllMethodsMappedToNative(['Array', 'Boolean', 'Number', 'String', 'Date', 'RegExp', 'Function']);
     assertStaticMethodsMappedToNative(['Object']);
     assertInstanceMethodsNotMappedToNative(['Object']);
@@ -254,7 +254,7 @@ namespace('Core', function() {
   });
 
   group('Will extend to Object.prototype on global extend with true', function () {
-    Sugar.extendAll({
+    Sugar.extend({
       objectPrototype: true
     });
     defineCustom(Sugar.Object);
@@ -364,6 +364,11 @@ namespace('Core', function() {
     Sugar.Boolean.extend();
     equal(Sugar.Boolean.trueOnSundays(true), new Date().getDay() === 0, 'Only true on sundays!');
     equal(true.trueOnSundays(), new Date().getDay() === 0, 'Only true on sundays! | extended');
+
+    delete Boolean.prototype.trueOnSundays;
+
+    Sugar.extend();
+    equal(true.trueOnSundays(), new Date().getDay() === 0, 'extend also extends the namespace');
 
     delete Boolean.prototype.trueOnSundays;
     delete Sugar.Boolean;
