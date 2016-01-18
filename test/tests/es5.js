@@ -1,5 +1,5 @@
 namespace('ES5', function () {
-  "use strict";
+  'use strict';
 
   // The scope when none is set.
   var nullScope = (function() { return this; }).call();

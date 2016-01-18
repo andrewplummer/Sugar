@@ -1,5 +1,5 @@
 namespace('ES7', function () {
-  "use strict";
+  'use strict';
 
   method('includes', function() {
 

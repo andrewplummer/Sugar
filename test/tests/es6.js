@@ -1,5 +1,5 @@
 namespace('ES6', function () {
-  "use strict";
+  'use strict';
 
   // Only true in strict mode
   var allowsNullScope = (function(){ return this; }).call(null) === null;

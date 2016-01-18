@@ -1,5 +1,5 @@
 namespace('Dates Finnish', function () {
-  "use strict";
+  'use strict';
 
   var now, then;
 

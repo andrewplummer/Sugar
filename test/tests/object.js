@@ -1,5 +1,5 @@
 namespace('Object', function () {
-  "use strict";
+  'use strict';
 
   // The scope when none is set. Needs to be set here
   // as strict mode affects this"

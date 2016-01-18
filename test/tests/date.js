@@ -1,5 +1,5 @@
 namespace('Date', function () {
-  "use strict";
+  'use strict';
 
   var now = new Date();
   var thisYear = now.getFullYear();

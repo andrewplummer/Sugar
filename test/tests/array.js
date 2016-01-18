@@ -1,5 +1,5 @@
 namespace('Array', function () {
-  "use strict";
+  'use strict';
 
   method('construct', function() {
 

@@ -1,5 +1,5 @@
 namespace('Array', function() {
-  "use strict";
+  'use strict';
 
   method('map', function() {
 
@@ -1348,7 +1348,7 @@ namespace('Array', function() {
 });
 
 namespace('Object', function() {
-  "use strict";
+  'use strict';
 
   // Array.prototype.min may shadow Object.prototype.min,
   // throwing off test results, so add a check for that here.

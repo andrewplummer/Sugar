@@ -1,5 +1,5 @@
 namespace('RegExp', function () {
-  "use strict";
+  'use strict';
 
   method('escape', function() {
     test(RegExp, ['test regexp'], 'test regexp', 'basic');

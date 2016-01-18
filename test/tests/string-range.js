@@ -1,5 +1,5 @@
 namespace('String', function () {
-  "use strict";
+  'use strict';
 
   function getRange(from, to) {
     return run(String, 'range', [from, to]);

@@ -1,5 +1,5 @@
 namespace('Dates Traditional Chinese', function () {
-  "use strict";
+  'use strict';
 
   var now;
   var then;

@@ -1,5 +1,5 @@
 namespace('Number', function () {
-  "use strict";
+  'use strict';
 
   method('random', function() {
     var rand;
