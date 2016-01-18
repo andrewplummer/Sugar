@@ -1511,9 +1511,10 @@ function buildNpmPackages(p, dist) {
                  fnPackage.dependencies.indexOf(node.expression.left.name) !== -1;
         }
 
-        function isMethodNameDeclaration(node) {
-          return node.declarations &&
-                 node.declarations[0].id.name === 'methods';
+        function isHashMethodWrap(node) {
+          return node.type === 'ExpressionStatement' &&
+                 node.expression.type === 'CallExpression' &&
+                 node.expression.callee.name === 'wrapHashMethods';
         }
 
         fnCall = getNodeBody(node);
@@ -1593,10 +1594,10 @@ function buildNpmPackages(p, dist) {
           // This is a somewhat hacky way to ensure that if
           // Object.extend is required it will get all Hash
           // methods, even though they are split among packages.
-          if (isHashBuild && isMethodNameDeclaration(node)) {
-            var methods = node.declarations[0].init.elements;
-            methods.map(function(node) {
-              appendRequires(mainPackage, getMethodKeyForNode(node, node.value));
+          if (isHashBuild && isHashMethodWrap(node)) {
+            var methods = node.expression.arguments[0].value.split(',');
+            methods.map(function(name) {
+              appendRequires(mainPackage, getMethodKeyForNode(node, name));
             });
           } else if (isMethodBlock(node)) {
             var methods = node.expression.arguments[1].properties;
@@ -1820,6 +1821,13 @@ function buildNpmPackages(p, dist) {
     function getNamedRequires() {
       var packageNames = groupAliases(deps);
 
+      function sortByLength(a, b) {
+        a = a.name || a;
+        b = b.name || b;
+        // The core package is always the top dependency
+        return a === 'Sugar' ? -1 : a.length - b.length;
+      }
+
       function attemptToChunk() {
         var first = [], constants = [], vars = [], internal = []
 
@@ -1843,10 +1851,6 @@ function buildNpmPackages(p, dist) {
           }
         }
 
-        function packageByLength(a, b) {
-          return a.name.length - b.name.length;
-        }
-
         packageNames.forEach(function(d) {
           var p = getDependency(d);
           switch (p.type) {
@@ -1865,13 +1869,13 @@ function buildNpmPackages(p, dist) {
           var aLiteral = +!!a.name.match(/^[A-Z_]+$/);
           var bLiteral = +!!b.name.match(/^[A-Z_]+$/);
           if (aLiteral === bLiteral) {
-            return packageByLength(a, b);
+            return sortByLength(a, b);
           }
           return bLiteral - aLiteral;
         });
 
-        vars.sort(packageByLength);
-        internal.sort(packageByLength);
+        vars.sort(sortByLength);
+        internal.sort(sortByLength);
 
         var chunks = [];
         addChunk(chunks, first);
@@ -1884,9 +1888,7 @@ function buildNpmPackages(p, dist) {
       var inner = attemptToChunk();
 
       if (!inner) {
-        packageNames.sort(function(a, b) {
-          return a.length - b.length;
-        });
+        packageNames.sort(sortByLength);
         inner = packageNames.map(function(dep) {
           return getAssignName(dep) + ' = ' + getDependencyRequire(dep);
         }).join(',\n' + TAB + TAB);
@@ -2063,6 +2065,9 @@ function buildNpmPackages(p, dist) {
 
   function moduleIncludedInPackage(packageName, module, isEntryPoint) {
     var definition = PACKAGE_DEFINITIONS[packageName];
+    if (!definition) {
+      throw new Error('No package definition found for ' + packageName);
+    }
     var modules = definition.modules.split(',');
     var extra = (definition.extra || '').split(',');
     return modules.indexOf(module) !== -1 || (extra.indexOf(module) !== -1 && !isEntryPoint);
