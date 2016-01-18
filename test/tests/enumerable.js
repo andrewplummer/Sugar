@@ -1612,6 +1612,7 @@ namespace('Object', function() {
     testStaticAndInstance(obj1, [2], {foo:2},  'shortcut | 2');
     testStaticAndInstance(obj1, [7], {}, 'shortcut | 7');
     testStaticAndInstance({foo:'bar',moo:'car'}, [/a/], {foo:'bar',moo:'car'}, 'uses multi-match');
+    testStaticAndInstance(obj2, [{age:11}], {foo:{age:11}},  'shortcut | object matcher');
   });
 
   method('count', function() {

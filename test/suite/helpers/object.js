@@ -30,22 +30,20 @@ getDescriptorObject = function() {
 
 testStaticAndInstance = function (subject, args, expected, message) {
 
-  function testExtended(flag, message) {
+  function testExtended(flag, type) {
     var obj = Sugar.Object.extended(testClone(subject), flag);
     var result = obj[getCurrentTest().name].apply(obj, args);
     if (testIsHash(result) && result.unwrap) {
       result = result.unwrap();
     }
-    equal(result, expected, message);
+    equal(result, expected, type + ' | ' + message);
   }
 
   if (Sugar.Object && Sugar.Object.extended) {
+    // Need to perform extended tests first as the test subject
+    // may be altered in the process of the main test.
     testExtended(false, 'extended');
     testExtended(true, 'non-shadowable extended');
-    //var hash = Sugar.Object.extended(clonedSubject);
-    //equal(hash[getCurrentTest().name].apply(hash, args), expected, message + ' | extended object');
-    //var nshash = Sugar.Object.extended(clonedSubject, true);
-    //equal(nshash[getCurrentTest().name].apply(nshash, args), expected, message + ' | non-shadowable extended object');
   }
   test(subject, args, expected, message);
 }
