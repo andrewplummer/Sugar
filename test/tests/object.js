@@ -2335,6 +2335,44 @@ namespace('Object', function () {
 
   });
 
+  method('intersect', function() {
+    testStaticAndInstance({foo:'bar',moo:'car'}, [{foo:'bar',moo:'mar'}], {foo:'bar'}, 'One key');
+    testStaticAndInstance({foo:'bar',moo:'car'}, [{foo:'bar',moo:'car'}], {foo:'bar',moo:'car'}, 'Both keys');
+    testStaticAndInstance({foo:'bar',moo:'car'}, [{foo:'zar',moo:'zar'}], {}, 'No keys');
+    testStaticAndInstance({a:{foo:'bar'}}, [{a:{foo:'bar'}}], {a:{foo:'bar'}}, 'Deep object matches');
+    testStaticAndInstance({a:{foo:'bar'}}, [{a:{}}], {}, 'Empty deep object does not match');
+    testStaticAndInstance({a:{foo:'bar'}}, [{a:{foo:'bar',moo:'car'}}], {}, 'Deep object with extra does not match');
+    testStaticAndInstance({}, [{}], {}, 'Two empty produce empty');
+    testStaticAndInstance({foo:'bar',moo:'car'}, [], {}, 'No arguments produces empty');
+    test('foo', [], {}, 'no argument on primitive produces empty');
+    test('foo', ['str'], {}, 'primitive on primitive produces empty');
+    test('foo', [null], {}, 'null on primitive produces empty');
+    test('foo', [undefined], {}, 'undefined on primitive produces empty');
+    test(null, [{foo:'bar'}], {}, 'object on null produces empty');
+    test('foo', [{foo:'bar'}], {}, 'object on primitive produces empty');
+  });
+
+  method('subtract', function() {
+    testStaticAndInstance({foo:'bar',moo:'car'}, [{foo:'bar',moo:'mar'}], {moo:'car'}, 'One key');
+    testStaticAndInstance({foo:'bar',moo:'car'}, [{foo:'bar',moo:'car'}], {}, 'Both keys');
+    testStaticAndInstance({foo:'bar',moo:'car'}, [{foo:'zar',moo:'zar'}], {foo:'bar',moo:'car'}, 'No keys');
+    testStaticAndInstance({a:{foo:'bar'}}, [{a:{foo:'bar'}}], {}, 'Deep object matches');
+    testStaticAndInstance({a:{foo:'bar'}}, [{a:{}}], {a:{foo:'bar'}}, 'Empty deep object does not match');
+    testStaticAndInstance({a:{foo:'bar'}}, [{a:{foo:'bar',moo:'car'}}], {a:{foo:'bar'}}, 'Deep object with extra does not match');
+    testStaticAndInstance({}, [{}], {}, 'Two empty produce empty');
+    testStaticAndInstance({foo:'bar',moo:'car'}, [], {foo:'bar',moo:'car'}, 'No arguments produces original');
+    test('foo', [], 'foo', 'no argument on primitive produces original');
+    test('foo', ['str'], 'foo', 'primitive on primitive produces original');
+    test('foo', [null], 'foo', 'null on primitive produces original');
+    test('foo', [undefined], 'foo', 'undefined on primitive produces original');
+    test(null, [{foo:'bar'}], null, 'object on null produces null');
+    test('foo', [{foo:'bar'}], 'foo', 'object on primitive produces empty');
+
+    var obj = {foo:'bar'};
+    var result = run(obj, 'subtract', []);
+    equal(result === obj, false, 'No arguments still produces new object');
+  });
+
   method('select', function() {
 
     var obj = {
