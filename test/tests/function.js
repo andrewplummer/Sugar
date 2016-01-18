@@ -1,5 +1,5 @@
 namespace('Function', function () {
-  "use strict";
+  'use strict';
 
   var clock;
 

@@ -1,5 +1,5 @@
 namespace('Core', function() {
-  "use strict";
+  'use strict';
 
   function defineCustom(target, isStatic) {
     var methods = {

@@ -1,5 +1,5 @@
 namespace('Object | Equality', function() {
-  "use strict";
+  'use strict';
 
   // These tests also shamelessly stolen from the Underscore.js test suite.
   // Careful checks for cyclical references, equality between primitives and

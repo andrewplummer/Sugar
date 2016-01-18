@@ -1796,7 +1796,7 @@ function buildNpmPackages(p, dist) {
   function compilePackage(package) {
 
     var TAB = '  ';
-    var USE_STRICT = '"use strict";';
+    var USE_STRICT = "'use strict';";
     var BLOCK_DELIMITER = '\n\n';
 
     if (!canExportPackage(package)) {

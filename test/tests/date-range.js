@@ -1,5 +1,5 @@
 namespace('Date Ranges', function () {
-  "use strict";
+  'use strict';
 
   function getRange() {
     return run(Date, 'range', arguments);
