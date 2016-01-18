@@ -62,7 +62,7 @@ v2.0.0+
   - `Array#include` was removed as it is now identical to `Array#add`.
 
 - Level: Major
-  - `Object.findAll` was replaced with `Object.filter`, which simply wraps an enhanced `Array#filter`.
+  - `Object.findAll` was replaced with `Object.filter`, which parallels `Array#filter` by returning a filtered object.
 
 - Level: Major
   - `Object.toQueryString` no longer uses square bracket syntax by default. To enable this pass `deep` in the options object which is now the second argument to the function. `namespace`, which was previously the second argument to this method, is now `prefix` in the same options object.
@@ -77,7 +77,7 @@ v2.0.0+
   - `RegExp#addFlag` and `RegExp#removeFlag` are now `RegExp#addFlags` and `RegExp#removeFlags` and now work on multiple flags at once.
 
 - Level: Moderate
-  - `Number#format` no longer accepts arguments for the thousands separator and decimal point. Instead these can now be set on the global object Sugar.Number.thousands and Sugar.Number.decimal. These will also be respected by Number#abbr, Number#metric, and Number#bytes as well.
+  - `Number#format` no longer accepts arguments for the thousands separator and decimal point. Instead these can now be set globally using Sugar.Number.thousands() and Sugar.Number.decimal(). These will also be respected by Number#abbr, Number#metric, and Number#bytes as well.
 
 - Level: Moderate
   - Alphanumeric array options are now defined on the global object `Sugar.Array` instead of `Array` itself.

@@ -1636,6 +1636,61 @@ namespace('Object', function() {
     testStaticAndInstance(obj1, [7], true, 'shortcut | 7');
   });
 
+  method('reduce', function() {
+    var fn = function(a, b) {
+      return a * b;
+    }
+    var obj = {
+      foo: 2,
+      bar: 4,
+      moo: 6
+    }
+
+    testStaticAndInstance(obj, [fn], 48, 'reduced value should be 48');
+    testStaticAndInstance(obj, [fn, 10], 480, 'reduced value with initial should be 480');
+    testStaticAndInstance(obj, [function () {}], undefined, 'reduced with anonymous function');
+    testStaticAndInstance(obj, [function () {}, 10], undefined, 'reduced with anonymous function and initial');
+
+    // These tests are making an assumption that objects
+    // will be iterated over in a specific order. This is
+    // incorrect, but simplifies the tests greatly, so going
+    // with this for now.
+    var count = 0;
+    var expectedA = [2, -2];
+    var expectedB = [4, 6];
+    var expectedKeys = ['bar','moo'];
+    var checkArgs = function(a, b, key, obj) {
+      equal(a, expectedA[count], 'a should be equal');
+      equal(b, expectedB[count], 'key should be equal');
+      equal(key, expectedKeys[count], 'key should be equal');
+      equal(obj, obj, 'object should remain same as original');
+      count++;
+      return a - b;
+    }
+    var result = run(Object, 'reduce', [obj, checkArgs]);
+    equal(count, 2, 'Should have ran twice');
+    equal(result, -8, 'Result of subtracted should be -8');
+
+    var count = 0;
+    var expectedA = [18, 16, 12];
+    var expectedB = [2, 4, 6];
+    var expectedKeys = ['foo', 'bar','moo'];
+    var checkArgs = function(a, b, key, obj) {
+      equal(a, expectedA[count], 'a should be equal');
+      equal(b, expectedB[count], 'key should be equal');
+      equal(key, expectedKeys[count], 'key should be equal');
+      equal(obj, obj, 'object should remain same as original');
+      count++;
+      return a - b;
+    }
+    var result = run(Object, 'reduce', [obj, checkArgs, 18]);
+    equal(count, 3, 'Should have ran twice');
+    equal(result, 6, 'Result of subtracted should be -8');
+
+    raisesError(function(){ run(Object, 'reduce', [obj]) }, 'no function raises an error');
+
+  });
+
   group('Enumerables on Object.prototype', function() {
     storeNativeState();
     Sugar.Object.extend({

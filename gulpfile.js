@@ -17,7 +17,7 @@ gulp.task('help',    showHelpMessage);
 gulp.task('docs',    buildDocs);
 gulp.task('release', buildRelease);
 
-gulp.task('dev', buildDefault);
+gulp.task('dev', buildDevelopment);
 gulp.task('min', buildMinified);
 
 gulp.task('build',       buildDefault);

@@ -1,4 +1,4 @@
-xpackage('Date | Norwegian', function () {
+xnamespace('Date | Norwegian', function () {
   "use string";
 
   var now;
@@ -147,7 +147,7 @@ xpackage('Date | Norwegian', function () {
 
 });
 
-xpackage('Number | Norwegian Dates', function () {
+xnamespace('Number | Norwegian Dates', function () {
 
   method('duration', function() {
     test(run(5, 'hours'), ['sv'], '5 timmar', 'simple duration');
