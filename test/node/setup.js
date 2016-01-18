@@ -118,7 +118,7 @@ module.exports = {
     var testName = getTestNameFromModule(mod);
     if (extended) {
       storeNativeState();
-      Sugar.extendAll();
+      Sugar.extend();
     }
     function finished(runtime, results) {
       logResults(runtime, results, testName);
