@@ -107,9 +107,6 @@ v2.0.0+
   - `Date#set` now rewinds dates that have accidentally traversed into a new month, such as setting `{ month: 1 }` on `January 31st`. This behavior was previously only on `advance` and `rewind`.
 
 - Level: Minor
-  - `String#escapeHTML` now double escapes entities, meaning '&amp;' will become '&amp;amp;', etc.
-
-- Level: Minor
   - `Date.SugarNewDate` is now `Sugar.Date.newDateInternal`. This method is always on the `Sugar` global (not `Date`).
 
 - Level: Minor
