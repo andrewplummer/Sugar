@@ -51,6 +51,13 @@
     }
   }
 
+  function getChainablePrototype() {
+    // Force disambiguation to get at the unknown chainable prototype.
+    Sugar.Array.defineInstance('foo', function() {});
+    Sugar.String.defineInstance('foo', function() {});
+    return new Sugar.Array().foo().constructor.prototype;
+  }
+
   assertAllMethodsMappedToNative = function(namespaces) {
     assertNamespaces(namespaces, true, true, true);
   }
@@ -99,6 +106,10 @@
       objectPrototype: false
     });
 
+    // The "unknown" chainable prototype takse a bit
+    // of special work to get at, so do that here.
+    var cproto = getChainablePrototype();
+
     var nativeState = nativeStates.pop();
 
     for (var i = 0; i < NATIVES.length; i++) {
@@ -116,6 +127,8 @@
           // and remove it completely. Do this by setting it's
           // state as undefined.
           delete ns[methodName];
+          delete ns.prototype[methodName];
+          delete cproto[methodName];
           methodState = {};
         }
         restoreNative(methodName, nativeClass, methodState.static);

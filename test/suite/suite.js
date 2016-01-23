@@ -74,7 +74,7 @@
 
   equal = function (actual, expected, message, stack) {
     currentTest.namespace.assertions++;
-    if(!isEqual(actual, expected)) {
+    if (!isEqual(actual, expected)) {
       addFailure(actual, expected, getFullMessage(message), stack);
     }
   }
@@ -99,7 +99,7 @@
     } catch(e) {
       err = e;
     }
-    if(errorType) {
+    if (errorType) {
       equal(err instanceof errorType, true, message, 1);
     } else {
       if (err && err.message.match(/cannot read property/i)) {
@@ -181,13 +181,14 @@
 
   run = function (subject, methodName, args) {
     var namespace = currentTest.namespace.name;
+    var isInstance = !objectIsClass(subject);
     methodName = methodName || currentMethod || currentTest.name;
     args = args || currentArgs || [];
-    if(currentMode === 'extended') {
+    if (currentMode === 'extended') {
       var target = globalContext[namespace];
       if (!target.prototype[methodName]) {
-        // TODO: can this be removed?
-        if (!objectIsClass(subject)) {
+        // TODO: can this be removed after hashes removed?
+        if (isInstance) {
           args.unshift(subject);
         }
         // Static methods are tested with the global first: test(Array, [1,2,3])
@@ -196,8 +197,11 @@
         return target[methodName].apply(subject, args);
       }
       return target.prototype[methodName].apply(subject, args);
+    } else if (currentMode === 'chained' && isInstance) {
+      subject = new Sugar[namespace](subject);
+      return subject[methodName].apply(subject, args).raw;
     } else {
-      if(!objectIsClass(subject)) {
+      if (isInstance) {
         args = [subject].concat(args);
       }
       return Sugar[namespace][methodName].apply(null, args);
@@ -273,7 +277,7 @@
   function getFullMessage(tail) {
     var msg = '';
     var title = currentTest.name;
-    if(title) {
+    if (title) {
       msg += title + ' | ';
     }
     msg += tail;
@@ -295,16 +299,16 @@
 
   function getMeta(stack) {
     var level = 4;
-    if(stack !== undefined) {
+    if (stack !== undefined) {
       level += stack;
     }
     var e = new Error();
-    if(!e.stack) {
+    if (!e.stack) {
       return {};
     }
     var s = e.stack.split(/@|^\s+at/m);
     var match = s[level].match(/(.+\.js):(\d+)(?::(\d+))?/);
-    if(!match) match = [];
+    if (!match) match = [];
     return { file: match[1], line: match[2], col: match[3] };
   }
 
@@ -315,23 +319,23 @@
 
     type = typeof one;
 
-    if(type === 'string' || type === 'boolean' || one == null) {
+    if (type === 'string' || type === 'boolean' || one == null) {
       return one === two;
-    } else if(type === 'number') {
+    } else if (type === 'number') {
       return typeof two === 'number' && ((isNaN(one) && isNaN(two)) || one === two);
     }
 
     klass = testInternalToString.call(one);
 
-    if(klass === '[object Date]' && two.getTime) {
+    if (klass === '[object Date]' && two.getTime) {
       return dateIsEqual(one, two);
-    } else if(klass === '[object RegExp]') {
+    } else if (klass === '[object RegExp]') {
       return String(one) === String(two);
-    } else if(klass === '[object Array]') {
+    } else if (klass === '[object Array]') {
       return arrayIsEqual(one, two);
-    } else if((klass === '[object Object]' || klass === '[object Arguments]') && ('hasOwnProperty' in one) && type === 'object') {
+    } else if ((klass === '[object Object]' || klass === '[object Arguments]') && ('hasOwnProperty' in one) && type === 'object') {
       return objectIsEqual(one, two) && klass === testInternalToString.call(two);
-    } else if(klass === '[object Number]' && isNaN(one) && isNaN(two)) {
+    } else if (klass === '[object Number]' && isNaN(one) && isNaN(two)) {
       return true;
     }
 
@@ -343,11 +347,11 @@
   // will report false.
   function arrayIsEqual(one, two) {
     var i, result = true;
-    if(!one || !two || typeof one !== 'object' || typeof two !== 'object') {
+    if (!one || !two || typeof one !== 'object' || typeof two !== 'object') {
       return false;
     }
     arrayEach(one, function(a, i) {
-      if(!isEqual(one[i], two[i])) {
+      if (!isEqual(one[i], two[i])) {
         result = false;
       }
     });
@@ -356,14 +360,14 @@
     }
     var onep = 0, twop = 0;
     for(key in one) {
-      if(!one.hasOwnProperty(key)) continue;
+      if (!one.hasOwnProperty(key)) continue;
       onep++;
-      if(!isEqual(one[key], two[key])) {
+      if (!isEqual(one[key], two[key])) {
         return false;
       }
     }
     for(key in two) {
-      if(!two.hasOwnProperty(key)) continue;
+      if (!two.hasOwnProperty(key)) continue;
       twop++;
     }
     return result && one.length === two.length && onep === twop;
@@ -371,16 +375,16 @@
 
   function objectIsEqual(one, two) {
     var onep = 0, twop = 0, key;
-    if(one && two) {
+    if (one && two) {
       for(key in one) {
-        if(!one.hasOwnProperty(key)) continue;
+        if (!one.hasOwnProperty(key)) continue;
         onep++;
-        if(!isEqual(one[key], two[key])) {
+        if (!isEqual(one[key], two[key])) {
           return false;
         }
       }
       for(key in two) {
-        if(!two.hasOwnProperty(key)) continue;
+        if (!two.hasOwnProperty(key)) continue;
         twop++;
       }
     }
@@ -389,7 +393,7 @@
 
   function dateIsEqual(a, b) {
     var buffer = 50; // Number of milliseconds of "play" to make sure these tests pass.
-    if(typeof b == 'number') {
+    if (typeof b == 'number') {
       var d = new Date();
       d.setTime(d.getTime() + b);
       b = d;
@@ -402,17 +406,17 @@
     return arr.sort(function(a, b) {
       var aStr = getStringValueForObject(a);
       var bStr = getStringValueForObject(b);
-      if(aStr === bStr) return 0;
+      if (aStr === bStr) return 0;
       return aStr < bStr ? -1 : 1;
     });
   }
 
   function getStringValueForObject(obj) {
     var type = typeof obj, str;
-    if(type === 'object') {
+    if (type === 'object') {
       str = 'obj:';
       for (var key in obj) {
-        if(!obj.hasOwnProperty(key)) continue;
+        if (!obj.hasOwnProperty(key)) continue;
         str += key + getStringValueForObject(obj[key]);
       }
       return str;
@@ -428,9 +432,9 @@
   function arrayEach(arr, fn, sparse) {
     var length = arr.length, i = 0;
     while(i < length) {
-      if(!(i in arr)) {
+      if (!(i in arr)) {
         return iterateOverArray(arr, fn, i);
-      } else if(fn.call(arr, arr[i], i, arr) === false) {
+      } else if (fn.call(arr, arr[i], i, arr) === false) {
         break;
       }
       i++;
@@ -440,7 +444,7 @@
   function iterateOverArray(arr, fn, fromIndex) {
     var indexes = [], i;
     for(i in arr) {
-      if(isArrayIndex(arr, i) && i >= fromIndex) {
+      if (isArrayIndex(arr, i) && i >= fromIndex) {
         indexes.push(parseInt(i));
       }
     }
@@ -464,7 +468,7 @@
     return i in arr && (i >>> 0) == i && i != 0xffffffff;
   }
 
-  if(typeof console === 'undefined') {
+  if (typeof console === 'undefined') {
 
     if (typeof $ !== 'undefined') {
       var consoleFn = function() {

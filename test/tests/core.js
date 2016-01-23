@@ -1,7 +1,7 @@
 namespace('Core', function() {
   'use strict';
 
-  function defineCustom(target, isStatic) {
+  function defineCustom(target, andStatic) {
     var methods = {
       foo: function() {
         return 'foo!';
@@ -13,21 +13,11 @@ namespace('Core', function() {
         return 'moo!';
       }
     };
-    if (target === Sugar.Object || isStatic) {
-      methods.foo.static = true;
-      methods.bar.static = true;
-      methods.moo.static = true;
+    if (andStatic) {
+      target.defineInstanceAndStatic(methods);
+    } else {
+      target.defineInstance(methods);
     }
-    target.defineInstance(methods);
-  }
-
-  function deleteCustom() {
-    delete Sugar.Object.foo;
-    delete Sugar.Object.bar;
-    delete Sugar.Object.moo;
-    delete Sugar.String.foo;
-    delete Sugar.String.bar;
-    delete Sugar.String.moo;
   }
 
   setup(function() {
@@ -36,7 +26,6 @@ namespace('Core', function() {
 
   teardown(function() {
     restoreNativeState();
-    deleteCustom();
   });
 
   group('Sugar namespace', function () {
@@ -53,22 +42,10 @@ namespace('Core', function() {
     assertInstanceMethodsNotMappedToNative(['Object']);
   });
 
-  group('Sugar Array namespace', function () {
-    Sugar.Array();
-    assertAllMethodsMappedToNative(['Array']);
-    assertNoMethodsMappedToNative(['Object', 'Boolean', 'Number', 'String', 'Date', 'RegExp', 'Function']);
-  });
-
   group('Sugar Array extend', function () {
     Sugar.Array.extend();
     assertAllMethodsMappedToNative(['Array']);
     assertNoMethodsMappedToNative(['Object', 'Boolean', 'Number', 'String', 'Date', 'RegExp', 'Function']);
-  });
-
-  group('Sugar Date namespace', function () {
-    Sugar.Date();
-    assertAllMethodsMappedToNative(['Date']);
-    assertNoMethodsMappedToNative(['Array', 'Object', 'Boolean', 'Number', 'String', 'RegExp', 'Function']);
   });
 
   group('Sugar Date extend', function () {
@@ -77,21 +54,15 @@ namespace('Core', function() {
     assertNoMethodsMappedToNative(['Array', 'Object', 'Boolean', 'Number', 'String', 'RegExp', 'Function']);
   });
 
-  group('Sugar Object namespace', function () {
-    Sugar.Object();
-    assertStaticMethodsMappedToNative(['Object']);
-    assertInstanceMethodsNotMappedToNative(['Object']);
-    assertNoMethodsMappedToNative(['Array', 'Boolean', 'Number', 'Date', 'String', 'RegExp', 'Function']);
-  });
-
   group('Sugar Object extend', function () {
+    Sugar.Object.extend();
     assertStaticMethodsMappedToNative(['Object']);
     assertInstanceMethodsNotMappedToNative(['Object']);
     assertNoMethodsMappedToNative(['Array', 'Boolean', 'Number', 'Date', 'String', 'RegExp', 'Function']);
   });
 
   group('Sugar Object namespace full', function () {
-    Sugar.Object({
+    Sugar.Object.extend({
       objectPrototype: true
     });
     assertAllMethodsMappedToNative(['Object']);
@@ -106,29 +77,14 @@ namespace('Core', function() {
     assertNoMethodsMappedToNative(['Array', 'Boolean', 'Number', 'Date', 'String', 'RegExp', 'Function']);
   });
 
-  group('Extending by name namespace', function () {
-    defineCustom(Sugar.String);
-    Sugar.String('foo');
-    equal(''.foo(), 'foo!', 'foo has been mapped');
-    equal(''.bar, undefined, 'bar has not been mapped');
-  });
-
-  group('Extending by name extend', function () {
+  group('Extending by name', function () {
     defineCustom(Sugar.String);
     Sugar.String.extend('foo');
     equal(''.foo(), 'foo!', 'foo has been mapped');
     equal(''.bar, undefined, 'bar has not been mapped');
   });
 
-  group('Extending by name namespace with array', function () {
-    defineCustom(Sugar.String);
-    Sugar.String(['foo', 'bar']);
-    equal(''.foo(), 'foo!', 'foo has been mapped');
-    equal(''.bar(), 'bar!', 'bar has been mapped');
-    equal(''.moo, undefined, 'moo has not been mapped');
-  });
-
-  group('Extending by name extend with array', function () {
+  group('Extending by array', function () {
     defineCustom(Sugar.String);
     Sugar.String.extend(['foo', 'bar']);
     equal(''.foo(), 'foo!', 'foo has been mapped');
@@ -218,7 +174,7 @@ namespace('Core', function() {
 
   group('Can define single', function () {
     Sugar.String.defineInstance('foo', function(str) {
-      return str  + ' + you!'
+      return str  + ' + you!';
     });
     equal(Sugar.String.foo('wasabi'), 'wasabi + you!', 'Namespace method exists');
     Sugar.String.extend('foo');
@@ -233,7 +189,7 @@ namespace('Core', function() {
   });
 
   group('Will not extend to Object.prototype after namespace extend', function () {
-    defineCustom(Sugar.Object);
+    defineCustom(Sugar.Object, true);
     equal(({}).foo, undefined, 'foo has not been mapped');
   });
 
@@ -241,7 +197,7 @@ namespace('Core', function() {
     Sugar.Object.extend({
       objectPrototype: true
     });
-    defineCustom(Sugar.Object);
+    defineCustom(Sugar.Object, true);
     equal(({}).foo(), 'foo!', 'foo has been mapped');
   });
 
@@ -249,7 +205,7 @@ namespace('Core', function() {
     Sugar({
       objectPrototype: true
     });
-    defineCustom(Sugar.Object);
+    defineCustom(Sugar.Object, true);
     equal(({}).foo(), 'foo!', 'foo has been mapped');
   });
 
@@ -257,12 +213,12 @@ namespace('Core', function() {
     Sugar.extend({
       objectPrototype: true
     });
-    defineCustom(Sugar.Object);
+    defineCustom(Sugar.Object, true);
     equal(({}).foo(), 'foo!', 'foo has been mapped');
   });
 
   group('Can extend single method to object without prototype extension', function () {
-    defineCustom(Sugar.Object);
+    defineCustom(Sugar.Object, true);
     Sugar.Object.extend('foo');
     equal(Object.foo(), 'foo!', 'foo static has been mapped');
     equal(Object.bar, undefined, 'bar static has not been mapped');
@@ -273,7 +229,7 @@ namespace('Core', function() {
   });
 
   group('Can extend single method to object prototype', function () {
-    defineCustom(Sugar.Object);
+    defineCustom(Sugar.Object, true);
     Sugar.Object.extend({
       methods: ['foo'],
       objectPrototype: true
@@ -412,6 +368,92 @@ namespace('Core', function() {
     equal(''.foo, undefined, 'foo was not mapped');
     equal(''.bar(), 'bar!', 'bar was mapped');
     equal(''.moo(), 'moo!', 'moo was mapped');
+  });
+
+  group('Chaining', function() {
+    defineCustom(Sugar.String);
+    var superString = new Sugar.String('hai');
+    equal(superString.foo().raw, 'foo!', 'foo is chainable');
+    equal(superString.bar().raw, 'bar!', 'bar is chainable');
+    equal(superString.moo().raw, 'moo!', 'moo is chainable');
+    equal(superString.foo().valueOf(), 'foo!', 'valueOf also returns raw value');
+    equal(superString.toString(), 'SugarString: hai', 'Chainable should have a toString.');
+    equal(superString.foo().toString(), 'SugarChainable: foo!', 'Unknown chainable type should have a toString');
+  });
+
+  group('Chaining with factories', function() {
+    defineCustom(Sugar.String);
+    var superString = Sugar.String('hai');
+    equal(superString.foo().raw, 'foo!', 'foo is chainable');
+    equal(superString.bar().raw, 'bar!', 'bar is chainable');
+    equal(superString.moo().raw, 'moo!', 'moo is chainable');
+  });
+
+  group('Chaining across namespaces', function() {
+    Sugar.Array.defineInstance('rate', function(arr) {
+      // I like even arrays!
+      return arr.length % 2 === 0 ? 10 : 2;
+    });
+    Sugar.Number.defineInstance('twofold', function(num) {
+      // Double all the things!
+      return num * 2;
+    });
+    Sugar.Number.defineInstance('big', function(num) {
+      // Do I think this number is big??
+      return num > 10 ? 'big!' : 'little!';
+    });
+    Sugar.String.defineInstance('noIs', function(str) {
+      // I just love splitting on "i".
+      return str.split('i');
+    });
+
+    var arr = Sugar.Array([1,2,3]);
+    var raw = arr.rate().twofold().big().noIs().raw;
+    equal(raw, ['l','ttle!'], 'long chain of methods with odd');
+
+    var arr = Sugar.Array([1,2]);
+    var raw = arr.rate().twofold().big().noIs().raw;
+    equal(raw, ['b','g!'], 'long chain of methods with even');
+
+  });
+
+  group('Chaining with dismbiguation', function() {
+    Sugar.Array.defineInstance('foo', function(arr) {
+      return 'array says foo';
+    });
+    Sugar.String.defineInstance('foo', function(arr) {
+      return 'string says foo';
+    });
+
+    equal(Sugar.Array().foo().foo().raw, 'string says foo', 'chained disambiguated from Array');
+    equal(Sugar.String().foo().foo().raw, 'string says foo', 'chained disambiguated from String');
+  });
+
+  group('Disambiguation of an undefined namespace', function() {
+    Sugar.Array.defineInstance('foo', function(arr) {
+      return null;
+    });
+    Sugar.String.defineInstance('foo', function(arr) {
+      return null;
+    });
+    raisesError(function() { Sugar.Array().foo().foo().raw }, 'Unknown type cannot be disambiguated');
+  });
+
+  group('Chaining special cases', function() {
+    Sugar.Array.defineInstance('getNull', function(arr) {
+      return null;
+    });
+    Sugar.Number.defineInstance('getNaN', function(arr) {
+      return NaN;
+    });
+    Sugar.Object.defineInstance('getUndefined', function(arr) {
+      return undefined;
+    });
+
+    equal(Sugar.Array().getNull().getNaN().getUndefined().raw, undefined, 'Chained to undefined');
+    equal(Sugar.Number().getNaN().getUndefined().getNull().raw, null, 'Chained to null');
+    equal(Sugar.Object().getUndefined().getNull().getNaN().raw, NaN, 'Chained to null');
+
   });
 
 });
