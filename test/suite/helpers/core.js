@@ -51,10 +51,6 @@
     }
   }
 
-  function isSugarMethod(method) {
-    return typeof method === 'function' && (method.static || !!method.instance);
-  }
-
   assertAllMethodsMappedToNative = function(namespaces) {
     assertNamespaces(namespaces, true, true, true);
   }
@@ -86,12 +82,6 @@
       nativeState[name + 'Active'] = ns.active;
       var nativeClass = globalContext[name];
       testIterateOverObject(ns, function(methodName, method) {
-        if (!isSugarMethod(method)) {
-          // Only store Sugar defined methods.
-          return;
-        }
-        // Store both static and instance methods as both
-        // are possible, such as in the case of Object.keys.
         state[methodName] = {
           static: nativeClass[methodName],
           instance: nativeClass.prototype[methodName]
@@ -119,16 +109,13 @@
 
       ns.active = nativeState[name + 'Active'];
       testIterateOverObject(ns, function(methodName, method) {
-        if (!isSugarMethod(method)) {
-          // Only restore Sugar defined methods.
-          return;
-        }
         var methodState = nativeState[name][methodName];
         if (!methodState) {
           // If there is no stored state for this method, then
           // it's safe to assume that it was not there previously
           // and remove it completely. Do this by setting it's
           // state as undefined.
+          delete ns[methodName];
           methodState = {};
         }
         restoreNative(methodName, nativeClass, methodState.static);

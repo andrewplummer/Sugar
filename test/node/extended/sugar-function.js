@@ -5,4 +5,4 @@ runner.load('../../release/npm/sugar-function');
 // Tests
 runner.loadTest('function');
 
-runner.runExtended(module);
+runner.run(module, 'extended');

@@ -6,4 +6,4 @@ runner.load('../../release/npm/sugar-object');
 runner.loadTest('object');
 runner.loadTest('equals');
 
-runner.runExtended(module);
+runner.run(module, 'extended');

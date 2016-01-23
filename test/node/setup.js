@@ -108,7 +108,8 @@ module.exports = {
     loadLocaleTests();
   },
 
-  run: function(mod, extended, localSugar) {
+  run: function(mod, mode, localSugar) {
+    var extended = mode === 'extended';
 
     // Set the global object so that the tests can access.
     // Local sugar is to allow testing of the concatenated
@@ -123,7 +124,7 @@ module.exports = {
     function finished(runtime, results) {
       logResults(runtime, results, testName);
     }
-    runTests(finished, !!extended, 'node');
+    runTests(finished, mode || 'default', 'node');
 
     if (extended) {
       // Tests may be in a watcher, so restore native state
@@ -132,10 +133,6 @@ module.exports = {
     }
     Sugar = null;
     expireCache();
-  },
-
-  runExtended: function(mod, localSugar) {
-    this.run(mod, true, localSugar);
   },
 
   resetPolyfills: function(name) {

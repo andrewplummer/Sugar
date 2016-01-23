@@ -1,8 +1,8 @@
 namespace('String', function () {
   'use strict';
 
-  function getRange(from, to) {
-    return run(String, 'range', [from, to]);
+  function getRange() {
+    return Sugar.String.range.apply(null, testGetArgs(arguments));
   }
 
   group('basics', function() {

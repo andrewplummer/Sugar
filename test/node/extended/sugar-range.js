@@ -7,4 +7,4 @@ runner.loadTest('date-range');
 runner.loadTest('number-range');
 runner.loadTest('string-range');
 
-runner.runExtended(module);
+runner.run(module, 'extended');

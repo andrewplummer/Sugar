@@ -5,4 +5,4 @@ runner.load('../../release/npm/sugar-regexp');
 // Tests
 runner.loadTest('regexp');
 
-runner.runExtended(module);
+runner.run(module, 'extended');

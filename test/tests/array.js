@@ -380,7 +380,8 @@ namespace('Array', function () {
     test([1,2,3], oneUndefined, { 1: [1], 2: [2], 3: [3] }, 'undefined');
     test([1,2,3], [null], { 1: [1], 2: [2], 3: [3] }, 'null');
     test([1,2,3], [4], { 'undefined': [1,2,3] }, 'number');
-    equal(run(['one','two','three'], 'groupBy', ['length']).keys, undefined, 'result should not be an extended object');
+
+    assertIsNotHash(run(['one','two','three'], 'groupBy', ['length']));
 
     var counter = 0;
     var fn = function() {

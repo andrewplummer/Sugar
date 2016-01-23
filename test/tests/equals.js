@@ -6,7 +6,7 @@ namespace('Object | Equality', function() {
   // wrappers, and more. Sugar's callObjectEqual should now be considered "egal".
 
   function callObjectEqual(a, b) {
-    return run(Object, 'isEqual', arguments);
+    return run(a, 'isEqual', [b]);
   }
 
   function First() {

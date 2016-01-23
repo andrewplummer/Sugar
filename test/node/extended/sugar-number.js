@@ -9,4 +9,4 @@ runner.loadTest('es6');
 runner.loadTest('number');
 runner.loadTest('number-range');
 
-runner.runExtended(module);
+runner.run(module, 'extended');

@@ -1,8 +1,8 @@
 namespace('Number', function () {
   'use strict';
 
-  function getRange(from, to) {
-    return run(Number, 'range', [from, to]);
+  function getRange() {
+    return Sugar.Number.range.apply(null, testGetArgs(arguments));
   }
 
   function testRange(start, end, isValid, expectedCount, expectedResult, iterations) {
