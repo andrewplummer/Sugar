@@ -2927,7 +2927,7 @@ jQuery.event = {
 				}
 			}
 
-			if ( special.add ) {
+			if ( special.hasOwnProperty('add') ) {
 				special.add.call( elem, handleObj );
 
 				if ( !handleObj.handler.guid ) {

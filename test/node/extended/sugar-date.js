@@ -8,4 +8,4 @@ runner.loadTest('date');
 runner.loadTest('date-range');
 runner.loadLocaleTests();
 
-runner.runExtended(module);
+runner.run(module, 'extended');

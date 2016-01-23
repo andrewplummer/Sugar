@@ -9,4 +9,4 @@ runner.loadTest('es6');
 runner.loadTest('string');
 runner.loadTest('string-range');
 
-runner.runExtended(module);
+runner.run(module, 'extended');

@@ -1,8 +1,10 @@
 (function($) {
 
   $(document).ready(function() {
-    Sugar.extend();
-    runTests(testsFinished, true, 'browser');
+    Sugar.extend({
+      objectPrototype: true
+    });
+    runTests(testsFinished, 'extended', 'browser');
   });
 
 })(jQuery);

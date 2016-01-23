@@ -849,7 +849,7 @@ namespace('Array', function() {
 
     count = 0;
 
-    run({'0':'a','length':'1'}, 'each', [function() { count++; }], 0, true);
+    run({'0':'a','length':'1'}, 'each', [function() { count++; }]);
 
     equal(count, 1, 'looping over array-like objects with string lengths');
 
@@ -1434,12 +1434,12 @@ namespace('Object', function() {
       equal(o, obj, 'accepts a function | object is third param');
       count++;
     }
-    result = run(Object, 'each', [obj, callback]);
+    result = run(obj, 'each', [callback]);
     equal(count, 4, 'accepts a function | iterated properly');
     equal(result, obj, 'accepts a function | result should equal object passed in');
 
     raisesError(function(){
-      run(Object, 'each', [{foo:'bar'}]);
+      run({foo:'bar'}, 'each', []);
     }, 'no iterator raises an error');
 
     testStaticAndInstance(obj, [function () {}], obj, 'each returns itself');
@@ -1668,7 +1668,7 @@ namespace('Object', function() {
       count++;
       return a - b;
     }
-    var result = run(Object, 'reduce', [obj, checkArgs]);
+    var result = run(obj, 'reduce', [checkArgs]);
     equal(count, 2, 'Should have ran twice');
     equal(result, -8, 'Result of subtracted should be -8');
 
@@ -1684,14 +1684,15 @@ namespace('Object', function() {
       count++;
       return a - b;
     }
-    var result = run(Object, 'reduce', [obj, checkArgs, 18]);
+    var result = run(obj, 'reduce', [checkArgs, 18]);
     equal(count, 3, 'Should have ran twice');
     equal(result, 6, 'Result of subtracted should be -8');
 
-    raisesError(function(){ run(Object, 'reduce', [obj]) }, 'no function raises an error');
+    raisesError(function(){ run(obj, 'reduce', []) }, 'no function raises an error');
 
   });
 
+  // TODO remove
   group('Enumerables on Object.prototype', function() {
     storeNativeState();
     Sugar.Object.extend({

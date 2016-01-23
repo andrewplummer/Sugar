@@ -494,8 +494,8 @@ namespace('Number', function () {
     test(15.2, false);
     test(15.2668, false);
     test(15.0, true);
-    test('15', true, '"15"');
-    test('15.8', false, '"15.8"');
+    test('15', true);
+    test('15.8', false);
   });
 
 

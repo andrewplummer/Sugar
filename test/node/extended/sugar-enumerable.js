@@ -10,4 +10,4 @@ runner.loadTest('es6');
 runner.loadTest('es7');
 runner.loadTest('enumerable');
 
-runner.runExtended(module);
+runner.run(module, 'extended');

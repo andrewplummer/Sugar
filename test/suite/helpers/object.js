@@ -49,10 +49,15 @@ testStaticAndInstance = function (subject, args, expected, message) {
 }
 
 testIsHash = function(obj) {
-  // Simple way to check for extended objects
-  return obj && typeof obj.keys === 'function' && typeof obj.values === 'function';
+  // Hacky way to check for extended objects when the
+  // global object prototype may or may not be extended.
+  return !!obj && !!obj.keys && !!obj.add && obj.add !== Object.prototype.add;
 }
 
 assertIsHash = function(obj) {
   equal(testIsHash(obj), true, 'obj is hash');
+}
+
+assertIsNotHash = function(obj) {
+  equal(testIsHash(obj), false, 'obj is not hash');
 }

@@ -5,4 +5,4 @@ runner.load('../../release/npm/sugar-array');
 // Tests
 runner.loadTest('array');
 
-runner.runExtended(module);
+runner.run(module, 'extended');

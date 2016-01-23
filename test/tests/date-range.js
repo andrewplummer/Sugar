@@ -2,7 +2,7 @@ namespace('Date Ranges', function () {
   'use strict';
 
   function getRange() {
-    return run(Date, 'range', arguments);
+    return Sugar.Date.range.apply(null, testGetArgs(arguments));
   }
 
   function assertDateArrayIsSequential(arr, amt) {

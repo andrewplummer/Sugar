@@ -1,7 +1,7 @@
 (function($) {
 
   $(document).ready(function() {
-    runTests(testsFinished, 'default', 'browser');
+    runTests(testsFinished, 'chained', 'browser');
   });
 
 })(jQuery);

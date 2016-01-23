@@ -17,4 +17,4 @@ runner.loadTest('number-range');
 runner.loadTest('string-range');
 runner.loadTest('date-range');
 
-runner.runExtended(module, Sugar);
+runner.run(module, 'extended', Sugar);

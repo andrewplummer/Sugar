@@ -5,4 +5,4 @@ runner.load('../../release/npm/sugar-language');
 // Tests
 runner.loadTest('language');
 
-runner.runExtended(module);
+runner.run(module, 'extended');

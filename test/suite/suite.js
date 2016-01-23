@@ -2,9 +2,9 @@
 
   var allTests = [];
   var namespaces = [];
-  var testExtended;
   var currentTest;
   var currentArgs;
+  var currentMode;
   var currentMethod;
   var currentNamespace;
 
@@ -20,10 +20,10 @@
   // BE CAREFUL HERE! If you declare these using window.xxx or
   // some form thereof they will not trigger errors in IE7!
 
-  runTests = function(fn, extended, env) {
+  runTests = function(fn, mode, env) {
     var time = new Date;
     var tests = getTestsToRun();
-    testExtended = extended;
+    currentMode = mode;
     environment = env;
     for (var i = 0; i < tests.length; i++) {
       currentTest = tests[i];
@@ -160,6 +160,7 @@
 
   test = function (subject) {
     var args, expected, message;
+    // TODO should this change?
     switch(arguments.length) {
       case 2:
         expected = arguments[1];
@@ -179,38 +180,27 @@
   }
 
   run = function (subject, methodName, args) {
+    var namespace = currentTest.namespace.name;
     methodName = methodName || currentMethod || currentTest.name;
     args = args || currentArgs || [];
-    if(testExtended) {
-      var globalObject = globalContext[currentTest.namespace.name], fn;
-      var preferGlobal = globalObject === Object && subject !== Object;
-      if(subject && subject[methodName] && !preferGlobal) {
-        // Call any direct methods on the object if they exist. The only exception
-        // for this rule is if we are testing the Object namespace, then we want to
-        // go through Object.XXX even if there the method XXX exists in the object
-        // itself as this may produce a different result. Ex. [1].add(2) produces a
-        // different result than Object.add([1], 2)
-        fn = subject[methodName];
-      } else if(globalObject.prototype[methodName]) {
-        // If the method is defined on the prototype of the global object,
-        // then use it instead. This is the case when testing methods not
-        // originally defined on the prototype of the subject, such as string
-        // methods on numbers, undefined/null, etc.
-        fn = globalObject.prototype[methodName];
-      } else {
-        // Otherwise assume a class method of the global object.
-        return globalObject[methodName].apply(null, [subject].concat(args));
+    if(currentMode === 'extended') {
+      var target = globalContext[namespace];
+      if (!target.prototype[methodName]) {
+        // TODO: can this be removed?
+        if (!objectIsClass(subject)) {
+          args.unshift(subject);
+        }
+        // Static methods are tested with the global first: test(Array, [1,2,3])
+        // so if there is no method in the prototype chain then we know we are
+        // testing the static method instead.
+        return target[methodName].apply(subject, args);
       }
-      return fn.apply(subject, args);
+      return target.prototype[methodName].apply(subject, args);
     } else {
       if(!objectIsClass(subject)) {
-        args = [subject].concat(Array.prototype.slice.call(args));
+        args = [subject].concat(args);
       }
-      var method = getSugarNamespace(subject)[methodName];
-      if (!method) {
-        throw new Error(methodName + ' does not exist');
-      }
-      return method.apply(null, args);
+      return Sugar[namespace][methodName].apply(null, args);
     }
   }
 
@@ -248,32 +238,7 @@
     });
   }
 
-  function getSugarNamespace(subject) {
-    var ns;
-    ns = Sugar[currentTest.namespace.name];
-    if (ns) {
-      // If the current namespace name is the same, simply return it.
-      return ns;
-    }
-    var global = matchGlobalClass(subject);
-    ns = Sugar[getGlobalName(global)];
-    if (ns) {
-      // If the subject is a global class, then use the
-      // name to get the Sugar namespace.
-      return ns;
-    }
-    return Sugar[getObjectClassName(subject)];
-  }
-
-  function getObjectClassName(obj) {
-    return testInternalToString.call(obj).match(/object (\w+)/)[1];
-  }
-
   function objectIsClass(obj) {
-    return !!matchGlobalClass(obj);
-  }
-
-  function matchGlobalClass(obj) {
     switch(obj) {
       case Boolean:
       case Number:
@@ -283,8 +248,9 @@
       case Date:
       case RegExp:
       case Function:
-        return obj;
+        return true;
     }
+    return false;
   }
 
   function getGlobalName(global) {
