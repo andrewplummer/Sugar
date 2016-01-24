@@ -1692,34 +1692,4 @@ namespace('Object', function() {
 
   });
 
-  // TODO remove
-  group('Enumerables on Object.prototype', function() {
-    storeNativeState();
-    Sugar.Object.extend({
-      objectPrototype: true
-    });
-
-    equal(({a:1,b:3,c:5}).sum(), 9, 'Object#sum');
-    equal(({a:1,b:3,c:5}).average(), 3, 'Object#average');
-    equal(({a:1,b:3,c:5}).min(), 'a', 'Object#min');
-    equal(({a:1,b:3,c:5}).max(), 'c', 'Object#max');
-    equal(({a:1,b:1,c:5}).min(null, true), {a:1,b:1}, 'Object#min (all)');
-    equal(({a:1,b:5,c:5}).max(null, true), {b:5,c:5}, 'Object#max (all)');
-    equal(({a:1,b:1,c:5}).least(), 'c', 'Object#least');
-    equal(({a:1,b:2,c:2}).most(), 'b', 'Object#most');
-    equal(({a:1,b:1,c:5}).least(null, true), {c:5}, 'Object#least (all)');
-    equal(({a:1,b:2,c:2}).most(null, true), {b:2,c:2}, 'Object#most (all)');
-
-    equal(({a:1,b:2,c:2}).any(1), true, 'Object#any');
-    equal(({a:1,b:2,c:2}).all(1), false, 'Object#all');
-    equal(({a:1,b:2,c:2}).none(5), true, 'Object#none');
-    equal(({a:1,b:2,c:3}).count(2), 1, 'Object#count');
-    equal(({a:1,b:2,c:3}).filter(3), {c:3}, 'Object#filter');
-    equal(({a:1,b:2,c:3}).find(3), 'c', 'Object#find');
-
-    equal(({a:'a',b:'b',c:'c'}).filter(/[ac]/), {a:'a',c:'c'}, 'Object#filter');
-
-    restoreNativeState();
-  });
-
 });
