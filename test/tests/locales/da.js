@@ -1,4 +1,4 @@
-namespace('Dates Danish', function () {
+namespace('Date | Danish', function () {
   'use strict';
 
   var now, then;
@@ -17,10 +17,13 @@ namespace('Dates Danish', function () {
     equal(testCreateDate('maj 2011'), new Date(2011, 4), 'year and month');
     equal(testCreateDate('15 maj'), new Date(now.getFullYear(), 4, 15), 'month and date');
     equal(testCreateDate('2011'), new Date(2011, 0), 'year');
+    equal(testCreateDate('02. feb. 2016'), new Date(2016, 1, 2), 'toLocaleDateString');
+
     equal(testCreateDate('maj'), new Date(now.getFullYear(), 4), 'month');
     equal(testCreateDate('mandag'), getDateWithWeekdayAndOffset(1), 'Monday');
     equal(testCreateDate('15 maj 2011 3:45'), new Date(2011, 4, 15, 3, 45), 'basic Danish date 3:45');
     equal(testCreateDate('15 maj 2011 3:45pm'), new Date(2011, 4, 15, 15, 45), 'basic Danish date 3:45pm');
+
     equal(testCreateDate('for et millisekund siden'), getRelativeDate(null, null, null, null, null, null,-1), 'one millisecond ago');
     equal(testCreateDate('for et sekund siden'), getRelativeDate(null, null, null, null, null, -1), 'one second ago');
     equal(testCreateDate('for et minut siden'), getRelativeDate(null, null, null, null, -1), 'one minute ago');
@@ -164,7 +167,7 @@ namespace('Dates Danish', function () {
 
 });
 
-namespace('Number | Danish Dates', function () {
+namespace('Number | Danish', function () {
   method('duration', function() {
     test(run(5, 'hours'), ['da'], '5 timer', 'simple duration');
   });

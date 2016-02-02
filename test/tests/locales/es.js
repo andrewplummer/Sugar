@@ -1,4 +1,4 @@
-namespace('Dates Spanish', function () {
+namespace('Date | Spanish', function () {
   'use strict';
 
   var now, then;
@@ -17,6 +17,8 @@ namespace('Dates Spanish', function () {
     equal(testCreateDate('mayo de 2011'), new Date(2011, 4), 'year and month');
     equal(testCreateDate('15 de mayo'), new Date(now.getFullYear(), 4, 15), 'month and date');
     equal(testCreateDate('2011'), new Date(2011, 0), 'year');
+    equal(testCreateDate('02 de feb. de 2016'), new Date(2016, 1, 2), 'toLocaleDateString');
+
     equal(testCreateDate('mayo'), new Date(now.getFullYear(), 4), 'month');
     equal(testCreateDate('lunes'), getDateWithWeekdayAndOffset(1), 'Monday');
 
@@ -172,7 +174,7 @@ namespace('Dates Spanish', function () {
 
 });
 
-namespace('Number | Spanish Dates', function () {
+namespace('Number | Spanish', function () {
 
   method('duration', function() {
     test(run(5, 'hours'), ['es'], '5 horas', 'Date#create | Spanish | simple duration');
