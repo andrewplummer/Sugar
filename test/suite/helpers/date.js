@@ -1,6 +1,6 @@
 
-testCreateDate = function() {
-  return run(Date, 'create', arguments);
+testCreateDate = function(arg1, arg2) {
+  return Sugar.Date.create(arg1, arg2);
 }
 
 testCreateDateWithOptions = function(rawArgs, optName) {
