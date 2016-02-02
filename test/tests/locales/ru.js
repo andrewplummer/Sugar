@@ -1,4 +1,4 @@
-namespace('Dates Russian', function () {
+namespace('Date | Russian', function () {
   'use strict';
 
   var now, then;
@@ -17,7 +17,21 @@ namespace('Dates Russian', function () {
     equal(testCreateDate('Май 2011'), new Date(2011, 4), 'year and month');
     equal(testCreateDate('15 мая'), new Date(now.getFullYear(), 4, 15), 'month and date');
     equal(testCreateDate('2011'), new Date(2011, 0), 'year');
-    equal(testCreateDate('Май'), new Date(now.getFullYear(), 4), 'month');
+    equal(testCreateDate('02 февр. 2016 г.'), new Date(2016, 1, 2), 'toLocaleDateString');
+
+    equal(testCreateDate('янв.'),   new Date(now.getFullYear(), 0),  'January');
+    equal(testCreateDate('февр.'),  new Date(now.getFullYear(), 1),  'February');
+    equal(testCreateDate('март'),   new Date(now.getFullYear(), 2),  'March');
+    equal(testCreateDate('апр.'),   new Date(now.getFullYear(), 3),  'April');
+    equal(testCreateDate('май'),    new Date(now.getFullYear(), 4),  'May');
+    equal(testCreateDate('июнь'),   new Date(now.getFullYear(), 5),  'June');
+    equal(testCreateDate('июль'),   new Date(now.getFullYear(), 6),  'July');
+    equal(testCreateDate('авг.'),   new Date(now.getFullYear(), 7),  'August');
+    equal(testCreateDate('сент.'),  new Date(now.getFullYear(), 8),  'September');
+    equal(testCreateDate('окт.'),   new Date(now.getFullYear(), 9),  'October');
+    equal(testCreateDate('ноябрь'), new Date(now.getFullYear(), 10), 'November');
+    equal(testCreateDate('дек.'),   new Date(now.getFullYear(), 11), 'December');
+
     equal(testCreateDate('понедельник'), getDateWithWeekdayAndOffset(1), 'Monday');
 
     equal(testCreateDate('15 мая 2011 3:45'), new Date(2011, 4, 15, 3, 45), 'basic Russian date 3:45');
@@ -135,23 +149,24 @@ namespace('Dates Russian', function () {
     test(new Date(2015, 10, 13), ['{Dow}'], 'пт', 'Fri');
     test(new Date(2015, 10, 14), ['{Dow}'], 'сб', 'Sat');
 
-    test(new Date(2015, 0, 1),  ['{Mon}'], 'янв', 'Jan');
-    test(new Date(2015, 1, 1),  ['{Mon}'], 'фев', 'Feb');
+    test(new Date(2015, 0, 1),  ['{Mon}'], 'янв',  'Jan');
+    test(new Date(2015, 1, 1),  ['{Mon}'], 'февр', 'Feb');
     test(new Date(2015, 2, 1),  ['{Mon}'], 'март', 'Mar');
-    test(new Date(2015, 3, 1),  ['{Mon}'], 'апр', 'Apr');
-    test(new Date(2015, 4, 1),  ['{Mon}'], 'май', 'May');
+    test(new Date(2015, 3, 1),  ['{Mon}'], 'апр',  'Apr');
+    test(new Date(2015, 4, 1),  ['{Mon}'], 'май',  'May');
     test(new Date(2015, 5, 1),  ['{Mon}'], 'июнь', 'Jun');
     test(new Date(2015, 6, 1),  ['{Mon}'], 'июль', 'Jul');
-    test(new Date(2015, 7, 1),  ['{Mon}'], 'авг', 'Aug');
-    test(new Date(2015, 8, 1),  ['{Mon}'], 'сен', 'Sep');
-    test(new Date(2015, 9, 1),  ['{Mon}'], 'окт', 'Oct');
-    test(new Date(2015, 10, 1), ['{Mon}'], 'ноя', 'Nov');
-    test(new Date(2015, 11, 1), ['{Mon}'], 'дек', 'Dec');
+    test(new Date(2015, 7, 1),  ['{Mon}'], 'авг',  'Aug');
+    test(new Date(2015, 8, 1),  ['{Mon}'], 'сент', 'Sep');
+    test(new Date(2015, 9, 1),  ['{Mon}'], 'окт',  'Oct');
+    test(new Date(2015, 10, 1), ['{Mon}'], 'ноя',  'Nov');
+    test(new Date(2015, 11, 1), ['{Mon}'], 'дек',  'Dec');
 
   });
 
 
   method('relative', function() {
+
     assertRelative('1 second ago', '1 секунду назад');
     assertRelative('1 minute ago', '1 минуту назад');
     assertRelative('1 hour ago',   '1 час назад');
@@ -274,6 +289,7 @@ namespace('Dates Russian', function () {
 
     assertRelative('21 hours from now', 'через 21 час');
     assertRelative('22 hours from now', 'через 22 часа');
+
   });
 
   method('beginning/end', function() {
@@ -283,7 +299,7 @@ namespace('Dates Russian', function () {
 
 });
 
-namespace('Number | Russian Dates', function () {
+namespace('Number | Russian', function () {
 
   method('duration', function() {
     test(run(5, 'hours'), ['ru'], '5 часов', 'simple duration');

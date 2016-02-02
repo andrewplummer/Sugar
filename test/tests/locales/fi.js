@@ -1,4 +1,4 @@
-namespace('Dates Finnish', function () {
+namespace('Date | Finnish', function () {
   'use strict';
 
   var now, then;
@@ -11,12 +11,13 @@ namespace('Dates Finnish', function () {
 
   method('create', function() {
 
-    equal(testCreateDate('15. toukokuuta 2011'),          new Date(2011, 4, 15),              'basic Finnish date');
-    equal(testCreateDate('tiistai 5. tammikuuta 2012'),   new Date(2012, 0, 5),               '2012-01-05');
-    equal(testCreateDate('tiistaina 5. tammikuuta 2012'), new Date(2012, 0, 5),               '2012-01-05 (na)');
-    equal(testCreateDate('toukokuu 2011'),                new Date(2011, 4),                  'year and month');
-    equal(testCreateDate('15. toukokuuta'),               new Date(now.getFullYear(), 4, 15), 'month and date');
-    equal(testCreateDate('2011'),                         new Date(2011, 0),                  'year');
+    equal(testCreateDate('15. toukokuuta 2011'), new Date(2011, 4, 15), 'basic Finnish date');
+    equal(testCreateDate('tiistai 5. tammikuuta 2012'), new Date(2012, 0, 5), '2012-01-05');
+    equal(testCreateDate('tiistaina 5. tammikuuta 2012'), new Date(2012, 0, 5), '2012-01-05 (na)');
+    equal(testCreateDate('toukokuu 2011'), new Date(2011, 4), 'year and month');
+    equal(testCreateDate('15. toukokuuta'), new Date(now.getFullYear(), 4, 15), 'month and date');
+    equal(testCreateDate('2011'), new Date(2011, 0), 'year');
+    equal(testCreateDate('02. helmikuuta 2016'), new Date(2016, 1, 2), 'toLocaleDateString');
 
     equal(testCreateDate('tiistai 5. tammikuuta 2012 klo 3.45'), new Date(2012, 0, 5,  3, 45), '2012-01-05 3.45');
     equal(testCreateDate('tiistaina 5. tammikuuta 2012 klo 3.45'), new Date(2012, 0, 5,  3, 45), '2012-01-05 3.45 (na)');
@@ -259,7 +260,7 @@ namespace('Dates Finnish', function () {
 
 });
 
-namespace('Number | Finnish Dates', function () {
+namespace('Number | Finnish', function () {
 
   method('duration', function() {
     testSetLocale('fi');

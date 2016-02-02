@@ -1,4 +1,4 @@
-namespace('Dates Catalan', function () {
+namespace('Date | Catalan', function () {
   'use strict';
 
   var now, then;
@@ -10,6 +10,8 @@ namespace('Dates Catalan', function () {
   });
 
   method('create', function() {
+
+    equal(testCreateDate('02 febr. 2016'), new Date(2016, 1, 2), 'toLocaleDateString');
 
     // TODO: write me!
 
@@ -61,7 +63,7 @@ namespace('Dates Catalan', function () {
 
 });
 
-namespace('Number | Catalan Dates', function () {
+namespace('Number | Catalan', function () {
   method('duration', function() {
     // TODO: write me!
   });
