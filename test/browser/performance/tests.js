@@ -25,29 +25,28 @@ arr = arr.concat(arr);
 arr = arr.concat(arr);
 arr = arr.concat(arr);
 
+var templateObj = {
+  'x':  '1,',
+  'y':  '2,',
+  'yy': '3,',
+  'z':  '4,'
+}
+
 var tests = [
   {
     fn: function(arg) {
-      return Object.get(arg, '0.response.related.transliterations[1].text');
+      return arg.assign(templateObj);
     },
     targets: [
-      'jsonArray * 10000'
+      'simpleTemplateString * 10000'
     ]
   },
   {
     fn: function(arg) {
-      return Object.get(arg, '0.response.related.transliterations[0..1].text');
+      return arg.assign(templateObj);
     },
     targets: [
-      'jsonArray * 10000'
-    ]
-  },
-  {
-    fn: function(arg) {
-      return Object.get3(arg, '0.response.related.transliterations[1].text');
-    },
-    targets: [
-      'jsonArray * 10000'
+      'complexTemplateString * 1000'
     ]
   },
 ];

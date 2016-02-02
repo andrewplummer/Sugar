@@ -26,7 +26,8 @@ hugeString   = '';
 stringObject = new String('wasabi');
 hugeNumberAsString = '893249283429';
 hugeNumberAsStringWithTrailingLetters = '893249283429alkdf';
-
+simpleTemplateString = 'x: {x} y: {y}';
+complexTemplateString = '{x}  {y} '+('{yy}').repeat(1000)+' {x} {z}';
 
 emptyArray       = [];
 smallNumberArray = [1,2,3];
@@ -137,6 +138,7 @@ jsonArray = [
     "response":{
       "type":"meaning",
       "content":{
+        "votes": 45,
         "text":"\u96c6\u4e2d\u7684\u306a\u3001\u5f37\u3044"
       },
       "related":{
@@ -175,6 +177,7 @@ jsonArray = [
     "response":{
       "type":"meaning",
       "content":{
+        "votes": 112,
         "text":"\u3068\u304c\u3081\u308b\u3001\u975e\u96e3\u3059\u308b"
       },
       "related":{
@@ -213,6 +216,7 @@ jsonArray = [
     "response":{
       "type":"meaning",
       "content":{
+        "votes": 4,
         "text":"\u30ab\u30c8\u30ea\u30c3\u30af\u6559\u5f92"
       },
       "related":{
@@ -251,6 +255,7 @@ jsonArray = [
     "response":{
       "type":"meaning",
       "content":{
+        "votes": 89,
         "text":"\u5fc3\u914d\u3001\u4e0d\u5b89"
       },
       "related":{
@@ -289,6 +294,7 @@ jsonArray = [
     "response":{
       "type":"meaning",
       "content":{
+        "votes": 322,
         "text":"\u90aa\u9b54\u3059\u308b\u3001\u5e72\u6e09\u3059\u308b"
       },
       "related":{
@@ -327,6 +333,7 @@ jsonArray = [
     "response":{
       "type":"meaning",
       "content":{
+        "votes": 418,
         "text":"\u653e\u68c4\u3059\u308b\u3001\uff08\u4e0d\u8981\u306a\u3082\u306e\u3092\uff09\u6368\u3066\u308b"
       },
       "related":{
@@ -365,6 +372,7 @@ jsonArray = [
     "response":{
       "type":"meaning",
       "content":{
+        "votes": 16,
         "text":"\u80a5\u6c83\uff08\u3072\u3088\u304f\uff09\u306a"
       },
       "related":{
@@ -403,6 +411,7 @@ jsonArray = [
     "response":{
       "type":"meaning",
       "content":{
+        "votes": 20,
         "text":"\u793c\u5100\u6b63\u3057\u3044\u3001\u7acb\u6d3e\u306a\u3001\u304b\u306a\u308a\u306e"
       },
       "related":{
@@ -441,6 +450,7 @@ jsonArray = [
     "response":{
       "type":"meaning",
       "content":{
+        "votes": 99,
         "text":"\u9589\u3058\u3066\u3044\u306a\u3044\u3001\u3086\u308b\u3093\u3060\u3001\u81ea\u7531\u306a"
       },
       "related":{
@@ -479,6 +489,7 @@ jsonArray = [
     "response":{
       "type":"meaning",
       "content":{
+        "votes": 112,
         "text":"\u6607\u9032\u3055\u305b\u308b\u3001\u5ba3\u4f1d\u3059\u308b"
       },
       "related":{
