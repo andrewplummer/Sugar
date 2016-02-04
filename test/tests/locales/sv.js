@@ -1,4 +1,4 @@
-namespace('Dates Swedish', function () {
+namespace('Date | Swedish', function () {
   'use strict';
 
   var now, then;
@@ -18,6 +18,8 @@ namespace('Dates Swedish', function () {
     equal(testCreateDate('maj 2011'), new Date(2011, 4), 'year and month');
     equal(testCreateDate('15 maj'), new Date(now.getFullYear(), 4, 15), 'month and date');
     equal(testCreateDate('2011'), new Date(2011, 0), 'year');
+    equal(testCreateDate('02 feb. 2016'), new Date(2016, 1, 2), 'toLocaleDateString');
+
     equal(testCreateDate('maj'), new Date(now.getFullYear(), 4), 'month');
     equal(testCreateDate('måndag'), getDateWithWeekdayAndOffset(1), 'Monday');
 
@@ -203,7 +205,7 @@ namespace('Dates Swedish', function () {
 
 });
 
-namespace('Number | Swedish Dates', function () {
+namespace('Number | Swedish', function () {
 
   method('duration', function() {
     test(run(5, 'hours'), ['sv'], '5 timmar', 'simple duration');

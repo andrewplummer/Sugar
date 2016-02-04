@@ -1,4 +1,4 @@
-namespace('Dates Portuguese', function () {
+namespace('Date | Portuguese', function () {
   'use strict';
 
   var now, then;
@@ -9,15 +9,29 @@ namespace('Dates Portuguese', function () {
     testSetLocale('pt');
   });
 
-  method('create', function() {
+  fmethod('create', function() {
 
     equal(testCreateDate('15 de maio 2011'), new Date(2011, 4, 15), 'basic Portuguese date');
     equal(testCreateDate('5 de janeiro de 2012'), new Date(2012, 0, 5), '2012-01-05');
     equal(testCreateDate('maio de 2011'), new Date(2011, 4), 'year and month');
     equal(testCreateDate('15 de maio'), new Date(now.getFullYear(), 4, 15), 'month and date');
     equal(testCreateDate('2011'), new Date(2011, 0), 'year');
-    equal(testCreateDate('maio'), new Date(now.getFullYear(), 4), 'month');
+    equal(testCreateDate('02 de fev de 2016'), new Date(2016, 1, 2), 'toLocaleDateString');
+
     equal(testCreateDate('segunda-feira'), getDateWithWeekdayAndOffset(1), 'Monday');
+
+    equal(testCreateDate('janeiro'),   new Date(now.getFullYear(), 0),  'January');
+    equal(testCreateDate('fevereiro'), new Date(now.getFullYear(), 1),  'February');
+    equal(testCreateDate('março'),     new Date(now.getFullYear(), 2),  'March');
+    equal(testCreateDate('abril'),     new Date(now.getFullYear(), 3),  'April');
+    equal(testCreateDate('maio'),      new Date(now.getFullYear(), 4),  'May');
+    equal(testCreateDate('junho'),     new Date(now.getFullYear(), 5),  'June');
+    equal(testCreateDate('julho'),     new Date(now.getFullYear(), 6),  'July');
+    equal(testCreateDate('agosto'),    new Date(now.getFullYear(), 7),  'August');
+    equal(testCreateDate('setembro'),  new Date(now.getFullYear(), 8),  'September');
+    equal(testCreateDate('outubro'),   new Date(now.getFullYear(), 9),  'October');
+    equal(testCreateDate('novembro'),  new Date(now.getFullYear(), 10), 'November');
+    equal(testCreateDate('dezembro'),  new Date(now.getFullYear(), 11), 'December');
 
     equal(testCreateDate('5 de janeiro de 2012 3:45'), new Date(2012, 0, 5, 3, 45), '2012-01-05 3:45');
     equal(testCreateDate('5 de janeiro de 2012 3:45pm'), new Date(2012, 0, 5, 15, 45), '2012-01-05 3:45pm');
@@ -168,7 +182,7 @@ namespace('Dates Portuguese', function () {
 
 });
 
-namespace('Number | Portuguese Dates', function () {
+namespace('Number | Portuguese', function () {
 
   method('duration', function() {
     test(run(5, 'hours'), ['pt'], '5 horas', 'simple duration');

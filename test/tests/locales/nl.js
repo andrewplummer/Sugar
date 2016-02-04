@@ -1,4 +1,4 @@
-namespace('Dates Dutch', function () {
+namespace('Date | Dutch', function () {
   'use strict';
 
   var now, then;
@@ -9,7 +9,6 @@ namespace('Dates Dutch', function () {
     testSetLocale('nl');
   });
 
-
   method('create', function() {
 
     equal(testCreateDate('15 mei 2011'), new Date(2011, 4, 15), 'basic Dutch date');
@@ -17,6 +16,8 @@ namespace('Dates Dutch', function () {
     equal(testCreateDate('Mei 2011'), new Date(2011, 4), 'year and month');
     equal(testCreateDate('15 Mei'), new Date(now.getFullYear(), 4, 15), 'month and date');
     equal(testCreateDate('2011'), new Date(2011, 0), 'year');
+    equal(testCreateDate('02 feb. 2016'), new Date(2016, 1, 2), 'toLocaleDateString');
+
     equal(testCreateDate('Mei'), new Date(now.getFullYear(), 4), 'month');
     equal(testCreateDate('maandag'), getDateWithWeekdayAndOffset(1), 'Monday');
     equal(testCreateDate('Ma'), getDateWithWeekdayAndOffset(1), 'Monday abbreviated');
@@ -180,7 +181,7 @@ namespace('Dates Dutch', function () {
 
 });
 
-namespace('Number | Dutch Dates', function () {
+namespace('Number | Dutch', function () {
 
   method('duration', function() {
     test(run(5, 'hours'), ['nl'], '5 uur', 'simple duration');

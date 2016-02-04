@@ -1,4 +1,4 @@
-namespace('Dates Italian', function () {
+namespace('Date | Italian', function () {
   'use strict';
 
   var now, then;
@@ -16,6 +16,8 @@ namespace('Dates Italian', function () {
     equal(testCreateDate('Maggio 2011'), new Date(2011, 4), 'year and month');
     equal(testCreateDate('15 Maggio'), new Date(now.getFullYear(), 4, 15), 'month and date');
     equal(testCreateDate('2011'), new Date(2011, 0), 'year');
+    equal(testCreateDate('02 feb 2016'), new Date(2016, 1, 2), 'toLocaleDateString');
+
     equal(testCreateDate('Maggio'), new Date(now.getFullYear(), 4), 'month');
     equal(testCreateDate('Lunedì'), getDateWithWeekdayAndOffset(1), 'Monday');
     equal(testCreateDate('Lun'), getDateWithWeekdayAndOffset(1), 'Monday abbreviated');
@@ -183,7 +185,7 @@ namespace('Dates Italian', function () {
 
 });
 
-namespace('Number | Italian Dates', function () {
+namespace('Number | Italian', function () {
 
   method('duration', function() {
     test(run(5, 'hours'), ['it'], '5 ore', 'simple duration');

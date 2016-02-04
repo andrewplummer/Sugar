@@ -1,4 +1,4 @@
-namespace('Dates Japanese', function () {
+namespace('Date | Japanese', function () {
   'use strict';
 
   var now, then;
@@ -13,6 +13,7 @@ namespace('Dates Japanese', function () {
 
     equal(testCreateDate('2011年5月15日'), new Date(2011, 4, 15), 'Date#create | basic Japanese date');
     equal(testCreateDate('2011年5月15日'), new Date(2011, 4, 15), 'Date#create | once a language has been initialized it will always be recognized');
+    equal(testCreateDate('2016年2月02日'), new Date(2016, 1, 2), 'toLocaleDateString');
 
     equal(testCreateDate('2011年5月'), new Date(2011, 4), 'year and month');
     equal(testCreateDate('5月15日'), new Date(now.getFullYear(), 4, 15), 'month and date');
@@ -243,7 +244,7 @@ namespace('Dates Japanese', function () {
 
 });
 
-namespace('Number | Japanese Dates', function() {
+namespace('Number | Japanese', function() {
 
   method('duration', function() {
     test(run(5, 'hours'), ['ja'], '5時間', 'simple duration');
