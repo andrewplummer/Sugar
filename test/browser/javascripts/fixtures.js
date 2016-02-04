@@ -26,7 +26,8 @@ hugeString   = '';
 stringObject = new String('wasabi');
 hugeNumberAsString = '893249283429';
 hugeNumberAsStringWithTrailingLetters = '893249283429alkdf';
-
+simpleTemplateString = 'x: {x} y: {y}';
+complexTemplateString = '{x}  {y} '+('{yy}').repeat(1000)+' {x} {z}';
 
 emptyArray       = [];
 smallNumberArray = [1,2,3];

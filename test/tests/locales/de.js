@@ -1,4 +1,4 @@
-namespace('Dates German', function () {
+namespace('Date | German', function () {
   'use strict';
 
   var now, then;
@@ -15,6 +15,7 @@ namespace('Dates German', function () {
     equal(testCreateDate('Mai 2011'), new Date(2011, 4), 'year and month');
     equal(testCreateDate('15. Mai'), new Date(now.getFullYear(), 4, 15), 'month and date');
     equal(testCreateDate('2011'), new Date(2011, 0), 'year');
+    equal(testCreateDate('02. Feb. 2016'), new Date(2016, 1, 2), 'toLocaleDateString');
 
     equal(testCreateDate('Dienstag, 5. Januar 2012 3:45'), new Date(2012, 0, 5, 3, 45), '2012-01-05 3:45');
     equal(testCreateDate('Dienstag, 5. Januar 2012 3:45pm'), new Date(2012, 0, 5, 15, 45), '2012-01-05 3:45pm');
@@ -211,7 +212,7 @@ namespace('Dates German', function () {
 
 });
 
-namespace('Number | German Dates', function () {
+namespace('Number | German', function () {
 
   method('duration', function() {
     test(run(5, 'hours'), ['de'], '5 Stunden', 'simple duration');

@@ -1,4 +1,4 @@
-namespace('Dates Korean', function () {
+namespace('Date | Korean', function () {
   'use strict';
 
   var now, then;
@@ -15,6 +15,8 @@ namespace('Dates Korean', function () {
     equal(testCreateDate('2011년5월'), new Date(2011, 4), 'year and month');
     equal(testCreateDate('5월15일'), new Date(now.getFullYear(), 4, 15), 'month and date');
     equal(testCreateDate('2011년'), new Date(2011, 0), 'year');
+    equal(testCreateDate('2016년 2월 02일'), new Date(2016, 1, 2), 'toLocaleDateString');
+
     equal(testCreateDate('5월'), new Date(now.getFullYear(), 4), 'month');
     equal(testCreateDate('15일'), new Date(now.getFullYear(), now.getMonth(), 15), 'date');
     equal(testCreateDate('월요일'), getDateWithWeekdayAndOffset(1), 'Monday');
@@ -176,7 +178,7 @@ namespace('Dates Korean', function () {
 
 });
 
-namespace('Number | Korean Dates', function () {
+namespace('Number | Korean', function () {
 
   method('duration', function() {
     test(run(5, 'hours'), ['ko'], '5시간', 'simple duration');

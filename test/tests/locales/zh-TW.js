@@ -1,8 +1,7 @@
-namespace('Dates Traditional Chinese', function () {
+namespace('Date | Traditional Chinese', function () {
   'use strict';
 
-  var now;
-  var then;
+  var now, then;
 
   setup(function() {
     now = new Date();
@@ -10,12 +9,14 @@ namespace('Dates Traditional Chinese', function () {
     testSetLocale('zh-TW');
   });
 
-
   method('create', function() {
+
     equal(testCreateDate('2011年5月15日'), new Date(2011, 4, 15), 'Date#create | basic Traditional Chinese date');
     equal(testCreateDate('2011年5月'), new Date(2011, 4), 'year and month');
     equal(testCreateDate('5月15日'), new Date(now.getFullYear(), 4, 15), 'month and date');
     equal(testCreateDate('2011年'), new Date(2011, 0), 'year');
+    equal(testCreateDate('2016年2月02日'), new Date(2016, 1, 2), 'toLocaleDateString');
+
     equal(testCreateDate('5月'), new Date(now.getFullYear(), 4), 'month');
     equal(testCreateDate('15日'), new Date(now.getFullYear(), now.getMonth(), 15), 'date');
     equal(testCreateDate('星期一'), getDateWithWeekdayAndOffset(1), 'Monday');
@@ -160,7 +161,7 @@ namespace('Dates Traditional Chinese', function () {
 
 });
 
-namespace('Number | Chinese (Simplified) Dates', function () {
+namespace('Number | Traditional Chinese', function () {
 
   method('duration', function() {
     test(run(5, 'hours'), ['zh-TW'], '5小時', 'simple duration');

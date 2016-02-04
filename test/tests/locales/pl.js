@@ -1,4 +1,4 @@
-namespace('Dates Polish', function () {
+namespace('Date | Polish', function () {
   'use strict';
 
   var now, then;
@@ -10,6 +10,8 @@ namespace('Dates Polish', function () {
   });
 
   method('create', function() {
+
+    equal(testCreateDate('02 lut 2016'), new Date(2016, 1, 2), 'toLocaleDateString');
 
     // TODO: Write these and uncommment!
 
@@ -239,7 +241,7 @@ namespace('Dates Polish', function () {
 
 });
 
-namespace('Number | Polish Dates', function () {
+namespace('Number | Polish', function () {
 
   method('duration', function() {
     testSetLocale('pl');

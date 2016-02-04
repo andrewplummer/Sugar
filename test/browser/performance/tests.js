@@ -25,21 +25,28 @@ arr = arr.concat(arr);
 arr = arr.concat(arr);
 arr = arr.concat(arr);
 
+var templateObj = {
+  'x':  '1,',
+  'y':  '2,',
+  'yy': '3,',
+  'z':  '4,'
+}
+
 var tests = [
   {
     fn: function(arg) {
-      return Sugar.Object.min(arg, 'id');
+      return arg.format(templateObj);
     },
     targets: [
-      'jsonArray * 10000'
+      'simpleTemplateString * 10000'
     ]
   },
   {
     fn: function(arg) {
-      return Sugar.Object.average2(arg, 'response.content.votes');
+      return arg.format(templateObj);
     },
     targets: [
-      'jsonArray * 10000'
+      'complexTemplateString * 1000'
     ]
   },
 ];
