@@ -24,6 +24,7 @@ gulp.task('build',       buildDefault);
 gulp.task('build:dev',   buildDevelopment);
 gulp.task('build:min',   buildMinified);
 gulp.task('build:all',   buildAll);
+gulp.task('build:qml',   buildQml);
 gulp.task('build:clean', buildClean);
 
 gulp.task('build:npm',       buildNpmDefault);
@@ -84,6 +85,8 @@ var HELP_MESSAGE = [
   '      |build:bower|                    Builds bower packages (none by default).',
   '      |build:bower:all|                Builds all bower packages (slow).',
   '      |build:bower:clean|              Cleans bower package output directory ("release/bower" by default).',
+  '',
+  '      |build:qml|                      Creates a QML compatible build.',
   '',
   '      |test|                           Run default test suite.',
   '      |test:all|                       Run all tests.',
@@ -408,6 +411,14 @@ function buildMinified() {
   return createMinifiedBuild(filename, modules, locales);
 }
 
+function buildQml() {
+  var filename = args.o || args.output || 'sugar.js';
+  var modules = args.m || args.modules || 'default';
+  var locales = args.l || args.locales;
+  notify('Creating QML Build: ' + getBuildMessage(filename, modules, locales));
+  return createDevelopmentBuild(filename, modules, locales, true);
+}
+
 function getBuildMessage(filename, modules, locales) {
   var message = filename;
   if (locales) {
@@ -416,22 +427,42 @@ function getBuildMessage(filename, modules, locales) {
   return message;
 }
 
-function createDevelopmentBuild(outputPath, p, l) {
+function getWrapper(qml) {
+  return qml ? getQmlWrapper() : getStandardWrapper();
+}
+
+function getStandardWrapper() {
+  return [
+    getLicense(),
+    '(function() {',
+    "  'use strict';",
+    '$1',
+    '}).call(this);'
+  ].join('\n');
+}
+
+function getQmlWrapper() {
+  return [
+    getLicense(),
+    '.pragma library',
+    'var Sugar = (function() {',
+    "  'use strict';",
+    '$1',
+    '  return Sugar;',
+    '}).call(this);'
+  ].join('\n');
+}
+
+function createDevelopmentBuild(outputPath, p, l, qml) {
   var filename = path.basename(outputPath);
   var modules  = getModuleNames(p);
   var locales  = getLocales(l);
-  var template = [
-    getLicense(),
-    '(function() {',
-      "  'use strict';",
-      '$1',
-    '}).call(this);'
-  ].join('\n');
+  var wrapper  = getWrapper(qml);
   return gulp.src(modules.concat(locales))
     .pipe(concat(filename, { newLine: '' }))
     .pipe(replace(/^\s*'use strict';\n/g, ''))
     .pipe(replace(/^(?=.)/gm, '  '))
-    .pipe(replace(/^([\s\S]+)$/m, template))
+    .pipe(replace(/^([\s\S]+)$/m, wrapper))
     .pipe(replace(/edge/, getVersion()))
     .pipe(gulp.dest(path.dirname(outputPath)));
 }
