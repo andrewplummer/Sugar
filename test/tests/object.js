@@ -33,6 +33,20 @@ namespace('Object', function () {
       arr: [1]
     };
 
+    // Array
+
+    testStaticAndInstance(obj, [['str']], 'hi', 'array | string');
+    testStaticAndInstance(obj, [['num']], 5, 'array | number');
+    testStaticAndInstance(obj, [['und']], undefined, 'array | undefined');
+    testStaticAndInstance(obj, [['nul']], null, 'array | null');
+    testStaticAndInstance(obj, [['arr']], [1], 'array | array');
+    testStaticAndInstance(obj, [['non']], undefined, 'array | non-existent');
+    testStaticAndInstance(obj, [['a','b','c','foo']], 'bar', 'array | accesses deep property');
+    testStaticAndInstance(obj, [['a.b.c']], 'surprise', 'array | allows key with dot notation');
+    testStaticAndInstance(obj, [{0:'a',1:'b',2:'c',3:'foo',length:4}], 'bar', 'array | array-like');
+
+    // Dot syntax
+
     testStaticAndInstance(obj, ['str'], 'hi', 'flat string');
     testStaticAndInstance(obj, ['num'], 5, 'flat number');
     testStaticAndInstance(obj, ['und'], undefined, 'flat undefined');
@@ -68,13 +82,11 @@ namespace('Object', function () {
     testStaticAndInstance(obj, ['.'], undefined, 'single dot');
 
     testStaticAndInstance({}, [], undefined, 'no arguments');
-    testStaticAndInstance({'ohai':1}, [{toString:function() {return 'ohai';}}], 1, 'object should be coerced to string');
     testStaticAndInstance({'undefined':1}, [undefined], undefined, 'undefined should not be coerced to string');
     testStaticAndInstance({'null':1}, [null], undefined, 'null should not be coerced to string');
     testStaticAndInstance({3:1}, [3], 1, 'number should be coerced to string');
     testStaticAndInstance({'undefined':1}, ['undefined'], 1, '"undefined" is found');
     testStaticAndInstance({'null':1}, ['null'], 1, '"null" is found');
-
 
     testStaticAndInstance({'':1}, [''], 1, 'empty string as key');
     testStaticAndInstance({'':{'':2}}, ['.'], 2, 'nested empty string as key');
@@ -253,6 +265,19 @@ namespace('Object', function () {
     run(Object, 'set', [obj, 'foo.bar', 'car']);
     equal(obj.foo.bar, 'car', 'Basic flat property is set on original object');
 
+    // Arrays
+
+    testStaticAndInstance({}, [['str'], 'hi'], {str:'hi'}, 'array | string');
+    testStaticAndInstance({}, [['num'], 5], {num:5}, 'array | number');
+    testStaticAndInstance({}, [['und'], undefined], {}, 'array | undefined');
+    testStaticAndInstance({}, [['nul'], null], {nul:null}, 'array | null');
+    testStaticAndInstance({}, [['arr'], [1]], {arr:[1]}, 'array | array');
+    testStaticAndInstance({}, [['obj'], {a:'b'}], {obj:{a:'b'}}, 'array | object');
+    testStaticAndInstance({}, [['a','b','c'],'foo'], {a:{b:{c:'foo'}}}, 'array | set deep property');
+    testStaticAndInstance({}, [['a.b.c'],'foo'], {'a.b.c':'foo'}, 'array | allows key with dot notation');
+    testStaticAndInstance({}, [{0:'a',1:'b',2:'c',length:3},'foo'], {a:{b:{c:'foo'}}}, 'array | array-like');
+
+    // Dot syntax
 
     testStaticAndInstance({}, ['str', 'hi'], {str:'hi'}, 'flat | string');
     testStaticAndInstance({}, ['num', 5], {num:5}, 'flat | number');
@@ -313,10 +338,7 @@ namespace('Object', function () {
     testStaticAndInstance({}, [undefined, 'x'], {}, 'undefined should be ignored');
     testStaticAndInstance({}, [null, 'x'], {}, 'null should ignored');
     testStaticAndInstance({}, [3, 'x'], {3:'x'}, 'number should be coerced to string');
-    testStaticAndInstance({}, [{toString:function(){return 'ohai';}}, 'x'], {'ohai': 'x'}, 'object should be coerced to string');
-
     testStaticAndInstance({3:1}, [3,'x'], {3:'x'}, 'coerced number is set');
-    testStaticAndInstance({'ohai':1}, [{toString:function(){return 'ohai';}}, 'x'], {'ohai':'x'}, 'coerced object is set');
 
     testStaticAndInstance({'':1}, ['','x'], {'':'x'}, 'empty string as key');
     testStaticAndInstance({'':{'':2}}, ['.','x'], {'':{'':'x'}}, 'nested empty string as key');
