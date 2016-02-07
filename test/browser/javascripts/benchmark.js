@@ -1,28 +1,20 @@
 
-runPerformanceTest = function() {
-  var iterations, fn, start, i = 0, ms;
-  var passedArg = arguments[2];
-  if(arguments.length == 1) {
-    iterations = 10000;
-    fn = arguments[0];
-  } else {
-    iterations = arguments[0];
-    fn = arguments[1];
-  }
+runPerformanceTest = function(name, fn, arg, iterations) {
+  var start, i = 0, ms;
   start = new Date();
   while(i < iterations) {
-    fn(passedArg);
+    fn(arg);
     i++;
   }
-  ms = new Date() - start
-  console.info(iterations + ' iterations finished in ' + ms + ' milliseconds');
+  ms = new Date() - start;
+  console.info(name + ': ' + iterations + ' iterations finished in ' + ms + ' milliseconds');
   return ms;
 }
 
-function runMultipleTestsWithArgumentAndAverage(test, arg, iterationsEach, times) {
+function runMultipleTestsWithArgumentAndAverage(name, fn, arg, iterations, times) {
   var sum = 0;
   for (var i = 0; i < times; i += 1) {
-    sum += runPerformanceTest(iterationsEach, test, arg);
+    sum += runPerformanceTest(name, fn, arg, iterations);
   };
   return Math.round(sum / times);
 }
