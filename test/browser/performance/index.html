@@ -154,21 +154,17 @@ background-color: teal;
 
     function renderResults() {
       var results = {};
-      var minTime = Infinity;
-      var winner;
       tests.forEach(function(test, i) {
         test.average = 0;
         test.targets.forEach(function(t) {
           test.average += t.average;
         });
         test.average = Math.round(test.average / test.targets.length);
-        if (test.average < minTime) {
-          minTime = test.average;
-          winner = i;
-        }
       });
-      tests.sort(function(a, b) {
+      tests.concat().sort(function(a, b) {
         return a.average - b.average;
+      }).forEach(function(test, i) {
+        test.rank = (i + 1);
       });
       tests.forEach(function(test, i) {
         var r = {};
@@ -180,6 +176,7 @@ background-color: teal;
           r['Target ' + (j + 1)] = average;
         });
         r['Average'] = test.average;
+        r['Rank'] = test.rank;
         results[test.name] = r;
       });
       console.table(results);
