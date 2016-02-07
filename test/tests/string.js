@@ -1339,6 +1339,7 @@ namespace('String', function () {
   });
 
   method('format', function() {
+
     var obj1 = { firstName: 'Harry' };
     var obj2 = { lastName: 'Potter' };
     var obj3 = { firstName: 'program', age: 21, points: 345 };
@@ -1379,6 +1380,10 @@ namespace('String', function () {
     test('{{{{0}}}}', ['foo'], '{{0}}', '3 nested');
     test('{{{{{0}}}}}', ['foo'], '{{foo}}', '4 nested');
     test('{{{{{{0}}}}}}', ['foo'], '{{{0}}}', '5 nested');
+
+    test('%', [], '%', '%');
+    test('%%', [], '%%', '%%');
+    test('%f', [], '%f', '%f');
 
     raisesError(function() { run('0}', 'format', ['foo']); }, 'unmatched }');
     raisesError(function() { run('{0', 'format', ['foo']); }, 'unmatched {');
