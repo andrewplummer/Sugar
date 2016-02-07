@@ -1479,6 +1479,7 @@ namespace('Date', function () {
   });
 
   method('format', function() {
+
     var d = new Date('August 5, 2010 13:45:02');
 
     test(d, 'August 5, 2010 1:45 PM', 'no arguments is standard format with no time');
@@ -1540,6 +1541,8 @@ namespace('Date', function () {
 
     test(d, ['{Z}'],  getExpectedTimezoneOffset(d, true), 'Z');
     test(d, ['{ZZ}'], getExpectedTimezoneOffset(d), 'ZZ');
+
+    raisesError(function(){ run(d, 'format', ['{foo}']); }, 'unknown ldml token raises error');
 
     // Not all environments provide that so just make sure it returns the abbreviation or nothing.
     equal(/\w{3}|^$/.test(run(d, 'format', ['{z}'])), true, 'Timezone abbreviation');
@@ -1686,6 +1689,9 @@ namespace('Date', function () {
     test(d, ['%X'], '2:03 PM', 'Locale based representation | time only');
     test(d, ['%Y'], '2010', 'Full year');
 
+    raisesError(function(){ run(d, 'format', ['%']); }, 'unused strf token raises error');
+    raisesError(function(){ run(d, 'format', ['%foo']); }, 'unknown strf token raises error');
+
     equal(/[+-]\d{4}/.test(run(d, 'format', ['%z'])), true, 'Timezone offset');
     equal(/\w{3}/.test(run(d, 'format', ['%Z'])), true, 'Timezone abbreviation');
 
@@ -1768,7 +1774,7 @@ namespace('Date', function () {
     assertFormatShortcut(then, 'full', 'Tuesday, 5 January, 2010 15:52', 'en-CA');
 
     // Issue #262
-    equal(/\d+-/.test(run(new Date(), 'format', ['{timezone}'])), false, 'Timezone format should not include hyphens')
+    equal(/\d+-/.test(run(new Date(), 'format', ['{tz}'])), false, 'Timezone format should not include hyphens')
 
     // Issue #498
     test(new Date(1901, 0, 2), ['{yy}'], '01', 'Zero padded year should respect yy format');
