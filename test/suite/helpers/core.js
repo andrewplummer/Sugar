@@ -6,7 +6,7 @@
 
   var NATIVES = ['Number','String','Array','Date','RegExp','Function', 'Object'];
 
-  function restoreNative(methodName, target, storedMethod) {
+  function restore(methodName, target, storedMethod) {
     if (target[methodName] !== storedMethod) {
       if (!storedMethod) {
         delete target[methodName];
@@ -90,7 +90,9 @@
       var nativeClass = globalContext[name];
       testIterateOverObject(ns, function(methodName, method) {
         state[methodName] = {
-          static: nativeClass[methodName],
+          sugar:    ns[methodName],
+          chain:    ns.prototype[methodName],
+          static:   nativeClass[methodName],
           instance: nativeClass.prototype[methodName]
         }
       });
@@ -99,6 +101,7 @@
   }
 
   restoreNativeState = function() {
+
     // "objectPrototype" preserves state for future
     // method definitions, so reset that flag here.
     Sugar.Object.extend({
@@ -126,13 +129,13 @@
           // it's safe to assume that it was not there previously
           // and remove it completely. Do this by setting it's
           // state as undefined.
-          delete ns[methodName];
-          delete ns.prototype[methodName];
-          delete cproto[methodName];
           methodState = {};
+          delete cproto[methodName];
         }
-        restoreNative(methodName, nativeClass, methodState.static);
-        restoreNative(methodName, nativeClass.prototype, methodState.instance);
+        restore(methodName, ns, methodState.sugar);
+        restore(methodName, ns.prototype, methodState.chain);
+        restore(methodName, nativeClass, methodState.static);
+        restore(methodName, nativeClass.prototype, methodState.instance);
       });
     }
   }
