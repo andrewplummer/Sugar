@@ -9,7 +9,7 @@ namespace('Date | Portuguese', function () {
     testSetLocale('pt');
   });
 
-  fmethod('create', function() {
+  method('create', function() {
 
     equal(testCreateDate('15 de maio 2011'), new Date(2011, 4, 15), 'basic Portuguese date');
     equal(testCreateDate('5 de janeiro de 2012'), new Date(2012, 0, 5), '2012-01-05');
