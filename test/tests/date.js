@@ -1542,7 +1542,7 @@ namespace('Date', function () {
     test(d, ['{Z}'],  getExpectedTimezoneOffset(d, true), 'Z');
     test(d, ['{ZZ}'], getExpectedTimezoneOffset(d), 'ZZ');
 
-    raisesError(function(){ run(d, 'format', ['{foo}']); }, 'unknown ldml token raises error');
+    raisesError(function(){ run(d, 'format', ['{foo}']); }, 'unknown ldml token raises error', TypeError);
 
     // Not all environments provide that so just make sure it returns the abbreviation or nothing.
     equal(/\w{3}|^$/.test(run(d, 'format', ['{z}'])), true, 'Timezone abbreviation');
@@ -1689,8 +1689,8 @@ namespace('Date', function () {
     test(d, ['%X'], '2:03 PM', 'Locale based representation | time only');
     test(d, ['%Y'], '2010', 'Full year');
 
-    raisesError(function(){ run(d, 'format', ['%']); }, 'unused strf token raises error');
-    raisesError(function(){ run(d, 'format', ['%foo']); }, 'unknown strf token raises error');
+    raisesError(function(){ run(d, 'format', ['%']); }, 'unused strf token raises error', TypeError);
+    raisesError(function(){ run(d, 'format', ['%foo']); }, 'unknown strf token raises error', TypeError);
 
     equal(/[+-]\d{4}/.test(run(d, 'format', ['%z'])), true, 'Timezone offset');
     equal(/\w{3}/.test(run(d, 'format', ['%Z'])), true, 'Timezone abbreviation');
