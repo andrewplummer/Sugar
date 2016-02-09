@@ -70,7 +70,7 @@
   }
 
   function escapeHTML(str) {
-    return str ? str.replace(/</g, '&lt;').replace(/>/g, '&gt;') : '';
+    return str ? str.replace(/</g, '&lt;').replace(/>/g, '&gt;').valueOf() : '';
   }
 
   function getFailureHTML(f) {
