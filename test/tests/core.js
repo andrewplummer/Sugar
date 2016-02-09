@@ -377,11 +377,10 @@ namespace('Core', function() {
     equal(superString.bar().raw, 'bar!', 'bar is chainable');
     equal(superString.moo().raw, 'moo!', 'moo is chainable');
     equal(superString.foo().valueOf(), 'foo!', 'valueOf also returns raw value');
-    equal(superString.toString(), 'SugarString: hai', 'Chainable should have a toString.');
-    equal(superString.foo().toString(), 'SugarChainable: foo!', 'Unknown chainable type should have a toString');
+    equal(superString.foo().bar().moo().raw, 'moo!', 'long chain');
   });
 
-  group('Chaining with factories', function() {
+  group('Chainables as factories', function() {
     defineCustom(Sugar.String);
     var superString = Sugar.String('hai');
     equal(superString.foo().raw, 'foo!', 'foo is chainable');
@@ -454,6 +453,69 @@ namespace('Core', function() {
     equal(Sugar.Number().getNaN().getUndefined().getNull().raw, null, 'Chained to null');
     equal(Sugar.Object().getUndefined().getNull().getNaN().raw, NaN, 'Chained to null');
 
+  });
+
+  group('Chainable built-in methods', function() {
+    defineCustom(Sugar.String);
+    var str = new Sugar.String('wow');
+    equal(str.charCodeAt(0).toFixed(2).raw, '119.00', 'Chaining built-ins');
+
+    var fn = function(n) { return String.fromCharCode(n); }
+    var arr = new Sugar.Array([102,111,111]);
+    arr.push(33);
+    equal(arr.map(fn).join('.').bar().replace('!', '').raw, 'bar', 'run between native and Sugar methods');
+
+    equal(Sugar.Array([1,2,3]).map(function() { return 'a'; }).raw, ['a','a','a'], 'built-in is mapped to chainable');
+    Sugar.String.defineInstance('map', function(str) {
+      return 'enhanced string map!'
+    });
+    Sugar.Array.defineInstance('map', function(str) {
+      return 'enhanced array map!'
+    });
+    equal(Sugar.Array([1,2,3]).map().raw, 'enhanced array map!', 'enhanced method is mapped to chainable');
+    equal(Sugar.String('1,2,3').split(',').map().raw, 'enhanced array map!', 'enhanced method is disambiguated');
+    equal(Sugar.String('1,2,3').map().raw, 'enhanced string map!', 'string enhancement still works');
+  });
+
+  group('Chainable valueOf behavior', function() {
+
+    var eight = new Sugar.Number(8);
+    equal(eight + 8, 16, 'lhs can add primitives');
+    equal(12 + eight, 20, 'rhs can be added to primitives');
+    equal(eight > 3, true, 'greater than true');
+    equal(eight > 13, false, 'greater than false');
+    equal(eight < 3, false, 'less than false');
+    equal(eight < 13, true, 'less than true');
+    equal(eight >= 8, true, 'greater or equal true');
+    equal(eight <= 8, true, 'less than or equal true');
+    equal(eight * 2 * 8, 128, 'multiplication');
+    equal(eight / 2 / 8, .5, 'division');
+    equal(eight % 2, 0, 'modulo');
+
+    var foo = new Sugar.String('foo');
+    equal(foo + 'bar', 'foobar', 'lhs string concat works');
+    equal('bar' + foo, 'barfoo', 'rhs string concat works');
+    equal(foo == 'foo', true, '== equality is true');
+    equal(foo == 'bar', false, '== equality is false');
+
+    var f = new Sugar.RegExp(/f/);
+    equal(f.test('q') == false, true, '== equality is false');
+    equal(f.test('f') == true,  true, '== equality is true');
+    equal(f.test('f') === false, false, '=== equality is always false');
+
+  });
+
+  group('Chainable toString behavior', function() {
+    equal(new Sugar.Number(8).toString().raw, '8', 'toString returns chainable as well');
+    equal(new Sugar.Array([1,2,3]).toString().raw, '1,2,3', 'toString are not generic, but match their built-in class');
+    equal(new Sugar.String('a,b').split(',').toString().raw, 'a,b', 'toString disambiguates');
+  });
+
+  group('Chainable polyfill methods', function() {
+    var d = new Date(1460646000000);
+    function r(a, b) { return parseInt(a, 10) + parseInt(b, 10); }
+    equal(new Sugar.Array(['a','b','c']).indexOf('b').raw, 1, 'indexOf should be mapped');
+    equal(new Sugar.Date(d).toISOString().trim().split('-').reduce(r).toFixed(2).raw, '2034.00', 'long chained');
   });
 
 });

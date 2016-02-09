@@ -4,7 +4,18 @@
   var globalContext = typeof global !== 'undefined' && global.Object ? global : context;
   var nativeStates = [];
 
-  var NATIVES = ['Number','String','Array','Date','RegExp','Function', 'Object'];
+
+  function forEachNamespace(fn) {
+    testIterateOverObject(Sugar, function(key, val) {
+      // In environments that can't set non-enumerable properties, other props
+      // may accidentally get iterated over here. Fortunately, all Sugar
+      // namespaces have custom toString methods that we can leverage here to
+      // separate namespaces from utility functions.
+      if (typeof val === 'function' && val.toString() === 'Sugar' + key) {
+        fn(key, val);
+      }
+    });
+  }
 
   function restore(methodName, target, storedMethod) {
     if (target[methodName] !== storedMethod) {
@@ -51,7 +62,7 @@
     }
   }
 
-  function getChainablePrototype() {
+  function getDefaultChainablePrototype() {
     // Force disambiguation to get at the unknown chainable prototype.
     Sugar.Array.defineInstance('foo', function() {});
     Sugar.String.defineInstance('foo', function() {});
@@ -84,14 +95,14 @@
 
   storeNativeState = function() {
     var nativeState = {};
-    testIterateOverObject(Sugar, function(name, ns) {
+    forEachNamespace(function(name, namespace) {
       var state = nativeState[name] = {};
-      nativeState[name + 'Active'] = ns.active;
       var nativeClass = globalContext[name];
-      testIterateOverObject(ns, function(methodName, method) {
+      state.active = namespace.active;
+      testIterateOverObject(namespace, function(methodName, method) {
         state[methodName] = {
-          sugar:    ns[methodName],
-          chain:    ns.prototype[methodName],
+          sugar:    namespace[methodName],
+          chain:    namespace.prototype[methodName],
           static:   nativeClass[methodName],
           instance: nativeClass.prototype[methodName]
         }
@@ -111,18 +122,14 @@
 
     // The "unknown" chainable prototype takse a bit
     // of special work to get at, so do that here.
-    var cproto = getChainablePrototype();
+    var cproto = getDefaultChainablePrototype();
 
     var nativeState = nativeStates.pop();
 
-    for (var i = 0; i < NATIVES.length; i++) {
-
-      var name        = NATIVES[i];
-      var ns          = Sugar[name];
+    forEachNamespace(function(name, namespace) {
       var nativeClass = globalContext[name];
-
-      ns.active = nativeState[name + 'Active'];
-      testIterateOverObject(ns, function(methodName, method) {
+      namespace.active = nativeState.active;
+      testIterateOverObject(namespace, function(methodName, method) {
         var methodState = nativeState[name][methodName];
         if (!methodState) {
           // If there is no stored state for this method, then
@@ -132,12 +139,12 @@
           methodState = {};
           delete cproto[methodName];
         }
-        restore(methodName, ns, methodState.sugar);
-        restore(methodName, ns.prototype, methodState.chain);
+        restore(methodName, namespace, methodState.sugar);
+        restore(methodName, namespace.prototype, methodState.chain);
         restore(methodName, nativeClass, methodState.static);
         restore(methodName, nativeClass.prototype, methodState.instance);
       });
-    }
+    });
   }
 
 })(this);
