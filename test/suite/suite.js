@@ -158,6 +158,10 @@
     currentMethod = null;
   }
 
+  isExtendedMode = function() {
+    return currentMode === 'extended';
+  }
+
   test = function (subject) {
     var args, expected, message;
     switch(arguments.length) {
@@ -186,10 +190,6 @@
     if (currentMode === 'extended') {
       var target = globalContext[namespace];
       if (!target.prototype[methodName]) {
-        // TODO: can this be removed after hashes removed?
-        if (isInstance) {
-          args.unshift(subject);
-        }
         // Static methods are tested with the global first: test(Array, [1,2,3])
         // so if there is no method in the prototype chain then we know we are
         // testing the static method instead.
