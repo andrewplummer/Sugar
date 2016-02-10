@@ -22,10 +22,15 @@ namespace('Array', function () {
   method('create', function() {
     var arrayLike = { 0: 1, 1: 2, 2: 3, length: 3 }
     var args = (function() { return arguments; })('a','b','c');
+    var Soup = function() {}; Soup.prototype = [1,2,3]; var inst = new Soup();
 
     var arr = [1,2,3];
-    equal(arr === run(Array, 'create', [arr]), false, 'Should clone a passed array');
+    equal(run(Array, 'create', [arr]) === arr, true, 'should return a reference by default');
 
+    var arr = [1,2,3];
+    equal(run(Array, 'create', [arr, true]) === arr, false, 'should clone the array with argument');
+
+    equal(run(Array, 'create', [inst]) === inst, true, 'should return reference to inherited');
     test(Array, [], 'no argument produces empty array');
     test(Array, [undefined], [], 'undefined is the same as no argument');
     test(Array, [8], [8], 'non-object argument wraps in array');
