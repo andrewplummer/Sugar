@@ -14,34 +14,43 @@ v2.0.0+
 =======
 
 - Level: Major
+  - `String#assign` is now `String#format`, and behaves very closely to Python's method of the same name. Tokens are now zero based, and start with `{0}`. Also, errors will be thrown when tokens cannot be matched. Braces can now be escaped by repeating them. Lastly, multiple objects passed will no longer be merged together. Instead either access with new dot syntax (0.prop) or merge together with Object.merge beforehand.
+
+- Level: Major
+  - `Function#fill` was renamed to `Function#partial`. Additionally, it no longer accepts `null` as a placeholder. Use `undefined` instead.
+
+- Level: Major
   - `Object.equal` is renamed to `Object.isEqual` in both the static and instance method types.
+
+- Level: Major
+  - `Object.extended` was removed in favor of chainables. The equivalent is now `new Sugar.Object()`, however the result will be wrapped in a property called `.raw`. See the docs for more details.
+
+- Level: Major
+  - `Object.merge` now takes an options object instead of a list of arguments. The 3rd argument is now "deep" in the options object, and the 4th is "resolve". Resolver functions will now abort the merge (for a single property) if `undefined` is the return value. To tell the resolver function to continue as normal, return the `Sugar` global object instead. Any non-undefined value returned by the function will now resolve the conflict completely and will not continue traversing into it when in "deep" mode. To tell the resolver function to continue with the merge, return the Sugar global object instead.
 
 - Level: Major
   - `String#has` is now removed in favor of `String#includes` to be in compliance with the ES6 spec. The ES6 method only accepts a string as input, however Sugar enhances this method to allow regexes (can be opted-out).
 
 - Level: Major
-  - `Date.past`, `Date.future`, `Date.utc.create`, `Date.utc.past`, and `Date.utc.future` are all deprecated. Instead, pass an options object as the second argument to `Date.create` with the equivalent properties. For example: `Date.create('March', { future: true, fromUTC: true, locale: 'ja' })`, etc. Additionally, the `utc` parameter is now `fromUTC` and a new parameter `setUTC` has been added to clear up confusion about what the flag was doing. `fromUTC` assumes the input to be UTC but the output is a normal Javascript local date. `setUTC` sets an internal flag which tells Sugar to use utc methods like `getUTCHours`.
+  - `Array#include` was removed as it is now identical to `Array#add`.
+
+- Level: Major
+  - `Array#findAll` was replaced with `Array#filterFrom` in cases that require a start index. For cases without a start index, simply use `Array#filter` instead.
+
+- Level: Major
+  - `Object.findAll` was replaced with `Object.filter`, which parallels `Array#filter` by returning a filtered object.
 
 - Level: Major
   - `Date#utc` is now `Date#setUTC`, and now requires explicitly passing `true` as the first argument to set the flag to true.
 
 - Level: Major
-  - `String#startsWith` and `String#endsWith` are now more in compliance with the ES6 spec. They now no longer accept a RegExp (will throw an error) or a `case` parameter. If you need to do more complex string checking, use `String#match` with standard regexes instead. Also minor differences in the way the starting/ending positions are coerced may also be present.
-
-- Level: Major
-  - `Object.reduce` is now deprecated. Use `Array#reduce` together with `Object.keys` instead.
-
-- Level: Major
-  - `Object.merge` now takes an options object instead of a list of arguments. The 3rd argument is now "deep" in the options hash, and the 4th is "resolve". Resolver functions will now abort the merge (for a single property) if `undefined` is the return value. To tell the resolver function to continue as normal, return the `Sugar` global object instead. Any non-undefined value returned by the function will now resolve the conflict completely and will not continue traversing into it when in "deep" mode. To tell the resolver function to continue with the merge, return the Sugar global object instead.
-
-- Level: Major
-  - `String#assign` is now `String#format`, and behaves very closely to Python's method of the same name. Tokens are now zero based, and start with `{0}`. Also, errors will be thrown when tokens cannot be matched. Braces can now be escaped by repeating them. Lastly, multiple objects passed will no longer be merged together. Instead either access with new dot syntax (0.prop) or merge together with Object.merge beforehand.
+  - `Date#format` shortcuts ("short", "long", "full", etc) have significantly changed. See the docs for the new formats. Tokens `f`, `fff`, `izotz`, and `ord`, have been replaced with `S`, `SSS`, `Z`, and `do` to align better with Moment/LDML. `Dow` and `Mon` were previously always 3 characters and uppercased. Both of these are now locale dependent, as certain locales may prefer different casing or abbreviation length. Lowercased formats `dow` and `mon` are also locale-dependent in length, but always lowercased.
 
 - Level: Major
   - `Array#randomize` was renamed to `Array#shuffle`.
 
 - Level: Major
-  - `Array.create` was removed. Use ES6 method `Array.from` instead. Sugar provides this as a polyfill in the default bundle.
+  - `Array.create` functionality has changed. See the docs for more details or use ES6 method `Array.from` instead. Sugar provides this as a polyfill in the default bundle.
 
 - Level: Major
   - `Object.watch` was removed. This method was the only part of Sugar that was not 100% compatible in all environments, and was an overly simplistic solution to a difficult problem that others have done better (see discussions around Object.observe and polling). As a quick and dirty solution, this will be made available as a [plugin](https://github.com/andrewplummer/sugar-plugins). Also includes `Object.unwatch`.
@@ -50,19 +59,7 @@ v2.0.0+
   - `Function#after` has changed behavior. Previously it would fire every `n` times. Now it will fire after `n` calls. Additionally it will not immediately fire when `0` is passed.
 
 - Level: Major
-  - `Function#fill` was renamed to `Function#partial`. Additionally, it no longer accepts `null` as a placeholder. Use `undefined` instead.
-
-- Level: Major
-  - `Array#findAll` was replaced with `Array#filterFrom` in cases that require a start index. For cases without a start index, simply use `Array#filter` instead.
-
-- Level: Major
   - `Array#add` is now non-destructive. To append to the array in place, use `Array#append`.
-
-- Level: Major
-  - `Array#include` was removed as it is now identical to `Array#add`.
-
-- Level: Major
-  - `Object.findAll` was replaced with `Object.filter`, which parallels `Array#filter` by returning a filtered object.
 
 - Level: Major
   - `Object.toQueryString` no longer uses square bracket syntax by default. To enable this pass `deep` in the options object which is now the second argument to the function. `namespace`, which was previously the second argument to this method, is now `prefix` in the same options object.
@@ -71,13 +68,16 @@ v2.0.0+
   - `Object.fromQueryString` now performs "smart" conversion of numerals, booleans, and multiple keys by default. To turn this off, pass `smart: false` in the options object which is now the second argument to the function. Deep bracket syntax (`[]` in keys) is now off by defualt but can be enabled with `deep` on the options object.
 
 - Level: Major
-  - `Date#format` shortcuts ("short", "long", "full", etc) have significantly changed. See the docs for the new formats. Tokens `f`, `fff`, `izotz`, and `ord`, have been replaced with `S`, `SSS`, `Z`, and `do` to align better with Moment/LDML. `Dow` and `Mon` were previously always 3 characters and uppercased. Both of these are now locale dependent, as certain locales may prefer different casing or abbreviation length. Lowercased formats `dow` and `mon` are also locale-dependent in length, but always lowercased.
-
-- Level: Major
   - `RegExp#addFlag` and `RegExp#removeFlag` are now `RegExp#addFlags` and `RegExp#removeFlags` and now work on multiple flags at once.
 
 - Level: Major
   - `Object.has` is now `Object.hasOwn`. The previous method now allows deep keys and makes no `hasOwnProperty` checks.
+
+- Level: Major
+  - `Date.past`, `Date.future`, `Date.utc.create`, `Date.utc.past`, and `Date.utc.future` are all deprecated. Instead, pass an options object as the second argument to `Date.create` with the equivalent properties. For example: `Date.create('March', { future: true, fromUTC: true, locale: 'ja' })`, etc. Additionally, the `utc` parameter is now `fromUTC` and a new parameter `setUTC` has been added to clear up confusion about what the flag was doing. `fromUTC` assumes the input to be UTC but the output is a normal Javascript local date. `setUTC` sets an internal flag which tells Sugar to use utc methods like `getUTCHours`.
+
+- Level: Major
+  - `String#startsWith` and `String#endsWith` are now more in compliance with the ES6 spec. They now no longer accept a RegExp (will throw an error) or a `case` parameter. If you need to do more complex string checking, use `String#match` with standard regexes instead. Also minor differences in the way the starting/ending positions are coerced may also be present.
 
 - Level: Moderate
   - `Number#format` no longer accepts arguments for the thousands separator and decimal point. Instead these can now be set globally using Sugar.thousands() and Sugar.decimal(). These will also be respected by Number#abbr, Number#metric, and Number#bytes as well.
@@ -125,7 +125,7 @@ v2.0.0+
   - `Array#isEmpty` now does a simple check if the length is zero. To also check if `undefined`, `null`, or `NaN` are present, use `Array#compact` first.
 
 - Level: Minor
-  - `Object.fromQueryString` now returns a plain object. If you want an extended object call `Object.extended` on the result.
+  - `Object.fromQueryString` now returns a plain object. If you want what was previously an extended object, use a chainable on the result with `new Sugar.Object()`.
 
 - Level: Minor
   - `String#stripTags` and `String#removeTags` no longer accept enumerated arguments. Simply pass an array of tags to remove multiple.

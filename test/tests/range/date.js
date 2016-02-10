@@ -74,7 +74,7 @@ namespace('Date Ranges', function () {
   });
 
 
-  group('Creation with extended', function() {
+  group('Creation with Date.create support', function() {
     if(!Sugar.Date.create) return;
 
     // Date ranges should be able to be created from a string

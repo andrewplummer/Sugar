@@ -79,6 +79,7 @@ v2.0.0
 - Moved `String#titleize` to String module from Inflections.
 - Added `Array.create`.
 - Modified `Object.has` to allow deep keys. Previous behavior is now moved to `Object.hasOwn`.
+- Removed `Object.extended` and all trace of Hashes in favor of Sugar chainables.
 
 
 v1.4.2

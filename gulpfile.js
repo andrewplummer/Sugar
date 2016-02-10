@@ -238,7 +238,7 @@ var PACKAGE_DEFINITIONS = {
   },
   'sugar-object': {
     modules: 'object',
-    description: 'This build includes methods for object manipulation, type checking (isNumber, isString, etc) and extended objects with hash-like methods. Note that Object.prototype is not extended by default. See the README for more.',
+    description: 'This build includes methods for object creation, manipulation, comparison, and type checking. Note that Object.prototype is not extended by default. See the README for more.',
   },
   'sugar-date': {
     locales: true,
@@ -1527,7 +1527,7 @@ function buildNpmPackages(p, dist) {
       }
 
       function processBuildExpression(node) {
-        var mainPackage, fnPackage, fnCall, assignedVars, isHashBuild;
+        var mainPackage, fnPackage, fnCall, assignedVars;
 
         // Build functions can be used in a few different ways. They can build
         // one or more variables for later use and can also define methods. The
@@ -1542,17 +1542,9 @@ function buildNpmPackages(p, dist) {
                  fnPackage.dependencies.indexOf(node.expression.left.name) !== -1;
         }
 
-        function isHashMethodWrap(node) {
-          return node.type === 'ExpressionStatement' &&
-                 node.expression.type === 'CallExpression' &&
-                 node.expression.callee.name === 'wrapHashMethods';
-        }
-
         fnCall = getNodeBody(node);
         fnPackage = topLevel[node.expression.callee.name];
         assignedVars = [];
-
-        isHashBuild = /^buildHash/.test(fnPackage.name);
 
         fnPackage.node.body.body.forEach(function(node) {
           if (isReassignedDependency(node)) {
@@ -1622,15 +1614,7 @@ function buildNpmPackages(p, dist) {
         // The build function may define methods, so step
         // into it and create method packages if necessary.
         fnPackage.node.body.body.forEach(function(node) {
-          // This is a somewhat hacky way to ensure that if
-          // Object.extend is required it will get all Hash
-          // methods, even though they are split among packages.
-          if (isHashBuild && isHashMethodWrap(node)) {
-            var methods = node.expression.arguments[0].value.split(',');
-            methods.map(function(name) {
-              appendRequires(mainPackage, getMethodKeyForNode(node, name));
-            });
-          } else if (isMethodBlock(node)) {
+          if (isMethodBlock(node)) {
             var methods = node.expression.arguments[1].properties;
             methods.forEach(function(node) {
               addSugarBuiltMethod(node.key.value, node, mainPackage);
@@ -1656,11 +1640,6 @@ function buildNpmPackages(p, dist) {
             appendRequires(mainPackage, getMethodKeyForNode(node, sourceName));
           }
         });
-
-        if (isHashBuild) {
-          var extendedPackage = getSugarMethod('object', 'Object', 'extended');
-          appendRequires(extendedPackage, fnPackage.name);
-        }
 
       }
 
