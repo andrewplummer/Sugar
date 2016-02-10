@@ -10,7 +10,28 @@ namespace('Object', function () {
     equal(typeof new Sugar.Object('foo').raw, 'string', 'primitive should not be coerced into object');
   });
 
+  group('Static Extended', function() {
+
+    if (!isExtendedMode()) {
+      // Testing basic instance methods have been
+      // mapped over as static, but only in extended mode.
+      return;
+    };
+
+    // Just test a few basic methods to ensure they've been mapped.
+    equal(Object.get({foo:'bar'}, 'foo'), 'bar', 'Object.get was extended');
+    equal(Object.isArray(['a']), true, 'Object.isArray was extended');
+    equal(Object.fromQueryString('a=b'), {a:'b'}, 'Object.fromQueryString was extended');
+    equal(Object.toQueryString({c:'d'}), 'c=d', 'Object.toQueryString was extended');
+  });
+
   method('get', function() {
+
+    if (isExtendedMode()) {
+      // Object.get can never be extended
+      // as it conflicts with native getters.
+      return;
+    }
 
     var obj = {
       'a.b.c': 'surprise',
@@ -253,6 +274,12 @@ namespace('Object', function () {
   });
 
   method('set', function() {
+
+    if (isExtendedMode()) {
+      // Object.set can never be extended
+      // as it conflicts with native setters.
+      return;
+    }
 
     var obj = {};
     run(Object, 'set', [obj, 'foo.bar', 'car']);

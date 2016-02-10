@@ -1,7 +1,7 @@
 namespace('Core', function() {
   'use strict';
 
-  function defineCustom(target, andStatic) {
+  function defineCustom(target) {
     var methods = {
       foo: function() {
         return 'foo!';
@@ -13,11 +13,7 @@ namespace('Core', function() {
         return 'moo!';
       }
     };
-    if (andStatic) {
-      target.defineInstanceAndStatic(methods);
-    } else {
-      target.defineInstance(methods);
-    }
+    target.defineInstance(methods);
   }
 
   setup(function() {
@@ -189,7 +185,7 @@ namespace('Core', function() {
   });
 
   group('Will not extend to Object.prototype after namespace extend', function () {
-    defineCustom(Sugar.Object, true);
+    defineCustom(Sugar.Object);
     equal(({}).foo, undefined, 'foo has not been mapped');
   });
 
@@ -197,7 +193,7 @@ namespace('Core', function() {
     Sugar.Object.extend({
       objectPrototype: true
     });
-    defineCustom(Sugar.Object, true);
+    defineCustom(Sugar.Object);
     equal(({}).foo(), 'foo!', 'foo has been mapped');
   });
 
@@ -205,7 +201,7 @@ namespace('Core', function() {
     Sugar({
       objectPrototype: true
     });
-    defineCustom(Sugar.Object, true);
+    defineCustom(Sugar.Object);
     equal(({}).foo(), 'foo!', 'foo has been mapped');
   });
 
@@ -213,12 +209,13 @@ namespace('Core', function() {
     Sugar.extend({
       objectPrototype: true
     });
-    defineCustom(Sugar.Object, true);
+    defineCustom(Sugar.Object);
     equal(({}).foo(), 'foo!', 'foo has been mapped');
   });
 
-  group('Can extend single method to object without prototype extension', function () {
-    defineCustom(Sugar.Object, true);
+  group('Can extend single method to Object without prototype extension', function () {
+    Sugar.Object.defineStatic('foo', function() { return 'foo!'; });
+    Sugar.Object.defineStatic('bar', function() { return 'foo!'; });
     Sugar.Object.extend('foo');
     equal(Object.foo(), 'foo!', 'foo static has been mapped');
     equal(Object.bar, undefined, 'bar static has not been mapped');
@@ -228,8 +225,8 @@ namespace('Core', function() {
     equal(({}).moo, undefined, 'moo instance has not been mapped');
   });
 
-  group('Can extend single method to object prototype', function () {
-    defineCustom(Sugar.Object, true);
+  group('Can extend single method to Object.prototype', function () {
+    defineCustom(Sugar.Object);
     Sugar.Object.extend({
       methods: ['foo'],
       objectPrototype: true
@@ -251,6 +248,27 @@ namespace('Core', function() {
     equal(('').bar2(), 'bar!', 'bar2 is an alias of foo');
     delete Sugar.String.foo2;
     delete Sugar.String.bar2;
+  });
+
+  group('Defining with flags', function() {
+    Sugar.String.defineStatic('foo', function() {
+      return 'enhanced foo!';
+    }, ['fooFlag']);
+    Sugar.String.defineInstance('bar', function() {
+      return 'enhanced bar!';
+    }, ['barFlag']);
+    Sugar.String.extend({
+      fooFlag: false,
+      barFlag: false
+    });
+    equal(String.foo, undefined, 'static extend prevented by flag');
+    equal(''.bar, undefined, 'instance extend prevented by flag');
+    Sugar.String.extend({
+      fooFlag: true,
+      barFlag: true
+    });
+    equal(String.foo(), 'enhanced foo!', 'static extended');
+    equal(''.bar(), 'enhanced bar!', 'instance extended');
   });
 
   group('Array enhancements', function() {
@@ -302,7 +320,7 @@ namespace('Core', function() {
   group('Extending after global hijacking', function() {
     var nativeDate = Date;
     function FakeDate() {}
-    defineCustom(Sugar.Date, true);
+    Sugar.Date.defineStatic('foo', function() { return 'foo!'; });
     // Hijacking the global Date object. Sinon does this to allow time mocking
     // in tests, so need to support this here.
     Date = FakeDate;
