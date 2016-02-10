@@ -2112,6 +2112,9 @@ namespace('Object', function () {
     assertQueryString({user:{id:12345,name:'pooh'}}, [{separator:'-'}], 'user-id=12345&user-name=pooh', 'user object with separator');
     assertQueryString({user:{id:12345,name:'pooh'}}, [{separator:''}], 'userid=12345&username=pooh', 'allow blank separator');
 
+    var arr = []; arr[1] = 'a';
+    assertQueryString({foo:arr}, [{deep:true}], 'foo[]=&foo[]=a', 'should handle sparse arrays');
+
     // Directly using arrays so can't go through extended objects here.
 
     assertQueryString(['a','b','c'], [], 'a&b&c', 'straight array no prefix', true);
