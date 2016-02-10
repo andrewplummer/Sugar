@@ -76,6 +76,9 @@ v2.0.0+
 - Level: Major
   - `RegExp#addFlag` and `RegExp#removeFlag` are now `RegExp#addFlags` and `RegExp#removeFlags` and now work on multiple flags at once.
 
+- Level: Major
+  - `Object.has` is now `Object.hasOwn`. The previous method now allows deep keys and makes no `hasOwnProperty` checks.
+
 - Level: Moderate
   - `Number#format` no longer accepts arguments for the thousands separator and decimal point. Instead these can now be set globally using Sugar.thousands() and Sugar.decimal(). These will also be respected by Number#abbr, Number#metric, and Number#bytes as well.
 

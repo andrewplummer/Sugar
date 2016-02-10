@@ -2007,8 +2007,19 @@ namespace('Object', function () {
   });
 
   method('has', function() {
-    test({ foo: 'bar' }, ['foo'], true, 'finds a property');
-    test({ foo: 'bar' }, ['baz'], false, 'does not find a nonexistant property');
+    test({foo:'bar'}, ['foo'], true, 'finds a property');
+    test({foo:'bar'}, ['baz'], false, 'does not find a nonexistant property');
+    test({foo:{a:'b'}}, ['foo.a'], true, 'works on deep properties');
+    test({foo:{a:'b'}}, ['foo[a]'], true, 'works on deep properties with bracket syntax');
+    test({foo:{a:'b'}}, [['foo','a']], true, 'works on deep properties with array');
+    test({ hasOwnProperty: true, foo: 'bar' }, ['foo'], true, 'local hasOwnProperty is ignored');
+  });
+
+  method('hasOwn', function() {
+    test({foo:'bar'}, ['foo'], true, 'finds a property');
+    test({foo:'bar'}, ['baz'], false, 'does not find a nonexistant property');
+    test({foo:{a:'b'}}, ['foo.a'], false, 'does not work on deep properties');
+    test({foo:{a:'b'}}, ['foo[a]'], false, 'does not work on deep properties with bracket syntax');
     test({ hasOwnProperty: true, foo: 'bar' }, ['foo'], true, 'local hasOwnProperty is ignored');
   });
 

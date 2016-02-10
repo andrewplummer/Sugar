@@ -77,6 +77,8 @@ v2.0.0
 - Removed `Array#include` (now is identical to `Array#add`).
 - Added `Object.invert`.
 - Moved `String#titleize` to String module from Inflections.
+- Added `Array.create`.
+- Modified `Object.has` to allow deep keys. Previous behavior is now moved to `Object.hasOwn`.
 
 
 v1.4.2
