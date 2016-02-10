@@ -21,10 +21,39 @@ namespace('Array', function () {
     equal(new Sugar.Array().raw, [], 'No argument produces empty array');
     equal(new Sugar.Array(undefined).raw, [], 'Undefined is the same as no argument');
     equal(new Sugar.Array(8).raw, [8], 'Non-object argument wraps in array');
+    equal(new Sugar.Array('abc').raw, ['a','b','c'], 'String is split into array');
     equal(new Sugar.Array(null).raw, [null], 'Null is wrapped');
     equal(new Sugar.Array([2,4,6], square, obj).raw, [4,16,36], 'Map function is used if passed');
     equal(new Sugar.Array(arrayLike).raw, [1,2,3], 'Chainable constructor accepts array-likes');
     equal(new Sugar.Array(arrayLike, square, obj).raw, [1,4,9], 'Chainable constructor accepts map function');
+    equal(contextWasObj, true, 'Context was the map function');
+  });
+
+  method('create', function() {
+    var obj = {}, contextWasObj = true;
+
+    function square(n, c) {
+      if (this !== obj) {
+        contextWasObj = false;
+      }
+      return n * n;
+    }
+
+    var arrayLike = {
+      0: 1,
+      1: 2,
+      2: 3,
+      length: 3
+    }
+
+    test(Array, [], 'No argument produces empty array');
+    test(Array, [undefined], [], 'Undefined is the same as no argument');
+    test(Array, [8], [8], 'Non-object argument wraps in array');
+    test(Array, ['abc'], ['a','b','c'], 'String is split into array');
+    test(Array, [null], [null], 'Null is wrapped');
+    test(Array, [[2,4,6], square, obj], [4,16,36], 'Map function is used if passed');
+    test(Array, [arrayLike], [1,2,3], 'Chainable constructor accepts array-likes');
+    test(Array, [arrayLike, square, obj], [1,4,9], 'Chainable constructor accepts map function');
     equal(contextWasObj, true, 'Context was the map function');
   });
 
