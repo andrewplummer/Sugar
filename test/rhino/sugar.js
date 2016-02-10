@@ -55,9 +55,9 @@ load('test/tests/regexp.js');
 load('test/tests/string.js');
 load('test/tests/enumerable.js');
 
-load('test/tests/number-range.js');
-load('test/tests/string-range.js');
-load('test/tests/date-range.js');
+load('test/tests/range/date.js');
+load('test/tests/range/number.js');
+load('test/tests/range/string.js');
 
 load('test/tests/locales/ca.js');
 load('test/tests/locales/da.js');
