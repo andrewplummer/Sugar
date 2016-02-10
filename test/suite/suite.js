@@ -160,7 +160,6 @@
 
   test = function (subject) {
     var args, expected, message;
-    // TODO should this change?
     switch(arguments.length) {
       case 2:
         expected = arguments[1];
