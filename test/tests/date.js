@@ -2955,7 +2955,7 @@ namespace('Date', function () {
 
     // Issue #342 handling offsets for comparison
 
-    Sugar.Date.newDateInternal(function() {
+    Sugar.newDateInternal(function() {
       var d = new Date();
       // Honolulu time zone GMT-10:00
       var offset = (d.getTimezoneOffset() - (10 * 60)) * 60 * 1000;
@@ -2994,13 +2994,13 @@ namespace('Date', function () {
     AwesomeDate.prototype = new Date();
     AwesomeDate.prototype.getMinutes = function() {};
 
-    Sugar.Date.newDateInternal(function() {
+    Sugar.newDateInternal(function() {
       return new AwesomeDate();
     });
 
     equal(testCreateDate() instanceof AwesomeDate, true, 'Result should be use in Date.create');
 
-    Sugar.Date.newDateInternal(null);
+    Sugar.newDateInternal(null);
     equal(testCreateDate() instanceof AwesomeDate, false, 'Internal function should have been reset');
 
   });
