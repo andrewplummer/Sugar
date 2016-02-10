@@ -1361,7 +1361,7 @@ namespace('Array', function () {
 
     // The equivalents table is an object so need to make a clone
     // here to properly restore the state after this test finishes.
-    var equivalents = Sugar.Array.sortEquivalents();
+    var equivalents = Sugar.sortEquivalents();
     var storedEquivalents = testClone(equivalents);
 
     equivalents['ö'] = null;
@@ -1388,7 +1388,7 @@ namespace('Array', function () {
       'Adrian'
     ];
 
-    Sugar.Array.sortIgnoreCase(true);
+    Sugar.sortIgnoreCase(true);
     test(arr, expected, 'allows case ignore');
 
     expected = [
@@ -1398,7 +1398,7 @@ namespace('Array', function () {
       'abner'
     ];
 
-    Sugar.Array.sortOrder('dba');
+    Sugar.sortOrder('dba');
     test(arr, expected, 'allows other order');
 
     expected = [
@@ -1407,18 +1407,18 @@ namespace('Array', function () {
       'Adrian',
       'aBBey'
     ];
-    Sugar.Array.sortIgnore(/[abcde]/g);
+    Sugar.sortIgnore(/[abcde]/g);
     test(arr, expected, 'allows custom ignore');
-    Sugar.Array.sortIgnore(null);
+    Sugar.sortIgnore(null);
 
 
-    Sugar.Array.sortOrder('cba');
+    Sugar.sortOrder('cba');
     arr = ['cotÉ', 'cÔte', 'cÔtÉ', 'andere', 'ändere'];
     test(arr, arr, 'cba');
-    Sugar.Array.sortOrder(null);
+    Sugar.sortOrder(null);
 
 
-    Sugar.Array.sortCollate(function(a, b) {
+    Sugar.sortCollate(function(a, b) {
       switch (true) {
         case a === 'c': return -1;
         case b === 'c': return  1;
@@ -1429,7 +1429,7 @@ namespace('Array', function () {
     });
     arr = ['a','b','c','d','e'];
     test(arr, ['c','a','b','d','e'], 'allows custom collation');
-    Sugar.Array.sortCollate(null);
+    Sugar.sortCollate(null);
 
     // Issue #282
 
@@ -1460,7 +1460,7 @@ namespace('Array', function () {
     test(['1 Title - The Big Lebowski','1 Title - Gattaca','1 Title - Last Picture Show'], ['1 Title - Gattaca','1 Title - Last Picture Show','1 Title - The Big Lebowski'], 'stolen | movie titles');
 
 
-    Sugar.Array.sortNatural(false);
+    Sugar.sortNatural(false);
 
     test(['2','100','3'], ['100','2','3'], 'natural sort off');
     test(['a2','a100','a3'], ['a100','a2','a3'], 'natural sort off | leading char');
@@ -1468,7 +1468,7 @@ namespace('Array', function () {
     test(['２','１００','３'], ['１００','２','３'], 'natural sort off | full width');
     test(['a２','a１００','a３'], ['a１００','a２','a３'], 'natural sort off | full width leading char');
 
-    Sugar.Array.sortNatural(true);
+    Sugar.sortNatural(true);
 
 
 
@@ -1596,7 +1596,7 @@ namespace('Array', function () {
     // Issue #273 - exposing collateString
 
     var arr = ['c','b','a','à','å','ä','ö'];
-    var viaSort   = arr.sort(Sugar.Array.sortCollate());
+    var viaSort   = arr.sort(Sugar.sortCollate());
     var viaSortBy = run(arr, 'sortBy');
     equal(viaSort, viaSortBy, 'Array.SugarCollateStrings | should be exposed to allow sorting via native Array#sort');
 

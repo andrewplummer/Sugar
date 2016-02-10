@@ -8,7 +8,7 @@ v2.0.0
 - Changed String#escapeHTML to double-escape entities.
 - Object.extend() is now passed as a flag on the global Sugar.Object.extend(true).
 - `Date#utc` is now `Date#setUTC`.
-- Renamed `Date.SugarNewDate` to `Sugar.Date.newDateInternal`.
+- Renamed `Date.SugarNewDate` to `Sugar.newDateInternal`.
 - Modified `String#startsWith` and `String#endsWith` to be more in compliance with ES6. See CAUTION.md for details.
 - Removed `String#has` in favor of `String#includes` to be more in compliance with ES6. See CAUTION.md for details.
 - Added `Number.isNaN` shim.
