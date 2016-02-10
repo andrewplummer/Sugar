@@ -48,7 +48,7 @@ v2.0.0
 - Renamed `Array#randomize` to `Array#shuffle`
 - Added `Array#sample` ability to remove sampled elements and performance optimization.
 - Added `String#replaceAll` and `String#removeAll`.
-- Added polyfill for `Array.from` and removed `Array.create`.
+- Added polyfill for `Array.from` and modified `Array.create` to return a reference by default.
 - Changed behavior of `Function#after` to more closely match that of Underscore/Lodash.
 - Changed behavior of `Number#times` to return an array of return values.
 - Changed `Object.fromQueryString` to return a plain object.
@@ -77,7 +77,6 @@ v2.0.0
 - Removed `Array#include` (now is identical to `Array#add`).
 - Added `Object.invert`.
 - Moved `String#titleize` to String module from Inflections.
-- Added `Array.create`.
 - Modified `Object.has` to allow deep keys. Previous behavior is now moved to `Object.hasOwn`.
 - Removed `Object.extended` and all trace of Hashes in favor of Sugar chainables.
 

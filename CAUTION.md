@@ -50,7 +50,7 @@ v2.0.0+
   - `Array#randomize` was renamed to `Array#shuffle`.
 
 - Level: Major
-  - `Array.create` functionality has changed. See the docs for more details or use ES6 method `Array.from` instead. Sugar provides this as a polyfill in the default bundle.
+  - `Array.create` now only accepts one argument. See the docs for more details or use ES6 method `Array.from` instead. Sugar provides this as a polyfill in the default bundle.
 
 - Level: Major
   - `Object.watch` was removed. This method was the only part of Sugar that was not 100% compatible in all environments, and was an overly simplistic solution to a difficult problem that others have done better (see discussions around Object.observe and polling). As a quick and dirty solution, this will be made available as a [plugin](https://github.com/andrewplummer/sugar-plugins). Also includes `Object.unwatch`.
