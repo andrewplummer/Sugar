@@ -15,9 +15,9 @@ runner.loadTest('regexp');
 runner.loadTest('string');
 runner.loadTest('enumerable');
 
-runner.loadTest('number-range');
-runner.loadTest('string-range');
-runner.loadTest('date-range');
+runner.loadTest('range/date');
+runner.loadTest('range/number');
+runner.loadTest('range/string');
 
 // Locales
 runner.loadLocaleTests()
