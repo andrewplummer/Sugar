@@ -1,6 +1,33 @@
 namespace('Array', function () {
   'use strict';
 
+  group('Chainable', function() {
+    var obj = {}, contextWasObj = true;
+
+    function square(n, c) {
+      if (this !== obj) {
+        contextWasObj = false;
+      }
+      return n * n;
+    }
+
+    var arrayLike = {
+      0: 1,
+      1: 2,
+      2: 3,
+      length: 3
+    }
+
+    equal(new Sugar.Array().raw, [], 'No argument produces empty array');
+    equal(new Sugar.Array(undefined).raw, [], 'Undefined is the same as no argument');
+    equal(new Sugar.Array(8).raw, [8], 'Non-object argument wraps in array');
+    equal(new Sugar.Array(null).raw, [null], 'Null is wrapped');
+    equal(new Sugar.Array([2,4,6], square, obj).raw, [4,16,36], 'Map function is used if passed');
+    equal(new Sugar.Array(arrayLike).raw, [1,2,3], 'Chainable constructor accepts array-likes');
+    equal(new Sugar.Array(arrayLike, square, obj).raw, [1,4,9], 'Chainable constructor accepts map function');
+    equal(contextWasObj, true, 'Context was the map function');
+  });
+
   method('construct', function() {
 
     function square(i) {

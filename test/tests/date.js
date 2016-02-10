@@ -53,6 +53,15 @@ namespace('Date', function () {
     equal(run(Date, 'create'), new Date(), 'empty');
   });
 
+  group('Create | Chainables', function() {
+    equal(new Sugar.Date().raw, new Date(), 'No argument produces current date');
+    equal(new Sugar.Date(undefined).raw, new Date(), 'Undefined is the same as no argument');
+    equal(new Sugar.Date(null).raw, new Date(0), 'Null is the same as 0');
+    equal(new Sugar.Date(1455030000000).raw, new Date(1455030000000), 'Integer is used as unix timestamp');
+    equal(new Sugar.Date('tomorrow').raw, testCreateDate('tomorrow'), 'Chainable constructor should go through create');
+    equal(new Sugar.Date('8/10/50', { locale: 'en-GB'}).raw, new Date(1950, 9, 8), 'Chainable constructor accepts options');
+  });
+
   group('Create | Objects', function() {
     equal(testCreateDate({ year: 1998 }), new Date(1998, 0), '1998');
     equal(testCreateDate({ year: 1998, month: 1 }), new Date(1998,1), 'January, 1998');
