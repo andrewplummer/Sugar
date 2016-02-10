@@ -1,6 +1,7 @@
-// TODO can tests be added here?
 xnamespace('Date | Norwegian', function () {
   "use string";
+
+  // TODO: Someone Norwegian please help with these (they're Swedish now) :)
 
   var now;
 
