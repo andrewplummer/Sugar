@@ -2,65 +2,37 @@ namespace('Array', function () {
   'use strict';
 
   group('Chainable', function() {
-    var obj = {}, contextWasObj = true;
-
-    function square(n, c) {
-      if (this !== obj) {
-        contextWasObj = false;
-      }
-      return n * n;
-    }
-
-    var arrayLike = {
-      0: 1,
-      1: 2,
-      2: 3,
-      length: 3
-    }
-
+    var arr = [1,2,3];
+    var arrayLike = { 0: 1, 1: 2, 2: 3, length: 3 };
     var args = (function() { return arguments; })('a','b','c');
+    var Soup = function() {}; Soup.prototype = [1,2,3]; var inst = new Soup();
+
+    equal(new Sugar.Array(arr).raw === arr, true, 'should simply wrap an existing array');
+    equal(new Sugar.Array(inst).raw === inst, true, 'should simply wrap an inherited array');
 
     equal(new Sugar.Array().raw, [], 'no argument produces empty array');
     equal(new Sugar.Array(undefined).raw, [], 'undefined is the same as no argument');
     equal(new Sugar.Array(8).raw, [8], 'non-object argument wraps in array');
     equal(new Sugar.Array('abc').raw, ['a','b','c'], 'string is split into array');
     equal(new Sugar.Array(null).raw, [null], 'null is wrapped');
-    equal(new Sugar.Array([2,4,6], square, obj).raw, [4,16,36], 'map function is used if passed');
     equal(new Sugar.Array(arrayLike).raw, [1,2,3], 'accepts array-likes');
-    equal(new Sugar.Array(arrayLike, square, obj).raw, [1,4,9], 'accepts map function');
     equal(new Sugar.Array(args).raw, ['a','b','c'], 'works on arguments object');
-    equal(contextWasObj, true, 'context was the map function');
   });
 
   method('create', function() {
-    var obj = {}, contextWasObj = true;
-
-    function square(n, c) {
-      if (this !== obj) {
-        contextWasObj = false;
-      }
-      return n * n;
-    }
-
-    var arrayLike = {
-      0: 1,
-      1: 2,
-      2: 3,
-      length: 3
-    }
-
+    var arrayLike = { 0: 1, 1: 2, 2: 3, length: 3 }
     var args = (function() { return arguments; })('a','b','c');
+
+    var arr = [1,2,3];
+    equal(arr === run(Array, 'create', [arr]), false, 'Should clone a passed array');
 
     test(Array, [], 'no argument produces empty array');
     test(Array, [undefined], [], 'undefined is the same as no argument');
     test(Array, [8], [8], 'non-object argument wraps in array');
     test(Array, ['abc'], ['a','b','c'], 'string is split into array');
     test(Array, [null], [null], 'null is wrapped');
-    test(Array, [[2,4,6], square, obj], [4,16,36], 'map function is used if passed');
     test(Array, [arrayLike], [1,2,3], 'accepts array-likes');
-    test(Array, [arrayLike, square, obj], [1,4,9], 'accepts map function');
     test(Array, [args], ['a','b','c'], 'works on arguments object');
-    equal(contextWasObj, true, 'context was the map function');
   });
 
   method('construct', function() {
@@ -442,8 +414,6 @@ namespace('Array', function () {
     test([1,2,3], oneUndefined, { 1: [1], 2: [2], 3: [3] }, 'undefined');
     test([1,2,3], [null], { 1: [1], 2: [2], 3: [3] }, 'null');
     test([1,2,3], [4], { 'undefined': [1,2,3] }, 'number');
-
-    assertIsNotHash(run(['one','two','three'], 'groupBy', ['length']));
 
     var counter = 0;
     var fn = function() {

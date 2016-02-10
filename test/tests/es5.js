@@ -911,6 +911,7 @@ namespace('ES5', function () {
     // raisesError(function() { Object.keys(NaN); }, 'raises a TypeError for NaN');
     // raisesError(function() { Object.keys('wasabi'); }, 'raises a TypeError for string');
 
+    equal(Object.keys('abc'), ['0','1','2'], 'returns indexes of a string');
     equal(Object.keys({ moo:'bar', broken:'wear' }), ['moo','broken'], 'returns keys of an object');
     equal(Object.keys(['a','b','c']), ['0','1','2'], 'returns indexes of an array');
     equal(Object.keys(/foobar/), [], 'regexes return a blank array');
