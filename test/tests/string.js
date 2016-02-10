@@ -4,15 +4,6 @@ namespace('String', function () {
   var whiteSpace = '\u0009\u000B\u000C\u0020\u00A0\uFEFF\u1680\u180E\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u202F\u205F\u3000';
   var lineTerminators = '\u000A\u000D\u2028\u2029';
 
-  var replaceChompsUndefined = ''.replace(/^/, function() {}) === '';
-
-  function testWithUndefined(subject, args, expected, message) {
-    if (replaceChompsUndefined) {
-      expected = expected.replace(/undefined/g, '');
-    }
-    test(subject, args, expected, message);
-  }
-
   method('escapeURL', function() {
 
     test('what a day...', 'what%20a%20day...', '...');
@@ -1348,9 +1339,9 @@ namespace('String', function () {
     test('Welcome, {firstName}.', [obj1], 'Welcome, Harry.', 'keyword');
     test('Welcome, {firstName}. You are {age} years old and have {points} points left.', [obj3], 'Welcome, program. You are 21 years old and have 345 points left.', '3 arguments by keyword');
     test('Welcome, {0}. You are {1} years old and have {2} points left.', ['program', 21, 345], 'Welcome, program. You are 21 years old and have 345 points left.', '3 arguments by index');
-    testWithUndefined('Welcome, {0}.', [obj1], 'Welcome, undefined.', 'numeric key does not exist in object');
-    testWithUndefined('hello {0.firstName}', [obj1], 'hello undefined', 'does not allow dot expressions');
-    testWithUndefined('hello {firstName} {lastName}', [obj1, obj2], 'hello undefined undefined', 'objects will not be merged');
+    test('Welcome, {0}.', [obj1], 'Welcome, undefined.', 'numeric key does not exist in object');
+    test('hello {0.firstName}', [obj1], 'hello undefined', 'does not allow dot expressions');
+    test('hello {firstName} {lastName}', [obj1, obj2], 'hello undefined undefined', 'objects will not be merged');
     test('hello {0.firstName} {1.lastName}', [obj1, obj2], 'hello Harry Potter', 'arrays are accessible through indexes');
     test('hello {0.firstName} {1.lastName}', [[obj1, obj2]], 'hello Harry Potter', 'passing an array as the only argument will get unwrapped');
 
@@ -1366,8 +1357,8 @@ namespace('String', function () {
 
     test('Hello, {0}.', [''], 'Hello, .', 'empty string has no index');
     test('Hello, {empty}.', [{ empty: '' }], 'Hello, .', 'empty string matches');
-    testWithUndefined('Hello, {0}.', [], 'Hello, undefined.', 'no argument with index');
-    testWithUndefined('Hello, {name}.', [], 'Hello, undefined.', 'no argument with keyword');
+    test('Hello, {0}.', [], 'Hello, undefined.', 'no argument with index');
+    test('Hello, {name}.', [], 'Hello, undefined.', 'no argument with keyword');
 
     test('{}', ['foo'], '{}', 'single curly braces does not match');
     test('{{}}', ['foo'], '{}', 'double curly braces escapes');
@@ -1400,7 +1391,7 @@ namespace('String', function () {
     test('Welcome, {0}.', [Object(3)], 'Welcome, 3.', 'number should be coerced');
     test('Welcome, {0}.', [Object(true)], 'Welcome, true.', 'boolean should be coerced');
     test('Welcome, {0}.', [null], 'Welcome, null.', 'passing null');
-    testWithUndefined('Welcome, {0}.', [undefined], 'Welcome, undefined.', 'passing undefined');
+    test('Welcome, {0}.', [undefined], 'Welcome, undefined.', 'passing undefined');
 
     var obj1 = {a:{b:{c:'foo'}}};
     var obj2 = {a:{b:{c:'bar'}}};
@@ -1411,8 +1402,8 @@ namespace('String', function () {
     test('Bring me a {}', ['foo'], 'Bring me a {}', 'requires a key to be passed');
     test('From {} to {}', ['foo', 'bar'], 'From {} to {}', 'requires keys to be passed');
     test('My quest is {name}', [{name:'partying'}], 'My quest is partying', 'allows keyword arguments as objects');
-    testWithUndefined('Weight in tons {0.weight}', ['foo'], 'Weight in tons undefined', 'does not allow operators as part of format');
-    testWithUndefined('Units destroyed: {players[0]}', [{players: ['huey', 'duey']}], 'Units destroyed: huey', 'allows bracket syntax');
+    test('Weight in tons {0.weight}', ['foo'], 'Weight in tons undefined', 'does not allow operators as part of format');
+    test('Units destroyed: {players[0]}', [{players: ['huey', 'duey']}], 'Units destroyed: huey', 'allows bracket syntax');
 
     test('{0}, {1}, {2}', ['a', 'b', 'c'], 'a, b, c', 'simple enumeration');
     test('{}, {}, {}', ['a', 'b', 'c'], '{}, {}, {}', 'empty tokens');
@@ -1437,7 +1428,7 @@ namespace('String', function () {
     // There is currently no way to access properties that have braces in the keynames.
     // They will have to be enumerated as arguments or mapped to different property names.
     // This is not possible in Python as kwargs names cannot have special characters.
-    testWithUndefined('{{{name}}}', [{'{name}': 'John'}], '{undefined}', 'cannot access properties with braces');
+    test('{{{name}}}', [{'{name}': 'John'}], '{undefined}', 'cannot access properties with braces');
 
   });
 
