@@ -1917,7 +1917,7 @@ namespace('Object', function () {
     raisesError(function(){ run(new Foo, 'clone', []); }, 'should raise an error if clone is not a basic object type');
 
     // Issue #256
-    if (Sugar.Date.clone) {
+    if (Sugar.Date.clone && Sugar.Date.setUTC) {
       var date = Sugar.Date.setUTC(new Date(), true);
       equal(testIsUTC(date), true, 'utc flag is set');
       equal(testIsUTC(run(date, 'clone', [])), true, 'should preserve utc flag when set');
