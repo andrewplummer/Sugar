@@ -5,6 +5,12 @@ namespace('Object', function () {
   // as strict mode affects this"
   var nullScope = (function() { return this; }).call();
 
+  group('Chainable', function() {
+    equal(new Sugar.Object().raw, {}, 'no argument should create empty object');
+    equal(new Sugar.Object({foo:'bar'}).raw, {foo:'bar'}, 'argument should be converted to object');
+    equal(typeof new Sugar.Object('foo').raw, 'object', 'primitive should be coerced into object');
+  });
+
   method('get', function() {
 
     var obj = {
