@@ -12,6 +12,9 @@ runner.load('./default/sugar-es7.js');
 runner.notice('Default');
 runner.load('./default/default.js');
 
+runner.notice('Chained');
+runner.load('./chained/default.js');
+
 runner.notice('Extended');
 runner.load('./extended/default.js');
 

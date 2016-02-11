@@ -1,7 +1,6 @@
 var runner = require('../setup');
 
-runner.load('../../release/npm/sugar');
-runner.load('../../release/npm/sugar/locales');
+var Sugar = runner.load('../../sugar');
 
 // Tests
 runner.loadTest('array');
@@ -18,6 +17,4 @@ runner.loadTest('range/date');
 runner.loadTest('range/number');
 runner.loadTest('range/string');
 
-runner.loadLocaleTests();
-
-runner.run(module, 'extended');
+runner.run(module, 'chained', Sugar);

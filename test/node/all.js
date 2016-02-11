@@ -24,6 +24,21 @@ runner.load('./default/sugar-range.js');
 runner.load('./default/sugar-regexp.js');
 runner.load('./default/sugar-string.js');
 
+runner.notice('Chained');
+runner.load('./chained/default.js');
+runner.load('./chained/sugar.js');
+runner.load('./chained/sugar-array.js');
+runner.load('./chained/sugar-object.js');
+runner.load('./chained/sugar-enumerable.js');
+runner.load('./chained/sugar-date.js');
+runner.load('./chained/sugar-function.js');
+runner.load('./chained/sugar-inflections.js');
+runner.load('./chained/sugar-language.js');
+runner.load('./chained/sugar-number.js');
+runner.load('./chained/sugar-range.js');
+runner.load('./chained/sugar-regexp.js');
+runner.load('./chained/sugar-string.js');
+
 runner.notice('Extended');
 runner.load('./extended/default.js');
 runner.load('./extended/sugar.js');
