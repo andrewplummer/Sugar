@@ -330,9 +330,9 @@
       return dateIsEqual(one, two);
     } else if (klass === '[object RegExp]') {
       return String(one) === String(two);
-    } else if (klass === '[object Array]') {
-      return arrayIsEqual(one, two);
-    } else if ((klass === '[object Object]' || klass === '[object Arguments]') && ('hasOwnProperty' in one) && type === 'object') {
+    } else if (klass === '[object Array]' || klass === '[object Arguments]') {
+      return arrayIsEqual(one, two) && klass === testInternalToString.call(two);
+    } else if (klass === '[object Object]' && ('hasOwnProperty' in one) && type === 'object') {
       return objectIsEqual(one, two) && klass === testInternalToString.call(two);
     } else if (klass === '[object Number]' && isNaN(one) && isNaN(two)) {
       return true;
@@ -345,7 +345,10 @@
   // elements will not pass the .hasOwnProperty check. For example [undefined].hasOwnProperty('0')
   // will report false.
   function arrayIsEqual(one, two) {
-    var i, result = true;
+    var i, result = true, key;
+    if (one === two) {
+      return true;
+    }
     if (!one || !two || typeof one !== 'object' || typeof two !== 'object') {
       return false;
     }
