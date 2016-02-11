@@ -415,23 +415,24 @@ namespace('Core', function() {
       // Double all the things!
       return num * 2;
     });
-    Sugar.Number.defineInstance('big', function(num) {
-      // Do I think this number is big??
-      return num > 10 ? 'big!' : 'little!';
+    Sugar.Number.defineInstance('large', function(num) {
+      // Do I think this number is large??
+      return num > 10 ? 'large!' : 'small!';
     });
     Sugar.String.defineInstance('noIs', function(str) {
       // I just love splitting on "i".
-      return str.split('i');
+      return str.split('a');
     });
 
-    var arr = Sugar.Array([1,2,3]);
-    var raw = arr.rate().twofold().big().noIs().raw;
-    equal(raw, ['l','ttle!'], 'long chain of methods with odd');
+    var arr = new Sugar.Array([1,2,3]);
+    var raw = arr.rate().twofold().large().noIs().raw;
+    equal(raw, ['sm','ll!'], 'long chain of methods with odd');
 
-    var arr = Sugar.Array([1,2]);
-    var raw = arr.rate().twofold().big().noIs().raw;
-    equal(raw, ['b','g!'], 'long chain of methods with even');
+    var arr = new Sugar.Array([1,2]);
+    var raw = arr.rate().twofold().large().noIs().raw;
+    equal(raw, ['l','rge!'], 'long chain of methods with even');
 
+    equal(new Sugar.Array([1]).large().raw, 'small!', 'array chainable also inherits from default');
   });
 
   group('Chaining with dismbiguation', function() {
@@ -444,6 +445,8 @@ namespace('Core', function() {
 
     equal(Sugar.Array().foo().foo().raw, 'string says foo', 'chained disambiguated from Array');
     equal(Sugar.String().foo().foo().raw, 'string says foo', 'chained disambiguated from String');
+    equal(Sugar.Number('a').foo().raw, 'string says foo', 'any type can reach the default chain');
+    equal(Sugar.Number([1]).foo().raw, 'array says foo', 'any type can reach the default chain');
   });
 
   group('Disambiguation of an undefined namespace', function() {
@@ -451,9 +454,11 @@ namespace('Core', function() {
       return null;
     });
     Sugar.String.defineInstance('foo', function(arr) {
-      return null;
+      return {};
     });
-    raisesError(function() { Sugar.Array().foo().foo().raw }, 'Unknown type cannot be disambiguated');
+    raisesError(function() { Sugar.Array().foo().foo();  }, 'Null type cannot be disambiguated', TypeError);
+    raisesError(function() { Sugar.String().foo().foo(); }, 'Unrelated type cannot be disambiguated from default chainable', TypeError);
+    raisesError(function() { Sugar.Number(8).foo(); }, 'Unrelated type cannot be disambiguated from class chainable', TypeError);
   });
 
   group('Chaining special cases', function() {
