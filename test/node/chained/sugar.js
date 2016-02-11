@@ -20,4 +20,4 @@ runner.loadTest('range/string');
 
 runner.loadLocaleTests();
 
-runner.run(module, 'extended');
+runner.run(module, 'chained');
