@@ -4,6 +4,10 @@
   var globalContext = typeof global !== 'undefined' && global.Object ? global : context;
   var nativeStates = [];
 
+  var USE_PROPERTY_DESCRIPTORS = !!Object.defineProperty && !!Object.defineProperties;
+
+
+  // Storing/reverting global state
 
   function forEachNamespace(fn) {
     testIterateOverObject(Sugar, function(key, val) {
@@ -17,15 +21,93 @@
     });
   }
 
-  function restore(methodName, target, storedMethod) {
-    if (target[methodName] !== storedMethod) {
-      if (!storedMethod) {
-        delete target[methodName];
+  // Iterate over non-enumerable properties if possible.
+  function iterateOverNonEnumerable(obj, fn) {
+    if (Object.getOwnPropertyNames) {
+      var names = Object.getOwnPropertyNames(obj), name;
+      while (name = names.pop()) {
+        fn(name);
+      }
+    } else {
+      testIterateOverObject(obj, fn);
+    }
+  }
+
+  function getFunctionProperty(obj, key) {
+    if (USE_PROPERTY_DESCRIPTORS) {
+      var descriptor = Object.getOwnPropertyDescriptor(obj, key);
+      if (descriptor && typeof descriptor.value === 'function') {
+        return descriptor;
+      }
+    } else if (typeof obj[key] === 'function') {
+      return obj[key];
+    }
+  }
+
+  function restoreProp(target, key, stored) {
+    var restoreFn = USE_PROPERTY_DESCRIPTORS ? restorePropByDescriptor : restorePropEnumerable;
+    return restoreFn(target, key, stored);
+  }
+
+  function restorePropByDescriptor(target, key, descriptor) {
+    var hasOwn = testHasOwn(target, key);
+    if (hasOwn && !descriptor) {
+      delete target[key];
+    } else if (hasOwn && target[key] !== descriptor.value) {
+      Object.defineProperty(target, key, descriptor);
+    }
+  }
+
+  function getDefaultChainablePrototype() {
+    // The DefaultChainable prototype can be reached through Sugar.Object
+    // as it inherits from DefaultChainable and does not define its own
+    // constructor. If this changes this module will fail, so be careful!
+    return Sugar.Object.prototype.constructor.prototype;
+  }
+
+  function restorePropEnumerable(target, key, val) {
+    if (testHasOwn(target, key) && target[key] !== val) {
+      if (!val) {
+        delete target[key];
       } else {
-        target[methodName] = storedMethod;
+        target[key] = val;
       }
     }
   }
+
+  function getState(obj) {
+    var state = {};
+    iterateOverNonEnumerable(obj, function(key) {
+      var prop = getFunctionProperty(obj, key);
+      if (prop) {
+        state[key] = prop;
+      }
+    });
+    return state;
+  }
+
+  function restoreState(target, state) {
+    // First iterate over the state object,
+    // restoring anything that has been changed.
+    testIterateOverObject(state, function(key) {
+      restoreProp(target, key, state[key]);
+    });
+    // Once that has been done any function properties
+    // left on the target must have been added later,
+    // so revert those as well;
+    iterateOverNonEnumerable(target, function(key) {
+      var prop = getFunctionProperty(target, key);
+      if (prop) {
+        // In an environment with a potentially dirty Object.prototype state,
+        // the state hash may be inheriting properties, so be careful.
+        var val = testHasOwn(state, key) ? state[key] : undefined;
+        restoreProp(target, key, val);
+      }
+    });
+  }
+
+
+  // Asserting on extended namespaces
 
   function assertNamespaces(namespaces, assert, checkStatic, checkInstance) {
     for (var i = 0; i < namespaces.length; i++) {
@@ -62,12 +144,8 @@
     }
   }
 
-  function getDefaultChainablePrototype() {
-    // Force disambiguation to get at the unknown chainable prototype.
-    Sugar.Array.defineInstance('foo', function() {});
-    Sugar.String.defineInstance('foo', function() {});
-    return new Sugar.Array().foo().constructor.prototype;
-  }
+
+  // Public
 
   assertAllMethodsMappedToNative = function(namespaces) {
     assertNamespaces(namespaces, true, true, true);
@@ -95,24 +173,18 @@
 
   storeNativeState = function() {
     var nativeState = {};
+    nativeState['DefaultChainableState'] = getState(getDefaultChainablePrototype());
     forEachNamespace(function(name, namespace) {
-      var state = nativeState[name] = {};
-      var nativeClass = globalContext[name];
-      state.active = namespace.active;
-      testIterateOverObject(namespace, function(methodName, method) {
-        state[methodName] = {
-          sugar:    namespace[methodName],
-          chain:    namespace.prototype[methodName],
-          static:   nativeClass[methodName],
-          instance: nativeClass.prototype[methodName]
-        }
-      });
+      nativeState[name + 'Active'] = namespace.active;
+      nativeState[name + 'State'] = getState(namespace);
+      nativeState[name + 'ProtoState'] = getState(namespace.prototype);
+      nativeState[name + 'GlobalState'] = getState(globalContext[name]);
+      nativeState[name + 'GlobalProtoState'] = getState(globalContext[name].prototype);
     });
     nativeStates.push(nativeState);
   }
 
   restoreNativeState = function() {
-
     // "objectPrototype" preserves state for future
     // method definitions, so reset that flag here.
     Sugar.Object.extend({
@@ -120,31 +192,19 @@
       objectPrototype: false
     });
 
-    // The "unknown" chainable prototype takse a bit
-    // of special work to get at, so do that here.
-    var cproto = getDefaultChainablePrototype();
-
     var nativeState = nativeStates.pop();
 
+    // First restore each namespace.
     forEachNamespace(function(name, namespace) {
-      var nativeClass = globalContext[name];
-      namespace.active = nativeState.active;
-      testIterateOverObject(namespace, function(methodName, method) {
-        var methodState = nativeState[name][methodName];
-        if (!methodState) {
-          // If there is no stored state for this method, then
-          // it's safe to assume that it was not there previously
-          // and remove it completely. Do this by setting it's
-          // state as undefined.
-          methodState = {};
-          delete cproto[methodName];
-        }
-        restore(methodName, namespace, methodState.sugar);
-        restore(methodName, namespace.prototype, methodState.chain);
-        restore(methodName, nativeClass, methodState.static);
-        restore(methodName, nativeClass.prototype, methodState.instance);
-      });
+      namespace.active = nativeState[name + 'Active'];
+      restoreState(namespace, nativeState[name + 'State']);
+      restoreState(namespace.prototype, nativeState[name + 'ProtoState']);
+      restoreState(globalContext[name], nativeState[name + 'GlobalState']);
+      restoreState(globalContext[name].prototype, nativeState[name + 'GlobalProtoState']);
     });
+
+    // Then restore the default chainble state.
+    restoreState(getDefaultChainablePrototype(), nativeState['DefaultChainableState']);
   }
 
 })(this);

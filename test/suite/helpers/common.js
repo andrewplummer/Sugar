@@ -1,7 +1,14 @@
+(function() {
+  var internalHasOwnProperty = Object.prototype.hasOwnProperty;
+  testHasOwn = function(obj, key) {
+    return internalHasOwnProperty.call(obj, key);
+  }
+})();
+
 testIterateOverObject = function (obj, fn) {
   var key;
   for(key in obj) {
-    if(!obj.hasOwnProperty(key)) continue;
+    if(!testHasOwn(obj, key)) continue;
     fn.call(obj, key, obj[key]);
   }
 }
@@ -42,15 +49,15 @@ testClone = function (obj) {
     // Will not clone functions
     return obj;
   }
-  if (obj && typeof obj.valueOf() === 'string' && obj.length > 0 && !obj.hasOwnProperty(0)) {
+  if (obj && typeof obj.valueOf() === 'string' && obj.length > 0 && !testHasOwn(obj, 0)) {
     testForceStringCoercion(obj);
   }
   var result = testIsArray(obj) ? [] : {}, key;
   for(key in obj) {
-    if(!obj.hasOwnProperty(key)) continue;
+    if(!testHasOwn(obj, key)) continue;
     result[key] = testClone(obj[key]);
   }
-  if (obj && typeof obj === 'object' && obj.hasOwnProperty('toString')) {
+  if (obj && typeof obj === 'object' && testHasOwn(obj, 'toString')) {
     result['toString'] = obj['toString'];
   }
   return result;
@@ -71,7 +78,7 @@ testForceStringCoercion = function(obj) {
     obj[i++] = chr;
   }
   for (var key in obj) {
-    if(!obj.hasOwnProperty(key)) continue;
+    if(!testHasOwn(obj, key)) continue;
   };
 }
 
@@ -92,7 +99,7 @@ testGetSet = function() {
 
 propertyIsEnumerable = function(obj, prop) {
   for (var key in obj) {
-    if(!obj.hasOwnProperty(key)) continue;
+    if(!testHasOwn(obj, key)) continue;
     if(key === prop) return true;
   }
   return false;

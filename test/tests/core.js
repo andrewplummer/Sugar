@@ -445,8 +445,8 @@ namespace('Core', function() {
 
     equal(Sugar.Array().foo().foo().raw, 'string says foo', 'chained disambiguated from Array');
     equal(Sugar.String().foo().foo().raw, 'string says foo', 'chained disambiguated from String');
-    equal(Sugar.Number('a').foo().raw, 'string says foo', 'any type can reach the default chain');
-    equal(Sugar.Number([1]).foo().raw, 'array says foo', 'any type can reach the default chain');
+    equal(Sugar.Number('a').foo().raw, 'string says foo', 'string can reach the default chain');
+    equal(Sugar.Number([1]).foo().raw, 'array says foo', 'array can reach the default chain');
   });
 
   group('Disambiguation of an undefined namespace', function() {
@@ -459,6 +459,21 @@ namespace('Core', function() {
     raisesError(function() { Sugar.Array().foo().foo();  }, 'Null type cannot be disambiguated', TypeError);
     raisesError(function() { Sugar.String().foo().foo(); }, 'Unrelated type cannot be disambiguated from default chainable', TypeError);
     raisesError(function() { Sugar.Number(8).foo(); }, 'Unrelated type cannot be disambiguated from class chainable', TypeError);
+  });
+
+  group('Object chained methods on non-object chainables', function() {
+    Sugar.Object.defineInstance('foo', function(arr) {
+      return 'object foo!';
+    });
+    Sugar.String.defineInstance('foo', function(arr) {
+      return 'string foo!';
+    });
+    equal(new Sugar.Number(8).foo().raw, 'object foo!', 'object method should work from non-object chainable');
+    equal(new Sugar.String(8).foo().raw, 'string foo!', 'non-object chainable still shadows object');
+
+    Sugar.createNamespace('Boolean');
+    equal(new Sugar.Boolean(true).foo().raw, 'object foo!', 'namespaces created later still receive object methods');
+    delete Sugar.Boolean;
   });
 
   group('Chaining special cases', function() {
