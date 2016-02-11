@@ -12,8 +12,10 @@ var fs       = require('fs'),
 
 // -------------- Tasks ----------------
 
-gulp.task('default', showHelpMessage);
-gulp.task('help',    showHelpMessage);
+gulp.task('default', showTasks);
+gulp.task('help',    showHelp);
+gulp.task('tasks',   showTasks);
+
 gulp.task('docs',    buildDocs);
 gulp.task('release', buildRelease);
 
@@ -64,7 +66,7 @@ function buildRelease() {
 
 // -------------- help ----------------
 
-var HELP_MESSAGE = [
+var MESSAGE_TASKS = [
   '',
   '    %Usage%',
   '',
@@ -101,7 +103,13 @@ var HELP_MESSAGE = [
   '',
   '      |docs|                           Builds docs as JSON.',
   '',
-  '      |help|                           Show this message.',
+  '      |tasks|                          Show available tasks.',
+  '      |help|                           Show more detailed help.',
+  '',
+  '',
+].join('\n');
+
+var MESSAGE_EXTRA = [
   '',
   '    %Options%',
   '',
@@ -171,9 +179,20 @@ var HELP_MESSAGE = [
   '',
 ].join('\n');
 
-function showHelpMessage() {
-  var msg = HELP_MESSAGE
-    .replace(/%LOCALE_LIST%/g, function(match) {
+function showTasks() {
+  if (args.help) {
+    showHelp();
+  } else {
+    showMessage(MESSAGE_TASKS);
+  }
+}
+
+function showHelp() {
+  showMessage(MESSAGE_TASKS + MESSAGE_EXTRA);
+}
+
+function showMessage(message) {
+  var msg = message.replace(/%LOCALE_LIST%/g, function(match) {
       return getAllLocales().map(function(l) {
         var code = l.match(/([\w-]+)\.js$/)[1];
         var name = readFile(l).match(/\* (.+) locale definition/i)[1];
