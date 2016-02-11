@@ -333,6 +333,10 @@ function iter(obj, fn) {
   };
 }
 
+function capitalize(str) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
 // -------------- Build ----------------
 
 var COPYRIGHT = [
@@ -1720,14 +1724,20 @@ function buildNpmPackages(p, dist) {
         return getRequireStatement(package, p, true);
       }).join('\n');
       moduleEntryPoints.push(package);
-      return compilePackage(package);
+      return package;
     }
 
     function prepareModulePackages(module) {
-      var packages = [];
+      var packages = [], entryPoint, chainableName;
 
       if (module !== 'common') {
-        packages.push(createModuleEntryPoint(module, /^es[567]$/.test(module)));
+        entryPoint = createModuleEntryPoint(module, /^es[567]$/.test(module));
+        chainableName = 'set' + capitalize(module) +'ChainableConstructor';
+        if (topLevel[chainableName]) {
+          addPackage(topLevel[chainableName]);
+          appendRequires(entryPoint, chainableName);
+        }
+        packages.push(compilePackage(entryPoint));
       }
 
       function addPackage(p) {
