@@ -20,11 +20,12 @@
   // The name of Sugar in the global namespace.
   var SUGAR_GLOBAL = 'Sugar';
 
-  // Natives by name.
-  var NATIVES = ['Number','String','Array','Date','RegExp','Function','Object'];
+  // Natives available on initialization. Letting Object go first to ensure its
+  // global is set by the time the rest are checking for chainable Object methods.
+  var NATIVE_NAMES = 'Object,Number,String,Array,Date,RegExp,Function';
 
-  // Property descriptors exist in IE8 but will error when trying to define a property on native objects.
-  // IE8 does not have defineProperies, however, so this check saves a try/catch block.
+  // defineProperty exists in IE8 but errors when defining a property on native
+  // objects. IE8 does not have defineProperies, so this check saves a try/catch.
   var PROPERTY_DESCRIPTOR_SUPPORT = !!(Object.defineProperty && Object.defineProperties);
 
   // Static method flag
@@ -34,21 +35,35 @@
   var INSTANCE = 0x2;
 
   // defineProperty with a simple shim
-  var defineProperty = PROPERTY_DESCRIPTOR_SUPPORT ? Object.defineProperty : definePropertyShim;
+  var defineProperty = PROPERTY_DESCRIPTOR_SUPPORT ?  Object.defineProperty : definePropertyShim;
 
-  // The global context. Rhino shadows "global" with it's own keyword so do an extra check to be sure
-  // that it's actually the global context.
-  var globalContext = typeof global !== 'undefined' && global.Object ? global : this;
+  // The global context. Rhino uses a different "global" keyword so
+  // do an extra check to be sure that it's actually the global context.
+  var globalContext = typeof global !== 'undefined' && global.Object === Object ? global : this;
 
   // Is the environment node?
   var hasExports = typeof module !== 'undefined' && module.exports;
 
-  // Internal hasOwnProperty
-  var internalHasOwnProperty = Object.prototype.hasOwnProperty;
-
   // Whether object instance methods can be mapped to the prototype.
   var allowObjectPrototype = false;
 
+  // A map from Array to SugarArray.
+  var namespacesByName = {};
+
+  // A map from [object Object] to namespace.
+  var namespacesByClassName = {};
+
+  // A default chainable class for unknown types. The silly "SugarChainable" here
+  // is simply to force GCC to respect this token on output.
+  var SugarChainable, DefaultChainable = SugarChainable || getNewChainableClass('Chainable');
+
+  // Internal references
+  var ownPropertyNames = Object.getOwnPropertyNames,
+      internalToString = Object.prototype.toString,
+      internalHasOwnProperty = Object.prototype.hasOwnProperty;
+
+
+  // Global methods
 
   function setupGlobal() {
     var existingSugar = globalContext[SUGAR_GLOBAL];
@@ -59,37 +74,95 @@
       return;
     }
     Sugar = function(arg) {
-      for (var i = 0; i < NATIVES.length; i++) {
-        Sugar[NATIVES[i]].extend(arg);
-      }
+      iterateOverObject(Sugar, function(name, sugarNamespace) {
+        // Although only the only enumerable properties on the global
+        // object are Sugar namespaces, environments that can't set
+        // non-enumerable properties will step through the utility methods
+        // as well here, so use this check to only allow true namespaces.
+        if (hasOwn(namespacesByName, name)) {
+          sugarNamespace.extend(arg);
+        }
+      });
     };
-
-    // There are 2 identical methods for extending with Sugar:
-    // 1. Sugar.extendAll();
-    // 2. require('sugar')();
-    // The "extend" method is more explicit and preferred, but the
-    // namespace itself is also available for cleaner npm modules.
-    setProperty(Sugar, 'extendAll', Sugar);
-    iterateOverObject(NATIVES, function(i, name) {
-      createNamespace(name, name === 'Object');
-    });
     if (hasExports) {
       module.exports = Sugar;
     } else {
-      globalContext[SUGAR_GLOBAL] = Sugar;
+      try {
+        globalContext[SUGAR_GLOBAL] = Sugar;
+      } catch (e) {
+        // Contexts such as QML have a read-only global context.
+      }
     }
+    iterateOverObject(NATIVE_NAMES.split(','), function(i, name) {
+      createNamespace(name);
+    });
     setGlobalProperties();
   }
 
-  function createNamespace(name, isObject) {
+  /***
+   * @method createNamespace(<name>)
+   * @returns Self
+   * @short Creates a new Sugar namespace.
+   * @extra This method is for plugin developers who want to define methods to be
+   *        used with natives that Sugar does not handle by default, for example
+   *        Set, WeakMap, etc. <name> will appear on the `Sugar` global with all
+   *        the methods of normal namespaces, as well as the ability to define new
+   *        methods. Defined methods will appear on the namespace as static
+   *        methods, but can also be used in chainables following the format:
+   *        new Sugar.<name>() or Sugar.<name>(). Lastly, the global method
+   *        `Sugar.extend()` allows end users to extend native prototypes with
+   *        defined methods.
+   ***/
+  function createNamespace(name) {
 
-    var toString = function() {
-      // Print out something nicer than just a garbage function.
-      return SUGAR_GLOBAL + name;
-    }
+    // Is the current namespace Object?
+    var isObject = name === 'Object';
 
-    var namespace = function(arg) {
+    // A Sugar namespace is also a chainable class: Sugar.Array, etc.
+    var sugarNamespace = getNewChainableClass(name, true);
+
+    /***
+     * @method extend([opt])
+     * @returns Self
+     * @short Extends natives with methods defined on the namespace.
+     * @extra [opt] may be a string as a single method name, an array of method
+     *        names, or an options object (options listed below). This method can
+     *        be called on individual namespaces like `Sugar.Array` or on the
+     *        global itself, in which case [options] will be forwarded to each
+     *        `extend` call.
+     *
+     * @options
+     *
+     *   methods:          An array of method names to explicitly extend.
+     *
+     *   except:           An array of method names to explicitly exclude.
+     *
+     *   enhance:          A shortcut to disallow all "enhance" flags, which are
+     *                     listed below and on by default.
+     *
+     *   enhanceString:    Sugar enhances `String#includes` to allow testing
+     *                     against a regex.
+     *
+     *   enhanceArray:     Sugar enhances array methods `every`, `some`, `filter`,
+     *                     `find`, and `findIndex` to allow passing shortcuts to
+     *                     matching functions, as well as a shortcut for mapping
+     *                     with `Array#map`. See each method's docs for more.
+     *
+     *   enhanceObject:    Sugar enhances `Object.keys` to run a callback for each
+     *                     of the object's keys.
+     *
+     *   objectPrototype:  If `true`, this option will Object.prototype with
+     *                     instance methods. This option is off by default as it
+     *                     can have unintended consequences. For more, see
+     *                     `extending natives`.
+     *
+     ***/
+    var extend = function (arg) {
       var staticMethods = {}, instanceMethods = {}, opts = {}, methodsByName;
+
+      function objectRestricted(name, instance) {
+        return isObject && instance && (!allowObjectPrototype || name === 'get' || name === 'set');
+      }
 
       function disallowedByFlags(flags) {
         if (!flags) return;
@@ -100,8 +173,14 @@
         }
       }
 
-      function canExtendPrototype(method) {
-        return (!isObject || allowObjectPrototype) && !disallowedByFlags(method.flags);
+      function methodExcepted(methodName) {
+        return opts.except && opts.except.indexOf(methodName) !== -1;
+      }
+
+      function canExtend(methodName, method, instance) {
+        return !objectRestricted(methodName, instance) &&
+               !disallowedByFlags(method.flags) &&
+               !methodExcepted(methodName);
       }
 
       if (typeof arg === 'string') {
@@ -117,105 +196,190 @@
         }
       }
 
-      iterateOverObject(methodsByName || namespace, function(methodName, method) {
+      iterateOverObject(methodsByName || sugarNamespace, function(methodName, method) {
         if (methodsByName) {
           // If we have method names passed in an array,
           // then we need to flip the key and value here
           // and find the method in the Sugar namespace.
           methodName = method;
-          method = namespace[methodName];
+          method = sugarNamespace[methodName];
         }
-        if (hasOwn(method, 'instance') && canExtendPrototype(method)) {
+        if (hasOwn(method, 'instance') && canExtend(methodName, method, true)) {
           instanceMethods[methodName] = method.instance;
         }
-        if(hasOwn(method, 'static')) {
+        if(hasOwn(method, 'static') && canExtend(methodName, method)) {
           staticMethods[methodName] = method;
         }
       });
+
+      // Accessing the extend target each time instead of holding a reference as
+      // it may have been overwritten (for example Date by Sinon). Also need to
+      // access through the global to allow extension of user-defined namespaces.
       extendNative(globalContext[name], staticMethods);
       extendNative(globalContext[name].prototype, instanceMethods);
+
       if (!methodsByName) {
         // If there are no method names passed, then
         // all methods in the namespace will be extended
         // to the native. This includes all future defined
         // methods, so add a flag here to check later.
-        setProperty(namespace, 'active', true);
+        setProperty(sugarNamespace, 'active', true);
       }
       // return self
-      return namespace;
+      return sugarNamespace;
     };
 
     function defineWithOptionCollect(methodName, instance, args) {
-      setProperty(namespace, methodName, function(arg1, arg2, arg3) {
+      setProperty(sugarNamespace, methodName, function(arg1, arg2, arg3) {
         var opts = collectDefineOptions(arg1, arg2, arg3);
-        defineMethods(namespace, opts.methods, instance, args, opts.last);
+        defineMethods(sugarNamespace, opts.methods, instance, args, opts.last);
+        return sugarNamespace;
       });
     }
 
-    // Extending by namespace:
-    // 1. Sugar.Array.extend();
-    // 2. require('sugar-array')();
-    Sugar[name] = namespace;
-    setProperty(namespace, 'extend', namespace);
-    setProperty(namespace, 'toString', toString);
-
+    /***
+     * @method defineStatic()
+     * @returns SugarNamespace
+     * @short Defines static methods on the namespace that can later be extended
+     *        onto the native globals.
+     * @extra Accepts either a single object mapping names to functions, or name
+     *        and function as two arguments.
+     ***/
     defineWithOptionCollect('defineStatic', STATIC);
+
+    /***
+     * @method defineInstance()
+     * @returns SugarNamespace
+     * @short Defines methods on the namespace that can later be extended as
+     *        instance methods onto the native prototype.
+     * @extra Accepts either a single object mapping names to functions, or name
+     *        and function as two arguments. All functions should accept the
+     *        native for which they are mapped as their first argument, and should
+     *        never refer to their `this`. This allows the end user to decide if
+     *        they want to use the method in static or instance form. Additionally,
+     *        functions should never accept more than 4 arguments in addition to
+     *        the native (5 arguments total), as any additional arguments will not
+     *        be mapped. If more options are required, accept an options object instead.
+     ***/
     defineWithOptionCollect('defineInstance', INSTANCE);
+
+    /***
+     * @method defineInstanceAndStatic()
+     * @returns SugarNamespace
+     * @short A shortcut to define both static and instance methods on the namespace.
+     * @extra This method is intended for use with `Object`. As Sugar will not map
+     *        instance methods to `Object.prototype` by default, defining intended
+     *        instance methods as both promotes the use of static methods instead.
+     *        See the `Object` docs for examples of this.
+     ***/
     defineWithOptionCollect('defineInstanceAndStatic', INSTANCE | STATIC);
+
+
+    /***
+     * @method defineStaticWithArguments()
+     * @returns SugarNamespace
+     * @short Defines static methods that collect arguments.
+     * @extra This method is identical to `defineStatic`, except that when defined
+     *        methods are called, they will collect any arguments past `n - 1`,
+     *        where `n` is the number of arguments that the method accepts.
+     *        Collected arguments will be passed to the method as the last argument
+     *        defined on the function.
+     ***/
     defineWithOptionCollect('defineStaticWithArguments', STATIC, true);
+
+    /***
+     * @method defineInstanceWithArguments()
+     * @returns SugarNamespace
+     * @short Defines instance methods that collect arguments.
+     * @extra This method is identical to `defineInstance`, except that when
+     *        defined methods are called, they will collect any arguments past
+     *        `n - 1`, where `n` is the number of arguments that the method
+     *        accepts. Collected arguments will be passed to the method as the
+     *        last argument defined on the function.
+     ***/
     defineWithOptionCollect('defineInstanceWithArguments', INSTANCE, true);
 
-    setProperty(namespace, 'alias', function(name, source) {
-      var method = typeof source === 'string' ? namespace[source] : source;
-      setProperty(namespace, name, method, true);
+    /***
+     * @method alias(<fromName>, <toName>)
+     * @returns SugarNamespace
+     * @short Aliases one Sugar method to another.
+     ***/
+    setProperty(sugarNamespace, 'alias', function(name, source) {
+      var method = typeof source === 'string' ? sugarNamespace[source] : source;
+      setMethod(sugarNamespace, name, method);
     });
 
-    setProperty(namespace, 'defineStaticPolyfill', function(arg1, arg2, arg3) {
+    /***
+     * @method defineStaticPolyfill()
+     * @returns SugarNamespace
+     * @short Defines static methods that are immediately mapped onto the native
+     *        if they do not already exist.
+     * @extra Intended only for use creating polyfills that follow the ECMAScript
+     *        spec. Accepts either a single object mapping names to functions, or
+     *        name and function as two arguments.
+     ***/
+    setProperty(sugarNamespace, 'defineStaticPolyfill', function(arg1, arg2, arg3) {
       var opts = collectDefineOptions(arg1, arg2, arg3);
       extendNative(globalContext[name], opts.methods, true, opts.last);
     });
 
-    setProperty(namespace, 'defineInstancePolyfill', function(arg1, arg2, arg3) {
+    /***
+     * @method defineInstancePolyfill()
+     * @returns SugarNamespace
+     * @short Defines instance methods that are immediately mapped onto the native
+     *        prototype if they do not already exist.
+     * @extra Intended only for use creating polyfills that follow the ECMAScript
+     *        spec. Accepts either a single object mapping names to functions, or
+     *        name and function as two arguments.
+     ***/
+    setProperty(sugarNamespace, 'defineInstancePolyfill', function(arg1, arg2, arg3) {
       var opts = collectDefineOptions(arg1, arg2, arg3);
-      extendNative(globalContext[name].prototype, collectDefineOptions(arg1, arg2).methods, true, opts.last);
+      extendNative(globalContext[name].prototype, opts.methods, true, opts.last);
+      // Map instance polyfills to chainable as well.
+      iterateOverObject(opts.methods, function(methodName, fn) {
+        defineChainableMethod(sugarNamespace, methodName, fn);
+      });
     });
 
+    // Each namespace can extend only itself through its .extend method.
+    setProperty(sugarNamespace, 'extend', extend);
+
+    // Cache the class to namespace relationship for later use.
+    namespacesByName[name] = sugarNamespace;
+    namespacesByClassName['[object ' + name + ']'] = sugarNamespace;
+
+    mapNativeToChainable(name);
+    mapObjectChainablesToNamespace(sugarNamespace);
+
+    // Export
+    return Sugar[name] = sugarNamespace;
+  }
+
+  function setGlobalProperties() {
+    setProperty(Sugar, 'VERSION', 'edge');
+    // The extend method is an alias to the global function
+    // to allow two methods of extending:
+    // Sugar.extend();
+    // require('sugar')();
+    setProperty(Sugar, 'extend', Sugar);
+    setProperty(Sugar, 'hasOwn', hasOwn);
+    setProperty(Sugar, 'toString', toString);
+    setProperty(Sugar, 'className', className);
+    setProperty(Sugar, 'setProperty', setProperty);
+    setProperty(Sugar, 'defineProperty', defineProperty);
+    setProperty(Sugar, 'createNamespace', createNamespace);
+    setProperty(Sugar, 'iterateOverObject', iterateOverObject);
+    setProperty(Sugar, 'mapNativeToChainable', mapNativeToChainable);
   }
 
   function toString() {
     return SUGAR_GLOBAL;
   }
 
-  function setGlobalProperties() {
-    setProperty(Sugar, 'VERSION', 'edge');
-
-    setProperty(Sugar, 'hasOwn', hasOwn);
-    setProperty(Sugar, 'toString', toString);
-    setProperty(Sugar, 'setProperty', setProperty);
-    setProperty(Sugar, 'defineProperty', defineProperty);
-    setProperty(Sugar, 'createNamespace', createNamespace);
-    setProperty(Sugar, 'iterateOverObject', iterateOverObject);
-    setProperty(Sugar, 'wrapInstanceMethod', wrapInstanceMethod);
-  }
-
-  function extendNative(extendee, source, polyfill, override) {
-    iterateOverObject(source, function(name, method) {
-      if (polyfill && !override && extendee[name]) {
-        // Polyfill exists, so bail.
-        return;
-      }
-      setProperty(extendee, name, method);
-    });
-  }
-
-  function definePropertyShim(obj, prop, descriptor) {
-    obj[prop] = descriptor.value;
-  }
-
 
   // Defining Methods
 
-  function defineMethods(sugarNamespace, methods, instance, args, flags) {
+  function defineMethods(sugarNamespace, methods, type, args, flags) {
     iterateOverObject(methods, function(methodName, method) {
       var instanceMethod, staticMethod = method;
       if (args) {
@@ -224,23 +388,24 @@
       if (flags) {
         staticMethod.flags = flags;
       }
-      setProperty(sugarNamespace, methodName, staticMethod, true);
 
       // A method may define its own custom implementation, so
       // make sure that's not the case before creating one.
-      if (instance & INSTANCE && !method.instance) {
+      if (type & INSTANCE && !method.instance) {
         instanceMethod = wrapInstanceMethod(method, args);
         setProperty(staticMethod, 'instance', instanceMethod);
       }
 
-      if (instance & STATIC) {
+      if (type & STATIC) {
         setProperty(staticMethod, 'static', true);
       }
 
+      setMethod(sugarNamespace, methodName, staticMethod);
+
       if (sugarNamespace.active) {
-        // If the namespace has been activated (all methods mapped)
+        // If the namespace has been activated (.extend has been called),
         // then map this method as well.
-        sugarNamespace(methodName);
+        sugarNamespace.extend(methodName);
       }
     });
   }
@@ -260,7 +425,6 @@
       methods: methods
     };
   }
-
 
   function wrapInstanceMethod(fn, args) {
     return args ? wrapMethodWithArguments(fn, true) : wrapInstanceMethodFixed(fn);
@@ -321,7 +485,174 @@
     }
   }
 
+  // Method helpers
+
+  function extendNative(target, source, polyfill, override) {
+    iterateOverObject(source, function(name, method) {
+      if (polyfill && !override && target[name]) {
+        // Polyfill exists, so bail.
+        return;
+      }
+      setProperty(target, name, method);
+    });
+  }
+
+  function setMethod(sugarNamespace, methodName, method) {
+    sugarNamespace[methodName] = method;
+    if (method.instance) {
+      defineChainableMethod(sugarNamespace, methodName, method.instance);
+    }
+  }
+
+
+  // Chainables
+
+  function getNewChainableClass(name, inherits) {
+    var fn = SugarChainable = function (obj) {
+      if (!(this instanceof fn)) {
+        return new fn(obj);
+      }
+      if (this.constructor !== DefaultChainable) {
+        // Allow modules to define their own constructors.
+        obj = this.constructor.apply(obj, arguments);
+      }
+      this.raw = obj;
+    };
+    if (inherits) {
+      fn.prototype = new DefaultChainable;
+    }
+    setProperty(fn, 'toString', function() {
+      return SUGAR_GLOBAL + name;
+    });
+    setProperty(fn.prototype, 'valueOf', function() {
+      return this.raw;
+    });
+    return fn;
+  }
+
+  function defineChainableMethod(sugarNamespace, methodName, fn) {
+    var wrapped = wrapWithChainableResult(fn), existing, collision, dcp;
+    dcp = DefaultChainable.prototype;
+    existing = dcp[methodName];
+
+    // If the method was previously defined on the default chainable, then a
+    // collision exists, so set the method to a disambiguation function that
+    // will lazily evaluate the object and find it's associated chainable.
+    collision = existing && existing !== Object.prototype[methodName];
+
+    // The disambiguation function is only required once.
+    if (!existing || !existing.disambiguate) {
+      dcp[methodName] = collision ? disambiguateMethod(methodName) : wrapped;
+    }
+
+    // The target chainable always receives the wrapped method. Additionally,
+    // if the target chainable is Sugar.Object, then map the wrapped method
+    // to all other namespaces as well if they do not define their own method
+    // of the same name. This way, a Sugar.Number will have methods like
+    // isEqual that can be called on any object without having to traverse up
+    // the prototype chain and perform disambiguation, which costs cycles.
+    // Note that the "if" block below actually does nothing on init as Object
+    // goes first and no other namespaces exist yet. However it needs to be
+    // here as Object instance methods defined later also need to be mapped
+    // back onto existing namespaces.
+    sugarNamespace.prototype[methodName] = wrapped;
+    if (sugarNamespace === Sugar.Object) {
+      mapObjectChainableToAllNamespaces(methodName, wrapped);
+    }
+  }
+
+  function mapObjectChainablesToNamespace(sugarNamespace) {
+    iterateOverObject(Sugar.Object && Sugar.Object.prototype, function(methodName, val) {
+      if (typeof val === 'function') {
+        setObjectChainableOnNamespace(sugarNamespace, methodName, val);
+      }
+    });
+  }
+
+  function mapObjectChainableToAllNamespaces(methodName, fn) {
+    iterateOverObject(namespacesByName, function(name, sugarNamespace) {
+      setObjectChainableOnNamespace(sugarNamespace, methodName, fn);
+    });
+  }
+
+  function setObjectChainableOnNamespace(sugarNamespace, methodName, fn) {
+    var proto = sugarNamespace.prototype;
+    if (!hasOwn(proto, methodName)) {
+      proto[methodName] = fn;
+    }
+  }
+
+  function wrapWithChainableResult(fn) {
+    return function() {
+      return new DefaultChainable(fn.apply(this.raw, arguments));
+    };
+  }
+
+  function disambiguateMethod(methodName) {
+    var fn = function() {
+      var raw = this.raw, sugarNamespace, fn;
+      if (raw != null) {
+        // Find the Sugar namespace for this unknown.
+        sugarNamespace = namespacesByClassName[className(raw)];
+      }
+      if (!sugarNamespace) {
+        // If no sugarNamespace can be resolved, then default
+        // back to Sugar.Object so that undefined and other
+        // non-supported types can still have basic object
+        // methods called on them, such as type checks.
+        sugarNamespace = Sugar.Object;
+      }
+
+      fn = new sugarNamespace(raw)[methodName];
+
+      if (fn.disambiguate) {
+        // If the method about to be called on this chainable is
+        // itself a disambiguation method, then throw an error to
+        // prevent infinite recursion.
+        throw new TypeError('Cannot resolve namespace for ' + raw);
+      }
+
+      return fn.apply(this, arguments);
+    };
+    fn.disambiguate = true;
+    return fn;
+  }
+
+  function mapNativeToChainable(name, methodNames) {
+    var sugarNamespace = namespacesByName[name],
+        nativeProto = globalContext[name].prototype;
+
+    if (!methodNames && ownPropertyNames) {
+      methodNames = ownPropertyNames(nativeProto);
+    }
+
+    iterateOverObject(methodNames, function(i, methodName) {
+      if (methodName === 'valueOf' || methodName === 'constructor') {
+        // Both "valueOf" and "constructor" have their own definitions
+        // for chainables, so do not forward those methods here.
+        return;
+      }
+      try {
+        var fn = nativeProto[methodName];
+        if (typeof fn !== 'function') {
+          // Bail on anything not a function.
+          return;
+        }
+      } catch (e) {
+        // Function.prototype has properties that
+        // will throw errors when accessed.
+        return;
+      }
+      defineChainableMethod(sugarNamespace, methodName, fn);
+    });
+  }
+
+
   // Util
+
+  function definePropertyShim(obj, prop, descriptor) {
+    obj[prop] = descriptor.value;
+  }
 
   function setProperty(target, name, value, enumerable) {
     defineProperty(target, name, {
@@ -337,6 +668,14 @@
       if (!hasOwn(obj, key)) continue;
       if (fn.call(obj, key, obj[key], obj) === false) break;
     }
+  }
+
+  // PERF: Attempts to speed this method up get very Heisenbergy. Quickly
+  // returning based on typeof works for primitives, but slows down object
+  // types. Even === checks on null and undefined (no typeof) will end up
+  // basically breaking even. This seems to be as fast as it can go.
+  function className(obj) {
+    return internalToString.call(obj);
   }
 
   function hasOwn(obj, prop) {
@@ -373,12 +712,18 @@
   // WhiteSpace/LineTerminator as defined in ES5.1 plus Unicode characters in the Space, Separator category.
   var TRIM_CHARS = '\u0009\u000A\u000B\u000C\u000D\u0020\u00A0\u1680\u180E\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u202F\u205F\u2028\u2029\u3000\uFEFF';
 
+  // Regex for matching a formatted string
+  var STRING_FORMAT_REG = /([{}])\1|\{([^}]*)\}|(%)%|(%(\w*))/g;
+
   var HALF_WIDTH_ZERO = 0x30;
   var FULL_WIDTH_ZERO = 0xff10;
 
   var HALF_WIDTH_PERIOD   = '.';
   var FULL_WIDTH_PERIOD   = '．';
   var HALF_WIDTH_COMMA    = ',';
+
+  var OPEN_BRACE  = '{';
+  var CLOSE_BRACE = '}';
 
   // Namespace aliases
   var sugarObject   = Sugar.Object,
@@ -389,15 +734,12 @@
       sugarFunction = Sugar.Function,
       sugarRegExp   = Sugar.RegExp;
 
-  // Internal toString
-  var internalToString = Object.prototype.toString;
-
   // Core utility aliases
   var hasOwn             = Sugar.hasOwn,
+      className          = Sugar.className,
       setProperty        = Sugar.setProperty,
       defineProperty     = Sugar.defineProperty,
-      iterateOverObject  = Sugar.iterateOverObject,
-      wrapInstanceMethod = Sugar.wrapInstanceMethod;
+      iterateOverObject  = Sugar.iterateOverObject;
 
 
   // Type Checks
@@ -446,10 +788,6 @@
     return k === '[object '+ klass +']';
   }
 
-  function className(obj) {
-    return internalToString.call(obj);
-  }
-
   // Wrapping the core's "define" methods to
   // save a few bytes in the minified script.
 
@@ -496,27 +834,29 @@
   // actual arguments covers all requirements. Note that passing
   // the argument length also forces the compiler to not rewrite
   // length of the compiled function.
-  function fixArgumentLength(fn) {
+  function fixArgumentLength(fn, staticOnly) {
     var staticFn = function(a) {
       var args = arguments;
       return fn(a, args[1], args[2], args.length - 1);
     };
-    staticFn.instance = function(b) {
-      var args = arguments;
-      return fn(this, b, args[1], args.length);
-    };
+    if (!staticOnly) {
+      staticFn.instance = function(b) {
+        var args = arguments;
+        return fn(this, b, args[1], args.length);
+      };
+    }
     return staticFn;
   }
 
-  function defineAccessor(namespace, name, global) {
+  function defineAccessor(namespace, name, globalDefault) {
     var local, accessor;
     accessor = function(val) {
       if (arguments.length > 0) {
         local = val;
       }
-      return local != null ? local : global;
+      return local != null ? local : globalDefault;
     };
-    defineStatic(namespace, name, accessor);
+    setProperty(Sugar, name, accessor);
     return accessor;
   }
 
@@ -571,13 +911,18 @@
     };
   }
 
+  function setChainableConstructor(sugarNamespace, passCheck, createFn) {
+    sugarNamespace.prototype.constructor = function(obj) {
+      return passCheck(obj) ? obj : createFn.apply(this, arguments);
+    };
+  }
+
   // Fuzzy matching helpers
 
   function getMatcher(f, k) {
     if (!isPrimitiveType(f)) {
       var klass = className(f);
       if (isRegExp(f, klass)) {
-        // Match against a RegExp
         return regexMatcher(f);
       } else if (isDate(f, klass)) {
         // Match against a date. isEqual below should also
@@ -591,7 +936,6 @@
           return functionMatcher(f);
         }
       } else if (isPlainObject(f, klass)) {
-        // Match against a fuzzy hash or array.
         return fuzzyMatcher(f, k);
       }
     }
@@ -655,34 +999,43 @@
 
   var getKeys = Object.keys;
 
+  function deepHasProperty(obj, key) {
+    return handleDeepProperty(obj, key, true);
+  }
+
   function deepGetProperty(obj, key) {
-    return handleDeepProperty(obj, key);
+    return handleDeepProperty(obj, key, false);
   }
 
   function deepSetProperty(obj, key, val) {
-    handleDeepProperty(obj, key, true, false, val);
+    handleDeepProperty(obj, key, false, true, false, val);
     return obj;
   }
 
-  function handleDeepProperty(obj, key, fill, fillLast, val) {
-    var ns = obj || undefined, bs, ps, cbi, set, isLast, isPush, isIndex, nextIsIndex;
+  function handleDeepProperty(obj, key, has, fill, fillLast, val) {
+    var ns, bs, ps, cbi, set, isLast, isPush, isIndex, nextIsIndex, exists;
+    ns = obj || undefined;
     if (key == null) return;
-    key = String(key);
 
-    // Bail early here to save a few cycles as objects can often be
-    // inadvertently passed as keys, and happen to have a bracket syntax.
-    if (key === '[object Object]') {
-      return ns[key];
+    if (isObjectType(key)) {
+      // Allow array and array-like accessors
+      bs = [key];
+    } else {
+      key = String(key);
+      if (key.indexOf('..') !== -1) {
+        return handleArrayIndexRange(obj, key, val);
+      }
+      bs = key.split('[');
     }
 
-    if (key.indexOf('..') !== -1) {
-      return handleArrayIndexRange(obj, key, val);
-    }
-    bs = key.split('[');
     set = isDefined(val);
 
     for (var i = 0, blen = bs.length; i < blen; i++) {
-      ps = periodSplit(bs[i]);
+      ps = bs[i];
+
+      if (isString(ps)) {
+        ps = periodSplit(ps);
+      }
 
       for (var j = 0, plen = ps.length; j < plen; j++) {
         key = ps[j];
@@ -729,7 +1082,12 @@
             ns[key] = nextIsIndex || (fillLast && isLast) ? [] : {};
           }
 
-          if (set && isLast) {
+          if (has) {
+            exists = key in ns;
+            if (isLast || !exists) {
+              return exists;
+            }
+          } else if (set && isLast) {
             assertWritable(ns);
             ns[key] = val;
           }
@@ -761,12 +1119,12 @@
     end = end === -1 ? obj.length : end + 1;
 
     if (leading) {
-      obj = handleDeepProperty(obj, leading, set ? true : false, true);
+      obj = handleDeepProperty(obj, leading, false, set ? true : false, true);
     }
 
     if (set) {
       for (var i = start; i < end; i++) {
-        handleDeepProperty(obj, i + trailing, true, false, val);
+        handleDeepProperty(obj, i + trailing, false, true, false, val);
       }
     } else {
       obj = obj.slice(start, end);
@@ -803,23 +1161,10 @@
   }
 
   function isPlainObject(obj, klass) {
-    if (!isObjectType(obj) || !isClass(obj, 'Object', klass) || !hasValidPlainObjectPrototype(obj)) {
-      return false;
-    }
-    // Allowing internally defined Hash to report back as a plain object as well.
-    if (isHash(obj)) {
-      return true;
-    }
-    // Plain objects are generally defined as having enumerated properties
-    // all their own, however in early IE environments without defineProperty,
-    // there may also be enumerated methods in the prototype chain, so check
-    // for both of these cases.
-    for (var key in obj) {
-      if (!hasOwn(obj, key) && obj[key] !== Object.prototype[key]) {
-        return false;
-      }
-    }
-    return true;
+    return isObjectType(obj) &&
+           isClass(obj, 'Object', klass) &&
+           hasValidPlainObjectPrototype(obj) &&
+           hasOwnEnumeratedProperties(obj);
   }
 
   function hasValidPlainObjectPrototype(obj) {
@@ -836,6 +1181,21 @@
     return (!hasConstructor && !hasToString) ||
             (hasConstructor && !hasOwn(obj, 'constructor') &&
              hasOwn(obj.constructor.prototype, 'isPrototypeOf'));
+  }
+
+  function hasOwnEnumeratedProperties(obj) {
+    // Plain objects are generally defined as having enumerated properties
+    // all their own, however in early IE environments without defineProperty,
+    // there may also be enumerated methods in the prototype chain, so check
+    // for both of these cases.
+    var objectProto = Object.prototype;
+    for (var key in obj) {
+      var val = obj[key];
+      if (!hasOwn(obj, key) && val !== objectProto[key]) {
+        return false;
+      }
+    }
+    return true;
   }
 
   function simpleRepeat(n, fn) {
@@ -880,7 +1240,7 @@
   function isEqual(a, b, stack) {
     var aClass, bClass;
     if (a === b) {
-      // Return quickly up front when matching by reference,
+      // Return quickly up front when matched by reference,
       // but be careful about 0 !== -0.
       return a !== 0 || 1 / a === 1 / b;
     }
@@ -889,6 +1249,7 @@
     if (aClass !== bClass) {
       return false;
     }
+
     if (isSet(a, aClass) && isSet(b, bClass)) {
       return setIsEqual(a, b);
     } else if (canCompareValue(a, aClass) && canCompareValue(b, bClass)) {
@@ -898,9 +1259,11 @@
   }
 
   function canCompareValue(obj, klass) {
-    // Only known objects are matched by value. This is notably excluding functions, DOM Elements, and instances of
-    // user-created classes. The latter can arguably be matched by value, but distinguishing between these and
-    // host objects -- which should never be compared by value -- is very tricky so not dealing with it here.
+    // Only known objects are matched by value. This is notably excluding
+    // functions, DOM Elements, and instances of user-created classes. The latter
+    // can arguably be matched by value, but distinguishing between these and host
+    // objects -- which should never be compared by value -- is very tricky so not
+    // dealing with it here.
     klass = klass || className(obj);
     return MATCHED_BY_VALUE_REG.test(klass) || isPlainObject(obj, klass);
   }
@@ -910,7 +1273,7 @@
     if (aType !== bType) {
       return false;
     }
-    if (isObjectType(a, aType)) {
+    if (isObjectType(a.valueOf())) {
       count = 0;
       propsEqual = true;
       arrayLike = isArrayLike(a, aClass);
@@ -1034,10 +1397,10 @@
   }
 
   function isArrayLike(obj, klass) {
-    return isArray(obj, klass) || isArgumentsObject(obj, klass);
+    return isArray(obj, klass) || isArguments(obj, klass);
   }
 
-  function isArgumentsObject(obj, klass) {
+  function isArguments(obj, klass) {
     klass = klass || className(obj);
     // .callee exists on Arguments objects in < IE8
     return hasProperty(obj, 'length') && (klass === '[object Arguments]' || !!obj.callee);
@@ -1208,20 +1571,20 @@
   var fullWidthNumberReg, fullWidthNumberMap, fullWidthNumbers;
 
   function buildFullWidthNumber() {
-    var digit;
+    var fwp = FULL_WIDTH_PERIOD, hwp = HALF_WIDTH_PERIOD, hwc = HALF_WIDTH_COMMA, fwn = '';
     fullWidthNumberMap = {};
-    fullWidthNumbers = '';
-    for (var i = 0; i <= 9; i++) {
+    for (var i = 0, digit; i <= 9; i++) {
       digit = chr(i + FULL_WIDTH_ZERO);
-      fullWidthNumbers += digit;
+      fwn += digit;
       fullWidthNumberMap[digit] = chr(i + HALF_WIDTH_ZERO);
     }
-    fullWidthNumberMap[HALF_WIDTH_COMMA] = '';
-    fullWidthNumberMap[FULL_WIDTH_PERIOD] = HALF_WIDTH_PERIOD;
+    fullWidthNumberMap[hwc] = '';
+    fullWidthNumberMap[fwp] = hwp;
     // Mapping this to itself to capture it easily
     // in stringToNumber to detect decimals later.
-    fullWidthNumberMap[HALF_WIDTH_PERIOD] = HALF_WIDTH_PERIOD;
-    fullWidthNumberReg = RegExp('[' + fullWidthNumbers + FULL_WIDTH_PERIOD + HALF_WIDTH_COMMA + HALF_WIDTH_PERIOD + ']', 'g');
+    fullWidthNumberMap[hwp] = hwp;
+    fullWidthNumberReg = allCharsReg(fwn + fwp + hwc + hwp);
+    fullWidthNumbers = fwn;
   }
 
   // Takes into account full-width characters, commas, and decimals.
@@ -1279,7 +1642,91 @@
     });
   }
 
+  function createFormatMatcher(bracketMatcher, percentMatcher, precheck) {
+
+    var reg = STRING_FORMAT_REG;
+    var compiledFormats = {};
+
+    function getToken(format, match) {
+      var get, token, literal, fn;
+      var bKey = match[2];
+      var pLit = match[3];
+      var pKey = match[5];
+      if (match[4] && percentMatcher) {
+        token = pKey;
+        get = percentMatcher;
+      } else if (bKey) {
+        token = bKey;
+        get = bracketMatcher;
+      } else if (pLit && percentMatcher) {
+        literal = pLit;
+      } else {
+        literal = match[1] || match[0];
+      }
+      if (get) {
+        assertPassesPrecheck(precheck, bKey, pKey);
+        fn = function(obj, opt) {
+          return get(obj, token, opt);
+        }
+      }
+      format.push(fn || getLiteral(literal));
+    }
+
+    function getSubstring(format, str, start, end) {
+      if (end > start) {
+        var sub = str.slice(start, end);
+        assertNoUnmatched(sub, OPEN_BRACE);
+        assertNoUnmatched(sub, CLOSE_BRACE);
+        format.push(function() {
+          return sub;
+        });
+      }
+    }
+
+    function getLiteral(str) {
+      return function() {
+        return str;
+      }
+    }
+
+    function assertPassesPrecheck(precheck, bt, pt) {
+      if (precheck && !precheck(bt, pt)) {
+        throw new TypeError('Invalid token '+ (bt || pt) +' in format string.');
+      }
+    }
+
+    function assertNoUnmatched(str, chr) {
+      if (str.indexOf(chr) !== -1) {
+        throw new TypeError('Unmatched '+ chr +' in format string.');
+      }
+    }
+
+    function compile(str) {
+      var format = [], lastIndex = 0, match;
+      reg.lastIndex = 0;
+      while(match = reg.exec(str)) {
+        getSubstring(format, str, lastIndex, match.index);
+        getToken(format, match);
+        lastIndex = reg.lastIndex;
+      }
+      getSubstring(format, str, lastIndex, str.length);
+      return compiledFormats[str] = format;
+    }
+
+    return function(str, obj, opt) {
+      var format = compiledFormats[str] || compile(str), result = '';
+      for (var i = 0; i < format.length; i++) {
+        result += format[i](obj, opt);
+      }
+      return result;
+    }
+  }
+
   // RegExp helpers
+
+  function allCharsReg(src) {
+    return RegExp('[' + src + ']', 'g');
+  }
 
   function getRegExpFlags(reg, add) {
     var flags = '';
@@ -1319,25 +1766,6 @@
     }
     return d['set' + (_utc(d) ? 'UTC' : '') + method](value);
   }
-
-
-  // Hash definition
-
-  function Hash(obj) {
-    // Not using simpleMerge here due to an odd compiler bug when building
-    // modules that don't use Hash where this constructor still gets required
-    // after the simpleMerge token has already been removed.
-    for (var key in obj) {
-      if(!hasOwn(obj, key)) continue;
-      this[key] = obj[key];
-    };
-  }
-
-  function isHash(obj) {
-    return obj instanceof Hash;
-  }
-
-  Hash.prototype.constructor = Object;
 
 
   buildClassChecks();
@@ -1631,7 +2059,6 @@
 
   /***
    * @module Date
-   * @dependency core
    * @description Date parsing and formatting, relative formats like "1 minute ago", Number methods like "daysAgo", locale support with default English locale definition.
    *
    ***/
@@ -1641,9 +2068,6 @@
 
   var DECIMAL_REG       = '(?:[,.]\\d+)?';
   var REQUIRED_TIME_REG = '({t})?\\s*(\\d{1,2}{d})(?:{h}([0-5]\\d{d})?{m}(?::?([0-5]\\d'+DECIMAL_REG+'){s})?\\s*(?:({t})|(Z)|(?:([+-])(\\d{2,2})(?::?(\\d{2,2}))?)?)?|\\s*({t}))';
-
-  var COMPILED_FORMAT_REG = /(\{\w+\})|%\w+|%%|[^{}%]+/g;
-  var DATE_FORMAT_TOKEN_REG = /\{(\w+)\}|%(%|\w+)/;
 
   var TIMEZONE_ABBREVIATION_REG = /(\w{3})[()\s\d]*$/;
 
@@ -1664,9 +2088,6 @@
 
   // A hash of date units by name
   var dateUnitsByName;
-
-  // Output formats are lazily compiled, so store references here.
-  var compiledOutputFormats = {};
 
   // Format tokens by name
   var ldmlTokens = {},
@@ -1881,9 +2302,11 @@
       ordinalToken: 'wo',
       ldmlPaddedToken: 'ww',
       get: function(d, localeCode) {
-        var loc = localeManager.get(localeCode);
         // Locale dependent, 1-53
-        return getWeekNumber(d, true, loc.getFirstDayOfWeek(localeCode), loc.getFirstDayOfWeekYear(localeCode));
+        var loc = localeManager.get(localeCode),
+            dow = loc.getFirstDayOfWeek(localeCode),
+            doy = loc.getFirstDayOfWeekYear(localeCode);
+        return getWeekNumber(d, true, dow, doy);
       }
     },
     {
@@ -2057,6 +2480,36 @@
     }
   ];
 
+
+  /***
+   * @namespace Sugar
+   *
+   ***
+   * @method newDateInternal([fn])
+   * @namespace Sugar
+   * @returns Mixed
+   * @accessor
+   * @short Gets or sets Sugar's internal date constructor.
+   * @extra Many methods construct a `new Date()` internally as a reference point
+   *        (`isToday`, relative formats like `tomorrow`, etc). You can override
+   *        this here if you need it to be something else. Most commonly, this
+   *        allows you to return a shifted date to simulate a specific timezone,
+   *        as dates in Javascript are always local. Setting to `null` restores
+   *        the default.
+   *
+   ***/
+  var _newDateInternal = defineAccessor(sugarDate, 'newDateInternal', defaultNewDate);
+
+
+  /***
+   * @namespace Date
+   *
+   ***/
+
+  function setDateChainableConstructor() {
+    setChainableConstructor(sugarDate, isDate, createDate);
+  }
+
   // General helpers
 
   function tzOffset(d) {
@@ -2138,10 +2591,12 @@
   }
 
   function getUTCOffset(d, iso) {
-    var offset = _utc(d) ? 0 : tzOffset(d);
-    var colon  = iso === true ? ':' : '';
+    var offset = _utc(d) ? 0 : tzOffset(d), hours, mins, colon;
+    colon  = iso === true ? ':' : '';
     if (!offset && iso) return 'Z';
-    return padNumber(trunc(-offset / 60), 2, true) + colon + padNumber(abs(offset % 60), 2);
+    hours = padNumber(trunc(-offset / 60), 2, true);
+    mins = padNumber(abs(offset % 60), 2);
+    return  hours + colon + mins;
   }
 
   // Date argument helpers
@@ -2508,16 +2963,18 @@
       } else {
         moveToBeginningOfUnit(date, unit, localeCode);
       }
-      // This value of -2 is arbitrary but it's a nice clean way to hook into this system.
+      // This value of -2 is arbitrary but it's a clean way to hook into this system.
       if (modifier.value === -2) {
         resetTime(date);
       }
     }
 
-    function handleAmericanVariant() {
-      var tmp = set.month;
-      set.month = set.date;
-      set.date  = tmp;
+    function handleAmericanVariant(loc, set) {
+      if(!isString(set.month) && (isString(set.date) || loc.isMDY())) {
+        var tmp = set.month;
+        set.month = set.date;
+        set.date  = tmp;
+      }
     }
 
     function handleLocalizedRelativeDay(loc, mod) {
@@ -2541,6 +2998,18 @@
         // the previous month. This needs to be independent of the "prefer" flag because
         // we are only ensuring that the weekday is in the future, not the entire date.
         weekdayForward = true;
+      }
+    }
+
+    function handleLocalizedHours(hours) {
+      set.hours = hours % 24;
+      if (hours > 23) {
+        // If the date has hours past 24, we need to prevent it from traversing
+        // into a new day as that trigger it being part of a new week in ambiguous
+        // dates such as "Monday".
+        afterDateSet(function() {
+          advanceDate(date, 'date', trunc(hours / 24));
+        });
       }
     }
 
@@ -2622,8 +3091,8 @@
               return false;
             }
 
-            if (dif.variant && !isString(set.month) && (isString(set.date) || baseLocale.isMDY())) {
-              handleAmericanVariant();
+            if (dif.variant) {
+              handleAmericanVariant(loc, set);
             }
 
             if (hasAbbreviatedYear(set)) {
@@ -2638,8 +3107,7 @@
             }
 
             if (set.hours && (tmp = loc.modifiersByName[set.hours])) {
-              // Set hour tokens like "noon"
-              set.hours = tmp.value;
+              handleLocalizedHours(tmp.value);
             }
 
             if (set.day && (tmp = loc.modifiersByName[set.day])) {
@@ -2699,7 +3167,7 @@
           date.setTime(date.getTime() + (tzOffset(date) * MINUTE));
         }
       } else if (set.unit) {
-        // If a set contains a unit ("days", "months", etc.), then it is relative to the current date.
+        // If a set has a unit ("days", etc), then it is relative to the current date.
         updateDate(date, set, false, 1);
       } else {
         if (_utc(date)) {
@@ -2711,11 +3179,12 @@
       }
       fireCallbacks();
     }
-    // A date created by parsing a string presumes that the format *itself* is UTC, but
-    // not that the date, once created, should be manipulated as such. In other words,
-    // if you are creating a date object from a server time "2012-11-15T12:00:00Z",
-    // in the majority of cases you are using it to create a date that will, after creation,
-    // be manipulated as local, so reset the utc flag here unless "setUTC" is also set.
+    // A date created by parsing a string presumes that the format *itself* is
+    // UTC, but not that the date, once created, should be manipulated as such. In
+    // other words, if you are creating a date object from a server time
+    // "2012-11-15T12:00:00Z", in the majority of cases you are using it to create
+    // a date that will, after creation, be manipulated as local, so reset the utc
+    // flag here unless "setUTC" is also set.
     _utc(date, !!options.setUTC);
     return {
       date: date,
@@ -2774,7 +3243,9 @@
   }
 
   function getWeekYear(d, localeCode, iso) {
-    var year = getYear(d), month = getMonth(d), firstDayOfWeek, firstDayOfWeekYear, week, loc;
+    var year, month, firstDayOfWeek, firstDayOfWeekYear, week, loc;
+    year = getYear(d);
+    month = getMonth(d);
     if (month === 0 || month === 11) {
       if (!iso) {
         loc = localeManager.get(localeCode);
@@ -2862,36 +3333,20 @@
 
   // Date formatting helpers
 
-  function getCompiledTokens(str) {
-    var compiled = [];
-    forEach(str.match(COMPILED_FORMAT_REG), function(p) {
-      var match = p.match(DATE_FORMAT_TOKEN_REG), token, format;
-      if (match) {
-        token = match[1] || match[2];
-        format = match[1] ? ldmlTokens[token] : strfTokens[token];
-        if (format) {
-          compiled.push(format);
-        } else {
-          compiled.push(token);
-        }
-        return;
-      }
-      compiled.push(p);
-    });
-    return compiled;
+
+  // Format matcher for LDML or STRF tokens.
+  var dateFormatMatcher = createFormatMatcher(getLdml, getStrf, checkDateToken);
+
+  function checkDateToken(ldml, strf) {
+    return ldmlTokens[ldml] || strfTokens[strf];
   }
 
-  function executeCompiledOutputFormat(d, format, localeCode) {
-    var compiledFormat, length, i, t, result = '';
-    compiledFormat = compiledOutputFormats[format];
-    if (!compiledFormat) {
-      compiledFormat = compiledOutputFormats[format] = getCompiledTokens(format);
-    }
-    for(i = 0, length = compiledFormat.length; i < length; i++) {
-      t = compiledFormat[i];
-      result += isFunction(t) ? t(d, localeCode) : t;
-    }
-    return result;
+  function getLdml(d, token, localeCode) {
+    return ldmlTokens[token](d, localeCode);
+  }
+
+  function getStrf(d, token, localeCode) {
+    return strfTokens[token](d, localeCode);
   }
 
   function formatDate(d, format, relative, localeCode) {
@@ -2912,11 +3367,8 @@
       }
       return localeManager.get(localeCode).getRelativeFormat(adu);
     }
-    return executeCompiledOutputFormat(d, getDateFormat(format), localeCode);
-  }
-
-  function getDateFormat(format) {
-    return CONSTANT_FORMATS[format] || format || '{long}';
+    format = CONSTANT_FORMATS[format] || format || '{long}';
+    return dateFormatMatcher(format, d, localeCode);
   }
 
   // Date comparison helpers
@@ -2971,8 +3423,9 @@
         max = getMaxBySpecificity();
       }
       if (!override && p.set.sign && p.set.specificity !== 'millisecond') {
-        // If the time is relative, there can occasionally be an disparity between the relative date
-        // and "now", which it is being compared to, so set an extra margin to account for this.
+        // If the time is relative, there can occasionally be an disparity between
+        // the relative date and "now", which it is being compared to, so set an
+        // extra margin to account for this.
         loMargin = 50;
         hiMargin = -50;
       }
@@ -3076,7 +3529,7 @@
     }
 
     if (isNumber(params) && advance) {
-      // If param is a number and we're advancing, the number is presumed to be milliseconds.
+      // If param is a number and advancing, the number is in milliseconds.
       params = { milliseconds: params };
     } else if (isNumber(params)) {
       // Otherwise just set the timestamp and return.
@@ -3153,7 +3606,11 @@
     return targetMonth % 12 !== getMonth(d);
   }
 
-  function createDate(contextDate, d, options) {
+  function createDate(d, options) {
+    return getExtendedDate(null, d, options).date;
+  }
+
+  function createDateWithContext(contextDate, d, options) {
     return getExtendedDate(contextDate, d, options).date;
   }
 
@@ -3400,10 +3857,10 @@
       };
 
       var since = function(date, d, options) {
-        return getTimeDistanceForUnit(date, createDate(date, d, options), u);
+        return getTimeDistanceForUnit(date, createDateWithContext(date, d, options), u);
       };
       var until = function(date, d, options) {
-        return getTimeDistanceForUnit(createDate(date, d, options), date, u);
+        return getTimeDistanceForUnit(createDateWithContext(date, d, options), date, u);
       };
 
       methods[u.name + 'sAgo']   = methods[u.name + 'sUntil']   = until;
@@ -3451,7 +3908,7 @@
 
     function buildAlias(alias) {
       return function(d, localeCode) {
-        return executeCompiledOutputFormat(d, alias, localeCode);
+        return dateFormatMatcher(alias, d, localeCode);
       };
     }
 
@@ -3474,7 +3931,7 @@
     function getIdentityFormat(name) {
       return function(d, localeCode) {
         var loc = localeManager.get(localeCode);
-        return executeCompiledOutputFormat(d, loc[name], localeCode);
+        return dateFormatMatcher(loc[name], d, localeCode);
       };
     }
 
@@ -3595,16 +4052,6 @@
     });
   }
 
-  /**
-   * @method Date.newDateInternal([fn])
-   * @returns Mixed
-   * @short Gets or sets Sugar's internal date constructor.
-   * @extra Many methods construct a `new Date()` internally as a reference point (`isToday`, relative formats like `tomorrow`, etc). You can override this here if you need it to be something else. Most commonly, this allows you to return a shifted date to simulate a specific timezone, as dates in Javascript are always local. Setting to `null` restores the default.
-   *
-   **/
-
-  var _newDateInternal = defineAccessor(sugarDate, 'newDateInternal', defaultNewDate);
-
   defineStatic(sugarDate, {
 
      /***
@@ -3656,7 +4103,7 @@
      *
      ***/
     'create': function(d, options) {
-      return createDate(null, d, options);
+      return createDate(d, options);
     },
 
      /***
@@ -3835,7 +4282,7 @@
      *
      ***/
     'get': function(date, d, options) {
-      return createDate(date, d, options);
+      return createDateWithContext(date, d, options);
     },
 
      /***
@@ -3992,7 +4439,7 @@
      *
      ***/
     'isAfter': function(date, d, margin) {
-      return date.getTime() > createDate(null, d).getTime() - (margin || 0);
+      return date.getTime() > createDate(d).getTime() - (margin || 0);
     },
 
      /***
@@ -4007,7 +4454,7 @@
      *
      ***/
     'isBefore': function(date, d, margin) {
-      return date.getTime() < createDate(null, d).getTime() + (margin || 0);
+      return date.getTime() < createDate(d).getTime() + (margin || 0);
     },
 
      /***
@@ -4023,8 +4470,8 @@
      ***/
     'isBetween': function(date, d1, d2, margin) {
       var t  = date.getTime();
-      var t1 = createDate(null, d1).getTime();
-      var t2 = createDate(null, d2).getTime();
+      var t1 = createDate(d1).getTime();
+      var t2 = createDate(d2).getTime();
       var lo = min(t1, t2);
       var hi = max(t1, t2);
       margin = margin || 0;
@@ -4350,10 +4797,10 @@
       return round(n * multiplier);
     };
     after = function(n, d, options) {
-      return advanceDate(createDate(null, d, options), u.name, n);
+      return advanceDate(createDate(d, options), u.name, n);
     };
     before = function(n, d, options) {
-      return advanceDate(createDate(null, d, options), u.name, -n);
+      return advanceDate(createDate(d, options), u.name, -n);
     };
     methods[name] = base;
     methods[name + 's'] = base;
@@ -4391,7 +4838,6 @@
 
   /***
    * @module Locales
-   * @dependency date
    * @description Locale definitions French (fr), Italian (it), Spanish (es), Portuguese (pt), German (de), Russian (ru), Polish (pl), Swedish (sv), Japanese (ja), Korean (ko), Simplified Chinese (zh-CN), and Traditional Chinese (zh-TW). Locales can also be included individually. See @date_locales for more.
    *
    ***/
@@ -4582,7 +5028,9 @@
       }
       mult = !this.plural || num === 1 ? 0 : 1;
       unit = this.units[mult * 8 + u] || this.units[u];
-      sign = filter(this.modifiers, function(m) { return m.name == 'sign' && m.value == (ms > 0 ? 1 : -1); })[0];
+      sign = filter(this.modifiers, function(m) {
+        return m.name == 'sign' && m.value == (ms > 0 ? 1 : -1);
+      })[0];
       return format.replace(/\{(.*?)\}/g, function(full, match) {
         switch(match) {
           case 'num': return num;
@@ -4593,11 +5041,23 @@
     },
 
     getFormats: function() {
-      return this.cachedFormat ? [this.cachedFormat].concat(this.compiledFormats) : this.compiledFormats;
+      return this.cachedFormat ?
+        [this.cachedFormat].concat(this.compiledFormats) :
+        this.compiledFormats;
     },
 
     addFormat: function(src, allowsTime, match, variant, iso) {
-      var to = match || [], loc = this, time, timeMarkers, lastIsNumeral;
+      var to = match || [], loc = this, time;
+
+      function getTimeFirst(src, time) {
+        return '(?:' + time + ')[,\\s\\u3000]+?' + src;
+      }
+
+      function getTimeLast(src, time) {
+        var req = /\\d\{\d,\d\}\)+\??$/.test(src) ? '+' : '*';
+        var timeMarkers = ['T','[\\s\\u3000]'].concat(loc.get('timeMarker'));
+        return src + '(?:[,\\s]*(?:' + timeMarkers.join('|') + req + ')' + time + ')?';
+      }
 
       src = src.replace(/\s+/g, '[,. ]*');
       src = src.replace(/\{([^,]+?)\}/g, function(all, k) {
@@ -4638,10 +5098,8 @@
       });
       if (allowsTime) {
         time = loc.prepareTimeFormat(iso);
-        timeMarkers = ['T','[\\s\\u3000]'].concat(loc.get('timeMarker'));
-        lastIsNumeral = /\\d\{\d,\d\}\)+\??$/.test(src);
-        loc.addRawFormat('(?:' + time + ')[,\\s\\u3000]+?' + src, TIME_FORMAT.concat(to), variant);
-        loc.addRawFormat(src + '(?:[,\\s]*(?:' + timeMarkers.join('|') + (lastIsNumeral ? '+' : '*') +')' + time + ')?', to.concat(TIME_FORMAT), variant);
+        loc.addRawFormat(getTimeFirst(src, time), TIME_FORMAT.concat(to), variant);
+        loc.addRawFormat(getTimeLast(src, time), to.concat(TIME_FORMAT), variant);
       } else {
         loc.addRawFormat(src, to, variant);
       }
@@ -4661,7 +5119,7 @@
     },
 
     prepareTimeFormat: function(iso) {
-      var loc = this, timeSuffixMapping = {'h':0,'m':1,'s':2};
+      var loc = this, timeSuffixMapping = {'h':0,'m':1,'s':2}, src;
       return REQUIRED_TIME_REG.replace(/{([a-z])}/g, function(full, token) {
         // The ISO format allows times without ":",
         // so make sure that these markers are optional.
@@ -4681,7 +5139,8 @@
           if (add = loc.timeSuffixes[timeSuffixMapping[token]]) {
             separators.push(add + '\\s*');
           }
-          return separators.length === 0 ? '' : '(?:' + separators.join('|') + ')' + (tokenIsRequired ? '' : '?');
+          src = '(?:' + separators.join('|') + ')' + (tokenIsRequired ? '' : '?');
+          return separators.length === 0 ? '' : src;
         }
       });
     },
@@ -4931,11 +5390,11 @@
   buildFormatTokens();
   buildDateUnitMethods();
   buildRelativeAliases();
+  setDateChainableConstructor();
   'use strict';
 
   /***
    * @module Range
-   * @dependency core
    * @description Ranges allow creating spans of numbers, strings, or dates. They can enumerate over specific points within that range, and be manipulated and compared.
    *
    ***/
@@ -5105,7 +5564,9 @@
      *
      ***/
     'isValid': function() {
-      return isValidRangeMember(this.start) && isValidRangeMember(this.end) && typeof this.start === typeof this.end;
+      return isValidRangeMember(this.start) &&
+             isValidRangeMember(this.end) &&
+             typeof this.start === typeof this.end;
     },
 
     /***
@@ -5120,9 +5581,8 @@
      *
      ***/
     'span': function() {
-      return this.isValid() ? abs(
-        getRangeMemberNumericValue(this.end) - getRangeMemberNumericValue(this.start)
-      ) + 1 : NaN;
+      var n = getRangeMemberNumericValue(this.end) - getRangeMemberNumericValue(this.start);
+      return this.isValid() ? abs(n) + 1 : NaN;
     },
 
     /***
@@ -5433,7 +5893,6 @@
 
   /***
    * @module Number
-   * @dependency core
    * @description Number formatting, rounding (with precision). Aliases to Math methods.
    *
    ***/
@@ -5445,15 +5904,34 @@
       METRIC_UNITS_SHORT  = 'nμm|k',
       METRIC_UNITS_FULL   = 'yzafpnμm|KMGTPEZY';
 
-  function getThousands() {
-    var str = sugarNumber.thousands;
-    return isString(str) ? str : HALF_WIDTH_COMMA;
-  }
 
-  function getDecimal() {
-    var str = sugarNumber.decimal;
-    return isString(str) ? str : HALF_WIDTH_PERIOD;
-  }
+  /***
+   * @namespace Sugar
+   *
+   ***
+   * @method thousands([str])
+   * @returns Mixed
+   * @accessor
+   * @short Gets or sets a string to be used as the thousands marker (default ",").
+   * @extra Used by `Number#format`, `Nubmer#abbr`, `Number#metric`, and `Number#bytes`. Setting to `null` restores the default.
+   *
+   ***
+   * @method decimal([str])
+   * @namespace Sugar
+   * @returns Mixed
+   * @accessor
+   * @short Gets or sets a string to be used as the decimal marker (default ".").
+   * @extra Used by `Number#format`, `Nubmer#abbr`, `Number#metric`, and `Number#bytes`. Setting to `null` restores the default.
+   *
+   ***/
+  var _thousands = defineAccessor(sugarNumber, 'thousands', HALF_WIDTH_COMMA);
+  var _decimal   = defineAccessor(sugarNumber, 'decimal', HALF_WIDTH_PERIOD);
+
+
+  /***
+   * @namespace Number
+   *
+   ***/
 
   function abbreviateNumber(num, precision, ustr, bytes) {
     var fixed        = num.toFixed(20),
@@ -5491,10 +5969,9 @@
   }
 
   function numberFormat(num, place) {
-    var i, str, split, integer, fraction, result = '';
-    var thousands = getThousands();
-    var decimal   = getDecimal();
-    str      = (isNumber(place) ? withPrecision(num, place || 0).toFixed(max(place, 0)) : num.toString()).replace(/^-/, '');
+    var i, str, split, integer, fraction, result = '', p = isNumber(place);
+    str = p ? withPrecision(num, place || 0).toFixed(max(place, 0)) : num.toString();
+    str = str.replace(/^-/, '');
     split    = periodSplit(str);
     integer  = split[0];
     fraction = split[1];
@@ -5503,13 +5980,13 @@
     } else {
       for(i = integer.length; i > 0; i -= 3) {
         if (i < integer.length) {
-          result = thousands + result;
+          result = _thousands() + result;
         }
         result = integer.slice(max(0, i - 3), i) + result;
       }
     }
     if (fraction) {
-      result += decimal + repeatString('0', (place || 0) - fraction.length) + fraction;
+      result += _decimal() + repeatString('0', (place || 0) - fraction.length) + fraction;
     }
     return (num < 0 ? '-' : '') + result;
   }
@@ -5631,7 +6108,7 @@
      * @method abbr([precision] = 0)
      * @returns String
      * @short Returns an abbreviated form of the number ("k" for thousand, "m" for million, etc).
-     * @extra [precision] will round to the given precision. %Sugar.Number.thousands% and %Sugar.Number.decimal% allow custom markers to be used.
+     * @extra [precision] will round to the given precision. %Sugar.thousands% and %Sugar.decimal% allow custom markers to be used.
      * @example
      *
      *   (1000).abbr()    -> "1k"
@@ -5693,7 +6170,7 @@
      * @method format([place] = 0)
      * @returns String
      * @short Formats the number to a readable string.
-     * @extra If [place] is %undefined%, the place will automatically be determined. %Sugar.Number.thousands% and %Sugar.Number.decimal% allow custom markers to be used.
+     * @extra If [place] is %undefined%, the place will automatically be determined. %Sugar.thousands% and %Sugar.decimal% allow custom markers to be used.
      * @example
      *
      *   (56782).format()    -> '56,782'
@@ -5894,7 +6371,6 @@
 
   /***
    * @module Function
-   * @dependency core
    * @description Lazy, throttled, and memoized functions, delayed functions and handling of timers, argument currying.
    *
    ***/
@@ -6091,12 +6567,11 @@
      * @method after(<n>)
      * @returns Function
      * @short Creates a function that will execute after <n> calls.
-     * @extra %after% is useful for running a final callback after a specific number of operations, often when the order in which the operations will complete is unknown. The created function will be passed an array of the arguments that it has collected from each after <n>.
+     * @extra `after` is useful for running a final callback after a specific number of operations, often when the order in which the operations will complete is unknown. The created function will be passed an array of the arguments that it has collected from each after <n>. Note that the function will execute on every call after <n>. Use `once` in conjunction with this method to prevent being triggered by subsequent calls.
      * @example
      *
-     *   var fn = (function() {
-     *     // Will be executed once
-     *   }).after(3); fn(); fn(); fn();
+     *   logAfter3 = logHello.after(3); fn(); fn(); fn(); fn();            // Will log twice
+     *   logOnceAfter3 = logHello.once().after(3); fn(); fn(); fn(); fn(); // Will log once
      *
      ***/
     'after': function(fn, num) {
@@ -6275,7 +6750,6 @@
 
   /***
    * @module Enumerable
-   * @dependency core
    * @description Counting, mapping, and finding methods on both arrays and objects.
    *
    ***/
@@ -6874,6 +7348,19 @@
     return result;
   }
 
+  function objectReduce(obj, fn, acc) {
+    var init = isDefined(acc);
+    iterateOverObject(obj, function(key, val) {
+      if (!init) {
+        acc = val;
+        init = true;
+        return;
+      }
+      acc = fn(acc, val, key, obj);
+    });
+    return acc;
+  }
+
   function objectNone(obj, f) {
     return !objectSome(obj, f);
   }
@@ -6919,9 +7406,9 @@
      * @extra <map> can also be a string, which is a shortcut for a function that gets that property (or invokes a function) on each element. This string allows `deep mapping`.
      * @callback
      *
-     *   key The key of the current iteration.
-     *   val The value of the current iteration.
-     *   obj A reference to the object.
+     *   key The key of the current property.
+     *   val The value of the current property.
+     *   obj A reference to <obj>.
      *
      * @example
      *
@@ -6935,6 +7422,35 @@
     },
 
     /***
+     * @method Object.reduce(<obj>, <fn>, [init])
+     * @returns Mixed
+     * @short Reduces the object to a single result.
+     * @extra This operation is sometimes called "accumulation", as it takes the result of the last iteration of <fn> and passes it as the first argument to the next iteration, "accumulating" that value as it goes. The return value of this method will be the return value of the final iteration of <fn>. If [init] is passed, it will be the initial "accumulator" (the first argument). If [init] is not passed, then a property of the object will be used instead and <fn> will not be called for that property. Note that object properties have no order, and this may lead to bugs (for example if performing division or subtraction operations on a value). If order is important, use an array instead!
+     *
+     * @callback
+     *
+     *   acc The "accumulator", either [init], the result of the last iteration of <fn>, or a property of <obj>.
+     *   val The value of the current property called for <fn>.
+     *   key The key of the current property called for <fn>.
+     *   obj A reference to <obj>.
+     *
+     * @example
+     *
+     *   Object.reduce({a:2,b:4}, function(a, b, bKey, obj) {
+     *     return a * b;
+     *   }); -> 8
+     *
+     *   Object.reduce({a:2,b:4}, function(a, b, bKey, obj) {
+     *     return a * b;
+     *   }, 10); -> 80
+     *
+     *
+     ***/
+    'reduce': function(obj, fn, init) {
+      return objectReduce(obj, fn, init);
+    },
+
+    /***ds
      * @method Object.each(<obj>, <fn>)
      * @returns Object
      * @short Runs <fn> against each property in the object.
@@ -7217,28 +7733,10 @@
    *
    ***/
   alias(sugarObject, 'any', 'some');
-
-
-  function buildHashEnumerable() {
-
-    var methods = [
-      'map','some','any','every','all','none','find','filter',
-      'each','count','sum','average','median',
-      'min','max','most','least'
-    ];
-
-    forEach(methods, function(name) {
-      setProperty(Hash.prototype, name, sugarObject[name].instance);
-    });
-
-  }
-
-  buildHashEnumerable();
   'use strict';
 
   /***
    * @module Array
-   * @dependency core
    * @description Array manipulation and traversal, alphanumeric sorting and collation.
    *
    ***/
@@ -7246,6 +7744,85 @@
   var HALF_WIDTH_NINE = 0x39;
   var FULL_WIDTH_NINE = 0xff19;
 
+  /***
+   * @namespace Sugar
+   *
+   ***
+   * @method sortIgnore([reg] = null)
+   * @returns Mixed
+   * @accessor
+   * @short Gets or sets a regex to ignore when sorting.
+   * @extra Used by `Array#sortBy`.
+   ***
+   * @method sortIgnoreCase([bool] = true)
+   * @returns Mixed
+   * @accessor
+   * @short Gets or sets a boolean that ignores case when sorting.
+   * @extra Used by `Array#sortBy`.
+   ***
+   * @method sortNatural([bool] = true)
+   * @returns Mixed
+   * @accessor
+   * @short Gets or sets a boolean that turns on natural sort mode.
+   * @extra Used by `Array#sortBy`. "Natural sort" means that numerals like "10"
+   *        will be sorted naturally after "9" instead of after "1".
+   ***
+   * @method sortCollate([fn])
+   * @returns Mixed
+   * @accessor
+   * @short Gets or sets the collation function used when sorting strings.
+   * @extra Used by `Array#sortBy`. The default is a natural string sort based on
+   *        other `sort` options. Setting the collation function directly here will
+   *        override all these options. Setting to `null` restores the default.
+   ***
+   * @method sortOrder([str])
+   * @returns Mixed
+   * @accessor
+   * @short Gets or sets a string of characters to use as the base sort order.
+   * @extra Used by `Array#sortBy`. The default is an order natural to most major
+   *        world languages, but can be modified as needed. Setting to `null`
+   *        restores the default.
+   *
+   ***
+   * @method sortEquivalents([obj])
+   * @returns Mixed
+   * @accessor
+   * @short Gets or sets a table of characters that should be considered equivalent
+   *        when sorting (for example "é" and "e").
+   * @extra Used by `Array#sortBy`. The default table produces a natural sort order
+   *        for most world languages, however can be modified for others. For
+   *        example, setting "ä" and "ö" to `null` in the table would produce a
+   *        perfect Scandanavian sort order. Setting [obj] to `null` restores the
+   *        default, however if the table is mutated changes will persist.
+   *
+   ***/
+  var _sortIgnore      = defineAccessor(sugarArray, 'sortIgnore');
+  var _sortNatural     = defineAccessor(sugarArray, 'sortNatural', true);
+  var _sortIgnoreCase  = defineAccessor(sugarArray, 'sortIgnoreCase', true);
+  var _sortOrder       = defineAccessor(sugarArray, 'sortOrder', getSortOrder());
+  var _sortCollate     = defineAccessor(sugarArray, 'sortCollate', collateStrings);
+  var _sortEquivalents = defineAccessor(sugarArray, 'sortEquivalents', getSortEquivalents());
+
+
+  /***
+   * @namespace Array
+   *
+   ***/
+
+  function setArrayChainableConstructor() {
+    setChainableConstructor(sugarArray, isArrayOrInherited, arrayCreateFromArrayLike);
+  }
+
+  function isArrayOrInherited(obj) {
+    return obj && obj.constructor && isArray(obj.constructor.prototype);
+  }
+
+  function arrayCreateFromArrayLike(obj) {
+    if (isObjectType(obj) || isString(obj)) {
+      return Array.from(obj);
+    }
+    return isDefined(obj) ? [obj] : [];
+  }
 
   function arrayClone(arr) {
     var clone = [], i = arr.length;
@@ -7359,8 +7936,8 @@
       var stringified = stringify(el),
           isReference = !canCompareValue(el);
       // Add the result to the array if:
-      // 1. We're subtracting intersections or it doesn't already exist in the result and
-      // 2. It exists in the compared array and we're adding, or it doesn't exist and we're removing.
+      // 1. Subtracting intersections or doesn't already exist in the result
+      // 2. Exists and we're adding, or doesn't exist and we're removing.
       if (elementExistsInHash(o, stringified, el, isReference) !== subtract) {
         discardElementFromHash(o, stringified, el, isReference);
         result.push(el);
@@ -7371,35 +7948,35 @@
 
   // Array diff helpers
 
-  function elementExistsInHash(hash, key, el, isReference) {
+  function elementExistsInHash(obj, key, el, isReference) {
     var exists;
     if (isReference) {
-      if (!hash[key]) {
-        hash[key] = [];
+      if (!obj[key]) {
+        obj[key] = [];
       }
-      exists = indexOf(hash[key], el) !== -1;
+      exists = indexOf(obj[key], el) !== -1;
     } else {
-      exists = hasOwn(hash, key);
+      exists = hasOwn(obj, key);
     }
     return exists;
   }
 
-  function checkForElementInHashAndSet(hash, el) {
+  function checkForElementInHashAndSet(obj, el) {
     var stringified = stringify(el),
         isReference = !canCompareValue(el),
-        exists      = elementExistsInHash(hash, stringified, el, isReference);
+        exists      = elementExistsInHash(obj, stringified, el, isReference);
     if (isReference) {
-      hash[stringified].push(el);
+      obj[stringified].push(el);
     } else {
-      hash[stringified] = el;
+      obj[stringified] = el;
     }
     return exists;
   }
 
-  function discardElementFromHash(hash, key, element, isReference) {
+  function discardElementFromHash(obj, key, element, isReference) {
     var arr, i = 0;
     if (isReference) {
-      arr = hash[key];
+      arr = obj[key];
       while(i < arr.length) {
         if (arr[i] === element) {
           arr.splice(i, 1);
@@ -7408,7 +7985,7 @@
         }
       }
     } else {
-      delete hash[key];
+      delete obj[key];
     }
   }
 
@@ -7531,60 +8108,42 @@
   }
 
 
-  /***
-   * @method Array.sortIgnore([reg])
-   * @returns Mixed
-   * @short Gets or sets a regex that will ignore matches when sorting (for example punctuation).
-   * @extra Used by `Array#sortBy`. (Default is `null`)
-   *
-   ***
-   * @method Array.sortIgnoreCase([bool])
-   * @returns Mixed
-   * @short Gets or sets a boolean that converts strings to lowercase when sorting.
-   * @extra Used by `Array#sortBy`. (Default is `true`);
-   *
-   ***
-   * @method Array.sortNatural([bool])
-   * @returns Mixed
-   * @short Gets or sets a boolean that turns on natural sort mode.
-   * @extra Used by `Array#sortBy`. "Natural sort" means that numerals like "10" will be sorted naturally after "9" instead of after "1". (Default is `true`)
-   *
-   ***
-   * @method Array.sortCollate([fn])
-   * @returns Mixed
-   * @short Gets or sets the collation function used when sorting strings.
-   * @extra Used by `Array#sortBy`. The default is a natural string sort based on other `sort` options. Setting the collation function directly here will override all these options. Setting to `null` restores the default.
-   *
-   ***
-   * @method Array.sortOrder([str])
-   * @returns Mixed
-   * @short Gets or sets the base order as a string of characters to apply when sorting.
-   * @extra Used by `Array#sortBy`. The default is an order natural to most major world languages, but can be modified as needed. Setting to `null` restores the default.
-   *
-   ***
-   * @method Array.sortEquivalents([obj])
-   * @returns Mixed
-   * @short Gets or sets a table of characters that should be considered equivalent when sorting (for example "é" and "e").
-   * @extra Used by `Array#sortBy`. The default table produces a natural sort order for most world languages, however can be modified for others. For example, setting "ä" and "ö" to `null` in the table would produce a perfect Scandanavian sort order. Setting [obj] to `null` restores the default, however if the table is mutated changes will persist.
-   *
-   ***/
-
-  var _sortIgnore      = defineAccessor(sugarArray, 'sortIgnore');
-  var _sortNatural     = defineAccessor(sugarArray, 'sortNatural', true);
-  var _sortIgnoreCase  = defineAccessor(sugarArray, 'sortIgnoreCase', true);
-
-  var _sortOrder       = defineAccessor(sugarArray, 'sortOrder', getSortOrder());
-  var _sortCollate     = defineAccessor(sugarArray, 'sortCollate', collateStrings);
-  var _sortEquivalents = defineAccessor(sugarArray, 'sortEquivalents', getSortEquivalents());
-
-
   defineStatic(sugarArray, {
+
+    /***
+     *
+     * @method Array.create(<obj>, [clone] = false)
+     * @returns Array
+     * @short Creates an array from an unknown <obj>.
+     * @extra This method is similar to native `Array.from` but is faster when
+     *        <obj> is already an array, even when [clone] is true, in which case
+     *        the array will be shallow cloned. Additionally, it will not fail on
+     *        `undefined`, `null`, or numbers, producing an empty array in the
+     *        case of `undefined` and wrapping <obj> otherwise.
+     * @example
+     *
+     *   Array.create()          -> []
+     *   Array.create(8)         -> [8]
+     *   Array.create('abc')     -> ['a','b','c']
+     *   Array.create([1,2,3])   -> [1, 2, 3]
+     *   Array.create(undefined) -> []
+     *
+     ***/
+    'create': function(obj, clone) {
+      if (!isArrayOrInherited(obj)) {
+        obj = arrayCreateFromArrayLike(obj);
+      } else if (clone) {
+        obj = arrayClone(obj);
+      }
+      return obj;
+    },
 
     /***
      *
      * @method Array.construct(<n>, <fn>)
      * @returns Array
-     * @short Constructs an array of <n> length from the values of <fn>, which is passed a single index argument.
+     * @short Constructs an array of <n> length from the values of <fn>, which is
+     *        passed a single index argument.
      * @example
      *
      *   Array.construct(3, parseInt) -> [0, 1, 2]
@@ -7621,7 +8180,9 @@
      * @method isEqual(<arr>)
      * @returns Boolean
      * @short Returns true if the array equal to <arr>.
-     * @extra %isEqual% in Sugar is "egal", meaning the values are equal if they are "not observably distinguishable". This method is identical to, and a shortcut for `Object.isEqual()`.
+     * @extra `isEqual` in Sugar is "egal", meaning the values are equal if they
+     *        are "not observably distinguishable". This method is identical to,
+     *        and a shortcut for `Object.isEqual()`.
      * @example
      *
      *   ['a','b'].isEqual(['a','b'])           -> true
@@ -7650,7 +8211,9 @@
      * @method at(<index>, [loop] = true)
      * @returns Mixed
      * @short Gets the element(s) at a given index.
-     * @extra When [loop] is true, overshooting the end of the array (or the beginning) will begin counting from the other end. If <index> is an array, multiple elements will be returned.
+     * @extra When [loop] is true, overshooting the end of the array (or the
+     *        beginning) will begin counting from the other end. If <index> is an
+     *        array, multiple elements will be returned.
      * @example
      *
      *   [1,2,3].at(0)        -> 1
@@ -7669,7 +8232,12 @@
      * @method append(<item>, [index])
      * @returns Array
      * @short Appends <item> to the array.
-     * @extra If [index] is specified, it will append at [index], otherwise appends to the end of the array. `append` behaves like `concat` in that if <el> is an array it will be joined, not inserted. This method will change the array! Use `add` for a non-destructive alias. Also, `insert` is provided as an alias that reads better when using an index.
+     * @extra If [index] is specified, it will append at [index], otherwise
+     *        appends to the end of the array. `append` behaves like `concat` in
+     *        that if <el> is an array it will be joined, not inserted. This
+     *        method will change the array! Use `add` for a non-destructive alias.
+     *        Also, `insert` is provided as an alias that reads better when using
+     *        an index.
      * @example
      *
      *   [1,2,3,4].append(5)       -> [1,2,3,4,5]
@@ -7685,7 +8253,9 @@
      * @method add(<item>, [index])
      * @returns Array
      * @short Adds <item> to the array and returns the result as a new array.
-     * @extra If <item> is also an array, it will be joined to the array instead of inserted, making this essentially a more readable alias for `concat` with the added ability to specify the index to add at.
+     * @extra If <item> is also an array, it will be joined to the array instead
+     *        of inserted, making this essentially a more readable alias for
+     *        `concat` with the added ability to specify the index to add at.
      * @example
      *
      *   [1,2,3,4].add(5)       -> [1,2,3,4,5]
@@ -7700,7 +8270,9 @@
     /***
      * @method removeAt(<start>, [end])
      * @returns Array
-     * @short Removes element at <start>. If [end] is specified, removes the range between <start> and [end]. This method will change the array! If you don't intend the array to be changed use %clone% first.
+     * @short Removes element at <start>. If [end] is specified, removes the range
+     *        between <start> and [end]. This method will change the array! If you
+     *        don't intend the array to be changed use `clone` first.
      * @example
      *
      *   ['a','b','c'].removeAt(0) -> ['b','c']
@@ -7718,7 +8290,11 @@
      * @method unique([map])
      * @returns Array
      * @short Removes all duplicate elements in the array.
-     * @extra [map] may be a function mapping the value to be uniqued on or a string acting as a shortcut. This is most commonly used when you have a key that ensures the object's uniqueness, and don't need to check all fields. This method will also correctly operate on arrays of objects.
+     * @extra [map] may be a function mapping the value to be uniqued on or a
+     *        string acting as a shortcut. This is most commonly used when you
+     *        have a key that ensures the object's uniqueness, and don't need to
+     *        check all fields. This method will also correctly operate on arrays
+     *        of objects.
      * @example
      *
      *   [1,2,2,3].unique()                 -> [1,2,3]
@@ -7814,8 +8390,9 @@
     /***
      * @method compact([all] = false)
      * @returns Array
-     * @short Removes all instances of %undefined%, %null%, and %NaN% from the array.
-     * @extra If [all] is %true%, all "falsy" elements will be removed. This includes empty strings, 0, and false.
+     * @short Removes all instances of `undefined`, `null`, and `NaN` from the array.
+     * @extra If [all] is `true`, all "falsy" elements will be removed. This
+     *        includes empty strings, 0, and false.
      * @example
      *
      *   [1,null,2,undefined,3].compact() -> [1,2,3]
@@ -7832,13 +8409,15 @@
      * @method groupBy(<map>, [fn])
      * @returns Object
      * @short Groups the array by <map>.
-     * @extra Will return an object with keys equal to the grouped values. <map> may be a mapping function, or a string acting as a shortcut. Optionally calls [fn] for each group.
+     * @extra Will return an object with keys equal to the grouped values. <map>
+     *        may be a mapping function, or a string acting as a shortcut.
+     *        Optionally calls [fn] for each group.
      * @example
      *
      *   ['fee','fi','fum'].groupBy('length') -> { 2: ['fi'], 3: ['fee','fum'] }
      *   [{age:35,name:'ken'},{age:15,name:'bob'}].groupBy(function(n) {
      *     return n.age;
-     *   });                                  -> { 35: [{age:35,name:'ken'}], 15: [{age:15,name:'bob'}] }
+     *   }); -> { 35: [{age:35,name:'ken'}], 15: [{age:15,name:'bob'}] }
      *
      ***/
     'groupBy': function(arr, map, fn) {
@@ -7849,11 +8428,12 @@
      * @method inGroups(<num>, [padding] = None)
      * @returns Array
      * @short Groups the array into <num> arrays.
-     * @extra [padding] specifies a value with which to pad the last array so that they are all equal length.
+     * @extra [padding] specifies a value with which to pad the last array so that
+     *        they are all equal length.
      * @example
      *
-     *   [1,2,3,4,5,6,7].inGroups(3)         -> [ [1,2,3], [4,5,6], [7] ]
-     *   [1,2,3,4,5,6,7].inGroups(3, 'none') -> [ [1,2,3], [4,5,6], [7,'none','none'] ]
+     *   [1,2,3,4,5,6,7].inGroups(3)         -> [[1,2,3],[4,5,6],[7]]
+     *   [1,2,3,4,5,6,7].inGroups(3, 'none') -> [[1,2,3],[4,5,6],[7,'none','none']]
      *
      ***/
     'inGroups': function(arr, num, padding) {
@@ -7877,7 +8457,8 @@
      * @method inGroupsOf(<num>, [padding] = None)
      * @returns Array
      * @short Groups the array into arrays of <num> elements each.
-     * @extra [padding] specifies a value with which to pad the last array so that they are all equal length.
+     * @extra [padding] specifies a value with which to pad the last array so that
+     *        they are all equal length.
      * @example
      *
      *   [1,2,3,4,5,6,7].inGroupsOf(4)         -> [ [1,2,3,4], [5,6,7] ]
@@ -7917,7 +8498,9 @@
      * @method sample([num] = 1, [remove] = false)
      * @returns Mixed
      * @short Returns a random element from the array.
-     * @extra If [num] is passed, will return an array of [num] elements. If [remove] is true, sampled elements will also be removed from the array. [remove] can also be passed in place of [num].
+     * @extra If [num] is passed, will return an array of [num] elements. If
+     *        [remove] is true, sampled elements will also be removed from the
+     *        array. [remove] can also be passed in place of [num].
      * @example
      *
      *   [1,2,3,4,5].sample()  -> // Random element
@@ -7952,7 +8535,13 @@
      * @method sortBy(<map>, [desc] = false)
      * @returns Array
      * @short Returns a copy of the array sorted by <map>.
-     * @extra <map> may be a function, a string acting as a shortcut, an array (comparison by multiple values), or blank (direct comparison of array values). [desc] will sort the array in descending order. When the field being sorted on is a string, the resulting order will be determined by an internal collation algorithm that is optimized for major Western languages, but can be customized. For more information see %array_sorting%.
+     * @extra <map> may be a function, a string acting as a shortcut, an array
+     *        (comparison by multiple values), or blank (direct comparison of
+     *        array values). [desc] will sort the array in descending order. When
+     *        the field being sorted on is a string, the resulting order will be
+     *        determined by an internal collation algorithm that is optimized for
+     *        major Western languages, but can be customized. For more information
+     *        see `array_sorting`.
      * @example
      *
      *   ['world','a','new'].sortBy('length')       -> ['a','new','world']
@@ -7976,7 +8565,8 @@
      * @method remove(<f>)
      * @returns Array
      * @short Removes any element in the array that matches <f>.
-     * @extra This method will change the array! Use `exclude` for a non-destructive alias. This method implements `matching shortcuts`.
+     * @extra This method will change the array! Use `exclude` for a
+     *        non-destructive alias. This method implements `matching shortcuts`.
      * @example
      *
      *   [1,2,3].remove(3)         -> [1,2]
@@ -7994,7 +8584,8 @@
      * @method exclude(<f>)
      * @returns Array
      * @short Returns a new array with every element matching <f> removed.
-     * @extra This is a non-destructive alias for `remove`. It will not change the original array. This method implements `matching shortcuts`.
+     * @extra This is a non-destructive alias for `remove`. It will not change the
+     *        original array. This method implements `matching shortcuts`.
      * @example
      *
      *   [1,2,3].exclude(3)         -> [1,2]
@@ -8016,7 +8607,7 @@
     /***
      * @method union([a1], [a2], ...)
      * @returns Array
-     * @short Returns an array containing all elements in all arrays with duplicates removed.
+     * @short Returns an array containing elements in all arrays with duplicates removed.
      * @extra This method will also correctly operate on arrays of objects.
      * @example
      *
@@ -8063,11 +8654,15 @@
      * @method zip([arr1], [arr2], ...)
      * @returns Array
      * @short Merges multiple arrays together.
-     * @extra This method "zips up" smaller arrays into one large whose elements are "all elements at index 0", "all elements at index 1", etc. Useful when you have associated data that is split over separated arrays. If the arrays passed have more elements than the original array, they will be discarded. If they have fewer elements, the missing elements will filled with %null%.
+     * @extra This method "zips up" smaller arrays into one large whose elements
+     *        are "all elements at index 0", "all elements at index 1", etc.
+     *        Useful when you have associated data that is split over separated
+     *        arrays. If the arrays passed have more elements than the original
+     *        array, they will be discarded. If they have fewer elements, the
+     *        missing elements will filled with `null`.
      * @example
      *
-     *   [1,2,3].zip([4,5,6])                                       -> [[1,2], [3,4], [5,6]]
-     *   ['Martin','John'].zip(['Luther','F.'], ['King','Kennedy']) -> [['Martin','Luther','King'], ['John','F.','Kennedy']]
+     *   [1,2,3].zip([4,5,6]) -> [[1,2], [3,4], [5,6]]
      *
      ***/
     'zip': function(arr, args) {
@@ -8080,23 +8675,28 @@
 
   });
 
+
   /***
    * @method insert()
    * @alias append
    *
    ***/
   alias(sugarArray, 'insert', 'append');
+
+  setArrayChainableConstructor();
   'use strict';
 
   /***
    * @module Object
-   * @dependency core
-   * @description Object manipulation, type checking (isNumber, isString, ...), %extended objects% with hash-like methods available as instance methods.
+   * @description Object creation, manipulation, comparison, and type checking.
    *
    * Much thanks to kangax for his informative aricle about how problems with instanceof and constructor
    * http://perfectionkills.com/instanceof-considered-harmful-or-how-to-write-a-robust-isarray/
    *
    ***/
+
+  // Flag allowing Object.keys to be enhanced
+  var OBJECT_ENHANCEMENTS_FLAG = 'enhanceObject';
 
   var DONT_ENUM_PROPS = [
     'valueOf',
@@ -8118,6 +8718,9 @@
   var getOwnPropertyNames      = Object.getOwnPropertyNames;
   var getOwnPropertyDescriptor = Object.getOwnPropertyDescriptor;
 
+  // Internal reference to check if an object can be serialized.
+  var internalToString = Object.prototype.toString;
+
   // Iterate over an object with support
   // for the DontEnum bug in < IE9
   var iterateOverObjectSafe;
@@ -8137,15 +8740,16 @@
     });
   }
 
+  // Create
 
   // Query Strings | Creating
 
-  function toQueryStringWithOptions(obj, options) {
-    options = options || {};
-    if (isUndefined(options.separator)) {
-      options.separator = '_';
+  function toQueryStringWithOptions(obj, opts) {
+    opts = opts || {};
+    if (isUndefined(opts.separator)) {
+      opts.separator = '_';
     }
-    return toQueryString(obj, options.deep, options.transform, options.prefix || '', options.separator);
+    return toQueryString(obj, opts.deep, opts.transform, opts.prefix || '', opts.separator);
   }
 
   function toQueryString(obj, deep, transform, prefix, separator) {
@@ -8160,15 +8764,22 @@
   }
 
   function collectArrayAsQueryString(arr, deep, transform, prefix, separator) {
-    return map(arr, function(el) {
-      var key = prefix + (prefix && deep ? '[]' : '');
+    var el, qc, key, result = [];
+    // Intentionally treating sparse arrays as dense here by avoiding map,
+    // otherwise indexes will shift during the process of serialization.
+    for (var i = 0, len = arr.length; i < len; i++) {
+      el = arr[i];
+      key = prefix + (prefix && deep ? '[]' : '');
       if (!key && !isObjectType(el)) {
         // If there is no key, then the values of the array should be
         // considered as null keys, so use them instead;
-        return sanitizeURIComponent(el);
+        qc = sanitizeURIComponent(el);
+      } else {
+        qc = toQueryString(el, deep, transform, key, separator);
       }
-      return toQueryString(el, deep, transform, key, separator);
-    }).join('&');
+      result.push(qc);
+    }
+    return result.join('&');
   }
 
   function collectObjectAsQueryString(obj, deep, transform, prefix, separator) {
@@ -8208,15 +8819,16 @@
 
   // Query Strings | Parsing
 
-  function fromQueryStringWithOptions(obj, options) {
-    var str = String(obj || '').replace(/^.*?\?/, ''), result = {};
-    options = options || {};
+  function fromQueryStringWithOptions(obj, opts) {
+    var str = String(obj || '').replace(/^.*?\?/, ''), result = {}, auto;
+    opts = opts || {};
     if (str) {
       forEach(str.split('&'), function(p) {
         var split = p.split('=');
         var key = decodeURIComponent(split[0]);
         var val = split.length === 2 ? decodeURIComponent(split[1]) : '';
-        parseQueryComponent(result, key, val, options.deep, options.auto !== false, options.separator, options.transform);
+        auto = opts.auto !== false;
+        parseQueryComponent(result, key, val, opts.deep, auto, opts.separator, opts.transform);
       });
     }
     return result;
@@ -8239,7 +8851,7 @@
     var key = match[1];
     var inner = match[2].slice(1, -1).split('][');
     forEach(inner, function(k) {
-      if (!obj[key]) {
+      if (!hasOwn(obj, key)) {
         obj[key] = k ? {} : [];
       }
       obj = obj[key];
@@ -8429,8 +9041,6 @@
       return new Date(source.getTime());
     } else if (isRegExp(source, klass)) {
       return RegExp(source.source, getRegExpFlags(source));
-    } else if (isHash(source)) {
-      return new Hash;
     } else if (isArray(source, klass)) {
       return [];
     } else if (isPlainObject(source, klass)) {
@@ -8507,7 +9117,7 @@
   }
 
   function selectFromObject(obj, f, select) {
-    var match, result = isHash(obj) ? new Hash : {};
+    var match, result = {};
     f = [].concat(f);
     iterateOverObject(obj, function(key, value) {
       match = false;
@@ -8556,53 +9166,71 @@
     return result;
   }
 
+  function objectIntersectOrSubtract(obj1, obj2, subtract) {
+    if (!isObjectType(obj1)) {
+      return subtract ? obj1 : {};
+    }
+    obj2 = coercePrimitiveToObject(obj2);
+    function resolve(key, val, val1) {
+      var exists = key in obj2 && isEqual(val1, obj2[key]);
+      if (exists !== subtract) {
+        return val1;
+      }
+    }
+    return objectMerge({}, obj1, false, resolve);
+  }
+
+  /***
+   * @method Object.is[Type](<obj>)
+   * @returns Boolean
+   * @short Returns true if <obj> is an object of that type.
+   * @extra %isObject% will return true only for plain objects (not for instances of classes or native browser objects). Note also that %isNaN% will ONLY return true if the object IS %NaN%. It does not mean the same as browser native %isNaN%, which returns true for anything that is "not a number".
+   *
+   * @set
+   *   isArray
+   *   isBoolean
+   *   isDate
+   *   isFunction
+   *   isNumber
+   *   isString
+   *   isRegExp
+   *
+   * @example
+   *
+   *   Object.isArray([1,2,3])   -> true
+   *   Object.isDate(3)          -> false
+   *   Object.isRegExp(/wasabi/) -> true
+   *
+   ***/
+  function buildTypeCheckMethods() {
+    var checks = [isBoolean, isNumber, isString, isArray, isDate, isRegExp, isFunction];
+    defineInstanceAndStaticSimilar(sugarObject, TYPE_CHECK_NAMES, function(methods, name, i) {
+      methods['is' + name] = checks[i];
+    });
+  }
+
+
+  defineInstanceAndStatic(sugarObject, {
+
+    /***
+     * @method Object.keys(<obj>, [fn])
+     * @returns Array
+     * @short Returns an array containing the keys in <obj>. Optionally calls [fn] for each key.
+     * @extra Sugar provides a polyfill for browsers that don't support this method natively. Additionally it optionally enhances it to allow the callback function [fn]. Order of returned keys is not guaranteed.
+     * @example
+     *
+     *   Object.keys({ broken: 'wear' }) -> ['broken']
+     *   Object.keys({ broken: 'wear' }, function(key, value) {
+     *     // Called once for each key.
+     *   });
+     *
+     ***/
+    'keys': fixArgumentLength(getKeysWithCallback)
+
+  }, [ENHANCEMENTS_FLAG, OBJECT_ENHANCEMENTS_FLAG]);
+
 
   defineStatic(sugarObject, {
-
-    /***
-     * @method Object.extended(<obj> = {})
-     * @returns Extended object
-     * @short Creates a new object, equivalent to %new Object()% or %{}%, but with extended methods.
-     * @extra See %extended objects% for more.
-     * @example
-     *
-     *   Object.extended()
-     *   Object.extended({ happy:true, pappy:false }).keys() -> ['happy','pappy']
-     *   Object.extended({ happy:true, pappy:false }).values() -> [true, false]
-     *
-     ***/
-    'extended': function(obj) {
-      return new Hash(coercePrimitiveToObject(obj));
-    },
-
-    /***
-     * @method Object.get(<obj>, <prop>)
-     * @returns Mixed
-     * @short Gets a property of <obj>. If <prop> contains dot notation, the nested property will be returned.
-     * @example
-     *
-     *   Object.get({a:'b'}, 'a');       -> 'b'
-     *   Object.get({a:{b:'c'}}, 'a.b'); -> 'c'
-     *
-     ***/
-    'get': function(obj, prop) {
-      return deepGetProperty(obj, prop);
-    },
-
-    /***
-     * @method Object.set(<obj>, <key>, <val>)
-     * @returns Object
-     * @short Sets a property on <obj>. If <key> contains dot notation, the nested property will be set.
-     * @extra The original object passed will be returned.
-     * @example
-     *
-     *   Object.set({}, 'a', 'c');   -> {a:'c'}
-     *   Object.get({}, 'a.b', 'c'); -> {a:{b:'c'}}
-     *
-     ***/
-    'set': function(obj, key, val) {
-      return deepSetProperty(obj, key, val);
-    },
 
     /***
      * @method Object.fromQueryString(<str>, [options])
@@ -8641,20 +9269,34 @@
   defineInstanceAndStatic(sugarObject, {
 
     /***
-     * @method Object.keys(<obj>, [fn])
-     * @returns Array
-     * @short Returns an array containing the keys in <obj>. Optionally calls [fn] for each key.
-     * @extra This method is provided for browsers that don't support it natively, and additionally is enhanced to accept the callback [fn]. Returned keys are in no particular order. %keys% is available as an instance method on %extended objects%.
+     * @method Object.get(<obj>, <key>)
+     * @returns Mixed
+     * @short Gets a property of <obj>. <key> can be a deep property using dot or bracket notation.
      * @example
      *
-     *   Object.keys({ broken: 'wear' }) -> ['broken']
-     *   Object.keys({ broken: 'wear' }, function(key, value) {
-     *     // Called once for each key.
-     *   });
-     *   Object.extended({ broken: 'wear' }).keys() -> ['broken']
+     *   Object.get({a:'b'}, 'a');       -> 'b'
+     *   Object.get({a:{b:'c'}}, 'a.b'); -> 'c'
      *
      ***/
-    'keys': fixArgumentLength(getKeysWithCallback),
+    'get': function(obj, prop) {
+      return deepGetProperty(obj, prop);
+    },
+
+    /***
+     * @method Object.set(<obj>, <key>, <val>)
+     * @returns Object
+     * @short Sets a property on <obj>. <key> can be a deep property using dot or bracket notation.
+     * @extra If <key> is deep and the namespace does not exist, then it will be created either as an object (dot notation) or an array (bracket notation). Returns the object.
+     * @example
+     *
+     *   Object.set({}, 'a', 'c');    -> {a:'c'}
+     *   Object.set({}, 'a.b', 'c');  -> {a:{b:'c'}}
+     *   Object.set({}, 'a[0]', 'c'); -> {a:['c']}
+     *
+     ***/
+    'set': function(obj, key, val) {
+      return deepSetProperty(obj, key, val);
+    },
 
     /***
      * @method Object.size(<obj>)
@@ -8724,7 +9366,6 @@
      *
      *   Object.isEqual({a:2}, {a:2}) -> true
      *   Object.isEqual({a:2}, {a:3}) -> false
-     *   Object.extended({a:2}).isEqual({a:3}) -> false
      *
      ***/
     'isEqual': function(a, b) {
@@ -8735,7 +9376,6 @@
      * @method Object.merge(<target>, <source>, [options])
      * @returns Merged object
      * @short Merges properties from <source> into <target>.
-     * @extra Supports %extended objects%.
      * @options
      *
      *   deep:        If `true` deep properties are merged recursively.
@@ -8778,7 +9418,6 @@
      * @method Object.mergeAll(<target>, <sources>, [options])
      * @returns Merged object
      * @short Merges properties from multiple <sources> into <target>.
-     * @extra Supports %extended objects%.
      * @options
      *
      *   deep:        If `true` deep properties are merged recursively.
@@ -8817,7 +9456,30 @@
      * @method Object.add(<obj1>, <obj2>, [options])
      * @returns Object
      * @short Merges properties from <obj1> and <obj2> together and returns a new object.
-     * @extra Supports %extended objects%.
+     * @options
+     *
+     *   deep:        If `true` deep properties are merged recursively.
+     *                (Default = `false`)
+     *
+     *   resolve:     Determines which property wins in the case of conflicts.
+     *                If `true`, <source> wins. If `false`, <target> wins. If a
+     *                function is passed, its return value will decide the result.
+     *                Any non-undefined return value will resolve the conflict
+     *                for that property (will not continue if `deep`). Returning
+     *                `undefined` will do nothing (no merge). Finally, returning
+     *                the global object `Sugar` will allow Sugar to handle the
+     *                merge as normal. Resolve functions are passed the arguments:
+     *                `key`, `targetValue`, `sourceValue`, `target`, `source`.
+     *                (Default = `true`)
+     *
+     *   hidden:      If `true`, non-enumerable properties will be merged as well.
+     *                (Default = `false`)
+     *
+     *   descriptor:  If `true`, properties will be merged by property descriptor.
+     *                Use this option to merge getters or setters, or to preserve
+     *                `enumerable`, `configurable`, etc.
+     *                (Default = `false`)
+     *
      * @example
      *
      *   Object.add({one:1},{two:2})                 -> {one:1,two:2}
@@ -8833,10 +9495,40 @@
     },
 
     /***
+     * @method Object.intersect(<obj1>, <obj2>)
+     * @returns Object
+     * @short Returns a new object whose properties are those that both <obj1> and <obj2> have in common.
+     * @extra If both key and value do not match, then the property will not be included.
+     * @example
+     *
+     *   Object.intersect({a:'a'},{b:'b'}) -> {}
+     *   Object.intersect({a:'a'},{a:'b'}) -> {}
+     *   Object.intersect({a:'a',b:'b'},{b:'b',z:'z'}) -> {b:'b'}
+     *
+     ***/
+    'intersect': function(obj1, obj2) {
+      return objectIntersectOrSubtract(obj1, obj2, false);
+    },
+
+    /***
+     * @method Object.subtract(<obj1>, <obj2>)
+     * @returns Object
+     * @short Returns a clone of <obj1> with any properties shared by <obj2> excluded.
+     * @extra If both key and value do not match, then the property will not be excluded.
+     * @example
+     *
+     *   Object.subtract({a:'a',b:'b'},{b:'b'}) -> {a:'a'}
+     *   Object.subtract({a:'a',b:'b'},{a:'b'}) -> {a:'a',b:'b'}
+     *
+     ***/
+    'subtract': function(obj1, obj2) {
+      return objectIntersectOrSubtract(obj1, obj2, true);
+    },
+
+    /***
      * @method Object.defaults(<target>, <sources>, [options])
      * @returns Merged object
      * @short Merges properties from one or multiple <sources> into <target> while preserving <target>'s properties.
-     * @extra Supports %extended objects%.
      * @options
      *
      *   deep:        If `true` deep properties are merged recursively.
@@ -8875,12 +9567,11 @@
      * @method Object.clone(<obj>, [deep] = false)
      * @returns Cloned object
      * @short Creates a clone (copy) of <obj>.
-     * @extra Default is a shallow clone, unless [deep] is true. Supports %extended objects%.
+     * @extra Default is a shallow clone, unless [deep] is true.
      * @example
      *
-     *   Object.clone({foo:'bar'})            -> { foo: 'bar' }
-     *   Object.clone()                       -> {}
-     *   Object.extended({foo:'bar'}).clone() -> { foo: 'bar' }
+     *   Object.clone({foo:'bar'}) -> { foo: 'bar' }
+     *   Object.clone()            -> {}
      *
      ***/
     'clone': function(obj, deep) {
@@ -8891,14 +9582,13 @@
      * @method Object.values(<obj>, [fn])
      * @returns Array
      * @short Returns an array containing the values in <obj>. Optionally calls [fn] for each value.
-     * @extra Returned values are in no particular order. %values% is available as an instance method on %extended objects%.
+     * @extra Returned values are in no particular order.
      * @example
      *
      *   Object.values({ broken: 'wear' }) -> ['wear']
      *   Object.values({ broken: 'wear' }, function(value) {
      *     // Called once for each value.
      *   });
-     *   Object.extended({ broken: 'wear' }).values() -> ['wear']
      *
      ***/
     'values': function(obj, fn) {
@@ -8928,9 +9618,6 @@
           result[val] = key;
         }
       });
-      if (isHash(obj)) {
-        result = new Hash(result);
-      }
       return result;
     },
 
@@ -8938,14 +9625,15 @@
      * @method Object.tap(<obj>, <fn>)
      * @returns Object
      * @short Runs <fn> and returns <obj>.
-     * @extra  A string can also be used as a shortcut to a method. This method is used to run an intermediary function in the middle of method chaining. As a standalone method on the Object class it doesn't have too much use. The power of %tap% comes when using %extended objects% or modifying the Object prototype with %Sugar.Object.extend()%.
+     * @extra  A string can also be used as a shortcut to a method. This method is designed to run an intermediary function that "taps into" a method chain. As such, it is fairly useless as a static method. However it can be quite useful when combined with chainables.
+     * @callback
+     *
+     *   obj A reference to <obj>.
+     *
      * @example
      *
-     *   Sugar.Object.extend();
-     *   [2,4,6].map(Math.exp).tap(function(arr) {
-     *     arr.pop()
-     *   });
-     *   [2,4,6].map(Math.exp).tap('pop').map(Math.round); ->  [7,55]
+     *   Sugar.Array([1,4,9]).map(Math.sqrt).tap('pop') -> [1,2]
+     *   Sugar.Object({a:'a'}).tap(log).merge({b:'b'})  -> {a:'a',b:'b'}
      *
      ***/
     'tap': function(obj, arg) {
@@ -8953,19 +9641,35 @@
     },
 
     /***
-     * @method Object.has(<obj>, <key>)
+     * @method Object.has(<obj>, <prop>)
      * @returns Boolean
-     * @short Checks if <obj> has <key> using hasOwnProperty from Object.prototype.
-     * @extra This method is considered safer than %Object#hasOwnProperty% when using objects as hashes. See http://www.devthought.com/2012/01/18/an-object-is-not-a-hash/ for more.
+     * @short Checks if <obj> has property <prop>, which may be a deep property using dot or bracket notation.
+     * @extra Note that this method does not care of <prop> is a direct property of <obj> or in the prototype. To check that use `hasOwn` instead.
      * @example
      *
-     *   Object.has({ foo: 'bar' }, 'foo') -> true
-     *   Object.has({ foo: 'bar' }, 'baz') -> false
-     *   Object.has({ hasOwnProperty: true }, 'foo') -> false
+     *   Object.has({a:'a'}, 'a')       -> true
+     *   Object.has({a:{b:'b'}}, 'a.b') -> true
+     *   Object.has({a:{b:'b'}}, 'b.b') -> false
      *
      ***/
-    'has': function(obj, key) {
-      return hasOwn(obj, key);
+    'has': function(obj, prop) {
+      return deepHasProperty(obj, prop);
+    },
+
+    /***
+     * @method Object.hasOwn(<obj>, <prop>)
+     * @returns Boolean
+     * @short Checks if <obj> has its own property <prop> using hasOwnProperty from Object.prototype.
+     * @extra This method is considered safer than %Object#hasOwnProperty% when using objects as data stores. See http://www.devthought.com/2012/01/18/an-object-is-not-a-hash/ for more. Note that this method will *not* work with deep keys.
+     * @example
+     *
+     *   Object.hasOwn({foo:'bar'}, 'foo') -> true
+     *   Object.hasOwn({foo:'bar'}, 'baz') -> false
+     *   Object.hasOwn({hasOwnProperty:true}, 'foo') -> false
+     *
+     ***/
+    'hasOwn': function(obj, prop) {
+      return hasOwn(obj, prop);
     },
 
     /***
@@ -8979,7 +9683,7 @@
      *
      ***/
     'isArguments': function(obj) {
-      return isArgumentsObject(obj);
+      return isArguments(obj);
     },
 
     /***
@@ -9050,7 +9754,7 @@
      * @method Object.select(<obj>, <find>)
      * @returns Object
      * @short Builds a new object containing the keys specified in <find>.
-     * @extra When <find> is a string, a single key will be selected. Arrays or objects will match multiple keys, and a regex will match keys by regex. %select% is available as an instance method on %extended objects%.
+     * @extra When <find> is a string, a single key will be selected. Arrays or objects will match multiple keys, and a regex will match keys by regex.
      * @example
      *
      *   Object.select({a:1,b:2}, 'a')           -> {a:1}
@@ -9067,7 +9771,7 @@
      * @method Object.reject(<obj>, <find>)
      * @returns Object
      * @short Builds a new object containing all keys except those in <find>.
-     * @extra When <find> is a string, a single key will be rejected. Arrays or objects will match multiple keys, and a regex will match keys by regex. %reject% is available as an instance method on %extended objects%.
+     * @extra When <find> is a string, a single key will be rejected. Arrays or objects will match multiple keys, and a regex will match keys by regex.
      * @example
      *
      *   Object.reject({a:1,b:2}, 'a')        -> {b:2}
@@ -9082,74 +9786,19 @@
 
   });
 
-  /***
-   * @method Object.is[Type](<obj>)
-   * @returns Boolean
-   * @short Returns true if <obj> is an object of that type.
-   * @extra %isObject% will return true only for plain objects (not for instances of classes or native browser objects). Note also that %isNaN% will ONLY return true if the object IS %NaN%. It does not mean the same as browser native %isNaN%, which returns true for anything that is "not a number".
-   *
-   * @set
-   *   isArray
-   *   isBoolean
-   *   isDate
-   *   isFunction
-   *   isNumber
-   *   isString
-   *   isRegExp
-   *
-   * @example
-   *
-   *   Object.isArray([1,2,3])   -> true
-   *   Object.isDate(3)          -> false
-   *   Object.isRegExp(/wasabi/) -> true
-   *
-   ***/
-  function buildTypeCheckMethods() {
-    var checks = [isBoolean, isNumber, isString, isArray, isDate, isRegExp, isFunction];
-    defineInstanceAndStaticSimilar(sugarObject, TYPE_CHECK_NAMES, function(methods, name, i) {
-      methods['is' + name] = checks[i];
-    });
-  }
-
-  function buildHashBase() {
-
-    var methods = [
-      'isEmpty','size','invert',
-      'merge','mergeAll','defaults','clone',
-      'add','remove','exclude','select','reject',
-      'has','keys','values','tap','isEqual','toQueryString'
-    ];
-
-    forEach(methods, function(name) {
-      setProperty(Hash.prototype, name, sugarObject[name].instance);
-    });
-
-  }
-
-  function buildHashGetSet() {
-
-    var methods = ['get', 'set'];
-
-    forEach(methods, function(name) {
-      setProperty(Hash.prototype, name, wrapInstanceMethod(sugarObject[name]));
-    });
-
-  }
-
   buildSafeIterate();
-  buildHashBase();
-  buildHashGetSet();
   buildTypeCheckMethods();
   'use strict';
 
   /***
    * @module RegExp
-   * @dependency core
    * @description Escaping regexes and manipulating their flags.
    *
-   * Note here that methods on the RegExp class like .exec and .test will fail in the current version of SpiderMonkey being
-   * used by CouchDB when using shorthand regex notation like /foo/. This is the reason for the intermixed use of shorthand
-   * and compiled regexes here. If you're using JS in CouchDB, it is safer to ALWAYS compile your regexes from a string.
+   * Note here that methods on the RegExp class like .exec and .test will fail in
+   * the current version of SpiderMonkey being used by CouchDB when using
+   * shorthand regex notation like /foo/. This is the reason for the intermixed
+   * use of shorthand and compiled regexes here. If you're using JS in CouchDB, it
+   * is safer to ALWAYS compile your regexes from a string.
    *
    ***/
 
@@ -9225,7 +9874,7 @@
     *
     ***/
     'removeFlags': function(r, flags) {
-      var reg = RegExp('[' + flags + ']', 'g');
+      var reg = allCharsReg(flags);
       return RegExp(r.source, getRegExpFlags(r).replace(reg, ''));
     }
 
@@ -9234,7 +9883,6 @@
 
   /***
    * @module String
-   * @dependency core
    * @description String manupulation, escaping, encoding, truncation, and conversion.
    *
    ***/
@@ -9249,7 +9897,7 @@
   var HTML_ESCAPE_REG = /[&<>]/g;
 
   // Special HTML entities.
-  var HTML_SPECIAL_ENTITIES = {
+  var HTML_FROM_ENTITY_MAP = {
     'lt':    '<',
     'gt':    '>',
     'amp':   '&',
@@ -9258,7 +9906,10 @@
     'apos':  "'"
   };
 
-  var STRING_FORMAT_TOKEN_REG = /(\{\{)|(\}\}?)|(\{\})|\{([^}]+)(\}?)/g;
+  var HTML_TO_ENTITY_MAP;
+
+  // Regex matching camelCase.
+  var CAMELIZE_REG = /(^|_)([^_]+)/g;
 
   // Words that should not be capitalized in titles
   var DOWNCASED_WORDS = [
@@ -9277,13 +9928,14 @@
   var RIGHT_TRIM_REG = RegExp('['+ TRIM_CHARS +']+$');
   var TRUNC_REG      = RegExp('(?=[' + TRIM_CHARS + '])');
 
-
+  // Reference to native String#includes to enhance later.
   var nativeIncludes = String.prototype.includes;
 
   // Base64
   var encodeBase64, decodeBase64;
 
-  var specialEntities;
+  // Format matcher for String#format.
+  var stringFormatMatcher = createFormatMatcher(deepGetProperty);
 
   function getAcronym(str) {
     var inflector = sugarString.Inflector;
@@ -9412,7 +10064,7 @@
 
   function unescapeHTML(str) {
     return str.replace(HTML_ENTITY_REG, function(full, hex, code) {
-      var special = HTML_SPECIAL_ENTITIES[code];
+      var special = HTML_FROM_ENTITY_MAP[code];
       return special || chr(hex ? parseInt(code, 16) : +code);
     });
   }
@@ -9441,11 +10093,13 @@
   }
 
   function replaceTags(str, find, replacement, strip) {
-    var tags = isString(find) ? [find] : find, reg;
+    var tags = isString(find) ? [find] : find, reg, src;
     tags = map(tags || [], function(t) {
       return escapeRegExp(t);
     }).join('|');
-    reg = RegExp('<(\\/)?(' + (tags.replace('all', '') || '[^\\s>]+') + ')(\\s+[^<>]*?)?\\s*(\\/)?>', 'gi');
+    src = tags.replace('all', '') || '[^\\s>]+';
+    src = '<(\\/)?(' + src + ')(\\s+[^<>]*?)?\\s*(\\/)?>';
+    reg = RegExp(src, 'gi');
     return runTagReplacements(str.toString(), reg, strip, replacement);
   }
 
@@ -9454,9 +10108,9 @@
     var match;
     var result = '';
     var currentIndex = 0;
-    var currentlyOpenTagName;
-    var currentlyOpenTagAttributes;
-    var currentlyOpenTagCount = 0;
+    var openTagName;
+    var openTagAttributes;
+    var openTagCount = 0;
 
     function processTag(index, tagName, attributes, tagLength, isVoid) {
       var content = str.slice(currentIndex, index), s = '', r = '';
@@ -9489,35 +10143,35 @@
       var tagLength       = match[0].length;
       var isVoid          = tagIsVoid(tagName);
       var isOpeningTag    = !isClosingTag && !isSelfClosing && !isVoid;
-      var isSameAsCurrent = tagName === currentlyOpenTagName;
+      var isSameAsCurrent = tagName === openTagName;
 
-      if (!currentlyOpenTagName) {
+      if (!openTagName) {
         result += str.slice(currentIndex, match.index);
         currentIndex = match.index;
       }
 
       if (isOpeningTag) {
-        if (!currentlyOpenTagName) {
-          currentlyOpenTagName = tagName;
-          currentlyOpenTagAttributes = attributes;
-          currentlyOpenTagCount++;
+        if (!openTagName) {
+          openTagName = tagName;
+          openTagAttributes = attributes;
+          openTagCount++;
           currentIndex += tagLength;
         } else if (isSameAsCurrent) {
-          currentlyOpenTagCount++;
+          openTagCount++;
         }
       } else if (isClosingTag && isSameAsCurrent) {
-        currentlyOpenTagCount--;
-        if (currentlyOpenTagCount === 0) {
-          processTag(match.index, currentlyOpenTagName, currentlyOpenTagAttributes, tagLength, isVoid);
-          currentlyOpenTagName       = null;
-          currentlyOpenTagAttributes = null;
+        openTagCount--;
+        if (openTagCount === 0) {
+          processTag(match.index, openTagName, openTagAttributes, tagLength, isVoid);
+          openTagName       = null;
+          openTagAttributes = null;
         }
-      } else if (!currentlyOpenTagName) {
+      } else if (!openTagName) {
         processTag(match.index, tagName, attributes, tagLength, isVoid);
       }
     }
-    if (currentlyOpenTagName) {
-      processTag(str.length, currentlyOpenTagName, currentlyOpenTagAttributes);
+    if (openTagName) {
+      processTag(str.length, openTagName, openTagAttributes);
     }
     result += str.slice(currentIndex);
     return result;
@@ -9579,7 +10233,10 @@
           } else if (isNaN(chr3)) {
             enc4 = 64;
           }
-          output = output + key.charAt(enc1) + key.charAt(enc2) + key.charAt(enc3) + key.charAt(enc4);
+          output += key.charAt(enc1);
+          output += key.charAt(enc2);
+          output += key.charAt(enc3);
+          output += key.charAt(enc4);
           chr1 = chr2 = chr3 = '';
           enc1 = enc2 = enc3 = enc4 = '';
         } while (i < str.length);
@@ -9623,10 +10280,10 @@
     };
   }
 
-  function buildSpecialEntities() {
-    specialEntities = {};
-    iterateOverObject(HTML_SPECIAL_ENTITIES, function(k, v) {
-      specialEntities[v] = '&' + k + ';';
+  function buildEntities() {
+    HTML_TO_ENTITY_MAP = {};
+    iterateOverObject(HTML_FROM_ENTITY_MAP, function(k, v) {
+      HTML_TO_ENTITY_MAP[v] = '&' + k + ';';
     });
   }
 
@@ -9710,7 +10367,7 @@
       ***/
     'escapeHTML': function(str) {
       return str.replace(HTML_ESCAPE_REG, function(chr) {
-        return specialEntities[chr];
+        return HTML_TO_ENTITY_MAP[chr];
       });
     },
 
@@ -10080,7 +10737,8 @@
      *
      ***/
     'camelize': function(str, first) {
-      return underscore(str).replace(/(^|_)([^_]+)/g, function(match, pre, word, index) {
+      str = underscore(str);
+      return str.replace(CAMELIZE_REG, function(match, pre, word, index) {
         var acronym = getAcronym(word), cap = first !== false || index > 0;
         if (acronym) return cap ? acronym : acronym.toLowerCase();
         return cap ? capitalize(word) : word;
@@ -10116,14 +10774,16 @@
      *
      ***/
     'titleize': function(str) {
-      var fullStopPunctuation = /[.:;!]$/, hasPunctuation, lastHadPunctuation, isFirstOrLast;
+      var fullStopPunctuation = /[.:;!]$/, lastHadPunctuation;
       str = spacify(str);
       if (sugarString.Inflector) {
         str = Inflector.humanize(str);
       }
       return eachWord(str, function(word, index, words) {
+        var hasPunctuation, isFirstOrLast;
+        var first = index == 0, last = index == words.length - 1;
         hasPunctuation = fullStopPunctuation.test(word);
-        isFirstOrLast = index == 0 || index == words.length - 1 || hasPunctuation || lastHadPunctuation;
+        isFirstOrLast = first || last || hasPunctuation || lastHadPunctuation;
         lastHadPunctuation = hasPunctuation;
         if (isFirstOrLast || indexOf(DOWNCASED_WORDS, word) === -1) {
           return capitalizeWithoutDowncasing(word, true);
@@ -10329,25 +10989,7 @@
       if (args.length === 1 && isObjectType(arg1)) {
         args = arg1;
       }
-      return str.replace(STRING_FORMAT_TOKEN_REG, function(match, open, close, empty, key, closeKey) {
-        if (empty) {
-          // {}
-          return empty;
-        } else if (open) {
-          // {{
-          return open.charAt(0);
-        } else if (close && close.length === 2) {
-          // }}
-          return close.charAt(0);
-        } else if (close) {
-          // Unclosed }
-          throw new Error('Unmatched } in format string.');
-        } else if (key && !closeKey) {
-          // Unclosed {
-          throw new Error('Unmatched { in format string.');
-        }
-        return deepGetProperty(args, key);
-      });
+      return stringFormatMatcher(str, args);
     }
 
   });
@@ -10361,6 +11003,6 @@
   alias(sugarString, 'insert', 'add');
 
   buildBase64();
-  buildSpecialEntities();
+  buildEntities();
 
 }).call(this);
