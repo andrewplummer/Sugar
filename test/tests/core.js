@@ -388,7 +388,7 @@ namespace('Core', function() {
     equal(''.moo(), 'moo!', 'moo was mapped');
   });
 
-  group('Chaining', function() {
+  group('Basic Chaining', function() {
     defineCustom(Sugar.String);
     var superString = new Sugar.String('hai');
     equal(superString.foo().raw, 'foo!', 'foo is chainable');
@@ -424,15 +424,14 @@ namespace('Core', function() {
       return str.split('a');
     });
 
+    equal(new Sugar.Array([1]).large().raw, 'small!', 'array chainable can reach number method');
+
     var arr = new Sugar.Array([1,2,3]);
-    var raw = arr.rate().twofold().large().noIs().raw;
-    equal(raw, ['sm','ll!'], 'long chain of methods with odd');
+    equal(arr.rate().twofold().large().noIs().raw, ['sm','ll!'], 'long chain of methods with odd');
 
     var arr = new Sugar.Array([1,2]);
-    var raw = arr.rate().twofold().large().noIs().raw;
-    equal(raw, ['l','rge!'], 'long chain of methods with even');
+    equal(arr.rate().twofold().large().noIs().raw, ['l','rge!'], 'long chain of methods with even');
 
-    equal(new Sugar.Array([1]).large().raw, 'small!', 'array chainable also inherits from default');
   });
 
   group('Chaining with dismbiguation', function() {
@@ -443,6 +442,7 @@ namespace('Core', function() {
       return 'string says foo';
     });
 
+    equal(Sugar.Array().foo().raw, 'array says foo', 'Array method');
     equal(Sugar.Array().foo().foo().raw, 'string says foo', 'chained disambiguated from Array');
     equal(Sugar.String().foo().foo().raw, 'string says foo', 'chained disambiguated from String');
     equal(Sugar.Number('a').foo().raw, 'string says foo', 'string can reach the default chain');
@@ -461,15 +461,35 @@ namespace('Core', function() {
     raisesError(function() { Sugar.Number(8).foo(); }, 'Unrelated type cannot be disambiguated from class chainable', TypeError);
   });
 
-  group('Object chained methods on non-object chainables', function() {
+  group('Disambiguation only happens once', function() {
+    var before, after;
+    Sugar.String.defineInstance('foo', function(arr) {
+      return 'string foo!';
+    });
+    Sugar.Number.defineInstance('foo', function(arr) {
+      return 'number foo!';
+    });
+    before = testGetDefaultChainablePrototype().foo;
+    Sugar.Array.defineInstance('foo', function(arr) {
+      return 'array foo!';
+    });
+    after = testGetDefaultChainablePrototype().foo;
+    equal(before === after, true, 'Disambiguation function was only defined once');
+  });
+
+  group('Chainables with Object', function() {
     Sugar.Object.defineInstance('foo', function(arr) {
       return 'object foo!';
     });
     Sugar.String.defineInstance('foo', function(arr) {
       return 'string foo!';
     });
+    Sugar.Number.defineInstance('bar', function(arr) {
+      return null;
+    });
     equal(new Sugar.Number(8).foo().raw, 'object foo!', 'object method should work from non-object chainable');
     equal(new Sugar.String(8).foo().raw, 'string foo!', 'non-object chainable still shadows object');
+    equal(new Sugar.Number(8).bar().foo().raw, 'object foo!', 'null type disambiguation falls back to Object');
 
     Sugar.createNamespace('Boolean');
     equal(new Sugar.Boolean(true).foo().raw, 'object foo!', 'namespaces created later still receive object methods');
@@ -483,13 +503,13 @@ namespace('Core', function() {
     Sugar.Number.defineInstance('getNaN', function(arr) {
       return NaN;
     });
-    Sugar.Object.defineInstance('getUndefined', function(arr) {
+    Sugar.String.defineInstance('getUndefined', function(arr) {
       return undefined;
     });
 
     equal(Sugar.Array().getNull().getNaN().getUndefined().raw, undefined, 'Chained to undefined');
     equal(Sugar.Number().getNaN().getUndefined().getNull().raw, null, 'Chained to null');
-    equal(Sugar.Object().getUndefined().getNull().getNaN().raw, NaN, 'Chained to null');
+    equal(Sugar.String().getUndefined().getNull().getNaN().raw, NaN, 'Chained to NaN');
 
   });
 
@@ -503,20 +523,23 @@ namespace('Core', function() {
     arr.push(33);
     equal(arr.map(fn).join('.').bar().replace('!', '').raw, 'bar', 'run between native and Sugar methods');
 
-    equal(Sugar.Array([1,2,3]).map(function() { return 'a'; }).raw, ['a','a','a'], 'built-in is mapped to chainable');
+    equal(new Sugar.Array([1,2,3]).map(function() { return 'a'; }).raw, ['a','a','a'], 'built-in is mapped to chainable');
     Sugar.String.defineInstance('map', function(str) {
       return 'enhanced string map!'
     });
     Sugar.Array.defineInstance('map', function(str) {
       return 'enhanced array map!'
     });
-    equal(Sugar.Array([1,2,3]).map().raw, 'enhanced array map!', 'enhanced method is mapped to chainable');
-    equal(Sugar.String('1,2,3').split(',').map().raw, 'enhanced array map!', 'enhanced method is disambiguated');
-    equal(Sugar.String('1,2,3').map().raw, 'enhanced string map!', 'string enhancement still works');
+    equal(new Sugar.Array([1,2,3]).map().raw, 'enhanced array map!', 'enhanced method is mapped to chainable');
+    equal(new Sugar.String('1,2,3').split(',').map().raw, 'enhanced array map!', 'enhanced method is disambiguated');
+    equal(new Sugar.String('1,2,3').map().raw, 'enhanced string map!', 'string enhancement still works');
+
+    var dcp = testGetDefaultChainablePrototype();
+    equal(dcp.hasOwnProperty === Sugar.Object.prototype.hasOwnProperty, true, 'Object#hasOwnProperty should not require disambiguation');
+    equal(testHasOwn(Sugar.String.prototype, 'hasOwnProperty'), true, 'Sugar.String should now have its own hasOwnProperty chainable method');
   });
 
   group('Chainable valueOf behavior', function() {
-
     var eight = new Sugar.Number(8);
     equal(eight + 8, 16, 'lhs can add primitives');
     equal(12 + eight, 20, 'rhs can be added to primitives');
@@ -540,13 +563,14 @@ namespace('Core', function() {
     equal(f.test('q') == false, true, '== equality is false');
     equal(f.test('f') == true,  true, '== equality is true');
     equal(f.test('f') === false, false, '=== equality is always false');
-
   });
 
   group('Chainable toString behavior', function() {
     equal(new Sugar.Number(8).toString().raw, '8', 'toString returns chainable as well');
     equal(new Sugar.Array([1,2,3]).toString().raw, '1,2,3', 'toString are not generic, but match their built-in class');
     equal(new Sugar.String('a,b').split(',').toString().raw, 'a,b', 'toString disambiguates');
+    equal(new Sugar.Object(null).toString().raw, '[object Null]', 'null with Object#toString');
+    equal(new Sugar.Object(undefined).toString().raw, '[object Undefined]', 'undefined with Object#toString');
   });
 
   group('Chainable polyfill methods', function() {

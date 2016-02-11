@@ -58,13 +58,6 @@
     }
   }
 
-  function getDefaultChainablePrototype() {
-    // The DefaultChainable prototype can be reached through Sugar.Object
-    // as it inherits from DefaultChainable and does not define its own
-    // constructor. If this changes this module will fail, so be careful!
-    return Sugar.Object.prototype.constructor.prototype;
-  }
-
   function restorePropEnumerable(target, key, val) {
     if (testHasOwn(target, key) && target[key] !== val) {
       if (!val) {
@@ -147,6 +140,13 @@
 
   // Public
 
+  testGetDefaultChainablePrototype = function () {
+    // The DefaultChainable prototype can be reached through Sugar.Object
+    // as it inherits from DefaultChainable and does not define its own
+    // constructor. If this changes this module will fail, so be careful!
+    return Sugar.Object.prototype.constructor.prototype;
+  }
+
   assertAllMethodsMappedToNative = function(namespaces) {
     assertNamespaces(namespaces, true, true, true);
   }
@@ -173,7 +173,7 @@
 
   storeNativeState = function() {
     var nativeState = {};
-    nativeState['DefaultChainableState'] = getState(getDefaultChainablePrototype());
+    nativeState['DefaultChainableState'] = getState(testGetDefaultChainablePrototype());
     forEachNamespace(function(name, namespace) {
       nativeState[name + 'Active'] = namespace.active;
       nativeState[name + 'State'] = getState(namespace);
@@ -204,7 +204,7 @@
     });
 
     // Then restore the default chainble state.
-    restoreState(getDefaultChainablePrototype(), nativeState['DefaultChainableState']);
+    restoreState(testGetDefaultChainablePrototype(), nativeState['DefaultChainableState']);
   }
 
 })(this);
