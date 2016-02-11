@@ -569,8 +569,8 @@ namespace('Core', function() {
     equal(new Sugar.Number(8).toString().raw, '8', 'toString returns chainable as well');
     equal(new Sugar.Array([1,2,3]).toString().raw, '1,2,3', 'toString are not generic, but match their built-in class');
     equal(new Sugar.String('a,b').split(',').toString().raw, 'a,b', 'toString disambiguates');
-    equal(new Sugar.Object(null).toString().raw, '[object Null]', 'null with Object#toString');
-    equal(new Sugar.Object(undefined).toString().raw, '[object Undefined]', 'undefined with Object#toString');
+    equal(new Sugar.Object(null).toString().raw, testGetClass(null), 'null with Object#toString');
+    equal(new Sugar.Object(undefined).toString().raw, testGetClass(undefined), 'undefined with Object#toString');
   });
 
   group('Chainable polyfill methods', function() {
