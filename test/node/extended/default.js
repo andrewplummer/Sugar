@@ -1,6 +1,6 @@
 var runner = require('../setup');
 
-var Sugar = runner.load('../../release/npm/sugar');
+var Sugar = runner.load('../../sugar');
 
 // Tests
 runner.loadTest('array');

@@ -18,4 +18,4 @@ runner.loadTest('range/date');
 runner.loadTest('range/number');
 runner.loadTest('range/string');
 
-runner.run(module, false, Sugar);
+runner.run(module, 'default', Sugar);
