@@ -76,4 +76,4 @@ load('test/tests/locales/sv.js');
 load('test/tests/locales/zh-CN.js');
 load('test/tests/locales/zh-TW.js');
 
-runTests(logResults, false, 'rhino');
+runTests(logResults, 'default', 'rhino');
