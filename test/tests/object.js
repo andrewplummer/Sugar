@@ -25,6 +25,190 @@ namespace('Object', function () {
     equal(Object.toQueryString({c:'d'}), 'c=d', 'Object.toQueryString was extended');
   });
 
+  method('fromQueryString', function() {
+
+    test(Object, ['foo=bar&moo=car'], {foo:'bar',moo:'car'}, 'basic');
+    test(Object, ['foo=bar&moo=3'], {foo:'bar',moo:3}, 'with numbers | auto');
+    test(Object, ['foo=bar&moo=3', {auto:false}], {foo:'bar',moo:'3'}, 'with numbers');
+
+    test(Object, ['foo=bar&moo=true'], {foo:'bar',moo:true}, 'with true | auto');
+    test(Object, ['foo=bar&moo=false'], {foo:'bar',moo:false}, 'with false | auto');
+    test(Object, ['foo=bar&moo=true', {auto:false}], {foo:'bar',moo:'true'}, 'with true not | auto');
+    test(Object, ['foo=bar&moo=false', {auto:false}], {foo:'bar',moo:'false'}, 'with false not | auto');
+
+    test(Object, ['foo=bar3'], {foo:'bar3'}, 'number in back');
+    test(Object, ['foo=3bar'], {foo:'3bar'}, 'number up front');
+
+    test(Object, ['foo=345'], {foo:345}, 'numbers only | auto');
+    test(Object, ['foo&bar'], {foo:null,bar:null}, 'undefined without = | auto');
+    test(Object, ['foo&bar', {auto:false}], {foo:'',bar:''}, 'undefined without = | not auto');
+    test(Object, ['foo=&bar='], {foo:null,bar:null}, 'undefined params | auto');
+    test(Object, ['foo=&bar=', {auto:false}], {foo:'',bar:''}, 'undefined params | not auto');
+    test(Object, ['foo[]=bar&foo[]=car'], {'foo[]':['bar','car']}, 'deep strings with default');
+    test(Object, ['foo[]=bar&foo[]=car',{auto:false}], {'foo[]':'car'}, 'deep strings with default | not auto');
+
+    test(Object, ['foo[]=bar&foo[]=car', {deep:true}], {'foo':['bar','car']}, 'deep strings with deep');
+    test(Object, ['foo[bar]=tee&foo[car]=hee', {deep:true}], { foo: { bar: 'tee', car: 'hee' } }, 'handles keys');
+
+    test(Object, ['foo[cap][map]=3', {deep:true}], {foo:{cap:{map:3}}}, 'deep keys');
+    test(Object, ['foo[cap][map][]=3', {deep:true}], {foo:{cap:{map:[3]}}}, 'nested with trailing array');
+    test(Object, ['foo[moo]=1&bar[far]=2', {deep:true}], {foo:{moo:1},bar:{far:2}}, 'sister objects');
+
+    test(Object, ['foo[cap][map]=3', {deep:true,auto:false}], {foo:{cap:{map:'3'}}}, 'deep keys not auto');
+    test(Object, ['foo[cap][map][]=3', {deep:true,auto:false}], {foo:{cap:{map:['3']}}}, 'nested with trailing array not auto');
+    test(Object, ['foo[moo]=1&bar[far]=2', {deep:true,auto:false}], {foo:{moo:'1'},bar:{far:'2'}}, 'sister objects not auto');
+
+    test(Object, ['f[]=a&f[]=b&f[]=c&f[]=d&f[]=e&f[]=f',{deep:true}], { f: ['a','b','c','d','e','f'] }, 'large array');
+    test(Object, ['foo[][]=a&foo[][]=b',{deep:true}], {foo:[['a'],['b']]}, 'nested arrays separate');
+    test(Object, ['foo[][]=3&foo[][]=4',{deep:true}], {foo:[[3],[4]]}, 'nested arrays together');
+    test(Object, ['foo[][]=3&foo[][]=4',{deep:true,auto:false}], {foo:[['3'],['4']]}, 'nested arrays together not auto');
+
+    var qs = 'foo[cap][map]=true&foo[cap][pap]=false';
+    test(Object, [qs,{deep:true}], {foo:{cap:{map:true,pap:false}}}, 'nested boolean not auto');
+    test(Object, [qs,{deep:true,auto:false}], {foo:{cap:{ map:'true',pap:'false'}}}, 'nested boolean auto');
+
+    test(Object, ['foo[3]=hardy&foo[10]=har har', {deep:true}], {foo:{3:'hardy',10:'har har'}}, 'array keys will construct object');
+
+    test(Object, ['text=What%20is%20going%20on%20here%3f%3f&url=http://animalsbeingdicks.com/page/2'], { text: 'What is going on here??', url: 'http://animalsbeingdicks.com/page/2' }, 'handles partially escaped params');
+    test(Object, ['text=What%20is%20going%20on%20here%3f%3f&url=http%3A%2F%2Fanimalsbeingdicks.com%2Fpage%2F2'], { text: 'What is going on here??', url: 'http://animalsbeingdicks.com/page/2' }, 'handles fully escaped params');
+    test(Object, ['foo%3Dbar=car'], {'foo=bar':'car'}, 'handles = in encoded keys');
+    test(Object, ['foo%2Cbar=car'], {'foo,bar':'car'}, 'handles , in encoded keys');
+    test(Object, ['foo=bar%3Dcar'], {'foo':'bar=car'}, 'handles = in encoded values');
+    test(Object, ['foo=bar%2Ccar'], {'foo':'bar,car'}, 'handles , in encoded values');
+
+    test(Object, ['url=http%3A%2F%2Fwww.site.com%2Fslug%3Fin%3D%2Fuser%2Fjoeyblake'], { url: 'http://www.site.com/slug?in=/user/joeyblake' }, 'equal must be escaped as well');
+
+    test(Object, ['http://fake.com?foo=bar'], { foo: 'bar' }, 'handles whole URLs');
+    test(Object, {}, 'will not die if no arguments');
+
+    if (typeof window !== 'undefined') {
+      equal(typeof run(Object, 'fromQueryString', [window.location]), 'object', 'can handle just window.location');
+    }
+
+    // Automatic casting
+
+    test(Object, ['foo=3.14156'], { foo: 3.14156 }, 'float values');
+    test(Object, ['foo=3.14156', {auto:false}], { foo: '3.14156' }, 'float values not automatic');
+    test(Object, ['foo=127.0.0.1'], { foo: '127.0.0.1' }, 'IP addresses not treated as numbers');
+    test(Object, ['zip=00165'], { zip: 165 }, 'zipcodes are treated as numbers if auto');
+    test(Object, ['zip=00165',{auto:false}], { zip: '00165' }, 'zipcodes are not treated as numbers if not auto');
+    test(Object, ['foo[=bar'], { 'foo[': 'bar' }, 'opening bracket does not trigger deep parameters');
+
+    test(Object, ['foo='],        { foo: null },   'auto | null');
+    test(Object, ['foo=0'],       { foo:   0 },    'auto | zero');
+    test(Object, ['foo=-0'],      { foo:  -0 },    'auto | negative zero');
+    test(Object, ['foo=.5'],      { foo:  .5 },    'auto | .5');
+    test(Object, ['foo=0.5'],     { foo:  .5 },    'auto | 0.5');
+    test(Object, ['foo=0.00'],    { foo: 0 },      'auto | 0.00');
+    test(Object, ['foo=1'],       { foo: 1 },      'auto | 1');
+    test(Object, ['foo=-1'],      { foo:-1 },      'auto | -1');
+    test(Object, ['foo=-0.5'],    { foo: -.5 },    'auto | -0.5');
+    test(Object, ['foo=-.5'],     { foo: -.5 },    'auto | -.5');
+    test(Object, ['foo=-.0025'],  { foo: -.0025 }, 'auto | -.0025');
+    test(Object, ['foo=-0.0025'], { foo: -.0025 }, 'auto | -0.0025');
+    test(Object, ['foo=.0025'],   { foo:  .0025 }, 'auto | .0025');
+    test(Object, ['foo=0.0025'],  { foo:  .0025 }, 'auto | 0.0025');
+
+    test(Object, ['foo=0x89'],    { foo: '0x89' },     'auto | should not cast 0x89');
+    test(Object, ['foo=1e25'],    { foo: '1e25' },     'auto | should not cast 1e25');
+    test(Object, ['foo=#fff'],    { foo: '#fff' },     'auto | should not cast #fff');
+    test(Object, ['foo=1.2.3'],   { foo: '1.2.3'},     'auto | should not cast 1.2.3');
+    test(Object, ['foo=Infinity'],{ foo: 'Infinity' }, 'auto | should not cast Infinity');
+    test(Object, ['foo=99,999'],  { foo: '99,999' },   'auto | should not cast numbers with commas');
+    test(Object, ['foo=24px'],    { foo: '24px' },     'auto | should not cast 24px');
+    test(Object, ['foo=5-'],      { foo: '5-' },       'auto | should not cast 5-');
+
+
+    test(Object, ['foo=bar&foo=car'], {'foo':['bar','car']}, 'two keys detected by auto');
+    test(Object, ['foo=bar&foo=car&foo=moo'], {'foo':['bar','car','moo']}, 'three keys detected by auto');
+    test(Object, ['foo=bar&foo=car', {deep:true}], {'foo':['bar','car']}, 'two keys detected by auto');
+    test(Object, ['foo=bar&foo=car&foo=moo', {deep:true}], {'foo':['bar','car','moo']}, 'three keys detected by auto');
+
+
+    // Separators
+
+    test(Object, ['user_name=Harry'], {'user_name':'Harry'}, 'without separator');
+    test(Object, ['user_name=Harry', {separator:'_'}], {'user':{name:'Harry'}}, 'with separator');
+    test(Object, ['user_name_first=Harry', {separator:'_'}], {'user':{name:{first:'Harry'}}}, 'with separator deeper');
+
+    test(Object, ['user|name=Harry'], {'user|name':'Harry'}, 'without separator | pipe');
+    test(Object, ['user|name=Harry', {separator:'|'}], {'user':{name:'Harry'}}, 'with separator | pipe');
+    test(Object, ['user|name|first=Harry', {separator:'|'}], {'user':{name:{first:'Harry'}}}, 'with separator deeper | pipe');
+
+
+    // Cast function
+
+    var toFoo = function() { return 'foo'; }
+    test(Object, ['foo=bar',    {transform:toFoo}], {foo:'foo'}, 'transform foo');
+    test(Object, ['foo=3',      {transform:toFoo}], {foo:'foo'}, 'transform foo before auto conversion');
+    test(Object, ['foo=true',   {transform:toFoo}], {foo:'foo'}, 'transform foo before boolean conversion');
+    test(Object, ['foo[]=true', {transform:toFoo}], {'foo[]':'foo'}, 'transform foo on brackets');
+
+    var toEmpty = function() { return ''; }
+    test(Object, ['foo=bar', {transform:toEmpty}], {foo:''}, 'transform empty string');
+
+
+    var count = 0;
+    var testTransformArguments = function(key, value, obj, str) {
+      equal(key, 'foo', 'first argument should be the key');
+      equal(value, 'bar', 'second argument should be the value');
+      count++;
+    }
+    run(Object, 'fromQueryString', ['foo=bar', {transform:testTransformArguments}]);
+    equal(count, 1, 'should have run once');
+
+    var count = 0;
+    var expectedKeys = ['foo[name]', 'moo[]'];
+    var expectedValues = ['bar', 'beer'];
+    var capturedObj;
+    var testTransformArgumentsDeep = function(key, value, obj) {
+      equal(key, expectedKeys[count], 'first argument');
+      equal(value, expectedValues[count], 'second argument');
+      capturedObj = obj;
+      count++;
+    }
+    var result = run(Object, 'fromQueryString', ['foo[name]=bar&moo[]=beer', {transform:testTransformArgumentsDeep}]);
+
+    equal(capturedObj, result, 'third argument should be equal to the result');
+    equal(count, 2, 'should have run twice');
+
+    var onlyUserName = function(key) {
+      if (key === 'user_name') {
+        return 'Harry';
+      }
+    }
+    test(Object, ['user_name=moo&user_id=12345', {transform:onlyUserName}], {user_name:'Harry',user_id:12345}, 'only user name');
+
+    var numeralToBoolean = function(key, value) {
+      if (value === '1' || value === '0') {
+        return !!+value;
+      }
+    }
+    var subject = 'user[profile][agreed]=1&user[address][street]=12345%20Foo%20St.&user[profile][friends][]=Mary&user[profile][friends][]=Jerry&user[profile][paid]=0';
+    var expected = {
+      user: {
+        profile: {
+          paid: false,
+          agreed: true,
+          friends: ['Mary', 'Jerry']
+        },
+        address: {
+          street: '12345 Foo St.'
+        }
+      }
+    }
+    test(Object, [subject, {deep:true,transform:numeralToBoolean}], expected, 'complex object with numeral cast to boolean');
+
+
+    var toArray = function(key, value, obj) {
+      if (key === 'foo' && !obj[key]) {
+        return [value];
+      }
+    }
+    test(Object, ['foo=bar', {transform:toArray}], {'foo':['bar']}, 'single can still be converted to array with cast function');
+
+  });
+
   method('get', function() {
 
     if (isExtendedMode()) {
@@ -117,10 +301,11 @@ namespace('Object', function () {
     test({'':1}, [''], 1, 'empty string as key');
     test({'':{'':2}}, ['.'], 2, 'nested empty string as key');
 
-    test(undefined, ['a'], undefined, 'flat property on undefined');
-    test(undefined, ['a.b'], undefined, 'deep property on undefined');
-    test(null, ['a'], undefined, 'flat property on null');
-    test(null, ['a.b'], undefined, 'deep property on null');
+    test(Object, [undefined, 'a'], undefined, 'flat property on undefined');
+    test(Object, [undefined, 'a.b'], undefined, 'deep property on undefined');
+    test(Object, [null, 'a'], undefined, 'flat property on null');
+    test(Object, [null, 'a.b'], undefined, 'deep property on null');
+
     test({}, ['a'], undefined, 'flat property on empty object');
     test({}, ['a.b'], undefined, 'deep property on empty object');
     test(NaN, ['a'], undefined, 'flat property on NaN');
@@ -552,190 +737,6 @@ namespace('Object', function () {
 
   });
 
-  method('fromQueryString', function() {
-
-    test(Object, ['foo=bar&moo=car'], {foo:'bar',moo:'car'}, 'basic');
-    test(Object, ['foo=bar&moo=3'], {foo:'bar',moo:3}, 'with numbers | auto');
-    test(Object, ['foo=bar&moo=3', {auto:false}], {foo:'bar',moo:'3'}, 'with numbers');
-
-    test(Object, ['foo=bar&moo=true'], {foo:'bar',moo:true}, 'with true | auto');
-    test(Object, ['foo=bar&moo=false'], {foo:'bar',moo:false}, 'with false | auto');
-    test(Object, ['foo=bar&moo=true', {auto:false}], {foo:'bar',moo:'true'}, 'with true not | auto');
-    test(Object, ['foo=bar&moo=false', {auto:false}], {foo:'bar',moo:'false'}, 'with false not | auto');
-
-    test(Object, ['foo=bar3'], {foo:'bar3'}, 'number in back');
-    test(Object, ['foo=3bar'], {foo:'3bar'}, 'number up front');
-
-    test(Object, ['foo=345'], {foo:345}, 'numbers only | auto');
-    test(Object, ['foo&bar'], {foo:null,bar:null}, 'undefined without = | auto');
-    test(Object, ['foo&bar', {auto:false}], {foo:'',bar:''}, 'undefined without = | not auto');
-    test(Object, ['foo=&bar='], {foo:null,bar:null}, 'undefined params | auto');
-    test(Object, ['foo=&bar=', {auto:false}], {foo:'',bar:''}, 'undefined params | not auto');
-    test(Object, ['foo[]=bar&foo[]=car'], {'foo[]':['bar','car']}, 'deep strings with default');
-    test(Object, ['foo[]=bar&foo[]=car',{auto:false}], {'foo[]':'car'}, 'deep strings with default | not auto');
-
-    test(Object, ['foo[]=bar&foo[]=car', {deep:true}], {'foo':['bar','car']}, 'deep strings with deep');
-    test(Object, ['foo[bar]=tee&foo[car]=hee', {deep:true}], { foo: { bar: 'tee', car: 'hee' } }, 'handles keys');
-
-    test(Object, ['foo[cap][map]=3', {deep:true}], {foo:{cap:{map:3}}}, 'deep keys');
-    test(Object, ['foo[cap][map][]=3', {deep:true}], {foo:{cap:{map:[3]}}}, 'nested with trailing array');
-    test(Object, ['foo[moo]=1&bar[far]=2', {deep:true}], {foo:{moo:1},bar:{far:2}}, 'sister objects');
-
-    test(Object, ['foo[cap][map]=3', {deep:true,auto:false}], {foo:{cap:{map:'3'}}}, 'deep keys not auto');
-    test(Object, ['foo[cap][map][]=3', {deep:true,auto:false}], {foo:{cap:{map:['3']}}}, 'nested with trailing array not auto');
-    test(Object, ['foo[moo]=1&bar[far]=2', {deep:true,auto:false}], {foo:{moo:'1'},bar:{far:'2'}}, 'sister objects not auto');
-
-    test(Object, ['f[]=a&f[]=b&f[]=c&f[]=d&f[]=e&f[]=f',{deep:true}], { f: ['a','b','c','d','e','f'] }, 'large array');
-    test(Object, ['foo[][]=a&foo[][]=b',{deep:true}], {foo:[['a'],['b']]}, 'nested arrays separate');
-    test(Object, ['foo[][]=3&foo[][]=4',{deep:true}], {foo:[[3],[4]]}, 'nested arrays together');
-    test(Object, ['foo[][]=3&foo[][]=4',{deep:true,auto:false}], {foo:[['3'],['4']]}, 'nested arrays together not auto');
-
-    var qs = 'foo[cap][map]=true&foo[cap][pap]=false';
-    test(Object, [qs,{deep:true}], {foo:{cap:{map:true,pap:false}}}, 'nested boolean not auto');
-    test(Object, [qs,{deep:true,auto:false}], {foo:{cap:{ map:'true',pap:'false'}}}, 'nested boolean auto');
-
-    test(Object, ['foo[3]=hardy&foo[10]=har har', {deep:true}], {foo:{3:'hardy',10:'har har'}}, 'array keys will construct object');
-
-    test(Object, ['text=What%20is%20going%20on%20here%3f%3f&url=http://animalsbeingdicks.com/page/2'], { text: 'What is going on here??', url: 'http://animalsbeingdicks.com/page/2' }, 'handles partially escaped params');
-    test(Object, ['text=What%20is%20going%20on%20here%3f%3f&url=http%3A%2F%2Fanimalsbeingdicks.com%2Fpage%2F2'], { text: 'What is going on here??', url: 'http://animalsbeingdicks.com/page/2' }, 'handles fully escaped params');
-    test(Object, ['foo%3Dbar=car'], {'foo=bar':'car'}, 'handles = in encoded keys');
-    test(Object, ['foo%2Cbar=car'], {'foo,bar':'car'}, 'handles , in encoded keys');
-    test(Object, ['foo=bar%3Dcar'], {'foo':'bar=car'}, 'handles = in encoded values');
-    test(Object, ['foo=bar%2Ccar'], {'foo':'bar,car'}, 'handles , in encoded values');
-
-    test(Object, ['url=http%3A%2F%2Fwww.site.com%2Fslug%3Fin%3D%2Fuser%2Fjoeyblake'], { url: 'http://www.site.com/slug?in=/user/joeyblake' }, 'equal must be escaped as well');
-
-    test(Object, ['http://fake.com?foo=bar'], { foo: 'bar' }, 'handles whole URLs');
-    test(Object, {}, 'will not die if no arguments');
-
-    if (typeof window !== 'undefined') {
-      equal(typeof run(Object, 'fromQueryString', [window.location]), 'object', 'can handle just window.location');
-    }
-
-    // Automatic casting
-
-    test(Object, ['foo=3.14156'], { foo: 3.14156 }, 'float values');
-    test(Object, ['foo=3.14156', {auto:false}], { foo: '3.14156' }, 'float values not automatic');
-    test(Object, ['foo=127.0.0.1'], { foo: '127.0.0.1' }, 'IP addresses not treated as numbers');
-    test(Object, ['zip=00165'], { zip: 165 }, 'zipcodes are treated as numbers if auto');
-    test(Object, ['zip=00165',{auto:false}], { zip: '00165' }, 'zipcodes are not treated as numbers if not auto');
-    test(Object, ['foo[=bar'], { 'foo[': 'bar' }, 'opening bracket does not trigger deep parameters');
-
-    test(Object, ['foo='],        { foo: null },   'auto | null');
-    test(Object, ['foo=0'],       { foo:   0 },    'auto | zero');
-    test(Object, ['foo=-0'],      { foo:  -0 },    'auto | negative zero');
-    test(Object, ['foo=.5'],      { foo:  .5 },    'auto | .5');
-    test(Object, ['foo=0.5'],     { foo:  .5 },    'auto | 0.5');
-    test(Object, ['foo=0.00'],    { foo: 0 },      'auto | 0.00');
-    test(Object, ['foo=1'],       { foo: 1 },      'auto | 1');
-    test(Object, ['foo=-1'],      { foo:-1 },      'auto | -1');
-    test(Object, ['foo=-0.5'],    { foo: -.5 },    'auto | -0.5');
-    test(Object, ['foo=-.5'],     { foo: -.5 },    'auto | -.5');
-    test(Object, ['foo=-.0025'],  { foo: -.0025 }, 'auto | -.0025');
-    test(Object, ['foo=-0.0025'], { foo: -.0025 }, 'auto | -0.0025');
-    test(Object, ['foo=.0025'],   { foo:  .0025 }, 'auto | .0025');
-    test(Object, ['foo=0.0025'],  { foo:  .0025 }, 'auto | 0.0025');
-
-    test(Object, ['foo=0x89'],    { foo: '0x89' },     'auto | should not cast 0x89');
-    test(Object, ['foo=1e25'],    { foo: '1e25' },     'auto | should not cast 1e25');
-    test(Object, ['foo=#fff'],    { foo: '#fff' },     'auto | should not cast #fff');
-    test(Object, ['foo=1.2.3'],   { foo: '1.2.3'},     'auto | should not cast 1.2.3');
-    test(Object, ['foo=Infinity'],{ foo: 'Infinity' }, 'auto | should not cast Infinity');
-    test(Object, ['foo=99,999'],  { foo: '99,999' },   'auto | should not cast numbers with commas');
-    test(Object, ['foo=24px'],    { foo: '24px' },     'auto | should not cast 24px');
-    test(Object, ['foo=5-'],      { foo: '5-' },       'auto | should not cast 5-');
-
-
-    test(Object, ['foo=bar&foo=car'], {'foo':['bar','car']}, 'two keys detected by auto');
-    test(Object, ['foo=bar&foo=car&foo=moo'], {'foo':['bar','car','moo']}, 'three keys detected by auto');
-    test(Object, ['foo=bar&foo=car', {deep:true}], {'foo':['bar','car']}, 'two keys detected by auto');
-    test(Object, ['foo=bar&foo=car&foo=moo', {deep:true}], {'foo':['bar','car','moo']}, 'three keys detected by auto');
-
-
-    // Separators
-
-    test(Object, ['user_name=Harry'], {'user_name':'Harry'}, 'without separator');
-    test(Object, ['user_name=Harry', {separator:'_'}], {'user':{name:'Harry'}}, 'with separator');
-    test(Object, ['user_name_first=Harry', {separator:'_'}], {'user':{name:{first:'Harry'}}}, 'with separator deeper');
-
-    test(Object, ['user|name=Harry'], {'user|name':'Harry'}, 'without separator | pipe');
-    test(Object, ['user|name=Harry', {separator:'|'}], {'user':{name:'Harry'}}, 'with separator | pipe');
-    test(Object, ['user|name|first=Harry', {separator:'|'}], {'user':{name:{first:'Harry'}}}, 'with separator deeper | pipe');
-
-
-    // Cast function
-
-    var toFoo = function() { return 'foo'; }
-    test(Object, ['foo=bar',    {transform:toFoo}], {foo:'foo'}, 'transform foo');
-    test(Object, ['foo=3',      {transform:toFoo}], {foo:'foo'}, 'transform foo before auto conversion');
-    test(Object, ['foo=true',   {transform:toFoo}], {foo:'foo'}, 'transform foo before boolean conversion');
-    test(Object, ['foo[]=true', {transform:toFoo}], {'foo[]':'foo'}, 'transform foo on brackets');
-
-    var toEmpty = function() { return ''; }
-    test(Object, ['foo=bar', {transform:toEmpty}], {foo:''}, 'transform empty string');
-
-
-    var count = 0;
-    var testTransformArguments = function(key, value, obj, str) {
-      equal(key, 'foo', 'first argument should be the key');
-      equal(value, 'bar', 'second argument should be the value');
-      count++;
-    }
-    run(Object, 'fromQueryString', ['foo=bar', {transform:testTransformArguments}]);
-    equal(count, 1, 'should have run once');
-
-    var count = 0;
-    var expectedKeys = ['foo[name]', 'moo[]'];
-    var expectedValues = ['bar', 'beer'];
-    var capturedObj;
-    var testTransformArgumentsDeep = function(key, value, obj) {
-      equal(key, expectedKeys[count], 'first argument');
-      equal(value, expectedValues[count], 'second argument');
-      capturedObj = obj;
-      count++;
-    }
-    var result = run(Object, 'fromQueryString', ['foo[name]=bar&moo[]=beer', {transform:testTransformArgumentsDeep}]);
-
-    equal(capturedObj, result, 'third argument should be equal to the result');
-    equal(count, 2, 'should have run twice');
-
-    var onlyUserName = function(key) {
-      if (key === 'user_name') {
-        return 'Harry';
-      }
-    }
-    test(Object, ['user_name=moo&user_id=12345', {transform:onlyUserName}], {user_name:'Harry',user_id:12345}, 'only user name');
-
-    var numeralToBoolean = function(key, value) {
-      if (value === '1' || value === '0') {
-        return !!+value;
-      }
-    }
-    var subject = 'user[profile][agreed]=1&user[address][street]=12345%20Foo%20St.&user[profile][friends][]=Mary&user[profile][friends][]=Jerry&user[profile][paid]=0';
-    var expected = {
-      user: {
-        profile: {
-          paid: false,
-          agreed: true,
-          friends: ['Mary', 'Jerry']
-        },
-        address: {
-          street: '12345 Foo St.'
-        }
-      }
-    }
-    test(Object, [subject, {deep:true,transform:numeralToBoolean}], expected, 'complex object with numeral cast to boolean');
-
-
-    var toArray = function(key, value, obj) {
-      if (key === 'foo' && !obj[key]) {
-        return [value];
-      }
-    }
-    test(Object, ['foo=bar', {transform:toArray}], {'foo':['bar']}, 'single can still be converted to array with cast function');
-
-  });
-
   method('keys', function() {
 
     var called = false;
@@ -798,8 +799,6 @@ namespace('Object', function () {
     test(function() {}, false, 'function() {}');
     test(1, false, '1');
     test('wasabi', false, '"wasabi"');
-    test(null, false, 'null');
-    test(undefined, false, 'undefined');
     test(NaN, false, 'NaN');
     test(false, false, 'false');
     test(true, false, 'true');
@@ -813,6 +812,8 @@ namespace('Object', function () {
       test(Object.create(null), true, 'Object with null prototype');
     }
 
+    test(Object, [null], false, 'null');
+    test(Object, [undefined], false, 'undefined');
   });
 
   method('isArray', function() {
@@ -824,11 +825,11 @@ namespace('Object', function () {
     test(function() {}, false, 'function() {}');
     test(1, false, '1');
     test('wasabi', false, '"wasabi"');
-    test(null, false, 'null');
-    test(undefined, false, 'undefined');
     test(NaN, false, 'NaN');
     test(false, false, 'false');
     test(true, false, 'true');
+    test(Object, [null], false, 'null');
+    test(Object, [undefined], false, 'undefined');
   });
 
   method('isBoolean', function() {
@@ -839,11 +840,11 @@ namespace('Object', function () {
     test(function() {}, false, 'function() {}');
     test(1, false, '1');
     test('wasabi', false, '"wasabi"');
-    test(null, false, 'null');
-    test(undefined, false, 'undefined');
     test(NaN, false, 'NaN');
     test(false, true, 'false');
     test(true, true, 'true');
+    test(Object, [null], false, 'null');
+    test(Object, [undefined], false, 'undefined');
   });
 
   method('isDate', function() {
@@ -854,11 +855,9 @@ namespace('Object', function () {
     test(function() {}, false, 'function() {}');
     test(1, false, '1');
     test('wasabi', false, '"wasabi"');
-    test(null, false, 'null');
-    test(undefined, false, 'undefined');
     test(NaN, false, 'NaN');
-    test(false, false, 'false');
-    test(true, false, 'true');
+    test(Object, [null], false, 'null');
+    test(Object, [undefined], false, 'undefined');
   });
 
   method('isFunction', function() {
@@ -870,11 +869,11 @@ namespace('Object', function () {
     test(new Function(), true, 'new Function()');
     test(1, false, '1');
     test('wasabi', false, '"wasabi"');
-    test(null, false, 'null');
-    test(undefined, false, 'undefined');
     test(NaN, false, 'NaN');
     test(false, false, 'false');
     test(true, false, 'true');
+    test(Object, [null], false, 'null');
+    test(Object, [undefined], false, 'undefined');
   });
 
 
@@ -890,11 +889,11 @@ namespace('Object', function () {
     test(-1, true, '-1');
     test(new Number('3'), true, 'new Number("3")');
     test('wasabi', false, '"wasabi"');
-    test(null, false, 'null');
-    test(undefined, false, 'undefined');
     test(NaN, true, 'NaN');
     test(false, false, 'false');
     test(true, false, 'true');
+    test(Object, [null], false, 'null');
+    test(Object, [undefined], false, 'undefined');
   });
 
   method('isString', function() {
@@ -907,11 +906,11 @@ namespace('Object', function () {
     test(1, false, '1');
     test('wasabi', true, '"wasabi"');
     test(new String('wasabi'), true, 'new String("wasabi")');
-    test(null, false, 'null');
-    test(undefined, false, 'undefined');
     test(NaN, false, 'NaN');
     test(false, false, 'false');
     test(true, false, 'true');
+    test(Object, [null], false, 'null');
+    test(Object, [undefined], false, 'undefined');
   });
 
   method('isRegExp', function() {
@@ -924,11 +923,11 @@ namespace('Object', function () {
     test(new Function(), false, 'new Function()');
     test(1, false, '1');
     test('wasabi', false, '"wasabi"');
-    test(null, false, 'null');
-    test(undefined, false, 'undefined');
     test(NaN, false, 'NaN');
     test(false, false, 'false');
     test(true, false, 'true');
+    test(Object, [null], false, 'null');
+    test(Object, [undefined], false, 'undefined');
   });
 
   method('isNaN', function() {
@@ -941,11 +940,11 @@ namespace('Object', function () {
     test(new Function(), false, 'new Function()');
     test(1, false, '1');
     test('wasabi', false, '"wasabi"');
-    test(null, false, 'null');
-    test(undefined, false, 'undefined');
     test(NaN, true, 'NaN');
     test(false, false, 'false');
     test(true, false, 'true');
+    test(Object, [null], false, 'null');
+    test(Object, [undefined], false, 'undefined');
   });
 
   method('isArguments', function() {
@@ -957,13 +956,13 @@ namespace('Object', function () {
     test(function() {}, false, 'function() {}');
     test(1, false, '1');
     test('wasabi', false, '"wasabi"');
-    test(null, false, 'null');
-    test(undefined, false, 'undefined');
     test(NaN, false, 'NaN');
     test(false, false, 'false');
     test(true, false, 'true');
     test((function(){ return arguments; })(), true, 'arguments object with 0 length');
     test((function(){ return arguments; })(1,2,3), true, 'arguments object with 3 length');
+    test(Object, [null], false, 'null');
+    test(Object, [undefined], false, 'undefined');
   });
 
   method('merge', function() {
@@ -1256,10 +1255,11 @@ namespace('Object', function () {
 
     // Non-standard merges
 
-    test(undefined, ['b'], 'b', 'merge string into undefined');
-    test(undefined, [{a:'a'}], {a:'a'}, 'merge object into undefined');
-    test(null, ['b'], 'b', 'merge string into null');
-    test(null, [{a:'a'}], {a:'a'}, 'merge object into null');
+    test(Object, [undefined, 'b'], 'b', 'merge string into undefined');
+    test(Object, [undefined, {a:'a'}], {a:'a'}, 'merge object into undefined');
+    test(Object, [null, 'b'], 'b', 'merge string into null');
+    test(Object, [null, {a:'a'}], {a:'a'}, 'merge object into null');
+
     test('a', ['b'], 'b', 'merge string into string');
     test('a', [{a:'a'}], {a:'a'}, 'merge object into string');
     test(0, ['b'], 'b', 'merge string into 0');
@@ -1666,11 +1666,13 @@ namespace('Object', function () {
 
   method('clone', function() {
 
+    test(new String('hardy'), [], new String('hardy'), 'clone on a string object');
     test('hardy', [], 'hardy', 'clone on a string');
-    test(undefined, [], undefined, 'clone on undefined');
-    test(null, [], null, 'clone on null');
     test([1,2,3], [], [1,2,3], 'clone on arrays');
     test(['a','b','c'], [], ['a','b','c'], 'clone on array of strings');
+
+    test(Object, [undefined], undefined, 'clone on undefined');
+    test(Object, [null], null, 'clone on null');
 
     test({a:'a'}, [], {a:'a'}, 'basic clone');
     test({a:'a',b:1,c:null}, [], {a:'a',b:1,c:null}, 'multiple clone');
@@ -1809,7 +1811,8 @@ namespace('Object', function () {
     var obj1 = { foo: 'bar' };
     obj1.moo = obj1;
     test(obj1, [{foo:'bar',moo:obj1}], true, 'cyclical references handled');
-    test(undefined, ['one'], false, 'string to undefined');
+
+    test(Object, [undefined, 'one'], false, 'string to undefined');
 
     if (typeof Set !== 'undefined') {
       var set = testGetSet;
@@ -2088,8 +2091,8 @@ namespace('Object', function () {
     test('foo', ['str'], {}, 'primitive on primitive produces empty');
     test('foo', [null], {}, 'null on primitive produces empty');
     test('foo', [undefined], {}, 'undefined on primitive produces empty');
-    test(null, [{foo:'bar'}], {}, 'object on null produces empty');
     test('foo', [{foo:'bar'}], {}, 'object on primitive produces empty');
+    test(Object, [null, {foo:'bar'}], {}, 'object on null produces empty');
   });
 
   method('subtract', function() {
@@ -2105,8 +2108,8 @@ namespace('Object', function () {
     test('foo', ['str'], 'foo', 'primitive on primitive produces original');
     test('foo', [null], 'foo', 'null on primitive produces original');
     test('foo', [undefined], 'foo', 'undefined on primitive produces original');
-    test(null, [{foo:'bar'}], null, 'object on null produces null');
     test('foo', [{foo:'bar'}], 'foo', 'object on primitive produces empty');
+    test(Object, [null, {foo:'bar'}], null, 'object on null produces null');
 
     var obj = {foo:'bar'};
     var result = run(obj, 'subtract', []);
@@ -2183,7 +2186,6 @@ namespace('Object', function () {
   });
 
   method('isEmpty', function() {
-
     test({}, [], true, 'object is empty');
     test({ broken: 'wear' }, [], false, 'object is not empty');
     test({ length: 0 }, [], false, 'simple object with length property is not empty');
@@ -2191,8 +2193,6 @@ namespace('Object', function () {
     test({ foo: undefined }, [], false, 'undefined is still counted');
     test({ foo: NaN }, [], false, 'undefined is still counted');
     test([], [], true, 'empty array is empty');
-    test(null, [], true, 'null is empty');
-    test(undefined, [], true, 'undefined is empty');
     test('', [], true, 'empty string is empty');
     test(new String(''), [], true, 'empty string object is empty');
     test('wasabi', [], false, 'non-empty string is not empty');
@@ -2200,11 +2200,11 @@ namespace('Object', function () {
     test(NaN, [], true, 'NaN is empty');
     test(8, [], true, '8 is empty');
     test(new Number(8), [], true, '8 object is empty');
-
+    test(Object, [null], true, 'null is empty');
+    test(Object, [undefined], true, 'undefined is empty');
   });
 
   method('size', function() {
-
     test({}, [], 0, 'empty object');
     test({foo:'bar'}, [], 1, '1 property');
     test({foo:'bar',moo:'car'}, [], 2, '2 properties');
@@ -2222,8 +2222,9 @@ namespace('Object', function () {
     test(new Number(1), [], 0, 'number object');
     test(true, [], 0, 'boolean primitive');
     test(new Boolean(true), [], 0, 'boolean object');
-    test(null, [], 0, 'null');
-    test(undefined, [], 0, 'undefined');
+
+    test(Object, [null], 0, 'null');
+    test(Object, [undefined], 0, 'undefined');
 
     var Foo = function(){};
     test(new Foo, [], 0, 'class instances');
