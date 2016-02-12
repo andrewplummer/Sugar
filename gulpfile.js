@@ -538,13 +538,14 @@ function getModuleNames(p) {
   alias('default', DEFAULT_MODULES);
 
   if (args.es5) {
-    names.push('es5');
+    names.unshift('es5');
   }
 
   if (!names.length || names[0] !== 'core') {
     names.unshift('common');
   }
   names.unshift('core');
+
   return uniq(names).map(function(name) {
     return path.join('lib', name.toLowerCase() + '.js');
   });
