@@ -6,6 +6,19 @@ namespace('Object | Equality', function() {
   // wrappers, and more. Sugar's callObjectEqual should now be considered "egal".
 
   function callObjectEqual(a, b) {
+    if (!canTestPrimitiveScope) {
+      // If the environment doesn't allow null scope, then there's no way
+      // to predict how the scope will be mangled by running "a" through it,
+      // so run isEqual as a static method instead. This is simulating a real
+      // world situation as well as there is no way to map isEqual to Object
+      // prototype and have it work for string primitives when strict mode is
+      // not available, so the user will in that case have to go through the
+      // static method as well. Similarly, chainables would have to go through
+      // a significant tapdance to get working right with null scope issues,
+      // and the performance penalties and indescrepancy with extended mode
+      // is not worth the benefits.
+      return run(Object, 'isEqual', [a, b]);
+    }
     return run(a, 'isEqual', [b]);
   }
 
@@ -21,12 +34,11 @@ namespace('Object | Equality', function() {
 
 
   group('Basic equality and identity comparisons', function() {
-    equal(callObjectEqual(null, null), true, "`null` is equal to `null`");
-    equal(callObjectEqual(), true, "`undefined` is equal to `undefined`");
-
     equal(callObjectEqual(0, -0), false, "`0` is not equal to `-0`");
     equal(callObjectEqual(-0, 0), false, "Commutative equality is implemented for `0` and `-0`");
 
+    equal(callObjectEqual(), true, "`undefined` is equal to `undefined`");
+    equal(callObjectEqual(null, null), true, "`null` is equal to `null`");
     equal(callObjectEqual(null, undefined), false, "`null` is not equal to `undefined`");
     equal(callObjectEqual(undefined, null), false, "Commutative equality is implemented for `null` and `undefined`");
   });

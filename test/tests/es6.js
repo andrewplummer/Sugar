@@ -1,10 +1,6 @@
 namespace('ES6', function () {
   'use strict';
 
-  // Only true in strict mode
-  var allowsNullScope = (function(){ return this; }).call(null) === null;
-  var undefinedContextObj = (function(){ return this; }).call(undefined);
-
   method('find', function() {
     var arr, count, result, visited;
 
@@ -32,7 +28,7 @@ namespace('ES6', function () {
       equal(el, expectedValues[count], 'Array#find | first argument should be element');
       equal(i, expectedIndexes[count], 'Array#find | second argument should be index');
       equal(a, arr, 'Array#find | third argument should be the array');
-      equal(this, undefinedContextObj, 'Array#find | context should be undefined');
+      equal(this, testNullScope, 'Array#find | context should be undefined');
       count++;
     });
     equal(count, 3, 'Array#find | should have iterated 3 times');
@@ -105,7 +101,7 @@ namespace('ES6', function () {
       equal(el, expectedValues[count], 'Array#findIndex | first argument should be element');
       equal(i, expectedIndexes[count], 'Array#findIndex | second argument should be index');
       equal(a, arr, 'Array#findIndex | third argument should be the array');
-      equal(this, undefinedContextObj, 'Array#findIndex | context should be undefined');
+      equal(this, testNullScope, 'Array#findIndex | context should be undefined');
       count++;
     });
     equal(count, 3, 'Array#findIndex | should have iterated 3 times');
@@ -334,7 +330,7 @@ namespace('ES6', function () {
       '[a-z]+/(bar)?/'.startsWith(/(bar)?/);
     }, 'String#startsWith | slashes starting with regex', TypeError);
 
-    if(allowsNullScope) {
+    if(canTestPrimitiveScope) {
       raisesError(function() {
         String.prototype.startsWith.call(undefined);
       }, 'String#startsWith | undefined', TypeError);
@@ -601,7 +597,7 @@ namespace('ES6', function () {
       '[a-z]+/(bar)?/'.endsWith(/(bar)?/);
     }, 'String#endsWith | slashes starting with regex', TypeError);
 
-    if(allowsNullScope) {
+    if(canTestPrimitiveScope) {
       raisesError(function() {
         String.prototype.endsWith.call(undefined);
       }, 'String#endsWith | undefined', TypeError);
@@ -714,7 +710,7 @@ namespace('ES6', function () {
       'abc'.repeat(+Infinity);
     }, 'String#repeat | +Infinity throws RangeError', RangeError);
 
-    if(allowsNullScope) {
+    if(canTestPrimitiveScope) {
       raisesError(function() {
         String.prototype.repeat.call(undefined);
       }, 'String#repeat | undefined throws error', TypeError);
@@ -828,7 +824,7 @@ namespace('ES6', function () {
     equal(string.includes('\u2603'), true);
     equal(string.includes('\uD83D\uDCA9'), true);
 
-    if(allowsNullScope) {
+    if(canTestPrimitiveScope) {
       raisesError(function() { String.prototype.includes.call(undefined); }, TypeError);
       raisesError(function() { String.prototype.includes.call(undefined, 'b'); }, TypeError);
       raisesError(function() { String.prototype.includes.call(undefined, 'b', 4); }, TypeError);
@@ -1049,11 +1045,11 @@ namespace('ES6', function () {
     equal(Array.from({length:-Infinity}), [], 'swallows -Infinity');
 
     Array.from([1], function () {
-      equal(this, undefinedContextObj, 'when not passed, context should be default undefined context');
+      equal(this, testNullScope, 'when not passed, context should be default undefined context');
     });
 
     Array.from.call({}, [1], function () {
-      equal(this, undefinedContextObj, 'context should still be undefined even if .call() is used');
+      equal(this, testNullScope, 'context should still be undefined even if .call() is used');
     });
 
     if (typeof document !== 'undefined') {

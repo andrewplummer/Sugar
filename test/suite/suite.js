@@ -158,6 +158,14 @@
     currentMethod = null;
   }
 
+  isDefaultMode = function() {
+    return currentMode === 'default';
+  }
+
+  isChainedMode = function() {
+    return currentMode === 'chained';
+  }
+
   isExtendedMode = function() {
     return currentMode === 'extended';
   }

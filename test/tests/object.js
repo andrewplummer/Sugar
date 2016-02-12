@@ -1,10 +1,6 @@
 namespace('Object', function () {
   'use strict';
 
-  // The scope when none is set. Needs to be set here
-  // as strict mode affects this"
-  var nullScope = (function() { return this; }).call();
-
   group('Chainable', function() {
     equal(new Sugar.Object({foo:'bar'}).raw, {foo:'bar'}, 'argument should be converted to object');
     equal(typeof new Sugar.Object('foo').raw, 'string', 'primitive should not be coerced into object');
@@ -1128,7 +1124,7 @@ namespace('Object', function () {
       equal(b, 5, 'Third argument should be the source value');
       equal(target, {}, 'Fourth argument should be the target');
       equal(source, {count:5}, 'Fifth argument should be the source');
-      equal(this, nullScope, 'No scope is set by default');
+      equal(this, testNullScope, 'No scope is set by default');
       return b * 2;
     }
     var opts = { resolve: fn };
@@ -1260,10 +1256,13 @@ namespace('Object', function () {
     test(Object, [null, 'b'], 'b', 'merge string into null');
     test(Object, [null, {a:'a'}], {a:'a'}, 'merge object into null');
 
-    test('a', ['b'], 'b', 'merge string into string');
-    test('a', [{a:'a'}], {a:'a'}, 'merge object into string');
-    test(0, ['b'], 'b', 'merge string into 0');
-    test(0, [{a:'a'}], {a:'a'}, 'merge object into 0');
+    if (canTestPrimitiveScope) {
+      test('a', ['b'], 'b', 'merge string into string');
+      test('a', [{a:'a'}], {a:'a'}, 'merge object into string');
+      test(0, ['b'], 'b', 'merge string into 0');
+      test(0, [{a:'a'}], {a:'a'}, 'merge object into 0');
+    }
+
     test([1,2,3,4], [[4,5,6]], [4,5,6,4], 'two arrays');
 
     var a = [1];
@@ -2104,12 +2103,15 @@ namespace('Object', function () {
     test({a:{foo:'bar'}}, [{a:{foo:'bar',moo:'car'}}], {a:{foo:'bar'}}, 'Deep object with extra does not match');
     test({}, [{}], {}, 'Two empty produce empty');
     test({foo:'bar',moo:'car'}, [], {foo:'bar',moo:'car'}, 'No arguments produces original');
-    test('foo', [], 'foo', 'no argument on primitive produces original');
-    test('foo', ['str'], 'foo', 'primitive on primitive produces original');
-    test('foo', [null], 'foo', 'null on primitive produces original');
-    test('foo', [undefined], 'foo', 'undefined on primitive produces original');
-    test('foo', [{foo:'bar'}], 'foo', 'object on primitive produces empty');
     test(Object, [null, {foo:'bar'}], null, 'object on null produces null');
+
+    if (canTestPrimitiveScope) {
+      test('foo', [], 'foo', 'no argument on primitive produces original');
+      test('foo', ['str'], 'foo', 'primitive on primitive produces original');
+      test('foo', [null], 'foo', 'null on primitive produces original');
+      test('foo', [undefined], 'foo', 'undefined on primitive produces original');
+      test('foo', [{foo:'bar'}], 'foo', 'object on primitive produces empty');
+    }
 
     var obj = {foo:'bar'};
     var result = run(obj, 'subtract', []);

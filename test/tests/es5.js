@@ -1,9 +1,6 @@
 namespace('ES5', function () {
   'use strict';
 
-  // The scope when none is set.
-  var nullScope = (function() { return this; }).call();
-
   method('isArray', function() {
 
     equal(Array.isArray.length, 1, 'should have argument length of 1');
@@ -37,7 +34,7 @@ namespace('ES5', function () {
 
     raisesError(function() { [].forEach(); }, 'should raise an error when no fn given');
     result = arr.forEach(function() {
-      equal(this, nullScope, 'scope should be undefined when not passed');
+      equal(this, testNullScope, 'scope should be undefined when not passed');
     });
     result = arr.forEach(function() {
       equal(this.toString(), 'wasabi', 'scope can be passed');
@@ -388,7 +385,7 @@ namespace('ES5', function () {
     arr = [];
     raisesError(function() { [].every(); }, 'should raise an error when no first param');
     result = arr.every(function() {
-      equal(this, nullScope, 'scope should be undefined when not passed');
+      equal(this, testNullScope, 'scope should be undefined when not passed');
     });
     [1].every(function() {
       equal(this.toString(), 'wasabi', 'scope can be passed');
@@ -461,7 +458,7 @@ namespace('ES5', function () {
     arr = [];
     raisesError(function() { [].some(); }, 'should raise an error when no first param');
     result = arr.some(function() {
-      equal(this, nullScope, 'scope should be undefined when not passed');
+      equal(this, testNullScope, 'scope should be undefined when not passed');
     });
     [1].some(function() {
       equal(this.toString(), 'wasabi', 'scope can be passed');
@@ -536,7 +533,7 @@ namespace('ES5', function () {
     arr = [];
     raisesError(function() { [].map(); }, 'should raise an error when no first param');
     result = arr.map(function() {
-      equal(this, nullScope, 'scope should be undefined when not passed');
+      equal(this, testNullScope, 'scope should be undefined when not passed');
     });
     [1].map(function() {
       equal(this.toString(), 'wasabi', 'scope can be passed');
@@ -603,7 +600,7 @@ namespace('ES5', function () {
     arr = [];
     raisesError(function() { [].filter(); }, 'should raise an error when no first param');
     result = arr.filter(function() {
-      equal(this, nullScope, 'scope should be undefined when not passed');
+      equal(this, testNullScope, 'scope should be undefined when not passed');
     });
     [1].filter(function() {
       equal(this.toString(), 'wasabi', 'scope can be passed');
@@ -677,7 +674,7 @@ namespace('ES5', function () {
     raisesError(function() { [1].reduce(); }, 'should raise an error when no callback provided');
     raisesError(function() { [].reduce(function() {}); }, 'should raise an error on an empty array with no initial value');
     [1].reduce(function() {
-      equal(this, nullScope, 'scope should be undefined');
+      equal(this, testNullScope, 'scope should be undefined');
     }, 1);
 
 
@@ -761,7 +758,7 @@ namespace('ES5', function () {
     raisesError(function() { [1].reduceRight(); }, 'should raise an error when no callback provided');
     raisesError(function() { [].reduceRight(function() {}); }, 'should raise an error on an empty array with no initial value');
     [1].reduceRight(function() {
-      equal(this, nullScope, 'scope should be undefined');
+      equal(this, testNullScope, 'scope should be undefined');
     }, 1);
 
 
@@ -958,7 +955,7 @@ namespace('ES5', function () {
     equal((function() { return this; }).bind('yellow')().toString(), 'yellow', 'basic binding of this arg');
     equal((function() { return arguments[0]; }).bind('yellow', 'mellow')(), 'mellow', 'currying argument 1');
     equal((function() { return arguments[1]; }).bind('yellow', 'mellow', 'fellow')(), 'fellow', 'currying argument 2');
-    equal((function() { return this; }).bind(undefined)(), nullScope, 'passing undefined as the scope');
+    equal((function() { return this; }).bind(undefined)(), testNullScope, 'passing undefined as the scope');
 
     (function(a, b) {
       equal(this.toString(), 'yellow', 'ensure only one call | this object');
