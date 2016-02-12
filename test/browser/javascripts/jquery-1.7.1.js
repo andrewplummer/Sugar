@@ -352,6 +352,7 @@ jQuery.extend = jQuery.fn.extend = function() {
 		if ( (options = arguments[ i ]) != null ) {
 			// Extend the base object
 			for ( name in options ) {
+                          if (!options.hasOwnProperty(name)) continue;
 				src = target[ name ];
 				copy = options[ name ];
 
@@ -543,6 +544,7 @@ jQuery.extend({
 
 	isEmptyObject: function( obj ) {
 		for ( var name in obj ) {
+                  if (!obj.hasOwnProperty(name)) continue;
 			return false;
 		}
 		return true;
@@ -633,6 +635,7 @@ jQuery.extend({
 		if ( args ) {
 			if ( isObj ) {
 				for ( name in object ) {
+                                  if (!object.hasOwnProperty(name)) continue;
 					if ( callback.apply( object[ name ], args ) === false ) {
 						break;
 					}
@@ -649,6 +652,7 @@ jQuery.extend({
 		} else {
 			if ( isObj ) {
 				for ( name in object ) {
+                                  if (!object.hasOwnProperty(name)) continue;
 					if ( callback.call( object[ name ], name, object[ name ] ) === false ) {
 						break;
 					}
@@ -778,6 +782,7 @@ jQuery.extend({
 		// Go through every key on the object,
 		} else {
 			for ( key in elems ) {
+                          if (!elems.hasOwnProperty(key)) continue;
 				value = callback( elems[ key ], key, arg );
 
 				if ( value != null ) {
@@ -828,6 +833,7 @@ jQuery.extend({
 		// Setting many attributes
 		if ( typeof key === "object" ) {
 			for ( var k in key ) {
+                          if (!key.hasOwnProperty(k)) continue;
 				jQuery.access( elems, k, key[k], exec, fn, value );
 			}
 			return elems;
@@ -1251,6 +1257,7 @@ jQuery.extend({
 						obj = promise;
 					} else {
 						for ( var key in promise ) {
+                                                  if (!promise.hasOwnProperty(key)) continue;
 							obj[ key ] = promise[ key ];
 						}
 					}
@@ -1261,6 +1268,7 @@ jQuery.extend({
 			key;
 
 		for ( key in lists ) {
+                  if (!lists.hasOwnProperty(key)) continue;
 			deferred[ key ] = lists[ key ].fire;
 			deferred[ key + "With" ] = lists[ key ].fireWith;
 		}
@@ -1494,11 +1502,9 @@ jQuery.support = (function() {
 	// avoid an eval call (in setAttribute) which can cause CSP
 	// to go haywire. See: https://developer.mozilla.org/en/Security/CSP
 	if ( div.attachEvent ) {
-		for( i in {
-			submit: 1,
-			change: 1,
-			focusin: 1
-		}) {
+          var obj = { submit: 1, change: 1, focusin: 1 };
+		for( i in obj) {
+                  if (!obj.hasOwnProperty(i)) continue;
 			eventName = "on" + i;
 			isSupported = ( eventName in div );
 			if ( !isSupported ) {
@@ -1961,6 +1967,7 @@ function dataAttr( elem, key, data ) {
 // checks a cache object for emptiness
 function isEmptyDataObject( obj ) {
 	for ( var name in obj ) {
+          if (!obj.hasOwnProperty(name)) continue;
 
 		// if the public data object is empty, the private is still empty
 		if ( name === "data" && jQuery.isEmptyObject( obj[name] ) ) {
@@ -2973,6 +2980,7 @@ jQuery.event = {
 			// Unbind all events (on this namespace, if provided) for the element
 			if ( !type ) {
 				for ( type in events ) {
+                                  if (!events.hasOwnProperty(type)) continue;
 					jQuery.event.remove( elem, type + types[ t ], handler, selector, true );
 				}
 				continue;
@@ -3091,6 +3099,7 @@ jQuery.event = {
 			// TODO: Stop taunting the data cache; remove global events and always attach to document
 			cache = jQuery.cache;
 			for ( i in cache ) {
+                                  if (!cache.hasOwnProperty(i)) continue;
 				if ( cache[ i ].events && cache[ i ].events[ type ] ) {
 					jQuery.event.trigger( event, data, cache[ i ].handle.elem, true );
 				}
@@ -3677,6 +3686,7 @@ jQuery.fn.extend({
 				selector = undefined;
 			}
 			for ( type in types ) {
+                                  if (!types.hasOwnProperty(type)) continue;
 				this.on( type, selector, data, types[ type ], one );
 			}
 			return this;
@@ -3735,6 +3745,7 @@ jQuery.fn.extend({
 		if ( typeof types === "object" ) {
 			// ( types-object [, selector] )
 			for ( var type in types ) {
+                                  if (!types.hasOwnProperty(type)) continue;
 				this.off( type, selector, types[ type ] );
 			}
 			return this;
@@ -4094,6 +4105,7 @@ Sizzle.filter = function( expr, set, inplace, not ) {
 
 	while ( expr && set.length ) {
 		for ( type in Expr.filter ) {
+                  if (!Expr.filter.hasOwnProperty(type)) continue;
 			if ( (match = Expr.leftMatch[ type ].exec( expr )) != null && match[2] ) {
 				filter = Expr.filter[ type ];
 				left = match[1];
@@ -4754,6 +4766,7 @@ var origPOS = Expr.match.POS,
 	};
 
 for ( var type in Expr.match ) {
+  if (!Expr.match.hasOwnProperty(type)) continue;
 	Expr.match[ type ] = new RegExp( Expr.match[ type ].source + (/(?![^\[]*\])(?![^\(]*\))/.source) );
 	Expr.leftMatch[ type ] = new RegExp( /(^(?:.|\r|\n)*?)/.source + Expr.match[ type ].source.replace(/\\(\d+)/g, fescape) );
 }
@@ -5084,6 +5097,7 @@ if ( document.querySelectorAll ) {
 		};
 
 		for ( var prop in oldSizzle ) {
+                  if (!oldSizzle.hasOwnProperty(prop)) continue;
 			Sizzle[ prop ] = oldSizzle[ prop ];
 		}
 
@@ -6012,6 +6026,7 @@ function cloneCopyEvent( src, dest ) {
 		curData.events = {};
 
 		for ( type in events ) {
+                  if (!events.hasOwnProperty(type)) continue;
 			for ( i = 0, l = events[ type ].length; i < l; i++ ) {
 				jQuery.event.add( dest, type + ( events[ type ][ i ].namespace ? "." : "" ) + events[ type ][ i ].namespace, events[ type ][ i ], events[ type ][ i ].data );
 			}
@@ -6394,6 +6409,7 @@ jQuery.extend({
 
 				if ( data && data.events ) {
 					for ( var type in data.events ) {
+                                          if (!data.events.hasOwnProperty(type)) continue;
 						if ( special[ type ] ) {
 							jQuery.event.remove( elem, type );
 
@@ -6590,6 +6606,7 @@ jQuery.extend({
 
 		// Remember the old values, and insert the new ones
 		for ( var name in options ) {
+                  if (!options.hasOwnProperty(name)) continue;
 			old[ name ] = elem.style[ name ];
 			elem.style[ name ] = options[ name ];
 		}
@@ -6598,6 +6615,7 @@ jQuery.extend({
 
 		// Revert the old values
 		for ( name in options ) {
+                  if (!options.hasOwnProperty(name)) continue;
 			elem.style[ name ] = old[ name ];
 		}
 	}
@@ -6974,6 +6992,7 @@ function ajaxExtend( target, src ) {
 	var key, deep,
 		flatOptions = jQuery.ajaxSettings.flatOptions || {};
 	for ( key in src ) {
+          if (!src.hasOwnProperty(key)) continue;
 		if ( src[ key ] !== undefined ) {
 			( flatOptions[ key ] ? target : ( deep || ( deep = {} ) ) )[ key ] = src[ key ];
 		}
@@ -7434,6 +7453,7 @@ jQuery.extend({
 				var tmp;
 				if ( state < 2 ) {
 					for ( tmp in map ) {
+                                          if (!map.hasOwnProperty(tmp)) continue;
 						statusCode[ tmp ] = [ statusCode[tmp], map[tmp] ];
 					}
 				} else {
@@ -7540,6 +7560,7 @@ jQuery.extend({
 
 		// Check for headers option
 		for ( i in s.headers ) {
+                  if (!s.headers.hasOwnProperty(i)) continue;
 			jqXHR.setRequestHeader( i, s.headers[ i ] );
 		}
 
@@ -7552,7 +7573,9 @@ jQuery.extend({
 		}
 
 		// Install callbacks on deferreds
-		for ( i in { success: 1, error: 1, complete: 1 } ) {
+                var obj = { success: 1, error: 1, complete: 1 }
+		for ( i in  obj) {
+                  if (!obj.hasOwnProperty(i)) continue;
 			jqXHR[ i ]( s[ i ] );
 		}
 
@@ -7618,6 +7641,7 @@ jQuery.extend({
 			// If traditional, encode the "old" way (the way 1.3.2 or older
 			// did it), otherwise encode params recursively.
 			for ( var prefix in a ) {
+                          if (!a.hasOwnProperty(prefix)) continue;
 				buildParams( prefix, a[ prefix ], traditional, add );
 			}
 		}
@@ -7650,6 +7674,7 @@ function buildParams( prefix, obj, traditional, add ) {
 	} else if ( !traditional && obj != null && typeof obj === "object" ) {
 		// Serialize object item.
 		for ( var name in obj ) {
+                  if (!obj.hasOwnProperty(name)) continue;
 			buildParams( prefix + "[" + name + "]", obj[ name ], traditional, add );
 		}
 
@@ -7689,6 +7714,7 @@ function ajaxHandleResponses( s, jqXHR, responses ) {
 
 	// Fill responseXXX fields
 	for ( type in responseFields ) {
+          if (!responseFields.hasOwnProperty(type)) continue;
 		if ( type in responses ) {
 			jqXHR[ responseFields[type] ] = responses[ type ];
 		}
@@ -7705,6 +7731,7 @@ function ajaxHandleResponses( s, jqXHR, responses ) {
 	// Check if we're dealing with a known content-type
 	if ( ct ) {
 		for ( type in contents ) {
+                  if (!contents.hasOwnProperty(type)) continue;
 			if ( contents[ type ] && contents[ type ].test( ct ) ) {
 				dataTypes.unshift( type );
 				break;
@@ -7718,6 +7745,7 @@ function ajaxHandleResponses( s, jqXHR, responses ) {
 	} else {
 		// Try convertible dataTypes
 		for ( type in responses ) {
+                  if (!responses.hasOwnProperty(type)) continue;
 			if ( !dataTypes[ 0 ] || s.converters[ type + " " + dataTypes[0] ] ) {
 				finalDataType = type;
 				break;
@@ -7773,6 +7801,7 @@ function ajaxConvert( s, response ) {
 		// with lowercased keys
 		if ( i === 1 ) {
 			for ( key in s.converters ) {
+                          if (!s.converters.hasOwnProperty(key)) continue;
 				if ( typeof key === "string" ) {
 					converters[ key.toLowerCase() ] = s.converters[ key ];
 				}
@@ -7797,6 +7826,7 @@ function ajaxConvert( s, response ) {
 			if ( !conv ) {
 				conv2 = undefined;
 				for ( conv1 in converters ) {
+                                  if (!converters.hasOwnProperty(conv1)) continue;
 					tmp = conv1.split( " " );
 					if ( tmp[ 0 ] === prev || tmp[ 0 ] === "*" ) {
 						conv2 = converters[ tmp[1] + " " + current ];
@@ -8001,6 +8031,7 @@ var // #5280: Internet Explorer will keep connections alive if we don't abort on
 	xhrOnUnloadAbort = window.ActiveXObject ? function() {
 		// Abort all pending requests
 		for ( var key in xhrCallbacks ) {
+                  if (!xhrCallbacks.hasOwnProperty(key)) continue;
 			xhrCallbacks[ key ]( 0, 1 );
 		}
 	} : false,
@@ -8071,6 +8102,7 @@ if ( jQuery.support.ajax ) {
 					// Apply custom fields if provided
 					if ( s.xhrFields ) {
 						for ( i in s.xhrFields ) {
+                                                  if (!s.xhrFields.hasOwnProperty(i)) continue;
 							xhr[ i ] = s.xhrFields[ i ];
 						}
 					}
@@ -8092,6 +8124,7 @@ if ( jQuery.support.ajax ) {
 					// Need an extra try/catch for cross domain requests in Firefox 3
 					try {
 						for ( i in headers ) {
+                                                  if (!headers.hasOwnProperty(i)) continue;
 							xhr.setRequestHeader( i, headers[ i ] );
 						}
 					} catch( _ ) {}
@@ -8365,6 +8398,7 @@ jQuery.fn.extend({
 			opt.animatedProperties = {};
 
 			for ( p in prop ) {
+                          if (!prop.hasOwnProperty(p)) continue;
 
 				// property name normalization
 				name = jQuery.camelCase( p );
@@ -8416,6 +8450,7 @@ jQuery.fn.extend({
 			}
 
 			for ( p in prop ) {
+                          if (!prop.hasOwnProperty(p)) continue;
 				e = new jQuery.fx( this, opt, p );
 				val = prop[ p ];
 
@@ -8497,6 +8532,7 @@ jQuery.fn.extend({
 
 			if ( type == null ) {
 				for ( index in data ) {
+                                  if (!data.hasOwnProperty(index)) continue;
 					if ( data[ index ] && data[ index ].stop && index.indexOf(".run") === index.length - 4 ) {
 						stopQueue( this, data, index );
 					}
@@ -8720,6 +8756,7 @@ jQuery.fx.prototype = {
 			options.animatedProperties[ this.prop ] = true;
 
 			for ( p in options.animatedProperties ) {
+                          if (!options.animatedProperties.hasOwnProperty(p)) continue;
 				if ( options.animatedProperties[ p ] !== true ) {
 					done = false;
 				}
@@ -8742,6 +8779,7 @@ jQuery.fx.prototype = {
 				// Reset the properties, if the item has been hidden or shown
 				if ( options.hide || options.show ) {
 					for ( p in options.animatedProperties ) {
+                                          if (!options.animatedProperties.hasOwnProperty(p)) continue;
 						jQuery.style( elem, p, options.orig[ p ] );
 						jQuery.removeData( elem, "fxshow" + p, true );
 						// Toggle data is no longer needed
