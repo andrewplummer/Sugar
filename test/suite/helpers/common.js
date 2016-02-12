@@ -1,9 +1,15 @@
-(function() {
-  var internalHasOwnProperty = Object.prototype.hasOwnProperty;
-  testHasOwn = function(obj, key) {
-    return internalHasOwnProperty.call(obj, key);
-  }
-})();
+
+// Properties
+
+testNullScope = (function() { 'use strict'; return this; }).call();
+canTestPrimitiveScope = isDefaultMode() || testNullScope === undefined;
+
+
+// Methods
+
+testHasOwn = function(obj, key) {
+  return Object.prototype.hasOwnProperty.call(obj, key);
+}
 
 testIterateOverObject = function (obj, fn) {
   var key;
