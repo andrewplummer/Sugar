@@ -27,7 +27,7 @@
   }
 
   function getSplitPath() {
-    var match = document.location.pathname.match(/(\w+)\/(\w+)\/([\w-]+)\.html$/);
+    var match = document.location.pathname.match(/(\w+)\/(\w+)\/([\w-]+)(\.html|\/)?$/);
     return [match[1], match[2], match[3]];
   }
 

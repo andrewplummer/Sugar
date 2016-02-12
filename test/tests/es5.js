@@ -247,10 +247,12 @@ namespace('ES5', function () {
     equal([{ foo: 'bar' }].indexOf({ foo: 'bar' }), -1, 'will not find deep objects (use findIndex)');
     equal([{ foo: 'bar' }].indexOf(function(a) { return a.foo === 'bar'; }), -1, 'will not run against a function (use findIndex)');
 
-    // This test locks Firefox, unfortunately.
-    // var arr = [];
-    // arr[Math.pow(2, 32) - 2] = 'a';
-    // equal(arr.indexOf('a'), Math.pow(2, 32) - 2, 'maximum allowed array index');
+    // The two below tests have the potential to lock the browser,
+    // so need to make sure that they are never running against native implementations.
+
+    var arr = [];
+    arr[Math.pow(2, 32) - 2] = 'a';
+    equal(arr.indexOf('a'), Math.pow(2, 32) - 2, 'maximum allowed array index');
 
     var obj = {};
     obj.length = Math.pow(2, 32);
