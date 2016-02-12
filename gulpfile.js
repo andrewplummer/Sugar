@@ -25,6 +25,7 @@ gulp.task('min', buildMinified);
 gulp.task('build',       buildDefault);
 gulp.task('build:dev',   buildDevelopment);
 gulp.task('build:min',   buildMinified);
+gulp.task('build:es5',   buildES5);
 gulp.task('build:all',   buildAll);
 gulp.task('build:qml',   buildQml);
 gulp.task('build:clean', buildClean);
@@ -87,6 +88,8 @@ var MESSAGE_TASKS = [
   '      |build:bower|                    Builds bower packages (none by default).',
   '      |build:bower:all|                Builds all bower packages (slow).',
   '      |build:bower:clean|              Cleans bower package output directory ("release/bower" by default).',
+  '',
+  '      |build:es5|                      Runs "build" with ES5 polyfill module included.',
   '',
   '      |build:qml|                      Creates a QML compatible build.',
   '',
@@ -434,6 +437,11 @@ function buildMinified() {
   return createMinifiedBuild(filename, modules, locales);
 }
 
+function buildES5() {
+  args.es5 = true;
+  return buildDefault();
+}
+
 function buildQml() {
   var filename = args.o || args.output || 'sugar.js';
   var modules = args.m || args.modules || 'default';
@@ -496,6 +504,7 @@ function createMinifiedBuild(outputPath, p, l) {
 
   var modules  = getModuleNames(p);
   var locales  = getLocales(l);
+
   try {
     fs.lstatSync(COMPILER_JAR_PATH);
   } catch(e) {
@@ -516,17 +525,22 @@ function createMinifiedBuild(outputPath, p, l) {
 }
 
 function getModuleNames(p) {
-  var names;
-  switch (p) {
-    case 'all':
-      names = ALL_MODULES;
-      break;
-    case 'default':
-      names = DEFAULT_MODULES;
-      break;
-    default:
-      names = p.split(',');
+  var names = p.split(',');
+
+  function alias(name, modules) {
+    var index = names.indexOf(name);
+    if (index !== -1) {
+      names.splice.apply(names, [index, 0].concat(modules));
+    }
   }
+
+  alias('all', ALL_MODULES);
+  alias('default', DEFAULT_MODULES);
+
+  if (args.es5) {
+    names.push('es5');
+  }
+
   if (!names.length || names[0] !== 'core') {
     names.unshift('common');
   }
