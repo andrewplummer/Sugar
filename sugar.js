@@ -24,18 +24,14 @@
   // global is set by the time the rest are checking for chainable Object methods.
   var NATIVE_NAMES = 'Object,Number,String,Array,Date,RegExp,Function';
 
-  // defineProperty exists in IE8 but errors when defining a property on native
-  // objects. IE8 does not have defineProperies, so this check saves a try/catch.
-  var PROPERTY_DESCRIPTOR_SUPPORT = !!(Object.defineProperty && Object.defineProperties);
-
   // Static method flag
   var STATIC   = 0x1;
 
   // Instance method flag
   var INSTANCE = 0x2;
 
-  // defineProperty with a simple shim
-  var defineProperty = PROPERTY_DESCRIPTOR_SUPPORT ?  Object.defineProperty : definePropertyShim;
+  // IE8 has a broken defineProperty but no defineProperties so this saves a try/catch.
+  var PROPERTY_DESCRIPTOR_SUPPORT = !!(Object.defineProperty && Object.defineProperties);
 
   // The global context. Rhino uses a different "global" keyword so
   // do an extra check to be sure that it's actually the global context.
@@ -53,14 +49,12 @@
   // A map from [object Object] to namespace.
   var namespacesByClassName = {};
 
+  // Defining properties.
+  var defineProperty = PROPERTY_DESCRIPTOR_SUPPORT ?  Object.defineProperty : definePropertyShim;
+
   // A default chainable class for unknown types. The silly "SugarChainable" here
   // is simply to force GCC to respect this token on output.
   var SugarChainable, DefaultChainable = SugarChainable || getNewChainableClass('Chainable');
-
-  // Internal references
-  var ownPropertyNames = Object.getOwnPropertyNames,
-      internalToString = Object.prototype.toString,
-      internalHasOwnProperty = Object.prototype.hasOwnProperty;
 
 
   // Global methods
@@ -500,7 +494,7 @@
   function setMethod(sugarNamespace, methodName, method) {
     sugarNamespace[methodName] = method;
     if (method.instance) {
-      defineChainableMethod(sugarNamespace, methodName, method.instance);
+      defineChainableMethod(sugarNamespace, methodName, method.instance, true);
     }
   }
 
@@ -530,8 +524,8 @@
     return fn;
   }
 
-  function defineChainableMethod(sugarNamespace, methodName, fn) {
-    var wrapped = wrapWithChainableResult(fn), existing, collision, dcp;
+  function defineChainableMethod(sugarNamespace, methodName, fn, internal) {
+    var wrapped = wrapWithChainableResult(fn, internal), existing, collision, dcp;
     dcp = DefaultChainable.prototype;
     existing = dcp[methodName];
 
@@ -582,7 +576,7 @@
     }
   }
 
-  function wrapWithChainableResult(fn) {
+  function wrapWithChainableResult(fn, internal) {
     return function() {
       return new DefaultChainable(fn.apply(this.raw, arguments));
     };
@@ -649,6 +643,11 @@
 
 
   // Util
+
+  // Internal references
+  var ownPropertyNames = Object.getOwnPropertyNames,
+      internalToString = Object.prototype.toString,
+      internalHasOwnProperty = Object.prototype.hasOwnProperty;
 
   function definePropertyShim(obj, prop, descriptor) {
     obj[prop] = descriptor.value;
@@ -869,7 +868,7 @@
   }
 
   function assertWritable(obj) {
-    if (isPrimitiveType(obj)) {
+    if (isPrimitive(obj)) {
       // If strict mode is active then primitives will throw an
       // error when attempting to write properties. We can't be
       // sure if strict mode is available, so pre-emptively
@@ -920,7 +919,7 @@
   // Fuzzy matching helpers
 
   function getMatcher(f, k) {
-    if (!isPrimitiveType(f)) {
+    if (!isPrimitive(f)) {
       var klass = className(f);
       if (isRegExp(f, klass)) {
         return regexMatcher(f);
@@ -1148,14 +1147,14 @@
   }
 
   function hasProperty(obj, prop) {
-    return !isPrimitiveType(obj) && prop in obj;
+    return !isPrimitive(obj) && prop in obj;
   }
 
   function isObjectType(obj, type) {
     return !!obj && (type || typeof obj) === 'object';
   }
 
-  function isPrimitiveType(obj, type) {
+  function isPrimitive(obj, type) {
     type = type || typeof obj;
     return obj == null || type === 'string' || type === 'number' || type === 'boolean';
   }
@@ -1217,7 +1216,7 @@
 
   // Make primtives types like strings into objects.
   function coercePrimitiveToObject(obj) {
-    if (isPrimitiveType(obj)) {
+    if (isPrimitive(obj)) {
       obj = Object(obj);
     }
     if (NO_KEYS_IN_STRING_OBJECTS && isString(obj)) {
@@ -1310,7 +1309,7 @@
     var type = typeof obj, arrayLike, klass, value;
 
     // Return quickly for primitives to save cycles
-    if (isPrimitiveType(obj, type) && !isRealNaN(obj)) {
+    if (isPrimitive(obj, type) && !isRealNaN(obj)) {
       return type + obj;
     }
 
@@ -6280,7 +6279,7 @@
      *
      ***/
     'toNumber': function(n) {
-      return n;
+      return n.valueOf();
     },
 
     /***
@@ -6780,7 +6779,8 @@
     len = result.length;
     if (!len) return 0;
     result.sort(function(a, b) {
-      return a - b;
+      // IE7 will throw errors on non-numbers!
+      return (a || 0) - (b || 0);
     });
     middle = trunc(len / 2);
     return len % 2 ? result[middle] : (result[middle - 1] + result[middle]) / 2;
@@ -7834,6 +7834,19 @@
     return clone;
   }
 
+  function arrayConcatAll(arr, args) {
+    // Array#concat has some edge case issues with
+    // arrays of undefined in < IE8 so avoiding them
+    // here by doing a double push.
+    var result = arrayClone(arr);
+    forEach(args, function(arg) {
+      forEach(arg, function(el) {
+        result.push(el);
+      });
+    });
+    return result;
+  }
+
   function arrayAppend(arr, el, index) {
     index = +index;
     if (isNaN(index)) {
@@ -7928,7 +7941,7 @@
   }
 
   function arrayIntersectOrSubtract(arr1, args, subtract) {
-    var result = [], o = {}, arr2 = [].concat.apply([], args);
+    var result = [], o = {}, arr2 = arrayConcatAll([], args);
     forEach(arr2, function(el) {
       checkForElementInHashAndSet(o, el);
     });
@@ -8616,7 +8629,7 @@
      *
      ***/
     'union': function(arr, args) {
-      return arrayUnique([].concat.apply(arr, args));
+      return arrayUnique(arrayConcatAll(arr, args));
     },
 
     /***
@@ -8963,14 +8976,14 @@
       target.setTime(source.getTime());
     }
 
-    if (isPrimitiveType(target)) {
+    if (isPrimitive(target)) {
       // Will not merge into a primitive type, so simply override.
       return source;
     }
 
     // If the source object is a primitive
     // type then coerce it into an object.
-    if (isPrimitiveType(source)) {
+    if (isPrimitive(source)) {
       source = coercePrimitiveToObject(source);
     }
 
@@ -9035,16 +9048,16 @@
     // at all, then they have an associated value. As we are only creating new
     // objects when they don't exist in the target, these values can come alone
     // for the ride when created.
-    if (isPrimitiveType(source)) {
-      return source;
+    if (isArray(source, klass)) {
+      return [];
+    } else if (isPlainObject(source, klass)) {
+      return {};
     } else if (isDate(source, klass)) {
       return new Date(source.getTime());
     } else if (isRegExp(source, klass)) {
       return RegExp(source.source, getRegExpFlags(source));
-    } else if (isArray(source, klass)) {
-      return [];
-    } else if (isPlainObject(source, klass)) {
-      return {};
+    } else if (isPrimitive(source && source.valueOf())) {
+      return source;
     }
     // If the object is not of a known type, then simply merging its
     // properties into a plain object will result in something different
