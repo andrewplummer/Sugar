@@ -187,15 +187,8 @@
     var isInstance = !objectIsClass(subject);
     methodName = methodName || currentMethod || currentTest.name;
     args = args || currentArgs || [];
-    if (currentMode === 'extended') {
-      var target = globalContext[namespace];
-      if (!target.prototype[methodName]) {
-        // Static methods are tested with the global first: test(Array, [1,2,3])
-        // so if there is no method in the prototype chain then we know we are
-        // testing the static method instead.
-        return target[methodName].apply(subject, args);
-      }
-      return target.prototype[methodName].apply(subject, args);
+    if (currentMode === 'extended' && isInstance) {
+      return globalContext[namespace].prototype[methodName].apply(subject, args);
     } else if (currentMode === 'chained' && isInstance) {
       subject = new Sugar[namespace](subject);
       return subject[methodName].apply(subject, args).raw;
@@ -336,6 +329,8 @@
       return objectIsEqual(one, two) && klass === testInternalToString.call(two);
     } else if (klass === '[object Number]' && isNaN(one) && isNaN(two)) {
       return true;
+    } else if (klass === '[object String]') {
+      return one.valueOf() === two.valueOf();
     }
 
     return one === two;
