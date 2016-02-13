@@ -348,30 +348,15 @@ namespace('String', function () {
 
   });
 
-  method('codes', function() {
-
-    var counter = 0, result;
-    var arr = [103,105,110,103,101,114];
-    var callback = function(str, i) {
-      equal(str, arr[i], 'char code should have been passed into the block');
-      counter++;
-    }
-
-    test('jumpy', [106,117,109,112,121], 'jumpy');
-
-    result = run('ginger', 'codes', [callback]);
-    equal(counter, 6, 'should have ran 6 times');
-    equal(result, arr, 'result should be an array');
-
-    test('', [], 'empty string');
-  });
-
   method('chars', function() {
 
     var counter = 0, result;
-    var callback = function(str, i) {
-      equal(str, 'ginger'.charAt(counter), 'char code should be the first argument in the block');
-      equal(i, counter, 'index should be the second argument in the block');
+    var chars = ['g','i','n','g','e','r'];
+    var indexes = [0,1,2,3,4,5];
+    var callback = function(chr, i, a) {
+      equal(chr, chars[i], 'First argument should be the code.');
+      equal(i, indexes[i], 'Second argument should be the index.');
+      equal(a, chars, 'Third argument the array of charactrs.');
       counter++;
     };
 
@@ -392,33 +377,42 @@ namespace('String', function () {
   });
 
   method('words', function() {
+
     var counter = 0, result, callback;
     var sentence = 'these pretzels are \n\n making me         thirsty!\n\n';
-    var arr = ['these', 'pretzels', 'are', 'making', 'me', 'thirsty!'];
-    var callback = function(str, i) {
-      equal(str, arr[i], 'match is the first argument');
+    var words = ['these', 'pretzels', 'are', 'making', 'me', 'thirsty!'];
+    var indexes = [0,1,2,3,4,5];
+    var callback = function(word, i, a) {
+      equal(word, words[i], 'First argument should be the word.');
+      equal(i, indexes[i], 'Second argument should be the index.');
+      equal(a, words, 'Third argument the array of words.');
       counter++;
     };
 
     result = run(sentence, 'words', [callback]);
     equal(counter, 6, 'should have run 6 times');
-    equal(result, arr, 'result should be an array of matches');
+    equal(result, words, 'result should be an array of matches');
 
     test('', [], 'empty string');
+
   });
 
   method('lines', function() {
+
     var counter = 0, result, callback;
     var paragraph = 'these\npretzels\nare\n\nmaking\nme\n         thirsty!\n\n\n\n';
-    var arr = ['these', 'pretzels', 'are', '', 'making', 'me', '         thirsty!'];
-    var callback = function(str, i) {
-      equal(str, arr[i], 'match is the first argument');
+    var lines = ['these', 'pretzels', 'are', '', 'making', 'me', '         thirsty!'];
+    var indexes = [0,1,2,3,4,5,6];
+    var callback = function(line, i, a) {
+      equal(line, lines[i], 'First argument should be the line.');
+      equal(i, indexes[i], 'Second argument should be the index.');
+      equal(a, lines, 'Third argument the array of lines.');
       counter++;
     };
 
     result = run(paragraph, 'lines', [callback]);
     equal(counter, 7, 'should have run 7 times');
-    equal(result, arr, 'result should be an array of matches');
+    equal(result, lines, 'result should be an array of matches');
 
     callback = function(str, i) {
       return run(str, 'capitalize');
@@ -427,9 +421,11 @@ namespace('String', function () {
     equal(['One','Two'], result, 'lines can be modified');
 
     test('', [''], 'empty string');
+
   });
 
   method('paragraphs', function() {
+
     var counter = 0;
     var essay = 'the history of the united states\n\n';
     essay +=    'it all began back in 1776 when someone declared something from someone.\n';
@@ -437,18 +433,42 @@ namespace('String', function () {
     essay +=    'The British got their revenge in the late 60s with the British Invasion,\n';
     essay +=    'which claimed the lives of over 32,352 young women across the nation.\n\n\n\n\n';
     essay +=    'The End\n\n\n\n\n\n\n';
-    var arr = ['the history of the united states', 'it all began back in 1776 when someone declared something from someone.\nit was at this point that we had to get our rears in gear', 'The British got their revenge in the late 60s with the British Invasion,\nwhich claimed the lives of over 32,352 young women across the nation.', 'The End'];
-    var callback = function(str, i) {
-      equal(str, arr[i], 'match is the first argument');
+    var paragraphs = ['the history of the united states', 'it all began back in 1776 when someone declared something from someone.\nit was at this point that we had to get our rears in gear', 'The British got their revenge in the late 60s with the British Invasion,\nwhich claimed the lives of over 32,352 young women across the nation.', 'The End'];
+    var indexes = [0,1,2,3];
+    var callback = function(p, i, a) {
+      equal(p, paragraphs[i], 'First argument should be the paragraph.');
+      equal(i, indexes[i], 'Second argument should be the index.');
+      equal(a, paragraphs, 'Third argument the array of paragraphs.');
       counter ++;
     };
     var result = run(essay, 'paragraphs', [callback]);
     equal(counter, 4, 'should have run 4 times');
-    equal(result, arr, 'result should be an array of matches');
+    equal(result, paragraphs, 'result should be an array of matches');
 
     test('', [''], 'empty string');
+
   });
 
+  method('codes', function() {
+
+    test('jumpy', [106,117,109,112,121], 'jumpy');
+
+    var counter = 0, result;
+    var arr = [103,105,110,103,101,114];
+    var indexes = [0,1,2,3,4,5];
+    var callback = function(code, i, s) {
+      equal(code, arr[i], 'First argument should be the code.');
+      equal(i, indexes[i], 'Second argument should be the index.');
+      equal(s, 'ginger', 'Third argument should be the string.');
+      counter++;
+    }
+
+    result = run('ginger', 'codes', [callback]);
+    equal(counter, 6, 'should have ran 6 times');
+    equal(result, arr, 'result should be an array');
+
+    test('', [], 'empty string');
+  });
 
   method('isBlank', function() {
 

@@ -736,12 +736,14 @@ namespace('Object', function () {
   method('keys', function() {
 
     var called = false;
-    var fn = function(key, val) {
+    var fn = function(key, o) {
       equal(key, 'foo', 'First argument should be key');
-      equal(val, 'bar', 'Second argument should be value');
+      equal(o, obj, 'Second argument should be the object');
       called = true;
     }
-    run({foo:'bar'}, 'keys', [fn]);
+
+    var obj = {foo:'bar'};
+    run(obj, 'keys', [fn]);
     equal(called, true, 'Callback should have been called');
 
     // Issue #525
@@ -755,10 +757,13 @@ namespace('Object', function () {
     test({foo:'bar'}, ['bar'], 'Values should be received');
 
     var called = false;
-    var fn = function(key, val) {
+    var fn = function(val, o) {
+      equal(val, 'bar', 'First argument should be value');
+      equal(o, obj, 'Second argument should be the object');
       called = true;
     }
-    var result = run({foo:'bar'}, 'values', [fn]);
+    var obj = {foo:'bar'};
+    var result = run(obj, 'values', [fn]);
     equal(called, true, 'Callback should have been called');
 
     // Issue #525
