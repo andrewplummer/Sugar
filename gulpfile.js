@@ -69,13 +69,13 @@ function buildRelease() {
 
 var MESSAGE_TASKS = [
   '',
-  '    %Usage%',
+  '    `Usage`',
   '',
   '      |gulp| [TASK] [OPTIONS]',
   '',
-  '    %Tasks%',
+  '    `Tasks`',
   '',
-  '      |build|                          Create development and minified build.',
+  '      |build|                          Create development and minified build. "gulp help" for options.',
   '      |build:dev|                      Create development build (concatenate files only).',
   '      |build:min|                      Create minified build (closure compiler).',
   '      |build:all|                      Runs "build" and creates all npm/bower packages.',
@@ -93,14 +93,14 @@ var MESSAGE_TASKS = [
   '',
   '      |build:qml|                      Creates a QML compatible build.',
   '',
+  '      |dev|                            Shortcut for build:dev',
+  '      |min|                            Shortcut for build:min',
+  '',
   '      |test|                           Run default test suite.',
   '      |test:all|                       Run all tests.',
   '',
   '      |watch|                          Watch for changes and reload default test suite.',
   '      |watch:all|                      Watch for changes and reload all tests.',
-  '',
-  '      |dev|                            Shortcut for build:dev',
-  '      |min|                            Shortcut for build:min',
   '',
   '      |release|                        Create a release. Same as "build:all" but requires a version.',
   '',
@@ -114,7 +114,7 @@ var MESSAGE_TASKS = [
 
 var MESSAGE_EXTRA = [
   '',
-  '    %Options%',
+  '    `Options`',
   '',
   '      -m, --modules                  Comma separated modules to include (dev,min tasks only).',
   '                                     Modules below (non-default marked with *).',
@@ -133,32 +133,33 @@ var MESSAGE_EXTRA = [
   '',
   '      -v, --version                  Version token to be exported into bundles.',
   '',
-  '    %Modules%',
+  '    `Modules`',
   '',
   '      es5 *',
   '      es6',
   '      es7',
-  '      array',
   '      date',
+  '      string',
+  '      array',
+  '      object',
+  '      enumerable',
   '      function',
   '      number',
-  '      object',
-  '      range',
   '      regexp',
-  '      string',
+  '      range',
   '      language *',
   '      inflections *',
   '',
-  '    %Locales%',
+  '    `Locales`',
   '',
-  '      %LOCALE_LIST%',
+  '      `LOCALE_LIST`',
   '',
   '      Note that locales are included in the "sugar" and "sugar-date" packages',
   '      individually, but bundled together with the main files. If you have',
   '      specific locales you want to pre-package together, use the --locales',
   '      option to include them in your build.',
   '',
-  '    %Custom Builds%',
+  '    `Custom Builds`',
   '',
   '      The npm build tasks split out all methods and dependencies in the',
   '      source code so that they can be consumed individually. The result',
@@ -170,7 +171,7 @@ var MESSAGE_EXTRA = [
   '      identical to the modularized repos hosted on Github. This also means that',
   '      there is no "sugar" package for bower as it is identical to the main repo.',
   '',
-  '    %Notes%',
+  '    `Notes`',
   '',
   '      The es5 module is no longer default in Sugar builds. It should be',
   '      added if ES5 compatibility is required in environments where it',
@@ -195,7 +196,7 @@ function showHelp() {
 }
 
 function showMessage(message) {
-  var msg = message.replace(/%LOCALE_LIST%/g, function(match) {
+  var msg = message.replace(/`LOCALE_LIST`/g, function(match) {
       return getAllLocales().map(function(l) {
         var code = l.match(/([\w-]+)\.js$/)[1];
         var name = readFile(l).match(/\* (.+) locale definition/i)[1];
@@ -205,8 +206,8 @@ function showMessage(message) {
     .replace(/\[\w+\]/g, function(match) {
       return util.colors.dim(match);
     })
-    .replace(/%.+%/g, function(match) {
-      return util.colors.underline(match.replace(/%/g, ''));
+    .replace(/`.+`/g, function(match) {
+      return util.colors.underline(match.replace(/`/g, ''));
     })
     .replace(/-\w, --\w+/g, function(match) {
       return util.colors.yellow(match);
@@ -376,14 +377,14 @@ var DEFAULT_MODULES = [
   'es6',
   'es7',
   'date',
-  'range',
-  'number',
-  'function',
-  'enumerable',
+  'string',
   'array',
   'object',
+  'enumerable',
+  'function',
+  'number',
   'regexp',
-  'string'
+  'range',
 ];
 
 var ALL_MODULES = [
@@ -391,14 +392,14 @@ var ALL_MODULES = [
   'es6',
   'es7',
   'date',
-  'range',
-  'number',
-  'function',
+  'string',
   'array',
   'object',
   'enumerable',
+  'number',
+  'function',
   'regexp',
-  'string',
+  'range',
   'inflections',
   'language'
 ];
