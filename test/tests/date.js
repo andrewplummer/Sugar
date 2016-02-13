@@ -60,6 +60,8 @@ namespace('Date', function () {
     equal(new Sugar.Date(1455030000000).raw, new Date(1455030000000), 'Integer is used as unix timestamp');
     equal(new Sugar.Date('tomorrow').raw, testCreateDate('tomorrow'), 'Chainable constructor should go through create');
     equal(new Sugar.Date('8/10/50', { locale: 'en-GB'}).raw, new Date(1950, 9, 8), 'Chainable constructor accepts options');
+    equal(new Sugar.Date('8/10/50', 'en-GB').raw, new Date(1950, 9, 8), 'Chainable constructor accepts a locale code');
+    equal(Sugar.Date('8/10/50', 'en-GB').raw, new Date(1950, 9, 8), 'Chainable as factory accepts a locale code');
   });
 
   group('Create | Objects', function() {
@@ -1753,7 +1755,6 @@ namespace('Date', function () {
     test(d, ['%Y\t%A'], '2010\tThursday', 'can input tabs');
     test(d, ['%Y%%%A'], '2010%Thursday', 'can escape percent signs');
 
-
     // Shortcuts
 
     var then = new Date(2010, 0, 5, 15, 52);
@@ -1829,7 +1830,7 @@ namespace('Date', function () {
       equal(loc.code, 'en', '4 hours ago | 4th argument is the locale object');
       return value + strings[unit] + (ms < 0 ? '前' : '後');
     }
-    equal(run(testCreateDate('5 minutes ago'), 'format', [dyn]), '5分前', '5 minutes ago');
+    equal(run(testCreateDate('5 minutes ago'), 'relative', [dyn]), '5分前', '5 minutes ago');
 
 
     dyn = function(value, unit, ms, loc) {
@@ -1839,7 +1840,7 @@ namespace('Date', function () {
       equal(loc.code, 'en', '4 hours ago | 4th argument is the locale object');
       return value + strings[unit] + (ms < 0 ? '前' : '後');
     }
-    equal(run(testCreateDate('61 seconds from now'), 'format', [dyn]), '1分後', '1 minute from now');
+    equal(run(testCreateDate('61 seconds from now'), 'relative', [dyn]), '1分後', '1 minute from now');
 
     dyn = function(value, unit, ms, loc) {
       equal(value, 4, '4 hours ago | value is the closest relevant value');
@@ -1848,14 +1849,12 @@ namespace('Date', function () {
       equal(loc.code, 'en', '4 hours ago | 4th argument is the locale object');
       return value + strings[unit] + (ms < 0 ? '前' : '後');
     }
-    equal(run(testCreateDate('240 minutes ago'), 'format', [dyn]), '4時間前', '4 hours ago');
+    equal(run(testCreateDate('240 minutes ago'), 'relative', [dyn]), '4時間前', '4 hours ago');
 
-    run(testCreateDate('223 milliseconds ago'), 'format', [function(value, unit) {
+    run(testCreateDate('223 milliseconds ago'), 'relative', [function(value, unit) {
       equalWithMargin(value, 223, 20, 'still passes < 1 second');
       equal(unit, 0, 'still passes millisecond is zero');
     }]);
-
-    equal(run(testCreateDate('2002-02-17'), 'format', [function() {}]), 'February 17, 2002 12:00 AM', 'function that returns undefined defaults to standard format');
 
     equal(run(testCreateDate(), 'relative'), '1 second ago', '6 milliseconds ago');
 
@@ -2996,6 +2995,13 @@ namespace('Date', function () {
     equal(run(d, 'isFuture'), true, 'should respect global offset');
     equal(run(d, 'isPast'), false, 'should respect global offset');
 
+    // Relative formatting with newDateInternal
+
+    Sugar.newDateInternal(function() {
+      return new Date(1963, 11, 22);
+    });
+
+    equal(run(new Date(1963, 5, 20), 'relative'), '6 months ago', 'relative should respect newDateInternal as well');
 
     // Issue #342 internal constructor override
 

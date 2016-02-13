@@ -101,15 +101,15 @@ namespace('Date Ranges', function () {
 
   });
 
-
   method('every', function() {
     var count = 0;
     var range = getRange(new Date(2010,6,10,9), new Date(2010,8,10,9));
 
     var expected = [new Date(2010,6,10,9), new Date(2010,7,10,9), new Date(2010,8,10,9)];
-    var result = range.every('month', function(d, index) {
-      equal(d, expected[count], 'date is first argument');
-      equal(index, count, 'index is second argument');
+    var result = range.every('month', function(d, index, r) {
+      equal(d, expected[count], 'The first argument is the date.');
+      equal(index, count, 'The second argument is the index.');
+      equal(r, range, 'The third argument is the range.');
       count++;
     });
     equal(result, expected, '2010-9 - 2010-11 | every month');
