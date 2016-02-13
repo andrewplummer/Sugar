@@ -1,5 +1,8 @@
 namespace('String', function () {
-  'use strict';
+
+  // Skipping strict mode here as testing
+  // malformed utf-8 is part of these tests.
+
 
   var whiteSpace = '\u0009\u000B\u000C\u0020\u00A0\uFEFF\u1680\u180E\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u202F\u205F\u3000';
   var lineTerminators = '\u000A\u000D\u2028\u2029';
@@ -1525,6 +1528,51 @@ namespace('String', function () {
     testIterateOverObject(MixtureToTitleCase, function(before, titleized) {
       test(before, titleized, 'mixed cases')
     });
+  });
+
+  method('parameterize', function() {
+
+    test('Donald E. Knuth', 'donald-e-knuth');
+    test('Random text with *(bad)* characters', 'random-text-with-bad-characters');
+    test('Allow_Under_Scores', 'allow_under_scores');
+    test('Trailing bad characters!@#', 'trailing-bad-characters');
+    test('!@#Leading bad characters', 'leading-bad-characters');
+    test('Squeeze   separators', 'squeeze-separators');
+    test('Test with + sign', 'test-with-sign');
+    test('Test with malformed utf8 \251', 'test-with-malformed-utf8');
+
+    withArgs([''], function() {
+      test('Donald E. Knuth', 'donaldeknuth');
+      test('With-some-dashes', 'with-some-dashes');
+      test('Random text with *(bad)* characters', 'randomtextwithbadcharacters');
+      test('Trailing bad characters!@#', 'trailingbadcharacters');
+      test('!@#Leading bad characters', 'leadingbadcharacters');
+      test('Squeeze   separators', 'squeezeseparators');
+      test('Test with + sign', 'testwithsign');
+      test('Test with malformed utf8 \251', 'testwithmalformedutf8');
+    });
+
+    withArgs(['_'], function() {
+      test('Donald E. Knuth', 'donald_e_knuth');
+      test('Random text with *(bad)* characters', 'random_text_with_bad_characters');
+      test('With-some-dashes', 'with-some-dashes');
+      test('Retain_underscore', 'retain_underscore');
+      test('Trailing bad characters!@#', 'trailing_bad_characters');
+      test('!@#Leading bad characters', 'leading_bad_characters');
+      test('Squeeze   separators', 'squeeze_separators');
+      test('Test with + sign', 'test_with_sign');
+      test('Test with malformed utf8 \251', 'test_with_malformed_utf8');
+    });
+
+    if (Sugar.String.toAscii) {
+      test('Malmö here', 'malmo-here');
+      test('Garçons', 'garcons');
+      test('Ops\331', 'opsu');
+      test('Ærøskøbing', 'aeroskobing');
+      test('Aßlar', 'asslar');
+      test('Japanese: 日本語', 'japanese')
+    }
+
   });
 
 });
