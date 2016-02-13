@@ -1,13 +1,19 @@
-## Caution!
+Caution!
+========
 
 Here you will find points of caution when updating Sugar to a new version.
 Think of it as a pruned Changelog with the most front-facing changes surfaced.
 If your code breaks on update check here first! Read all the ones that are greater than the version you are migrating from.
 
-### Note about versions < 1.3.9
 
-Version 1.4.0 improves future-compatibility by ensuring that browser updates do not cause breakages going forward. Upgrading is highly recommended, however as there are also many API changes, [this patch](https://raw.github.com/andrewplummer/Sugar/master/lib/extras/patches/sugar-es6-patch.min.js) was created for older versions. Just drop it in after the main script.
+Upgrade Script
+==============
 
+### [upgrade.js](lib/extras/upgrade.js)
+
+When upgrading to a new major version, it's hard to know what changes you will be affected by. This document was meant to help, but now there is also the upgrade script! Just include it immediately after Sugar is loaded, and it will log any method calls that may potentially break!
+
+Drop it in before upgrading to get a general idea of what needs to change, or upgrade and fix as you go!
 
 
 v2.0.0+
@@ -218,6 +224,11 @@ v1.4.0+
 
 - Level: Very Minor
   - `String#pad/padLeft/padRight` will now raise an error on padding to a negative number. Conversely, they will no longer raise an error on undefined/null/NaN.
+
+
+### Note about versions < 1.3.9
+
+Version 1.4.0 improves future-compatibility by ensuring that browser updates do not cause breakages going forward. Upgrading is highly recommended, however as there are also many API changes, [this patch](https://raw.github.com/andrewplummer/Sugar/master/lib/extras/patches/sugar-es6-patch.min.js) was created for older versions. Just drop it in after the main script.
 
 
 v1.3.9+
