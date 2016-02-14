@@ -13,20 +13,16 @@ var fs       = require('fs'),
 // -------------- Tasks ----------------
 
 gulp.task('default', showTasks);
-gulp.task('help',    showHelp);
+gulp.task('more',    showMore);
 gulp.task('tasks',   showTasks);
 
 gulp.task('docs',    buildDocs);
 gulp.task('release', buildRelease);
 
-gulp.task('dev', buildDevelopment);
-gulp.task('min', buildMinified);
-
 gulp.task('build',       buildDefault);
 gulp.task('build:dev',   buildDevelopment);
 gulp.task('build:min',   buildMinified);
 gulp.task('build:es5',   buildES5);
-gulp.task('build:all',   buildAll);
 gulp.task('build:qml',   buildQml);
 gulp.task('build:clean', buildClean);
 
@@ -62,7 +58,12 @@ function buildRelease() {
     run = false;
   }
   if (!run) process.exit();
-  return buildAll();
+  return merge(
+    buildDevelopment(),
+    buildMinified(),
+    buildBowerAll(),
+    buildNpmAll()
+  );
 }
 
 // -------------- help ----------------
@@ -75,12 +76,11 @@ var MESSAGE_TASKS = [
   '',
   '    `Tasks`',
   '',
-  '      |build|                          Create development and minified build. "gulp help" for options.',
+  '      |build|                          Create development and minified build.',
   '      |build:dev|                      Create development build (concatenate files only).',
   '      |build:min|                      Create minified build (closure compiler).',
-  '      |build:all|                      Runs "build" and creates all npm/bower packages.',
   '',
-  '      |build:npm|                      Builds npm packages ("sugar" by default).',
+  '      |build:npm|                      Builds modularized npm packages ("sugar" by default).',
   '      |build:npm:core|                 Builds "sugar-core" npm package.',
   '      |build:npm:all|                  Builds all npm packages (slow).',
   '      |build:npm:clean|                Cleans npm package output directory ("release/npm" by default).',
@@ -89,12 +89,7 @@ var MESSAGE_TASKS = [
   '      |build:bower:all|                Builds all bower packages (slow).',
   '      |build:bower:clean|              Cleans bower package output directory ("release/bower" by default).',
   '',
-  '      |build:es5|                      Runs "build" with ES5 polyfill module included.',
-  '',
   '      |build:qml|                      Creates a QML compatible build.',
-  '',
-  '      |dev|                            Shortcut for build:dev',
-  '      |min|                            Shortcut for build:min',
   '',
   '      |test|                           Run default test suite.',
   '      |test:all|                       Run all tests.',
@@ -102,96 +97,81 @@ var MESSAGE_TASKS = [
   '      |watch|                          Watch for changes and reload default test suite.',
   '      |watch:all|                      Watch for changes and reload all tests.',
   '',
-  '      |release|                        Create a release. Same as "build:all" but requires a version.',
+  '      |release|                        Create a release. Requires a version.',
   '',
   '      |docs|                           Builds docs as JSON.',
   '',
-  '      |tasks|                          Show available tasks.',
-  '      |help|                           Show more detailed help.',
+  '      |more|                           Show more details.',
   '',
+  '    `Options`',
+  '',
+  '      |--es5, --no-polyfill|           Customize polyfills in default build (dev,min tasks only).',
+  '',
+  '      |-m, --modules|                  Comma separated modules to include (dev,min tasks only).',
+    '                                     Run "gulp more" for modules (non-default marked with *).',
+  '',
+  '      |-l, --locales|                  Comma separated date locales to include (dev,min tasks only).',
+    '                                     Run "gulp more" for locales. English packaged with date module.',
+  '',
+  '      |-p, --packages|                 Comma separated packages to build (npm,bower tasks only).',
+    '                                     Same as modules with "sugar-" prefixed, plus "sugar-core".',
+  '',
+  '      |-o, --output|                   Build output path (default is "sugar.js" or "sugar.min.js").',
+  '',
+  '      |-s, --source_map|               Compiler source map filename. Default is "sugar.min.map".',
+  '',
+  '      |-n, --no_source_map|            Do not output a source map.',
+  '',
+  '      |-v, --version|                  Version token. Required for "release" build.',
   '',
 ].join('\n');
 
 var MESSAGE_EXTRA = [
   '',
-  '    `Options`',
-  '',
-  '      -m, --modules                  Comma separated modules to include (dev,min tasks only).',
-  '                                     Modules below (non-default marked with *).',
-  '',
-  '      -l, --locales                  Comma separated date locales to include (dev,min tasks only).',
-  '                                     English is included in the date module by default.',
-  '',
-  '      -p, --packages                 Comma separated packages to build (npm,bower tasks only).',
-  '                                     Same as modules with "sugar-" prefixed, plus "sugar-core".',
-  '',
-  '      -s, --source_map               Compiler source map file. Default is "sugar.min.map".',
-  '',
-  '      -n, --no_source_map            Do not output a source map.',
-  '',
-  '      -o, --output                   Output path (default is "sugar.js" or "sugar.min.js").',
-  '',
-  '      -v, --version                  Version token to be exported into bundles.',
-  '',
   '    `Modules`',
   '',
-  '      es5 *',
-  '      es6',
-  '      es7',
-  '      date',
-  '      string',
-  '      array',
-  '      object',
-  '      enumerable',
-  '      function',
-  '      number',
-  '      regexp',
-  '      range',
-  '      language *',
-  '      inflections *',
+  '      |es5 *|                          Full ES5 polyfill suite (adds IE6-8 support).',
+  '      |es6|                            Partial ES6 polyfills, mostly for String/Array support.',
+  '      |es7|                            Partial ES7 polyfills. Right now only Array#includes.',
+  '      |date|                           Date parsing, manipulation, formatting, and locale support.',
+  '      |string|                         String encoding, truncating, formatting, and more.',
+  '      |array|                          Array sorting, uniquing, randomizing, and much more.',
+  '      |object|                         Object merging, manipulating, type checks, and more.',
+  '      |enumerable|                     Traversing, mapping, finding, etc. Shared by Array and Object.',
+  '      |function|                       Function throttling, memoizing, partial functions, and more.',
+  '      |number|                         Number formatting, rounding, math aliases, and more.',
+  '      |regexp|                         RegExp escaping and flag manipulation methods.',
+  '      |range|                          Date, Number, and String ranges.',
+  '      |language *|                     Script detection, half-full width conversion, kana.',
+  '      |inflections *|                  Pluralizing and special character normalization.',
   '',
   '    `Locales`',
   '',
   '      `LOCALE_LIST`',
   '',
-  '      Note that locales are included in the "sugar" and "sugar-date" packages',
-  '      individually, but bundled together with the main files. If you have',
-  '      specific locales you want to pre-package together, use the --locales',
-  '      option to include them in your build.',
-  '',
-  '    `Custom Builds`',
+  '    `Modularized Builds`',
   '',
   '      The npm build tasks split out all methods and dependencies in the',
   '      source code so that they can be consumed individually. The result',
   '      of these tasks will be identical to the packages hosted on npm.',
   '      For more information on how to include them, see the README.',
   '',
-  '      Bower packages contain just the bundled scripts in the "dist/" directory.',
-  '      As bower requires a public git endpoint, the result of these tasks will be',
-  '      identical to the modularized repos hosted on Github. This also means that',
-  '      there is no "sugar" package for bower as it is identical to the main repo.',
-  '',
-  '    `Notes`',
-  '',
-  '      The es5 module is no longer default in Sugar builds. It should be',
-  '      added if ES5 compatibility is required in environments where it',
-  '      does not exist (most commonly IE8 and below).',
-  '',
-  '      The es6/es7 modules are default and include minimal polyfills required',
-  '      by Sugar. They can be removed if support can be guaranteed, either',
-  '      natively or through a polyfill library.',
+  '      Bower packages contain only the bundles in the "dist/" directory.',
+  '      As bower requires a public git endpoint, the result of these tasks',
+  '      will be identical to the repos on Github. This also means that there',
+  '      is no "sugar" package for bower as it is identical to the main repo.',
   '',
 ].join('\n');
 
 function showTasks() {
   if (args.help) {
-    showHelp();
+    showMore();
   } else {
     showMessage(MESSAGE_TASKS);
   }
 }
 
-function showHelp() {
+function showMore() {
   showMessage(MESSAGE_TASKS + MESSAGE_EXTRA);
 }
 
@@ -200,7 +180,7 @@ function showMessage(message) {
       return getAllLocales().map(function(l) {
         var code = l.match(/([\w-]+)\.js$/)[1];
         var name = readFile(l).match(/\* (.+) locale definition/i)[1];
-        return code + ': ' + name;
+        return util.colors.yellow(code + ': ' + name);
       }).join('\n      ');
     })
     .replace(/\[\w+\]/g, function(match) {
@@ -209,10 +189,7 @@ function showMessage(message) {
     .replace(/`.+`/g, function(match) {
       return util.colors.underline(match.replace(/`/g, ''));
     })
-    .replace(/-\w, --\w+/g, function(match) {
-      return util.colors.yellow(match);
-    })
-    .replace(/\|.+\|/g, function(match) {
+    .replace(/\|.+?\|/g, function(match) {
       return util.colors.yellow(match.replace(/\|/g, ''));
     });
   console.log(msg);
@@ -406,15 +383,6 @@ var ALL_MODULES = [
 
 function buildDefault() {
   return merge(buildDevelopment(), buildMinified());
-}
-
-function buildAll() {
-  return merge(
-    buildDevelopment(),
-    buildMinified(),
-    buildBowerAll(),
-    buildNpmAll()
-  );
 }
 
 function buildClean() {
