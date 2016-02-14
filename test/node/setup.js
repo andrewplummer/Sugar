@@ -89,7 +89,7 @@ function getTestNameFromModule(mod) {
   var type = match[1];
   var name = match[2];
   if (name === 'default') {
-    name = 'Bundled (sugar.js)';
+    name = 'Dist (sugar.js)';
   }
   return name;
 }
