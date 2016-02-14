@@ -12,7 +12,7 @@
   var globalContext = typeof global !== 'undefined' ? global : this;
 
   // Has ability to use Object.defineProperty
-  definePropertySupport = !!(Object.defineProperty && Object.defineProperties);
+  testDefinePropertySupport = !!(Object.defineProperty && Object.defineProperties);
 
   testInternalToString = Object.prototype.toString;
 

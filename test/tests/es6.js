@@ -139,10 +139,10 @@ namespace('ES6', function () {
 
 
     if (Array.propertyIsEnumerable) {
-      equal(Array.propertyIsEnumerable('from'), definePropertySupport ? false : true, 'Array.from is not enumerable');
+      equal(Array.propertyIsEnumerable('from'), testDefinePropertySupport ? false : true, 'Array.from is not enumerable');
     }
 
-    if (definePropertySupport) {
+    if (testDefinePropertySupport) {
 
       var MyType = function () {};
       Object.defineProperty(MyType.prototype, '0', {

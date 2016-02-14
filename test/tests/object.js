@@ -433,7 +433,7 @@ namespace('Object', function () {
 
     test(Object, [Array, 'prototype.every'], Array.prototype.every, 'works on built-ins');
 
-    if (definePropertySupport) {
+    if (testDefinePropertySupport) {
       // Non-enumerable
       var obj = {};
       Object.defineProperty(obj, 'foo', {
@@ -705,7 +705,7 @@ namespace('Object', function () {
     equal(Array.prototype.whee, 'x', 'works on built-ins');
     delete Array.prototype['whee'];
 
-    if (definePropertySupport) {
+    if (testDefinePropertySupport) {
       // Non-enumerable
       var obj = {};
       Object.defineProperty(obj, 'foo', {
@@ -1188,18 +1188,18 @@ namespace('Object', function () {
     test(obj1, [obj2, opts], expected, 'continue on if the resolve function returns the Sugar global');
 
 
-    if (definePropertySupport) {
+    if (testDefinePropertySupport) {
 
       // Merging by descriptor
 
       var opts = { descriptor: true };
-      var obj = getAccessorObject();
+      var obj = testGetAccessorObject();
       var result = run({}, 'merge', [obj]);
       result.data.label = 'bar';
       equal(result.label, 'foo', 'basic merge does not support property descriptors');
 
       var opts = { descriptor: true };
-      var obj = getAccessorObject();
+      var obj = testGetAccessorObject();
       var result = run({}, 'merge',  [obj, opts]);
       result.data.label = 'bar';
       equal(result.label, 'bar', 'property getter merged');
@@ -1207,7 +1207,7 @@ namespace('Object', function () {
       equal(result.data.label, 'car', 'property setter merged');
 
       var opts = { deep: true, descriptor: true };
-      var obj = { foo: getAccessorObject() }
+      var obj = { foo: testGetAccessorObject() }
       var result = run({}, 'merge',  [obj, opts]);
       equal(result.foo !== obj.foo, true, 'object was deeply merged');
       result.foo.label = 'bar';
@@ -1227,30 +1227,30 @@ namespace('Object', function () {
 
       // Non-enumerated properties
 
-      var obj = getDescriptorObject();
+      var obj = testGetDescriptorObject();
       var result = run({}, 'merge',  [obj]);
       equal(result.foo, undefined, 'default non-enumerable property is not merged');
 
       var opts = { hidden: true };
-      var obj = getDescriptorObject();
+      var obj = testGetDescriptorObject();
       var result = run({}, 'merge',  [obj, opts]);
       equal(result.foo, 'bar', 'non-enumerable property merged with hidden flag on');
 
       var opts = { hidden: true };
       var obj = {
-        yo: getDescriptorObject()
+        yo: testGetDescriptorObject()
       }
       var result = run({}, 'merge',  [obj, opts]);
       equal(result.yo.foo, 'bar', 'deep non-enumerable property merged with hidden flag on');
 
       var opts = { descriptor: true, hidden: true };
-      var obj = getDescriptorObject();
+      var obj = testGetDescriptorObject();
       var result = run({}, 'merge',  [obj, opts]);
-      raisesError(function() { result.foo = 'moo'; }, 're-assignment of non-writable property raises error');
+      assertNonWritableRaisesError(function() { result.foo = 'moo'; });
 
-      var obj1 = getDescriptorObject();
+      var obj1 = testGetDescriptorObject();
       var obj2 = { foo: 'bar' }
-      raisesError(function() { run(obj1, 'merge',  [obj2]); }, 'merging into read-only property raises error');
+      assertNonWritableRaisesError(function() { run(obj1, 'merge',  [obj2]); });
 
     }
 
@@ -1585,18 +1585,18 @@ namespace('Object', function () {
 
     test({name:'Anonymous'}, [{name:'Frank'}], {name:'Frank'}, 'passing a single object should still work');
 
-    if (definePropertySupport) {
-      var obj1 = getAccessorObject('one');
-      var obj2 = getAccessorObject('two');
+    if (testDefinePropertySupport) {
+      var obj1 = testGetAccessorObject('one');
+      var obj2 = testGetAccessorObject('two');
       var result = run({}, 'mergeAll',  [[obj1, obj2], {descriptor:true}]);
       result.data.one = 'hoo';
       result.data.two = 'ha';
       equal(result.one + result.two, 'hooha', 'both descriptors were merged');
 
       var fn = function(key, a, b) { return (a || '') + b; };
-      var obj1 = getDescriptorObject();
-      var obj2 = getDescriptorObject();
-      var obj3 = getDescriptorObject();
+      var obj1 = testGetDescriptorObject();
+      var obj2 = testGetDescriptorObject();
+      var obj3 = testGetDescriptorObject();
       test({}, [[obj1, obj2, obj3],{hidden:true,resolve:fn}],{foo:'barbarbar'}, 'can handle hidden properties');
     }
 
@@ -1757,7 +1757,7 @@ namespace('Object', function () {
 
     // Issue #396 cloning objects with accessors.
 
-    if (definePropertySupport) {
+    if (testDefinePropertySupport) {
       var template = {
         data: { label: 'original label' }
       };
