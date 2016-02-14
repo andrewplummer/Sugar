@@ -1,23 +1,20 @@
-Caution!
-========
+### Caution!
 
 Here you will find points of caution when updating Sugar to a new version.
 Think of it as a pruned Changelog with the most front-facing changes surfaced.
 If your code breaks on update check here first! Read all the ones that are greater than the version you are migrating from.
 
 
-Upgrade Script
-==============
+### Upgrade Script
 
-### [upgrade.js](lib/extras/upgrade.js)
+[upgrade.js](lib/extras/upgrade.js)
 
 When upgrading to a new major version, it's hard to know what changes you will be affected by. This document was meant to help, but now there is also the upgrade script! Just include it immediately after Sugar is loaded, and it will log any method calls that may potentially break!
 
 Drop it in before upgrading to get a general idea of what needs to change, or upgrade and fix as you go!
 
 
-v2.0.0+
-=======
+### v2.0.0+
 
 - Level: Major
   - `String#assign` is now `String#format`, and behaves very closely to Python's method of the same name. Tokens are now zero based, and start with `{0}`. Also, errors will be thrown when tokens cannot be matched. Braces can now be escaped by repeating them. Lastly, multiple objects passed will no longer be merged together. Instead either access with new dot syntax (0.prop) or merge together with Object.merge beforehand.
@@ -149,15 +146,13 @@ v2.0.0+
   - `String#hankaku` and `String#zenkaku` now don't take multiple arguments for modes. Just mix them together in the first argument as a string. See docs for more.
 
 
-v1.4.1+
-=======
+### v1.4.1+
 
 - Level: Minor
   - `Object.select` and `Object.reject` now will match values when passed an object. This means that if you pass `{foo:'bar'}`, it will no longer match if the value of `foo` in your object is not `bar`. Previously it would match simply if the key existed.
 
 
-v1.4.0+
-=======
+### v1.4.0+
 
 - Level: Major
   - `pad`, `padLeft`, and `padRight` now pad to the exact character. This means that `padLeft(20)` will produce a string exactly 20 characters long, instead of adding 20 characters worth of padding to the left side of the string as before. You can use `String#repeat` for the same effect as the old functionality.
@@ -231,15 +226,13 @@ v1.4.0+
 Version 1.4.0 improves future-compatibility by ensuring that browser updates do not cause breakages going forward. Upgrading is highly recommended, however as there are also many API changes, [this patch](https://raw.github.com/andrewplummer/Sugar/master/lib/extras/patches/sugar-es6-patch.min.js) was created for older versions. Just drop it in after the main script.
 
 
-v1.3.9+
-=======
+### v1.3.9+
 
 - Level: Major
   - Removed `String#namespace`.
 
 
-v1.3.8+
-=======
+### v1.3.8+
 
 - Level: Major
   - Renamed `Date#getWeek` and `Date#setWeek` to `Date#getISOWeek` and `Date#setISOWeek`.
@@ -248,8 +241,7 @@ v1.3.8+
   - Object.clone will now preserve a date's internal utc flag when set.
 
 
-v1.3.7+
-=======
+### v1.3.7+
 
 - Level: Major
   - `String#startsWith` and `String#endsWith` now accept different arguments to better align them with the Harmony proposal of the same name. The second argument is now the "position" that limits where the string starts/ends, and the "case" flag indicating case sensitivity is now pushed to the 3rd argument.
@@ -261,8 +253,7 @@ v1.3.7+
   - Aliases on dates such as `daysAgo` will now count "past" an integer instead of rounding. This means that `Date.create('23 hours ago').daysAgo()` will now be `0`. There is however a small margin of error (roughly 0.1%) that will trigger a round up, which is higher for months, which have a more vague definition and a higher margin for error.
 
 
-v1.3.6+
-=======
+### v1.3.6+
 
 - Level: Very Minor
   - Float values should be properly parsed in `Object.fromQueryString`, meaning IP addresses and the like will now parse as strings instead of truncated numbers.
@@ -274,22 +265,19 @@ v1.3.6+
   - Date parsing now only allows a maximum of 59 for minutes and seconds.
 
 
-v1.3.5+
-=======
+### v1.3.5+
 
 - Level: Very Minor
   - `Array.create` now properly creates arrays from objects.
 
 
-v1.3.2+
-=======
+### v1.3.2+
 
 - Level: Minor
   - `Date.create` will no longer set the UTC flag on dates created from an ISO string with the "Z" flag. This can be considered a bug introduced in the last release. The "Z" flag indicates that a date is in UTC time, but should not serve as an indication that the date should further be manipulated as UTC, only as a cue when parsing. If you want the date to actually behave as UTC (internally call UTC methods), then you need to explicitly set with `Date#utc(true)` now.
 
 
-v1.3.1+
-=======
+### v1.3.1+
 
 
 - Level: Major
@@ -323,8 +311,7 @@ v1.3.1+
   - `Date#setWeekday` now returns a timestamp instead of `undefined`.
 
 
-v1.3+
-=======
+### v1.3+
 
 
 - Level: Major
@@ -368,8 +355,7 @@ v1.3+
 
 
 
-v1.2.5+
-=======
+### v1.2.5+
 
 - Level: Major
   - `String#truncate` arguments changed. `ellipsis` (`"..."` by default) is now the last argument of four. Second argument is now `split` which is true by default, so the method will behave like standard truncate methods by default. `from` added as the third parameter and determines where to truncate. Can be `"right"` (default), `"left"`, or `"middle"`.
@@ -381,8 +367,7 @@ v1.2.5+
   - `Object.isObject` now returns `true` for extended objects.
 
 
-v1.2.4+
-=======
+### v1.2.4+
 
 - Level: Minor
   - Object.equal and its instance method form "equals" is now considered "egal". This means that, for example, new String('w') will NOT be equal to 'w', etc. Previously equal was nearly egal, but not quite, so this should only affect very small edge cases. This now means that Sugar will match Underscore's _.isEqual method 100% of the time with the only exception being custom "isEqual" methods that Underscore checks explicitly.
@@ -392,8 +377,7 @@ v1.2.4+
 
 
 
-v1.2.3+
-=======
+### v1.2.3+
 
 - Level: Major
   - String#compare, Number#compare, and Date#compare are deprecated
@@ -407,16 +391,14 @@ v1.2.3+
 
 
 
-v1.2.2+
-=======
+### v1.2.2+
 
 - Level: Very Minor
   - Extended objects now keep their "Hash" constructor (which is internal) so they no longer have `Object` as their constructor. If you are doing instanceof checks here this may break (which you shouldn't be doing anyway)
 
 
 
-v1.2+
-=====
+### v1.2+
 
 - Level: Major
   - Array methods now use "fuzzy object matching" when passing an object. As an example, `arr.find({ foo: 'bar' })` would previously only match an identical object, now it will match any object whose `foo` property is `bar`. Additionally, note that passing regexes and functions will be used to match (regexes match against strings, functions are callbacks that return `true`/`false`), not compared directly. This applies to the following array methods: `every`, `some`, `filter`, `find`, `findAll`, `findIndex`, `remove`, `none`, `count`, and `exclude`.
@@ -429,8 +411,7 @@ v1.2+
 
 
 
-v1.1.2+
-=======
+### v1.1.2+
 
 - Level: Minor
   - Function#after will now call a method immediately if the passed value is `0`.
@@ -440,8 +421,7 @@ v1.1.2+
 
 
 
-v1.1.1+
-=======
+### v1.1.1+
 
 - Level: Major
   - Object.merge no longer merges an arbitrary number of arguments. Use extended objects and chaining instead.
@@ -451,8 +431,7 @@ v1.1.1+
 
 
 
-v1.1+
-=====
+### v1.1+
 
 - Level: Major
   - Object.equals renamed to Object.equal.
@@ -471,8 +450,7 @@ v1.1+
 
 
 
-v1.0+
-=====
+### v1.0+
 
 
 - Level: Major
@@ -498,8 +476,7 @@ v1.0+
 
 
 
-v0.9.5+
-=======
+### v0.9.5+
 
 
 - Level: Major
@@ -519,8 +496,7 @@ v0.9.5+
 
 
 
-v0.9.3+
-=======
+### v0.9.3+
 
 
 - Level: Major
@@ -555,8 +531,7 @@ v0.9.3+
 
 
 
-v0.9.1+
-=======
+### v0.9.1+
 
 - Level: Major
   - Object.create changed to Object.extended.
