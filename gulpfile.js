@@ -45,6 +45,9 @@ gulp.task('test:all',  testRunAll);
 gulp.task('watch',     testWatchDefault);
 gulp.task('watch:all', testWatchAll);
 
+gulp.task('dev', buildDevelopment);
+gulp.task('min', buildMinified);
+
 // -------------- Release ----------------
 
 function buildRelease() {
@@ -310,8 +313,8 @@ function writeFile(outputPath, body) {
   fs.writeFileSync(outputPath, body, 'utf-8');
 }
 
-function notify(text) {
-  util.log(util.colors.yellow(text + '...'));
+function notify(text, ellipsis) {
+  util.log(util.colors.yellow(text + (ellipsis !== false ? '...' : '')));
 }
 
 function uniq(arr) {
@@ -381,29 +384,9 @@ var ALL_MODULES = [
   'language'
 ];
 
-function buildDefault() {
-  return merge(buildDevelopment(), buildMinified());
-}
-
 function buildClean() {
   buildNpmClean();
   buildBowerClean();
-}
-
-function buildDevelopment() {
-  var filename = args.o || args.output || 'sugar.js';
-  var modules = args.m || args.modules || 'default';
-  var locales = args.l || args.locales;
-  notify('Exporting ' + getBuildMessage(filename, modules, locales));
-  return createDevelopmentBuild(filename, modules, locales);
-}
-
-function buildMinified() {
-  var filename = args.o || args.output || 'sugar.min.js';
-  var modules = args.m || args.modules || 'default';
-  var locales = args.l || args.locales;
-  notify('Minifying: ' + getBuildMessage(filename, modules, locales));
-  return createMinifiedBuild(filename, modules, locales);
 }
 
 function buildES5() {
@@ -411,20 +394,26 @@ function buildES5() {
   return buildDefault();
 }
 
-function buildQml() {
-  var filename = args.o || args.output || 'sugar.js';
-  var modules = args.m || args.modules || 'default';
-  var locales = args.l || args.locales;
-  notify('Creating QML Build: ' + getBuildMessage(filename, modules, locales));
-  return createDevelopmentBuild(filename, modules, locales, true);
+function buildDefault() {
+  notify('Exporting: ' + getFilename());
+  notify('Minifying: ' + getFilename(true));
+  return logBuildResults(merge(createDevelopmentBuild(), createMinifiedBuild()));
 }
 
-function getBuildMessage(filename, modules, locales) {
-  var message = filename;
-  if (locales) {
-    message += ' with locales ' + locales;
-  }
-  return message;
+function buildDevelopment() {
+  notify('Exporting: ' + getFilename());
+  return logBuildResults(createDevelopmentBuild());
+}
+
+function buildMinified() {
+  notify('Minifying: ' + getFilename(true));
+  return logBuildResults(createMinifiedBuild());
+}
+
+function buildQml() {
+  args.qml = true;
+  notify('Creating QML Build: ' + getFilename());
+  return logBuildResults(createDevelopmentBuild());
 }
 
 function getWrapper(qml) {
@@ -453,13 +442,16 @@ function getQmlWrapper() {
   ].join('\n');
 }
 
-function createDevelopmentBuild(outputPath, p, l, qml) {
-  var filename = path.basename(outputPath);
-  var modules  = getModuleNames(p);
-  var locales  = getLocales(l);
-  var wrapper  = getWrapper(qml);
+function createDevelopmentBuild(outputPath, moduleNames, localeCodes) {
+
+  var filename = outputPath || getFilename();
+  var wrapper  = getWrapper(args.qml);
+
+  var modules = getModules(moduleNames);
+  var locales = getLocales(localeCodes);
+
   return gulp.src(modules.concat(locales))
-    .pipe(concat(filename, { newLine: '' }))
+    .pipe(concat(path.basename(filename), { newLine: '' }))
     .pipe(replace(/^\s*'use strict';\n/g, ''))
     .pipe(replace(/^(?=.)/gm, '  '))
     .pipe(replace(/^([\s\S]+)$/m, wrapper))
@@ -467,12 +459,12 @@ function createDevelopmentBuild(outputPath, p, l, qml) {
     .pipe(gulp.dest(path.dirname(outputPath)));
 }
 
-function createMinifiedBuild(outputPath, p, l) {
-
+function createMinifiedBuild(outputPath, moduleNames, localeCodes) {
   var through = require('through2');
+  var filename = outputPath || getFilename(true);
 
-  var modules  = getModuleNames(p);
-  var locales  = getLocales(l);
+  var modules = getModules(moduleNames);
+  var locales = getLocales(localeCodes);
 
   try {
     fs.lstatSync(COMPILER_JAR_PATH);
@@ -481,7 +473,7 @@ function createMinifiedBuild(outputPath, p, l) {
     return;
   }
   return gulp.src(modules.concat(locales))
-    .pipe(compileSingle(outputPath))
+    .pipe(compileSingle(filename))
     .pipe(through.obj(function(file, enc, cb) {
       setTimeout(function() {
         // Extremely hacky way of replacing the version in the compiler output
@@ -493,13 +485,36 @@ function createMinifiedBuild(outputPath, p, l) {
     }));
 }
 
-function getModuleNames(p) {
-  var names = p.split(',');
+function logBuildResults(stream) {
+  stream.on('end', function() {
+    if (args.skipBuildResults) {
+      return;
+    }
+    var moduleNames = getModuleNames();
+    var localeCodes = getLocaleCodes();
+    notify('Done! Build info:', false);
+    notify('', false);
+    notify('Modules: ' + moduleNames.join(','), false);
+    if (localeCodes.length) {
+      notify('Locales: ' + localeCodes.join(','), false);
+    }
+    notify('', false);
+  });
+  return stream;
+}
+
+function getFilename(min) {
+  return args.o || args.output || 'sugar' + (min ? '.min' : '') + '.js';
+}
+
+function getModuleNames(m) {
+
+  var names = (m || args.m || args.modules || 'default').split(',');
 
   function alias(name, modules) {
     var index = names.indexOf(name);
     if (index !== -1) {
-      names.splice.apply(names, [index, 0].concat(modules));
+      names.splice.apply(names, [index, 1].concat(modules));
     }
   }
 
@@ -510,25 +525,70 @@ function getModuleNames(p) {
     names.unshift('es5');
   }
 
+  if (args.polyfills === false) {
+    names = names.filter(function(n) {
+      return !n.match(/^es[567]$/);
+    });
+  }
+  return names;
+}
+
+function getModules(m) {
+
+  var names = getModuleNames(m);
+
+  function getPath(name) {
+    return path.join('lib', name.toLowerCase() + '.js');
+  }
+
+  names.forEach(function(n) {
+    try {
+      fs.lstatSync(getPath(n));
+    } catch(e) {
+      util.log(util.colors.red('Cannot find module ' + n + '!'));
+      util.log(util.colors.red('Exiting...'));
+      process.exit();
+    }
+  });
+
   if (!names.length || names[0] !== 'core') {
     names.unshift('common');
   }
   names.unshift('core');
+  return uniq(names).map(getPath);
+}
 
-  return uniq(names).map(function(name) {
-    return path.join('lib', name.toLowerCase() + '.js');
-  });
+function getLocaleCodes(l) {
+  var names = typeof l === 'string' ? l : args.l || args.locales;
+  if (names === 'all') {
+    names = getAllLocales().map(function(p) {
+      return p.match(/([\w-]+)\.js/)[1];
+    });
+  } else if (names) {
+    names = names.split(',')
+  }
+  return names || [];
 }
 
 function getLocales(l) {
-  if (l === 'all') {
-    return getAllLocales();
-  } else if (l) {
-    return l.split(',').map(function(code) {
-      return path.join('lib','locales', code.toLowerCase() + '.js');
-    });
+
+  var codes = getLocaleCodes(l);
+
+  function getPath(l) {
+    return path.join('locales', l.toLowerCase() + '.js');
   }
-  return [];
+
+  codes.forEach(function(n) {
+    try {
+      fs.lstatSync(getPath(n));
+    } catch(e) {
+      util.log(util.colors.red('Cannot find locale ' + n + '!'));
+      util.log(util.colors.red('Exiting...'));
+      process.exit();
+    }
+  });
+
+  return codes.map(getPath);
 }
 
 function getLicense() {
@@ -640,14 +700,14 @@ function copyLocales(l, dir) {
 
 function buildPackageDist(packageName, outputDir) {
 
-  var definition = PACKAGE_DEFINITIONS[packageName];
+  var definition = getPackageDefinition(packageName);
 
   function write(modules) {
     var streams = [];
     var devFilename = path.join(outputDir, getDistFilename(packageName));
     var minFilename = path.join(outputDir, getDistFilename(packageName, true));
-    streams = streams.concat(createDevelopmentBuild(devFilename, modules));
-    streams = streams.concat(createMinifiedBuild(minFilename, modules));
+    streams = streams.concat(createDevelopmentBuild(devFilename, modules, ''));
+    streams = streams.concat(createMinifiedBuild(minFilename, modules, ''));
     return streams;
   }
 
@@ -2145,10 +2205,10 @@ function buildNpmPackages(p, dist) {
     notify('Building npm ' + packageName);
     exportPackageJson(packageName, outputDir);
     copyPackageMeta(outputDir);
-    streams.push(createDevelopmentBuild(devFilename, 'core'));
+    streams.push(createDevelopmentBuild(devFilename, 'core', ''));
 
     if (dist) {
-      streams.push(createMinifiedBuild(minFilename, 'core'));
+      streams.push(createMinifiedBuild(minFilename, 'core', ''));
     }
   }
 
@@ -2211,6 +2271,17 @@ function buildBowerAll() {
   return buildBowerPackages('all', true);
 }
 
+
+function getPackageDefinition(packageName) {
+  var def = PACKAGE_DEFINITIONS[packageName];
+  if (!def) {
+    util.log(util.colors.red('Cannot find package ' + packageName + '!'));
+    util.log(util.colors.red('Exiting...'));
+    process.exit();
+  }
+  return def;
+}
+
 function buildBowerPackages(p) {
 
   var streams = [];
@@ -2218,7 +2289,7 @@ function buildBowerPackages(p) {
   var baseDir = args.b || args.o || args.output || 'release/bower';
 
   function exportPackage(packageName) {
-    var def = PACKAGE_DEFINITIONS[packageName];
+    var def = getPackageDefinition(packageName);
     if (def.bower === false) {
       return;
     }
@@ -2404,6 +2475,8 @@ function runTests(all) {
 }
 
 function testWatch(all) {
+
+  args.skipBuildResults = true;
 
   setTimeout(function() {
     notify('Waiting');
