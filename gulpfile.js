@@ -36,9 +36,6 @@ gulp.task('build:bower:clean', buildBowerClean);
 gulp.task('build:bower:core',  buildBowerCore);
 gulp.task('build:bower:all',   buildBowerAll);
 
-gulp.task('precompile:dev', precompileDev);
-gulp.task('precompile:min', precompileMin);
-
 gulp.task('test',      testRunDefault);
 gulp.task('test:all',  testRunAll);
 
@@ -610,34 +607,6 @@ function getAllLocales() {
   return glob.sync('locales/*.js');
 }
 
-// TODO: TRY TO REMOVE
-/*
-function getFiles(modules, skipLocales) {
-  var arr, files = [];
-  if (modules === 'core') {
-    return ['lib/core.js'];
-  }
-  files.push('lib/core.js');
-  files.push('lib/common.js');
-  arr = modules.split(',');
-  arr.forEach(function(name) {
-    if (name === 'default') {
-      Array.prototype.push.apply(arr, DEFAULT_MODULES);
-    } else if (name === 'all') {
-      Array.prototype.push.apply(arr, ALL_MODULES);
-    }
-  });
-  arr.forEach(function(p) {
-    if (p === 'locales' && !skipLocales) {
-      files = files.concat(glob.sync('locales/*.js'));
-    } else {
-      files.push('lib/' + p + '.js');
-    }
-  });
-  return files;
-}
-*/
-
 function getCompilerModules(files) {
   var modules = [], locales = [];
   files.forEach(function(f) {
@@ -654,27 +623,6 @@ function getCompilerModules(files) {
     modules.push(['locales:' + locales.length + ':core'].concat(locales));
   }
   return modules;
-}
-
-// -------------- precompile ----------------
-
-var PRECOMPILED_MIN_DIR = 'release/precompiled/minified/';
-var PRECOMPILED_DEV_DIR = 'release/precompiled/development/';
-
-function precompileDev() {
-  var files = getFiles('all').filter(function(path) {
-    return !path.match(/locales/);
-  });
-  return merge(gulp.src(files), gulp.src('locales/*.js')
-      .pipe(concat('locales.js', { newLine: '' })))
-    .pipe(replace(/^\s*'use strict';\n/g, ''))
-    .pipe(gulp.dest(PRECOMPILED_DEV_DIR));
-}
-
-function precompileMin() {
-  var files = getFiles('all');
-  var modules = getCompilerModules(files);
-  return gulp.src(files).pipe(compileModules(modules, PRECOMPILED_MIN_DIR));
 }
 
 // -------------- package util ----------------
@@ -2309,159 +2257,159 @@ function buildBowerPackages(p) {
 
 function buildDocs() {
 
-  var through  = require('through2');
+  var json = {
+    'namespaces': {},
+  };
 
-  var files = getFiles('all', true), modules = {}, methodsByNamespace = {};
+  var currentModule;
+  var currentMethod;
+  var currentNamespace;
   var output = args.f || args.file || 'docs.json';
-  var basename = path.basename(output);
-  var dirname = path.dirname(output);
+  var modules = getModules('all');
+  var modulePathMap = {};
 
-  return gulp.src(files)
-    .pipe(through.obj(function(file, enc, cb) {
-      var text, lines, currentNamespace, currentModule;
+  function getNamespaceForModuleName(name) {
+    if (name === 'Core') {
+      return 'Sugar';
+    }
+    return name.match(/Object|Number|String|Array|Date|RegExp|Function|Range/) ? module : null;
+  }
 
-      text = file.contents.toString('utf-8')
-      lines = text.split('\n');
+  function setCurrentNamespace(name) {
+    if (name && json['namespaces'][name]) {
+      currentNamespace = json['namespaces'][name];
+    } else if (name) {
+      currentNamespace = { methods: [] };
+      json['namespaces'][name] = currentNamespace;
+    }
+  }
 
-      function extractMethodNameAndArgs(obj, str) {
-        var match = str.match(/(\w+\.)?([^(]+)\(([^\)]*)\)/), args = [];
-        var klass = match[1];
-        var name  = match[2];
+  function checkModule(block, path) {
+    var match = block.match(/@module (\w+)/);
+    if (match) {
+      var name = match[1];
+      var module = {};
+      setCurrentNamespace(getNamespaceForModuleName(name));
+      modulePathMap[path] = { name: name };
+      setAllKeys(modulePathMap[path], block);
+    }
+  }
 
-        match[3].split(',').forEach(function(a) {
-          var o = a.split(' = '), arg = {};
-          var required = true;
-          var argName = o[0].trim().replace(/[<>]/g, '').replace(/[\[\]]/g, function(s) {
-            required = false;
-            return '';
-          });
-          if (!argName) {
-            return;
-          } else if (argName == '...') {
-            obj['glob'] = true;
-            return;
-          }
-          arg['name'] = argName;
-          if (o[1]) {
-            arg['default'] = o[1];
-            arg['type'] = eval('typeof ' + o[1]);
-          }
-          if (!required) {
-            arg['optional'] = true;
-          }
-          args.push(arg);
-        });
-        if (!klass) {
-          obj['instance'] = true;
-        }
-        if (args.length) {
-          obj['args'] = args;
-        }
-        return name;
+  function getModuleNameForPath(path) {
+    return modulePathMap[path].name;
+  }
+
+  function checkNamespace(block) {
+    var match = block.match(/@namespace (\w+)/);
+    if (match) {
+      setCurrentNamespace(match[1]);
+    }
+  }
+
+  function setAllKeys(obj, block) {
+    block.replace(/@(\w+)\s?([\s\S]+?)(?=@|\*\*\*)/gm, function(match, key, value) {
+      if (key === 'method' || key === 'module') return;
+      value = value.replace(/[\s*]{2,}/gm, ' ').trim();
+      if (!value) {
+        value = true;
       }
+      obj[key] = value;
+    });
+  }
 
-      function getLineNumber(name) {
-        var lineNum;
-        var reg = RegExp('@method ' + name + '\\b');
-        lines.some(function(l, i) {
-          if (l.match(reg)) {
-            lineNum = i + 1;
-            return true;
-          }
-        });
-        return lineNum;
-      }
-
-      function switchNamespace(name) {
-        currentNamespace = methodsByNamespace[name];
-        if (!currentNamespace) {
-          currentNamespace = methodsByNamespace[name] = {};
-        }
-      }
-
-      function getMultiline(str) {
-        var result = [], fOpen = false;
-        str.split('\n').forEach(function(l) {
-          l = l.replace(/^[\s*]+|[\s*]+$/g, '').replace(/\s+->.+$/, '');
-          if (l) {
-            if (fOpen) {
-              result[result.length - 1] += '\n' + l;
-            } else {
-              result.push(l);
-            }
-          }
-          if (l.match(/\{$/)) {
-            fOpen = true;
-          } else if (l.match(/^\}/)) {
-            fOpen = false;
-          }
-        });
-        return result;
-      }
-
-      function getFileSize(path) {
-        return fs.statSync(path).size;
-      }
-
-      function getGzippedFileSize(path) {
-        return require('zlib').gzipSync(readFile(path)).length;
-      }
-
-      function getModuleSize(module) {
-        var name = module.replace(/\s/g, '_').toLowerCase();
-        var dPath = PRECOMPILED_DEV_DIR + name + '.js';
-        var mPath = PRECOMPILED_MIN_DIR + name + '.js';
-        modules[module]['size'] = getFileSize(dPath);
-        modules[module]['min_size'] = getGzippedFileSize(mPath);
-      }
-
-      text.replace(/\*\*\*([\s\S]+?)[\s\n*]*(?=\*\*\*)/gm, function(m, tags) {
-        var obj = {};
-        tags.replace(/@(\w+)\s?([^@]*)/g, function(all, key, val) {
-          val = val.replace(/^[\s*]/gm, '').replace(/[\s*]+$/, '');
-          switch(key) {
-            case 'module':
-              modules[val] = obj;
-              currentModule = val;
-              if (DEFAULT_MODULES.indexOf(val.toLowerCase()) !== -1) {
-                obj['supplemental'] = true;
-              }
-              switchNamespace(val);
-              getModuleSize(val);
-              break;
-            case 'namespace':
-              switchNamespace(val);
-              break;
-            case 'method':
-              var name = extractMethodNameAndArgs(obj, val);
-              obj.line = getLineNumber(name);
-              obj.module = currentModule;
-              currentNamespace[name] = obj;
-              break;
-            case 'set':
-              obj[key] = getMultiline(val);
-              break;
-            case 'example':
-              obj[key] = getMultiline(val);
-              break;
-            default:
-              obj[key] = val;
-          }
-        });
+  function checkMethod(block) {
+    var match = block.match(/@method ([\w\[\]]+)\((.*)\)$/m);
+    if (match) {
+      var method = { name: match[1] };
+      var args = match[2].split(', ').filter(function(a) {
+        return a;
       });
-      this.push(file);
-      cb();
-    }))
-    .pipe(concat(basename, { newLine: '' }))
-    .pipe(through.obj(function(file, enc, cb) {
-      file.contents = new Buffer(JSON.stringify({
-        modules: modules,
-        methodsByNamespace: methodsByNamespace
-      }), "utf8");
-      this.push(file);
-      cb();
-    }))
-    .pipe(gulp.dest(dirname));
+      var method = {};
+      if (args.length) {
+        method['args'] = args.map(function(a) {
+          var s = a.split(' = ');
+          var m = s[0].match(/([<\[])(\w+)[>\]]|(\.\.\.)/);
+          var arg = {};
+          if (m[2]) {
+            arg.name = m[2];
+            arg.required = m[1] === '<';
+          }
+          if (m[3]) {
+            arg.glob = true;
+          }
+          if (s[1]) {
+            arg.default = s[1];
+          }
+          return arg;
+        });
+      }
+      setAllKeys(method, block);
+      currentNamespace.methods.push(method);
+    }
+  }
+
+  function getCompilerModuleFlags() {
+    var flags = getDefaultFlags();
+    flags.module_output_path_prefix = 'tmp/';
+    flags.module = modules.map(function(p) {
+      var name = getModuleNameForPath(p).toLowerCase(), args = [], modArgs = [];
+      modArgs.push(name);
+      modArgs.push(1);
+      if (name === 'common') {
+        modArgs.push('core');
+      } else if (name !== 'core') {
+        modArgs.push('common');
+      }
+      modArgs.push('');
+      args.push(modArgs.join(':'));
+      args.push(p);
+      return args;
+    });
+    return flags;
+  }
+
+  function exportModules(file, enc, cb) {
+    json['modules'] = {};
+    modules.forEach(function(p) {
+      var name = getModuleNameForPath(p);
+      var tmpPath = 'tmp/' + name.toLowerCase() + '.js';
+      var size = require('zlib').gzipSync(readFile(tmpPath)).length;
+      json['modules'][name] = {
+        size: size
+      };
+      fs.unlink(tmpPath);
+    });
+    cb();
+  }
+
+  function finish() {
+    writeFile(path.join(output), JSON.stringify(json, null, 2));
+  }
+
+  modules.forEach(function(p) {
+    var content = fs.readFileSync(p, 'utf-8'), module;
+    content.replace(/\*\*\*[\s\S]+?(?=\*\*\*)/gm, function(block) {
+      checkModule(block, p);
+      checkNamespace(block);
+      checkMethod(block);
+    });
+  });
+
+  if (args.modules === false) {
+    finish();
+  } else {
+    var compiler = require('closure-compiler-stream');
+    var through = require('through2');
+    var flags = getCompilerModuleFlags();
+    var stream = gulp.src(modules).pipe(compiler(flags)).pipe(through.obj(exportModules));
+
+    stream.on('end', function() {
+      fs.rmdir('tmp');
+      finish();
+    });
+
+    return stream;
+  }
 }
 
 
