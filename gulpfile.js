@@ -2261,10 +2261,9 @@ function buildDocs() {
     'namespaces': {},
   };
 
-  var currentModule;
-  var currentMethod;
   var currentNamespace;
-  var output = args.f || args.file || 'docs.json';
+  var currentModuleName;
+  var currentNamespaceName;
   var modules = getModules('all');
   var modulePathMap = {};
 
@@ -2272,15 +2271,17 @@ function buildDocs() {
     if (name === 'Core') {
       return 'Sugar';
     }
-    return name.match(/Object|Number|String|Array|Date|RegExp|Function|Range/) ? module : null;
+    return name.match(/Core|Object|Number|String|Array|Date|RegExp|Function|Range/) ? name : null;
   }
 
   function setCurrentNamespace(name) {
     if (name && json['namespaces'][name]) {
       currentNamespace = json['namespaces'][name];
+      currentNamespaceName = name;
     } else if (name) {
-      currentNamespace = { methods: [] };
+      currentNamespace = {};
       json['namespaces'][name] = currentNamespace;
+      currentNamespaceName = name;
     }
   }
 
@@ -2292,6 +2293,7 @@ function buildDocs() {
       setCurrentNamespace(getNamespaceForModuleName(name));
       modulePathMap[path] = { name: name };
       setAllKeys(modulePathMap[path], block);
+      currentModuleName = name;
     }
   }
 
@@ -2307,7 +2309,7 @@ function buildDocs() {
   }
 
   function setAllKeys(obj, block) {
-    block.replace(/@(\w+)\s?([\s\S]+?)(?=@|\*\*\*)/gm, function(match, key, value) {
+    block.replace(/@(\w+)\s?([\s\S]+?)(?=@|$)/g, function(match, key, value) {
       if (key === 'method' || key === 'module') return;
       value = value.replace(/[\s*]{2,}/gm, ' ').trim();
       if (!value) {
@@ -2317,14 +2319,16 @@ function buildDocs() {
     });
   }
 
-  function checkMethod(block) {
+  function checkMethod(block, lines) {
     var match = block.match(/@method ([\w\[\]]+)\((.*)\)$/m);
     if (match) {
-      var method = { name: match[1] };
+      var method = {};
+      var name = match[1];
       var args = match[2].split(', ').filter(function(a) {
         return a;
       });
       var method = {};
+      method.line = getLineNumber(name, lines);
       if (args.length) {
         method['args'] = args.map(function(a) {
           var s = a.split(' = ');
@@ -2343,9 +2347,22 @@ function buildDocs() {
           return arg;
         });
       }
+      method.module = currentModuleName;
       setAllKeys(method, block);
-      currentNamespace.methods.push(method);
+      currentNamespace[name] = method;
     }
+  }
+
+  function getLineNumber(methodName, lines) {
+    var lineNum;
+    var reg = RegExp('@method ' + methodName + '\\b');
+    lines.some(function(l, i) {
+      if (l.match(reg)) {
+        lineNum = i + 1;
+        return true;
+      }
+    });
+    return lineNum;
   }
 
   function getCompilerModuleFlags() {
@@ -2382,18 +2399,62 @@ function buildDocs() {
     cb();
   }
 
+  function sortAll() {
+    sortObjectKeys(json, 'namespaces', sortNamespaces);
+    iter(json['namespaces'], function(name, namespace) {
+      sortObjectKeys(json['namespaces'], name, sortMethods);
+    });
+  }
+
+  function sortObjectKeys(obj, key, sortFn) {
+    var arr = [], result = {};
+    iter(obj[key], function(key, val) {
+      val.name = key;
+      arr.push(val);
+    });
+    arr.sort(sortFn);
+    arr.forEach(function(val) {
+      var name = val.name;
+      delete val.name;
+      result[name] = val;
+    });
+    obj[key] = result;
+  }
+
+  function sortNamespaces(a, b) {
+    var aName = a.name;
+    var bName = b.name;
+    if (aName === 'Sugar') {
+      return -1;
+    }
+    return aName < bName ? -1 : aName > bName ? 1 : 0;
+  }
+
+  function sortMethods(a, b) {
+    var aName = a.name;
+    var bName = b.name;
+    if (a.static !== b.static) {
+      return a.static ? -1 : 1;
+    }
+    return aName < bName ? -1 : aName > bName ? 1 : 0;
+  }
+
   function finish() {
+    var output = args.f || args.file || 'docs.json';
     writeFile(path.join(output), JSON.stringify(json, null, 2));
   }
 
   modules.forEach(function(p) {
     var content = fs.readFileSync(p, 'utf-8'), module;
+    var lines = content.split('\n');
     content.replace(/\*\*\*[\s\S]+?(?=\*\*\*)/gm, function(block) {
       checkModule(block, p);
       checkNamespace(block);
-      checkMethod(block);
+      checkMethod(block, lines);
     });
   });
+
+  sortAll();
 
   if (args.modules === false) {
     finish();
