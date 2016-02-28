@@ -3319,7 +3319,7 @@ namespace('Number', function () {
     var en = Sugar.Date.getLocale('en');
     var properties = [
       'ampm','articles','code','date','parse','day','duration','edge','full',
-      'fullMonth','future','cachedFormat','compiledFormats', 'modifiers','long','modifiers','modifiersByName',
+      'fullMonth','future','compiledFormats', 'modifiers','long','modifiers','modifiersByName',
       'months','num','numbers','past','plural','shift','short','sign','timeMarker',
       'timeParse','timeSuffixes','tokens','units','weekdays','year'
     ];
