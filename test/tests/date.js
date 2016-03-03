@@ -595,19 +595,19 @@ namespace('Date', function () {
 
     equal(testCreateDate('the 2nd Tuesday of June, 2012'), new Date(2012, 5, 12), 'the 2nd tuesday of June, 2012');
 
-    equal(testCreateDate('the 1st Tuesday of November, 2012'), new Date(2012, 10, 6), 'the 1st tuesday of November');
+    equal(testCreateDate('the 1st Tuesday of November, 2012'), new Date(2012, 10, 6),  'the 1st tuesday of November');
     equal(testCreateDate('the 2nd Tuesday of November, 2012'), new Date(2012, 10, 13), 'the 2nd tuesday of November');
     equal(testCreateDate('the 3rd Tuesday of November, 2012'), new Date(2012, 10, 20), 'the 3rd tuesday of November');
     equal(testCreateDate('the 4th Tuesday of November, 2012'), new Date(2012, 10, 27), 'the 4th tuesday of November');
-    equal(testCreateDate('the 5th Tuesday of November, 2012'), new Date(2012, 11, 4), 'the 5th tuesday of November');
+    equal(testCreateDate('the 5th Tuesday of November, 2012'), new Date(2012, 11, 4),  'the 5th tuesday of November');
     equal(testCreateDate('the 6th Tuesday of November, 2012'), new Date(2012, 11, 11), 'the 6th tuesday of November');
 
-    equal(testCreateDate('the 1st Friday of February, 2012'), new Date(2012, 1, 3), 'the 1st Friday of February');
+    equal(testCreateDate('the 1st Friday of February, 2012'), new Date(2012, 1, 3),  'the 1st Friday of February');
     equal(testCreateDate('the 2nd Friday of February, 2012'), new Date(2012, 1, 10), 'the 2nd Friday of February');
     equal(testCreateDate('the 3rd Friday of February, 2012'), new Date(2012, 1, 17), 'the 3rd Friday of February');
     equal(testCreateDate('the 4th Friday of February, 2012'), new Date(2012, 1, 24), 'the 4th Friday of February');
-    equal(testCreateDate('the 5th Friday of February, 2012'), new Date(2012, 2, 2), 'the 5th Friday of February');
-    equal(testCreateDate('the 6th Friday of February, 2012'), new Date(2012, 2, 9), 'the 6th Friday of February');
+    equal(testCreateDate('the 5th Friday of February, 2012'), new Date(2012, 2, 2),  'the 5th Friday of February');
+    equal(testCreateDate('the 6th Friday of February, 2012'), new Date(2012, 2, 9),  'the 6th Friday of February');
 
     var d = new Date(thisYear, 1);
     while(d.getDay() !== 5) {
@@ -707,6 +707,35 @@ namespace('Date', function () {
     equal(testCreateDate('a week from Tuesday'), getDateWithWeekdayAndOffset(2, 7), 'a week from Tuesday');
     equal(testCreateDate('week from Tuesday'), getDateWithWeekdayAndOffset(2, 7), 'week from Tuesday');
     equal(testCreateDate('first of the month'), new Date(now.getFullYear(), now.getMonth()), 'first of the month');
+
+    equal(testCreateDate('the first Friday of February, 2012'),  new Date(2012, 1, 3),  'the first Friday of February');
+    equal(testCreateDate('the second Friday of February, 2012'), new Date(2012, 1, 10), 'the second Friday of February');
+    equal(testCreateDate('the third Friday of February, 2012'),  new Date(2012, 1, 17), 'the third Friday of February');
+    equal(testCreateDate('the fourth Friday of February, 2012'), new Date(2012, 1, 24), 'the fourth Friday of February');
+    equal(testCreateDate('the fifth Friday of February, 2012'),  new Date(2012, 2, 2),  'the fifth Friday of February');
+    equal(testCreateDate('the sixth Friday of February, 2012'),  new Date(2012, 2, 9),  'the sixth Friday of February');
+
+    equal(testCreateDate('the 3rd Tuesday in November, 2012'), new Date(2012, 10, 20), 'the 3rd tuesday in November');
+
+    equal(testCreateDate('the second Sunday in June, 2016'),    new Date(2016, 5, 12), 'the second Sunday in June');
+    equal(testCreateDate('the second Monday in June, 2016'),    new Date(2016, 5, 13), 'the second Monday in June');
+    equal(testCreateDate('the second Tuesday in June, 2016'),   new Date(2016, 5, 14), 'the second Tuesday in June');
+    equal(testCreateDate('the second Wednesday in June, 2016'), new Date(2016, 5, 8),  'the second Wednesday in June');
+    equal(testCreateDate('the second Thursday in June, 2016'),  new Date(2016, 5, 9),  'the second Thursday in June');
+    equal(testCreateDate('the second Friday in June, 2016'),    new Date(2016, 5, 10), 'the second Friday in June');
+    equal(testCreateDate('the second Saturday in June, 2016'),  new Date(2016, 5, 11), 'the second Saturday in June');
+
+    equal(testCreateDate('the last Sunday in November, 2012'),    new Date(2012, 10, 25), 'the last Sunday in November');
+    equal(testCreateDate('the last Monday in November, 2012'),    new Date(2012, 10, 26), 'the last Monday in November');
+    equal(testCreateDate('the last Tuesday in November, 2012'),   new Date(2012, 10, 27), 'the last Tuesday in November');
+    equal(testCreateDate('the last Wednesday in November, 2012'), new Date(2012, 10, 28), 'the last Wednesday in November');
+    equal(testCreateDate('the last Thursday in November, 2012'),  new Date(2012, 10, 29), 'the last Thursday in November');
+    equal(testCreateDate('the last Friday in November, 2012'),    new Date(2012, 10, 30), 'the last Friday in November');
+    equal(testCreateDate('the last Saturday in November, 2012'),  new Date(2012, 10, 24), 'the last Saturday in November');
+
+    equal(testCreateDate('next weekend'), getDateWithWeekdayAndOffset(6, 7), 'next weekend');
+    equal(testCreateDate('the second weekend of August, 2011'), new Date(2011, 7, 13), 'the second weekend of August, 2011');
+    equal(testCreateDate('the last weekend of January, 1985'), new Date(1985, 0, 26), 'the last weekend of January, 1985');
 
   });
 
@@ -3160,7 +3189,6 @@ namespace('Number', function () {
     function assertBeforeAfter(ms, method, args, ems, message) {
       equal(run(ms, method, args), getRelativeDate(null, null, null, null, null, null, ems), message);
     }
-    //console.info(run(1, 'secondAfter'));
     assertBeforeAfter(1, 'secondAfter', [], 1000, 'secondAfter | 1');
     assertBeforeAfter(5, 'secondsAfter', [], 5000, 'secondsAfter | 5');
     assertBeforeAfter(10, 'minutesAfter', [], 600000, 'minutesAfter | 10');
@@ -3319,7 +3347,7 @@ namespace('Number', function () {
     var en = Sugar.Date.getLocale('en');
     var properties = [
       'ampm','articles','code','date','parse','day','duration','edge','full',
-      'fullMonth','future','compiledFormats', 'modifiers','long','modifiers','modifiersByName',
+      'fullMonth','future','compiledFormats', 'modifiers','long','modifiers',
       'months','num','numbers','past','plural','shift','short','sign','timeMarker',
       'timeParse','timeSuffixes','tokens','units','weekdays','year'
     ];
