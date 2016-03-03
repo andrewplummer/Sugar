@@ -2261,6 +2261,15 @@ function buildDocs() {
     'namespaces': {},
   };
 
+  var ALIAS_FIELDS = [
+    'args',
+    'returns',
+    'short',
+    'extra',
+    'callbacks',
+    'examples',
+  ];
+
   var currentNamespace;
   var currentModuleName;
   var currentNamespaceName;
@@ -2292,7 +2301,7 @@ function buildDocs() {
       var module = {};
       setCurrentNamespace(getNamespaceForModuleName(name));
       modulePathMap[path] = { name: name };
-      setAllKeys(modulePathMap[path], block);
+      setAllFields(modulePathMap[path], block);
       currentModuleName = name;
     }
   }
@@ -2308,15 +2317,69 @@ function buildDocs() {
     }
   }
 
-  function setAllKeys(obj, block) {
-    block.replace(/@(\w+)\s?([\s\S]+?)(?=@|$)/g, function(match, key, value) {
-      if (key === 'method' || key === 'module') return;
-      value = value.replace(/[\s*]{2,}/gm, ' ').trim();
+  function setAllFields(obj, block, name) {
+    block.replace(/@(\w+)\s?([\s\S]+?)(?=@|$)/g, function(match, field, value) {
+      if (field === 'method' || field === 'module') return;
       if (!value) {
         value = true;
+      } else if (field === 'example') {
+        field = 'examples';
+        value = getExamples(value, name);
+      } else if (field === 'callback') {
+        field = 'callbacks';
+        value = getCallback(value, name, obj[field]);
+      } else {
+        value = getTextField(value, name);
       }
-      obj[key] = value;
+      obj[field] = value;
     });
+  }
+
+  function getCallback(str, name, arr) {
+    var callbackName;
+    if (!arr) {
+      arr = [];
+    }
+    str = str.replace(/(\w+)$/m, function(all, match) {
+      callbackName = match;
+      return '';
+    });
+    arr.push({
+      name: callbackName,
+      args: getMultiline(str)
+    });
+    return arr;
+  }
+
+  function getTextField(str, name) {
+    return getMultiline(str, name).join(' ');
+  }
+
+  function getMultiline(str, name) {
+    return str.split('\n').map(function(line) {
+      return line.replace(/^[\s*]*|[\s*]*$/g, '');
+    }).filter(function(line) {
+      return line;
+    });
+  }
+
+  function getExamples(str, name) {
+    var result = [], index = 0;
+    var lines = getMultiline(str, name);
+
+    function getLine() {
+      var line = lines.shift();
+      return line ? line.replace(/\s*->.+$/, '') : '';
+    }
+
+    for (var line; line = getLine();) {
+      if (line.match(/function/)) {
+        line += '\n  ' + getLine();
+        line += '\n' + getLine();
+      }
+      result.push(line);
+    }
+    return result;
   }
 
   function checkMethod(block, lines) {
@@ -2348,8 +2411,30 @@ function buildDocs() {
         });
       }
       method.module = currentModuleName;
-      setAllKeys(method, block);
+      setAllFields(method, block, name);
+      checkAlias(method, name);
       currentNamespace[name] = method;
+    }
+  }
+
+  function checkAlias(method, name) {
+    if (method.alias && !method.short) {
+      var srcMethod = currentNamespace[method.alias];
+      var reg = RegExp('\\.' + method.alias, 'g');
+      iter(srcMethod, function(field, value) {
+        if (ALIAS_FIELDS.indexOf(field) !== -1) {
+          if (field === 'examples') {
+            value = value.map(function(l) {
+              return l.replace(reg, '.' + name);
+            });
+          } else if (typeof value === 'string') {
+            value = value.replace(reg, '.' + name);
+          }
+          method[field] = value;
+        }
+      });
+      method.short = 'Alias for `' + method.alias + '`. ' + method.short;
+      delete method.alias;
     }
   }
 
