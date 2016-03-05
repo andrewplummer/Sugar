@@ -636,39 +636,41 @@ namespace('String', function () {
 
 
   method('at', function() {
+
     test('foop', [0], 'f', 'pos 0');
     test('foop', [1], 'o', 'pos 1');
     test('foop', [2], 'o', 'pos 2');
     test('foop', [3], 'p', 'pos 3');
-    test('foop', [4], 'f', 'pos 4');
-    test('foop', [5], 'o', 'pos 5');
-    test('foop', [1224], 'f', 'out of bounds');
+    test('foop', [4], '', 'pos 4');
+    test('foop', [1224], '', 'out of bounds');
     test('foop', [-1], 'p', 'negative | pos -1');
     test('foop', [-2], 'o', 'negative | pos -2');
     test('foop', [-3], 'o', 'negative | pos -3');
     test('foop', [-4], 'f', 'negative | pos -4');
-    test('foop', [-5], 'p', 'negative | pos -5');
-    test('foop', [-1224], 'f', 'negative | out of bounds');
+    test('foop', [-5], '', 'negative | pos -5');
+    test('foop', [-1224], '', 'negative | out of bounds');
 
-    test('foop', [0, false], 'f', 'pos 0');
-    test('foop', [1, false], 'o', 'pos 1');
-    test('foop', [2, false], 'o', 'pos 2');
-    test('foop', [3, false], 'p', 'pos 3');
-    test('foop', [4, false], '', 'pos 4');
-    test('foop', [1224, false], '', 'out of bounds');
-    test('foop', [-1, false], '', 'negative | pos -1');
-    test('foop', [-2, false], '', 'negative | pos -2');
-    test('foop', [-3, false], '', 'negative | pos -3');
-    test('foop', [-4, false], '', 'negative | pos -4');
-    test('foop', [-5, false], '', 'negative | pos -5');
-    test('foop', [-1224, false], '', 'negative | out of bounds');
+    test('foop', [0, true], 'f', 'pos 0');
+    test('foop', [1, true], 'o', 'pos 1');
+    test('foop', [2, true], 'o', 'pos 2');
+    test('foop', [3, true], 'p', 'pos 3');
+    test('foop', [4, true], 'f', 'pos 4');
+    test('foop', [5, true], 'o', 'pos 5');
+    test('foop', [1224, true], 'f', 'out of bounds');
+    test('foop', [-1, true], 'p', 'negative | pos -1');
+    test('foop', [-2, true], 'o', 'negative | pos -2');
+    test('foop', [-3, true], 'o', 'negative | pos -3');
+    test('foop', [-4, true], 'f', 'negative | pos -4');
+    test('foop', [-5, true], 'p', 'negative | pos -5');
+    test('foop', [-1224, true], 'f', 'negative | out of bounds');
 
-    test('wowzers', [[0,2,4,6]], ['w','w','e','s'], 'handles enumerated params');
-    test('wowzers', [[0,2,4,6,18]], ['w','w','e','s','e'], 'handles enumerated params');
-    test('wowzers', [[0,2,4,6,18],false], ['w','w','e','s',''], 'handles enumerated params');
+    test('wowzers', [[0,2,4,6,18]], ['w','w','e','s',''], 'handles enumerated params');
+    test('wowzers', [[0,2,4,6], true], ['w','w','e','s'], 'handles enumerated params');
+    test('wowzers', [[0,2,4,6,18], true], ['w','w','e','s','e'], 'handles enumerated params');
 
     test('', [3], '', 'blank');
     test('wasabi', [0], 'w', 'wasabi at pos 0');
+
   });
 
 

@@ -103,34 +103,35 @@ namespace('Array', function () {
   });
 
   method('at', function() {
+
     test(['a','b','c'], [0], 'a', 'a,b,c | 0');
     test(['a','b','c'], [1], 'b', 'a,b,c | 1');
     test(['a','b','c'], [2], 'c', 'a,b,c | 2');
-    test(['a','b','c'], [3], 'a', 'a,b,c | 3');
+    test(['a','b','c'], [3], undefined, 'a,b,c | 3');
     test(['a','b','c'], [-1], 'c', 'a,b,c | -1');
     test(['a','b','c'], [-2], 'b', 'a,b,c | -2');
     test(['a','b','c'], [-3], 'a', 'a,b,c | -3');
-    test(['a','b','c'], [-4], 'c', 'a,b,c | -3');
+    test(['a','b','c'], [-4], undefined, 'a,b,c | -3');
 
-    test(['a','b','c'], [0, false], 'a', 'a,b,c | loop off | 0');
-    test(['a','b','c'], [1, false], 'b', 'a,b,c | loop off | 1');
-    test(['a','b','c'], [2, false], 'c', 'a,b,c | loop off | 2');
-    test(['a','b','c'], [3, false], undefined, 'a,b,c | loop off | 3');
-    test(['a','b','c'], [-1, false], undefined, 'a,b,c | loop off | -1');
-    test(['a','b','c'], [-2, false], undefined, 'a,b,c | loop off | -2');
-    test(['a','b','c'], [-3, false], undefined, 'a,b,c | loop off | -3');
-    test(['a','b','c'], [-4, false], undefined, 'a,b,c | loop off | -4');
+    test(['a','b','c'], [3, true], 'a', 'a,b,c | 3');
+    test(['a','b','c'], [-4, true], 'c', 'a,b,c | -3');
     test(['a','b','c'], [], undefined, 'a,b,c | no argument');
-    test([false], [0], false, 'false | loop off | 0');
+    test([false], [0], false, 'false | 0');
+
     test(['a'], [0], 'a', 'a | 0');
-    test(['a'], [1], 'a', 'a | 1');
-    test(['a'], [1, false], undefined, 'a | loop off | 1');
+    test(['a'], [1], undefined, 'a | loop off | 1');
+    test(['a'], [1, true], 'a', 'a | 1');
     test(['a'], [-1], 'a', 'a | -1');
+    test(['a'], [-2], undefined, 'a | -1');
+    test(['a'], [-2, true], 'a', 'a | -1');
+
+    test(['a','b','c','d','e','f'], [[0,2,4,6]], safeArray('a','c','e', undefined), 'a,b,c,d,e,f | 0,2,4,6,false | false');
+
     test(['a','b','c','d','e','f'], [[0,2,4]], ['a','c','e'], 'a,b,c,d,e,f | 0,2,4');
     test(['a','b','c','d','e','f'], [[1,3,5]], ['b','d','f'], 'a,b,c,d,e,f | 1,3,5');
-    test(['a','b','c','d','e','f'], [[0,2,4,6]], ['a','c','e','a'], 'a,b,c,d,e,f | 0,2,4,6');
-    test(['a','b','c','d','e','f'], [[0,2,4,6,18]], ['a','c','e','a','a'], 'a,b,c,d,e,f | 0,2,4,6,18');
-    test(['a','b','c','d','e','f'], [[0,2,4,6], false], safeArray('a','c','e', undefined), 'a,b,c,d,e,f | 0,2,4,6,false | false');
+    test(['a','b','c','d','e','f'], [[0,2,4,6], true], ['a','c','e','a'], 'a,b,c,d,e,f | 0,2,4,6');
+    test(['a','b','c','d','e','f'], [[0,2,4,6,18], true], ['a','c','e','a','a'], 'a,b,c,d,e,f | 0,2,4,6,18');
+
   });
 
   method('append', function() {
