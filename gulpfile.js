@@ -2257,10 +2257,6 @@ function buildBowerPackages(p) {
 
 function buildDocs() {
 
-  var json = {
-    'namespaces': {},
-  };
-
   var ALIAS_FIELDS = [
     'args',
     'returns',
@@ -2270,9 +2266,22 @@ function buildDocs() {
     'examples',
   ];
 
+  var LINKED_TOKENS = {
+    'enhanced matching': '#/EnhancedMatching',
+    'deep properties': '#/DeepProperties',
+    'extending natives': '/natives',
+    'append': '#/Array/append',
+    'insert': '#/Array/insert',
+    'add': '#/Array/add',
+  }
+
+  var json = {
+    namespaces: []
+  }
+
   var currentNamespace;
+  var currentMethod;
   var currentModuleName;
-  var currentNamespaceName;
   var modules = getModules('all');
   var modulePathMap = {};
 
@@ -2284,13 +2293,20 @@ function buildDocs() {
   }
 
   function setCurrentNamespace(name) {
-    if (name && json['namespaces'][name]) {
-      currentNamespace = json['namespaces'][name];
-      currentNamespaceName = name;
-    } else if (name) {
-      currentNamespace = {};
-      json['namespaces'][name] = currentNamespace;
-      currentNamespaceName = name;
+    if (!name) {
+      return;
+    }
+    var namespace = json.namespaces.find(function(ns) {
+      return ns.name === name;
+    });
+    if (namespace) {
+      currentNamespace = namespace;
+    } else {
+      currentNamespace = {
+        name: name,
+        methods: []
+      };
+      json.namespaces.push(currentNamespace);
     }
   }
 
@@ -2322,9 +2338,15 @@ function buildDocs() {
       if (field === 'method' || field === 'module') return;
       if (!value) {
         value = true;
+      } else if (field === 'polyfill') {
+        obj['extra'] = obj['extra'] || '';
+        obj['extra'] += 'This method is provided as a polyfill.';
+        return;
       } else if (field === 'example') {
         field = 'examples';
         value = getExamples(value, name);
+      } else if (field === 'options') {
+        value = getOptions(value, name);
       } else if (field === 'callback') {
         field = 'callbacks';
         value = getCallback(value, name, obj[field]);
@@ -2335,37 +2357,96 @@ function buildDocs() {
     });
   }
 
-  function getCallback(str, name, arr) {
+  function getOptions(str, name) {
+    var lines = getMultiline(str, name), lineBuffer = [];
+    var options = [];
+    lines.forEach(function(line) {
+      if (!line && lineBuffer.length) {
+        var buffer = lineBuffer.join(' ');
+        var match = buffer.match(/^(\w+)\s+(.+)$/);
+        options.push({
+          name: match[1],
+          description: getReplacements(match[2])
+        });
+        lineBuffer = [];
+      } else if (line) {
+        lineBuffer.push(line);
+      }
+    });
+    return options;
+  }
+
+  function getCallback(str, name, callbacks) {
     var callbackName;
-    if (!arr) {
-      arr = [];
+    if (!callbacks) {
+      callbacks = [];
     }
     str = str.replace(/(\w+)$/m, function(all, match) {
       callbackName = match;
       return '';
     });
-    arr.push({
-      name: callbackName,
-      args: getMultiline(str)
+    var args = [];
+    getMultiline(str, name, true).forEach(function(line) {
+      var match = line.match(/^(\w+)\s{2,}(.+)$/);
+      if (match) {
+        args.push({
+          name: match[1],
+          description: getReplacements(match[2])
+        });
+      } else {
+        args[args.length - 1].description += ' ' + getReplacements(line);
+      }
     });
-    return arr;
+    callbacks.push({
+      name: callbackName,
+      args: args
+    });
+    return callbacks;
   }
 
   function getTextField(str, name) {
-    return getMultiline(str, name).join(' ');
+    var text = getReplacements(getMultiline(str, name).join('\n'), name);
+    return text ? text : true;
   }
 
-  function getMultiline(str, name) {
-    return str.split('\n').map(function(line) {
-      return line.replace(/^[\s*]*|[\s*]*$/g, '');
-    }).filter(function(line) {
-      return line;
+  function getReplacements(str, name) {
+    return str.replace(/([<\[])(\w+?)([>\]])/g, function(all, open, token) {
+      if (open === '<') {
+        return '<code class="docs-required-argument">' + token + '</code>';
+      } else if (open === '[') {
+        return '<code class="docs-optional-argument">' + token + '</code>';
+      }
+    }).replace(/^#(.+)$/m, '<span class="docs-method-body-header">$1</span>')
+      .replace(/\n+$/, '').replace(/\n+/g, function(nl, index) {
+      var result = ' ';
+      if (nl.length > 1) {
+        result += new Array(nl.length).join('<br><br>');
+      }
+      return result;
+    }).replace(/`([^`]+)`/g, function(all, token) {
+      if (LINKED_TOKENS[token]) {
+        return '<a jump-link href="'+ LINKED_TOKENS[token] +'">' + token + '</a>';
+      } else {
+        return '<code>' + token + '</code>';
+      }
     });
+  }
+
+  function getMultiline(str, name, clean) {
+    var lines = str.split('\n').map(function(line) {
+      return line.replace(/^[\s*]*|[\s*]*$/g, '');
+    });
+    if (clean) {
+      lines = lines.filter(function(l) {
+        return l;
+      });
+    }
+    return lines;
   }
 
   function getExamples(str, name) {
     var result = [], index = 0;
-    var lines = getMultiline(str, name);
+    var lines = getMultiline(str, name, true);
 
     function getLine() {
       var line = lines.shift();
@@ -2373,13 +2454,23 @@ function buildDocs() {
     }
 
     for (var line; line = getLine();) {
-      if (line.match(/function/)) {
-        line += '\n  ' + getLine();
-        line += '\n' + getLine();
+      var braceLevel = getBraceLevel(line);
+      while (braceLevel > 0) {
+        var nextLine = getLine();
+        var nextBraceLevel = braceLevel + getBraceLevel(nextLine);
+        var indent = '  '.repeat(nextBraceLevel > braceLevel ? braceLevel : nextBraceLevel);
+        line += '\n' + indent  + nextLine;
+        braceLevel = nextBraceLevel;
       }
       result.push(line);
     }
     return result;
+  }
+
+  function getBraceLevel(str) {
+    var open = str.match(/{/g);
+    var close = str.match(/}/g);
+    return (open && open.length || 0) - (close && close.length || 0);
   }
 
   function checkMethod(block, lines) {
@@ -2390,7 +2481,9 @@ function buildDocs() {
       var args = match[2].split(', ').filter(function(a) {
         return a;
       });
-      var method = {};
+      var method = {
+        name: name
+      };
       method.line = getLineNumber(name, lines);
       if (args.length) {
         method['args'] = args.map(function(a) {
@@ -2403,6 +2496,7 @@ function buildDocs() {
           }
           if (m[3]) {
             arg.glob = true;
+            arg.name = '...';
           }
           if (s[1]) {
             arg.default = s[1];
@@ -2413,13 +2507,15 @@ function buildDocs() {
       method.module = currentModuleName;
       setAllFields(method, block, name);
       checkAlias(method, name);
-      currentNamespace[name] = method;
+      currentNamespace.methods.push(method);
     }
   }
 
   function checkAlias(method, name) {
     if (method.alias && !method.short) {
-      var srcMethod = currentNamespace[method.alias];
+      var srcMethod = currentNamespace.methods.find(function(m) {
+        return m.name === method.alias;
+      });
       var reg = RegExp('\\.' + method.alias, 'g');
       iter(srcMethod, function(field, value) {
         if (ALIAS_FIELDS.indexOf(field) !== -1) {
@@ -2433,7 +2529,7 @@ function buildDocs() {
           method[field] = value;
         }
       });
-      method.short = 'Alias for `' + method.alias + '`. ' + method.short;
+      method.short = 'Alias for <code>' + method.alias + '</code>. ' + method.short;
       delete method.alias;
     }
   }
@@ -2485,43 +2581,45 @@ function buildDocs() {
   }
 
   function sortAll() {
-    sortObjectKeys(json, 'namespaces', sortNamespaces);
-    iter(json['namespaces'], function(name, namespace) {
-      sortObjectKeys(json['namespaces'], name, sortMethods);
+    json.namespaces.forEach(function(ns) {
+      ns.methods.sort(methodCollate);
     });
+    json.namespaces.sort(namespaceCollate);
   }
 
-  function sortObjectKeys(obj, key, sortFn) {
-    var arr = [], result = {};
-    iter(obj[key], function(key, val) {
-      val.name = key;
-      arr.push(val);
-    });
-    arr.sort(sortFn);
-    arr.forEach(function(val) {
-      var name = val.name;
-      delete val.name;
-      result[name] = val;
-    });
-    obj[key] = result;
-  }
-
-  function sortNamespaces(a, b) {
+  function namespaceCollate(a, b) {
     var aName = a.name;
     var bName = b.name;
     if (aName === 'Sugar') {
-      return -1;
+      return 1;
     }
     return aName < bName ? -1 : aName > bName ? 1 : 0;
   }
 
-  function sortMethods(a, b) {
-    var aName = a.name;
-    var bName = b.name;
-    if (a.static !== b.static) {
-      return a.static ? -1 : 1;
+  function methodCollate(a, b) {
+    var aRank = getMethodRank(a);
+    var bRank = getMethodRank(b);
+    if (aRank !== bRank) {
+      return aRank - bRank;
     }
-    return aName < bName ? -1 : aName > bName ? 1 : 0;
+    return a.name < b.name ? -1 : a.name > b.name ? 1 : 0;
+  }
+
+  function getMethodRank(method) {
+    var rank = 0;
+    if (method.global) {
+      return -4;
+    }
+    if (method.namespace) {
+      return -3;
+    }
+    if (method.static) {
+      return -2;
+    }
+    if (method.accessor) {
+      return -1;
+    }
+    return 0;
   }
 
   function finish() {

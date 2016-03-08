@@ -83,7 +83,7 @@ Drop it in before upgrading to get a general idea of what needs to change, or up
   - `String#startsWith` and `String#endsWith` are now more in compliance with the ES6 spec. They now no longer accept a RegExp (will throw an error) or a `case` parameter. If you need to do more complex string checking, use `String#match` with standard regexes instead. Also minor differences in the way the starting/ending positions are coerced may also be present.
 
 - Level: Moderate
-  - `Number#format` no longer accepts arguments for the thousands separator and decimal point. Instead these can now be set globally using Sugar.thousands() and Sugar.decimal(). These will also be respected by Number#abbr, Number#metric, and Number#bytes as well.
+  - `Number#format` no longer accepts arguments for the thousands separator and decimal point. Instead these can now be set globally using Sugar.Number.thousands() and Sugar.Number.decimal(). These will also be respected by Number#abbr, Number#metric, and Number#bytes as well.
 
 - Level: Moderate
   - Alphanumeric array options are now defined on the global object `Sugar` instead of `Array` itself.
@@ -116,7 +116,7 @@ Drop it in before upgrading to get a general idea of what needs to change, or up
   - `Date#set` now rewinds dates that have accidentally traversed into a new month, such as setting `{ month: 1 }` on `January 31st`. This behavior was previously only on `advance` and `rewind`.
 
 - Level: Minor
-  - `Date.SugarNewDate` is now `Sugar.newDateInternal`. This method is always on the `Sugar` global (not `Date`).
+  - `Date.SugarNewDate` is now `Sugar.Date.newDateInternal`. This method is always on the `Sugar` global (not `Date`).
 
 - Level: Minor
   - `Object.map`, `Object.each`, and `Object.size` were moved to the Object module from the Array module. If you were using these methods and making custom builds you may have to include the Object module now as well.
