@@ -361,26 +361,26 @@ namespace('Number', function () {
     equal(run(100046546510000.022435451, 'format').replace(/\.\d+$/, ''), '100,046,546,510,000');
     equal(run(-100046546510000.022435451, 'format').replace(/\.\d+$/, ''), '-100,046,546,510,000');
 
-    Sugar.thousands(' ');
-    Sugar.decimal(',');
+    Sugar.Number.thousands(' ');
+    Sugar.Number.decimal(',');
     test(1000, [null, ' '], '1 000', 'with space');
     test(1532587, [null, ' '], '1 532 587', 'larget with space');
     test(1532587.5752, [null, ' ', ','], '1 532 587,5752', 'larger number with decimal');
 
-    Sugar.thousands('.');
-    Sugar.decimal(',');
+    Sugar.Number.thousands('.');
+    Sugar.Number.decimal(',');
     test(9999999.99, [null, '.',','], '9.999.999,99', 'Euro style!');
 
-    Sugar.thousands('');
-    Sugar.decimal('.');
+    Sugar.Number.thousands('');
+    Sugar.Number.decimal('.');
     test(9999999.99, [null, ''], '9999999.99', 'empty string');
 
-    Sugar.thousands('');
-    Sugar.decimal('');
+    Sugar.Number.thousands('');
+    Sugar.Number.decimal('');
     test(9999999.99, [null, '', ''], '999999999', 'no punctuation');
 
-    Sugar.thousands(null);
-    Sugar.decimal(null);
+    Sugar.Number.thousands(null);
+    Sugar.Number.decimal(null);
     test(9999999.99, [null, '', ''], '9,999,999.99', 'null returns to defaults');
 
     withArgs([2], function() {
@@ -569,9 +569,9 @@ namespace('Number', function () {
       test(1749584, '1.75m', 'decimal 3 places | 1,749,584');
 
       // Issue #422
-      Sugar.decimal(',');
+      Sugar.Number.decimal(',');
       test(1749584, '1,75m', 'should respect global decimal marker');
-      Sugar.decimal(null);
+      Sugar.Number.decimal(null);
     });
 
     withArgs([-1], function() {
@@ -753,9 +753,9 @@ namespace('Number', function () {
       test(1249584, '1,249.6k', 'decimal 1 place | 1,249,584');
 
       // Issue #422
-      Sugar.decimal(',');
+      Sugar.Number.decimal(',');
       test(3232, [1], '3,2k', 'should respect global decimal marker');
-      Sugar.decimal(null);
+      Sugar.Number.decimal(null);
     });
 
     withArgs([1, 'all'], function() {
@@ -1010,9 +1010,9 @@ namespace('Number', function () {
       test(100000000000000000, '88.82PB', '2 places | 100PB');
 
       // Issue #422
-      Sugar.decimal(',');
+      Sugar.Number.decimal(',');
       test(1000, '0,98KB', 'should respect global decimal');
-      Sugar.decimal(null);
+      Sugar.Number.decimal(null);
 
     });
 
