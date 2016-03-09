@@ -49,11 +49,11 @@ Sugar.Date.addLocale('ja', {
     '{month}月{edge}'
   ],
   'timeParse': [
-    '{shift}{unit=6-7}',
-    '{shift}{unit=5}{weekday?}',
-    '{shift}{unit=7}{month}月{edge}',
-    '{shift}{unit=7}{month?}月?{date?}日?',
-    '{shift}{unit=6}{edge?}{date?}日?',
+    '{shift}{unit:6-7}',
+    '{shift}{unit:5}{weekday?}',
+    '{shift}{unit:7}{month}月{edge}',
+    '{shift}{unit:7}{month?}月?{date?}日?',
+    '{shift}{unit:6}{edge?}{date?}日?',
     '{year}年度?{month?}月?{date?}日?',
     '{month}月{date?}日?',
     '{date}日'

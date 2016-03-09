@@ -52,7 +52,7 @@ Sugar.Date.addLocale('ru', {
     '{num} {unit} {sign}',
     '{sign} {num} {unit}',
     '{month} {year}',
-    '{0?} {shift} {unit=5-7}'
+    '{0?} {shift} {unit:5-7}'
   ],
   'timeParse': [
     '{date} {month} {year?} {1?}',

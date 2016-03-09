@@ -38,7 +38,7 @@ Sugar.Date.addLocale('zh-CN', {
   ],
   'parse': [
     '{num}{unit}{sign}',
-    '{shift}{unit=5-7}'
+    '{shift}{unit:5-7}'
   ],
   'timeParse': [
     '{shift}{weekday}',

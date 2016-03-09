@@ -35,8 +35,8 @@ Sugar.Date.addLocale('nl', {
   ],
   'parse': [
     '{num} {unit} {sign}',
-    '{0?} {unit=5-7} {shift}',
-    '{0?} {shift} {unit=5-7}'
+    '{0?} {unit:5-7} {shift}',
+    '{0?} {shift} {unit:5-7}'
   ],
   'timeParse': [
     '{weekday?} {date?} {month} {year?}',
