@@ -53,7 +53,7 @@ Sugar.Date.addLocale('fi', {
     { 'name': 'shift', 'src': 'seuraava|seuraavana|tuleva|tulevana|ensi', 'value': 1 }
   ],
   'parse': [
-    '{shift} {unit=5-7}'
+    '{shift} {unit:5-7}'
   ],
   'timeParse': [
     '{shift} {weekday}',

@@ -37,10 +37,10 @@ Sugar.Date.addLocale('ko', {
   ],
   'parse': [
     '{num}{unit} {sign}',
-    '{shift?} {unit=5-7}'
+    '{shift?} {unit:5-7}'
   ],
   'timeParse': [
-    '{shift} {unit=5?} {weekday}',
+    '{shift} {unit:5?} {weekday}',
     '{year}년 {month?}월? {date?}일? {weekday?}',
     '{month}월 {date?}일?',
     '{date}일'
