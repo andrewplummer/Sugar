@@ -2789,19 +2789,6 @@ namespace('Date', function () {
   });
 
 
-  method('addFormat', function() {
-
-    run(Date, 'addFormat', ['(\\d+)\\^\\^(\\d+)%%(\\d+), but at the (beginning|end)', ['date','year','month','edge']]);
-    equal(testCreateDate('25^^2008%%02, but at the end'), new Date(2008, 1, 25, 23, 59, 59, 999), 'Date.addFormat | make your own crazy format!');
-
-    run(Date, 'addFormat', ['on ze (\\d+)th of (january|february|march|april|may) lavigne', ['date','month'], 'en']);
-    equal(testCreateDate('on ze 18th of april lavigne', 'en'), new Date(thisYear, 3, 18), 'handles other formats');
-
-    equal(typeof Sugar.Date.getLocale(), 'object', 'current locale object is exposed in case needed');
-    equal(Sugar.Date.getLocale().code, 'en', 'adding the format did not change the current locale');
-
-  });
-
   group('Date Locales', function() {
 
     equal(run(new Date(2011, 5, 18), 'format', ['{Month} {date}, {yyyy}']), 'June 18, 2011', 'Non-initialized defaults to English formatting');
@@ -2828,6 +2815,31 @@ namespace('Date', function () {
 
     raisesError(function(){ testSetLocale('pink'); }, 'Non-existent locales will raise an error');
     equal(run(testCreateDate('2011kupo'), 'format'), 'yeehaw', 'will not set the current locale to an invalid locale');
+
+  });
+
+  group('Custom Formats', function() {
+    testSetLocale('en');
+
+    Sugar.Date.getLocale('en').addFormat('!{month}!{year}!');
+    equal(testCreateDate('!March!2015!'), new Date(2015, 2), 'format with !');
+
+    Sugar.Date.getLocale('en').addRawFormat('(\\d+)\\^\\^(\\d+)%%(\\d+), but at the (beginning|end)', ['date','year','month','edge']);
+    equal(testCreateDate('25^^2008%%02, but at the end'), new Date(2008, 1, 25, 23, 59, 59, 999), 'make your own crazy format!');
+
+    Sugar.Date.getLocale('en').addRawFormat('on ze (\\d+)th of (january|february|march|april|may) lavigne', ['date','month']);
+    equal(testCreateDate('on ze 18th of april lavigne', 'en'), new Date(thisYear, 3, 18), 'handles other formats');
+
+    equal(typeof Sugar.Date.getLocale(), 'object', 'current locale object is exposed in case needed');
+    equal(Sugar.Date.getLocale().code, 'en', 'adding the format did not change the current locale');
+
+
+    // Issue #119
+    Sugar.Date.getLocale('en').addRawFormat('(\\d{2})(\\d{2})', ['hour','minute']);
+    equal(testCreateDate('0615'), testCreateDate('06:15'), 'Overrides defined formats');
+
+    // Not sure how nuts I want to get with this so for the sake of the tests just push the proper format back over the top...
+    Sugar.Date.getLocale('en').addRawFormat('(\\d{4})', ['year']);
 
   });
 
@@ -2875,17 +2887,6 @@ namespace('Date', function () {
     test(new Date(2010, 0, 8), 1, 'utc | January 8th');
     test(new Date(2010, 3, 15), 15, 'utc | April 15th');
 
-  });
-
-  group('Custom Formats', function() {
-
-    // https://github.com/andrewplummer/Sugar/issues/119#issuecomment-4520966
-
-    run(Date, 'addFormat', ['(\\d{2})(\\d{2})',['hour','minute']]);
-    equal(testCreateDate('0615'), testCreateDate('06:15'), 'Overrides defined formats');
-
-    // Not sure how nuts I want to get with this so for the sake of the tests just push the proper format back over the top...
-    run(Date, 'addFormat', ['(\\d{4})', ['year']]);
   });
 
   method('iso', function() {
