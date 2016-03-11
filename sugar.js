@@ -97,17 +97,16 @@
 
   /***
    * @method createNamespace(<name>)
-   * @returns Self
+   * @returns Namespace
+   * @static
+   * @global
    * @short Creates a new Sugar namespace.
    * @extra This method is for plugin developers who want to define methods to be
-   *        used with natives that Sugar does not handle by default, for example
-   *        Set, WeakMap, etc. <name> will appear on the `Sugar` global with all
-   *        the methods of normal namespaces, as well as the ability to define new
-   *        methods. Defined methods will appear on the namespace as static
-   *        methods, but can also be used in chainables following the format:
-   *        new Sugar.<name>() or Sugar.<name>(). Lastly, the global method
-   *        `Sugar.extend()` allows end users to extend native prototypes with
-   *        defined methods.
+   *        used with natives that Sugar does not handle by default. The new
+   *        namespace will appear on the `Sugar` global with all the methods of
+   *        normal namespaces, including the ability to define new methods. When
+   *        extended, any defined methods will be mapped to `name` in the global
+   *        context.
    ***/
   function createNamespace(name) {
 
@@ -119,9 +118,12 @@
 
     /***
      * @method extend([opt])
-     * @returns Self
+     * @returns Sugar
+     * @static
+     * @global
+     * @namespace
      * @short Extends natives with methods defined on the namespace.
-     * @extra [opt] may be a string as a single method name, an array of method
+     * @extra [opt] may be a single method name as a string, an array of method
      *        names, or an options object (options listed below). This method can
      *        be called on individual namespaces like `Sugar.Array` or on the
      *        global itself, in which case [options] will be forwarded to each
@@ -129,28 +131,30 @@
      *
      * @options
      *
-     *   methods:          An array of method names to explicitly extend.
+     *   methods           An array of method names to explicitly extend.
      *
-     *   except:           An array of method names to explicitly exclude.
+     *   except            An array of method names to explicitly exclude.
      *
-     *   enhance:          A shortcut to disallow all "enhance" flags, which are
-     *                     listed below and on by default.
+     *   enhance           A shortcut to disallow all "enhance" flags at once
+     *                     (flags listed below). Default is `true`.
      *
-     *   enhanceString:    Sugar enhances `String#includes` to allow testing
-     *                     against a regex.
+     *   enhanceString     A boolean allowing String enhancements (allowing a
+     *                     regex in `String#includes`). Default is `true`.
      *
-     *   enhanceArray:     Sugar enhances array methods `every`, `some`, `filter`,
-     *                     `find`, and `findIndex` to allow passing shortcuts to
-     *                     matching functions, as well as a shortcut for mapping
-     *                     with `Array#map`. See each method's docs for more.
+     *   enhanceArray      A boolean allowing Array enhancements such as passing
+     *                     shortcuts to matching functions in `every`, `some`,
+     *                     `filter`, `find`, and `findIndex`, and passing a
+     *                     shortcut for a mapping function in `map`. See each
+     *                     method's docs for more. Default is `true`.
      *
-     *   enhanceObject:    Sugar enhances `Object.keys` to run a callback for each
-     *                     of the object's keys.
+     *   enhanceObject     A boolean allowing Object enhancements (optional
+     *                     callback function for `Object.keys`). Default is `true`.
      *
-     *   objectPrototype:  If `true`, this option will Object.prototype with
-     *                     instance methods. This option is off by default as it
-     *                     can have unintended consequences. For more, see
-     *                     `extending natives`.
+     *   objectPrototype   A boolean allowing Sugar to extend Object.prototype
+     *                     with instance methods. This option is off by default
+     *                     and should be used with extreme caution as it may have
+     *                     unintended consequences and result in issues that are
+     *                     difficult to debug. For more, see `extending natives`.
      *
      ***/
     var extend = function (arg) {
@@ -221,8 +225,7 @@
         // methods, so add a flag here to check later.
         setProperty(sugarNamespace, 'active', true);
       }
-      // return self
-      return sugarNamespace;
+      return Sugar;
     };
 
     function defineWithOptionCollect(methodName, instance, args) {
@@ -234,85 +237,145 @@
     }
 
     /***
-     * @method defineStatic()
-     * @returns SugarNamespace
+     * @method defineStatic(...)
+     * @returns Namespace
+     * @namespace
+     * @static
      * @short Defines static methods on the namespace that can later be extended
      *        onto the native globals.
      * @extra Accepts either a single object mapping names to functions, or name
      *        and function as two arguments.
+     *
+     * @example
+     *
+     *   Sugar.Number.defineStatic({
+     *     isOdd: function (num) {
+     *       return num % 2 === 1;
+     *     }
+     *   });
+     *
      ***/
     defineWithOptionCollect('defineStatic', STATIC);
 
     /***
-     * @method defineInstance()
-     * @returns SugarNamespace
+     * @method defineInstance(...)
+     * @returns Namespace
+     * @namespace
+     * @static
      * @short Defines methods on the namespace that can later be extended as
      *        instance methods onto the native prototype.
      * @extra Accepts either a single object mapping names to functions, or name
      *        and function as two arguments. All functions should accept the
      *        native for which they are mapped as their first argument, and should
-     *        never refer to their `this`. This allows the end user to decide if
-     *        they want to use the method in static or instance form. Additionally,
-     *        functions should never accept more than 4 arguments in addition to
-     *        the native (5 arguments total), as any additional arguments will not
-     *        be mapped. If more options are required, accept an options object instead.
+     *        never refer to `this`. Additionally, functions cannot accept more
+     *        than 4 arguments in addition to the native (5 arguments total). Any
+     *        additional arguments will not be mapped. If more options are
+     *        required, use an options object instead.
+     *
+     * @example
+     *
+     *   Sugar.Number.defineInstance({
+     *     square: function (num) {
+     *       return num * num;
+     *     }
+     *   });
+     *
      ***/
     defineWithOptionCollect('defineInstance', INSTANCE);
 
     /***
-     * @method defineInstanceAndStatic()
-     * @returns SugarNamespace
+     * @method defineInstanceAndStatic(...)
+     * @returns Namespace
+     * @namespace
+     * @static
      * @short A shortcut to define both static and instance methods on the namespace.
-     * @extra This method is intended for use with `Object`. As Sugar will not map
-     *        instance methods to `Object.prototype` by default, defining intended
-     *        instance methods as both promotes the use of static methods instead.
-     *        See the `Object` docs for examples of this.
+     * @extra This method is intended for use with `Object` instance methods. Sugar
+     *        will not map any methods to `Object.prototype` by default, so defining
+     *        instance methods as static helps facilitate their proper use.
+     *
+     * @example
+     *
+     *   Sugar.Object.defineInstanceAndStatic({
+     *     isAwesome: function (obj) {
+     *       // check if obj is awesome!
+     *     }
+     *   });
+     *
      ***/
     defineWithOptionCollect('defineInstanceAndStatic', INSTANCE | STATIC);
 
 
     /***
-     * @method defineStaticWithArguments()
-     * @returns SugarNamespace
+     * @method defineStaticWithArguments(...)
+     * @returns Namespace
+     * @namespace
+     * @static
      * @short Defines static methods that collect arguments.
      * @extra This method is identical to `defineStatic`, except that when defined
      *        methods are called, they will collect any arguments past `n - 1`,
      *        where `n` is the number of arguments that the method accepts.
-     *        Collected arguments will be passed to the method as the last argument
-     *        defined on the function.
+     *        Collected arguments will be passed to the method in an array
+     *        as the last argument defined on the function.
+     *
+     * @example
+     *
+     *   Sugar.Number.defineStaticWithArguments({
+     *     addAll: function (num, args) {
+     *       for (var i = 0; i < args.length; i++) {
+     *         num += args[i];
+     *       }
+     *       return num;
+     *     }
+     *   });
+     *
      ***/
     defineWithOptionCollect('defineStaticWithArguments', STATIC, true);
 
     /***
-     * @method defineInstanceWithArguments()
-     * @returns SugarNamespace
+     * @method defineInstanceWithArguments(...)
+     * @returns Namespace
+     * @namespace
+     * @static
      * @short Defines instance methods that collect arguments.
      * @extra This method is identical to `defineInstance`, except that when
      *        defined methods are called, they will collect any arguments past
      *        `n - 1`, where `n` is the number of arguments that the method
      *        accepts. Collected arguments will be passed to the method as the
      *        last argument defined on the function.
+     *
+     * @example
+     *
+     *   Sugar.Number.defineInstanceWithArguments({
+     *     addAll: function (num, args) {
+     *       for (var i = 0; i < args.length; i++) {
+     *         num += args[i];
+     *       }
+     *       return num;
+     *     }
+     *   });
+     *
      ***/
     defineWithOptionCollect('defineInstanceWithArguments', INSTANCE, true);
 
     /***
-     * @method alias(<fromName>, <toName>)
-     * @returns SugarNamespace
-     * @short Aliases one Sugar method to another.
-     ***/
-    setProperty(sugarNamespace, 'alias', function(name, source) {
-      var method = typeof source === 'string' ? sugarNamespace[source] : source;
-      setMethod(sugarNamespace, name, method);
-    });
-
-    /***
-     * @method defineStaticPolyfill()
-     * @returns SugarNamespace
-     * @short Defines static methods that are immediately mapped onto the native
-     *        if they do not already exist.
+     * @method defineStaticPolyfill(...)
+     * @returns Namespace
+     * @namespace
+     * @static
+     * @short Defines static methods that are mapped onto the native if they do
+     *        not already exist.
      * @extra Intended only for use creating polyfills that follow the ECMAScript
      *        spec. Accepts either a single object mapping names to functions, or
      *        name and function as two arguments.
+     *
+     * @example
+     *
+     *   Sugar.Object.defineStaticPolyfill({
+     *     keys: function (obj) {
+     *       // get keys!
+     *     }
+     *   });
+     *
      ***/
     setProperty(sugarNamespace, 'defineStaticPolyfill', function(arg1, arg2, arg3) {
       var opts = collectDefineOptions(arg1, arg2, arg3);
@@ -320,13 +383,27 @@
     });
 
     /***
-     * @method defineInstancePolyfill()
-     * @returns SugarNamespace
-     * @short Defines instance methods that are immediately mapped onto the native
-     *        prototype if they do not already exist.
+     * @method defineInstancePolyfill(...)
+     * @returns Namespace
+     * @namespace
+     * @static
+     * @short Defines instance methods that are mapped onto the native prototype
+     *        if they do not already exist.
      * @extra Intended only for use creating polyfills that follow the ECMAScript
      *        spec. Accepts either a single object mapping names to functions, or
-     *        name and function as two arguments.
+     *        name and function as two arguments. `defineInstancePolyfill` differs
+     *        from `defineInstance` as there is no static signature (as the method
+     *        is mapped as-is to the native), so it should refer to its `this`
+     *        object.
+     *
+     * @example
+     *
+     *   Sugar.Array.defineInstancePolyfill({
+     *     indexOf: function (arr, el) {
+     *       // index finding code here!
+     *     }
+     *   });
+     *
      ***/
     setProperty(sugarNamespace, 'defineInstancePolyfill', function(arg1, arg2, arg3) {
       var opts = collectDefineOptions(arg1, arg2, arg3);
@@ -335,6 +412,23 @@
       iterateOverObject(opts.methods, function(methodName, fn) {
         defineChainableMethod(sugarNamespace, methodName, fn);
       });
+    });
+
+    /***
+     * @method alias(<toName>, <fromName>)
+     * @returns Namespace
+     * @namespace
+     * @static
+     * @short Aliases one Sugar method to another.
+     *
+     * @example
+     *
+     *   Sugar.Array.alias('all', 'every');
+     *
+     ***/
+    setProperty(sugarNamespace, 'alias', function(name, source) {
+      var method = typeof source === 'string' ? sugarNamespace[source] : source;
+      setMethod(sugarNamespace, name, method);
     });
 
     // Each namespace can extend only itself through its .extend method.
@@ -619,9 +713,11 @@
     }
 
     iterateOverObject(methodNames, function(i, methodName) {
-      if (methodName === 'valueOf' || methodName === 'constructor') {
-        // Both "valueOf" and "constructor" have their own definitions
-        // for chainables, so do not forward those methods here.
+      if (nativeMethodProhibited(methodName)) {
+        // Sugar chainables have their own constructors as well as "valueOf"
+        // methods, so exclude them here. The __proto__ argument should be trapped
+        // by the function check below, however simply accessing this property on
+        // Object.prototype causes QML to segfault, so pre-emptively excluding it.
         return;
       }
       try {
@@ -637,6 +733,12 @@
       }
       defineChainableMethod(sugarNamespace, methodName, fn);
     });
+  }
+
+  function nativeMethodProhibited(methodName) {
+    return methodName === 'constructor' ||
+           methodName === 'valueOf' ||
+           methodName === '__proto__';
   }
 
 
@@ -853,7 +955,7 @@
       }
       return local != null ? local : globalDefault;
     };
-    setProperty(Sugar, name, accessor);
+    setProperty(namespace, name, accessor);
     return accessor;
   }
 
@@ -1444,10 +1546,10 @@
   }
 
   function entryAtIndex(obj, index, length, loop, isString) {
-    if (index && loop !== false) {
+    if (index && loop) {
       index = index % length;
-      if (index < 0) index = length + index;
     }
+    if (index < 0) index = length + index;
     return isString ? obj.charAt(index) : obj[index];
   }
 
@@ -1775,7 +1877,8 @@
    *
    ***/
 
-  /*** @namespace String */
+
+  /*** @namespace String ***/
 
   function getCoercedStringSubject(obj) {
     if (obj == null) {
@@ -1907,14 +2010,15 @@
   });
 
 
-  /*** @namespace Number */
+  /*** @namespace Number ***/
 
   defineStaticPolyfill(sugarNumber, {
 
     /***
-     * @method Number.isNaN(<value>)
+     * @method isNaN(<value>)
      * @returns Boolean
      * @polyfill es6
+     * @static
      * @short Returns true only if the number is `NaN`.
      * @extra This is differs from the global `isNaN`, which returns true for
      *        anything that is not a number.
@@ -1932,8 +2036,7 @@
   });
 
 
-
-  /*** @namespace Array */
+  /*** @namespace Array ***/
 
   function getCoercedObject(obj) {
     if (obj == null) {
@@ -2025,8 +2128,8 @@
    *
    ***/
 
-  /*** @namespace Array */
 
+  /*** @namespace Array ***/
 
   function sameValueZero(a, b) {
     if (isRealNaN(a)) {
@@ -2500,11 +2603,7 @@
 
 
   /***
-   * @namespace Sugar
-   *
-   ***
    * @method newDateInternal([fn])
-   * @namespace Sugar
    * @returns Mixed
    * @accessor
    * @short Gets or sets Sugar's internal date constructor.
@@ -2515,14 +2614,18 @@
    *        as dates in Javascript are always local. Setting to `null` restores
    *        the default.
    *
+   * @example
+   *
+   *   Sugar.Date.newDateInternal(function() {
+   *     var d = new Date(), offset;
+   *     offset = (d.getTimezoneOffset() - 600) * 60 * 1000;
+   *     d.setTime(d.getTime() + offset); // Hawaii time!
+   *     return d;
+   *   });
+   *
    ***/
   var _newDateInternal = defineAccessor(sugarDate, 'newDateInternal', defaultNewDate);
 
-
-  /***
-   * @namespace Date
-   *
-   ***/
 
   function setDateChainableConstructor() {
     setChainableConstructor(sugarDate, isDate, createDate);
@@ -2756,14 +2859,19 @@
     return d;
   }
 
-  function setWeekday(d, dow, forward) {
+  function setWeekday(d, dow, dir) {
     if (!isNumber(dow)) return;
-    // Dates like "the 2nd Tuesday of June" need to be set forward
-    // so make sure that the day of the week reflects that here.
-    if (forward && dow % 7 < getWeekday(d)) {
-      dow += 7;
+    var currentWeekday = getWeekday(d);
+    if (dir) {
+      // Allow a "direction" parameter to determine whether a weekday can
+      // be set beyond the current weekday in either direction.
+      var ndir = dir > 0 ? 1 : -1;
+      var offset = dow % 7 - currentWeekday;
+      if (offset && offset / abs(offset) !== ndir) {
+        dow += 7 * ndir;
+      }
     }
-    return setDate(d, getDate(d) + dow - getWeekday(d));
+    return setDate(d, getDate(d) + dow - currentWeekday);
   }
 
   function moveToEdgeOfUnit(d, unit, localeCode, edgeOfWeek, end) {
@@ -2868,7 +2976,7 @@
 
   function getExtendedDate(contextDate, d, opt) {
 
-    var date, set, options, baseLocale, afterCallbacks, weekdayForward;
+    var date, set, options, baseLocale, afterCallbacks, weekdayDir;
 
     afterCallbacks = [];
     options = getDateOptions(opt);
@@ -2883,9 +2991,13 @@
       });
     }
 
-    function getWeekdayWithMultiplier(w) {
-      var num = set.num && !set.unit ? set.num : 1;
-      return (7 * (num - 1)) + w;
+    function getWeekdayWithMultiplier(weekday, loc) {
+      var num;
+      if (set.num && !set.unit) {
+        num = loc.getNumber(set.num);
+      }
+      num = num && !set.unit ? num : 1;
+      return (7 * (num - 1)) + weekday;
     }
 
 
@@ -2911,13 +3023,13 @@
 
       if (set.shift) {
         // Shift and unit, ie "next month", "last week", etc.
-        tmp = loc.modifiersByName[set.shift];
+        tmp = loc.findModifier(set, 'shift');
         if (tmp) {
           num *= tmp.value;
         }
       }
 
-      if (set.sign && (tmp = loc.modifiersByName[set.sign])) {
+      if (set.sign && (tmp = loc.findModifier(set, 'sign'))) {
         // Unit and sign, ie "months ago", "weeks from now", etc.
         num *= tmp.value;
       }
@@ -2930,6 +3042,20 @@
 
       // Finally shift the unit.
       set[unitName] = (set[unitName] || 0) + num;
+    }
+
+    function handleUnitEdge(loc) {
+      // If there is an "edge" it needs to be set after the other fields are set.
+      // ie "the end of February". If there are any weekdays to be set, then they
+      // need to be removed until after the edge is set.
+      var weekday = set.weekday;
+      delete set.weekday;
+      afterDateSet(function() {
+        if (isDefined(weekday)) {
+          set.weekday = weekday;
+        }
+        setUnitEdge(loc, set);
+      });
     }
 
     function separateAbsoluteUnits(loc, unitIndex) {
@@ -2967,7 +3093,7 @@
     }
 
     function setUnitEdge(loc, params) {
-      var val = loc.modifiersByName[params.edge].value, localeCode, unit;
+      var val = loc.findModifier(params, 'edge').value, localeCode, unit;
       localeCode = options.locale;
       iterateOverHigherDateUnits(function(name) {
         if (isDefined(params[name])) {
@@ -2991,6 +3117,12 @@
           resetTime(date);
         }
       }
+      if (isDefined(params.weekday)) {
+        // If a weekday is defined then set it here. If we are at the end of the
+        // month, then force a previous weekday otherwise force the next weekday.
+        setWeekday(date, params.weekday, -val);
+        resetTime(date);
+      }
     }
 
     function handleAmericanVariant(loc, set) {
@@ -3011,18 +3143,18 @@
       // If the day is a weekday, then set that instead.
       delete set.day;
       delete set.weekday;
-      set.weekday = getWeekdayWithMultiplier(weekday);
+      set.weekday = getWeekdayWithMultiplier(weekday, loc);
       // The unit is now set to "day" so that shifting can occur.
       if (set.shift && !set.unit) {
         set.unit = loc.unitsLower[5];
       }
       if (set.num && set.month) {
-        // If we have "the 2nd Tuesday of June", then pass the "weekdayForward"
+        // If we have "the 2nd Tuesday of June", then pass the "weekdayDir"
         // flag along to updateDate so that the date does not accidentally traverse
         // into the previous month. This needs to be independent of the "prefer"
         // flag because we are only ensuring that the weekday is in the future, not
         // the entire date.
-        weekdayForward = true;
+        weekdayDir = 1;
       }
     }
 
@@ -3099,13 +3231,14 @@
       d = cleanDateInput(d);
 
       if (baseLocale) {
+
         iterateOverObject(baseLocale.getFormats(), function(i, dif) {
           var match = d.match(dif.reg), loc, tmp;
           if (match) {
 
             loc = dif.locale;
             set = getFormatMatch(match, dif.to, loc);
-            loc.cachedFormat = dif;
+            loc.setCachedFormat(dif);
 
             if (set.utc) {
               _utc(date, true);
@@ -3131,11 +3264,11 @@
               if (set.shift && !set.unit) set.unit = loc.unitsLower[7];
             }
 
-            if (set.hours && (tmp = loc.modifiersByName[set.hours])) {
+            if (set.hours && (tmp = loc.findModifier(set, 'hours'))) {
               handleLocalizedHours(tmp.value);
             }
 
-            if (set.day && (tmp = loc.modifiersByName[set.day])) {
+            if (set.day && (tmp = loc.findModifier(set, 'day'))) {
               // Relative day localizations such as "today" and "tomorrow".
               handleLocalizedRelativeDay(loc, tmp);
             } else if ((tmp = loc.getWeekdayValue(set.weekday || set.day)) > -1) {
@@ -3163,11 +3296,7 @@
             }
 
             if (set.edge) {
-              // If there is an "edge" it needs to be set after the
-              // other fields are set. ie "the end of February"
-              afterDateSet(function() {
-                setUnitEdge(loc, set);
-              });
+              handleUnitEdge(loc);
             }
 
             if (set.yearSign === '-') {
@@ -3200,7 +3329,7 @@
           // so preemtively reset the time here to prevent this.
           resetTime(date);
         }
-        updateDate(date, set, true, 0, options.prefer, weekdayForward);
+        updateDate(date, set, true, 0, options.prefer, weekdayDir);
       }
       fireCallbacks();
     }
@@ -3491,7 +3620,7 @@
     return (tzOffset(p.date) - tzOffset(d)) * MINUTE;
   }
 
-  function updateDate(d, params, reset, advance, prefer, weekdayForward) {
+  function updateDate(d, params, reset, advance, prefer, weekdayDir) {
     var specificityIndex, noop = true;
 
     function getParam(key) {
@@ -3595,13 +3724,12 @@
       setUnit(u, advance, getParam(name));
     });
 
-
     // If a weekday is included in the params and no 'date' parameter is
     // overriding, set it here after all other units have been set. Note that
     // the date has to be perfectly set before disambiguation so that a proper
     // comparison can be made.
     if (!advance && !paramExists('day') && paramExists('weekday')) {
-      setWeekday(d, getParam('weekday'), weekdayForward);
+      setWeekday(d, getParam('weekday'), weekdayDir);
     }
 
     // If no action has been taken on the date
@@ -4102,39 +4230,40 @@
   defineStatic(sugarDate, {
 
      /***
-     * @method Date.create(<d>, [options])
+     * @method create(<d>, [options])
      * @returns Date
+     * @static
      * @short Alternate date constructor which accepts many different text formats, a timestamp, or another date.
      * @extra If no argument is given, the date is assumed to be now.
      *
      * @options
      *
-     *   locale   A locale code to parse the date in. This can also be passed as
-     *            the second argument to this method. Default is the current
-     *            locale, which is English if none is set.
-     *            (Default = 'en')
+     *   locale     A locale code to parse the date in. This can also be passed as
+     *              the second argument to this method. Default is the current
+     *              locale, which is English if none is set.
+     *              (Default = 'en')
      *
-     *   past     If `true`, ambiguous dates like `Sunday` will be parsed as
-     *            `last Sunday`. Note that this does not guarantee that non-
-     *            ambiguous dates will be in the past.
-     *            (Default = `false`)
+     *   past       If `true`, ambiguous dates like `Sunday` will be parsed as
+     *              `last Sunday`. Note that this does not guarantee that non-
+     *              ambiguous dates will be in the past.
+     *              (Default = `false`)
      *
-     *   future   If `true`, ambiguous dates like `Sunday` will be parsed as
-     *            `next Sunday`. Note that this does not guarantee that non-
-     *            ambiguous dates will be in the future.
-     *            (Default = `false`)
+     *   future     If `true`, ambiguous dates like `Sunday` will be parsed as
+     *              `next Sunday`. Note that this does not guarantee that non-
+     *              ambiguous dates will be in the future.
+     *              (Default = `false`)
      *
-     *   fromUTC  If `true`, the date will be parsed as UTC time (no timezone
-     *            offset). This is useful for server timestamps, etc.
-     *            (Default = `false`)
+     *   fromUTC    If `true`, the date will be parsed as UTC time (no timezone
+     *              offset). This is useful for server timestamps, etc.
+     *              (Default = `false`)
      *
-     *   setUTC   If `true` this will set the date's internal `utc` flag, which
-     *            tells it to use UTC based methods like `setUTCHours` when
-     *            handling the date. Note that this is different from `fromUTC`
-     *            which parses a date string as being UTC time, but creates a
-     *            standard local Javascript date object. Also note that native
-     *            methods like `setHours` will still return a local non-UTC value.
-     *            (Default = `false`)
+     *   setUTC     If `true` this will set the date's internal `utc` flag, which
+     *              tells it to use UTC based methods like `setUTCHours` when
+     *              handling the date. Note that this is different from `fromUTC`
+     *              which parses a date string as being UTC time, but creates a
+     *              standard local Javascript date object. Also note that native
+     *              methods like `setHours` will still return a local non-UTC value.
+     *              (Default = `false`)
      *
      * @example
      *
@@ -4146,7 +4275,7 @@
      *   Date.create('July 4, 1776')  -> July 4, 1776
      *   Date.create(-446806800000)   -> November 5, 1955
      *   Date.create('1776年07月04日', 'ja') -> July 4, 1776
-     *   Date.create('Thursday', '{fromUTC:true}) -> Thursday at 12:00am UTC time
+     *   Date.create('Thursday', {fromUTC: true}) -> Thursday at 12:00am UTC time
      *
      ***/
     'create': function(d, options) {
@@ -4154,8 +4283,9 @@
     },
 
      /***
-     * @method Date.getLocale([code] = current)
+     * @method getLocale([code] = current)
      * @returns Locale
+     * @static
      * @short Gets the locale for the given code, or the current locale.
      * @extra The resulting locale object can be manipulated to provide more control
      *        over date localizations. For more about locales, see `date locales`.
@@ -4166,9 +4296,13 @@
     },
 
      /***
-     * @method Date.getAllLocales()
+     * @method getAllLocales()
      * @returns Object
+     * @static
      * @short Returns all available locales.
+     * @example
+     *
+     *   Date.getAllLocales()
      *
      ***/
     'getAllLocales': function() {
@@ -4176,9 +4310,13 @@
     },
 
      /***
-     * @method Date.getAllLocaleCodes()
+     * @method getAllLocaleCodes()
      * @returns Array
+     * @static
      * @short Returns all available locale names as an array of strings.
+     * @example
+     *
+     *   Date.getAllLocaleCodes()
      *
      ***/
     'getAllLocaleCodes': function() {
@@ -4186,8 +4324,9 @@
     },
 
      /***
-     * @method Date.setLocale(<code>)
+     * @method setLocale(<code>)
      * @returns Locale
+     * @static
      * @short Sets the current locale to be used with dates.
      * @extra Sugar has native support for 17 major locales. In addition, you can
      *        define a new locale with `Date.addLocale`. For more see `date locales`.
@@ -4198,10 +4337,14 @@
     },
 
      /***
-     * @method Date.addLocale(<code>, <set>)
+     * @method addLocale(<code>, <set>)
      * @returns Locale
+     * @static
      * @short Adds a locale <set> to the locales understood by Sugar.
      * @extra For more see `date locales`.
+     * @example
+     *
+     *   Date.addLocale('foo', {})
      *
      ***/
     'addLocale': function(code, set) {
@@ -4209,29 +4352,15 @@
     },
 
      /***
-     * @method Date.removeLocale(<code>)
+     * @method removeLocale(<code>)
      * @returns Locale
+     * @static
      * @short Deletes the the locale by <code> from Sugar's known locales.
      *
      ***/
     'removeLocale': function(code) {
       return localeManager.remove(code);
-    },
-
-    /**
-     * @method Date.addFormat(<format>, <match>, [code] = null)
-     * @returns Nothing
-     * @short Manually adds a new date input format.
-     * @extra This method allows fine grained control for alternate formats.
-     *        <format> is a string that can have regex tokens inside. <match> is
-     *        an array of the tokens that each regex capturing group will map to,
-     *        for example `year`, `date`, etc. For more, see `date locales`.
-     *
-     **/
-    'addFormat': function(format, match, localeCode) {
-      localeManager.get(localeCode).addRawFormat(format, match);
     }
-
 
   });
 
@@ -4752,8 +4881,8 @@
      *
      * @example
      *
-     +   now.getWeekday();    -> (ex.) 3
-     +   now.getUTCWeekday(); -> (ex.) 3
+     *   now.getWeekday();    -> (ex.) 3
+     *   now.getUTCWeekday(); -> (ex.) 3
      *
      ***/
     'getWeekday': function(d) {
@@ -5188,9 +5317,15 @@
     },
 
     getFormats: function() {
-      return this.cachedFormat ?
-        [this.cachedFormat].concat(this.compiledFormats) :
-        this.compiledFormats;
+      return this.cachedFormats || this.compiledFormats;
+    },
+
+    setCachedFormat: function(dif) {
+      var arr = filter(this.compiledFormats, function(f) {
+        return f !== dif;
+      });
+      arr.unshift(dif);
+      this.cachedFormats = arr;
     },
 
     addFormat: function(src, allowsTime, match, variant, iso) {
@@ -5252,6 +5387,14 @@
       }
     },
 
+    findModifier: function (obj, name) {
+      var val = obj[name];
+      if (val) {
+        var key = name + '|' + val;
+        return this.modifiersByKey[key];
+      }
+    },
+
     addRawFormat: function(format, match, variant) {
       this.compiledFormats.unshift({
         variant: !!variant,
@@ -5259,6 +5402,7 @@
         reg: RegExp('^' + format + '$', 'i'),
         to: match
       });
+      this.cachedFormats = null;
     },
 
     addTimeFormat: function() {
@@ -5370,17 +5514,17 @@
 
       function buildModifiers() {
         var arr = [];
-        loc.modifiersByName = {};
+        loc.modifiersByKey = {};
         forEach(loc.modifiers, function(modifier) {
           var name = modifier.name;
           eachAlternate(modifier.src, function(t) {
+            var key = name + '|' + t;
             var locEntry = loc[name];
-            loc.modifiersByName[t] = modifier;
+            loc.modifiersByKey[key] = modifier;
             arr.push({ name: name, src: t, value: modifier.value });
             loc[name] = locEntry ? locEntry + '|' + t : t;
           });
         });
-        loc.day += '|' + arrayToAlternates(loc.weekdaysLower);
         loc.modifiers = arr;
       }
 
@@ -5399,6 +5543,9 @@
       setDefault('year', "'\\d{2}|" + getDigit(4,4));
       setDefault('num', getNum());
 
+      loc.day = arrayToAlternates(loc.weekdaysLower);
+      loc.fullMonth = getDigit(1,2) + '|' + arrayToAlternates(loc.months);
+
       buildModifiers();
 
       if (loc.monthSuffix) {
@@ -5407,7 +5554,6 @@
           return n + loc.monthSuffix;
         });
       }
-      loc.fullMonth = getDigit(1,2) + '|' + arrayToAlternates(loc.months);
 
       // The order of these formats is very important. Order is reversed so
       // formats that are initialized later will take precedence. This generally
@@ -5443,11 +5589,11 @@
     'timeMarker': 'at',
     'ampm':       'AM,PM,a,p',
     'months':     'Jan:uary|,Feb:ruary|,Mar:ch|,Apr:il|,May,Jun:e|,Jul:y|,Aug:ust|,Sep:tember|t|,Oct:ober|,Nov:ember|,Dec:ember|',
-    'weekdays':   'Sun:day|,Mon:day|,Tue:sday|,Wed:nesday|,Thu:rsday|,Fri:day|,Sat:urday|',
+    'weekdays':   'Sun:day|,Mon:day|,Tue:sday|,Wed:nesday|,Thu:rsday|,Fri:day|,Sat:urday|+weekend',
     'units':      'millisecond:|s,second:|s,minute:|s,hour:|s,day:|s,week:|s,month:|s,year:|s',
-    'numbers':    'zero,one,two,three,four,five,six,seven,eight,nine,ten',
+    'numbers':    'zero,one|first,two|second,three|third,four|fourth,five|fifth,six|sixth,seven|seventh,eight|eighth,nine|ninth,ten|tenth',
     'articles':   'a,an,the',
-    'tokens':     'the,st|nd|rd|th,of',
+    'tokens':     'the,st|nd|rd|th,of|in',
     'time':       '{H}:{mm}',
     'past':       '{num} {unit} {sign}',
     'future':     '{num} {unit} {sign}',
@@ -5463,32 +5609,32 @@
       { 'name': 'sign',  'src': 'from now|after|from|in|later', 'value': 1 },
       { 'name': 'edge',  'src': 'first day|first|beginning', 'value': -2 },
       { 'name': 'edge',  'src': 'last day', 'value': 1 },
-      { 'name': 'edge',  'src': 'end', 'value': 2 },
+      { 'name': 'edge',  'src': 'end|last', 'value': 2 },
       { 'name': 'shift', 'src': 'last', 'value': -1 },
       { 'name': 'shift', 'src': 'the|this', 'value': 0 },
       { 'name': 'shift', 'src': 'next', 'value': 1 }
     ],
     'parse': [
       '{month} {year}',
-      '{shift} {unit=5-7}',
+      '{shift} {unit:5-7}',
       '{0?} {date}{1}',
       '{hours} {day}',
       '{shift?} {day?} {timeMarker?} {hours}',
-      '{0?} {edge} of {shift?} {unit=4-7?} {month?} {year?}'
+      '{0?} {edge} {weekday?} {2} {shift?} {unit:4-7?} {month?} {year?}'
     ],
     'timeParse': [
       '{num} {unit} {sign}',
       '{sign} {num} {unit}',
-      '{0} {num}{1} {day} of {month} {year?}',
+      '{0} {num}{1}? {day} {2} {month} {year?}',
       '{weekday?} {month} {date}{1?} {year?}',
       '{date} {month} {year}',
       '{date} {month}',
       '{shift} {weekday}',
       '{shift} week {weekday}',
       '{weekday} {2?} {shift} week',
-      '{num?} {unit=4-5} {sign} {day}',
+      '{num?} {unit:4-5} {sign} {day}',
       '{0?} {date}{1} of {month}',
-      '{0?}{month?} {date?}{1?} of {shift} {unit=6-7}',
+      '{0?}{month?} {date?}{1?} of {shift} {unit:6-7}',
       '{edge} of {day}'
     ]
   };
@@ -5969,7 +6115,7 @@
   defineInstance(sugarString, {
 
     /***
-     * @method at(<index>, [loop] = true)
+     * @method at(<index>, [loop] = false)
      * @returns String or Array
      * @short Gets the character(s) at a given index.
      * @extra When [loop] is true, overshooting the end of the string (or the
@@ -5979,8 +6125,8 @@
      *
      *   'jumpy'.at(0)             -> 'j'
      *   'jumpy'.at(2)             -> 'm'
-     *   'jumpy'.at(5)             -> 'j'
-     *   'jumpy'.at(5, false)      -> ''
+     *   'jumpy'.at(5)             -> ''
+     *   'jumpy'.at(5, true)       -> 'j'
      *   'jumpy'.at(-1)            -> 'y'
      *   'lucky charms'.at([2, 4]) -> ['u','k']
      *
@@ -6832,20 +6978,25 @@
   var FULL_WIDTH_NINE = 0xff19;
 
   /***
-   * @namespace Sugar
-   *
-   ***
    * @method sortIgnore([reg] = null)
    * @returns Mixed
    * @accessor
    * @short Gets or sets a regex to ignore when sorting.
    * @extra Used by `Array#sortBy`.
+   * @example
+   *
+   *   Sugar.Array.sortIgnore(/\d/)
+   *
    ***
    * @method sortIgnoreCase([bool] = true)
    * @returns Mixed
    * @accessor
    * @short Gets or sets a boolean that ignores case when sorting.
    * @extra Used by `Array#sortBy`.
+   * @example
+   *
+   *   Sugar.Array.sortIgnoreCase(true)
+   *
    ***
    * @method sortNatural([bool] = true)
    * @returns Mixed
@@ -6853,6 +7004,10 @@
    * @short Gets or sets a boolean that turns on natural sort mode.
    * @extra Used by `Array#sortBy`. "Natural sort" means that numerals like "10"
    *        will be sorted naturally after "9" instead of after "1".
+   * @example
+   *
+   *   Sugar.Array.sortNatural(true)
+   *
    ***
    * @method sortCollate([fn])
    * @returns Mixed
@@ -6861,6 +7016,10 @@
    * @extra Used by `Array#sortBy`. The default is a natural string sort based on
    *        other `sort` options. Setting the collation function directly here will
    *        override all these options. Setting to `null` restores the default.
+   * @example
+   *
+   *   Sugar.Array.sortCollate(fn)
+   *
    ***
    * @method sortOrder([str])
    * @returns Mixed
@@ -6869,6 +7028,10 @@
    * @extra Used by `Array#sortBy`. The default is an order natural to most major
    *        world languages, but can be modified as needed. Setting to `null`
    *        restores the default.
+   *
+   * @example
+   *
+   *   Sugar.Array.sortOrder('zyxw...')
    *
    ***
    * @method sortEquivalents([obj])
@@ -6879,8 +7042,12 @@
    * @extra Used by `Array#sortBy`. The default table produces a natural sort order
    *        for most world languages, however can be modified for others. For
    *        example, setting "ä" and "ö" to `null` in the table would produce a
-   *        perfect Scandanavian sort order. Setting [obj] to `null` restores the
-   *        default, however if the table is mutated changes will persist.
+   *        Scandanavian sort order. Setting [obj] to `null` restores the default,
+   *        however if the table is mutated changes will persist.
+   *
+   * @example
+   *
+   *   Sugar.Array.sortEquivalents({ 'é': 'e' })
    *
    ***/
   var _sortIgnore      = defineAccessor(sugarArray, 'sortIgnore');
@@ -6890,11 +7057,6 @@
   var _sortCollate     = defineAccessor(sugarArray, 'sortCollate', collateStrings);
   var _sortEquivalents = defineAccessor(sugarArray, 'sortEquivalents', getSortEquivalents());
 
-
-  /***
-   * @namespace Array
-   *
-   ***/
 
   function setArrayChainableConstructor() {
     setChainableConstructor(sugarArray, isArrayOrInherited, arrayCreateFromArrayLike);
@@ -7206,14 +7368,15 @@
 
     /***
      *
-     * @method Array.create(<obj>, [clone] = false)
+     * @method create(<obj>, [clone] = false)
      * @returns Array
+     * @static
      * @short Creates an array from an unknown <obj>.
      * @extra This method is similar to native `Array.from` but is faster when
-     *        <obj> is already an array, even when [clone] is true, in which case
-     *        the array will be shallow cloned. Additionally, it will not fail on
-     *        `undefined`, `null`, or numbers, producing an empty array in the
-     *        case of `undefined` and wrapping <obj> otherwise.
+     *        <obj> is already an array. When [clone] is true, the array will be
+     *        shallow cloned. Additionally, it will not fail on `undefined`,
+     *        `null`, or numbers, producing an empty array in the case of
+     *        `undefined` and wrapping <obj> otherwise.
      *
      * @example
      *
@@ -7235,8 +7398,9 @@
 
     /***
      *
-     * @method Array.construct(<n>, <fn>)
+     * @method construct(<n>, <fn>)
      * @returns Array
+     * @static
      * @short Constructs an array of <n> length from the values of <fn>.
      *
      * @callback fn
@@ -7310,21 +7474,21 @@
     },
 
     /***
-     * @method at(<index>, [loop] = true)
+     * @method at(<index>, [loop] = false)
      * @returns Mixed
-     * @short Gets the element(s) at a given index.
-     * @extra When [loop] is true, overshooting the end of the array (or the
-     *        beginning) will begin counting from the other end. If <index> is an
-     *        array, multiple elements will be returned.
+     * @short Gets the element(s) at <index>.
+     * @extra When [loop] is true, overshooting the end of the array will begin
+     *        counting from the other end. If <index> is an array, multiple
+     *        elements will be returned.
      *
      * @example
      *
-     *   [1,2,3].at(0)        -> 1
-     *   [1,2,3].at(2)        -> 3
-     *   [1,2,3].at(4)        -> 2
-     *   [1,2,3].at(4, false) -> null
-     *   [1,2,3].at(-1)       -> 3
-     *   [1,2,3].at([0, 1])   -> [1, 2]
+     *   [1,2,3].at(0)       -> 1
+     *   [1,2,3].at(2)       -> 3
+     *   [1,2,3].at(4)       -> undefined
+     *   [1,2,3].at(4, true) -> 2
+     *   [1,2,3].at(-1)      -> 3
+     *   [1,2,3].at([0, 1])  -> [1, 2]
      *
      ***/
     'at': function(arr, index, loop) {
@@ -7332,34 +7496,11 @@
     },
 
     /***
-     * @method append(<item>, [index])
-     * @returns Array
-     * @short Appends <item> to the array.
-     * @extra If [index] is specified, it will append at [index], otherwise
-     *        appends to the end of the array. `append` behaves like `concat` in
-     *        that if <el> is an array it will be joined, not inserted. This
-     *        method will change the array! Use `add` for a non-destructive alias.
-     *        Also, `insert` is provided as an alias that reads better when using
-     *        an index.
-     *
-     * @example
-     *
-     *   [1,2,3,4].append(5)       -> [1,2,3,4,5]
-     *   [1,2,3,4].append([5,6,7]) -> [1,2,3,4,5,6,7]
-     *   [1,2,3,4].insert(8, 1)    -> [1,8,2,3,4]
-     *
-     ***/
-    'append': function(arr, item, index) {
-      return arrayAppend(arr, item, index);
-    },
-
-    /***
      * @method add(<item>, [index])
      * @returns Array
      * @short Adds <item> to the array and returns the result as a new array.
-     * @extra If <item> is also an array, it will be joined to the array instead
-     *        of inserted, making this essentially a more readable alias for
-     *        `concat` with the added ability to specify the index to add at.
+     * @extra If <item> is also an array, it will be concatenated instead of
+     *        inserted. Use `append` to change the original array.
      *
      * @example
      *
@@ -7370,6 +7511,26 @@
      ***/
     'add': function(arr, item, index) {
       return arrayAppend(arrayClone(arr), item, index);
+    },
+
+    /***
+     * @method append(<item>, [index])
+     * @returns Array
+     * @short Appends <item> to the array.
+     * @extra If <item> is also an array, it will be concatenated instead of
+     *        inserted. This method changes the array! Use `add` to create a new
+     *        array. Additionally, `insert` is provided as an alias that reads
+     *        better when using an index.
+     *
+     * @example
+     *
+     *   [1,2,3,4].append(5)       -> [1,2,3,4,5]
+     *   [1,2,3,4].append([5,6,7]) -> [1,2,3,4,5,6,7]
+     *   [1,2,3,4].append(8, 1)    -> [1,8,2,3,4]
+     *
+     ***/
+    'append': function(arr, item, index) {
+      return arrayAppend(arr, item, index);
     },
 
     /***
@@ -7510,7 +7671,7 @@
      * @returns Array
      * @short Removes all instances of `undefined`, `null`, and `NaN` from the array.
      * @extra If [all] is `true`, all "falsy" elements will be removed. This
-     *        includes empty strings, 0, and false.
+     *        includes empty strings, `0`, and `false`.
      *
      * @example
      *
@@ -7677,7 +7838,8 @@
      *        the array in descending order. When the field being sorted on is
      *        a string, the resulting order will be determined by an internal
      *        collation algorithm that is optimized for major Western languages,
-     *        but can be customized with custom `sorting properties`.
+     *        but can be customized using sorting accessors such as `sortIgnore`
+     *        (listed above).
      *
      * @callback map
      *
@@ -7704,13 +7866,13 @@
     },
 
     /***
-     * @method remove(<f>)
+     * @method remove(<search>)
      * @returns Array
-     * @short Removes any element in the array that matches <f>.
+     * @short Removes any element in the array that matches <search>.
      * @extra This method will change the array! Use `exclude` for a
      *        non-destructive alias. This method implements `enhanced matching`.
      *
-     * @callback f
+     * @callback search
      *
      *   el   The element of the current iteration.
      *   i    The index of the current iteration.
@@ -7730,13 +7892,13 @@
     },
 
     /***
-     * @method exclude(<f>)
+     * @method exclude(<search>)
      * @returns Array
-     * @short Returns a new array with every element matching <f> removed.
+     * @short Returns a new array with every element matching <search> removed.
      * @extra This is a non-destructive alias for `remove`. It will not change the
      *        original array. This method implements `enhanced matching`.
      *
-     * @callback f
+     * @callback search
      *
      *   el   The element of the current iteration.
      *   i    The index of the current iteration.
@@ -7779,13 +7941,13 @@
     /***
      * @method intersect([a1], [a2], ...)
      * @returns Array
-     * @short Returns an array containing the elements all arrays have in common.
+     * @short Returns a new array containing the elements all arrays have in common.
      * @extra This method will also correctly operate on arrays of objects.
      *
      * @example
      *
-     *   [1,3,5].intersect([5,7,9])   -> [5]
-     *   ['a','b'].intersect('b','c') -> ['b']
+     *   [1,3,5].intersect([5,7,9])     -> [5]
+     *   ['a','b'].intersect(['b','c']) -> ['b']
      *
      ***/
     'intersect': function(arr, args) {
@@ -7800,9 +7962,9 @@
      *
      * @example
      *
-     *   [1,3,5].subtract([5,7,9])   -> [1,3]
-     *   [1,3,5].subtract([3],[5])   -> [1]
-     *   ['a','b'].subtract('b','c') -> ['a']
+     *   [1,3,5].subtract([5,7,9])     -> [1,3]
+     *   [1,3,5].subtract([3],[5])     -> [1]
+     *   ['a','b'].subtract(['b','c']) -> ['a']
      *
      ***/
     'subtract': function(arr, args) {
@@ -7837,8 +7999,17 @@
 
 
   /***
-   * @method insert()
-   * @alias append
+   * @method insert(<item>, [index])
+   * @returns Array
+   * @short Appends <item> to the array at [index].
+   * @extra This method is simply a more readable alias for `append` when passing
+   *        an index. If <el> is an array it will be joined. This method changes
+   *        the array! Use `add` as a non-destructive alias.
+   *
+   * @example
+   *
+   *   [1,3,4,5].insert(2, 1)     -> [1,2,3,4,5]
+   *   [1,4,5,6].insert([2,3], 1) -> [1,2,3,4,5,6]
    *
    ***/
   alias(sugarArray, 'insert', 'append');
@@ -8432,8 +8603,8 @@
      *
      * @callback fn
      *
-     *   key The key of the current iteration.
-     *   obj A reference to the object.
+     *   key  The key of the current iteration.
+     *   obj  A reference to the object.
      *
      * @example
      *
@@ -8458,32 +8629,32 @@
      *
      * @options
      *
-     *   deep:       If the string contains "deep" syntax (`foo[]`), this will
+     *   deep        If the string contains "deep" syntax (`foo[]`), this will
      *               be automatically converted to an array. (Default `false`)
      *
-     *   auto:       If `true`, booleans (`true`/`false`), numbers, and arrays
+     *   auto        If `true`, booleans (`true`/`false`), numbers, and arrays
      *               (repeated keys) will be automatically cast to native
      *               values. (Default `true`)
      *
-     *   transform:  A function whose return value becomes the final value. If
+     *   transform   A function whose return value becomes the final value. If
      *               the function returns `undefined`, then the original value
      *               will be used. This allows the function to intercept only
      *               certain keys or values. (No Default)
      *
-     *   separator:  If passed, keys will be split on this string to extract
+     *   separator   If passed, keys will be split on this string to extract
      *               deep values. (Default `null`)
      *
      * @callback transform
      *
-     *   key  The key component of the query string (before `=`).
-     *   val  The value component of the query string (after `=`).
-     *   obj  A reference to the object being built.
+     *   key   The key component of the query string (before `=`).
+     *   val   The value component of the query string (after `=`).
+     *   obj   A reference to the object being built.
      *
      * @example
      *
-     *   Object.fromQueryString('a=1&b=2')               -> {a:1,b:2}
-     *   Object.fromQueryString('a[]=1&a[]=2')           -> {a:['1','2']}
-     *   Object.fromQueryString('a_b=c',{separator:'_'}) -> {a:{b:'c'}}
+     *   Object.fromQueryString('a=1&b=2')                 -> {a:1,b:2}
+     *   Object.fromQueryString('a[]=1&a[]=2',{deep:true}) -> {a:['1','2']}
+     *   Object.fromQueryString('a_b=c',{separator:'_'})   -> {a:{b:'c'}}
      *
      ***/
     'fromQueryString': function(obj, options) {
@@ -8499,13 +8670,7 @@
      * @method get(<obj>, <key>)
      * @returns Mixed
      * @short Gets a property of <obj>.
-     * @extra Using a dot or square bracket in <key> is considered "deep" syntax,
-     *        and will attempt to traverse into <obj> to retrieve the property,
-     *        returning `undefined` if any namespace does not exist along the way.
-     *        Additionally, a `..` separator inside the brackets is "range"
-     *        notation, and will return the specified numerical range. Range
-     *        members may be negative, which will be an offset from the end of the
-     *        array.
+     * @extra Allows deep properties.
      *
      * @example
      *
@@ -8587,17 +8752,17 @@
      *
      * @options
      *
-     *   deep:       If `true`, non-standard "deep" syntax (`foo[]`) will be
+     *   deep        If `true`, non-standard "deep" syntax (`foo[]`) will be
      *               used for output. Note that `separator` will be ignored,
      *               as this option overrides shallow syntax. (Default `false`)
      *
-     *   prefix:     If passed, this string will be prefixed to all keys,
+     *   prefix      If passed, this string will be prefixed to all keys,
      *               separated by the `separator`. (Default `''`).
      *
-     *   transform:  A function whose return value becomes the final value
+     *   transform   A function whose return value becomes the final value
      *               in the string. (No Default)
      *
-     *   separator:  A string that is used to separate keys, either for deep
+     *   separator   A string that is used to separate keys, either for deep
      *               objects, or when `prefix` is passed.(Default `_`).
      *
      * @callback transform
@@ -8641,10 +8806,10 @@
      *
      * @options
      *
-     *   deep:        If `true` deep properties are merged recursively.
+     *   deep         If `true` deep properties are merged recursively.
      *                (Default = `false`)
      *
-     *   resolve:     Determines which property wins in the case of conflicts.
+     *   resolve      Determines which property wins in the case of conflicts.
      *                If `true`, <source> wins. If `false`, <target> wins. If a
      *                function is passed, its return value will decide the result.
      *                Any non-undefined return value will resolve the conflict
@@ -8653,10 +8818,10 @@
      *                the global object `Sugar` will allow Sugar to handle the
      *                merge as normal. (Default = `true`)
      *
-     *   hidden:      If `true`, non-enumerable properties will be merged as well.
+     *   hidden       If `true`, non-enumerable properties will be merged as well.
      *                (Default = `false`)
      *
-     *   descriptor:  If `true`, properties will be merged by property descriptor.
+     *   descriptor   If `true`, properties will be merged by property descriptor.
      *                Use this option to merge getters or setters, or to preserve
      *                `enumerable`, `configurable`, etc.
      *                (Default = `false`)
@@ -8674,7 +8839,7 @@
      *   Object.merge({one:1},{two:2})                 -> {one:1,two:2}
      *   Object.merge({one:1},{one:9,two:2})           -> {one:9,two:2}
      *   Object.merge({x:{a:1}},{x:{b:2}},{deep:true}) -> {x:{a:1,b:2}}
-     +   Object.merge({a:1},{a:2},{resolve:mergeAdd})  -> {a:3}
+     *   Object.merge({a:1},{a:2},{resolve:mergeAdd})  -> {a:3}
      *
      ***/
     'merge': function(target, source, opts) {
@@ -8708,7 +8873,7 @@
      *   Object.add({one:1},{two:2})                 -> {one:1,two:2}
      *   Object.add({one:1},{one:9,two:2})           -> {one:9,two:2}
      *   Object.add({x:{a:1}},{x:{b:2}},{deep:true}) -> {x:{a:1,b:2}}
-     +   Object.add({a:1},{a:2},{resolve:mergeAdd})  -> {a:3}
+     *   Object.add({a:1},{a:2},{resolve:mergeAdd})  -> {a:3}
      *
      ***/
     'add': function(obj1, obj2, opts) {
@@ -8791,8 +8956,8 @@
      *
      * @callback fn
      *
-     *   val The value of the current iteration.
-     *   obj A reference to the object.
+     *   val  The value of the current iteration.
+     *   obj  A reference to the object.
      *
      * @example
      *
@@ -8845,7 +9010,7 @@
      *
      * @callback
      *
-     *   obj A reference to <obj>.
+     *   obj  A reference to <obj>.
      *
      * @example
      *
@@ -8948,12 +9113,12 @@
     },
 
     /***
-     * @method remove(<obj>, <f>)
+     * @method remove(<obj>, <search>)
      * @returns Object
-     * @short Deletes all properties in <obj> matching <f>.
+     * @short Deletes all properties in <obj> matching <search>.
      * @extra This method implements `enhanced matching`.
      *
-     * @callback f
+     * @callback search
      *
      *   key  The key of the current iteration.
      *   val  The value of the current iteration.
@@ -8970,13 +9135,13 @@
     },
 
     /***
-     * @method exclude(<obj>, <f>)
+     * @method exclude(<obj>, <search>)
      * @returns Object
-     * @short Returns a new object with all properties matching <f> removed.
+     * @short Returns a new object with all properties matching <search> removed.
      * @extra This is a non-destructive version of `remove`. This method
      *        implements `enhanced matching`.
      *
-     * @callback f
+     * @callback search
      *
      *   key  The key of the current iteration.
      *   val  The value of the current iteration.
@@ -9239,31 +9404,13 @@
   defineInstance(sugarArray, {
 
     /***
-     * @method find(<f>, [context])
+     * @method find(<search>, [context])
      * @returns Mixed
      * @polyfill es6
-     * @short Returns the first element in the array for which <f> is true.
-     * @extra In native methods such as `find` among others, <f> must be a
-     *        function whose return value should be true or false to determine a
-     *        match. Here, when <f> is a function it is simply handed off to the
-     *        native implementation. However, Sugar further enhances these methods
-     *        by accepting other values for <f>, and using them to build custom
-     *        "matcher functions". First, primitives like strings and numbers can
-     *        be passed and will be matched using strict equality (`===`). Regular
-     *        expressions are also valid, and can be run against an array of
-     *        strings. Dates will call `getTime` internally to match by value.
-     *        Arrays will perform deep comparison, calling `isEqual` under the
-     *        hood. Lastly, passing an object will perform "fuzzy matching", which
-     *        can match objects in the array on specific properties. Object
-     *        matchers can also be as deep as necessary, and allow any property
-     *        allowed for <f> so, for example, if `{ name: /^[a-f]/i }` is passed,
-     *        it will match any objects in the array with a `name` property that
-     *        starts with a-f. Properties may even be functions, which will behave
-     *        like <f> does as a function and allow complex deep matching. Note
-     *        that only plain objects will trigger fuzzy matching, so for example
-     *        passing a DOM element for <f> will simply match by strict equality.
+     * @short Returns the first element in the array that matches <search>.
+     * @extra This method implements `enhanced matching`.
      *
-     * @callback f
+     * @callback search
      *
      *   el   The element of the current iteration.
      *   i    The index of the current iteration.
@@ -9274,7 +9421,11 @@
      *   users.find(function(user) {
      *     return user.name = 'Harry';
      *   }); -> harry!
-     *   ['cuba','japan','canada'].find(/^c/) -> 'cuba'
+     *
+     *   users.find({ name: 'Harry' }); -> harry!
+     *   users.find({ name: /^[A-H]/ });  -> First user with name starting with A-H
+     *   users.find({ titles: ['Ms', 'Dr'] }); -> not harry!
+     *
      *
      ***/
     'find': fixArgumentLength(enhancedFind),
@@ -9303,21 +9454,22 @@
      *   }); -> [3,6,9]
      *
      *   ['a','aa','aaa'].map('length') -> [1,2,3]
+     *   ['A','B','C'].map('toLowerCase') -> ['a','b','c']
      *   users.map('name') -> array of user names
      *
      ***/
     'map': fixArgumentLength(enhancedMap),
 
     /***
-     * @method every(<f>, [context])
+     * @method every(<search>, [context])
      * @returns Boolean
      * @polyfill es5
      * @alias all
-     * @short Returns true if <f> is true for all elements of the array.
+     * @short Returns true if <search> is true for all elements of the array.
      * @extra [context] is the `this` object. This method implements `enhanced
      *        matching`.
      *
-     * @callback f
+     * @callback search
      *
      *   el   The element of the current iteration.
      *   i    The index of the current iteration.
@@ -9325,7 +9477,7 @@
      *
      * @example
      *
-     +   ['a','a','a'].every(function(n) {
+     *   ['a','a','a'].every(function(n) {
      *     return n == 'a';
      *   });
      *   ['a','a','a'].every('a')   -> true
@@ -9336,15 +9488,15 @@
     'every': fixArgumentLength(enhancedEvery),
 
     /***
-     * @method some(<f>, [context])
+     * @method some(<search>, [context])
      * @returns Boolean
      * @polyfill es5
      * @alias any
-     * @short Returns true if <f> is true for any element in the array.
+     * @short Returns true if <search> is true for any element in the array.
      * @extra [context] is the `this` object. This method implements `enhanced
      *        matching`.
      *
-     * @callback f
+     * @callback search
      *
      *   el   The element of the current iteration.
      *   i    The index of the current iteration.
@@ -9352,10 +9504,10 @@
      *
      * @example
      *
-     +   ['a','b','c'].some(function(n) {
+     *   ['a','b','c'].some(function(n) {
      *     return n == 'a';
      *   });
-     +   ['a','b','c'].some(function(n) {
+     *   ['a','b','c'].some(function(n) {
      *     return n == 'd';
      *   });
      *   ['a','b','c'].some('a')    -> true
@@ -9366,14 +9518,14 @@
     'some': fixArgumentLength(enhancedSome),
 
     /***
-     * @method filter(<f>, [context])
+     * @method filter(<search>, [context])
      * @returns Array
      * @polyfill es5
-     * @short Returns any elements in the array for which <f> is true.
+     * @short Returns any elements in the array that match <search>.
      * @extra [context] is the `this` object. This method implements `enhanced
      *        matching`.
      *
-     * @callback f
+     * @callback search
      *
      *   el   The element of the current iteration.
      *   i    The index of the current iteration.
@@ -9381,7 +9533,7 @@
      *
      * @example
      *
-     +   [1,2,3].filter(function(n) {
+     *   [1,2,3].filter(function(n) {
      *     return n > 1;
      *   });
      *   [1,2,2,4].filter(2) -> 2
@@ -9391,15 +9543,15 @@
     'filter': fixArgumentLength(enhancedFilter),
 
     /***
-     * @method findIndex(<f>, [context])
+     * @method findIndex(<search>, [context])
      * @returns Number
      * @polyfill es6
-     * @short Returns the index of the first element in the array for which <f> is
-     *        true, or -1 if none.
+     * @short Returns the index of the first element in the array that matches
+     *        <search>, or `-1` if none.
      * @extra [context] is the `this` object. This method implements `enhanced
      *        matching`.
      *
-     * @callback f
+     * @callback search
      *
      *   el   The element of the current iteration.
      *   i    The index of the current iteration.
@@ -9436,12 +9588,12 @@
   defineInstance(sugarArray, {
 
     /***
-     * @method none(<f>)
+     * @method none(<search>)
      * @returns Boolean
-     * @short Returns true if none of the elements in the array match <f>.
+     * @short Returns true if none of the elements in the array match <search>.
      * @extra This method implements `enhanced matching`.
      *
-     * @callback f
+     * @callback search
      *
      *   el   The element of the current iteration.
      *   i    The index of the current iteration.
@@ -9459,13 +9611,13 @@
     'none': fixArgumentLength(arrayNone),
 
     /***
-     * @method findFrom(<f>, [fromIndex] = 0, [loop] = false)
+     * @method findFrom(<search>, [fromIndex] = 0, [loop] = false)
      * @returns Array
-     * @short Returns any element that matches <f>, beginning from [fromIndex].
-     * @extra Will continue from index = 0 if [loop] is true. This method
+     * @short Returns any element that matches <search>, beginning from [fromIndex].
+     * @extra Will continue from `index = 0` if [loop] is true. This method
      *        implements `enhanced matching`.
      *
-     * @callback f
+     * @callback search
      *
      *   el   The element of the current iteration.
      *   i    The index of the current iteration.
@@ -9481,13 +9633,13 @@
     },
 
     /***
-     * @method filterFrom(<f>, [fromIndex] = 0, [loop] = false)
+     * @method filterFrom(<search>, [fromIndex] = 0, [loop] = false)
      * @returns Array
-     * @short Returns any elements that match <f>, beginning from [fromIndex].
-     * @extra Will continue from index = 0 if [loop] is true. This method
+     * @short Returns any elements that match <search>, beginning from [fromIndex].
+     * @extra Will continue from `index = 0` if [loop] is true. This method
      *        implements `enhanced matching`.
      *
-     * @callback f
+     * @callback search
      *
      *   el   The element of the current iteration.
      *   i    The index of the current iteration.
@@ -9504,13 +9656,13 @@
     },
 
     /***
-     * @method findIndexFrom(<f>, [fromIndex] = 0, [loop] = false)
+     * @method findIndexFrom(<search>, [fromIndex] = 0, [loop] = false)
      * @returns Array
-     * @short Returns the index of any element that matches <f>, starting from [fromIndex].
-     * @extra Will continue from index = 0 if [loop] is true. This method
+     * @short Returns the index of any element that matches <search>, starting from [fromIndex].
+     * @extra Will continue from `index = 0` if [loop] is true. This method
      *        implements `enhanced matching`.
      *
-     * @callback f
+     * @callback search
      *
      *   el   The element of the current iteration.
      *   i    The index of the current iteration.
@@ -9529,12 +9681,11 @@
     /***
      * @method each(<fn>, [index] = 0, [loop] = false)
      * @returns Array
-     * @alias forEachFrom
-     * @short Runs <fn> against each element in the array. Enhanced version of `Array#forEach`.
+     * @short Enhanced `forEach`.
      * @extra If <fn> returns `false` at any time it will break out of the loop.
      *        If [index] is passed, <fn> will begin at that index and work its way
      *        to the end. If [loop] is true, it will then start over from the
-     *        beginning of the array and continue until it reaches [index] - 1.
+     *        beginning of the array and continue until it reaches `index - 1`.
      *
      * @callback fn
      *
@@ -9606,7 +9757,7 @@
      *
      *   [1,2,3].max()                          -> 3
      *   ['fee','fo','fum'].max('length')       -> 'fee'
-     *   ['fee','fo','fum'].max('length', true) -> ['fee']
+     *   ['fee','fo','fum'].max('length', true) -> ['fee','fum']
      *   users.max('age')                       -> oldest guy!
      *
      *   ['fee','fo','fum'].max(function(n) {
@@ -9636,9 +9787,6 @@
      *
      *   [3,2,2].least() -> 3
      *   ['fe','fo','fum'].least('length', true) -> ['fum']
-     *   users.least(function(user) {
-     *     return user.name;
-     *   }, true); -> guys with the most common name
      *
      ***/
     'least': function(arr, map, all) {
@@ -9663,9 +9811,6 @@
      *
      *   [3,2,2].most(2) -> 2
      *   ['fe','fo','fum'].most('length', true) -> ['fe','fo']
-     *   users.most(function(user) {
-     *     return user.name;
-     *   }, true); -> guys with the most common name
      *
      ***/
     'most': function(arr, map, all) {
@@ -9673,12 +9818,12 @@
     },
 
     /***
-     * @method count(<f>)
+     * @method count(<search>)
      * @returns Number
-     * @short Counts all elements in the array that match <f>.
+     * @short Counts all elements in the array that match <search>.
      * @extra This method implements `enhanced matching`.
      *
-     * @callback f
+     * @callback search
      *
      *   el   The element of the current iteration.
      *   i    The index of the current iteration.
@@ -9775,8 +9920,27 @@
   });
 
   /***
-   * @method forEachFrom()
-   * @alias each
+   * @method forEachFrom(<fn>, [index] = 0, [loop] = false)
+   * @returns Array
+   * @short Runs <fn> for each value in the array.
+   * @extra This method is simply a more readable alias for `each` when passing
+   *        an index. If <fn> returns `false` at any time it will break out of
+   *        the loop. If [index] is passed, <fn> will begin at that index and
+   *        work its way to the end. If [loop] is true, it will then start over
+   *        from the beginning of the array and continue until it reaches
+   *        `index - 1`.
+   *
+   * @callback fn
+   *
+   *   el   The element of the current iteration.
+   *   i    The index of the current iteration.
+   *   arr  A reference to the array.
+   *
+   * @example
+   *
+   *   [1,2,3,4].forEachFrom(function(n) {
+   *     console.log(n); // Called 4 times: 3, 4, 1, 2
+   *   }, 2, true);
    *
    ***/
   alias(sugarArray, 'forEachFrom', 'each');
@@ -9926,7 +10090,7 @@
       return objectReduce(obj, fn, init);
     },
 
-    /***ds
+    /***
      * @method each(<obj>, <fn>)
      * @returns Object
      * @short Runs <fn> against each property in the object.
@@ -10119,13 +10283,13 @@
     },
 
     /***
-     * @method some(<obj>, <f>)
+     * @method some(<obj>, <search>)
      * @returns Boolean
      * @alias any
-     * @short Returns true if <f> is true for any property in the object.
+     * @short Returns true if <search> is true for any property in the object.
      * @extra This method implements `enhanced matching`.
      *
-     * @callback f
+     * @callback search
      *
      *   key  The key of the current iteration.
      *   val  The value of the current iteration.
@@ -10142,13 +10306,13 @@
     'some': objectSome,
 
     /***
-     * @method every(<obj>, <f>)
+     * @method every(<obj>, <search>)
      * @returns Boolean
      * @alias all
-     * @short Returns true if <f> is true for all properties in the object.
+     * @short Returns true if <search> is true for all properties in the object.
      * @extra This method implements `enhanced matching`.
      *
-     * @callback f
+     * @callback search
      *
      *   key  The key of the current iteration.
      *   val  The value of the current iteration.
@@ -10165,14 +10329,14 @@
     'every': objectEvery,
 
     /***
-     * @method find(<obj>, <f>)
+     * @method find(<obj>, <search>)
      * @returns Boolean
-     * @short Returns the first key in the object for which <f> is true.
+     * @short Returns the first key whose value matches <search>.
      * @extra This method implements `enhanced matching`. Note that "first" is
      *        implementation-dependent. If order is important an array should be
      *        used instead.
      *
-     * @callback f
+     * @callback search
      *
      *   key  The key of the current iteration.
      *   val  The value of the current iteration.
@@ -10189,12 +10353,12 @@
     'find': objectFind,
 
     /***
-     * @method filter(<obj>, <f>)
+     * @method filter(<obj>, <search>)
      * @returns Array
-     * @short Returns an object with all properties in <obj> for which <f> is true.
+     * @short Returns a new object with properties that match <search>.
      * @extra This method implements `enhanced matching`.
      *
-     * @callback f
+     * @callback search
      *
      *   key  The key of the current iteration.
      *   val  The value of the current iteration.
@@ -10214,12 +10378,12 @@
     },
 
     /***
-     * @method count(<obj>, <f>)
+     * @method count(<obj>, <search>)
      * @returns Number
-     * @short Counts all properties in the object that match <f>.
+     * @short Counts all properties in the object that match <search>.
      * @extra This method implements `enhanced matching`.
      *
-     * @callback f
+     * @callback search
      *
      *   key  The key of the current iteration.
      *   val  The value of the current iteration.
@@ -10239,12 +10403,12 @@
     },
 
     /***
-     * @method none(<obj>, <f>)
+     * @method none(<obj>, <search>)
      * @returns Boolean
-     * @short Returns true if none of the properties in the object match <f>.
+     * @short Returns true if none of the properties in the object match <search>.
      * @extra This method implements `enhanced matching`.
      *
-     * @callback f
+     * @callback search
      *
      *   key  The key of the current iteration.
      *   val  The value of the current iteration.
@@ -10267,14 +10431,14 @@
 
   /***
    * @method all()
-   * @alias Object.every
+   * @alias every
    *
    ***/
   alias(sugarObject, 'all', 'every');
 
   /***
    * @method any()
-   * @alias Object.some
+   * @alias some
    *
    ***/
   alias(sugarObject, 'any', 'some');
@@ -10721,34 +10885,32 @@
 
 
   /***
-   * @namespace Sugar
-   *
-   ***
    * @method thousands([str])
    * @returns Mixed
    * @accessor
    * @short Gets or sets a string to be used as the thousands marker (default ",").
    * @extra Used by `Number#format`, `Nubmer#abbr`, `Number#metric`, and
    *        `Number#bytes`. Setting to `null` restores the default.
+   * @example
+   *
+   *   Sugar.Number.thousands('.');
    *
    ***
    * @method decimal([str])
-   * @namespace Sugar
    * @returns Mixed
    * @accessor
    * @short Gets or sets a string to be used as the decimal marker (default ".").
    * @extra Used by `Number#format`, `Nubmer#abbr`, `Number#metric`, and
    *        `Number#bytes`. Setting to `null` restores the default.
    *
+   * @example
+   *
+   *   Sugar.Number.thousands(',');
+   *
    ***/
   var _thousands = defineAccessor(sugarNumber, 'thousands', HALF_WIDTH_COMMA);
   var _decimal   = defineAccessor(sugarNumber, 'decimal', HALF_WIDTH_PERIOD);
 
-
-  /***
-   * @namespace Number
-   *
-   ***/
 
   function abbreviateNumber(num, precision, ustr, bytes) {
     var fixed        = num.toFixed(20),
@@ -10825,8 +10987,9 @@
   defineStatic(sugarNumber, {
 
     /***
-     * @method Number.random([n1], [n2])
+     * @method random([n1], [n2])
      * @returns Number
+     * @static
      * @short Returns a random integer between [n1] and [n2].
      * @extra If only 1 number is passed, the other will be 0. If none are passed,
      *        the number will be either 0 or 1.
@@ -11236,8 +11399,9 @@
   defineStatic(sugarRegExp, {
 
    /***
-    * @method RegExp.escape(<str> = '')
+    * @method escape(<str> = '')
     * @returns String
+    * @static
     * @short Escapes all RegExp tokens in a string.
     *
     * @example
@@ -11716,16 +11880,15 @@
 
   };
 
-  /***
-   * @namespace Number
-   *
-   ***/
+
+  /*** @namespace Number ***/
 
   defineStatic(sugarNumber, {
 
     /***
-     * @method Number.range([start], [end])
+     * @method range([start], [end])
      * @returns Range
+     * @static
      * @short Creates a new range between [start] and [end]. See `ranges` for more.
      *
      * @example
@@ -11823,15 +11986,14 @@
   alias(sugarNumber, 'downto', 'upto');
 
 
-  /***
-   * @namespace String
-   *
-   ***/
+  /*** @namespace String ***/
+
   defineStatic(sugarString, {
 
     /***
-     * @method String.range([start], [end])
+     * @method range([start], [end])
      * @returns Range
+     * @static
      * @short Creates a new range between [start] and [end]. See `ranges` for more.
      *
      * @example
@@ -11844,15 +12006,14 @@
   });
 
 
-  /***
-   * @namespace Date
-   *
-   ***/
+  /*** @namespace Date ***/
+
   defineStatic(sugarDate,   {
 
     /***
-     * @method Date.range([start], [end])
+     * @method range([start], [end])
      * @returns Range
+     * @static
      * @short Creates a new range between [start] and [end].
      * @extra If either [start] or [end] are null, they will default to the
      *        current date. See `ranges` for more.
