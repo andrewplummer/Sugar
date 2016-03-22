@@ -1456,7 +1456,7 @@ namespace('Array', function () {
     Sugar.Array.sortOrder(null);
 
 
-    Sugar.Array.sortCollate(function(a, b) {
+    Sugar.Array.sortFunction(function(a, b) {
       switch (true) {
         case a === 'c': return -1;
         case b === 'c': return  1;
@@ -1467,7 +1467,7 @@ namespace('Array', function () {
     });
     arr = ['a','b','c','d','e'];
     test(arr, ['c','a','b','d','e'], 'allows custom collation');
-    Sugar.Array.sortCollate(null);
+    Sugar.Array.sortFunction(null);
 
     // Issue #282
 
@@ -1634,7 +1634,7 @@ namespace('Array', function () {
     // Issue #273 - exposing collateString
 
     var arr = ['c','b','a','à','å','ä','ö'];
-    var viaSort   = arr.sort(Sugar.Array.sortCollate());
+    var viaSort   = arr.sort(Sugar.Array.sortFunction());
     var viaSortBy = run(arr, 'sortBy');
     equal(viaSort, viaSortBy, 'Array.SugarCollateStrings | should be exposed to allow sorting via native Array#sort');
 
