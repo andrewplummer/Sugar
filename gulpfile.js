@@ -2270,6 +2270,7 @@ function buildDocs() {
     'enhanced matching': '#/EnhancedMatching',
     'deep properties': '#/DeepProperties',
     'date locales': '#/DateLocales',
+    'polyfill': '#/Polyfills',
     'extending natives': '/natives',
     'append': '#/Array/append',
     'insert': '#/Array/insert',
@@ -2341,7 +2342,7 @@ function buildDocs() {
         value = true;
       } else if (field === 'polyfill') {
         obj['extra'] = obj['extra'] || '';
-        obj['extra'] += 'This method is provided as a polyfill.';
+        obj['extra'] += getReplacements('This method is provided as a `polyfill`.');
         return;
       } else if (field === 'example') {
         field = 'examples';
@@ -2353,6 +2354,9 @@ function buildDocs() {
         value = getCallback(value, name, obj[field]);
       } else {
         value = getTextField(value, name);
+        if (field === 'extra' && obj[field]) {
+          value += ' ' + obj[field];
+        }
       }
       obj[field] = value;
     });
