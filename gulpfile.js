@@ -2270,8 +2270,10 @@ function buildDocs() {
     'enhanced matching': '#/EnhancedMatching',
     'deep properties': '#/DeepProperties',
     'date locales': '#/DateLocales',
+    'date formats': '#/DateFormats',
     'polyfill': '#/Polyfills',
     'extending natives': '/natives',
+    'range methods': '#/Range',
     'append': '#/Array/append',
     'insert': '#/Array/insert',
     'add': '#/Array/add',
@@ -2352,6 +2354,8 @@ function buildDocs() {
       } else if (field === 'callback') {
         field = 'callbacks';
         value = getCallback(value, name, obj[field]);
+      } else if (field === 'set') {
+        value = getMultiline(value, name, true);
       } else {
         value = getTextField(value, name);
         if (field === 'extra' && obj[field]) {
@@ -2482,13 +2486,14 @@ function buildDocs() {
     var match = block.match(/@method ([\w\[\]]+)\((.*)\)$/m);
     if (match) {
       var method = {};
-      var name = match[1];
+      var name = match[1].replace(/(\w*)\[(\w+)\](\w*)/, function(full, left, mid, right) {
+        method['name_html'] = left + '<span class="docs-method-set">' + mid + '</span>' + right;
+        return left + mid + right;
+      });
       var args = match[2].split(', ').filter(function(a) {
         return a;
       });
-      var method = {
-        name: name
-      };
+      method.name = name;
       method.line = getLineNumber(name, lines);
       if (args.length) {
         method['args'] = args.map(function(a) {
