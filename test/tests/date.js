@@ -760,6 +760,11 @@ namespace('Date', function () {
     equal(testCreateDate('half year ago'), getRelativeDate(null, -6), 'half year ago');
     equal(testCreateDate('half a year ago'), getRelativeDate(null, -6), 'half a year ago');
 
+    equal(testCreateDate('half a day ago'), getRelativeDate(null, null, null, -12), 'half a day ago is valid');
+
+    equal(run(testCreateDate('half a week ago'), 'isValid'), false, 'half a week ago is not valid');
+    equal(run(testCreateDate('half a month ago'), 'isValid'), false, 'half a month ago is not valid');
+
   });
 
 
