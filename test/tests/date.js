@@ -744,6 +744,22 @@ namespace('Date', function () {
     equal(testCreateDate('the second weekend of August, 2011'), new Date(2011, 7, 13), 'the second weekend of August, 2011');
     equal(testCreateDate('the last weekend of January, 1985'), new Date(1985, 0, 26), 'the last weekend of January, 1985');
 
+    // Issue #455 Allowing "half" for hours and years
+
+    equal(testCreateDate('half hour ago'), getRelativeDate(null, null, null, null, -30), 'half hour ago');
+    equal(testCreateDate('half an hour ago'), getRelativeDate(null, null, null, null, -30), 'half an hour ago');
+    equal(testCreateDate('a half hour ago'), getRelativeDate(null, null, null, null, -30), 'a half hour ago');
+
+    equal(testCreateDate('half hour from now'), getRelativeDate(null, null, null, null, 30), 'half hour from now');
+    equal(testCreateDate('half an hour from now'), getRelativeDate(null, null, null, null, 30), 'half an hour from now');
+    equal(testCreateDate('a half hour from now'), getRelativeDate(null, null, null, null, 30), 'a half hour from now');
+
+    equal(testCreateDate('in half an hour'), getRelativeDate(null, null, null, null, 30), 'in half an hour');
+    equal(testCreateDate('in a half hour'), getRelativeDate(null, null, null, null, 30), 'in a half hour');
+
+    equal(testCreateDate('half year ago'), getRelativeDate(null, -6), 'half year ago');
+    equal(testCreateDate('half a year ago'), getRelativeDate(null, -6), 'half a year ago');
+
   });
 
 
