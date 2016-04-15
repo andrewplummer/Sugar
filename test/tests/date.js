@@ -4,19 +4,19 @@ namespace('Date', function () {
   var now = new Date();
   var thisYear = now.getFullYear();
 
-  group('Locale Setup', function() {
+  // Imaginary locale to test locale switching
+  Sugar.Date.addLocale('fo', {
+    units: 'do,re,mi,fa,so,la,ti,do',
+    months: 'Do,Re,Mi,Fa,So,La,Ti,Do',
+    parse: [
+      '{year}kupo',
+      '{month}mofo'
+    ],
+    duration: '{num}{unit}momoney',
+    long: 'yeehaw'
+  });
 
-    // Imaginary locale to test locale switching
-    Sugar.Date.addLocale('fo', {
-      units: 'do,re,mi,fa,so,la,ti,do',
-      months: 'Do,Re,Mi,Fa,So,La,Ti,Do',
-      parse: [
-        '{year}kupo',
-        '{month}mofo'
-      ],
-      duration: '{num}{unit}momoney',
-      long: 'yeehaw'
-    });
+  group('Locale Setup', function() {
 
     notEqual(Sugar.Date.getLocale().code, undefined, 'Current locale must be something... other libs may overwrite this');
     testSetLocale('en');
@@ -175,6 +175,13 @@ namespace('Date', function () {
 
     // Options objects without a date.
     equal(testCreateDate({ fromUTC: true }).getTime(), NaN, 'accidentally passing an options object without a date to parse is invalid');
+
+    // Issue #545 Allowing "set" option
+    var set = {};
+    testCreateDate('January 13th, 2016', { set: set });
+    equal(set.year, 2016, 'Set object should expose year');
+    equal(set.month, 0, 'Set object should expose month');
+    equal(set.date, 13, 'Set object should expose date');
 
   });
 
