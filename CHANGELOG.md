@@ -79,6 +79,7 @@ v2.0.0
 - Moved `String#titleize` to String module from Inflections.
 - Modified `Object.has` to allow deep keys. Previous behavior is now moved to `Object.hasOwn`.
 - Removed `Object.extended` and all trace of Hashes in favor of Sugar chainables.
+- Added date unit methods to ranges.
 
 
 v1.4.2
