@@ -281,7 +281,6 @@ namespace('Date Ranges', function () {
 
   });
 
-
   method('clamp', function() {
     var range = getRange(new Date(2010, 0), new Date(2011, 0));
 
@@ -336,6 +335,21 @@ namespace('Date Ranges', function () {
     var reverseExpected = testClone(forwardExpected).reverse();
     equal(getRange(start, end).toArray(), forwardExpected, 'should work on date ranges');
     equal(getRange(end, start).toArray(), reverseExpected, 'should work on inverse date ranges');
+  });
+
+  group('Date Units', function() {
+
+    equal(getRange(new Date(2001, 0), new Date(2004, 0)).years(), 3, '5 year range');
+    equal(getRange(new Date(2001, 0), new Date(2001, 3)).months(), 3, 'January to April in months');
+    equal(getRange(new Date(2001, 0), new Date(2001, 3)).days(), 90, 'January to April in days');
+    equal(getRange(new Date(2001, 0), new Date(2001, 3)).hours(), 2160, 'January to April in hours');
+    equal(getRange(new Date(2001, 0), new Date(2001, 3)).minutes(), 129600, 'January to April in minutes');
+    equal(getRange(new Date(2001, 0), new Date(2001, 3)).seconds(), 7776000, 'January to April in seconds');
+    equal(getRange(new Date(2001, 0), new Date(2001, 3)).milliseconds(), 7776000000, 'January to April in minutes');
+
+    equal(getRange(1, 2001).seconds(), 2, 'Number ranges are taken as milliseconds');
+    equal(getRange('a', 'f').seconds(), NaN, 'String ranges return NaN for date units');
+
   });
 
 });
