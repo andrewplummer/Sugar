@@ -2270,12 +2270,14 @@ function buildDocs() {
     'enhanced matching': '#/EnhancedMatching',
     'deep properties': '#/DeepProperties',
     'date locales': '#/DateLocales',
-    'date formats': '#/DateFormats',
+    'date input formats': '#/DateInputFormats',
+    'date output formats': '#/DateOutputFormats',
     'polyfill': '#/Polyfills',
     'extending natives': '/natives',
     'range methods': '#/Range',
     'append': '#/Array/append',
     'insert': '#/Array/insert',
+    'each': '#/Array/each',
     'add': '#/Array/add',
   }
 
