@@ -251,6 +251,12 @@ namespace('Core', function() {
   });
 
   group('Defining with flags', function() {
+    String.foo = function() {
+      return 'native foo!';
+    }
+    String.prototype.bar = function() {
+      return 'native bar!';
+    }
     Sugar.String.defineStatic('foo', function() {
       return 'enhanced foo!';
     }, ['fooFlag']);
@@ -261,14 +267,29 @@ namespace('Core', function() {
       fooFlag: false,
       barFlag: false
     });
-    equal(String.foo, undefined, 'static extend prevented by flag');
-    equal(''.bar, undefined, 'instance extend prevented by flag');
+    equal(String.foo(), 'native foo!', 'static enhance prevented by flag');
+    equal(''.bar(), 'native bar!', 'instance enhance prevented by flag');
     Sugar.String.extend({
       fooFlag: true,
       barFlag: true
     });
     equal(String.foo(), 'enhanced foo!', 'static extended');
     equal(''.bar(), 'enhanced bar!', 'instance extended');
+  });
+
+  group('Aliases with flags', function() {
+    String.prototype.foo = function() {
+      return 'something native!';
+    }
+    Sugar.String.defineInstance('foo', function(str) {
+      return str + ' enhanced!';
+    }, ['fooFlag']);
+    Sugar.String.alias('foo2', 'foo');
+    Sugar.String.extend({
+      fooFlag: false
+    });
+    equal('hi'.foo(), 'something native!', 'foo should not be enhanced');
+    equal('hi'.foo2(), 'hi enhanced!', 'foo2 should be extended');
   });
 
   group('Array enhancements', function() {
