@@ -2279,6 +2279,8 @@ function buildDocs() {
     'add': '#/Array/add',
   }
 
+  var POLYFILL_HTML = getReplacements('This method is provided as a `polyfill`.');
+
   var json = {
     namespaces: []
   }
@@ -2344,7 +2346,7 @@ function buildDocs() {
         value = true;
       } else if (field === 'polyfill') {
         obj['extra'] = obj['extra'] || '';
-        obj['extra'] += getReplacements('This method is provided as a `polyfill`.');
+        obj['extra'] += POLYFILL_HTML;
         return;
       } else if (field === 'example') {
         field = 'examples';
@@ -2535,6 +2537,9 @@ function buildDocs() {
             });
           } else if (typeof value === 'string') {
             value = value.replace(reg, '.' + name);
+          }
+          if (field === 'extra') {
+            value = value.replace(POLYFILL_HTML, '');
           }
           method[field] = value;
         }
