@@ -399,7 +399,17 @@ namespace('Core', function() {
 
   });
 
-  group('Extending with exceptions', function() {
+  group('Extending with namespace exceptions', function() {
+    Sugar.String.defineInstance('foo', function() { return 'foo!'; });
+    Sugar.Number.defineInstance('bar', function() { return 'bar!'; });
+    Sugar.extend({
+      except: [String]
+    });
+    equal(''.foo, undefined, 'foo was not mapped');
+    equal((5).bar(), 'bar!', 'bar was mapped');
+  });
+
+  group('Extending with method exceptions', function() {
     defineCustom(Sugar.String);
     Sugar.String.extend({
       except: ['foo']
