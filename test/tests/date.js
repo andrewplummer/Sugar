@@ -862,7 +862,7 @@ namespace('Date', function () {
     equal(testIsUTC(run(new Date(), 'clone')), false, 'clone should never be UTC if flag not set');
     equal(run(testCreateDate(run(new Date(), 'setUTC', [true])), 'isUTC'), true, 'create should preserve UTC');
 
-    var isCurrentlyGMT = new Date(2011, 0, 1).getTimezoneOffset() === 0;
+    var isCurrentlyGMT = new Date().getTimezoneOffset() === 0;
     equal(run(testCreateDate(new Date()), 'isUTC'), isCurrentlyGMT, 'non utc date should not have UTC flag');
 
     // Issue #244
