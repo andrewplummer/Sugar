@@ -453,7 +453,7 @@ namespace('Core', function() {
       return str.split('a');
     });
 
-    equal(new Sugar.Array([1]).large().raw, 'small!', 'array chainable can reach number method');
+    equal(new Sugar.Array([1]).large, undefined, 'array chainable does not have number method');
 
     var arr = new Sugar.Array([1,2,3]);
     equal(arr.rate().twofold().large().noIs().raw, ['sm','ll!'], 'long chain of methods with odd');
@@ -474,8 +474,7 @@ namespace('Core', function() {
     equal(Sugar.Array().foo().raw, 'array says foo', 'Array method');
     equal(Sugar.Array().foo().foo().raw, 'string says foo', 'chained disambiguated from Array');
     equal(Sugar.String().foo().foo().raw, 'string says foo', 'chained disambiguated from String');
-    equal(Sugar.Number('a').foo().raw, 'string says foo', 'string can reach the default chain');
-    equal(Sugar.Number([1]).foo().raw, 'array says foo', 'array can reach the default chain');
+    equal(Sugar.Number('a').foo, undefined, 'number has no method foo');
   });
 
   group('Disambiguation of an undefined namespace', function() {
