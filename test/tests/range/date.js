@@ -340,12 +340,12 @@ namespace('Date Ranges', function () {
   group('Date Units', function() {
 
     equal(getRange(new Date(2001, 0), new Date(2004, 0)).years(), 3, '5 year range');
-    equal(getRange(new Date(2001, 0), new Date(2001, 3)).months(), 3, 'January to April in months');
-    equal(getRange(new Date(2001, 0), new Date(2001, 3)).days(), 90, 'January to April in days');
-    equal(getRange(new Date(2001, 0), new Date(2001, 3)).hours(), 2160, 'January to April in hours');
-    equal(getRange(new Date(2001, 0), new Date(2001, 3)).minutes(), 129600, 'January to April in minutes');
-    equal(getRange(new Date(2001, 0), new Date(2001, 3)).seconds(), 7776000, 'January to April in seconds');
-    equal(getRange(new Date(2001, 0), new Date(2001, 3)).milliseconds(), 7776000000, 'January to April in minutes');
+    equal(getRange(new Date(2001, 0), new Date(2001, 2)).months(), 2, 'January to March in months');
+    equal(getRange(new Date(2001, 0), new Date(2001, 2)).days(), 59, 'January to March in days');
+    equal(getRange(new Date(2001, 0), new Date(2001, 2)).hours(), 1416, 'January to March in hours');
+    equal(getRange(new Date(2001, 0), new Date(2001, 2)).minutes(), 84960, 'January to March in minutes');
+    equal(getRange(new Date(2001, 0), new Date(2001, 2)).seconds(), 5097600, 'January to March in seconds');
+    equal(getRange(new Date(2001, 0), new Date(2001, 2)).milliseconds(), 5097600000, 'January to March in ms');
 
     equal(getRange(1, 2001).seconds(), 2, 'Number ranges are taken as milliseconds');
     equal(getRange('a', 'f').seconds(), NaN, 'String ranges return NaN for date units');
