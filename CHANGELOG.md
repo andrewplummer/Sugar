@@ -80,7 +80,7 @@ v2.0.0
 - Modified `Object.has` to allow deep keys. Previous behavior is now moved to `Object.hasOwn`.
 - Removed `Object.extended` and all trace of Hashes in favor of Sugar chainables.
 - Added date unit methods to ranges.
-- Allowed excepting entire namespaces.
+- Allowed excepting and allowing entire namespaces.
 
 
 v1.4.2

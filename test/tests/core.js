@@ -239,6 +239,36 @@ namespace('Core', function() {
     equal(({}).moo, undefined, 'moo has not been mapped');
   });
 
+  group('Extending specific namespaces by array', function() {
+    Sugar.String.defineInstance('foo', function() { return 'foo!'; });
+    Sugar.Number.defineInstance('bar', function() { return 'bar!'; });
+    Sugar.extend({
+      namespaces: [String]
+    });
+    equal(''.foo(), 'foo!', 'foo was mapped');
+    equal((5).bar, undefined, 'bar was not mapped');
+  });
+
+  group('Extending with namespace exceptions', function() {
+    Sugar.String.defineInstance('foo', function() { return 'foo!'; });
+    Sugar.Number.defineInstance('bar', function() { return 'bar!'; });
+    Sugar.extend({
+      except: [String]
+    });
+    equal(''.foo, undefined, 'foo was not mapped');
+    equal((5).bar(), 'bar!', 'bar was mapped');
+  });
+
+  group('Extending with method exceptions', function() {
+    defineCustom(Sugar.String);
+    Sugar.String.extend({
+      except: ['foo']
+    });
+    equal(''.foo, undefined, 'foo was not mapped');
+    equal(''.bar(), 'bar!', 'bar was mapped');
+    equal(''.moo(), 'moo!', 'moo was mapped');
+  });
+
   group('Aliasing', function() {
     defineCustom(Sugar.String);
     Sugar.String.alias('foo2', Sugar.String.foo);
@@ -397,26 +427,6 @@ namespace('Core', function() {
       delete Sugar.WeakMap;
     }
 
-  });
-
-  group('Extending with namespace exceptions', function() {
-    Sugar.String.defineInstance('foo', function() { return 'foo!'; });
-    Sugar.Number.defineInstance('bar', function() { return 'bar!'; });
-    Sugar.extend({
-      except: [String]
-    });
-    equal(''.foo, undefined, 'foo was not mapped');
-    equal((5).bar(), 'bar!', 'bar was mapped');
-  });
-
-  group('Extending with method exceptions', function() {
-    defineCustom(Sugar.String);
-    Sugar.String.extend({
-      except: ['foo']
-    });
-    equal(''.foo, undefined, 'foo was not mapped');
-    equal(''.bar(), 'bar!', 'bar was mapped');
-    equal(''.moo(), 'moo!', 'moo was mapped');
   });
 
   group('Basic Chaining', function() {
