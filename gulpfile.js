@@ -117,6 +117,7 @@ var MESSAGE_TASKS = [
     '                                     Same as modules with "sugar-" prefixed, plus "sugar-core".',
   '',
   '      |-o, --output|                   Build output path (default is "sugar.js" or "sugar.min.js").',
+    '                                     Also output file for docs task.',
   '',
   '      |-s, --source_map|               Compiler source map filename. Default is "sugar.min.map".',
   '',
@@ -2268,6 +2269,7 @@ function buildDocs() {
 
   var LINKED_TOKENS = {
     'enhanced matching': '#/EnhancedMatching',
+    'enhances': '#/EnhancedMethods',
     'deep properties': '#/DeepProperties',
     'date locales': '#/DateLocales',
     'date input formats': '#/DateInputFormats',
@@ -2640,7 +2642,7 @@ function buildDocs() {
   }
 
   function finish() {
-    var output = args.f || args.file || 'docs.json';
+    var output = args.o || args.output || 'docs.json';
     writeFile(path.join(output), JSON.stringify(json, null, 2));
   }
 
