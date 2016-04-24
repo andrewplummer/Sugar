@@ -32,7 +32,8 @@ namespace('Core', function() {
   });
 
   group('Sugar extend', function () {
-    Sugar.extend();
+    var result = Sugar.extend();
+    equal(result, Sugar, 'Return value should be the global object');
     assertAllMethodsMappedToNative(['Array', 'Boolean', 'Number', 'String', 'Date', 'RegExp', 'Function']);
     assertStaticMethodsMappedToNative(['Object']);
     assertInstanceMethodsNotMappedToNative(['Object']);
@@ -71,21 +72,6 @@ namespace('Core', function() {
     });
     assertAllMethodsMappedToNative(['Object']);
     assertNoMethodsMappedToNative(['Array', 'Boolean', 'Number', 'Date', 'String', 'RegExp', 'Function']);
-  });
-
-  group('Extending by name', function () {
-    defineCustom(Sugar.String);
-    Sugar.String.extend('foo');
-    equal(''.foo(), 'foo!', 'foo has been mapped');
-    equal(''.bar, undefined, 'bar has not been mapped');
-  });
-
-  group('Extending by array', function () {
-    defineCustom(Sugar.String);
-    Sugar.String.extend(['foo', 'bar']);
-    equal(''.foo(), 'foo!', 'foo has been mapped');
-    equal(''.bar(), 'bar!', 'bar has been mapped');
-    equal(''.moo, undefined, 'moo has not been mapped');
   });
 
   group('Custom with no arguments', function () {
@@ -216,7 +202,9 @@ namespace('Core', function() {
   group('Can extend single method to Object without prototype extension', function () {
     Sugar.Object.defineStatic('foo', function() { return 'foo!'; });
     Sugar.Object.defineStatic('bar', function() { return 'foo!'; });
-    Sugar.Object.extend('foo');
+    Sugar.Object.extend({
+      methods: ['foo']
+    });
     equal(Object.foo(), 'foo!', 'foo static has been mapped');
     equal(Object.bar, undefined, 'bar static has not been mapped');
     equal(Object.moo, undefined, 'moo static has not been mapped');
