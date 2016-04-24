@@ -2268,7 +2268,10 @@ function buildDocs() {
   ];
 
   var LINKED_TOKENS = {
+    'extending': '#/Extending',
+    'object methods': '#/ObjectMethods',
     'enhanced matching': '#/EnhancedMatching',
+    'enhanced methods': '#/EnhancedMethods',
     'enhances': '#/EnhancedMethods',
     'deep properties': '#/DeepProperties',
     'date locales': '#/DateLocales',
