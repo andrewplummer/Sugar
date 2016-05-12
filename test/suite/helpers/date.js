@@ -233,6 +233,20 @@ testGetTimezoneHours = function(d) {
   return Math.floor(Math.abs(d.getTimezoneOffset()) / 60);
 }
 
+testCreateFakeLocale = function(code) {
+  // Imaginary locale to test locale switching
+  Sugar.Date.addLocale(code, {
+    units: 'do,re,mi,fa,so,la,ti,do',
+    months: 'Do,Re,Mi,Fa,So,La,Ti,Do',
+    parse: [
+      '{year}kupo',
+      '{month}mofo'
+    ],
+    duration: '{num}{unit}momoney',
+    long: 'yeehaw'
+  });
+}
+
 // This helper method are necessary because setting/getting
 // the locale is sometimes performed outside the Date module,
 // giving no context for run().

@@ -10,7 +10,6 @@ runner.load('./default/sugar-es6.js');
 runner.load('./default/sugar-es7.js');
 
 runner.notice('Default');
-runner.load('./default/dist.js');
 runner.load('./default/sugar.js');
 runner.load('./default/sugar-array.js');
 runner.load('./default/sugar-object.js');
@@ -25,7 +24,6 @@ runner.load('./default/sugar-regexp.js');
 runner.load('./default/sugar-string.js');
 
 runner.notice('Chained');
-runner.load('./chained/dist.js');
 runner.load('./chained/sugar.js');
 runner.load('./chained/sugar-array.js');
 runner.load('./chained/sugar-object.js');
@@ -40,7 +38,6 @@ runner.load('./chained/sugar-regexp.js');
 runner.load('./chained/sugar-string.js');
 
 runner.notice('Extended');
-runner.load('./extended/dist.js');
 runner.load('./extended/sugar.js');
 runner.load('./extended/sugar-array.js');
 runner.load('./extended/sugar-object.js');

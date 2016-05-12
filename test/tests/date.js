@@ -4,18 +4,6 @@ namespace('Date', function () {
   var now = new Date();
   var thisYear = now.getFullYear();
 
-  // Imaginary locale to test locale switching
-  Sugar.Date.addLocale('fo', {
-    units: 'do,re,mi,fa,so,la,ti,do',
-    months: 'Do,Re,Mi,Fa,So,La,Ti,Do',
-    parse: [
-      '{year}kupo',
-      '{month}mofo'
-    ],
-    duration: '{num}{unit}momoney',
-    long: 'yeehaw'
-  });
-
   group('Locale Setup', function() {
 
     notEqual(Sugar.Date.getLocale().code, undefined, 'Current locale must be something... other libs may overwrite this');
@@ -90,6 +78,8 @@ namespace('Date', function () {
   });
 
   group('Create | Options', function() {
+
+    testCreateFakeLocale('fo');
 
     equal(testCreateDate('8/10/50', { locale: 'en-GB'}), new Date(1950, 9, 8), 'locale accepted in the options');
 
@@ -1037,6 +1027,9 @@ namespace('Date', function () {
   });
 
   group('Invalid Dates', function() {
+
+    testCreateFakeLocale('fo');
+
     equal(run(testCreateDate('my pants'), 'isPast'), undefined, 'isPast | invalid dates should return false');
     equal(run(testCreateDate('my pants'), 'isFuture'), undefined, 'isFuture | invalid dates should return false');
     equal(run(testCreateDate('my pants'), 'isToday'), undefined, 'isToday | invalid dates should return false');
@@ -2819,6 +2812,8 @@ namespace('Date', function () {
 
   group('Date Locales', function() {
 
+    testCreateFakeLocale('fo');
+
     equal(run(new Date(2011, 5, 18), 'format', ['{Month} {date}, {yyyy}']), 'June 18, 2011', 'Non-initialized defaults to English formatting');
     equal(run(getRelativeDate(null, null, null, -1), 'relative'), '1 hour ago', 'Non-initialized relative formatting is also English');
     equal(run(testCreateDate('June 18, 2011'), 'isValid'), true, 'English dates will also be properly parsed without being initialized or passing a locale code');
@@ -3313,6 +3308,8 @@ namespace('Number', function () {
 
   method('duration', function() {
 
+    testCreateFakeLocale('fo');
+
     testSetLocale('en');
 
     test(-3600000, '0 milliseconds', 'negative number should be 0');
@@ -3346,9 +3343,6 @@ namespace('Number', function () {
     test(run(2, 'years'), '2 years', '2 years');
     test(run(15, 'years'), '15 years', '15 years');
     test(run(1500, 'years'), '1500 years', '1500 years');
-
-
-    // Fake Locale
 
     testSetLocale('fo');
 
