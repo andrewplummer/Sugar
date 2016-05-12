@@ -88,7 +88,7 @@ function getTestNameFromModule(mod) {
   var match = mod.filename.match(/(\w+)\/([\w-]+)\.js$/);
   var type = match[1];
   var name = match[2];
-  if (name === 'default') {
+  if (name === 'dist') {
     name = 'Distributed (sugar.js)';
   }
   return name;
