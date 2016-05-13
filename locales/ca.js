@@ -34,7 +34,7 @@ Sugar.Date.addLocale('ca', {
     { 'name': 'shift', 'src': 'passat', 'value': -1 },
     { 'name': 'shift', 'src': 'el proper|la propera', 'value': 1 }
   ],
-  'parse': [
+  'dateParse': [
     '{sign} {num} {unit}',
     '{num} {unit} {sign}',
     '{0?}{1?} {unit:5-7} {shift}',

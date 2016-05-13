@@ -33,12 +33,11 @@ Sugar.Date.addLocale('fr', {
     { 'name': 'shift', 'src': 'derni:èr|er|ère|ere', 'value': -1 },
     { 'name': 'shift', 'src': 'prochain:|e', 'value': 1 }
   ],
-  'parse': [
-    '{sign} {num} {unit}',
+  'dateParse': [
     '{sign} {num} {unit}',
     '{0?} {unit:5-7} {shift}'
   ],
-  'timeParse': [
+  'timeFrontParse': [
     '{weekday?} {0?} {date?} {month} {year?}',
     '{0?} {weekday} {shift}'
   ]

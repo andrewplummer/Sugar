@@ -93,7 +93,10 @@ namespace('Date | French', function () {
     equal(testCreateDate('lundi prochain'), getDateWithWeekdayAndOffset(1, 7), 'next monday');
     equal(testCreateDate('lundi dernièr'), getDateWithWeekdayAndOffset(1, -7), 'last monday');
 
-    equal(testCreateDate('lundi dernièr 3:45'), run(getDateWithWeekdayAndOffset(1, -7), 'set', [{ hour: 3, minute: 45 }, true]), 'last monday 3:45');
+    equal(testCreateDate('lundi dernièr 3:45'), run(getDateWithWeekdayAndOffset(1, -7), 'set', [{hour:3,minute:45}, true]), 'last monday 3:45');
+
+    equal(testCreateDate('17:32 15 mai'), new Date(now.getFullYear(), 4, 15, 17, 32), '17:32 May 15');
+    equal(testCreateDate('17:32 lundi prochain'), getDateWithWeekdayAndOffset(1, 7, 17, 32), '17:32 next monday');
 
     equal(testCreateDate('demain à 3:30'), run(getRelativeDate(null, null, 1), 'set', [{hours:3,minutes:30}, true]), 'tomorrow at 3:30');
 

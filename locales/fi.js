@@ -15,7 +15,7 @@ Sugar.Date.addLocale('fi', {
   'units':         'millisekun:ti|tia|nin|teja|tina,sekun:ti|tia|nin|teja|tina,minuut:ti|tia|in|teja|tina,tun:ti|tia|nin|teja|tina,päiv:ä|ää|än|iä|änä,viik:ko|koa|on|olla|koja|kona,kuukau:si|tta|den+kuussa,vuo:si|tta|den|sia|tena|nna',
   'numbers':       'nolla,yksi|ensimmäinen,kaksi|toinen,kolm:e|as,neljä:|s,vii:si|des,kuu:si|des,seitsemä:n|s,kahdeksa:n|s,yhdeksä:n|s,kymmene:n|s',
   'tokens':        '.',
-  'timeSuffixes':  '.,.,.',
+  'timeSuffixes':  '\\.,\\.,\\.',
   'ordinalSuffix': '.',
   'short':         '{d}.{M}.{yyyy}',
   'medium':        '{d}. {month} {yyyy}',
@@ -52,10 +52,10 @@ Sugar.Date.addLocale('fi', {
     { 'name': 'shift', 'src': 'tä:llä|ssä|nä|mä', 'value': 0 },
     { 'name': 'shift', 'src': 'seuraava|seuraavana|tuleva|tulevana|ensi', 'value': 1 }
   ],
-  'parse': [
+  'dateParse': [
     '{shift} {unit:5-7}'
   ],
-  'timeParse': [
+  'timeFrontParse': [
     '{shift} {weekday}',
     '{num?} {unit} {sign}',
     '{weekday?} {date?} {month} {year?}'

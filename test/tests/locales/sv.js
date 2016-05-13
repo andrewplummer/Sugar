@@ -104,6 +104,8 @@ namespace('Date | Swedish', function () {
     equal(testCreateDate('forra aret'), getRelativeDate(-1), 'Last year');
     equal(testCreateDate('nasta ar'), getRelativeDate(1), 'Next year');
 
+    equal(testCreateDate('17:32 den 15 maj'), new Date(now.getFullYear(), 4, 15, 17, 32), '17:32 May 15');
+    equal(testCreateDate('17:32 nästa måndag'), getDateWithWeekdayAndOffset(1, 7, 17, 32), '17:32 next monday');
 
     // Numbers
 

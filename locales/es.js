@@ -34,13 +34,13 @@ Sugar.Date.addLocale('es', {
     { 'name': 'shift', 'src': 'pasad:o|a', 'value': -1 },
     { 'name': 'shift', 'src': 'próximo|próxima|proximo|proxima', 'value': 1 }
   ],
-  'parse': [
+  'dateParse': [
     '{sign} {num} {unit}',
     '{num} {unit} {sign}',
     '{0?}{1?} {unit:5-7} {shift}',
     '{0?}{1?} {shift} {unit:5-7}'
   ],
-  'timeParse': [
+  'timeFrontParse': [
     '{shift} {weekday}',
     '{weekday} {shift}',
     '{date?} {2?} {month} {2?} {year?}'

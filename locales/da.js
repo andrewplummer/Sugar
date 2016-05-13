@@ -36,15 +36,14 @@ Sugar.Date.addLocale('da', {
     { 'name': 'shift', 'src': 'denne', 'value': 0 },
     { 'name': 'shift', 'src': 'næste|naeste', 'value': 1 }
   ],
-  'parse': [
+  'dateParse': [
     '{num} {unit} {sign}',
     '{sign} {num} {unit}',
     '{1?} {num} {unit} {sign}',
     '{shift} {unit:5-7}'
   ],
-  'timeParse': [
-    '{0?} {weekday?} {date?} {month} {year}',
-    '{date} {month}',
+  'timeFrontParse': [
+    '{0?} {weekday?} {date?} {month} {year?}',
     '{shift} {weekday}'
   ]
 });

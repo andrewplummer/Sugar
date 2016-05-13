@@ -238,7 +238,7 @@ testCreateFakeLocale = function(code) {
   Sugar.Date.addLocale(code, {
     units: 'do,re,mi,fa,so,la,ti,do',
     months: 'Do,Re,Mi,Fa,So,La,Ti,Do',
-    parse: [
+    dateParse: [
       '{year}kupo',
       '{month}mofo'
     ],

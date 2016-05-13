@@ -32,14 +32,14 @@ Sugar.Date.addLocale('pl', {
     { 'name': 'shift', 'src': 'zeszły|zeszła|ostatni|ostatnia', 'value': -1 },
     { 'name': 'shift', 'src': 'następny|następna|następnego|przyszły|przyszła|przyszłego', 'value': 1 }
   ],
-  'parse': [
+  'dateParse': [
     '{num} {unit} {sign}',
     '{sign} {num} {unit}',
     '{month} {year}',
     '{shift} {unit:5-7}',
     '{0} {shift?} {weekday}'
   ],
-  'timeParse': [
+  'timeFrontParse': [
     '{date} {month} {year?} {1}',
     '{0} {shift?} {weekday}'
   ],

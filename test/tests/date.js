@@ -658,7 +658,7 @@ namespace('Date', function () {
     equal(testCreateDate('6:30pm in 3 days'), run(getRelativeDate(null, null, 3), 'set', [{hours:18,minutes:30}, true]), '6:30pm in 3 days');
     equal(testCreateDate('6:30pm in -3 days'), run(getRelativeDate(null, null, -3), 'set', [{hours:18,minutes:30}, true]), '6:30pm in -3 days');
 
-    equal(testCreateDate('6:30pm 2 days ago'), run(getRelativeDate(null, null, -2), 'set', [{hours:18,minutes:30}, true]), '6:30pm in 2 days ago');
+    equal(testCreateDate('6:30pm 2 days ago'), run(getRelativeDate(null, null, -2), 'set', [{hours:18,minutes:30}, true]), '6:30pm 2 days ago');
 
     equal(testCreateDate('21:00 in 2 weeks'), run(getRelativeDate(null, null, 14), 'set', [{hours:21}, true]), '21:00pm in 2 weeks');
     equal(testCreateDate('5:00am in a month'), run(getRelativeDate(null, 1), 'set', [{hours:5}, true]), '5:00am in a month');
@@ -3375,10 +3375,10 @@ namespace('Number', function () {
 
     var en = Sugar.Date.getLocale('en');
     var properties = [
-      'ampm','articles','code','date','parse','day','duration','edge','full',
-      'fullMonth','future','compiledFormats', 'modifiers','long','modifiers',
-      'months','num','numbers','past','plural','shift','short','sign','timeMarker',
-      'timeParse','timeSuffixes','tokens','units','weekdays','year'
+      'ampm','articles','code','date','day','duration','edge','full','fullMonth',
+      'future','compiledFormats', 'modifiers','long','modifiers','months','num',
+      'num','numbers','past','plural','shift','short','sign','timeMarker','dateParse',
+      'timeParse','timeFrontParse','timeSuffixes','tokens','units','weekdays','year'
     ];
 
     for (var i = 0; i < properties.length; i++) {

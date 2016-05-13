@@ -44,7 +44,7 @@ Sugar.Date.addLocale('ja', {
     { 'name': 'shift', 'src': '明後|翌々|次々|再来|さ来', 'value': 2 },
     { 'name': 'shift', 'src': '明々後|翌々々', 'value':  3 }
   ],
-  'parse': [
+  'dateParse': [
     '{num}{unit}{sign}',
     '{month}月{edge}'
   ],
