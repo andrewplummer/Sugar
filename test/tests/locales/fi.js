@@ -109,8 +109,8 @@ namespace('Date | Finnish', function () {
     equal(testCreateDate('ensi maanantaina'),  getDateWithWeekdayAndOffset(1, 7),  'next monday | na');
     equal(testCreateDate('viime maanantaina'), getDateWithWeekdayAndOffset(1, -7), 'last monday | na');
 
-    equal(testCreateDate('viime maanantaina klo 3.45'), run(getDateWithWeekdayAndOffset(1, -7), 'set', [{ hour: 3, minute: 45 }, true]), 'last monday 3:45');
-    equal(testCreateDate('viime maanantai klo 3.45'),   run(getDateWithWeekdayAndOffset(1, -7), 'set', [{ hour: 3, minute: 45 }, true]), 'last monday 3:45 (na)');
+    equal(testCreateDate('viime maanantaina klo 3.45'), run(getDateWithWeekdayAndOffset(1, -7), 'set', [{hour:3,minute:45}, true]), 'last monday 3:45');
+    equal(testCreateDate('viime maanantai klo 3.45'),   run(getDateWithWeekdayAndOffset(1, -7), 'set', [{hour:3,minute:45}, true]), 'last monday 3:45 (na)');
     equal(testCreateDate('huomenna klo 3.30'),          run(getRelativeDate(null, null, 1), 'set', [{hours:3,minutes:30}, true]), 'tomorrow at 3:30');
 
     equal(testCreateDate('viime sunnuntaina'),   getDateWithWeekdayAndOffset(0, -7), 'last sunday');
@@ -120,6 +120,9 @@ namespace('Date | Finnish', function () {
     equal(testCreateDate('viime torstaina'),     getDateWithWeekdayAndOffset(4, -7), 'last thursday');
     equal(testCreateDate('viime perjantaina'),   getDateWithWeekdayAndOffset(5, -7), 'last friday');
     equal(testCreateDate('viime lauantaina'),    getDateWithWeekdayAndOffset(6, -7), 'last saturday');
+
+    equal(testCreateDate('17:32 15. toukokuuta'), new Date(now.getFullYear(), 4, 15, 17, 32), '17:32 May 15');
+    equal(testCreateDate('17:32 ensi maanantai'), getDateWithWeekdayAndOffset(1, 7, 17, 32), '17:32 next monday');
 
 
     // Numbers

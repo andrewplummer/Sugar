@@ -48,13 +48,13 @@ Sugar.Date.addLocale('ru', {
     { 'name': 'shift', 'src': 'следующ:ий|ей|ем', 'value': 1 }
   ],
 
-  'parse': [
+  'dateParse': [
     '{num} {unit} {sign}',
     '{sign} {num} {unit}',
     '{month} {year}',
     '{0?} {shift} {unit:5-7}'
   ],
-  'timeParse': [
+  'timeFrontParse': [
     '{date} {month} {year?} {1?}',
     '{0?} {shift} {weekday}'
   ]

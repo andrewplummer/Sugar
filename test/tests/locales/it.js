@@ -59,10 +59,10 @@ namespace('Date | Italian', function () {
     equal(testCreateDate("l'anno scorso"), getRelativeDate(-1), 'Last year');
     equal(testCreateDate("l'anno prossimo"), getRelativeDate(1), 'Next year');
 
-    equal(testCreateDate("prossimo lunedì"), getDateWithWeekdayAndOffset(1, 7), 'next monday');
-    equal(testCreateDate("scorsa lunedì"), getDateWithWeekdayAndOffset(1, -7), 'last monday');
+    equal(testCreateDate('prossimo lunedì'), getDateWithWeekdayAndOffset(1, 7), 'next monday');
+    equal(testCreateDate('scorsa lunedì'), getDateWithWeekdayAndOffset(1, -7), 'last monday');
 
-    equal(testCreateDate("scorsa lunedì 3:45"), run(getDateWithWeekdayAndOffset(1, -7), 'set', [{ hour: 3, minute: 45 }, true]), 'last monday 3:45');
+    equal(testCreateDate('scorsa lunedì 3:45'), run(getDateWithWeekdayAndOffset(1, -7), 'set', [{ hour: 3, minute: 45 }, true]), 'last monday 3:45');
 
     // No accents
     equal(testCreateDate('Martedi, 5 Gennaio 2012'), new Date(2012, 0, 5), 'no accents | 2012-01-05');
@@ -82,6 +82,7 @@ namespace('Date | Italian', function () {
     equal(run(testCreateDate('2012/08/25', 'ux_UX'), 'isValid'), true, 'System intelligible formats are still parsed');
 
     equal(testCreateDate('17:32 18 agosto'), new Date(now.getFullYear(), 7, 18, 17, 32), 'August 18, 17:32');
+    equal(testCreateDate('17:32 prossimo lunedì'), getDateWithWeekdayAndOffset(1, 7, 17, 32), '17:32 next monday');
 
     equal(testCreateDate('domani alle 3:30'), run(getRelativeDate(null, null, 1), 'set', [{hours:3,minutes:30}, true]), 'tomorrow at 3:30');
 

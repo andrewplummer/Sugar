@@ -111,6 +111,8 @@ namespace('Date | Polish', function () {
     //equal(testCreateDate(''), getDateWithWeekdayAndOffset(5, -7), 'last friday');
     //equal(testCreateDate(''), getDateWithWeekdayAndOffset(6, -7), 'last saturday');
 
+    equal(testCreateDate('17:32 02 lut 2016'), new Date(2016, 1, 2, 17, 32), '17:32 February 2 2016');
+    equal(testCreateDate('17:32 następny poniedziałek'), getDateWithWeekdayAndOffset(1, 7, 17, 32), '17:32 next monday');
 
     // Numbers
 

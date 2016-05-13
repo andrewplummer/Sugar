@@ -28,7 +28,7 @@ namespace('Date | Dutch', function () {
     equal(testCreateDate('een milliseconde geleden'), getRelativeDate(null, null, null, null, null, null,-1), 'one millisecond ago');
     equal(testCreateDate('een seconde geleden'), getRelativeDate(null, null, null, null, null, -1), 'one second ago');
     equal(testCreateDate('een minuut geleden'), getRelativeDate(null, null, null, null, -1), 'one minuto ago');
-    equal(testCreateDate("een uur geleden"), getRelativeDate(null, null, null, -1), 'one hour ago');
+    equal(testCreateDate('een uur geleden'), getRelativeDate(null, null, null, -1), 'one hour ago');
     equal(testCreateDate('een dag geleden'), getRelativeDate(null, null, -1), 'one day ago');
     equal(testCreateDate('een week geleden'), getRelativeDate(null, null, -7), 'one week ago');
     equal(testCreateDate('een maand geleden'), getRelativeDate(null, -1), 'one month ago');
@@ -56,17 +56,18 @@ namespace('Date | Dutch', function () {
     equal(testCreateDate('vorige maand'), getRelativeDate(null, -1), 'last month');
     equal(testCreateDate('volgende maand'), getRelativeDate(null, 1), 'Next month');
 
-    equal(testCreateDate("afgelopen jaar"), getRelativeDate(-1), 'Last year');
-    equal(testCreateDate("volgend jaar"), getRelativeDate(1), 'Next year');
+    equal(testCreateDate('afgelopen jaar'), getRelativeDate(-1), 'Last year');
+    equal(testCreateDate('volgend jaar'), getRelativeDate(1), 'Next year');
 
-    equal(testCreateDate("volgende maandag"), getDateWithWeekdayAndOffset(1, 7), 'next monday');
-    equal(testCreateDate("afgelopen maandag"), getDateWithWeekdayAndOffset(1, -7), 'last monday');
+    equal(testCreateDate('volgende maandag'), getDateWithWeekdayAndOffset(1, 7), 'next monday');
+    equal(testCreateDate('afgelopen maandag'), getDateWithWeekdayAndOffset(1, -7), 'last monday');
 
-    equal(testCreateDate("afgelopen maandag 3:45"), run(getDateWithWeekdayAndOffset(1, -7), 'set', [{ hour: 3, minute: 45 }, true]), 'last monday 3:45');
+    equal(testCreateDate('afgelopen maandag 3:45'), run(getDateWithWeekdayAndOffset(1, -7), 'set', [{ hour: 3, minute: 45 }, true]), 'last monday 3:45');
 
     // Issue #152 Dutch should not use a variant in any format
     equal(testCreateDate('15/3/2012 12:45'), new Date(2012, 2, 15, 12, 45), 'slash format with time');
     equal(testCreateDate('12:45 15/3/2012'), new Date(2012, 2, 15, 12, 45), 'slash format with time front');
+    equal(testCreateDate('12:45 volgende maandag'), getDateWithWeekdayAndOffset(1, 7, 12, 45), '12:45 next monday');
 
     // Issue #150 Fully qualified ISO codes should be allowed
     equal(testCreateDate('7 januari 2012', 'nl_NL'), new Date(2012, 0, 7), 'nl_NL');

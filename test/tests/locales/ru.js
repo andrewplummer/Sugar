@@ -110,6 +110,9 @@ namespace('Date | Russian', function () {
     equal(testCreateDate('Завтра в 3:30 утра'), run(getRelativeDate(null, null, 1), 'set', [{hours:3,minutes:30}, true]), 'tomorrow at 3:30');
 
 
+    equal(testCreateDate('17:32 15 мая 2011'), new Date(2011, 4, 15, 17, 32), '17:32 May 15 2011');
+    equal(testCreateDate('17:32 следующий понедельник'), getDateWithWeekdayAndOffset(1, 7, 17, 32), '17:32 next monday');
+
     // Numbers
 
     equal(testCreateDate('ноль лет назад'),    getRelativeDate(0),   'zero years ago');

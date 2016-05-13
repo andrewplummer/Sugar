@@ -36,7 +36,7 @@ Sugar.Date.addLocale('zh-TW', {
     { 'name': 'shift', 'src': '這', 'value':  0 },
     { 'name': 'shift', 'src': '下|明', 'value':  1 }
   ],
-  'parse': [
+  'dateParse': [
     '{num}{unit}{sign}',
     '{shift}{unit:5-7}'
   ],

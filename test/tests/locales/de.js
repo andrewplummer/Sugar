@@ -105,6 +105,7 @@ namespace('Date | German', function () {
     equal(testCreateDate('naechstes Jahr'), getRelativeDate(1), 'no accents | Next year');
 
     equal(testCreateDate('3:45 15. Mai 2011'), new Date(2011, 4, 15, 3, 45), 'time first format');
+    equal(testCreateDate('3:45 nächster Montag'), getDateWithWeekdayAndOffset(1, 7, 3, 45), '3:45 next monday');
     equal(testCreateDate('morgen um 3:30'), run(getRelativeDate(null, null, 1), 'set', [{hours:3,minutes:30}, true]), 'tomorrow at 3:30');
 
     // Numbers

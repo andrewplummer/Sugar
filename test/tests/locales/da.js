@@ -69,6 +69,9 @@ namespace('Date | Danish', function () {
     equal(testCreateDate('sidste år'), getRelativeDate(-1), 'Last year');
     equal(testCreateDate('næste år'), getRelativeDate(1), 'Next year');
 
+    equal(testCreateDate('17:32 den 15. maj'), new Date(now.getFullYear(), 4, 15, 17, 32), '17:32 May 15');
+    equal(testCreateDate('17:32 næste mandag'), getDateWithWeekdayAndOffset(1, 7, 17, 32), '17:32 next monday');
+
     // Numbers
 
     equal(testCreateDate('nul år siden'),  getRelativeDate(0),   'zero years ago');

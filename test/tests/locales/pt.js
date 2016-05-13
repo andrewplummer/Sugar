@@ -84,6 +84,9 @@ namespace('Date | Portuguese', function () {
 
     equal(testCreateDate('amanhã às 3:30'), run(getRelativeDate(null, null, 1), 'set', [{hours:3,minutes:30}, true]), 'tomorrow at 3:30');
 
+    equal(testCreateDate('17:32 15 de maio'), new Date(now.getFullYear(), 4, 15, 17, 32), '17:32 May 15');
+    equal(testCreateDate('17:32 próximo segunda-feira'), getDateWithWeekdayAndOffset(1, 7, 17, 32), '17:32 next monday');
+
 
     // Numbers
 

@@ -67,6 +67,10 @@ namespace('Date | Spanish', function () {
     equal(testCreateDate('el año pasado'), getRelativeDate(-1), 'Last year');
     equal(testCreateDate('el próximo año'), getRelativeDate(1), 'Next year');
 
+    equal(testCreateDate('3:45 15 de mayo 2011'), new Date(2011, 4, 15, 3, 45), 'time first format');
+    equal(testCreateDate('3:45 próximo lunes'), getDateWithWeekdayAndOffset(1, 7, 3, 45), '3:45 next monday');
+    equal(testCreateDate('3:45 lunes pasado'), getDateWithWeekdayAndOffset(1, -7, 3, 45), '3:45 last monday');
+
     // no accents
     equal(testCreateDate('hace 1 dia'), getRelativeDate(null, null, -1), 'one day ago');
     equal(testCreateDate('proximo mes'), getRelativeDate(null, 1), 'Next month');
