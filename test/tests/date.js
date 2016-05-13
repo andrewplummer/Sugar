@@ -574,9 +574,9 @@ namespace('Date', function () {
     equal(testCreateDate('the first day of 1998'), new Date(1998, 0), 'the first day of 1998');
     equal(testCreateDate('the last day of 1998'), new Date(1998, 11, 31), 'the last day of 1998');
 
-    equal(testCreateDate('The 15th of last month.'), new Date(now.getFullYear(), now.getMonth() - 1, 15), 'The 15th of last month');
-    equal(testCreateDate('January 30th of last year.'), new Date(now.getFullYear() - 1, 0, 30), 'January 30th of last year');
-    equal(testCreateDate('January of last year.'), new Date(now.getFullYear() - 1, 0), 'January of last year');
+    equal(testCreateDate('The 15th of last month'), new Date(now.getFullYear(), now.getMonth() - 1, 15), 'The 15th of last month');
+    equal(testCreateDate('January 30th of last year'), new Date(now.getFullYear() - 1, 0, 30), 'January 30th of last year');
+    equal(testCreateDate('January of last year'), new Date(now.getFullYear() - 1, 0), 'January of last year');
 
     equal(testCreateDate('First day of may'), new Date(now.getFullYear(), 4, 1), 'First day of may');
     equal(testCreateDate('Last day of may'), new Date(now.getFullYear(), 4, 31), 'Last day of may');
@@ -686,6 +686,12 @@ namespace('Date', function () {
     equal(testCreateDate('yesterday at 3a'), new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1, 3), 'yesterday at 3a');
     equal(testCreateDate('yesterday at 3:00p'), new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1, 15), 'yesterday at 3:00p');
     equal(testCreateDate('yesterday at 3:00a'), new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1, 3), 'yesterday at 3:00a');
+
+    // Issue #455 "a.m./p.m."
+    equal(testCreateDate('3a.m.'), new Date(now.getFullYear(), now.getMonth(), now.getDate(), 3), '3a.m.');
+    equal(testCreateDate('3p.m.'), new Date(now.getFullYear(), now.getMonth(), now.getDate(), 15), '3p.m.');
+    equal(testCreateDate('3 a.m.'), new Date(now.getFullYear(), now.getMonth(), now.getDate(), 3), '3 a.m.');
+    equal(testCreateDate('3 p.m.'), new Date(now.getFullYear(), now.getMonth(), now.getDate(), 15), '3 p.m.');
 
     // Issue #453 "tomorrow at noon"
     equal(testCreateDate('noon'), new Date(now.getFullYear(), now.getMonth(), now.getDate(), 12), 'noon');
