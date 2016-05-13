@@ -3,7 +3,7 @@
   // IE9 has no strict mode, and so still allows writing
   // to properties whose descriptors are writable: false
 
-  var hasNonWritableBug;
+  var hasNonWritableBug = false;
 
   function testNonWritableBug() {
     var obj = {};
@@ -14,9 +14,7 @@
     try {
       obj.foo = 'wow';
       hasNonWritableBug = true;
-    } catch(e) {
-      hasNonWritableBug = false;
-    }
+    } catch(e) {}
   }
 
   assertNonWritableRaisesError = function(fn) {
@@ -25,7 +23,9 @@
     }
   }
 
-  testNonWritableBug();
+  if (testDefinePropertySupport) {
+    testNonWritableBug();
+  }
 
 })();
 
