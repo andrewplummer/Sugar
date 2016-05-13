@@ -143,9 +143,11 @@ namespace('Date | Russian', function () {
     test(then, ['%c'], 'вт 5 янв 2010 15:52', '%c stamp');
 
     test(then, ['{d} {Month2} {yyyy}'], '5 янв 2010', 'alternate 2');
-    test(then, ['{d} {Month3} {yyyy}'], '5 январь 2010', 'alternate 3');
+    test(then, ['{d} {Month3} {yyyy}'], '5 янв. 2010', 'alternate 3');
+    test(then, ['{d} {Month4} {yyyy}'], '5 январь 2010', 'alternate 4');
     test(then, ['{d} {month2} {yyyy}'], '5 янв 2010', 'alternate 2 | lower');
-    test(then, ['{d} {month3} {yyyy}'], '5 январь 2010', 'alternate 3 | lower');
+    test(then, ['{d} {month3} {yyyy}'], '5 янв. 2010', 'alternate 3 | lower');
+    test(then, ['{d} {month4} {yyyy}'], '5 январь 2010', 'alternate 4 | lower');
 
     test(new Date('December 27, 2009'), ['{w}'], '52', 'locale week number | Dec 27 2009');
     test(new Date('December 27, 2009'), ['{ww}'], '52', 'locale week number padded | Dec 27 2009');
