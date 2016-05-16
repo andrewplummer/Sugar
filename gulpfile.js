@@ -1023,9 +1023,10 @@ function getSourcePackages() {
       sp.dependencies = sp.dependencies.concat(deps || []);
 
       if (sp.comments) {
-        // Method comments are indented by 2, so just a hack to
+        // Method comments are indented by 3, so just a hack to
         // make sure the resulting source is the same.
-        sp.comments = '  ' + sp.comments;
+        sp.comments = '   ' + sp.comments;
+        sp.bodyWithComments = '   ' + sp.bodyWithComments;
       }
     }
 
@@ -1134,7 +1135,7 @@ function getSourcePackages() {
             }
           }
           return lines.map(function(l) {
-            return '\/\/ ' + l;
+            return '\/\/' + l;
           }).join('\n');
         } else {
           if (!comment.text.match(/@(module|namespace)/)) {
@@ -1145,24 +1146,24 @@ function getSourcePackages() {
       return '';
     }
 
-    function getAllMethodNamesInPreviousComment(node) {
-      var names = [];
+    function getMethodBlocksInPreviousComment(node) {
+      var methodBlocks = [];
       var comment = getLastCommentForNode(node, 1);
       var blocks = comment.split('***');
       blocks.forEach(function(block) {
-        var match = block.match(/@set([^@\/]+)/);
-        if (match) {
-          var set = match[1];
-          set = set.replace(/^[\s*]*|[\s*]*$/g, '').replace(/[\s*]+/g, ',');
-          names = names.concat(set.split(','));
-        } else {
-          match = block.match(/@method (\w+)/);
-          if (match) {
-            names.push(match[1]);
+        var methodMatch = block.match(/@method ([\[\]\w]+)/);
+        if (methodMatch) {
+          var methodBlock = {
+            name: methodMatch[1]
+          };
+          var setMatch = block.match(/@set([^@\/]+)/);
+          if (setMatch) {
+            methodBlock.set = setMatch[1].replace(/^[\s*]*|[\s*]*$/g, '').replace(/[\s*]+/g, ',').split(',');
           }
+          methodBlocks.push(methodBlock);
         }
       });
-      return names;
+      return methodBlocks;
     }
 
     // --- Nodes ---
@@ -1346,9 +1347,9 @@ function getSourcePackages() {
       // saying that any set methods must be defined in the comment block
       // directly above the build method.
       function findBuiltMethods() {
-        var opts = {}, methodNames, hasPrototypeBlock, target, type;
+        var opts = {}, methodBlocks, hasPrototypeBlock, target, type;
 
-        methodNames = getAllMethodNamesInPreviousComment(fnPackage.node);
+        methodBlocks = getMethodBlocksInPreviousComment(fnPackage.node);
 
         fnPackage.node.body.body.some(function(node) {
           if (isPrototypeBlock(node)) {
@@ -1363,8 +1364,17 @@ function getSourcePackages() {
         // standard Sugar method defines.
         type = hasPrototypeBlock ? 'prototype' : 'method';
 
-        methodNames.forEach(function(name) {
-          addSugarBuiltMethod(name, fnPackage, type, opts);
+        methodBlocks.forEach(function(block) {
+          if (block.set) {
+            opts.set = block.set;
+            opts.setName = block.name;
+            block.set.forEach(function(methodName) {
+              addSugarBuiltMethod(methodName, fnPackage, type, opts);
+            });
+          } else {
+            addSugarBuiltMethod(block.name, fnPackage, type, opts);
+          }
+
         });
       }
 
@@ -2539,9 +2549,6 @@ function buildJSONDocs() {
     return 0;
   }
 
-  function finish() {
-  }
-
   modules.forEach(function(p) {
     var content = fs.readFileSync(p, 'utf-8'), module;
     var lines = content.split('\n');
@@ -2572,6 +2579,7 @@ function buildJSONSource() {
   mkdirp.sync(TMP_MODULES_DIR);
 
   addCorePackage();
+  bundleSetPackages();
   exportSourcePackages();
   stream = compileSourcePackages();
 
@@ -2585,6 +2593,32 @@ function buildJSONSource() {
     });
   }
 
+  function bundleSetPackages() {
+    var setPackages = {};
+    sourcePackages = sourcePackages.filter(function(p) {
+      if (p.set) {
+        // If the package has been handled already then just skipping will remove.
+        if (!setPackages[p.setName]) {
+          setPackages[p.setName] = {
+            setName: p.setName,
+            name: p.setName.replace(/[\[\]]/g, ''),
+            sample: p.set.slice(0, 2).concat('...').join(', '),
+            type: p.type,
+            module: p.module,
+            namespace: p.namespace,
+            dependencies: p.dependencies,
+            bodyWithComments: p.bodyWithComments,
+          };
+        }
+        return false;
+      }
+      return true;
+    });
+    iter(setPackages, function(name, p) {
+      sourcePackages.push(p);
+    });
+  }
+
   function exportSourcePackages() {
     sourcePackages.forEach(function(p) {
       var content = p.bodyWithComments;
@@ -2592,6 +2626,9 @@ function buildJSONSource() {
         content = [p.blockStart, content, p.blockEnd].join('\n\n');
       }
       p.size = content.length;
+      if (p.size === 0) {
+        p.minifiedSize = 0;
+      }
       p.path = path.join(TMP_MODULES_DIR, getFilePath(p));
       writeFile(p.path, content);
     });
@@ -2627,12 +2664,20 @@ function buildJSONSource() {
 
     sourcePackages.forEach(function(p, i) {
       p.minifiedSize = getMinifiedSize(sourceSplit[i]);
+      p.nameHTML = (p.setName || p.name).replace(/\[(\w+)\]/, function(m, token) {
+        return '<span class="u-faded">' + token + '</span>';
+      });
       delete p.node;
       delete p.vars;
       delete p.type;
       delete p.body;
-      delete p.comments;
       delete p.path;
+      delete p.setName;
+      delete p.comments;
+      delete p.varDependencies;
+      if (!p.bodyWithComments) {
+        delete p.bodyWithComments;
+      }
     });
   }
 
