@@ -34,7 +34,11 @@
       if (currentTest.namespace.setup) {
         currentTest.namespace.setup();
       }
-      currentTest.fn();
+      try {
+        currentTest.fn();
+      } catch(e) {
+        addFailure(e.message, '', currentTest.name);
+      }
       if (currentTest.namespace.teardown) {
         currentTest.namespace.teardown();
       }
