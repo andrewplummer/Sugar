@@ -380,7 +380,7 @@ function block(strings) {
 
 var LICENSE = block`
 /*
- *  Sugar Library ${getVersion()}
+ *  Sugar ${getVersion()}
  *
  *  Freely distributable and licensed under the MIT-style license.
  *  Copyright (c) ${new Date().getFullYear()} Andrew Plummer
@@ -413,8 +413,8 @@ var DEFAULT_MODULES = [
   'array',
   'object',
   'enumerable',
-  'function',
   'number',
+  'function',
   'regexp',
   'range',
 ];
@@ -488,7 +488,7 @@ function createDevelopmentBuild(outputPath, moduleNames, localeCodes) {
 
   return gulp.src(modules.concat(locales))
     .pipe(concat(path.basename(filename), { newLine: '' }))
-    .pipe(replace(/^\s*'use strict';\n/g, ''))
+    .pipe(replace(/^'use strict';\n/gm, ''))
     .pipe(replace(/^(?=.)/gm, '  '))
     .pipe(replace(/^([\s\S]+)$/m, wrapper))
     .pipe(replace(/edge/, getVersion()))
@@ -891,11 +891,11 @@ function exportBowerJson(packageName, packageDir) {
  *    simply includes all packages in a circular dependency chain.
  *
  */
-function getSourcePackages() {
+function getSourcePackages(includeModules) {
 
   var WHITELISTED = ['arguments', 'undefined', 'NaN', 'btoa', 'atob'];
 
-  var sourcePackages = [];
+  var sourcePackages = [], modules = [];
 
   setupFindMethods();
   parseAllModules();
@@ -1005,7 +1005,7 @@ function getSourcePackages() {
         dependencies: getDependencies(node, name),
       };
       merge(sourcePackage, opts);
-      comments = getLastCommentForNode(node, 2);
+      comments = getLastCommentForNode(node, 1);
       if (comments) {
         sourcePackage.comments = comments;
         sourcePackage.bodyWithComments = comments + '\n' + sourcePackage.body;
@@ -1022,11 +1022,11 @@ function getSourcePackages() {
       sp.namespace    = getNamespaceForNode(node);
       sp.dependencies = sp.dependencies.concat(deps || []);
 
-      if (sp.comments) {
+      if (sp.comments && type !== 'alias') {
         // Method comments are indented by 3, so just a hack to
         // make sure the resulting source is the same.
-        sp.comments = '   ' + sp.comments;
-        sp.bodyWithComments = '   ' + sp.bodyWithComments;
+        sp.comments = '  ' + sp.comments;
+        sp.bodyWithComments = '  ' + sp.bodyWithComments;
       }
     }
 
@@ -1104,15 +1104,23 @@ function getSourcePackages() {
     // --- Comments ---
 
     function onComment(block, text, start, stop, startLoc, endLoc) {
-      var matches;
+      var match, name;
       commentsByEndLine[endLoc.line] = {
         text: text,
         block: block
       }
+      match = text.match(/@module (\w+)/);
+      if (match) {
+        modules.push({
+          name: match[1],
+          lower: match[1].toLowerCase(),
+          comment: '/*' + text + '*/\n'
+        });
+      }
       // Both @module and @namespace may be defined in the same comment block.
-      matches = text.match(/@(namespace|module) \w+/g);
-      if (matches) {
-        var namespace = matches[matches.length - 1].match(/@(namespace|module) (\w+)/)[2];
+      match = text.match(/@(namespace|module) \w+/g);
+      if (match) {
+        var namespace = match[match.length - 1].match(/@(namespace|module) (\w+)/)[2];
         namespaceBoundary(namespace, endLoc.line);
       }
     }
@@ -1628,6 +1636,13 @@ function getSourcePackages() {
     sourcePackages.forEach(function(p) {
       delete p.node;
     });
+  }
+
+  if (includeModules) {
+    return {
+      modules: modules,
+      packages: sourcePackages
+    }
   }
 
   return sourcePackages;
@@ -2574,7 +2589,7 @@ function buildJSONSource() {
 
   var zlib = require('zlib');
 
-  var sourcePackages = getSourcePackages(), stream;
+  var data = getSourcePackages(true), stream;
 
   mkdirp.sync(TMP_MODULES_DIR);
 
@@ -2584,22 +2599,28 @@ function buildJSONSource() {
   stream = compileSourcePackages();
 
   function addCorePackage() {
-    sourcePackages.unshift({
+    data.modules.unshift({
+      name: 'Core',
+      lower: 'core'
+    });
+    data.packages.unshift({
       name: 'Sugar',
       type: 'core',
       module: 'core',
       dependencies: [],
-      bodyWithComments: readFile('lib/core.js')
+      bodyWithComments: readFile('lib/core.js').trim()
     });
   }
 
   function bundleSetPackages() {
-    var setPackages = {};
-    sourcePackages = sourcePackages.filter(function(p) {
+    var packages = [], handledSets = {}, p;
+
+    for (var i = 0; i < data.packages.length; i++) {
+      p = data.packages[i];
       if (p.set) {
-        // If the package has been handled already then just skipping will remove.
-        if (!setPackages[p.setName]) {
-          setPackages[p.setName] = {
+        // If the package has been handled already then just skip.
+        if (!handledSets[p.setName]) {
+          packages.push({
             setName: p.setName,
             name: p.setName.replace(/[\[\]]/g, ''),
             sample: p.set.slice(0, 2).concat('...').join(', '),
@@ -2608,19 +2629,19 @@ function buildJSONSource() {
             namespace: p.namespace,
             dependencies: p.dependencies,
             bodyWithComments: p.bodyWithComments,
-          };
+          });
+          handledSets[p.setName] = true;
         }
-        return false;
+      } else {
+        packages.push(p);
       }
-      return true;
-    });
-    iter(setPackages, function(name, p) {
-      sourcePackages.push(p);
-    });
+    }
+
+    data.packages = packages;
   }
 
   function exportSourcePackages() {
-    sourcePackages.forEach(function(p) {
+    data.packages.forEach(function(p) {
       var content = p.bodyWithComments;
       if (p.blockStart) {
         content = [p.blockStart, content, p.blockEnd].join('\n\n');
@@ -2639,7 +2660,7 @@ function buildJSONSource() {
   }
 
   function compileSourcePackages() {
-    var files = sourcePackages.map(function(p) {
+    var files = data.packages.map(function(p) {
       return p.path;
     });
     return gulp.src(files)
@@ -2652,7 +2673,7 @@ function buildJSONSource() {
 
   function finalize(file) {
     prepareJSON(file.contents.toString('utf-8'));
-    writeJSON(sourcePackages, 'source.json');
+    writeJSON(data, 'source.json');
     cleanDir(TMP_DIR);
   }
 
@@ -2662,7 +2683,7 @@ function buildJSONSource() {
     // First is null
     sourceSplit.shift();
 
-    sourcePackages.forEach(function(p, i) {
+    data.packages.forEach(function(p, i) {
       p.minifiedSize = getMinifiedSize(sourceSplit[i]);
       p.nameHTML = (p.setName || p.name).replace(/\[(\w+)\]/, function(m, token) {
         return '<span class="u-faded">' + token + '</span>';
