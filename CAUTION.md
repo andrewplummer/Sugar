@@ -86,6 +86,9 @@ Drop it in before upgrading to get a general idea of what needs to change, or up
   - `Number#format` no longer accepts arguments for the thousands separator and decimal point. Instead these can now be set globally using Sugar.Number.thousands() and Sugar.Number.decimal(). These will also be respected by Number#abbr, Number#metric, and Number#bytes as well.
 
 - Level: Moderate
+  - `Number#bytes` now uses powers of 1000 by default instead of powers of 1024. For the old behavior, pass "true" as the 2nd argument (after precision). Further, when using the "binary" flag, units will be standard binary units (KiB, MiB, etc.). For standard units (KB, MB, etc.) pass 'si' for the 3rd argument.
+
+- Level: Moderate
   - Alphanumeric array options are now defined on the global object `Sugar` instead of `Array` itself.
 
 - Level: Moderate
