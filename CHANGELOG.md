@@ -81,6 +81,7 @@ v2.0.0
 - Removed `Object.extended` and all trace of Hashes in favor of Sugar chainables.
 - Added date unit methods to ranges.
 - Allowed excepting and allowing entire namespaces.
+- Flipped "si" argument to Number#bytes to instead be "binary".
 
 
 v1.4.2
