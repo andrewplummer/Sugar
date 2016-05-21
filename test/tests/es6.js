@@ -1018,18 +1018,18 @@ namespace('ES6', function () {
     equal(string.includes('\uD83D\uDCA9'), true);
 
     if(canTestPrimitiveScope) {
-      raisesError(function() { String.prototype.includes.call(undefined); }, TypeError);
-      raisesError(function() { String.prototype.includes.call(undefined, 'b'); }, TypeError);
-      raisesError(function() { String.prototype.includes.call(undefined, 'b', 4); }, TypeError);
-      raisesError(function() { String.prototype.includes.call(null); }, TypeError);
-      raisesError(function() { String.prototype.includes.call(null, 'b'); }, TypeError);
-      raisesError(function() { String.prototype.includes.call(null, 'b', 4); }, TypeError);
-      raisesError(function() { String.prototype.includes.apply(undefined); }, TypeError);
-      raisesError(function() { String.prototype.includes.apply(undefined, ['b']); }, TypeError);
-      raisesError(function() { String.prototype.includes.apply(undefined, ['b', 4]); }, TypeError);
-      raisesError(function() { String.prototype.includes.apply(null); }, TypeError);
-      raisesError(function() { String.prototype.includes.apply(null, ['b']); }, TypeError);
-      raisesError(function() { String.prototype.includes.apply(null, ['b', 4]); }, TypeError);
+      raisesError(function() { String.prototype.includes.call(undefined); }, 'undefined', TypeError);
+      raisesError(function() { String.prototype.includes.call(undefined, 'b'); }, 'undefined | b', TypeError);
+      raisesError(function() { String.prototype.includes.call(undefined, 'b', 4); }, 'undefined | b | 4', TypeError);
+      raisesError(function() { String.prototype.includes.call(null); }, 'null', TypeError);
+      raisesError(function() { String.prototype.includes.call(null, 'b'); }, 'null | b', TypeError);
+      raisesError(function() { String.prototype.includes.call(null, 'b', 4); }, 'null | b | 4', TypeError);
+      raisesError(function() { String.prototype.includes.apply(undefined); }, 'apply | undefined', TypeError);
+      raisesError(function() { String.prototype.includes.apply(undefined, ['b']); }, 'apply | undefined | b', TypeError);
+      raisesError(function() { String.prototype.includes.apply(undefined, ['b', 4]); }, 'apply | undefined | b | 4', TypeError);
+      raisesError(function() { String.prototype.includes.apply(null); }, 'apply | null', TypeError);
+      raisesError(function() { String.prototype.includes.apply(null, ['b']); }, 'apply | null | b', TypeError);
+      raisesError(function() { String.prototype.includes.apply(null, ['b', 4]); }, 'apply | null | b | 4', TypeError);
     }
     equal(String.prototype.includes.call(42, '2'), true);
     equal(String.prototype.includes.call(42, 'b', 4), false);
