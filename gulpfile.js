@@ -248,15 +248,6 @@ function compileSingle(path) {
   return compiler(flags);
 }
 
-function compileSeparated(path) {
-  var compiler = require('closure-compiler-stream');
-  var flags = getDefaultFlags();
-  flags.output_wrapper = '';
-  flags.js_output_file = path;
-  flags.formatting = 'PRINT_INPUT_DELIMITER';
-  return compiler(flags);
-}
-
 function getDefaultFlags() {
   return {
     jar: COMPILER_JAR_PATH,
@@ -1104,16 +1095,17 @@ function getSourcePackages(includeModules) {
     // --- Comments ---
 
     function onComment(block, text, start, stop, startLoc, endLoc) {
-      var match, name;
+      var match;
       commentsByEndLine[endLoc.line] = {
         text: text,
         block: block
       }
       match = text.match(/@module (\w+)/);
       if (match) {
+        var name = match[1];
         modules.push({
-          name: match[1],
-          lower: match[1].toLowerCase(),
+          name: name,
+          lower: name.toLowerCase(),
           comment: '/*' + text + '*/\n'
         });
       }
@@ -1380,6 +1372,8 @@ function getSourcePackages(includeModules) {
               addSugarBuiltMethod(methodName, fnPackage, type, opts);
             });
           } else {
+            delete opts.set;
+            delete opts.setName;
             addSugarBuiltMethod(block.name, fnPackage, type, opts);
           }
 
@@ -2583,20 +2577,12 @@ function buildJSONDocs() {
 
 function buildJSONSource() {
 
-  var TMP_DIR = 'tmp';
-  var TMP_MODULES_DIR  = path.join(TMP_DIR, 'modules');
-  var TMP_MODULES_FILE = path.join(TMP_DIR, 'modules.min.js');
-
-  var zlib = require('zlib');
-
-  var data = getSourcePackages(true), stream;
-
-  mkdirp.sync(TMP_MODULES_DIR);
+  var data = getSourcePackages(true);
 
   addCorePackage();
   bundleSetPackages();
-  exportSourcePackages();
-  stream = compileSourcePackages();
+  prepareData();
+  writeJSON(data, 'source.json');
 
   function addCorePackage() {
     data.modules.unshift({
@@ -2640,73 +2626,45 @@ function buildJSONSource() {
     data.packages = packages;
   }
 
-  function exportSourcePackages() {
+  function prepareData() {
+    data.modules.forEach(function(m) {
+      indentField(m, 'comment');
+    });
     data.packages.forEach(function(p) {
-      var content = p.bodyWithComments;
-      if (p.blockStart) {
-        content = [p.blockStart, content, p.blockEnd].join('\n\n');
-      }
-      p.size = content.length;
-      if (p.size === 0) {
-        p.minifiedSize = 0;
-      }
-      p.path = path.join(TMP_MODULES_DIR, getFilePath(p));
-      writeFile(p.path, content);
-    });
-  }
-
-  function getFilePath(p) {
-    return (p.namespace ? [p.module, p.namespace, p.name] : [p.module, p.name]).join('_') + '.js';
-  }
-
-  function compileSourcePackages() {
-    var files = data.packages.map(function(p) {
-      return p.path;
-    });
-    return gulp.src(files)
-      .pipe(compileSeparated(TMP_MODULES_FILE))
-      .pipe(through.obj(function(file, enc, cb) {
-        finalize(file);
-        cb();
-      }));
-  }
-
-  function finalize(file) {
-    prepareJSON(file.contents.toString('utf-8'));
-    writeJSON(data, 'source.json');
-    cleanDir(TMP_DIR);
-  }
-
-  function prepareJSON(compiled) {
-    var sourceSplit = compiled.split(/\n?\/\/ Input \d+\n/);
-
-    // First is null
-    sourceSplit.shift();
-
-    data.packages.forEach(function(p, i) {
-      p.minifiedSize = getMinifiedSize(sourceSplit[i]);
+      // Wrap name with HTML in case there are brackets.
       p.nameHTML = (p.setName || p.name).replace(/\[(\w+)\]/, function(m, token) {
         return '<span class="u-faded">' + token + '</span>';
       });
-      delete p.node;
-      delete p.vars;
-      delete p.type;
-      delete p.body;
-      delete p.path;
-      delete p.setName;
-      delete p.comments;
-      delete p.varDependencies;
-      if (!p.bodyWithComments) {
-        delete p.bodyWithComments;
-      }
+
+      // Pre-indenting all packages rather than doing it on compile to
+      // save some cycles and also correctly calculate the package size.
+      indentField(p, 'blockStart');
+      indentField(p, 'blockEnd');
+      indentField(p, 'bodyWithComments');
+
+      cleanSourcePackage(p);
     });
   }
 
-  function getMinifiedSize(content) {
-    return !content.trim() ? 0 : zlib.gzipSync(content).length;
+  function indentField(p, field) {
+    if (p[field]) {
+      p[field] = p[field].replace(/^(?=.)/gm, '  ');
+    }
   }
 
-  return stream;
+  function cleanSourcePackage(p) {
+    delete p.vars;
+    delete p.type;
+    delete p.body;
+    delete p.path;
+    delete p.setName;
+    delete p.comments;
+    delete p.varDependencies;
+    if (!p.bodyWithComments) {
+      delete p.bodyWithComments;
+    }
+  }
+
 }
 
 // -------------- Tests ----------------
