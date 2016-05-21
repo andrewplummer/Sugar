@@ -25,14 +25,11 @@ namespace('Number', function () {
     test(Number, [0, 0], 0, '0 should always remain 0');
   });
 
-
-
   method('toNumber', function() {
     test(4, 4, '4 is 4');
     test(10000, 10000, '10000 is 10000');
     test(5.2345, 5.2345, '5.2345 is 5.2345');
   });
-
 
   method('ceil', function() {
     test(5.5, 6, '5.5');
@@ -67,14 +64,12 @@ namespace('Number', function () {
     test(4417.1318, [-3], 4000, '-3');
   });
 
-
   method('abs', function() {
     test(-5, 5, '-5');
     test(5, 5, '5');
     test(-3.324, 3.324, '-3.324');
     test(3.324, 3.324, '3.324');
   });
-
 
   method('pow', function() {
     test(3, [2], 9, '3 ^ 2');
@@ -84,7 +79,6 @@ namespace('Number', function () {
     test(3, [0], 1, 'zero is allowed');
     test(3, NaN, 'defaults to no number');
   });
-
 
   method('sin', function() {
     // A recent change in the V8 engine now produces less accurate values for
@@ -123,7 +117,6 @@ namespace('Number', function () {
     test(45, 1.5485777614681775);
   });
 
-
   method('log', function() {
     test(64, [2], 6, '64 with base 2');
     equalWithMargin(run(9, 'log', [3]), 2, 0.000000000000001, '9 with base 3');
@@ -160,7 +153,6 @@ namespace('Number', function () {
     test(722855.241, [-6], 1000000, '722855.241 to -6 places');
     test(722855.241, [-8], 0, '722855.241 to -8 places');
   });
-
 
   method('chr', function() {
     test(65, 'A');
@@ -208,7 +200,6 @@ namespace('Number', function () {
     test(2, false, 'no argument passed');
   });
 
-
   method('isOdd', function() {
     test(0, false);
     test(1, true);
@@ -221,7 +212,6 @@ namespace('Number', function () {
     test(-Infinity, false);
   });
 
-
   method('isEven', function() {
     test(0, true);
     test(1, false);
@@ -233,7 +223,6 @@ namespace('Number', function () {
     test(Infinity, false);
     test(-Infinity, false);
   });
-
 
   method('ordinalize', function() {
     test(1, '1st');
@@ -339,7 +328,6 @@ namespace('Number', function () {
 
   });
 
-
   method('format', function() {
     test(100, '100');
     test(1, '1');
@@ -430,7 +418,6 @@ namespace('Number', function () {
     test(553599.435, [-5], '600,000', 'to -5 places');
   });
 
-
   method('pad', function() {
     test(1, [0], '1', '1 no padding');
     test(1, [1], '1', '1 padded to 1 place');
@@ -462,7 +449,6 @@ namespace('Number', function () {
     test(2, [4, false, 2], '0010', 'handles binary');
   });
 
-
   method('hex', function() {
     test(0, '0');
     test(10, 'a');
@@ -488,7 +474,6 @@ namespace('Number', function () {
     });
   });
 
-
   method('isInteger', function() {
     test(15, true);
     test(15.2, false);
@@ -497,7 +482,6 @@ namespace('Number', function () {
     test('15', true);
     test('15.8', false);
   });
-
 
   method('abbr', function() {
     test(1, '1');

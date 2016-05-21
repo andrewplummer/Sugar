@@ -964,7 +964,6 @@ namespace('Function', function () {
     equal(fn(1),     safeArray(1, u, u), 'takes 2 | manual 1 | 1 arg');
     equal(fn(1,2,3), safeArray(1, u, u), 'takes 2 | manual 1 | 3 args');
 
-
     // Get all arguments by length as forcing 3 could mask
     // real number called with .apply
 
@@ -988,6 +987,9 @@ namespace('Function', function () {
     equal(fn(1),     [1], 'takes 2 returns varied | manual 1 | 1 arg');
     equal(fn(1,2,3), [1], 'takes 2 returns varied | manual 1 | 3 args');
 
+  });
+
+  group('Locking partial functions', function() {
 
     // Locking partial functions with curried arguments
 
