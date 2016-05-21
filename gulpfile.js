@@ -427,6 +427,14 @@ var ALL_MODULES = [
   'language'
 ];
 
+var LOCALES_MODULE_COMMENT = block`
+/***
+ * @module Date Locales
+ * @description Locale files for the Sugar Date module.
+ *
+ ***/
+`;
+
 function buildClean() {
   buildNpmClean();
   buildBowerClean();
@@ -637,9 +645,8 @@ function getAllLocales() {
 
 var PACKAGE_DEFINITIONS = {
   'sugar': {
-    locales: true,
     bower: false, // Same as main repo
-    modules: 'es6,es7,string,number,array,enumerable,object,date,range,function,regexp',
+    modules: 'es6,es7,string,number,array,enumerable,object,date,locales,range,function,regexp',
     description: 'This build includes default Sugar modules and optional date locales.',
   },
   'sugar-core': {
@@ -679,8 +686,7 @@ var PACKAGE_DEFINITIONS = {
     description: 'This build includes methods for object creation, manipulation, comparison, and type checking. Note that Object.prototype is not extended by default. See the README for more.',
   },
   'sugar-date': {
-    locales: true,
-    modules: 'date,range',
+    modules: 'date,locales,range',
     description: 'This build includes methods for date parsing and formatting, relative formats like "1 minute ago", number methods like "daysAgo", and optional date locales.',
   },
   'sugar-range': {
@@ -749,11 +755,17 @@ function buildPackageDist(packageName, packageDir) {
     return stream;
   }
 
-  if (definition.locales) {
-    copyLocales('all', path.join(packageDir, 'locales'));
+  function getFilteredModules(modules) {
+    return modules.split(',').filter(function(m) {
+      if (m === 'locales') {
+        copyLocales('all', path.join(packageDir, 'locales'));
+        return false;
+      }
+      return true;
+    }).join(',');
   }
 
-  return write(definition.modules);
+  return write(getFilteredModules(definition.modules));
 }
 
 function getDistFilename(packageName, min) {
@@ -882,7 +894,7 @@ function exportBowerJson(packageName, packageDir) {
  *    simply includes all packages in a circular dependency chain.
  *
  */
-function getSourcePackages(includeModules) {
+function getModularSource() {
 
   var WHITELISTED = ['arguments', 'undefined', 'NaN', 'btoa', 'atob'];
 
@@ -891,6 +903,7 @@ function getSourcePackages(includeModules) {
   setupFindMethods();
   parseAllModules();
   transposeVarDependencies();
+  addLocalePackages();
   cleanNodes();
 
   // --- Find Methods ---
@@ -1632,14 +1645,38 @@ function getSourcePackages(includeModules) {
     });
   }
 
-  if (includeModules) {
-    return {
-      modules: modules,
-      packages: sourcePackages
-    }
+  // --- Locales ---
+
+  function addLocalePackages() {
+    var di = modules.findIndex(function(m) {
+      return m.name === 'Date';
+    });
+    modules.splice(di + 1, 0, {
+      name: 'Date Locales',
+      lower: 'locales',
+      comment: LOCALES_MODULE_COMMENT
+    });
+    getAllLocales().forEach(function(filePath) {
+      var code = path.basename(filePath, '.js');
+      var body = readFile(filePath);
+      var name = body.match(/\s+([^*]+) locale definition/)[1];
+      sourcePackages.push({
+        name: name,
+        code: code,
+        body: body,
+        type: 'locale',
+        module: 'locales',
+        bodyWithComments: body,
+        dependencies: ['addLocale']
+      });
+    });
   }
 
-  return sourcePackages;
+  return {
+    modules: modules,
+    packages: sourcePackages
+  }
+
 }
 
 // -------------- npm ----------------
@@ -1679,7 +1716,7 @@ function buildNpmPackages(p, rebuild) {
 
     if (isModular && !sourcePackages) {
       notify('Getting source packages');
-      sourcePackages = getSourcePackages();
+      sourcePackages = getModularSource().packages;
       bundleCircularDependencies();
     }
 
@@ -1718,23 +1755,6 @@ function buildNpmPackages(p, rebuild) {
       createEntryPoint(moduleNames.map(function(m) {
         return './' + m;
       }));
-      if (def.locales) {
-        exportLocales(packageName);
-      }
-    }
-
-    function exportLocales(packageName) {
-      var paths = [];
-      getAllLocales().forEach(function(l) {
-        var filename = path.basename(l, '.js');
-        exportPackage({
-          path: path.join('locales', filename),
-          body: readFile(l).replace(/^Sugar\.Date\./gm, ''),
-          dependencies: ['addLocale'],
-        });
-        paths.push('./' + filename);
-      });
-      createEntryPoint(paths, 'locales');
     }
 
     function exportModule(moduleName) {
@@ -1746,7 +1766,7 @@ function buildNpmPackages(p, rebuild) {
 
       function exportSugarMethods() {
         sourcePackages.forEach(function(p) {
-          if (p.module === moduleName && sourcePackageIsMethod(p)) {
+          if (p.module === moduleName && sourcePackageIsPublic(p)) {
             exportPackage(p);
             addDependencies(p);
             methodPaths.push(getRelativePath(p.path, moduleName, true));
@@ -1813,6 +1833,9 @@ function buildNpmPackages(p, rebuild) {
         case 'var':
           compileVarPackage(p);
           break;
+        case 'locale':
+          compileLocalePackage(p);
+          break;
       }
     }
 
@@ -1856,6 +1879,10 @@ function buildNpmPackages(p, rebuild) {
       }
     }
 
+    function compileLocalePackage(p) {
+      p.body = p.body.replace(/Sugar\.Date\.(?=addLocale)/, '');
+    }
+
     function removeVarDependency(p, name) {
       var varPackage = sourcePackages.findByVarName(name);
       p.dependencies = p.dependencies.filter(function(d) {
@@ -1872,6 +1899,8 @@ function buildNpmPackages(p, rebuild) {
         return path.join('polyfills', p.namespace.toLowerCase(), p.name);
       } else if (p.type === 'method' || p.type === 'alias' || p.type === 'prototype') {
         return path.join(p.namespace.toLowerCase(), p.name);
+      } else if (p.type === 'locale') {
+        return path.join(p.module, p.code);
       } else {
         return path.join(p.module, p.type, p.name);
       }
@@ -1983,6 +2012,11 @@ function buildNpmPackages(p, rebuild) {
           '// This module does not export anything as it is',
           '// simply defining "'+ p.name +'" on '+ p.target +'.prototype.'
         ].join('\n');
+      } else if (p.type === 'locale') {
+        return [
+          '// This module does not export anything as it is',
+          '// simply registering the "'+ p.code +'" locale.'
+        ].join('\n');
       } else if (p.type === 'method' || p.type === 'alias') {
         exports = ['Sugar', p.namespace, p.name].join('.');
       } else if (p.type === 'build') {
@@ -2043,9 +2077,9 @@ function buildNpmPackages(p, rebuild) {
 
     function bundleCircular(chain) {
 
-      // Method definitions can never be bundled
+      // Public packages can never be bundled
       // together with top level dependencies.
-      chain = removeMethodsFromChain(chain);
+      chain = removePublicFromChain(chain);
 
       // Sort the chain so that all packages are
       // bundled into the first found in the source.
@@ -2068,9 +2102,9 @@ function buildNpmPackages(p, rebuild) {
 
     }
 
-    function removeMethodsFromChain(chain) {
+    function removePublicFromChain(chain) {
       return chain.filter(function(name) {
-        return !sourcePackageIsMethod(sourcePackages.findByName(name));
+        return !sourcePackageIsPublic(sourcePackages.findByName(name));
       });
     }
 
@@ -2156,8 +2190,9 @@ function buildNpmPackages(p, rebuild) {
     return sourcePackages.findByDependencyName(name) || sourcePackages.findByMethodName(name);
   }
 
-  function sourcePackageIsMethod(p) {
-    return p.type === 'method' || p.type === 'polyfill' || p.type === 'alias' || p.type === 'prototype';
+  function sourcePackageIsPublic(p) {
+    var t = p.type;
+    return t === 'alias' || t === 'method' || t === 'locale' || t === 'polyfill' || t === 'prototype';
   }
 
   return stream;
@@ -2577,7 +2612,7 @@ function buildJSONDocs() {
 
 function buildJSONSource() {
 
-  var data = getSourcePackages(true);
+  var data = getModularSource();
 
   addCorePackage();
   bundleSetPackages();

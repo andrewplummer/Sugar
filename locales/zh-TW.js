@@ -47,4 +47,3 @@ Sugar.Date.addLocale('zh-TW', {
     '{date}[日號]'
   ]
 });
-

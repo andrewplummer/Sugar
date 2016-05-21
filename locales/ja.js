@@ -59,4 +59,3 @@ Sugar.Date.addLocale('ja', {
     '{date}日'
   ]
 });
-

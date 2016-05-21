@@ -46,4 +46,3 @@ Sugar.Date.addLocale('ko', {
     '{date}일'
   ]
 });
-
