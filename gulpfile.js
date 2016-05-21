@@ -1303,16 +1303,16 @@ function getModularSource() {
     }
 
     function processAliasExpression(node) {
-      var sugarNamespace, methodName, aliasedMethod, deps, opts = {};
+      var sugarNamespace, methodName, aliasedMethod, opts = {};
 
       sugarNamespace = node.expression.arguments[0].name;
       methodName     = node.expression.arguments[1].value;
       aliasedMethod  = node.expression.arguments[2].value;
 
       opts.alias = aliasedMethod;
+      opts.methodDependencies = [aliasedMethod];
 
-      deps = [aliasedMethod];
-      addSugarMethod(methodName, node, 'alias', deps, opts);
+      addSugarMethod(methodName, node, 'alias', [], opts);
     }
 
     function processBuildExpression(node) {
@@ -1667,7 +1667,7 @@ function getModularSource() {
         type: 'locale',
         module: 'locales',
         bodyWithComments: body,
-        dependencies: ['addLocale']
+        methodDependencies: ['addLocale']
       });
     });
   }
@@ -2692,11 +2692,18 @@ function buildJSONSource() {
     delete p.type;
     delete p.body;
     delete p.path;
+    delete p.alias;
     delete p.setName;
     delete p.comments;
     delete p.varDependencies;
-    if (!p.bodyWithComments) {
-      delete p.bodyWithComments;
+    compactField(p, 'bodyWithComments');
+    compactField(p, 'dependencies');
+  }
+
+  function compactField(p, field) {
+    var val = p[field];
+    if (!val || (Array.isArray(val) && !val.length)) {
+      delete p[field];
     }
   }
 
