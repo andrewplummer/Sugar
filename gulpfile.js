@@ -1717,6 +1717,7 @@ function buildNpmPackages(p, rebuild) {
     if (isModular && !sourcePackages) {
       notify('Getting source packages');
       sourcePackages = getModularSource().packages;
+      mergeMethodDependencies();
       bundleCircularDependencies();
     }
 
@@ -2048,6 +2049,13 @@ function buildNpmPackages(p, rebuild) {
       writeFile(outputPath, outputBody);
     }
 
+  }
+
+  function mergeMethodDependencies() {
+    sourcePackages.forEach(function(sp) {
+      var deps = sp.dependencies, mdeps = sp.methodDependencies;
+      sp.dependencies = (deps || []).concat(mdeps || []);
+    });
   }
 
   // Circular dependencies are not necessarily a problem for Javascript at
