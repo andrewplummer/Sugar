@@ -872,7 +872,6 @@ namespace('Date', function () {
 
   });
 
-
   group('Create | Other', function() {
 
     // Issue #98: System time set to January 31st
@@ -952,7 +951,6 @@ namespace('Date', function () {
     equal(new Date(null), testCreateDate(null), 'null');
 
   });
-
 
   method('isPast', function() {
 
@@ -1505,8 +1503,6 @@ namespace('Date', function () {
     test(d, 29, 'feb leap year');
   });
 
-
-
   method('setISOWeek', function() {
     var d = new Date('August 25, 2010 11:45:20');
 
@@ -1945,7 +1941,6 @@ namespace('Date', function () {
 
   });
 
-
   method('is', function() {
 
     var d = new Date(2010,7,5,13,45,2,542);
@@ -2277,7 +2272,6 @@ namespace('Date', function () {
     equal(run(new Date(2015, 2, 31), 'monthsSince', [new Date(2015, 0, 31)]),  2, 'Mar 31st is  2 months since Jan 31st');
 
   });
-
 
   group('Beginning/End', function() {
 
@@ -2646,7 +2640,6 @@ namespace('Date', function () {
 
   });
 
-
   method('isAfter', function() {
 
     dateTest(new Date(2001,1,23), [new Date(2000,1,23)], true, 'January 23, 2000');
@@ -2814,7 +2807,6 @@ namespace('Date', function () {
     equal(run(date2, 'isValid'), false, 'Date#clone | cloned element is also invalid');
 
   });
-
 
   group('Date Locales', function() {
 
@@ -3016,7 +3008,6 @@ namespace('Date', function () {
 
     test(new Date(2013, 6, 12, 8, 30), new Date(2013, 6, 14, 23, 59, 59, 999), 'resets time');
   });
-
 
   method('newDateInternal', function() {
 
