@@ -79,4 +79,3 @@ Sugar.Date.addLocale('pl', {
     }
   }
 });
-

@@ -59,4 +59,3 @@ Sugar.Date.addLocale('ru', {
     '{0?} {shift} {weekday}'
   ]
 });
-

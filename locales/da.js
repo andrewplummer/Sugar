@@ -47,4 +47,3 @@ Sugar.Date.addLocale('da', {
     '{shift} {weekday}'
   ]
 });
-
