@@ -45,7 +45,7 @@
       currentTest = null;
     }
     var runAll = arrayFilter(namespaces, function(p) {
-      return p.assertions > 0;
+      return p.assertions > 0 || p.failures.length;
     });
     fn(new Date() - time, runAll);
     allTests = [];
