@@ -27,7 +27,6 @@ namespace('String', function () {
     test('アイカムinピース', true);
   });
 
-
   method('isHiragana', function() {
     test('あ', true);
     test('ぁ', true);
@@ -38,7 +37,6 @@ namespace('String', function () {
     test('アイカム イン ピース', false);
   });
 
-
   method('hasHiragana', function() {
     test('あ', true);
     test('ぁ', true);
@@ -48,7 +46,6 @@ namespace('String', function () {
     test('あいかむいんぴーす', true);
     test('あいかむinぴーす', true);
   });
-
 
   method('isKana', function() {
     test('', false, 'blank');
@@ -96,7 +93,6 @@ namespace('String', function () {
     test(' 語学 ', true, 'kango with whitespace');
     test(' 語学\t ', true, 'kango with whitespace and tabs');
   });
-
 
   method('isKanji', function() {
     test('', false, 'blank');
@@ -172,7 +168,6 @@ namespace('String', function () {
     test('これはミックスですよね。', false, 'Katakana hiragana mix');
   });
 
-
   method('hankaku', function() {
 
     test('カ', 'ｶ', 'カ');
@@ -224,8 +219,6 @@ namespace('String', function () {
 
     test(allZenkakuChars, allHankakuChars, 'everything');
 
-    equal(run(run('こんにちは。タロウ　ＹＡＭＡＤＡです。１８才です！（笑）', 'katakana'), 'hankaku'), 'ｺﾝﾆﾁﾊ｡ﾀﾛｳ YAMADAﾃﾞｽ｡18才ﾃﾞｽ!(笑)', 'full string to katakana and hankaku');
-
   });
 
   method('zenkaku', function() {
@@ -271,7 +264,6 @@ namespace('String', function () {
     test(allHankakuChars, allZenkakuChars, 'everything');
   });
 
-
   method('hiragana', function() {
     var barabara = 'こんにちは｡ﾀﾛｳ YAMADAです｡18才です!(笑)';
 
@@ -283,7 +275,6 @@ namespace('String', function () {
     test(barabara, 'こんにちは｡たろう YAMADAです｡18才です!(笑)', 'full string');
     test('ｶﾀｶﾅ', [false], 'ｶﾀｶﾅ', 'no widths |convert from hankaku katakana');
     test(barabara, [false], 'こんにちは｡ﾀﾛｳ YAMADAです｡18才です!(笑)', 'no widths | full string');
-    test(run(barabara, 'zenkaku'), 'こんにちは。たろう　ＹＡＭＡＤＡです。１８才です！（笑）', 'full string to zenkaku');
     test(allKatakana, allHiragana, 'all');
   });
 
@@ -294,8 +285,13 @@ namespace('String', function () {
     test('か', 'カ', 'か');
     test('ひらがな', 'ヒラガナ', 'from hiragana');
     test(barabara, 'コンニチハ｡ﾀﾛｳ YAMADAデス｡18才デス!(笑)', 'full string');
-    test(run(barabara, 'zenkaku'), 'コンニチハ。タロウ　ＹＡＭＡＤＡデス。１８才デス！（笑）', 'full string to zenkaku');
     test(allHiragana, allKatakana, 'all');
+  });
+
+  group('Method Inverses', function() {
+    equal(run(run('こんにちは。タロウ　ＹＡＭＡＤＡです。１８才です！（笑）', 'katakana'), 'hankaku'), 'ｺﾝﾆﾁﾊ｡ﾀﾛｳ YAMADAﾃﾞｽ｡18才ﾃﾞｽ!(笑)', 'full string to katakana and hankaku');
+    equal(run(run('こんにちは｡ﾀﾛｳ YAMADAです｡18才です!(笑)', 'zenkaku'), 'hiragana'), 'こんにちは。たろう　ＹＡＭＡＤＡです。１８才です！（笑）', 'full string to zenkaku');
+    equal(run(run('こんにちは｡ﾀﾛｳ YAMADAです｡18才です!(笑)', 'zenkaku'), 'katakana'), 'コンニチハ。タロウ　ＹＡＭＡＤＡデス。１８才デス！（笑）', 'full string to zenkaku');
   });
 
 });
