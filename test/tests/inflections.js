@@ -500,18 +500,18 @@ namespace('String | Inflections', function () {
   });
 
   group('Clearing Inflectors', function() {
-    test('foo', 'foos', 'String.Inflector.clear | foo is foos');
+    equal(run('foo', 'pluralize'), 'foos', 'String.Inflector.clear | foo is foos');
     Sugar.String.Inflector.clear('plurals');
-    test('foo', 'foo', 'String.Inflector.clear | clear purals');
+    equal(run('foo', 'pluralize'), 'foo', 'String.Inflector.clear | clear purals');
     equal(run('foos', 'singularize'), 'foo', 'String.Inflector.clear | singulars are not cleared');
     Sugar.String.Inflector.plural(/$/, 's');
-    test('foo', 'foos', 'String.Inflector.plural | re-add');
+    equal(run('foo', 'pluralize'), 'foos', 'String.Inflector.plural | re-add');
     Sugar.String.Inflector.clear('all');
-    test('foo', 'foo', 'String.Inflector.plural | clear all with "all"');
+    equal(run('foo', 'pluralize'), 'foo', 'String.Inflector.plural | clear all with "all"');
     Sugar.String.Inflector.plural(/$/, 's');
-    test('foo', 'foos', 'String.Inflector.plural | re-add again');
+    equal(run('foo', 'pluralize'), 'foos', 'String.Inflector.plural | re-add again');
     Sugar.String.Inflector.clear();
-    test('foo', 'foo', 'String.Inflector.plural | clear all with undefined');
+    equal(run('foo', 'pluralize'), 'foo', 'String.Inflector.plural | clear all with undefined');
   });
 
 });

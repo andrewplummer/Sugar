@@ -1,11 +1,48 @@
 namespace('Function', function () {
   'use strict';
 
-  var clock;
+  var clock, u;
 
   function getTimers(fn) {
     return testGetPrivateProp(fn, 'timers');
   }
+
+  function getThreeNoLength(args) {
+    var arr = [];
+    for (var i = 0; i < 3; i++) {
+      arr[i] = args[i];
+    }
+    return arr;
+  }
+
+  function getAllWithLength(args) {
+    var arr = [];
+    for (var i = 0; i < args.length; i++) {
+      arr[i] = args[i];
+    }
+    return arr;
+  }
+
+  function takesNone() {
+    return getThreeNoLength(arguments);
+  }
+
+  function takesOne(a) {
+    return getThreeNoLength(arguments);
+  }
+
+  function takesTwo(a, b) {
+    return getThreeNoLength(arguments);
+  }
+
+  function takesNoneReturnsVaried() {
+    return getAllWithLength(arguments);
+  }
+
+  function takesTwoReturnsVaried(a, b) {
+    return getAllWithLength(arguments);
+  }
+
 
   setup(function() {
     clock = sinon.useFakeTimers();
@@ -894,44 +931,6 @@ namespace('Function', function () {
 
   method('lock', function() {
 
-    var u;
-
-    function getThreeNoLength(args) {
-      var arr = [];
-      for (var i = 0; i < 3; i++) {
-        arr[i] = args[i];
-      }
-      return arr;
-    }
-
-    function getAllWithLength(args) {
-      var arr = [];
-      for (var i = 0; i < args.length; i++) {
-        arr[i] = args[i];
-      }
-      return arr;
-    }
-
-    function takesNone() {
-      return getThreeNoLength(arguments);
-    }
-
-    function takesOne(a) {
-      return getThreeNoLength(arguments);
-    }
-
-    function takesTwo(a, b) {
-      return getThreeNoLength(arguments);
-    }
-
-    function takesNoneReturnsVaried() {
-      return getAllWithLength(arguments);
-    }
-
-    function takesTwoReturnsVaried(a, b) {
-      return getAllWithLength(arguments);
-    }
-
     // Force 3 arguments as .length could be lying
 
     var fn = run(takesNone, 'lock', []);
@@ -990,8 +989,6 @@ namespace('Function', function () {
   });
 
   group('Locking partial functions', function() {
-
-    // Locking partial functions with curried arguments
 
     var partial = run(takesNoneReturnsVaried, 'partial', ['a', 'b']);
     var fn = run(partial, 'lock', []);
