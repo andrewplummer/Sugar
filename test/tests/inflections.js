@@ -497,7 +497,9 @@ namespace('String | Inflections', function () {
     // More irregulars
     test('street', 'streets', 'String.Inflector | street > streets');
 
-    // Test clearing inflectors KEEP ME AT THE BOTTOM
+  });
+
+  group('Clearing Inflectors', function() {
     test('foo', 'foos', 'String.Inflector.clear | foo is foos');
     Sugar.String.Inflector.clear('plurals');
     test('foo', 'foo', 'String.Inflector.clear | clear purals');
@@ -510,7 +512,6 @@ namespace('String | Inflections', function () {
     test('foo', 'foos', 'String.Inflector.plural | re-add again');
     Sugar.String.Inflector.clear();
     test('foo', 'foo', 'String.Inflector.plural | clear all with undefined');
-
   });
 
 });
