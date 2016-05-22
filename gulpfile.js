@@ -909,34 +909,42 @@ function getModularSource() {
   // --- Find Methods ---
 
   function setupFindMethods() {
-    setupCachedFind('findByName', findByName);
     setupCachedFind('findByVarName', findByVarName);
-    setupCachedFind('findByMethodName', findByMethodName);
+    setupCachedFind('findByDependentPackage', findByDependentPackage);
     setupCachedFind('findByDependencyName', findByDependencyName);
   }
 
   function setupCachedFind(methodName, fn) {
     var cache = {};
-    sourcePackages[methodName] = function(token) {
-      if (cache[token]) {
+    sourcePackages[methodName] = function(obj) {
+      var token = getTokenForObject(obj);
+      if (token in cache) {
         return cache[token];
       }
       return cache[token] = this.find(function(p) {
-        return fn(p, token);
+        return fn(p, obj);
       });
     }
   }
 
-  function findByName(p, name) {
-    return p.name === name;
+  function getTokenForObject(obj) {
+    if (typeof obj === 'object' && obj.module && obj.name) {
+      // Assume a source package;
+      obj = obj.module + (obj.namespace || '') + obj.name;
+    }
+    return obj;
   }
 
   function findByVarName(p, varName) {
     return p.vars && p.vars.indexOf(varName) !== -1;
   }
 
-  function findByMethodName(p, methodName) {
-    return p.name === methodName && p.type === 'method';
+  function findByDependentPackage(p, ap) {
+    if (ap.type === 'locale') {
+      return p.namespace === 'Date' && p.name === 'addLocale';
+    } else if (ap.type === 'alias') {
+      return p.name === ap.alias && p.module === ap.module && p.namespace === ap.namespace;
+    }
   }
 
   function findByDependencyName(p, dependencyName) {
@@ -1167,7 +1175,8 @@ function getModularSource() {
         var methodMatch = block.match(/@method ([\[\]\w]+)/);
         if (methodMatch) {
           var methodBlock = {
-            name: methodMatch[1]
+            name: methodMatch[1],
+            static: /@static/.test(block)
           };
           var setMatch = block.match(/@set([^@\/]+)/);
           if (setMatch) {
@@ -1278,6 +1287,7 @@ function getModularSource() {
       opts.defineMethod = defineMethod;
       opts.blockStart   = defineMethod + '(' + sugarNamespace + ', {';
       opts.blockEnd     = getBlockEnd();
+      opts.static       = /static/i.test(defineMethod);
 
       methods.forEach(function(node) {
         addSugarMethod(node.key.value, node, type, deps, opts);
@@ -1294,8 +1304,9 @@ function getModularSource() {
       deps = [defineMethod, target];
 
       opts.target     = target;
-      opts.blockStart =  defineMethod + '(' + target + ', {';
+      opts.blockStart = defineMethod + '(' + target + ', {';
       opts.blockEnd   = '});';
+      opts.static     = /static/i.test(defineMethod);
 
       methods.forEach(function(node) {
         addSugarMethod(node.key.value, node, 'prototype', deps, opts);
@@ -1311,6 +1322,7 @@ function getModularSource() {
 
       opts.alias = aliasedMethod;
       opts.methodDependencies = [aliasedMethod];
+      opts.static = getMethodBlocksInPreviousComment(node)[0].static;
 
       addSugarMethod(methodName, node, 'alias', [], opts);
     }
@@ -1319,7 +1331,7 @@ function getModularSource() {
 
       var fnName     = node.expression.callee.name;
       var fnCallName = fnName + 'Call';
-      var fnPackage  = sourcePackages.findByName(fnName);
+      var fnPackage  = sourcePackages.findByDependencyName(fnName);
 
       addSourcePackage(fnCallName, node, 'build');
       findVarAssignments();
@@ -1378,8 +1390,9 @@ function getModularSource() {
         type = hasPrototypeBlock ? 'prototype' : 'method';
 
         methodBlocks.forEach(function(block) {
+          opts.static = block.static;
           if (block.set) {
-            opts.set = block.set;
+            opts.set     = block.set;
             opts.setName = block.name;
             block.set.forEach(function(methodName) {
               addSugarBuiltMethod(methodName, fnPackage, type, opts);
@@ -1777,7 +1790,7 @@ function buildNpmPackages(p, rebuild) {
 
       function addDependencies(p) {
         p.dependencies.forEach(function(d) {
-          var dep = findDependency(d);
+          var dep = findDependency(d, p);
           if (dep) {
             dependencies.push(dep);
             addDependencies(dep);
@@ -1927,7 +1940,7 @@ function buildNpmPackages(p, rebuild) {
       if (d === 'Sugar') {
         return 'sugar-core';
       }
-      return getPackageRelativePath(findDependency(d), p);
+      return getPackageRelativePath(findDependency(d, p), p);
     }
 
     function getRequires(p) {
@@ -1986,7 +1999,7 @@ function buildNpmPackages(p, rebuild) {
     function getAssigns(p) {
       var assigns = [];
       p.dependencies.forEach(function(d) {
-        var dep = findDependency(d);
+        var dep = findDependency(d, p);
         if (dep && dep.vars && dep.vars.length > 1) {
           dep.vars.forEach(function(v) {
             if (p.varDependencies && p.varDependencies.indexOf(v) !== -1) {
@@ -2067,7 +2080,8 @@ function buildNpmPackages(p, rebuild) {
 
     function findCircular(deps, chain) {
       for (var i = 0, startIndex, c, p; i < deps.length; i++) {
-        p = sourcePackages.findByName(deps[i]);
+        // Only top level dependencies will be included in the chain.
+        p = sourcePackages.findByDependencyName(deps[i]);
         if (!p) {
           continue;
         }
@@ -2085,18 +2099,14 @@ function buildNpmPackages(p, rebuild) {
 
     function bundleCircular(chain) {
 
-      // Public packages can never be bundled
-      // together with top level dependencies.
-      chain = removePublicFromChain(chain);
-
       // Sort the chain so that all packages are
       // bundled into the first found in the source.
       chain = sortChain(chain);
 
-      var target = sourcePackages.findByName(chain[0]);
+      var target = sourcePackages.findByDependencyName(chain[0]);
       delete target.comments;
       chain.slice(1).forEach(function(n) {
-        var src = sourcePackages.findByName(n);
+        var src = sourcePackages.findByDependencyName(n);
         target.body += '\n\n' + src.body;
         target.bodyWithComments += '\n\n' + src.bodyWithComments;
         bundleArray(target, src, 'dependencies', true);
@@ -2108,12 +2118,6 @@ function buildNpmPackages(p, rebuild) {
         removePackage(src);
       });
 
-    }
-
-    function removePublicFromChain(chain) {
-      return chain.filter(function(name) {
-        return !sourcePackageIsPublic(sourcePackages.findByName(name));
-      });
     }
 
     function sortChain(chain) {
@@ -2194,8 +2198,8 @@ function buildNpmPackages(p, rebuild) {
   // enhanced "every" method was present or not. Additionally, generally native
   // functionality should use it's proper name, so aliases should always be
   // referring to something beyond that.
-  function findDependency(name) {
-    return sourcePackages.findByDependencyName(name) || sourcePackages.findByMethodName(name);
+  function findDependency(name, p) {
+    return sourcePackages.findByDependencyName(name) || sourcePackages.findByDependentPackage(p);
   }
 
   function sourcePackageIsPublic(p) {
@@ -2655,6 +2659,7 @@ function buildJSONSource() {
             sample: p.set.slice(0, 2).concat('...').join(', '),
             type: p.type,
             module: p.module,
+            static: p.static,
             namespace: p.namespace,
             dependencies: p.dependencies,
             bodyWithComments: p.bodyWithComments,
@@ -2674,10 +2679,6 @@ function buildJSONSource() {
       indentField(m, 'comment');
     });
     data.packages.forEach(function(p) {
-      // Wrap name with HTML in case there are brackets.
-      p.nameHTML = (p.setName || p.name).replace(/\[(\w+)\]/, function(m, token) {
-        return '<span class="u-faded">' + token + '</span>';
-      });
 
       // Pre-indenting all packages rather than doing it on compile to
       // save some cycles and also correctly calculate the package size.
@@ -2700,10 +2701,10 @@ function buildJSONSource() {
     delete p.type;
     delete p.body;
     delete p.path;
-    delete p.alias;
-    delete p.setName;
+    delete p.assigns;
     delete p.comments;
     delete p.varDependencies;
+    compactField(p, 'static');
     compactField(p, 'bodyWithComments');
     compactField(p, 'dependencies');
   }
