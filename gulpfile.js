@@ -40,6 +40,7 @@ gulp.task('test:watch',     testWatchDefault);
 gulp.task('test:watch:npm', testWatchNpm);
 gulp.task('test:watch:all', testWatchAll);
 
+gulp.task('json:api',    buildJSONAPI);
 gulp.task('json:docs',   buildJSONDocs);
 gulp.task('json:source', buildJSONSource);
 
@@ -79,7 +80,8 @@ var MESSAGE_TASKS = `
        |test:watch:npm|                 Watch for changes and run "test:npm".
        |test:watch:all|                 Watch for changes and run "test:all".
 
-       |json:docs|                      Builds docs as JSON.
+       |json:api|                       Builds API method list as JSON.
+       |json:docs|                      Builds full docs set as JSON.
        |json:source|                    Builds modularized source as JSON.
 
        |more|                           Show more help details.
@@ -2255,7 +2257,40 @@ function buildBowerPackages(p) {
 
 // -------------- JSON Docs ----------------
 
+function buildJSONAPI() {
+
+  var SINGULAR_UNITS_REG = /^(year|month|week|day|hour|minute|second|millisecond)(?!s)/;
+
+  var docs = getJSONDocs(), data = {};
+
+  data.namespaces = docs.namespaces.map(function(ns) {
+    return {
+      name: ns.name,
+      methods: ns.methods.map(function(m) {
+        var p = {
+          name: m.name
+        }
+        if (m.set) {
+          p.set = m.set.filter(function(name) {
+            return !SINGULAR_UNITS_REG.test(name);
+          });
+        }
+        return p;
+      })
+    }
+  });
+
+  writeJSON(data, 'api.json');
+}
+
 function buildJSONDocs() {
+
+  var docs = getJSONDocs();
+
+  writeJSON(getJSONDocs(), 'docs.json');
+}
+
+function getJSONDocs() {
 
   var ALIAS_FIELDS = [
     'args',
@@ -2563,6 +2598,16 @@ function buildJSONDocs() {
     return lineNum;
   }
 
+  modules.forEach(function(p) {
+    var content = fs.readFileSync(p, 'utf-8'), module;
+    var lines = content.split('\n');
+    content.replace(/\*\*\*[\s\S]+?(?=\*\*\*)/gm, function(block) {
+      checkModule(block, p);
+      checkNamespace(block);
+      checkMethod(block, lines);
+    });
+  });
+
   function sortAll() {
     docs.namespaces.forEach(function(ns) {
       ns.methods.sort(methodCollate);
@@ -2605,19 +2650,9 @@ function buildJSONDocs() {
     return 0;
   }
 
-  modules.forEach(function(p) {
-    var content = fs.readFileSync(p, 'utf-8'), module;
-    var lines = content.split('\n');
-    content.replace(/\*\*\*[\s\S]+?(?=\*\*\*)/gm, function(block) {
-      checkModule(block, p);
-      checkNamespace(block);
-      checkMethod(block, lines);
-    });
-  });
+  sortAll(docs);
 
-  sortAll();
-
-  writeJSON(docs, 'docs.json');
+  return docs;
 }
 
 // --- JSON Source ---
