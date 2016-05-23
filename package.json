@@ -41,6 +41,7 @@
     "acorn": "^2.7.0",
     "closure-compiler-stream": "^0.1.15",
     "glob": "^5.0.14",
+    "google-closure-compiler": "^20160517.1.0",
     "gulp": "^3.9.0",
     "gulp-concat-util": "^0.5.2",
     "gulp-replace": "^0.5.3",
