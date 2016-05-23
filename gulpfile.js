@@ -106,9 +106,12 @@ var MESSAGE_TASKS = `
 
        |--no-polyfill|                  Exclude ES6/ES7 modules from build (dev/min tasks).
 
-       |--source_map|                   Compiler source map filename. Default is "sugar.min.map".
+       |--charset|                      Charset flag to pass to the compiler. Note that although "utf-8"
+                                        produces smaller output, default build is smaller after gzip.
 
-       |--no_source_map|                Do not output a source map.
+       |--source-map|                   Compiler source map filename. Default is "sugar.min.map".
+
+       |--no-source-map|                Do not output a source map.
 
 `;
 
@@ -238,14 +241,17 @@ function buildRelease() {
 
 // -------------- Compiler ----------------
 
-var COMPILER_JAR_PATH = 'bower_components/closure-compiler/compiler.jar';
+var COMPILER_JAR_PATH = 'node_modules/google-closure-compiler/compiler.jar';
 
 function compileSingle(path) {
   var compiler = require('closure-compiler-stream');
   var flags = getDefaultFlags();
   flags.js_output_file = path;
-  if (!args.no_source_map) {
-    flags.create_source_map = args.source_map || path.replace(/\.js/, '.map');
+  if (args.sourceMap !== false) {
+    flags.create_source_map = args.sourceMap || path.replace(/\.js/, '.map');
+  }
+  if (args.charset) {
+    flags.charset = args.charset;
   }
   return compiler(flags);
 }
@@ -253,7 +259,8 @@ function compileSingle(path) {
 function getDefaultFlags() {
   return {
     jar: COMPILER_JAR_PATH,
-    compilation_level: 'ADVANCED_OPTIMIZATIONS',
+    compilation_level: 'ADVANCED',
+    assume_function_wrapper: true,
     jscomp_off: ['globalThis', 'misplacedTypeAnnotation', 'checkTypes'],
     output_wrapper: LICENSE + "\n(function(){'use strict';%output%}).call(this);",
     externs: 'lib/extras/externs.js',
