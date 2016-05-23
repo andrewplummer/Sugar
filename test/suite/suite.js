@@ -36,8 +36,8 @@
       }
       try {
         currentTest.fn();
-      } catch(e) {
-        addFailure(e.message, '', currentTest.name);
+      } catch(err) {
+        addFailure(err.message, '', currentTest.name);
       }
       if (currentTest.namespace.teardown) {
         currentTest.namespace.teardown();
@@ -144,9 +144,18 @@
     currentNamespace.teardown = fn;
   }
 
-  withArgs = function(args, fn) {
+  withArgs = function(args) {
+    var name, fn;
+    if (arguments.length === 2) {
+      fn   = arguments[1];
+    } else if (arguments.length === 3) {
+      name = arguments[1];
+      fn   = arguments[2];
+    }
+    currentTest.message = name || args.join(', ');
     currentArgs = args;
     fn();
+    currentTest.message = null;
     currentArgs = null;
   }
 
@@ -283,6 +292,9 @@
     var title = currentTest.name;
     if (title) {
       msg += title + ' | ';
+    }
+    if (currentTest.message) {
+      msg += currentTest.message + ' | ';
     }
     msg += tail;
     return msg;
