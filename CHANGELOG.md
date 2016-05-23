@@ -82,6 +82,7 @@ v2.0.0
 - Added date unit methods to ranges.
 - Allowed excepting and allowing entire namespaces.
 - Flipped "si" argument to Number#bytes to instead be "binary".
+- Modified `String#capitalize` to have an extra parameter for downcasing.
 
 
 v1.4.2

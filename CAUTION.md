@@ -106,6 +106,9 @@ Drop it in before upgrading to get a general idea of what needs to change, or up
 - Level: Moderate
   - `Object.select` and `Object.reject` now, when passed an object as a matcher, only check for key existence, not whether values also match or not. To do the "intersect" operation that these methods previously performed, `Object.filter`, `Object.remove`, or `Object.exclude` can instead be used.
 
+- Level: Major
+  - `String#capitalize` will now only capitalize the first letter of a string by default. If you want to downcase the rest of the string, pass true for the 1st argument. Capitalizing all words is now the 2nd argument.
+
 - Level: Minor
   - `Array#remove` and `Array#exclude` no longer accept enumerated paramters. To remove multiple elements, depending on the type a regex or function may be used. Otherwise the method must be called multiple times.
 

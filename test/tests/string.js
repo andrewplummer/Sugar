@@ -122,38 +122,67 @@ namespace('String', function () {
 
   method('capitalize', function() {
 
-    test('reuben sandwich', 'Reuben sandwich', 'should capitalize first letter of first word only.');
-    test('Reuben sandwich', 'Reuben sandwich', 'should leave the string alone');
-    test('REUBEN SANDWICH', 'Reuben sandwich', 'should uncapitalize all other letters');
-    test('фыва йцук', 'Фыва йцук', 'should capitalize unicode letters');
+    test('wasabi', 'Wasabi', 'lowercase word');
+    test('Wasabi', 'Wasabi', 'capitalized word');
+    test('WASABI', 'WASABI', 'all caps');
+    test('WasAbI', 'WasAbI', 'mixed');
+    test('wasabi sandwich', 'Wasabi sandwich', 'two words');
+    test('WASABI SANDWICH', 'WASABI SANDWICH', 'two words all caps');
+    test("wasabi's SANDWICH", "Wasabi's SANDWICH", 'mixed with apostrophe');
+
+    withArgs([true], 'Downcase', function() {
+      test('wasabi', 'Wasabi', 'downcase | lowercase word');
+      test('Wasabi', 'Wasabi', 'downcase | capitalized word');
+      test('WASABI', 'Wasabi', 'downcase | all caps');
+      test('WasAbI', 'Wasabi', 'downcase | mixed');
+      test('wasabi sandwich', 'Wasabi sandwich', 'two words');
+      test('WASABI SANDWICH', 'Wasabi sandwich', 'two words all caps');
+      test("wasabi's SANDWICH", "Wasabi's sandwich", 'mixed with apostrophe');
+
+      test('reuben sandwich', 'Reuben sandwich', 'should capitalize all first letters');
+      test('фыва йцук', 'Фыва йцук', 'should capitalize unicode letters');
+    });
+
+    withArgs([false, true], 'All Words', function() {
+      test('wasabi', 'Wasabi', 'lowercase word');
+      test('Wasabi', 'Wasabi', 'capitalized word');
+      test('WASABI', 'WASABI', 'all caps');
+      test('WasAbI', 'WasAbI', 'mixed');
+      test('wasabi sandwich', 'Wasabi Sandwich', 'two words');
+      test('WASABI SANDWICH', 'WASABI SANDWICH', 'two words all caps');
+      test("wasabi's SANDWICH", "Wasabi's SANDWICH", 'mixed with apostrophe');
+    });
+
+    withArgs([true, true], 'Downcase | All Words', function() {
+      test('wasabi', 'Wasabi', 'downcase | lowercase word');
+      test('Wasabi', 'Wasabi', 'downcase | capitalized word');
+      test('WASABI', 'Wasabi', 'downcase | all caps');
+      test('WasAbI', 'Wasabi', 'downcase | mixed');
+      test('wasabi sandwich', 'Wasabi Sandwich', 'two words');
+      test('WASABI SANDWICH', 'Wasabi Sandwich', 'two words all caps');
+      test("wasabi's SANDWICH", "Wasabi's Sandwich", 'mixed with apostrophe');
+
+      test('reuben-sandwich', 'Reuben-Sandwich', 'hyphen');
+      test('reuben(sandwich)', 'Reuben(Sandwich)', 'parentheses');
+      test('reuben,sandwich', 'Reuben,Sandwich', 'comma');
+      test('reuben;sandwich', 'Reuben;Sandwich', 'semicolon');
+      test('reuben.sandwich', 'Reuben.Sandwich', 'period');
+      test('reuben_sandwich', 'Reuben_Sandwich', 'underscore');
+      test('reuben\nsandwich', 'Reuben\nSandwich', 'new line');
+      test("reuben's sandwich", "Reuben's Sandwich", 'apostrophe should not trigger capitalize');
+
+      test('фыва-йцук', 'Фыва-Йцук', 'Russian with hyphens');
+      test('фыва,йцук', 'Фыва,Йцук', 'Russian with comma');
+      test('фыва;йцук', 'Фыва;Йцук', 'Russian with semicolon');
+      test('фыва7йцук', 'Фыва7Йцук', 'Russian with 7');
+
+      test('what a shame of a title', 'What A Shame Of A Title', 'all lower-case');
+      test('What A Shame Of A Title', 'What A Shame Of A Title', 'already capitalized');
+      test(' what a shame of a title    ', ' What A Shame Of A Title    ', 'preserves whitespace');
+      test(' what a shame of\n a title    ', ' What A Shame Of\n A Title    ', 'preserves new lines');
+    });
 
     test('', '', 'blank');
-    test('wasabi', 'Wasabi', 'wasabi');
-  });
-
-  method('capitalize', function() {
-
-    test('reuben sandwich', [true], 'Reuben Sandwich', 'should capitalize all first letters');
-    test('Reuben sandwich', [true], 'Reuben Sandwich', 'should capitalize the second letter only');
-    test('REUBEN SANDWICH', [true], 'Reuben Sandwich', 'should uncapitalize all other letters');
-    test('фыва йцук', [true], 'Фыва Йцук', 'should capitalize unicode letters');
-    test('what a shame of a title', [true], 'What A Shame Of A Title', 'all lower-case');
-    test('What A Shame Of A Title', [true], 'What A Shame Of A Title', 'already capitalized');
-    test(' what a shame of a title    ', [true], ' What A Shame Of A Title    ', 'preserves whitespace');
-    test(' what a shame of\n a title    ', [true], ' What A Shame Of\n A Title    ', 'preserves new lines');
-
-    test('reuben-sandwich', [true], 'Reuben-Sandwich', 'hyphen');
-    test('reuben,sandwich', [true], 'Reuben,Sandwich', 'comma');
-    test('reuben;sandwich', [true], 'Reuben;Sandwich', 'semicolon');
-    test('reuben.sandwich', [true], 'Reuben.Sandwich', 'period');
-    test('reuben_sandwich', [true], 'Reuben_Sandwich', 'underscore');
-    test('reuben\nsandwich', [true], 'Reuben\nSandwich', 'new line');
-    test("reuben's sandwich", [true], "Reuben's Sandwich", 'apostrophe should not trigger capitalize');
-    test('фыва-йцук', [true], 'Фыва-Йцук', 'Russian with hyphens');
-    test('фыва,йцук', [true], 'Фыва,Йцук', 'Russian with comma');
-    test('фыва;йцук', [true], 'Фыва;Йцук', 'Russian with semicolon');
-    test('фыва7йцук', [true], 'Фыва7Йцук', 'Russian with 7');
-
   });
 
   method('chars', function() {
