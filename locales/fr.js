@@ -12,7 +12,7 @@ Sugar.Date.addLocale('fr', {
   'weekdays': 'dim:anche|,lun:di|,mar:di|,mer:credi|,jeu:di|,ven:dredi|,sam:edi|',
   'units': 'milliseconde:|s,seconde:|s,minute:|s,heure:|s,jour:|s,semaine:|s,mois,an:|s|née|nee',
   'numbers': 'zéro,un:|e,deux,trois,quatre,cinq,six,sept,huit,neuf,dix',
-  'tokens': "l'|la|le",
+  'tokens': "l'|la|le,er",
   'short':  '{dd}/{MM}/{yyyy}',
   'medium': '{d} {month} {yyyy}',
   'long':   '{d} {month} {yyyy} {time}',
@@ -38,7 +38,7 @@ Sugar.Date.addLocale('fr', {
     '{0?} {unit:5-7} {shift}'
   ],
   'timeFrontParse': [
-    '{weekday?} {0?} {date?} {month} {year?}',
+    '{weekday?} {0?} {date?}{1?} {month} {year?}',
     '{0?} {weekday} {shift}'
   ]
 });

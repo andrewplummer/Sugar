@@ -132,6 +132,10 @@ namespace('Date | French', function () {
     equal(run(testCreateDate('1 year ago', 'en'), 'isLastYear'), true, 'isLastYear should be true for last year in other locales');
     equal(run(testCreateDate('1 year from now', 'en'), 'isNextYear'), true, 'isNextYear should be true for next year in other locales');
 
+    // Issue #548 - Ordinal 1st
+
+    equal(testCreateDate('1er septembre'), new Date(now.getFullYear(), 8, 1), '1er septembre');
+    equal(testCreateDate('2 septembre'), new Date(now.getFullYear(), 8, 2), '2 septembre');
 
   });
 
