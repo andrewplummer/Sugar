@@ -98,7 +98,8 @@ namespace('Array', function () {
     equal(arr, [1,2,3], 'original array should be untouched');
 
     var arr = testGetSparseArray(5, 'a', 'b', 'c');
-    test(arr, [], arr, 'should correctly clone a sparse array');
+    arr[9] = 'd';
+    test(arr, arr, 'should correctly clone a sparse array');
 
   });
 
