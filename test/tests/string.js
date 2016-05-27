@@ -137,7 +137,9 @@ namespace('String', function () {
       test('WasAbI', 'Wasabi', 'downcase | mixed');
       test('wasabi sandwich', 'Wasabi sandwich', 'two words');
       test('WASABI SANDWICH', 'Wasabi sandwich', 'two words all caps');
+
       test("wasabi's SANDWICH", "Wasabi's sandwich", 'mixed with apostrophe');
+      test("wasabis' SANDWICH", "Wasabis' sandwich", 'mixed with apostrophe last');
 
       test('reuben sandwich', 'Reuben sandwich', 'should capitalize all first letters');
       test('фыва йцук', 'Фыва йцук', 'should capitalize unicode letters');
@@ -150,7 +152,10 @@ namespace('String', function () {
       test('WasAbI', 'WasAbI', 'mixed');
       test('wasabi sandwich', 'Wasabi Sandwich', 'two words');
       test('WASABI SANDWICH', 'WASABI SANDWICH', 'two words all caps');
-      test("wasabi's SANDWICH", "Wasabi's SANDWICH", 'mixed with apostrophe');
+
+      test("wasabi's SANDWICH", "Wasabi's SANDWICH", 'should not touch apostrophe');
+      test("'you' and 'me'", "'You' And 'Me'", 'should find words in single quotes');
+
     });
 
     withArgs([true, true], 'Downcase | All Words', function() {
@@ -842,6 +847,8 @@ namespace('String', function () {
     test('watch   me   fail', 'watch_me_fail', 'long whitespace');
     test('watch me fail-sad-face', 'watch_me_fail_sad_face', 'whitespace sad face');
     test('waTch me su-cCeed', 'wa_tch_me_su_c_ceed', 'complex whitespace');
+
+    test('_hop_on_pop_', '_hop_on_pop_', 'underscores are left alone');
 
     test('', '', 'blank');
     test('noFingWay', 'no_fing_way', 'noFingWay');

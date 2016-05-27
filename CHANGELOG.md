@@ -20,7 +20,7 @@ v2.0.0
 - Added `String#map`.
 - Added ability fo `String#stripTags` and `Strip#removeTags` to pass a callback.
 - Made `String#stripTags` and `String#removeTags` much more robust.
-- Renamed `String#normalize` to `String#toAscii`.
+- Removed `String#normalize` and will put into its own plugin module as `String#toAscii` later.
 - Updated `Array#sortBy` to handle sorting on multiple properties (Issue #386, thanks to @eric-weiser).
 - Fixed `String#unescapeHTML` to handle HTML (and hex) codes. Also now handling &nbsp;
 - Added a third argument to `Number#bytes` to allow normal SI units.
@@ -83,6 +83,7 @@ v2.0.0
 - Allowed excepting and allowing entire namespaces.
 - Flipped "si" argument to Number#bytes to instead be "binary".
 - Modified `String#capitalize` to have an extra parameter for downcasing.
+- Refactored inflections module to have a more straightforward API.
 
 
 v1.4.2
@@ -150,7 +151,6 @@ v1.4.0
 - Fixed `String#truncate` not returning primitives.
 - `String#repeat` is now aligned more with spec. `String#pad` follows suit.
 - Added `Array#findFrom` and `Array#findIndexFrom`.
-- Removed `String#normalize`.
 - Removed `Range#step` alias.
 - Removed `deep` argument from `Object.fromQueryString` and replaced with optional boolean casting.
 

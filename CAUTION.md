@@ -91,8 +91,8 @@ Drop it in before upgrading to get a general idea of what needs to change, or up
 - Level: Moderate
   - Alphanumeric array options are now defined on the global object `Sugar` instead of `Array` itself.
 
-- Level: Moderate
-  - `String#normalize` is now renamed to `String#toAscii` to comply with the ES6 spec.
+- Level: Major
+  - `String#normalize` was removed to comply with the ES6 spec. It was also a brute force approach and most likely overkill for most situations. It will be made available as a [plugin](https://github.com/andrewplummer/sugar-plugins) under the name `String#toAscii`.
 
 - Level: Moderate
   - `Array#at` and `String#at` now no longer accept enumerated arguments. To get an multiple indexes, pass an array instead.
@@ -144,6 +144,9 @@ Drop it in before upgrading to get a general idea of what needs to change, or up
 
 - Level: Minor
   - `String#titleize` was moved from the Inflections module to String.
+
+- Level: Minor
+  - `String.Inflector` has been removed from the inflections module in favor of the static methods `addAcronym`, `addPlural`, and `addHuman`.
 
 - Level: Very Minor
   - `Array#map`, `Array#unique`, `Array#groupBy`, `Array#min`, `Array#max`, `Array#least`, `Array#most`, `Array#sortBy`: Mapping shortcut strings now accept deep matchers with the dot `.` token. If you have objects that use `.` in the keys and are using these methods, be careful as this now makes the methods try to go deep. Pass a function instead to map as before.

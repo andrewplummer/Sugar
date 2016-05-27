@@ -249,107 +249,17 @@ namespace('String | Inflections', function () {
     'underground'     : 'Underground'
   }
 
-  teardown(function() {
-    Sugar.String.Inflector.reset();
-  });
+  group('acronyms', function() {
 
-  method('pluralize', function() {
-    // Test pluralize plurals
-    test('plurals', 'plurals', 'plurals')
-    test('Plurals', 'Plurals', 'Plurals')
-    test('', '', 'empty string');
-  });
-
-
-  group('Uncountables', function() {
-    // Test uncountability of words
-    Uncountables.forEach(function(word) {
-      equal(run(word, 'singularize'), word, 'singularize | uncountables');
-      equal(run(word, 'pluralize'), word, 'pluralize | uncountables');
-      equal(run(word, 'singularize'), run(word, 'pluralize'), 'singularize | uncountables | same as pluralize');
-    });
-  });
-
-  method('singularize', function() {
-
-    var uncountable = 'ors';
-    var countable = 'sponsor';
-
-    Sugar.String.Inflector.uncountable(uncountable);
-
-    test(uncountable, uncountable, 'singularize | uncountable | ors');
-    test(countable, 'sponsor', 'singularize | countable | sponsor');
-
-    // Test singularize plural
-    testIterateOverObject(SingularToPlural, function(singular, plural) {
-      test(plural, singular, 'singularize | plural > singular');
-    });
-
-    // Test singularize singular
-    testIterateOverObject(SingularToPlural, function(singular, plural) {
-      equal(singular, singular, 'singular > singular');
-    });
-
-
-  });
-
-  method('pluralize', function() {
-    var uncountable = 'ors';
-    var countable = 'sponsor';
-
-    Sugar.String.Inflector.uncountable(uncountable);
-
-    test(uncountable, run(uncountable, 'singularize'), 'singularize | uncountable | both are same');
-
-    test(countable, 'sponsors', 'pluralize | countable | sponsors');
-    equal(run(run(countable, 'pluralize'), 'singularize'), 'sponsor', 'pluralize | countable | both are same');
-
-    // Test pluralize singular
-    testIterateOverObject(SingularToPlural, function(singular, plural) {
-      test(singular, plural, 'pluralize | singular > plural');
-    });
-
-    // Test pluralize plural
-    testIterateOverObject(SingularToPlural, function(singular, plural) {
-      test(plural, plural, 'plural > plural');
-    });
-
-  });
-
-  group('Overwrite previous inflectors', function() {
-    equal(run('series', 'singularize'), 'series', 'singularize | series');
-    Sugar.String.Inflector.singular('series', 'serie');
-    equal(run('series', 'singularize'), 'serie', 'singularize | serie');
-    Sugar.String.Inflector.singular('series'); // Return to normal
-  });
-
-  group('Irregulars', function() {
-    testIterateOverObject(Irregulars, function(singular, plural) {
-      equal(run(plural, 'singularize'), singular, 'singularize | irregulars');
-      equal(run(singular, 'pluralize'), plural, 'pluralize | irregulars | pluralized singular is plural');
-    });
-
-    testIterateOverObject(Irregulars, function(singular, plural) {
-      equal(run(plural, 'pluralize'), plural, 'singularize | irregulars | pluralized plural id pluralized');
-    });
-  });
-
-  group('Custom Irregulars', function() {
-    Sugar.String.Inflector.irregular('wasabi', 'meecrab');
-    equal(run('wasabi', 'pluralize'), 'meecrab', 'custom singular -> plural');
-    equal(run('meecrab', 'singularize'), 'wasabi', 'custom plural -> singular');
-  });
-
-  group('Acronyms', function() {
-
-    Sugar.String.Inflector.acronym('API');
-    Sugar.String.Inflector.acronym('HTML');
-    Sugar.String.Inflector.acronym('HTTP');
-    Sugar.String.Inflector.acronym('RESTful');
-    Sugar.String.Inflector.acronym('W3C');
-    Sugar.String.Inflector.acronym('PhD');
-    Sugar.String.Inflector.acronym('RoR');
-    Sugar.String.Inflector.acronym('SSL');
+    run(String, 'addAcronym', ['API']);
+    run(String, 'addAcronym', ['HTML']);
+    run(String, 'addAcronym', ['HTTP']);
+    run(String, 'addAcronym', ['HTTPS']);
+    run(String, 'addAcronym', ['W3C']);
+    run(String, 'addAcronym', ['PhD']);
+    run(String, 'addAcronym', ['RoR']);
+    run(String, 'addAcronym', ['SSL']);
+    run(String, 'addAcronym', ['RESTful']);
 
     // camelize             underscore            humanize              titleize
     [
@@ -372,42 +282,42 @@ namespace('String | Inflections', function () {
       // misdirection
       ['Capistrano',        'capistrano',         'Capistrano',       'Capistrano'],
       ['CapiController',    'capi_controller',    'Capi controller',  'Capi Controller'],
-      ['HttpsApis',         'https_apis',         'Https apis',       'Https Apis'],
+      ['HTTPSApis',         'https_apis',         'HTTPS apis',       'HTTPS Apis'],
       ['Html5',             'html5',              'Html5',            'Html5'],
       ['Restfully',         'restfully',          'Restfully',        'Restfully']
       // This one confounds the JS implementation, but I argue that it isn't correct anyway.
       // ['RoRails',           'ro_rails',           'Ro rails',         'Ro Rails']
+
     ].forEach(function(set) {
       var camel = set[0], under = set[1], human = set[2], title = set[3];
-      equal(run(under, 'humanize'), human, 'humanize | under.humanize()')
+      equal(run(under, 'humanize'), human, 'humanize | under')
 
       withMethod('camelize', function() {
-        test(under, camel, 'camelize | under.camelize()')
-        test(camel, camel, 'camelize | camel.camelize()')
+        test(under, camel, 'camelize | under')
+        test(camel, camel, 'camelize | camel')
       });
 
       withMethod('underscore', function() {
-        test(under, under, 'underscore | under.underscore()')
-        test(camel, under, 'underscore | camel.underscore()')
+        test(under, under, 'underscore | under')
+        test(camel, under, 'underscore | camel')
       });
 
       withMethod('titleize', function() {
-        test(under, title, 'titleize | under.titleize()')
-        test(camel, title, 'titleize | camel.titleize()')
+        test(under, title, 'titleize | under')
+        test(camel, title, 'titleize | camel')
       });
 
     });
 
     withMethod('camelize', function() {
 
-      Sugar.String.Inflector.acronym('API');
-      Sugar.String.Inflector.acronym('HTML');
       testIterateOverObject(CamelToUnderscore, function(camel, underscore) {
         test(underscore, camel, 'mixed cases')
       });
       test('Camel_Case', 'CamelCase', 'handles underscores');
 
-      Sugar.String.Inflector.acronym('LegacyApi')
+      run(String, 'addAcronym', ['LegacyApi']);
+
       test('legacyapi', 'LegacyApi', 'LegacyApi')
       test('legacy_api', 'LegacyAPI', 'LegacyAPI')
       test('some_legacyapi', 'SomeLegacyApi', 'SomeLegacyApi')
@@ -431,8 +341,7 @@ namespace('String | Inflections', function () {
       // Make sure this test doesn't come before "camelize",
       // or it will affect the "html5" acronym which should not be active at that point.
 
-      Sugar.String.Inflector.acronym('HTML5');
-      Sugar.String.Inflector.acronym('API');
+      run(String, 'addAcronym', ['HTML5']);
 
       test('HTML5HTMLAPI', 'html5_html_api', 'HTML5HTMLAPI')
       testIterateOverObject(CamelToUnderscore, function(camel, underscore) {
@@ -446,33 +355,39 @@ namespace('String | Inflections', function () {
 
   });
 
-  method('toAscii', function() {
-    test('à', 'a', 'a');
-    test('cañon', 'canon', 'cañon');
-    test('Jørgen Kastholm', 'Jorgen Kastholm', 'Jørgen Kastholm');
-    test('Bodil Kjær', 'Bodil Kjaer', 'Bodil Kjær');
-  });
-
   method('humanize', function() {
 
     testIterateOverObject(UnderscoreToHuman, function(under, human) {
         test(under, human, 'underscore')
     });
 
-    Sugar.String.Inflector.human(/_cnt$/i, '_count');
-    Sugar.String.Inflector.human(/^prefx_/i, '')
+    run(String, 'addHuman', ['cnt', 'count']);
+    run(String, 'addHuman', ['col', 'column']);
+    run(String, 'addHuman', [/^prefx_/i, '']);
 
     test('jargon_cnt', 'Jargon count', 'Jargon count')
     test('prefx_request', 'Request', 'Request')
 
-    Sugar.String.Inflector.human('col_rpted_bugs', 'Reported bugs')
-
-    test('col_rpted_bugs', 'Reported bugs', 'Reported bugs')
-    test('COL_rpted_bugs', 'Col rpted bugs', 'Col rpted bugs')
+    withMethod('titleize', function() {
+      test('col_cnt', 'Column Count', 'titleized')
+    });
 
   });
 
   method('pluralize', function() {
+
+    test('', '', 'blank string');
+    test(' ', ' s', 'space');
+    test('  ', '  s', 'double space');
+    test('\n', '\ns', 'newline');
+    test(8, '8s', 'number');
+    test(null, 'nulls', 'null');
+    test(undefined, 'undefineds', 'null');
+    test(true, 'trues', 'boolean');
+    test(NaN, 'NaNs', 'NaN');
+
+    test('person', 'people', 'person');
+    test('sheep', 'sheep', 'sheep');
 
     // Testing optional number argument first.
     test('person', [0], 'people', 'person with 0');
@@ -497,21 +412,101 @@ namespace('String | Inflections', function () {
     // More irregulars
     test('street', 'streets', 'String.Inflector | street > streets');
 
+    // Test pluralize "plurals"
+    test('plurals', 'plurals', 'plurals')
+    test('Plurals', 'Plurals', 'Plurals')
+    test('', '', 'empty string');
+
+    // Test pluralize singular
+    testIterateOverObject(SingularToPlural, function(singular, plural) {
+      test(singular, plural, 'pluralize | singular > plural');
+    });
+
+    // Test pluralize plural
+    testIterateOverObject(SingularToPlural, function(singular, plural) {
+      test(plural, plural, 'plural > plural');
+    });
+
   });
 
-  group('Clearing Inflectors', function() {
-    equal(run('foo', 'pluralize'), 'foos', 'String.Inflector.clear | foo is foos');
-    Sugar.String.Inflector.clear('plurals');
-    equal(run('foo', 'pluralize'), 'foo', 'String.Inflector.clear | clear purals');
-    equal(run('foos', 'singularize'), 'foo', 'String.Inflector.clear | singulars are not cleared');
-    Sugar.String.Inflector.plural(/$/, 's');
-    equal(run('foo', 'pluralize'), 'foos', 'String.Inflector.plural | re-add');
-    Sugar.String.Inflector.clear('all');
-    equal(run('foo', 'pluralize'), 'foo', 'String.Inflector.plural | clear all with "all"');
-    Sugar.String.Inflector.plural(/$/, 's');
-    equal(run('foo', 'pluralize'), 'foos', 'String.Inflector.plural | re-add again');
-    Sugar.String.Inflector.clear();
-    equal(run('foo', 'pluralize'), 'foo', 'String.Inflector.plural | clear all with undefined');
+  method('singularize', function() {
+
+    test('', '', 'blank string');
+    test(' ', ' ', 'space');
+    test('  ', '  ', 'double space');
+    test('\n', '\n', 'newline');
+    test(8, '8', 'number');
+    test(null, 'null', 'null');
+    test(undefined, 'undefined', 'null');
+    test(true, 'true', 'boolean');
+    test(NaN, 'NaN', 'NaN');
+
+    test('people', 'person', 'person');
+    test('sheep', 'sheep', 'sheep');
+
+    var uncountable = 'ors';
+    var countable = 'sponsor';
+
+    run(String, 'addPlural', [uncountable ,uncountable]);
+
+    test(uncountable, uncountable, 'singularize | uncountable | ors');
+    test(countable, 'sponsor', 'singularize | countable | sponsor');
+
+    // Test singularize plural
+    testIterateOverObject(SingularToPlural, function(singular, plural) {
+      test(plural, singular, 'singularize | plural > singular');
+    });
+
+    // Test singularize singular
+    testIterateOverObject(SingularToPlural, function(singular, plural) {
+      equal(singular, singular, 'singular > singular');
+    });
+
+  });
+
+  group('Uncountables', function() {
+    // Test uncountability of words
+    Uncountables.forEach(function(word) {
+      equal(run(word, 'singularize'), word, 'singularize | uncountables');
+      equal(run(word, 'pluralize'), word, 'pluralize | uncountables');
+      equal(run(word, 'singularize'), run(word, 'pluralize'), 'singularize | uncountables | same as pluralize');
+    });
+
+    var uncountable = 'ors';
+    var countable = 'sponsor';
+
+    run(String, 'addPlural', [uncountable]);
+
+    equal(run(run(uncountable, 'pluralize'), 'singularize'), 'ors', 'uncountable > plural > singular');
+
+    equal(run(countable, 'pluralize'), 'sponsors', 'countable is not affected');
+    equal(run(run(countable, 'pluralize'), 'singularize'), 'sponsor', 'countable > plural > singular');
+
+  });
+
+  group('Override previous inflectors', function() {
+
+    equal(run('series', 'singularize'), 'series', 'singularize | series');
+    run(String, 'addPlural', ['serie', 'series']);
+    equal(run('series', 'singularize'), 'serie', 'singularize | serie');
+
+  });
+
+  group('Irregulars', function() {
+
+    testIterateOverObject(Irregulars, function(singular, plural) {
+      equal(run(plural, 'singularize'), singular, 'singularize | irregulars');
+      equal(run(singular, 'pluralize'), plural, 'pluralize | irregulars | pluralized singular is plural');
+    });
+
+    testIterateOverObject(Irregulars, function(singular, plural) {
+      equal(run(plural, 'pluralize'), plural, 'singularize | irregulars | pluralized plural id pluralized');
+    });
+
+    run(String, 'addPlural', ['wasabi', 'meecrab']);
+    equal(run('wasabi', 'pluralize'), 'meecrab', 'custom singular -> plural');
+    equal(run('meecrab', 'singularize'), 'wasabi', 'custom plural -> singular');
+
   });
 
 });
