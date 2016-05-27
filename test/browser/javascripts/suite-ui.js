@@ -82,7 +82,7 @@
       if (f.hasOwnProperty('expected') && f.hasOwnProperty('actual')) {
         expected = getStringified(f.expected);
         actual = getStringified(f.actual);
-        html += ', expected: ' + escapeHTML(expected) + ' actual: ' + escapeHTML(actual);
+        html += ' | expected: ' + escapeHTML(expected) + ' actual: ' + escapeHTML(actual);
       }
       html += '</p>';
       return html;

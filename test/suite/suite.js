@@ -34,11 +34,7 @@
       if (currentTest.namespace.setup) {
         currentTest.namespace.setup();
       }
-      try {
-        currentTest.fn();
-      } catch(err) {
-        addFailure(err.message, '', currentTest.name);
-      }
+      currentTest.fn();
       if (currentTest.namespace.teardown) {
         currentTest.namespace.teardown();
       }
@@ -216,6 +212,9 @@
     } else {
       if (isInstance) {
         args = [subject].concat(args);
+      }
+      if (!Sugar[namespace][methodName]) {
+        throw new Error('missing method ' + methodName);
       }
       return Sugar[namespace][methodName].apply(null, args);
     }
