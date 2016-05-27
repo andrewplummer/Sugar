@@ -196,7 +196,7 @@ function showMore() {
 }
 
 function showMessage(message) {
-  var msg = message.replace(/LOCALE_LIST/g, function(match) {
+  var msg = message.replace(/LOCALE_LIST/g, function() {
       return getAllLocales().map(function(l) {
         var code = l.match(/([\w-]+)\.js$/)[1];
         var name = readFile(l).match(/\* (.+) locale definition/i)[1];
@@ -263,8 +263,8 @@ function getDefaultFlags() {
     assume_function_wrapper: true,
     jscomp_off: ['globalThis', 'misplacedTypeAnnotation', 'checkTypes'],
     output_wrapper: LICENSE + "\n(function(){'use strict';%output%}).call(this);",
-    externs: 'lib/extras/externs.js',
-  }
+    externs: 'lib/extras/externs.js'
+  };
 }
 
 // -------------- File Util ----------------
@@ -346,8 +346,8 @@ function uniq(arr) {
 }
 
 function merge(obj1, obj2) {
-  iter(obj2, function(key, value) {
-    obj1[key] = obj2[key];
+  iter(obj2, function(key, val) {
+    obj1[key] = val;
   });
 }
 
@@ -363,7 +363,7 @@ function iter(obj, fn) {
       if(fn(key, obj[key]) === false) {
         break;
       }
-  };
+  }
 }
 
 // Template tag
@@ -416,7 +416,7 @@ var DEFAULT_MODULES = [
   'number',
   'function',
   'regexp',
-  'range',
+  'range'
 ];
 
 var ALL_MODULES = [
@@ -620,7 +620,7 @@ function getLocaleCodes(l) {
       return p.match(/([\w-]+)\.js/)[1];
     });
   } else if (names) {
-    names = names.split(',')
+    names = names.split(',');
   }
   return names || [];
 }
@@ -656,67 +656,67 @@ var PACKAGE_DEFINITIONS = {
   'sugar': {
     bower: false, // Same as main repo
     modules: 'es6,es7,string,number,array,enumerable,object,date,locales,range,function,regexp',
-    description: 'This build includes default Sugar modules and optional date locales.',
+    description: 'This build includes default Sugar modules and optional date locales.'
   },
   'sugar-core': {
     modules: 'core',
-    description: 'This build is the core module, which allows custom methods to be defined and extended later.',
+    description: 'This build is the core module, which allows custom methods to be defined and extended later.'
   },
   'sugar-es5': {
     modules: 'es5',
-    description: 'This build includes all ES5 polyfills not included in the default build.',
+    description: 'This build includes all ES5 polyfills not included in the default build.'
   },
   'sugar-es6': {
     modules: 'es6',
-    description: 'This build includes all ES6 polyfills bundled with Sugar. Currently this is String#includes, String#startsWith, String#endsWith, String#repeat, Number.isNaN, Array#find, Array#findIndex, and Array.from.',
+    description: 'This build includes all ES6 polyfills bundled with Sugar. Currently this is String#includes, String#startsWith, String#endsWith, String#repeat, Number.isNaN, Array#find, Array#findIndex, and Array.from.'
   },
   'sugar-es7': {
     modules: 'es7',
-    description: 'This build includes all ES7 polyfills bundled with Sugar. Currently this is only Array#includes.',
+    description: 'This build includes all ES7 polyfills bundled with Sugar. Currently this is only Array#includes.'
   },
   'sugar-string': {
     modules: 'es6,string,range',
-    description: 'This build includes methods for string manipulation, escaping, encoding, truncation, and conversion.',
+    description: 'This build includes methods for string manipulation, escaping, encoding, truncation, and conversion.'
   },
   'sugar-number': {
     modules: 'es6,number,range',
-    description: 'This build includes methods for number formatting, rounding (with precision), and aliases to Math methods.',
+    description: 'This build includes methods for number formatting, rounding (with precision), and aliases to Math methods.'
   },
   'sugar-enumerable': {
     modules: 'es6,es7,enumerable',
-    description: 'This build includes methods common to arrays and objects, such as matching elements/properties, mapping, counting, and averaging. Also included are polyfills for methods that enhance arrays: Array#find, Array#findIndex, Array#includes.',
+    description: 'This build includes methods common to arrays and objects, such as matching elements/properties, mapping, counting, and averaging. Also included are polyfills for methods that enhance arrays: Array#find, Array#findIndex, Array#includes.'
   },
   'sugar-array': {
     modules: 'array',
-    description: 'This build includes methods for array manipulation, grouping, randomizing, and alphanumeric sorting and collation.',
+    description: 'This build includes methods for array manipulation, grouping, randomizing, and alphanumeric sorting and collation.'
   },
   'sugar-object': {
     modules: 'object',
-    description: 'This build includes methods for object creation, manipulation, comparison, and type checking. Note that Object.prototype is not extended by default. See the README for more.',
+    description: 'This build includes methods for object creation, manipulation, comparison, and type checking. Note that Object.prototype is not extended by default. See the README for more.'
   },
   'sugar-date': {
     modules: 'date,locales,range',
-    description: 'This build includes methods for date parsing and formatting, relative formats like "1 minute ago", number methods like "daysAgo", and optional date locales.',
+    description: 'This build includes methods for date parsing and formatting, relative formats like "1 minute ago", number methods like "daysAgo", and optional date locales.'
   },
   'sugar-range': {
     modules: 'range',
-    description: 'This build includes number, string, and date ranges. Ranges can be iterated over, compared, and manipulated.',
+    description: 'This build includes number, string, and date ranges. Ranges can be iterated over, compared, and manipulated.'
   },
   'sugar-function': {
     modules: 'function',
-    description: 'This build includes methods for lazy, throttled, and memoized functions, delayed functions, timers, and argument currying.',
+    description: 'This build includes methods for lazy, throttled, and memoized functions, delayed functions, timers, and argument currying.'
   },
   'sugar-regexp': {
     modules: 'regexp',
-    description: 'This build includes methods for escaping regexes and manipulating their flags.',
+    description: 'This build includes methods for escaping regexes and manipulating their flags.'
   },
   'sugar-inflections': {
     modules: 'inflections',
-    description: 'This build includes methods for pluralization similar to ActiveSupport including uncountable words and acronyms, humanized and URL-friendly strings.',
+    description: 'This build includes methods for pluralization similar to ActiveSupport including uncountable words and acronyms, humanized and URL-friendly strings.'
   },
   'sugar-language': {
     modules: 'language',
-    description: 'This build includes helpers for detecting language by character block, full-width <-> half-width character conversion, and Hiragana and Katakana conversions.',
+    description: 'This build includes helpers for detecting language by character block, full-width <-> half-width character conversion, and Hiragana and Katakana conversions.'
   }
 };
 
@@ -830,7 +830,7 @@ function exportPackageJson(packageName, packageDir) {
     json.main = 'index.js';
     json.dependencies = {
       'sugar-core': '^' + json.version
-    }
+    };
   }
   writeFile(path.join(packageDir, 'package.json'), JSON.stringify(json, null, 2));
 }
@@ -933,7 +933,7 @@ function getModularSource() {
       return cache[token] = this.find(function(p) {
         return fn(p, obj);
       });
-    }
+    };
   }
 
   function getTokenForObject(obj) {
@@ -974,8 +974,8 @@ function getModularSource() {
 
     var commentsByEndLine = {}, namespaceRanges = [], currentNamespaceRange;
 
-    var filePath = 'lib/' + moduleName + '.js'
-    var source = readFile(filePath)
+    var filePath = 'lib/' + moduleName + '.js';
+    var source = readFile(filePath);
 
     parseTopLevelNodes();
 
@@ -1009,7 +1009,7 @@ function getModularSource() {
         case isFunctionCall(node):        return processBuildExpression(node);
         default:
           console.log(node);
-          throw new Error("Unknown Top Level Node: " + node.type);
+          throw new Error('Unknown Top Level Node: ' + node.type);
       }
     }
 
@@ -1023,7 +1023,7 @@ function getModularSource() {
         type: type,
         body: getNodeBody(node, true),
         module: moduleName,
-        dependencies: getDependencies(node, name),
+        dependencies: getDependencies(node, name)
       };
       merge(sourcePackage, opts);
       comments = getLastCommentForNode(node, 1);
@@ -1108,7 +1108,7 @@ function getModularSource() {
         currentNamespaceRange = {
           name: namespace,
           line: line
-        }
+        };
       }
     }
 
@@ -1129,7 +1129,7 @@ function getModularSource() {
       commentsByEndLine[endLoc.line] = {
         text: text,
         block: block
-      }
+      };
       match = text.match(/@module (\w+)/);
       if (match) {
         var name = match[1];
@@ -1274,7 +1274,7 @@ function getModularSource() {
 
     // Define block example: defineInstance(sugarDate, { ... }, [FLAG]);
     function processDefineBlock(node, type) {
-      var defineMethod, sugarNamespace, methods, arg3, deps = [], opts = {};
+      var defineMethod, sugarNamespace, methods, deps = [], opts = {};
 
       function getBlockEnd() {
         var arg3 = node.expression.arguments[2], end = '}';
@@ -1323,9 +1323,8 @@ function getModularSource() {
     }
 
     function processAliasExpression(node) {
-      var sugarNamespace, methodName, aliasedMethod, opts = {};
+      var methodName, aliasedMethod, opts = {};
 
-      sugarNamespace = node.expression.arguments[0].name;
       methodName     = node.expression.arguments[1].value;
       aliasedMethod  = node.expression.arguments[2].value;
 
@@ -1381,7 +1380,7 @@ function getModularSource() {
       // saying that any set methods must be defined in the comment block
       // directly above the build method.
       function findBuiltMethods() {
-        var opts = {}, methodBlocks, hasPrototypeBlock, target, type;
+        var opts = {}, methodBlocks, hasPrototypeBlock, type;
 
         methodBlocks = getMethodBlocksInPreviousComment(fnPackage.node);
 
@@ -1470,14 +1469,14 @@ function getModularSource() {
 
       function pushLocal(loc) {
         if (locals.indexOf(loc) === -1) {
-          log("PUSHING LOCAL", loc);
+          log('PUSHING LOCAL', loc);
           locals.push(loc);
         }
       }
 
       function pushDependency(dep) {
         if (deps.indexOf(dep) === -1) {
-          log("PUSHING DEPENDENCY", dep);
+          log('PUSHING DEPENDENCY', dep);
           deps.push(dep);
         }
       }
@@ -1613,7 +1612,7 @@ function getModularSource() {
             return;
           default:
             console.log(node);
-            throw new Error("Unknown Node: " + node.type);
+            throw new Error('Unknown Node: ' + node.type);
         }
       }
 
@@ -1697,7 +1696,7 @@ function getModularSource() {
   return {
     modules: modules,
     packages: sourcePackages
-  }
+  };
 
 }
 
@@ -1949,6 +1948,7 @@ function buildNpmPackages(p, rebuild) {
       if (d === 'Sugar') {
         return 'sugar-core';
       }
+      if (!findDependency(d, p)) console.info('FOOOOOOOO', d, p);
       return getPackageRelativePath(findDependency(d, p), p);
     }
 
@@ -2049,7 +2049,7 @@ function buildNpmPackages(p, rebuild) {
         var lines = p.vars.map(function(v) {
           return v + ': ' + (p.exportsDirectly ? p.assigns[v] : v);
         });
-        exports = ['{', TAB + lines.join(',\n' + TAB), '}'].join('\n')
+        exports = ['{', TAB + lines.join(',\n' + TAB), '}'].join('\n');
       } else if (p.exportsDirectly) {
         // Single line direct export
         exports = p.assigns[p.vars[0]];
@@ -2180,7 +2180,7 @@ function buildNpmPackages(p, rebuild) {
             p.dependencies.splice(index, 1, newName);
           }
         }
-      })
+      });
     }
 
     function removePackage(p) {
@@ -2276,7 +2276,7 @@ function buildJSONAPI() {
       methods: ns.methods.map(function(m) {
         var p = {
           name: m.name
-        }
+        };
         if (m.set) {
           p.set = m.set.filter(function(name) {
             return !SINGULAR_UNITS_REG.test(name);
@@ -2284,16 +2284,13 @@ function buildJSONAPI() {
         }
         return p;
       })
-    }
+    };
   });
 
   writeJSON(data, 'api.json');
 }
 
 function buildJSONDocs() {
-
-  var docs = getJSONDocs();
-
   writeJSON(getJSONDocs(), 'docs.json');
 }
 
@@ -2305,7 +2302,7 @@ function getJSONDocs() {
     'short',
     'extra',
     'callbacks',
-    'examples',
+    'examples'
   ];
 
   var LINKED_TOKENS = {
@@ -2324,17 +2321,16 @@ function getJSONDocs() {
     'append': '#/Array/append',
     'insert': '#/Array/insert',
     'each': '#/Array/each',
-    'add': '#/Array/add',
-  }
+    'add': '#/Array/add'
+  };
 
   var POLYFILL_HTML = getReplacements('This method is provided as a `polyfill`.');
 
   var docs = {
     namespaces: []
-  }
+  };
 
   var currentNamespace;
-  var currentMethod;
   var currentModuleName;
   var modules = getModules('all');
   var modulePathMap = {};
@@ -2368,7 +2364,6 @@ function getJSONDocs() {
     var match = block.match(/@module (\w+)/);
     if (match) {
       var name = match[1];
-      var module = {};
       setCurrentNamespace(getNamespaceForModuleName(name));
       modulePathMap[path] = { name: name };
       setAllFields(modulePathMap[path], block);
@@ -2464,7 +2459,7 @@ function getJSONDocs() {
     return text ? text : true;
   }
 
-  function getReplacements(str, name) {
+  function getReplacements(str) {
     return str.replace(/([<\[])(\w+?)([>\]])/g, function(all, open, token) {
       if (open === '<') {
         return '<code class="docs-required-argument">' + token + '</code>';
@@ -2472,12 +2467,13 @@ function getJSONDocs() {
         return '<code class="docs-optional-argument">' + token + '</code>';
       }
     }).replace(/^#(.+)$/m, '<span class="docs-method-body-header">$1</span>')
-      .replace(/\n+$/, '').replace(/\n+/g, function(nl, index) {
-      var result = ' ';
-      if (nl.length > 1) {
-        result += new Array(nl.length).join('<br><br>');
-      }
-      return result;
+      .replace(/\n+$/, '')
+      .replace(/\n+/g, function(nl) {
+        var result = ' ';
+        if (nl.length > 1) {
+          result += new Array(nl.length).join('<br><br>');
+        }
+        return result;
     }).replace(/`([^`]+)`/g, function(all, token) {
       if (LINKED_TOKENS[token]) {
         return '<a jump-link href="'+ LINKED_TOKENS[token] +'">' + token + '</a>';
@@ -2500,7 +2496,7 @@ function getJSONDocs() {
   }
 
   function getExamples(str, name) {
-    var result = [], index = 0;
+    var result = [];
     var lines = getMultiline(str, name, true);
 
     function getLine() {
@@ -2606,7 +2602,7 @@ function getJSONDocs() {
   }
 
   modules.forEach(function(p) {
-    var content = fs.readFileSync(p, 'utf-8'), module;
+    var content = fs.readFileSync(p, 'utf-8');
     var lines = content.split('\n');
     content.replace(/\*\*\*[\s\S]+?(?=\*\*\*)/gm, function(block) {
       checkModule(block, p);
@@ -2641,20 +2637,13 @@ function getJSONDocs() {
   }
 
   function getMethodRank(method) {
-    var rank = 0;
-    if (method.global) {
-      return -4;
+    switch (true) {
+      case method.global:    return -4;
+      case method.namespace: return -3;
+      case method.static:    return -2;
+      case method.accessor:  return -1;
+      default:               return  0;
     }
-    if (method.namespace) {
-      return -3;
-    }
-    if (method.static) {
-      return -2;
-    }
-    if (method.accessor) {
-      return -1;
-    }
-    return 0;
   }
 
   sortAll(docs);
@@ -2704,7 +2693,7 @@ function buildJSONSource() {
             static: p.static,
             namespace: p.namespace,
             dependencies: p.dependencies,
-            bodyWithComments: p.bodyWithComments,
+            bodyWithComments: p.bodyWithComments
           });
           handledSets[p.setName] = true;
         }
