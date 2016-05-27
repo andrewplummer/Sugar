@@ -2320,7 +2320,7 @@ function getJSONDocs() {
     'date output formats': '#/DateOutputFormats',
     'polyfill': '#/Polyfills',
     'extending natives': '/natives',
-    'range methods': '#/Range',
+    'ranges': '#/Ranges',
     'append': '#/Array/append',
     'insert': '#/Array/insert',
     'each': '#/Array/each',
