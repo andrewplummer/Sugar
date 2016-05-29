@@ -378,17 +378,6 @@ function block(strings) {
 
 // -------------- Build ----------------
 
-var LICENSE = block`
-/*
- *  Sugar ${getVersion()}
- *
- *  Freely distributable and licensed under the MIT-style license.
- *  Copyright (c) ${new Date().getFullYear()} Andrew Plummer
- *  http://sugarjs.com/
- *
- * ---------------------------- */
-`;
-
 var CLOSURE_WRAPPER = block`
 (function() {
   'use strict';
@@ -435,6 +424,17 @@ var ALL_MODULES = [
   'inflections',
   'language'
 ];
+
+var LICENSE = block`
+/*
+ *  Sugar ${getVersion()}
+ *
+ *  Freely distributable and licensed under the MIT-style license.
+ *  Copyright (c) Andrew Plummer
+ *  http://sugarjs.com/
+ *
+ * ---------------------------- */
+`;
 
 var LOCALES_MODULE_COMMENT = block`
 /***
@@ -550,10 +550,15 @@ function logBuildResults(stream) {
   return stream;
 }
 
-function getVersion(prefix) {
-  var ver = args.v || args.version || 'edge';
-  if (prefix && ver.match(/^[\d.]+$/)) {
+function getVersion() {
+  var ver = args.v || args.version || 'edge', hasCustomModules, hasCustomLocales;
+  if (ver && ver.match(/^[\d.]+$/)) {
     ver = 'v' + ver;
+  }
+  if (buildHasCustomModules() || buildHasCustomLocales()) {
+    var d = new Date();
+    var df = [d.getFullYear(), d.getMonth() + 1, d.getDate()].join('.');
+    ver = 'Custom ' + df;
   }
   return ver;
 }
@@ -648,6 +653,18 @@ function getLocales(l) {
 
 function getAllLocales() {
   return require('glob').sync('locales/*.js');
+}
+
+function buildHasCustomModules() {
+  var moduleNames = getModuleNames();
+  var hasNonDefault = moduleNames.some(function(n) {
+    return DEFAULT_MODULES.indexOf(n) === -1;
+  });
+  return moduleNames.length !== DEFAULT_MODULES.length || hasNonDefault;
+}
+
+function buildHasCustomLocales() {
+  return getLocaleCodes().length !== 0;
 }
 
 // -------------- Package Definitions ----------------
