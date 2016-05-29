@@ -366,6 +366,14 @@ function iter(obj, fn) {
   }
 }
 
+function padNumber(n, place) {
+  var str = String(n);
+  while (str.length < place) {
+    str = '0' + str;
+  }
+  return str;
+}
+
 // Template tag
 function block(strings) {
   var result = Array.from(strings);
@@ -557,7 +565,7 @@ function getVersion() {
   }
   if (buildHasCustomModules() || buildHasCustomLocales()) {
     var d = new Date();
-    var df = [d.getFullYear(), d.getMonth() + 1, d.getDate()].join('.');
+    var df = [d.getFullYear(), padNumber(d.getMonth() + 1, 2), padNumber(d.getDate(), 2)].join('.');
     ver = 'Custom ' + df;
   }
   return ver;
