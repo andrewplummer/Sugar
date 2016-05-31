@@ -2663,8 +2663,7 @@ function getJSONDocs() {
 
   function getMethodRank(method) {
     switch (true) {
-      case method.global:    return -4;
-      case method.namespace: return -3;
+      case method.global && method.namespace: return -3;
       case method.static:    return -2;
       case method.accessor:  return -1;
       default:               return  0;
