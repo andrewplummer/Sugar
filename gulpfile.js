@@ -508,7 +508,7 @@ function createDevelopmentBuild(outputPath, moduleNames, localeCodes) {
     .pipe(replace(/^(?=.)/gm, '  '))
     .pipe(replace(/^([\s\S]+)$/m, wrapper))
     .pipe(replace(/edge/, getVersion()))
-    .pipe(gulp.dest(path.dirname(outputPath)));
+    .pipe(gulp.dest(path.dirname(filename)));
 }
 
 function createMinifiedBuild(outputPath, moduleNames, localeCodes) {

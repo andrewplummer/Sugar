@@ -805,7 +805,6 @@ namespace('String', function () {
 
   });
 
-
   method('camelize', function() {
     test('hop-on-pop', 'HopOnPop', 'dashes');
     test('HOP-ON-POP', 'HopOnPop', 'capital dashes');
@@ -817,24 +816,23 @@ namespace('String', function () {
 
     test('', '', 'blank');
     test('no-fing-way', 'NoFingWay', 'no-fing-way');
+
+    withArgs([false], function() {
+      test('hop-on-pop', [false], 'hopOnPop', 'first false | dashes');
+      test('HOP-ON-POP', [false], 'hopOnPop', 'first false | capital dashes');
+      test('hop_on_pop', [false], 'hopOnPop', 'first false | underscores');
+      test('watch me fail', [false], 'watchMeFail', 'first false | whitespace');
+      test('watch me fail-sad-face', [false], 'watchMeFailSadFace', 'first false | whitespace sad face');
+      test('waTch me su-cCeed', [false], 'waTchMeSuCCeed', 'first false | complex whitespace');
+    });
+
+    withArgs([false], function() {
+      test('hop-on-pop', [true], 'HopOnPop', 'first true | dashes');
+      test('HOP-ON-POP', [true], 'HopOnPop', 'first true | capital dashes');
+      test('hop_on_pop', [true], 'HopOnPop', 'first true | underscores');
+    });
+
   });
-
-  method('camelize', function() {
-    test('hop-on-pop', [false], 'hopOnPop', 'first false | dashes');
-    test('HOP-ON-POP', [false], 'hopOnPop', 'first false | capital dashes');
-    test('hop_on_pop', [false], 'hopOnPop', 'first false | underscores');
-    test('watch me fail', [false], 'watchMeFail', 'first false | whitespace');
-    test('watch me fail-sad-face', [false], 'watchMeFailSadFace', 'first false | whitespace sad face');
-    test('waTch me su-cCeed', [false], 'waTchMeSuCCeed', 'first false | complex whitespace');
-
-  });
-
-  method('camelize', function() {
-    test('hop-on-pop', [true], 'HopOnPop', 'first true | dashes');
-    test('HOP-ON-POP', [true], 'HopOnPop', 'first true | capital dashes');
-    test('hop_on_pop', [true], 'HopOnPop', 'first true | underscores');
-  });
-
 
   method('underscore', function() {
 
@@ -1562,8 +1560,8 @@ namespace('String', function () {
       'raiders_of_the_lost_ark'      :  'Raiders of the Lost Ark'
     }
 
-    testIterateOverObject(MixtureToTitleCase, function(before, titleized) {
-      test(before, titleized, 'mixed cases')
+    testIterateOverObject(MixtureToTitleCase, function(src, expected) {
+      test(src, expected, 'mixed cases')
     });
   });
 
