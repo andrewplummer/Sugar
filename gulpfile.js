@@ -2385,7 +2385,7 @@ function getJSONDocs() {
     }
   }
 
-  function checkModule(block, path) {
+  function processModule(block, path) {
     var match = block.match(/@module (\w+)/);
     if (match) {
       var name = match[1];
@@ -2396,14 +2396,14 @@ function getJSONDocs() {
     }
   }
 
-  function checkNamespace(block) {
+  function processNamespace(block) {
     var match = block.match(/@namespace (\w+)/);
     if (match) {
       setCurrentNamespace(match[1]);
     }
   }
 
-  function setAllFields(obj, block, name) {
+  function setAllFields(obj, block) {
     block.replace(/@(\w+)\s?([\s\S]+?)(?=@|$)/g, function(match, field, value) {
       if (field === 'method' || field === 'module') return;
       if (!value) {
@@ -2414,16 +2414,16 @@ function getJSONDocs() {
         return;
       } else if (field === 'example') {
         field = 'examples';
-        value = getExamples(value, name);
+        value = getExamples(value);
       } else if (field === 'options') {
-        value = getOptions(value, name);
+        value = getOptions(value);
       } else if (field === 'callback') {
         field = 'callbacks';
-        value = getCallback(value, name, obj[field]);
+        value = getCallback(value, obj[field]);
       } else if (field === 'set') {
-        value = getMultiline(value, name, true);
+        value = getMultiline(value, true);
       } else {
-        value = getTextField(value, name);
+        value = getTextField(value);
         if (field === 'extra' && obj[field]) {
           value += ' ' + obj[field];
         }
@@ -2432,8 +2432,8 @@ function getJSONDocs() {
     });
   }
 
-  function getOptions(str, name) {
-    var lines = getMultiline(str, name), lineBuffer = [];
+  function getOptions(str) {
+    var lines = getMultiline(str), lineBuffer = [];
     var options = [];
     lines.forEach(function(line) {
       if (!line && lineBuffer.length) {
@@ -2451,7 +2451,7 @@ function getJSONDocs() {
     return options;
   }
 
-  function getCallback(str, name, callbacks) {
+  function getCallback(str, callbacks) {
     var callbackName;
     if (!callbacks) {
       callbacks = [];
@@ -2461,7 +2461,7 @@ function getJSONDocs() {
       return '';
     });
     var args = [];
-    getMultiline(str, name, true).forEach(function(line) {
+    getMultiline(str, true).forEach(function(line) {
       var match = line.match(/^(\w+)\s{2,}(.+)$/);
       if (match) {
         args.push({
@@ -2479,8 +2479,8 @@ function getJSONDocs() {
     return callbacks;
   }
 
-  function getTextField(str, name) {
-    var text = getReplacements(getMultiline(str, name).join('\n'), name);
+  function getTextField(str) {
+    var text = getReplacements(getMultiline(str).join('\n'));
     return text ? text : true;
   }
 
@@ -2508,7 +2508,7 @@ function getJSONDocs() {
     });
   }
 
-  function getMultiline(str, name, clean) {
+  function getMultiline(str, clean) {
     var lines = str.split('\n').map(function(line) {
       return line.replace(/^[\s*]*|[\s*]*$/g, '');
     });
@@ -2520,9 +2520,9 @@ function getJSONDocs() {
     return lines;
   }
 
-  function getExamples(str, name) {
+  function getExamples(str) {
     var result = [];
-    var lines = getMultiline(str, name, true);
+    var lines = getMultiline(str, true);
 
     function getLine() {
       var line = lines.shift();
@@ -2549,19 +2549,25 @@ function getJSONDocs() {
     return (open && open.length || 0) - (close && close.length || 0);
   }
 
-  function checkMethod(block, lines) {
+  function processMethod(block, lines) {
     var match = block.match(/@method ([\w\[\]]+)\((.*)\)$/m);
     if (match) {
       var method = {};
       var name = match[1].replace(/(\w*)\[(\w+)\](\w*)/, function(full, left, mid, right) {
-        method['name_html'] = left + '<span class="docs-method-set">' + mid + '</span>' + right;
+        method['name_html'] = left + '<span class="docs-method__set">' + mid + '</span>' + right;
         return left + mid + right;
       });
       var args = match[2].split(', ').filter(function(a) {
         return a;
       });
+
       method.name = name;
+
+      setAllFields(method, block);
+
       method.line = getLineNumber(name, lines);
+      method.type = getMethodType(method);
+
       if (args.length) {
         method['args'] = args.map(function(a) {
           var s = a.split(' = ');
@@ -2582,7 +2588,6 @@ function getJSONDocs() {
         });
       }
       method.module = currentModuleName;
-      setAllFields(method, block, name);
       checkAlias(method, name);
       currentNamespace.methods.push(method);
     }
@@ -2630,9 +2635,9 @@ function getJSONDocs() {
     var content = fs.readFileSync(p, 'utf-8');
     var lines = content.split('\n');
     content.replace(/\*\*\*[\s\S]+?(?=\*\*\*)/gm, function(block) {
-      checkModule(block, p);
-      checkNamespace(block);
-      checkMethod(block, lines);
+      processModule(block, p);
+      processNamespace(block);
+      processMethod(block, lines);
     });
   });
 
@@ -2649,24 +2654,27 @@ function getJSONDocs() {
     if (aName === 'Sugar') {
       return 1;
     }
-    return aName < bName ? -1 : aName > bName ? 1 : 0;
+    return aName === bName ? 0 : aName < bName ? -1 : 1;
   }
 
   function methodCollate(a, b) {
-    var aRank = getMethodRank(a);
-    var bRank = getMethodRank(b);
-    if (aRank !== bRank) {
-      return aRank - bRank;
+    var aVal = a.type;
+    var bVal = b.type;
+    if (aVal === bVal) {
+      aVal = a.name;
+      bVal = b.name;
     }
-    return a.name < b.name ? -1 : a.name > b.name ? 1 : 0;
+    return aVal === bVal ? 0 : aVal < bVal ? -1 : 1;
   }
 
-  function getMethodRank(method) {
+  function getMethodType(method) {
     switch (true) {
-      case method.global && method.namespace: return -3;
-      case method.static:    return -2;
-      case method.accessor:  return -1;
-      default:               return  0;
+      case method.global &&
+           method.namespace: return 1;
+      case method.namespace: return 2;
+      case method.static:    return 3;
+      case method.accessor:  return 4;
+      default:               return 5;
     }
   }
 
@@ -2707,9 +2715,8 @@ function buildJSONSource() {
       p = data.packages[i];
       if (p.set) {
         // If the package has been handled already then just skip.
-        if (!handledSets[p.setName]) {
+        if (!handledSets[p.namespace + p.setName]) {
           packages.push({
-            setName: p.setName,
             name: p.setName.replace(/[\[\]]/g, ''),
             sample: p.set.slice(0, 2).concat('...').join(', '),
             type: p.type,
@@ -2719,7 +2726,7 @@ function buildJSONSource() {
             dependencies: p.dependencies,
             bodyWithComments: p.bodyWithComments
           });
-          handledSets[p.setName] = true;
+          handledSets[p.namespace + p.setName] = true;
         }
       } else {
         packages.push(p);
