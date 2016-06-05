@@ -446,7 +446,7 @@ var LICENSE = block`
 
 var LOCALES_MODULE_COMMENT = block`
 /***
- * @module Date Locales
+ * @module Locales
  * @description Locale files for the Sugar Date module.
  *
  ***/
@@ -680,67 +680,67 @@ function buildHasCustomLocales() {
 var PACKAGE_DEFINITIONS = {
   'sugar': {
     bower: false, // Same as main repo
-    modules: 'es6,es7,string,number,array,enumerable,object,date,locales,range,function,regexp',
+    modules: 'ES6,ES7,String,Number,Array,Enumerable,Object,Date,Locales,Range,Function,RegExp',
     description: 'This build includes default Sugar modules and optional date locales.'
   },
   'sugar-core': {
-    modules: 'core',
+    modules: 'Core',
     description: 'This build is the core module, which allows custom methods to be defined and extended later.'
   },
   'sugar-es5': {
-    modules: 'es5',
+    modules: 'ES5',
     description: 'This build includes all ES5 polyfills not included in the default build.'
   },
   'sugar-es6': {
-    modules: 'es6',
+    modules: 'ES6',
     description: 'This build includes all ES6 polyfills bundled with Sugar. Currently this is String#includes, String#startsWith, String#endsWith, String#repeat, Number.isNaN, Array#find, Array#findIndex, and Array.from.'
   },
   'sugar-es7': {
-    modules: 'es7',
+    modules: 'ES7',
     description: 'This build includes all ES7 polyfills bundled with Sugar. Currently this is only Array#includes.'
   },
   'sugar-string': {
-    modules: 'es6,string,range',
+    modules: 'ES6,String,Range',
     description: 'This build includes methods for string manipulation, escaping, encoding, truncation, and conversion.'
   },
   'sugar-number': {
-    modules: 'es6,number,range',
+    modules: 'ES6,Number,Range',
     description: 'This build includes methods for number formatting, rounding (with precision), and aliases to Math methods.'
   },
   'sugar-enumerable': {
-    modules: 'es6,es7,enumerable',
+    modules: 'ES6,ES7,Enumerable',
     description: 'This build includes methods common to arrays and objects, such as matching elements/properties, mapping, counting, and averaging. Also included are polyfills for methods that enhance arrays: Array#find, Array#findIndex, Array#includes.'
   },
   'sugar-array': {
-    modules: 'array',
+    modules: 'Array',
     description: 'This build includes methods for array manipulation, grouping, randomizing, and alphanumeric sorting and collation.'
   },
   'sugar-object': {
-    modules: 'object',
+    modules: 'Object',
     description: 'This build includes methods for object creation, manipulation, comparison, and type checking. Note that Object.prototype is not extended by default. See the README for more.'
   },
   'sugar-date': {
-    modules: 'date,locales,range',
+    modules: 'Date,Locales,Range',
     description: 'This build includes methods for date parsing and formatting, relative formats like "1 minute ago", number methods like "daysAgo", and optional date locales.'
   },
   'sugar-range': {
-    modules: 'range',
+    modules: 'Range',
     description: 'This build includes number, string, and date ranges. Ranges can be iterated over, compared, and manipulated.'
   },
   'sugar-function': {
-    modules: 'function',
+    modules: 'Function',
     description: 'This build includes methods for lazy, throttled, and memoized functions, delayed functions, timers, and argument currying.'
   },
   'sugar-regexp': {
-    modules: 'regexp',
+    modules: 'RegExp',
     description: 'This build includes methods for escaping regexes and manipulating their flags.'
   },
   'sugar-inflections': {
-    modules: 'inflections',
+    modules: 'Inflections',
     description: 'This build includes methods for pluralization similar to ActiveSupport including uncountable words and acronyms, humanized and URL-friendly strings.'
   },
   'sugar-language': {
-    modules: 'language',
+    modules: 'Language',
     description: 'This build includes helpers for detecting language by character block, full-width <-> half-width character conversion, and Hiragana and Katakana conversions.'
   }
 };
@@ -791,7 +791,7 @@ function buildPackageDist(packageName, packageDir) {
 
   function getFilteredModules(modules) {
     return modules.split(',').filter(function(m) {
-      if (m === 'locales') {
+      if (m === 'Locales') {
         copyLocales('all', path.join(packageDir, 'locales'));
         return false;
       }
@@ -995,11 +995,13 @@ function getModularSource() {
     ['common'].concat(ALL_MODULES).forEach(parseModule);
   }
 
-  function parseModule(moduleName) {
+  function parseModule(moduleLower) {
+
+    var moduleName;
 
     var commentsByEndLine = {}, namespaceRanges = [], currentNamespaceRange;
 
-    var filePath = 'lib/' + moduleName + '.js';
+    var filePath = 'lib/' + moduleLower + '.js';
     var source = readFile(filePath);
 
     parseTopLevelNodes();
@@ -1157,10 +1159,9 @@ function getModularSource() {
       };
       match = text.match(/@module (\w+)/);
       if (match) {
-        var name = match[1];
+        moduleName = match[1];
         modules.push({
-          name: name,
-          lower: name.toLowerCase(),
+          name: moduleName,
           comment: '/*' + text + '*/\n'
         });
       }
@@ -1698,8 +1699,7 @@ function getModularSource() {
       return m.name === 'Date';
     });
     modules.splice(di + 1, 0, {
-      name: 'Date Locales',
-      lower: 'locales',
+      name: 'Locales',
       comment: LOCALES_MODULE_COMMENT
     });
     getAllLocales().forEach(function(filePath) {
@@ -1711,7 +1711,7 @@ function getModularSource() {
         code: code,
         body: body,
         type: 'locale',
-        module: 'locales',
+        module: 'Locales',
         bodyWithComments: body,
         methodDependencies: ['addLocale']
       });
@@ -1800,23 +1800,23 @@ function buildNpmPackages(p, rebuild) {
         exportModule(m);
       });
       createEntryPoint(moduleNames.map(function(m) {
-        return './' + m;
+        return './' + m.toLowerCase();
       }));
     }
 
     function exportModule(moduleName) {
-      var dependencies = [], methodPaths = [];
+      var dependencies = [], methodPaths = [], moduleLower = moduleName.toLowerCase();
 
       exportSugarMethods();
       exportDependencies();
-      createEntryPoint(methodPaths, moduleName);
+      createEntryPoint(methodPaths, moduleLower);
 
       function exportSugarMethods() {
         sourcePackages.forEach(function(p) {
           if (p.module === moduleName && sourcePackageIsPublic(p)) {
             exportPackage(p);
             addDependencies(p);
-            methodPaths.push(getRelativePath(p.path, moduleName, true));
+            methodPaths.push(getRelativePath(p.path, moduleLower, true));
           }
         });
       }
@@ -2697,12 +2697,11 @@ function buildJSONSource() {
   function addCorePackage() {
     data.modules.unshift({
       name: 'Core',
-      lower: 'core'
     });
     data.packages.unshift({
       name: 'Sugar',
       type: 'core',
-      module: 'core',
+      module: 'Core',
       dependencies: [],
       bodyWithComments: readFile('lib/core.js').trim()
     });
