@@ -2334,6 +2334,7 @@ function getJSONDocs() {
     'object methods': '#/ObjectMethods',
     'enhanced matching': '#/EnhancedMatching',
     'enhanced methods': '#/EnhancedMethods',
+    'enhanced method': '#/EnhancedMethods',
     'enhances': '#/EnhancedMethods',
     'deep properties': '#/DeepProperties',
     'date locales': '#/DateLocales',
@@ -2349,6 +2350,9 @@ function getJSONDocs() {
   };
 
   var POLYFILL_HTML = getReplacements('This method is provided as a `polyfill`.');
+  var ENHANCED_HTML = getReplacements('This method is also provided as a `polyfill` in the MOD module.');
+
+  var POLYFILL_REPLACE_REG = /This method is .* provided as a .*polyfill.*\./;
 
   var docs = {
     namespaces: []
@@ -2408,8 +2412,7 @@ function getJSONDocs() {
       if (!value) {
         value = true;
       } else if (field === 'polyfill') {
-        obj['extra'] = obj['extra'] || '';
-        obj['extra'] += POLYFILL_HTML;
+        obj['extra'] = (obj['extra'] || '') + getPolyfill(obj, getTextField(value));
         return;
       } else if (field === 'example') {
         field = 'examples';
@@ -2429,6 +2432,14 @@ function getJSONDocs() {
       }
       obj[field] = value;
     });
+  }
+
+  function getPolyfill(method, mod) {
+    if (/^ES[567]$/i.test(method.module)) {
+      return POLYFILL_HTML;
+    } else {
+      return ENHANCED_HTML.replace(/MOD/, mod);
+    }
   }
 
   function getOptions(str) {
@@ -2561,6 +2572,7 @@ function getJSONDocs() {
       });
 
       method.name = name;
+      method.module = currentModuleName;
 
       setAllFields(method, block);
 
@@ -2586,7 +2598,6 @@ function getJSONDocs() {
           return arg;
         });
       }
-      method.module = currentModuleName;
       checkAlias(method, name);
       currentNamespace.methods.push(method);
     }
@@ -2608,7 +2619,7 @@ function getJSONDocs() {
             value = value.replace(reg, '.' + name);
           }
           if (field === 'extra') {
-            value = value.replace(POLYFILL_HTML, '');
+            value = value.replace(POLYFILL_REPLACE_REG, '');
           }
           method[field] = value;
         }
@@ -2670,9 +2681,10 @@ function getJSONDocs() {
     switch (true) {
       case method.global &&
            method.namespace: return 1;
-      case method.namespace: return 2;
-      case method.static:    return 3;
-      case method.accessor:  return 4;
+      case method.global:    return 2;
+      case method.namespace: return 3;
+      case method.static:    return 4;
+      case method.accessor:  return 6;
       default:               return 5;
     }
   }
