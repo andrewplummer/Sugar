@@ -712,7 +712,7 @@ var PACKAGE_DEFINITIONS = {
     description: 'This build includes methods common to arrays and objects, such as matching elements/properties, mapping, counting, and averaging. Also included are polyfills for methods that enhance arrays: Array#find, Array#findIndex, Array#includes.'
   },
   'sugar-array': {
-    modules: 'Array',
+    modules: 'ES6,ES7,Array',
     description: 'This build includes methods for array manipulation, grouping, randomizing, and alphanumeric sorting and collation.'
   },
   'sugar-object': {
@@ -1947,9 +1947,9 @@ function buildNpmPackages(p, rebuild) {
       } else if (p.type === 'method' || p.type === 'alias' || p.type === 'prototype') {
         return path.join(p.namespace.toLowerCase(), p.name);
       } else if (p.type === 'locale') {
-        return path.join(p.module, p.code);
+        return path.join(p.module.toLowerCase(), p.code);
       } else {
-        return path.join(p.module, p.type, p.name);
+        return path.join(p.module.toLowerCase(), p.type, p.name);
       }
     }
 
@@ -1973,7 +1973,6 @@ function buildNpmPackages(p, rebuild) {
       if (d === 'Sugar') {
         return 'sugar-core';
       }
-      if (!findDependency(d, p)) console.info('FOOOOOOOO', d, p);
       return getPackageRelativePath(findDependency(d, p), p);
     }
 
