@@ -78,7 +78,6 @@ function expireCache() {
   for (var path in require.cache) {
     if(!require.cache.hasOwnProperty(path)) continue;
     if (pathIsLocal(path) || pathIsCore(path)) {
-      // console.info('EXPIRING:', path);
       delete require.cache[path]
     }
   };
