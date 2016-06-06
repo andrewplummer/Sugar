@@ -190,11 +190,6 @@ namespace('String', function () {
     test('', '', 'blank');
   });
 
-  method('chars', function() {
-    test('wasabi', ['w','a','s','a','b','i'], 'splits string into constituent chars');
-    test(' wasabi \n', [' ','w','a','s','a','b','i',' ','\n'], 'should not trim whitespace');
-  });
-
   method('trimLeft', function() {
     test('   wasabi   ', 'wasabi   ', 'should trim left whitespace only');
     test('', '', 'blank');
@@ -293,6 +288,19 @@ namespace('String', function () {
 
   });
 
+  method('shift', function() {
+
+    test('ク', [1], 'グ', 'should shift 1 code up');
+    test('グ', [-1], 'ク', 'should shift 1 code down');
+    test('ヘ', [2], 'ペ', 'should shift 2 codes');
+    test('ペ', [-2], 'ヘ', 'should shift -2 codes');
+    test('ク', [0], 'ク', 'should shift 0 codes');
+    test('ク', 'ク', 'no params simply returns the string');
+    test('カキクケコ', [1], 'ガギグゲゴ', 'multiple characters up one');
+    test('ガギグゲゴ', [-1], 'カキクケコ', 'multiple characters down one');
+
+  });
+
   method('each', function() {
 
     var callbackTest, result;
@@ -371,32 +379,22 @@ namespace('String', function () {
 
   });
 
-  method('shift', function() {
-
-    test('ク', [1], 'グ', 'should shift 1 code up');
-    test('グ', [-1], 'ク', 'should shift 1 code down');
-    test('ヘ', [2], 'ペ', 'should shift 2 codes');
-    test('ペ', [-2], 'ヘ', 'should shift -2 codes');
-    test('ク', [0], 'ク', 'should shift 0 codes');
-    test('ク', 'ク', 'no params simply returns the string');
-    test('カキクケコ', [1], 'ガギグゲゴ', 'multiple characters up one');
-    test('ガギグゲゴ', [-1], 'カキクケコ', 'multiple characters down one');
-
-  });
-
   method('chars', function() {
 
-    var counter = 0, result;
+    test('wasabi', ['w','a','s','a','b','i'], 'splits string into constituent chars');
+    test(' wasabi \n', [' ','w','a','s','a','b','i',' ','\n'], 'should not trim whitespace');
+
+    var counter = 0;
     var chars = ['g','i','n','g','e','r'];
     var indexes = [0,1,2,3,4,5];
     var callback = function(chr, i, a) {
       equal(chr, chars[i], 'First argument should be the code.');
       equal(i, indexes[i], 'Second argument should be the index.');
-      equal(a, chars, 'Third argument the array of charactrs.');
+      equal(a, chars, 'Third argument the array of characters.');
       counter++;
     };
 
-    result = run('ginger', 'chars', [callback]);
+    var result = run('ginger', 'chars', [callback]);
     equal(counter, 6, 'should have run 6 times');
     equal(result, ['g','i','n','g','e','r'], 'result should be an array');
 
@@ -406,7 +404,7 @@ namespace('String', function () {
       counter++;
       return str.toUpperCase();
     }
-    result = run('ginger', 'chars', [callback]);
+    var result = run('ginger', 'chars', [callback]);
     equal(result, ['G','I','N','G','E','R'], 'can be mapped');
 
     test('', [], 'empty string');
