@@ -43,10 +43,10 @@ If you are upgrading to `v2.0.0`, there is now an [upgrade helper](lib/extras/up
 
 ## Getting Started
 
-Sugar now has 3 modes of usage. Which mode is right for you depends on your use case. Sugar still fully endorses extending prototypes, and makes it as safe as possible to do so. However, if you are creating a library, plugin, or **any piece of code whose end user may not be aware that prototypes are extended**, it is strongly recommended that you avoid extended mode. The decision to extend prototypes is one that should be left up to the end user.
+Sugar now has 3 modes of usage. Which is right for you depends on your use case. Sugar still fully endorses extending prototypes, and makes it as safe as possible to do so. However, if you are creating a library, plugin, or **any piece of code whose end user may not be aware that prototypes are extended**, it is strongly recommended that you avoid extending. The decision to extend prototypes is one that should be left up to the end user.
 
 
-### Static
+### Default
 
 ```javascript
 Sugar.Array.sum([2,4,6]); // 12
@@ -54,7 +54,7 @@ Sugar.Array.sum([2,4,6]); // 12
 
 Straight method calls on the global `Sugar` object. Methods marked `static` in the docs take arguments as listed. Methods marked `instance` in the docs are the same except for the first argument, which must be the instance object itself.
 
-### Chainables
+### Chained
 
 ```javascript
 new Sugar.Array([2,4,6]).sum().raw; // 12
@@ -73,7 +73,7 @@ Sugar.extend();
 [2,4,6].sum(); // 12
 ```
 
-Extended mode extends native prototypes so that they can immediately make use of Sugar methods. As in previous versions, `Object.prototype` is never touched without a special flag ([that you generally shouldn't use](http://sugarjs.com/docs/#natives)). Additionally there are a number of [options](http://sugarjs.com/docs/Sugar/extend) when extending to allow fine grained control over which methods get mapped. Classes can be extended individually as well with: `Sugar.Array.extend()`. Once a class (or all classes) are extended, any method that is [defined later](#defining-methods) will be immediately extended onto the prototype as well.
+The global `extend` method maps defined methods onto natives so that they can immediately make use of Sugar methods. As in previous versions, `Object.prototype` is never touched without a special flag ([that you generally shouldn't use](http://sugarjs.com/docs/#natives)). Additionally there are a number of [options](http://sugarjs.com/docs/Sugar/extend) when extending to allow fine grained control over which methods get mapped. Classes can be extended individually as well with: `Sugar.Array.extend()`. Once a class (or all classes) are extended, any method that is [defined later](#defining-methods) will be immediately extended onto the prototype as well.
 
 
 ## Custom Builds
@@ -110,7 +110,7 @@ require('sugar/array/sum');
 require('sugar/string/format');
 ```
 
-Once required, methods will be defined on the `Sugar` global, and can be [used as normal](#usage) in any mode. Additionally, individual method packages will return references to their static form which can be used immediately:
+Once required, methods will be defined on the `Sugar` global, and can be called as normal. Additionally, individual method packages will return references to their static form which can be used immediately:
 
 ```javascript
 var sum = require('sugar/array/sum');
@@ -190,7 +190,7 @@ Accurate handling of timezones is very complex and outside the scope of Sugar. H
 
 ## Defining Methods
 
-Sugar now makes it easy to define your own methods. This is aimed at developers hoping to release their own plugins with Sugar. After defining methods, they can be used in any of the 3 [modes](#usage):
+Sugar now makes it easy to define your own methods. This is aimed at developers hoping to release their own plugins with Sugar. After defining methods, they can be extended or used as chainables just like other methods:
 
 ```javascript
 Sugar.Number.defineStatic('randomish', function () {
