@@ -376,13 +376,16 @@ namespace('String | Inflections', function () {
 
   method('pluralize', function() {
 
+    if (canTestPrimitiveScope) {
+      test(null, 'nulls', 'null');
+      test(undefined, 'undefineds', 'null');
+    }
+
     test('', '', 'blank string');
     test(' ', ' s', 'space');
     test('  ', '  s', 'double space');
     test('\n', '\ns', 'newline');
     test(8, '8s', 'number');
-    test(null, 'nulls', 'null');
-    test(undefined, 'undefineds', 'null');
     test(true, 'trues', 'boolean');
     test(NaN, 'NaNs', 'NaN');
 
@@ -431,13 +434,16 @@ namespace('String | Inflections', function () {
 
   method('singularize', function() {
 
+    if (canTestPrimitiveScope) {
+      test(null, 'null', 'null');
+      test(undefined, 'undefined', 'null');
+    }
+
     test('', '', 'blank string');
     test(' ', ' ', 'space');
     test('  ', '  ', 'double space');
     test('\n', '\n', 'newline');
     test(8, '8', 'number');
-    test(null, 'null', 'null');
-    test(undefined, 'undefined', 'null');
     test(true, 'true', 'boolean');
     test(NaN, 'NaN', 'NaN');
 
