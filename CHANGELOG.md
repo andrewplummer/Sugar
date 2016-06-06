@@ -477,7 +477,7 @@ v1.2
 - String#toDate will now check for Date.create before hooking into it.
 - String#underscore will now check for acronyms if Inflectors module is present.
 - String#camelize will now check for acronyms if Inflectors module is present.
-- RegExp.escape will now perform a [toString] operation on non-strings (ie. numbers, etc).
+- RegExp.escape will now perform a [toString] operation on non-strings (i.e. numbers, etc).
 - Function#fill now uses internal Array#splice to fill in arguments.
 - Added support for JSON date format Date(xxxxxxxxxx).
 - Fixed issues with Date#getWeek.
@@ -548,7 +548,7 @@ v1.1.1
 - Added Object.tap
 - Consolidated the arguments that are passed to mapping functions on methods such as Array#min/max/groupBy/sortBy. All such functions will now be passed the array element, array index, and array object, in that order, to conform to ES5 Array#map behavior.
 - Array#flatten can now accept a level of nesting to flatten to. Default is all levels.
-- Array#remove no longer works like a reverse concat (ie. no longer flattens arguments passed to it as if they were passed as separate arguments, so removing arrays within arrays should now work properly. This applies to Array#exclude as well.
+- Array#remove no longer works like a reverse concat (i.e. no longer flattens arguments passed to it as if they were passed as separate arguments, so removing arrays within arrays should now work properly. This applies to Array#exclude as well.
 - Added Array#zip
 
 ### Internal Changes ###
