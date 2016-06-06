@@ -412,7 +412,7 @@
   }
 
   function dateIsEqual(a, b) {
-    var buffer = 50; // Number of milliseconds of "play" to make sure these tests pass.
+    var buffer = 80; // Number of milliseconds of "play" to make sure these tests pass.
     if (typeof b == 'number') {
       var d = new Date();
       d.setTime(d.getTime() + b);
