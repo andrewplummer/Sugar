@@ -840,9 +840,6 @@ namespace('Array', function() {
       equal(el, 'a', 'first parameter is the element');
       equal(i, 0, 'second parameter is the index');
       equal(a, ['a'], 'third parameter is the array');
-      // Note: psychotic syntax here because equal() is now strictly equal, and the this object is actually an "object" string
-      // as opposed to a primitive string, but only in Prototype. Calling .toString() in a non-prototype environment would effectively
-      // try to convert the array to a string, which is also not what we want.
       equal(this, a, 'scope is also the array');
     };
     run(['a'], 'each', [fn, 'this']);
@@ -1408,7 +1405,7 @@ namespace('Object', function() {
   });
 
   method('each', function() {
-    var fn = function () {}, callback, result;
+    var fn = function () {};
     var d = new Date();
     var obj = {
       number: 3,
@@ -1420,15 +1417,13 @@ namespace('Object', function() {
     var keys = ['number','person','date','func'];
     var values = [3, 'jim', d, fn];
     var count = 0;
-
-    count = 0;
-    callback = function(key, value, o) {
+    var callback = function(key, value, o) {
       equal(key, keys[count], 'accepts a function');
       equal(value, values[count], 'accepts a function');
       equal(o, obj, 'accepts a function | object is third param');
       count++;
     }
-    result = run(obj, 'each', [callback]);
+    var result = run(obj, 'each', [callback]);
     equal(count, 4, 'accepts a function | iterated properly');
     equal(result, obj, 'accepts a function | result should equal object passed in');
 
@@ -1437,6 +1432,18 @@ namespace('Object', function() {
     }, 'no iterator raises an error');
 
     test(obj, [function () {}], obj, 'each returns itself');
+
+
+    var count = 0;
+    var callback = function() { count++; return false; }
+    run({foo:'bar'}, 'each', [callback]);
+    equal(count, 1, 'returning false should break the loop');
+
+    var count = 0;
+    var callback = function() { count++; return false; }
+    run({toString:1,valueOf:2,hasOwnProperty:3}, 'each', [callback]);
+    equal(count, 1, 'returning false with dontenum properties');
+
   });
 
   method('sum', function() {

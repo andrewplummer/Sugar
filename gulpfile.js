@@ -918,10 +918,19 @@ function exportBowerJson(packageName, packageDir) {
  *    define in the comment block directly before the build function using the
  *    @method or @set keyword. See the source for examples.
  *
- * 7. Top level variables may never be reassigned, except when they are
+ * 7. Any build function ending in "fix" allows overriding of behavior based on
+ *    feature detects. Unlike normal build methods, which find global variable
+ *    assignments and make themselves dependencies of the variable package, "fix"
+ *    functions will instead take assigned global variables and add them to
+ *    "postAssigns". The npm tasks can then consume this to override the defined
+ *    method after the build function has been called. Note that this will only
+ *    work when variables are bundled together in multiple exports, as it needs
+ *    to be able to mutate the exported object.
+ *
+ * 8. Top level variables may never be reassigned, except when they are
  *    declared a single time and assigned later from a build function.
  *
- * 8. Modularized source packages may have circular dependencies! This is not
+ * 9. Modularized source packages may have circular dependencies! This is not
  *    handled here and should be handled by the final consumer of this function.
  *    For example, npm modules cannot have circular dependencies so they will
  *    bundle them together into a single module where the custom download tool
@@ -1086,7 +1095,20 @@ function getModularSource() {
 
       // Built methods are essentially null. They don't have any body
       // or add to the source code. They simply require that the build
-      // method be present and called.
+      // function be present and called.
+      sp.body = '';
+      sp.comments = '';
+      sp.bodyWithComments = '';
+    }
+
+    function addSugarFix(name, buildFn) {
+      var sp = addSourcePackage(name, buildFn.node, 'fix');
+
+      sp.dependencies = [buildFn.name];
+
+      // Like built methods, fixes are wrappers around build functions,
+      // so they don't have any body themselves, just requiring that the
+      // build function is called.
       sp.body = '';
       sp.comments = '';
       sp.bodyWithComments = '';
@@ -1368,13 +1390,16 @@ function getModularSource() {
       var fnPackage  = sourcePackages.findByDependencyName(fnName);
 
       addSourcePackage(fnCallName, node, 'build');
-      findVarAssignments();
-      findBuiltMethods();
-      findChainableConstructors();
+
+      bundleVarAssignments();
+      addBuiltMethods();
+      addChainableConstructors();
+      addFixes();
       transposeDependencies();
 
-      function findVarAssignments() {
-        fnPackage.node.body.body.forEach(function(node) {
+      function findVarAssignments(nodes, allowIf, assignments) {
+        assignments = assignments || [];
+        nodes.forEach(function(node) {
           if (isVarAssignment(node)) {
             var varName = node.expression.left.name, varPackage;
             if (fnPackage.dependencies.indexOf(varName) === -1) {
@@ -1385,18 +1410,29 @@ function getModularSource() {
             }
             varPackage = sourcePackages.findByVarName(varName);
             if (varPackage.dependencies.indexOf(fnCallName) === -1) {
-
-              // Add the call method as a dependency of the variable.
-              // Note that this will create circular dependencies:
-              // someVar -> buildFunctionCall -> buildFunction -> someVar
-              // This is acceptable because other circular dependencies
-              // exist and this is not an issue when modularizing for the
-              // sake of re-creating the source, however these need to be
-              // addressed when modularizing for the sake of a package
-              // manager like npm.
-              varPackage.dependencies.push(fnCallName);
+              assignments.push({
+                name: varName,
+                package: varPackage
+              });
             }
+          } else if (allowIf && node.type === 'IfStatement') {
+            findVarAssignments(node.consequent.body, false, assignments);
           }
+        });
+        return assignments;
+      }
+
+      function bundleVarAssignments() {
+        findVarAssignments(fnPackage.node.body.body).forEach(function(assignment) {
+          // Add the call method as a dependency of the variable.
+          // Note that this will create circular dependencies:
+          // someVar -> buildFunctionCall -> buildFunction -> someVar
+          // This is acceptable because other circular dependencies
+          // exist and this is not an issue when modularizing for the
+          // sake of re-creating the source, however these need to be
+          // addressed when modularizing for the sake of a package
+          // manager like npm.
+          assignment.package.dependencies.push(fnCallName);
         });
       }
 
@@ -1405,7 +1441,7 @@ function getModularSource() {
       // so instead of attempting to analyze the build function, we are
       // saying that any set methods must be defined in the comment block
       // directly above the build method.
-      function findBuiltMethods() {
+      function addBuiltMethods() {
         var opts = {}, methodBlocks, hasPrototypeBlock, type;
 
         methodBlocks = getMethodBlocksInPreviousComment(fnPackage.node);
@@ -1446,7 +1482,7 @@ function getModularSource() {
       // primitive, for example "new Sugar.Date('today')". When modularizing,
       // the "create" method simply needs to know that it depends on this build
       // so that the link can be created.
-      function findChainableConstructors() {
+      function addChainableConstructors() {
         var match = fnPackage.name.match(/^set(\w+)ChainableConstructor$/);
         if (match) {
           var namespace = match[1];
@@ -1454,6 +1490,18 @@ function getModularSource() {
             return p.name === 'create' && p.namespace === namespace;
           });
           createPackage.dependencies.push(fnPackage.name);
+        }
+      }
+
+      // Fixes are special types of build methods that fix broken behavior but
+      // are not polyfills or attached to a specific method, so need to be
+      // handled differently.
+      function addFixes() {
+        var match = fnPackage.name.match(/^build(\w+)Fix$/);
+        if (match) {
+          addSugarFix(match[1], fnPackage);
+          fnPackage.dependencies.push(fnCallName);
+          fnPackage.postAssigns = findVarAssignments(fnPackage.node.body.body, true);
         }
       }
 
@@ -1787,7 +1835,7 @@ function buildNpmPackages(p, rebuild) {
     var TAB = '  ';
     var DTAB = TAB + TAB;
     var STRICT = "'use strict';";
-    var BUILD_CALL_REG = /Call$/;
+    var BUILD_CALL_REG = /Call|Fix$/;
 
     exportAllModules();
 
@@ -1807,16 +1855,24 @@ function buildNpmPackages(p, rebuild) {
     function exportModule(moduleName) {
       var dependencies = [], methodPaths = [], moduleLower = moduleName.toLowerCase();
 
-      exportSugarMethods();
+      exportPublicPackages();
       exportDependencies();
       createEntryPoint(methodPaths, moduleLower);
 
-      function exportSugarMethods() {
+      function exportPublicPackages() {
         sourcePackages.forEach(function(p) {
           if (p.module === moduleName && sourcePackageIsPublic(p)) {
             exportPackage(p);
             addDependencies(p);
             methodPaths.push(getRelativePath(p.path, moduleLower, true));
+          }
+        });
+      }
+
+      function exportDependencies() {
+        uniq(dependencies).forEach(function(dep) {
+          if (dep.name !== 'core') {
+            exportPackage(dep);
           }
         });
       }
@@ -1827,14 +1883,6 @@ function buildNpmPackages(p, rebuild) {
           if (dep) {
             dependencies.push(dep);
             addDependencies(dep);
-          }
-        });
-      }
-
-      function exportDependencies() {
-        uniq(dependencies).forEach(function(dep) {
-          if (dep.name !== 'core') {
-            exportPackage(dep);
           }
         });
       }
@@ -1861,6 +1909,7 @@ function buildNpmPackages(p, rebuild) {
         getDirectRequires(p),
         getAssigns(p),
         p.body,
+        getPostAssigns(p),
         getExports(p)
       ]).join('\n\n');
     }
@@ -1944,6 +1993,8 @@ function buildNpmPackages(p, rebuild) {
         return p.path;
       } else if (p.type === 'polyfill') {
         return path.join('polyfills', p.namespace.toLowerCase(), p.name);
+      } else if (p.type === 'fix') {
+        return path.join(p.module.toLowerCase(), 'fixes', p.name);
       } else if (p.type === 'method' || p.type === 'alias' || p.type === 'prototype') {
         return path.join(p.namespace.toLowerCase(), p.name);
       } else if (p.type === 'locale') {
@@ -2047,28 +2098,40 @@ function buildNpmPackages(p, rebuild) {
       return 'var ' + assigns.join(',\n' + DTAB) + ';';
     }
 
+    function getPostAssigns(p) {
+      if (p.postAssigns && p.postAssigns.length) {
+        var assigns = p.postAssigns.map(function(a) {
+          return a.package.name + '.' + a.name + ' = ' + a.name + ';';
+        });
+        return assigns.join('\n');
+      }
+      return '';
+    }
+
     function getExports(p) {
       var exports;
       if (p.type === 'polyfill') {
         return [
-          '// This module does not export anything as it is mapping a',
+          '// This package does not export anything as it is mapping a',
           '// polyfill to '+ p.namespace +'.prototype which cannot be called statically.'
         ].join('\n');
       } else if (p.type === 'prototype') {
         return [
-          '// This module does not export anything as it is',
+          '// This package does not export anything as it is',
           '// simply defining "'+ p.name +'" on '+ p.target +'.prototype.'
         ].join('\n');
       } else if (p.type === 'locale') {
         return [
-          '// This module does not export anything as it is',
+          '// This package does not export anything as it is',
           '// simply registering the "'+ p.code +'" locale.'
+        ].join('\n');
+      } else if (p.type === 'fix') {
+        return [
+          '// This package does not export anything as it is',
+          '// simply fixing existing behavior.'
         ].join('\n');
       } else if (p.type === 'method' || p.type === 'alias') {
         exports = ['Sugar', p.namespace, p.name].join('.');
-      } else if (p.type === 'build') {
-        // Build calls do not export anything. No comment as this is internal.
-        return '';
       } else if (p.vars && p.vars.length > 1) {
         var lines = p.vars.map(function(v) {
           return v + ': ' + (p.exportsDirectly ? p.assigns[v] : v);
@@ -2077,10 +2140,12 @@ function buildNpmPackages(p, rebuild) {
       } else if (p.exportsDirectly) {
         // Single line direct export
         exports = p.assigns[p.vars[0]];
-      } else {
+      } else if (p.type !== 'build') {
+        // Build calls do not export themselves, so don't export unless they have
+        // explicit vars (caught above). No comment as this is internal.
         exports = p.name;
       }
-      return 'module.exports = ' + exports + ';';
+      return exports ? 'module.exports = ' + exports + ';' : '';
     }
 
     // --- Entry Point ---
@@ -2147,6 +2212,10 @@ function buildNpmPackages(p, rebuild) {
         bundleArray(target, src, 'vars');
         bundleMap(target, src, 'assigns');
         updateExternalDependencies(src.name, target.name);
+
+        if (src.type === 'build') {
+          target.type = 'build';
+        }
 
         removePackage(src);
       });
