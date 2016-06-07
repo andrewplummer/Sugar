@@ -1793,6 +1793,8 @@ function buildNpmAll() {
 
 function buildNpmPackages(p, rebuild) {
 
+  var PUBLIC_TYPES = ['method', 'polyfill', 'prototype', 'locale', 'alias', 'fix'];
+
   var sourcePackages;
   var baseDir = args.o || args.output || 'release/npm';
   var stream = getEmptyStream();
@@ -1835,7 +1837,7 @@ function buildNpmPackages(p, rebuild) {
     var TAB = '  ';
     var DTAB = TAB + TAB;
     var STRICT = "'use strict';";
-    var BUILD_CALL_REG = /Call|Fix$/;
+    var DIRECT_REQUIRES_REG = /(Call|Fix)$/;
 
     exportAllModules();
 
@@ -2037,7 +2039,7 @@ function buildNpmPackages(p, rebuild) {
 
       function getRequiresSorted() {
         var deps = p.dependencies.concat().filter(function(d) {
-          return !BUILD_CALL_REG.test(d);
+          return !DIRECT_REQUIRES_REG.test(d);
         });
         if (!deps.length) {
           return '';
@@ -2074,7 +2076,7 @@ function buildNpmPackages(p, rebuild) {
     // required directly, so output them here.
     function getDirectRequires(p) {
       return p.dependencies.filter(function(d) {
-        return BUILD_CALL_REG.test(d);
+        return DIRECT_REQUIRES_REG.test(d);
       }).map(function(d) {
         return "require('"+ getDependencyPath(d, p) +"');";
       }).join('\n');
@@ -2305,8 +2307,7 @@ function buildNpmPackages(p, rebuild) {
   }
 
   function sourcePackageIsPublic(p) {
-    var t = p.type;
-    return t === 'alias' || t === 'method' || t === 'locale' || t === 'polyfill' || t === 'prototype';
+    return PUBLIC_TYPES.indexOf(p.type) !== -1;
   }
 
   return stream;
