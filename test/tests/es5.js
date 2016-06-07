@@ -916,6 +916,7 @@ namespace('ES5', function () {
     equal(Object.keys(/foobar/), [], 'regexes return a blank array');
     equal(Object.keys(function() {}), [], 'functions return a blank array');
     equal(Object.keys(new Date), [], 'dates return a blank array');
+    equal(Object.keys({toString:1}), ['toString'], 'should enumerate toString');
 
     Person = function() {
       this.broken = 'wear';
