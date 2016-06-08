@@ -2215,7 +2215,11 @@ function buildNpmPackages(p, rebuild) {
         bundleMap(target, src, 'assigns');
         updateExternalDependencies(src.name, target.name);
 
-        if (src.type === 'build') {
+        if (src.type === 'build' && (!target.vars || !target.vars.length)) {
+          // A build function that is having it's call block being bundled
+          // into it can also take on the type "build". This generally means
+          // that it has no exports. However don't do this if the function is
+          // building up variables, in which case it will have a "vars".
           target.type = 'build';
         }
 
