@@ -1,4 +1,6 @@
 
+var INVALID_DATE = new Date(NaN).toString();
+
 testCreateDate = function(arg1, arg2) {
   return Sugar.Date.create(arg1, arg2);
 }
@@ -275,7 +277,11 @@ assertAddUnitIsNumericallyEqual = function (d, method, add, message) {
 }
 
 assertRelative = function(format, expected) {
-  equal(run(testCreateDate(format, 'en'), 'relative'), expected, 'relative | ' + format);
+  var d = testCreateDate(format, 'en');
+  if (d - new Date > 1000) {
+    d = new Date(d.getTime() + 50);
+  }
+  equal(run(d, 'relative'), expected, 'relative | ' + format);
 }
 
 assertFormatShortcut = function (d, name, expected, localeCode) {
