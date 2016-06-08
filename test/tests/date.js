@@ -426,9 +426,9 @@ namespace('Date', function () {
   });
 
   group('Create | .NET JSON', function() {
-    equal(testCreateDate('\/Date(628318530718)\/'), new Date(628318530718), 'basic');
-    equal(testCreateDate('\/Date(1318287600+0100)\/'), new Date(1318287600), '+ date format with timezone');
-    equal(testCreateDate('\/Date(1318287600-0700)\/'), new Date(1318287600), '- date format with timezone');
+    equal(testCreateDate('\\/Date(628318530718)\\/'), new Date(628318530718), 'basic');
+    equal(testCreateDate('\\/Date(1318287600+0100)\\/'), new Date(1318287600), '+ date format with timezone');
+    equal(testCreateDate('\\/Date(1318287600-0700)\\/'), new Date(1318287600), '- date format with timezone');
   });
 
   group('Create | Fuzzy Dates', function() {
