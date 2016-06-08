@@ -92,6 +92,7 @@ namespace('Array', function() {
     test(accounts, ['profile.addresses[0..1]'], [a1, a2], 'allows range syntax');
     test(accounts, ['profile.addresses[0..1].city'], [['Washington DC', 'London'], ['Quahog', 'Springfield']], 'allows range syntax with trailing dot');
 
+    raisesError(function() { run([{foo:'bar'}], 'map', 'foo[0..1]'); }, 'Range syntax on an object should raise an error', TypeError);
 
     // Issue #386
 
