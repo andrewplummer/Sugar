@@ -109,7 +109,7 @@
         if (typeof val === 'string') {
           val = '"' + val + '"';
         }
-        arr.push((isArray ? '' : key + ': ') + val);
+        arr.push((isArray ? '' : key + ': ') + getStringified(val));
       }
     }
     str += arr.join(',');
