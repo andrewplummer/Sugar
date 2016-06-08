@@ -279,7 +279,7 @@ assertAddUnitIsNumericallyEqual = function (d, method, add, message) {
 assertRelative = function(format, expected) {
   var d = testCreateDate(format, 'en');
   if (d - new Date > 1000) {
-    d = new Date(d.getTime() + 50);
+    d = new Date(d.getTime() + 80);
   }
   equal(run(d, 'relative'), expected, 'relative | ' + format);
 }
