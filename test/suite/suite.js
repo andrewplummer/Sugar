@@ -412,14 +412,15 @@
   }
 
   function dateIsEqual(a, b) {
-    var buffer = 80; // Number of milliseconds of "play" to make sure these tests pass.
+    // Margin of error in ms.
+    var margin = 80;
     if (typeof b == 'number') {
       var d = new Date();
       d.setTime(d.getTime() + b);
       b = d;
     }
     var offset = Math.abs(a.getTime() - b.getTime());
-    return offset < buffer;
+    return offset < margin;
   }
 
   function sortOnStringValue(arr) {

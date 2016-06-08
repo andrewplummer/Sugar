@@ -1605,6 +1605,8 @@ namespace('Date', function () {
     test(d, ['{Z}'],  getExpectedTimezoneOffset(d, true), 'Z');
     test(d, ['{ZZ}'], getExpectedTimezoneOffset(d), 'ZZ');
 
+    test(new Date(NaN), INVALID_DATE);
+
     raisesError(function(){ run(d, 'format', ['{foo}']); }, 'unknown ldml token raises error', TypeError);
 
     // Not all environments provide that so just make sure it returns the abbreviation or nothing.
@@ -1852,7 +1854,7 @@ namespace('Date', function () {
 
   method('relative', function() {
 
-    var d;
+    test(new Date(NaN), INVALID_DATE);
     var simpleDateFormat = '{Month} {date}, {year}';
 
     var dyn = function(value, unit, ms, loc) {
@@ -1862,11 +1864,14 @@ namespace('Date', function () {
       }
     }
 
-    d = getRelativeDate(null, null, null, null, -5);
-    equal(run(d, 'relative', [dyn]), '5 minutes ago', '5 minutes should stay relative');
+    var d = getRelativeDate(null, null, null, null, -5);
+    var result = run(d, 'relative', [dyn]);
+    equal(result, '5 minutes ago', '5 minutes should stay relative');
 
-    d = getRelativeDate(null, -13)
-    equal(run(d, 'relative', [dyn]), run(d, 'format', [simpleDateFormat]), 'higher reverts to absolute');
+    var d = getRelativeDate(null, -13)
+    var result = run(d, 'relative', [dyn]);
+    var expected = run(d, 'format', [simpleDateFormat]);
+    equal(result, expected, 'higher reverts to absolute');
 
     equal(run(testCreateDate('2002-02-17'), 'relative', [dyn]), 'February 17, 2002', 'function that returns a format uses that format');
     equal(run(testCreateDate('45 days ago'), 'relative', [dyn]), '1 month ago', 'function that returns undefined uses relative format');
@@ -2082,10 +2087,7 @@ namespace('Date', function () {
     test(testCreateDate('tomorrow'), ['past'], false, 'tomorrow is the past');
 
     test(new Date(), ['future'], false, 'now is the future');
-
-    // now CAN be in the past if there is any lag between when the dates are
-    // created, so give this a bit of a buffer...
-    test(run(new Date(), 'advance', [{ milliseconds: 5 }]), ['past', 40], false, 'now is the past');
+    test(new Date(), ['past'], false, 'now is the past');
 
     test(testCreateDate('yesterday'), ['future'], false, 'yesterday is the future');
     test(testCreateDate('yesterday'), ['past'], true, 'yesterday is the past');
