@@ -21,7 +21,7 @@ h2 {
 
 a,
 a:visited {
-  color: #666;
+  color: inherit;
 }
 
 .hidden {
@@ -63,10 +63,18 @@ h3 {
   position: absolute;
   top: 8px;
   right: 8px;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: normal;
-  color: #888;
+  color: #9a9a9a;
   *right: 20px;
+}
+
+.name a {
+  text-decoration: none;
+}
+
+.name a:hover {
+  text-decoration: underline;
 }
 
 .tests {
