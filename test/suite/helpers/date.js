@@ -1,6 +1,16 @@
 
 var INVALID_DATE = new Date(NaN).toString();
 
+var TEST_DATE_UNITS = [
+  ['FullYear', 0],
+  ['Month', 0],
+  ['Date', 1],
+  ['Hours', 0],
+  ['Minutes', 0],
+  ['Seconds', 0],
+  ['Milliseconds', 0]
+];
+
 testCreateDate = function(arg1, arg2) {
   return Sugar.Date.create(arg1, arg2);
 }
@@ -78,6 +88,15 @@ getRelativeDate = function(year, month, day, hours, minutes, seconds, millisecon
   return d;
 }
 
+getRelativeDateReset = function() {
+  var d = getRelativeDate.apply(this, arguments);
+  for (var i = arguments.length; i < TEST_DATE_UNITS.length; i++) {
+    var unit = TEST_DATE_UNITS[i];
+    d['set' + unit[0]](unit[1]);
+  }
+  return d;
+};
+
 getUTCDate = function(year, month, day, hours, minutes, seconds, milliseconds) {
   var d = new Date();
   if(year) d.setFullYear(year);
@@ -95,9 +114,9 @@ testIsUTC = function(d) {
   return testGetPrivateProp(d, 'utc');
 }
 
-getDateWithWeekdayAndOffset = function(weekday, offset, hours, minutes, seconds, milliseconds) {
+testGetWeekday = function(weekday, weekOffset, hours, minutes, seconds, milliseconds) {
   var d = new Date();
-  if(offset) d.setDate(d.getDate() + offset);
+  if(weekOffset) d.setDate(d.getDate() + (weekOffset * 7));
   d.setDate(d.getDate() + (weekday - d.getDay()));
   d.setHours(hours || 0);
   d.setMinutes(minutes || 0);
@@ -116,12 +135,25 @@ testGetEndOfRelativeMonth = function(month) {
   return testGetEndOfMonth(now.getFullYear(), now.getMonth() + month);
 }
 
-testResetTime = function(d) {
-  d.setHours(0);
-  d.setMinutes(0);
-  d.setSeconds(0);
-  d.setMilliseconds(0);
+testGetWeekdayInMonth = function(month, weekday, weekOffset, hours, minutes, seconds, milliseconds) {
+  var d = new Date(), offset;
+  d.setMonth(month);
+  d.setDate(1);
+  offset = weekday - d.getDay();
+  if (offset < 0) {
+    offset += 7;
+  }
+  d.setDate(1 + offset + (7 * (weekOffset || 0)));
+  d.setHours(hours || 0);
+  d.setMinutes(minutes || 0);
+  d.setSeconds(seconds || 0);
+  d.setMilliseconds(milliseconds || 0);
   return d;
+}
+
+testGetWeekdayInRelativeMonth = function(month, weekday, weekOffset) {
+  var now = new Date();
+  return testGetWeekdayInMonth(now.getMonth() + month, weekday, weekOffset);
 }
 
 testGetBeginningOfWeek = function(startWeekday) {
@@ -225,10 +257,6 @@ testPadNumber = function(val, place, sign) {
     str = (val < 0 ? '-' : '+') + str;
   }
   return str;
-}
-
-testCapitalize = function(str) {
-  return str.slice(0,1).toUpperCase() + str.slice(1);
 }
 
 testGetTimezoneHours = function(d) {

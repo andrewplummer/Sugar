@@ -10,7 +10,7 @@ namespace('Date | Spanish', function () {
   });
 
   method('create', function() {
-    equal(testCreateDate('la semana pasada'), getRelativeDate(null, null, -7), 'Last week');
+    equal(testCreateDate('la semana pasada'), getRelativeDate(0, 0, -7), 'Last week');
 
     equal(testCreateDate('15 de mayo 2011'), new Date(2011, 4, 15), 'Date#create | basic Spanish date');
     equal(testCreateDate('5 de enero de 2012'), new Date(2012, 0, 5), '2012-01-05');
@@ -20,46 +20,46 @@ namespace('Date | Spanish', function () {
     equal(testCreateDate('02 de feb. de 2016'), new Date(2016, 1, 2), 'toLocaleDateString');
 
     equal(testCreateDate('mayo'), new Date(now.getFullYear(), 4), 'month');
-    equal(testCreateDate('lunes'), getDateWithWeekdayAndOffset(1), 'Monday');
+    equal(testCreateDate('lunes'), testGetWeekday(1), 'Monday');
 
     equal(testCreateDate('5 de enero de 2012 3:45'), new Date(2012, 0, 5, 3, 45), '2012-01-05 3:45');
     equal(testCreateDate('5 de enero de 2012 3:45pm'), new Date(2012, 0, 5, 15, 45), '2012-01-05 3:45pm');
 
-    equal(testCreateDate('hace 1 milisegundo'), getRelativeDate(null, null, null, null, null, null,-1), 'one millisecond ago');
-    equal(testCreateDate('hace 1 segundo'), getRelativeDate(null, null, null, null, null, -1), 'one second ago');
-    equal(testCreateDate('hace 1 minuto'), getRelativeDate(null, null, null, null, -1), 'one minute ago');
-    equal(testCreateDate('hace 1 hora'), getRelativeDate(null, null, null, -1), 'one hour ago');
-    equal(testCreateDate('hace 1 día'), getRelativeDate(null, null, -1), 'one day ago');
-    equal(testCreateDate('hace 1 semana'), getRelativeDate(null, null, -7), 'one week');
-    equal(testCreateDate('hace 1 mes'), getRelativeDate(null, -1), 'one month ago');
-    equal(testCreateDate('hace 1 año'), getRelativeDate(-1), 'one year ago');
+    equal(testCreateDate('hace 1 milisegundo'), getRelativeDate(0,0,0,0,0,0,-1), 'one millisecond ago');
+    equal(testCreateDate('hace 1 segundo'),     getRelativeDate(0,0,0,0,0,-1), 'one second ago');
+    equal(testCreateDate('hace 1 minuto'),      getRelativeDate(0,0,0,0,-1), 'one minute ago');
+    equal(testCreateDate('hace 1 hora'),        getRelativeDate(0,0,0,-1), 'one hour ago');
+    equal(testCreateDate('hace 1 día'),         getRelativeDate(0,0,-1), 'one day ago');
+    equal(testCreateDate('hace 1 semana'),      getRelativeDate(0,0,-7), 'one week');
+    equal(testCreateDate('hace 1 mes'),         getRelativeDate(0,-1), 'one month ago');
+    equal(testCreateDate('hace 1 año'),         getRelativeDate(-1), 'one year ago');
 
 
-    equal(testCreateDate('dentro de 5 milisegundos'), getRelativeDate(null, null, null, null, null, null,5), 'five milliseconds from now');
-    equal(testCreateDate('dentro de 5 segundos'), getRelativeDate(null, null, null, null, null, 5), 'five second from now');
-    equal(testCreateDate('dentro de 5 minutos'), getRelativeDate(null, null, null, null, 5), 'five minute from now');
-    equal(testCreateDate('dentro de 5 horas'), getRelativeDate(null, null, null, 5), 'five hour from now');
-    equal(testCreateDate('dentro de 5 días'), getRelativeDate(null, null, 5), 'five day from now');
-    equal(testCreateDate('dentro de 5 semanas'), getRelativeDate(null, null, 35), 'five weeks from now');
-    equal(testCreateDate('dentro de 5 meses'), getRelativeDate(null, 5), 'five months from now');
-    equal(testCreateDate('dentro de 5 años'), getRelativeDate(5), 'five years from now');
+    equal(testCreateDate('dentro de 5 milisegundos'), getRelativeDate(0,0,0,0,0,0,5), 'five milliseconds from now');
+    equal(testCreateDate('dentro de 5 segundos'),     getRelativeDate(0,0,0,0,0,5), 'five second from now');
+    equal(testCreateDate('dentro de 5 minutos'),      getRelativeDate(0,0,0,0,5), 'five minute from now');
+    equal(testCreateDate('dentro de 5 horas'),        getRelativeDate(0,0,0,5), 'five hour from now');
+    equal(testCreateDate('dentro de 5 días'),         getRelativeDate(0,0,5), 'five day from now');
+    equal(testCreateDate('dentro de 5 semanas'),      getRelativeDate(0,0,35), 'five weeks from now');
+    equal(testCreateDate('dentro de 5 meses'),        getRelativeDate(0,5), 'five months from now');
+    equal(testCreateDate('dentro de 5 años'),         getRelativeDate(5), 'five years from now');
 
 
-    equal(testCreateDate('anteayer'), run(getRelativeDate(null, null, -2), 'reset'), '一昨日');
-    equal(testCreateDate('ayer'), run(getRelativeDate(null, null, -1), 'reset'), 'yesterday');
-    equal(testCreateDate('hoy'), run(getRelativeDate(null, null, 0), 'reset'), 'today');
-    equal(testCreateDate('mañana'), run(getRelativeDate(null, null, 1), 'reset'), 'tomorrow');
+    equal(testCreateDate('anteayer'), run(getRelativeDate(0,0,-2), 'reset'), '一昨日');
+    equal(testCreateDate('ayer'),     run(getRelativeDate(0,0,-1), 'reset'), 'yesterday');
+    equal(testCreateDate('hoy'),      run(getRelativeDate(0,0,0), 'reset'), 'today');
+    equal(testCreateDate('mañana'),   run(getRelativeDate(0,0,1), 'reset'), 'tomorrow');
 
-    equal(testCreateDate('la semana pasada'), getRelativeDate(null, null, -7), 'Last week');
-    equal(testCreateDate('la próxima semana'), getRelativeDate(null, null, 7), 'Next week');
+    equal(testCreateDate('la semana pasada'),  getRelativeDate(0,0,-7), 'Last week');
+    equal(testCreateDate('la próxima semana'), getRelativeDate(0,0,7), 'Next week');
 
-    equal(testCreateDate('el mes pasado'), getRelativeDate(null, -1), 'last month');
-    equal(testCreateDate('el próximo mes'), getRelativeDate(null, 1), 'Next month');
+    equal(testCreateDate('el mes pasado'),  getRelativeDate(0,-1), 'last month');
+    equal(testCreateDate('el próximo mes'), getRelativeDate(0,1), 'Next month');
 
     equal(testCreateDate('proximo lunes'), testCreateDate('next monday', 'en'), 'next monday no accent');
     equal(testCreateDate('próximo lunes'), testCreateDate('next monday', 'en'), 'next monday accent');
-    equal(testCreateDate('pasado lunes'), testCreateDate('last monday', 'en'), 'last monday front');
-    equal(testCreateDate('lunes pasado'), testCreateDate('last monday', 'en'), 'last monday back');
+    equal(testCreateDate('pasado lunes'),  testCreateDate('last monday', 'en'), 'last monday front');
+    equal(testCreateDate('lunes pasado'),  testCreateDate('last monday', 'en'), 'last monday back');
 
     equal(testCreateDate('lunes pasado 3:45'), run(testCreateDate('last monday', 'en'), 'set', [{ hour: 3, minute: 45 }, true]), 'last monday back 3:45');
     equal(testCreateDate('proximo lunes 3:45'), run(testCreateDate('next monday', 'en'), 'set', [{ hour: 3, minute: 45 }, true]), 'next monday no accent 3:45');
@@ -68,17 +68,17 @@ namespace('Date | Spanish', function () {
     equal(testCreateDate('el próximo año'), getRelativeDate(1), 'Next year');
 
     equal(testCreateDate('3:45 15 de mayo 2011'), new Date(2011, 4, 15, 3, 45), 'time first format');
-    equal(testCreateDate('3:45 próximo lunes'), getDateWithWeekdayAndOffset(1, 7, 3, 45), '3:45 next monday');
-    equal(testCreateDate('3:45 lunes pasado'), getDateWithWeekdayAndOffset(1, -7, 3, 45), '3:45 last monday');
+    equal(testCreateDate('3:45 próximo lunes'), testGetWeekday(1, 1, 3, 45), '3:45 next monday');
+    equal(testCreateDate('3:45 lunes pasado'), testGetWeekday(1, -1, 3, 45), '3:45 last monday');
 
     // no accents
-    equal(testCreateDate('hace 1 dia'), getRelativeDate(null, null, -1), 'one day ago');
-    equal(testCreateDate('proximo mes'), getRelativeDate(null, 1), 'Next month');
-    equal(testCreateDate('proxima semana'), getRelativeDate(null, null, 7), 'Next week');
-    equal(testCreateDate('manana'), run(getRelativeDate(null, null, 1), 'reset'), 'tomorrow');
+    equal(testCreateDate('hace 1 dia'), getRelativeDate(0,0,-1), 'one day ago');
+    equal(testCreateDate('proximo mes'), getRelativeDate(0,1), 'Next month');
+    equal(testCreateDate('proxima semana'), getRelativeDate(0,0,7), 'Next week');
+    equal(testCreateDate('manana'), run(getRelativeDate(0,0,1), 'reset'), 'tomorrow');
     equal(testCreateDate('hace 1 ano'), getRelativeDate(-1), 'one year ago');
 
-    equal(testCreateDate('mañana a las 3:30'), run(getRelativeDate(null, null, 1), 'set', [{hours:3,minutes:30}, true]), 'tomorrow at 3:30');
+    equal(testCreateDate('mañana a las 3:30'), run(getRelativeDate(0,0,1), 'set', [{hours:3,minutes:30}, true]), 'tomorrow at 3:30');
 
 
     // Numbers

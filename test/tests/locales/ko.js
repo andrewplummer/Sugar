@@ -19,50 +19,50 @@ namespace('Date | Korean', function () {
 
     equal(testCreateDate('5월'), new Date(now.getFullYear(), 4), 'month');
     equal(testCreateDate('15일'), new Date(now.getFullYear(), now.getMonth(), 15), 'date');
-    equal(testCreateDate('월요일'), getDateWithWeekdayAndOffset(1), 'Monday');
+    equal(testCreateDate('월요일'), testGetWeekday(1), 'Monday');
     equal(testCreateDate('구일'), new Date(now.getFullYear(), now.getMonth(), 9), 'the 9th');
     equal(testCreateDate('이십오일'), new Date(now.getFullYear(), now.getMonth(), 25), 'the 25th');
-    equal(testCreateDate('한달 전'), getRelativeDate(null, -1), 'one month ago 달');
+    equal(testCreateDate('한달 전'), getRelativeDate(0,-1), 'one month ago 달');
 
     equal(testCreateDate('2011년5월15일 3:45'), new Date(2011, 4, 15, 3, 45), '3:45');
     equal(testCreateDate('2011년5월15일 오후3:45'), new Date(2011, 4, 15, 15, 45), '3:45pm');
     equal(testCreateDate('2011년5월15일 오후 3시 45분'), new Date(2011, 4, 15, 15, 45), 'full korean letters');
 
-    equal(testCreateDate('1밀리초 전'), getRelativeDate(null, null, null, null, null, null,-1), 'one millisecond ago');
-    equal(testCreateDate('1초 전'), getRelativeDate(null, null, null, null, null, -1), 'one second ago');
-    equal(testCreateDate('1분 전'), getRelativeDate(null, null, null, null, -1), 'one minute ago');
-    equal(testCreateDate('1시간 전'), getRelativeDate(null, null, null, -1), 'one hour ago');
-    equal(testCreateDate('1일 전'), getRelativeDate(null, null, -1), 'one day ago');
-    equal(testCreateDate('1주 전'), getRelativeDate(null, null, -7), 'one week');
-    equal(testCreateDate('1개월 전'), getRelativeDate(null, -1), 'one month ago 개월');
-    equal(testCreateDate('1년 전'), getRelativeDate(-1), 'one year ago');
+    equal(testCreateDate('1밀리초 전'), getRelativeDate(0,0,0,0,0,0,-1), 'one millisecond ago');
+    equal(testCreateDate('1초 전'),     getRelativeDate(0,0,0,0,0,-1), 'one second ago');
+    equal(testCreateDate('1분 전'),     getRelativeDate(0,0,0,0,-1), 'one minute ago');
+    equal(testCreateDate('1시간 전'),   getRelativeDate(0,0,0,-1), 'one hour ago');
+    equal(testCreateDate('1일 전'),     getRelativeDate(0,0,-1), 'one day ago');
+    equal(testCreateDate('1주 전'),     getRelativeDate(0,0,-7), 'one week');
+    equal(testCreateDate('1개월 전'),   getRelativeDate(0,-1), 'one month ago 개월');
+    equal(testCreateDate('1년 전'),     getRelativeDate(-1), 'one year ago');
 
-    equal(testCreateDate('5밀리초 후'), getRelativeDate(null, null, null, null, null, null,5), 'five millisecond from now');
-    equal(testCreateDate('5초 후'), getRelativeDate(null, null, null, null, null, 5), 'five second from now');
-    equal(testCreateDate('5분 후'), getRelativeDate(null, null, null, null, 5), 'five minute from now');
-    equal(testCreateDate('5시간 후'), getRelativeDate(null, null, null, 5), 'five hour from now');
-    equal(testCreateDate('5일 후'), getRelativeDate(null, null, 5), 'five day from now');
-    equal(testCreateDate('5주 후'), getRelativeDate(null, null, 35), 'five weeks from now');
-    equal(testCreateDate('5개월 후'), getRelativeDate(null, 5), 'five months 개월');
-    equal(testCreateDate('5년 후'), getRelativeDate(5), 'five years from now');
+    equal(testCreateDate('5밀리초 후'), getRelativeDate(0,0,0,0,0,0,5), 'five millisecond from now');
+    equal(testCreateDate('5초 후'),     getRelativeDate(0,0,0,0,0,5), 'five second from now');
+    equal(testCreateDate('5분 후'),     getRelativeDate(0,0,0,0,5), 'five minute from now');
+    equal(testCreateDate('5시간 후'),   getRelativeDate(0,0,0,5), 'five hour from now');
+    equal(testCreateDate('5일 후'),     getRelativeDate(0,0,5), 'five day from now');
+    equal(testCreateDate('5주 후'),     getRelativeDate(0,0,35), 'five weeks from now');
+    equal(testCreateDate('5개월 후'),   getRelativeDate(0,5), 'five months 개월');
+    equal(testCreateDate('5년 후'),     getRelativeDate(5), 'five years from now');
 
-    equal(testCreateDate('그저께'), run(getRelativeDate(null, null, -2), 'reset'), '그저께');
-    equal(testCreateDate('어제'), run(getRelativeDate(null, null, -1), 'reset'), 'yesterday');
-    equal(testCreateDate('오늘'), run(getRelativeDate(null, null, 0), 'reset'), 'today');
-    equal(testCreateDate('내일'), run(getRelativeDate(null, null, 1), 'reset'), 'tomorrow');
-    equal(testCreateDate('모레'), run(getRelativeDate(null, null, 2), 'reset'), '모레');
+    equal(testCreateDate('그저께'), run(getRelativeDate(0,0,-2), 'reset'), '그저께');
+    equal(testCreateDate('어제'),   run(getRelativeDate(0,0,-1), 'reset'), 'yesterday');
+    equal(testCreateDate('오늘'),   run(getRelativeDate(0,0,0), 'reset'), 'today');
+    equal(testCreateDate('내일'),   run(getRelativeDate(0,0,1), 'reset'), 'tomorrow');
+    equal(testCreateDate('모레'),   run(getRelativeDate(0,0,2), 'reset'), '모레');
 
-    equal(testCreateDate('내일 3:45'), run(getRelativeDate(null, null, 1), 'set', [{ hours: 3, minutes: 45 }, true]), 'tomorrow with time 3:45');
-    equal(testCreateDate('내일 오후3:45'), run(getRelativeDate(null, null, 1), 'set', [{ hours: 15, minutes: 45 }, true]), 'tomorrow with time 3:45pm');
-    equal(testCreateDate('수요일 3:45'), run(getDateWithWeekdayAndOffset(3, 0), 'set', [{ hours: 3, minutes: 45 }, true]), 'wednesday with time 3:45');
+    equal(testCreateDate('내일 3:45'),     run(getRelativeDate(0,0,1), 'set', [{ hours: 3, minutes: 45 }, true]), 'tomorrow with time 3:45');
+    equal(testCreateDate('내일 오후3:45'), run(getRelativeDate(0,0,1), 'set', [{ hours: 15, minutes: 45 }, true]), 'tomorrow with time 3:45pm');
+    equal(testCreateDate('수요일 3:45'),   run(testGetWeekday(3), 'set', [{ hours: 3, minutes: 45 }, true]), 'wednesday with time 3:45');
 
-    equal(testCreateDate('지난 주'), getRelativeDate(null, null, -7), 'Last week');
-    equal(testCreateDate('이번 주'), getRelativeDate(null, null, 0), 'this week');
-    equal(testCreateDate('다음 주'), getRelativeDate(null, null, 7), 'Next week');
+    equal(testCreateDate('지난 주'), getRelativeDate(0,0,-7), 'Last week');
+    equal(testCreateDate('이번 주'), getRelativeDate(0,0,0), 'this week');
+    equal(testCreateDate('다음 주'), getRelativeDate(0,0,7), 'Next week');
 
-    equal(testCreateDate('지난 달'), getRelativeDate(null, -1), 'last month');
-    equal(testCreateDate('이번 달'), getRelativeDate(null, 0), 'this month');
-    equal(testCreateDate('다음 달'), getRelativeDate(null, 1), 'Next month');
+    equal(testCreateDate('지난 달'), getRelativeDate(0,-1), 'last month');
+    equal(testCreateDate('이번 달'), getRelativeDate(0,0), 'this month');
+    equal(testCreateDate('다음 달'), getRelativeDate(0,1), 'Next month');
 
     equal(testCreateDate('작년'),    getRelativeDate(-1), 'Last year');
     equal(testCreateDate('내년'),    getRelativeDate(1), 'Next year');
@@ -71,9 +71,9 @@ namespace('Date | Korean', function () {
     equal(testCreateDate('다음 해'), getRelativeDate(1), 'Next year');
 
 
-    equal(testCreateDate('지난 주 수요일'), getDateWithWeekdayAndOffset(3, -7), 'Last wednesday');
-    equal(testCreateDate('이번 일요일'),    getDateWithWeekdayAndOffset(0), 'this sunday');
-    equal(testCreateDate('다음 주 금요일'), getDateWithWeekdayAndOffset(5, 7), 'Next friday');
+    equal(testCreateDate('지난 주 수요일'), testGetWeekday(3, -1), 'Last wednesday');
+    equal(testCreateDate('이번 일요일'),    testGetWeekday(0), 'this sunday');
+    equal(testCreateDate('다음 주 금요일'), testGetWeekday(5, 1), 'Next friday');
 
     // Numbers
 

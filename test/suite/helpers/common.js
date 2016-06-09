@@ -103,6 +103,10 @@ testGetSet = function() {
   return s;
 }
 
+testCapitalize = function(str) {
+  return str.slice(0,1).toUpperCase() + str.slice(1);
+}
+
 propertyIsEnumerable = function(obj, prop) {
   for (var key in obj) {
     if(!testHasOwn(obj, key)) continue;

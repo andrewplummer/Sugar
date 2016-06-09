@@ -19,55 +19,55 @@ namespace('Date | Dutch', function () {
     equal(testCreateDate('02 feb. 2016'), new Date(2016, 1, 2), 'toLocaleDateString');
 
     equal(testCreateDate('Mei'), new Date(now.getFullYear(), 4), 'month');
-    equal(testCreateDate('maandag'), getDateWithWeekdayAndOffset(1), 'Monday');
-    equal(testCreateDate('Ma'), getDateWithWeekdayAndOffset(1), 'Monday abbreviated');
+    equal(testCreateDate('maandag'), testGetWeekday(1), 'Monday');
+    equal(testCreateDate('Ma'), testGetWeekday(1), 'Monday abbreviated');
 
     equal(testCreateDate('Dinsdag, 5 Januari 2012 3:45'), new Date(2012, 0, 5, 3, 45), '2012-01-05 3:45');
     equal(run(testCreateDate('Dinsdag, 5 Januari 2012 3:45pm'), 'isValid'), false, 'does not support am/pm');
 
-    equal(testCreateDate('een milliseconde geleden'), getRelativeDate(null, null, null, null, null, null,-1), 'one millisecond ago');
-    equal(testCreateDate('een seconde geleden'), getRelativeDate(null, null, null, null, null, -1), 'one second ago');
-    equal(testCreateDate('een minuut geleden'), getRelativeDate(null, null, null, null, -1), 'one minuto ago');
-    equal(testCreateDate('een uur geleden'), getRelativeDate(null, null, null, -1), 'one hour ago');
-    equal(testCreateDate('een dag geleden'), getRelativeDate(null, null, -1), 'one day ago');
-    equal(testCreateDate('een week geleden'), getRelativeDate(null, null, -7), 'one week ago');
-    equal(testCreateDate('een maand geleden'), getRelativeDate(null, -1), 'one month ago');
-    equal(testCreateDate('een jaar geleden'), getRelativeDate(-1), 'one year ago');
+    equal(testCreateDate('een milliseconde geleden'), getRelativeDate(0,0,0,0,0,0,-1), 'one millisecond ago');
+    equal(testCreateDate('een seconde geleden'),      getRelativeDate(0,0,0,0,0,-1), 'one second ago');
+    equal(testCreateDate('een minuut geleden'),       getRelativeDate(0,0,0,0,-1), 'one minuto ago');
+    equal(testCreateDate('een uur geleden'),          getRelativeDate(0,0,0,-1), 'one hour ago');
+    equal(testCreateDate('een dag geleden'),          getRelativeDate(0,0,-1), 'one day ago');
+    equal(testCreateDate('een week geleden'),         getRelativeDate(0,0,-7), 'one week ago');
+    equal(testCreateDate('een maand geleden'),        getRelativeDate(0,-1), 'one month ago');
+    equal(testCreateDate('een jaar geleden'),         getRelativeDate(-1), 'one year ago');
 
 
-    equal(testCreateDate('5 milliseconden vanaf nu'), getRelativeDate(null, null, null, null, null, null,5), 'danni | five milliseconds from now');
-    equal(testCreateDate('5 seconden vanaf nu'), getRelativeDate(null, null, null, null, null, 5), 'danni | five second from now');
-    equal(testCreateDate('5 minuten vanaf nu'), getRelativeDate(null, null, null, null, 5), 'danni | five minuto from now');
-    equal(testCreateDate('5 uur vanaf nu'), getRelativeDate(null, null, null, 5), 'danni | five hour from now');
-    equal(testCreateDate('5 dagen vanaf nu'), getRelativeDate(null, null, 5), 'danni | five day from now');
-    equal(testCreateDate('5 weken vanaf nu'), getRelativeDate(null, null, 35), 'danni | five weeks from now');
-    equal(testCreateDate('5 maanden vanaf nu'), getRelativeDate(null, 5), 'danni | five months from now');
-    equal(testCreateDate('5 jaar vanaf nu'), getRelativeDate(5), 'danni | five years from now');
+    equal(testCreateDate('5 milliseconden vanaf nu'), getRelativeDate(0,0,0,0,0,0,5), 'danni | five milliseconds from now');
+    equal(testCreateDate('5 seconden vanaf nu'), getRelativeDate(0,0,0,0,0,5), 'danni | five second from now');
+    equal(testCreateDate('5 minuten vanaf nu'),  getRelativeDate(0,0,0,0,5), 'danni | five minuto from now');
+    equal(testCreateDate('5 uur vanaf nu'),      getRelativeDate(0,0,0,5), 'danni | five hour from now');
+    equal(testCreateDate('5 dagen vanaf nu'),    getRelativeDate(0,0,5), 'danni | five day from now');
+    equal(testCreateDate('5 weken vanaf nu'),    getRelativeDate(0,0,35), 'danni | five weeks from now');
+    equal(testCreateDate('5 maanden vanaf nu'),  getRelativeDate(0,5), 'danni | five months from now');
+    equal(testCreateDate('5 jaar vanaf nu'),     getRelativeDate(5), 'danni | five years from now');
 
 
-    equal(testCreateDate('gisteren'), run(getRelativeDate(null, null, -1), 'reset'), 'yesterday');
-    equal(testCreateDate('vandaag'), run(getRelativeDate(null, null, 0), 'reset'), 'today');
-    equal(testCreateDate('morgen'), run(getRelativeDate(null, null, 1), 'reset'), 'tomorrow');
-    equal(testCreateDate('overmorgen'), run(getRelativeDate(null, null, 2), 'reset'), 'day after tomorrow');
+    equal(testCreateDate('gisteren'),   run(getRelativeDate(0,0,-1), 'reset'), 'yesterday');
+    equal(testCreateDate('vandaag'),    run(getRelativeDate(0,0,0), 'reset'), 'today');
+    equal(testCreateDate('morgen'),     run(getRelativeDate(0,0,1), 'reset'), 'tomorrow');
+    equal(testCreateDate('overmorgen'), run(getRelativeDate(0,0,2), 'reset'), 'day after tomorrow');
 
-    equal(testCreateDate('laatste week'), getRelativeDate(null, null, -7), 'Last week');
-    equal(testCreateDate('volgende week'), getRelativeDate(null, null, 7), 'Next week');
+    equal(testCreateDate('laatste week'),  getRelativeDate(0,0,-7), 'Last week');
+    equal(testCreateDate('volgende week'), getRelativeDate(0,0,7), 'Next week');
 
-    equal(testCreateDate('vorige maand'), getRelativeDate(null, -1), 'last month');
-    equal(testCreateDate('volgende maand'), getRelativeDate(null, 1), 'Next month');
+    equal(testCreateDate('vorige maand'),   getRelativeDate(0,-1), 'last month');
+    equal(testCreateDate('volgende maand'), getRelativeDate(0,1), 'Next month');
 
     equal(testCreateDate('afgelopen jaar'), getRelativeDate(-1), 'Last year');
-    equal(testCreateDate('volgend jaar'), getRelativeDate(1), 'Next year');
+    equal(testCreateDate('volgend jaar'),   getRelativeDate(1), 'Next year');
 
-    equal(testCreateDate('volgende maandag'), getDateWithWeekdayAndOffset(1, 7), 'next monday');
-    equal(testCreateDate('afgelopen maandag'), getDateWithWeekdayAndOffset(1, -7), 'last monday');
+    equal(testCreateDate('volgende maandag'),  testGetWeekday(1, 1), 'next monday');
+    equal(testCreateDate('afgelopen maandag'), testGetWeekday(1, -1), 'last monday');
 
-    equal(testCreateDate('afgelopen maandag 3:45'), run(getDateWithWeekdayAndOffset(1, -7), 'set', [{ hour: 3, minute: 45 }, true]), 'last monday 3:45');
+    equal(testCreateDate('afgelopen maandag 3:45'), run(testGetWeekday(1, -1), 'set', [{ hour: 3, minute: 45 }, true]), 'last monday 3:45');
 
     // Issue #152 Dutch should not use a variant in any format
     equal(testCreateDate('15/3/2012 12:45'), new Date(2012, 2, 15, 12, 45), 'slash format with time');
     equal(testCreateDate('12:45 15/3/2012'), new Date(2012, 2, 15, 12, 45), 'slash format with time front');
-    equal(testCreateDate('12:45 volgende maandag'), getDateWithWeekdayAndOffset(1, 7, 12, 45), '12:45 next monday');
+    equal(testCreateDate('12:45 volgende maandag'), testGetWeekday(1, 1, 12, 45), '12:45 next monday');
 
     // Issue #150 Fully qualified ISO codes should be allowed
     equal(testCreateDate('7 januari 2012', 'nl_NL'), new Date(2012, 0, 7), 'nl_NL');
@@ -80,7 +80,7 @@ namespace('Date | Dutch', function () {
 
     equal(testCreateDate('17:32 18 augustus'), new Date(now.getFullYear(), 7, 18, 17, 32), 'August 18, 17:32');
 
-    equal(testCreateDate('morgen \'s 3:30'), run(getRelativeDate(null, null, 1), 'set', [{hours:3,minutes:30}, true]), 'tomorrow at 3:30');
+    equal(testCreateDate('morgen \'s 3:30'), run(getRelativeDate(0,0,1), 'set', [{hours:3,minutes:30}, true]), 'tomorrow at 3:30');
 
     // Numbers
 
