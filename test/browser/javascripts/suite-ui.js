@@ -32,27 +32,7 @@
   }
 
   function getTestName() {
-    var path = getSplitPath();
-    var testName = path[2];
-    var isExtended = path[0] === 'extended';
-    var isMin = path[1] === 'min';
-    var isNpm = testName.match(/^sugar(-\w+)$/);
-    var tokens = [];
-    if (isNpm) {
-      tokens.push('npm');
-    } else {
-      testName = capitalize(testName);
-    }
-    if (isExtended) {
-      tokens.push('extended');
-    }
-    if (isMin) {
-      tokens.push('minified');
-    }
-    if (tokens.length) {
-      testName += ' (' + tokens.join(' | ') + ')';
-    }
-    return testName;
+    return window.parent === window ? '' : getSplitPath().join(' | ');
   }
 
   function createHTML() {
