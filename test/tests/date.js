@@ -426,141 +426,170 @@ namespace('Date', function () {
   });
 
   group('Create | .NET JSON', function() {
-    equal(testCreateDate('\\/Date(628318530718)\\/'), new Date(628318530718), 'basic');
+    equal(testCreateDate('\\/Date(628318530718)\\/'),    new Date(628318530718), 'basic');
     equal(testCreateDate('\\/Date(1318287600+0100)\\/'), new Date(1318287600), '+ date format with timezone');
     equal(testCreateDate('\\/Date(1318287600-0700)\\/'), new Date(1318287600), '- date format with timezone');
   });
 
   group('Create | Fuzzy Dates', function() {
 
+    equal(testCreateDate('the 1st Sunday of last month'),    testGetWeekdayInRelativeMonth(-1,0,0), '1st Sun | last');
+    equal(testCreateDate('the 1st Monday of last month'),    testGetWeekdayInRelativeMonth(-1,1,0), '1st Mon | last');
+    equal(testCreateDate('the 1st Tuesday of last month'),   testGetWeekdayInRelativeMonth(-1,2,0), '1st Tue | last');
+    equal(testCreateDate('the 1st Wednesday of last month'), testGetWeekdayInRelativeMonth(-1,3,0), '1st Wed | last');
+    equal(testCreateDate('the 1st Thursday of last month'),  testGetWeekdayInRelativeMonth(-1,4,0), '1st Thu | last');
+    equal(testCreateDate('the 1st Friday of last month'),    testGetWeekdayInRelativeMonth(-1,5,0), '1st Fri | last');
+    equal(testCreateDate('the 1st Saturday of last month'),  testGetWeekdayInRelativeMonth(-1,6,0), '1st Sat | last');
+
+    equal(testCreateDate('the 1st Sunday of next month'),    testGetWeekdayInRelativeMonth(1,0,0), '1st Sun | next');
+    equal(testCreateDate('the 1st Monday of next month'),    testGetWeekdayInRelativeMonth(1,1,0), '1st Mon | next');
+    equal(testCreateDate('the 1st Tuesday of next month'),   testGetWeekdayInRelativeMonth(1,2,0), '1st Tue | next');
+    equal(testCreateDate('the 1st Wednesday of next month'), testGetWeekdayInRelativeMonth(1,3,0), '1st Wed | next');
+    equal(testCreateDate('the 1st Thursday of next month'),  testGetWeekdayInRelativeMonth(1,4,0), '1st Thu | next');
+    equal(testCreateDate('the 1st Friday of next month'),    testGetWeekdayInRelativeMonth(1,5,0), '1st Fri | next');
+    equal(testCreateDate('the 1st Saturday of next month'),  testGetWeekdayInRelativeMonth(1,6,0), '1st Sat | next');
+
+    equal(testCreateDate('the 1st Friday of last month'), testGetWeekdayInRelativeMonth(-1,5,0), '1st Fri | last');
+    equal(testCreateDate('the 2nd Friday of last month'), testGetWeekdayInRelativeMonth(-1,5,1), '2nd Fri | last');
+    equal(testCreateDate('the 3rd Friday of last month'), testGetWeekdayInRelativeMonth(-1,5,2), '3rd Fri | last');
+    equal(testCreateDate('the 4th Friday of last month'), testGetWeekdayInRelativeMonth(-1,5,3), '4th Fri | last');
+
+    equal(testCreateDate('the 1st Friday of next month'), testGetWeekdayInRelativeMonth(1,5,0), '1st Fri | next');
+    equal(testCreateDate('the 2nd Friday of next month'), testGetWeekdayInRelativeMonth(1,5,1), '2nd Fri | next');
+    equal(testCreateDate('the 3rd Friday of next month'), testGetWeekdayInRelativeMonth(1,5,2), '3rd Fri | next');
+    equal(testCreateDate('the 4th Friday of next month'), testGetWeekdayInRelativeMonth(1,5,3), '4th Fri | next');
+
     equal(testCreateDate('now'),      new Date(), 'now');
     equal(testCreateDate('Now'),      new Date(), 'Now');
     equal(testCreateDate('Just now'), new Date(), 'Just Now');
-    equal(testCreateDate('today'),    testResetTime(new Date()), 'today');
-    equal(testCreateDate('Today'),    testResetTime(new Date()), 'Today');
+    equal(testCreateDate('today'),    getRelativeDateReset(0,0,0), 'today');
+    equal(testCreateDate('Today'),    getRelativeDateReset(0,0,0), 'Today');
 
     equal(testCreateDate('4pm'),           new Date(now.getFullYear(), now.getMonth(), now.getDate(), 16), '4pm');
     equal(testCreateDate('today at 4pm'),  new Date(now.getFullYear(), now.getMonth(), now.getDate(), 16), 'Today at 4pm');
     equal(testCreateDate('today at 4 pm'), new Date(now.getFullYear(), now.getMonth(), now.getDate(), 16), 'Today at 4 pm');
     equal(testCreateDate('4pm today'),     new Date(now.getFullYear(), now.getMonth(), now.getDate(), 16), '4pm today');
 
-    equal(testCreateDate('yesterday'), testResetTime(getRelativeDate(null, null, -1)), 'yesterday');
-    equal(testCreateDate('Yesterday'), testResetTime(getRelativeDate(null, null, -1)), 'Yesterday');
-    equal(testCreateDate('tomorrow'),  testResetTime(getRelativeDate(null, null,  1)), 'tomorrow');
-    equal(testCreateDate('Tomorrow'),  testResetTime(getRelativeDate(null, null,  1)), 'Tomorrow');
+    equal(testCreateDate('yesterday'), getRelativeDateReset(0,0,-1), 'yesterday');
+    equal(testCreateDate('Yesterday'), getRelativeDateReset(0,0,-1), 'Yesterday');
+    equal(testCreateDate('tomorrow'),  getRelativeDateReset(0,0, 1), 'tomorrow');
+    equal(testCreateDate('Tomorrow'),  getRelativeDateReset(0,0, 1), 'Tomorrow');
 
-    equal(testCreateDate('Two days before yesterday'), testResetTime(getRelativeDate(null, null,-3)), 'Two days before yesterday');
-    equal(testCreateDate('Two days before today'),     testResetTime(getRelativeDate(null, null,-2)), 'Two days before today');
-    equal(testCreateDate('The day before yesterday'),  testResetTime(getRelativeDate(null, null,-2)), 'The day before yesterday');
-    equal(testCreateDate('One day before yesterday'),  testResetTime(getRelativeDate(null, null,-2)), 'One day before yesterday');
-    equal(testCreateDate('The day after tomorrow'),    testResetTime(getRelativeDate(null, null, 2)), 'The day after tomorrow');
-    equal(testCreateDate('One day after tomorrow'),    testResetTime(getRelativeDate(null, null, 2)), 'One day after tomorrow');
-    equal(testCreateDate('Two days after today'),      testResetTime(getRelativeDate(null, null, 2)), 'Two days after today');
-    equal(testCreateDate('Two days from today'),       testResetTime(getRelativeDate(null, null, 2)), 'Two days from today');
-    equal(testCreateDate('Two days after tomorrow'),   testResetTime(getRelativeDate(null, null, 3)), 'Two days after tomorrow');
-    equal(testCreateDate('tWo dAyS after toMoRRoW'),   testResetTime(getRelativeDate(null, null, 3)), 'tWo dAyS after toMoRRoW');
-    equal(testCreateDate('2 days after tomorrow'),     testResetTime(getRelativeDate(null, null, 3)), '2 days after tomorrow');
-    equal(testCreateDate('2 day after tomorrow'),      testResetTime(getRelativeDate(null, null, 3)), '2 day after tomorrow');
-    equal(testCreateDate('18 days after tomorrow'),    testResetTime(getRelativeDate(null, null, 19)), '18 days after tomorrow');
-    equal(testCreateDate('18 day after tomorrow'),     testResetTime(getRelativeDate(null, null, 19)), '18 day after tomorrow');
+    equal(testCreateDate('Two days before yesterday'), getRelativeDateReset(0,0,-3), 'Two days before yesterday');
+    equal(testCreateDate('Two days before today'),     getRelativeDateReset(0,0,-2), 'Two days before today');
+    equal(testCreateDate('The day before yesterday'),  getRelativeDateReset(0,0,-2), 'The day before yesterday');
+    equal(testCreateDate('One day before yesterday'),  getRelativeDateReset(0,0,-2), 'One day before yesterday');
+    equal(testCreateDate('The day after tomorrow'),    getRelativeDateReset(0,0, 2), 'The day after tomorrow');
+    equal(testCreateDate('One day after tomorrow'),    getRelativeDateReset(0,0, 2), 'One day after tomorrow');
+    equal(testCreateDate('Two days after today'),      getRelativeDateReset(0,0, 2), 'Two days after today');
+    equal(testCreateDate('Two days from today'),       getRelativeDateReset(0,0, 2), 'Two days from today');
+    equal(testCreateDate('Two days after tomorrow'),   getRelativeDateReset(0,0, 3), 'Two days after tomorrow');
+    equal(testCreateDate('tWo dAyS after toMoRRoW'),   getRelativeDateReset(0,0, 3), 'tWo dAyS after toMoRRoW');
+    equal(testCreateDate('2 days after tomorrow'),     getRelativeDateReset(0,0, 3), '2 days after tomorrow');
+    equal(testCreateDate('2 day after tomorrow'),      getRelativeDateReset(0,0, 3), '2 day after tomorrow');
+    equal(testCreateDate('18 days after tomorrow'),    getRelativeDateReset(0,0, 19), '18 days after tomorrow');
+    equal(testCreateDate('18 day after tomorrow'),     getRelativeDateReset(0,0, 19), '18 day after tomorrow');
 
-    equal(testCreateDate('2 years ago'), getRelativeDate(-2), '2 years ago');
-    equal(testCreateDate('2 months ago'), getRelativeDate(null, -2), '2 months ago');
-    equal(testCreateDate('2 weeks ago'), getRelativeDate(null, null, -14), '2 weeks ago');
-    equal(testCreateDate('2 days ago'), getRelativeDate(null, null, -2), '2 days ago');
-    equal(testCreateDate('2 hours ago'), getRelativeDate(null, null, null, -2), '2 hours ago');
-    equal(testCreateDate('2 minutes ago'), getRelativeDate(null, null, null, null, -2), '2 minutes ago');
-    equal(testCreateDate('2 seconds ago'), getRelativeDate(null, null, null, null, null, -2), '2 seconds ago');
-    equal(testCreateDate('2 milliseconds ago'), getRelativeDate(null, null, null, null, null, null, -2), '2 milliseconds ago');
-    equal(testCreateDate('a second ago'), getRelativeDate(null, null, null, null, null, -1), 'a second ago');
-    equal(testCreateDate('2 years from now'), getRelativeDate(2), '2 years from now');
-    equal(testCreateDate('2 months from now'), getRelativeDate(null, 2), '2 months from now');
-    equal(testCreateDate('2 weeks from now'), getRelativeDate(null, null, 14), '2 weeks from now');
-    equal(testCreateDate('2 days from now'), getRelativeDate(null, null, 2), '2 days from now');
-    equal(testCreateDate('2 hours from now'), getRelativeDate(null, null, null, 2), '2 hours from now');
-    equal(testCreateDate('2 minutes from now'), getRelativeDate(null, null, null, null, 2), '2 minutes from now');
-    equal(testCreateDate('2 seconds from now'), getRelativeDate(null, null, null, null, null, 2), '2 seconds from now');
-    equal(testCreateDate('2 milliseconds from now'), getRelativeDate(null, null, null, null, null, null, 2), '2 milliseconds from now');
+    equal(testCreateDate('2 years ago'),        getRelativeDate(-2), '2 years ago');
+    equal(testCreateDate('2 months ago'),       getRelativeDate(0, -2), '2 months ago');
+    equal(testCreateDate('2 weeks ago'),        getRelativeDate(0, 0, -14), '2 weeks ago');
+    equal(testCreateDate('2 days ago'),         getRelativeDate(0, 0, -2), '2 days ago');
+    equal(testCreateDate('2 hours ago'),        getRelativeDate(0, 0, 0, -2), '2 hours ago');
+    equal(testCreateDate('2 minutes ago'),      getRelativeDate(0, 0, 0, 0, -2), '2 minutes ago');
+    equal(testCreateDate('2 seconds ago'),      getRelativeDate(0, 0, 0, 0, 0, -2), '2 seconds ago');
+    equal(testCreateDate('2 milliseconds ago'), getRelativeDate(0, 0, 0, 0, 0, 0, -2), '2 milliseconds ago');
+    equal(testCreateDate('a second ago'),       getRelativeDate(0, 0, 0, 0, 0, -1), 'a second ago');
 
-    equal(testCreateDate('2 years later'), getRelativeDate(2), '2 years later');
-    equal(testCreateDate('2 months later'), getRelativeDate(null, 2), '2 months later');
-    equal(testCreateDate('2 weeks later'), getRelativeDate(null, null, 14), '2 weeks later');
-    equal(testCreateDate('2 days later'), getRelativeDate(null, null, 2), '2 days later');
-    equal(testCreateDate('2 hours later'), getRelativeDate(null, null, null, 2), '2 hours later');
-    equal(testCreateDate('2 minutes later'), getRelativeDate(null, null, null, null, 2), '2 minutes later');
-    equal(testCreateDate('2 seconds later'), getRelativeDate(null, null, null, null, null, 2), '2 seconds later');
-    equal(testCreateDate('2 milliseconds later'), getRelativeDate(null, null, null, null, null, null, 2), '2 milliseconds later');
+    equal(testCreateDate('2 years from now'),        getRelativeDate(2), '2 years from now');
+    equal(testCreateDate('2 months from now'),       getRelativeDate(0, 2), '2 months from now');
+    equal(testCreateDate('2 weeks from now'),        getRelativeDate(0, 0, 14), '2 weeks from now');
+    equal(testCreateDate('2 days from now'),         getRelativeDate(0, 0, 2), '2 days from now');
+    equal(testCreateDate('2 hours from now'),        getRelativeDate(0, 0, 0, 2), '2 hours from now');
+    equal(testCreateDate('2 minutes from now'),      getRelativeDate(0, 0, 0, 0, 2), '2 minutes from now');
+    equal(testCreateDate('2 seconds from now'),      getRelativeDate(0, 0, 0, 0, 0, 2), '2 seconds from now');
+    equal(testCreateDate('2 milliseconds from now'), getRelativeDate(0, 0, 0, 0, 0, 0, 2), '2 milliseconds from now');
+
+    equal(testCreateDate('2 years later'),        getRelativeDate(2), '2 years later');
+    equal(testCreateDate('2 months later'),       getRelativeDate(0, 2), '2 months later');
+    equal(testCreateDate('2 weeks later'),        getRelativeDate(0, 0, 14), '2 weeks later');
+    equal(testCreateDate('2 days later'),         getRelativeDate(0, 0, 2), '2 days later');
+    equal(testCreateDate('2 hours later'),        getRelativeDate(0, 0, 0, 2), '2 hours later');
+    equal(testCreateDate('2 minutes later'),      getRelativeDate(0, 0, 0, 0, 2), '2 minutes later');
+    equal(testCreateDate('2 seconds later'),      getRelativeDate(0, 0, 0, 0, 0, 2), '2 seconds later');
+    equal(testCreateDate('2 milliseconds later'), getRelativeDate(0, 0, 0, 0, 0, 0, 2), '2 milliseconds later');
 
     // Article trouble
-    equal(testCreateDate('an hour ago'), getRelativeDate(null, null, null, -1), 'an hours ago');
-    equal(testCreateDate('an hour from now'), getRelativeDate(null, null, null, 1), 'an hour from now');
+    equal(testCreateDate('an hour ago'),      getRelativeDate(0, 0, 0, -1), 'an hours ago');
+    equal(testCreateDate('an hour from now'), getRelativeDate(0, 0, 0, 1), 'an hour from now');
 
-    equal(testCreateDate('Monday'), getDateWithWeekdayAndOffset(1), 'Monday');
-    equal(testCreateDate('The day after Monday'), getDateWithWeekdayAndOffset(2), 'The day after Monday');
-    equal(testCreateDate('The day before Monday'), getDateWithWeekdayAndOffset(0), 'The day before Monday');
-    equal(testCreateDate('2 days after monday'), getDateWithWeekdayAndOffset(3), '2 days after monday');
-    equal(testCreateDate('2 days before monday'), getDateWithWeekdayAndOffset(6, -7), '2 days before monday');
-    equal(testCreateDate('2 weeks after monday'), getDateWithWeekdayAndOffset(1, 14), '2 weeks after monday');
+    equal(testCreateDate('Monday'),                testGetWeekday(1), 'Monday');
+    equal(testCreateDate('The day after Monday'),  testGetWeekday(2), 'The day after Monday');
+    equal(testCreateDate('The day before Monday'), testGetWeekday(0), 'The day before Monday');
+    equal(testCreateDate('2 days after monday'),   testGetWeekday(3), '2 days after monday');
+    equal(testCreateDate('2 days before monday'),  testGetWeekday(6, -1), '2 days before monday');
+    equal(testCreateDate('2 weeks after monday'),  testGetWeekday(1, 2), '2 weeks after monday');
 
-    equal(testCreateDate('Next Monday'), getDateWithWeekdayAndOffset(1, 7), 'Next Monday');
-    equal(testCreateDate('next week monday'), getDateWithWeekdayAndOffset(1, 7), 'next week monday');
-    equal(testCreateDate('Next friDay'), getDateWithWeekdayAndOffset(5, 7), 'Next friDay');
-    equal(testCreateDate('next week thursday'), getDateWithWeekdayAndOffset(4, 7), 'next week thursday');
+    equal(testCreateDate('Next Monday'),        testGetWeekday(1, 1), 'Next Monday');
+    equal(testCreateDate('next week monday'),   testGetWeekday(1, 1), 'next week monday');
+    equal(testCreateDate('Next friDay'),        testGetWeekday(5, 1), 'Next friDay');
+    equal(testCreateDate('next week thursday'), testGetWeekday(4, 1), 'next week thursday');
 
-    equal(testCreateDate('last Monday'), getDateWithWeekdayAndOffset(1, -7), 'last Monday');
-    equal(testCreateDate('last week monday'), getDateWithWeekdayAndOffset(1, -7), 'last week monday');
-    equal(testCreateDate('last friDay'), getDateWithWeekdayAndOffset(5, -7), 'last friDay');
-    equal(testCreateDate('last week thursday'), getDateWithWeekdayAndOffset(4, -7), 'last week thursday');
-    equal(testCreateDate('last Monday at 4pm'), getDateWithWeekdayAndOffset(1, -7, 16), 'last Monday at 4pm');
+    equal(testCreateDate('last Monday'),        testGetWeekday(1, -1), 'last Monday');
+    equal(testCreateDate('last week monday'),   testGetWeekday(1, -1), 'last week monday');
+    equal(testCreateDate('last friDay'),        testGetWeekday(5, -1), 'last friDay');
+    equal(testCreateDate('last week thursday'), testGetWeekday(4, -1), 'last week thursday');
+    equal(testCreateDate('last Monday at 4pm'), testGetWeekday(1, -1, 16), 'last Monday at 4pm');
 
-    equal(testCreateDate('this Monday'), getDateWithWeekdayAndOffset(1, 0), 'this Monday');
-    equal(testCreateDate('this week monday'), getDateWithWeekdayAndOffset(1, 0), 'this week monday');
-    equal(testCreateDate('this friDay'), getDateWithWeekdayAndOffset(5, 0), 'this friDay');
-    equal(testCreateDate('this week thursday'), getDateWithWeekdayAndOffset(4, 0), 'this week thursday');
+    equal(testCreateDate('this Monday'),        testGetWeekday(1), 'this Monday');
+    equal(testCreateDate('this week monday'),   testGetWeekday(1), 'this week monday');
+    equal(testCreateDate('this friDay'),        testGetWeekday(5), 'this friDay');
+    equal(testCreateDate('this week thursday'), testGetWeekday(4), 'this week thursday');
 
-    equal(testCreateDate('Monday of last week'), getDateWithWeekdayAndOffset(1, -7), 'Monday of last week');
-    equal(testCreateDate('saturday of next week'), getDateWithWeekdayAndOffset(6, 7), 'saturday of next week');
-    equal(testCreateDate('Monday last week'), getDateWithWeekdayAndOffset(1, -7), 'Monday last week');
-    equal(testCreateDate('saturday next week'), getDateWithWeekdayAndOffset(6, 7), 'saturday next week');
+    equal(testCreateDate('Monday of last week'),   testGetWeekday(1, -1), 'Monday of last week');
+    equal(testCreateDate('saturday of next week'), testGetWeekday(6, 1), 'saturday of next week');
+    equal(testCreateDate('Monday last week'),      testGetWeekday(1, -1), 'Monday last week');
+    equal(testCreateDate('saturday next week'),    testGetWeekday(6, 1), 'saturday next week');
 
-    equal(testCreateDate('Monday of this week'), getDateWithWeekdayAndOffset(1, 0), 'Monday of this week');
-    equal(testCreateDate('saturday of this week'), getDateWithWeekdayAndOffset(6, 0), 'saturday of this week');
-    equal(testCreateDate('Monday this week'), getDateWithWeekdayAndOffset(1, 0), 'Monday this week');
-    equal(testCreateDate('saturday this week'), getDateWithWeekdayAndOffset(6, 0), 'saturday this week');
+    equal(testCreateDate('Monday of this week'),   testGetWeekday(1), 'Monday of this week');
+    equal(testCreateDate('saturday of this week'), testGetWeekday(6), 'saturday of this week');
+    equal(testCreateDate('Monday this week'),      testGetWeekday(1), 'Monday this week');
+    equal(testCreateDate('saturday this week'),    testGetWeekday(6), 'saturday this week');
 
-    equal(testCreateDate('Tue of last week'), getDateWithWeekdayAndOffset(2, -7), 'Tue of last week');
-    equal(testCreateDate('Tue. of last week'), getDateWithWeekdayAndOffset(2, -7), 'Tue. of last week');
+    equal(testCreateDate('Tue of last week'),  testGetWeekday(2, -1), 'Tue of last week');
+    equal(testCreateDate('Tue. of last week'), testGetWeekday(2, -1), 'Tue. of last week');
 
-    equal(testCreateDate('Next week'), getRelativeDate(null, null, 7), 'Next week');
-    equal(testCreateDate('Last week'), getRelativeDate(null, null, -7), 'Last week');
-    equal(testCreateDate('Next month'), getRelativeDate(null, 1), 'Next month');
-    equal(testCreateDate('Next year'), getRelativeDate(1), 'Next year');
-    equal(testCreateDate('this year'), getRelativeDate(0), 'this year');
+    equal(testCreateDate('Next week'),  getRelativeDate(0, 0, 7), 'Next week');
+    equal(testCreateDate('Last week'),  getRelativeDate(0, 0, -7), 'Last week');
+    equal(testCreateDate('Next month'), getRelativeDate(0, 1), 'Next month');
+    equal(testCreateDate('Next year'),  getRelativeDate(1), 'Next year');
+    equal(testCreateDate('this year'),  getRelativeDate(0), 'this year');
 
-    equal(testCreateDate('beginning of the week'), getDateWithWeekdayAndOffset(0), 'beginning of the week');
-    equal(testCreateDate('beginning of this week'), getDateWithWeekdayAndOffset(0), 'beginning of this week');
-    equal(testCreateDate('end of this week'), getDateWithWeekdayAndOffset(6, 0, 23, 59, 59, 999), 'end of this week');
-    equal(testCreateDate('beginning of next week'), getDateWithWeekdayAndOffset(0, 7), 'beginning of next week');
-    equal(testCreateDate('the beginning of next week'), getDateWithWeekdayAndOffset(0, 7), 'the beginning of next week');
+    equal(testCreateDate('beginning of the week'),      testGetWeekday(0), 'beginning of the week');
+    equal(testCreateDate('beginning of this week'),     testGetWeekday(0), 'beginning of this week');
+    equal(testCreateDate('beginning of next week'),     testGetWeekday(0, 1), 'beginning of next week');
+    equal(testCreateDate('the beginning of next week'), testGetWeekday(0, 1), 'the beginning of next week');
+    equal(testCreateDate('end of this week'),           testGetWeekday(6, 0, 23, 59, 59, 999), 'end of this week');
 
     equal(testCreateDate('beginning of the week', { locale: 'en-GB'}), testGetBeginningOfWeek(1), 'beginning of the week | locale overrides');
     equal(testCreateDate('end of this week', { locale: 'en-GB'}), testGetEndOfWeek(0), 'end of this week | locale overrides');
 
-    equal(testCreateDate('beginning of the month'), new Date(now.getFullYear(), now.getMonth()), 'beginning of the month');
-    equal(testCreateDate('beginning of this month'), new Date(now.getFullYear(), now.getMonth()), 'beginning of this month');
-    equal(testCreateDate('beginning of next month'), new Date(now.getFullYear(), now.getMonth() + 1), 'beginning of next month');
-    equal(testCreateDate('the beginning of next month'), new Date(now.getFullYear(), now.getMonth() + 1), 'the beginning of next month');
+    equal(testCreateDate('beginning of the month'),  getRelativeDateReset(0, 0), 'beginning of the month');
+    equal(testCreateDate('beginning of this month'), getRelativeDateReset(0, 0), 'beginning of this month');
+    equal(testCreateDate('beginning of next month'), getRelativeDateReset(0, 1), 'beginning of next month');
+
+    equal(testCreateDate('the beginning of next month'), getRelativeDateReset(0, 1), 'the beginning of next month');
     equal(testCreateDate('the end of next month'), testGetEndOfRelativeMonth(1), 'the end of next month');
-    equal(testCreateDate('the end of the month'), testGetEndOfRelativeMonth(0), 'the end of the month');
+    equal(testCreateDate('the end of the month'),  testGetEndOfRelativeMonth(0), 'the end of the month');
 
-    equal(testCreateDate('the beginning of the year'), new Date(now.getFullYear(), 0), 'the beginning of the year');
-    equal(testCreateDate('the beginning of this year'), new Date(now.getFullYear(), 0), 'the beginning of this year');
-    equal(testCreateDate('the beginning of next year'), new Date(now.getFullYear() + 1, 0), 'the beginning of next year');
-    equal(testCreateDate('the beginning of last year'), new Date(now.getFullYear() - 1, 0), 'the beginning of last year');
-    equal(testCreateDate('the end of next year'), new Date(now.getFullYear() + 1, 11, 31, 23, 59, 59, 999), 'the end of next year');
-    equal(testCreateDate('the end of last year'), new Date(now.getFullYear() - 1, 11, 31, 23, 59, 59, 999), 'the end of last year');
+    equal(testCreateDate('the beginning of the year'),  getRelativeDateReset(0), 'the beginning of the year');
+    equal(testCreateDate('the beginning of this year'), getRelativeDateReset(0), 'the beginning of this year');
+    equal(testCreateDate('the beginning of next year'), getRelativeDateReset(1), 'the beginning of next year');
+    equal(testCreateDate('the beginning of last year'), getRelativeDateReset(-1), 'the beginning of last year');
 
-    equal(testCreateDate('the beginning of the day'), new Date(now.getFullYear(), now.getMonth(), now.getDate()), 'the beginning of the day');
+    equal(testCreateDate('the end of next year'), testGetEndOfMonth(now.getFullYear() + 1, 11), 'the end of next year');
+    equal(testCreateDate('the end of last year'), testGetEndOfMonth(now.getFullYear() - 1, 11), 'the end of last year');
+
+    equal(testCreateDate('the beginning of the day'), getRelativeDateReset(0,0,0), 'the beginning of the day');
 
     equal(testCreateDate('beginning of March'), new Date(now.getFullYear(), 2), 'beginning of March');
     equal(testCreateDate('end of March'), new Date(now.getFullYear(), 2, 31, 23, 59, 59, 999), 'end of March');
@@ -585,9 +614,9 @@ namespace('Date', function () {
 
     equal(testCreateDate('the first day of next January'), new Date(now.getFullYear() + 1, 0, 1), 'the first day of next january');
 
-    equal(testCreateDate('Next week'), getRelativeDate(null, null, 7), 'Next week');
+    equal(testCreateDate('Next week'), getRelativeDate(0, 0, 7), 'Next week');
 
-    equal(testCreateDate('Thursday of next week, 3:30pm'), getDateWithWeekdayAndOffset(4, 7, 15, 30), 'thursday of next week, 3:30pm');
+    equal(testCreateDate('Thursday of next week, 3:30pm'), testGetWeekday(4, 1, 15, 30), 'thursday of next week, 3:30pm');
 
 
     equal(testCreateDate('the 2nd Tuesday of June, 2012'), new Date(2012, 5, 12), 'the 2nd tuesday of June, 2012');
@@ -611,17 +640,17 @@ namespace('Date', function () {
       d.setDate(d.getDate() + 1);
     }
 
-    equal(testCreateDate('the 1st Friday of February').getFullYear(), thisYear, '1st friday of February should be this year');
+    equal(testCreateDate('the 1st Friday of February'), testGetWeekdayInMonth(1, 5), 'the 1st Friday of February');
     equal(testCreateFutureDate('the 1st Friday of February').getFullYear(), now > d ? thisYear + 1 : thisYear, '1st friday of February should be this year or next');
     equal(testCreatePastDate('the 1st Friday of February').getFullYear(), now < d ? thisYear - 1 : thisYear, '1st friday of February should be this year or last');
 
-    equal(testCreateDate('in 60 seconds'), getRelativeDate(null, null, null, null, 1), 'in 60 seconds');
-    equal(testCreateDate('in 45 minutes'), getRelativeDate(null, null, null, null, 45), 'in 45 minutes');
-    equal(testCreateDate('in 5 hours'), getRelativeDate(null, null, null, 5), 'in 5 hours');
-    equal(testCreateDate('in 5 days'), getRelativeDate(null, null, 5), 'in 5 days');
-    equal(testCreateDate('in 5 weeks'), getRelativeDate(null, null, 35), 'in 5 weeks');
-    equal(testCreateDate('in 5 months'), getRelativeDate(null, 5), 'in 5 months');
-    equal(testCreateDate('in 5 years'), getRelativeDate(5), 'in 5 years');
+    equal(testCreateDate('in 60 seconds'), getRelativeDate(0, 0, 0, 0, 1), 'in 60 seconds');
+    equal(testCreateDate('in 45 minutes'), getRelativeDate(0, 0, 0, 0, 45), 'in 45 minutes');
+    equal(testCreateDate('in 5 hours'),    getRelativeDate(0, 0, 0, 5), 'in 5 hours');
+    equal(testCreateDate('in 5 days'),     getRelativeDate(0, 0, 5), 'in 5 days');
+    equal(testCreateDate('in 5 weeks'),    getRelativeDate(0, 0, 35), 'in 5 weeks');
+    equal(testCreateDate('in 5 months'),   getRelativeDate(0, 5), 'in 5 months');
+    equal(testCreateDate('in 5 years'),    getRelativeDate(5), 'in 5 years');
 
 
     // Issue #203
@@ -654,16 +683,16 @@ namespace('Date', function () {
 
     // Issue #310
 
-    equal(testCreateDate('6:30pm in 1 day'), run(getRelativeDate(null, null, 1), 'set', [{hours:18,minutes:30}, true]), '6:30pm in 1 day');
-    equal(testCreateDate('6:30pm in 3 days'), run(getRelativeDate(null, null, 3), 'set', [{hours:18,minutes:30}, true]), '6:30pm in 3 days');
-    equal(testCreateDate('6:30pm in -3 days'), run(getRelativeDate(null, null, -3), 'set', [{hours:18,minutes:30}, true]), '6:30pm in -3 days');
+    equal(testCreateDate('6:30pm in 1 day'), run(getRelativeDate(0, 0, 1), 'set', [{hours:18,minutes:30}, true]), '6:30pm in 1 day');
+    equal(testCreateDate('6:30pm in 3 days'), run(getRelativeDate(0, 0, 3), 'set', [{hours:18,minutes:30}, true]), '6:30pm in 3 days');
+    equal(testCreateDate('6:30pm in -3 days'), run(getRelativeDate(0, 0, -3), 'set', [{hours:18,minutes:30}, true]), '6:30pm in -3 days');
 
-    equal(testCreateDate('6:30pm 2 days ago'), run(getRelativeDate(null, null, -2), 'set', [{hours:18,minutes:30}, true]), '6:30pm 2 days ago');
+    equal(testCreateDate('6:30pm 2 days ago'), run(getRelativeDate(0, 0, -2), 'set', [{hours:18,minutes:30}, true]), '6:30pm 2 days ago');
 
-    equal(testCreateDate('21:00 in 2 weeks'), run(getRelativeDate(null, null, 14), 'set', [{hours:21}, true]), '21:00pm in 2 weeks');
-    equal(testCreateDate('5:00am in a month'), run(getRelativeDate(null, 1), 'set', [{hours:5}, true]), '5:00am in a month');
-    equal(testCreateDate('5am in a month'), run(getRelativeDate(null, 1), 'set', [{hours:5}, true]), '5am in a month');
-    equal(testCreateDate('5:01am in a month'), run(getRelativeDate(null, 1), 'set', [{hours:5,minutes:1}, true]), '5:01am in a month');
+    equal(testCreateDate('21:00 in 2 weeks'), run(getRelativeDate(0, 0, 14), 'set', [{hours:21}, true]), '21:00pm in 2 weeks');
+    equal(testCreateDate('5:00am in a month'), run(getRelativeDate(0, 1), 'set', [{hours:5}, true]), '5:00am in a month');
+    equal(testCreateDate('5am in a month'), run(getRelativeDate(0, 1), 'set', [{hours:5}, true]), '5am in a month');
+    equal(testCreateDate('5:01am in a month'), run(getRelativeDate(0, 1), 'set', [{hours:5,minutes:1}, true]), '5:01am in a month');
 
     equal(run(testCreateDate('5am in an hour'), 'isValid'), false, '5am in an hour is invalid');
     equal(run(testCreateDate('5am in a minute'), 'isValid'), false, '5am in a minute is invalid');
@@ -678,8 +707,8 @@ namespace('Date', function () {
     equal(testCreateDate('end of tomorrow'), run(testCreateDate('tomorrow'), 'endOfDay'), 'end of tomorrow');
 
     // Issue #431 "ten minutes ago"
-    equal(testCreateDate('ten minutes ago'), getRelativeDate(null, null, null, null, -10), 'ten minutes ago');
-    equal(testCreateDate('ten minutes from now'), getRelativeDate(null, null, null, null, 10), 'ten minutes from now');
+    equal(testCreateDate('ten minutes ago'), getRelativeDate(0, 0, 0, 0, -10), 'ten minutes ago');
+    equal(testCreateDate('ten minutes from now'), getRelativeDate(0, 0, 0, 0, 10), 'ten minutes from now');
 
     // Issue #509 "a/p" for "am/pm"
     equal(testCreateDate('yesterday at 3p'), new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1, 15), 'yesterday at 3p');
@@ -696,19 +725,20 @@ namespace('Date', function () {
     // Issue #453 "tomorrow at noon"
     equal(testCreateDate('noon'), new Date(now.getFullYear(), now.getMonth(), now.getDate(), 12), 'noon');
     equal(testCreateDate('tomorrow at noon'), new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 12), 'tommorrow at noon');
-    equal(testCreateDate('Monday at noon'), getDateWithWeekdayAndOffset(1, 0, 12), 'Monday at noon');
-    equal(testCreateDate('next Saturday at noon'), getDateWithWeekdayAndOffset(6, 7, 12), 'next Saturday at noon');
-    equal(testCreateDate('last Tuesday at noon'), getDateWithWeekdayAndOffset(2, -7, 12), 'last Tuesday at noon');
-    equal(testCreateDate('midnight'), testResetTime(getRelativeDate(null, null, 1)), 'midnight');
-    equal(testCreateDate('midnight tonight'), testResetTime(getRelativeDate(null, null, 1)), 'midnight');
-    equal(testCreateDate('tomorrow at midnight'), testResetTime(getRelativeDate(null, null, 2)), 'tommorrow at midnight');
-    equal(testCreateDate('Monday at midnight'), getDateWithWeekdayAndOffset(2, 0), 'Monday at midnight');
-    equal(testCreateDate('next Saturday at midnight'), getDateWithWeekdayAndOffset(7, 7), 'next Saturday at midnight');
-    equal(testCreateDate('last Tuesday at midnight'), getDateWithWeekdayAndOffset(3, -7), 'last Tuesday at midnight');
+    equal(testCreateDate('Monday at noon'),            testGetWeekday(1, 0, 12), 'Monday at noon');
+    equal(testCreateDate('next Saturday at noon'),     testGetWeekday(6, 1, 12), 'next Saturday at noon');
+    equal(testCreateDate('last Tuesday at noon'),      testGetWeekday(2, -1, 12), 'last Tuesday at noon');
+    equal(testCreateDate('Monday at midnight'),        testGetWeekday(2, 0), 'Monday at midnight');
+    equal(testCreateDate('next Saturday at midnight'), testGetWeekday(7, 1), 'next Saturday at midnight');
+    equal(testCreateDate('last Tuesday at midnight'),  testGetWeekday(3, -1), 'last Tuesday at midnight');
+
+    equal(testCreateDate('midnight'), getRelativeDateReset(0, 0, 1), 'midnight');
+    equal(testCreateDate('midnight tonight'), getRelativeDateReset(0, 0, 1), 'midnight');
+    equal(testCreateDate('tomorrow at midnight'), getRelativeDateReset(0, 0, 2), 'tommorrow at midnight');
 
     // Issue #455
-    equal(testCreateDate('a week from Tuesday'), getDateWithWeekdayAndOffset(2, 7), 'a week from Tuesday');
-    equal(testCreateDate('week from Tuesday'), getDateWithWeekdayAndOffset(2, 7), 'week from Tuesday');
+    equal(testCreateDate('a week from Tuesday'), testGetWeekday(2, 1), 'a week from Tuesday');
+    equal(testCreateDate('week from Tuesday'), testGetWeekday(2, 1), 'week from Tuesday');
     equal(testCreateDate('first of the month'), new Date(now.getFullYear(), now.getMonth()), 'first of the month');
 
     equal(testCreateDate('the first Friday of February, 2012'),  new Date(2012, 1, 3),  'the first Friday of February');
@@ -736,27 +766,27 @@ namespace('Date', function () {
     equal(testCreateDate('the last Friday in November, 2012'),    new Date(2012, 10, 30), 'the last Friday in November');
     equal(testCreateDate('the last Saturday in November, 2012'),  new Date(2012, 10, 24), 'the last Saturday in November');
 
-    equal(testCreateDate('next weekend'), getDateWithWeekdayAndOffset(6, 7), 'next weekend');
+    equal(testCreateDate('next weekend'), testGetWeekday(6, 1), 'next weekend');
     equal(testCreateDate('the second weekend of August, 2011'), new Date(2011, 7, 13), 'the second weekend of August, 2011');
     equal(testCreateDate('the last weekend of January, 1985'), new Date(1985, 0, 26), 'the last weekend of January, 1985');
 
     // Issue #455 Allowing "half" for hours and years
 
-    equal(testCreateDate('half hour ago'), getRelativeDate(null, null, null, null, -30), 'half hour ago');
-    equal(testCreateDate('half an hour ago'), getRelativeDate(null, null, null, null, -30), 'half an hour ago');
-    equal(testCreateDate('a half hour ago'), getRelativeDate(null, null, null, null, -30), 'a half hour ago');
+    equal(testCreateDate('half hour ago'), getRelativeDate(0, 0, 0, 0, -30), 'half hour ago');
+    equal(testCreateDate('half an hour ago'), getRelativeDate(0, 0, 0, 0, -30), 'half an hour ago');
+    equal(testCreateDate('a half hour ago'), getRelativeDate(0, 0, 0, 0, -30), 'a half hour ago');
 
-    equal(testCreateDate('half hour from now'), getRelativeDate(null, null, null, null, 30), 'half hour from now');
-    equal(testCreateDate('half an hour from now'), getRelativeDate(null, null, null, null, 30), 'half an hour from now');
-    equal(testCreateDate('a half hour from now'), getRelativeDate(null, null, null, null, 30), 'a half hour from now');
+    equal(testCreateDate('half hour from now'), getRelativeDate(0, 0, 0, 0, 30), 'half hour from now');
+    equal(testCreateDate('half an hour from now'), getRelativeDate(0, 0, 0, 0, 30), 'half an hour from now');
+    equal(testCreateDate('a half hour from now'), getRelativeDate(0, 0, 0, 0, 30), 'a half hour from now');
 
-    equal(testCreateDate('in half an hour'), getRelativeDate(null, null, null, null, 30), 'in half an hour');
-    equal(testCreateDate('in a half hour'), getRelativeDate(null, null, null, null, 30), 'in a half hour');
+    equal(testCreateDate('in half an hour'), getRelativeDate(0, 0, 0, 0, 30), 'in half an hour');
+    equal(testCreateDate('in a half hour'), getRelativeDate(0, 0, 0, 0, 30), 'in a half hour');
 
-    equal(testCreateDate('half year ago'), getRelativeDate(null, -6), 'half year ago');
-    equal(testCreateDate('half a year ago'), getRelativeDate(null, -6), 'half a year ago');
+    equal(testCreateDate('half year ago'), getRelativeDate(0, -6), 'half year ago');
+    equal(testCreateDate('half a year ago'), getRelativeDate(0, -6), 'half a year ago');
 
-    equal(testCreateDate('half a day ago'), getRelativeDate(null, null, null, -12), 'half a day ago is valid');
+    equal(testCreateDate('half a day ago'), getRelativeDate(0, 0, 0, -12), 'half a day ago is valid');
 
     equal(run(testCreateDate('half a week ago'), 'isValid'), false, 'half a week ago is not valid');
     equal(run(testCreateDate('half a month ago'), 'isValid'), false, 'half a month ago is not valid');
@@ -774,7 +804,7 @@ namespace('Date', function () {
     equal(testCreateUTCDate('1994-11-05T13:15:30Z'), new Date(Date.UTC(1994, 10, 5, 13, 15, 30)), '"Z" is still utc');
 
     var d = testCreateUTCDate('two days ago');
-    var expected = getRelativeDate(null, null, -2, 0);
+    var expected = getRelativeDate(0, 0, -2, 0);
     var tzOffset = (expected.getTimezoneOffset() - new Date().getTimezoneOffset()) * 60 * 1000;
     expected.setTime(expected.getTime() - tzOffset);
     equal(d, expected, 'relative dates are not UTC');
@@ -885,7 +915,7 @@ namespace('Date', function () {
 
 
     // Issue #144 various time/date formats
-    var d = getDateWithWeekdayAndOffset(4);
+    var d = testGetWeekday(4);
     d.setHours(15);
     equal(testCreateDate('6/30/2012 3:00 PM'), new Date(2012, 5, 30, 15), '6/30/2012 3:00 PM');
     equal(testCreateDate('Thursday at 3:00 PM'), d, 'Thursday at 3:00 PM');
@@ -1864,11 +1894,11 @@ namespace('Date', function () {
       }
     }
 
-    var d = getRelativeDate(null, null, null, null, -5);
+    var d = getRelativeDate(0, 0, 0, 0, -5);
     var result = run(d, 'relative', [dyn]);
     equal(result, '5 minutes ago', '5 minutes should stay relative');
 
-    var d = getRelativeDate(null, -13)
+    var d = getRelativeDate(0, -13)
     var result = run(d, 'relative', [dyn]);
     var expected = run(d, 'format', [simpleDateFormat]);
     equal(result, expected, 'higher reverts to absolute');
@@ -2003,8 +2033,8 @@ namespace('Date', function () {
     test(testCreateDate('sunday'), ['sunday'], true, 'sunday is sunday');
     test(testCreateDate('saturday'), ['saturday'], true, 'saturday is saturday');
 
-    test(getDateWithWeekdayAndOffset(0), ['the beginning of the week'], true, 'the beginning of the week');
-    test(getDateWithWeekdayAndOffset(6, 0, 23, 59, 59, 999), ['the end of the week'], true, 'the end of the week');
+    test(testGetWeekday(0), ['the beginning of the week'], true, 'the beginning of the week');
+    test(testGetWeekday(6, 0, 23, 59, 59, 999), ['the end of the week'], true, 'the end of the week');
 
     test(new Date(1970,4,15,22,3,1,432), [new Date(1970,4,15,22,3,1,431)], false, 'accuracy | accurate to millisecond by default | 431');
     test(new Date(1970,4,15,22,3,1,432), [new Date(1970,4,15,22,3,1,432)], true, 'accuracy |  accurate to millisecond by default | 432');
@@ -2048,35 +2078,35 @@ namespace('Date', function () {
 
     // Note that relative #is formats can only be considered to be accurate to within a few milliseconds
     // to avoid complications rising from the date being created momentarily after the function is called.
-    test(getRelativeDate(null,null,null,null,null,null, -5), ['3 milliseconds ago'], false, '3 milliseconds ago is accurate to milliseconds');
-    test(getRelativeDate(null,null,null,null,null,null, -5), ['5 milliseconds ago', 5], true, '5 milliseconds ago is accurate to milliseconds');
-    test(getRelativeDate(null,null,null,null,null,null, -5), ['7 milliseconds ago'], false, '7 milliseconds ago is accurate to milliseconds');
+    test(getRelativeDate(0,0,0,0,0,0, -5), ['3 milliseconds ago'], false, '3 milliseconds ago is accurate to milliseconds');
+    test(getRelativeDate(0,0,0,0,0,0, -5), ['5 milliseconds ago', 5], true, '5 milliseconds ago is accurate to milliseconds');
+    test(getRelativeDate(0,0,0,0,0,0, -5), ['7 milliseconds ago'], false, '7 milliseconds ago is accurate to milliseconds');
 
-    test(getRelativeDate(null,null,null,null,null,-5), ['4 seconds ago'], false, '4 seconds ago is not 5 seconds ago');
-    test(getRelativeDate(null,null,null,null,null,-5), ['5 seconds ago'], true, '5 seconds ago is 5 seconds ago');
-    test(getRelativeDate(null,null,null,null,null,-5), ['6 seconds ago'], false, '6 seconds ago is not 5 seconds ago');
-    test(getRelativeDate(null,null,null,null,null,-5), ['7 seconds ago'], false, '7 seconds ago is not 5 seconds ago');
+    test(getRelativeDate(0,0,0,0,0,-5), ['4 seconds ago'], false, '4 seconds ago is not 5 seconds ago');
+    test(getRelativeDate(0,0,0,0,0,-5), ['5 seconds ago'], true, '5 seconds ago is 5 seconds ago');
+    test(getRelativeDate(0,0,0,0,0,-5), ['6 seconds ago'], false, '6 seconds ago is not 5 seconds ago');
+    test(getRelativeDate(0,0,0,0,0,-5), ['7 seconds ago'], false, '7 seconds ago is not 5 seconds ago');
 
-    test(getRelativeDate(null,null,null,null,-5), ['4 minutes ago'], false, '4 minutes ago is not 5 minutes ago');
-    test(getRelativeDate(null,null,null,null,-5), ['5 minutes ago'], true, '5 minutes ago is 5 minutes ago');
-    test(getRelativeDate(null,null,null,null,-5), ['6 minutes ago'], false, '6 minutes ago is not 5 minutes ago');
-    test(getRelativeDate(null,null,null,null,-5), ['7 minutes ago'], false, '7 minutes ago is not 5 minutes ago');
+    test(getRelativeDate(0,0,0,0,-5), ['4 minutes ago'], false, '4 minutes ago is not 5 minutes ago');
+    test(getRelativeDate(0,0,0,0,-5), ['5 minutes ago'], true, '5 minutes ago is 5 minutes ago');
+    test(getRelativeDate(0,0,0,0,-5), ['6 minutes ago'], false, '6 minutes ago is not 5 minutes ago');
+    test(getRelativeDate(0,0,0,0,-5), ['7 minutes ago'], false, '7 minutes ago is not 5 minutes ago');
 
-    test(getRelativeDate(null,null,null,-5), ['4 hours ago'], false, '4 hours ago is not 5 hours ago');
-    test(getRelativeDate(null,null,null,-5), ['5 hours ago'], true, '5 hours ago is 5 hours ago');
-    test(getRelativeDate(null,null,null,-5, 15), ['5 hours ago'], true, '5:15 hours ago is still 5 hours ago');
-    test(getRelativeDate(null,null,null,-5), ['6 hours ago'], false, '6 hours ago is not 5 hours ago');
-    test(getRelativeDate(null,null,null,-5), ['7 hours ago'], false, '7 hours ago is not 5 hours ago');
+    test(getRelativeDate(0,0,0,-5), ['4 hours ago'], false, '4 hours ago is not 5 hours ago');
+    test(getRelativeDate(0,0,0,-5), ['5 hours ago'], true, '5 hours ago is 5 hours ago');
+    test(getRelativeDate(0,0,0,-5, 15), ['5 hours ago'], true, '5:15 hours ago is still 5 hours ago');
+    test(getRelativeDate(0,0,0,-5), ['6 hours ago'], false, '6 hours ago is not 5 hours ago');
+    test(getRelativeDate(0,0,0,-5), ['7 hours ago'], false, '7 hours ago is not 5 hours ago');
 
-    test(getRelativeDate(null,null,-5), ['4 days ago'], false, '4 days ago is not 5 days ago');
-    test(getRelativeDate(null,null,-5), ['5 days ago'], true, '5 days ago is 5 hours ago');
-    test(getRelativeDate(null,null,-5), ['6 days ago'], false, '6 days ago is not 5 days ago');
-    test(getRelativeDate(null,null,-5), ['7 days ago'], false, '7 days ago is not 5 days ago');
+    test(getRelativeDate(0,0,-5), ['4 days ago'], false, '4 days ago is not 5 days ago');
+    test(getRelativeDate(0,0,-5), ['5 days ago'], true, '5 days ago is 5 hours ago');
+    test(getRelativeDate(0,0,-5), ['6 days ago'], false, '6 days ago is not 5 days ago');
+    test(getRelativeDate(0,0,-5), ['7 days ago'], false, '7 days ago is not 5 days ago');
 
-    test(getRelativeDate(null,-5), ['4 months ago'], false, '4 months ago is not 5 months ago');
-    test(getRelativeDate(null,-5), ['5 months ago'], true, '5 months ago is 5 months ago');
-    test(getRelativeDate(null,-5), ['6 months ago'], false, '6 months ago is not 5 months ago');
-    test(getRelativeDate(null,-5), ['7 months ago'], false, '7 months ago is accurate to months');
+    test(getRelativeDate(0,-5), ['4 months ago'], false, '4 months ago is not 5 months ago');
+    test(getRelativeDate(0,-5), ['5 months ago'], true, '5 months ago is 5 months ago');
+    test(getRelativeDate(0,-5), ['6 months ago'], false, '6 months ago is not 5 months ago');
+    test(getRelativeDate(0,-5), ['7 months ago'], false, '7 months ago is accurate to months');
 
     test(getRelativeDate(-5), ['4 years ago'], false, '4 years ago is not 5 years ago');
     test(getRelativeDate(-5), ['5 years ago'], true, '5 years ago is 5 years ago');
@@ -2213,7 +2243,7 @@ namespace('Date', function () {
     equal(run(d, 'yearsUntil', ['the last day of 2011']), 1, 'years until the last day of 2011');
 
     var d = new Date();
-    var offset = d.getTime() - getRelativeDate(null, null, -7).getTime();
+    var offset = d.getTime() - getRelativeDate(0, 0, -7).getTime();
     var since, until;
 
     // I'm occasionally seeing some REALLY big lags with IE here (up to 500ms), so giving a 1s buffer here.
@@ -2248,7 +2278,7 @@ namespace('Date', function () {
     equal(run(d, 'yearsUntil', ['last week']), Math.round(-offset / 1000 / 60 / 60 / 24 / 365.25), 'years until the last day of 2011');
 
     // Issue #236
-    var d = getRelativeDate(null, null, null, 14);
+    var d = getRelativeDate(0, 0, 0, 14);
     equal(run(d, 'daysFromNow'), 0, 'should floor the number rather than round');
 
     // Issue #267
@@ -2439,25 +2469,25 @@ namespace('Date', function () {
     equal(run(now, 'isThisYear'), true, 'isThisYear | now');
     equal(run(now, 'isNextYear'), false, 'isNextYear | now');
 
-    equal(run(getRelativeDate(null, null, -7), 'isLastWeek'), true, 'isLastWeek | last week');
-    equal(run(getRelativeDate(null, null, -7), 'isThisWeek'), false, 'isThisWeek | last week');
-    equal(run(getRelativeDate(null, null, -7), 'isNextWeek'), false, 'isNextWeek | last week');
+    equal(run(getRelativeDate(0, 0, -7), 'isLastWeek'), true, 'isLastWeek | last week');
+    equal(run(getRelativeDate(0, 0, -7), 'isThisWeek'), false, 'isThisWeek | last week');
+    equal(run(getRelativeDate(0, 0, -7), 'isNextWeek'), false, 'isNextWeek | last week');
 
-    equal(run(getRelativeDate(null, null, 7), 'isLastWeek'), false, 'isLastWeek | next week');
-    equal(run(getRelativeDate(null, null, 7), 'isThisWeek'), false, 'isThisWeek | next week');
-    equal(run(getRelativeDate(null, null, 7), 'isNextWeek'), true, 'isNextWeek | next week');
+    equal(run(getRelativeDate(0, 0, 7), 'isLastWeek'), false, 'isLastWeek | next week');
+    equal(run(getRelativeDate(0, 0, 7), 'isThisWeek'), false, 'isThisWeek | next week');
+    equal(run(getRelativeDate(0, 0, 7), 'isNextWeek'), true, 'isNextWeek | next week');
 
-    equal(run(getDateWithWeekdayAndOffset(0), 'isLastWeek'), false, 'isLastWeek | this week sunday is last week');
-    equal(run(getDateWithWeekdayAndOffset(0), 'isThisWeek'), true, 'isThisWeek | this week sunday is this week');
-    equal(run(getDateWithWeekdayAndOffset(0), 'isNextWeek'), false, 'isNextWeek | this week sunday is next week');
+    equal(run(testGetWeekday(0), 'isLastWeek'), false, 'isLastWeek | this week sunday is last week');
+    equal(run(testGetWeekday(0), 'isThisWeek'), true, 'isThisWeek | this week sunday is this week');
+    equal(run(testGetWeekday(0), 'isNextWeek'), false, 'isNextWeek | this week sunday is next week');
 
-    equal(run(getDateWithWeekdayAndOffset(5), 'isLastWeek'), false, 'isLastWeek | friday is last week');
-    equal(run(getDateWithWeekdayAndOffset(5), 'isThisWeek'), true, 'isThisWeek | friday is this week');
-    equal(run(getDateWithWeekdayAndOffset(5), 'isNextWeek'), false, 'isNextWeek | friday is next week');
+    equal(run(testGetWeekday(5), 'isLastWeek'), false, 'isLastWeek | friday is last week');
+    equal(run(testGetWeekday(5), 'isThisWeek'), true, 'isThisWeek | friday is this week');
+    equal(run(testGetWeekday(5), 'isNextWeek'), false, 'isNextWeek | friday is next week');
 
-    equal(run(getDateWithWeekdayAndOffset(6), 'isLastWeek'), false, 'isLastWeek | satuday is last week');
-    equal(run(getDateWithWeekdayAndOffset(6), 'isThisWeek'), true, 'isThisWeek | satuday is this week');
-    equal(run(getDateWithWeekdayAndOffset(6), 'isNextWeek'), false, 'isNextWeek | satuday is next week');
+    equal(run(testGetWeekday(6), 'isLastWeek'), false, 'isLastWeek | satuday is last week');
+    equal(run(testGetWeekday(6), 'isThisWeek'), true, 'isThisWeek | satuday is this week');
+    equal(run(testGetWeekday(6), 'isNextWeek'), false, 'isNextWeek | satuday is next week');
 
     equal(run(testCreateDate('last sunday'), 'isLastWeek'), true, 'isLastWeek | last sunday');
     equal(run(testCreateDate('last sunday'), 'isThisWeek'), false, 'isThisWeek | last sunday');
@@ -2579,19 +2609,19 @@ namespace('Date', function () {
     equal(run(d, 'isNextWeek'), false, 'isNextWeek | the beginning of next week - 1 minute');
 
 
-    equal(run(getRelativeDate(null, -1), 'isLastWeek'), false, 'isLastWeek | last month');
-    equal(run(getRelativeDate(null, -1), 'isThisWeek'), false, 'isThisWeek | last month');
-    equal(run(getRelativeDate(null, -1), 'isNextWeek'), false, 'isNextWeek | last month');
-    equal(run(getRelativeDate(null, -1), 'isLastMonth'), true, 'isLastMonth | last month');
-    equal(run(getRelativeDate(null, -1), 'isThisMonth'), false, 'isThisMonth | last month');
-    equal(run(getRelativeDate(null, -1), 'isNextMonth'), false, 'isNextMonth | last month');
+    equal(run(getRelativeDate(0, -1), 'isLastWeek'), false, 'isLastWeek | last month');
+    equal(run(getRelativeDate(0, -1), 'isThisWeek'), false, 'isThisWeek | last month');
+    equal(run(getRelativeDate(0, -1), 'isNextWeek'), false, 'isNextWeek | last month');
+    equal(run(getRelativeDate(0, -1), 'isLastMonth'), true, 'isLastMonth | last month');
+    equal(run(getRelativeDate(0, -1), 'isThisMonth'), false, 'isThisMonth | last month');
+    equal(run(getRelativeDate(0, -1), 'isNextMonth'), false, 'isNextMonth | last month');
 
-    equal(run(getRelativeDate(null, 1), 'isLastWeek'), false, 'isLastWeek | next month');
-    equal(run(getRelativeDate(null, 1), 'isThisWeek'), false, 'isThisWeek | next month');
-    equal(run(getRelativeDate(null, 1), 'isNextWeek'), false, 'isNextWeek | next month');
-    equal(run(getRelativeDate(null, 1), 'isLastMonth'), false, 'isLastMonth | next month');
-    equal(run(getRelativeDate(null, 1), 'isThisMonth'), false, 'isThisMonth | next month');
-    equal(run(getRelativeDate(null, 1), 'isNextMonth'), true, 'isNextMonth | next month');
+    equal(run(getRelativeDate(0, 1), 'isLastWeek'), false, 'isLastWeek | next month');
+    equal(run(getRelativeDate(0, 1), 'isThisWeek'), false, 'isThisWeek | next month');
+    equal(run(getRelativeDate(0, 1), 'isNextWeek'), false, 'isNextWeek | next month');
+    equal(run(getRelativeDate(0, 1), 'isLastMonth'), false, 'isLastMonth | next month');
+    equal(run(getRelativeDate(0, 1), 'isThisMonth'), false, 'isThisMonth | next month');
+    equal(run(getRelativeDate(0, 1), 'isNextMonth'), true, 'isNextMonth | next month');
 
     equal(run(getRelativeDate(-1), 'isLastWeek'), false, 'isLastWeek | last year');
     equal(run(getRelativeDate(-1), 'isThisWeek'), false, 'isThisWeek | last year');
@@ -2673,16 +2703,16 @@ namespace('Date', function () {
 
     dateTest(new Date(1999,5), ['1999'], true, 'June 1999 is after implied January 1999');
     dateTest(getRelativeDate(1), ['tomorrow'], true, 'relative | next year');
-    dateTest(getRelativeDate(null, 1), ['tomorrow'], true, 'relative | next month');
-    dateTest(getRelativeDate(null, null, 1), ['tomorrow'], true, 'relative | tomorrow');
+    dateTest(getRelativeDate(0, 1), ['tomorrow'], true, 'relative | next month');
+    dateTest(getRelativeDate(0, 0, 1), ['tomorrow'], true, 'relative | tomorrow');
 
-    dateTest(getDateWithWeekdayAndOffset(0), ['monday'], false, 'relative | sunday');
-    dateTest(getDateWithWeekdayAndOffset(2), ['monday'], true, 'relative | tuesday');
-    dateTest(getDateWithWeekdayAndOffset(0,7), ['monday'], true, 'relative | next week sunday');
-    dateTest(getDateWithWeekdayAndOffset(0,-7), ['monday'], false, 'relative | last week sunday');
-    dateTest(getDateWithWeekdayAndOffset(0), ['the beginning of this week'], false, 'relative | the beginning of this week');
-    dateTest(getDateWithWeekdayAndOffset(0), ['the beginning of last week'], true, 'relative | the beginning of last week');
-    dateTest(getDateWithWeekdayAndOffset(0), ['the end of this week'], false, 'relative | the end of this week');
+    dateTest(testGetWeekday(0),    ['monday'], false, 'relative | sunday');
+    dateTest(testGetWeekday(2),    ['monday'], true, 'relative | tuesday');
+    dateTest(testGetWeekday(0, 1), ['monday'], true, 'relative | next week sunday');
+    dateTest(testGetWeekday(0,-1), ['monday'], false, 'relative | last week sunday');
+    dateTest(testGetWeekday(0),    ['the beginning of this week'], false, 'relative | the beginning of this week');
+    dateTest(testGetWeekday(0),    ['the beginning of last week'], true, 'relative | the beginning of last week');
+    dateTest(testGetWeekday(0),    ['the end of this week'], false, 'relative | the end of this week');
 
     dateTest(new Date(2001,1,23), [new Date(2000,1,24), 24 * 60 * 60 * 1000], true, 'buffers work');
     dateTest(new Date(1999,1), [{ year: 1999 }], true, 'February 1999 is after implied January 1999');
@@ -2729,16 +2759,16 @@ namespace('Date', function () {
 
     dateTest(new Date(1999,5), ['1999'], false, 'June 1999 is not after 1999 in general');
     dateTest(getRelativeDate(1), ['tomorrow'], false, 'relative | next year');
-    dateTest(getRelativeDate(null, 1), ['tomorrow'], false, 'relative | next month');
-    dateTest(getRelativeDate(null, null, 1), ['tomorrow'], false, 'relative | tomorrow');
+    dateTest(getRelativeDate(0, 1), ['tomorrow'], false, 'relative | next month');
+    dateTest(getRelativeDate(0, 0, 1), ['tomorrow'], false, 'relative | tomorrow');
 
-    dateTest(getDateWithWeekdayAndOffset(0), ['monday'], true, 'relative | sunday');
-    dateTest(getDateWithWeekdayAndOffset(2), ['monday'], false, 'relative | tuesday');
-    dateTest(getDateWithWeekdayAndOffset(0,7), ['monday'], false, 'relative | next week sunday');
-    dateTest(getDateWithWeekdayAndOffset(0,-7), ['monday'], true, 'relative | last week sunday');
-    dateTest(getDateWithWeekdayAndOffset(0), ['the beginning of this week'], false, 'relative | the beginning of this week');
-    dateTest(getDateWithWeekdayAndOffset(0), ['the beginning of last week'], false, 'relative | the beginning of last week');
-    dateTest(getDateWithWeekdayAndOffset(0), ['the end of this week'], true, 'relative | the end of this week');
+    dateTest(testGetWeekday(0),    ['monday'], true, 'relative | sunday');
+    dateTest(testGetWeekday(2),    ['monday'], false, 'relative | tuesday');
+    dateTest(testGetWeekday(0, 1), ['monday'], false, 'relative | next week sunday');
+    dateTest(testGetWeekday(0,-1), ['monday'], true, 'relative | last week sunday');
+    dateTest(testGetWeekday(0),    ['the beginning of this week'], false, 'relative | the beginning of this week');
+    dateTest(testGetWeekday(0),    ['the beginning of last week'], false, 'relative | the beginning of last week');
+    dateTest(testGetWeekday(0),    ['the end of this week'], true, 'relative | the end of this week');
 
     dateTest(new Date(2001,1,25), [new Date(2001,1,24), 48 * 60 * 60 * 1000], true, 'buffers work');
 
@@ -2774,20 +2804,20 @@ namespace('Date', function () {
 
     dateTest(new Date(1999,5), ['1998','1999'], false, 'Ambiguous periods are hard coded to the ms, there is no "implied specificity" as with Date#is');
 
-    dateTest(new Date(),                     ['yesterday','tomorrow'], true, 'relative | now is between today and tomorrow');
-    dateTest(getRelativeDate(1),             ['yesterday','tomorrow'], false, 'relative | last year is between today and tomorrow');
-    dateTest(getRelativeDate(null, 1),       ['yesterday','tomorrow'], false, 'relative | last month is between today and tomorrow');
-    dateTest(getRelativeDate(null, null, 0), ['today','tomorrow'], true, 'relative | right now is between today and tomorrow');
-    dateTest(getRelativeDate(null, null, 1), ['today','tomorrow'], false, 'relative | tomorrow is between today and tomorrow');
+    dateTest(new Date(), ['yesterday','tomorrow'], true, 'relative | now is between today and tomorrow');
+    dateTest(getRelativeDate(1), ['yesterday','tomorrow'], false, 'relative | last year is between today and tomorrow');
+    dateTest(getRelativeDate(0, 1), ['yesterday','tomorrow'], false, 'relative | last month is between today and tomorrow');
+    dateTest(getRelativeDate(0, 0, 0), ['today','tomorrow'], true, 'relative | right now is between today and tomorrow');
+    dateTest(getRelativeDate(0, 0, 1), ['today','tomorrow'], false, 'relative | tomorrow is between today and tomorrow');
 
-    dateTest(getDateWithWeekdayAndOffset(0), ['monday', 'friday'], false, 'relative | sunday is between monday and friday');
-    dateTest(getDateWithWeekdayAndOffset(2), ['monday', 'friday'], true, 'relative | tuesday is between monday and friday');
-    dateTest(getDateWithWeekdayAndOffset(0,7), ['monday', 'friday'], false, 'relative | next week sunday is between monday and friday');
-    dateTest(getDateWithWeekdayAndOffset(0,-7), ['monday', 'friday'], false, 'relative | last week sunday is between monday and friday');
-    dateTest(getDateWithWeekdayAndOffset(0), ['the beginning of this week','the beginning of last week'], true, 'relative | sunday is between the beginning of this week and the beginning of last week');
-    dateTest(getDateWithWeekdayAndOffset(0), ['the beginning of this week','the beginning of next week'], true, 'relative | sunday is between the beginning of this week and the beginning of next week');
-    dateTest(getDateWithWeekdayAndOffset(0), ['the beginning of last week','the beginning of next week'], true, 'relative | sunday is between the beginning of last week and the beginning of next week');
-    dateTest(getDateWithWeekdayAndOffset(0), ['the beginning of last week','the end of this week'], true, 'relative | sunday is between the beginning of last week and the end of this week');
+    dateTest(testGetWeekday(0),    ['monday', 'friday'], false, 'relative | sunday is between monday and friday');
+    dateTest(testGetWeekday(2),    ['monday', 'friday'], true, 'relative | tuesday is between monday and friday');
+    dateTest(testGetWeekday(0, 1), ['monday', 'friday'], false, 'relative | next week sunday is between monday and friday');
+    dateTest(testGetWeekday(0,-1), ['monday', 'friday'], false, 'relative | last week sunday is between monday and friday');
+    dateTest(testGetWeekday(0),    ['the beginning of this week','the beginning of last week'], true, 'relative | sunday is between the beginning of this week and the beginning of last week');
+    dateTest(testGetWeekday(0),    ['the beginning of this week','the beginning of next week'], true, 'relative | sunday is between the beginning of this week and the beginning of next week');
+    dateTest(testGetWeekday(0),    ['the beginning of last week','the beginning of next week'], true, 'relative | sunday is between the beginning of last week and the beginning of next week');
+    dateTest(testGetWeekday(0),    ['the beginning of last week','the end of this week'], true, 'relative | sunday is between the beginning of last week and the end of this week');
 
     dateTest(testCreateDate('yesterday'), ['yesterday', 'today'], true, 'today is between yesterday and today');
     dateTest(testCreateDate('tomorrow'), ['today', 'tomorrow'], true, 'tomrrow is between today and tomorrow');
@@ -2815,7 +2845,7 @@ namespace('Date', function () {
     testCreateFakeLocale('fo');
 
     equal(run(new Date(2011, 5, 18), 'format', ['{Month} {date}, {yyyy}']), 'June 18, 2011', 'Non-initialized defaults to English formatting');
-    equal(run(getRelativeDate(null, null, null, -1), 'relative'), '1 hour ago', 'Non-initialized relative formatting is also English');
+    equal(run(getRelativeDate(0, 0, 0, -1), 'relative'), '1 hour ago', 'Non-initialized relative formatting is also English');
     equal(run(testCreateDate('June 18, 2011'), 'isValid'), true, 'English dates will also be properly parsed without being initialized or passing a locale code');
 
 
@@ -3210,7 +3240,7 @@ namespace('Number', function () {
   group('Unit Before/After', function () {
 
     function assertBeforeAfter(ms, method, args, ems, message) {
-      equal(run(ms, method, args), getRelativeDate(null, null, null, null, null, null, ems), message);
+      equal(run(ms, method, args), getRelativeDate(0, 0, 0, 0, 0, 0, ems), message);
     }
     assertBeforeAfter(1, 'secondAfter', [], 1000, 'secondAfter | 1');
     assertBeforeAfter(5, 'secondsAfter', [], 5000, 'secondsAfter | 5');
@@ -3242,23 +3272,23 @@ namespace('Number', function () {
 
     var christmas = new Date('December 25, 1972');
 
-    equal(run(5, 'minutesBefore', [christmas]), getRelativeDate.call(christmas, null, null, null, null, -5), 'minutesBefore | 5 minutes before christmas');
-    equal(run(5, 'minutesAfter', [christmas]), getRelativeDate.call(christmas, null, null, null, null, 5), 'minutesAfter | 5 minutes after christmas');
+    equal(run(5, 'minutesBefore', [christmas]), getRelativeDate.call(christmas,0,0,0,0,-5), 'minutesBefore | 5 minutes before christmas');
+    equal(run(5, 'minutesAfter', [christmas]), getRelativeDate.call(christmas,0,0,0,0,5), 'minutesAfter | 5 minutes after christmas');
 
-    equal(run(5, 'hoursBefore', [christmas]), getRelativeDate.call(christmas, null, null, null, -5), 'hoursBefore | 5 hours before christmas');
-    equal(run(5, 'hoursAfter', [christmas]), getRelativeDate.call(christmas, null, null, null, 5), 'hoursAfter | 5 hours after christmas');
+    equal(run(5, 'hoursBefore', [christmas]), getRelativeDate.call(christmas,0,0,0,-5), 'hoursBefore | 5 hours before christmas');
+    equal(run(5, 'hoursAfter', [christmas]), getRelativeDate.call(christmas,0,0,0,5), 'hoursAfter | 5 hours after christmas');
 
-    equal(run(5, 'daysBefore', [christmas]), getRelativeDate.call(christmas, null, null, -5), 'daysBefore | 5 days before christmas');
-    equal(run(5, 'daysAfter', [christmas]), getRelativeDate.call(christmas, null, null, 5), 'daysAfter | 5 days after christmas');
+    equal(run(5, 'daysBefore', [christmas]), getRelativeDate.call(christmas,0,0,-5), 'daysBefore | 5 days before christmas');
+    equal(run(5, 'daysAfter', [christmas]), getRelativeDate.call(christmas,0,0,5), 'daysAfter | 5 days after christmas');
 
-    equal(run(5, 'weeksBefore', [christmas]), getRelativeDate.call(christmas, null, null, -35), 'weeksBefore | 5 weeks before christmas');
-    equal(run(5, 'weeksAfter', [christmas]), getRelativeDate.call(christmas, null, null, 35), 'weeksAfter | 5 weeks after christmas');
+    equal(run(5, 'weeksBefore', [christmas]), getRelativeDate.call(christmas,0,0, -35), 'weeksBefore | 5 weeks before christmas');
+    equal(run(5, 'weeksAfter', [christmas]), getRelativeDate.call(christmas,0,0, 35), 'weeksAfter | 5 weeks after christmas');
 
-    equal(run(5, 'monthsBefore', [christmas]), getRelativeDate.call(christmas, null, -5), 'monthsBefore | 5 months before christmas');
-    equal(run(5, 'monthsAfter', [christmas]), getRelativeDate.call(christmas, null, 5), 'monthsAfter | 5 months after christmas');
+    equal(run(5, 'monthsBefore', [christmas]), getRelativeDate.call(christmas,0,-5), 'monthsBefore | 5 months before christmas');
+    equal(run(5, 'monthsAfter', [christmas]), getRelativeDate.call(christmas,0,5), 'monthsAfter | 5 months after christmas');
 
-    equal(run(5, 'yearsBefore', [christmas]), getRelativeDate.call(christmas, -5), 'yearsBefore | 5 years before christmas');
-    equal(run(5, 'yearsAfter', [christmas]), getRelativeDate.call(christmas, 5), 'yearsAfter | 5 years after christmas');
+    equal(run(5, 'yearsBefore', [christmas]), getRelativeDate.call(christmas,-5), 'yearsBefore | 5 years before christmas');
+    equal(run(5, 'yearsAfter', [christmas]), getRelativeDate.call(christmas,5), 'yearsAfter | 5 years after christmas');
 
 
     // Hooking it all up!!
@@ -3276,31 +3306,31 @@ namespace('Number', function () {
     equal(run(5, 'hoursAfter', ['the end of 2006']), new Date(2007, 0, 1, 4, 59, 59, 999), 'hoursAfter | 5 hours after the end of 2006');
 
 
-    var expected = getDateWithWeekdayAndOffset(1, -7);
+    var expected = testGetWeekday(1, -1);
     expected.setDate(expected.getDate() - 5);
     equal(run(5, 'daysBefore', ['last week monday']), expected, 'daysBefore | 5 days before last week monday');
 
-    var expected = new Date(getDateWithWeekdayAndOffset(2, 7).getTime() + run(5, 'days'));
+    var expected = new Date(testGetWeekday(2, 1).getTime() + run(5, 'days'));
     equal(run(5, 'daysAfter', ['next tuesday']), expected, 'daysAfter | 5 days after next week tuesday');
 
-    var expected = getRelativeDate(null, null, -35);
+    var expected = getRelativeDate(0, 0, -35);
     expected.setHours(0);
     expected.setMinutes(0);
     expected.setSeconds(0);
     expected.setMilliseconds(0);
     equal(run(5, 'weeksBefore', ['today']), expected, 'weeksBefore | 5 weeks before today');
 
-    var expected = getRelativeDate(null, null, 35);
+    var expected = getRelativeDate(0, 0, 35);
     equal(run(5, 'weeksAfter', ['now']), expected, 'weeksAfter | 5 weeks after now');
 
-    var expected = getRelativeDate(null, -5);
+    var expected = getRelativeDate(0, -5);
     expected.setHours(0);
     expected.setMinutes(0);
     expected.setSeconds(0);
     expected.setMilliseconds(0);
     equal(run(5, 'monthsBefore', ['today']), expected, 'monthsBefore | 5 months before today');
 
-    var expected = getRelativeDate(null, 5);
+    var expected = getRelativeDate(0, 5);
     equal(run(5, 'monthsAfter', ['now']), expected, 'monthsAfter | 5 months after now');
 
   });

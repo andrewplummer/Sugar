@@ -44,75 +44,75 @@ namespace('Date | Polish', function () {
     //equal(testCreateDate(''), new Date(now.getFullYear(), 10), 'November');
     //equal(testCreateDate(''), new Date(now.getFullYear(), 11), 'December');
 
-    //equal(testCreateDate(''), getDateWithWeekdayAndOffset(0), 'Sunday');
-    //equal(testCreateDate(''), getDateWithWeekdayAndOffset(1), 'Monday');
-    //equal(testCreateDate(''), getDateWithWeekdayAndOffset(2), 'Tuesday');
-    //equal(testCreateDate(''), getDateWithWeekdayAndOffset(3), 'Wednesday');
-    //equal(testCreateDate(''), getDateWithWeekdayAndOffset(4), 'Thursday');
-    //equal(testCreateDate(''), getDateWithWeekdayAndOffset(5), 'Friday');
-    //equal(testCreateDate(''), getDateWithWeekdayAndOffset(6), 'Saturday');
+    //equal(testCreateDate(''), testGetWeekday(0), 'Sunday');
+    //equal(testCreateDate(''), testGetWeekday(1), 'Monday');
+    //equal(testCreateDate(''), testGetWeekday(2), 'Tuesday');
+    //equal(testCreateDate(''), testGetWeekday(3), 'Wednesday');
+    //equal(testCreateDate(''), testGetWeekday(4), 'Thursday');
+    //equal(testCreateDate(''), testGetWeekday(5), 'Friday');
+    //equal(testCreateDate(''), testGetWeekday(6), 'Saturday');
 
-    //equal(testCreateDate(''), getRelativeDate(null, null, null, null, null, null,-1), 'one millisecond ago');
-    //equal(testCreateDate(''), getRelativeDate(null, null, null, null, null, -1), 'one second ago');
-    //equal(testCreateDate(''), getRelativeDate(null, null, null, null, -1), 'one minute ago');
-    //equal(testCreateDate(''), getRelativeDate(null, null, null, -1), 'one hour ago');
-    //equal(testCreateDate(''), getRelativeDate(null, null, -1), 'one day ago');
-    //equal(testCreateDate(''), getRelativeDate(null, null, -7), 'one week ago');
-    //equal(testCreateDate(''), getRelativeDate(null, -1), 'one month ago');
+    //equal(testCreateDate(''), getRelativeDate(0,0,0,0,0,0,-1), 'one millisecond ago');
+    //equal(testCreateDate(''), getRelativeDate(0,0,0,0,0,-1), 'one second ago');
+    //equal(testCreateDate(''), getRelativeDate(0,0,0,0,-1), 'one minute ago');
+    //equal(testCreateDate(''), getRelativeDate(0,0,0,-1), 'one hour ago');
+    //equal(testCreateDate(''), getRelativeDate(0,0,-1), 'one day ago');
+    //equal(testCreateDate(''), getRelativeDate(0,0,-7), 'one week ago');
+    //equal(testCreateDate(''), getRelativeDate(0,-1), 'one month ago');
     //equal(testCreateDate(''), getRelativeDate(-1), 'one year ago');
-    //equal(testCreateDate(''), getRelativeDate(null, null, null, null, null, null,-1), 'one millisecond ago');
-    //equal(testCreateDate(''), getRelativeDate(null, null, null, null, null, -1), 'one second ago');
-    //equal(testCreateDate(''), getRelativeDate(null, null, null, null, -1), 'one minute ago');
-    //equal(testCreateDate(''), getRelativeDate(null, null, null, -1), 'one hour ago');
-    //equal(testCreateDate(''), getRelativeDate(null, null, -1), 'one day ago');
-    //equal(testCreateDate(''), getRelativeDate(null, null, -7), 'one week ago');
-    //equal(testCreateDate(''), getRelativeDate(null, -1), 'one month ago');
+    //equal(testCreateDate(''), getRelativeDate(0,0,0,0,0,0,-1), 'one millisecond ago');
+    //equal(testCreateDate(''), getRelativeDate(0,0,0,0,0,-1), 'one second ago');
+    //equal(testCreateDate(''), getRelativeDate(0,0,0,0,-1), 'one minute ago');
+    //equal(testCreateDate(''), getRelativeDate(0,0,0,-1), 'one hour ago');
+    //equal(testCreateDate(''), getRelativeDate(0,0,-1), 'one day ago');
+    //equal(testCreateDate(''), getRelativeDate(0,0,-7), 'one week ago');
+    //equal(testCreateDate(''), getRelativeDate(0,-1), 'one month ago');
     //equal(testCreateDate(''), getRelativeDate(-1), 'one year ago');
 
-    //equal(testCreateDate(''), getRelativeDate(null, null, null, null, null, null,5), 'five milliseconds from now');
-    //equal(testCreateDate(''), getRelativeDate(null, null, null, null, null, 5), 'five second from now');
-    //equal(testCreateDate(''), getRelativeDate(null, null, null, null, 5), 'five minute from now');
-    //equal(testCreateDate(''), getRelativeDate(null, null, null, 5), 'five hour from now');
-    //equal(testCreateDate(''), getRelativeDate(null, null, 5), 'five day from now');
-    //equal(testCreateDate(''), getRelativeDate(null, null, 35), 'five weeks from now');
-    //equal(testCreateDate(''), getRelativeDate(null, 5), 'five months from now');
+    //equal(testCreateDate(''), getRelativeDate(0,0,0,0,0,0,5), 'five milliseconds from now');
+    //equal(testCreateDate(''), getRelativeDate(0,0,0,0,0,5), 'five second from now');
+    //equal(testCreateDate(''), getRelativeDate(0,0,0,0,5), 'five minute from now');
+    //equal(testCreateDate(''), getRelativeDate(0,0,0,5), 'five hour from now');
+    //equal(testCreateDate(''), getRelativeDate(0,0,5), 'five day from now');
+    //equal(testCreateDate(''), getRelativeDate(0,0,35), 'five weeks from now');
+    //equal(testCreateDate(''), getRelativeDate(0,5), 'five months from now');
     //equal(testCreateDate(''), getRelativeDate(5), 'five years from now');
 
-    //equal(testCreateDate(''), run(getRelativeDate(null, null, -2), 'reset'), 'day before yesterday');
-    //equal(testCreateDate(''), getRelativeDate(null, null, -1), 'reset'), 'yesterday');
-    //equal(testCreateDate(''), getRelativeDate(null, null,  0), 'reset'), 'today');
-    //equal(testCreateDate(''), run(getRelativeDate(null, null,  1), 'reset'), 'tomorrow');
-    //equal(testCreateDate(''), run(getRelativeDate(null, null,  2), 'reset'), 'day after tomorrow');
+    //equal(testCreateDate(''), run(getRelativeDate(0,0,-2), 'reset'), 'day before yesterday');
+    //equal(testCreateDate(''), getRelativeDate(0,0,-1), 'reset'), 'yesterday');
+    //equal(testCreateDate(''), getRelativeDate(0,0, 0), 'reset'), 'today');
+    //equal(testCreateDate(''), run(getRelativeDate(0,0, 1), 'reset'), 'tomorrow');
+    //equal(testCreateDate(''), run(getRelativeDate(0,0, 2), 'reset'), 'day after tomorrow');
 
-    //equal(testCreateDate(''), getRelativeDate(null, null, -7), 'Last week');
-    //equal(testCreateDate(''), getRelativeDate(null, null,  7), 'Next week');
+    //equal(testCreateDate(''), getRelativeDate(0,0,-7), 'Last week');
+    //equal(testCreateDate(''), getRelativeDate(0,0, 7), 'Next week');
 
-    //equal(testCreateDate(''), getRelativeDate(null, -1), 'last month (viime)');
-    //equal(testCreateDate(''), getRelativeDate(null, -1), 'last month (edellinen)');
-    //equal(testCreateDate(''), getRelativeDate(null,  1), 'Next month (seuraava)');
-    //equal(testCreateDate(''), getRelativeDate(null,  1), 'Next month (ensi)');
+    //equal(testCreateDate(''), getRelativeDate(0,-1), 'last month (viime)');
+    //equal(testCreateDate(''), getRelativeDate(0,-1), 'last month (edellinen)');
+    //equal(testCreateDate(''), getRelativeDate(0, 1), 'Next month (seuraava)');
+    //equal(testCreateDate(''), getRelativeDate(0, 1), 'Next month (ensi)');
 
     //equal(testCreateDate(''), getRelativeDate(-1), 'Last year');
     //equal(testCreateDate(''), getRelativeDate(1),  'Next year');
 
-    //equal(testCreateDate(''), getDateWithWeekdayAndOffset(1, 7), 'next monday');
-    //equal(testCreateDate(''), getDateWithWeekdayAndOffset(1, -7), 'last monday');
+    //equal(testCreateDate(''), testGetWeekday(1,1), 'next monday');
+    //equal(testCreateDate(''), testGetWeekday(1,-1), 'last monday');
 
-    //equal(testCreateDate(''), run(getDateWithWeekdayAndOffset(1, -7), 'set', [{ hour: 3, minute: 45 }, true]), 'last monday 3:45');
-    //equal(testCreateDate(''), run(getDateWithWeekdayAndOffset(1, -7), 'set', [{ hour: 3, minute: 45 }, true]), 'last monday 3:45 (na)');
-    //equal(testCreateDate(''), run(getRelativeDate(null, null, 1), 'set', [{hours:3,minutes:30}, true]), 'tomorrow at 3:30');
+    //equal(testCreateDate(''), run(testGetWeekday(1,-1), 'set', [{ hour: 3, minute: 45 }, true]), 'last monday 3:45');
+    //equal(testCreateDate(''), run(testGetWeekday(1,-1), 'set', [{ hour: 3, minute: 45 }, true]), 'last monday 3:45 (na)');
+    //equal(testCreateDate(''), run(getRelativeDate(0,0,1), 'set', [{hours:3,minutes:30}, true]), 'tomorrow at 3:30');
 
 
-    //equal(testCreateDate(''), getDateWithWeekdayAndOffset(0, -7), 'last sunday');
-    //equal(testCreateDate(''), getDateWithWeekdayAndOffset(1, -7), 'last monday');
-    //equal(testCreateDate(''), getDateWithWeekdayAndOffset(2, -7), 'last tuesday');
-    //equal(testCreateDate(''), getDateWithWeekdayAndOffset(3, -7), 'last wednesday');
-    //equal(testCreateDate(''), getDateWithWeekdayAndOffset(4, -7), 'last thursday');
-    //equal(testCreateDate(''), getDateWithWeekdayAndOffset(5, -7), 'last friday');
-    //equal(testCreateDate(''), getDateWithWeekdayAndOffset(6, -7), 'last saturday');
+    //equal(testCreateDate(''), testGetWeekday(0,-1), 'last sunday');
+    //equal(testCreateDate(''), testGetWeekday(1,-1), 'last monday');
+    //equal(testCreateDate(''), testGetWeekday(2,-1), 'last tuesday');
+    //equal(testCreateDate(''), testGetWeekday(3,-1), 'last wednesday');
+    //equal(testCreateDate(''), testGetWeekday(4,-1), 'last thursday');
+    //equal(testCreateDate(''), testGetWeekday(5,-1), 'last friday');
+    //equal(testCreateDate(''), testGetWeekday(6,-1), 'last saturday');
 
     equal(testCreateDate('17:32 02 lut 2016'), new Date(2016, 1, 2, 17, 32), '17:32 February 2 2016');
-    equal(testCreateDate('17:32 następny poniedziałek'), getDateWithWeekdayAndOffset(1, 7, 17, 32), '17:32 next monday');
+    equal(testCreateDate('17:32 następny poniedziałek'), testGetWeekday(1, 1, 17, 32), '17:32 next monday');
 
     // Numbers
 
