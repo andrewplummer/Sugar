@@ -2411,22 +2411,34 @@ function getJSONDocs() {
     'enhanced method': '#/EnhancedMethods',
     'enhances': '#/EnhancedMethods',
     'deep properties': '#/DeepProperties',
+    'deep property': '#/DeepProperties',
     'date locales': '#/DateLocales',
     'date input formats': '#/DateInputFormats',
     'date output formats': '#/DateOutputFormats',
     'polyfill': '#/Polyfills',
     'extending natives': '/natives',
     'ranges': '#/Ranges',
+    'exclude': '#/Array/exclude',
+    'remove': '#/Array/remove',
     'append': '#/Array/append',
     'insert': '#/Array/insert',
     'each': '#/Array/each',
-    'add': '#/Array/add'
+    'add': '#/Array/add',
+    'merge': '#/Object/merge',
+    'create': '#/Date/create',
+    'unitsAgo': '#/Date/unitsAgo',
+    'Date#relative': '#/Date/relative',
+    'unitsFromNow': '#/Date/unitsFromNow',
+    'thousands': '#/Number/thousands',
+    'decimal': '#/Number/decimal',
+    'metric': '#/Number/metric',
+    'log': '#/Number/log',
   };
 
   var POLYFILL_HTML = getReplacements('This method is provided as a `polyfill`.');
   var ENHANCED_HTML = getReplacements('This method is also provided as a `polyfill` in the MOD module.');
 
-  var POLYFILL_REPLACE_REG = /This method is .* provided as a .*polyfill.*\./;
+  var POLYFILL_REPLACE_REG = /This method is (also )?provided as a .*polyfill.*\./;
 
   var docs = {
     namespaces: []
@@ -2593,6 +2605,7 @@ function getJSONDocs() {
   }
 
   function getMultiline(str, clean) {
+
     var lines = str.split('\n').map(function(line) {
       return line.replace(/^[\s*]*|[\s*]*$/g, '');
     });
@@ -2613,6 +2626,21 @@ function getJSONDocs() {
       return line ? line.replace(/\s*->.+$/, '') : '';
     }
 
+    for (var i = 0; i < lines.length; i++) {
+      var line = lines[i];
+      var nextLine = lines[i + 1];
+      if (line.match(/{$/)) {
+        break;
+      }
+      if (line.match(/^\w+ = /) && !line.match(/->/) && nextLine && nextLine.trim()) {
+        while (nextLine) {
+          lines[i] += '\n' + nextLine;
+          lines.splice(i + 1, 1);
+          nextLine = lines[i + 1];
+        }
+      }
+    }
+
     for (var line; line = getLine();) {
       var braceLevel = getBraceLevel(line);
       while (braceLevel > 0) {
@@ -2624,6 +2652,7 @@ function getJSONDocs() {
       }
       result.push(line);
     }
+
     return result;
   }
 
