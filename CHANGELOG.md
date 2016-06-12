@@ -84,6 +84,7 @@ v2.0.0
 - Flipped "si" argument to Number#bytes to instead be "binary".
 - Modified `String#capitalize` to have an extra parameter for downcasing.
 - Refactored inflections module to have a more straightforward API.
+- Updated `Array#sortBy` to not clone the array by default.
 
 
 v1.4.2

@@ -1602,7 +1602,7 @@ namespace('Array', function () {
 
     arr = [1,2,3];
     run(arr, 'sortBy', [function(n){ return 3 - n; }]);
-    equal(arr, [1,2,3], 'should not be destructive');
+    equal(arr, [3,2,1], 'should be destructive');
 
     test([1,2,3], oneUndefined, [1,2,3], 'undefined');
     test([1,2,3], [null], [1,2,3], 'null');
