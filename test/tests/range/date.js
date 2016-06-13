@@ -60,16 +60,16 @@ namespace('Date Ranges', function () {
     equal(range.end, new Date(2010,8,10,9), 'End has not been modified');
 
     var range = getRange(new Date(2010,3,25));
-    equal(range.start, new Date(2010,3,25), 'null end | start');
-    equal(range.end, new Date(), 'null end is current time');
+    equal(range.start, new Date(2010,3,25), 'undefined end | start');
+    equal(range.end, new Date(), 'undefined end is current time');
 
     var range = getRange(null, new Date(2010,3,25));
-    equal(range.start, new Date(0), 'null starts at epoch');
-    equal(range.end, new Date(2010,3,25), 'start is reversed when null is current');
+    equal(range.start, new Date(), 'null should be the same as undefined');
+    equal(range.end, new Date(2010,3,25), 'start is reversed when undefined is current');
 
     var range = getRange();
-    equal(range.start, new Date(), 'both null | start');
-    equal(range.end, new Date(), 'both null | end');
+    equal(range.start, new Date(), 'both undefined | start');
+    equal(range.end, new Date(), 'both undefined | end');
 
   });
 
@@ -96,8 +96,11 @@ namespace('Date Ranges', function () {
     dateRangeEqual(getRange('tomorrow from 3pm to 5pm'), getRange('3pm tomorrow', '5pm tomorrow'), 'advanced text ranges | from');
     dateRangeEqual(getRange('monday 3pm to saturday 5pm'), getRange('3pm monday', '5pm saturday'), 'advanced text ranges | from different days');
     dateRangeEqual(getRange('1 hour starting at 3:15 monday'), getRange('3:15 monday', '4:15 monday'), 'advanced text ranges | starting at');
+    dateRangeEqual(getRange('1 hour starting at 3:15 on monday'), getRange('3:15 monday', '4:15 monday'), 'advanced text ranges | starting at..on');
     dateRangeEqual(getRange('for 1 hour starting at 3:15 monday'), getRange('3:15 monday', '4:15 monday'), 'advanced text ranges | for..starting at');
-    dateRangeEqual(getRange('foobar'), getRange(), 'invalid string is the same as no arguments');
+
+    dateRangeEqual(getRange('monday'), getRange('monday', new Date()), 'advanced text ranges | single date');
+    dateRangeEqual(getRange('foobar'), getRange(NaN, new Date()), 'invalid string is the same as no arguments');
 
   });
 

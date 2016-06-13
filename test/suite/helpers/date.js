@@ -46,8 +46,16 @@ dateTest = function(d) {
 }
 
 dateRangeEqual = function(a, b, message) {
-  equal(a.start, b.start, message);
-  equal(a.end, b.end, message);
+  var ast = a.start.getTime();
+  var aet = a.end.getTime();
+  var bst = b.start.getTime();
+  var bet = b.end.getTime();
+
+  // Allow for NaN values.
+  var startEqual = ast === bst || (ast !== ast && bst !== bst);
+  var endEqual   = aet === bet || (aet !== aet && bet !== bet);
+
+  equal(startEqual && endEqual, true, message);
 }
 
 getRelativeDate = function(year, month, day, hours, minutes, seconds, milliseconds) {
