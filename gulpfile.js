@@ -2404,6 +2404,8 @@ function getJSONDocs() {
   ];
 
   var LINKED_TOKENS = {
+    'MOD': '#/Modules',
+    'default build': '#/Modules',
     'extending': '#/Extending',
     'object methods': '#/ObjectMethods',
     'enhanced matching': '#/EnhancedMatching',
@@ -2433,10 +2435,20 @@ function getJSONDocs() {
     'decimal': '#/Number/decimal',
     'metric': '#/Number/metric',
     'log': '#/Number/log',
+    'titleize': '#/String/titleize',
+    'addHuman': '#/String/addHuman',
+    'addPlural': '#/String/addPlural',
+    'removeAll': '#/String/removeAll',
+    'extend': '#/Sugar/extend',
+    'defineStatic': '#/Sugar/defineStatic',
+    'defineInstance': '#/Sugar/defineInstance',
+    'defineInstanceWithArguments': '#/Sugar/defineInstanceWithArguments',
+    'defineStaticWithArguments': '#/Sugar/defineStaticWithArguments',
   };
 
-  var POLYFILL_HTML = getReplacements('This method is provided as a `polyfill`.');
-  var ENHANCED_HTML = getReplacements('This method is also provided as a `polyfill` in the MOD module.');
+  var POLYFILL_HTML    = getReplacements('This method is provided as a `polyfill`.');
+  var ENHANCED_HTML    = getReplacements('This method is also provided as a `polyfill` in the MOD module.');
+  var NON_DEFAULT_HTML = getReplacements('This method is not included in the `default build`.');
 
   var POLYFILL_REPLACE_REG = /This method is (also )?provided as a .*polyfill.*\./;
 
@@ -2498,7 +2510,7 @@ function getJSONDocs() {
       if (!value) {
         value = true;
       } else if (field === 'polyfill') {
-        obj['extra'] = (obj['extra'] || '') + getPolyfill(obj, getTextField(value));
+        obj['extra'] = (obj['extra'] || '') + getPolyfillNote(obj, getTextField(value));
         return;
       } else if (field === 'example') {
         field = 'examples';
@@ -2520,12 +2532,17 @@ function getJSONDocs() {
     });
   }
 
-  function getPolyfill(method, mod) {
+  function getPolyfillNote(method, mod) {
     if (/^ES[567]$/i.test(method.module)) {
       return POLYFILL_HTML;
     } else {
       return ENHANCED_HTML.replace(/MOD/, mod);
     }
+  }
+
+  function hasNonDefaultNote() {
+    var m = currentModuleName.toLowerCase();
+    return DEFAULT_MODULES.indexOf(m) === -1 && m !== 'es5' && m !== 'core';
   }
 
   function getOptions(str) {
@@ -2681,6 +2698,11 @@ function getJSONDocs() {
 
       method.line = getLineNumber(name, lines);
       method.type = getMethodType(method);
+
+      if (hasNonDefaultNote()) {
+        method.extra = method.extra || '';
+        method.extra += ' ' + NON_DEFAULT_HTML;
+      }
 
       if (args.length) {
         method['args'] = args.map(function(a) {
