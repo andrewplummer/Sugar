@@ -469,6 +469,8 @@ namespace('Date', function () {
     equal(testCreateDate('today at 4pm'),  new Date(now.getFullYear(), now.getMonth(), now.getDate(), 16), 'Today at 4pm');
     equal(testCreateDate('today at 4 pm'), new Date(now.getFullYear(), now.getMonth(), now.getDate(), 16), 'Today at 4 pm');
     equal(testCreateDate('4pm today'),     new Date(now.getFullYear(), now.getMonth(), now.getDate(), 16), '4pm today');
+    equal(testCreateDate('8am Saturday'),  testGetWeekday(6, 0, 8), '8am saturday');
+    equal(testCreateDate('8am on Saturday'),  testGetWeekday(6, 0, 8), '8am on saturday');
 
     equal(testCreateDate('yesterday'), getRelativeDateReset(0,0,-1), 'yesterday');
     equal(testCreateDate('Yesterday'), getRelativeDateReset(0,0,-1), 'Yesterday');
@@ -735,6 +737,9 @@ namespace('Date', function () {
     equal(testCreateDate('midnight'), getRelativeDateReset(0, 0, 1), 'midnight');
     equal(testCreateDate('midnight tonight'), getRelativeDateReset(0, 0, 1), 'midnight');
     equal(testCreateDate('tomorrow at midnight'), getRelativeDateReset(0, 0, 2), 'tommorrow at midnight');
+
+    equal(testCreateDate('midnight Tuesday'), testGetWeekday(3, 0), 'midnight Tuesday');
+    equal(testCreateDate('midnight on Tuesday'), testGetWeekday(3, 0), 'midnight on Tuesday');
 
     // Issue #455
     equal(testCreateDate('a week from Tuesday'), testGetWeekday(2, 1), 'a week from Tuesday');
