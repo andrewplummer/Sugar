@@ -1,8 +1,8 @@
 /*
- *  Sugar Library edge
+ *  Sugar edge
  *
  *  Freely distributable and licensed under the MIT-style license.
- *  Copyright (c) 2016 Andrew Plummer
+ *  Copyright (c) Andrew Plummer
  *  http://sugarjs.com/
  *
  * ---------------------------- */
@@ -11,8 +11,8 @@
 
   /***
    * @module Core
-   * @description Core module allows custom methods to be defined on the Sugar
-   *              global and extended onto natives later.
+   * @description Core functionality including the ability to define methods and
+   *              extend onto natives.
    *
    ***/
 
@@ -62,11 +62,9 @@
   // Global methods
 
   function setupGlobal() {
-    var existingSugar = globalContext[SUGAR_GLOBAL];
-    // Re-use already defined Sugar global object
-    // but only if not using exports!
-    if (!hasExports && existingSugar) {
-      Sugar = existingSugar;
+    Sugar = globalContext[SUGAR_GLOBAL];
+    if (Sugar) {
+      // Reuse already defined Sugar global object.
       return;
     }
     Sugar = function(arg) {
@@ -79,6 +77,7 @@
           sugarNamespace.extend(arg);
         }
       });
+      return Sugar;
     };
     if (hasExports) {
       module.exports = Sugar;
@@ -98,7 +97,6 @@
   /***
    * @method createNamespace(<name>)
    * @returns Namespace
-   * @static
    * @global
    * @short Creates a new Sugar namespace.
    * @extra This method is for plugin developers who want to define methods to be
@@ -107,6 +105,11 @@
    *        normal namespaces, including the ability to define new methods. When
    *        extended, any defined methods will be mapped to `name` in the global
    *        context.
+   *
+   * @example
+   *
+   *   Sugar.createNamespace('Boolean');
+   *
    ***/
   function createNamespace(name) {
 
@@ -117,55 +120,67 @@
     var sugarNamespace = getNewChainableClass(name, true);
 
     /***
-     * @method extend([opt])
+     * @method extend([options])
      * @returns Sugar
-     * @static
      * @global
      * @namespace
-     * @short Extends natives with methods defined on the namespace.
-     * @extra [opt] may be a single method name as a string, an array of method
-     *        names, or an options object (options listed below). This method can
-     *        be called on individual namespaces like `Sugar.Array` or on the
-     *        global itself, in which case [options] will be forwarded to each
-     *        `extend` call.
+     * @short Extends Sugar defined methods onto natives.
+     * @extra This method can be called on individual namespaces like
+     *        `Sugar.Array` or on the `Sugar` global itself, in which case
+     *        [options] will be forwarded to each `extend` call. For more,
+     *        see `extending`.
      *
      * @options
      *
      *   methods           An array of method names to explicitly extend.
      *
-     *   except            An array of method names to explicitly exclude.
+     *   except            An array of method names or global namespaces (`Array`,
+     *                     `String`) to explicitly exclude. Namespaces should be the
+     *                     actual global objects, not strings.
+     *
+     *   namespaces        An array of global namespaces (`Array`, `String`) to
+     *                     explicitly extend. Namespaces should be the actual
+     *                     global objects, not strings.
      *
      *   enhance           A shortcut to disallow all "enhance" flags at once
-     *                     (flags listed below). Default is `true`.
+     *                     (flags listed below). For more, see `enhanced methods`.
+     *                     Default is `true`.
      *
-     *   enhanceString     A boolean allowing String enhancements (allowing a
-     *                     regex in `String#includes`). Default is `true`.
+     *   enhanceString     A boolean allowing String enhancements. Default is `true`.
      *
-     *   enhanceArray      A boolean allowing Array enhancements such as passing
-     *                     shortcuts to matching functions in `every`, `some`,
-     *                     `filter`, `find`, and `findIndex`, and passing a
-     *                     shortcut for a mapping function in `map`. See each
-     *                     method's docs for more. Default is `true`.
+     *   enhanceArray      A boolean allowing Array enhancements. Default is `true`.
      *
-     *   enhanceObject     A boolean allowing Object enhancements (optional
-     *                     callback function for `Object.keys`). Default is `true`.
+     *   enhanceObject     A boolean allowing Object enhancements. Default is `true`.
      *
      *   objectPrototype   A boolean allowing Sugar to extend Object.prototype
      *                     with instance methods. This option is off by default
-     *                     and should be used with extreme caution as it may have
-     *                     unintended consequences and result in issues that are
-     *                     difficult to debug. For more, see `extending natives`.
+     *                     and should generally not be used except with caution.
+     *                     For more, see `object methods`.
+     *
+     * @example
+     *
+     *   Sugar.Array.extend();
+     *   Sugar.extend();
      *
      ***/
-    var extend = function (arg) {
-      var staticMethods = {}, instanceMethods = {}, opts = {}, methodsByName;
+    var extend = function (opts) {
 
-      function objectRestricted(name, instance) {
-        return isObject && instance && (!allowObjectPrototype || name === 'get' || name === 'set');
+      var nativeClass = globalContext[name], nativeProto = nativeClass.prototype;
+      var staticMethods = {}, instanceMethods = {}, methodsByName;
+
+      function objectRestricted(name, target) {
+        return isObject && target === nativeProto &&
+               (!allowObjectPrototype || name === 'get' || name === 'set');
       }
 
-      function disallowedByFlags(flags) {
-        if (!flags) return;
+      function disallowedByFlags(methodName, target, flags) {
+        // Disallowing methods by flag currently only applies if methods already
+        // exist to avoid enhancing native methods, as aliases should still be
+        // extended (i.e. Array#all should still be extended even if Array#every
+        // is being disallowed by a flag).
+        if (!target[methodName] || !flags) {
+          return false;
+        }
         for (var i = 0; i < flags.length; i++) {
           if (opts[flags[i]] === false) {
             return true;
@@ -173,27 +188,29 @@
         }
       }
 
-      function methodExcepted(methodName) {
+      function namespaceIsExcepted() {
+        return (opts.except && opts.except.indexOf(nativeClass) !== -1) ||
+               (opts.namespaces && opts.namespaces.indexOf(nativeClass) === -1);
+      }
+
+      function methodIsExcepted(methodName) {
         return opts.except && opts.except.indexOf(methodName) !== -1;
       }
 
-      function canExtend(methodName, method, instance) {
-        return !objectRestricted(methodName, instance) &&
-               !disallowedByFlags(method.flags) &&
-               !methodExcepted(methodName);
+      function canExtend(methodName, method, target) {
+        return !objectRestricted(methodName, target) &&
+               !disallowedByFlags(methodName, target, method.flags) &&
+               !methodIsExcepted(methodName);
       }
 
-      if (typeof arg === 'string') {
-        methodsByName = [arg];
-      } else if (arg && arg.length) {
-        methodsByName = arg;
-      } else if (arg) {
-        opts = arg;
-        methodsByName = opts.methods;
-        if (isObject && typeof opts.objectPrototype === 'boolean') {
-          // Store "objectPrototype" flag for future reference.
-          allowObjectPrototype = opts.objectPrototype;
-        }
+      opts = opts || {};
+      methodsByName = opts.methods;
+
+      if (namespaceIsExcepted()) {
+        return;
+      } else if (isObject && typeof opts.objectPrototype === 'boolean') {
+        // Store "objectPrototype" flag for future reference.
+        allowObjectPrototype = opts.objectPrototype;
       }
 
       iterateOverObject(methodsByName || sugarNamespace, function(methodName, method) {
@@ -204,10 +221,10 @@
           methodName = method;
           method = sugarNamespace[methodName];
         }
-        if (hasOwn(method, 'instance') && canExtend(methodName, method, true)) {
+        if (hasOwn(method, 'instance') && canExtend(methodName, method, nativeProto)) {
           instanceMethods[methodName] = method.instance;
         }
-        if(hasOwn(method, 'static') && canExtend(methodName, method)) {
+        if(hasOwn(method, 'static') && canExtend(methodName, method, nativeClass)) {
           staticMethods[methodName] = method;
         }
       });
@@ -215,8 +232,8 @@
       // Accessing the extend target each time instead of holding a reference as
       // it may have been overwritten (for example Date by Sinon). Also need to
       // access through the global to allow extension of user-defined namespaces.
-      extendNative(globalContext[name], staticMethods);
-      extendNative(globalContext[name].prototype, instanceMethods);
+      extendNative(nativeClass, staticMethods);
+      extendNative(nativeProto, instanceMethods);
 
       if (!methodsByName) {
         // If there are no method names passed, then
@@ -240,11 +257,12 @@
      * @method defineStatic(...)
      * @returns Namespace
      * @namespace
-     * @static
      * @short Defines static methods on the namespace that can later be extended
      *        onto the native globals.
      * @extra Accepts either a single object mapping names to functions, or name
-     *        and function as two arguments.
+     *        and function as two arguments. If `extend` was previously called
+     *        with no arguments, the method will be immediately mapped to its
+     *        native when defined.
      *
      * @example
      *
@@ -261,15 +279,19 @@
      * @method defineInstance(...)
      * @returns Namespace
      * @namespace
-     * @static
      * @short Defines methods on the namespace that can later be extended as
      *        instance methods onto the native prototype.
      * @extra Accepts either a single object mapping names to functions, or name
      *        and function as two arguments. All functions should accept the
      *        native for which they are mapped as their first argument, and should
-     *        never refer to `this`. Additionally, functions cannot accept more
-     *        than 4 arguments in addition to the native (5 arguments total). Any
-     *        additional arguments will not be mapped. If more options are
+     *        never refer to `this`. If `extend` was previously called with no
+     *        arguments, the method will be immediately mapped to its native when
+     *        defined.
+     *
+     *        Methods cannot accept more than 4 arguments in addition to the
+     *        native (5 arguments total). Any additional arguments will not be
+     *        mapped. If the method needs to accept unlimited arguments, use
+     *        `defineInstanceWithArguments`. Otherwise if more options are
      *        required, use an options object instead.
      *
      * @example
@@ -287,7 +309,6 @@
      * @method defineInstanceAndStatic(...)
      * @returns Namespace
      * @namespace
-     * @static
      * @short A shortcut to define both static and instance methods on the namespace.
      * @extra This method is intended for use with `Object` instance methods. Sugar
      *        will not map any methods to `Object.prototype` by default, so defining
@@ -309,7 +330,6 @@
      * @method defineStaticWithArguments(...)
      * @returns Namespace
      * @namespace
-     * @static
      * @short Defines static methods that collect arguments.
      * @extra This method is identical to `defineStatic`, except that when defined
      *        methods are called, they will collect any arguments past `n - 1`,
@@ -335,7 +355,6 @@
      * @method defineInstanceWithArguments(...)
      * @returns Namespace
      * @namespace
-     * @static
      * @short Defines instance methods that collect arguments.
      * @extra This method is identical to `defineInstance`, except that when
      *        defined methods are called, they will collect any arguments past
@@ -361,7 +380,6 @@
      * @method defineStaticPolyfill(...)
      * @returns Namespace
      * @namespace
-     * @static
      * @short Defines static methods that are mapped onto the native if they do
      *        not already exist.
      * @extra Intended only for use creating polyfills that follow the ECMAScript
@@ -386,13 +404,12 @@
      * @method defineInstancePolyfill(...)
      * @returns Namespace
      * @namespace
-     * @static
      * @short Defines instance methods that are mapped onto the native prototype
      *        if they do not already exist.
      * @extra Intended only for use creating polyfills that follow the ECMAScript
      *        spec. Accepts either a single object mapping names to functions, or
-     *        name and function as two arguments. `defineInstancePolyfill` differs
-     *        from `defineInstance` as there is no static signature (as the method
+     *        name and function as two arguments. This method differs from
+     *        `defineInstance` as there is no static signature (as the method
      *        is mapped as-is to the native), so it should refer to its `this`
      *        object.
      *
@@ -418,7 +435,6 @@
      * @method alias(<toName>, <fromName>)
      * @returns Namespace
      * @namespace
-     * @static
      * @short Aliases one Sugar method to another.
      *
      * @example
@@ -440,6 +456,7 @@
 
     mapNativeToChainable(name);
     mapObjectChainablesToNamespace(sugarNamespace);
+
 
     // Export
     return Sugar[name] = sugarNamespace;
@@ -538,7 +555,7 @@
         }
       }
       args.push(collectedArgs);
-      return fn.apply(null, args);
+      return fn.apply(this, args);
     };
   }
 
@@ -593,20 +610,17 @@
 
   // Chainables
 
-  function getNewChainableClass(name, inherits) {
+  function getNewChainableClass(name) {
     var fn = SugarChainable = function (obj, arg) {
       if (!(this instanceof fn)) {
         return new fn(obj, arg);
       }
-      if (this.constructor !== DefaultChainable) {
+      if (this.constructor !== fn) {
         // Allow modules to define their own constructors.
         obj = this.constructor.apply(obj, arguments);
       }
       this.raw = obj;
     };
-    if (inherits) {
-      fn.prototype = new DefaultChainable;
-    }
     setProperty(fn, 'toString', function() {
       return SUGAR_GLOBAL + name;
     });
@@ -616,14 +630,15 @@
     return fn;
   }
 
-  function defineChainableMethod(sugarNamespace, methodName, fn, internal) {
-    var wrapped = wrapWithChainableResult(fn, internal), existing, collision, dcp;
+  function defineChainableMethod(sugarNamespace, methodName, fn) {
+    var wrapped = wrapWithChainableResult(fn), existing, collision, dcp;
     dcp = DefaultChainable.prototype;
     existing = dcp[methodName];
 
     // If the method was previously defined on the default chainable, then a
-    // collision exists, so set the method to a disambiguation function that
-    // will lazily evaluate the object and find it's associated chainable.
+    // collision exists, so set the method to a disambiguation function that will
+    // lazily evaluate the object and find it's associated chainable. An extra
+    // check is required to avoid false positives from Object inherited methods.
     collision = existing && existing !== Object.prototype[methodName];
 
     // The disambiguation function is only required once.
@@ -668,7 +683,7 @@
     }
   }
 
-  function wrapWithChainableResult(fn, internal) {
+  function wrapWithChainableResult(fn) {
     return function() {
       return new DefaultChainable(fn.apply(this.raw, arguments));
     };
@@ -782,8 +797,6 @@
   }
 
   setupGlobal();
-  'use strict';
-
 
   /***
    * @module Common
@@ -814,15 +827,14 @@
   // Regex for matching a formatted string
   var STRING_FORMAT_REG = /([{}])\1|\{([^}]*)\}|(%)%|(%(\w*))/g;
 
-  var HALF_WIDTH_ZERO = 0x30;
-  var FULL_WIDTH_ZERO = 0xff10;
-
-  var HALF_WIDTH_PERIOD   = '.';
-  var FULL_WIDTH_PERIOD   = '．';
-  var HALF_WIDTH_COMMA    = ',';
-
-  var OPEN_BRACE  = '{';
-  var CLOSE_BRACE = '}';
+  // Common chars
+  var HALF_WIDTH_ZERO = 0x30,
+      FULL_WIDTH_ZERO = 0xff10,
+      HALF_WIDTH_PERIOD   = '.',
+      FULL_WIDTH_PERIOD   = '．',
+      HALF_WIDTH_COMMA    = ',',
+      OPEN_BRACE  = '{',
+      CLOSE_BRACE = '}';
 
   // Namespace aliases
   var sugarObject   = Sugar.Object,
@@ -840,8 +852,7 @@
       defineProperty     = Sugar.defineProperty,
       iterateOverObject  = Sugar.iterateOverObject;
 
-
-  // Type Checks
+  // Class checks
   var isBoolean, isNumber, isString, isArray, isDate, isRegExp, isFunction, isSet;
 
   function buildClassChecks() {
@@ -889,14 +900,13 @@
 
   // Wrapping the core's "define" methods to
   // save a few bytes in the minified script.
-
   function wrapNamespace(method) {
     return function(sugarNamespace, arg1, arg2) {
       sugarNamespace[method](arg1, arg2);
     };
   }
 
-  // Define aliases
+  // Method define aliases
   var alias                       = wrapNamespace('alias'),
       defineStatic                = wrapNamespace('defineStatic'),
       defineInstance              = wrapNamespace('defineInstance'),
@@ -959,11 +969,25 @@
     return accessor;
   }
 
+  // For methods defined directly on the prototype like Range
+  function defineOnPrototype(ctor, methods) {
+    var proto = ctor.prototype;
+    iterateOverObject(methods, function(key, val) {
+      proto[key] = val;
+    });
+  }
+
   // Argument helpers
 
-  function assertCallable(fn) {
-    if (!isFunction(fn)) {
+  function assertCallable(obj) {
+    if (!isFunction(obj)) {
       throw new TypeError('Function is not callable');
+    }
+  }
+
+  function assertIsArray(obj, msg) {
+    if (!isArray(obj)) {
+      throw new TypeError(msg);
     }
   }
 
@@ -976,7 +1000,6 @@
       throw new TypeError('Property cannot be written.');
     }
   }
-
 
   // Coerces an object to a positive integer.
   // Does not allow NaN, or Infinity.
@@ -1010,9 +1033,9 @@
     };
   }
 
-  function setChainableConstructor(sugarNamespace, passCheck, createFn) {
+  function setChainableConstructor(sugarNamespace, createFn) {
     sugarNamespace.prototype.constructor = function(obj) {
-      return passCheck(obj) ? obj : createFn.apply(this, arguments);
+      return createFn.apply(this, arguments);
     };
   }
 
@@ -1038,6 +1061,24 @@
     }
     // Default is standard isEqual
     return defaultMatcher(f);
+  }
+
+  function fuzzyMatcher(obj, k) {
+    var matchers = {};
+    return function(el, i, arr) {
+      var matched = true;
+      if (!isObjectType(el)) {
+        return false;
+      }
+      iterateOverObject(obj, function(key, val) {
+        matchers[key] = matchers[key] || getMatcher(val, k);
+        if (matchers[key].call(arr, el[key], i, arr) === false) {
+          matched = false;
+        }
+        return matched;
+      });
+      return matched;
+    };
   }
 
   function defaultMatcher(f) {
@@ -1074,27 +1115,15 @@
     };
   }
 
-  function fuzzyMatcher(obj, k) {
-    var matchers = {};
-    return function(el, i, arr) {
-      var matched = true;
-      if (!isObjectType(el)) {
-        return false;
-      }
-      iterateOverObject(obj, function(key, val) {
-        matchers[key] = matchers[key] || getMatcher(val, k);
-        if (matchers[key].call(arr, el[key], i, arr) === false) {
-          matched = false;
-        }
-        return matched;
-      });
-      return matched;
-    };
-  }
-
   // Object helpers
 
-  var getKeys = Object.keys;
+  var getKeys = Object.keys || function(obj) {
+    var keys = [];
+    iterateOverObject(obj, function(key) {
+      keys.push(key);
+    });
+    return keys;
+  };
 
   function deepHasProperty(obj, key) {
     return handleDeepProperty(obj, key, true);
@@ -1199,32 +1228,38 @@
 
   // Get object property with support for 0..1 style range notation.
   function handleArrayIndexRange(obj, key, val) {
-    var match, start, end, leading, trailing, set;
-    set = isDefined(val);
+    var match, start, end, leading, trailing, arr, set;
     match = key.match(PROPERTY_RANGE_REG);
     if (!match) {
       return;
     }
-    leading  = match[1];
+
+    set = isDefined(val);
+    leading = match[1];
+
+    if (leading) {
+      arr = handleDeepProperty(obj, leading, false, set ? true : false, true);
+    } else {
+      arr = obj;
+    }
+
+    assertIsArray(arr, 'Range syntax requires Array.');
+
     trailing = match[4];
     start    = match[2] ? +match[2] : 0;
-    end      = match[3] ? +match[3] : obj.length;
+    end      = match[3] ? +match[3] : arr.length;
 
     // A range of 0..1 is inclusive, so we need to add 1 to the end. If this
     // pushes the index from -1 to 0, then set it to the full length of the
     // array, otherwise it will return nothing.
-    end = end === -1 ? obj.length : end + 1;
-
-    if (leading) {
-      obj = handleDeepProperty(obj, leading, false, set ? true : false, true);
-    }
+    end = end === -1 ? arr.length : end + 1;
 
     if (set) {
       for (var i = start; i < end; i++) {
-        handleDeepProperty(obj, i + trailing, false, true, false, val);
+        handleDeepProperty(arr, i + trailing, false, true, false, val);
       }
     } else {
-      obj = obj.slice(start, end);
+      arr = arr.slice(start, end);
 
       // If there are trailing properties, then they need to be mapped for each
       // element in the array.
@@ -1236,12 +1271,12 @@
           // with the array index to be set.
           trailing = trailing.slice(1);
         }
-        return obj.map(function(el) {
+        return arr.map(function(el) {
           return handleDeepProperty(el, trailing);
         });
       }
     }
-    return obj;
+    return arr;
   }
 
   function hasProperty(obj, prop) {
@@ -1355,16 +1390,6 @@
     return false;
   }
 
-  function canCompareValue(obj, klass) {
-    // Only known objects are matched by value. This is notably excluding
-    // functions, DOM Elements, and instances of user-created classes. The latter
-    // can arguably be matched by value, but distinguishing between these and host
-    // objects -- which should never be compared by value -- is very tricky so not
-    // dealing with it here.
-    klass = klass || className(obj);
-    return MATCHED_BY_VALUE_REG.test(klass) || isPlainObject(obj, klass);
-  }
-
   function objectIsEqual(a, b, aClass, stack) {
     var aType = typeof a, bType = typeof b, propsEqual, lenEqual, arrayLike, count;
     if (aType !== bType) {
@@ -1388,6 +1413,16 @@
     }
     // Stringifying the value handles NaN, wrapped primitives, and dates in one go.
     return a.valueOf().toString() === b.valueOf().toString();
+  }
+
+  function canCompareValue(obj, klass) {
+    // Only known objects are matched by value. This is notably excluding
+    // functions, DOM Elements, and instances of user-created classes. The latter
+    // can arguably be matched by value, but distinguishing between these and host
+    // objects -- which should never be compared by value -- is very tricky so not
+    // dealing with it here.
+    klass = klass || className(obj);
+    return MATCHED_BY_VALUE_REG.test(klass) || isPlainObject(obj, klass);
   }
 
   function setIsEqual(s1, s2) {
@@ -1730,13 +1765,7 @@
   }
 
   function simpleCapitalize(str) {
-    return str.slice(0,1).toUpperCase() + str.slice(1).toLowerCase();
-  }
-
-  function capitalizeWithoutDowncasing(word) {
-    return word.replace(/^\W*[a-z]/, function(w) {
-      return w.toUpperCase();
-    });
+    return str.charAt(0).toUpperCase() + str.slice(1);
   }
 
   function createFormatMatcher(bracketMatcher, percentMatcher, precheck) {
@@ -1764,7 +1793,7 @@
         assertPassesPrecheck(precheck, bKey, pKey);
         fn = function(obj, opt) {
           return get(obj, token, opt);
-        }
+        };
       }
       format.push(fn || getLiteral(literal));
     }
@@ -1783,7 +1812,7 @@
     function getLiteral(str) {
       return function() {
         return str;
-      }
+      };
     }
 
     function assertPassesPrecheck(precheck, bt, pt) {
@@ -1816,7 +1845,23 @@
         result += format[i](obj, opt);
       }
       return result;
-    }
+    };
+  }
+
+  // Inflection helper
+
+  var Inflections = {};
+
+  function getAcronym(str) {
+    return Inflections.acronyms && Inflections.acronyms.find(str);
+  }
+
+  function getHumanWord(str) {
+    return Inflections.human && Inflections.human.find(str);
+  }
+
+  function runHumanRules(str) {
+    return Inflections.human && Inflections.human.runRules(str) || str;
   }
 
   // RegExp helpers
@@ -1833,9 +1878,9 @@
         flags += flag;
       }
     }
-    checkFlag(reg.multiline, 'm');
-    checkFlag(reg.ignoreCase, 'i');
     checkFlag(reg.global, 'g');
+    checkFlag(reg.ignoreCase, 'i');
+    checkFlag(reg.multiline, 'm');
     checkFlag(reg.sticky, 'y');
     return flags;
   }
@@ -1864,14 +1909,12 @@
     return d['set' + (_utc(d) ? 'UTC' : '') + method](value);
   }
 
-
   buildClassChecks();
   buildFullWidthNumber();
-  'use strict';
 
   /***
    * @module ES6
-   * @description Methods that provide some basic ES6 compatibility. This module
+   * @description Polyfills that provide basic ES6 compatibility. This module
    *              provides the base for Sugar functionality, but is not a full
    *              polyfill suite.
    *
@@ -1899,7 +1942,7 @@
     /***
      * @method includes(<search>, [pos] = 0)
      * @returns Boolean
-     * @polyfill es6
+     * @polyfill ES6
      * @short Returns true if <search> is contained within the string.
      * @extra Search begins at [pos], which defaults to the beginning of the
      *        string. Sugar enhances this method to allow matching a regex.
@@ -1922,7 +1965,7 @@
     /***
      * @method startsWith(<search>, [pos] = 0)
      * @returns Boolean
-     * @polyfill es6
+     * @polyfill ES6
      * @short Returns true if the string starts with substring <search>.
      * @extra Search begins at [pos], which defaults to the entire string length.
      *
@@ -1955,7 +1998,7 @@
     /***
      * @method endsWith(<search>, [pos] = length)
      * @returns Boolean
-     * @polyfill es6
+     * @polyfill ES6
      * @short Returns true if the string ends with substring <search>.
      * @extra Search ends at [pos], which defaults to the entire string length.
      *
@@ -1992,7 +2035,7 @@
     /***
      * @method repeat([num] = 0)
      * @returns String
-     * @polyfill es6
+     * @polyfill ES6
      * @short Returns the string repeated [num] times.
      *
      * @example
@@ -2017,7 +2060,7 @@
     /***
      * @method isNaN(<value>)
      * @returns Boolean
-     * @polyfill es6
+     * @polyfill ES6
      * @static
      * @short Returns true only if the number is `NaN`.
      * @extra This is differs from the global `isNaN`, which returns true for
@@ -2050,7 +2093,7 @@
     /***
      * @method Array.from(<a>, [map], [context])
      * @returns Mixed
-     * @polyfill es6
+     * @polyfill ES6
      * @short Creates an array from an array-like object.
      * @extra If a function is passed for [map], it will be map each element of
      *        the array. [context] is the `this` object if passed.
@@ -2118,11 +2161,10 @@
     }
 
   });
-  'use strict';
 
   /***
    * @module ES7
-   * @description Methods that provide some basic ES7 compatibility. This module
+   * @description Polyfills that provide basic ES7 compatibility. This module
    *              provides the base for Sugar functionality, but is not a full
    *              polyfill suite.
    *
@@ -2143,7 +2185,7 @@
     /***
      * @method includes(<search>, [fromIndex] = 0)
      * @returns Boolean
-     * @polyfill es7
+     * @polyfill ES7
      * @short Returns true if <search> is contained within the array.
      * @extra Search begins at [fromIndex], which defaults to the beginning of the
      *        array.
@@ -2174,31 +2216,34 @@
     }
 
   });
-  'use strict';
 
   /***
    * @module Date
-   * @description Date parsing and formatting, relative formats like "1 minute ago",
-   *              Number methods like "daysAgo", locale support with default English
-   *              locale definition.
+   * @description Date parsing and formatting, relative formats, number shortcuts,
+   *              and locale support with default English locales.
    *
    ***/
 
   var TIME_FORMAT = ['ampm','hour','minute','second','ampm','utc','offsetSign','offsetHours','offsetMinutes','ampm'];
-  var LOCALE_FIELDS = ['months','weekdays','units','numbers','articles','tokens','timeMarker','ampm','timeSuffixes','parse','timeParse','modifiers'];
+  var LOCALE_FIELDS = ['months','weekdays','units','numbers','articles','tokens','timeMarker','ampm','timeSuffixes','dateParse','timeParse','modifiers'];
 
   var DECIMAL_REG       = '(?:[,.]\\d+)?';
   var REQUIRED_TIME_REG = '({t})?\\s*(\\d{1,2}{d})(?:{h}([0-5]\\d{d})?{m}(?::?([0-5]\\d'+DECIMAL_REG+'){s})?\\s*(?:({t})|(Z)|(?:([+-])(\\d{2,2})(?::?(\\d{2,2}))?)?)?|\\s*({t}))';
 
+  // Time constants
+  var ALLOWS_TIME = 1, ALLOWS_TIME_IN_FRONT = 2;
+
+  // Regex for stripping Timezone Abbreviations
   var TIMEZONE_ABBREVIATION_REG = /(\w{3})[()\s\d]*$/;
 
-  var MINUTE = 60 * 1000;
+  var MINUTES = 60 * 1000;
 
-  var CONSTANT_FORMATS = {
-    'ISO8601': '{yyyy}-{MM}-{dd}T{HH}:{mm}:{ss}.{SSS}{Z}',
-    'RFC1123': '{Dow}, {dd} {Mon} {yyyy} {HH}:{mm}:{ss} {tz}',
-    'RFC1036': '{Weekday}, {dd}-{Mon}-{yy} {HH}:{mm}:{ss} {tz}'
-  };
+  // Date unit indexes
+  var SECONDS_INDEX = 1,
+      HOURS_INDEX   = 3,
+      DAY_INDEX     = 4,
+      MONTH_INDEX   = 6,
+      YEAR_INDEX    = 7;
 
   // ISO Defaults
   var ISO_FIRST_DAY_OF_WEEK = 1,
@@ -2210,20 +2255,16 @@
   // A hash of date units by name
   var dateUnitsByName;
 
-  // Format tokens by name
-  var ldmlTokens = {},
-      strfTokens = {};
-
   // Core formats common to every locale
   var CoreDateFormats = [
     {
       iso: true,
-      time: true,
+      time: ALLOWS_TIME_IN_FRONT,
       match: 'yearSign,year,month,date',
       src:'([+-])?(\\d{4,4})[-.\\/]?{fullMonth}[-.]?(\\d{1,2})?'
     },
     {
-      time: true,
+      time: ALLOWS_TIME_IN_FRONT,
       variant: true,
       match: 'date,month,year',
       src: '(\\d{1,2})[-.\\/]{fullMonth}(?:[-.\\/](\\d{2,4}))?'
@@ -2234,9 +2275,15 @@
     },
     {
       match: 'timestamp',
-      src: '\\/Date\\((\\d+(?:[+-]\\d{4,4})?)\\)\\/'
+      src: '\\\\/Date\\((\\d+(?:[+-]\\d{4,4})?)\\)\\\\/'
     }
   ];
+
+  var CoreOutputFormats = {
+    'ISO8601': '{yyyy}-{MM}-{dd}T{HH}:{mm}:{ss}.{SSS}{Z}',
+    'RFC1123': '{Dow}, {dd} {Mon} {yyyy} {HH}:{mm}:{ss} {tz}',
+    'RFC1036': '{Weekday}, {dd}-{Mon}-{yy} {HH}:{mm}:{ss} {tz}'
+  };
 
   var FormatTokensBase = [
     {
@@ -2549,6 +2596,7 @@
       name: 'second',
       method: 'Seconds',
       multiplier: 1000,
+      half: 500,
       start: 0,
       end: 59
     },
@@ -2556,6 +2604,7 @@
       name: 'minute',
       method: 'Minutes',
       multiplier: 60 * 1000,
+      half: 30,
       start: 0,
       end: 59
     },
@@ -2563,6 +2612,7 @@
       name: 'hour',
       method: 'Hours',
       multiplier: 60 * 60 * 1000,
+      half: 30,
       start: 0,
       end: 23
     },
@@ -2572,6 +2622,7 @@
       higher: true,
       resetValue: 1,
       multiplier: 24 * 60 * 60 * 1000,
+      half: 12,
       start: 1,
       end: function(d) {
         return daysInMonth(d);
@@ -2597,10 +2648,10 @@
       method: 'FullYear',
       higher: true,
       multiplier: 365.25 * 24 * 60 * 60 * 1000,
+      half: 6,
       start: 0
     }
   ];
-
 
   /***
    * @method newDateInternal([fn])
@@ -2618,17 +2669,16 @@
    *
    *   Sugar.Date.newDateInternal(function() {
    *     var d = new Date(), offset;
-   *     offset = (d.getTimezoneOffset() - 600) * 60 * 1000;
-   *     d.setTime(d.getTime() + offset); // Hawaii time!
+   *     offset = (d.getTimezoneOffset() - 600) * 60 * 1000; // Hawaii time!
+   *     d.setTime(d.getTime() + offset);
    *     return d;
    *   });
    *
    ***/
   var _newDateInternal = defineAccessor(sugarDate, 'newDateInternal', defaultNewDate);
 
-
   function setDateChainableConstructor() {
-    setChainableConstructor(sugarDate, isDate, createDate);
+    setChainableConstructor(sugarDate, createDate);
   }
 
   // General helpers
@@ -2637,18 +2687,8 @@
     return d.getTimezoneOffset();
   }
 
-  function arrayToAlternates(arr) {
-    return filter(arr, function(el) {
-      return !!el;
-    }).join('|');
-  }
-
   function getNewDate() {
     return _newDateInternal()();
-  }
-
-  function getNewDateIsDefault() {
-    return _newDateInternal() === defaultNewDate;
   }
 
   function defaultNewDate() {
@@ -2771,7 +2811,7 @@
   // Milliseconds -> Years
   function iterateOverDateUnits(fn, from, to) {
     var i = from || 0, inc, unit, result;
-    if (isUndefined(to)) to = 7;
+    if (isUndefined(to)) to = YEAR_INDEX;
     inc = i > to ? -1 : 1;
     while (result !== false) {
       unit = DateUnits[i];
@@ -2785,17 +2825,28 @@
 
   // Years -> Milliseconds
   function iterateOverDateUnitsReverse(fn) {
-    iterateOverDateUnits(fn, 7, 0);
+    iterateOverDateUnits(fn, YEAR_INDEX, 0);
   }
 
   // Days -> Years
   function iterateOverHigherDateUnits(fn) {
-    iterateOverDateUnits(fn, 4, 7);
+    iterateOverDateUnits(fn, DAY_INDEX, YEAR_INDEX);
   }
 
   // Seconds -> Hours
   function iterateOverLowerDateUnits(fn) {
-    iterateOverDateUnits(fn, 1, 3);
+    iterateOverDateUnits(fn, SECONDS_INDEX, HOURS_INDEX);
+  }
+
+  // Milliseconds -> Years including "weekday" and "date" for "day"
+  function iterateOverDateParamUnits(fn, from, to) {
+    iterateOverDateUnits(function(name, u, i) {
+      if (name === 'day') {
+        fn('weekday', i);
+        name = 'date';
+      }
+      return fn(name, i);
+    });
   }
 
   // Date shifting helpers
@@ -2924,62 +2975,60 @@
     return fwd ? -num : num;
   }
 
-  // Date parsing helpers
-
-  function getFormatMatch(match, arr) {
-    var obj = {}, value, num;
-    forEach(arr, function(key, i) {
-      value = match[i + 1];
-      if (isUndefined(value) || value === '') return;
-      if (key === 'year') {
-        obj.yearAsString = value.replace(/'/, '');
-      }
-      num = parseFloat(value.replace(/'/, '').replace(/,/, HALF_WIDTH_PERIOD));
-      obj[key] = !isNaN(num) ? num : value.toLowerCase();
-    });
-    return obj;
-  }
-
-  function cleanDateInput(str) {
-    str = trim(str).replace(/^just (?=now)|\.+$/i, '');
-    return convertAsianDigits(str);
-  }
-
-  function convertAsianDigits(str) {
-    return str.replace(cjkDigitReg, function(full, disallowed, match) {
-      var sum = 0, place = 1, lastWasHolder, lastHolder;
-      if (disallowed) return full;
-      forEach(match.split('').reverse(), function(letter) {
-        var value = cjkDigitMap[letter], holder = value > 9;
-        if (holder) {
-          if (lastWasHolder) sum += place;
-          place *= value / (lastHolder || 1);
-          lastHolder = value;
-        } else {
-          if (lastWasHolder === false) {
-            place *= 10;
-          }
-          sum += place * value;
-        }
-        lastWasHolder = holder;
-      });
-      if (lastWasHolder) sum += place;
-      return sum;
-    });
-  }
-
-  function getDateOptions(opt) {
-    var options = isString(opt) ? { locale: opt } : opt || {};
-    options.prefer = +!!options.future - +!!options.past;
-    return options;
-  }
-
   function getExtendedDate(contextDate, d, opt) {
 
     var date, set, options, baseLocale, afterCallbacks, weekdayDir;
 
     afterCallbacks = [];
     options = getDateOptions(opt);
+
+    function getDateOptions(opt) {
+      var options = isString(opt) ? { locale: opt } : opt || {};
+      options.prefer = +!!options.future - +!!options.past;
+      return options;
+    }
+
+    function getFormatMatch(match, arr) {
+      var obj = options.set || {}, value, num;
+      forEach(arr, function(key, i) {
+        value = match[i + 1];
+        if (isUndefined(value) || value === '') return;
+        if (key === 'year') {
+          obj.yearAsString = value.replace(/'/, '');
+        }
+        num = parseFloat(value.replace(/'/, '').replace(/,/, HALF_WIDTH_PERIOD));
+        obj[key] = !isNaN(num) ? num : value.toLowerCase();
+      });
+      return obj;
+    }
+
+    function cleanDateInput(str) {
+      str = trim(str).replace(/^just (?=now)/i, '');
+      return convertAsianDigits(str);
+    }
+
+    function convertAsianDigits(str) {
+      return str.replace(cjkDigitReg, function(full, disallowed, match) {
+        var sum = 0, place = 1, lastWasHolder, lastHolder;
+        if (disallowed) return full;
+        forEach(match.split('').reverse(), function(letter) {
+          var value = cjkDigitMap[letter], holder = value > 9;
+          if (holder) {
+            if (lastWasHolder) sum += place;
+            place *= value / (lastHolder || 1);
+            lastHolder = value;
+          } else {
+            if (lastWasHolder === false) {
+              place *= 10;
+            }
+            sum += place * value;
+          }
+          lastWasHolder = holder;
+        });
+        if (lastWasHolder) sum += place;
+        return sum;
+      });
+    }
 
     function afterDateSet(fn) {
       afterCallbacks.push(fn);
@@ -3000,18 +3049,55 @@
       return (7 * (num - 1)) + weekday;
     }
 
-
     function handleRelativeUnit(loc) {
       var unitName, unitIndex, num, tmp;
       num = loc.getNumber(set.num);
       unitIndex = loc.getUnitIndex(set.unit);
       unitName  = English.unitsLower[unitIndex];
 
+      // Allow localized "half" as a standalone colloquialism. Purposely avoiding
+      // the locale number system to reduce complexity. Since higher units aren't
+      // set numerically, handling "half a year" as a special case as other higher
+      // units don't have meaning. Other higher units should be invalidated.
+      if (set.half && set.unit) {
+        var unit = DateUnits[unitIndex];
+        if (unit.half) {
+          num = unit.half;
+          unitIndex -= 1;
+          unitName  = unit.lower.name;
+        } else {
+          invalidateDate(date);
+        }
+        delete set.half;
+      }
+
+      // If a weekday is defined, there are 3 possible formats being applied:
+      //
+      // 1. "the day after monday": unit is days
+      // 2. "next monday": short for "next week monday", unit is weeks
+      // 3. "the 2nd monday of next month": unit is months
+      //
+      // In the first case, we need to set the weekday up front, as the day is
+      // relative to it. In case three, the weekday needs to be set after the
+      // month is set, so allow separateAbsoluteUnits to set up a callback. The
+      // second case can be set at either time, but setting it first to handle
+      // "next monday at midnight", which needs to have the day set first.
+      if (isDefined(set.weekday)) {
+        if (unitIndex === MONTH_INDEX) {
+          set.weekday += (num - 1) * 7;
+          weekdayDir = 1;
+          num = 1;
+        } else {
+          updateDate(date, { weekday: set.weekday }, true);
+          delete set.weekday;
+        }
+      }
+
       // Relative date units such as "tomorrow" have already had their
       // "day" set above so assume 0 shift unless they are explicitly
       // using a shift or have a have a "sign" such as the form
       // "the day after tomorrow".
-      if (!set.sign && !set.shift && unitIndex === 4) {
+      if (!set.sign && !set.shift && unitIndex === DAY_INDEX) {
         num = 0;
       }
 
@@ -3034,12 +3120,6 @@
         num *= tmp.value;
       }
 
-      if (isDefined(set.weekday)) {
-        // Units can be with non-relative dates, set here. ie "the day after monday"
-        updateDate(date, { weekday: set.weekday }, true);
-        delete set.weekday;
-      }
-
       // Finally shift the unit.
       set[unitName] = (set[unitName] || 0) + num;
     }
@@ -3060,13 +3140,13 @@
 
     function separateAbsoluteUnits(loc, unitIndex) {
       var params;
-      iterateOverDateUnits(function(name, u, i) {
-        if (name === 'day') name = 'date';
+
+      iterateOverDateParamUnits(function(name, specificityIndex) {
         if (dateParamIsDefined(set, name)) {
           // If there is a time unit set that is more specific than
           // the matched unit we have a string like "5:30am in 2 minutes",
           // which is meaningless, so invalidate the date.
-          if (i >= unitIndex) {
+          if (specificityIndex >= unitIndex) {
             invalidateDate(date);
             return false;
           }
@@ -3079,7 +3159,14 @@
       });
       if (params) {
         afterDateSet(function() {
-          updateDate(date, params, true);
+          if (unitIndex === MONTH_INDEX && isDefined(params.weekday)) {
+            // If the relative unit was "months", and a weekday is set, then we
+            // have a format like "the first friday of next month", which is
+            // relative to the first of the month, so reset the date here to
+            // allow for this.
+            setDate(date, 1);
+          }
+          updateDate(date, params, true, false, options.prefer, weekdayDir);
         });
         if (set.edge) {
           // Allow formats like "the end of March of next year"
@@ -3135,7 +3222,7 @@
 
     function handleLocalizedRelativeDay(loc, mod) {
       resetTime(date);
-      set.unit = loc.unitsLower[4];
+      set.unit = loc.unitsLower[DAY_INDEX];
       set.day = mod.value;
     }
 
@@ -3206,7 +3293,7 @@
 
     if (contextDate && d) {
       // If a context date is passed, (in the case of "get"
-      // and "[unit]FromNow") then use it as the starting point.
+      // and "unitsFromNow") then use it as the starting point.
       date = cloneDateByFlag(contextDate);
     } else {
       date = getNewDate();
@@ -3261,7 +3348,7 @@
             if (set.month) {
               // Set the month which may be localized.
               set.month = loc.getMonthValue(set.month);
-              if (set.shift && !set.unit) set.unit = loc.unitsLower[7];
+              if (set.shift && !set.unit) set.unit = loc.unitsLower[YEAR_INDEX];
             }
 
             if (set.hours && (tmp = loc.findModifier(set, 'hours'))) {
@@ -3318,7 +3405,7 @@
         if (options.fromUTC) {
           // Falling back to system date here which cannot be parsed as UTC,
           // so if we're forcing UTC then simply add the offset.
-          date.setTime(date.getTime() + (tzOffset(date) * MINUTE));
+          date.setTime(date.getTime() + (tzOffset(date) * MINUTES));
         }
       } else if (set.unit) {
         // If a set has a unit ("days", etc), then it is relative to the current date.
@@ -3460,26 +3547,27 @@
     });
   }
 
-  // Gets the adjusted unit using the [unit]FromNow methods,
+  // Gets the adjusted unit using the unitsFromNow methods,
   // which use internal date methods that neatly avoid vaguely
   // defined units of time (days in month, leap years, etc).
-  function getAdjustedUnitForDate(d) {
-    var compareDate = getNewDate(), ms;
-    if (getNewDateIsDefault() && d > compareDate) {
-      // If the internal getNewDate is default and the incoming date is
-      // greater than it, that means that we are comparing some time in
-      // the future to right now. However, commonly the incoming date
-      // was created in the same cycle as our comparison, but our
-      // getNewDate will have been created an instant after it, creating
-      // situations where "5 minutes from now" becomes "4 minutes from now"
-      // in the same tick. To prevent this, subtract 10ms to compensate.
-      // Note that even with this compensation, some slower environments
-      // will still report false test failures, but accepting this for now.
-      compareDate = new Date(compareDate.getTime() - 10);
+  function getAdjustedUnitForDate(d, dRelative) {
+    var ms;
+    if (!dRelative) {
+      dRelative = getNewDate();
+      if (d > dRelative) {
+        // If our date is greater than the one that we got from getNewDate, it
+        // means that we are finding the unit for a date that is in the future
+        // relative to now. However, often the incoming date was created in
+        // the same cycle as our comparison, but our "now" date will have been
+        // created an instant after it, creating situations where "5 minutes from
+        // now" becomes "4 minutes from now" in the same tick. To prevent this,
+        // subtract a buffer of 10ms to compensate.
+        dRelative = new Date(dRelative.getTime() - 10);
+      }
     }
-    ms = d - compareDate;
+    ms = d - dRelative;
     return getAdjustedUnit(ms, function(u) {
-      return abs(getTimeDistanceForUnit(d, compareDate, u));
+      return abs(getTimeDistanceForUnit(d, dRelative, u));
     });
   }
 
@@ -3490,41 +3578,167 @@
 
   // Date formatting helpers
 
+  // Formatting tokens
+  var ldmlTokens, strfTokens;
 
-  // Format matcher for LDML or STRF tokens.
-  var dateFormatMatcher = createFormatMatcher(getLdml, getStrf, checkDateToken);
+  var dateFormatMatcher;
 
-  function checkDateToken(ldml, strf) {
-    return ldmlTokens[ldml] || strfTokens[strf];
-  }
+  function buildDateFormatTokens() {
 
-  function getLdml(d, token, localeCode) {
-    return ldmlTokens[token](d, localeCode);
-  }
-
-  function getStrf(d, token, localeCode) {
-    return strfTokens[token](d, localeCode);
-  }
-
-  function formatDate(d, format, relative, localeCode) {
-    var adu;
-    if (!isValid(d)) {
-      return 'Invalid Date';
-    } else if (relative && isFunction(format)) {
-      adu = getAdjustedUnitForDate(d);
-      format = format.apply(d, adu.concat(localeManager.get(localeCode)));
-    }
-    if (relative && !format) {
-      adu = adu || getAdjustedUnitForDate(d);
-      // Adjust up if time is in ms, as this doesn't
-      // look very good for a standard relative date.
-      if (adu[1] === 0) {
-        adu[1] = 1;
-        adu[0] = 1;
+    function addFormats(target, tokens, fn) {
+      if (tokens) {
+        forEach(commaSplit(tokens), function(token) {
+          target[token] = fn;
+        });
       }
-      return localeManager.get(localeCode).getRelativeFormat(adu);
     }
-    format = CONSTANT_FORMATS[format] || format || '{long}';
+
+    function buildLowercase(get) {
+      return function(d, localeCode) {
+        return get(d, localeCode).toLowerCase();
+      };
+    }
+
+    function buildOrdinal(get) {
+      return function(d, localeCode) {
+        var n = get(d, localeCode);
+        return n + localeManager.get(localeCode).getOrdinal(n);
+      };
+    }
+
+    function buildPadded(get, padding) {
+      return function(d, localeCode) {
+        return padNumber(get(d, localeCode), padding);
+      };
+    }
+
+    function buildTwoDigits(get) {
+      return function(d, localeCode) {
+        return get(d, localeCode) % 100;
+      };
+    }
+
+    function buildAlias(alias) {
+      return function(d, localeCode) {
+        return dateFormatMatcher(alias, d, localeCode);
+      };
+    }
+
+    function buildAlternates(f) {
+      for (var n = 1; n <= 5; n++) {
+        buildAlternate(f, n);
+      }
+    }
+
+    function buildAlternate(f, n) {
+      var alternate = function(d, localeCode) {
+        return f.get(d, localeCode, n);
+      };
+      addFormats(ldmlTokens, f.ldml + n, alternate);
+      if (f.lowerToken) {
+        ldmlTokens[f.lowerToken + n] = buildLowercase(alternate);
+      }
+    }
+
+    function getIdentityFormat(name) {
+      return function(d, localeCode) {
+        var loc = localeManager.get(localeCode);
+        return dateFormatMatcher(loc[name], d, localeCode);
+      };
+    }
+
+    ldmlTokens = {};
+    strfTokens = {};
+
+    forEach(FormatTokensBase, function(f) {
+      var get = f.get, getPadded;
+      if (f.lowerToken) {
+        ldmlTokens[f.lowerToken] = buildLowercase(get);
+      }
+      if (f.ordinalToken) {
+        ldmlTokens[f.ordinalToken] = buildOrdinal(get, f);
+      }
+      if (f.ldmlPaddedToken) {
+        ldmlTokens[f.ldmlPaddedToken] = buildPadded(get, f.ldmlPaddedToken.length);
+      }
+      if (f.ldmlTwoDigitToken) {
+        ldmlTokens[f.ldmlTwoDigitToken] = buildPadded(buildTwoDigits(get), 2);
+      }
+      if (f.strfTwoDigitToken) {
+        strfTokens[f.strfTwoDigitToken] = buildPadded(buildTwoDigits(get), 2);
+      }
+      if (f.strfPadding) {
+        getPadded = buildPadded(get, f.strfPadding);
+      }
+      if (f.alias) {
+        get = buildAlias(f.alias);
+      }
+      if (f.allowAlternates) {
+        buildAlternates(f);
+      }
+      addFormats(ldmlTokens, f.ldml, get);
+      addFormats(strfTokens, f.strf, getPadded || get);
+    });
+
+    iterateOverObject(CoreOutputFormats, function(name, src) {
+      addFormats(ldmlTokens, name, buildAlias(src));
+    });
+
+    defineInstanceSimilar(sugarDate, 'short,medium,long,full', function(methods, name) {
+      var fn = getIdentityFormat(name);
+      addFormats(ldmlTokens, name, fn);
+      methods[name] = fn;
+    });
+
+    addFormats(ldmlTokens, 'time', getIdentityFormat('time'));
+    addFormats(ldmlTokens, 'stamp', getIdentityFormat('stamp'));
+  }
+
+  function buildDateFormatMatcher() {
+
+    function getLdml(d, token, localeCode) {
+      return ldmlTokens[token](d, localeCode);
+    }
+
+    function getStrf(d, token, localeCode) {
+      return strfTokens[token](d, localeCode);
+    }
+
+    function checkDateToken(ldml, strf) {
+      return ldmlTokens[ldml] || strfTokens[strf];
+    }
+
+    // Format matcher for LDML or STRF tokens.
+    dateFormatMatcher = createFormatMatcher(getLdml, getStrf, checkDateToken);
+  }
+
+  function dateRelative(d, fn, localeCode) {
+    var adu, format;
+    if (!isValid(d)) {
+      return d.toString();
+    }
+    if (fn) {
+      adu = getAdjustedUnitForDate(d);
+      format = fn.apply(d, adu.concat(localeManager.get(localeCode)));
+      if (format) {
+        return dateFormat(d, format, localeCode);
+      }
+    }
+    adu = adu || getAdjustedUnitForDate(d);
+    // Adjust up if time is in ms, as this doesn't
+    // look very good for a standard relative date.
+    if (adu[1] === 0) {
+      adu[1] = 1;
+      adu[0] = 1;
+    }
+    return localeManager.get(localeCode).getRelativeFormat(adu);
+  }
+
+  function dateFormat(d, format, localeCode) {
+    if (!isValid(d)) {
+      return d.toString();
+    }
+    format = CoreOutputFormats[format] || format || '{long}';
     return dateFormatMatcher(format, d, localeCode);
   }
 
@@ -3566,6 +3780,7 @@
       options.fromUTC = true;
       options.setUTC = true;
     }
+
     p = getExtendedDate(null, d, options);
 
     if (margin > 0) {
@@ -3617,7 +3832,7 @@
     if (p.set && p.set.specificity) {
       return 0;
     }
-    return (tzOffset(p.date) - tzOffset(d)) * MINUTE;
+    return (tzOffset(p.date) - tzOffset(d)) * MINUTES;
   }
 
   function updateDate(d, params, reset, advance, prefer, weekdayDir) {
@@ -3742,7 +3957,7 @@
     // If past or future is preferred, then the process of "disambiguation" will
     // ensure that an ambiguous time/date ("4pm", "thursday", "June", etc.) will
     // be in the past or future. Weeks are only considered ambiguous if there is
-    // a weekday, ie. "thursday" is an ambiguous week, but "the 4th" is an
+    // a weekday, i.e. "thursday" is an ambiguous week, but "the 4th" is an
     // ambiguous month.
     if (canDisambiguate()) {
       iterateOverDateUnits(function(name, u) {
@@ -3797,10 +4012,10 @@
    * @returns Number
    * @short Returns the time since [d].
    * @extra [d] will accept a date object, timestamp, or string. If not specified,
-   *        [d] is assumed to be now. `[unit]Ago` is provided as an alias to make
+   *        [d] is assumed to be now. `unitsAgo` is provided as an alias to make
    *        this more readable when [d] is assumed to be the current date. See
-   *        `Date.create` for options.
-
+   *        `create` for options.
+   *
    * @set
    *   millisecondsSince
    *   secondsSince
@@ -3813,9 +4028,9 @@
    *
    * @example
    *
-   *   now.millisecondsSince('1 hour ago') -> 3,600,000
-   *   now.daysSince('1 week ago')         -> 7
-   *   now.yearsSince('15 years ago')      -> 15
+   *   new Date().millisecondsSince('1 hour ago') -> 3,600,000
+   *   new Date().daysSince('1 week ago')         -> 7
+   *   new Date().yearsSince('15 years ago')      -> 15
    *   lastYear.yearsAgo()                 -> 1
    *
    ***
@@ -3844,10 +4059,10 @@
    * @returns Number
    * @short Returns the time until [d].
    * @extra [d] will accept a date object, timestamp, or string. If not specified,
-   *        [d] is assumed to be now. `[unit]FromNow` is provided as an alias to
+   *        [d] is assumed to be now. `unitsFromNow` is provided as an alias to
    *        make this more readable when [d] is assumed to be the current date.
-   *        See `Date.create` for options.
-
+   *        See `create` for options.
+   *
    *
    * @set
    *   millisecondsUntil
@@ -3861,9 +4076,9 @@
    *
    * @example
    *
-   *   now.millisecondsUntil('1 hour from now') -> 3,600,000
-   *   now.daysUntil('1 week from now')         -> 7
-   *   now.yearsUntil('15 years from now')      -> 15
+   *   new Date().millisecondsUntil('1 hour from now') -> 3,600,000
+   *   new Date().daysUntil('1 week from now')         -> 7
+   *   new Date().yearsUntil('15 years from now')      -> 15
    *   nextYear.yearsFromNow()                  -> 1
    *
    ***
@@ -3888,14 +4103,14 @@
    *   nextYear.yearsFromNow()        -> 15
    *
    ***
-   * @method add[Units](<num>, [reset] = false)
+   * @method add[Units](<n>, [reset] = false)
    * @returns Date
-   * @short Adds <num> units to the date. If [reset] is true, all lower units will
+   * @short Adds <n> units to the date. If [reset] is true, all lower units will
    *        be reset.
-   * @extra Note that "months" is ambiguous as a unit of time. If the target date
-   *        falls on a day that does not exist (ie. August 31 -> February 31), the
-   *        date will be shifted to the last day of the month.
-   *        Don't use `addMonths` if you need precision.
+   * @extra Note that in the case of `addMonths`, the date may fall on a date
+   *        that doesn't exist (i.e. February 30). In this case the date will be
+   *        shifted to the last day of the month. Don't use `addMonths` if you
+   *        need precision.
    *
    * @set
    *   addMilliseconds
@@ -3909,14 +4124,14 @@
    *
    * @example
    *
-   *   now.addMilliseconds(5) -> current time + 5 milliseconds
-   *   now.addDays(5)         -> current time + 5 days
-   *   now.addYears(5)        -> current time + 5 years
+   *   new Date().addYears(5)        -> current time + 5 years
+   *   new Date().addDays(5)         -> current time + 5 days
+   *   new Date().addDays(5, true)   -> current time + 5 days (time reset)
    *
    ***
    * @method isLast[Unit]()
    * @returns Boolean
-   * @short Returns true if the date is last week/month/year.
+   * @short Returns true if the date is last week, month, or year.
    *
    * @set
    *   isLastWeek
@@ -3932,7 +4147,7 @@
    ***
    * @method isThis[Unit]()
    * @returns Boolean
-   * @short Returns true if the date is this week/month/year.
+   * @short Returns true if the date is this week, month, or year.
    *
    * @set
    *   isThisWeek
@@ -3948,7 +4163,7 @@
    ***
    * @method isNext[Unit]()
    * @returns Boolean
-   * @short Returns true if the date is next week/month/year.
+   * @short Returns true if the date is next week, month, or year.
    *
    * @set
    *   isNextWeek
@@ -3965,8 +4180,9 @@
    * @method beginningOf[Unit]([locale])
    * @returns Date
    * @short Sets the date to the beginning of the appropriate unit.
-   * @extra Takes an optional locale code as "week" varies by locale, otherwise
-   *        uses the current locale.
+   * @extra This method takes an optional locale code for `beginningOfWeek`,
+   *        which is locale dependent. If consistency is needed, use
+   *        `beginningOfISOWeek` instead.
    *
    * @set
    *   beginningOfDay
@@ -3976,17 +4192,18 @@
    *
    * @example
    *
-   *   now.beginningOfDay()   -> the beginning of today (resets the time)
-   *   now.beginningOfWeek()  -> the beginning of the week
-   *   now.beginningOfMonth() -> the beginning of the month
-   *   now.beginningOfYear()  -> the beginning of the year
+   *   new Date().beginningOfDay()   -> the beginning of today (resets the time)
+   *   new Date().beginningOfWeek()  -> the beginning of the week
+   *   new Date().beginningOfMonth() -> the beginning of the month
+   *   new Date().beginningOfYear()  -> the beginning of the year
    *
    ***
    * @method endOf[Unit]([locale])
    * @returns Date
    * @short Sets the date to the end of the appropriate unit.
-   * @extra Takes an optional locale code as "week" varies by locale, otherwise
-   *        uses the current locale.
+   * @extra This method takes an optional locale code for `endOfWeek`, which is
+   *        locale dependent. If consistency is needed, use `endOfISOWeek`
+   *        instead.
    *
    * @set
    *   endOfDay
@@ -3996,10 +4213,10 @@
    *
    * @example
    *
-   *   now.endOfDay()   -> the end of today (sets the time to 23:59:59.999)
-   *   now.endOfWeek()  -> the end of the week
-   *   now.endOfMonth() -> the end of the month
-   *   now.endOfYear()  -> the end of the year
+   *   new Date().endOfDay()   -> the end of today (sets the time to 23:59:59.999)
+   *   new Date().endOfWeek()  -> the end of the week
+   *   new Date().endOfMonth() -> the end of the month
+   *   new Date().endOfYear()  -> the end of the year
    *
    ***/
   function buildDateUnitMethods() {
@@ -4007,14 +4224,14 @@
     defineInstanceSimilar(sugarDate, DateUnits, function(methods, u, i) {
       var name = u.name, caps = simpleCapitalize(name);
 
-      if (i > 4) {
+      if (i > DAY_INDEX) {
         forEach(['Last','This','Next'], function(shift) {
           methods['is' + shift + caps] = function(d) {
             return compareDate(d, shift + ' ' + name, 0, { locale: 'en' });
           };
         });
       }
-      if (i > 3) {
+      if (i > HOURS_INDEX) {
         methods['beginningOf' + caps] = function(d, localeCode) {
           return moveToBeginningOfUnit(d, name, localeCode);
         };
@@ -4037,117 +4254,8 @@
       methods[u.name + 'sAgo']   = methods[u.name + 'sUntil']   = until;
       methods[u.name + 'sSince'] = methods[u.name + 'sFromNow'] = since;
 
-      buildNumberMethods(u, u.multiplier);
     });
 
-  }
-
-  function buildFormatTokens() {
-
-    function addFormats(target, tokens, fn) {
-      if (tokens) {
-        forEach(commaSplit(tokens), function(token) {
-          target[token] = fn;
-        });
-      }
-    }
-
-    function buildLowercase(get) {
-      return function(d, localeCode) {
-        return get(d, localeCode).toLowerCase();
-      };
-    }
-
-    function buildOrdinal(get) {
-      return function(d, localeCode) {
-        var n = get(d, localeCode);
-        return n + localeManager.get(localeCode).getOrdinal(n);
-      };
-    }
-
-    function buildPadded(get, padding) {
-      return function(d, localeCode) {
-        return padNumber(get(d, localeCode), padding);
-      };
-    }
-
-    function buildTwoDigits(get) {
-      return function(d, localeCode) {
-        return get(d, localeCode) % 100;
-      };
-    }
-
-    function buildAlias(alias) {
-      return function(d, localeCode) {
-        return dateFormatMatcher(alias, d, localeCode);
-      };
-    }
-
-    function buildAlternates(f) {
-      for (var n = 1; n <= 5; n++) {
-        buildAlternate(f, n);
-      }
-    }
-
-    function buildAlternate(f, n) {
-      var alternate = function(d, localeCode) {
-        return f.get(d, localeCode, n);
-      };
-      addFormats(ldmlTokens, f.ldml + n, alternate);
-      if (f.lowerToken) {
-        ldmlTokens[f.lowerToken + n] = buildLowercase(alternate);
-      }
-    }
-
-    function getIdentityFormat(name) {
-      return function(d, localeCode) {
-        var loc = localeManager.get(localeCode);
-        return dateFormatMatcher(loc[name], d, localeCode);
-      };
-    }
-
-    forEach(FormatTokensBase, function(f) {
-      var get = f.get, getPadded;
-      if (f.lowerToken) {
-        ldmlTokens[f.lowerToken] = buildLowercase(get);
-      }
-      if (f.ordinalToken) {
-        ldmlTokens[f.ordinalToken] = buildOrdinal(get, f);
-      }
-      if (f.ldmlPaddedToken) {
-        ldmlTokens[f.ldmlPaddedToken] = buildPadded(get, f.ldmlPaddedToken.length);
-      }
-      if (f.ldmlTwoDigitToken) {
-        ldmlTokens[f.ldmlTwoDigitToken] = buildPadded(buildTwoDigits(get), 2);
-      }
-      if (f.strfTwoDigitToken) {
-        strfTokens[f.strfTwoDigitToken] = buildPadded(buildTwoDigits(get), 2);
-      }
-      if (f.strfPadding) {
-        getPadded = buildPadded(get, f.strfPadding);
-      }
-      if (f.alias) {
-        get = buildAlias(f.alias);
-      }
-      if (f.allowAlternates) {
-        buildAlternates(f);
-      }
-      addFormats(ldmlTokens, f.ldml, get);
-      addFormats(strfTokens, f.strf, getPadded || get);
-    });
-
-    iterateOverObject(CONSTANT_FORMATS, function(name, src) {
-      addFormats(ldmlTokens, name, buildAlias(src));
-    });
-
-    defineInstanceSimilar(sugarDate, 'short,medium,long,full', function(methods, name) {
-      var fn = getIdentityFormat(name);
-      addFormats(ldmlTokens, name, fn);
-      methods[name] = fn;
-    });
-
-    addFormats(ldmlTokens, 'time', getIdentityFormat('time'));
-    addFormats(ldmlTokens, 'stamp', getIdentityFormat('stamp'));
   }
 
   function buildCJKDigits() {
@@ -4166,12 +4274,10 @@
     cjkDigitReg = RegExp('([期週周])?([' + digits + fullWidthNumbers + ']+)(?!昨)', 'g');
   }
 
-   /***
+  /***
    * @method is[Day]()
    * @returns Boolean
-   * @short Returns true if the date falls on that day.
-   * @extra Also available: `isYesterday`, `isToday`, `isTomorrow`, `isWeekday`,
-   *        and `isWeekend`.
+   * @short Returns true if the date falls on the specified day.
    *
    * @set
    *   isToday
@@ -4219,7 +4325,7 @@
     var special  = commaSplit('Today,Yesterday,Tomorrow,Weekday,Weekend,Future,Past');
     var weekdays = English.weekdays.slice(0, 7);
     var months   = English.months.slice(0, 12);
-    var together = special.concat(weekdays).concat(months)
+    var together = special.concat(weekdays).concat(months);
     defineInstanceSimilar(sugarDate, together, function(methods, name) {
       methods['is'+ name] = function(d) {
         return fullCompareDate(d, name);
@@ -4229,52 +4335,64 @@
 
   defineStatic(sugarDate, {
 
-     /***
+    /***
      * @method create(<d>, [options])
      * @returns Date
      * @static
-     * @short Alternate date constructor which accepts many different text formats, a timestamp, or another date.
-     * @extra If no argument is given, the date is assumed to be now.
+     * @short Alternate date constructor which accepts text formats, a timestamp,
+     *        objects, or another date.
+     * @extra If no argument is given, the date is assumed to be now. The second
+     *        argument can either be an options object or a locale code as a
+     *        shortcut. For more, see `date input formats`.
      *
      * @options
      *
      *   locale     A locale code to parse the date in. This can also be passed as
      *              the second argument to this method. Default is the current
-     *              locale, which is English if none is set.
-     *              (Default = 'en')
+     *              locale, which is `en` if none is set.
      *
      *   past       If `true`, ambiguous dates like `Sunday` will be parsed as
-     *              `last Sunday`. Note that this does not guarantee that non-
-     *              ambiguous dates will be in the past.
-     *              (Default = `false`)
+     *              `last Sunday`. Note that non-ambiguous dates are not
+     *              guaranteed to be in the past.
+     *              Default is `false`.
      *
      *   future     If `true`, ambiguous dates like `Sunday` will be parsed as
-     *              `next Sunday`. Note that this does not guarantee that non-
-     *              ambiguous dates will be in the future.
-     *              (Default = `false`)
+     *              `next Sunday`. Note that non-ambiguous dates are not
+     *              guaranteed to be in the future.
+     *              Default is `false`.
      *
-     *   fromUTC    If `true`, the date will be parsed as UTC time (no timezone
-     *              offset). This is useful for server timestamps, etc.
-     *              (Default = `false`)
+     *   fromUTC    If `true`, dates with no timezone notation will be parsed as
+     *              UTC (no timezone offset). This is useful for server
+     *              timestamps, etc. Note that this flag is not required if the
+     *              timezone is specified in the string, either as an explicit
+     *              value (ex. +0900 or -09:00) or "Z", which is UTC time.
      *
      *   setUTC     If `true` this will set the date's internal `utc` flag, which
      *              tells it to use UTC based methods like `setUTCHours` when
-     *              handling the date. Note that this is different from `fromUTC`
-     *              which parses a date string as being UTC time, but creates a
-     *              standard local Javascript date object. Also note that native
-     *              methods like `setHours` will still return a local non-UTC value.
-     *              (Default = `false`)
+     *              handling the date. This is different from `fromUTC` which
+     *              parses a date string as being UTC time, but creates a
+     *              standard local Javascript date object. Note that the `utc`
+     *              flag governs only which methods are called internally –
+     *              date native methods like `setHours` will still return local
+     *              non-UTC values.
+     *              Default is `false`.
+     *
+     *   set        An optional object that is populated with properties that are
+     *              parsed from string input. This option is useful when parsed
+     *              properties need to be retained.
      *
      * @example
      *
-     *   Date.create('July')          -> July of this year
-     *   Date.create('1776')          -> 1776
-     *   Date.create('today')         -> today
-     *   Date.create('wednesday')     -> This wednesday
-     *   Date.create('next friday')   -> Next friday
-     *   Date.create('July 4, 1776')  -> July 4, 1776
-     *   Date.create(-446806800000)   -> November 5, 1955
-     *   Date.create('1776年07月04日', 'ja') -> July 4, 1776
+     *   Date.create('July')                      -> July of this year
+     *   Date.create('1776')                      -> 1776
+     *   Date.create('today')                     -> today
+     *   Date.create('Wednesday')                 -> This wednesday
+     *   Date.create('next Friday')               -> Next friday
+     *   Date.create('July 4, 1776')              -> July 4, 1776
+     *   Date.create(-446806800000)               -> November 5, 1955
+     *   Date.create('1776年07月04日', 'ja')      -> July 4, 1776
+     *   Date.create('August', {past: true})      -> August of this or last year
+     *   Date.create('August', {future: true})    -> August of this or next year
      *   Date.create('Thursday', {fromUTC: true}) -> Thursday at 12:00am UTC time
      *
      ***/
@@ -4282,24 +4400,32 @@
       return createDate(d, options);
     },
 
-     /***
+    /***
      * @method getLocale([code] = current)
      * @returns Locale
      * @static
-     * @short Gets the locale for the given code, or the current locale.
-     * @extra The resulting locale object can be manipulated to provide more control
-     *        over date localizations. For more about locales, see `date locales`.
+     * @short Gets the locale object for the given code, or the current locale.
+     * @extra The locale object has various properties that dictate how dates are
+     *        parsed and formatted for that locale. The locale object is exposed
+     *        here mostly for introspection - it should be uncommon to need to
+     *        maniplate the object itself. For more, see `date locales`.
+     *
+     * @example
+     *
+     *   Date.getLocale()     -> Returns the current locale
+     *   Date.getLocale('en') -> Returns the EN locale
      *
      ***/
     'getLocale': function(code) {
       return localeManager.get(code, !code);
     },
 
-     /***
+    /***
      * @method getAllLocales()
      * @returns Object
      * @static
-     * @short Returns all available locales.
+     * @short Returns all available locales as an object.
+     * @extra For more, see `date locales`.
      * @example
      *
      *   Date.getAllLocales()
@@ -4309,11 +4435,12 @@
       return localeManager.getAll();
     },
 
-     /***
+    /***
      * @method getAllLocaleCodes()
      * @returns Array
      * @static
-     * @short Returns all available locale names as an array of strings.
+     * @short Returns all available locale codes as an array of strings.
+     * @extra For more, see `date locales`.
      * @example
      *
      *   Date.getAllLocaleCodes()
@@ -4323,39 +4450,47 @@
       return getKeys(localeManager.getAll());
     },
 
-     /***
+    /***
      * @method setLocale(<code>)
      * @returns Locale
      * @static
      * @short Sets the current locale to be used with dates.
      * @extra Sugar has native support for 17 major locales. In addition, you can
-     *        define a new locale with `Date.addLocale`. For more see `date locales`.
+     *        define a new locale with `addLocale`. For more, see `date locales`.
+     * @example
+     *
+     *   Date.setLocale('en')
      *
      ***/
     'setLocale': function(code) {
       return localeManager.set(code);
     },
 
-     /***
-     * @method addLocale(<code>, <set>)
+    /***
+     * @method addLocale(<code>, <def>)
      * @returns Locale
      * @static
-     * @short Adds a locale <set> to the locales understood by Sugar.
-     * @extra For more see `date locales`.
+     * @short Adds a locale definition to the locales understood by Sugar.
+     * @extra This method should only be required for adding locale definitions
+     *        that don't already exist. For more, see `date locales`.
      * @example
      *
-     *   Date.addLocale('foo', {})
+     *   Date.addLocale('eo', {})
      *
      ***/
     'addLocale': function(code, set) {
       return localeManager.add(code, set);
     },
 
-     /***
+    /***
      * @method removeLocale(<code>)
      * @returns Locale
      * @static
      * @short Deletes the the locale by <code> from Sugar's known locales.
+     * @extra For more, see `date locales`.
+     * @example
+     *
+     *   Date.removeLocale('foo')
      *
      ***/
     'removeLocale': function(code) {
@@ -4366,15 +4501,13 @@
 
   defineInstanceWithArguments(sugarDate, {
 
-     /***
+    /***
      * @method set(<set>, [reset] = false)
      * @returns Date
      * @short Sets the date object.
-     * @extra This method can accept multiple formats including a single number as
-     *        a timestamp, an object, or enumerated parameters (as with the Date
-     *        constructor). If [reset] is `true`, any units more specific than
-     *        those passed will be reset. If a month is set to a date that does
-     *        not exist, it will rewind to the last day of the month.
+     * @extra This method accepts multiple formats including a single number as
+     *        a timestamp, an object, or enumerated arguments. If [reset] is
+     *        `true`, any units more specific than those passed will be reset.
      *
      * @example
      *
@@ -4389,12 +4522,12 @@
       return updateDate(d, args[0], args[1]);
     },
 
-     /***
+    /***
      * @method advance(<set>, [reset] = false)
      * @returns Date
-     * @short Sets the date forward.
-     * @extra This method can accept multiple formats including an object, a string
-     *        in the format `3 days`, a single number as milliseconds, or enumerated
+     * @short Shifts the date forward.
+     * @extra <set> accepts multiple formats including an object, a string in the
+     *        format "3 days", a single number as milliseconds, or enumerated
      *        parameters (as with the Date constructor). If [reset] is `true`, any
      *        units more specific than those passed will be reset. This method
      *        modifies the date!
@@ -4402,7 +4535,7 @@
      * @example
      *
      *   new Date().advance({ year: 2 }) -> 2 years in the future
-     *   new Date().advance('2 days')    -> 2 days in the future
+     *   new Date().advance('2 hours')   -> 2 hours in the future
      *   new Date().advance(0, 2, 3)     -> 2 months 3 days in the future
      *   new Date().advance(86400000)    -> 1 day in the future
      *
@@ -4411,18 +4544,20 @@
       return advanceDateWithArgs(d, args, 1);
     },
 
-     /***
+    /***
      * @method rewind(<set>, [reset] = false)
      * @returns Date
-     * @short Sets the date back.
-     * @extra This method can accept multiple formats including a single number as
-     *        a timestamp, an object, or enumerated parameters (as with the Date
-     *        constructor). If [reset] is `true`, any units more specific than
-     *        those passed will be reset. This method modifies the date!
+     * @short Shifts the date backward.
+     * @extra [set] accepts multiple formats including an object, a string in the
+     *        format "3 days", a single number as milliseconds, or enumerated
+     *        parameters (as with the Date constructor). If [reset] is `true`, any
+     *        units more specific than those passed will be reset. This method
+     *        modifies the date!
      *
      * @example
      *
      *   new Date().rewind({ year: 2 }) -> 2 years in the past
+     *   new Date().rewind('2 weeks')   -> 2 weeks in the past
      *   new Date().rewind(0, 2, 3)     -> 2 months 3 days in the past
      *   new Date().rewind(86400000)    -> 1 day in the past
      *
@@ -4435,13 +4570,13 @@
 
   defineInstance(sugarDate, {
 
-     /***
+    /***
      * @method get(<d>, [options])
      * @returns Date
      * @short Gets a new date using the current one as a starting point.
      * @extra This method is identical to `Date.create`, except that relative
      *        formats like `next month` are relative to the date instance rather
-     *        than the current date. See `Date.create` for options.
+     *        than the current date. See `create` for options.
      *
      * @example
      *
@@ -4453,16 +4588,10 @@
       return createDateWithContext(date, d, options);
     },
 
-     /***
+    /***
      * @method setWeekday(<dow>)
-     * @returns Nothing
-     * @short Sets the weekday of the date.
-     * @extra In order to maintain a parallel with `getWeekday` (which itself is
-     *        an alias for Javascript native `getDay`), Sunday is considered day
-     *        `0`. This contrasts with ISO8601 standard (used in `getISOWeek` and
-     *        `setISOWeek`) which places Sunday at the end of the week (day 7).
-     *        This means that passing `0` to this method while in the middle of a
-     *        week will rewind the date, where passing `7` will advance it.
+     * @returns undefined
+     * @short Sets the weekday of the date, starting with Sunday at `0`.
      *
      * @example
      *
@@ -4474,9 +4603,9 @@
       return setWeekday(d, dow);
     },
 
-     /***
+    /***
      * @method setISOWeek(<num>)
-     * @returns Nothing
+     * @returns undefined
      * @short Sets the week (of the year) as defined by the ISO8601 standard.
      * @extra Note that this standard places Sunday at the end of the week (day 7).
      *
@@ -4489,7 +4618,7 @@
       return setISOWeekNumber(d, num);
     },
 
-     /***
+    /***
      * @method getISOWeek()
      * @returns Number
      * @short Gets the date's week (of the year) as defined by the ISO8601 standard.
@@ -4498,14 +4627,14 @@
      *
      * @example
      *
-     *   now.getISOWeek() -> today's week of the year
+     *   new Date().getISOWeek() -> today's week of the year
      *
      ***/
     'getISOWeek': function(d) {
       return getWeekNumber(d, true);
     },
 
-     /***
+    /***
      * @method beginningOfISOWeek()
      * @returns Date
      * @short Set the date to the beginning of week as defined by ISO8601.
@@ -4513,7 +4642,7 @@
      *
      * @example
      *
-     *   now.beginningOfISOWeek() -> Monday
+     *   new Date().beginningOfISOWeek() -> Monday
      *
      ***/
     'beginningOfISOWeek': function(d) {
@@ -4527,7 +4656,7 @@
       return resetTime(d);
     },
 
-     /***
+    /***
      * @method endOfISOWeek()
      * @returns Date
      * @short Set the date to the end of week as defined by this ISO8601 standard.
@@ -4535,7 +4664,7 @@
      *
      * @example
      *
-     *   now.endOfISOWeek() -> Sunday
+     *   new Date().endOfISOWeek() -> Sunday
      *
      ***/
     'endOfISOWeek': function(d) {
@@ -4545,7 +4674,7 @@
       return moveToEndOfUnit(d, 'day');
     },
 
-     /***
+    /***
      * @method getUTCOffset([iso])
      * @returns String
      * @short Returns a string representation of the offset from UTC time. If [iso]
@@ -4553,33 +4682,34 @@
      *
      * @example
      *
-     *   now.getUTCOffset()     -> "+0900"
-     *   now.getUTCOffset(true) -> "+09:00"
+     *   new Date().getUTCOffset()     -> "+0900"
+     *   new Date().getUTCOffset(true) -> "+09:00"
      *
      ***/
     'getUTCOffset': function(d, iso) {
       return getUTCOffset(d, iso);
     },
 
-     /***
+    /***
      * @method setUTC([on] = false)
      * @returns Date
-     * @short Sets the internal utc flag for the date. When on, UTC based methods
+     * @short Sets the internal `utc` flag for the date. When on, UTC based methods
      *        like `setUTCHours` will be called internally.
-     * @extra Note that native methods like `getHours` will still retur a local
-     *        non-UTC value.
+     * @extra Note that the `utc` flag governs only which methods are called
+     *        internally – date native methods like `setHours` will still return
+     *        local non-UTC values.
      *
      * @example
      *
-     *   new Date().setUTC(true)
-     *   new Date().setUTC(false)
+     *   new Date().setUTC(true).long()  -> formatted with UTC methods
+     *   new Date().setUTC(false).long() -> formatted without UTC methods
      *
      ***/
     'setUTC': function(d, on) {
       return _utc(d, on);
     },
 
-     /***
+    /***
      * @method isUTC()
      * @returns Boolean
      * @short Returns true if the date has no timezone offset.
@@ -4598,7 +4728,7 @@
       return isUTC(d);
     },
 
-     /***
+    /***
      * @method isValid()
      * @returns Boolean
      * @short Returns true if the date is valid.
@@ -4613,13 +4743,13 @@
       return isValid(d);
     },
 
-     /***
+    /***
      * @method isAfter(<d>, [margin] = 0)
      * @returns Boolean
-     * @short Returns true if the date is after the <d>.
-     * @extra [margin] is to allow extra margin of error (in ms). <d> will accept
+     * @short Returns true if the date is after <d>.
+     * @extra [margin] is to allow extra margin of error in ms. <d> will accept
      *        a date object, timestamp, or string. If not specified, <d> is
-     *        assumed to be now. See `Date.create` for formats.
+     *        assumed to be now. See `create` for formats.
      *
      * @example
      *
@@ -4631,13 +4761,13 @@
       return date.getTime() > createDate(d).getTime() - (margin || 0);
     },
 
-     /***
+    /***
      * @method isBefore(<d>, [margin] = 0)
      * @returns Boolean
      * @short Returns true if the date is before <d>.
-     * @extra [margin] is to allow extra margin of error (in ms). <d> will accept
+     * @extra [margin] is to allow extra margin of error in ms. <d> will accept
      *        a date object, timestamp, or text format. If not specified, <d> is
-     *        assumed to be now. See `Date.create` for formats.
+     *        assumed to be now. See `create` for formats.
      *
      * @example
      *
@@ -4649,18 +4779,19 @@
       return date.getTime() < createDate(d).getTime() + (margin || 0);
     },
 
-     /***
+    /***
      * @method isBetween(<d1>, <d2>, [margin] = 0)
      * @returns Boolean
-     * @short Returns true if the date is later or equal to <d1> and before or equal to <d2>.
-     * @extra [margin] is to allow extra margin of error (in ms). <d1> and <d2> will
+     * @short Returns true if the date is later or equal to <d1> and before or
+     *        equal to <d2>.
+     * @extra [margin] is to allow extra margin of error in ms. <d1> and <d2> will
      *        accept a date object, timestamp, or text format. If not specified,
-     *        they are assumed to be now.  See `Date.create` for formats.
+     *        they are assumed to be now.  See `create` for formats.
      *
      * @example
      *
-     *   now.isBetween('yesterday', 'tomorrow')    -> true
-     *   now.isBetween('last year', '2 years ago') -> false
+     *   new Date().isBetween('yesterday', 'tomorrow')    -> true
+     *   new Date().isBetween('last year', '2 years ago') -> false
      *
      ***/
     'isBetween': function(date, d1, d2, margin) {
@@ -4673,7 +4804,7 @@
       return (lo - margin <= t) && (hi + margin >= t);
     },
 
-     /***
+    /***
      * @method isLeapYear()
      * @returns Boolean
      * @short Returns true if the date is a leap year.
@@ -4688,7 +4819,7 @@
       return (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
     },
 
-     /***
+    /***
      * @method daysInMonth()
      * @returns Number
      * @short Returns the number of days in the date's month.
@@ -4703,25 +4834,25 @@
       return daysInMonth(d);
     },
 
-     /***
-     * @method format(<f>, [locale] = currentLocale)
+    /***
+     * @method format([f], [locale] = currentLocale)
      * @returns String
-     * @short Returns the date as a string following the format <f>.
-     * @extra <f> is a string that contains formatting tokens demarcated by either
-     *        curly braces `{}` or a percent sign `%`. <f> may also have locale-
-     *        specific aliases `short`, `medium`, `long`, and `full`, are also
-     *        aliased as methods. If <f> is not specified, the `long` format is
-     *        assumed. [locale] specifies a locale code to use (if not specified
-     *        the current locale is used). See `date formatting` for more details.
+     * @short Returns the date as a string using the format <f>.
+     * @extra <f> is a string that contains tokens in either LDML format using
+     *        curly braces, or "strftime" format using a percent sign. If <f> is
+     *        not specified, the locale specific `{long}` format is used. [locale]
+     *        is a locale code to use (if not specified the current locale is
+     *        used). For more, see `date output formats`.
      *
      * @example
      *
-     *   now.format()                        -> ex. February 13, 2012 11:21 AM
-     *   now.format('{Weekday} {d} {Month}') -> ex. Monday July 4
-     *   now.format('{hh}:{mm}')             -> ex. 15:57
-     *   now.format('{12hr}:{mm}{tt}')       -> ex. 3:57pm
-     *   now.format('ISO8601')               -> ex. 2011-07-05 12:24:55.528Z
-     *   lastWeek.format('short', 'ja')      -> ex. 先週
+     *   new Date().format()                        -> ex. February 13, 2012 11:21 AM
+     *   new Date().format('{Weekday} {d} {Month}') -> ex. Monday July 4
+     *   new Date().format('{hh}:{mm}')             -> ex. 15:57
+     *   new Date().format('%H:%M')                 -> ex. 15:57
+     *   new Date().format('{12hr}:{mm}{tt}')       -> ex. 3:57pm
+     *   new Date().format('ISO8601')               -> ex. 2011-07-05 12:24:55.528Z
+     *   new Date().format('{Weekday}', 'ja')       -> ex. 先週
      *
      ***
      * @method short([locale] = currentLocale)
@@ -4731,8 +4862,8 @@
      *
      * @example
      *
-     *   now.short()     -> ex. 02/13/2016
-     *   now.short('fi') -> ex. 13.2.2016
+     *   new Date().short()     -> ex. 02/13/2016
+     *   new Date().short('fi') -> ex. 13.2.2016
      *
      ***
      * @method medium([locale] = currentLocale)
@@ -4742,8 +4873,8 @@
      *
      * @example
      *
-     *   now.medium()     -> ex. February 13, 2016
-     *   now.medium('ja') -> ex. 2016年2月13日
+     *   new Date().medium()     -> ex. February 13, 2016
+     *   new Date().medium('ja') -> ex. 2016年2月13日
      *
      ***
      * @method long([locale] = currentLocale)
@@ -4753,8 +4884,8 @@
      *
      * @example
      *
-     *   now.long()     -> ex. February 13, 2016 6:22 PM
-     *   now.long('es') -> ex. 13 de febrero de 2016 18:22
+     *   new Date().long()     -> ex. February 13, 2016 6:22 PM
+     *   new Date().long('es') -> ex. 13 de febrero de 2016 18:22
      *
      ***
      * @method full([locale] = currentLocale)
@@ -4764,28 +4895,30 @@
      *
      * @example
      *
-     *   now.full()     -> ex. Saturday, February 13, 2016 6:23 PM
-     *   now.full('ru') -> ex. суббота, 13 февраля 2016 г., 18:23
+     *   new Date().full()     -> ex. Saturday, February 13, 2016 6:23 PM
+     *   new Date().full('ru') -> ex. суббота, 13 февраля 2016 г., 18:23
      *
      ***/
     'format': function(d, f, localeCode) {
-      return formatDate(d, f, false, localeCode);
+      return dateFormat(d, f, localeCode);
     },
 
-     /***
+    /***
      * @method relative([fn], [locale] = currentLocale)
      * @returns String
      * @short Returns the date in a text format relative to the current time,
-     *        such as `5 minutes ago`.
+     *        such as "5 minutes ago".
      * @extra [fn] is a function that can be passed to provide more granular control
      *        over the resulting string. Its return value will be passed to `format`.
      *        If nothing is returned, the relative format will be used. [locale] may
-     *        also be passed in place of [fn]. For more, see `date formatting`.
+     *        also be passed in place of [fn]. For more about formats, see
+     *        `date output formats`.
      *
      * @callback fn
      *
-     *   val   The offset value in `unit`.
-     *   unit  The numeric unit that `val` is in, starting at 0 for ms.
+     *   num   The offset number in `unit`.
+     *   unit  A numeric representation of the unit that `num` is in, starting at
+     *         0 for ms.
      *   ms    The absolute offset in milliseconds.
      *   loc   The locale object, either specified by [locale] or default.
      *
@@ -4794,8 +4927,11 @@
      *   hourAgo.relative() -> 1 hour ago
      *   jan.relative()     -> ex. 5 months ago
      *   jan.relative('ja') -> 3ヶ月前
-     *   now.relative(function(val, unit, ms, loc) {
-     *     // value = 2, unit = 3, ms = -7200, loc = [current locale object]
+     *   jan.relative(function(num, unit, ms, loc) {
+     *     // Return an absolute date for anything over 6 months.
+     *     if(unit == 6 && num > 6 || unit > 6) {
+     *       return '{Month} {d}, {yyyy}';
+     *     }
      *   }); -> ex. 5 months ago
      *
      ***/
@@ -4804,40 +4940,39 @@
         localeCode = fn;
         fn = null;
       }
-      return formatDate(d, fn, true, localeCode);
+      return dateRelative(d, fn, localeCode);
     },
 
-     /***
+    /***
      * @method is(<f>, [margin] = 0)
      * @returns Boolean
-     * @short Returns true if the date is <f>.
-     * @extra <f> will accept a date object, timestamp, or text format. `is`
-     *        additionally understands more generalized expressions like month/weekday
-     *        names, 'today', etc, and compares to the precision implied in <f>.
-     *        [margin] allows an extra margin of error in milliseconds. See
-     *        `Date.create` for formats.
+     * @short Returns true if the date matches <f>.
+     * @extra <f> will accept a date object, timestamp, or text format. In the
+     *        case of objects and text formats, `is` will additionally compare
+     *        based on the precision implied in the input. [margin] allows an
+     *        extra margin of error in milliseconds. See `create` for formats.
      *
      * @example
      *
-     *   now.is('July')               -> true or false?
-     *   now.is('1776')               -> false
-     *   now.is('today')              -> true
-     *   now.is('weekday')            -> true or false?
-     *   now.is('July 4, 1776')       -> false
-     *   now.is(-6106093200000)       -> false
-     *   now.is(new Date(1776, 6, 4)) -> false
+     *   new Date().is('July')               -> true or false?
+     *   new Date().is('1776')               -> false
+     *   new Date().is('today')              -> true
+     *   new Date().is('weekday')            -> true or false?
+     *   new Date().is('July 4, 1776')       -> false
+     *   new Date().is(-6106093200000)       -> false
+     *   new Date().is(new Date(1776, 6, 4)) -> false
      *
      ***/
     'is': function(date, d, margin) {
       return fullCompareDate(date, d, margin);
     },
 
-     /***
+    /***
      * @method reset([unit] = 'hours')
      * @returns Date
      * @short Resets the unit passed and all smaller units. Default is "hours",
      *        effectively resetting the time.
-     * @extra This method modifies the array!
+     * @extra This method modifies the date!
      *
      * @example
      *
@@ -4849,21 +4984,21 @@
       return resetUnitAndLower(d, unit);
     },
 
-     /***
+    /***
      * @method clone()
      * @returns Date
      * @short Clones the date.
      *
      * @example
      *
-     *   now.clone() -> Copy of now
+     *   new Date().clone() -> Copy of now
      *
      ***/
     'clone': function(d) {
       return cloneDate(d);
     },
 
-     /***
+    /***
      * @method iso()
      * @alias toISOString
      *
@@ -4872,23 +5007,30 @@
       return d.toISOString();
     },
 
-     /***
+    /***
      * @method getWeekday()
      * @returns Number
      * @short Alias for `getDay`.
-     * @set
-     *   getUTCWeekday
      *
      * @example
      *
-     *   now.getWeekday();    -> (ex.) 3
-     *   now.getUTCWeekday(); -> (ex.) 3
+     *   new Date().getWeekday();    -> (ex.) 3
      *
      ***/
     'getWeekday': function(d) {
       return getWeekday(d);
     },
 
+    /***
+     * @method getUTCWeekday()
+     * @returns Number
+     * @short Alias for `getUTCDay`.
+     *
+     * @example
+     *
+     *   new Date().getUTCWeekday(); -> (ex.) 3
+     *
+     ***/
     'getUTCWeekday': function(d) {
       return d.getUTCDay();
     }
@@ -4896,10 +5038,7 @@
   });
 
 
-  /***
-   * @namespace Number
-   *
-   ***/
+  /*** @namespace Number ***/
 
   /***
    * @method [unit]()
@@ -4940,10 +5079,10 @@
    * @short Returns a date that is <n> units before [d], where <n> is the number.
    * @extra [d] will accept a date object, timestamp, or text format. Note that
    *        "months" is ambiguous as a unit of time. If the target date falls on a
-   *        day that does not exist (ie. August 31 -> February 31), the date will
+   *        day that does not exist (i.e. August 31 -> February 31), the date will
    *        be shifted to the last day of the month. Be careful using `monthsBefore`
-   *        if you need exact precision. See `Date.create` for options.
-
+   *        if you need exact precision. See `create` for options.
+   *
    *
    * @set
    *   millisecondBefore
@@ -4973,7 +5112,7 @@
    * @returns Date
    * @short Returns a date that is <n> units ago.
    * @extra Note that "months" is ambiguous as a unit of time. If the target date
-   *        falls on a day that does not exist (ie. August 31 -> February 31), the
+   *        falls on a day that does not exist (i.e. August 31 -> February 31), the
    *        date will be shifted to the last day of the month. Be careful using
    *        `monthsAgo` if you need exact precision.
    *
@@ -5006,9 +5145,9 @@
    * @short Returns a date <n> units after [d], where <n> is the number.
    * @extra [d] will accept a date object, timestamp, or text format. Note that
    *        "months" is ambiguous as a unit of time. If the target date falls on a
-   *        day that does not exist (ie. August 31 -> February 31), the date will
+   *        day that does not exist (i.e. August 31 -> February 31), the date will
    *        be shifted to the last day of the month. Be careful using `monthsAfter`
-   *        if you need exact precision. See `Date.create` for options.
+   *        if you need exact precision. See `create` for options.
    *
    * @set
    *   millisecondAfter
@@ -5038,7 +5177,7 @@
    * @returns Date
    * @short Returns a date <n> units from now.
    * @extra Note that "months" is ambiguous as a unit of time. If the target date
-   *        falls on a day that does not exist (ie. August 31 -> February 31), the
+   *        falls on a day that does not exist (i.e. August 31 -> February 31), the
    *        date will be shifted to the last day of the month. Be careful using
    *        `monthsFromNow` if you need exact precision.
    *
@@ -5066,33 +5205,34 @@
    *   (1).yearFromNow()  -> January 23, 1998
    *
    ***/
-  function buildNumberMethods(u, multiplier) {
-    var base, after, before, name = u.name, methods = {};
-    base = function(n) {
-      return round(n * multiplier);
-    };
-    after = function(n, d, options) {
-      return advanceDate(createDate(d, options), u.name, n);
-    };
-    before = function(n, d, options) {
-      return advanceDate(createDate(d, options), u.name, -n);
-    };
-    methods[name] = base;
-    methods[name + 's'] = base;
-    methods[name + 'Before'] = before;
-    methods[name + 'sBefore'] = before;
-    methods[name + 'Ago'] = before;
-    methods[name + 'sAgo'] = before;
-    methods[name + 'After'] = after;
-    methods[name + 'sAfter'] = after;
-    methods[name + 'FromNow'] = after;
-    methods[name + 'sFromNow'] = after;
-    defineInstance(sugarNumber, methods);
+  function buildNumberUnitMethods() {
+    defineInstanceSimilar(sugarNumber, DateUnits, function(methods, u) {
+      var base, after, before;
+      base = function(n) {
+        return round(n * u.multiplier);
+      };
+      after = function(n, d, options) {
+        return advanceDate(createDate(d, options), u.name, n);
+      };
+      before = function(n, d, options) {
+        return advanceDate(createDate(d, options), u.name, -n);
+      };
+      methods[u.name] = base;
+      methods[u.name + 's'] = base;
+      methods[u.name + 'Before'] = before;
+      methods[u.name + 'sBefore'] = before;
+      methods[u.name + 'Ago'] = before;
+      methods[u.name + 'sAgo'] = before;
+      methods[u.name + 'After'] = after;
+      methods[u.name + 'sAfter'] = after;
+      methods[u.name + 'FromNow'] = after;
+      methods[u.name + 'sFromNow'] = after;
+    });
   }
 
   defineInstance(sugarNumber, {
 
-     /***
+    /***
      * @method duration([locale] = currentLocale)
      * @returns String
      * @short Takes the number as milliseconds and returns a localized string.
@@ -5118,482 +5258,507 @@
 
   // Locales
 
+
+  // Locale helpers
+  var English, localeManager;
+
   function getEnglishVariant(v) {
     return simpleMerge(simpleClone(EnglishLocaleBaseDefinition), v);
   }
 
-
-  function LocaleManager(loc) {
-    this.locales = {};
-    this.add(loc);
+  function arrayToRegAlternates(arr) {
+    // map handles sparse arrays so no need to compact the array here.
+    return map(arr, escapeRegExp).join('|');
   }
 
-  LocaleManager.prototype = {
+  function buildLocales() {
 
-    get: function(code, fallback) {
-      var loc = this.locales[code];
-      if (!loc && LazyLoadedLocales[code]) {
-        loc = this.add(code, LazyLoadedLocales[code]);
-      } else if (!loc && code) {
-        loc = this.locales[code.slice(0, 2)];
-      }
-      return loc || fallback === false ? loc : this.current;
-    },
-
-    getAll: function() {
-      return this.locales;
-    },
-
-    set: function(code) {
-      var loc = this.get(code, false);
-      if (!loc) {
-        throw new TypeError('Invalid Locale: ' + code);
-      }
-      return this.current = loc;
-    },
-
-    add: function(code, def) {
-      if (!def) {
-        def = code;
-        code = def.code;
-      } else {
-        def.code = code;
-      }
-      var loc = def.compiledFormats ? def : new Locale(def);
-      this.locales[code] = loc;
-      if (!this.current) {
-        this.current = loc;
-      }
-      return loc;
-    },
-
-    remove: function(code) {
-      if (this.current.code === code) {
-        this.current = this.get('en');
-      }
-      return delete this.locales[code];
+    function LocaleManager(loc) {
+      this.locales = {};
+      this.add(loc);
     }
 
-  };
+    LocaleManager.prototype = {
 
-  function Locale(def) {
-    this.init(def);
+      get: function(code, fallback) {
+        var loc = this.locales[code];
+        if (!loc && LazyLoadedLocales[code]) {
+          loc = this.add(code, LazyLoadedLocales[code]);
+        } else if (!loc && code) {
+          loc = this.locales[code.slice(0, 2)];
+        }
+        return loc || fallback === false ? loc : this.current;
+      },
+
+      getAll: function() {
+        return this.locales;
+      },
+
+      set: function(code) {
+        var loc = this.get(code, false);
+        if (!loc) {
+          throw new TypeError('Invalid Locale: ' + code);
+        }
+        return this.current = loc;
+      },
+
+      add: function(code, def) {
+        if (!def) {
+          def = code;
+          code = def.code;
+        } else {
+          def.code = code;
+        }
+        var loc = def.compiledFormats ? def : getNewLocale(def);
+        this.locales[code] = loc;
+        if (!this.current) {
+          this.current = loc;
+        }
+        return loc;
+      },
+
+      remove: function(code) {
+        if (this.current.code === code) {
+          this.current = this.get('en');
+        }
+        return delete this.locales[code];
+      }
+
+    };
+
+    // Sorry about this guys...
+    English = getNewLocale(AmericanEnglishDefinition);
+    localeManager = new LocaleManager(English);
   }
 
-  Locale.prototype = {
+  function getNewLocale(def) {
 
-    get: function(prop) {
-      return this[prop] || '';
-    },
+    function Locale(def) {
+      this.init(def);
+    }
 
-    fetch: function(prop, args) {
-      return isFunction(prop) ? prop.apply(this, args || []) : prop;
-    },
+    Locale.prototype = {
 
-    getMonthValue: function(n) {
-      if (isNumber(n)) {
-        return n - 1;
-      } else if (n) {
-        return indexOf(this.monthsLower, n) % 12;
-      }
-      return -1;
-    },
+      get: function(prop) {
+        return this[prop] || '';
+      },
 
-    getWeekdayValue: function(n) {
-      if (n) {
-        return indexOf(this.weekdaysLower, n) % 7;
-      }
-      return -1;
-    },
+      fetch: function(prop, args) {
+        return isFunction(prop) ? prop.apply(this, args || []) : prop;
+      },
 
-    getMonthName: function(n, mult) {
-      if (mult) {
-        n += (mult - 1) * 12;
-      }
-      return this.months[n];
-    },
-
-    getAbbreviatedMonthName: function(n) {
-      return this.getAbbreviatedName(this.months, n, 12);
-    },
-
-    getWeekdayName: function(n) {
-      return this.weekdays[n];
-    },
-
-    getAbbreviatedWeekdayName: function(n) {
-      return this.getAbbreviatedName(this.weekdays, n, 7);
-    },
-
-    getAbbreviatedName: function(arr, n, offset) {
-      return arr[n + offset] || arr[n];
-    },
-
-    getNumber: function(n, digit) {
-      var mapped = this.ordinalNumberMap[n];
-      if (isNumber(mapped)) {
-        if (digit) {
-          mapped = mapped % 10;
+      getMonthValue: function(n) {
+        if (isNumber(n)) {
+          return n - 1;
+        } else if (n) {
+          return indexOf(this.monthsLower, n) % 12;
         }
-        return mapped;
-      }
-      return isNumber(n) ? n : 1;
-    },
+        return -1;
+      },
 
-    getOrdinal: function(n) {
-      var suffix = this.fetch(this.ordinalSuffix, [n]);
-      return suffix || getOrdinalSuffix(n);
-    },
-
-    getNumericDate: function(n) {
-      var self = this;
-      return n.replace(RegExp(this.num, 'g'), function(d) {
-        var num = self.getNumber(d, true);
-        return num || '';
-      });
-    },
-
-    getUnitIndex: function(n) {
-      return indexOf(this.unitsLower, n) % 8;
-    },
-
-    getRelativeFormat: function(adu) {
-      return this.convertAdjustedToFormat(adu, adu[2] > 0 ? 'future' : 'past');
-    },
-
-    getDuration: function(ms) {
-      return this.convertAdjustedToFormat(getAdjustedUnitForNumber(max(0, ms)), 'duration');
-    },
-
-    getFirstDayOfWeek: function() {
-      var val = this.firstDayOfWeek;
-      return isDefined(val) ? val : ISO_FIRST_DAY_OF_WEEK;
-    },
-
-    getFirstDayOfWeekYear: function() {
-      return this.firstDayOfWeekYear || ISO_FIRST_DAY_OF_WEEK_YEAR;
-    },
-
-    isMDY: function() {
-      // mm/dd/yyyy format.
-      return !!this.mdy;
-    },
-
-    matchAM: function(str) {
-      return this.matchMeridian(str, 0);
-    },
-
-    matchPM: function(str) {
-      return this.matchMeridian(str, 1);
-    },
-
-    matchMeridian: function(str, index) {
-      return some(this.get('ampmLower'), function(token, i) {
-        return token === str && (i % 2) === index;
-      });
-    },
-
-    convertAdjustedToFormat: function(adu, mode) {
-      var sign, unit, mult,
-          num    = adu[0],
-          u      = adu[1],
-          ms     = adu[2],
-          format = this[mode] || this.relative;
-      if (isFunction(format)) {
-        return format.call(this, num, u, ms, mode);
-      }
-      mult = !this.plural || num === 1 ? 0 : 1;
-      unit = this.units[mult * 8 + u] || this.units[u];
-      sign = filter(this.modifiers, function(m) {
-        return m.name == 'sign' && m.value == (ms > 0 ? 1 : -1);
-      })[0];
-      return format.replace(/\{(.*?)\}/g, function(full, match) {
-        switch(match) {
-          case 'num': return num;
-          case 'unit': return unit;
-          case 'sign': return sign.src;
+      getWeekdayValue: function(n) {
+        if (n) {
+          return indexOf(this.weekdaysLower, n) % 7;
         }
-      });
-    },
+        return -1;
+      },
 
-    getFormats: function() {
-      return this.cachedFormats || this.compiledFormats;
-    },
+      getMonthName: function(n, mult) {
+        if (mult) {
+          n += (mult - 1) * 12;
+        }
+        return this.months[n];
+      },
 
-    setCachedFormat: function(dif) {
-      var arr = filter(this.compiledFormats, function(f) {
-        return f !== dif;
-      });
-      arr.unshift(dif);
-      this.cachedFormats = arr;
-    },
+      getAbbreviatedMonthName: function(n) {
+        return this.getAbbreviatedName(this.months, n, 12);
+      },
 
-    addFormat: function(src, allowsTime, match, variant, iso) {
-      var to = match || [], loc = this, time;
+      getWeekdayName: function(n) {
+        return this.weekdays[n];
+      },
 
-      function getTimeFirst(src, time) {
-        return '(?:' + time + ')[,\\s\\u3000]+?' + src;
-      }
+      getAbbreviatedWeekdayName: function(n) {
+        return this.getAbbreviatedName(this.weekdays, n, 7);
+      },
 
-      function getTimeLast(src, time) {
-        var req = /\\d\{\d,\d\}\)+\??$/.test(src) ? '+' : '*';
-        var timeMarkers = ['T','[\\s\\u3000]'].concat(loc.get('timeMarker'));
-        return src + '(?:[,\\s]*(?:' + timeMarkers.join('|') + req + ')' + time + ')?';
-      }
+      getAbbreviatedName: function(arr, n, offset) {
+        return arr[n + offset] || arr[n];
+      },
 
-      src = src.replace(/\s+/g, '[,. ]*');
-      src = src.replace(/\{([^,]+?)\}/g, function(all, k) {
-        var value, result,
-            opt   = k.match(/\?$/),
-            nc    = k.match(/^(\d+)\??$/),
-            slice = k.match(/(\d)(?:-(\d))?/),
-            key   = k.replace(/[^a-z]+$/, '');
-        if (nc) {
-          value = loc.get('tokens')[nc[1]];
-        } else if (loc[key]) {
-          value = loc[key];
-        } else if (loc[key + 's']) {
-          value = loc[key + 's'];
-          if (slice) {
-            value = filter(value, function(m, i) {
-              var mod = i % (loc.units ? 8 : value.length);
-              return mod >= slice[1] && mod <= (slice[2] || slice[1]);
+      getNumber: function(n, digit) {
+        var mapped = this.ordinalNumberMap[n];
+        if (isNumber(mapped)) {
+          if (digit) {
+            mapped = mapped % 10;
+          }
+          return mapped;
+        }
+        return isNumber(n) ? n : 1;
+      },
+
+      getOrdinal: function(n) {
+        var suffix = this.fetch(this.ordinalSuffix, [n]);
+        return suffix || getOrdinalSuffix(n);
+      },
+
+      getNumericDate: function(n) {
+        var self = this;
+        return n.replace(RegExp(this.num, 'g'), function(d) {
+          var num = self.getNumber(d, true);
+          return num || '';
+        });
+      },
+
+      getUnitIndex: function(n) {
+        return indexOf(this.unitsLower, n) % 8;
+      },
+
+      getRelativeFormat: function(adu) {
+        return this.convertAdjustedToFormat(adu, adu[2] > 0 ? 'future' : 'past');
+      },
+
+      getDuration: function(ms) {
+        return this.convertAdjustedToFormat(getAdjustedUnitForNumber(max(0, ms)), 'duration');
+      },
+
+      getFirstDayOfWeek: function() {
+        var val = this.firstDayOfWeek;
+        return isDefined(val) ? val : ISO_FIRST_DAY_OF_WEEK;
+      },
+
+      getFirstDayOfWeekYear: function() {
+        return this.firstDayOfWeekYear || ISO_FIRST_DAY_OF_WEEK_YEAR;
+      },
+
+      isMDY: function() {
+        // mm/dd/yyyy format.
+        return !!this.mdy;
+      },
+
+      matchAM: function(str) {
+        return this.matchMeridian(str, 0);
+      },
+
+      matchPM: function(str) {
+        return this.matchMeridian(str, 1);
+      },
+
+      matchMeridian: function(str, index) {
+        return some(this.get('ampmLower'), function(token, i) {
+          return token === str && (i % 2) === index;
+        });
+      },
+
+      convertAdjustedToFormat: function(adu, mode) {
+        var sign, unit, mult,
+            num    = adu[0],
+            u      = adu[1],
+            ms     = adu[2],
+            format = this[mode] || this.relative;
+        if (isFunction(format)) {
+          return format.call(this, num, u, ms, mode);
+        }
+        mult = !this.plural || num === 1 ? 0 : 1;
+        unit = this.units[mult * 8 + u] || this.units[u];
+        sign = filter(this.modifiers, function(m) {
+          return m.name == 'sign' && m.value == (ms > 0 ? 1 : -1);
+        })[0];
+        return format.replace(/\{(.*?)\}/g, function(full, match) {
+          switch(match) {
+            case 'num': return num;
+            case 'unit': return unit;
+            case 'sign': return sign.src;
+          }
+        });
+      },
+
+      getFormats: function() {
+        return this.cachedFormats || this.compiledFormats;
+      },
+
+      setCachedFormat: function(dif) {
+        var arr = filter(this.compiledFormats, function(f) {
+          return f !== dif;
+        });
+        arr.unshift(dif);
+        this.cachedFormats = arr;
+      },
+
+      addFormat: function(src, allowsTime, match, variant, iso) {
+        var to = match || [], loc = this, time;
+
+        function getTimeFirst(src, time) {
+          return '(?:' + time + ')[,\\s\\u3000]+?' + src;
+        }
+
+        function getTimeLast(src, time) {
+          var req = /\\d\{\d,\d\}\)+\??$/.test(src) ? '+' : '*';
+          var timeMarkers = ['T','[\\s\\u3000]'].concat(loc.get('timeMarker'));
+          return src + '(?:[,\\s]*(?:' + timeMarkers.join('|') + ')' + req + time + ')?';
+        }
+
+        src = src.replace(/\s+/g, '[,. ]*');
+        src = src.replace(/\{([^,]+?)\}/g, function(all, k) {
+          var value, result,
+              opt   = k.match(/\?$/),
+              nc    = k.match(/^(\d+)\??$/),
+              slice = k.match(/(\d)(?:-(\d))?/),
+              key   = k.replace(/[^a-z]+$/, '');
+          if (nc) {
+            value = loc.get('tokens')[nc[1]];
+          } else if (loc[key]) {
+            value = loc[key];
+          } else if (loc[key + 's']) {
+            value = loc[key + 's'];
+            if (slice) {
+              value = filter(value, function(m, i) {
+                var mod = i % (loc.units ? 8 : value.length);
+                return mod >= slice[1] && mod <= (slice[2] || slice[1]);
+              });
+            }
+            value = arrayToRegAlternates(value);
+          }
+          if (!value) {
+            return '';
+          }
+          if (nc) {
+            result = '(?:' + value + ')';
+          } else {
+            if (!match) {
+              to.push(key);
+            }
+            result = '(' + value + ')';
+          }
+          if (opt) {
+            result += '?';
+          }
+          return result;
+        });
+        if (allowsTime) {
+          time = loc.prepareTimeFormat(iso);
+          if (allowsTime === ALLOWS_TIME_IN_FRONT) {
+            loc.addRawFormat(getTimeFirst(src, time), TIME_FORMAT.concat(to), variant);
+          }
+          loc.addRawFormat(getTimeLast(src, time), to.concat(TIME_FORMAT), variant);
+        } else {
+          loc.addRawFormat(src, to, variant);
+        }
+      },
+
+      findModifier: function (obj, name) {
+        var val = obj[name];
+        if (val) {
+          var key = name + '|' + val;
+          return this.modifiersByKey[key];
+        }
+      },
+
+      addRawFormat: function(format, match, variant) {
+        this.compiledFormats.unshift({
+          variant: !!variant,
+          locale: this,
+          reg: RegExp('^' + format + '$', 'i'),
+          to: match
+        });
+        this.cachedFormats = null;
+      },
+
+      addTimeFormat: function() {
+        this.addFormat(this.prepareTimeFormat(), false, TIME_FORMAT);
+      },
+
+      prepareTimeFormat: function(iso) {
+        var loc = this, timeSuffixMapping = {'h':0,'m':1,'s':2}, src;
+        return REQUIRED_TIME_REG.replace(/{([a-z])}/g, function(full, token) {
+          // The ISO format allows times without ":",
+          // so make sure that these markers are optional.
+          var add, separators = [],
+              isHourSuffix = token === 'h',
+              tokenIsRequired = isHourSuffix && !iso;
+          if (token === 'd') {
+            // ISO8601 allows decimals in both hours and minutes,
+            // so add that suffix if the format is marked as iso
+            return iso ? DECIMAL_REG : '';
+          } else if (token === 't') {
+            return arrayToRegAlternates(loc.get('ampm'));
+          } else {
+            if (isHourSuffix) {
+              separators.push(':');
+            }
+            if (add = loc.timeSuffixes[timeSuffixMapping[token]]) {
+              separators.push(add + '\\s*');
+            }
+            src = '(?:' + separators.join('|') + ')' + (tokenIsRequired ? '' : '?');
+            return separators.length === 0 ? '' : src;
+          }
+        });
+      },
+
+      init: function(def) {
+        var loc = this;
+
+        function initFormats() {
+          loc.compiledFormats = [];
+        }
+
+        function initDefinition() {
+          simpleMerge(loc, def);
+        }
+
+        function initArrayFields() {
+          forEach(LOCALE_FIELDS, function(name) {
+            var val = loc[name];
+            if (isString(val)) {
+              loc[name] = commaSplit(val);
+            } else if (!val) {
+              loc[name] = [];
+            }
+          });
+        }
+
+        function eachAlternate(str, fn) {
+          str = map(str.split('+'), function(split) {
+            return split.replace(/(.+):(.+)$/, function(full, base, suffixes) {
+              return map(suffixes.split('|'), function(suffix) {
+                return base + suffix;
+              }).join('|');
+            });
+          }).join('|');
+          return forEach(str.split('|'), fn);
+        }
+
+        function setArray(name, multiple) {
+          var arr = [], lower = [];
+          forEach(loc[name], function(full, i) {
+            eachAlternate(full, function(alt, j) {
+              var idx = j * multiple + i;
+              arr[idx] = alt;
+              lower[idx] = alt.toLowerCase();
+            });
+          });
+          loc[name] = arr;
+          loc[name + 'Lower'] = lower;
+        }
+
+        function getDigit(start, stop, allowNumbers) {
+          var str = '\\d{' + start + HALF_WIDTH_COMMA + stop + '}';
+          if (allowNumbers) str += '|(?:' + arrayToRegAlternates(loc.get('numbers')) + ')+';
+          return str;
+        }
+
+        function getNum() {
+          var arr = [];
+          arr = arr.concat(loc.get('numbers')).concat(loc.get('articles'));
+          return '-?\\d+|' + arrayToRegAlternates(arr);
+        }
+
+        function setDefault(name, value) {
+          loc[name] = loc[name] || value;
+        }
+
+        function buildNumbers() {
+          var map = loc.ordinalNumberMap = {}, all = [];
+          forEach(loc.numbers, function(full, i) {
+            eachAlternate(full, function(alt) {
+              all.push(alt);
+              map[alt] = i;
+            });
+          });
+          loc.numbers = all;
+        }
+
+        function buildModifiers() {
+          var arr = [];
+          loc.modifiersByKey = {};
+          forEach(loc.modifiers, function(modifier) {
+            var name = modifier.name;
+            eachAlternate(modifier.src, function(t) {
+              var key = name + '|' + t;
+              var locEntry = loc[name];
+              loc.modifiersByKey[key] = modifier;
+              arr.push({ name: name, src: t, value: modifier.value });
+              loc[name] = locEntry ? locEntry + '|' + t : t;
+            });
+          });
+          loc.modifiers = arr;
+        }
+
+        function addDefinedFormats(field, allowsTime) {
+          var arr = loc[field];
+          if (arr) {
+            forEach(arr, function(src) {
+              loc.addFormat(src, allowsTime);
             });
           }
-          value = arrayToAlternates(value);
         }
-        if (!value) {
-          return '';
-        }
-        if (nc) {
-          result = '(?:' + value + ')';
-        } else {
-          if (!match) {
-            to.push(key);
-          }
-          result = '(' + value + ')';
-        }
-        if (opt) {
-          result += '?';
-        }
-        return result;
-      });
-      if (allowsTime) {
-        time = loc.prepareTimeFormat(iso);
-        loc.addRawFormat(getTimeFirst(src, time), TIME_FORMAT.concat(to), variant);
-        loc.addRawFormat(getTimeLast(src, time), to.concat(TIME_FORMAT), variant);
-      } else {
-        loc.addRawFormat(src, to, variant);
-      }
-    },
 
-    findModifier: function (obj, name) {
-      var val = obj[name];
-      if (val) {
-        var key = name + '|' + val;
-        return this.modifiersByKey[key];
-      }
-    },
+        initFormats();
+        initDefinition();
+        initArrayFields();
 
-    addRawFormat: function(format, match, variant) {
-      this.compiledFormats.unshift({
-        variant: !!variant,
-        locale: this,
-        reg: RegExp('^' + format + '$', 'i'),
-        to: match
-      });
-      this.cachedFormats = null;
-    },
+        buildNumbers();
 
-    addTimeFormat: function() {
-      this.addFormat(this.prepareTimeFormat(), false, TIME_FORMAT);
-    },
+        setArray('months', 12);
+        setArray('weekdays', 7);
+        setArray('units', 8);
+        setArray('ampm', 2);
 
-    prepareTimeFormat: function(iso) {
-      var loc = this, timeSuffixMapping = {'h':0,'m':1,'s':2}, src;
-      return REQUIRED_TIME_REG.replace(/{([a-z])}/g, function(full, token) {
-        // The ISO format allows times without ":",
-        // so make sure that these markers are optional.
-        var add, separators = [],
-            isHourSuffix = token === 'h',
-            tokenIsRequired = isHourSuffix && !iso;
-        if (token === 'd') {
-          // ISO8601 allows decimals in both hours and minutes,
-          // so add that suffix if the format is marked as iso
-          return iso ? DECIMAL_REG : '';
-        } else if (token === 't') {
-          return loc.get('ampm').join('|');
-        } else {
-          if (isHourSuffix) {
-            separators.push(':');
-          }
-          if (add = loc.timeSuffixes[timeSuffixMapping[token]]) {
-            separators.push(add + '\\s*');
-          }
-          src = '(?:' + separators.join('|') + ')' + (tokenIsRequired ? '' : '?');
-          return separators.length === 0 ? '' : src;
-        }
-      });
-    },
+        setDefault('date', getDigit(1,2, loc.digitDate));
+        setDefault('year', "'\\d{2}|" + getDigit(4,4));
+        setDefault('num', getNum());
 
-    init: function(def) {
-      var loc = this;
+        loc.day = arrayToRegAlternates(loc.weekdaysLower);
+        loc.fullMonth = getDigit(1,2) + '|' + arrayToRegAlternates(loc.months);
 
-      function initFormats() {
-        loc.compiledFormats = [];
-      }
+        buildModifiers();
 
-      function initDefinition() {
-        simpleMerge(loc, def);
-      }
-
-      function initArrayFields() {
-        forEach(LOCALE_FIELDS, function(name) {
-          var val = loc[name];
-          if (isString(val)) {
-            loc[name] = commaSplit(val);
-          } else if (!val) {
-            loc[name] = [];
-          }
-        });
-      }
-
-      function eachAlternate(str, fn) {
-        str = map(str.split('+'), function(split) {
-          return split.replace(/(.+):(.+)$/, function(full, base, suffixes) {
-            return map(suffixes.split('|'), function(suffix) {
-              return base + suffix;
-            }).join('|');
+        if (loc.monthSuffix) {
+          loc.month = getDigit(1,2);
+          loc.months = map(commaSplit('1,2,3,4,5,6,7,8,9,10,11,12'), function(n) {
+            return n + loc.monthSuffix;
           });
-        }).join('|');
-        return forEach(str.split('|'), fn);
-      }
-
-      function setArray(name, multiple) {
-        var arr = [];
-        forEach(loc[name], function(full, i) {
-          eachAlternate(full, function(alt, j) {
-            arr[j * multiple + i] = alt;
-          });
-        });
-        loc[name] = arr;
-        loc[name + 'Lower'] = arr.map(function(t) {
-          return t.toLowerCase();
-        });
-      }
-
-      function getDigit(start, stop, allowNumbers) {
-        var str = '\\d{' + start + HALF_WIDTH_COMMA + stop + '}';
-        if (allowNumbers) str += '|(?:' + arrayToAlternates(loc.get('numbers')) + ')+';
-        return str;
-      }
-
-      function getNum() {
-        var numbers = loc.get('numbers');
-        var arr = ['-?\\d+'].concat(loc.get('articles'));
-        if (numbers) {
-          arr = arr.concat(numbers);
         }
-        return arrayToAlternates(arr);
-      }
 
-      function setDefault(name, value) {
-        loc[name] = loc[name] || value;
-      }
+        // The order of these formats is very important. Order is reversed so
+        // formats that are initialized later will take precedence. This generally
+        // means that more specific formats should come later, however, the {year}
+        // format should come before {day}, as 2011 needs to be parsed as a year
+        // (2011) and not date (20) + hours (11), etc.
 
-      function buildNumbers() {
-        var map = loc.ordinalNumberMap = {}, all = [];
-        forEach(loc.numbers, function(full, i) {
-          eachAlternate(full, function(alt) {
-            all.push(alt);
-            map[alt] = i;
-          });
+        loc.addTimeFormat();
+
+        loc.addFormat('{day}', ALLOWS_TIME_IN_FRONT);
+        loc.addFormat('{month}' + (loc.monthSuffix || ''));
+        loc.addFormat('{year}' + (loc.yearSuffix || ''));
+
+        addDefinedFormats('dateParse');
+        addDefinedFormats('timeParse', ALLOWS_TIME);
+        addDefinedFormats('timeFrontParse', ALLOWS_TIME_IN_FRONT);
+
+        forEach(CoreDateFormats, function(df) {
+          var match = commaSplit(df.match);
+          loc.addFormat(df.src, df.time, match, df.variant, df.iso);
         });
-        loc.numbers = all;
+
       }
 
-      function buildModifiers() {
-        var arr = [];
-        loc.modifiersByKey = {};
-        forEach(loc.modifiers, function(modifier) {
-          var name = modifier.name;
-          eachAlternate(modifier.src, function(t) {
-            var key = name + '|' + t;
-            var locEntry = loc[name];
-            loc.modifiersByKey[key] = modifier;
-            arr.push({ name: name, src: t, value: modifier.value });
-            loc[name] = locEntry ? locEntry + '|' + t : t;
-          });
-        });
-        loc.modifiers = arr;
-      }
+    };
 
-      initFormats();
-      initDefinition();
-      initArrayFields();
-
-      buildNumbers();
-
-      setArray('months', 12);
-      setArray('weekdays', 7);
-      setArray('units', 8);
-      setArray('ampm', 2);
-
-      setDefault('date', getDigit(1,2, loc.digitDate));
-      setDefault('year', "'\\d{2}|" + getDigit(4,4));
-      setDefault('num', getNum());
-
-      loc.day = arrayToAlternates(loc.weekdaysLower);
-      loc.fullMonth = getDigit(1,2) + '|' + arrayToAlternates(loc.months);
-
-      buildModifiers();
-
-      if (loc.monthSuffix) {
-        loc.month = getDigit(1,2);
-        loc.months = map(commaSplit('1,2,3,4,5,6,7,8,9,10,11,12'), function(n) {
-          return n + loc.monthSuffix;
-        });
-      }
-
-      // The order of these formats is very important. Order is reversed so
-      // formats that are initialized later will take precedence. This generally
-      // means that more specific formats should come later, however, the {year}
-      // format should come before {day}, as 2011 needs to be parsed as a year
-      // (2011) and not date (20) + hours (11), etc.
-
-      loc.addTimeFormat();
-
-      loc.addFormat('{day}', true);
-      loc.addFormat('{month}' + (loc.monthSuffix || ''));
-      loc.addFormat('{year}' + (loc.yearSuffix || ''));
-
-      forEach(loc.parse, function(src) {
-        loc.addFormat(src);
-      });
-
-      forEach(loc.timeParse, function(src) {
-        loc.addFormat(src, true);
-      });
-
-      forEach(CoreDateFormats, function(df) {
-        var match = commaSplit(df.match);
-        loc.addFormat(df.src, df.time, match, df.variant, df.iso);
-      });
-
-    }
-
-  };
+    return new Locale(def);
+  }
 
   var EnglishLocaleBaseDefinition = {
     'code':       'en',
     'timeMarker': 'at',
-    'ampm':       'AM,PM,a,p',
+    'ampm':       'AM,PM,A.M.,P.M.,a,p',
+    'half':       'half',
     'months':     'Jan:uary|,Feb:ruary|,Mar:ch|,Apr:il|,May,Jun:e|,Jul:y|,Aug:ust|,Sep:tember|t|,Oct:ober|,Nov:ember|,Dec:ember|',
     'weekdays':   'Sun:day|,Mon:day|,Tue:sday|,Wed:nesday|,Thu:rsday|,Fri:day|,Sat:urday|+weekend',
     'units':      'millisecond:|s,second:|s,minute:|s,hour:|s,day:|s,week:|s,month:|s,year:|s',
     'numbers':    'zero,one|first,two|second,three|third,four|fourth,five|fifth,six|sixth,seven|seventh,eight|eighth,nine|ninth,ten|tenth',
     'articles':   'a,an,the',
-    'tokens':     'the,st|nd|rd|th,of|in',
+    'tokens':     'the,st|nd|rd|th,of|in,a|an,on',
     'time':       '{H}:{mm}',
     'past':       '{num} {unit} {sign}',
     'future':     '{num} {unit} {sign}',
@@ -5614,17 +5779,17 @@
       { 'name': 'shift', 'src': 'the|this', 'value': 0 },
       { 'name': 'shift', 'src': 'next', 'value': 1 }
     ],
-    'parse': [
+    'dateParse': [
       '{month} {year}',
       '{shift} {unit:5-7}',
       '{0?} {date}{1}',
-      '{hours} {day}',
+      '{hours} {4?} {day}',
       '{shift?} {day?} {timeMarker?} {hours}',
-      '{0?} {edge} {weekday?} {2} {shift?} {unit:4-7?} {month?} {year?}'
+      '{0?} {edge} {weekday?} {2} {shift?} {unit:4-7?} {month?} {year?}',
+      '{3?} {half} {3?} {unit} {sign}',
+      '{sign} {3?} {half} {3?} {unit}'
     ],
     'timeParse': [
-      '{num} {unit} {sign}',
-      '{sign} {num} {unit}',
       '{0} {num}{1}? {day} {2} {month} {year?}',
       '{weekday?} {month} {date}{1?} {year?}',
       '{date} {month} {year}',
@@ -5635,7 +5800,12 @@
       '{num?} {unit:4-5} {sign} {day}',
       '{0?} {date}{1} of {month}',
       '{0?}{month?} {date?}{1?} of {shift} {unit:6-7}',
+      '{0?} {num}{1}? {weekday} of {shift} {unit:6}',
       '{edge} of {day}'
+    ],
+    'timeFrontParse': [
+      '{num} {unit} {sign}',
+      '{sign} {num} {unit}'
     ]
   };
 
@@ -5675,28 +5845,30 @@
   };
 
 
-  // Sorry about this guys...
-
-  var English = new Locale(AmericanEnglishDefinition);
-  var localeManager = new LocaleManager(English);
-
-
+  buildLocales();
   buildDateUnits();
   buildCJKDigits();
-  buildFormatTokens();
+  buildDateFormatTokens();
+  buildDateFormatMatcher();
   buildDateUnitMethods();
+  buildNumberUnitMethods();
   buildRelativeAliases();
   setDateChainableConstructor();
-  'use strict';
 
   /***
    * @module String
-   * @description String manupulation, encoding, truncation, and formatting.
+   * @description String manupulation, encoding, truncation, and formatting, and more.
    *
    ***/
 
   // Flag allowing native string methods to be enhanced
   var STRING_ENHANCEMENTS_FLAG = 'enhanceString';
+
+  // Matches non-punctuation characters except apostrophe for capitalization.
+  var CAPITALIZE_REG = /[^\u0000-\u0040\u005B-\u0060\u007B-\u007F]+('s)?/g;
+
+  // Regex matching camelCase.
+  var CAMELIZE_REG = /(^|_)([^_]+)/g;
 
   // Regex matching any HTML entity.
   var HTML_ENTITY_REG = /&#?(x)?([\w\d]{0,5});/gi;
@@ -5715,9 +5887,6 @@
   };
 
   var HTML_TO_ENTITY_MAP;
-
-  // Regex matching camelCase.
-  var CAMELIZE_REG = /(^|_)([^_]+)/g;
 
   // Words that should not be capitalized in titles
   var DOWNCASED_WORDS = [
@@ -5745,20 +5914,8 @@
   // Format matcher for String#format.
   var stringFormatMatcher = createFormatMatcher(deepGetProperty);
 
-  function getAcronym(str) {
-    var inflector = sugarString.Inflector;
-    var word = inflector && inflector.acronyms[str];
-    if (isString(word)) {
-      return word;
-    }
-  }
-
   function padString(num, padding) {
     return repeatString(isDefined(padding) ? padding : ' ', num);
-  }
-
-  function spacify(str) {
-    return underscore(str).replace(/_/g, ' ');
   }
 
   function truncateString(str, length, from, ellipsis, split) {
@@ -5784,35 +5941,50 @@
   }
 
   function stringEach(str, search, fn) {
-    var i, len, chunks, chunk, ret, result = [];
+    var chunks, chunk, reg, result = [];
     if (isFunction(search)) {
       fn = search;
-      search = /[\s\S]/g;
+      reg = /[\s\S]/g;
     } else if (!search) {
-      search = /[\s\S]/g;
+      reg = /[\s\S]/g;
     } else if (isString(search)) {
-      search = RegExp(escapeRegExp(search), 'gi');
+      reg = RegExp(escapeRegExp(search), 'gi');
     } else if (isRegExp(search)) {
-      search = RegExp(search.source, getRegExpFlags(search, 'g'));
+      reg = RegExp(search.source, getRegExpFlags(search, 'g'));
     }
-    // Can't use exec as we need to pass the entire array into
-    // the callback if it exists.
-    chunks = str.match(search);
-    // < IE9 has enumable properties on regex matches that will
-    // confuse for..in loops, so need to dump to an array.
+    // Getting the entire array of chunks up front as we need to
+    // pass this into the callback function as an argument.
+    chunks = runGlobalMatch(str, reg);
+
     if (chunks) {
-      for(i = 0, len = chunks.length; i < len; i++) {
+      for(var i = 0, len = chunks.length, r; i < len; i++) {
         chunk = chunks[i];
         result[i] = chunk;
         if (fn) {
-          ret = fn.call(str, chunk, i, chunks);
-          if (ret === false) {
+          r = fn.call(str, chunk, i, chunks);
+          if (r === false) {
             break;
-          } else if (isDefined(ret)) {
-            result[i] = ret;
+          } else if (isDefined(r)) {
+            result[i] = r;
           }
         }
       }
+    }
+    return result;
+  }
+
+  // "match" in < IE9 has enumable properties that will confuse for..in
+  // loops, so ensure that the match is a normal array by manually running
+  // "exec". Note that this method is also slightly more performant.
+  function runGlobalMatch(str, reg) {
+    var result = [], match, lastLastIndex;
+    while ((match = reg.exec(str)) != null) {
+      if (reg.lastIndex === lastLastIndex) {
+        reg.lastIndex += 1;
+      } else {
+        result.push(match[0]);
+      }
+      lastLastIndex = reg.lastIndex;
     }
     return result;
   }
@@ -5831,11 +6003,11 @@
     return codes;
   }
 
-  function underscore(str) {
-    var inflector = sugarString.Inflector;
+  function stringUnderscore(str) {
+    var areg = Inflections.acronyms && Inflections.acronyms.reg;
     return str
       .replace(/[-\s]+/g, '_')
-      .replace(inflector && inflector.acronymRegExp, function(acronym, index) {
+      .replace(areg, function(acronym, index) {
         return (index > 0 ? '_' : '') + acronym.toLowerCase();
       })
       .replace(/([A-Z\d]+)([A-Z][a-z])/g,'$1_$2')
@@ -5843,15 +6015,57 @@
       .toLowerCase();
   }
 
-  function capitalize(str, all) {
-    var lastResponded;
-    // Identical to /[^']/g. Trying not to break Github's syntax highlighter.
-    return str.toLowerCase().replace(all ? /[^\u0027]/g : /^\S/, function(lower) {
-      var upper = lower.toUpperCase(), result;
-      result = lastResponded ? lower : upper;
-      lastResponded = upper !== lower;
-      return result;
+  function stringCamelize(str, upper) {
+    str = stringUnderscore(str);
+    return str.replace(CAMELIZE_REG, function(match, pre, word, index) {
+      var cap = upper !== false || index > 0, acronym;
+      acronym = getAcronym(word);
+      if (acronym && cap) {
+        return acronym;
+      }
+      return cap ? stringCapitalize(word, true) : word;
     });
+  }
+
+  function stringSpacify(str) {
+    return stringUnderscore(str).replace(/_/g, ' ');
+  }
+
+  function stringCapitalize(str, downcase, all) {
+    if (downcase) {
+      str = str.toLowerCase();
+    }
+    return all ? str.replace(CAPITALIZE_REG, simpleCapitalize) : simpleCapitalize(str);
+  }
+
+  function stringTitleize(str) {
+    var fullStopPunctuation = /[.:;!]$/, lastHadPunctuation;
+    str = runHumanRules(str);
+    str = stringSpacify(str);
+    return eachWord(str, function(word, index, words) {
+      word = getHumanWord(word) || word;
+      word = getAcronym(word) || word;
+      var hasPunctuation, isFirstOrLast;
+      var first = index == 0, last = index == words.length - 1;
+      hasPunctuation = fullStopPunctuation.test(word);
+      isFirstOrLast = first || last || hasPunctuation || lastHadPunctuation;
+      lastHadPunctuation = hasPunctuation;
+      if (isFirstOrLast || indexOf(DOWNCASED_WORDS, word) === -1) {
+        return stringCapitalize(word, false, true);
+      } else {
+        return word;
+      }
+    }).join(' ');
+  }
+
+  function stringParameterize(str, separator) {
+    if (separator === undefined) separator = '-';
+    str = str.replace(/[^a-z0-9\-_]+/gi, separator);
+    if (separator) {
+      var reg = RegExp('^{s}+|{s}+$|({s}){s}+'.split('{s}').join(escapeRegExp(separator)), 'g');
+      str = str.replace(reg, '$1');
+    }
+    return encodeURI(str.toLowerCase());
   }
 
   function reverseString(str) {
@@ -6116,11 +6330,11 @@
 
     /***
      * @method at(<index>, [loop] = false)
-     * @returns String or Array
+     * @returns Mixed
      * @short Gets the character(s) at a given index.
-     * @extra When [loop] is true, overshooting the end of the string (or the
-     *        beginning) will begin counting from the other end. If <index> is an
-     *        array, multiple elements will be returned.
+     * @extra When [loop] is true, overshooting the end of the string will begin
+     *        counting from the other end. <index> may be negative. If <index> is
+     *        an array, multiple elements will be returned.
      * @example
      *
      *   'jumpy'.at(0)             -> 'j'
@@ -6135,68 +6349,68 @@
       return getEntriesForIndexes(str, index, loop, true);
     },
 
-     /***
-      * @method escapeURL([param] = false)
-      * @returns String
-      * @short Escapes characters in a string to make a valid URL.
-      * @extra If [param] is true, it will also escape valid URL characters. Use
-      *        this when the entire string is meant for use in a query string.
-      *
-      * @example
-      *
-      *   'a, b, and c'.escapeURL() -> 'a,%20b,%20and%20c'
-      *   'http://foo.com/'.escapeURL(true) -> 'http%3A%2F%2Ffoo.com%2F'
-      *
-      ***/
+    /***
+     * @method escapeURL([param] = false)
+     * @returns String
+     * @short Escapes characters in a string to make a valid URL.
+     * @extra If [param] is true, it will also escape valid URL characters. Use
+     *        this when the entire string is meant for use in a query string.
+     *
+     * @example
+     *
+     *   'a, b, and c'.escapeURL() -> 'a,%20b,%20and%20c'
+     *   'http://foo.com/'.escapeURL(true) -> 'http%3A%2F%2Ffoo.com%2F'
+     *
+     ***/
     'escapeURL': function(str, param) {
       return param ? encodeURIComponent(str) : encodeURI(str);
     },
 
-     /***
-      * @method unescapeURL([partial] = false)
-      * @returns String
-      * @short Restores escaped characters in a URL escaped string.
-      * @extra If [partial] is true, it will only unescape non-valid URL tokens,
-      *        and is included here for completeness, but should be rarely needed.
-      *
-      * @example
-      *
-      *   'http%3A%2F%2Ffoo.com%2F'.unescapeURL()     -> 'http://foo.com/'
-      *   'http%3A%2F%2Ffoo.com%2F'.unescapeURL(true) -> 'http%3A%2F%2Ffoo.com%2F'
-      *
-      ***/
+    /***
+     * @method unescapeURL([partial] = false)
+     * @returns String
+     * @short Restores escaped characters in a URL escaped string.
+     * @extra If [partial] is true, it will only unescape non-valid URL tokens,
+     *        and is included here for completeness, but should be rarely needed.
+     *
+     * @example
+     *
+     *   'http%3A%2F%2Ffoo.com%2F'.unescapeURL()     -> 'http://foo.com/'
+     *   'http%3A%2F%2Ffoo.com%2F'.unescapeURL(true) -> 'http%3A%2F%2Ffoo.com%2F'
+     *
+     ***/
     'unescapeURL': function(str, param) {
       return param ? decodeURI(str) : decodeURIComponent(str);
     },
 
-     /***
-      * @method escapeHTML()
-      * @returns String
-      * @short Converts HTML characters to their entity equivalents.
-      *
-      * @example
-      *
-      *   '<p>some text</p>'.escapeHTML() -> '&lt;p&gt;some text&lt;/p&gt;'
-      *   'one & two'.escapeHTML()        -> 'one &amp; two'
-      *
-      ***/
+    /***
+     * @method escapeHTML()
+     * @returns String
+     * @short Converts HTML characters to their entity equivalents.
+     *
+     * @example
+     *
+     *   '<p>some text</p>'.escapeHTML() -> '&lt;p&gt;some text&lt;/p&gt;'
+     *   'one & two'.escapeHTML()        -> 'one &amp; two'
+     *
+     ***/
     'escapeHTML': function(str) {
       return str.replace(HTML_ESCAPE_REG, function(chr) {
         return HTML_TO_ENTITY_MAP[chr];
       });
     },
 
-     /***
-      * @method unescapeHTML()
-      * @returns String
-      * @short Restores escaped HTML characters.
-      *
-      * @example
-      *
-      *   '&lt;p&gt;some text&lt;/p&gt;'.unescapeHTML() -> '<p>some text</p>'
-      *   'one &amp; two'.unescapeHTML()                -> 'one & two'
-      *
-      ***/
+    /***
+     * @method unescapeHTML()
+     * @returns String
+     * @short Restores escaped HTML characters.
+     *
+     * @example
+     *
+     *   '&lt;p&gt;some text&lt;/p&gt;'.unescapeHTML() -> '<p>some text</p>'
+     *   'one &amp; two'.unescapeHTML()                -> 'one & two'
+     *
+     ***/
     'unescapeHTML': function(str) {
       return unescapeHTML(str);
     },
@@ -6222,8 +6436,8 @@
      *
      *   '<p>just <b>some</b> text</p>'.stripTags()    -> 'just some text'
      *   '<p>just <b>some</b> text</p>'.stripTags('p') -> 'just <b>some</b> text'
-     *   '<p>hi!</p>'.stripTags('p', function('all', content) {
-     *     return '|' + content + '|';
+     *   '<p>hi!</p>'.stripTags('p', function(all, content) {
+     *     return '|';
      *   }); -> '|hi!|'
      *
      ***/
@@ -6252,7 +6466,7 @@
      *
      *   '<p>just <b>some</b> text</p>'.removeTags()    -> ''
      *   '<p>just <b>some</b> text</p>'.removeTags('b') -> '<p>just text</p>'
-     *   '<p>hi!</p>'.removeTags('p', function('all', content) {
+     *   '<p>hi!</p>'.removeTags('p', function(all, content) {
      *     return 'bye!';
      *   }); -> 'bye!'
      *
@@ -6261,38 +6475,38 @@
       return replaceTags(str, tag, replace, false);
     },
 
-     /***
-      * @method encodeBase64()
-      * @returns String
-      * @short Encodes the string into base64 encoding.
-      * @extra This method wraps native methods when available, and uses a custom
-      *        implementation when not available. It can also handle Unicode
-      *        string encodings.
-      *
-      * @example
-      *
-      *   'gonna get encoded!'.encodeBase64()  -> 'Z29ubmEgZ2V0IGVuY29kZWQh'
-      *   'http://twitter.com/'.encodeBase64() -> 'aHR0cDovL3R3aXR0ZXIuY29tLw=='
-      *
-      ***/
+    /***
+     * @method encodeBase64()
+     * @returns String
+     * @short Encodes the string into base64 encoding.
+     * @extra This method wraps native methods when available, and uses a custom
+     *        implementation when not available. It can also handle Unicode
+     *        string encodings.
+     *
+     * @example
+     *
+     *   'gonna get encoded!'.encodeBase64()  -> 'Z29ubmEgZ2V0IGVuY29kZWQh'
+     *   'http://twitter.com/'.encodeBase64() -> 'aHR0cDovL3R3aXR0ZXIuY29tLw=='
+     *
+     ***/
     'encodeBase64': function(str) {
       return encodeBase64(str);
     },
 
-     /***
-      * @method decodeBase64()
-      * @returns String
-      * @short Decodes the string from base64 encoding.
-      * @extra This method wraps native methods when available, and uses a custom
-      *        implementation when not available. It can also handle Unicode string
-      *        encodings.
-      *
-      * @example
-      *
-      *   'aHR0cDovL3R3aXR0ZXIuY29tLw=='.decodeBase64() -> 'http://twitter.com/'
-      *   'anVzdCBnb3QgZGVjb2RlZA=='.decodeBase64()     -> 'just got decoded!'
-      *
-      ***/
+    /***
+     * @method decodeBase64()
+     * @returns String
+     * @short Decodes the string from base64 encoding.
+     * @extra This method wraps native methods when available, and uses a custom
+     *        implementation when not available. It can also handle Unicode string
+     *        encodings.
+     *
+     * @example
+     *
+     *   'aHR0cDovL3R3aXR0ZXIuY29tLw=='.decodeBase64() -> 'http://twitter.com/'
+     *   'anVzdCBnb3QgZGVjb2RlZA=='.decodeBase64()     -> 'just got decoded!'
+     *
+     ***/
     'decodeBase64': function(str) {
       return decodeBase64(str);
     },
@@ -6385,8 +6599,8 @@
      *
      * @example
      *
-     *   longText.lines() -> array of lines
-     *   longText.lines(function(l) {
+     *   lineText.lines() -> array of lines
+     *   lineText.lines(function(l) {
      *     // Called once per line
      *   });
      *
@@ -6617,7 +6831,7 @@
      *
      ***/
     'dasherize': function(str) {
-      return underscore(str).replace(/_/g, '-');
+      return stringUnderscore(str).replace(/_/g, '-');
     },
 
     /***
@@ -6632,31 +6846,27 @@
      *
      ***/
     'underscore': function(str) {
-      return underscore(str);
+      return stringUnderscore(str);
     },
 
     /***
-     * @method camelize([first] = true)
+     * @method camelize([upper] = true)
      * @returns String
-     * @short Converts underscores and hyphens to camel case. If [first] is true,
-     *        the first letter will also be capitalized.
-     * @extra If the Inflections module is included acryonyms can also be defined
-     *        that will be used when camelizing.
+     * @short Converts underscores and hyphens to camel case.
+     * @extra If [upper] is true, the string will be UpperCamelCase. If the
+     *        inflections module is included, acronyms can also be defined that
+     *        will be used when camelizing.
      *
      * @example
      *
      *   'caps_lock'.camelize()              -> 'CapsLock'
      *   'moz-border-radius'.camelize()      -> 'MozBorderRadius'
      *   'moz-border-radius'.camelize(false) -> 'mozBorderRadius'
+     *   'http-method'.camelize()            -> 'HTTPMethod'
      *
      ***/
-    'camelize': function(str, first) {
-      str = underscore(str);
-      return str.replace(CAMELIZE_REG, function(match, pre, word, index) {
-        var acronym = getAcronym(word), cap = first !== false || index > 0;
-        if (acronym) return cap ? acronym : acronym.toLowerCase();
-        return cap ? capitalize(word) : word;
-      });
+    'camelize': function(str, upper) {
+      return stringCamelize(str, upper);
     },
 
     /***
@@ -6672,7 +6882,7 @@
      *
      ***/
     'spacify': function(str) {
-      return underscore(str).replace(/_/g, ' ');
+      return stringSpacify(str);
     },
 
     /***
@@ -6692,23 +6902,7 @@
      *
      ***/
     'titleize': function(str) {
-      var fullStopPunctuation = /[.:;!]$/, lastHadPunctuation;
-      str = spacify(str);
-      if (sugarString.Inflector) {
-        str = Inflector.humanize(str);
-      }
-      return eachWord(str, function(word, index, words) {
-        var hasPunctuation, isFirstOrLast;
-        var first = index == 0, last = index == words.length - 1;
-        hasPunctuation = fullStopPunctuation.test(word);
-        isFirstOrLast = first || last || hasPunctuation || lastHadPunctuation;
-        lastHadPunctuation = hasPunctuation;
-        if (isFirstOrLast || indexOf(DOWNCASED_WORDS, word) === -1) {
-          return capitalizeWithoutDowncasing(word, true);
-        } else {
-          return word;
-        }
-      }).join(' ');
+      return stringTitleize(str);
     },
 
     /***
@@ -6723,17 +6917,7 @@
      *
      ***/
     'parameterize': function(str, separator) {
-      var reg;
-      if (sugarString.toAscii) {
-        str = sugarString.toAscii(str);
-      }
-      if (separator === undefined) separator = '-';
-      str = str.replace(/[^a-z0-9\-_]+/gi, separator);
-      if (separator) {
-        reg = RegExp('^{s}+|{s}+$|({s}){s}+'.split('{s}').join(escapeRegExp(separator)), 'g');
-        str = str.replace(reg, '$1');
-      }
-      return encodeURI(str.toLowerCase());
+      return stringParameterize(str, separator);
     },
 
     /***
@@ -6759,7 +6943,8 @@
      * @returns String
      * @short Truncates a string without splitting up words.
      * @extra [from] can be `'right'`, `'left'`, or `'middle'`. If the string is
-     *        shorter than <length>, [ellipsis] will not be added.
+     *        shorter than <length>, [ellipsis] will not be added. A "word" is
+     *        defined as any sequence of non-whitespace characters.
      *
      * @example
      *
@@ -6772,21 +6957,14 @@
     },
 
     /***
-     * @method pad[Side](<num> = null, [padding] = ' ')
+     * @method pad(<num> = null, [padding] = ' ')
      * @returns String
      * @short Pads the string out with [padding] to be exactly <num> characters.
      *
-     * @set
-     *   pad
-     *   padLeft
-     *   padRight
-     *
      * @example
      *
-     *   'wasabi'.pad(8)           -> ' wasabi '
-     *   'wasabi'.padLeft(8)       -> '  wasabi'
-     *   'wasabi'.padRight(8)      -> 'wasabi  '
-     *   'wasabi'.padRight(8, '-') -> 'wasabi--'
+     *   'wasabi'.pad(8)      -> ' wasabi '
+     *   'wasabi'.pad(8, '-') -> '-wasabi-'
      *
      ***/
     'pad': function(str, num, padding) {
@@ -6798,11 +6976,35 @@
       return padString(front, padding) + str + padString(back, padding);
     },
 
+    /***
+     * @method padLeft(<num> = null, [padding] = ' ')
+     * @returns String
+     * @short Pads the string out from the left with [padding] to be exactly
+     *        <num> characters.
+     *
+     * @example
+     *
+     *   'wasabi'.padLeft(8)      -> '  wasabi'
+     *   'wasabi'.padLeft(8, '-') -> '--wasabi'
+     *
+     ***/
     'padLeft': function(str, num, padding) {
       num = coercePositiveInteger(num);
       return padString(max(0, num - str.length), padding) + str;
     },
 
+    /***
+     * @method padRight(<num> = null, [padding] = ' ')
+     * @returns String
+     * @short Pads the string out from the right with [padding] to be exactly
+     *        <num> characters.
+     *
+     * @example
+     *
+     *   'wasabi'.padRight(8)      -> 'wasabi  '
+     *   'wasabi'.padRight(8, '-') -> 'wasabi--'
+     *
+     ***/
     'padRight': function(str, num, padding) {
       num = coercePositiveInteger(num);
       return str + padString(max(0, num - str.length), padding);
@@ -6861,51 +7063,59 @@
     },
 
     /***
-     * @method capitalize([all] = false)
+     * @method capitalize([lower] = false, [all] = false)
      * @returns String
-     * @short Capitalizes the first character of the string and downcases the rest.
-     * @extra If [all] is true, all words in the string will be capitalized.
+     * @short Capitalizes the first character of the string.
+     * @extra If [lower] is true, the remainder of the string will be downcased.
+     *        If [all] is true, all words in the string will be capitalized.
      *
      * @example
      *
      *   'hello'.capitalize()           -> 'Hello'
+     *   'HELLO'.capitalize(true)       -> 'Hello'
      *   'hello kitty'.capitalize()     -> 'Hello kitty'
-     *   'hello kitty'.capitalize(true) -> 'Hello Kitty'
-     *
+     *   'hEllO kItTy'.capitalize(true, true) -> 'Hello Kitty'
      *
      ***/
-    'capitalize': function(str, all) {
-      return capitalize(str, all);
+    'capitalize': function(str, lower, all) {
+      return stringCapitalize(str, lower, all);
     },
 
     /***
-     * @method trim[Side]()
+     * @method trimLeft()
      * @returns String
-     * @short Removes leading or trailing whitespace from the string.
+     * @short Removes leading whitespace from the string.
      * @extra Whitespace is defined as line breaks, tabs, and any character in the
-     *        "Space, Separator" Unicode category, conforming to the the ES5 spec.
-     *
-     * @set
-     *   trimLeft
-     *   trimRight
+     *        "Space, Separator" Unicode category, conforming to the the ES5 `trim`
+     *        spec.
      *
      * @example
      *
      *   '   wasabi   '.trimLeft()  -> 'wasabi   '
-     *   '   wasabi   '.trimRight() -> '   wasabi'
      *
      ***/
-
     'trimLeft': function(str) {
       return str.replace(LEFT_TRIM_REG, '');
     },
 
+    /***
+     * @method trimRight()
+     * @returns String
+     * @short Removes trailing whitespace from the string.
+     * @extra Whitespace is defined as line breaks, tabs, and any character in the
+     *        "Space, Separator" Unicode category, conforming to the the ES5 `trim`
+     *        spec.
+     *
+     * @example
+     *
+     *   '   wasabi   '.trimRight() -> '   wasabi'
+     *
+     ***/
     'trimRight': function(str) {
       return str.replace(RIGHT_TRIM_REG, '');
     }
 
   });
-
 
   defineInstanceWithArguments(sugarString, {
 
@@ -6920,8 +7130,8 @@
      *
      * @example
      *
-     *   '-x -y -z'.replaceAll('-', 1, 2, 3)              -> '1x 2y 3z'
-     *   'one and two'.replaceAll(/one|two/, '1st', 2nd') -> '1st and 2nd'
+     *   '-x -y -z'.replaceAll('-', 1, 2, 3)               -> '1x 2y 3z'
+     *   'one and two'.replaceAll(/one|two/, '1st', '2nd') -> '1st and 2nd'
      *
      ***/
     'replaceAll': function(str, f, args) {
@@ -6940,9 +7150,11 @@
      *
      * @example
      *
-     *   'Welcome, {name}.'.format({name:'Bill'}) -> 'Welcome, Bill.'
-     *   'You are {0} years old today.'.format(5) -> 'You are 5 years old today.'
-     *   '{0.name} and {1.name}'.format(users)    -> logs first two users' names
+     *   'Welcome, {name}.'.format({ name: 'Bill' }) -> 'Welcome, Bill.'
+     *   'You are {0} years old today.'.format(5)    -> 'You are 5 years old today.'
+     *   '{0.name} and {1.name}'.format(users)       -> logs first two users' names
+     *   '${currencies.usd.balance}'.format(Harry)   -> "$500"
+     *   '{{Hello}}'.format('Hello')                 -> "{Hello}"
      *
      ***/
     'format': function(str, args) {
@@ -6956,7 +7168,6 @@
 
   });
 
-
   /***
    * @method insert()
    * @alias add
@@ -6966,7 +7177,6 @@
 
   buildBase64();
   buildEntities();
-  'use strict';
 
   /***
    * @module Array
@@ -6981,18 +7191,20 @@
    * @method sortIgnore([reg] = null)
    * @returns Mixed
    * @accessor
-   * @short Gets or sets a regex to ignore when sorting.
-   * @extra Used by `Array#sortBy`.
+   * @short Used by `sortBy`. Gets or sets a regex to ignore when sorting.
+   * @extra An example usage of this option would be to ignore numbers in a list
+   *        to instead sort by the first text that appears.
    * @example
    *
-   *   Sugar.Array.sortIgnore(/\d/)
+   *   Sugar.Array.sortIgnore(/^\d+/)
    *
    ***
    * @method sortIgnoreCase([bool] = true)
    * @returns Mixed
    * @accessor
-   * @short Gets or sets a boolean that ignores case when sorting.
-   * @extra Used by `Array#sortBy`.
+   * @short Used by `sortBy`. Gets or sets a boolean that ignores case when
+   *        sorting.
+   * @extra Default is `true`.
    * @example
    *
    *   Sugar.Array.sortIgnoreCase(true)
@@ -7001,49 +7213,52 @@
    * @method sortNatural([bool] = true)
    * @returns Mixed
    * @accessor
-   * @short Gets or sets a boolean that turns on natural sort mode.
-   * @extra Used by `Array#sortBy`. "Natural sort" means that numerals like "10"
-   *        will be sorted naturally after "9" instead of after "1".
+   * @short Used by `sortBy`. Gets or sets a boolean that turns on natural
+   *        sort mode.
+   * @extra "Natural" means that numerals like "10" will be sorted naturally after
+   *        "9" instead of after "1".
    * @example
    *
    *   Sugar.Array.sortNatural(true)
    *
    ***
-   * @method sortCollate([fn])
+   * @method sortFunction([fn])
    * @returns Mixed
    * @accessor
-   * @short Gets or sets the collation function used when sorting strings.
-   * @extra Used by `Array#sortBy`. The default is a natural string sort based on
-   *        other `sort` options. Setting the collation function directly here will
-   *        override all these options. Setting to `null` restores the default.
+   * @short Used by `sortBy`. Gets or sets the collation function used when
+   *        sorting strings.
+   * @extra The default function produces a natural sort order that can be
+   *        customized with the other "sort" accessors. Overriding the function
+   *        directly here will also override these options. Setting to `null`
+   *        restores the default.
    * @example
    *
-   *   Sugar.Array.sortCollate(fn)
+   *   Sugar.Array.sortFunction(fn)
    *
    ***
    * @method sortOrder([str])
    * @returns Mixed
    * @accessor
-   * @short Gets or sets a string of characters to use as the base sort order.
-   * @extra Used by `Array#sortBy`. The default is an order natural to most major
-   *        world languages, but can be modified as needed. Setting to `null`
-   *        restores the default.
+   * @short Used by `sortBy`. Gets or sets a string of characters to use as
+   *        the base sort order.
+   * @extra The default is an order natural to most major world languages, but
+   *        can be modified as needed. Setting to `null` restores the default.
    *
    * @example
    *
-   *   Sugar.Array.sortOrder('zyxw...')
+   *   Sugar.Array.sortOrder('abcd...')
    *
    ***
    * @method sortEquivalents([obj])
    * @returns Mixed
    * @accessor
-   * @short Gets or sets a table of characters that should be considered equivalent
-   *        when sorting (for example "é" and "e").
-   * @extra Used by `Array#sortBy`. The default table produces a natural sort order
-   *        for most world languages, however can be modified for others. For
-   *        example, setting "ä" and "ö" to `null` in the table would produce a
-   *        Scandanavian sort order. Setting [obj] to `null` restores the default,
-   *        however if the table is mutated changes will persist.
+   * @short Used by `sortBy`. Gets or sets a table of equivalent characters used
+   *        when sorting.
+   * @extra The default table produces a natural sort order for most world
+   *        languages, however can be modified for others. For example, setting
+   *        "ä" and "ö" to `null` in the table would produce a Scandanavian sort
+   *        order. Setting [obj] to `null` restores the default, however if the
+  *         table is mutated changes will persist.
    *
    * @example
    *
@@ -7054,46 +7269,56 @@
   var _sortNatural     = defineAccessor(sugarArray, 'sortNatural', true);
   var _sortIgnoreCase  = defineAccessor(sugarArray, 'sortIgnoreCase', true);
   var _sortOrder       = defineAccessor(sugarArray, 'sortOrder', getSortOrder());
-  var _sortCollate     = defineAccessor(sugarArray, 'sortCollate', collateStrings);
+  var _sortFunction    = defineAccessor(sugarArray, 'sortFunction', collateStrings);
   var _sortEquivalents = defineAccessor(sugarArray, 'sortEquivalents', getSortEquivalents());
 
 
   function setArrayChainableConstructor() {
-    setChainableConstructor(sugarArray, isArrayOrInherited, arrayCreateFromArrayLike);
+    setChainableConstructor(sugarArray, arrayCreate);
   }
 
   function isArrayOrInherited(obj) {
     return obj && obj.constructor && isArray(obj.constructor.prototype);
   }
 
-  function arrayCreateFromArrayLike(obj) {
-    if (isObjectType(obj) || isString(obj)) {
-      return Array.from(obj);
+  function arrayCreate(obj, clone) {
+    var arr;
+    if (isArrayOrInherited(obj)) {
+      arr = clone ? arrayClone(obj) : obj;
+    } else if (isObjectType(obj) || isString(obj)) {
+      arr = Array.from(obj);
+    } else if (isDefined(obj)) {
+      arr = [obj];
     }
-    return isDefined(obj) ? [obj] : [];
+    return arr || [];
   }
 
   function arrayClone(arr) {
-    var clone = [], i = arr.length;
-    while(i--) {
-      if (i in arr) {
-        clone[i] = arr[i];
-      }
-    }
+    var clone = [];
+    forEach(arr, function(el, i) {
+      clone[i] = el;
+    });
     return clone;
   }
 
-  function arrayConcatAll(arr, args) {
+  function arrayConcatAll(target, rest) {
     // Array#concat has some edge case issues with
     // arrays of undefined in < IE8 so avoiding them
     // here by doing a double push.
-    var result = arrayClone(arr);
-    forEach(args, function(arg) {
-      forEach(arg, function(el) {
+    var result = arrayClone(target);
+    forEach(rest, function(arr) {
+      forEach(arr, function(el) {
         result.push(el);
       });
     });
     return result;
+  }
+
+  function arrayAdd(arr, el, index) {
+    if (isUndefined(index)) {
+      return arr.concat(el);
+    }
+    return arrayAppend(cloneArray(arr), el, index);
   }
 
   function arrayAppend(arr, el, index) {
@@ -7153,15 +7378,9 @@
   }
 
   function arrayCompact(arr, all) {
-    var result = [];
-    forEach(arr, function(el) {
-      if (all && el) {
-        result.push(el);
-      } else if (!all && el != null && el.valueOf() === el.valueOf()) {
-        result.push(el);
-      }
+    return filter(arr, function(el) {
+      return el || (!all && el != null && el.valueOf() === el.valueOf());
     });
-    return result;
   }
 
   function arrayShuffle(arr) {
@@ -7256,7 +7475,7 @@
   function compareValue(aVal, bVal) {
     var cmp, i, collate;
     if (isString(aVal) && isString(bVal)) {
-      collate = _sortCollate();
+      collate = _sortFunction();
       return collate(aVal, bVal);
     } else if (isArray(aVal) && isArray(bVal)) {
       if (aVal.length < bVal.length) {
@@ -7363,7 +7582,6 @@
     return equivalents;
   }
 
-
   defineStatic(sugarArray, {
 
     /***
@@ -7371,7 +7589,7 @@
      * @method create(<obj>, [clone] = false)
      * @returns Array
      * @static
-     * @short Creates an array from an unknown <obj>.
+     * @short Creates an array from an unknown object.
      * @extra This method is similar to native `Array.from` but is faster when
      *        <obj> is already an array. When [clone] is true, the array will be
      *        shallow cloned. Additionally, it will not fail on `undefined`,
@@ -7388,12 +7606,7 @@
      *
      ***/
     'create': function(obj, clone) {
-      if (!isArrayOrInherited(obj)) {
-        obj = arrayCreateFromArrayLike(obj);
-      } else if (clone) {
-        obj = arrayClone(obj);
-      }
-      return obj;
+      return arrayCreate(obj, clone);
     },
 
     /***
@@ -7409,8 +7622,7 @@
      *
      * @example
      *
-     *   Array.construct(3, parseInt) -> [0, 1, 2]
-     *   Array.construct(3, function(i) {
+     *   Array.construct(4, function(i) {
      *     return i * i;
      *   }); -> [0, 1, 4]
      *
@@ -7443,16 +7655,17 @@
     /***
      * @method isEqual(<arr>)
      * @returns Boolean
-     * @short Returns true if the array equal to <arr>.
-     * @extra `isEqual` in Sugar is "egal", meaning the values are equal if they
-     *        are "not observably distinguishable". This method is identical to,
-     *        and a shortcut for `Object.isEqual()`.
+     * @short Returns true if the array is equal to <arr>.
+     * @extra Objects in the array are considered equal if they are not obserably
+     *        distinguishable. This method is an instance alias for
+     *        `Object.isEqual()`.
      *
      * @example
      *
      *   ['a','b'].isEqual(['a','b']) -> true
      *   ['a','b'].isEqual(['a','c']) -> false
-     *   [{a:'a'}].isEqual({a:'a'})   -> true
+     *   [{a:'a'}].isEqual([{a:'a'}]) -> true
+     *   [5].isEqual([Object(5)])     -> false
      *
      ***/
     'isEqual': function(a, b) {
@@ -7462,7 +7675,7 @@
     /***
      * @method clone()
      * @returns Array
-     * @short Makes a shallow clone of the array.
+     * @short Creates a shallow clone of the array.
      *
      * @example
      *
@@ -7478,8 +7691,8 @@
      * @returns Mixed
      * @short Gets the element(s) at <index>.
      * @extra When [loop] is true, overshooting the end of the array will begin
-     *        counting from the other end. If <index> is an array, multiple
-     *        elements will be returned.
+     *        counting from the other end. <index> may be negative. If <index> is
+     *        an array, multiple elements will be returned.
      *
      * @example
      *
@@ -7510,7 +7723,7 @@
      *
      ***/
     'add': function(arr, item, index) {
-      return arrayAppend(arrayClone(arr), item, index);
+      return arrayAdd(arr, item, index);
     },
 
     /***
@@ -7537,13 +7750,12 @@
      * @method removeAt(<start>, [end])
      * @returns Array
      * @short Removes element at <start>. If [end] is specified, removes the range
-     *        between <start> and [end]. This method will change the array! If you
-     *        don't intend the array to be changed use `clone` first.
+     *        between <start> and [end]. This method will change the array!
      *
      * @example
      *
      *   ['a','b','c'].removeAt(0) -> ['b','c']
-     *   [1,2,3,4].removeAt(1, 3)  -> [1]
+     *   [1,2,3,4].removeAt(1, 2)  -> [1, 4]
      *
      ***/
     'removeAt': function(arr, start, end) {
@@ -7559,9 +7771,10 @@
      * @short Removes all duplicate elements in the array.
      * @extra [map] may be a function returning the value to be uniqued or a
      *        string acting as a shortcut. This is most commonly used when you
-     *        have a key that ensures the object's uniqueness, and don't need to
-     *        check all fields. This method will also correctly operate on arrays
-     *        of objects. <map> supports `deep properties`.
+     *        only need to check a single field that can ensure the object's
+     *        uniqueness (such as an `id` field). If [map] is not passed, then
+     *        objects will be deep checked for equality. Supports
+     *        `deep properties`.
      *
      * @callback map
      *
@@ -7573,10 +7786,12 @@
      *
      *   [1,2,2,3].unique()            -> [1,2,3]
      *   [{a:'a'},{a:'a'}].unique()    -> [{a:'a'}]
-     *   [{a:'a'},{a:'a'}].unique('a') -> [{a:'a'}]
+     *
      *   users.unique(function(user) {
      *     return user.id;
      *   }); -> users array uniqued by id
+     *
+     *   users.unique('id')            -> users array uniqued by id
      *
      ***/
     'unique': function(arr, map) {
@@ -7587,7 +7802,8 @@
      * @method flatten([limit] = Infinity)
      * @returns Array
      * @short Returns a flattened, one-dimensional copy of the array.
-     * @extra You can optionally specify a [limit], which will only flatten that depth.
+     * @extra You can optionally specify a [limit], which will only flatten to
+     *        that depth.
      *
      * @example
      *
@@ -7642,8 +7858,8 @@
      *
      * @example
      *
-     *   [1,2,3].from(1) -> [2,3]
-     *   [1,2,3].from(2) -> [3]
+     *   ['a','b','c'].from(1) -> ['b','c']
+     *   ['a','b','c'].from(2) -> ['c']
      *
      ***/
     'from': function(arr, num) {
@@ -7657,8 +7873,8 @@
      *
      * @example
      *
-     *   [1,3,5].to(1) -> [1]
-     *   [1,3,5].to(2) -> [1,3]
+     *   ['a','b','c'].to(1) -> ['a']
+     *   ['a','b','c'].to(2) -> ['a','b']
      *
      ***/
     'to': function(arr, num) {
@@ -7708,9 +7924,14 @@
      * @example
      *
      *   ['a','aa','aaa'].groupBy('length') -> { 1: ['a'], 2: ['aa'], 3: ['aaa'] }
+     *
      *   users.groupBy(function(n) {
      *     return n.age;
      *   }); -> users array grouped by age
+     *
+     *   users.groupBy('age', function(age, users) {
+     *     // iterates each grouping
+     *   });
      *
      ***/
     'groupBy': function(arr, map, fn) {
@@ -7718,16 +7939,16 @@
     },
 
     /***
-     * @method inGroups(<num>, [padding] = None)
+     * @method inGroups(<num>, [padding])
      * @returns Array
      * @short Groups the array into <num> arrays.
-     * @extra [padding] specifies a value with which to pad the last array so that
-     *        they are all equal length.
+     * @extra If specified, [padding] will be added to the last array to be of
+     *        equal length.
      *
      * @example
      *
-     *   [1,2,3,4,5,6,7].inGroups(3)         -> [[1,2,3],[4,5,6],[7]]
-     *   [1,2,3,4,5,6,7].inGroups(3, 'none') -> [[1,2,3],[4,5,6],[7,'none','none']]
+     *   [1,2,3,4,5,6,7].inGroups(3)    -> [[1,2,3],[4,5,6],[7]]
+     *   [1,2,3,4,5,6,7].inGroups(3, 0) -> [[1,2,3],[4,5,6],[7,0,0]]
      *
      ***/
     'inGroups': function(arr, num, padding) {
@@ -7748,16 +7969,15 @@
     },
 
     /***
-     * @method inGroupsOf(<num>, [padding] = None)
+     * @method inGroupsOf(<num>, [padding] = null)
      * @returns Array
      * @short Groups the array into arrays of <num> elements each.
-     * @extra [padding] specifies a value with which to pad the last array so that
-     *        they are all equal length.
+     * @extra [padding] will be added to the last array to be of equal length.
      *
      * @example
      *
-     *   [1,2,3,4,5,6,7].inGroupsOf(4)         -> [ [1,2,3,4], [5,6,7] ]
-     *   [1,2,3,4,5,6,7].inGroupsOf(4, 'none') -> [ [1,2,3,4], [5,6,7,'none'] ]
+     *   [1,2,3,4,5,6,7].inGroupsOf(4)    -> [ [1,2,3,4], [5,6,7] ]
+     *   [1,2,3,4,5,6,7].inGroupsOf(4, 0) -> [ [1,2,3,4], [5,6,7,0] ]
      *
      ***/
     'inGroupsOf': function(arr, num, padding) {
@@ -7801,6 +8021,7 @@
      * @example
      *
      *   [1,2,3,4,5].sample()  -> // Random element
+     *   [1,2,3,4,5].sample(1) -> // Array of 1 random element
      *   [1,2,3,4,5].sample(3) -> // Array of 3 random elements
      *
      ***/
@@ -7839,7 +8060,7 @@
      *        a string, the resulting order will be determined by an internal
      *        collation algorithm that is optimized for major Western languages,
      *        but can be customized using sorting accessors such as `sortIgnore`
-     *        (listed above).
+     *        (listed below).
      *
      * @callback map
      *
@@ -7856,7 +8077,6 @@
      *
      ***/
     'sortBy': function(arr, map, desc) {
-      arr = arrayClone(arr);
       arr.sort(function(a, b) {
         var aProperty = mapWithShortcuts(a, map, arr, [a]);
         var bProperty = mapWithShortcuts(b, map, arr, [b]);
@@ -7894,9 +8114,10 @@
     /***
      * @method exclude(<search>)
      * @returns Array
-     * @short Returns a new array with every element matching <search> removed.
-     * @extra This is a non-destructive alias for `remove`. It will not change the
-     *        original array. This method implements `enhanced matching`.
+     * @short Returns a new array with every element that does not match <search>.
+     * @extra This method can be thought of as the inverse of `Array#filter`. It
+     *        will not change the original array, Use `remove` to modify the
+     *        array in place. Implements `enhanced matching`.
      *
      * @callback search
      *
@@ -7919,14 +8140,14 @@
 
   });
 
-
   defineInstanceWithArguments(sugarArray, {
 
     /***
      * @method union([a1], [a2], ...)
      * @returns Array
      * @short Returns an array containing elements in all arrays with duplicates removed.
-     * @extra This method will also correctly operate on arrays of objects.
+     * @extra In addition to primitives, this method will also deep-check objects
+     *        for equality.
      *
      * @example
      *
@@ -7942,7 +8163,8 @@
      * @method intersect([a1], [a2], ...)
      * @returns Array
      * @short Returns a new array containing the elements all arrays have in common.
-     * @extra This method will also correctly operate on arrays of objects.
+     * @extra In addition to primitives, this method will also deep-check objects
+     *        for equality.
      *
      * @example
      *
@@ -7958,7 +8180,8 @@
      * @method subtract([a1], [a2], ...)
      * @returns Array
      * @short Subtracts from the array all elements in [a1], [a2], etc.
-     * @extra This method will also correctly operate on arrays of objects.
+     * @extra In addition to primitives, this method will also deep-check objects
+     *        for equality.
      *
      * @example
      *
@@ -7988,7 +8211,7 @@
      *
      ***/
     'zip': function(arr, args) {
-      return arr.map(function(el, i) {
+      return map(arr, function(el, i) {
         return [el].concat(map(args, function(k) {
           return (i in k) ? k[i] : null;
         }));
@@ -7996,7 +8219,6 @@
     }
 
   });
-
 
   /***
    * @method insert(<item>, [index])
@@ -8015,11 +8237,10 @@
   alias(sugarArray, 'insert', 'append');
 
   setArrayChainableConstructor();
-  'use strict';
 
   /***
    * @module Object
-   * @description Object creation, manipulation, comparison, and type checking.
+   * @description Object creation, manipulation, comparison, type checking, and more.
    *
    * Much thanks to kangax for his informative aricle about how problems with
    * instanceof and constructor: http://bit.ly/1Qds27W
@@ -8028,16 +8249,6 @@
 
   // Flag allowing Object.keys to be enhanced
   var OBJECT_ENHANCEMENTS_FLAG = 'enhanceObject';
-
-  var DONT_ENUM_PROPS = [
-    'valueOf',
-    'toString',
-    'constructor',
-    'isPrototypeOf',
-    'hasOwnProperty',
-    'toLocaleString',
-    'propertyIsEnumerable'
-  ];
 
   // Matches bracket-style query strings like user[name]
   var DEEP_QUERY_STRING_REG = /^(.+?)(\[.*\])$/;
@@ -8051,27 +8262,6 @@
 
   // Internal reference to check if an object can be serialized.
   var internalToString = Object.prototype.toString;
-
-  // Iterate over an object with support
-  // for the DontEnum bug in < IE9
-  var iterateOverObjectSafe;
-
-  function buildSafeIterate() {
-    var hasDontEnumBug = true, prop;
-    for (prop in { toString: true }) hasDontEnumBug = false;
-    iterateOverObjectSafe = hasDontEnumBug ? iterateOverObjectDontEnum : iterateOverObject;
-  }
-
-  function iterateOverObjectDontEnum(obj, fn) {
-    iterateOverObject(obj, fn);
-    forEach(DONT_ENUM_PROPS, function(key) {
-      if (hasOwn(obj, key)) {
-        fn.call(obj, key, obj[key], obj);
-      }
-    });
-  }
-
-  // Create
 
   // Query Strings | Creating
 
@@ -8263,7 +8453,7 @@
     if (getOwnPropertyNames && hidden) {
       iterateOverPropertyNames(obj, fn);
     } else {
-      iterateOverObjectSafe(obj, fn);
+      iterateOverObject(obj, fn);
     }
   }
 
@@ -8512,94 +8702,43 @@
   }
 
   /***
-   * @method isArray(<obj>)
+   * @method is[Type](<obj>)
    * @returns Boolean
-   * @short Returns true if <obj> is an array.
+   * @short Returns true if <obj> is an object of that type.
+   *
+   * @set
+   *   isArray
+   *   isBoolean
+   *   isDate
+   *   isFunction
+   *   isNumber
+   *   isString
+   *   isRegExp
    *
    * @example
    *
    *   Object.isArray([3]) -> true
-   *   Object.isArray(3)   -> false
-   *
-  /***
-   * @method isBoolean(<obj>)
-   * @returns Boolean
-   * @short Returns true if <obj> is a boolean.
-   *
-   * @example
-   *
-   *   Object.isBoolean(true)   -> true
-   *   Object.isBoolean('true') -> false
-   *
-  /***
-   * @method isDate(<obj>)
-   * @returns Boolean
-   * @short Returns true if <obj> is a date.
-   *
-   * @example
-   *
-   *   Object.isDate(now)   -> true
-   *   Object.isDate('now') -> false
-   *
-  /***
-   * @method isFunction(<obj>)
-   * @returns Boolean
-   * @short Returns true if <obj> is a function.
-   *
-   * @example
-   *
-   *   Object.isFunction(function(){}) -> true
-   *   Object.isFunction('function')   -> false
-   *
-  /***
-   * @method isNumber(<obj>)
-   * @returns Boolean
-   * @short Returns true if <obj> is a number.
-   *
-   * @example
-   *
-   *   Object.isNumber(3)   -> false
-   *   Object.isNumber([3]) -> false
-   *
-  /***
-   * @method isString(<obj>)
-   * @returns Boolean
-   * @short Returns true if <obj> is a string.
-   *
-   * @example
-   *
-   *   Object.isRegExp('wasabi') -> true
-   *   Object.isRegExp(/wasabi/) -> false
-   *
-  /***
-   * @method isRegExp(<obj>)
-   * @returns Boolean
-   * @short Returns true if <obj> is a regex.
-   *
-   * @example
-   *
-   *   Object.isRegExp(/wasabi/) -> true
-   *   Object.isRegExp('wasabi') -> false
+   *   Object.isNumber(3)  -> true
+   *   Object.isString(8)  -> false
    *
    ***/
-  function buildTypeCheckMethods() {
+  function buildClassCheckMethods() {
     var checks = [isBoolean, isNumber, isString, isArray, isDate, isRegExp, isFunction];
     defineInstanceAndStaticSimilar(sugarObject, TYPE_CHECK_NAMES, function(methods, name, i) {
       methods['is' + name] = checks[i];
     });
   }
 
-
   defineInstanceAndStatic(sugarObject, {
 
     /***
      * @method keys(<obj>, [fn])
      * @returns Array
-     * @short Returns an array containing the keys in <obj>. Optionally calls [fn]
-     *        for each key.
-     * @extra Sugar provides a polyfill for browsers that don't support this
-     *        method natively. Additionally it optionally enhances it to allow the
-     *        callback function [fn]. Order of returned keys is not guaranteed.
+     * @polyfill ES5
+     * @short Returns an array containing the keys in <obj>.
+     * @extra Sugar enhances this method to allow an optional function that is
+     *        called for each key. Note that the order of returned keys is not
+     *        guaranteed.
      *
      * @callback fn
      *
@@ -8618,12 +8757,12 @@
 
   }, [ENHANCEMENTS_FLAG, OBJECT_ENHANCEMENTS_FLAG]);
 
-
   defineStatic(sugarObject, {
 
     /***
      * @method fromQueryString(<str>, [options])
      * @returns Object
+     * @static
      * @short Converts the query string of a URL into an object.
      * @extra Options can be passed with [options] for more control over the result.
      *
@@ -8632,17 +8771,17 @@
      *   deep        If the string contains "deep" syntax (`foo[]`), this will
      *               be automatically converted to an array. (Default `false`)
      *
-     *   auto        If `true`, booleans (`true`/`false`), numbers, and arrays
+     *   auto        If `true`, booleans (`"true"` and `"false"`), numbers, and arrays
      *               (repeated keys) will be automatically cast to native
      *               values. (Default `true`)
      *
      *   transform   A function whose return value becomes the final value. If
      *               the function returns `undefined`, then the original value
      *               will be used. This allows the function to intercept only
-     *               certain keys or values. (No Default)
+     *               certain keys or values. (Default `undefined`)
      *
      *   separator   If passed, keys will be split on this string to extract
-     *               deep values. (Default `null`)
+     *               deep values. (Default `''`)
      *
      * @callback transform
      *
@@ -8655,6 +8794,7 @@
      *   Object.fromQueryString('a=1&b=2')                 -> {a:1,b:2}
      *   Object.fromQueryString('a[]=1&a[]=2',{deep:true}) -> {a:['1','2']}
      *   Object.fromQueryString('a_b=c',{separator:'_'})   -> {a:{b:'c'}}
+     *   Object.fromQueryString('id=123', {transform:idToNumber});
      *
      ***/
     'fromQueryString': function(obj, options) {
@@ -8663,14 +8803,13 @@
 
   });
 
-
   defineInstanceAndStatic(sugarObject, {
 
     /***
      * @method get(<obj>, <key>)
      * @returns Mixed
      * @short Gets a property of <obj>.
-     * @extra Allows deep properties.
+     * @extra Supports `deep properties`.
      *
      * @example
      *
@@ -8699,7 +8838,7 @@
      *        <val> onto the end of the array. Lastly, a `..` separator inside the
      *        brackets is "range" notation, and will set properties on all
      *        elements in the specified range. Range members may be negative,
-     *        which will be offset from the end of the array. Returns the object.
+     *        which will be offset from the end of the array.
      *
      * @example
      *
@@ -8747,8 +8886,8 @@
      * @method toQueryString(<obj>, [options])
      * @returns Object
      * @short Converts the object into a query string.
-     * @extra Accepts deep objects and arrays. Options can be passed with [options]
-     *        for more control over the result.
+     * @extra Accepts deep objects and arrays. [options] can be passed for more
+     *        control over the result.
      *
      * @options
      *
@@ -8760,7 +8899,7 @@
      *               separated by the `separator`. (Default `''`).
      *
      *   transform   A function whose return value becomes the final value
-     *               in the string. (No Default)
+     *               in the string. (Default `undefined`)
      *
      *   separator   A string that is used to separate keys, either for deep
      *               objects, or when `prefix` is passed.(Default `_`).
@@ -8786,13 +8925,19 @@
      * @method isEqual(<a>, <b>)
      * @returns Boolean
      * @short Returns true if <a> and <b> are equal.
-     * @extra `isEqual` in Sugar is "egal", meaning the values are equal if they
-     *        are "not observably distinguishable".
+     * @extra Objects are considered equal if they are not "obserably
+     *        distinguishable". This means that primitives and their object
+     *        counterparts, `0` and `-0`, sparse and dense arrays, etc., are all
+     *        not equal to each other. This method will traverse deeply into
+     *        objects to determine equality.
      *
      * @example
      *
-     *   Object.isEqual({a:2}, {a:2}) -> true
-     *   Object.isEqual({a:2}, {a:3}) -> false
+     *   Object.isEqual({a:2}, {a:2})         -> true
+     *   Object.isEqual({a:2}, {a:3})         -> false
+     *   Object.isEqual(5, Object(5))         -> false
+     *   Object.isEqual(Object(5), Object(5)) -> true
+     *   Object.isEqual(NaN, NaN)             -> false
      *
      ***/
     'isEqual': function(a, b) {
@@ -8807,7 +8952,15 @@
      * @options
      *
      *   deep         If `true` deep properties are merged recursively.
-     *                (Default = `false`)
+     *                (Default `false`)
+     *
+     *   hidden       If `true`, non-enumerable properties will be merged as well.
+     *                (Default `false`)
+     *
+     *   descriptor   If `true`, properties will be merged by property descriptor.
+     *                Use this option to merge getters or setters, or to preserve
+     *                `enumerable`, `configurable`, etc.
+     *                (Default `false`)
      *
      *   resolve      Determines which property wins in the case of conflicts.
      *                If `true`, <source> wins. If `false`, <target> wins. If a
@@ -8816,15 +8969,7 @@
      *                for that property (will not continue if `deep`). Returning
      *                `undefined` will do nothing (no merge). Finally, returning
      *                the global object `Sugar` will allow Sugar to handle the
-     *                merge as normal. (Default = `true`)
-     *
-     *   hidden       If `true`, non-enumerable properties will be merged as well.
-     *                (Default = `false`)
-     *
-     *   descriptor   If `true`, properties will be merged by property descriptor.
-     *                Use this option to merge getters or setters, or to preserve
-     *                `enumerable`, `configurable`, etc.
-     *                (Default = `false`)
+     *                merge as normal. (Default `true`)
      *
      * @callback resolve
      *
@@ -8850,7 +8995,7 @@
      * @method mergeAll(<target>, <sources>, [options])
      * @returns Merged object
      * @short Merges properties from multiple <sources> into <target>.
-     * @extra See `Object.merge` for options.
+     * @extra See `merge` for options.
      *
      * @example
      *
@@ -8866,7 +9011,7 @@
      * @method add(<obj1>, <obj2>, [options])
      * @returns Object
      * @short Merges properties in <obj1> and <obj2> and returns a new object.
-     * @extra See `Object.merge` for options.
+     * @extra See `merge` for options.
      *
      * @example
      *
@@ -8919,7 +9064,7 @@
      * @returns Merged object
      * @short Merges properties from one or multiple <sources> into <target> while
      *        preserving <target>'s properties.
-     * @extra See `Object.merge` for options.
+     * @extra See `merge` for options.
      *
      * @example
      *
@@ -8934,13 +9079,13 @@
     /***
      * @method clone(<obj>, [deep] = false)
      * @returns Cloned object
-     * @short Creates a clone (copy) of <obj>.
+     * @short Creates a clone of <obj>.
      * @extra Default is a shallow clone, unless [deep] is true.
      *
      * @example
      *
-     *   Object.clone({foo:'bar'})       // creates shallow clone
-     *   Object.clone({foo:'bar'}, true) // creates a deep clone
+     *   Object.clone({foo:'bar'})       -> creates shallow clone
+     *   Object.clone({foo:'bar'}, true) -> creates a deep clone
      *
      ***/
     'clone': function(obj, deep) {
@@ -8952,7 +9097,7 @@
      * @returns Array
      * @short Returns an array containing the values in <obj>. Optionally calls
      *        [fn] for each value.
-     * @extra Returned values are in no particular order.
+     * @extra Values are in no particular order.
      *
      * @callback fn
      *
@@ -8962,8 +9107,8 @@
      * @example
      *
      *   Object.values({ broken: 'wear' }) -> ['wear']
-     *   Object.values({ broken: 'wear' }, function(value) {
-     *     // Called once for each value.
+     *   Object.values(usersByName, function(user) {
+     *     // Called once for each user.
      *   });
      *
      ***/
@@ -9015,7 +9160,7 @@
      * @example
      *
      *   Sugar.Array([1,4,9]).map(Math.sqrt).tap('pop') -> [1,2]
-     *   Sugar.Object({a:'a'}).tap(log).merge({b:'b'})  -> {a:'a',b:'b'}
+     *   Sugar.Object({a:'a'}).tap(logArgs).merge({b:'b'})  -> {a:'a',b:'b'}
      *
      ***/
     'tap': function(obj, arg) {
@@ -9025,10 +9170,10 @@
     /***
      * @method has(<obj>, <prop>)
      * @returns Boolean
-     * @short Checks if <obj> has property <prop>, which may be a `deep property`
-     *        using dot or bracket notation.
-     * @extra Note that this method does not care of <prop> is a direct property
-     *        of <obj> or in the prototype. To check that use `hasOwn` instead.
+     * @short Checks if <obj> has property <prop>.
+     * @extra <prop> may be a `deep property`. Note that this method does not care
+     *        if <prop> is a direct property of <obj> or in the prototype. To
+     *        check that use `hasOwn` instead.
      *
      * @example
      *
@@ -9047,8 +9192,8 @@
      * @short Checks if <obj> has its own property <prop> using hasOwnProperty
      *        from Object.prototype.
      * @extra This method is considered safer than `Object#hasOwnProperty` when
-     *        using objects as data stores. Note that this method will *not* work
-     *        with `deep properties`.
+     *        using objects as data stores. Note that this method does not
+     *        support `deep properties`.
      *
      * @example
      *
@@ -9197,9 +9342,7 @@
 
   });
 
-  buildSafeIterate();
-  buildTypeCheckMethods();
-  'use strict';
+  buildClassCheckMethods();
 
   /***
    * @module Enumerable
@@ -9305,17 +9448,16 @@
     });
   }
 
-  /***
-   * @namespace Array
-   *
-   ***/
+  /*** @namespace Array ***/
 
   // Flag allowing native array methods to be enhanced
   var ARRAY_ENHANCEMENTS_FLAG = 'enhanceArray';
 
-  // Enhanced Natives
-  var enhancedMap       = wrapMapWithShortcuts(),
-      enhancedFind      = wrapNativeWithMatcher('find'),
+  // Enhanced map function
+  var enhancedMap = wrapMapWithShortcuts();
+
+  // Enhanced matcher methods
+  var enhancedFind      = wrapNativeWithMatcher('find'),
       enhancedSome      = wrapNativeWithMatcher('some'),
       enhancedEvery     = wrapNativeWithMatcher('every'),
       enhancedFilter    = wrapNativeWithMatcher('filter'),
@@ -9406,9 +9548,9 @@
     /***
      * @method find(<search>, [context])
      * @returns Mixed
-     * @polyfill es6
+     * @polyfill ES6
      * @short Returns the first element in the array that matches <search>.
-     * @extra This method implements `enhanced matching`.
+     * @extra Implements `enhanced matching`.
      *
      * @callback search
      *
@@ -9433,13 +9575,13 @@
     /***
      * @method map(<map>, [context])
      * @returns Array
-     * @polyfill es5
-     * @short Maps the array to another array whose elements are those returned by
-     *        the <map> callback.
+     * @polyfill ES5
+     * @short Maps the array to another array whose elements are the values
+     *        returned by the <map> callback.
      * @extra [context] is the `this` object. Sugar enhances this method to accept
      *        a string for <map>, which is a shortcut for a function that gets
-     *        that property (or invokes a function) on each element.
-     *        <map> supports `deep properties`.
+     *        a property or invokes a function on each element.
+     *        Supports `deep properties`.
      *
      * @callback map
      *
@@ -9463,11 +9605,9 @@
     /***
      * @method every(<search>, [context])
      * @returns Boolean
-     * @polyfill es5
-     * @alias all
+     * @polyfill ES5
      * @short Returns true if <search> is true for all elements of the array.
-     * @extra [context] is the `this` object. This method implements `enhanced
-     *        matching`.
+     * @extra [context] is the `this` object. Implements `enhanced matching`.
      *
      * @callback search
      *
@@ -9490,11 +9630,9 @@
     /***
      * @method some(<search>, [context])
      * @returns Boolean
-     * @polyfill es5
-     * @alias any
+     * @polyfill ES5
      * @short Returns true if <search> is true for any element in the array.
-     * @extra [context] is the `this` object. This method implements `enhanced
-     *        matching`.
+     * @extra [context] is the `this` object. Implements `enhanced matching`.
      *
      * @callback search
      *
@@ -9520,10 +9658,9 @@
     /***
      * @method filter(<search>, [context])
      * @returns Array
-     * @polyfill es5
+     * @polyfill ES5
      * @short Returns any elements in the array that match <search>.
-     * @extra [context] is the `this` object. This method implements `enhanced
-     *        matching`.
+     * @extra [context] is the `this` object. Implements `enhanced matching`.
      *
      * @callback search
      *
@@ -9545,11 +9682,10 @@
     /***
      * @method findIndex(<search>, [context])
      * @returns Number
-     * @polyfill es6
+     * @polyfill ES6
      * @short Returns the index of the first element in the array that matches
      *        <search>, or `-1` if none.
-     * @extra [context] is the `this` object. This method implements `enhanced
-     *        matching`.
+     * @extra [context] is the `this` object. Implements `enhanced matching`.
      *
      * @callback search
      *
@@ -9591,7 +9727,7 @@
      * @method none(<search>)
      * @returns Boolean
      * @short Returns true if none of the elements in the array match <search>.
-     * @extra This method implements `enhanced matching`.
+     * @extra Implements `enhanced matching`.
      *
      * @callback search
      *
@@ -9606,6 +9742,7 @@
      *   users.none(function(user) {
      *     return user.name == 'Wolverine';
      *   }); -> probably true
+     *   users.none({ name: 'Wolverine' }); -> same as above
      *
      ***/
     'none': fixArgumentLength(arrayNone),
@@ -9614,8 +9751,8 @@
      * @method findFrom(<search>, [fromIndex] = 0, [loop] = false)
      * @returns Array
      * @short Returns any element that matches <search>, beginning from [fromIndex].
-     * @extra Will continue from `index = 0` if [loop] is true. This method
-     *        implements `enhanced matching`.
+     * @extra Will continue from `index = 0` if [loop] is true. Implements
+     *        `enhanced matching`.
      *
      * @callback search
      *
@@ -9625,7 +9762,8 @@
      *
      * @example
      *
-     *   ['cuba','japan','canada'].findFrom(/^c/, 2) -> 'canada'
+     *   ['cuba','japan','canada'].findFrom(/^c/, 2)       -> 'canada'
+     *   ['cuba','japan','canada'].findFrom(/^j/, 2, true) -> 'japan'
      *
      ***/
     'findFrom': function(arr, f, fromIndex, loop) {
@@ -9636,8 +9774,8 @@
      * @method filterFrom(<search>, [fromIndex] = 0, [loop] = false)
      * @returns Array
      * @short Returns any elements that match <search>, beginning from [fromIndex].
-     * @extra Will continue from `index = 0` if [loop] is true. This method
-     *        implements `enhanced matching`.
+     * @extra Will continue from `index = 0` if [loop] is true. Implements
+     *        `enhanced matching`.
      *
      * @callback search
      *
@@ -9659,8 +9797,8 @@
      * @method findIndexFrom(<search>, [fromIndex] = 0, [loop] = false)
      * @returns Array
      * @short Returns the index of any element that matches <search>, starting from [fromIndex].
-     * @extra Will continue from `index = 0` if [loop] is true. This method
-     *        implements `enhanced matching`.
+     * @extra Will continue from `index = 0` if [loop] is true. Implements
+     *        `enhanced matching`.
      *
      * @callback search
      *
@@ -9679,13 +9817,13 @@
     },
 
     /***
-     * @method each(<fn>, [index] = 0, [loop] = false)
+     * @method each(<fn>, [fromIndex] = 0, [loop] = false)
      * @returns Array
      * @short Enhanced `forEach`.
      * @extra If <fn> returns `false` at any time it will break out of the loop.
-     *        If [index] is passed, <fn> will begin at that index and work its way
-     *        to the end. If [loop] is true, it will then start over from the
-     *        beginning of the array and continue until it reaches `index - 1`.
+     *        If [fromIndex] is passed, <fn> will begin at that index and work its
+     *        way to the end. If [loop] is true, it will then start over from the
+     *        beginning of the array and continue until it reaches `fromIndex - 1`.
      *
      * @callback fn
      *
@@ -9696,12 +9834,17 @@
      * @example
      *
      *   [1,2,3,4].each(function(n) {
-     *     console.log(n); // Called 4 times: 1, 2, 3, 4
+     *     // Called 4 times: 1, 2, 3, 4
      *   });
      *
      *   [1,2,3,4].each(function(n) {
-     *     console.log(n); // Called 4 times: 3, 4, 1, 2
+     *     // Called 4 times: 3, 4, 1, 2
      *   }, 2, true);
+     *
+     *   [1,2,3,4].each(function(n) {
+     *     // Called once: 1
+     *     return false;
+     *   });
      *
      ***/
     'each': function(arr, fn, index, loop) {
@@ -9713,8 +9856,8 @@
      * @returns Mixed
      * @short Returns the element in the array with the lowest value.
      * @extra [map] may be a function mapping the value to be checked or a string
-     *        acting as a shortcut. If [all] is true, will return all min values
-     *        in an array. [map] supports `deep properties`.
+     *        acting as a shortcut. If [all] is true, multiple elements will be
+     *        returned. Supports `deep properties`.
      *
      * @callback map
      *
@@ -9744,8 +9887,8 @@
      * @returns Mixed
      * @short Returns the element in the array with the greatest value.
      * @extra [map] may be a function mapping the value to be checked or a string
-     *        acting as a shortcut. If [all] is true, will return all max values
-     *        in an array. [map] supports `deep properties`.
+     *        acting as a shortcut. If [all] is true, multiple elements will be
+     *        returned. Supports `deep properties`.
      *
      * @callback map
      *
@@ -9775,7 +9918,7 @@
      * @short Returns the elements in the array with the least commonly occuring value.
      * @extra [map] may be a function mapping the value to be checked or a string
      *        acting as a shortcut. If [all] is true, will return multiple values
-     *        in an array. [map] supports `deep properties`.
+     *        in an array. Supports `deep properties`.
      *
      * @callback map
      *
@@ -9787,6 +9930,8 @@
      *
      *   [3,2,2].least() -> 3
      *   ['fe','fo','fum'].least('length', true) -> ['fum']
+     *   users.least('profile.type')            -> (user with least commonly occurring type)
+     *   users.least('profile.type', true)      -> (users with least commonly occurring type)
      *
      ***/
     'least': function(arr, map, all) {
@@ -9799,7 +9944,7 @@
      * @short Returns the elements in the array with the most commonly occuring value.
      * @extra [map] may be a function mapping the value to be checked or a string
      *        acting as a shortcut. If [all] is true, will return multiple values
-     *        in an array. [map] supports `deep properties`.
+     *        in an array. Supports `deep properties`.
      *
      * @callback map
      *
@@ -9811,6 +9956,8 @@
      *
      *   [3,2,2].most(2) -> 2
      *   ['fe','fo','fum'].most('length', true) -> ['fe','fo']
+     *   users.most('profile.type')            -> (user with most commonly occurring type)
+     *   users.most('profile.type', true)      -> (users with most commonly occurring type)
      *
      ***/
     'most': function(arr, map, all) {
@@ -9821,7 +9968,7 @@
      * @method count(<search>)
      * @returns Number
      * @short Counts all elements in the array that match <search>.
-     * @extra This method implements `enhanced matching`.
+     * @extra Implements `enhanced matching`.
      *
      * @callback search
      *
@@ -9873,7 +10020,7 @@
      * @returns Number
      * @short Gets the mean average for all values in the array.
      * @extra [map] may be a function mapping the value to be averaged or a string
-     *        acting as a shortcut.
+     *        acting as a shortcut. Supports `deep properties`.
      *
      * @callback map
      *
@@ -9883,11 +10030,12 @@
      *
      * @example
      *
-     *   [1,2,3].average() -> 2
+     *   [1,2,3,4].average() -> 2
      *   users.average(function(user) {
      *     return user.age;
      *   }); -> average user age
      *   users.average('age') -> average user age
+     *   users.average('currencies.usd.balance') -> average USD balance
      *
      ***/
     'average': function(arr, map) {
@@ -9911,6 +10059,8 @@
      *
      *   [1,2,2].median() -> 2
      *   [{a:1},{a:2},{a:2}].median('a') -> 2
+     *   users.median('age') -> median user age
+     *   users.median('currencies.usd.balance') -> median USD balance
      *
      ***/
     'median': function(arr, map) {
@@ -9939,7 +10089,7 @@
    * @example
    *
    *   [1,2,3,4].forEachFrom(function(n) {
-   *     console.log(n); // Called 4 times: 3, 4, 1, 2
+   *     // Called 4 times: 3, 4, 1, 2
    *   }, 2, true);
    *
    ***/
@@ -9947,17 +10097,12 @@
 
 
 
-  /***
-   * @namespace Object
-   *
-   ***/
-
+  /*** @namespace Object ***/
 
   // Object matchers
   var objectSome  = wrapObjectMatcher('some'),
       objectFind  = wrapObjectMatcher('find'),
       objectEvery = wrapObjectMatcher('every');
-
 
   function objectEach(obj, fn) {
     assertCallable(fn);
@@ -10030,8 +10175,8 @@
      * @short Maps the object to another object whose properties are the values
      *        returned by <map>.
      * @extra <map> can also be a string, which is a shortcut for a function that
-     *        gets that property (or invokes a function) on each element. <map>
-     *        supports `deep properties`.
+     *        gets that property (or invokes a function) on each element.
+     *        Supports `deep properties`.
      *
      * @callback map
      *
@@ -10044,6 +10189,7 @@
      *   Object.map({a:'b'}, function(key, val) {
      *     return 'b';
      *   }); -> {a:'b'}
+     *   Object.map(usersByName, 'age');
      *
      ***/
     'map': function(obj, map) {
@@ -10076,11 +10222,11 @@
      *
      * @example
      *
-     *   Object.reduce({a:2,b:4}, function() {
+     *   Object.reduce({a:2,b:4}, function(a, b) {
      *     return a * b;
      *   }); -> 8
      *
-     *   Object.reduce({a:2,b:4}, function() {
+     *   Object.reduce({a:2,b:4}, function(a, b) {
      *     return a * b;
      *   }, 10); -> 80
      *
@@ -10106,7 +10252,7 @@
      * @example
      *
      *   Object.each({a:'b'}, function(key, val) {
-     *     console.log(key, val); // a, b
+     *     // key = a, val = 'b'
      *   });
      *
      ***/
@@ -10152,6 +10298,8 @@
      * @example
      *
      *   Object.average({a:35,b:11}); -> 23
+     *   Object.average(usersByName, 'age'); -> average user age
+     *   Object.average(usersByName, 'currencies.usd.balance'); -> USD mean balance
      *
      ***/
     'average': function(obj, map) {
@@ -10174,6 +10322,8 @@
      * @example
      *
      *   Object.median({a:1,b:2,c:2}) -> 2
+     *   Object.median(usersByName, 'age'); -> median user age
+     *   Object.median(usersByName, 'currencies.usd.balance'); -> USD median balance
      *
      ***/
     'median': function(obj, map) {
@@ -10285,9 +10435,8 @@
     /***
      * @method some(<obj>, <search>)
      * @returns Boolean
-     * @alias any
      * @short Returns true if <search> is true for any property in the object.
-     * @extra This method implements `enhanced matching`.
+     * @extra Implements `enhanced matching`.
      *
      * @callback search
      *
@@ -10308,9 +10457,8 @@
     /***
      * @method every(<obj>, <search>)
      * @returns Boolean
-     * @alias all
      * @short Returns true if <search> is true for all properties in the object.
-     * @extra This method implements `enhanced matching`.
+     * @extra Implements `enhanced matching`.
      *
      * @callback search
      *
@@ -10332,7 +10480,7 @@
      * @method find(<obj>, <search>)
      * @returns Boolean
      * @short Returns the first key whose value matches <search>.
-     * @extra This method implements `enhanced matching`. Note that "first" is
+     * @extra Implements `enhanced matching`. Note that "first" is
      *        implementation-dependent. If order is important an array should be
      *        used instead.
      *
@@ -10356,7 +10504,7 @@
      * @method filter(<obj>, <search>)
      * @returns Array
      * @short Returns a new object with properties that match <search>.
-     * @extra This method implements `enhanced matching`.
+     * @extra Implements `enhanced matching`.
      *
      * @callback search
      *
@@ -10381,7 +10529,7 @@
      * @method count(<obj>, <search>)
      * @returns Number
      * @short Counts all properties in the object that match <search>.
-     * @extra This method implements `enhanced matching`.
+     * @extra Implements `enhanced matching`.
      *
      * @callback search
      *
@@ -10392,10 +10540,10 @@
      * @example
      *
      *   Object.count({a:'a',b:'b',c:'a'}, 'a') -> 2
-     *
-     *   Object.count(usersByName.count(function(key, user) {
+     *   Object.count(usersByName, function(key, user) {
      *     return user.age > 30;
      *   }); -> number of users older than 30
+     *   Object.count(usersByName, { name: /^[H-Z]/ });
      *
      ***/
     'count': function(obj, f) {
@@ -10406,7 +10554,7 @@
      * @method none(<obj>, <search>)
      * @returns Boolean
      * @short Returns true if none of the properties in the object match <search>.
-     * @extra This method implements `enhanced matching`.
+     * @extra Implements `enhanced matching`.
      *
      * @callback search
      *
@@ -10442,7 +10590,523 @@
    *
    ***/
   alias(sugarObject, 'any', 'some');
-  'use strict';
+
+  /***
+   * @module Number
+   * @description Number formatting, precision rounding, Math aliases, and more.
+   *
+   ***/
+
+  // Abbreviation Units
+  var BASIC_UNITS         = '|kmbt',
+      MEMORY_UNITS        = '|KMGTPE',
+      MEMORY_BINARY_UNITS = '|,Ki,Mi,Gi,Ti,Pi,Ei',
+      METRIC_UNITS_SHORT  = 'nμm|k',
+      METRIC_UNITS_FULL   = 'yzafpnμm|KMGTPEZY';
+
+
+  /***
+   * @method thousands([str])
+   * @returns Mixed
+   * @accessor
+   * @short Gets or sets a string to be used as the thousands marker (default `,`).
+   * @extra Used by `Number#format`, `Nubmer#abbr`, `Number#metric`, and
+   *        `Number#bytes`. Setting to `null` restores the default.
+   * @example
+   *
+   *   Sugar.Number.thousands('.');
+   *
+   ***
+   * @method decimal([str])
+   * @returns Mixed
+   * @accessor
+   * @short Gets or sets a string to be used as the decimal marker (default `.`).
+   * @extra Used by `Number#format`, `Nubmer#abbr`, `Number#metric`, and
+   *        `Number#bytes`. Setting to `null` restores the default.
+   *
+   * @example
+   *
+   *   Sugar.Number.thousands(',');
+   *
+   ***/
+  var _thousands = defineAccessor(sugarNumber, 'thousands', HALF_WIDTH_COMMA);
+  var _decimal   = defineAccessor(sugarNumber, 'decimal', HALF_WIDTH_PERIOD);
+
+
+  function abbreviateNumber(num, precision, ustr, bytes) {
+    var fixed        = num.toFixed(20),
+        decimalPlace = fixed.search(/\./),
+        numeralPlace = fixed.search(/[1-9]/),
+        significant  = decimalPlace - numeralPlace,
+        units, unit, mid, i, divisor;
+    if (significant > 0) {
+      significant -= 1;
+    }
+    units = commaSplit(ustr);
+    if (units.length === 1) {
+      units = ustr.split('');
+    }
+    mid = units.indexOf('|');
+    if (mid === -1) {
+      // Skipping the placeholder means the units should start from zero,
+      // otherwise assume they end at zero.
+      mid = units[0] === '_' ? 0 : units.length;
+    }
+    i = max(min(floor(significant / 3), units.length - mid - 1), -mid);
+    unit = units[i + mid];
+    while (unit === '_') {
+      i += i < 0 ? -1 : 1;
+      unit = units[i + mid];
+    }
+    if (unit === '|') {
+      unit = '';
+    }
+    if (significant < -9) {
+      precision = abs(significant) - 9;
+    }
+    divisor = bytes ? pow(2, 10 * i) : pow(10, i * 3);
+    return numberFormat(withPrecision(num / divisor, precision || 0)) + unit;
+  }
+
+  function numberFormat(num, place) {
+    var i, str, split, integer, fraction, result = '', p = isNumber(place);
+    str = p ? withPrecision(num, place || 0).toFixed(max(place, 0)) : num.toString();
+    str = str.replace(/^-/, '');
+    split    = periodSplit(str);
+    integer  = split[0];
+    fraction = split[1];
+    if (/e/.test(str)) {
+      result = str;
+    } else {
+      for(i = integer.length; i > 0; i -= 3) {
+        if (i < integer.length) {
+          result = _thousands() + result;
+        }
+        result = integer.slice(max(0, i - 3), i) + result;
+      }
+    }
+    if (fraction) {
+      result += _decimal() + repeatString('0', (place || 0) - fraction.length) + fraction;
+    }
+    return (num < 0 ? '-' : '') + result;
+  }
+
+  function isInteger(n) {
+    return n % 1 === 0;
+  }
+
+  function isMultipleOf(n1, n2) {
+    return n1 % n2 === 0;
+  }
+
+  function createRoundingFunction(fn) {
+    return function(n, precision) {
+      return precision ? withPrecision(n, precision, fn) : fn(n);
+    };
+  }
+
+  defineStatic(sugarNumber, {
+
+    /***
+     * @method random([n1], [n2])
+     * @returns Number
+     * @static
+     * @short Returns a random integer from [n1] to [n2] (both inclusive).
+     * @extra If only 1 number is passed, the other will be 0. If none are passed,
+     *        the number will be either 0 or 1.
+     *
+     * @example
+     *
+     *   Number.random(50, 100) -> ex. 85
+     *   Number.random(50)      -> ex. 27
+     *   Number.random()        -> ex. 0
+     *
+     ***/
+    'random': function(n1, n2) {
+      var minNum, maxNum;
+      if (arguments.length == 1) n2 = n1, n1 = 0;
+      minNum = min(n1 || 0, isUndefined(n2) ? 1 : n2);
+      maxNum = max(n1 || 0, isUndefined(n2) ? 1 : n2) + 1;
+      return trunc((Math.random() * (maxNum - minNum)) + minNum);
+    }
+
+  });
+
+  defineInstance(sugarNumber, {
+
+    /***
+     * @method isInteger()
+     * @returns Boolean
+     * @short Returns true if the number has no trailing decimal.
+     *
+     * @example
+     *
+     *   (420).isInteger() -> true
+     *   (4.5).isInteger() -> false
+     *
+     ***/
+    'isInteger': function(n) {
+      return isInteger(n);
+    },
+
+    /***
+     * @method isOdd()
+     * @returns Boolean
+     * @short Returns true if the number is odd.
+     *
+     * @example
+     *
+     *   (3).isOdd()  -> true
+     *   (18).isOdd() -> false
+     *
+     ***/
+    'isOdd': function(n) {
+      return isInteger(n) && !isMultipleOf(n, 2);
+    },
+
+    /***
+     * @method isEven()
+     * @returns Boolean
+     * @short Returns true if the number is even.
+     *
+     * @example
+     *
+     *   (6).isEven()  -> true
+     *   (17).isEven() -> false
+     *
+     ***/
+    'isEven': function(n) {
+      return isMultipleOf(n, 2);
+    },
+
+    /***
+     * @method isMultipleOf(<num>)
+     * @returns Boolean
+     * @short Returns true if the number is a multiple of <num>.
+     *
+     * @example
+     *
+     *   (6).isMultipleOf(2)  -> true
+     *   (17).isMultipleOf(2) -> false
+     *   (32).isMultipleOf(4) -> true
+     *   (34).isMultipleOf(4) -> false
+     *
+     ***/
+    'isMultipleOf': function(n, num) {
+      return isMultipleOf(n, num);
+    },
+
+    /***
+     * @method log(<base> = Math.E)
+     * @returns Number
+     * @short Returns the logarithm of the number with <base>, or the natural
+     *        logarithm of the number if <base> is undefined.
+     *
+     * @example
+     *
+     *   (64).log(2) -> 6
+     *   (9).log(3)  -> 2
+     *   (5).log()   -> 1.6094379124341003
+     *
+     ***/
+    'log': function(n, base) {
+      return Math.log(n) / (base ? Math.log(base) : 1);
+    },
+
+    /***
+     * @method abbr([precision] = 0)
+     * @returns String
+     * @short Returns an abbreviated form of the number ("k" for thousand, "m"
+     *        for million, etc).
+     * @extra [precision] will round to the given precision. `thousands` and
+     *        `decimal` allow custom separators to be used.
+     *
+     * @example
+     *
+     *   (1000).abbr()    -> "1k"
+     *   (1000000).abbr() -> "1m"
+     *   (1280).abbr(1)   -> "1.3k"
+     *
+     ***/
+    'abbr': function(n, precision) {
+      return abbreviateNumber(n, precision, BASIC_UNITS);
+    },
+
+    /***
+     * @method metric([precision] = 0, [units] = "nμm|k")
+     * @returns String
+     * @short Returns the number as a string in metric notation.
+     * @extra [precision] will round to the given precision (can be negative).
+     *        [units] is a string that determines both the unit notation and the
+     *        min/max unit allowed. The default is natural notation for common
+     *        units (meters, grams, etc). "all" can be passed for [units] and is a
+     *        shortcut to all standard SI units. The token `,` if present separates
+     *        units, otherwise each character is a unit. The token `|` if present
+     *        marks where fractional units end, otherwise no fractional units are
+     *        used. Finally, the token `_` if present is a placeholder for no unit.
+     *
+     * @example
+     *
+     *   (1000).metric()        -> "1k"
+     *   (1000000).metric()     -> "1,000k"
+     *   (1249).metric(2) + 'g' -> "1.25kg"
+     *   (0.025).metric() + 'm' -> "25mm"
+     *   (1000000).metric(0, 'nμm|kM') -> "1M"
+     *
+     ***/
+    'metric': function(n, precision, units) {
+      if (units === 'all') {
+        units = METRIC_UNITS_FULL;
+      } else if (!units) {
+        units = METRIC_UNITS_SHORT;
+      }
+      return abbreviateNumber(n, precision, units);
+    },
+
+    /***
+     * @method bytes([precision] = 0, [binary] = false, [units] = 'si')
+     * @returns String
+     * @short Returns an abbreviated form of the number, with 'B' on the end for "bytes".
+     * @extra [precision] will round to the given precision. If [binary] is `true`,
+     *        powers of 1024 will be used instead of 1000, and units will default
+     *        to the binary units "KiB", "MiB", etc. Units can be overridden by
+     *        passing "si" or "binary" for [units], or further customized by
+     *        passing a unit string. See `metric` for more.
+     *
+     * @example
+     *
+     *   (1000).bytes()                 -> "1KB"
+     *   (1289).bytes(2)                -> "1.29KB"
+     *   (1000).bytes(2, true)          -> "0.98KiB"
+     *   (1000).bytes(2, true, 'si')    -> "0.98KB"
+     *
+     ***/
+    'bytes': function(n, precision, binary, units) {
+      if (units === 'binary' || (!units && binary)) {
+        units = MEMORY_BINARY_UNITS;
+      } else if(units === 'si' || !units) {
+        units = MEMORY_UNITS;
+      }
+      return abbreviateNumber(n, precision, units, binary) + 'B';
+    },
+
+    /***
+     * @method format([place] = 0)
+     * @returns String
+     * @short Formats the number to a readable string.
+     * @extra If [place] is `undefined`, the place will automatically be determined.
+     *        `thousands` and `decimal` allow custom markers to be used.
+     *
+     * @example
+     *
+     *   (56782).format()    -> '56,782'
+     *   (56782).format(2)   -> '56,782.00'
+     *   (4388.43).format(2) -> '4,388.43'
+     *
+     ***/
+    'format': function(n, place) {
+      return numberFormat(n, place);
+    },
+
+    /***
+     * @method hex([pad] = 1)
+     * @returns String
+     * @short Converts the number to hexidecimal.
+     * @extra [pad] will pad the resulting string to that many places.
+     *
+     * @example
+     *
+     *   (255).hex()   -> 'ff';
+     *   (255).hex(4)  -> '00ff';
+     *   (23654).hex() -> '5c66';
+     *
+     ***/
+    'hex': function(n, pad) {
+      return padNumber(n, pad || 1, false, 16);
+    },
+
+    /***
+     * @method times(<fn>)
+     * @returns Mixed
+     * @short Calls <fn> a number of times equivalent to the number.
+     * @extra Any non-undefined return values of <fn> will be collected and
+     *        returned in an array.
+     *
+     * @callback fn
+     *
+     *   i   The index of the current iteration.
+     *
+     * @example
+     *
+     *   (8).times(logHello) -> logs "hello" 8 times
+     *   (7).times(function(n) {
+     *     return Math.pow(2, n);
+     *   });
+     *
+     ***/
+    'times': function(n, fn) {
+      var arr, result;
+      for(var i = 0; i < n; i++) {
+        result = fn.call(n, i);
+        if (isDefined(result)) {
+          if (!arr) {
+            arr = [];
+          }
+          arr.push(result);
+        }
+      }
+      return arr;
+    },
+
+    /***
+     * @method chr()
+     * @returns String
+     * @short Returns a string at the code point of the number.
+     *
+     * @example
+     *
+     *   (65).chr() -> "A"
+     *   (75).chr() -> "K"
+     *
+     ***/
+    'chr': function(n) {
+      return chr(n);
+    },
+
+    /***
+     * @method pad(<place> = 0, [sign] = false, [base] = 10)
+     * @returns String
+     * @short Pads a number with "0" to <place>.
+     * @extra [sign] allows you to force the sign as well (+05, etc). [base] can
+     *        change the base for numeral conversion.
+     *
+     * @example
+     *
+     *   (5).pad(2)        -> '05'
+     *   (-5).pad(4)       -> '-0005'
+     *   (82).pad(3, true) -> '+082'
+     *
+     ***/
+    'pad': function(n, place, sign, base) {
+      return padNumber(n, place, sign, base);
+    },
+
+    /***
+     * @method ordinalize()
+     * @returns String
+     * @short Returns an ordinalized English string, i.e. "1st", "2nd", etc.
+     *
+     * @example
+     *
+     *   (1).ordinalize() -> '1st';
+     *   (2).ordinalize() -> '2nd';
+     *   (8).ordinalize() -> '8th';
+     *
+     ***/
+    'ordinalize': function(n) {
+      var num = abs(n), last = +num.toString().slice(-2);
+      return n + getOrdinalSuffix(last);
+    },
+
+    /***
+     * @method toNumber()
+     * @returns Number
+     * @short Identity function for compatibilty.
+     *
+     * @example
+     *
+     *   (420).toNumber() -> 420
+     *
+     ***/
+    'toNumber': function(n) {
+      return n.valueOf();
+    },
+
+    /***
+     * @method round(<precision> = 0)
+     * @returns Number
+     * @short Shortcut for `Math.round` that also allows a <precision>.
+     *
+     * @example
+     *
+     *   (3.241).round()  -> 3
+     *   (-3.841).round() -> -4
+     *   (3.241).round(2) -> 3.24
+     *   (3748).round(-2) -> 3800
+     *
+     ***/
+    'round': createRoundingFunction(round),
+
+    /***
+     * @method ceil(<precision> = 0)
+     * @returns Number
+     * @short Shortcut for `Math.ceil` that also allows a <precision>.
+     *
+     * @example
+     *
+     *   (3.241).ceil()  -> 4
+     *   (-3.241).ceil() -> -3
+     *   (3.241).ceil(2) -> 3.25
+     *   (3748).ceil(-2) -> 3800
+     *
+     ***/
+    'ceil': createRoundingFunction(ceil),
+
+    /***
+     * @method floor(<precision> = 0)
+     * @returns Number
+     * @short Shortcut for `Math.floor` that also allows a <precision>.
+     *
+     * @example
+     *
+     *   (3.241).floor()  -> 3
+     *   (-3.841).floor() -> -4
+     *   (3.241).floor(2) -> 3.24
+     *   (3748).floor(-2) -> 3700
+     *
+     ***/
+    'floor': createRoundingFunction(floor)
+
+  });
+
+  /***
+   * @method [math]()
+   * @returns Number
+   * @short Math related functions are mapped as shortcuts to numbers and are
+   *        identical. Note that `log` provides some special defaults.
+   *
+   * @set
+   *   abs
+   *   sin
+   *   asin
+   *   cos
+   *   acos
+   *   tan
+   *   atan
+   *   sqrt
+   *   exp
+   *   pow
+   *
+   * @example
+   *
+   *   (3).pow(3) -> 27
+   *   (-3).abs() -> 3
+   *   (1024).sqrt() -> 32
+   *
+   ***/
+  function buildMathAliases() {
+    defineInstanceSimilar(sugarNumber, 'abs,pow,sin,asin,cos,acos,tan,atan,exp,pow,sqrt', function(methods, name) {
+      methods[name] = function(n, arg) {
+        // Note that .valueOf() here is only required due to a
+        // very strange bug in iOS7 that only occurs occasionally
+        // in which Math.abs() called on non-primitive numbers
+        // returns a completely different number (Issue #400)
+        return Math[name](n.valueOf(), arg);
+      };
+    });
+  }
+
+  buildMathAliases();
 
   /***
    * @module Function
@@ -10563,7 +11227,7 @@
 
   defineInstance(sugarFunction, {
 
-     /***
+    /***
      * @method lazy([ms] = 1, [immediate] = false, [limit] = Infinity)
      * @returns Function
      * @short Creates a lazy function that, when called repeatedly, will queue
@@ -10577,21 +11241,15 @@
      *
      * @example
      *
-     *   logHello.lazy()()    // Logs after a delay
-     *   logHello.lazy(500)() // Logs after 500ms
-     *
-     *   (3).times(logHello.lazy(500));
-     *   -> Logs 3 times with each execution 500ms after the last
-     *
-     *   (100).times(logHello.lazy(500, false, 10));
-     *   -> Logs 10 times with each execution 500ms after the last
+     *   (10).times(logHello.lazy(250));             -> Logs 10 times each time 250ms later
+     *   (100).times(logHello.lazy(250, false, 10)); -> Logs 10 times each time 250ms later
      *
      ***/
     'lazy': function(fn, ms, immediate, limit) {
       return createLazyFunction(fn, ms, immediate, limit);
     },
 
-     /***
+    /***
      * @method throttle([ms] = 1)
      * @returns Function
      * @short Creates a "throttled" version of the function that will only be
@@ -10611,7 +11269,7 @@
       return createLazyFunction(fn, ms, true, 1);
     },
 
-     /***
+    /***
      * @method debounce([ms] = 1)
      * @returns Function
      * @short Creates a "debounced" function that postpones its execution until
@@ -10623,7 +11281,7 @@
      *
      * @example
      *
-     *   (3).times(logHello.debounce(50)) // called once 50ms later
+     *   (3).times(logHello.debounce(50)) -> called once 50ms later
      *
      ***/
     'debounce': function(fn, ms) {
@@ -10636,7 +11294,7 @@
       return debounced;
     },
 
-     /***
+    /***
      * @method cancel()
      * @returns Function
      * @short Cancels a delayed function scheduled to be run.
@@ -10644,14 +11302,14 @@
      *
      * @example
      *
-     *   logHello.delay(500).cancel() // never logs
+     *   logHello.delay(500).cancel() -> never logs
      *
      ***/
     'cancel': function(fn) {
       return cancelFunction(fn);
     },
 
-     /***
+    /***
      * @method after(<n>)
      * @returns Function
      * @short Creates a function that will execute after <n> calls.
@@ -10665,8 +11323,8 @@
      *
      * @example
      *
-     *   (5).times(logHello.after(2));       // logs four times
-     *   (5).times(logHello.once().after(2)) // logs once
+     *   (5).times(logHello.after(2));       -> logs four times
+     *   (5).times(logHello.once().after(2)) -> logs once
      *
      ***/
     'after': function(fn, num) {
@@ -10683,7 +11341,7 @@
       };
     },
 
-     /***
+    /***
      * @method once()
      * @returns Function
      * @short Creates a function that will execute only once and store the result.
@@ -10702,11 +11360,11 @@
       return createMemoizedFunction(fn, function() {});
     },
 
-     /***
+    /***
      * @method memoize([hashFn])
      * @returns Function
      * @short Creates a function that will cache results for unique calls.
-     * @extra `memoize` can be thought of as a more power `once`. Where `once`
+     * @extra `memoize` can be thought of as a more powerful `once`. Where `once`
      *        will only call a function once ever, memoized functions will be
      *        called once per unique call. A "unique call" is determined by the
      *        return value of [hashFn], which is passed the arguments of each call.
@@ -10717,18 +11375,17 @@
      *
      * @example
      *
-     *   fn = logHello.memoize();fn(1);fn(2);fn(1);
-     *   -> logs twice, returning the memoized result of the first call
+     *   fn = logHello.memoize();fn(1);fn(2);fn(1); -> logs twice, memoizing once
      *
-     *   (5).times(logHello.memoize())
-     *   -> will log 5 times as each call is passed different arguments by "times"
+     *   fn = calculateUserBalance.memoize('id');
+     *   fn(Harry); fn(Mark); fn(Mark);
      *
      ***/
     'memoize': function(fn, hashFn) {
       return createMemoizedFunction(fn, hashFn);
     },
 
-     /***
+    /***
      * @method lock([n])
      * @returns Function
      * @short Locks the number of arguments accepted by the function.
@@ -10739,7 +11396,7 @@
      * @example
      *
      *   parseInt.lock(1)('10', 16)  -> 10 (only 1 argument passed to parseInt)
-     *   logArguments.lock(2)(1,2,3) -> logs 1,2
+     *   logArgs.lock(2)(1,2,3)      -> logs 1,2
      *
      ***/
     'lock': function(fn, n) {
@@ -10758,10 +11415,9 @@
 
   });
 
-
   defineInstanceWithArguments(sugarFunction, {
 
-     /***
+    /***
      * @method partial(<arg1>, <arg2>, ...)
      * @returns Function
      * @short Returns a new version of the function which has part of its arguments
@@ -10773,8 +11429,11 @@
      *
      * @example
      *
-     *   logArguments.partial(undefined, 'b')('a')    // logs a, b
-     *   setTimeout.partial(undefined, 500)(logHello) // logs after 500ms
+     *   logArgs.partial(undefined, 'b')('a')    -> logs a, b
+     *
+     *   halfSecond = setTimeout.partial(undefined, 500);
+     *   halfSecond(logHello);
+     *   halfSecond(logGoodbye);
      *
      ***/
     'partial': function(fn, curriedArgs) {
@@ -10815,7 +11474,7 @@
       return partialFn;
     },
 
-     /***
+    /***
      * @method delay([ms] = 1, [arg1], ...)
      * @returns Function
      * @short Executes the function after <ms> milliseconds.
@@ -10826,8 +11485,8 @@
      *
      * @example
      *
-     *   logHello.delay(500)          // logs after 500ms
-     *   logArguments.delay(500, 'a') // logs "a" after 500ms
+     *   logHello.delay(500)     -> logs after 500ms
+     *   logArgs.delay(500, 'a') -> logs "a" after 500ms
      *
      ***/
     'delay': function(fn, ms, args) {
@@ -10835,7 +11494,7 @@
       return fn;
     },
 
-     /***
+    /***
      * @method every([ms] = 1, [arg1], ...)
      * @returns Function
      * @short Executes the function every <ms> milliseconds.
@@ -10852,8 +11511,9 @@
      *
      * @example
      *
-     *   logEvery = logHello.every(1000) // logs every second
-     *   logEvery.cancel() // cancel it!!
+     *   logEvery = logHello.every(1000)        -> logs every second
+     *   logEvery = logArgs.every(1000, 'Hola') -> logs 'hola' every second
+     *   logEvery.cancel()                      -> cancel it!!
      *
      ***/
     'every': function(fn, ms, args) {
@@ -10868,525 +11528,10 @@
     }
 
   });
-  'use strict';
-
-  /***
-   * @module Number
-   * @description Number formatting, precision rounding, Math aliases, etc.
-   *
-   ***/
-
-  // Abbreviation Units
-  var BASIC_UNITS         = '|kmbt',
-      MEMORY_UNITS        = '|KMGTPE',
-      MEMORY_BINARY_UNITS = '|,Ki,Mi,Gi,Ti,Pi,Ei',
-      METRIC_UNITS_SHORT  = 'nμm|k',
-      METRIC_UNITS_FULL   = 'yzafpnμm|KMGTPEZY';
-
-
-  /***
-   * @method thousands([str])
-   * @returns Mixed
-   * @accessor
-   * @short Gets or sets a string to be used as the thousands marker (default ",").
-   * @extra Used by `Number#format`, `Nubmer#abbr`, `Number#metric`, and
-   *        `Number#bytes`. Setting to `null` restores the default.
-   * @example
-   *
-   *   Sugar.Number.thousands('.');
-   *
-   ***
-   * @method decimal([str])
-   * @returns Mixed
-   * @accessor
-   * @short Gets or sets a string to be used as the decimal marker (default ".").
-   * @extra Used by `Number#format`, `Nubmer#abbr`, `Number#metric`, and
-   *        `Number#bytes`. Setting to `null` restores the default.
-   *
-   * @example
-   *
-   *   Sugar.Number.thousands(',');
-   *
-   ***/
-  var _thousands = defineAccessor(sugarNumber, 'thousands', HALF_WIDTH_COMMA);
-  var _decimal   = defineAccessor(sugarNumber, 'decimal', HALF_WIDTH_PERIOD);
-
-
-  function abbreviateNumber(num, precision, ustr, bytes) {
-    var fixed        = num.toFixed(20),
-        decimalPlace = fixed.search(/\./),
-        numeralPlace = fixed.search(/[1-9]/),
-        significant  = decimalPlace - numeralPlace,
-        units, unit, mid, i, divisor;
-    if (significant > 0) {
-      significant -= 1;
-    }
-    units = commaSplit(ustr);
-    if (units.length === 1) {
-      units = ustr.split('');
-    }
-    mid = units.indexOf('|');
-    if (mid === -1) {
-      // Skipping the placeholder means the units should start from zero,
-      // otherwise assume they end at zero.
-      mid = units[0] === '_' ? 0 : units.length;
-    }
-    i = max(min(floor(significant / 3), units.length - mid - 1), -mid);
-    unit = units[i + mid];
-    while (unit === '_') {
-      i += i < 0 ? -1 : 1;
-      unit = units[i + mid];
-    }
-    if (unit === '|') {
-      unit = '';
-    }
-    if (significant < -9) {
-      precision = abs(significant) - 9;
-    }
-    divisor = bytes ? pow(2, 10 * i) : pow(10, i * 3);
-    return numberFormat(withPrecision(num / divisor, precision || 0)) + unit;
-  }
-
-  function numberFormat(num, place) {
-    var i, str, split, integer, fraction, result = '', p = isNumber(place);
-    str = p ? withPrecision(num, place || 0).toFixed(max(place, 0)) : num.toString();
-    str = str.replace(/^-/, '');
-    split    = periodSplit(str);
-    integer  = split[0];
-    fraction = split[1];
-    if (/e/.test(str)) {
-      result = str;
-    } else {
-      for(i = integer.length; i > 0; i -= 3) {
-        if (i < integer.length) {
-          result = _thousands() + result;
-        }
-        result = integer.slice(max(0, i - 3), i) + result;
-      }
-    }
-    if (fraction) {
-      result += _decimal() + repeatString('0', (place || 0) - fraction.length) + fraction;
-    }
-    return (num < 0 ? '-' : '') + result;
-  }
-
-  function isInteger(n) {
-    return n % 1 === 0;
-  }
-
-  function isMultipleOf(n1, n2) {
-    return n1 % n2 === 0;
-  }
-
-  function createRoundingFunction(fn) {
-    return function(n, precision) {
-      return precision ? withPrecision(n, precision, fn) : fn(n);
-    };
-  }
-
-  defineStatic(sugarNumber, {
-
-    /***
-     * @method random([n1], [n2])
-     * @returns Number
-     * @static
-     * @short Returns a random integer between [n1] and [n2].
-     * @extra If only 1 number is passed, the other will be 0. If none are passed,
-     *        the number will be either 0 or 1.
-     *
-     * @example
-     *
-     *   Number.random(50, 100) -> ex. 85
-     *   Number.random(50)      -> ex. 27
-     *   Number.random()        -> ex. 0
-     *
-     ***/
-    'random': function(n1, n2) {
-      var minNum, maxNum;
-      if (arguments.length == 1) n2 = n1, n1 = 0;
-      minNum = min(n1 || 0, isUndefined(n2) ? 1 : n2);
-      maxNum = max(n1 || 0, isUndefined(n2) ? 1 : n2) + 1;
-      return trunc((Math.random() * (maxNum - minNum)) + minNum);
-    }
-
-  });
-
-  defineInstance(sugarNumber, {
-
-    /***
-     * @method isInteger()
-     * @returns Boolean
-     * @short Returns true if the number has no trailing decimal.
-     *
-     * @example
-     *
-     *   (420).isInteger() -> true
-     *   (4.5).isInteger() -> false
-     *
-     ***/
-    'isInteger': function(n) {
-      return isInteger(n);
-    },
-
-    /***
-     * @method isOdd()
-     * @returns Boolean
-     * @short Returns true if the number is odd.
-     *
-     * @example
-     *
-     *   (3).isOdd()  -> true
-     *   (18).isOdd() -> false
-     *
-     ***/
-    'isOdd': function(n) {
-      return isInteger(n) && !isMultipleOf(n, 2);
-    },
-
-    /***
-     * @method isEven()
-     * @returns Boolean
-     * @short Returns true if the number is even.
-     *
-     * @example
-     *
-     *   (6).isEven()  -> true
-     *   (17).isEven() -> false
-     *
-     ***/
-    'isEven': function(n) {
-      return isMultipleOf(n, 2);
-    },
-
-    /***
-     * @method isMultipleOf(<num>)
-     * @returns Boolean
-     * @short Returns true if the number is a multiple of <num>.
-     *
-     * @example
-     *
-     *   (6).isMultipleOf(2)  -> true
-     *   (17).isMultipleOf(2) -> false
-     *   (32).isMultipleOf(4) -> true
-     *   (34).isMultipleOf(4) -> false
-     *
-     ***/
-    'isMultipleOf': function(n, num) {
-      return isMultipleOf(n, num);
-    },
-
-    /***
-     * @method log(<base> = Math.E)
-     * @returns Number
-     * @short Returns the logarithm of the number with base <base>, or natural
-     *        logarithm of the number if <base> is undefined.
-     *
-     * @example
-     *
-     *   (64).log(2) -> 6
-     *   (9).log(3)  -> 2
-     *   (5).log()   -> 1.6094379124341003
-     *
-     ***/
-    'log': function(n, base) {
-      return Math.log(n) / (base ? Math.log(base) : 1);
-    },
-
-    /***
-     * @method abbr([precision] = 0)
-     * @returns String
-     * @short Returns an abbreviated form of the number ("k" for thousand, "m"
-     *        for million, etc).
-     * @extra [precision] will round to the given precision. `Sugar.thousands` and
-     *        `Sugar.decimal` allow custom markers to be used.
-     *
-     * @example
-     *
-     *   (1000).abbr()    -> "1k"
-     *   (1000000).abbr() -> "1m"
-     *   (1280).abbr(1)   -> "1.3k"
-     *
-     ***/
-    'abbr': function(n, precision) {
-      return abbreviateNumber(n, precision, BASIC_UNITS);
-    },
-
-    /***
-     * @method metric([precision] = 0, [units] = "nμm|k")
-     * @returns String
-     * @short Returns the number as a string in metric notation.
-     * @extra [precision] will round to the given precision (can be negative).
-     *        [units] is a string that determines both the unit notation and the
-     *        min/max unit allowed. The default is natural notation for common
-     *        units (meters, grams, etc). "all" can be passed for [units] and is a
-     *        shortcut to all standard SI units. The token `,` if present separates
-     *        units, otherwise each character is a unit. The token `|` if present
-     *        marks where fractional units end, otherwise no fractional units are
-     *        used. Finally, the token `_` if present is a placeholder for no unit.
-     *
-     * @example
-     *
-     *   (1000).metric()        -> "1k"
-     *   (1000000).metric()     -> "1,000k"
-     *   (1249).metric(2) + 'g' -> "1.25kg"
-     *   (0.025).metric() + 'm' -> "25mm"
-     *   (1000000).metric(0, 'nμm|kM') -> "1M"
-     *
-     ***/
-    'metric': function(n, precision, units) {
-      if (units === 'all') {
-        units = METRIC_UNITS_FULL;
-      } else if (!units) {
-        units = METRIC_UNITS_SHORT;
-      }
-      return abbreviateNumber(n, precision, units);
-    },
-
-    /***
-     * @method bytes([precision] = 0, [si] = false, [units] = '|KMGTPE')
-     * @returns String
-     * @short Returns an abbreviated form of the number, with 'B' on the end for "bytes".
-     * @extra [precision] will round to the given precision. If [si] is `true`,
-     *        the standard SI units of 1000 will be used instead of 1024. [units]
-     *        is a string that determines both the unit notation and the min/max
-     *        unit allowed. See `Number#metric` for more.
-     *
-     * @example
-     *
-     *   (1000).bytes()                 -> "1kB"
-     *   (1000).bytes(2)                -> "0.98kB"
-     *   ((10).pow(20)).bytes()         -> "90,949,470TB"
-     *   ((10).pow(20)).bytes(0, false) -> "87EB"
-     *
-     ***/
-    'bytes': function(n, precision, si, units) {
-      if (units === 'binary') {
-        units = MEMORY_BINARY_UNITS;
-      } else if(!units) {
-        units = MEMORY_UNITS;
-      }
-      return abbreviateNumber(n, precision, units, !si) + 'B';
-    },
-
-    /***
-     * @method format([place] = 0)
-     * @returns String
-     * @short Formats the number to a readable string.
-     * @extra If [place] is `undefined`, the place will automatically be determined.
-     *        `Sugar.thousands` and `Sugar.decimal` allow custom markers to be used.
-     *
-     * @example
-     *
-     *   (56782).format()    -> '56,782'
-     *   (56782).format(2)   -> '56,782.00'
-     *   (4388.43).format(2) -> '4,388.43'
-     *
-     ***/
-    'format': function(n, place) {
-      return numberFormat(n, place);
-    },
-
-    /***
-     * @method hex([pad] = 1)
-     * @returns String
-     * @short Converts the number to hexidecimal.
-     * @extra [pad] will pad the resulting string to that many places.
-     *
-     * @example
-     *
-     *   (255).hex()   -> 'ff';
-     *   (255).hex(4)  -> '00ff';
-     *   (23654).hex() -> '5c66';
-     *
-     ***/
-    'hex': function(n, pad) {
-      return padNumber(n, pad || 1, false, 16);
-    },
-
-    /***
-     * @method times(<fn>)
-     * @returns Mixed
-     * @short Calls <fn> a number of times equivalent to the number.
-     * @extra Any non-undefined return values of <fn> will be collected and
-     *        returned in an array.
-     *
-     * @callback fn
-     *
-     *   i   The index of the current iteration.
-     *
-     * @example
-     *
-     *   (8).times(logHello) // logs "hello" 8 times
-     *
-     ***/
-    'times': function(n, fn) {
-      var arr, result;
-      for(var i = 0; i < n; i++) {
-        result = fn.call(n, i);
-        if (isDefined(result)) {
-          if (!arr) {
-            arr = [];
-          }
-          arr.push(result);
-        }
-      }
-      return arr;
-    },
-
-    /***
-     * @method chr()
-     * @returns String
-     * @short Returns a string at the code point of the number.
-     *
-     * @example
-     *
-     *   (65).chr() -> "A"
-     *   (75).chr() -> "K"
-     *
-     ***/
-    'chr': function(n) {
-      return chr(n);
-    },
-
-    /***
-     * @method pad(<place> = 0, [sign] = false, [base] = 10)
-     * @returns String
-     * @short Pads a number with "0" to <place>.
-     * @extra [sign] allows you to force the sign as well (+05, etc). [base] can
-     *        change the base for numeral conversion.
-     *
-     * @example
-     *
-     *   (5).pad(2)        -> '05'
-     *   (-5).pad(4)       -> '-0005'
-     *   (82).pad(3, true) -> '+082'
-     *
-     ***/
-    'pad': function(n, place, sign, base) {
-      return padNumber(n, place, sign, base);
-    },
-
-    /***
-     * @method ordinalize()
-     * @returns String
-     * @short Returns an ordinalized (English) string, i.e. "1st", "2nd", etc.
-     *
-     * @example
-     *
-     *   (1).ordinalize() -> '1st';
-     *   (2).ordinalize() -> '2nd';
-     *   (8).ordinalize() -> '8th';
-     *
-     ***/
-    'ordinalize': function(n) {
-      var num = abs(n), last = +num.toString().slice(-2);
-      return n + getOrdinalSuffix(last);
-    },
-
-    /***
-     * @method toNumber()
-     * @returns Number
-     * @short Identity function for compatibilty.
-     *
-     * @example
-     *
-     *   (420).toNumber() -> 420
-     *
-     ***/
-    'toNumber': function(n) {
-      return n.valueOf();
-    },
-
-    /***
-     * @method round(<precision> = 0)
-     * @returns Number
-     * @short Shortcut for `Math.round` that also allows a <precision>.
-     *
-     * @example
-     *
-     *   (3.241).round()  -> 3
-     *   (-3.841).round() -> -4
-     *   (3.241).round(2) -> 3.24
-     *   (3748).round(-2) -> 3800
-     *
-     ***/
-    'round': createRoundingFunction(round),
-
-    /***
-     * @method ceil(<precision> = 0)
-     * @returns Number
-     * @short Shortcut for `Math.ceil` that also allows a <precision>.
-     *
-     * @example
-     *
-     *   (3.241).ceil()  -> 4
-     *   (-3.241).ceil() -> -3
-     *   (3.241).ceil(2) -> 3.25
-     *   (3748).ceil(-2) -> 3800
-     *
-     ***/
-    'ceil': createRoundingFunction(ceil),
-
-    /***
-     * @method floor(<precision> = 0)
-     * @returns Number
-     * @short Shortcut for `Math.floor` that also allows a <precision>.
-     *
-     * @example
-     *
-     *   (3.241).floor()  -> 3
-     *   (-3.841).floor() -> -4
-     *   (3.241).floor(2) -> 3.24
-     *   (3748).floor(-2) -> 3700
-     *
-     ***/
-    'floor': createRoundingFunction(floor)
-
-  });
-
-  /***
-   * @method [math]()
-   * @returns Number
-   * @short Math related functions are mapped as shortcuts to numbers and are
-   *        identical. Note that `Number#log` provides some special defaults.
-   *
-   * @set
-   *   abs
-   *   sin
-   *   asin
-   *   cos
-   *   acos
-   *   tan
-   *   atan
-   *   sqrt
-   *   exp
-   *   pow
-   *
-   * @example
-   *
-   *   (3).pow(3) -> 27
-   *   (-3).abs() -> 3
-   *   (1024).sqrt() -> 32
-   *
-   ***/
-  function buildMathAliases() {
-    defineInstanceSimilar(sugarNumber, 'abs,pow,sin,asin,cos,acos,tan,atan,exp,pow,sqrt', function(methods, name) {
-      methods[name] = function(n, arg) {
-        // Note that .valueOf() here is only required due to a
-        // very strange bug in iOS7 that only occurs occasionally
-        // in which Math.abs() called on non-primitive numbers
-        // returns a completely different number (Issue #400)
-        return Math[name](n.valueOf(), arg);
-      };
-    });
-  }
-
-  buildMathAliases();
-  'use strict';
 
   /***
    * @module RegExp
-   * @description Escaping regexes and manipulating their flags.
+   * @description RegExp escaping and flag manipulation.
    *
    * Note here that methods on the RegExp class like .exec and .test will fail in
    * the current version of SpiderMonkey being used by CouchDB when using
@@ -11398,19 +11543,19 @@
 
   defineStatic(sugarRegExp, {
 
-   /***
-    * @method escape(<str> = '')
-    * @returns String
-    * @static
-    * @short Escapes all RegExp tokens in a string.
-    *
-    * @example
-    *
-    *   RegExp.escape('really?')      -> 'really\?'
-    *   RegExp.escape('yes.')         -> 'yes\.'
-    *   RegExp.escape('(not really)') -> '\(not really\)'
-    *
-    ***/
+    /***
+     * @method escape(<str> = '')
+     * @returns String
+     * @static
+     * @short Escapes all RegExp tokens in a string.
+     *
+     * @example
+     *
+     *   RegExp.escape('really?')      -> 'really\?'
+     *   RegExp.escape('yes.')         -> 'yes\.'
+     *   RegExp.escape('(not really)') -> '\(not really\)'
+     *
+     ***/
     'escape': function(str) {
       return escapeRegExp(str);
     }
@@ -11419,77 +11564,75 @@
 
   defineInstance(sugarRegExp, {
 
-   /***
-    * @method getFlags()
-    * @returns String
-    * @short Returns the flags of the regex as a string.
-    *
-    * @example
-    *
-    *   /texty/gim.getFlags() -> 'gim'
-    *
-    ***/
+    /***
+     * @method getFlags()
+     * @returns String
+     * @short Returns the flags of the regex as a string.
+     *
+     * @example
+     *
+     *   /texty/gim.getFlags() -> 'gim'
+     *
+     ***/
     'getFlags': function(r) {
       return getRegExpFlags(r);
     },
 
-   /***
-    * @method setFlags(<flags>)
-    * @returns RegExp
-    * @short Sets the flags on a regex and retuns a copy.
-    *
-    * @example
-    *
-    *   /texty/.setFlags('gim') -> now has global, ignoreCase, and multiline set
-    *
-    ***/
+    /***
+     * @method setFlags(<flags>)
+     * @returns RegExp
+     * @short Creates a copy of the regex with <flags> set.
+     *
+     * @example
+     *
+     *   /texty/.setFlags('gim') -> now has global, ignoreCase, and multiline set
+     *
+     ***/
     'setFlags': function(r, flags) {
       return RegExp(r.source, flags);
     },
 
-   /***
-    * @method addFlags(<flags>)
-    * @returns RegExp
-    * @short Adds any flag in the <flags> string to the regex.
-    *
-    * @example
-    *
-    *   /texty/.addFlags('g')  -> /texty/g
-    *   /texty/.addFlags('im') -> /texty/im
-    *
-    ***/
+    /***
+     * @method addFlags(<flags>)
+     * @returns RegExp
+     * @short Creates a copy of the regex with <flags> added.
+     *
+     * @example
+     *
+     *   /texty/.addFlags('g')  -> /texty/g
+     *   /texty/.addFlags('im') -> /texty/im
+     *
+     ***/
     'addFlags': function(r, flags) {
       return RegExp(r.source, getRegExpFlags(r, flags));
     },
 
-   /***
-    * @method removeFlags(<flags>)
-    * @returns RegExp
-    * @short Removes any flag in the <flags> string from the regex.
-    *
-    * @example
-    *
-    *   /texty/gim.removeFlags('g')  -> /texty/im
-    *   /texty/gim.removeFlags('im') -> /texty/g
-    *
-    ***/
+    /***
+     * @method removeFlags(<flags>)
+     * @returns RegExp
+     * @short Creates a copy of the regex with <flags> removed.
+     *
+     * @example
+     *
+     *   /texty/gim.removeFlags('g')  -> /texty/im
+     *   /texty/gim.removeFlags('im') -> /texty/g
+     *
+     ***/
     'removeFlags': function(r, flags) {
       var reg = allCharsReg(flags);
       return RegExp(r.source, getRegExpFlags(r).replace(reg, ''));
     }
 
   });
-  'use strict';
 
   /***
    * @module Range
-   * @description Ranges allow creating spans of numbers, strings, or dates.
-   *              They can enumerate over specific points within that range,
-   *              and be manipulated and compared.
+   * @description Date, Number, and String ranges that can be manipulated and compared,
+   *              or enumerate over specific points within the range.
    *
    ***/
 
-  var DURATION_UNITS           = 'year|month|week|day|hour|minute|(?:milli)?second';
+  var DURATION_UNITS           = 'year|month|week|day|hour|minute|second|millisecond';
   var FULL_CAPTURED_DURATION   = '((?:\\d+)?\\s*(?:' + DURATION_UNITS + '))s?';
 
   // Duration Formats
@@ -11542,12 +11685,12 @@
   function getDateForRange(d) {
     if (isDate(d)) {
       return d;
+    } else if (d == null) {
+      return new Date();
     } else if (sugarDate.create) {
       return sugarDate.create(d);
-    } else {
-      // Needed as argument numbers are checked internally here.
-      return d === undefined ? new Date() : new Date(d);
     }
+    return new Date(d);
   }
 
   function createDateRangeFromString(str) {
@@ -11569,6 +11712,8 @@
       start = getDateForRange(datetime);
       dio = getDateIncrementObject(duration);
       end = incrementDate(start, dio[0], dio[1]);
+    } else {
+      start = str;
     }
     return new Range(getDateForRange(start), getDateForRange(end));
   }
@@ -11590,6 +11735,66 @@
     return m !== -Infinity && m !== Infinity;
   }
 
+  function rangeIsValid(range) {
+    return isValidRangeMember(range.start) &&
+           isValidRangeMember(range.end) &&
+           typeof range.start === typeof range.end;
+  }
+
+  function rangeEvery(range, amount, countOnly, fn) {
+    var increment,
+        precision,
+        dio,
+        unit,
+        start   = range.start,
+        end     = range.end,
+        inverse = end < start,
+        current = start,
+        index   = 0,
+        result  = [];
+
+    if (!rangeIsValid(range)) {
+      return [];
+    }
+    if (isFunction(amount)) {
+      fn = amount;
+      amount = null;
+    }
+    amount = amount || 1;
+    if (isNumber(start)) {
+      precision = getGreaterPrecision(start, amount);
+      increment = function() {
+        return incrementNumber(current, amount, precision);
+      };
+    } else if (isString(start)) {
+      increment = function() {
+        return incrementString(current, amount);
+      };
+    } else if (isDate(start)) {
+      dio    = getDateIncrementObject(amount);
+      amount = dio[0];
+      unit   = dio[1];
+      increment = function() {
+        return incrementDate(current, amount, unit);
+      };
+    }
+    // Avoiding infinite loops
+    if (inverse && amount > 0) {
+      amount *= -1;
+    }
+    while(inverse ? current >= end : current <= end) {
+      if (!countOnly) {
+        result.push(current);
+      }
+      if (fn) {
+        fn(current, index, range);
+      }
+      current = increment();
+      index++;
+    }
+    return countOnly ? index - 1 : result;
+  }
+
   function getDateIncrementObject(amt) {
     var match, val, unit;
     if (isNumber(amt)) {
@@ -11597,7 +11802,7 @@
     }
     match = amt.match(DURATION_REG);
     val = +match[1] || 1;
-    unit = simpleCapitalize(match[2]);
+    unit = simpleCapitalize(match[2].toLowerCase());
     if (unit.match(/hour|minute|second/i)) {
       unit += 's';
     } else if (unit === 'Year') {
@@ -11627,7 +11832,68 @@
     return withPrecision(current + amount, precision);
   }
 
-  Range.prototype = {
+  function rangeClamp(range, obj) {
+    var clamped,
+        start = range.start,
+        end = range.end,
+        min = end < start ? end : start,
+        max = start > end ? start : end;
+    if (obj < min) {
+      clamped = min;
+    } else if (obj > max) {
+      clamped = max;
+    } else {
+      clamped = obj;
+    }
+    return cloneRangeMember(clamped);
+  }
+
+  /***
+   * @method [unit]()
+   * @returns Number
+   * @short Returns the span of a date range in the given unit.
+   * @extra Higher order units ("days" and greater) walk the date to avoid
+   *        discrepancies with ambiguity. Lower order units simply subtract the
+   *        start from the end.
+   *
+   * @set
+   *   milliseconds
+   *   seconds
+   *   minutes
+   *   hours
+   *   days
+   *   weeks
+   *   months
+   *   years
+   *
+   * @example
+   *
+   *   janToMay.months()  -> 4
+   *   janToMay.days()    -> 121
+   *   janToMay.hours()   -> 2904
+   *   janToMay.minutes() -> 220320
+   *
+   ***/
+  function buildDateRangeUnits() {
+    var methods = {};
+    forEach(DURATION_UNITS.split('|'), function(unit, i) {
+      var name = unit + 's', mult, fn;
+      if (i < 4) {
+        fn = function() {
+          return rangeEvery(this, unit, true);
+        };
+      } else {
+        mult = MULTIPLIERS[simpleCapitalize(name)];
+        fn = function() {
+          return trunc((this.end - this.start) / mult);
+        };
+      }
+      methods[name] = fn;
+    });
+    defineOnPrototype(Range, methods);
+  }
+
+  defineOnPrototype(Range, {
 
     /***
      * @method toString()
@@ -11641,7 +11907,7 @@
      *
      ***/
     'toString': function() {
-      return this.isValid() ? this.start + '..' + this.end : 'Invalid Range';
+      return rangeIsValid(this) ? this.start + '..' + this.end : 'Invalid Range';
     },
 
     /***
@@ -11656,9 +11922,7 @@
      *
      ***/
     'isValid': function() {
-      return isValidRangeMember(this.start) &&
-             isValidRangeMember(this.end) &&
-             typeof this.start === typeof this.end;
+      return rangeIsValid(this);
     },
 
     /***
@@ -11670,13 +11934,14 @@
      *
      * @example
      *
-     *   Number.range(5, 10).span() -> 6
-     *   janToMay.span()            -> 10368000001 (or more depending on leap year)
+     *   Number.range(5, 10).span()  -> 6
+     *   Number.range(40, 25).span() -> 16
+     *   janToMay.span()             -> 10368000001 (or more depending on leap year)
      *
      ***/
     'span': function() {
       var n = getRangeMemberNumericValue(this.end) - getRangeMemberNumericValue(this.start);
-      return this.isValid() ? abs(n) + 1 : NaN;
+      return rangeIsValid(this) ? abs(n) + 1 : NaN;
     },
 
     /***
@@ -11688,7 +11953,10 @@
      * @example
      *
      *   Number.range(5, 10).contains(7)         -> true
-     *   janToMay.contains(Date.create('March')) -> true
+     *   Number.range(5, 10).contains(2)         -> false
+     *   janToMay.contains(mar)                  -> true
+     *   janToMay.contains(marToAug)             -> false
+     *   janToMay.contains(febToApr)             -> true
      *
      ***/
     'contains': function(obj) {
@@ -11704,13 +11972,12 @@
     /***
      * @method every(<amount>, [fn])
      * @returns Array
-     * @short Iterates through the range for every <amount>, calling [fn] if it is
-     *        passed. Returns an array of each increment visited.
-     * @extra In the case of date ranges, <amount> can also be a string, in which
-     *        case it will increment a number of  units. Note that `(2).months()`
-     *        first resolves to a number, which will be interpreted as milliseconds
-     *        and is an approximation, so stepping through the actual months by
-     *        passing `"2 months"` is usually preferable.
+     * @short Iterates through the range by <amount>, calling [fn] for each step.
+     * @extra Returns an array of each increment visited. For date ranges,
+     *        <amount> can also be a string like `"2 days"`. This will step
+     *        through the range by incrementing a date object by that specific
+     *        unit, and so is generally preferable for vague units such as
+     *        `"2 months"`.
      *
      * @callback fn
      *
@@ -11721,59 +11988,11 @@
      * @example
      *
      *   Number.range(2, 8).every(2) -> [2,4,6,8]
-     *   janToMay.every('month')     -> [Jan 1, Feb 1, Mar 1, Apr 1, May 1]
+     *   janToMay.every('2 months')  -> [Jan 1, Mar 1, May 1]
      *
      ***/
     'every': function(amount, fn) {
-      var increment,
-          precision,
-          dio,
-          unit,
-          start   = this.start,
-          end     = this.end,
-          inverse = end < start,
-          current = start,
-          index   = 0,
-          result  = [];
-
-      if (!this.isValid()) {
-        return [];
-      }
-      if (isFunction(amount)) {
-        fn = amount;
-        amount = null;
-      }
-      amount = amount || 1;
-      if (isNumber(start)) {
-        precision = getGreaterPrecision(start, amount);
-        increment = function() {
-          return incrementNumber(current, amount, precision);
-        };
-      } else if (isString(start)) {
-        increment = function() {
-          return incrementString(current, amount);
-        };
-      } else if (isDate(start)) {
-        dio    = getDateIncrementObject(amount);
-        amount = dio[0];
-        unit   = dio[1];
-        increment = function() {
-          return incrementDate(current, amount, unit);
-        };
-      }
-      // Avoiding infinite loops
-      if (inverse && amount > 0) {
-        amount *= -1;
-      }
-      while(inverse ? current >= end : current <= end) {
-        result.push(current);
-        if (fn) {
-          fn(current, index, this);
-        }
-        current = increment();
-        index++;
-      }
-      return result;
+      return rangeEvery(this, amount, false, fn);
     },
 
     /***
@@ -11786,11 +12005,11 @@
      * @example
      *
      *   Number.range(1, 5).toArray() -> [1,2,3,4,5]
-     *   Date.range('1 second ago', 'now').toArray() -> [1000ms ago, 999ms ago, ...]
+     *   Date.range('1 millisecond ago', 'now').toArray() -> [1ms ago, now]
      *
      ***/
     'toArray': function() {
-      return this.every();
+      return rangeEvery(this);
     },
 
     /***
@@ -11859,26 +12078,14 @@
      * @example
      *
      *   Number.range(1, 5).clamp(8)     -> 5
-     *   Date.range(janToMay).clamp(aug) -> May 1, xxxx
+     *   janToMay.clamp(aug) -> May 1, xxxx
      *
      ***/
     'clamp': function(obj) {
-      var clamped,
-          start = this.start,
-          end = this.end,
-          min = end < start ? end : start,
-          max = start > end ? start : end;
-      if (obj < min) {
-        clamped = min;
-      } else if (obj > max) {
-        clamped = max;
-      } else {
-        clamped = obj;
-      }
-      return cloneRangeMember(clamped);
+      return rangeClamp(this, obj);
     }
 
-  };
+  });
 
 
   /*** @namespace Number ***/
@@ -11889,11 +12096,13 @@
      * @method range([start], [end])
      * @returns Range
      * @static
-     * @short Creates a new range between [start] and [end]. See `ranges` for more.
+     * @short Creates a new number range between [start] and [end]. See `ranges`
+     *        for more.
      *
      * @example
      *
      *   Number.range(5, 10)
+     *   Number.range(20, 15)
      *
      ***/
     'range': PrimitiveRangeConstructor
@@ -11925,13 +12134,14 @@
      *
      ***/
     'upto': function(n, num, fn, step) {
-      return new Range(n, num).every(step, fn);
+      return rangeEvery(new Range(n, num), step, false, fn);
     },
 
-     /***
+    /***
      * @method clamp([start] = Infinity, [end] = Infinity)
      * @returns Number
-     * @short Constrains the number so that it is between [start] and [end].
+     * @short Constrains the number so that it falls on or between [start] and
+     *        [end].
      * @extra This will build a range object that has an equivalent `clamp` method.
      *
      * @example
@@ -11941,10 +12151,10 @@
      *
      ***/
     'clamp': function(n, start, end) {
-      return new Range(start, end).clamp(n);
+      return rangeClamp(new Range(start, end), n);
     },
 
-     /***
+    /***
      * @method cap([max] = Infinity)
      * @returns Number
      * @short Constrains the number so that it is no greater than [max].
@@ -11956,7 +12166,7 @@
      *
      ***/
     'cap': function(n, max) {
-      return new Range(undefined, max).clamp(n);
+      return rangeClamp(new Range(undefined, max), n);
     }
 
   });
@@ -11994,11 +12204,13 @@
      * @method range([start], [end])
      * @returns Range
      * @static
-     * @short Creates a new range between [start] and [end]. See `ranges` for more.
+     * @short Creates a new string range between [start] and [end]. See `ranges`
+     *        for more.
      *
      * @example
      *
      *   String.range('a', 'z')
+     *   String.range('t', 'm')
      *
      ***/
     'range': PrimitiveRangeConstructor
@@ -12014,17 +12226,29 @@
      * @method range([start], [end])
      * @returns Range
      * @static
-     * @short Creates a new range between [start] and [end].
-     * @extra If either [start] or [end] are null, they will default to the
-     *        current date. See `ranges` for more.
+     * @short Creates a new date range between [start] and [end].
+     * @extra Arguments may be either dates or strings which will be forwarded to
+     *        the date constructor (`create` will be used if present in the build).
+     *        If either [start] or [end] are undefined, they will default to the
+     *        current date. This method also accepts an alternate syntax of a
+     *        single string describing the range in natural language. See `ranges`
+     *        for more.
      *
      * @example
      *
+     *   Date.range(jan, may)
      *   Date.range('today', 'tomorrow')
+     *   Date.range('now', '5 days ago')
+     *   Date.range('last Monday')
+     *   Date.range('Monday to Friday')
+     *   Date.range('tomorrow from 3pm to 5pm')
+     *   Date.range('1 hour starting at 5pm Tuesday')
      *
      ***/
     'range': DateRangeConstructor
 
   });
+
+  buildDateRangeUnits();
 
 }).call(this);
