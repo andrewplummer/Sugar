@@ -50,6 +50,7 @@ namespace('Date', function () {
     equal(new Sugar.Date('8/10/50', { locale: 'en-GB'}).raw, new Date(1950, 9, 8), 'Chainable constructor accepts options');
     equal(new Sugar.Date('8/10/50', 'en-GB').raw, new Date(1950, 9, 8), 'Chainable constructor accepts a locale code');
     equal(Sugar.Date('8/10/50', 'en-GB').raw, new Date(1950, 9, 8), 'Chainable as factory accepts a locale code');
+    equal(testIsUTC(new Sugar.Date(new Date(), { setUTC: true }).raw), true, 'Date object should be sent to create');
   });
 
   group('Create | Objects', function() {
