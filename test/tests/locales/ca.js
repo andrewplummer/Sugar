@@ -11,7 +11,7 @@ namespace('Date | Catalan', function () {
 
   method('create', function() {
 
-    equal(testCreateDate('02 febr. 2016'), new Date(2016, 1, 2), 'toLocaleDateString');
+    assertDateParsed('02 febr. 2016', new Date(2016, 1, 2));
 
     // TODO: write me!
 

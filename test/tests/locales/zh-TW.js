@@ -11,69 +11,71 @@ namespace('Date | Traditional Chinese', function () {
 
   method('create', function() {
 
-    equal(testCreateDate('2011年5月15日'), new Date(2011, 4, 15), 'Date#create | basic Traditional Chinese date');
-    equal(testCreateDate('2011年5月'), new Date(2011, 4), 'year and month');
-    equal(testCreateDate('5月15日'), new Date(now.getFullYear(), 4, 15), 'month and date');
-    equal(testCreateDate('2011年'), new Date(2011, 0), 'year');
-    equal(testCreateDate('2016年2月02日'), new Date(2016, 1, 2), 'toLocaleDateString');
+    assertDateParsed('2011年5月15日', new Date(2011, 4, 15));
+    assertDateParsed('2011年5月', new Date(2011, 4));
+    assertDateParsed('5月15日', new Date(now.getFullYear(), 4, 15));
+    assertDateParsed('2011年', new Date(2011, 0));
+    assertDateParsed('2016年2月02日', new Date(2016, 1, 2));
 
-    equal(testCreateDate('5月'), new Date(now.getFullYear(), 4), 'month');
-    equal(testCreateDate('15日'), new Date(now.getFullYear(), now.getMonth(), 15), 'date');
-    equal(testCreateDate('星期一'), testGetWeekday(1), 'Monday');
-    equal(testCreateDate('星期天'), testGetWeekday(0), 'Sunday');
-    equal(testCreateDate('九日'), new Date(now.getFullYear(), now.getMonth(), 9), 'the 9th');
-    equal(testCreateDate('二十五日'), new Date(now.getFullYear(), now.getMonth(), 25), 'the 25th');
-    equal(testCreateDate('二十五號'), new Date(now.getFullYear(), now.getMonth(), 25), '號 should be understood as well');
+    assertDateParsed('5月', new Date(now.getFullYear(), 4));
+    assertDateParsed('15日', new Date(now.getFullYear(), now.getMonth(), 15));
+    assertDateParsed('星期一', testGetWeekday(1));
+    assertDateParsed('星期天', testGetWeekday(0));
+    assertDateParsed('九日', new Date(now.getFullYear(), now.getMonth(), 9));
+    assertDateParsed('二十五日', new Date(now.getFullYear(), now.getMonth(), 25));
+    assertDateParsed('二十五號', new Date(now.getFullYear(), now.getMonth(), 25));
 
-    equal(testCreateDate('2011年5月15日 3:45'), new Date(2011, 4, 15, 3, 45), 'Date#create | basic Traditional Chinese date 3:45');
-    equal(testCreateDate('2011年5月15日 下午3:45'), new Date(2011, 4, 15, 15, 45), 'Date#create | basic Traditional Chinese date 3:45pm');
-    equal(testCreateDate('2011年5月15日 3點45分鐘'), new Date(2011, 4, 15, 3, 45), 'Date#create | basic Traditional Chinese date 3:45pm kanji');
-    equal(testCreateDate('2011年5月15日 下午3點45分鐘'), new Date(2011, 4, 15, 15, 45), 'Date#create | basic Traditional Chinese date 3:45pm kanji afternoon');
+    assertDateParsed('2011年5月15日 3:45', new Date(2011, 4, 15, 3, 45));
+    assertDateParsed('2011年5月15日 下午3:45', new Date(2011, 4, 15, 15, 45));
+    assertDateParsed('2011年5月15日 3點45分鐘', new Date(2011, 4, 15, 3, 45));
+    assertDateParsed('2011年5月15日 下午3點45分鐘', new Date(2011, 4, 15, 15, 45));
 
-    equal(testCreateDate('一毫秒前'),   getRelativeDate(0,0,0,0,0,0,-1), 'one millisecond ago');
-    equal(testCreateDate('一秒鐘前'),   getRelativeDate(0,0,0,0,0,-1), 'one second ago');
-    equal(testCreateDate('一分鐘前'),   getRelativeDate(0,0,0,0,-1), 'one minute ago');
-    equal(testCreateDate('一小時前'),   getRelativeDate(0,0,0,-1), 'one hour ago');
-    equal(testCreateDate('一天前'),     getRelativeDate(0,0,-1), 'one day ago');
-    equal(testCreateDate('一週前'),     getRelativeDate(0,0,-7), 'one week 週');
-    equal(testCreateDate('一個星期前'), getRelativeDate(0,0,-7), 'one week 個星期');
-    equal(testCreateDate('一個月前'),   getRelativeDate(0,-1), 'one month ago');
-    equal(testCreateDate('一年前'),     getRelativeDate(-1), 'one year ago');
+    assertDateParsed('2011年5月15日下午3點45分鐘', new Date(2011, 4, 15, 15, 45));
 
-    equal(testCreateDate('5毫秒後'),   getRelativeDate(0,0,0,0,0,0,5), 'five millisecond from now');
-    equal(testCreateDate('5秒鐘後'),   getRelativeDate(0,0,0,0,0,5), 'five second from now');
-    equal(testCreateDate('5分鐘後'),   getRelativeDate(0,0,0,0,5), 'five minute from now');
-    equal(testCreateDate('5小時後'),   getRelativeDate(0,0,0,5), 'five hour from now');
-    equal(testCreateDate('5天後'),     getRelativeDate(0,0,5), 'five day from now');
-    equal(testCreateDate('5週後'),     getRelativeDate(0,0,35), 'five weeks from now 週');
-    equal(testCreateDate('5個星期後'), getRelativeDate(0,0,35), 'five weeks from now 個星期');
-    equal(testCreateDate('5個月後'),   getRelativeDate(0,5), 'five months');
-    equal(testCreateDate('5年後'),     getRelativeDate(5), 'five years from now');
+    assertDateParsed('一毫秒前',   getRelativeDate(0,0,0,0,0,0,-1));
+    assertDateParsed('一秒鐘前',   getRelativeDate(0,0,0,0,0,-1));
+    assertDateParsed('一分鐘前',   getRelativeDate(0,0,0,0,-1));
+    assertDateParsed('一小時前',   getRelativeDate(0,0,0,-1));
+    assertDateParsed('一天前',     getRelativeDate(0,0,-1));
+    assertDateParsed('一週前',     getRelativeDate(0,0,-7));
+    assertDateParsed('一個星期前', getRelativeDate(0,0,-7));
+    assertDateParsed('一個月前',   getRelativeDate(0,-1));
+    assertDateParsed('一年前',     getRelativeDate(-1));
 
-    equal(testCreateDate('２０１１年'), new Date(2011, 0), 'full-width year');
+    assertDateParsed('5毫秒後',   getRelativeDate(0,0,0,0,0,0,5));
+    assertDateParsed('5秒鐘後',   getRelativeDate(0,0,0,0,0,5));
+    assertDateParsed('5分鐘後',   getRelativeDate(0,0,0,0,5));
+    assertDateParsed('5小時後',   getRelativeDate(0,0,0,5));
+    assertDateParsed('5天後',     getRelativeDate(0,0,5));
+    assertDateParsed('5週後',     getRelativeDate(0,0,35));
+    assertDateParsed('5個星期後', getRelativeDate(0,0,35));
+    assertDateParsed('5個月後',   getRelativeDate(0,5));
+    assertDateParsed('5年後',     getRelativeDate(5));
 
-    equal(testCreateDate('大前天'), run(getRelativeDate(0,0,-3), 'reset'), 'day before day before yesterday');
-    equal(testCreateDate('前天'),   run(getRelativeDate(0,0,-2), 'reset'), 'day before yesterday');
-    equal(testCreateDate('昨天'),   run(getRelativeDate(0,0,-1), 'reset'), 'yesterday');
-    equal(testCreateDate('今天'),   run(getRelativeDate(0,0,0), 'reset'), 'today');
-    equal(testCreateDate('明天'),   run(getRelativeDate(0,0,1), 'reset'), 'tomorrow');
-    equal(testCreateDate('後天'),   run(getRelativeDate(0,0,2), 'reset'), 'day after tomorrow');
-    equal(testCreateDate('大後天'), run(getRelativeDate(0,0,3), 'reset'), 'day after day after tomorrow');
+    assertDateParsed('２０１１年', new Date(2011, 0));
 
-    equal(testCreateDate('上週'), getRelativeDate(0,0,-7), 'Last week');
-    equal(testCreateDate('這週'), getRelativeDate(0,0,0),  'This week');
-    equal(testCreateDate('下週'), getRelativeDate(0,0,7),  'Next week');
+    assertDateParsed('大前天', getRelativeDateReset(0,0,-3));
+    assertDateParsed('前天',   getRelativeDateReset(0,0,-2));
+    assertDateParsed('昨天',   getRelativeDateReset(0,0,-1));
+    assertDateParsed('今天',   getRelativeDateReset(0,0,0));
+    assertDateParsed('明天',   getRelativeDateReset(0,0,1));
+    assertDateParsed('後天',   getRelativeDateReset(0,0,2));
+    assertDateParsed('大後天', getRelativeDateReset(0,0,3));
 
-    equal(testCreateDate('上個月'), getRelativeDate(0,-1), 'last month');
-    equal(testCreateDate('這個月'), getRelativeDate(0,0), 'this month');
-    equal(testCreateDate('下個月'), getRelativeDate(0,1), 'Next month');
+    assertDateParsed('上週', getRelativeDate(0,0,-7));
+    assertDateParsed('這週', getRelativeDate(0,0,0));
+    assertDateParsed('下週', getRelativeDate(0,0,7));
 
-    equal(testCreateDate('去年'), getRelativeDate(-1), 'Last year');
-    equal(testCreateDate('明年'), getRelativeDate(1), 'Next year');
+    assertDateParsed('上個月', getRelativeDate(0,-1));
+    assertDateParsed('這個月', getRelativeDate(0,0));
+    assertDateParsed('下個月', getRelativeDate(0,1));
 
-    equal(testCreateDate('上週三'), testGetWeekday(3,-1), 'Last wednesday');
-    equal(testCreateDate('這個月'), getRelativeDate(0,0), 'this month');
-    equal(testCreateDate('下週五'), testGetWeekday(5, 1), 'Next friday');
+    assertDateParsed('去年', getRelativeDate(-1));
+    assertDateParsed('明年', getRelativeDate(1));
+
+    assertDateParsed('上週三', testGetWeekday(3,-1));
+    assertDateParsed('這個月', getRelativeDate(0,0));
+    assertDateParsed('下週五', testGetWeekday(5, 1));
 
     equal(testCreateDate('18:00', 'zh-TW').getHours(), 18, 'hour:minute only');
 

@@ -8,10 +8,10 @@
  */
 Sugar.Date.addLocale('sv', {
   'plural': true,
+  'units': 'millisekund:|er,sekund:|er,minut:|er,timm:e|ar,dag:|ar,veck:a|or|an,månad:|er|en+manad:|er|en,år:||et+ar:||et',
   'months': 'jan:uari|,feb:ruari|,mar:s|,apr:il|,maj,jun:i|,jul:i|,aug:usti|,sep:tember|,okt:ober|,nov:ember|,dec:ember|',
   'weekdays': 'sön:dag|+son:dag|,mån:dag||dagen+man:dag||dagen,tis:dag|,ons:dag|,tor:sdag|,fre:dag|,lör:dag||dag',
-  'units': 'millisekund:|er,sekund:|er,minut:|er,timm:e|ar,dag:|ar,veck:a|or|an,månad:|er|en+manad:|er|en,år:||et+ar:||et',
-  'numbers': 'noll,en|ett,två|tva,tre,fyra,fem,sex,sju,åtta|atta,nio,tio',
+  'numerals': 'noll,en|ett,två|tva,tre,fyra,fem,sex,sju,åtta|atta,nio,tio',
   'tokens': 'den,för|for',
   'articles': 'den',
   'short':  '{yyyy}-{MM}-{dd}',
@@ -36,14 +36,20 @@ Sugar.Date.addLocale('sv', {
     { 'name': 'shift', 'src': 'denna', 'value': 0 },
     { 'name': 'shift', 'src': 'nästa|nasta', 'value': 1 }
   ],
-  'dateParse': [
+  'parse': [
     '{num} {unit} {sign}',
     '{sign} {num} {unit}',
     '{1?} {num} {unit} {sign}',
     '{shift} {unit:5-7}'
   ],
+  'timeParse': [
+    '{day|weekday}',
+    '{shift} {weekday}',
+    '{0?} {weekday?} {date?} {months} {year?}'
+  ],
   'timeFrontParse': [
-    '{0?} {weekday?} {date?} {month} {year?}',
-    '{shift} {weekday}'
+    '{day|weekday}',
+    '{shift} {weekday}',
+    '{0?} {weekday?} {date?} {months} {year?}'
   ]
 });

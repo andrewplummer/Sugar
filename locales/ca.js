@@ -8,10 +8,11 @@
  */
 Sugar.Date.addLocale('ca', {
   'plural': true,
+  'ampm': 'am,pm',
+  'units': 'milisegon:|s,segon:|s,minut:|s,hor:a|es,di:a|es,setman:a|es,mes:|os,any:|s',
   'months': 'gen:er|,febr:er|,mar:ç|,abr:il|,mai:g|,jun:y|,jul:iol|,ag:ost|,set:embre|,oct:ubre|,nov:embre|,des:embre|',
   'weekdays': 'diumenge|dg,dilluns|dl,dimarts|dt,dimecres|dc,dijous|dj,divendres|dv,dissabte|ds',
-  'units': 'milisegon:|s,segon:|s,minut:|s,hor:a|es,di:a|es,setman:a|es,mes:|os,any:|s',
-  'numbers': 'zero,un,dos,tres,quatre,cinc,sis,set,vuit,nou,deu',
+  'numerals': 'zero,un,dos,tres,quatre,cinc,sis,set,vuit,nou,deu',
   'tokens': 'el,la,de',
   'short':  '{dd}/{MM}/{yyyy}',
   'medium': '{d} {month} {yyyy}',
@@ -23,7 +24,6 @@ Sugar.Date.addLocale('ca', {
   'future': '{sign} {num} {unit}',
   'duration': '{num} {unit}',
   'timeMarker': 'a las',
-  'ampm': 'am,pm',
   'modifiers': [
     { 'name': 'day', 'src': "abans d'ahir", 'value': -2 },
     { 'name': 'day', 'src': 'ahir', 'value': -1 },
@@ -34,7 +34,7 @@ Sugar.Date.addLocale('ca', {
     { 'name': 'shift', 'src': 'passat', 'value': -1 },
     { 'name': 'shift', 'src': 'el proper|la propera', 'value': 1 }
   ],
-  'dateParse': [
+  'parse': [
     '{sign} {num} {unit}',
     '{num} {unit} {sign}',
     '{0?}{1?} {unit:5-7} {shift}',

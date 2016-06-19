@@ -7,10 +7,14 @@
  *
  */
 Sugar.Date.addLocale('zh-CN', {
-  'monthSuffix': '月',
-  'weekdays': '星期日|日|周日|星期天,星期一|一|周一,星期二|二|周二,星期三|三|周三,星期四|四|周四,星期五|五|周五,星期六|六|周六',
+  'ampmFront': true,
+  'allowsNumerals': true,
+  'allowsFullWidth': true,
+  'timeMarkerOptional': true,
   'units': '毫秒,秒钟,分钟,小时,天,个星期|周,个月,年',
-  'tokens': '日|号',
+  'weekdays': '星期日|日|周日|星期天,星期一|一|周一,星期二|二|周二,星期三|三|周三,星期四|四|周四,星期五|五|周五,星期六|六|周六',
+  'numerals': '〇,一,二,三,四,五,六,七,八,九',
+  'placeholders': '十,百,千,万',
   'short':  '{yyyy}-{MM}-{dd}',
   'medium': '{yyyy}年{M}月{d}日',
   'long':   '{yyyy}年{M}月{d}日{time}',
@@ -20,7 +24,7 @@ Sugar.Date.addLocale('zh-CN', {
   'past':   '{num}{unit}{sign}',
   'future': '{num}{unit}{sign}',
   'duration': '{num}{unit}',
-  'timeSuffixes': '点|时,分钟?,秒',
+  'timeSuffixes': ',秒,分钟?,点|时,日|号,,月,年',
   'ampm': '上午,下午',
   'modifiers': [
     { 'name': 'day', 'src': '大前天', 'value': -3 },
@@ -36,14 +40,15 @@ Sugar.Date.addLocale('zh-CN', {
     { 'name': 'shift', 'src': '这', 'value':  0 },
     { 'name': 'shift', 'src': '下|明', 'value':  1 }
   ],
-  'dateParse': [
+  'parse': [
     '{num}{unit}{sign}',
-    '{shift}{unit:5-7}'
+    '{shift}{unit:5-7}',
+    '{year?}{month}',
+    '{year}'
   ],
   'timeParse': [
+    '{day|weekday}',
     '{shift}{weekday}',
-    '{year}年{month?}月?{date?}{0?}',
-    '{month}月{date?}{0?}',
-    '{date}[日号]'
+    '{year?}{month?}{date}'
   ]
 });

@@ -7,23 +7,20 @@
  *
  */
 Sugar.Date.addLocale('fi', {
-  'plural':        true,
-  'timeMarker':    'klo|kello',
-  'ampm':          ',',
-  'months':        'tammi:kuuta||kuu,helmi:kuuta||kuu,maalis:kuuta||kuu,huhti:kuuta||kuu,touko:kuuta||kuu,kesä:kuuta||kuu,heinä:kuuta||kuu,elo:kuuta||kuu,syys:kuuta||kuu,loka:kuuta||kuu,marras:kuuta||kuu,joulu:kuuta||kuu',
-  'weekdays':      'su:nnuntai||nnuntaina,ma:anantai||anantaina,ti:istai||istaina,ke:skiviikko||skiviikkona,to:rstai||rstaina,pe:rjantai||rjantaina,la:uantai||uantaina',
-  'units':         'millisekun:ti|tia|nin|teja|tina,sekun:ti|tia|nin|teja|tina,minuut:ti|tia|in|teja|tina,tun:ti|tia|nin|teja|tina,päiv:ä|ää|än|iä|änä,viik:ko|koa|on|olla|koja|kona,kuukau:si|tta|den+kuussa,vuo:si|tta|den|sia|tena|nna',
-  'numbers':       'nolla,yksi|ensimmäinen,kaksi|toinen,kolm:e|as,neljä:|s,vii:si|des,kuu:si|des,seitsemä:n|s,kahdeksa:n|s,yhdeksä:n|s,kymmene:n|s',
-  'tokens':        '.',
-  'timeSuffixes':  '\\.,\\.,\\.',
+  'plural': true,
+  'timeMarker': 'klo,kello',
+  'units': 'millisekun:ti|tia|nin|teja|tina,sekun:ti|tia|nin|teja|tina,minuut:ti|tia|in|teja|tina,tun:ti|tia|nin|teja|tina,päiv:ä|ää|än|iä|änä,viik:ko|koa|on|olla|koja|kona,kuukau:si|tta|den+kuussa,vuo:si|tta|den|sia|tena|nna',
+  'months': 'tammi:kuuta||kuu,helmi:kuuta||kuu,maalis:kuuta||kuu,huhti:kuuta||kuu,touko:kuuta||kuu,kesä:kuuta||kuu,heinä:kuuta||kuu,elo:kuuta||kuu,syys:kuuta||kuu,loka:kuuta||kuu,marras:kuuta||kuu,joulu:kuuta||kuu',
+  'weekdays': 'su:nnuntai||nnuntaina,ma:anantai||anantaina,ti:istai||istaina,ke:skiviikko||skiviikkona,to:rstai||rstaina,pe:rjantai||rjantaina,la:uantai||uantaina',
+  'numerals': 'nolla,yksi|ensimmäinen,kaksi|toinen,kolm:e|as,neljä:|s,vii:si|des,kuu:si|des,seitsemä:n|s,kahdeksa:n|s,yhdeksä:n|s,kymmene:n|s',
+  'short': '{d}.{M}.{yyyy}',
+  'medium': '{d}. {month} {yyyy}',
+  'long': '{d}. {month} {yyyy} klo {time}',
+  'full': '{weekday} {d}. {month} {yyyy} klo {time}',
+  'stamp': '{dow} {d} {mon} {yyyy} {time}',
+  'time': '{H}.{mm}',
   'ordinalSuffix': '.',
-  'short':         '{d}.{M}.{yyyy}',
-  'medium':        '{d}. {month} {yyyy}',
-  'long':          '{d}. {month} {yyyy} klo {time}',
-  'full':          '{weekday} {d}. {month} {yyyy} klo {time}',
-  'stamp':         '{dow} {d} {mon} {yyyy} {time}',
-  'time':          '{H}.{mm}',
-  'relative':       function(num, unit, ms, format) {
+  'relative': function(num, unit, ms, format) {
     var units = this['units'];
     function numberWithUnit(mult) {
       return num + ' ' + units[(8 * mult) + unit];
@@ -52,12 +49,17 @@ Sugar.Date.addLocale('fi', {
     { 'name': 'shift', 'src': 'tä:llä|ssä|nä|mä', 'value': 0 },
     { 'name': 'shift', 'src': 'seuraava|seuraavana|tuleva|tulevana|ensi', 'value': 1 }
   ],
-  'dateParse': [
+  'parse': [
+    '{months} {year?}',
     '{shift} {unit:5-7}'
   ],
+  'timeParse': [
+    '{shift?} {day|weekday}',
+    '{weekday?} {date}\\.? {months?} {year?}'
+  ],
   'timeFrontParse': [
-    '{shift} {weekday}',
+    '{shift?} {day|weekday}',
     '{num?} {unit} {sign}',
-    '{weekday?} {date?} {month} {year?}'
+    '{weekday?} {date}\\.? {months?} {year?}'
   ]
 });

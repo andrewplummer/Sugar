@@ -12,97 +12,97 @@ xnamespace('Date | Norwegian', function () {
 
   method('create', function() {
 
-    equal(testCreateDate('den 15 maj 2011'), new Date(2011, 4, 15), 'basic Norwegian date');
-    equal(testCreateDate('15 maj 2011'), new Date(2011, 4, 15), 'basic Norwegian date');
-    equal(testCreateDate('tisdag 5 januari 2012'), new Date(2012, 0, 5), '2012-01-05');
-    equal(testCreateDate('tisdag, 5 januari 2012'), new Date(2012, 0, 5), '2012-01-05');
-    equal(testCreateDate('maj 2011'), new Date(2011, 4), 'year and month');
-    equal(testCreateDate('15 maj'), new Date(now.getFullYear(), 4, 15), 'month and date');
-    equal(testCreateDate('2011'), new Date(2011, 0), 'year');
-    equal(testCreateDate('Feb 02, 2016'), new Date(2016, 1, 2), 'toLocaleDateString');
+    assertDateParsed('den 15 maj 2011', new Date(2011, 4, 15));
+    assertDateParsed('15 maj 2011', new Date(2011, 4, 15));
+    assertDateParsed('tisdag 5 januari 2012', new Date(2012, 0, 5));
+    assertDateParsed('tisdag, 5 januari 2012', new Date(2012, 0, 5));
+    assertDateParsed('maj 2011', new Date(2011, 4));
+    assertDateParsed('15 maj', new Date(now.getFullYear(), 4, 15));
+    assertDateParsed('2011', new Date(2011, 0));
+    assertDateParsed('Feb 02, 2016', new Date(2016, 1, 2));
 
-    equal(testCreateDate('maj'), new Date(now.getFullYear(), 4), 'month');
-    equal(testCreateDate('måndag'), testGetWeekday(1), 'Monday');
+    assertDateParsed('maj', new Date(now.getFullYear(), 4));
+    assertDateParsed('måndag', testGetWeekday(1));
 
-    equal(testCreateDate('15 maj 2011 3:45'), new Date(2011, 4, 15, 3, 45), 'basic Norwegian date 3:45');
-    equal(testCreateDate('15 maj 2011 3:45pm'), new Date(2011, 4, 15, 15, 45), 'basic Norwegian date 3:45pm');
+    assertDateParsed('15 maj 2011 3:45', new Date(2011, 4, 15, 3, 45));
+    assertDateParsed('15 maj 2011 3:45pm', new Date(2011, 4, 15, 15, 45));
 
-    equal(testCreateDate('för en millisekund sedan'), getRelativeDate(0,0,0,0,0,0,-1), 'one millisecond ago');
-    equal(testCreateDate('för en sekund sedan'),      getRelativeDate(0,0,0,0,0,-1), 'one second ago');
-    equal(testCreateDate('för en minut sedan'),       getRelativeDate(0,0,0,0,-1), 'one minute ago');
-    equal(testCreateDate('för en timme sedan'),       getRelativeDate(0,0,0,-1), 'one hour ago');
-    equal(testCreateDate('för en dag sedan'),         getRelativeDate(0,0,-1), 'one day ago');
-    equal(testCreateDate('för en vecka sedan'),       getRelativeDate(0,0,-7), 'one week ago');
-    equal(testCreateDate('för en månad sedan'),       getRelativeDate(0,-1), 'one month ago');
-    equal(testCreateDate('för ett år sedan'),         getRelativeDate(-1), 'one year ago');
-    equal(testCreateDate('ett år sen'),               getRelativeDate(-1), 'one year ago');
-    equal(testCreateDate('ett ar sen'),               getRelativeDate(-1), 'one year ago');
+    assertDateParsed('för en millisekund sedan', getRelativeDate(0,0,0,0,0,0,-1));
+    assertDateParsed('för en sekund sedan',      getRelativeDate(0,0,0,0,0,-1));
+    assertDateParsed('för en minut sedan',       getRelativeDate(0,0,0,0,-1));
+    assertDateParsed('för en timme sedan',       getRelativeDate(0,0,0,-1));
+    assertDateParsed('för en dag sedan',         getRelativeDate(0,0,-1));
+    assertDateParsed('för en vecka sedan',       getRelativeDate(0,0,-7));
+    assertDateParsed('för en månad sedan',       getRelativeDate(0,-1));
+    assertDateParsed('för ett år sedan',         getRelativeDate(-1));
+    assertDateParsed('ett år sen',               getRelativeDate(-1));
+    assertDateParsed('ett ar sen',               getRelativeDate(-1));
 
-    equal(testCreateDate('om 5 millisekunder'), getRelativeDate(0,0,0,0,0,0,5), 'dans | five milliseconds from now');
-    equal(testCreateDate('om 5 sekunder'),      getRelativeDate(0,0,0,0,0,5), 'dans | five second from now');
-    equal(testCreateDate('om 5 minuter'),       getRelativeDate(0,0,0,0,5), 'dans | five minute from now');
-    equal(testCreateDate('om 5 timmar'),        getRelativeDate(0,0,0,5), 'dans | five hour from now');
-    equal(testCreateDate('om 5 dagar'),         getRelativeDate(0,0,5), 'dans | five day from now');
-    equal(testCreateDate('om 5 veckor'),        getRelativeDate(0,0,35), 'dans | five weeks from now');
-    equal(testCreateDate('om 5 månader'),       getRelativeDate(0,5), 'dans | five months from now');
-    equal(testCreateDate('om 5 år'),            getRelativeDate(5), 'dans | five years from now');
+    assertDateParsed('om 5 millisekunder', getRelativeDate(0,0,0,0,0,0,5));
+    assertDateParsed('om 5 sekunder',      getRelativeDate(0,0,0,0,0,5));
+    assertDateParsed('om 5 minuter',       getRelativeDate(0,0,0,0,5));
+    assertDateParsed('om 5 timmar',        getRelativeDate(0,0,0,5));
+    assertDateParsed('om 5 dagar',         getRelativeDate(0,0,5));
+    assertDateParsed('om 5 veckor',        getRelativeDate(0,0,35));
+    assertDateParsed('om 5 månader',       getRelativeDate(0,5));
+    assertDateParsed('om 5 år',            getRelativeDate(5));
 
 
-    equal(testCreateDate('i förrgår'),     run(getRelativeDate(0,0,-2), 'reset'), 'day before yesterday');
-    equal(testCreateDate('förrgår'),       run(getRelativeDate(0,0,-2), 'reset'), 'day before yesterday');
-    equal(testCreateDate('i går'),         run(getRelativeDate(0,0,-1), 'reset'), 'yesterday');
-    equal(testCreateDate('igår'),          run(getRelativeDate(0,0,-1), 'reset'), 'yesterday');
-    equal(testCreateDate('i dag'),         run(getRelativeDate(0,0,0), 'reset'), 'today');
-    equal(testCreateDate('idag'),          run(getRelativeDate(0,0,0), 'reset'), 'today');
-    equal(testCreateDate('imorgon'),       run(getRelativeDate(0,0,1), 'reset'), 'tomorrow');
-    equal(testCreateDate('i morgon'),      run(getRelativeDate(0,0,1), 'reset'), 'tomorrow');
-    equal(testCreateDate('i övermorgon'),  run(getRelativeDate(0,0,2), 'reset'), 'day after tomorrow');
-    equal(testCreateDate('i över morgon'), run(getRelativeDate(0,0,2), 'reset'), 'day after tomorrow');
+    assertDateParsed('i förrgår',     getRelativeDateReset(0,0,-2));
+    assertDateParsed('förrgår',       getRelativeDateReset(0,0,-2));
+    assertDateParsed('i går',         getRelativeDateReset(0,0,-1));
+    assertDateParsed('igår',          getRelativeDateReset(0,0,-1));
+    assertDateParsed('i dag',         getRelativeDateReset(0,0,0));
+    assertDateParsed('idag',          getRelativeDateReset(0,0,0));
+    assertDateParsed('imorgon',       getRelativeDateReset(0,0,1));
+    assertDateParsed('i morgon',      getRelativeDateReset(0,0,1));
+    assertDateParsed('i övermorgon',  getRelativeDateReset(0,0,2));
+    assertDateParsed('i över morgon', getRelativeDateReset(0,0,2));
 
-    equal(testCreateDate('förra veckan'),   getRelativeDate(0,0,-7), 'Last week');
-    equal(testCreateDate('i förra veckan'), getRelativeDate(0,0,-7), 'Last week');
-    equal(testCreateDate('nästa vecka'),    getRelativeDate(0,0,7), 'Next week');
-    equal(testCreateDate('nasta vecka'),    getRelativeDate(0,0,7), 'Next week');
+    assertDateParsed('förra veckan',   getRelativeDate(0,0,-7));
+    assertDateParsed('i förra veckan', getRelativeDate(0,0,-7));
+    assertDateParsed('nästa vecka',    getRelativeDate(0,0,7));
+    assertDateParsed('nasta vecka',    getRelativeDate(0,0,7));
 
-    equal(testCreateDate('förra månaden'), getRelativeDate(0,-1), 'last month');
-    equal(testCreateDate('nästa månad'),   getRelativeDate(0,1), 'Next month');
+    assertDateParsed('förra månaden', getRelativeDate(0,-1));
+    assertDateParsed('nästa månad',   getRelativeDate(0,1));
 
-    equal(testCreateDate('förra året'), getRelativeDate(-1), 'Last year');
-    equal(testCreateDate('nästa år'),   getRelativeDate(1), 'Next year');
+    assertDateParsed('förra året', getRelativeDate(-1));
+    assertDateParsed('nästa år',   getRelativeDate(1));
 
-    equal(testCreateDate('förra måndagen'), testGetWeekday(1,-1), 'last monday');
-    equal(testCreateDate('nästa måndag'),   testGetWeekday(1,1), 'next monday');
+    assertDateParsed('förra måndagen', testGetWeekday(1,-1));
+    assertDateParsed('nästa måndag',   testGetWeekday(1,1));
 
 
     // no accents
-    equal(testCreateDate('mandag'), testGetWeekday(1), 'Monday');
-    equal(testCreateDate('for en millisekund sedan'), getRelativeDate(0,0,0,0,0,0,-1), 'one millisecond ago');
-    equal(testCreateDate('for en sekund sedan'), getRelativeDate(0,0,0,0,0,-1), 'one second ago');
-    equal(testCreateDate('for en minut sedan'), getRelativeDate(0,0,0,0,-1), 'one minute ago');
-    equal(testCreateDate('for en timme sedan'), getRelativeDate(0,0,0,-1), 'one hour ago');
-    equal(testCreateDate('for en dag sedan'), getRelativeDate(0,0,-1), 'one day ago');
-    equal(testCreateDate('for en vecka sedan'), getRelativeDate(0,0,-7), 'one week ago');
-    equal(testCreateDate('for en manad sedan'), getRelativeDate(0,-1), 'one month ago');
-    equal(testCreateDate('for ett ar sedan'), getRelativeDate(-1), 'one year ago');
-    equal(testCreateDate('ett ar sen'), getRelativeDate(-1), 'one year ago');
+    assertDateParsed('mandag', testGetWeekday(1));
+    assertDateParsed('for en millisekund sedan', getRelativeDate(0,0,0,0,0,0,-1));
+    assertDateParsed('for en sekund sedan', getRelativeDate(0,0,0,0,0,-1));
+    assertDateParsed('for en minut sedan', getRelativeDate(0,0,0,0,-1));
+    assertDateParsed('for en timme sedan', getRelativeDate(0,0,0,-1));
+    assertDateParsed('for en dag sedan', getRelativeDate(0,0,-1));
+    assertDateParsed('for en vecka sedan', getRelativeDate(0,0,-7));
+    assertDateParsed('for en manad sedan', getRelativeDate(0,-1));
+    assertDateParsed('for ett ar sedan', getRelativeDate(-1));
+    assertDateParsed('ett ar sen', getRelativeDate(-1));
 
-    equal(testCreateDate('om 5 manader'), getRelativeDate(0,5), 'dans | five months from now');
-    equal(testCreateDate('om 5 ar'), getRelativeDate(5), 'dans | five years from now');
+    assertDateParsed('om 5 manader', getRelativeDate(0,5));
+    assertDateParsed('om 5 ar', getRelativeDate(5));
 
-    equal(testCreateDate('i forrgar'), run(getRelativeDate(0,0,-2), 'reset'), 'day before yesterday');
-    equal(testCreateDate('förrgår'), run(getRelativeDate(0,0,-2), 'reset'), 'day before yesterday');
-    equal(testCreateDate('i gar'), run(getRelativeDate(0,0,-1), 'reset'), 'yesterday');
-    equal(testCreateDate('igar'), run(getRelativeDate(0,0,-1), 'reset'), 'yesterday');
-    equal(testCreateDate('i overmorgon'), run(getRelativeDate(0,0,2), 'reset'), 'day after tomorrow');
-    equal(testCreateDate('i over morgon'), run(getRelativeDate(0,0,2), 'reset'), 'day after tomorrow');
+    assertDateParsed('i forrgar', getRelativeDateReset(0,0,-2));
+    assertDateParsed('förrgår', getRelativeDateReset(0,0,-2));
+    assertDateParsed('i gar', getRelativeDateReset(0,0,-1));
+    assertDateParsed('igar', getRelativeDateReset(0,0,-1));
+    assertDateParsed('i overmorgon', getRelativeDateReset(0,0,2));
+    assertDateParsed('i over morgon', getRelativeDateReset(0,0,2));
 
-    equal(testCreateDate('forra veckan'), getRelativeDate(0,0,-7), 'Last week');
-    equal(testCreateDate('i forra veckan'), getRelativeDate(0,0,-7), 'Last week');
-    equal(testCreateDate('nasta vecka'), getRelativeDate(0,0,7), 'Next week');
-    equal(testCreateDate('forra manaden'), getRelativeDate(0,-1), 'last month');
-    equal(testCreateDate('nasta manad'), getRelativeDate(0,1), 'Next month');
-    equal(testCreateDate('forra aret'), getRelativeDate(-1), 'Last year');
-    equal(testCreateDate('nasta ar'), getRelativeDate(1), 'Next year');
+    assertDateParsed('forra veckan', getRelativeDate(0,0,-7));
+    assertDateParsed('i forra veckan', getRelativeDate(0,0,-7));
+    assertDateParsed('nasta vecka', getRelativeDate(0,0,7));
+    assertDateParsed('forra manaden', getRelativeDate(0,-1));
+    assertDateParsed('nasta manad', getRelativeDate(0,1));
+    assertDateParsed('forra aret', getRelativeDate(-1));
+    assertDateParsed('nasta ar', getRelativeDate(1));
 
   });
 
