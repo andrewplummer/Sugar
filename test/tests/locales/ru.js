@@ -11,125 +11,125 @@ namespace('Date | Russian', function () {
 
   method('create', function() {
 
-    equal(testCreateDate('15 мая 2011'), new Date(2011, 4, 15), 'basic Russian date');
-    equal(testCreateDate('2 мая 1989 года'), new Date(1989, 4, 2), 'format with year');
-    equal(testCreateDate('5 января 2012'), new Date(2012, 0, 5), '2012-01-05');
-    equal(testCreateDate('Май 2011'), new Date(2011, 4), 'year and month');
-    equal(testCreateDate('15 мая'), new Date(now.getFullYear(), 4, 15), 'month and date');
-    equal(testCreateDate('2011'), new Date(2011, 0), 'year');
-    equal(testCreateDate('02 февр. 2016 г.'), new Date(2016, 1, 2), 'toLocaleDateString');
+    assertDateParsed('15 мая 2011', new Date(2011, 4, 15));
+    assertDateParsed('2 мая 1989 года', new Date(1989, 4, 2));
+    assertDateParsed('5 января 2012', new Date(2012, 0, 5));
+    assertDateParsed('Май 2011', new Date(2011, 4));
+    assertDateParsed('15 мая', new Date(now.getFullYear(), 4, 15));
+    assertDateParsed('2011', new Date(2011, 0));
+    assertDateParsed('02 февр. 2016 г.', new Date(2016, 1, 2));
 
-    equal(testCreateDate('янв.'),   new Date(now.getFullYear(), 0),  'January');
-    equal(testCreateDate('февр.'),  new Date(now.getFullYear(), 1),  'February');
-    equal(testCreateDate('март'),   new Date(now.getFullYear(), 2),  'March');
-    equal(testCreateDate('апр.'),   new Date(now.getFullYear(), 3),  'April');
-    equal(testCreateDate('май'),    new Date(now.getFullYear(), 4),  'May');
-    equal(testCreateDate('июнь'),   new Date(now.getFullYear(), 5),  'June');
-    equal(testCreateDate('июль'),   new Date(now.getFullYear(), 6),  'July');
-    equal(testCreateDate('авг.'),   new Date(now.getFullYear(), 7),  'August');
-    equal(testCreateDate('сент.'),  new Date(now.getFullYear(), 8),  'September');
-    equal(testCreateDate('окт.'),   new Date(now.getFullYear(), 9),  'October');
-    equal(testCreateDate('ноябрь'), new Date(now.getFullYear(), 10), 'November');
-    equal(testCreateDate('дек.'),   new Date(now.getFullYear(), 11), 'December');
+    assertDateParsed('янв.',   new Date(now.getFullYear(), 0));
+    assertDateParsed('февр.',  new Date(now.getFullYear(), 1));
+    assertDateParsed('март',   new Date(now.getFullYear(), 2));
+    assertDateParsed('апр.',   new Date(now.getFullYear(), 3));
+    assertDateParsed('май',    new Date(now.getFullYear(), 4));
+    assertDateParsed('июнь',   new Date(now.getFullYear(), 5));
+    assertDateParsed('июль',   new Date(now.getFullYear(), 6));
+    assertDateParsed('авг.',   new Date(now.getFullYear(), 7));
+    assertDateParsed('сент.',  new Date(now.getFullYear(), 8));
+    assertDateParsed('окт.',   new Date(now.getFullYear(), 9));
+    assertDateParsed('ноябрь', new Date(now.getFullYear(), 10));
+    assertDateParsed('дек.',   new Date(now.getFullYear(), 11));
 
-    equal(testCreateDate('янв'), new Date(now.getFullYear(), 0),  '3-letter January');
-    equal(testCreateDate('фев'), new Date(now.getFullYear(), 1),  '3-letter February');
-    equal(testCreateDate('мар'), new Date(now.getFullYear(), 2),  '3-letter March');
-    equal(testCreateDate('апр'), new Date(now.getFullYear(), 3),  '3-letter April');
-    equal(testCreateDate('май'), new Date(now.getFullYear(), 4),  '3-letter May');
-    equal(testCreateDate('июн'), new Date(now.getFullYear(), 5),  '3-letter June');
-    equal(testCreateDate('июл'), new Date(now.getFullYear(), 6),  '3-letter July');
-    equal(testCreateDate('авг'), new Date(now.getFullYear(), 7),  '3-letter August');
-    equal(testCreateDate('сен'), new Date(now.getFullYear(), 8),  '3-letter September');
-    equal(testCreateDate('окт'), new Date(now.getFullYear(), 9),  '3-letter October');
-    equal(testCreateDate('ноя'), new Date(now.getFullYear(), 10), '3-letter November');
-    equal(testCreateDate('дек'), new Date(now.getFullYear(), 11), '3-letter December');
+    assertDateParsed('янв', new Date(now.getFullYear(), 0));
+    assertDateParsed('фев', new Date(now.getFullYear(), 1));
+    assertDateParsed('мар', new Date(now.getFullYear(), 2));
+    assertDateParsed('апр', new Date(now.getFullYear(), 3));
+    assertDateParsed('май', new Date(now.getFullYear(), 4));
+    assertDateParsed('июн', new Date(now.getFullYear(), 5));
+    assertDateParsed('июл', new Date(now.getFullYear(), 6));
+    assertDateParsed('авг', new Date(now.getFullYear(), 7));
+    assertDateParsed('сен', new Date(now.getFullYear(), 8));
+    assertDateParsed('окт', new Date(now.getFullYear(), 9));
+    assertDateParsed('ноя', new Date(now.getFullYear(), 10));
+    assertDateParsed('дек', new Date(now.getFullYear(), 11));
 
-    equal(testCreateDate('понедельник'), testGetWeekday(1), 'Monday');
+    assertDateParsed('понедельник', testGetWeekday(1));
 
-    equal(testCreateDate('15 мая 2011 3:45'), new Date(2011, 4, 15, 3, 45), 'basic Russian date 3:45');
-    equal(testCreateDate('15 мая 2011 3:45 вечера'), new Date(2011, 4, 15, 15, 45), 'basic Russian date 3:45pm');
+    assertDateParsed('15 мая 2011 3:45', new Date(2011, 4, 15, 3, 45));
+    assertDateParsed('15 мая 2011 3:45 вечера', new Date(2011, 4, 15, 15, 45));
 
-    equal(testCreateDate('одну миллисекунду назад'), getRelativeDate(0,0,0,0,0,0,-1), 'one millisecond ago');
-    equal(testCreateDate('одну секунду назад'),      getRelativeDate(0,0,0,0,0,-1), 'one second ago');
-    equal(testCreateDate('одну минуту назад'),       getRelativeDate(0,0,0,0,-1), 'one minute ago');
-    equal(testCreateDate('один час назад'),          getRelativeDate(0,0,0,-1), 'one hour ago');
-    equal(testCreateDate('один день назад'),         getRelativeDate(0,0,-1), 'one day ago');
-    equal(testCreateDate('одну неделю назад'),       getRelativeDate(0,0,-7), 'one week ago');
-    equal(testCreateDate('один месяц назад'),        getRelativeDate(0,-1), 'one month ago');
-    equal(testCreateDate('один год назад'),          getRelativeDate(-1), 'one year ago');
+    assertDateParsed('одну миллисекунду назад', getRelativeDate(0,0,0,0,0,0,-1));
+    assertDateParsed('одну секунду назад',      getRelativeDate(0,0,0,0,0,-1));
+    assertDateParsed('одну минуту назад',       getRelativeDate(0,0,0,0,-1));
+    assertDateParsed('один час назад',          getRelativeDate(0,0,0,-1));
+    assertDateParsed('один день назад',         getRelativeDate(0,0,-1));
+    assertDateParsed('одну неделю назад',       getRelativeDate(0,0,-7));
+    assertDateParsed('один месяц назад',        getRelativeDate(0,-1));
+    assertDateParsed('один год назад',          getRelativeDate(-1));
 
-    equal(testCreateDate('две миллисекунды назад'), getRelativeDate(0,0,0,0,0,0,-2), 'two milliseconds ago');
-    equal(testCreateDate('две секунды назад'),      getRelativeDate(0,0,0,0,0,-2), 'two seconds ago');
-    equal(testCreateDate('две минуты назад'),       getRelativeDate(0,0,0,0,-2), 'two minutes ago');
-    equal(testCreateDate('два часа назад'),         getRelativeDate(0,0,0,-2), 'two hours ago');
-    equal(testCreateDate('Два дня назад'),          getRelativeDate(0,0,-2), 'two days ago');
-    equal(testCreateDate('две недели назад'),       getRelativeDate(0,0,-14), 'two weeks ago');
-    equal(testCreateDate('два месяца назад'),       getRelativeDate(0,-2), 'two months ago');
-    equal(testCreateDate('два года назад'),         getRelativeDate(-2), 'two years ago');
+    assertDateParsed('две миллисекунды назад', getRelativeDate(0,0,0,0,0,0,-2));
+    assertDateParsed('две секунды назад',      getRelativeDate(0,0,0,0,0,-2));
+    assertDateParsed('две минуты назад',       getRelativeDate(0,0,0,0,-2));
+    assertDateParsed('два часа назад',         getRelativeDate(0,0,0,-2));
+    assertDateParsed('Два дня назад',          getRelativeDate(0,0,-2));
+    assertDateParsed('две недели назад',       getRelativeDate(0,0,-14));
+    assertDateParsed('два месяца назад',       getRelativeDate(0,-2));
+    assertDateParsed('два года назад',         getRelativeDate(-2));
 
-    equal(testCreateDate('восемь миллисекунд назад'), getRelativeDate(0,0,0,0,0,0,-8), 'eight milliseconds ago');
-    equal(testCreateDate('восемь секунд назад'),      getRelativeDate(0,0,0,0,0,-8), 'eight seconds ago');
-    equal(testCreateDate('восемь минут назад'),       getRelativeDate(0,0,0,0,-8), 'eight minutes ago');
-    equal(testCreateDate('восемь часов назад'),       getRelativeDate(0,0,0,-8), 'eight hours ago');
-    equal(testCreateDate('восемь дней назад'),        getRelativeDate(0,0,-8), 'eight days ago');
-    equal(testCreateDate('восемь недель назад'),      getRelativeDate(0,0,-56), 'eight weeks ago');
-    equal(testCreateDate('восемь месяцев назад'),     getRelativeDate(0,-8), 'eight months ago');
-    equal(testCreateDate('восемь лет назад'),         getRelativeDate(-8), 'eight years ago');
+    assertDateParsed('восемь миллисекунд назад', getRelativeDate(0,0,0,0,0,0,-8));
+    assertDateParsed('восемь секунд назад',      getRelativeDate(0,0,0,0,0,-8));
+    assertDateParsed('восемь минут назад',       getRelativeDate(0,0,0,0,-8));
+    assertDateParsed('восемь часов назад',       getRelativeDate(0,0,0,-8));
+    assertDateParsed('восемь дней назад',        getRelativeDate(0,0,-8));
+    assertDateParsed('восемь недель назад',      getRelativeDate(0,0,-56));
+    assertDateParsed('восемь месяцев назад',     getRelativeDate(0,-8));
+    assertDateParsed('восемь лет назад',         getRelativeDate(-8));
 
-    equal(testCreateDate('через 5 миллисекунд'), getRelativeDate(0,0,0,0,0,0,5), 'five milliseconds from now');
-    equal(testCreateDate('через 5 секунд'),      getRelativeDate(0,0,0,0,0,5), 'five second from now');
-    equal(testCreateDate('через 5 минут'),       getRelativeDate(0,0,0,0,5), 'five minute from now');
-    equal(testCreateDate('через 5 часов'),       getRelativeDate(0,0,0,5), 'five hour from now');
-    equal(testCreateDate('через 5 дней'),        getRelativeDate(0,0,5), 'five days from now');
-    equal(testCreateDate('через 5 недель'),      getRelativeDate(0,0,35), 'five weeks from now');
-    equal(testCreateDate('через 5 месяцев'),     getRelativeDate(0,5), 'five months from now');
-    equal(testCreateDate('через 5 лет'),         getRelativeDate(5), 'five years from now');
+    assertDateParsed('через 5 миллисекунд', getRelativeDate(0,0,0,0,0,0,5));
+    assertDateParsed('через 5 секунд',      getRelativeDate(0,0,0,0,0,5));
+    assertDateParsed('через 5 минут',       getRelativeDate(0,0,0,0,5));
+    assertDateParsed('через 5 часов',       getRelativeDate(0,0,0,5));
+    assertDateParsed('через 5 дней',        getRelativeDate(0,0,5));
+    assertDateParsed('через 5 недель',      getRelativeDate(0,0,35));
+    assertDateParsed('через 5 месяцев',     getRelativeDate(0,5));
+    assertDateParsed('через 5 лет',         getRelativeDate(5));
 
-    equal(testCreateDate('позавчера'),   run(getRelativeDate(0,0,-2), 'reset'), 'day before yesterday');
-    equal(testCreateDate('Вчера'),       run(getRelativeDate(0,0,-1), 'reset'), 'yesterday');
-    equal(testCreateDate('Сегодня'),     run(getRelativeDate(0,0,0), 'reset'), 'today');
-    equal(testCreateDate('Завтра'),      run(getRelativeDate(0,0,1), 'reset'), 'tomorrow');
-    equal(testCreateDate('послезавтра'), run(getRelativeDate(0,0,2), 'reset'), 'day after tomorrow');
+    assertDateParsed('позавчера',   getRelativeDateReset(0,0,-2));
+    assertDateParsed('Вчера',       getRelativeDateReset(0,0,-1));
+    assertDateParsed('Сегодня',     getRelativeDateReset(0,0,0));
+    assertDateParsed('Завтра',      getRelativeDateReset(0,0,1));
+    assertDateParsed('послезавтра', getRelativeDateReset(0,0,2));
 
-    equal(testCreateDate('на прошлой неделе'),   getRelativeDate(0,0,-7), 'Last week');
-    equal(testCreateDate('на следующей неделе'), getRelativeDate(0,0,7), 'Next week');
+    assertDateParsed('на прошлой неделе',   getRelativeDate(0,0,-7));
+    assertDateParsed('на следующей неделе', getRelativeDate(0,0,7));
 
-    equal(testCreateDate('в прошлом месяце'),   getRelativeDate(0,-1), 'last month');
-    equal(testCreateDate('в следующем месяце'), getRelativeDate(0,1), 'Next month');
+    assertDateParsed('в прошлом месяце',   getRelativeDate(0,-1));
+    assertDateParsed('в следующем месяце', getRelativeDate(0,1));
 
-    equal(testCreateDate('в прошлом году'),   getRelativeDate(-1), 'Last year');
-    equal(testCreateDate('в следующем году'), getRelativeDate(1), 'Next year');
-
-
-    equal(testCreateDate('следующий понедельник'), testGetWeekday(1, 1), 'next monday');
-    equal(testCreateDate('в прошлый вторник'),     testGetWeekday(2,-1), 'last tuesday');
-
-    equal(testCreateDate('следующий понедельник 3:45 вечера'), run(testGetWeekday(1,1), 'set', [{ hour: 15, minute: 45 }, true]), 'next monday');
-
-    equal(testCreateDate('Завтра в 3:30 утра'), run(getRelativeDate(0,0,1), 'set', [{hours:3,minutes:30}, true]), 'tomorrow at 3:30');
+    assertDateParsed('в прошлом году',   getRelativeDate(-1));
+    assertDateParsed('в следующем году', getRelativeDate(1));
 
 
-    equal(testCreateDate('17:32 15 мая 2011'), new Date(2011, 4, 15, 17, 32), '17:32 May 15 2011');
-    equal(testCreateDate('17:32 следующий понедельник'), testGetWeekday(1, 1, 17, 32), '17:32 next monday');
+    assertDateParsed('следующий понедельник', testGetWeekday(1, 1));
+    assertDateParsed('в прошлый вторник',     testGetWeekday(2,-1));
+
+    assertDateParsed('следующий понедельник 3:45 вечера', run(testGetWeekday(1,1), 'set', [{ hour: 15, minute: 45 }, true]));
+
+    assertDateParsed('Завтра в 3:30 утра', run(getRelativeDate(0,0,1), 'set', [{hours:3,minutes:30}, true]));
+
+
+    assertDateParsed('17:32 15 мая 2011', new Date(2011, 4, 15, 17, 32));
+    assertDateParsed('17:32 следующий понедельник', testGetWeekday(1, 1, 17, 32));
 
     // Numbers
 
-    equal(testCreateDate('ноль лет назад'),    getRelativeDate(0),   'zero years ago');
-    equal(testCreateDate('один год назад'),    getRelativeDate(-1),  'one year ago');
-    equal(testCreateDate('два года назад'),    getRelativeDate(-2),  'two years ago');
-    equal(testCreateDate('три года назад'),    getRelativeDate(-3),  'three years ago');
-    equal(testCreateDate('четыре года назад'), getRelativeDate(-4),  'four years ago');
-    equal(testCreateDate('пять лет назад'),    getRelativeDate(-5),  'five years ago');
-    equal(testCreateDate('шесть лет назад'),   getRelativeDate(-6),  'six years ago');
-    equal(testCreateDate('семь лет назад'),    getRelativeDate(-7),  'seven years ago');
-    equal(testCreateDate('восемь лет назад'),  getRelativeDate(-8),  'eight years ago');
-    equal(testCreateDate('девять лет назад'),  getRelativeDate(-9),  'nine years ago');
-    equal(testCreateDate('десять лет назад'),  getRelativeDate(-10), 'ten years ago');
+    assertDateParsed('ноль лет назад',    getRelativeDate(0));
+    assertDateParsed('один год назад',    getRelativeDate(-1));
+    assertDateParsed('два года назад',    getRelativeDate(-2));
+    assertDateParsed('три года назад',    getRelativeDate(-3));
+    assertDateParsed('четыре года назад', getRelativeDate(-4));
+    assertDateParsed('пять лет назад',    getRelativeDate(-5));
+    assertDateParsed('шесть лет назад',   getRelativeDate(-6));
+    assertDateParsed('семь лет назад',    getRelativeDate(-7));
+    assertDateParsed('восемь лет назад',  getRelativeDate(-8));
+    assertDateParsed('девять лет назад',  getRelativeDate(-9));
+    assertDateParsed('десять лет назад',  getRelativeDate(-10));
 
 
     // Issue #524
-    equal(testCreateDate('3 октября 2014 г.'), new Date(2014, 9, 3), 'Windows long format');
+    assertDateParsed('3 октября 2014 г.', new Date(2014, 9, 3));
 
   });
 

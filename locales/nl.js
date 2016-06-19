@@ -8,11 +8,10 @@
  */
 Sugar.Date.addLocale('nl', {
   'plural': true,
+  'units': 'milliseconde:|n,seconde:|n,minu:ut|ten,uur,dag:|en,we:ek|ken,maand:|en,jaar',
   'months': 'jan:uari|,feb:ruari|,maart|mrt,apr:il|,mei,jun:i|,jul:i|,aug:ustus|,sep:tember|,okt:ober|,nov:ember|,dec:ember|',
   'weekdays': 'zondag|zo,maandag|ma,dinsdag|di,woensdag|wo|woe,donderdag|do,vrijdag|vr|vrij,zaterdag|za',
-  'units': 'milliseconde:|n,seconde:|n,minu:ut|ten,uur,dag:|en,we:ek|ken,maand:|en,jaar',
-  'numbers': 'nul,een,twee,drie,vier,vijf,zes,zeven,acht,negen,tien',
-  'tokens': '',
+  'numerals': 'nul,een,twee,drie,vier,vijf,zes,zeven,acht,negen,tien',
   'short':  '{dd}-{MM}-{yyyy}',
   'medium': '{d} {month} {yyyy}',
   'long':   '{d} {Month} {yyyy} {time}',
@@ -22,7 +21,7 @@ Sugar.Date.addLocale('nl', {
   'past':   '{num} {unit} {sign}',
   'future': '{num} {unit} {sign}',
   'duration': '{num} {unit}',
-  'timeMarker': "'s|om",
+  'timeMarker': "'s,om",
   'modifiers': [
     { 'name': 'day', 'src': 'gisteren', 'value': -1 },
     { 'name': 'day', 'src': 'vandaag', 'value': 0 },
@@ -33,13 +32,16 @@ Sugar.Date.addLocale('nl', {
     { 'name': 'shift', 'src': 'laatste|vorige|afgelopen', 'value': -1 },
     { 'name': 'shift', 'src': 'volgend:|e', 'value': 1 }
   ],
-  'dateParse': [
+  'parse': [
     '{num} {unit} {sign}',
     '{0?} {unit:5-7} {shift}',
     '{0?} {shift} {unit:5-7}'
   ],
+  'timeParse': [
+    '{shift?} {day|weekday}'
+  ],
   'timeFrontParse': [
-    '{weekday?} {date?} {month} {year?}',
-    '{shift} {weekday}'
+    '{shift?} {day|weekday}',
+    '{weekday?} {date?} {months} {year?}'
   ]
 });

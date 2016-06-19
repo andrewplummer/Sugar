@@ -8,10 +8,10 @@
  */
 Sugar.Date.addLocale('no', {
   'plural': true,
+  'units': 'millisekund:|er,sekund:|er,minutt:|er,tim:e|er,dag:|er,uk:e|er|en,måned:|er|en+maaned:|er|en,år:||et+aar:||et',
   'months': 'januar,februar,mars,april,mai,juni,juli,august,september,oktober,november,desember',
   'weekdays': 'søndag|sondag,mandag,tirsdag,onsdag,torsdag,fredag,lørdag|lordag',
-  'units': 'millisekund:|er,sekund:|er,minutt:|er,tim:e|er,dag:|er,uk:e|er|en,måned:|er|en+maaned:|er|en,år:||et+aar:||et',
-  'numbers': 'en|et,to,tre,fire,fem,seks,sju|syv,åtte,ni,ti',
+  'numerals': 'en|et,to,tre,fire,fem,seks,sju|syv,åtte,ni,ti',
   'tokens': 'den,for',
   'articles': 'den',
   'short':'d. {d}. {month} {yyyy}',
@@ -33,7 +33,7 @@ Sugar.Date.addLocale('no', {
     { 'name': 'shift', 'src': 'denne', 'value': 0 },
     { 'name': 'shift', 'src': 'neste', 'value': 1 }
   ],
-  'dateParse': [
+  'parse': [
     '{num} {unit} {sign}',
     '{sign} {num} {unit}',
     '{1?} {num} {unit} {sign}',

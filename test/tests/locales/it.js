@@ -11,95 +11,95 @@ namespace('Date | Italian', function () {
 
   method('create', function() {
 
-    equal(testCreateDate('15 Maggio 2011'), new Date(2011, 4, 15), 'Date#create | basic Italian date');
-    equal(testCreateDate('Martedì, 5 Gennaio 2012'), new Date(2012, 0, 5), '2012-01-05');
-    equal(testCreateDate('Maggio 2011'), new Date(2011, 4), 'year and month');
-    equal(testCreateDate('15 Maggio'), new Date(now.getFullYear(), 4, 15), 'month and date');
-    equal(testCreateDate('2011'), new Date(2011, 0), 'year');
-    equal(testCreateDate('02 feb 2016'), new Date(2016, 1, 2), 'toLocaleDateString');
+    assertDateParsed('15 Maggio 2011', new Date(2011, 4, 15));
+    assertDateParsed('Martedì, 5 Gennaio 2012', new Date(2012, 0, 5));
+    assertDateParsed('Maggio 2011', new Date(2011, 4));
+    assertDateParsed('15 Maggio', new Date(now.getFullYear(), 4, 15));
+    assertDateParsed('2011', new Date(2011, 0));
+    assertDateParsed('02 feb 2016', new Date(2016, 1, 2));
 
-    equal(testCreateDate('Maggio'), new Date(now.getFullYear(), 4), 'month');
-    equal(testCreateDate('Lunedì'), testGetWeekday(1), 'Monday');
-    equal(testCreateDate('Lun'), testGetWeekday(1), 'Monday abbreviated');
+    assertDateParsed('Maggio', new Date(now.getFullYear(), 4));
+    assertDateParsed('Lunedì', testGetWeekday(1));
+    assertDateParsed('Lun', testGetWeekday(1));
 
-    equal(testCreateDate('Martedì, 5 Gennaio 2012 3:45'), new Date(2012, 0, 5, 3, 45), '2012-01-05 3:45');
-    equal(testCreateDate('Martedì, 5 Gennaio 2012 3:45pm'), new Date(2012, 0, 5, 15, 45), '2012-01-05 3:45pm');
+    assertDateParsed('Martedì, 5 Gennaio 2012 3:45', new Date(2012, 0, 5, 3, 45));
+    assertDateParsed('Martedì, 5 Gennaio 2012 3:45pm', new Date(2012, 0, 5, 15, 45));
 
-    equal(testCreateDate('un millisecondo fa'), getRelativeDate(0,0,0,0,0,0,-1), 'one millisecond ago');
-    equal(testCreateDate('un secondo fa'),      getRelativeDate(0,0,0,0,0,-1), 'one second ago');
-    equal(testCreateDate('un minuto fa'),       getRelativeDate(0,0,0,0,-1), 'one minuto ago');
-    equal(testCreateDate("un'ora fa"),          getRelativeDate(0,0,0,-1), 'one hour ago');
-    equal(testCreateDate('un giorno fa'),       getRelativeDate(0,0,-1), 'one day ago');
-    equal(testCreateDate('una settimana fa'),   getRelativeDate(0,0,-7), 'one week ago');
-    equal(testCreateDate('un mese fa'),         getRelativeDate(0,-1), 'one month ago');
-    equal(testCreateDate('un anno fa'),         getRelativeDate(-1), 'one year ago');
-
-
-    equal(testCreateDate('5 millisecondi da adesso'), getRelativeDate(0,0,0,0,0,0,5), 'danni | five milliseconds from now');
-    equal(testCreateDate('5 secondi da adesso'),   getRelativeDate(0,0,0,0,0,5), 'danni | five second from now');
-    equal(testCreateDate('5 minuti da adesso'),    getRelativeDate(0,0,0,0,5), 'danni | five minuto from now');
-    equal(testCreateDate('5 ore da adesso'),       getRelativeDate(0,0,0,5), 'danni | five hour from now');
-    equal(testCreateDate('5 giorni da adesso'),    getRelativeDate(0,0,5), 'danni | five day from now');
-    equal(testCreateDate('5 settimane da adesso'), getRelativeDate(0,0,35), 'danni | five weeks from now');
-    equal(testCreateDate('5 mesi da adesso'),      getRelativeDate(0,5), 'danni | five months from now');
-    equal(testCreateDate('5 anni da adesso'),      getRelativeDate(5), 'danni | five years from now');
+    assertDateParsed('un millisecondo fa', getRelativeDate(0,0,0,0,0,0,-1));
+    assertDateParsed('un secondo fa',      getRelativeDate(0,0,0,0,0,-1));
+    assertDateParsed('un minuto fa',       getRelativeDate(0,0,0,0,-1));
+    assertDateParsed("un'ora fa",          getRelativeDate(0,0,0,-1));
+    assertDateParsed('un giorno fa',       getRelativeDate(0,0,-1));
+    assertDateParsed('una settimana fa',   getRelativeDate(0,0,-7));
+    assertDateParsed('un mese fa',         getRelativeDate(0,-1));
+    assertDateParsed('un anno fa',         getRelativeDate(-1));
 
 
-    equal(testCreateDate('ieri'),       run(getRelativeDate(0,0,-1), 'reset'), 'yesterday');
-    equal(testCreateDate('oggi'),       run(getRelativeDate(0,0,0), 'reset'), 'today');
-    equal(testCreateDate('domani'),     run(getRelativeDate(0,0,1), 'reset'), 'tomorrow');
-    equal(testCreateDate('dopodomani'), run(getRelativeDate(0,0,2), 'reset'), 'day after tomorrow');
+    assertDateParsed('5 millisecondi da adesso', getRelativeDate(0,0,0,0,0,0,5));
+    assertDateParsed('5 secondi da adesso',   getRelativeDate(0,0,0,0,0,5));
+    assertDateParsed('5 minuti da adesso',    getRelativeDate(0,0,0,0,5));
+    assertDateParsed('5 ore da adesso',       getRelativeDate(0,0,0,5));
+    assertDateParsed('5 giorni da adesso',    getRelativeDate(0,0,5));
+    assertDateParsed('5 settimane da adesso', getRelativeDate(0,0,35));
+    assertDateParsed('5 mesi da adesso',      getRelativeDate(0,5));
+    assertDateParsed('5 anni da adesso',      getRelativeDate(5));
 
-    equal(testCreateDate('la settimana scorsa'),   getRelativeDate(0,0,-7), 'Last week');
-    equal(testCreateDate('la settimana prossima'), getRelativeDate(0,0,7), 'Next week');
 
-    equal(testCreateDate('il mese scorso'),   getRelativeDate(0,-1), 'last month');
-    equal(testCreateDate('il mese prossimo'), getRelativeDate(0,1), 'Next month');
+    assertDateParsed('ieri',       getRelativeDateReset(0,0,-1));
+    assertDateParsed('oggi',       getRelativeDateReset(0,0,0));
+    assertDateParsed('domani',     getRelativeDateReset(0,0,1));
+    assertDateParsed('dopodomani', getRelativeDateReset(0,0,2));
 
-    equal(testCreateDate("l'anno scorso"),   getRelativeDate(-1), 'Last year');
-    equal(testCreateDate("l'anno prossimo"), getRelativeDate(1), 'Next year');
+    assertDateParsed('la settimana scorsa',   getRelativeDate(0,0,-7));
+    assertDateParsed('la settimana prossima', getRelativeDate(0,0,7));
 
-    equal(testCreateDate('prossimo lunedì'), testGetWeekday(1, 1), 'next monday');
-    equal(testCreateDate('scorsa lunedì'),   testGetWeekday(1, -1), 'last monday');
+    assertDateParsed('il mese scorso',   getRelativeDate(0,-1));
+    assertDateParsed('il mese prossimo', getRelativeDate(0,1));
 
-    equal(testCreateDate('scorsa lunedì 3:45'), run(testGetWeekday(1, -1), 'set', [{ hour: 3, minute: 45 }, true]), 'last monday 3:45');
+    assertDateParsed("l'anno scorso",   getRelativeDate(-1));
+    assertDateParsed("l'anno prossimo", getRelativeDate(1));
+
+    assertDateParsed('prossimo lunedì', testGetWeekday(1, 1));
+    assertDateParsed('scorsa lunedì',   testGetWeekday(1, -1));
+
+    assertDateParsed('scorsa lunedì 3:45', run(testGetWeekday(1, -1), 'set', [{ hour: 3, minute: 45 }, true]));
 
     // No accents
-    equal(testCreateDate('Martedi, 5 Gennaio 2012'), new Date(2012, 0, 5), 'no accents | 2012-01-05');
-    equal(testCreateDate('Lunedi'), testGetWeekday(1), 'no accents | Monday');
+    assertDateParsed('Martedi, 5 Gennaio 2012', new Date(2012, 0, 5));
+    assertDateParsed('Lunedi', testGetWeekday(1));
 
     // Issue #152 Italian should not use a variant in any format
-    equal(testCreateDate('15/3/2012 12:45'), new Date(2012, 2, 15, 12, 45), 'slash format with time');
-    equal(testCreateDate('12:45 15/3/2012'), new Date(2012, 2, 15, 12, 45), 'slash format with time front');
+    assertDateParsed('15/3/2012 12:45', new Date(2012, 2, 15, 12, 45));
+    assertDateParsed('12:45 15/3/2012', new Date(2012, 2, 15, 12, 45));
 
     // Issue #150 Fully qualified ISO codes should be allowed
-    equal(testCreateDate('7 gennaio 2012', 'it_IT'), new Date(2012, 0, 7), 'it_IT');
-    equal(testCreateDate('7 gennaio 2012', 'it-IT'), new Date(2012, 0, 7), 'it-IT');
+    assertDateParsed('7 gennaio 2012', 'it_IT', new Date(2012, 0, 7));
+    assertDateParsed('7 gennaio 2012', 'it-IT', new Date(2012, 0, 7));
 
     // Issue #150 Unrecognized locales will result in invalid dates, but will not throw an error
     // Update: Now it will fall back to the current locale.
     equal(run(testCreateDate('7 gennaio 2012', 'ux_UX'), 'isValid'), true, 'unknown locale code');
     equal(run(testCreateDate('2012/08/25', 'ux_UX'), 'isValid'), true, 'System intelligible formats are still parsed');
 
-    equal(testCreateDate('17:32 18 agosto'), new Date(now.getFullYear(), 7, 18, 17, 32), 'August 18, 17:32');
-    equal(testCreateDate('17:32 prossimo lunedì'), testGetWeekday(1, 1, 17, 32), '17:32 next monday');
+    assertDateParsed('17:32 18 agosto', new Date(now.getFullYear(), 7, 18, 17, 32));
+    assertDateParsed('17:32 prossimo lunedì', testGetWeekday(1, 1, 17, 32));
 
-    equal(testCreateDate('domani alle 3:30'), run(getRelativeDate(0,0,1), 'set', [{hours:3,minutes:30}, true]), 'tomorrow at 3:30');
+    assertDateParsed('domani alle 3:30', run(getRelativeDate(0,0,1), 'set', [{hours:3,minutes:30}, true]));
 
 
     // Numbers
 
-    equal(testCreateDate('zero anni fa'),    getRelativeDate(0),   'zero years ago');
-    equal(testCreateDate('un anno fa'),      getRelativeDate(-1),  'one year ago');
-    equal(testCreateDate('due anni fa'),     getRelativeDate(-2),  'two years ago');
-    equal(testCreateDate('tre anni fa'),     getRelativeDate(-3),  'three years ago');
-    equal(testCreateDate('quattro anni fa'), getRelativeDate(-4),  'four years ago');
-    equal(testCreateDate('cinque anni fa'),  getRelativeDate(-5),  'five years ago');
-    equal(testCreateDate('sei anni fa'),     getRelativeDate(-6),  'six years ago');
-    equal(testCreateDate('sette anni fa'),   getRelativeDate(-7),  'seven years ago');
-    equal(testCreateDate('otto anni fa'),    getRelativeDate(-8),  'eight years ago');
-    equal(testCreateDate('nove anni fa'),    getRelativeDate(-9),  'nine years ago');
-    equal(testCreateDate('dieci anni fa'),   getRelativeDate(-10), 'ten years ago');
+    assertDateParsed('zero anni fa',    getRelativeDate(0));
+    assertDateParsed('un anno fa',      getRelativeDate(-1));
+    assertDateParsed('due anni fa',     getRelativeDate(-2));
+    assertDateParsed('tre anni fa',     getRelativeDate(-3));
+    assertDateParsed('quattro anni fa', getRelativeDate(-4));
+    assertDateParsed('cinque anni fa',  getRelativeDate(-5));
+    assertDateParsed('sei anni fa',     getRelativeDate(-6));
+    assertDateParsed('sette anni fa',   getRelativeDate(-7));
+    assertDateParsed('otto anni fa',    getRelativeDate(-8));
+    assertDateParsed('nove anni fa',    getRelativeDate(-9));
+    assertDateParsed('dieci anni fa',   getRelativeDate(-10));
 
   });
 

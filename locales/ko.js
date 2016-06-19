@@ -7,11 +7,11 @@
  *
  */
 Sugar.Date.addLocale('ko', {
-  'digitDate': true,
-  'monthSuffix': '월',
-  'weekdays': '일:요일|,월:요일|,화:요일|,수:요일|,목:요일|,금:요일|,토:요일|',
+  'ampmFront': true,
+  'allowsNumerals': true,
   'units': '밀리초,초,분,시간,일,주,개월|달,년|해',
-  'numbers': '영|제로,일|한,이,삼,사,오,육,칠,팔,구,십',
+  'weekdays': '일:요일|,월:요일|,화:요일|,수:요일|,목:요일|,금:요일|,토:요일|',
+  'numerals': '영|제로,일|한,이,삼,사,오,육,칠,팔,구,십',
   'short':  '{yyyy}.{MM}.{dd}',
   'medium': '{yyyy}년 {M}월 {d}일',
   'long':   '{yyyy}년 {M}월 {d}일 {time}',
@@ -21,7 +21,7 @@ Sugar.Date.addLocale('ko', {
   'past':   '{num}{unit} {sign}',
   'future': '{num}{unit} {sign}',
   'duration': '{num}{unit}',
-  'timeSuffixes': '시,분,초',
+  'timeSuffixes': ',초,분,시,일,,월,년',
   'ampm': '오전,오후',
   'modifiers': [
     { 'name': 'day', 'src': '그저께', 'value': -2 },
@@ -35,14 +35,15 @@ Sugar.Date.addLocale('ko', {
     { 'name': 'shift', 'src': '이번|올', 'value': 0 },
     { 'name': 'shift', 'src': '다음|내', 'value': 1 }
   ],
-  'dateParse': [
+  'parse': [
     '{num}{unit} {sign}',
-    '{shift?} {unit:5-7}'
+    '{shift?} {unit:5-7}',
+    '{year?} {month}',
+    '{year}'
   ],
   'timeParse': [
+    '{day|weekday}',
     '{shift} {unit:5?} {weekday}',
-    '{year}년 {month?}월? {date?}일? {weekday?}',
-    '{month}월 {date?}일?',
-    '{date}일'
+    '{year?} {month?} {date} {weekday?}'
   ]
 });

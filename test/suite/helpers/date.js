@@ -1,4 +1,3 @@
-
 var INVALID_DATE = new Date(NaN).toString();
 
 var TEST_DATE_UNITS = [
@@ -109,7 +108,7 @@ getUTCDate = function(year, month, day, hours, minutes, seconds, milliseconds) {
   var d = new Date();
   if(year) d.setFullYear(year);
   d.setUTCDate(15); // Pre-emptively preventing a month overflow situation
-  d.setUTCMonth(month === undefined ? 0 : month - 1);
+  d.setUTCMonth(month === undefined ? 0 : month);
   d.setUTCDate(day === undefined ? 1 : day);
   d.setUTCHours(hours === undefined ? 0 : hours);
   d.setUTCMinutes(minutes === undefined ? 0 : minutes);
@@ -225,38 +224,6 @@ getExpectedTimezoneOffset = function(d, iso) {
   return hours + (iso ? ':' : '') + minutes;
 }
 
-testFormatDate = function(d) {
-  var tzOffset = d.getTimezoneOffset();
-  var tzSign   = tzOffset > 0 ? '+' : '';
-  var tzHr     = testPadDigits(tzOffset / 60);
-  var tzMin    = testPadDigits(tzOffset % 60);
-  return d.getFullYear() + '-' +
-         testPadDigits(d.getMonth() + 1) + '-' +
-         testPadDigits(d.getDate()) + ' ' +
-         testPadDigits(d.getHours()) + ':' +
-         testPadDigits(d.getMinutes()) + ':' +
-         testPadDigits(d.getSeconds()) +
-         tzSign +
-         tzHr + ':' +
-         tzMin;
-}
-
-testPadDigits = function(d, place) {
-  var str = d.toString(), negative;
-  if(!place) place = 2;
-  if(str.slice(0, 1) === '-') {
-    str = str.slice(1);
-    negative = true;
-  }
-  while(str.length < place) {
-    str = '0' + str;
-  }
-  if(negative) {
-    str = '-' + str;
-  }
-  return str;
-}
-
 testPadNumber = function(val, place, sign) {
   var num = Math.abs(val);
   var len = Math.abs(num).toString().replace(/\.\d+/, '').length;
@@ -267,16 +234,12 @@ testPadNumber = function(val, place, sign) {
   return str;
 }
 
-testGetTimezoneHours = function(d) {
-  return Math.floor(Math.abs(d.getTimezoneOffset()) / 60);
-}
-
 testCreateFakeLocale = function(code) {
   // Imaginary locale to test locale switching
   Sugar.Date.addLocale(code, {
     units: 'do,re,mi,fa,so,la,ti,do',
     months: 'Do,Re,Mi,Fa,So,La,Ti,Do',
-    dateParse: [
+    parse: [
       '{year}kupo',
       '{month}mofo'
     ],
@@ -291,6 +254,21 @@ testCreateFakeLocale = function(code) {
 testSetLocale = function(code) {
   if (!Sugar.Date || !Sugar.Date.setLocale) return;
   return Sugar.Date.setLocale(code);
+}
+
+assertDateParsed = function(str) {
+  var d, arg;
+  if (arguments.length === 3) {
+    arg = arguments[1];
+    d   = arguments[2];
+  } else {
+    d = arguments[1];
+  }
+  equal(testCreateDate(str, arg), d, str);
+}
+
+assertDateNotParsed = function(str) {
+  equal(testCreateDate(str).getTime(), NaN, '"' + str + '" should not have parsed');
 }
 
 assertAddUnitIsNumericallyEqual = function (d, method, add, message) {

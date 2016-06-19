@@ -8,10 +8,10 @@
  */
 Sugar.Date.addLocale('fr', {
   'plural': true,
+  'units': 'milliseconde:|s,seconde:|s,minute:|s,heure:|s,jour:|s,semaine:|s,mois,an:|s|née|nee',
   'months': 'janv:ier|,févr:ier|+fevr:ier|,mars,avr:il|,mai,juin,juil:let|,août,sept:embre|,oct:obre|,nov:embre|,déc:embre|+dec:embre|',
   'weekdays': 'dim:anche|,lun:di|,mar:di|,mer:credi|,jeu:di|,ven:dredi|,sam:edi|',
-  'units': 'milliseconde:|s,seconde:|s,minute:|s,heure:|s,jour:|s,semaine:|s,mois,an:|s|née|nee',
-  'numbers': 'zéro,un:|e,deux,trois,quatre,cinq,six,sept,huit,neuf,dix',
+  'numerals': 'zéro,un:|e,deux,trois,quatre,cinq,six,sept,huit,neuf,dix',
   'tokens': "l'|la|le,er",
   'short':  '{dd}/{MM}/{yyyy}',
   'medium': '{d} {month} {yyyy}',
@@ -33,12 +33,17 @@ Sugar.Date.addLocale('fr', {
     { 'name': 'shift', 'src': 'derni:èr|er|ère|ere', 'value': -1 },
     { 'name': 'shift', 'src': 'prochain:|e', 'value': 1 }
   ],
-  'dateParse': [
+  'parse': [
+    '{months} {year?}',
     '{sign} {num} {unit}',
     '{0?} {unit:5-7} {shift}'
   ],
+  'timeParse': [
+    '{day|weekday} {shift?}',
+    '{weekday?} {0?} {date}{1?} {months}\\.? {year?}'
+  ],
   'timeFrontParse': [
-    '{weekday?} {0?} {date?}{1?} {month} {year?}',
-    '{0?} {weekday} {shift}'
+    '{0?} {weekday} {shift}',
+    '{weekday?} {0?} {date}{1?} {months}\\.? {year?}'
   ]
 });

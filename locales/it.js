@@ -7,23 +7,23 @@
  *
  */
 Sugar.Date.addLocale('it', {
-  'plural':     true,
-  'months':     'gen:naio|,feb:braio|,mar:zo|,apr:ile|,mag:gio|,giu:gno|,lug:lio|,ago:sto|,set:tembre|,ott:obre|,nov:embre|,dic:embre|',
-  'weekdays':   'dom:enica|,lun:edì||edi,mar:tedì||tedi,mer:coledì||coledi,gio:vedì||vedi,ven:erdì||erdi,sab:ato|',
-  'units':      'millisecond:o|i,second:o|i,minut:o|i,or:a|e,giorn:o|i,settiman:a|e,mes:e|i,ann:o|i',
-  'numbers':    "zero,un:|a|o|',due,tre,quattro,cinque,sei,sette,otto,nove,dieci",
-  'tokens':     "l'|la|il",
-  'short':      '{dd}/{MM}/{yyyy}',
-  'medium':     '{d} {month} {yyyy}',
-  'long':       '{d} {month} {yyyy} {time}',
-  'full':       '{weekday}, {d} {month} {yyyy} {time}',
-  'stamp':      '{dow} {d} {mon} {yyyy} {time}',
-  'time':       '{H}:{mm}',
-  'past':       '{num} {unit} {sign}',
-  'future':     '{num} {unit} {sign}',
-  'duration':   '{num} {unit}',
+  'plural': true,
+  'units': 'millisecond:o|i,second:o|i,minut:o|i,or:a|e,giorn:o|i,settiman:a|e,mes:e|i,ann:o|i',
+  'months': 'gen:naio|,feb:braio|,mar:zo|,apr:ile|,mag:gio|,giu:gno|,lug:lio|,ago:sto|,set:tembre|,ott:obre|,nov:embre|,dic:embre|',
+  'weekdays': 'dom:enica|,lun:edì||edi,mar:tedì||tedi,mer:coledì||coledi,gio:vedì||vedi,ven:erdì||erdi,sab:ato|',
+  'numerals': "zero,un:|a|o|',due,tre,quattro,cinque,sei,sette,otto,nove,dieci",
+  'tokens': "l'|la|il",
+  'short': '{dd}/{MM}/{yyyy}',
+  'medium': '{d} {month} {yyyy}',
+  'long': '{d} {month} {yyyy} {time}',
+  'full': '{weekday}, {d} {month} {yyyy} {time}',
+  'stamp': '{dow} {d} {mon} {yyyy} {time}',
+  'time': '{H}:{mm}',
+  'past': '{num} {unit} {sign}',
+  'future': '{num} {unit} {sign}',
+  'duration': '{num} {unit}',
   'timeMarker': 'alle',
-  'ampm':       'am,pm',
+  'ampm': 'am,pm',
   'modifiers': [
     { 'name': 'day', 'src': 'ieri', 'value': -1 },
     { 'name': 'day', 'src': 'oggi', 'value': 0 },
@@ -34,13 +34,18 @@ Sugar.Date.addLocale('it', {
     { 'name': 'shift', 'src': 'scors:o|a', 'value': -1 },
     { 'name': 'shift', 'src': 'prossim:o|a', 'value': 1 }
   ],
-  'dateParse': [
+  'parse': [
+    '{months} {year?}',
     '{num} {unit} {sign}',
     '{0?} {unit:5-7} {shift}',
     '{0?} {shift} {unit:5-7}'
   ],
+  'timeParse': [
+    '{shift?} {day|weekday}',
+    '{weekday?},? {date} {months?} {year?}'
+  ],
   'timeFrontParse': [
-    '{weekday?} {date?} {month} {year?}',
-    '{shift} {weekday}'
+    '{shift?} {day|weekday}',
+    '{weekday?},? {date} {months?} {year?}'
   ]
 });

@@ -7,20 +7,20 @@
  *
  */
 Sugar.Date.addLocale('pl', {
-  'plural':    true,
-  'months':    'sty:cznia||czeń,lut:ego||y,mar:ca||zec,kwi:etnia||ecień,maj:a|,cze:rwca||rwiec,lip:ca||iec,sie:rpnia||rpień,wrz:eśnia||esień,paź:dziernika||dziernik,lis:topada||topad,gru:dnia||dzień',
-  'weekdays':  'nie:dziela||dzielę,pon:iedziałek|,wt:orek|,śr:oda||odę,czw:artek|,piątek|pt,sobota|sb|sobotę',
-  'units':     'milisekund:a|y|,sekund:a|y|,minut:a|y|,godzin:a|y|,dzień|dni|dni,tydzień|tygodnie|tygodni,miesiąc|miesiące|miesięcy,rok|lata|lat',
-  'numbers':   'zero,jeden|jedną,dwa|dwie,trzy,cztery,pięć,sześć,siedem,osiem,dziewięć,dziesięć',
-  'optionals': 'w|we,roku',
-  'short':     '{dd}.{MM}.{yyyy}',
-  'medium':    '{d} {month} {yyyy}',
-  'long':      '{d} {month} {yyyy} {time}',
-  'full' :     '{weekday}, {d} {month} {yyyy} {time}',
-  'stamp':     '{dow} {d} {mon} {yyyy} {time}',
-  'time':      '{H}:{mm}',
-  'timeMarker':'o',
-  'ampm':      'am,pm',
+  'plural': true,
+  'units': 'milisekund:a|y|,sekund:a|y|,minut:a|y|,godzin:a|y|,dzień|dni|dni,tydzień|tygodnie|tygodni,miesiąc|miesiące|miesięcy,rok|lata|lat',
+  'months': 'sty:cznia||czeń,lut:ego||y,mar:ca||zec,kwi:etnia||ecień,maj:a|,cze:rwca||rwiec,lip:ca||iec,sie:rpnia||rpień,wrz:eśnia||esień,paź:dziernika||dziernik,lis:topada||topad,gru:dnia||dzień',
+  'weekdays': 'nie:dziela||dzielę,pon:iedziałek|,wt:orek|,śr:oda||odę,czw:artek|,piątek|pt,sobota|sb|sobotę',
+  'numerals': 'zero,jeden|jedną,dwa|dwie,trzy,cztery,pięć,sześć,siedem,osiem,dziewięć,dziesięć',
+  'tokens': 'w|we,roku',
+  'short': '{dd}.{MM}.{yyyy}',
+  'medium': '{d} {month} {yyyy}',
+  'long':  '{d} {month} {yyyy} {time}',
+  'full' : '{weekday}, {d} {month} {yyyy} {time}',
+  'stamp': '{dow} {d} {mon} {yyyy} {time}',
+  'time': '{H}:{mm}',
+  'timeMarker': 'o',
+  'ampm': 'am,pm',
   'modifiers': [
     { 'name': 'day', 'src': 'przedwczoraj', 'value': -2 },
     { 'name': 'day', 'src': 'wczoraj', 'value': -1 },
@@ -31,17 +31,6 @@ Sugar.Date.addLocale('pl', {
     { 'name': 'sign', 'src': 'za', 'value': 1 },
     { 'name': 'shift', 'src': 'zeszły|zeszła|ostatni|ostatnia', 'value': -1 },
     { 'name': 'shift', 'src': 'następny|następna|następnego|przyszły|przyszła|przyszłego', 'value': 1 }
-  ],
-  'dateParse': [
-    '{num} {unit} {sign}',
-    '{sign} {num} {unit}',
-    '{month} {year}',
-    '{shift} {unit:5-7}',
-    '{0} {shift?} {weekday}'
-  ],
-  'timeFrontParse': [
-    '{date} {month} {year?} {1}',
-    '{0} {shift?} {weekday}'
   ],
   'relative': function (num, unit, ms, format) {
     // special cases for relative days
@@ -77,5 +66,17 @@ Sugar.Date.addLocale('pl', {
       case 'past':     return text + ' temu';
       case 'future':   return 'za ' + text;
     }
-  }
+  },
+  'parse': [
+    '{num} {unit} {sign}',
+    '{sign} {num} {unit}',
+    '{months} {year?}',
+    '{shift} {unit:5-7}',
+    '{0} {shift?} {weekday}'
+  ],
+  'timeFrontParse': [
+    '{day|weekday}',
+    '{date} {months} {year?} {1?}',
+    '{0?} {shift?} {weekday}'
+  ]
 });
