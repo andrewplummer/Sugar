@@ -22,7 +22,7 @@ Sugar.Date.addLocale('it', {
   'past': '{num} {unit} {sign}',
   'future': '{num} {unit} {sign}',
   'duration': '{num} {unit}',
-  'timeMarker': 'alle',
+  'timeMarkers': 'alle',
   'ampm': 'am,pm',
   'modifiers': [
     { 'name': 'day', 'src': 'ieri', 'value': -1 },

@@ -2578,61 +2578,73 @@ namespace('Date', function () {
     equal(run(now, 'isThisYear'), true, 'isThisYear | now');
     equal(run(now, 'isNextYear'), false, 'isNextYear | now');
 
-    equal(run(getRelativeDate(0, 0, -7), 'isLastWeek'), true, 'isLastWeek | last week');
-    equal(run(getRelativeDate(0, 0, -7), 'isThisWeek'), false, 'isThisWeek | last week');
-    equal(run(getRelativeDate(0, 0, -7), 'isNextWeek'), false, 'isNextWeek | last week');
+    equal(run(getRelativeDate(0,0,-7), 'isLastWeek'), true,  'last week');
+    equal(run(getRelativeDate(0,0,-7), 'isThisWeek'), false, 'last week');
+    equal(run(getRelativeDate(0,0,-7), 'isNextWeek'), false, 'last week');
 
-    equal(run(getRelativeDate(0, 0, 7), 'isLastWeek'), false, 'isLastWeek | next week');
-    equal(run(getRelativeDate(0, 0, 7), 'isThisWeek'), false, 'isThisWeek | next week');
-    equal(run(getRelativeDate(0, 0, 7), 'isNextWeek'), true, 'isNextWeek | next week');
+    equal(run(getRelativeDate(0,0,7), 'isLastWeek'), false, 'next week');
+    equal(run(getRelativeDate(0,0,7), 'isThisWeek'), false, 'next week');
+    equal(run(getRelativeDate(0,0,7), 'isNextWeek'), true,  'next week');
 
-    equal(run(testGetWeekday(0), 'isLastWeek'), false, 'isLastWeek | this week sunday is last week');
-    equal(run(testGetWeekday(0), 'isThisWeek'), true, 'isThisWeek | this week sunday is this week');
-    equal(run(testGetWeekday(0), 'isNextWeek'), false, 'isNextWeek | this week sunday is next week');
+    equal(run(testGetWeekday(0), 'isLastWeek'), false, 'sunday is not last week');
+    equal(run(testGetWeekday(0), 'isThisWeek'), true,  'sunday is this week');
+    equal(run(testGetWeekday(0), 'isNextWeek'), false, 'sunday is not next week');
 
-    equal(run(testGetWeekday(5), 'isLastWeek'), false, 'isLastWeek | friday is last week');
-    equal(run(testGetWeekday(5), 'isThisWeek'), true, 'isThisWeek | friday is this week');
-    equal(run(testGetWeekday(5), 'isNextWeek'), false, 'isNextWeek | friday is next week');
+    equal(run(testGetWeekday(5), 'isLastWeek'), false, 'friday is not last week');
+    equal(run(testGetWeekday(5), 'isThisWeek'), true,  'friday is this week');
+    equal(run(testGetWeekday(5), 'isNextWeek'), false, 'friday is not next week');
 
-    equal(run(testGetWeekday(6), 'isLastWeek'), false, 'isLastWeek | satuday is last week');
-    equal(run(testGetWeekday(6), 'isThisWeek'), true, 'isThisWeek | satuday is this week');
-    equal(run(testGetWeekday(6), 'isNextWeek'), false, 'isNextWeek | satuday is next week');
+    equal(run(testGetWeekday(6), 'isLastWeek'), false, 'satuday is not last week');
+    equal(run(testGetWeekday(6), 'isThisWeek'), true,  'satuday is this week');
+    equal(run(testGetWeekday(6), 'isNextWeek'), false, 'satuday is not next week');
 
-    equal(run(testCreateDate('last sunday'), 'isLastWeek'), true, 'isLastWeek | last sunday');
-    equal(run(testCreateDate('last sunday'), 'isThisWeek'), false, 'isThisWeek | last sunday');
-    equal(run(testCreateDate('last sunday'), 'isNextWeek'), false, 'isNextWeek | last sunday');
+    equal(run(testGetWeekday(0), 'isLastWeek', ['en-GB']), true,  'en-GB | sunday is last week');
+    equal(run(testGetWeekday(0), 'isThisWeek', ['en-GB']), false, 'en-GB | sunday is not this week');
+    equal(run(testGetWeekday(0), 'isNextWeek', ['en-GB']), false, 'en-GB | sunday is not next week');
 
-    equal(run(testCreateDate('next sunday'), 'isLastWeek'), false, 'isLastWeek | next sunday');
-    equal(run(testCreateDate('next sunday'), 'isThisWeek'), false, 'isThisWeek | next sunday');
-    equal(run(testCreateDate('next sunday'), 'isNextWeek'), true, 'isNextWeek | next sunday');
+    equal(run(testGetWeekday(0,-1), 'isLastWeek', ['en-GB']), false, 'en-GB | last sunday is not last week');
+    equal(run(testGetWeekday(0,-1), 'isThisWeek', ['en-GB']), false, 'en-GB | last sunday is not this week');
+    equal(run(testGetWeekday(0,-1), 'isNextWeek', ['en-GB']), false, 'en-GB | last sunday is not next week');
 
-    equal(run(testCreateDate('last monday'), 'isLastWeek'), true, 'isLastWeek | last monday');
-    equal(run(testCreateDate('last monday'), 'isThisWeek'), false, 'isThisWeek | last monday');
-    equal(run(testCreateDate('last monday'), 'isNextWeek'), false, 'isNextWeek | last monday');
+    equal(run(testGetWeekday(0, 1), 'isLastWeek', ['en-GB']), false, 'en-GB | next sunday is not last week');
+    equal(run(testGetWeekday(0, 1), 'isThisWeek', ['en-GB']), true,  'en-GB | next sunday is this week');
+    equal(run(testGetWeekday(0, 1), 'isNextWeek', ['en-GB']), false, 'en-GB | next sunday is not next week');
 
-    equal(run(testCreateDate('next monday'), 'isLastWeek'), false, 'isLastWeek | next monday');
-    equal(run(testCreateDate('next monday'), 'isThisWeek'), false, 'isThisWeek | next monday');
-    equal(run(testCreateDate('next monday'), 'isNextWeek'), true, 'isNextWeek | next monday');
+    equal(run(testCreateDate('last sunday'), 'isLastWeek'), true,  'last sunday is last week');
+    equal(run(testCreateDate('last sunday'), 'isThisWeek'), false, 'last sunday is not this week');
+    equal(run(testCreateDate('last sunday'), 'isNextWeek'), false, 'last sunday is not next week');
 
-    equal(run(testCreateDate('last friday'), 'isLastWeek'), true, 'isLastWeek | last friday');
-    equal(run(testCreateDate('last friday'), 'isThisWeek'), false, 'isThisWeek | last friday');
-    equal(run(testCreateDate('last friday'), 'isNextWeek'), false, 'isNextWeek | last friday');
+    equal(run(testCreateDate('next sunday'), 'isLastWeek'), false, 'next sunday is not last week');
+    equal(run(testCreateDate('next sunday'), 'isThisWeek'), false, 'next sunday is not this week');
+    equal(run(testCreateDate('next sunday'), 'isNextWeek'), true,  'next sunday is next week');
 
-    equal(run(testCreateDate('next friday'), 'isLastWeek'), false, 'isLastWeek | next friday');
-    equal(run(testCreateDate('next friday'), 'isThisWeek'), false, 'isThisWeek | next friday');
-    equal(run(testCreateDate('next friday'), 'isNextWeek'), true, 'isNextWeek | next friday');
+    equal(run(testCreateDate('last monday'), 'isLastWeek'), true,  'last monday is last week');
+    equal(run(testCreateDate('last monday'), 'isThisWeek'), false, 'last monday is not this week');
+    equal(run(testCreateDate('last monday'), 'isNextWeek'), false, 'last monday is not next week');
 
-    equal(run(testCreateDate('last saturday'), 'isLastWeek'), true, 'isLastWeek | last saturday');
-    equal(run(testCreateDate('last saturday'), 'isThisWeek'), false, 'isThisWeek | last saturday');
-    equal(run(testCreateDate('last saturday'), 'isNextWeek'), false, 'isNextWeek | last saturday');
+    equal(run(testCreateDate('next monday'), 'isLastWeek'), false, 'next monday is not last week');
+    equal(run(testCreateDate('next monday'), 'isThisWeek'), false, 'next monday is not this week');
+    equal(run(testCreateDate('next monday'), 'isNextWeek'), true,  'next monday is next week');
 
-    equal(run(testCreateDate('next saturday'), 'isLastWeek'), false, 'isLastWeek | next saturday');
-    equal(run(testCreateDate('next saturday'), 'isThisWeek'), false, 'isThisWeek | next saturday');
-    equal(run(testCreateDate('next saturday'), 'isNextWeek'), true, 'isNextWeek | next saturday');
+    equal(run(testCreateDate('last friday'), 'isLastWeek'), true,  'last friday is last week');
+    equal(run(testCreateDate('last friday'), 'isThisWeek'), false, 'last friday is not this week');
+    equal(run(testCreateDate('last friday'), 'isNextWeek'), false, 'last friday is not next week');
 
-    equal(run(testCreateDate('the beginning of the week'), 'isLastWeek'), false, 'isLastWeek | the beginning of the week');
-    equal(run(testCreateDate('the beginning of the week'), 'isThisWeek'), true, 'isThisWeek | the beginning of the week');
-    equal(run(testCreateDate('the beginning of the week'), 'isNextWeek'), false, 'isNextWeek | the beginning of the week');
+    equal(run(testCreateDate('next friday'), 'isLastWeek'), false, 'next friday is not last week');
+    equal(run(testCreateDate('next friday'), 'isThisWeek'), false, 'next friday is not this week');
+    equal(run(testCreateDate('next friday'), 'isNextWeek'), true,  'next friday is next week');
+
+    equal(run(testCreateDate('last saturday'), 'isLastWeek'), true,  'last saturday is last week');
+    equal(run(testCreateDate('last saturday'), 'isThisWeek'), false, 'last saturday is not this week');
+    equal(run(testCreateDate('last saturday'), 'isNextWeek'), false, 'last saturday is not next week');
+
+    equal(run(testCreateDate('next saturday'), 'isLastWeek'), false, 'next saturday is not last week');
+    equal(run(testCreateDate('next saturday'), 'isThisWeek'), false, 'next saturday is not this week');
+    equal(run(testCreateDate('next saturday'), 'isNextWeek'), true,  'next saturday is next week');
+
+    equal(run(testCreateDate('the beginning of the week'), 'isLastWeek'), false, 'the beginning of the week is not last week');
+    equal(run(testCreateDate('the beginning of the week'), 'isThisWeek'), true, 'the beginning of the week is this week');
+    equal(run(testCreateDate('the beginning of the week'), 'isNextWeek'), false, 'the beginning of the week is not next weeek');
 
 
     var d = testCreateDate('the beginning of the week');
@@ -3517,7 +3529,7 @@ namespace('Number', function () {
     var properties = [
       'code',
       'months', 'weekdays', 'units', 'numerals', 'placeholders',
-      'articles', 'tokens', 'timeMarker', 'ampm', 'timeSuffixes',
+      'articles', 'tokens', 'timeMarkers', 'ampm', 'timeSuffixes',
       'parse', 'timeParse', 'timeFrontParse', 'modifiers',
       'compiledFormats', 'parseAliases', 'parseTokens', 'numeralMap'
     ];

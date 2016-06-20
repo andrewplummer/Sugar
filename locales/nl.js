@@ -21,7 +21,7 @@ Sugar.Date.addLocale('nl', {
   'past':   '{num} {unit} {sign}',
   'future': '{num} {unit} {sign}',
   'duration': '{num} {unit}',
-  'timeMarker': "'s,om",
+  'timeMarkers': "'s,om",
   'modifiers': [
     { 'name': 'day', 'src': 'gisteren', 'value': -1 },
     { 'name': 'day', 'src': 'vandaag', 'value': 0 },

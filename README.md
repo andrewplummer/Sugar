@@ -38,7 +38,7 @@ If you are upgrading to `v2.0.0`, there is now an [upgrade helper](lib/extras/up
 
 ## Documentation
 
-#### [http://sugarjs.com/docs/](http://sugarjs.com/docs/)
+#### [https://sugarjs.com/docs/](https://sugarjs.com/docs/)
 
 
 ## Getting Started
@@ -73,22 +73,22 @@ Sugar.extend();
 [2,4,6].sum(); // 12
 ```
 
-The global `extend` method maps defined methods onto natives so that they can immediately make use of Sugar methods. As in previous versions, `Object.prototype` is never touched without a special flag ([that you generally shouldn't use](http://sugarjs.com/docs/#natives)). Additionally there are a number of [options](http://sugarjs.com/docs/Sugar/extend) when extending to allow fine grained control over which methods get mapped. Classes can be extended individually as well with: `Sugar.Array.extend()`. Once a class (or all classes) are extended, any method that is [defined later](#defining-methods) will be immediately extended onto the prototype as well.
+The global `extend` method maps defined methods onto natives so that they can immediately make use of Sugar methods. As in previous versions, `Object.prototype` is never touched without a special flag ([that you generally shouldn't use](https://sugarjs.com/natives)). Additionally there are a number of [options](https://sugarjs.com/docs/#/Sugar/extend) when extending to allow fine grained control over which methods get mapped. Classes can be extended individually as well with: `Sugar.Array.extend()`. Once a class (or all classes) are extended, any method that is [defined later](#defining-methods) will be immediately extended onto the prototype as well.
 
 
 ## Custom Builds
 
-For custom builds, use the [download page](http://sugarjs.com/download). If you are using a bundler like Browserify, the [npm](#npm) package is modularized to allow requiring exactly the methods or modules you need. This repo has tasks to customize as well. Simply clone and run `npm install`, then `gulp`. Default modules included in the distributed build:
+For custom builds, use the [download page](https://sugarjs.com/download). If you are using a bundler like Browserify, the [npm](#npm) package is modularized to allow requiring exactly the methods or modules you need. This repo has tasks to customize as well. Simply clone and run `npm install`, then `gulp`. Default modules included in the distributed build:
 
-- [Date](http://sugarjs.com/docs/Date)
-- [String](http://sugarjs.com/docs/String)
-- [Array](http://sugarjs.com/docs/Array)
-- [Object](http://sugarjs.com/docs/Object)
-- [Function](http://sugarjs.com/docs/Function)
-- [Number](http://sugarjs.com/docs/Number)
-- [RegExp](http://sugarjs.com/docs/RegExp)
+- [Date](https://sugarjs.com/docs/#/Date)
+- [String](https://sugarjs.com/docs/#/String)
+- [Array](https://sugarjs.com/docs/#/Array)
+- [Object](https://sugarjs.com/docs/#/Object)
+- [Function](https://sugarjs.com/docs/#/Function)
+- [Number](https://sugarjs.com/docs/#/Number)
+- [RegExp](https://sugarjs.com/docs/#/RegExp)
 - [Enumerable](lib/enumerable.js) (shared methods on Array and Object)
-- [Range](http://sugarjs.com/docs/Range) (String, Number, and Date ranges)
+- [Range](https://sugarjs.com/docs/#/Range) (String, Number, and Date ranges)
 - [ES6](#polyfills) (Polyfills)
 - [ES7](#polyfills) (Polyfills)
 
@@ -124,18 +124,18 @@ Sugar has a full ES5 polyfill suite (most notably for IE6-8), as well as some si
 
 ##### ES6 (2015):
 
-- [Array.from](http://sugarjs.com/docs/Array/from)
-- [Array#find](http://sugarjs.com/docs/Array/find)
-- [Array#findIndex](http://sugarjs.com/docs/Array/findIndex)
-- [String#includes](http://sugarjs.com/docs/String/includes)
-- [String#startsWith](http://sugarjs.com/docs/String/startsWith)
-- [String#endsWith](http://sugarjs.com/docs/String/endsWith)
-- [String#repeat](http://sugarjs.com/docs/String/repeat)
-- [Number.isNaN](http://sugarjs.com/docs/Number/isNaN)
+- [Array.from](https://sugarjs.com/docs/#/Array/from)
+- [Array#find](https://sugarjs.com/docs/#/Array/find)
+- [Array#findIndex](https://sugarjs.com/docs/#/Array/findIndex)
+- [String#includes](https://sugarjs.com/docs/#/String/includes)
+- [String#startsWith](https://sugarjs.com/docs/#/String/startsWith)
+- [String#endsWith](https://sugarjs.com/docs/#/String/endsWith)
+- [String#repeat](https://sugarjs.com/docs/#/String/repeat)
+- [Number.isNaN](https://sugarjs.com/docs/#/Number/isNaN)
 
 ##### ES7 (2016):
 
-- [Array#includes](http://sugarjs.com/Array/includes)
+- [Array#includes](https://sugarjs.com/Array/includes)
 
 
 ## Date Locales
@@ -162,7 +162,7 @@ Locale definition files are in the [locales](locales/) directory. They can be si
 
 **Customizing/Adding Locales**
 
-If you need a locale not on this list, or if you need to tweak a locale, you can copy or change the locale definition file, which uses a format that is fairly easy to follow. Most tokens have a simple alternating format to keep them compact. For each token, a colon `:` demarcates a prefix and pipe `|` indicates suffix alternation. For example in the English definition file `Sep:tember|t|` is equivalent to `September|Sept|Sep`. Any alternate form will parse, but the order is important for formatting as the first alternate will be the "full" form, and the second alternate will be the "abbreviated" form. Plural forms for units likewise use alternates when the definition file has `'plural': true`. `parse` (without time) or `timeParse` (with time) are the main parsable formats that will be compiled into regular expressions, and should be fairly straightforward. `tokens` are arbitrary tokens such as `of` in English or `la` in French that can be used in the parsing formats but carry no value. `past`, `future`, `duration` and `relative` are output formats that allow tokens but may also be functions for grammatically complex languages. See [Russian](locales/ru.js) for example usage. `modifiers` should be easy to reason about, see [English](lib/date.js#3368) for an advanced example. For the `edge` modifier, values of `-2` and `2` are the beginning of the unit and end of the unit respectively, where a value of `1` will effectively reset the time, so is used for the "last day of ...", which is not exactly the edge. `-1` is at the moment unused.
+If you need a locale not on this list, or if you need to tweak a locale, you can copy or change the locale definition file, which uses a format that is fairly easy to follow. Most tokens have a simple alternating format to keep them compact. For each token, a colon `:` demarcates a prefix and pipe `|` indicates suffix alternation. For example in the English definition file `Sep:tember|t|` is equivalent to `September|Sept|Sep`. Any alternate form will parse, but the order is important for output as the first alternate will be the "full" form, and the second alternate will be the "abbreviated" form (used for tokens like {Mon} for {Month} or {Dow} for {Weekday}). Plural forms for units likewise use alternates when the definition file has `'plural': true`. Locale parsing formats are defined in the arrays `parse` (any unit), `timeParse` (appends time units), and `timeFrontParse` (appends time units before the format). Any token demarcated with `{}` will become a capturing group. Adding `?` to the token makes it optional, and `|` can also be used within the braces for alternation (one token or the other). Any other regex tokens can be used in or around the curly brace tokens except for capturing groups, whose order is important to the regex parsing. For example, to have alterating tokens that are optional, use `(?:{token1|token1})?`. The list of allowed tokens includes any array field on the locale itself (use [getLocale](https://sugarjs.com/docs/#/Date/getLocale) to get the locale object) as well as anything in the `parseTokens` field on the locale object. Common tokens that are integral to a format but carry no value, such as `of` in English or `la` in French can be added to the "tokens" array, and accessed by a number signifying an index, such as `{0}`. `past`, `future`, `duration` and `relative` are output formats that allow tokens but may also be functions for grammatically complex languages. See [Russian](locales/ru.js) for example usage. `modifiers` should be easy to reason about, see [English](lib/date.js#3623) for an advanced example. For the `edge` modifier, values of `-2` and `2` are the beginning of the unit and end of the unit respectively, where a value of `1` will effectively reset the time, so is used for the "last day of ...", which is not exactly the edge. `-1` is at the moment unused.
 
 If you do add or tweak a locale, please contribute your changes! If possible, add a [locale unit test](test/tests/locales/) for your submission asserting the correct formats and send a pull request with your changes.
 
@@ -185,7 +185,7 @@ Values allowed in the token array are anything allowed in locale formats:
 
 ## Timezones
 
-Accurate handling of timezones is very complex and outside the scope of Sugar. However, there are helper methods to [force internal use of UTC methods](http://sugarjs.com/docs/Date/setUTC), and it is also possible to [override the internal date constructor](http://sugarjs.com/docs/Sugar/newDateInternal) to allow specialized libraries like [TimezoneJS](https://github.com/mde/timezone-js) to hook into Sugar and play nicely together.
+Accurate handling of timezones is very complex and outside the scope of Sugar. However, there are helper methods to [force internal use of UTC methods](https://sugarjs.com/docs/#/Date/setUTC), and it is also possible to [override the internal date constructor](https://sugarjs.com/docs/#/Sugar/newDateInternal) to allow specialized libraries like [TimezoneJS](https://github.com/mde/timezone-js) to hook into Sugar and play nicely together.
 
 
 ## Defining Methods
@@ -221,7 +221,7 @@ Number.randomish(); // ???
 
 ```
 
-See the [docs](http://sugarjs.com/docs/Sugar) for options and other helpers.
+See the [docs](https://sugarjs.com/docs/#/Sugar) for options and other helpers.
 
 ## Contributing
 

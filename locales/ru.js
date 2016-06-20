@@ -19,6 +19,19 @@ Sugar.Date.addLocale('ru', {
   'full':   '{weekday}, {d} {month} {yyyy} г., {time}',
   'stamp':  '{dow} {d} {mon} {yyyy} {time}',
   'time':   '{H}:{mm}',
+  'timeMarkers': 'в',
+  'ampm': ' утра, вечера',
+  'modifiers': [
+    { 'name': 'day', 'src': 'позавчера', 'value': -2 },
+    { 'name': 'day', 'src': 'вчера', 'value': -1 },
+    { 'name': 'day', 'src': 'сегодня', 'value': 0 },
+    { 'name': 'day', 'src': 'завтра', 'value': 1 },
+    { 'name': 'day', 'src': 'послезавтра', 'value': 2 },
+    { 'name': 'sign', 'src': 'назад', 'value': -1 },
+    { 'name': 'sign', 'src': 'через', 'value': 1 },
+    { 'name': 'shift', 'src': 'прошл:ый|ой|ом', 'value': -1 },
+    { 'name': 'shift', 'src': 'следующ:ий|ей|ем', 'value': 1 }
+  ],
   'relative': function(num, unit, ms, format) {
     var numberWithUnit, last = num.toString().slice(-1), mult;
     switch(true) {
@@ -34,19 +47,6 @@ Sugar.Date.addLocale('ru', {
       case 'future':    return 'через ' + numberWithUnit;
     }
   },
-  'timeMarker': 'в',
-  'ampm': ' утра, вечера',
-  'modifiers': [
-    { 'name': 'day', 'src': 'позавчера', 'value': -2 },
-    { 'name': 'day', 'src': 'вчера', 'value': -1 },
-    { 'name': 'day', 'src': 'сегодня', 'value': 0 },
-    { 'name': 'day', 'src': 'завтра', 'value': 1 },
-    { 'name': 'day', 'src': 'послезавтра', 'value': 2 },
-    { 'name': 'sign', 'src': 'назад', 'value': -1 },
-    { 'name': 'sign', 'src': 'через', 'value': 1 },
-    { 'name': 'shift', 'src': 'прошл:ый|ой|ом', 'value': -1 },
-    { 'name': 'shift', 'src': 'следующ:ий|ей|ем', 'value': 1 }
-  ],
   'parse': [
     '{num} {unit} {sign}',
     '{sign} {num} {unit}',
