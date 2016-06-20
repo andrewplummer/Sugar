@@ -504,6 +504,15 @@ namespace('String', function () {
     test('', [], 'empty string');
   });
 
+  method('isEmpty', function() {
+    test('', true);
+    test('0', false);
+    test(' ', false);
+    test('　', false);
+    test('\t', false);
+    test('\n', false);
+  });
+
   method('isBlank', function() {
 
     test('', true, 'blank string');
