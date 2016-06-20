@@ -82,6 +82,9 @@ Drop it in before upgrading to get a general idea of what needs to change, or up
 - Level: Major
   - `String#startsWith` and `String#endsWith` are now more in compliance with the ES6 spec. They now no longer accept a RegExp (will throw an error) or a `case` parameter. If you need to do more complex string checking, use `String#match` with standard regexes instead. Also minor differences in the way the starting/ending positions are coerced may also be present.
 
+- Level: Major
+  - `Object.isNaN` was removed in favor of native `Number.isNaN`, which Sugar provides a polyfill for.
+
 - Level: Moderate
   - `Number#format` no longer accepts arguments for the thousands separator and decimal point. Instead these can now be set globally using Sugar.Number.thousands() and Sugar.Number.decimal(). These will also be respected by Number#abbr, Number#metric, and Number#bytes as well.
 

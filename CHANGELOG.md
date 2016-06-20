@@ -11,7 +11,7 @@ v2.0.0
 - Renamed `Date.SugarNewDate` to `Sugar.Date.newDateInternal`.
 - Modified `String#startsWith` and `String#endsWith` to be more in compliance with ES6. See CAUTION.md for details.
 - Removed `String#has` in favor of `String#includes` to be more in compliance with ES6. See CAUTION.md for details.
-- Added `Number.isNaN` shim.
+- Added `Number.isNaN` shim. Removed `Object.isNaN` in favor of this.
 - Alphanumeric array options are now on the global object.
 - Moved `Object.map`, `Object.each`, and `Object.size` to the object module.
 - Removed `Object.reduce`.

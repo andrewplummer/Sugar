@@ -933,23 +933,6 @@ namespace('Object', function () {
     test(Object, [undefined], false, 'undefined');
   });
 
-  method('isNaN', function() {
-    test({}, false, '{}');
-    test([], false, '[]');
-    test(new RegExp(), false, 'new RegExp()');
-    test(/afda/, false, '/afda/');
-    test(new Date(), false, 'new Date()');
-    test(function() {}, false, 'function() {}');
-    test(new Function(), false, 'new Function()');
-    test(1, false, '1');
-    test('wasabi', false, '"wasabi"');
-    test(NaN, true, 'NaN');
-    test(false, false, 'false');
-    test(true, false, 'true');
-    test(Object, [null], false, 'null');
-    test(Object, [undefined], false, 'undefined');
-  });
-
   method('isArguments', function() {
     test({}, false, '{}');
     test([], false, '[]');
