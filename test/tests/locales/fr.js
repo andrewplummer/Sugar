@@ -121,17 +121,17 @@ namespace('Date | French', function () {
 
     assertDateParsed('mardi 11 decembre 2012', 'fr', new Date(2012, 11, 11));
 
-    equal(run(testCreateDate(), 'isThisWeek'), true, 'isThisWeek should be true for today in other locales');
-    equal(run(testCreateDate('1 week ago', 'en'), 'isLastWeek'), true, 'isLastWeek should be true for last week in other locales');
-    equal(run(testCreateDate('1 week from now', 'en'), 'isNextWeek'), true, 'isNextWeek should be true for next week in other locales');
+    equal(run(testCreateDate('today', 'en'),           'isThisWeek'), true, 'today is this week');
+    equal(run(testCreateDate('1 week ago', 'en'),      'isLastWeek'), true, '1 week ago is last week');
+    equal(run(testCreateDate('1 week from now', 'en'), 'isNextWeek'), true, '1 week from now is next week');
 
-    equal(run(testCreateDate(), 'isThisMonth'), true, 'isThisMonth should be true for today in other locales');
-    equal(run(testCreateDate('1 month ago', 'en'), 'isLastMonth'), true, 'isLastMonth should be true for last month in other locales');
-    equal(run(testCreateDate('1 month from now', 'en'), 'isNextMonth'), true, 'isNextMonth should be true for next month in other locales');
+    equal(run(testCreateDate('today', 'en'),            'isThisMonth'), true, 'today is this month');
+    equal(run(testCreateDate('1 month ago', 'en'),      'isLastMonth'), true, '1 month ago is last month');
+    equal(run(testCreateDate('1 month from now', 'en'), 'isNextMonth'), true, '1 month from now is next month');
 
-    equal(run(testCreateDate(), 'isThisYear'), true, 'isThisYear should be true for today in other locales');
-    equal(run(testCreateDate('1 year ago', 'en'), 'isLastYear'), true, 'isLastYear should be true for last year in other locales');
-    equal(run(testCreateDate('1 year from now', 'en'), 'isNextYear'), true, 'isNextYear should be true for next year in other locales');
+    equal(run(testCreateDate('today', 'en'),           'isThisYear'), true, 'today is this year');
+    equal(run(testCreateDate('1 year ago', 'en'),      'isLastYear'), true, '1 year ago is last year');
+    equal(run(testCreateDate('1 year from now', 'en'), 'isNextYear'), true, '1 year from now is next year');
 
     // Issue #548 - Ordinal 1st
 

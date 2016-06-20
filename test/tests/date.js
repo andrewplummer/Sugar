@@ -2569,13 +2569,15 @@ namespace('Date', function () {
     equal(run(d, 'isPast'), false, 'isPast | 2 years from now');
 
     equal(run(now, 'isLastWeek'), false, 'isLastWeek | now');
-    equal(run(now, 'isThisWeek'), true, 'isThisWeek | now');
+    equal(run(now, 'isThisWeek'), true,  'isThisWeek | now');
     equal(run(now, 'isNextWeek'), false, 'isNextWeek | now');
+
     equal(run(now, 'isLastMonth'), false, 'isLastMonth | now');
-    equal(run(now, 'isThisMonth'), true, 'isThisMonth | now');
+    equal(run(now, 'isThisMonth'), true,  'isThisMonth | now');
     equal(run(now, 'isNextMonth'), false, 'isNextMonth | now');
+
     equal(run(now, 'isLastYear'), false, 'isLastYear | now');
-    equal(run(now, 'isThisYear'), true, 'isThisYear | now');
+    equal(run(now, 'isThisYear'), true,  'isThisYear | now');
     equal(run(now, 'isNextYear'), false, 'isNextYear | now');
 
     equal(run(getRelativeDate(0,0,-7), 'isLastWeek'), true,  'last week');
