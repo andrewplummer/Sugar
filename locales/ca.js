@@ -8,7 +8,6 @@
  */
 Sugar.Date.addLocale('ca', {
   'plural': true,
-  'ampm': 'am,pm',
   'units': 'milisegon:|s,segon:|s,minut:|s,hor:a|es,di:a|es,setman:a|es,mes:|os,any:|s',
   'months': 'gen:er|,febr:er|,mar:ç|,abr:il|,mai:g|,jun:y|,jul:iol|,ag:ost|,set:embre|,oct:ubre|,nov:embre|,des:embre|',
   'weekdays': 'diumenge|dg,dilluns|dl,dimarts|dt,dimecres|dc,dijous|dj,divendres|dv,dissabte|ds',
@@ -23,7 +22,8 @@ Sugar.Date.addLocale('ca', {
   'past':   '{sign} {num} {unit}',
   'future': '{sign} {num} {unit}',
   'duration': '{num} {unit}',
-  'timeMarker': 'a las',
+  'timeMarkers': 'a las',
+  'ampm': 'am,pm',
   'modifiers': [
     { 'name': 'day', 'src': "abans d'ahir", 'value': -2 },
     { 'name': 'day', 'src': 'ahir', 'value': -1 },

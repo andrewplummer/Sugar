@@ -19,7 +19,7 @@ Sugar.Date.addLocale('pl', {
   'full' : '{weekday}, {d} {month} {yyyy} {time}',
   'stamp': '{dow} {d} {mon} {yyyy} {time}',
   'time': '{H}:{mm}',
-  'timeMarker': 'o',
+  'timeMarkers': 'o',
   'ampm': 'am,pm',
   'modifiers': [
     { 'name': 'day', 'src': 'przedwczoraj', 'value': -2 },

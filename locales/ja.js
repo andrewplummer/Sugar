@@ -18,7 +18,6 @@ Sugar.Date.addLocale('ja', {
   'numerals': '〇,一,二,三,四,五,六,七,八,九',
   'placeholders': '十,百,千,万',
   'timeSuffixes': ',秒,分,時,日,,月,年度?',
-  'ampm': '午前,午後',
   'short':  '{yyyy}/{MM}/{dd}',
   'medium': '{yyyy}年{M}月{d}日',
   'long':   '{yyyy}年{M}月{d}日{time}',
@@ -28,6 +27,7 @@ Sugar.Date.addLocale('ja', {
   'past':   '{num}{unit}{sign}',
   'future': '{num}{unit}{sign}',
   'duration': '{num}{unit}',
+  'ampm': '午前,午後',
   'modifiers': [
     { 'name': 'day', 'src': '一昨々日|前々々日', 'value': -3 },
     { 'name': 'day', 'src': '一昨日|おととい|前々日', 'value': -2 },
