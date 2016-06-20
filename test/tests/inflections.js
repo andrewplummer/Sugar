@@ -249,7 +249,13 @@ namespace('String | Inflections', function () {
     'underground'     : 'Underground'
   }
 
-  group('acronyms', function() {
+  group('Accessors', function() {
+    equal(String.addAcronym, undefined, 'addAcronym should never be extended');
+    equal(String.addPlural, undefined, 'addPlural should never be extended');
+    equal(String.addHuman, undefined, 'addHuman should never be extended');
+  });
+
+  group('Acronyms', function() {
 
     run(String, 'addAcronym', ['API']);
     run(String, 'addAcronym', ['HTML']);

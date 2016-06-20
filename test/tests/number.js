@@ -1,6 +1,11 @@
 namespace('Number', function () {
   'use strict';
 
+  group('Options', function() {
+    equal(Sugar.Number.getOption('thousands'), ',', 'Thousands should be comma by default');
+    equal(Sugar.Number.getOption('decimal'), '.', 'Decimal should be dot by default');
+  });
+
   method('random', function() {
     var rand;
 
@@ -349,26 +354,26 @@ namespace('Number', function () {
     equal(run(100046546510000.022435451, 'format').replace(/\.\d+$/, ''), '100,046,546,510,000');
     equal(run(-100046546510000.022435451, 'format').replace(/\.\d+$/, ''), '-100,046,546,510,000');
 
-    Sugar.Number.thousands(' ');
-    Sugar.Number.decimal(',');
+    Sugar.Number.setOption('thousands', ' ');
+    Sugar.Number.setOption('decimal', ',');
     test(1000, [null, ' '], '1 000', 'with space');
     test(1532587, [null, ' '], '1 532 587', 'larget with space');
     test(1532587.5752, [null, ' ', ','], '1 532 587,5752', 'larger number with decimal');
 
-    Sugar.Number.thousands('.');
-    Sugar.Number.decimal(',');
+    Sugar.Number.setOption('thousands', '.');
+    Sugar.Number.setOption('decimal', ',');
     test(9999999.99, [null, '.',','], '9.999.999,99', 'Euro style!');
 
-    Sugar.Number.thousands('');
-    Sugar.Number.decimal('.');
+    Sugar.Number.setOption('thousands', '');
+    Sugar.Number.setOption('decimal', '.');
     test(9999999.99, [null, ''], '9999999.99', 'empty string');
 
-    Sugar.Number.thousands('');
-    Sugar.Number.decimal('');
+    Sugar.Number.setOption('thousands', '');
+    Sugar.Number.setOption('decimal', '');
     test(9999999.99, [null, '', ''], '999999999', 'no punctuation');
 
-    Sugar.Number.thousands(null);
-    Sugar.Number.decimal(null);
+    Sugar.Number.setOption('thousands', null);
+    Sugar.Number.setOption('decimal', null);
     test(9999999.99, [null, '', ''], '9,999,999.99', 'null returns to defaults');
 
     withArgs([2], function() {
@@ -553,9 +558,9 @@ namespace('Number', function () {
       test(1749584, '1.75m', 'decimal 3 places | 1,749,584');
 
       // Issue #422
-      Sugar.Number.decimal(',');
+      Sugar.Number.setOption('decimal', ',');
       test(1749584, '1,75m', 'should respect global decimal marker');
-      Sugar.Number.decimal(null);
+      Sugar.Number.setOption('decimal', null);
     });
 
     withArgs([-1], function() {
@@ -737,9 +742,9 @@ namespace('Number', function () {
       test(1249584, '1,249.6k', 'decimal 1 place | 1,249,584');
 
       // Issue #422
-      Sugar.Number.decimal(',');
+      Sugar.Number.setOption('decimal', ',');
       test(3232, [1], '3,2k', 'should respect global decimal marker');
-      Sugar.Number.decimal(null);
+      Sugar.Number.setOption('decimal', null);
     });
 
     withArgs([1, 'all'], function() {
@@ -1014,9 +1019,9 @@ namespace('Number', function () {
       test(100000000000000000, '88.82PiB', '2 places | base 2 | 100PB');
 
       // Issue #422
-      Sugar.Number.decimal(',');
+      Sugar.Number.setOption('decimal', ',');
       test(1000, '0,98KiB', 'should respect global decimal');
-      Sugar.Number.decimal(null);
+      Sugar.Number.setOption('decimal', null);
 
     });
 

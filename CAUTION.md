@@ -104,7 +104,7 @@ Drop it in before upgrading to get a general idea of what needs to change, or up
   - `Array#at` and `String#at` now have their `loop` argument off by default.
 
 - Level: Moderate
-  - Array natural sort options (`AlphanumericSortOrder`, `AlphanumericSortIgnore`, etc) now no longer have `Alphanumeric` in the name, and are now static accessor methods on `Sugar.Array` that either get or set the option depending on argument length. Lastly, `AlphanumericSort`, which simply exposed Sugar's internal sort algorithm is now `sortFunction`.
+  - Array natural sort options (`AlphanumericSortOrder`, `AlphanumericSortIgnore`, etc) now no longer have `Alphanumeric` in the name, and are now options that are set by the accessor methods `Sugar.Array.getOption` and `Sugar.Array.setOption`. Lastly, `AlphanumericSort`, which simply exposed Sugar's internal sort algorithm is now `sortCollate`.
 
 - Level: Moderate
   - `Array#sortBy` will now not clone the array by default. This will prevent unnecessary work when it is not needed, however it means that the method is now destructive. Simply use `clone` or `concat` on the array first for the old behavior.
