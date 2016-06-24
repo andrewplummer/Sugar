@@ -54,9 +54,9 @@ namespace('Date | Korean', function () {
     assertDateParsed('내일',   getRelativeDateReset(0,0,1));
     assertDateParsed('모레',   getRelativeDateReset(0,0,2));
 
-    assertDateParsed('내일 3:45',     run(getRelativeDate(0,0,1), 'set', [{ hours: 3, minutes: 45 }, true]));
-    assertDateParsed('내일 오후3:45', run(getRelativeDate(0,0,1), 'set', [{ hours: 15, minutes: 45 }, true]));
-    assertDateParsed('수요일 3:45',   run(testGetWeekday(3), 'set', [{ hours: 3, minutes: 45 }, true]));
+    assertDateParsed('내일 3:45',     testDateSet(getRelativeDateReset(0,0,1), {hour:3,minute:45}));
+    assertDateParsed('내일 오후3:45', testDateSet(getRelativeDateReset(0,0,1), {hour:15,minute:45}));
+    assertDateParsed('수요일 3:45',   testGetWeekday(3,0,3,45));
 
     assertDateParsed('지난 주', getRelativeDate(0,0,-7));
     assertDateParsed('이번 주', getRelativeDate(0,0,0));
@@ -174,8 +174,8 @@ namespace('Date | Korean', function () {
   });
 
   method('beginning/end', function() {
-    equal(dateRun(new Date(2010, 0), 'beginningOfWeek'), new Date(2009, 11, 28), 'beginningOfWeek');
-    equal(dateRun(new Date(2010, 0), 'endOfWeek'), new Date(2010, 0, 3, 23, 59, 59, 999), 'endOfWeek');
+    equal(run(new Date(2010, 0), 'beginningOfWeek'), new Date(2009, 11, 28), 'beginningOfWeek');
+    equal(run(new Date(2010, 0), 'endOfWeek'), new Date(2010, 0, 3, 23, 59, 59, 999), 'endOfWeek');
   });
 
 });

@@ -8,7 +8,7 @@
  */
 Sugar.Date.addLocale('ja', {
   'ampmFront': true,
-  'allowsNumerals': true,
+  'numeralUnits': true,
   'allowsFullWidth': true,
   'timeMarkerOptional': true,
   'firstDayOfWeek': 0,

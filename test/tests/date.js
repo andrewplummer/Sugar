@@ -18,8 +18,8 @@ namespace('Date', function () {
 
     // Issue #219
 
-    test(testCreateDate('28:00'),  true,  'hours may fall outside range');
-    test(testCreateDate('59:00'),  true,  'no hours allowed outside range');
+    test(testCreateDate('29:00'),  true,  'hours may fall outside range');
+    test(testCreateDate('30:00'),  false, 'no hours allowed outside range');
     test(testCreateDate('139:00'), false, '3 digits not supported');
 
     // These dates actually will parse out natively in V8
@@ -54,6 +54,7 @@ namespace('Date', function () {
   });
 
   group('Create | Objects', function() {
+
     assertDateParsed({year:1998 }, new Date(1998, 0));
     assertDateParsed({year:1998,month:1}, new Date(1998,1));
     assertDateParsed({year:1998,month:1,day:23}, new Date(1998,1,23));
@@ -67,6 +68,14 @@ namespace('Date', function () {
 
     equal(obj.year, 1998, 'Year should still be 1998');
     equal(Object.keys(obj).length, 1, 'No other properties should be set');
+
+    // Should handle fractions, ms should be truncated
+    assertDateParsed({days:20.5},    testDateSet(getRelativeDateReset(0,0), {date:20,hour:12}));
+    assertDateParsed({hours:2.5},    testDateSet(getRelativeDateReset(0,0,0), {hour:2,minute:30}));
+    assertDateParsed({minutes:15.5}, testDateSet(getRelativeDateReset(0,0,0,0), {minute:15,second:30}));
+    assertDateParsed({seconds:42.5}, testDateSet(getRelativeDateReset(0,0,0,0,0), {second:42,millisecond:500}));
+    assertDateParsed({milliseconds:999.99999}, testDateSet(getRelativeDateReset(0,0,0,0,0,0), {millisecond:999}));
+
   });
 
   group('Create | Timestamps', function() {
@@ -164,9 +173,9 @@ namespace('Date', function () {
     equal(d1 - d2, d1.getTimezoneOffset() * 60 * 1000, 'both UTC flags should parsed as UTC');
     equal(testIsUTC(d2), true, 'both UTC flags should also set UTC');
 
-    // Options objects without a date.
+    // Empty/unrecgonized params should be allowed
     assertDateParsed({}, new Date());
-    assertDateNotParsed({ fromUTC: true }, new Date());
+    assertDateParsed({ fromUTC: true }, new Date());
 
     // Issue #545 Allowing "set" option
     var set = {};
@@ -258,11 +267,52 @@ namespace('Date', function () {
 
   });
 
+  group('Create | Dygraphs', function() {
+
+    // http://dygraphs.com/date-formats.html
+    assertDateParsed('2009/07/12', new Date(2009,6,12));
+    assertDateParsed('2009/7/12', new Date(2009,6,12));
+    assertDateParsed('2009/07/12 12:34', new Date(2009,6,12,12,34));
+    assertDateParsed('2009/07/12 12:34:56', new Date(2009,6,12,12,34,56));
+    assertDateParsed('2009/07/12 12:34:56.789', new Date(2009,6,12,12,34,56,789));
+
+    assertDateParsed('07/02/2012', new Date(2012,6,2));
+    assertDateParsed('7/02/2012', new Date(2012,6,2));
+    assertDateParsed('7/02/2012 12:34', new Date(2012,6,2,12,34));
+
+    assertDateParsed('2009-7-12', new Date(2009,6,12));
+    assertDateParsed('2009-07-12', new Date(2009,6,12));
+    assertDateParsed('2009-07-12 12:34', new Date(2009,6,12,12,34));
+    assertDateParsed('2009-07-12 12:34:56', new Date(2009,6,12,12,34,56));
+
+    assertDateParsed('1-1-2012', new Date(2012,0,1));
+    assertDateParsed('1-1-12', new Date(2012,0,1));
+    assertDateParsed('1/1/12', new Date(2012,0,1));
+    assertDateParsed('1-1-12 11:12', new Date(2012,0,1,11,12));
+    assertDateParsed('1/1/12 11:12', new Date(2012,0,1,11,12));
+    assertDateParsed('1-1-12 11:12:34.567', new Date(2012,0,1,11,12,34,567));
+    assertDateParsed('1/1/12 11:12:34.567', new Date(2012,0,1,11,12,34,567));
+
+    assertDateParsed('1/2', new Date(now.getFullYear(),0,2));
+    assertDateParsed('1-2', new Date(now.getFullYear(),0,2));
+    assertDateParsed('1/2/3', new Date(2003,0,2));
+    assertDateParsed('1-2-3', new Date(2003,0,2));
+
+    assertDateParsed('2011-10-10T14:48:00+0200', getUTCDate(2011,9,10,12,48));
+    assertDateParsed('2011-10-10T14:48:00', new Date(2011,9,10,14,48));
+
+    assertDateParsed('2000-01-02T12:34:56Z', getUTCDate(2000,0,2,12,34,56));
+    assertDateParsed('2000-01-02T12:34:56.789Z', getUTCDate(2000,0,2,12,34,56,789));
+    assertDateParsed('2000-01-02T12:34:56.789012Z', getUTCDate(2000,0,2,12,34,56,789));
+
+  });
+
   group('Create | IETF', function() {
-    // Stolen with love from XDate
+    // Note that most browsers parse these, and Sugar will fall back to browser parsing.
     assertDateParsed('Mon Sep 05 2011 12:30:00 GMT-0700 (PDT)', getUTCDate(2011,8,5,19,30));
     assertDateParsed('Sat, 28 Aug 2004 08:15:38 GMT', getUTCDate(2004,7,28,8,15,38));
-
+    assertDateParsed('Sat, 28 Aug 2004 08:15:38 GMT-0500 (EASST)', getUTCDate(2004,7,28,13,15,38));
+    assertDateParsed('Wed Jun 22 2016 21:43 GMT+0300 (Jordan Daylight Time)', getUTCDate(2016,5,22,18,43));
   });
 
   group('Create | Reverse Full Slashes', function() {
@@ -307,6 +357,7 @@ namespace('Date', function () {
     assertDateParsed('15 July, 2008',   new Date(2008, 6, 15));
     assertDateParsed('15 July 2008',    new Date(2008, 6, 15));
     assertDateParsed('juNe 1St 2008',   new Date(2008, 5, 1));
+    assertDateParsed('February, 1998',  new Date(1998, 1));
 
     assertDateParsed('June 2008',       'en-GB', new Date(2008, 5));
     assertDateParsed('June-2008',       'en-GB', new Date(2008, 5));
@@ -347,13 +398,21 @@ namespace('Date', function () {
   });
 
   group('Create | Abbreviated with Text Month', function() {
+
     assertDateParsed('09-May-78', new Date(1978, 4, 9));
     assertDateParsed('09-May-1978', new Date(1978, 4, 9));
+    assertDateParsed('09-May-1978 3:45pm', new Date(1978, 4, 9, 15, 45));
+
     assertDateParsed('1978-May-09', new Date(1978, 4, 9));
-    assertDateParsed('Wednesday July 3rd, 2008', new Date(2008, 6, 3));
-    assertDateParsed('Wed July 3rd, 2008', new Date(2008, 6, 3));
-    assertDateParsed('Wed. July 3rd, 2008', new Date(2008, 6, 3));
-    assertDateParsed('Wed, 03 Jul 2008 08:00:00 EST', new Date(Date.UTC(2008, 6, 3, 13)));
+    assertDateParsed('1978-May-09 3:45pm', new Date(1978, 4, 9, 15, 45));
+
+    assertDateParsed('Thursday July 3rd, 2008', new Date(2008, 6, 3));
+    assertDateParsed('Thu July 3rd, 2008', new Date(2008, 6, 3));
+    assertDateParsed('Thu. July 3rd, 2008', new Date(2008, 6, 3));
+
+    // Date should not override an incorrect weekday
+    assertDateParsed('Wednesday July 3rd, 2008', new Date(2008, 6, 2));
+
   });
 
   group('Create | Core Formats', function() {
@@ -455,6 +514,13 @@ namespace('Date', function () {
     assertDateParsed('+1978-04-17', new Date(1978, 3, 17));
 
     assertDateParsed('17760523T024508+0830', getUTCDate(1776,4,22,18,15,8));
+
+    // 24 hour should parse
+    assertDateParsed('2012-05-03T24:00:00Z', getUTCDate(2012,4,4));
+
+    // Although ISO-8601 allows "60" for leap seconds,
+    // the ES6 spec does not, so disallowing this format.
+    assertDateNotParsed('1998-12-31T23:59:60Z');
 
   });
 
@@ -615,6 +681,8 @@ namespace('Date', function () {
     assertDateParsed('beginning of the week', 'en-GB', testGetBeginningOfWeek(1));
     assertDateParsed('end of this week', 'en-GB', testGetEndOfWeek(0));
 
+    assertDateParsed('end of day Friday', testGetWeekday(5, 0, 23, 59, 59, 999));
+
     assertDateParsed('beginning of the month',  getRelativeDateReset(0, 0));
     assertDateParsed('beginning of this month', getRelativeDateReset(0, 0));
     assertDateParsed('beginning of next month', getRelativeDateReset(0, 1));
@@ -633,12 +701,18 @@ namespace('Date', function () {
 
     assertDateParsed('the beginning of the day', getRelativeDateReset(0,0,0));
 
-    assertDateParsed('beginning of March', new Date(now.getFullYear(), 2));
-    assertDateParsed('end of March', new Date(now.getFullYear(), 2, 31, 23, 59, 59, 999));
+    assertDateParsed('end of March',           new Date(now.getFullYear(), 2, 31, 23, 59, 59, 999));
+    assertDateParsed('beginning of March',     new Date(now.getFullYear(), 2));
     assertDateParsed('the first day of March', new Date(now.getFullYear(), 2));
-    assertDateParsed('the last day of March', new Date(now.getFullYear(), 2, 31));
-    assertDateParsed('the last day of March 2010', new Date(2010, 2, 31));
+    assertDateParsed('the last day of March',  new Date(now.getFullYear(), 2, 31));
+
+    assertDateParsed('the last day of March 2010',  new Date(2010, 2, 31));
     assertDateParsed('the last day of March, 2012', new Date(2012, 2, 31));
+    assertDateParsed('end of march, 2005',          new Date(2005,2,31,23,59,59,999));
+
+    var year = now.getFullYear();
+    var days = testGetDaysInMonth(year + 1, 1);
+    assertDateParsed('the end of next February', new Date(year + 1, 1, days, 23, 59, 59, 999));
 
     assertDateParsed('beginning of 1998', new Date(1998, 0));
     assertDateParsed('end of 1998', new Date(1998, 11, 31, 23, 59, 59, 999));
@@ -700,6 +774,14 @@ namespace('Date', function () {
     assertDateParsed('in 5 months',   getRelativeDate(0, 5));
     assertDateParsed('in 5 years',    getRelativeDate(5));
 
+    // Testing absolute date with future preference
+    equal(testCreateFutureDate('1998-12-25'), new Date(1998, 11, 25), 'Future preference but in the past');
+    equal(testCreateFutureDate({}), new Date(), 'Empty object future preference');
+    equal(testCreateFutureDate(new Date(1998,11,30)), new Date(1998, 11, 30), 'Date object with future preference');
+
+    // Leap seconds do not exist as a concept, so make sure that the
+    // end of a leap second year/month is 23:59:59.999
+    assertDateParsed('the end of 1998', new Date(1998,11,31,23,59,59,999));
 
     // Issue #203
 
@@ -738,13 +820,13 @@ namespace('Date', function () {
 
     // Issue #310
 
-    assertDateParsed('6:30pm in 1 day',   run(getRelativeDate(0, 0, 1), 'set', [{hours:18,minutes:30}, true]));
-    assertDateParsed('6:30pm in 3 days',  run(getRelativeDate(0, 0, 3), 'set', [{hours:18,minutes:30}, true]));
-    assertDateParsed('6:30pm 2 days ago', run(getRelativeDate(0, 0, -2), 'set', [{hours:18,minutes:30}, true]));
-    assertDateParsed('21:00 in 2 weeks',  run(getRelativeDate(0, 0, 14), 'set', [{hours:21}, true]));
-    assertDateParsed('5:00am in a month', run(getRelativeDate(0, 1), 'set', [{hours:5}, true]));
-    assertDateParsed('5am in a month',    run(getRelativeDate(0, 1), 'set', [{hours:5}, true]));
-    assertDateParsed('5:01am in a month', run(getRelativeDate(0, 1), 'set', [{hours:5,minutes:1}, true]));
+    assertDateParsed('5:00am in a month', testDateSet(getRelativeDateReset(0,1,0),  {hour:5}));
+    assertDateParsed('5am in a month',    testDateSet(getRelativeDateReset(0,1,0),  {hour:5}));
+    assertDateParsed('21:00 in 2 weeks',  testDateSet(getRelativeDateReset(0,0,14), {hour:21}));
+    assertDateParsed('6:30pm in 1 day',   testDateSet(getRelativeDateReset(0,0,1),  {hour:18,minute:30}));
+    assertDateParsed('6:30pm in 3 days',  testDateSet(getRelativeDateReset(0,0,3),  {hour:18,minute:30}));
+    assertDateParsed('6:30pm 2 days ago', testDateSet(getRelativeDateReset(0,0,-2), {hour:18,minute:30}));
+    assertDateParsed('5:01am in a month', testDateSet(getRelativeDateReset(0,1,0),  {hour:5,minute:1}));
 
     assertDateNotParsed('6:30pm in -3 days');
     assertDateNotParsed('5:30am in an hour');
@@ -944,9 +1026,9 @@ namespace('Date', function () {
     var d = run(new Date(2001, 5, 15), 'setUTC', [true]);
     equal(run(d, 'hoursSince', ['2001-6-14', { fromUTC: false }]), 24, 'hoursSince | does not preserve UTC flag if fromUTC is set');
 
-    // Passing just an options object without a date results in an invalid date.
+    // Passing just an options object without a date will still parse
     var d = run(new Date(2001, 5, 15), 'setUTC', [true]);
-    equal(run(d, 'hoursSince', [{ fromUTC: false }]), NaN, 'hoursSince | needs more than just an options object');
+    equal(run(d, 'hoursSince', [{ fromUTC: false }]), 0, 'hoursSince | needs more than just an options object');
 
     var d = run(testCreateDate('1 month ago'), 'setUTC', [true])
     equal(run(d, 'isLastMonth'), true, 'isLastMonth');
@@ -962,12 +1044,11 @@ namespace('Date', function () {
 
     var d = run(testCreateUTCDate('2000-02-18 11:00pm'), 'setUTC', [true]);
 
-    equal(run(d, 'is', ['Friday', null, true]), true, 'is friday');
-    equal(run(d, 'isWeekday', [true]), true, 'friday isWeekday');
-    equal(run(d, 'is', ['2000-02-18', null, true]), true, 'friday full date');
+    equal(run(d, 'is', ['Friday']), true, 'is friday');
+    equal(run(d, 'isWeekday', []), true, 'friday isWeekday');
+    equal(run(d, 'is', ['2000-02-18']), true, 'friday full date');
     equal(run(d, 'isAfter', [testCreateUTCDate('2000-02-18 10:00pm')]), true, 'isAfter');
     equal(dateRun(d, 'reset'), new Date(Date.UTC(2000, 1, 18)), 'resetting');
-
 
     var d = run(testCreateUTCDate('2000-02-14'), 'setUTC', [true]);
 
@@ -1097,12 +1178,13 @@ namespace('Date', function () {
     // Issue #210
 
     equal(testCreateFutureDate('Sunday at 3:00').getDay(), 0, 'Date.future | weekday should never be ambiguous');
+
   });
 
   group('Create | 2-digit years', function() {
 
     // Issue #383 Date.past in 2-digit years
-    equal(testCreatePastDate('12/20/23'), new Date(1923,11,20), 'Date.past | 1923-12-20');
+    equal(testCreatePastDate('12/20/30'), new Date(1930,11,20), 'Date.past | 1923-12-20');
     equal(testCreateFutureDate('12/20/98'), new Date(2098,11,20), 'Date.future | 2098-12-20');
 
   });
@@ -1233,9 +1315,6 @@ namespace('Date', function () {
     // d1 may be Aug 24th or Aug 25th depending on the timezone.
     equal(d2, new Date(2010, 7, d1.getDate() + 1), 'fromUTC can override utc preservation');
     equal(testIsUTC(d2), false, 'setUTC can override utc preservation');
-
-    test(new Date(1960, 5, 11), ["January 5th '50"], new Date(1950, 0, 5), 'year abbreviation in 1960 should be 20th century');
-    test(new Date(2070, 5, 11), ["January 5th '50"], new Date(2050, 0, 5), 'year abbreviation in 2070 should be 21st century');
 
   });
 
@@ -2203,7 +2282,7 @@ namespace('Date', function () {
 
     test(getRelativeDate(0,0,0,-5), ['4 hours ago'], false, '4 hours ago is not 5 hours ago');
     test(getRelativeDate(0,0,0,-5), ['5 hours ago'], true, '5 hours ago is 5 hours ago');
-    test(getRelativeDate(0,0,0,-5, 15), ['5 hours ago'], true, '5:15 hours ago is still 5 hours ago');
+    test(getRelativeDate(0,0,0,-4, -45), ['5 hours ago'], true, '4:45 hours ago is still 5 hours ago');
     test(getRelativeDate(0,0,0,-5), ['6 hours ago'], false, '6 hours ago is not 5 hours ago');
     test(getRelativeDate(0,0,0,-5), ['7 hours ago'], false, '7 hours ago is not 5 hours ago');
 
@@ -2510,34 +2589,36 @@ namespace('Date', function () {
   });
 
   method('reset', function() {
+
     var d = new Date('February 29, 2012 22:15:42');
-    var yearZero = new Date(2000, 0);
-    yearZero.setFullYear(0);
 
-    dateTest(d, new Date(2012, 1, 29), 'Clears time');
+    dateTest(d, [], new Date(2012, 1, 29), 'No args resets time');
 
-    dateTest(d, ['years'],        yearZero, 'years');
-    dateTest(d, ['months'],       new Date(2012, 0), 'months');
-    dateTest(d, ['days'],         new Date(2012, 1, 1), 'days');
-    dateTest(d, ['hours'],        new Date(2012, 1, 29), 'hours');
-    dateTest(d, ['minutes'],      new Date(2012, 1, 29, 22), 'minutes');
-    dateTest(d, ['seconds'],      new Date(2012, 1, 29, 22, 15), 'seconds');
-    dateTest(d, ['milliseconds'], new Date(2012, 1, 29, 22, 15, 42), 'milliseconds');
+    dateTest(d, ['year'],        new Date(2012, 0), 'year');
+    dateTest(d, ['month'],       new Date(2012, 1, 1), 'month');
+    dateTest(d, ['day'],         new Date(2012, 1, 29), 'day');
+    dateTest(d, ['hour'],        new Date(2012, 1, 29, 22), 'hour');
+    dateTest(d, ['minute'],      new Date(2012, 1, 29, 22, 15), 'minute');
+    dateTest(d, ['second'],      new Date(2012, 1, 29, 22, 15, 42), 'second');
+    dateTest(d, ['millisecond'], new Date(2012, 1, 29, 22, 15, 42), 'millisecond does nothing');
 
-    dateTest(d, ['year'],        yearZero, 'year');
-    dateTest(d, ['month'],       new Date(2012, 0), 'month');
-    dateTest(d, ['day'],         new Date(2012, 1, 1), 'day');
-    dateTest(d, ['hour'],        new Date(2012, 1, 29), 'hour');
-    dateTest(d, ['minute'],      new Date(2012, 1, 29, 22), 'minute');
-    dateTest(d, ['second'],      new Date(2012, 1, 29, 22, 15), 'second');
-    dateTest(d, ['millisecond'], new Date(2012, 1, 29, 22, 15, 42), 'millisecond');
+    dateTest(d, ['year'],         new Date(2012, 0), 'years');
+    dateTest(d, ['months'],       new Date(2012, 1, 1), 'months');
+    dateTest(d, ['days'],         new Date(2012, 1, 29), 'days');
+    dateTest(d, ['hours'],        new Date(2012, 1, 29, 22), 'hours');
+    dateTest(d, ['minutes'],      new Date(2012, 1, 29, 22, 15), 'minutes');
+    dateTest(d, ['seconds'],      new Date(2012, 1, 29, 22, 15, 42), 'seconds');
+    dateTest(d, ['milliseconds'], new Date(2012, 1, 29, 22, 15, 42), 'milliseconds does nothing');
 
-    dateTest(d, ['date'],  new Date(2012, 1, 1), 'date');
+    dateTest(d, ['date'],  new Date(2012, 1, 29), 'date');
     dateTest(d, ['flegh'], new Date(2012, 1, 29, 22, 15, 42), 'an unknown string will do nothing');
-    dateTest(d, ['weeks'], new Date(2012, 1, 29, 22, 15, 42), 'reset week | not considered meaningful');
-    dateTest(d, ['week'],  new Date(2012, 1, 29, 22, 15, 42), 'reset weeks | not considered meaningful');
+
+    dateTest(d, ['weeks'], new Date(2012, 1, 26), 'reset week');
+    dateTest(d, ['week'],  new Date(2012, 1, 26), 'reset weeks');
+    dateTest(d, ['week', 'en-GB'],  new Date(2012, 1, 27), 'reset weeks | en-GB');
 
     equal(dateRun(d, 'addDays', [5, true]), new Date(2012, 2, 5), 'can also reset the time');
+
   });
 
   group('isMethods', function() {
@@ -3161,6 +3242,7 @@ namespace('Date', function () {
   });
 
   method('endOfISOWeek', function() {
+
     test(new Date(2013, 6, 8),  new Date(2013, 6, 14, 23, 59, 59, 999), 'Mon');
     test(new Date(2013, 6, 9),  new Date(2013, 6, 14, 23, 59, 59, 999), 'Tue');
     test(new Date(2013, 6, 10), new Date(2013, 6, 14, 23, 59, 59, 999), 'Wed');
@@ -3171,6 +3253,7 @@ namespace('Date', function () {
     test(new Date(2013, 6, 15), new Date(2013, 6, 21, 23, 59, 59, 999), 'next Mon');
 
     test(new Date(2013, 6, 12, 8, 30), new Date(2013, 6, 14, 23, 59, 59, 999), 'resets time');
+
   });
 
   method('newDateInternal', function() {

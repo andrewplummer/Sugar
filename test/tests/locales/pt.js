@@ -72,7 +72,7 @@ namespace('Date | Portuguese', function () {
     assertDateParsed('próximo segunda-feira', testGetWeekday(1, 1));
     assertDateParsed('passada segunda-feira', testGetWeekday(1,-1));
 
-    assertDateParsed('passada segunda-feira 3:45', run(testGetWeekday(1,-1), 'set', [{ hour: 3, minute: 45 }, true]));
+    assertDateParsed('passada segunda-feira 3:45', testGetWeekday(1, -1, 3, 45));
 
     // no accents
     assertDateParsed('daqui a 5 meses', getRelativeDate(0,5));
@@ -82,7 +82,7 @@ namespace('Date | Portuguese', function () {
     assertDateParsed('ha um ano',       getRelativeDate(-1));
     assertDateParsed('amanha',          getRelativeDateReset(0,0,1));
 
-    assertDateParsed('amanhã às 3:30', run(getRelativeDate(0,0,1), 'set', [{hours:3,minutes:30}, true]));
+    assertDateParsed('amanhã às 3:30', testDateSet(getRelativeDateReset(0,0,1), {hour:3,minute:30}));
 
     assertDateParsed('17:32 15 de maio', new Date(now.getFullYear(), 4, 15, 17, 32));
     assertDateParsed('17:32 próximo segunda-feira', testGetWeekday(1, 1, 17, 32));
@@ -179,8 +179,8 @@ namespace('Date | Portuguese', function () {
   });
 
   method('beginning/end', function() {
-    equal(dateRun(new Date(2010, 0), 'beginningOfWeek'), new Date(2009, 11, 28), 'beginningOfWeek');
-    equal(dateRun(new Date(2010, 0), 'endOfWeek'), new Date(2010, 0, 3, 23, 59, 59, 999), 'endOfWeek');
+    equal(run(new Date(2010, 0), 'beginningOfWeek'), new Date(2009, 11, 28), 'beginningOfWeek');
+    equal(run(new Date(2010, 0), 'endOfWeek'), new Date(2010, 0, 3, 23, 59, 59, 999), 'endOfWeek');
   });
 
 });

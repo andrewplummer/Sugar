@@ -8,7 +8,7 @@
  */
 Sugar.Date.addLocale('ko', {
   'ampmFront': true,
-  'allowsNumerals': true,
+  'numeralUnits': true,
   'units': '밀리초,초,분,시간,일,주,개월|달,년|해',
   'weekdays': '일:요일|,월:요일|,화:요일|,수:요일|,목:요일|,금:요일|,토:요일|',
   'numerals': '영|제로,일|한,이,삼,사,오,육,칠,팔,구,십',

@@ -35,7 +35,7 @@ Sugar.Date.addLocale('es', {
     { 'name': 'shift', 'src': 'próximo|próxima|proximo|proxima', 'value': 1 }
   ],
   'parse': [
-    '{months} {year?}',
+    '{months} {2?} {year?}',
     '{sign} {num} {unit}',
     '{num} {unit} {sign}',
     '{0?}{1?} {unit:5-7} {shift}',

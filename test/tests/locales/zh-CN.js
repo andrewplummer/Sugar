@@ -201,20 +201,20 @@ namespace('Date | Simplified Chinese', function () {
 
     // Issue #148 various Chinese dates
 
-    assertDateParsed('星期日 下午2:00', run(testGetWeekday(0), 'set', [{ hour: 14 }]));
+    assertDateParsed('星期日 下午2:00', testGetWeekday(0,0,14));
     assertDateParsed('下星期六 3点12分', testGetWeekday(6, 1, 3, 12));
 
-    assertDateParsed('上午3点12分', run(new Date(), 'set', [{ hour: 3, minute: 12 }, true]));
-    assertDateParsed('上午3点', run(new Date(), 'set', [{ hour: 3 }, true]));
+    assertDateParsed('上午3点12分', testDateSet(getRelativeDateReset(0,0,0), {hour:3,minute:12}));
+    assertDateParsed('上午3点', testDateSet(getRelativeDateReset(0,0,0), {hour:3}));
 
-    assertDateParsed('上午3时12分', run(new Date(), 'set', [{ hour: 3, minute: 12 }, true]));
-    assertDateParsed('上午3时', run(new Date(), 'set', [{ hour: 3 }, true]));
+    assertDateParsed('上午3时12分', testDateSet(getRelativeDateReset(0,0,0), {hour:3,minute:12}));
+    assertDateParsed('上午3时', testDateSet(getRelativeDateReset(0,0,0), {hour:3}));;
 
   });
 
   method('beginning/end', function() {
-    equal(dateRun(new Date(2010, 0), 'beginningOfWeek'), new Date(2009, 11, 28), 'beginningOfWeek');
-    equal(dateRun(new Date(2010, 0), 'endOfWeek'), new Date(2010, 0, 3, 23, 59, 59, 999), 'endOfWeek');
+    equal(run(new Date(2010, 0), 'beginningOfWeek'), new Date(2009, 11, 28), 'beginningOfWeek');
+    equal(run(new Date(2010, 0), 'endOfWeek'), new Date(2010, 0, 3, 23, 59, 59, 999), 'endOfWeek');
   });
 
 });

@@ -22,7 +22,10 @@ namespace('Date | Japanese', function () {
     assertDateParsed('月曜日', testGetWeekday(1));
     assertDateParsed('月曜', testGetWeekday(1));
     assertDateParsed('3時45分', new Date(now.getFullYear(), now.getMonth(), now.getDate(), 3, 45));
-    assertDateParsed('月曜日3時45分', run(testGetWeekday(1), 'set', [{hour:3,minute:45}]));
+    assertDateParsed('月曜日3時45分', testGetWeekday(1,0,3,45));
+
+    // KABUKICHO!
+    assertDateParsed('29時', testDateSet(getRelativeDateReset(0,0,1),{hour:5}));
 
     assertDateParsed('一月',   new Date(now.getFullYear(), 0));
     assertDateParsed('二月',   new Date(now.getFullYear(), 1));
@@ -181,14 +184,14 @@ namespace('Date | Japanese', function () {
 
     assertDateParsed('5月15日 3:45:59', new Date(now.getFullYear(), 4, 15, 3, 45, 59));
     assertDateParsed('15日 3:45:59', new Date(now.getFullYear(), now.getMonth(), 15, 3, 45, 59));
-    assertDateParsed('先週水曜日 5:15', run(testGetWeekday(3, -1), 'set', [{ hour: 5, minute: 15 }]));
+    assertDateParsed('先週水曜日 5:15', testGetWeekday(3,-1,5,15));
 
     // Issue #148 various Japanese dates
 
-    assertDateParsed('来週火曜日午後3:00', run(testGetWeekday(2, 1), 'set', [{ hours: 15 }]));
-    assertDateParsed('火曜日3:00', run(testGetWeekday(2), 'set', [{ hours: 3 }]));
-    assertDateParsed('火曜日午後3:00', run(testGetWeekday(2), 'set', [{ hours: 15 }]));
-    assertDateParsed('2012年6月5日3:00', new Date(2012, 5, 5, 3));
+    assertDateParsed('火曜日3:00',         testGetWeekday(2,0,3));
+    assertDateParsed('火曜日午後3:00',     testGetWeekday(2,0,15));
+    assertDateParsed('来週火曜日午後3:00', testGetWeekday(2,1,15));
+    assertDateParsed('2012年6月5日3:00', new Date(2012,5,5,3));
 
   });
 
@@ -267,8 +270,8 @@ namespace('Date | Japanese', function () {
   });
 
   method('beginning/end', function() {
-    equal(dateRun(new Date(2010, 0), 'beginningOfWeek'), new Date(2009, 11, 27), 'beginningOfWeek');
-    equal(dateRun(new Date(2010, 0), 'endOfWeek'), new Date(2010, 0, 2, 23, 59, 59, 999), 'endOfWeek');
+    equal(run(new Date(2010, 0), 'beginningOfWeek'), new Date(2009, 11, 27), 'beginningOfWeek');
+    equal(run(new Date(2010, 0), 'endOfWeek'), new Date(2010, 0, 2, 23, 59, 59, 999), 'endOfWeek');
   });
 
 });

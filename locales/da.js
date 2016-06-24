@@ -45,10 +45,10 @@ Sugar.Date.addLocale('da', {
   ],
   'timeParse': [
     '{day|weekday}',
-    '{date} {months?} {year?}'
+    '{date} {months?}\\.? {year?}'
   ],
   'timeFrontParse': [
     '{shift} {weekday}',
-    '{0?} {weekday?} {date}\\.? {months?} {year?}'
+    '{0?} {weekday?},? {date}\\.? {months?}\\.? {year?}'
   ]
 });
