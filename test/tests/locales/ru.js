@@ -105,9 +105,9 @@ namespace('Date | Russian', function () {
     assertDateParsed('следующий понедельник', testGetWeekday(1, 1));
     assertDateParsed('в прошлый вторник',     testGetWeekday(2,-1));
 
-    assertDateParsed('следующий понедельник 3:45 вечера', run(testGetWeekday(1,1), 'set', [{ hour: 15, minute: 45 }, true]));
+    assertDateParsed('следующий понедельник 3:45 вечера', testGetWeekday(1, 1, 15, 45));
 
-    assertDateParsed('Завтра в 3:30 утра', run(getRelativeDate(0,0,1), 'set', [{hours:3,minutes:30}, true]));
+    assertDateParsed('Завтра в 3:30 утра', testDateSet(getRelativeDateReset(0,0,1), {hour:3,minute:30}));
 
 
     assertDateParsed('17:32 15 мая 2011', new Date(2011, 4, 15, 17, 32));
@@ -311,8 +311,8 @@ namespace('Date | Russian', function () {
   });
 
   method('beginning/end', function() {
-    equal(dateRun(new Date(2010, 0), 'beginningOfWeek'), new Date(2009, 11, 28), 'beginningOfWeek');
-    equal(dateRun(new Date(2010, 0), 'endOfWeek'), new Date(2010, 0, 3, 23, 59, 59, 999), 'endOfWeek');
+    equal(run(new Date(2010, 0), 'beginningOfWeek'), new Date(2009, 11, 28), 'beginningOfWeek');
+    equal(run(new Date(2010, 0), 'endOfWeek'), new Date(2010, 0, 3, 23, 59, 59, 999), 'endOfWeek');
   });
 
 });

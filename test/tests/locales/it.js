@@ -12,7 +12,7 @@ namespace('Date | Italian', function () {
   method('create', function() {
 
     assertDateParsed('15 Maggio 2011', new Date(2011, 4, 15));
-    assertDateParsed('Martedì, 5 Gennaio 2012', new Date(2012, 0, 5));
+    assertDateParsed('Giovedì, 5 Gennaio 2012', new Date(2012, 0, 5));
     assertDateParsed('Maggio 2011', new Date(2011, 4));
     assertDateParsed('15 Maggio', new Date(now.getFullYear(), 4, 15));
     assertDateParsed('2011', new Date(2011, 0));
@@ -22,8 +22,8 @@ namespace('Date | Italian', function () {
     assertDateParsed('Lunedì', testGetWeekday(1));
     assertDateParsed('Lun', testGetWeekday(1));
 
-    assertDateParsed('Martedì, 5 Gennaio 2012 3:45', new Date(2012, 0, 5, 3, 45));
-    assertDateParsed('Martedì, 5 Gennaio 2012 3:45pm', new Date(2012, 0, 5, 15, 45));
+    assertDateParsed('Giovedì, 5 Gennaio 2012 3:45', new Date(2012, 0, 5, 3, 45));
+    assertDateParsed('Giovedì, 5 Gennaio 2012 3:45pm', new Date(2012, 0, 5, 15, 45));
 
     assertDateParsed('un millisecondo fa', getRelativeDate(0,0,0,0,0,0,-1));
     assertDateParsed('un secondo fa',      getRelativeDate(0,0,0,0,0,-1));
@@ -62,10 +62,10 @@ namespace('Date | Italian', function () {
     assertDateParsed('prossimo lunedì', testGetWeekday(1, 1));
     assertDateParsed('scorsa lunedì',   testGetWeekday(1, -1));
 
-    assertDateParsed('scorsa lunedì 3:45', run(testGetWeekday(1, -1), 'set', [{ hour: 3, minute: 45 }, true]));
+    assertDateParsed('scorsa lunedì 3:45', testGetWeekday(1, -1, 3, 45));
 
     // No accents
-    assertDateParsed('Martedi, 5 Gennaio 2012', new Date(2012, 0, 5));
+    assertDateParsed('Giovedì, 5 Gennaio 2012', new Date(2012, 0, 5));
     assertDateParsed('Lunedi', testGetWeekday(1));
 
     // Issue #152 Italian should not use a variant in any format
@@ -84,7 +84,7 @@ namespace('Date | Italian', function () {
     assertDateParsed('17:32 18 agosto', new Date(now.getFullYear(), 7, 18, 17, 32));
     assertDateParsed('17:32 prossimo lunedì', testGetWeekday(1, 1, 17, 32));
 
-    assertDateParsed('domani alle 3:30', run(getRelativeDate(0,0,1), 'set', [{hours:3,minutes:30}, true]));
+    assertDateParsed('domani alle 3:30', testDateSet(getRelativeDateReset(0,0,1), {hour:3,minute:30}));
 
 
     // Numbers
@@ -180,8 +180,8 @@ namespace('Date | Italian', function () {
   });
 
   method('beginning/end', function() {
-    equal(dateRun(new Date(2010, 0), 'beginningOfWeek'), new Date(2009, 11, 28), 'beginningOfWeek');
-    equal(dateRun(new Date(2010, 0), 'endOfWeek'), new Date(2010, 0, 3, 23, 59, 59, 999), 'endOfWeek');
+    equal(run(new Date(2010, 0), 'beginningOfWeek'), new Date(2009, 11, 28), 'beginningOfWeek');
+    equal(run(new Date(2010, 0), 'endOfWeek'), new Date(2010, 0, 3, 23, 59, 59, 999), 'endOfWeek');
   });
 
 });

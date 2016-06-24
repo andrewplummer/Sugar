@@ -1,13 +1,13 @@
 var INVALID_DATE = new Date(NaN).toString();
 
 var TEST_DATE_UNITS = [
-  ['FullYear', 0],
-  ['Month', 0],
-  ['Date', 1],
-  ['Hours', 0],
-  ['Minutes', 0],
-  ['Seconds', 0],
-  ['Milliseconds', 0]
+  ['FullYear', 'year', 0],
+  ['Month', 'month', 0],
+  ['Date', 'date', 1],
+  ['Hours', 'hour', 0],
+  ['Minutes', 'minute', 0],
+  ['Seconds', 'second', 0],
+  ['Milliseconds', 'millisecond', 0]
 ];
 
 testCreateDate = function(arg1, arg2) {
@@ -36,12 +36,12 @@ testCreateUTCDate = function() {
 }
 
 dateRun = function(d, name, arguments) {
-  return run(Sugar.Date.clone(d), name, arguments);
+  return run(testClone(d), name, arguments);
 }
 
 dateTest = function(d) {
   var args = Array.prototype.slice.call(arguments, 1);
-  return test.apply(null, [Sugar.Date.clone(d)].concat(args));
+  return test.apply(null, [testClone(d)].concat(args));
 }
 
 dateRangeEqual = function(a, b, message) {
@@ -99,10 +99,20 @@ getRelativeDateReset = function() {
   var d = getRelativeDate.apply(this, arguments);
   for (var i = arguments.length; i < TEST_DATE_UNITS.length; i++) {
     var unit = TEST_DATE_UNITS[i];
-    d['set' + unit[0]](unit[1]);
+    d['set' + unit[0]](unit[2]);
   }
   return d;
 };
+
+testDateSet = function(d, obj) {
+  for (var i = 0; i < TEST_DATE_UNITS.length; i++) {
+    var unit = TEST_DATE_UNITS[i];
+    if (testHasOwn(obj, unit[1])) {
+      d['set' + unit[0]](obj[unit[1]]);
+    }
+  }
+  return d;
+}
 
 getUTCDate = function(year, month, day, hours, minutes, seconds, milliseconds) {
   var d = new Date();
@@ -256,19 +266,24 @@ testSetLocale = function(code) {
   return Sugar.Date.setLocale(code);
 }
 
-assertDateParsed = function(str) {
-  var d, arg;
+assertDateParsed = function(obj) {
+  var d, arg, msg;
   if (arguments.length === 3) {
     arg = arguments[1];
     d   = arguments[2];
   } else {
     d = arguments[1];
   }
-  equal(testCreateDate(str, arg), d, str);
+  if (typeof obj === 'object' && typeof JSON !== 'undefined') {
+    msg = JSON.stringify(obj);
+  } else {
+    msg = obj;
+  }
+  equal(testCreateDate(obj, arg), d, msg);
 }
 
-assertDateNotParsed = function(str) {
-  equal(testCreateDate(str).getTime(), NaN, '"' + str + '" should not have parsed');
+assertDateNotParsed = function(str, message) {
+  equal(testCreateDate(str).getTime(), NaN, message || '"' + str + '" should not have parsed');
 }
 
 assertAddUnitIsNumericallyEqual = function (d, method, add, message) {

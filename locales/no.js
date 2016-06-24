@@ -40,8 +40,8 @@ Sugar.Date.addLocale('no', {
     '{shift} {unit:5-7}'
   ],
   'timeParse': [
-    '{0?} {weekday?} {date?} {month} {year}',
     '{date} {month}',
-    '{shift} {weekday}'
+    '{shift} {weekday}',
+    '{0?} {weekday?},? {date?} {month}\\.? {year}'
   ]
 });

@@ -8,7 +8,7 @@
  */
 Sugar.Date.addLocale('zh-TW', {
   'ampmFront': true,
-  'allowsNumerals': true,
+  'numeralUnits': true,
   'allowsFullWidth': true,
   'timeMarkerOptional': true,
   'units': '毫秒,秒鐘,分鐘,小時,天,個星期|週,個月,年',

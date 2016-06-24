@@ -37,6 +37,7 @@ Sugar.Date.addLocale('sv', {
     { 'name': 'shift', 'src': 'nästa|nasta', 'value': 1 }
   ],
   'parse': [
+    '{months} {year?}',
     '{num} {unit} {sign}',
     '{sign} {num} {unit}',
     '{1?} {num} {unit} {sign}',
@@ -45,11 +46,11 @@ Sugar.Date.addLocale('sv', {
   'timeParse': [
     '{day|weekday}',
     '{shift} {weekday}',
-    '{0?} {weekday?} {date?} {months} {year?}'
+    '{0?} {weekday?},? {date} {months?}\\.? {year?}'
   ],
   'timeFrontParse': [
     '{day|weekday}',
     '{shift} {weekday}',
-    '{0?} {weekday?} {date?} {months} {year?}'
+    '{0?} {weekday?},? {date} {months?}\\.? {year?}'
   ]
 });

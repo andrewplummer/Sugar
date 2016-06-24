@@ -12,22 +12,22 @@ namespace('Date | Finnish', function () {
   method('create', function() {
 
     assertDateParsed('15. toukokuuta 2011', new Date(2011, 4, 15));
-    assertDateParsed('tiistai 5. tammikuuta 2012', new Date(2012, 0, 5));
-    assertDateParsed('tiistaina 5. tammikuuta 2012', new Date(2012, 0, 5));
+    assertDateParsed('torstai 5. tammikuuta 2012', new Date(2012, 0, 5));
+    assertDateParsed('torstaina 5. tammikuuta 2012', new Date(2012, 0, 5));
     assertDateParsed('toukokuu 2011', new Date(2011, 4));
     assertDateParsed('15. toukokuuta', new Date(now.getFullYear(), 4, 15));
     assertDateParsed('2011', new Date(2011, 0));
     assertDateParsed('02. helmikuuta 2016', new Date(2016, 1, 2));
 
-    assertDateParsed('tiistai 5. tammikuuta 2012 klo 3.45', new Date(2012, 0, 5,  3, 45));
-    assertDateParsed('tiistaina 5. tammikuuta 2012 klo 3.45', new Date(2012, 0, 5,  3, 45));
-    assertDateParsed('tiistaina 5. tammikuuta 2012 klo 3.45.19', new Date(2012, 0, 5,  3, 45, 19));
-    assertDateParsed('tiistaina 5. tammikuuta 2012 klo 3.45.19,30', new Date(2012, 0, 5,  3, 45, 19, 300));
+    assertDateParsed('torstai 5. tammikuuta 2012 klo 3.45', new Date(2012, 0, 5,  3, 45));
+    assertDateParsed('torstaina 5. tammikuuta 2012 klo 3.45', new Date(2012, 0, 5,  3, 45));
+    assertDateParsed('torstaina 5. tammikuuta 2012 klo 3.45.19', new Date(2012, 0, 5,  3, 45, 19));
+    assertDateParsed('torstaina 5. tammikuuta 2012 klo 3.45.19,30', new Date(2012, 0, 5,  3, 45, 19, 300));
 
-    assertDateParsed('tiistai 5. tammikuuta 2012 klo 15:45', new Date(2012, 0, 5, 15, 45));
-    assertDateParsed('tiistaina 5. tammikuuta 2012 klo 15:45', new Date(2012, 0, 5, 15, 45));
+    assertDateParsed('torstai 5. tammikuuta 2012 klo 15:45', new Date(2012, 0, 5, 15, 45));
+    assertDateParsed('torstaina 5. tammikuuta 2012 klo 15:45', new Date(2012, 0, 5, 15, 45));
 
-    assertDateParsed('tiistaina 5. tammikuuta 2012 kello 15:45', new Date(2012, 0, 5, 15, 45));
+    assertDateParsed('torstaina 5. tammikuuta 2012 kello 15:45', new Date(2012, 0, 5, 15, 45));
 
     assertDateParsed('tammikuu',  new Date(now.getFullYear(),  0));
     assertDateParsed('helmikuu',  new Date(now.getFullYear(),  1));
@@ -109,9 +109,9 @@ namespace('Date | Finnish', function () {
     assertDateParsed('ensi maanantaina',  testGetWeekday(1, 1));
     assertDateParsed('viime maanantaina', testGetWeekday(1, -1));
 
-    assertDateParsed('viime maanantaina klo 3.45', run(testGetWeekday(1,-1), 'set', [{hour:3,minute:45}, true]));
-    assertDateParsed('viime maanantai klo 3.45',   run(testGetWeekday(1,-1), 'set', [{hour:3,minute:45}, true]));
-    assertDateParsed('huomenna klo 3.30',          run(getRelativeDate(0,0,1), 'set', [{hours:3,minutes:30}, true]));
+    assertDateParsed('viime maanantaina klo 3.45', testGetWeekday(1,-1,3,45));
+    assertDateParsed('viime maanantai klo 3.45',   testGetWeekday(1,-1,3,45));
+    assertDateParsed('huomenna klo 3.30',          testDateSet(getRelativeDateReset(0,0,1), {hour:3,minute:30}));
 
     assertDateParsed('viime sunnuntaina',   testGetWeekday(0,-1));
     assertDateParsed('viime maanantaina',   testGetWeekday(1,-1));
@@ -257,8 +257,8 @@ namespace('Date | Finnish', function () {
   });
 
   method('beginning/end', function() {
-    equal(dateRun(new Date(2010, 0), 'beginningOfWeek'), new Date(2009, 11, 28), 'beginningOfWeek');
-    equal(dateRun(new Date(2010, 0), 'endOfWeek'), new Date(2010, 0, 3, 23, 59, 59, 999), 'endOfWeek');
+    equal(run(new Date(2010, 0), 'beginningOfWeek'), new Date(2009, 11, 28), 'beginningOfWeek');
+    equal(run(new Date(2010, 0), 'endOfWeek'), new Date(2010, 0, 3, 23, 59, 59, 999), 'endOfWeek');
   });
 
 });

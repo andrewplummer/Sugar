@@ -43,6 +43,6 @@ Sugar.Date.addLocale('ca', {
   'timeParse': [
     '{shift} {weekday}',
     '{weekday} {shift}',
-    '{date?} {2?} {month} {2?} {year?}'
+    '{date?} {2?} {months}\\.? {2?} {year?}'
   ]
 });

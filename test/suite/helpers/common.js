@@ -1,6 +1,7 @@
 
 // Properties
 
+
 testNullScope = (function() { 'use strict'; return this; }).call();
 canTestPrimitiveScope = isDefaultMode() || testNullScope === undefined;
 
@@ -39,8 +40,12 @@ testIsFunction = function(obj) {
   return testGetClass(obj) === '[object Function]';
 }
 
+testGetPrivatePropKey = function(name) {
+  return '_sugar_' + name;
+}
+
 testGetPrivateProp = function(obj, name) {
-  return obj['_sugar_' + name];
+  return obj[testGetPrivatePropKey(name)];
 }
 
 testClone = function (obj) {
@@ -48,7 +53,12 @@ testClone = function (obj) {
     return obj;
   }
   if (testIsDate(obj)) {
-    return new Date(obj.getTime());
+    var d = new Date(obj.getTime());
+    var utcKey = testGetPrivatePropKey('utc');
+    if (testHasOwn(obj, utcKey)) {
+      d[utcKey] = obj[utcKey];
+    }
+    return d;
   } else if (testIsRegExp(obj)) {
     return testCloneRegExp(obj);
   } else if (testIsFunction(obj)) {

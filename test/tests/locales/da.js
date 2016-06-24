@@ -13,8 +13,8 @@ namespace('Date | Danish', function () {
 
     assertDateParsed('den 15. maj 2011', new Date(2011, 4, 15));
     assertDateParsed('15 maj 2011', new Date(2011, 4, 15));
-    assertDateParsed('tirsdag 5 januar 2012', new Date(2012, 0, 5)); 
-    assertDateParsed('tirsdag, 5 januar 2012', new Date(2012, 0, 5));
+    assertDateParsed('torsdag 5 januar 2012', new Date(2012, 0, 5));
+    assertDateParsed('torsdag, 5 januar 2012', new Date(2012, 0, 5));
     assertDateParsed('maj 2011', new Date(2011, 4));
     assertDateParsed('15 maj', new Date(now.getFullYear(), 4, 15));
     assertDateParsed('2011', new Date(2011, 0));
@@ -170,8 +170,8 @@ namespace('Date | Danish', function () {
   });
 
   method('beginning/end', function() {
-    equal(dateRun(new Date(2010, 0), 'beginningOfWeek'), new Date(2009, 11, 28), 'beginningOfWeek');
-    equal(dateRun(new Date(2010, 0), 'endOfWeek'), new Date(2010, 0, 3, 23, 59, 59, 999), 'endOfWeek');
+    equal(run(new Date(2010, 0), 'beginningOfWeek'), new Date(2009, 11, 28), 'beginningOfWeek');
+    equal(run(new Date(2010, 0), 'endOfWeek'), new Date(2010, 0, 3, 23, 59, 59, 999), 'endOfWeek');
   });
 
 });

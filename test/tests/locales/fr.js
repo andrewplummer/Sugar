@@ -92,14 +92,14 @@ namespace('Date | French', function () {
     assertDateParsed("l'annee prochaine",   getRelativeDate(1));
 
     assertDateParsed('lundi prochain', testGetWeekday(1, 1));
-    assertDateParsed('lundi dernièr',  testGetWeekday(1, -1));
+    assertDateParsed('lundi dernièr',  testGetWeekday(1,-1));
 
-    assertDateParsed('lundi dernièr 3:45', run(testGetWeekday(1, -1), 'set', [{hour:3,minute:45}, true]));
+    assertDateParsed('lundi dernièr 3:45', testGetWeekday(1, -1, 3, 45));
 
     assertDateParsed('17:32 15 mai', new Date(now.getFullYear(), 4, 15, 17, 32));
     assertDateParsed('17:32 lundi prochain', testGetWeekday(1, 1, 17, 32));
 
-    assertDateParsed('demain à 3:30', run(getRelativeDate(0,0,1), 'set', [{hours:3,minutes:30}, true]));
+    assertDateParsed('demain à 3:30', testDateSet(getRelativeDateReset(0,0,1), {hour:3,minute:30}));
 
 
     // Numbers
@@ -215,8 +215,8 @@ namespace('Date | French', function () {
   });
 
   method('beginning/end', function() {
-    equal(dateRun(new Date(2010, 0), 'beginningOfWeek'), new Date(2009, 11, 28), 'beginningOfWeek');
-    equal(dateRun(new Date(2010, 0), 'endOfWeek'), new Date(2010, 0, 3, 23, 59, 59, 999), 'endOfWeek');
+    equal(run(new Date(2010, 0), 'beginningOfWeek'), new Date(2009, 11, 28), 'beginningOfWeek');
+    equal(run(new Date(2010, 0), 'endOfWeek'), new Date(2010, 0, 3, 23, 59, 59, 999), 'endOfWeek');
   });
 
 

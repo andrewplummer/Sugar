@@ -62,8 +62,8 @@ namespace('Date | Spanish', function () {
     assertDateParsed('pasado lunes',  testCreateDate('last monday', 'en'));
     assertDateParsed('lunes pasado',  testCreateDate('last monday', 'en'));
 
-    assertDateParsed('lunes pasado 3:45',  run(testCreateDate('last monday', 'en'), 'set', [{ hour: 3, minute: 45 }, true]));
-    assertDateParsed('proximo lunes 3:45', run(testCreateDate('next monday', 'en'), 'set', [{ hour: 3, minute: 45 }, true]));
+    assertDateParsed('lunes pasado 3:45',  testGetWeekday(1,-1,3,45));
+    assertDateParsed('proximo lunes 3:45', testGetWeekday(1,1,3,45));
 
     assertDateParsed('el año pasado',  getRelativeDate(-1));
     assertDateParsed('el próximo año', getRelativeDate(1));
@@ -81,7 +81,7 @@ namespace('Date | Spanish', function () {
     assertDateParsed('manana',         getRelativeDateReset(0,0,1));
     assertDateParsed('hace 1 ano',     getRelativeDate(-1));
 
-    assertDateParsed('mañana a las 3:30', run(getRelativeDate(0,0,1), 'set', [{hours:3,minutes:30}, true]));
+    assertDateParsed('mañana a las 3:30', testDateSet(getRelativeDateReset(0,0,1),{hour:3,minute:30}));
 
 
     // Numbers
@@ -177,8 +177,8 @@ namespace('Date | Spanish', function () {
   });
 
   method('beginning/end', function() {
-    equal(dateRun(new Date(2010, 0), 'beginningOfWeek'), new Date(2009, 11, 28), 'beginningOfWeek');
-    equal(dateRun(new Date(2010, 0), 'endOfWeek'), new Date(2010, 0, 3, 23, 59, 59, 999), 'endOfWeek');
+    equal(run(new Date(2010, 0), 'beginningOfWeek'), new Date(2009, 11, 28), 'beginningOfWeek');
+    equal(run(new Date(2010, 0), 'endOfWeek'), new Date(2010, 0, 3, 23, 59, 59, 999), 'endOfWeek');
   });
 
 });

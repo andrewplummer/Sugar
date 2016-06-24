@@ -12,7 +12,7 @@ namespace('Date | Dutch', function () {
   method('create', function() {
 
     assertDateParsed('15 mei 2011', new Date(2011, 4, 15));
-    assertDateParsed('Dinsdag, 5 Januari 2012', new Date(2012, 0, 5));
+    assertDateParsed('Donderdag, 5 Januari 2012', new Date(2012, 0, 5));
     assertDateParsed('Mei 2011', new Date(2011, 4));
     assertDateParsed('15 Mei', new Date(now.getFullYear(), 4, 15));
     assertDateParsed('2011', new Date(2011, 0));
@@ -22,8 +22,8 @@ namespace('Date | Dutch', function () {
     assertDateParsed('maandag', testGetWeekday(1));
     assertDateParsed('Ma', testGetWeekday(1));
 
-    assertDateParsed('Dinsdag, 5 Januari 2012 3:45', new Date(2012, 0, 5, 3, 45));
-    equal(run(testCreateDate('Dinsdag, 5 Januari 2012 3:45pm'), 'isValid'), false, 'does not support am/pm');
+    assertDateParsed('Donderdag, 5 Januari 2012 3:45', new Date(2012, 0, 5, 3, 45));
+    equal(run(testCreateDate('Donderdag, 5 Januari 2012 3:45pm'), 'isValid'), false, 'does not support am/pm');
 
     assertDateParsed('een milliseconde geleden', getRelativeDate(0,0,0,0,0,0,-1));
     assertDateParsed('een seconde geleden',      getRelativeDate(0,0,0,0,0,-1));
@@ -62,7 +62,7 @@ namespace('Date | Dutch', function () {
     assertDateParsed('volgende maandag',  testGetWeekday(1, 1));
     assertDateParsed('afgelopen maandag', testGetWeekday(1, -1));
 
-    assertDateParsed('afgelopen maandag 3:45', run(testGetWeekday(1, -1), 'set', [{ hour: 3, minute: 45 }, true]));
+    assertDateParsed('afgelopen maandag 3:45', testGetWeekday(1, -1, 3, 45));
 
     // Issue #152 Dutch should not use a variant in any format
     assertDateParsed('15/3/2012 12:45', new Date(2012, 2, 15, 12, 45));
@@ -80,7 +80,7 @@ namespace('Date | Dutch', function () {
 
     assertDateParsed('17:32 18 augustus', new Date(now.getFullYear(), 7, 18, 17, 32));
 
-    assertDateParsed("morgen 's 3:30", run(getRelativeDate(0,0,1), 'set', [{hours:3,minutes:30}, true]));
+    assertDateParsed("morgen 's 3:30", testDateSet(getRelativeDateReset(0,0,1), {hour:3,minute:30}));
 
     // Numbers
 
@@ -176,8 +176,8 @@ namespace('Date | Dutch', function () {
   });
 
   method('beginning/end', function() {
-    equal(dateRun(new Date(2010, 0), 'beginningOfWeek'), new Date(2009, 11, 28), 'beginningOfWeek');
-    equal(dateRun(new Date(2010, 0), 'endOfWeek'), new Date(2010, 0, 3, 23, 59, 59, 999), 'endOfWeek');
+    equal(run(new Date(2010, 0), 'beginningOfWeek'), new Date(2009, 11, 28), 'beginningOfWeek');
+    equal(run(new Date(2010, 0), 'endOfWeek'), new Date(2010, 0, 3, 23, 59, 59, 999), 'endOfWeek');
   });
 
 });
