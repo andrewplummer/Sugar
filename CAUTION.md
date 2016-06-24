@@ -85,6 +85,12 @@ Drop it in before upgrading to get a general idea of what needs to change, or up
 - Level: Major
   - `Object.isNaN` was removed in favor of native `Number.isNaN`, which Sugar provides a polyfill for.
 
+- Level: Major
+  - `String#normalize` was removed to comply with the ES6 spec. It was also a brute force approach and most likely overkill for most situations. It will be made available as a [plugin](https://github.com/andrewplummer/sugar-plugins) under the name `String#toAscii`.
+
+- Level: Major
+  - `String#capitalize` will now only capitalize the first letter of a string by default. If you want to downcase the rest of the string, pass true for the 1st argument. Capitalizing all words is now the 2nd argument.
+
 - Level: Moderate
   - `Number#format` no longer accepts arguments for the thousands separator and decimal point. Instead these can now be set globally using Sugar.Number.thousands() and Sugar.Number.decimal(). These will also be respected by Number#abbr, Number#metric, and Number#bytes as well.
 
@@ -93,9 +99,6 @@ Drop it in before upgrading to get a general idea of what needs to change, or up
 
 - Level: Moderate
   - Alphanumeric array options are now defined on the global object `Sugar` instead of `Array` itself.
-
-- Level: Major
-  - `String#normalize` was removed to comply with the ES6 spec. It was also a brute force approach and most likely overkill for most situations. It will be made available as a [plugin](https://github.com/andrewplummer/sugar-plugins) under the name `String#toAscii`.
 
 - Level: Moderate
   - `Array#at` and `String#at` now no longer accept enumerated arguments. To get an multiple indexes, pass an array instead.
@@ -112,8 +115,8 @@ Drop it in before upgrading to get a general idea of what needs to change, or up
 - Level: Moderate
   - `Object.select` and `Object.reject` now, when passed an object as a matcher, only check for key existence, not whether values also match or not. To do the "intersect" operation that these methods previously performed, `Object.filter`, `Object.remove`, or `Object.exclude` can instead be used.
 
-- Level: Major
-  - `String#capitalize` will now only capitalize the first letter of a string by default. If you want to downcase the rest of the string, pass true for the 1st argument. Capitalizing all words is now the 2nd argument.
+- Level: Moderate
+  - `Date#reset` now requires one unit higher when resetting units based on a string. For example, d.reset('day') will now "reset the day", where it's previous behavior was to shift the date to the beginning of the month. Default is also shifted so no change should be necessary when resetting the time.
 
 - Level: Minor
   - `Array#remove` and `Array#exclude` no longer accept enumerated paramters. To remove multiple elements, depending on the type a regex or function may be used. Otherwise the method must be called multiple times.

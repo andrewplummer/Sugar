@@ -85,6 +85,7 @@ v2.0.0
 - Modified `String#capitalize` to have an extra parameter for downcasing.
 - Refactored inflections module to have a more straightforward API.
 - Updated `Array#sortBy` to not clone the array by default.
+- Modified `Date#reset` to use higher units to make more semantic sense.
 
 
 v1.4.2
