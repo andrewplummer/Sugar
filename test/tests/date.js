@@ -2681,18 +2681,6 @@ namespace('Date', function () {
     equal(run(testGetWeekday(6), 'isThisWeek'), true,  'satuday is this week');
     equal(run(testGetWeekday(6), 'isNextWeek'), false, 'satuday is not next week');
 
-    equal(run(testGetWeekday(0), 'isLastWeek', ['en-GB']), true,  'en-GB | sunday is last week');
-    equal(run(testGetWeekday(0), 'isThisWeek', ['en-GB']), false, 'en-GB | sunday is not this week');
-    equal(run(testGetWeekday(0), 'isNextWeek', ['en-GB']), false, 'en-GB | sunday is not next week');
-
-    equal(run(testGetWeekday(0,-1), 'isLastWeek', ['en-GB']), false, 'en-GB | last sunday is not last week');
-    equal(run(testGetWeekday(0,-1), 'isThisWeek', ['en-GB']), false, 'en-GB | last sunday is not this week');
-    equal(run(testGetWeekday(0,-1), 'isNextWeek', ['en-GB']), false, 'en-GB | last sunday is not next week');
-
-    equal(run(testGetWeekday(0, 1), 'isLastWeek', ['en-GB']), false, 'en-GB | next sunday is not last week');
-    equal(run(testGetWeekday(0, 1), 'isThisWeek', ['en-GB']), true,  'en-GB | next sunday is this week');
-    equal(run(testGetWeekday(0, 1), 'isNextWeek', ['en-GB']), false, 'en-GB | next sunday is not next week');
-
     equal(run(testCreateDate('last sunday'), 'isLastWeek'), true,  'last sunday is last week');
     equal(run(testCreateDate('last sunday'), 'isThisWeek'), false, 'last sunday is not this week');
     equal(run(testCreateDate('last sunday'), 'isNextWeek'), false, 'last sunday is not next week');
@@ -2848,6 +2836,23 @@ namespace('Date', function () {
     equal(run(getRelativeDate(1), 'isNextYear'), true, 'isNextYear | next year');
 
     equal(run(run(new Date, 'beginningOfWeek'), 'isLastWeek'), false, 'the beginning of this week is not last week');
+
+    // en-GB defines Monday as the beginning of the week. This means however that
+    // depending on what day it is, "Sunday" could be last week or it could be this week.
+
+    var isSunday = new Date().getDay() === 0;
+
+    equal(run(testGetWeekday(0), 'isLastWeek', ['en-GB']), isSunday ? false : true,  'en-GB | sunday could be last week');
+    equal(run(testGetWeekday(0), 'isThisWeek', ['en-GB']), isSunday ? true : false, 'en-GB | sunday could be this week');
+    equal(run(testGetWeekday(0), 'isNextWeek', ['en-GB']), false, 'en-GB | sunday is not next week');
+
+    equal(run(testGetWeekday(0,-1), 'isLastWeek', ['en-GB']), isSunday ? true : false, 'en-GB | last sunday could be last week');
+    equal(run(testGetWeekday(0,-1), 'isThisWeek', ['en-GB']), false, 'en-GB | last sunday is not this week');
+    equal(run(testGetWeekday(0,-1), 'isNextWeek', ['en-GB']), false, 'en-GB | last sunday is not next week');
+
+    equal(run(testGetWeekday(0, 1), 'isLastWeek', ['en-GB']), false, 'en-GB | next sunday is not last week');
+    equal(run(testGetWeekday(0, 1), 'isThisWeek', ['en-GB']), isSunday ? false : true,  'en-GB | next sunday could be this week');
+    equal(run(testGetWeekday(0, 1), 'isNextWeek', ['en-GB']), isSunday ? true : false, 'en-GB | next sunday could be next week');
 
   });
 
