@@ -257,15 +257,15 @@ namespace('String | Inflections', function () {
 
   group('Acronyms', function() {
 
-    run(String, 'addAcronym', ['API']);
-    run(String, 'addAcronym', ['HTML']);
-    run(String, 'addAcronym', ['HTTP']);
-    run(String, 'addAcronym', ['HTTPS']);
-    run(String, 'addAcronym', ['W3C']);
-    run(String, 'addAcronym', ['PhD']);
-    run(String, 'addAcronym', ['RoR']);
-    run(String, 'addAcronym', ['SSL']);
-    run(String, 'addAcronym', ['RESTful']);
+    Sugar.String.addAcronym('API');
+    Sugar.String.addAcronym('HTML');
+    Sugar.String.addAcronym('HTTP');
+    Sugar.String.addAcronym('HTTPS');
+    Sugar.String.addAcronym('W3C');
+    Sugar.String.addAcronym('PhD');
+    Sugar.String.addAcronym('RoR');
+    Sugar.String.addAcronym('SSL');
+    Sugar.String.addAcronym('RESTful');
 
     // camelize             underscore            humanize              titleize
     [
@@ -322,7 +322,7 @@ namespace('String | Inflections', function () {
       });
       test('Camel_Case', 'CamelCase', 'handles underscores');
 
-      run(String, 'addAcronym', ['LegacyApi']);
+      Sugar.String.addAcronym('LegacyApi');
 
       test('legacyapi', 'LegacyApi', 'LegacyApi')
       test('legacy_api', 'LegacyAPI', 'LegacyAPI')
@@ -347,7 +347,7 @@ namespace('String | Inflections', function () {
       // Make sure this test doesn't come before "camelize",
       // or it will affect the "html5" acronym which should not be active at that point.
 
-      run(String, 'addAcronym', ['HTML5']);
+      Sugar.String.addAcronym('HTML5');
 
       test('HTML5HTMLAPI', 'html5_html_api', 'HTML5HTMLAPI')
       testIterateOverObject(CamelToUnderscore, function(camel, underscore) {
@@ -367,9 +367,9 @@ namespace('String | Inflections', function () {
         test(under, human, 'underscore')
     });
 
-    run(String, 'addHuman', ['cnt', 'count']);
-    run(String, 'addHuman', ['col', 'column']);
-    run(String, 'addHuman', [/^prefx_/i, '']);
+    Sugar.String.addHuman('cnt', 'count');
+    Sugar.String.addHuman('col', 'column');
+    Sugar.String.addHuman(/^prefx_/i, '');
 
     test('jargon_cnt', 'Jargon count', 'Jargon count')
     test('prefx_request', 'Request', 'Request')
@@ -459,7 +459,7 @@ namespace('String | Inflections', function () {
     var uncountable = 'ors';
     var countable = 'sponsor';
 
-    run(String, 'addPlural', [uncountable ,uncountable]);
+    Sugar.String.addPlural(uncountable);
 
     test(uncountable, uncountable, 'singularize | uncountable | ors');
     test(countable, 'sponsor', 'singularize | countable | sponsor');
@@ -487,7 +487,7 @@ namespace('String | Inflections', function () {
     var uncountable = 'ors';
     var countable = 'sponsor';
 
-    run(String, 'addPlural', [uncountable]);
+    Sugar.String.addPlural(uncountable);
 
     equal(run(run(uncountable, 'pluralize'), 'singularize'), 'ors', 'uncountable > plural > singular');
 
@@ -499,7 +499,7 @@ namespace('String | Inflections', function () {
   group('Override previous inflectors', function() {
 
     equal(run('series', 'singularize'), 'series', 'singularize | series');
-    run(String, 'addPlural', ['serie', 'series']);
+    Sugar.String.addPlural('serie', 'series');
     equal(run('series', 'singularize'), 'serie', 'singularize | serie');
 
   });
@@ -515,7 +515,7 @@ namespace('String | Inflections', function () {
       equal(run(plural, 'pluralize'), plural, 'singularize | irregulars | pluralized plural id pluralized');
     });
 
-    run(String, 'addPlural', ['wasabi', 'meecrab']);
+    Sugar.String.addPlural('wasabi', 'meecrab');
     equal(run('wasabi', 'pluralize'), 'meecrab', 'custom singular -> plural');
     equal(run('meecrab', 'singularize'), 'wasabi', 'custom plural -> singular');
 
