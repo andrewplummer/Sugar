@@ -382,7 +382,7 @@ namespace('Date', function () {
 
   });
 
-  group('Create | Special Cases', function() {
+  group('Create | Whitespace', function() {
     assertDateParsed(' July 4th, 1987 ',  new Date(1987, 6, 4));
     assertDateParsed('  7/4/1987 ',       new Date(1987, 6, 4));
     assertDateParsed('   1987-07-04    ', new Date(1987, 6, 4));
@@ -1109,12 +1109,16 @@ namespace('Date', function () {
     assertDateParsed('Thursday at 3:00PM', d);
 
 
-    // Date.create should clone a date
-
+    // Date.create should not clone a date by default
     var date1 = new Date(5000);
     var date2 = testCreateDate(date1);
     date1.setTime(10000);
+    equal(date1.getTime(), date2.getTime(), 'created date should be affected');
 
+    // Date.create should allow a clone flag
+    var date1 = new Date(5000);
+    var date2 = testCreateDate(date1, { clone: true });
+    date1.setTime(10000);
     notEqual(date1.getTime(), date2.getTime(), 'created date should not be affected');
 
 
