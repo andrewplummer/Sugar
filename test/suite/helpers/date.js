@@ -1,4 +1,4 @@
-var INVALID_DATE = new Date(NaN).toString();
+INVALID_DATE = new Date(NaN).toString();
 
 var TEST_DATE_UNITS = [
   ['FullYear', 'year', 0],
