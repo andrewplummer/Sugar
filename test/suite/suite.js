@@ -200,12 +200,23 @@
   }
 
   run = function (subject, methodName, args) {
-    var namespace = currentTest.namespace.name;
-    var isInstance = !objectIsClass(subject);
+    var namespace, nativeMethod, isInstance;
+
+    namespace = currentTest.namespace.name;
+    isInstance = !objectIsClass(subject);
     methodName = methodName || currentMethod || currentTest.name;
     args = args || currentArgs || [];
-    if (currentMode === 'extended' && isInstance) {
-      return globalContext[namespace].prototype[methodName].apply(subject, args);
+
+    if (currentMode === 'extended') {
+      if (isInstance) {
+        nativeMethod = globalContext[namespace].prototype[methodName];
+      } else {
+        nativeMethod = globalContext[namespace][methodName];
+      }
+      if (!nativeMethod) {
+        throw new Error('missing method ' + methodName);
+      }
+      return nativeMethod.apply(subject, args);
     } else if (currentMode === 'chained' && isInstance) {
       subject = new Sugar[namespace](subject);
       return subject[methodName].apply(subject, args).raw;
