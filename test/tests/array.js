@@ -135,6 +135,31 @@ namespace('Array', function () {
 
   });
 
+  method('add', function() {
+
+    test([], [], [], 'nothing');
+    test([1], [[2]], [1,2], '1 + 2');
+    test([], [[1]], [1], 'empty + 1');
+
+    test(['a','b','d'], ['c', 2], ['a','b','c','d'], 'nothing');
+
+    test(oneUndefined, [oneUndefined], twoUndefined, 'undefined + undefined');
+    test(oneUndefined, [twoUndefined], threeUndefined, 'undefined + 2undefined');
+
+    var arr = [1,2,3];
+    var result = run(arr, 'add', [[4,5,6]]);
+    equal(result, [1,2,3,4,5,6], 'array should have been added');
+    equal(arr, [1,2,3], 'original array should be untouched');
+
+    var arr1 = []; arr1[5]  = 'a';
+    var arr2 = []; arr1[10] = 'b';
+    var expected = []; expected[5] = 'a'; expected[10] = 'b';
+    var result = run(arr1, 'add', [arr2]);
+    equal(result, expected, 'should work on sparse arrays');
+    equal(result.length, 11, 'sparse result length should be 11');
+
+  });
+
   method('append', function() {
 
     test([1,2,3], [4], [1,2,3,4], '1,2,3 + 4');
