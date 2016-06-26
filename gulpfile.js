@@ -351,6 +351,18 @@ function merge(obj1, obj2) {
   });
 }
 
+function groupBy(arr, field) {
+  var groups = {};
+  arr.forEach(function(el) {
+    var val = el[field];
+    if (!groups[val]) {
+      groups[val] = [];
+    }
+    groups[val].push(el);
+  });
+  return groups;
+}
+
 function compact(arr) {
   return arr.filter(function(el) {
     return el;
@@ -577,7 +589,7 @@ function getBuildPath(min) {
 
 function getModuleNames(m) {
 
-  var names = (m || args.m || args.modules || 'default').split(',');
+  var names = (m || args.m || args.module || args.modules || 'default').split(',');
 
   function alias(name, modules) {
     var index = names.indexOf(name);
@@ -627,7 +639,7 @@ function getModules(m) {
 }
 
 function getLocaleCodes(l) {
-  var names = typeof l === 'string' ? l : args.l || args.locales;
+  var names = typeof l === 'string' ? l : args.l || args.locale || args.locales;
   if (names === 'all') {
     names = getAllLocales().map(function(p) {
       return p.match(/([\w-]+)\.js/)[1];
@@ -679,9 +691,9 @@ function buildHasCustomLocales() {
 
 var PACKAGE_DEFINITIONS = {
   'sugar': {
-    bower: false, // Same as main repo
+    bower: false, // Same as distributed build
     modules: 'ES6,ES7,String,Number,Array,Enumerable,Object,Date,Locales,Range,Function,RegExp',
-    description: 'This build includes default Sugar modules and optional date locales.'
+    description: 'This build includes default Sugar modules, polyfills, and optional date locales.'
   },
   'sugar-core': {
     modules: 'Core',
@@ -700,19 +712,19 @@ var PACKAGE_DEFINITIONS = {
     description: 'This build includes all ES7 polyfills bundled with Sugar. Currently this is only Array#includes.'
   },
   'sugar-string': {
-    modules: 'ES6,String,Range',
+    modules: 'String,ES6:String,Range:String',
     description: 'This build includes methods for string manipulation, escaping, encoding, truncation, and conversion.'
   },
   'sugar-number': {
-    modules: 'ES6,Number,Range',
+    modules: 'Number,ES6:Number,Range:Number',
     description: 'This build includes methods for number formatting, rounding (with precision), and aliases to Math methods.'
   },
   'sugar-enumerable': {
-    modules: 'ES6,ES7,Enumerable',
+    modules: 'Enumerable,ES6:Array,ES7:Array',
     description: 'This build includes methods common to arrays and objects, such as matching elements/properties, mapping, counting, and averaging. Also included are polyfills for methods that enhance arrays: Array#find, Array#findIndex, Array#includes.'
   },
   'sugar-array': {
-    modules: 'ES6,ES7,Array',
+    modules: 'Array,ES6:Array,ES7:Array',
     description: 'This build includes methods for array manipulation, grouping, randomizing, and alphanumeric sorting and collation.'
   },
   'sugar-object': {
@@ -720,7 +732,7 @@ var PACKAGE_DEFINITIONS = {
     description: 'This build includes methods for object creation, manipulation, comparison, and type checking. Note that Object.prototype is not extended by default. See the README for more.'
   },
   'sugar-date': {
-    modules: 'Date,Locales,Range',
+    modules: 'Date,Locales,Range:Date',
     description: 'This build includes methods for date parsing and formatting, relative formats like "1 minute ago", number methods like "daysAgo", and optional date locales.'
   },
   'sugar-range': {
@@ -789,8 +801,10 @@ function buildPackageDist(packageName, packageDir) {
     return stream;
   }
 
-  function getFilteredModules(modules) {
-    return modules.split(',').filter(function(m) {
+  function getFilteredModules(moduleDefinitions) {
+    return moduleDefinitions.split(',').map(function(md) {
+      return md.split(':')[0];
+    }).filter(function(m) {
       if (m === 'Locales') {
         copyLocales('all', path.join(packageDir, 'locales'));
         return false;
@@ -1233,7 +1247,9 @@ function getModularSource() {
 
       methodBlocks.forEach(function(block) {
         opts.static = block.static;
-        opts.accessor = block.accessor;
+        if (block.accessor) {
+          type = 'accessor';
+        }
         if (block.set) {
           opts.set     = block.set;
           opts.setName = block.name;
@@ -1794,7 +1810,7 @@ function buildNpmClean() {
 }
 
 function buildNpmDefault() {
-  return buildNpmPackages(args.p || args.packages || 'sugar');
+  return buildNpmPackages(args.p || args.package || args.packages || 'sugar');
 }
 
 function buildNpmCore() {
@@ -1807,7 +1823,7 @@ function buildNpmAll() {
 
 function buildNpmPackages(p, rebuild) {
 
-  var PUBLIC_TYPES = ['method', 'polyfill', 'prototype', 'locale', 'alias', 'fix'];
+  var PUBLIC_TYPES = ['method', 'polyfill', 'prototype', 'accessor', 'locale', 'alias', 'fix'];
 
   var sourcePackages;
   var baseDir = args.o || args.output || 'release/npm';
@@ -1857,30 +1873,61 @@ function buildNpmPackages(p, rebuild) {
 
     // --- Exporting ---
 
-    function exportAllModules() {
-      var def = getPackageDefinition(packageName);
-      var moduleNames = def.modules.split(',');
-      moduleNames.forEach(function(m) {
-        exportModule(m);
+
+    function getModuleDefinitions(modules) {
+      return modules.split(',').map(function(md) {
+        var split = md.split(':'), name, path, type;
+        name = split[0];
+        path = './' + name.toLowerCase();
+        type = /ES[567]/i.test(name) ? 'polyfill' : 'index';
+        return {
+          name: name,
+          path: path,
+          type: type,
+          namespace: split[1]
+        }
       });
-      createEntryPoint(moduleNames.map(function(m) {
-        return './' + m.toLowerCase();
-      }));
     }
 
-    function exportModule(moduleName) {
+    function exportAllModules() {
+      var packageDefinition = getPackageDefinition(packageName);
+      var moduleDefinitions = getModuleDefinitions(packageDefinition.modules);
+      moduleDefinitions.forEach(function(m) {
+        exportModule(m.name, m.namespace);
+      });
+      createEntryPoint(groupBy(moduleDefinitions, 'type'));
+    }
+
+    function exportModule(moduleName, restrictedNamespace) {
       var dependencies = [], methodPaths = [], moduleLower = moduleName.toLowerCase();
 
       exportPublicPackages();
       exportDependencies();
-      createEntryPoint(methodPaths, moduleLower);
+      createEntryPoint(groupBy(methodPaths, 'type'), moduleLower);
+
+      function packageIsNamespaceRestricted(p) {
+        if (p.namespace === 'Range') {
+          // Don't restrict range methods
+          return false;
+        }
+        return restrictedNamespace && p.namespace && p.namespace !== restrictedNamespace;
+      }
+
+      function canExportPublicPackage(p) {
+        return p.module === moduleName &&
+               sourcePackageIsPublic(p) &&
+               !packageIsNamespaceRestricted(p);
+      }
 
       function exportPublicPackages() {
         sourcePackages.forEach(function(p) {
-          if (p.module === moduleName && sourcePackageIsPublic(p)) {
+          if (canExportPublicPackage(p)) {
             exportPackage(p);
             addDependencies(p);
-            methodPaths.push(getRelativePath(p.path, moduleLower, true));
+            methodPaths.push({
+              type: getEntryPointType(p.type),
+              path: getRelativePath(p.path, moduleLower, true)
+            });
           }
         });
       }
@@ -1936,6 +1983,9 @@ function buildNpmPackages(p, rebuild) {
         case 'polyfill':
           compileDefinedMethod(p);
           break;
+        case 'accessor':
+          compileAccessorMethod(p);
+          break;
         case 'alias':
           compileAliasedMethod(p);
           break;
@@ -1949,6 +1999,10 @@ function buildNpmPackages(p, rebuild) {
           compileLocalePackage(p);
           break;
       }
+    }
+
+    function compileAccessorMethod(p) {
+      p.dependencies.push('Sugar');
     }
 
     function compileDefinedMethod(p) {
@@ -2011,7 +2065,7 @@ function buildNpmPackages(p, rebuild) {
         return path.join('polyfills', p.namespace.toLowerCase(), p.name);
       } else if (p.type === 'fix') {
         return path.join(p.module.toLowerCase(), 'fixes', p.name);
-      } else if (p.type === 'method' || p.type === 'alias' || p.type === 'prototype') {
+      } else if (p.type === 'method' || p.type === 'alias' || p.type === 'prototype' || p.type === 'accessor') {
         return path.join(p.namespace.toLowerCase(), p.name);
       } else if (p.type === 'locale') {
         return path.join(p.module.toLowerCase(), p.code);
@@ -2146,7 +2200,7 @@ function buildNpmPackages(p, rebuild) {
           '// This package does not export anything as it is',
           '// simply fixing existing behavior.'
         ].join('\n');
-      } else if (p.type === 'method' || p.type === 'alias') {
+      } else if (p.type === 'method' || p.type === 'alias' || p.type === 'accessor') {
         exports = ['Sugar', p.namespace, p.name].join('.');
       } else if (p.vars && p.vars.length > 1) {
         var lines = p.vars.map(function(v) {
@@ -2166,14 +2220,68 @@ function buildNpmPackages(p, rebuild) {
 
     // --- Entry Point ---
 
-    function createEntryPoint(requirePaths, subPath) {
-      var outputPath = path.join(packageDir, subPath || '', 'index.js');
-      var requires = requirePaths.map(function(p) {
-        return "require('"+ p +"');";
-      });
+    function createEntryPoint(paths, subPath) {
+      var outputPath = path.join(packageDir, subPath || '', 'index.js'), requires;
+      requires = Array.isArray(paths) ? getRequiresForArray(paths) : getRequiresForGroup(paths);
       var exports = "module.exports = require('sugar-core');";
-      var outputBody = [STRICT, requires.join('\n'), exports].join('\n\n');
+      var outputBody = [STRICT, requires, exports].join('\n\n');
       writeFile(outputPath, outputBody);
+    }
+
+    function getRequiresForArray(arr) {
+      return arr.map(function(p) {
+        return "require('"+ p +"');";
+      }).join('\n');
+    }
+
+    function getRequiresForGroup(group) {
+      var blocks = [];
+      iter(group, function(type, entries) {
+        var requires = getCommentForEntryPointType(type) || '';
+        entries = entries.map(function(entry) {
+          return entry.path;
+        });
+        entries.sort();
+        requires += getRequiresForArray(entries);
+        blocks.push({
+          type: type,
+          requires: requires
+        });
+      });
+      blocks.sort(function(a, b) {
+        var aRank = getRankForEntryPointType(a.type);
+        var bRank = getRankForEntryPointType(b.type);
+        return aRank - bRank;
+      });
+      return blocks.map(function(b) {
+        return b.requires;
+      }).join('\n\n');
+    }
+
+    function getRankForEntryPointType(type) {
+      switch (type) {
+        case 'polyfill': return 1;
+        case 'alias':    return 3;
+        case 'accessor': return 4;
+        default: return 2;
+      }
+    }
+
+    function getCommentForEntryPointType(type) {
+      if(type === 'polyfill') {
+        return '// Polyfills\n';
+      } else if(type === 'alias') {
+        return '// Aliases\n';
+      } else if (type === 'accessor') {
+        return '// Accessors\n';
+      }
+    }
+
+    function getEntryPointType(type) {
+      if (type === 'alias' || type === 'accessor') {
+        return type;
+      }
+      return 'method';
     }
 
   }
@@ -2339,7 +2447,7 @@ function buildBowerClean() {
 }
 
 function buildBowerDefault() {
-  return buildBowerPackages(args.p || args.packages || 'sugar', true);
+  return buildBowerPackages(args.p || args.package || args.packages || 'sugar', true);
 }
 
 function buildBowerCore() {

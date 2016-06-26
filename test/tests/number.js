@@ -334,6 +334,7 @@ namespace('Number', function () {
   });
 
   method('format', function() {
+
     test(100, '100');
     test(1, '1');
     test(10, '10');
