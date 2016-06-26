@@ -994,10 +994,6 @@ function getModularSource() {
     return p.name === dependencyName && sourcePackageIsDependency(p);
   }
 
-  function sourcePackageIsDependency(p) {
-    return p.type === 'var' || p.type === 'build' || p.type === 'internal';
-  }
-
   // --- Parsing ---
 
   function parseAllModules() {
@@ -1125,6 +1121,7 @@ function getModularSource() {
         }
         return name;
       });
+      checkPackageForBuiltMethods(sp);
     }
 
     function getVarPackageName(node) {
@@ -1224,6 +1221,33 @@ function getModularSource() {
       return '';
     }
 
+    function checkPackageForBuiltMethods(package, type, opts) {
+      var methodBlocks = getMethodBlocksInPreviousComment(package.node);
+
+      if (!methodBlocks.length) {
+        return;
+      }
+
+      opts = opts || {};
+      type = type || 'method';
+
+      methodBlocks.forEach(function(block) {
+        opts.static = block.static;
+        opts.accessor = block.accessor;
+        if (block.set) {
+          opts.set     = block.set;
+          opts.setName = block.name;
+          block.set.forEach(function(methodName) {
+            addSugarBuiltMethod(methodName, package, type, opts);
+          });
+        } else {
+          delete opts.set;
+          delete opts.setName;
+          addSugarBuiltMethod(block.name, package, type, opts);
+        }
+      });
+    }
+
     function getMethodBlocksInPreviousComment(node) {
       var methodBlocks = [];
       var comment = getLastCommentForNode(node, 1);
@@ -1233,7 +1257,8 @@ function getModularSource() {
         if (methodMatch) {
           var methodBlock = {
             name: methodMatch[1],
-            static: /@static/.test(block)
+            static: /@static/.test(block),
+            accessor: /@accessor/.test(block),
           };
           var setMatch = block.match(/@set([^@\/]+)/);
           if (setMatch) {
@@ -1268,7 +1293,7 @@ function getModularSource() {
       return node.type === 'ExpressionStatement' &&
              node.expression.type === 'CallExpression' &&
              node.expression.callee.name &&
-             !!node.expression.callee.name.match(/^define(Static|Instance(AndStatic)?)(WithArguments)?$/);
+             !!node.expression.callee.name.match(/^define(Static|Instance(AndStatic)?)(Similar|WithArguments)?$/);
     }
 
     function isPolyfillBlock(node) {
@@ -1378,7 +1403,6 @@ function getModularSource() {
 
       opts.alias = aliasedMethod;
       opts.methodDependencies = [aliasedMethod];
-      opts.static = getMethodBlocksInPreviousComment(node)[0].static;
 
       addSugarMethod(methodName, node, 'alias', [], opts);
     }
@@ -1442,16 +1466,16 @@ function getModularSource() {
       // saying that any set methods must be defined in the comment block
       // directly above the build method.
       function addBuiltMethods() {
-        var opts = {}, methodBlocks, hasPrototypeBlock, type;
+        var opts = {}, hasPrototypeBlock, type;
 
-        methodBlocks = getMethodBlocksInPreviousComment(fnPackage.node);
-
-        fnPackage.node.body.body.some(function(node) {
+        fnPackage.node.body.body.forEach(function(node) {
           if (isPrototypeBlock(node)) {
             hasPrototypeBlock = true;
             opts.target = node.expression.arguments[0].name;
           }
-          return hasPrototypeBlock;
+          if (isMethodBlock(node)) {
+            opts.static = /static/i.test(node.expression.callee.name);
+          }
         });
 
         // If the build method has "defineOnPrototype", then the methods are
@@ -1459,21 +1483,7 @@ function getModularSource() {
         // standard Sugar method defines.
         type = hasPrototypeBlock ? 'prototype' : 'method';
 
-        methodBlocks.forEach(function(block) {
-          opts.static = block.static;
-          if (block.set) {
-            opts.set     = block.set;
-            opts.setName = block.name;
-            block.set.forEach(function(methodName) {
-              addSugarBuiltMethod(methodName, fnPackage, type, opts);
-            });
-          } else {
-            delete opts.set;
-            delete opts.setName;
-            addSugarBuiltMethod(block.name, fnPackage, type, opts);
-          }
-
-        });
+        checkPackageForBuiltMethods(fnPackage, type, opts);
       }
 
       // set___ChainableConstructor is a special type of build method that
@@ -1771,6 +1781,10 @@ function getModularSource() {
     packages: sourcePackages
   };
 
+}
+
+function sourcePackageIsDependency(p) {
+  return p.type === 'var' || p.type === 'build' || p.type === 'internal';
 }
 
 // -------------- npm ----------------
@@ -2420,6 +2434,7 @@ function getJSONDocs() {
     'polyfill': '#/Polyfills',
     'extending natives': '/natives',
     'ranges': '#/Ranges',
+    'sortIgnore': '#/Array/setOption',
     'exclude': '#/Array/exclude',
     'remove': '#/Array/remove',
     'append': '#/Array/append',
@@ -2435,7 +2450,6 @@ function getJSONDocs() {
     'decimal': '#/Number/decimal',
     'metric': '#/Number/metric',
     'log': '#/Number/log',
-    'titleize': '#/String/titleize',
     'addHuman': '#/String/addHuman',
     'addPlural': '#/String/addPlural',
     'removeAll': '#/String/removeAll',
@@ -2826,7 +2840,6 @@ function buildJSONSource() {
   var data = getModularSource();
 
   addCorePackage();
-  bundleSetPackages();
   prepareData();
   writeJSON(data, 'source.json');
 
@@ -2855,8 +2868,10 @@ function buildJSONSource() {
             name: p.setName.replace(/[\[\]]/g, ''),
             sample: p.set.slice(0, 2).concat('...').join(', '),
             type: p.type,
+            alias: p.alias,
             module: p.module,
             static: p.static,
+            accessor: p.accessor,
             namespace: p.namespace,
             dependencies: p.dependencies,
             bodyWithComments: p.bodyWithComments
@@ -2868,14 +2883,15 @@ function buildJSONSource() {
       }
     }
 
-    data.packages = packages;
+    return packages;
   }
 
   function prepareData() {
+    var bundledPackages = bundleSetPackages();
     data.modules.forEach(function(m) {
       indentField(m, 'comment');
     });
-    data.packages.forEach(function(p) {
+    bundledPackages.forEach(function(p) {
 
       // Pre-indenting all packages rather than doing it on compile to
       // save some cycles and also correctly calculate the package size.
@@ -2885,6 +2901,7 @@ function buildJSONSource() {
 
       cleanSourcePackage(p);
     });
+    data.packages = bundledPackages;
   }
 
   function indentField(p, field) {
@@ -2893,13 +2910,49 @@ function buildJSONSource() {
     }
   }
 
+  function setPublicTypesForPackageOrAlias(p) {
+    if (p.alias) {
+      p.subType = 'alias';
+    } else if (p.type === 'polyfill' || p.type === 'fix') {
+      p.subType = 'polyfill';
+    }
+    if (p.alias) {
+      var ap = data.packages.findByDependentPackage(p);
+      p.type = getPublicTypeForPackage(ap);
+    } else {
+      p.type = getPublicTypeForPackage(p);
+    }
+  }
+
+  function getPublicTypeForPackage(p) {
+    if (p.type === 'fix') {
+      return 'fix';
+    } else if (p.type === 'locale') {
+      return 'locale';
+    } else if (p.accessor) {
+      return 'accessor';
+    } else if (p.static) {
+      return 'static';
+    } else if (p.type === 'prototype') {
+      return 'range';
+    }
+  }
+
   function cleanSourcePackage(p) {
+    if (sourcePackageIsDependency(p)) {
+      delete p.type;
+    } else {
+      setPublicTypesForPackageOrAlias(p);
+    }
     delete p.vars;
-    delete p.type;
+    delete p.static;
+    delete p.accessor;
+    delete p.target;
     delete p.body;
     delete p.path;
     delete p.assigns;
     delete p.comments;
+    delete p.defineMethod;
     delete p.varDependencies;
     compactField(p, 'static');
     compactField(p, 'bodyWithComments');
