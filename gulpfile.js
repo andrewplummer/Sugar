@@ -1879,7 +1879,7 @@ function buildNpmPackages(p, rebuild) {
         var split = md.split(':'), name, path, type;
         name = split[0];
         path = './' + name.toLowerCase();
-        type = /ES[567]/i.test(name) ? 'polyfill' : 'index';
+        type = /ES[567]/i.test(name) ? 'polyfill' : 'module';
         return {
           name: name,
           path: path,
@@ -1925,7 +1925,7 @@ function buildNpmPackages(p, rebuild) {
             exportPackage(p);
             addDependencies(p);
             methodPaths.push({
-              type: getEntryPointType(p.type),
+              type: getEntryPointTypeForPackageType(p.type),
               path: getRelativePath(p.path, moduleLower, true)
             });
           }
@@ -2237,12 +2237,12 @@ function buildNpmPackages(p, rebuild) {
     function getRequiresForGroup(group) {
       var blocks = [];
       iter(group, function(type, entries) {
-        var requires = getCommentForEntryPointType(type) || '';
+        var comment = getCommentForEntryPointType(type), requires;
         entries = entries.map(function(entry) {
           return entry.path;
         });
         entries.sort();
-        requires += getRequiresForArray(entries);
+        requires = compact([comment, getRequiresForArray(entries)]).join('\n');
         blocks.push({
           type: type,
           requires: requires
@@ -2261,23 +2261,28 @@ function buildNpmPackages(p, rebuild) {
     function getRankForEntryPointType(type) {
       switch (type) {
         case 'polyfill': return 1;
-        case 'alias':    return 3;
-        case 'accessor': return 4;
-        default: return 2;
+        case 'module':   return 2;
+        case 'method':   return 3;
+        case 'alias':    return 4;
+        case 'accessor': return 5;
       }
     }
 
     function getCommentForEntryPointType(type) {
       if(type === 'polyfill') {
-        return '// Polyfills\n';
+        return '// Polyfills';
       } else if(type === 'alias') {
-        return '// Aliases\n';
+        return '// Aliases';
       } else if (type === 'accessor') {
-        return '// Accessors\n';
+        return '// Accessors';
+      } else if (type === 'method') {
+        return '// Methods';
+      } else if (type === 'module') {
+        return '// Modules';
       }
     }
 
-    function getEntryPointType(type) {
+    function getEntryPointTypeForPackageType(type) {
       if (type === 'alias' || type === 'accessor') {
         return type;
       }
