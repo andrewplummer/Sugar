@@ -377,6 +377,23 @@ namespace('Date', function () {
     assertDateParsed('15 July 2008',    'en-GB', new Date(2008, 6, 15));
     assertDateParsed('juNe 1St 2008',   'en-GB', new Date(2008, 5, 1));
 
+    assertDateParsed('Monday January 16th 2012',   new Date(2012, 0, 16));
+    assertDateParsed('Monday, January 16th 2012',  new Date(2012, 0, 16));
+    assertDateParsed('Monday, January, 16th 2012', new Date(2012, 0, 16));
+    assertDateParsed('Monday January, 16th 2012',  new Date(2012, 0, 16));
+
+    assertDateParsed('Monday January 16th, 2012',   new Date(2012, 0, 16));
+    assertDateParsed('Monday January, 16th, 2012',  new Date(2012, 0, 16));
+    assertDateParsed('Monday, January, 16th, 2012', new Date(2012, 0, 16));
+
+    assertDateParsed('Mon. January 16th, 2012',   new Date(2012, 0, 16));
+    assertDateParsed('Mon. January, 16th, 2012',  new Date(2012, 0, 16));
+    assertDateParsed('Mon., January, 16th, 2012', new Date(2012, 0, 16));
+
+    assertDateParsed('Mon. Jan. 16th, 2012',   new Date(2012, 0, 16));
+    assertDateParsed('Mon. Jan., 16th, 2012',  new Date(2012, 0, 16));
+    assertDateParsed('Mon., Jan., 16th, 2012', new Date(2012, 0, 16));
+
     // Issue #507 "sept"
     assertDateParsed('Sept 2015', new Date(2015, 8, 1));
 
