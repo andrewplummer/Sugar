@@ -3645,7 +3645,7 @@ namespace('Number', function () {
       'months', 'weekdays', 'units', 'numerals', 'placeholders',
       'articles', 'tokens', 'timeMarkers', 'ampm', 'timeSuffixes',
       'parse', 'timeParse', 'timeFrontParse', 'modifiers',
-      'compiledFormats', 'parseAliases', 'parseTokens', 'numeralMap'
+      'compiledFormats', 'parsingAliases', 'parsingTokens', 'numeralMap'
     ];
 
     for (var i = 0; i < properties.length; i++) {
