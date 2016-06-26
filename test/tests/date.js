@@ -753,6 +753,9 @@ namespace('Date', function () {
     assertDateParsed('the 5th Friday of February, 2012', new Date(2012, 2, 2));
     assertDateParsed('the 6th Friday of February, 2012', new Date(2012, 2, 9));
 
+    assertDateParsed('the 15th of last month', testDateSet(getRelativeDateReset(0,-1),{date:15}));
+    assertDateParsed('the 15th of last month at 2:30pm', testDateSet(getRelativeDateReset(0,-1),{date:15,hour:14,minute:30}));
+
     var d = new Date(thisYear, 1);
     while(d.getDay() !== 5) {
       d.setDate(d.getDate() + 1);
