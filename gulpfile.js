@@ -1250,6 +1250,7 @@ function getModularSource() {
         if (block.accessor) {
           type = 'accessor';
         }
+
         if (block.set) {
           opts.set     = block.set;
           opts.setName = block.name;
@@ -3031,7 +3032,7 @@ function buildJSONSource() {
       return 'fix';
     } else if (p.type === 'locale') {
       return 'locale';
-    } else if (p.accessor) {
+    } else if (p.type === 'accessor') {
       return 'accessor';
     } else if (p.static) {
       return 'static';
