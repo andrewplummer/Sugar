@@ -1,5 +1,3 @@
-INVALID_DATE = new Date(NaN).toString();
-
 var TEST_DATE_UNITS = [
   ['FullYear', 'year', 0],
   ['Month', 'month', 0],
@@ -249,6 +247,8 @@ testCreateFakeLocale = function(code) {
   Sugar.Date.addLocale(code, {
     units: 'do,re,mi,fa,so,la,ti,do',
     months: 'Do,Re,Mi,Fa,So,La,Ti,Do',
+    future: 'the future!',
+    past: 'the past!',
     parse: [
       '{year}kupo',
       '{month}mofo'
@@ -308,9 +308,18 @@ assertAddUnitIsNumericallyEqual = function (d, method, add, message) {
 assertRelative = function(format, expected) {
   var d = testCreateDate(format, 'en');
   if (d - new Date > 1000) {
+    // Add a 80ms margin for relative dates less than 1000ms
+    // in the future to avoid phantom test errors. This is in
+    // addition to the margin in getAdjustedUnitForDate which
+    // is to account for the same thing, however this effect
+    // can be exaggerated when the entire test suite is running.
     d = new Date(d.getTime() + 80);
   }
   equal(run(d, 'relative'), expected, 'relative | ' + format);
+}
+
+assertRelativeTo = function(d, args, expected) {
+  equal(run(d, 'relativeTo', args), expected, 'relativeTo | ' + expected);
 }
 
 assertFormatShortcut = function (d, name, expected, localeCode) {

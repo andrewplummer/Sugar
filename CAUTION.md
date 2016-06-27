@@ -119,6 +119,9 @@ Drop it in before upgrading to get a general idea of what needs to change, or up
   - `Date#reset` now requires one unit higher when resetting units based on a string. For example, d.reset('day') will now "reset the day", where it's previous behavior was to shift the date to the beginning of the month. Default is also shifted so no change should be necessary when resetting the time.
 
 - Level: Minor
+  - `Date#relative` arguments `fn` and `localeCode` are now reversed (`localeCode` first). As this method was previously accepting `localeCode` as a single argument anyway, this change will only have have an effect if both arguments are used together.
+
+- Level: Minor
   - `Array#remove` and `Array#exclude` no longer accept enumerated paramters. To remove multiple elements, depending on the type a regex or function may be used. Otherwise the method must be called multiple times.
 
 - Level: Minor
