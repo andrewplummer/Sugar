@@ -2575,7 +2575,6 @@ function getJSONDocs() {
 
   var POLYFILL_HTML    = getReplacements('This method is provided as a `polyfill`.');
   var ENHANCED_HTML    = getReplacements('This method is also provided as a `polyfill` in the MOD module.');
-  var NON_DEFAULT_HTML = getReplacements('This method is not included in the `default build`.');
 
   var POLYFILL_REPLACE_REG = /This method is (also )?provided as a .*polyfill.*\./;
 
@@ -2665,11 +2664,6 @@ function getJSONDocs() {
     } else {
       return ENHANCED_HTML.replace(/MOD/, mod);
     }
-  }
-
-  function hasNonDefaultNote() {
-    var m = currentModuleName.toLowerCase();
-    return DEFAULT_MODULES.indexOf(m) === -1 && m !== 'es5' && m !== 'core';
   }
 
   function getOptions(str) {
@@ -2825,11 +2819,6 @@ function getJSONDocs() {
 
       method.line = getLineNumber(name, lines);
       method.type = getMethodType(method);
-
-      if (hasNonDefaultNote()) {
-        method.extra = method.extra || '';
-        method.extra += ' ' + NON_DEFAULT_HTML;
-      }
 
       if (args.length) {
         method['args'] = args.map(function(a) {
