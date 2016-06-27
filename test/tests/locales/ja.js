@@ -238,6 +238,7 @@ namespace('Date | Japanese', function () {
   });
 
   method('relative', function() {
+
     assertRelative('1 second ago', '1秒前');
     assertRelative('1 minute ago', '1分前');
     assertRelative('1 hour ago', '1時間前');
@@ -267,6 +268,29 @@ namespace('Date | Japanese', function () {
     assertRelative('5 days from now', '5日後');
     assertRelative('5 weeks from now', '1ヶ月後');
     assertRelative('5 years from now', '5年後');
+
+  });
+
+  method('relativeTo', function() {
+
+    var d = new Date(2016,3,14,22,47,52,500);
+
+    assertRelativeTo(d, new Date(2015,3,14,22,47,52,500), '1年');
+    assertRelativeTo(d, new Date(2016,2,14,22,47,52,500), '1ヶ月');
+    assertRelativeTo(d, new Date(2016,3,13,22,47,52,500), '1日');
+    assertRelativeTo(d, new Date(2016,3,14,21,47,52,500), '1時間');
+    assertRelativeTo(d, new Date(2016,3,14,22,46,52,500), '1分');
+    assertRelativeTo(d, new Date(2016,3,14,22,47,51,500), '1秒');
+    assertRelativeTo(d, new Date(2016,3,14,22,47,51,499), '1秒');
+
+    assertRelativeTo(d, new Date(2017,3,14,22,47,52,500), '1年');
+    assertRelativeTo(d, new Date(2016,4,14,22,47,52,500), '1ヶ月');
+    assertRelativeTo(d, new Date(2016,3,15,22,47,52,500), '1日');
+    assertRelativeTo(d, new Date(2016,3,14,23,47,52,500), '1時間');
+    assertRelativeTo(d, new Date(2016,3,14,22,48,52,500), '1分');
+    assertRelativeTo(d, new Date(2016,3,14,22,47,53,500), '1秒');
+    assertRelativeTo(d, new Date(2016,3,14,22,47,51,501), '1秒');
+
   });
 
   method('beginning/end', function() {

@@ -1331,7 +1331,7 @@ namespace('Date', function () {
 
     var d1 = run(new Date(Date.UTC(2010, 7, 25)), 'setUTC', [true]);
     var d2 = run(d1, 'get', ['tomorrow']);
-    equal(d2, new Date(Date.UTC(2010, 7, 26)), 'date should be taken as UTC'); 
+    equal(d2, new Date(Date.UTC(2010, 7, 26)), 'date should be taken as UTC');
     equal(testIsUTC(d2), true, 'utc flag should be preserved');
 
     var d1 = run(new Date(Date.UTC(2010, 7, 25)), 'setUTC', [true]);
@@ -1847,8 +1847,7 @@ namespace('Date', function () {
     test(d, ['{Z}'],  getExpectedTimezoneOffset(d, true), 'Z');
     test(d, ['{ZZ}'], getExpectedTimezoneOffset(d), 'ZZ');
 
-    test(new Date(NaN), INVALID_DATE);
-
+    raisesError(function(){ test(new Date(NaN)); }, 'Invalid date raises error', TypeError);
     raisesError(function(){ run(d, 'format', ['{foo}']); }, 'unknown ldml token raises error', TypeError);
 
     // Not all environments provide that so just make sure it returns the abbreviation or nothing.
@@ -2096,7 +2095,34 @@ namespace('Date', function () {
 
   method('relative', function() {
 
-    test(new Date(NaN), INVALID_DATE);
+    equal(run(testCreateDate(), 'relative'), '1 second ago', 'no args');
+
+    assertRelative('6234 milliseconds ago', '6 seconds ago');
+    assertRelative('6 seconds ago', '6 seconds ago');
+    assertRelative('360 seconds ago', '6 minutes ago');
+    assertRelative('360 minutes ago', '6 hours ago');
+    assertRelative('360 hours ago', '2 weeks ago');
+    assertRelative('340 days ago', '11 months ago');
+    assertRelative('360 days ago', '11 months ago');
+    assertRelative('360 weeks ago', '6 years ago');
+    assertRelative('360 months ago', '30 years ago');
+    assertRelative('360 years ago', '360 years ago');
+    assertRelative('12 months ago', '1 year ago');
+
+    assertRelative('6234 milliseconds from now', '6 seconds from now');
+    assertRelative('361 seconds from now', '6 minutes from now');
+    assertRelative('361 minutes from now', '6 hours from now');
+    assertRelative('360 hours from now', '2 weeks from now');
+    assertRelative('340 days from now', '11 months from now');
+    assertRelative('360 days from now', '11 months from now');
+    assertRelative('360 weeks from now', '6 years from now');
+    assertRelative('360 months from now', '30 years from now');
+    assertRelative('360 years from now', '360 years from now');
+    assertRelative('13 months from now', '1 year from now');
+
+
+    // Handling callback
+
     var simpleDateFormat = '{Month} {date}, {year}';
 
     var dyn = function(value, unit, ms, loc) {
@@ -2122,7 +2148,7 @@ namespace('Date', function () {
 
     var strings = ['ミリ秒','秒','分','時間','日','週間','月','年'];
 
-    dyn = function(value, unit, ms, loc) {
+    var dyn = function(value, unit, ms, loc) {
       equal(value, 5, '5 minutes ago | value is the closest relevant value');
       equal(unit, 2, '5 minutes ago | unit is the closest relevant unit');
       equalWithMargin(ms, -300000, 20, '5 minutes ago | ms is the offset in ms');
@@ -2131,8 +2157,7 @@ namespace('Date', function () {
     }
     equal(run(testCreateDate('5 minutes ago'), 'relative', [dyn]), '5分前', '5 minutes ago');
 
-
-    dyn = function(value, unit, ms, loc) {
+    var dyn = function(value, unit, ms, loc) {
       equal(value, 1, '1 minute from now | value is the closest relevant value');
       equal(unit, 2, '1 minute from now | unit is the closest relevant unit');
       equalWithMargin(ms, 61000, 20, '1 minute from now | ms is the offset in ms');
@@ -2141,7 +2166,7 @@ namespace('Date', function () {
     }
     equal(run(testCreateDate('61 seconds from now'), 'relative', [dyn]), '1分後', '1 minute from now');
 
-    dyn = function(value, unit, ms, loc) {
+    var dyn = function(value, unit, ms, loc) {
       equal(value, 4, '4 hours ago | value is the closest relevant value');
       equal(unit, 3, '4 hours ago | unit is the closest relevant unit');
       equalWithMargin(ms, -14400000, 20, '4 hours ago | ms is the offset in ms');
@@ -2155,36 +2180,70 @@ namespace('Date', function () {
       equal(unit, 0, 'still passes millisecond is zero');
     }]);
 
-    equal(run(testCreateDate(), 'relative'), '1 second ago', '6 milliseconds ago');
+    // Handling locale code
 
-    assertRelative('6234 milliseconds ago', '6 seconds ago');
-    assertRelative('6 seconds ago', '6 seconds ago');
-    assertRelative('360 seconds ago', '6 minutes ago');
-    assertRelative('360 minutes ago', '6 hours ago');
-    assertRelative('360 hours ago', '2 weeks ago');
-    assertRelative('340 days ago', '11 months ago');
-    assertRelative('360 days ago', '11 months ago');
-    assertRelative('360 weeks ago', '6 years ago');
-    assertRelative('360 months ago', '30 years ago');
-    assertRelative('360 years ago', '360 years ago');
-    assertRelative('12 months ago', '1 year ago');
+    testCreateFakeLocale('fo');
 
-    assertRelative('6234 milliseconds from now', '6 seconds from now');
-    assertRelative('361 seconds from now', '6 minutes from now');
-    assertRelative('361 minutes from now', '6 hours from now');
-    assertRelative('360 hours from now', '2 weeks from now');
-    assertRelative('340 days from now', '11 months from now');
-    assertRelative('360 days from now', '11 months from now');
-    assertRelative('360 weeks from now', '6 years from now');
-    assertRelative('360 months from now', '30 years from now');
-    assertRelative('360 years from now', '360 years from now');
-    assertRelative('13 months from now', '1 year from now');
+    var dyn = function(value, unit, ms, loc) {
+      return loc.code;
+    }
+    equal(run(testCreateDate('5 minutes ago'), 'relative', ['fo']), 'the past!', 'lang code');
+    equal(run(testCreateDate('5 minutes ago'), 'relative', ['fo', dyn]), 'fo', 'lang code and callback');
+
+    raisesError(function(){ test(new Date(NaN)); }, 'Invalid date raises error', TypeError);
 
     // Issue #474
     // "1 month from now" can be forced back when there are not enough days in a month.
     // In these cases "relative()" should return "4 weeks from now" instead of "1 month from now".
     equal(run(testCreateDate('11/10/2014 21:00:00'), 'daysSince', ['7/1/2014']), 132, 'daysSince should be 132 at 9pm');
     equal(run(testCreateDate('11/10/2014 22:00:00'), 'daysSince', ['7/1/2014']), 132, 'daysSince should be 132 at 10pm');
+
+  });
+
+  method('relativeTo', function() {
+
+    testCreateFakeLocale('fo');
+
+    var d = new Date(2016,3,14,22,47,52,500);
+
+    assertRelativeTo(d, [new Date(2015,3,14,22,47,52,500)], '1 year');
+    assertRelativeTo(d, [new Date(2016,2,14,22,47,52,500)], '1 month');
+    assertRelativeTo(d, [new Date(2016,3,13,22,47,52,500)], '1 day');
+    assertRelativeTo(d, [new Date(2016,3,14,21,47,52,500)], '1 hour');
+    assertRelativeTo(d, [new Date(2016,3,14,22,46,52,500)], '1 minute');
+    assertRelativeTo(d, [new Date(2016,3,14,22,47,51,500)], '1 second');
+    assertRelativeTo(d, [new Date(2016,3,14,22,47,51,499)], '1 second');
+
+    assertRelativeTo(d, [new Date(2017,3,14,22,47,52,500)], '1 year');
+    assertRelativeTo(d, [new Date(2016,4,14,22,47,52,500)], '1 month');
+    assertRelativeTo(d, [new Date(2016,3,15,22,47,52,500)], '1 day');
+    assertRelativeTo(d, [new Date(2016,3,14,23,47,52,500)], '1 hour');
+    assertRelativeTo(d, [new Date(2016,3,14,22,48,52,500)], '1 minute');
+    assertRelativeTo(d, [new Date(2016,3,14,22,47,53,500)], '1 second');
+    assertRelativeTo(d, [new Date(2016,3,14,22,47,51,501)], '1 second');
+
+    assertRelativeTo(d, [new Date(2017,0)], '8 months');
+    assertRelativeTo(d, [new Date(2000,0)], '16 years');
+
+    assertRelativeTo(d, [new Date(2017,3,14,22,47,52,500), 'fo'], '1domomoney');
+    assertRelativeTo(d, [new Date(2016,4,14,22,47,52,500), 'fo'], '1timomoney');
+    assertRelativeTo(d, [new Date(2016,3,15,22,47,52,500), 'fo'], '1somomoney');
+    assertRelativeTo(d, [new Date(2016,3,14,23,47,52,500), 'fo'], '1famomoney');
+    assertRelativeTo(d, [new Date(2016,3,14,22,48,52,500), 'fo'], '1mimomoney');
+    assertRelativeTo(d, [new Date(2016,3,14,22,47,53,500), 'fo'], '1remomoney');
+    assertRelativeTo(d, [new Date(2016,3,14,22,47,51,501), 'fo'], '1remomoney');
+
+    assertRelativeTo(new Date(2010,0,18), ['The first day of January, 2010'], '2 weeks');
+    assertRelativeTo(new Date(2010,0),    ['August 10, 2010'], '7 months');
+
+    assertRelativeTo(new Date(), ['next week'],  '1 week');
+    assertRelativeTo(new Date(), ['last week'],  '1 week');
+    assertRelativeTo(new Date(), ['last month'], '1 month');
+    assertRelativeTo(new Date(), ['next month'], '1 month');
+    assertRelativeTo(new Date(), ['last year'],  '1 year');
+    assertRelativeTo(new Date(), ['next year'],  '1 year');
+
+    raisesError(function(){ test(new Date(NaN)); }, 'Invalid date raises error', TypeError);
 
   });
 
