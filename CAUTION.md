@@ -74,9 +74,6 @@ Drop it in before upgrading to get a general idea of what needs to change, or up
   - `RegExp#addFlag` and `RegExp#removeFlag` are now `RegExp#addFlags` and `RegExp#removeFlags` and now work on multiple flags at once.
 
 - Level: Major
-  - `Object.has` is now `Object.hasOwn`. The previous method now allows deep keys and makes no `hasOwnProperty` checks.
-
-- Level: Major
   - `Date.past`, `Date.future`, `Date.utc.create`, `Date.utc.past`, and `Date.utc.future` are all deprecated. Instead, pass an options object as the second argument to `Date.create` with the equivalent properties. For example: `Date.create('March', { future: true, fromUTC: true, locale: 'ja' })`, etc. Additionally, the `utc` parameter is now `fromUTC` and a new parameter `setUTC` has been added to clear up confusion about what the flag was doing. `fromUTC` assumes the input to be UTC but the output is a normal Javascript local date. `setUTC` sets an internal flag which tells Sugar to use utc methods like `getUTCHours`.
 
 - Level: Major

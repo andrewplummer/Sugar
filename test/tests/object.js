@@ -205,6 +205,24 @@ namespace('Object', function () {
 
   });
 
+  method('has', function() {
+
+    test({foo:'bar'}, ['foo'], true, 'finds a property');
+    test({foo:'bar'}, ['baz'], false, 'does not find a nonexistant property');
+    test({foo:{a:'b'}}, ['foo.a'], true, 'works on deep properties');
+    test({foo:{a:'b'}}, ['foo[a]'], true, 'works on deep properties with bracket syntax');
+    test({foo:{a:'b'}}, [['foo','a']], true, 'works on deep properties with array');
+    test({ hasOwnProperty: true, foo: 'bar' }, ['foo'], true, 'local hasOwnProperty is ignored');
+
+    function Foo() {}
+    Foo.prototype.bar = 'bar';
+    test(new Foo, ['bar'], false, 'Does not work on not own properties by default');
+    test(new Foo, ['bar', true], true, 'Allows not own properties with flag');
+    test([], ['forEach'], false, 'Built in prototype methods | off');
+    test([], ['forEach', true], true, 'Built in prototype methods | off');
+
+  });
+
   method('get', function() {
 
     if (isExtendedMode()) {
@@ -412,6 +430,7 @@ namespace('Object', function () {
     Foo.prototype.a = 'foo-a';
     Foo.prototype.b = 'foo-b';
     Foo.prototype.c = 'foo-c';
+    Foo.prototype.d = {e:'e'};
 
     Bar.prototype = new Foo;
     Bar.prototype.b = 'bar-b';
@@ -419,21 +438,37 @@ namespace('Object', function () {
     var instFoo = new Foo();
     var instBar = new Bar();
 
-    test(Object, [Foo, 'a'], 'class-a', 'Class method class-a');
+    test(Foo, ['a'], 'class-a', 'Class method class-a');
 
-    test(Object, [Foo.prototype, 'a'], 'foo-a', 'Foo.prototype.a');
-    test(Object, [Bar.prototype, 'a'], 'foo-a', 'Bar.prototype.a');
-    test(Object, [Foo.prototype, 'b'], 'foo-b', 'Foo.prototype.b');
-    test(Object, [Bar.prototype, 'b'], 'bar-b', 'Bar.prototype.b');
+    test(Foo.prototype, ['a'], 'foo-a',       'Foo.prototype.a   | has own');
+    test(Bar.prototype, ['a'], undefined,     'Bar.prototype.a   | not own');
+    test(Foo.prototype, ['b'], 'foo-b',       'Foo.prototype.b   | has own');
+    test(Bar.prototype, ['b'], 'bar-b',       'Bar.prototype.b   | has own');
+    test(Bar.prototype, ['a', true], 'foo-a', 'Bar.prototype.a   | allow not own');
+    test(Foo.prototype, ['c'], 'foo-c',       'Foo.prototype.c   | has own');
+    test(Foo.prototype, ['d.e'], 'e',         'Foo.prototype.d.e | has own');
 
-    test(Object, [instFoo, 'a'], 'foo-a', 'foo.a');
-    test(Object, [instBar, 'a'], 'foo-a', 'bar.a');
-    test(Object, [instFoo, 'b'], 'foo-b', 'foo.b');
-    test(Object, [instBar, 'b'], 'bar-b', 'bar.b');
-    test(Object, [instFoo, 'c'], 'foo-c', 'foo.c');
-    test(Object, [instBar, 'c'], 'inst-c', 'bar.c');
+    test(instFoo, ['a'], undefined,   'foo.a | not own');
+    test(instBar, ['a'], undefined,   'bar.a | not own');
+    test(instFoo, ['b'], undefined,   'foo.b | not own');
+    test(instBar, ['b'], undefined,   'bar.b | not own');
+    test(instFoo, ['c'], undefined,   'foo.c | not own');
+    test(instBar, ['c'], 'inst-c',    'bar.c | has own');
+    test(instFoo, ['d.e'], undefined, 'foo.d | not own');
+    test(instBar, ['d.e'], undefined, 'bar.d | not own');
 
-    test(Object, [Array, 'prototype.every'], Array.prototype.every, 'works on built-ins');
+    test(instFoo, ['a', true], 'foo-a', 'foo.a  | allow not own');
+    test(instBar, ['a', true], 'foo-a', 'bar.a  | allow not own');
+    test(instFoo, ['b', true], 'foo-b', 'foo.b  | allow not own');
+    test(instBar, ['b', true], 'bar-b', 'bar.b  | allow not own');
+    test(instFoo, ['c', true], 'foo-c', 'foo.c  | allow not own');
+    test(instBar, ['c', true], 'inst-c', 'bar.c | allow not own');
+    test(instFoo, ['d.e', true], 'e', 'foo.d.e  | allow not own');
+    test(instBar, ['d.e', true], 'e', 'bar.d.e  | allow not own');
+
+    test(Object, [Array, 'prototype.every'], Array.prototype.every, 'built in prototype');
+    test([], ['every'], undefined, 'built in instance | not own');
+    test([], ['every', true], Array.prototype.every, 'built in instance | allow not own');
 
     if (testDefinePropertySupport) {
       // Non-enumerable
@@ -465,7 +500,7 @@ namespace('Object', function () {
     }
 
     var obj = {};
-    run(Object, 'set', [obj, 'foo.bar', 'car']);
+    run(obj, 'set', ['foo.bar', 'car']);
     equal(obj.foo.bar, 'car', 'Basic flat property is set on original object');
 
     test({}, ['.','x'], {'':{'':'x'}}, 'single dot');
@@ -477,7 +512,7 @@ namespace('Object', function () {
     equal(result === obj, true, 'returned value is the original object');
 
     var obj = {};
-    run(Object, 'set', [obj, 'foo.bar', 'car']);
+    run(obj, 'set', ['foo.bar', 'car']);
     equal(obj.foo.bar, 'car', 'Basic flat property is set on original object');
 
     // Arrays
@@ -1852,23 +1887,6 @@ namespace('Object', function () {
     var obj = { foo: 'bar' };
     test(obj, [], obj, 'return value is strictly equal');
 
-  });
-
-  method('has', function() {
-    test({foo:'bar'}, ['foo'], true, 'finds a property');
-    test({foo:'bar'}, ['baz'], false, 'does not find a nonexistant property');
-    test({foo:{a:'b'}}, ['foo.a'], true, 'works on deep properties');
-    test({foo:{a:'b'}}, ['foo[a]'], true, 'works on deep properties with bracket syntax');
-    test({foo:{a:'b'}}, [['foo','a']], true, 'works on deep properties with array');
-    test({ hasOwnProperty: true, foo: 'bar' }, ['foo'], true, 'local hasOwnProperty is ignored');
-  });
-
-  method('hasOwn', function() {
-    test({foo:'bar'}, ['foo'], true, 'finds a property');
-    test({foo:'bar'}, ['baz'], false, 'does not find a nonexistant property');
-    test({foo:{a:'b'}}, ['foo.a'], false, 'does not work on deep properties');
-    test({foo:{a:'b'}}, ['foo[a]'], false, 'does not work on deep properties with bracket syntax');
-    test({ hasOwnProperty: true, foo: 'bar' }, ['foo'], true, 'local hasOwnProperty is ignored');
   });
 
   method('toQueryString', function() {
