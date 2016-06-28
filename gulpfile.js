@@ -967,19 +967,23 @@ function getModularSource() {
 
   function setupFindMethods() {
     setupCachedFind('findByVarName', findByVarName);
+    setupCachedFind('findByMethodName', findByMethodName);
     setupCachedFind('findByDependentPackage', findByDependentPackage);
     setupCachedFind('findByDependencyName', findByDependencyName);
   }
 
   function setupCachedFind(methodName, fn) {
     var cache = {};
-    sourcePackages[methodName] = function(obj) {
-      var token = getTokenForObject(obj);
-      if (token in cache) {
-        return cache[token];
+    sourcePackages[methodName] = function() {
+      var cacheKey = '', args = Array.from(arguments);
+      for (var i = 0; i < args.length; i++) {
+        cacheKey += getTokenForObject(args[i]);
       }
-      return cache[token] = this.find(function(p) {
-        return fn(p, obj);
+      if (cacheKey in cache) {
+        return cache[cacheKey];
+      }
+      return cache[cacheKey] = this.find(function(p) {
+        return fn.apply(null, [p].concat(args));
       });
     };
   }
@@ -996,12 +1000,16 @@ function getModularSource() {
     return p.vars && p.vars.indexOf(varName) !== -1;
   }
 
-  function findByDependentPackage(p, ap) {
-    if (ap.type === 'locale') {
+  function findByDependentPackage(p, dp) {
+    if (dp.type === 'locale') {
       return p.namespace === 'Date' && p.name === 'addLocale';
-    } else if (ap.type === 'alias') {
-      return p.name === ap.alias && p.module === ap.module && p.namespace === ap.namespace;
+    } else if (dp.alias) {
+      return p.name === dp.alias && p.module === dp.module && p.namespace === dp.namespace;
     }
+  }
+
+  function findByMethodName(p, methodName, namespaceName, moduleName) {
+    return p.name === methodName && p.namespace === namespaceName && p.module === moduleName;
   }
 
   function findByDependencyName(p, dependencyName) {
@@ -1089,7 +1097,7 @@ function getModularSource() {
       sp.namespace    = getNamespaceForNode(node);
       sp.dependencies = sp.dependencies.concat(deps || []);
 
-      if (sp.comments && type !== 'alias') {
+      if (sp.comments && !sp.alias) {
         // Method comments are indented by 3, so just a hack to
         // make sure the resulting source is the same.
         sp.comments = '  ' + sp.comments;
@@ -1243,11 +1251,12 @@ function getModularSource() {
       }
 
       opts = opts || {};
-      type = type || 'method';
+      type = type || 'instance';
 
       methodBlocks.forEach(function(block) {
-        opts.static = block.static;
-        if (block.accessor) {
+        if (block.static) {
+          type = 'static';
+        } else if (block.accessor) {
           type = 'accessor';
         }
 
@@ -1355,16 +1364,16 @@ function getModularSource() {
     }
 
     function processMethodBlock(node) {
-      processDefineBlock(node, 'method');
+      processDefineBlock(node);
     }
 
     function processPolyfillBlock(node) {
-      processDefineBlock(node, 'polyfill');
+      processDefineBlock(node);
     }
 
     // Define block example: defineInstance(sugarDate, { ... }, [FLAG]);
-    function processDefineBlock(node, type) {
-      var defineMethod, sugarNamespace, methods, deps = [], opts = {};
+    function processDefineBlock(node) {
+      var defineMethod, sugarNamespace, methods, type, deps = [], opts = {};
 
       function getBlockEnd() {
         var arg3 = node.expression.arguments[2], end = '}';
@@ -1376,6 +1385,8 @@ function getModularSource() {
         return end;
       }
 
+      type = /static/i.test(defineMethod) ? 'static' : 'instance';
+
       defineMethod   = node.expression.callee.name;
       sugarNamespace = node.expression.arguments[0].name;
       methods        = node.expression.arguments[1].properties;
@@ -1386,7 +1397,6 @@ function getModularSource() {
       opts.defineMethod = defineMethod;
       opts.blockStart   = defineMethod + '(' + sugarNamespace + ', {';
       opts.blockEnd     = getBlockEnd();
-      opts.static       = /static/i.test(defineMethod);
 
       methods.forEach(function(node) {
         addSugarMethod(node.key.value, node, type, deps, opts);
@@ -1405,7 +1415,6 @@ function getModularSource() {
       opts.target     = target;
       opts.blockStart = defineMethod + '(' + target + ', {';
       opts.blockEnd   = '});';
-      opts.static     = /static/i.test(defineMethod);
 
       methods.forEach(function(node) {
         addSugarMethod(node.key.value, node, 'prototype', deps, opts);
@@ -1413,7 +1422,7 @@ function getModularSource() {
     }
 
     function processAliasExpression(node) {
-      var methodName, aliasedMethod, opts = {};
+      var methodName, aliasedMethod, namespace, type, opts = {};
 
       methodName     = node.expression.arguments[1].value;
       aliasedMethod  = node.expression.arguments[2].value;
@@ -1421,7 +1430,10 @@ function getModularSource() {
       opts.alias = aliasedMethod;
       opts.methodDependencies = [aliasedMethod];
 
-      addSugarMethod(methodName, node, 'alias', [], opts);
+      namespace = getNamespaceForNode(node);
+      type = sourcePackages.findByMethodName(aliasedMethod, namespace, moduleName).type;
+
+      addSugarMethod(methodName, node, type, [], opts);
     }
 
     function processBuildExpression(node) {
@@ -1483,22 +1495,23 @@ function getModularSource() {
       // saying that any set methods must be defined in the comment block
       // directly above the build method.
       function addBuiltMethods() {
-        var opts = {}, hasPrototypeBlock, type;
+        var opts = {}, type;
 
         fnPackage.node.body.body.forEach(function(node) {
           if (isPrototypeBlock(node)) {
-            hasPrototypeBlock = true;
+            type = 'prototype';
             opts.target = node.expression.arguments[0].name;
           }
-          if (isMethodBlock(node)) {
-            opts.static = /static/i.test(node.expression.callee.name);
+          if (isMethodBlock(node) && /static/i.test(node.expression.callee.name)) {
+            type = 'static';
           }
         });
 
-        // If the build method has "defineOnPrototype", then the methods are
-        // directly defined on the prototype (Range, etc), otherwise they are
-        // standard Sugar method defines.
-        type = hasPrototypeBlock ? 'prototype' : 'method';
+        // If no special types were defined, then the
+        // build function is simply defining instance types.
+        if (!type) {
+          type = 'instance';
+        }
 
         checkPackageForBuiltMethods(fnPackage, type, opts);
       }
@@ -1800,8 +1813,14 @@ function getModularSource() {
 
 }
 
+// -------------- Idenity ----------------
+
 function sourcePackageIsDependency(p) {
   return p.type === 'var' || p.type === 'build' || p.type === 'internal';
+}
+
+function moduleIsPolyfill(moduleName) {
+  return /ES[567]/i.test(moduleName);
 }
 
 // -------------- npm ----------------
@@ -1824,7 +1843,16 @@ function buildNpmAll() {
 
 function buildNpmPackages(p, rebuild) {
 
-  var PUBLIC_TYPES = ['method', 'polyfill', 'prototype', 'accessor', 'locale', 'alias', 'fix'];
+  var PUBLIC_TYPES = [
+    'static',
+    'instance',
+    'prototype',
+    'accessor',
+    'global',
+    'namespace',
+    'locale',
+    'fix'
+  ];
 
   var sourcePackages;
   var baseDir = args.o || args.output || 'release/npm';
@@ -1880,7 +1908,7 @@ function buildNpmPackages(p, rebuild) {
         var split = md.split(':'), name, path, type;
         name = split[0];
         path = './' + name.toLowerCase();
-        type = /ES[567]/i.test(name) ? 'polyfill' : 'module';
+        type = moduleIsPolyfill(name) ? 'polyfill' : 'module';
         return {
           name: name,
           path: path,
@@ -1926,7 +1954,7 @@ function buildNpmPackages(p, rebuild) {
             exportPackage(p);
             addDependencies(p);
             methodPaths.push({
-              type: getEntryPointTypeForPackageType(p.type),
+              type: getEntryPointTypeForPackage(p),
               path: getRelativePath(p.path, moduleLower, true)
             });
           }
@@ -1980,7 +2008,8 @@ function buildNpmPackages(p, rebuild) {
 
     function compileForType(p) {
       switch(p.type) {
-        case 'method':
+        case 'static':
+        case 'instance':
         case 'polyfill':
           compileDefinedMethod(p);
           break;
@@ -2066,7 +2095,8 @@ function buildNpmPackages(p, rebuild) {
         return path.join('polyfills', p.namespace.toLowerCase(), p.name);
       } else if (p.type === 'fix') {
         return path.join(p.module.toLowerCase(), 'fixes', p.name);
-      } else if (p.type === 'method' || p.type === 'alias' || p.type === 'prototype' || p.type === 'accessor') {
+        // TODO: better?
+      } else if (p.type === 'static' || p.type === 'instance' || p.type === 'prototype' || p.type === 'accessor') {
         return path.join(p.namespace.toLowerCase(), p.name);
       } else if (p.type === 'locale') {
         return path.join(p.module.toLowerCase(), p.code);
@@ -2201,7 +2231,8 @@ function buildNpmPackages(p, rebuild) {
           '// This package does not export anything as it is',
           '// simply fixing existing behavior.'
         ].join('\n');
-      } else if (p.type === 'method' || p.type === 'alias' || p.type === 'accessor') {
+        // TODO: what about me??
+      } else if (p.type === 'static' || p.type === 'instance' || p.type === 'alias' || p.type === 'accessor') {
         exports = ['Sugar', p.namespace, p.name].join('.');
       } else if (p.vars && p.vars.length > 1) {
         var lines = p.vars.map(function(v) {
@@ -2261,11 +2292,13 @@ function buildNpmPackages(p, rebuild) {
 
     function getRankForEntryPointType(type) {
       switch (type) {
-        case 'polyfill': return 1;
-        case 'module':   return 2;
-        case 'method':   return 3;
-        case 'alias':    return 4;
-        case 'accessor': return 5;
+        case 'polyfill':  return 1;
+        case 'module':    return 2;
+        case 'static':    return 3;
+        case 'instance':  return 4;
+        case 'prototype': return 5;
+        case 'alias':     return 6;
+        case 'accessor':  return 7;
       }
     }
 
@@ -2276,18 +2309,23 @@ function buildNpmPackages(p, rebuild) {
         return '// Aliases';
       } else if (type === 'accessor') {
         return '// Accessors';
-      } else if (type === 'method') {
-        return '// Methods';
+      } else if (type === 'static') {
+        return '// Static Methods';
+      } else if (type === 'instance') {
+        return '// Instance Methods';
+      } else if (type === 'prototype') {
+        return '// Prototype Methods';
       } else if (type === 'module') {
         return '// Modules';
       }
     }
 
-    function getEntryPointTypeForPackageType(type) {
-      if (type === 'alias' || type === 'accessor') {
-        return type;
+    function getEntryPointTypeForPackageType(p) {
+      if (p.alias) {
+        return 'alias';
+      } else {
+        return p.type;
       }
-      return 'method';
     }
 
   }
@@ -2543,8 +2581,8 @@ function getJSONDocs() {
     'deep properties': '#/DeepProperties',
     'deep property': '#/DeepProperties',
     'date locales': '#/DateLocales',
-    'date input formats': '#/DateInputFormats',
-    'date output formats': '#/DateOutputFormats',
+    'date parsing': '#/DateParsing',
+    'date formatting': '#/DateFormatting',
     'polyfill': '#/Polyfills',
     'extending natives': '/natives',
     'ranges': '#/Ranges',
@@ -2893,10 +2931,7 @@ function getJSONDocs() {
     });
   });
 
-  function sortAll() {
-    docs.namespaces.forEach(function(ns) {
-      ns.methods.sort(methodCollate);
-    });
+  function sortNamespaces() {
     docs.namespaces.sort(namespaceCollate);
   }
 
@@ -2909,29 +2944,17 @@ function getJSONDocs() {
     return aName === bName ? 0 : aName < bName ? -1 : 1;
   }
 
-  function methodCollate(a, b) {
-    var aVal = a.type;
-    var bVal = b.type;
-    if (aVal === bVal) {
-      aVal = a.name;
-      bVal = b.name;
-    }
-    return aVal === bVal ? 0 : aVal < bVal ? -1 : 1;
-  }
-
   function getMethodType(method) {
     switch (true) {
-      case method.global &&
-           method.namespace: return 1;
-      case method.global:    return 2;
-      case method.namespace: return 3;
-      case method.static:    return 4;
-      case method.accessor:  return 6;
-      default:               return 5;
+      case method.global:    return 'global';
+      case method.namespace: return 'namespace';
+      case method.static:    return 'static';
+      case method.accessor:  return 'accessor';
+      default:               return 'instance';
     }
   }
 
-  sortAll(docs);
+  sortNamespaces(docs);
 
   return docs;
 }
@@ -2973,8 +2996,6 @@ function buildJSONSource() {
             type: p.type,
             alias: p.alias,
             module: p.module,
-            static: p.static,
-            accessor: p.accessor,
             namespace: p.namespace,
             dependencies: p.dependencies,
             bodyWithComments: p.bodyWithComments
@@ -3013,43 +3034,11 @@ function buildJSONSource() {
     }
   }
 
-  function setPublicTypesForPackageOrAlias(p) {
-    if (p.alias) {
-      p.subType = 'alias';
-    } else if (p.type === 'polyfill' || p.type === 'fix') {
-      p.subType = 'polyfill';
-    }
-    if (p.alias) {
-      var ap = data.packages.findByDependentPackage(p);
-      p.type = getPublicTypeForPackage(ap);
-    } else {
-      p.type = getPublicTypeForPackage(p);
-    }
-  }
-
-  function getPublicTypeForPackage(p) {
-    if (p.type === 'fix') {
-      return 'fix';
-    } else if (p.type === 'locale') {
-      return 'locale';
-    } else if (p.type === 'accessor') {
-      return 'accessor';
-    } else if (p.static) {
-      return 'static';
-    } else if (p.type === 'prototype') {
-      return 'range';
-    }
-  }
-
   function cleanSourcePackage(p) {
     if (sourcePackageIsDependency(p)) {
       delete p.type;
-    } else {
-      setPublicTypesForPackageOrAlias(p);
     }
     delete p.vars;
-    delete p.static;
-    delete p.accessor;
     delete p.target;
     delete p.body;
     delete p.path;
