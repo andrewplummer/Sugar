@@ -77,7 +77,7 @@ v2.0.0
 - Removed `Array#include` (now is identical to `Array#add`).
 - Added `Object.invert`.
 - Moved `String#titleize` to String module from Inflections.
-- Modified `Object.has` to allow deep keys. Previous behavior is now moved to `Object.hasOwn`.
+- Modified `Object.has` to allow deep keys. Also added a flag to allow properties in the prototype.
 - Removed `Object.extended` and all trace of Hashes in favor of Sugar chainables.
 - Added date unit methods to ranges.
 - Allowed excepting and allowing entire namespaces.
