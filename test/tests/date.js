@@ -208,7 +208,7 @@ namespace('Date', function () {
 
     // Abbreviated reverse slash format yy/mm/dd cannot exist because it clashes with forward
     // slash format dd/mm/yy (with european variant). This rule however, doesn't follow for dashes,
-    // which is abbreviated ISO8601 format: yy-mm-dd
+    // which is abbreviated ISO-8601 format: yy-mm-dd
     assertDateParsed('01/02/03', new Date(2003, 0, 2));
 
     var d = testCreateDate('08/25/0001');
@@ -472,18 +472,53 @@ namespace('Date', function () {
 
   });
 
-  group('Create | ISO8601', function() {
+  group('Create | ISO-8601', function() {
 
-    assertDateParsed('1994-11-05T08:15:30-05:00',    getUTCDate(1994,10,5,13,15,30));
+    // Without offsets
+
+    assertDateParsed('2010', new Date(2010,0));
+    assertDateParsed('2010-11', new Date(2010,10));
+    assertDateParsed('2010-11-22', new Date(2010,10,22));
+    assertDateParsed('2010-11-22T22', new Date(2010,10,22,22));
+    assertDateParsed('2010-11-22T22:59', new Date(2010,10,22,22,59));
+    assertDateParsed('2010-11-22T22:59:55', new Date(2010,10,22,22,59,55));
+    assertDateParsed('2010-11-22T22:59:55.400', new Date(2010,10,22,22,59,55,400));
+
+    // With offsets
+
+    // Date-only with offset is not a format explicitly addressed
+    // by ISO-8601 but is being supported here.
+    assertDateParsed('2010Z', getUTCDate(2010,0));
+    assertDateParsed('2010-11Z', getUTCDate(2010,10));
+    assertDateParsed('2010-11-22Z', getUTCDate(2010,10,22));
+
+    assertDateParsed('2010-11-22T22Z', getUTCDate(2010,10,22,22));
+    assertDateParsed('2010-11-22T22:59Z', getUTCDate(2010,10,22,22,59));
+    assertDateParsed('2010-11-22T22:59:55Z', getUTCDate(2010,10,22,22,59,55));
+    assertDateParsed('2010-11-22T22:59:55.400Z', getUTCDate(2010,10,22,22,59,55,400));
+
     assertDateParsed('2010-11-22T22:59Z',            getUTCDate(2010,10,22,22,59));
+    assertDateParsed('1994-11-05T13:15:30Z',         getUTCDate(1994,10,5,13,15,30));
     assertDateParsed('1997-07-16T19:20+00:00',       getUTCDate(1997,6,16,19,20));
     assertDateParsed('1997-07-16T19:20+01:00',       getUTCDate(1997,6,16,18,20));
     assertDateParsed('1997-07-16T19:20:30+01:00',    getUTCDate(1997,6,16,18,20,30));
     assertDateParsed('1997-07-16T19:20:30.45+01:00', getUTCDate(1997,6,16,18,20,30,450));
     assertDateParsed('1994-11-05T08:15:30-05:00',    getUTCDate(1994,10,5,13,15,30));
-    assertDateParsed('1994-11-05T13:15:30Z',         getUTCDate(1994,10,5,13,15,30));
+    assertDateParsed('1994-11-05T08:15:30-05:00',    getUTCDate(1994,10,5,13,15,30));
+
+    // With U+2212 MINUS SIGN
+    assertDateParsed('1994-11-05T08:15:30−05:00',    getUTCDate(1994,10,5,13,15,30));
 
     equal(testIsUTC(testCreateDate('1994-11-05T13:15:30Z')), false, 'does not forcefully set UTC flag');
+
+    // Basic format
+    assertDateParsed('1776', new Date(1776,0));
+    assertDateParsed('177605', new Date(1776,4));
+    assertDateParsed('17760523', new Date(1776,4,23));
+    assertDateParsed('17760523T02', new Date(1776,4,23,2));
+    assertDateParsed('17760523T0245', new Date(1776,4,23,2,45));
+    assertDateParsed('17760523T024508', new Date(1776,4,23,2,45,8));
+    assertDateParsed('17760523T024508+0830', getUTCDate(1776,4,22,18,15,8));
 
     assertDateParsed('1776-05-23T02:45:08-08:30', getUTCDate(1776,4,23,11,15,8));
     assertDateParsed('1776-05-23T02:45:08+08:30', getUTCDate(1776,4,22,18,15,8));
@@ -500,11 +535,11 @@ namespace('Date', function () {
     // .NET output
     assertDateParsed('2012-04-23T07:58:42.7940000z', getUTCDate(2012,3,23,7,58,42,794));
 
-    // decimals in ISO8601 dates
+    // decimals in ISO-8601 dates
     assertDateParsed('1997-07-16T14:30:40.5', new Date(1997,6,16,14,30,40,500));
     assertDateParsed('1997-07-16T14:30.5',    new Date(1997,6,16,14,30,30));
 
-    // Comma based decimals in ISO8601 dates
+    // Comma based decimals in ISO-8601 dates
     assertDateParsed('1997-07-16T14:30:40,5', new Date(1997,6,16,14,30,40,500));
     assertDateParsed('1997-07-16T14:30,5',    new Date(1997,6,16,14,30,30));
 
@@ -529,8 +564,6 @@ namespace('Date', function () {
     assertDateParsed('20101122',    new Date(2010, 10, 22));
     assertDateParsed('-0002-07-26', new Date(-2, 6, 26));
     assertDateParsed('+1978-04-17', new Date(1978, 3, 17));
-
-    assertDateParsed('17760523T024508+0830', getUTCDate(1776,4,22,18,15,8));
 
     // 24 hour should parse
     assertDateParsed('2012-05-03T24:00:00Z', getUTCDate(2012,4,4));
@@ -1100,8 +1133,8 @@ namespace('Date', function () {
 
     // Issue #244
 
-    equal(testCreateUTCDate('0999'), new Date(Date.UTC(999, 0)), '3 digit year 999 should be equal to ISO8601');
-    equal(testCreateUTCDate('0123'), new Date(Date.UTC(123, 0)), '3 digit year 123 should be equal to ISO8601');
+    equal(testCreateUTCDate('0999'), new Date(Date.UTC(999, 0)), '3 digit year 999 should be equal to ISO-8601');
+    equal(testCreateUTCDate('0123'), new Date(Date.UTC(123, 0)), '3 digit year 123 should be equal to ISO-8601');
 
     var d = run(testCreateUTCDate({ year: 2013, month: 0, date: 14 }), 'setUTC', [true]);
     run(d, 'set', [{week:1}]);
@@ -1775,10 +1808,10 @@ namespace('Date', function () {
 
     // Issue #251
 
-    test(new Date(2013, 0), [1], new Date(2013, 0, 1).getTime(), 'Should follow ISO8601');
-    test(new Date(2013, 0, 6), [1], new Date(2013, 0, 6).getTime(), 'Sunday should remain at the end of the week as per ISO8601 standard');
+    test(new Date(2013, 0), [1], new Date(2013, 0, 1).getTime(), 'Should follow ISO-8601');
+    test(new Date(2013, 0, 6), [1], new Date(2013, 0, 6).getTime(), 'Sunday should remain at the end of the week as per ISO-8601 standard');
     test(new Date(2013, 0, 13), [1], new Date(2013, 0, 6).getTime(), 'Sunday one week ahead');
-    test(new Date(2013, 0, 7), [1], new Date(2012, 11, 31).getTime(), 'Monday should remain at the beginning of the week as per ISO8601 standard');
+    test(new Date(2013, 0, 7), [1], new Date(2012, 11, 31).getTime(), 'Monday should remain at the beginning of the week as per ISO-8601 standard');
     test(new Date(2013, 0, 14), [2], new Date(2013, 0, 7).getTime(), 'Monday one week ahead');
 
   });
@@ -1889,12 +1922,12 @@ namespace('Date', function () {
     test(new Date('January 3, 2010'),   ['{gg}', 'en-GB'], '09', '2 digit week year | prev | UK');
     test(new Date('January 3, 2010'),   ['{gggg}', 'en-GB'], '2009', '4 digit week year | prev | UK');
 
-    test(new Date('December 28, 2008'), ['{GG}'], '08', '2 digit week year | ISO8601');
-    test(new Date('December 28, 2008'), ['{GGGG}'], '2008', '4 digit week year | ISO8601');
-    test(new Date('December 29, 2008'), ['{GG}'], '09', '2 digit week year | next | ISO8601');
-    test(new Date('December 29, 2008'), ['{GGGG}'], '2009', '4 digit week year | next | ISO8601');
-    test(new Date('January 3, 2010'),   ['{GG}'], '09', '2 digit week year | prev | ISO8601');
-    test(new Date('January 3, 2010'),   ['{GGGG}'], '2009', '4 digit week year | prev | ISO8601');
+    test(new Date('December 28, 2008'), ['{GG}'], '08', '2 digit week year | ISO-8601');
+    test(new Date('December 28, 2008'), ['{GGGG}'], '2008', '4 digit week year | ISO-8601');
+    test(new Date('December 29, 2008'), ['{GG}'], '09', '2 digit week year | next | ISO-8601');
+    test(new Date('December 29, 2008'), ['{GGGG}'], '2009', '4 digit week year | next | ISO-8601');
+    test(new Date('January 3, 2010'),   ['{GG}'], '09', '2 digit week year | prev | ISO-8601');
+    test(new Date('January 3, 2010'),   ['{GGGG}'], '2009', '4 digit week year | prev | ISO-8601');
 
     test(new Date(-60000000000000), ['{yy}'], '68', 'yy in year 0068 should be 2 digits');
     test(new Date(-60000000000000), ['{yyyy}'], '0068', 'yyyy in year 0068 should be 4 digits');
@@ -1924,10 +1957,10 @@ namespace('Date', function () {
     test(d, ['{Weekday}, {Month} {dd}, {yyyy} {12hr}:{mm}:{ss} {tt}'], 'Thursday, August 05, 2010 4:03:02 am', 'text date with time');
     test(d, ['{Month} {dd}'], 'August 05', 'month and day');
     test(d, ['{Dow}, {dd} {Mon} {yyyy} {hh}:{mm}:{ss} GMT'], 'Thu, 05 Aug 2010 04:03:02 GMT', 'full GMT');
-    test(d, ['{yyyy}-{MM}-{dd}T{hh}:{mm}:{ss}'], '2010-08-05T04:03:02', 'ISO8601 without timezone');
+    test(d, ['{yyyy}-{MM}-{dd}T{hh}:{mm}:{ss}'], '2010-08-05T04:03:02', 'ISO-8601 without timezone');
     test(d, ['{12hr}:{mm} {tt}'], '4:03 am', 'hr:min');
     test(d, ['{12hr}:{mm}:{ss} {tt}'], '4:03:02 am', 'hr:min:sec');
-    test(d, ['{yyyy}-{MM}-{dd} {hh}:{mm}:{ss}Z'], '2010-08-05 04:03:02Z', 'ISO8601 UTC');
+    test(d, ['{yyyy}-{MM}-{dd} {hh}:{mm}:{ss}Z'], '2010-08-05 04:03:02Z', 'ISO-8601 UTC');
     test(d, ['{Month}, {yyyy}'], 'August, 2010', 'month and year');
 
     var tz = getExpectedTimezoneOffset(d, true);
@@ -1952,7 +1985,7 @@ namespace('Date', function () {
     test(d, ['{RFC1123}'], rfc1123, 'RFC1123 UTC | token');
     test(d, ['{RFC1036}'], rfc1036, 'RFC1036 UTC | token');
 
-    // ISO8601 - UTC
+    // ISO-8601 - UTC
     var d = run(new Date('August 5, 2010 04:03:02'), 'setUTC', [true]);
     var iso = d.getUTCFullYear()+'-'+testPadNumber(d.getUTCMonth()+1, 2)+'-'+testPadNumber(d.getUTCDate(), 2)+'T'+testPadNumber(d.getUTCHours(), 2)+':'+testPadNumber(d.getUTCMinutes(), 2)+':'+testPadNumber(d.getUTCSeconds(), 2)+'.'+testPadNumber(d.getUTCMilliseconds(), 3)+'Z';
     test(d, ['ISO8601'], iso, 'ISO8601 UTC');
@@ -1986,7 +2019,7 @@ namespace('Date', function () {
     test(d, ['%R'], '14:03', '24 hour clock time without seconds');
     test(d, ['%S'], '02', 'seconds');
     test(d, ['%T'], '14:03:02', '24 hour clock time with seconds');
-    test(d, ['%u'], '4', 'ISO8601 day of week');
+    test(d, ['%u'], '4', 'ISO-8601 day of week');
     test(d, ['%U'], '31', 'Week number with first Sunday as first week');
     test(d, ['%V'], '31', 'ISO week number');
     test(d, ['%w'], '4', 'Day of the week (Sunday as 0)');
@@ -2003,12 +2036,12 @@ namespace('Date', function () {
 
     test(new Date('January 1, 2010'), ['%c', 'en-GB'], 'Fri 1 Jan 2010 0:00', 'Preferred stamp | UK');
 
-    test(new Date('December 28, 2008'), ['%g'], '08', '2 digit week year | ISO8601');
-    test(new Date('December 28, 2008'), ['%G'], '2008', '4 digit week year | ISO8601');
-    test(new Date('December 29, 2008'), ['%g'], '09', '2 digit week year | next | ISO8601');
-    test(new Date('December 29, 2008'), ['%G'], '2009', '4 digit week year | next | ISO8601');
-    test(new Date('January 3, 2010'),   ['%g'], '09', '2 digit week year | prev | ISO8601');
-    test(new Date('January 3, 2010'),   ['%G'], '2009', '4 digit week year | prev | ISO8601');
+    test(new Date('December 28, 2008'), ['%g'], '08', '2 digit week year | ISO-8601');
+    test(new Date('December 28, 2008'), ['%G'], '2008', '4 digit week year | ISO-8601');
+    test(new Date('December 29, 2008'), ['%g'], '09', '2 digit week year | next | ISO-8601');
+    test(new Date('December 29, 2008'), ['%G'], '2009', '4 digit week year | next | ISO-8601');
+    test(new Date('January 3, 2010'),   ['%g'], '09', '2 digit week year | prev | ISO-8601');
+    test(new Date('January 3, 2010'),   ['%G'], '2009', '4 digit week year | prev | ISO-8601');
 
     test(new Date('August 5, 2010 4:03:02'), ['%H'], '04', 'Padded hours in 24 hour');
     test(new Date('August 5, 2010 23:59:59'), ['%j'], '217', 'Day of the year at end of day');
@@ -2019,8 +2052,8 @@ namespace('Date', function () {
     test(new Date('August 5, 2010 4:00'), ['%p'], 'AM', 'AM');
     test(new Date('August 5, 2010 4:00'), ['%P'], 'am', 'am');
 
-    test(new Date('January 3, 2010'), ['%u'], '7', 'ISO8601 day of week Sunday');
-    test(new Date('January 4, 2010'), ['%u'], '1', 'ISO8601 day of week Monday');
+    test(new Date('January 3, 2010'), ['%u'], '7', 'ISO-8601 day of week Sunday');
+    test(new Date('January 4, 2010'), ['%u'], '1', 'ISO-8601 day of week Monday');
 
     test(new Date('January 3, 2010'), ['%w'], '0', 'Day of week Sunday');
     test(new Date('January 4, 2010'), ['%w'], '1', 'Day of week Monday');
