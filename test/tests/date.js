@@ -178,11 +178,11 @@ namespace('Date', function () {
     assertDateParsed({ fromUTC: true }, new Date());
 
     // Issue #545 Allowing "set" option
-    var set = {};
-    testCreateDate('January 13th, 2016', { set: set });
-    equal(set.year, 2016, 'Set object should expose year');
-    equal(set.month, 0, 'Set object should expose month');
-    equal(set.date, 13, 'Set object should expose date');
+    var params = {};
+    testCreateDate('January 13th, 2016', { params: params });
+    equal(params.year, 2016, 'Set object should expose year');
+    equal(params.month, 0, 'Set object should expose month');
+    equal(params.date, 13, 'Set object should expose date');
 
   });
 
