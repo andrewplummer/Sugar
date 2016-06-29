@@ -1,4 +1,6 @@
-globalFailures = 0;
+if (typeof globalFailures === 'undefined') {
+  globalFailures = 0;
+}
 
 logGreen = function(message) {
   console.log('\x1b[32m', message || '','\x1b[0m');

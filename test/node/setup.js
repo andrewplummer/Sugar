@@ -1,7 +1,7 @@
 // Node test suite
 
-var fs = require('fs');
 var path = require('path');
+var glob = require('glob');
 
 var baseDir = path.resolve(__dirname, '../..');
 
@@ -60,12 +60,6 @@ function load(loadPath) {
   }
 }
 
-function loadLocaleTests() {
-  fs.readdirSync(path.join(__dirname, '../tests/locales')).forEach(function(file) {
-    load(path.relative(__dirname, path.join('./test/tests/locales', file)));
-  });
-}
-
 function pathIsLocal(p) {
   return p.indexOf(baseDir) === 0 && !/node_modules/.test(p);
 }
@@ -104,7 +98,7 @@ module.exports = {
   },
 
   loadLocaleTests: function() {
-    loadLocaleTests();
+    glob.sync(path.join(__dirname, '../tests/locales/*.js')).forEach(load);
   },
 
   run: function(mod, mode, localSugar) {
@@ -138,10 +132,6 @@ module.exports = {
 
   resetPolyfills: function(name) {
     load('../suite/helpers/' + name + '-reset.js');
-  },
-
-  reset: function() {
-    globalFailures = 0;
   },
 
   logTotals: function() {
