@@ -757,6 +757,41 @@ var PACKAGE_DEFINITIONS = {
   }
 };
 
+// -------------- Source Package Identities ----------------
+
+var SOURCE_PACKAGE_LISTED_TYPES = [
+  'static',
+  'instance',
+  'prototype',
+  'accessor',
+  'global',
+  'namespace',
+  'locale',
+  'fix'
+];
+
+var SOURCE_PACKAGE_DEPENDENCY_TYPES = [
+  'internal',
+  'build',
+  'var',
+];
+
+function sourcePackageIsDependency(p) {
+  return SOURCE_PACKAGE_DEPENDENCY_TYPES.includes(p.type);
+}
+
+function sourcePackageIsListed(p) {
+  return SOURCE_PACKAGE_LISTED_TYPES.includes(p.type);
+}
+
+function sourcePackageExportsMethod(p) {
+  return p.type === 'static' || p.type === 'instance' || p.type === 'alias' || p.type === 'accessor';
+}
+
+function moduleIsPolyfill(moduleName) {
+  return /ES[567]/i.test(moduleName);
+}
+
 // -------------- Package Util ----------------
 
 function getPackageDefinition(packageName) {
@@ -1355,6 +1390,14 @@ function getModularSource() {
 
     // --- Processing Nodes ---
 
+    function hasStaticToken(str) {
+      return /static/i.test(str);
+    }
+
+    function hasPolyfillToken(str) {
+      return /polyfill/i.test(str);
+    }
+
     function processFunctionDeclaration(node) {
       addSourcePackage(node.id.name, node, 'internal');
     }
@@ -1385,11 +1428,12 @@ function getModularSource() {
         return end;
       }
 
-      type = /static/i.test(defineMethod) ? 'static' : 'instance';
-
       defineMethod   = node.expression.callee.name;
       sugarNamespace = node.expression.arguments[0].name;
       methods        = node.expression.arguments[1].properties;
+
+      type = hasStaticToken(defineMethod) ? 'static' : 'instance';
+      opts.polyfill = hasPolyfillToken(defineMethod);
 
       deps.push(defineMethod);
       deps.push(sugarNamespace);
@@ -1502,7 +1546,7 @@ function getModularSource() {
             type = 'prototype';
             opts.target = node.expression.arguments[0].name;
           }
-          if (isMethodBlock(node) && /static/i.test(node.expression.callee.name)) {
+          if (isMethodBlock(node) && hasStaticToken(node.expression.callee.name)) {
             type = 'static';
           }
         });
@@ -1813,16 +1857,6 @@ function getModularSource() {
 
 }
 
-// -------------- Idenity ----------------
-
-function sourcePackageIsDependency(p) {
-  return p.type === 'var' || p.type === 'build' || p.type === 'internal';
-}
-
-function moduleIsPolyfill(moduleName) {
-  return /ES[567]/i.test(moduleName);
-}
-
 // -------------- npm ----------------
 
 function buildNpmClean() {
@@ -1842,17 +1876,6 @@ function buildNpmAll() {
 }
 
 function buildNpmPackages(p, rebuild) {
-
-  var PUBLIC_TYPES = [
-    'static',
-    'instance',
-    'prototype',
-    'accessor',
-    'global',
-    'namespace',
-    'locale',
-    'fix'
-  ];
 
   var sourcePackages;
   var baseDir = args.o || args.output || 'release/npm';
@@ -1944,7 +1967,7 @@ function buildNpmPackages(p, rebuild) {
 
       function canExportPublicPackage(p) {
         return p.module === moduleName &&
-               sourcePackageIsPublic(p) &&
+               sourcePackageIsListed(p) &&
                !packageIsNamespaceRestricted(p);
       }
 
@@ -2007,17 +2030,17 @@ function buildNpmPackages(p, rebuild) {
     }
 
     function compileForType(p) {
+      if (p.alias) {
+        compileAliasedMethod(p);
+        return;
+      }
       switch(p.type) {
         case 'static':
         case 'instance':
-        case 'polyfill':
           compileDefinedMethod(p);
           break;
         case 'accessor':
           compileAccessorMethod(p);
-          break;
-        case 'alias':
-          compileAliasedMethod(p);
           break;
         case 'prototype':
           compilePrototypeMethod(p);
@@ -2091,17 +2114,16 @@ function buildNpmPackages(p, rebuild) {
     function getPackagePath(p) {
       if (p.path) {
         return p.path;
-      } else if (p.type === 'polyfill') {
+      } else if (p.polyfill) {
         return path.join('polyfills', p.namespace.toLowerCase(), p.name);
       } else if (p.type === 'fix') {
         return path.join(p.module.toLowerCase(), 'fixes', p.name);
-        // TODO: better?
-      } else if (p.type === 'static' || p.type === 'instance' || p.type === 'prototype' || p.type === 'accessor') {
-        return path.join(p.namespace.toLowerCase(), p.name);
       } else if (p.type === 'locale') {
         return path.join(p.module.toLowerCase(), p.code);
-      } else {
+      } else if (sourcePackageIsDependency(p)) {
         return path.join(p.module.toLowerCase(), p.type, p.name);
+      } else {
+        return path.join(p.namespace.toLowerCase(), p.name);
       }
     }
 
@@ -2211,7 +2233,7 @@ function buildNpmPackages(p, rebuild) {
 
     function getExports(p) {
       var exports;
-      if (p.type === 'polyfill') {
+      if (p.polyfill) {
         return [
           '// This package does not export anything as it is mapping a',
           '// polyfill to '+ p.namespace +'.prototype which cannot be called statically.'
@@ -2231,8 +2253,7 @@ function buildNpmPackages(p, rebuild) {
           '// This package does not export anything as it is',
           '// simply fixing existing behavior.'
         ].join('\n');
-        // TODO: what about me??
-      } else if (p.type === 'static' || p.type === 'instance' || p.type === 'alias' || p.type === 'accessor') {
+      } else if (sourcePackageExportsMethod(p)) {
         exports = ['Sugar', p.namespace, p.name].join('.');
       } else if (p.vars && p.vars.length > 1) {
         var lines = p.vars.map(function(v) {
@@ -2243,10 +2264,10 @@ function buildNpmPackages(p, rebuild) {
         // Single line direct export
         exports = p.assigns[p.vars[0]];
       } else if (p.type !== 'build') {
-        // Build calls do not export themselves, so don't export unless they have
-        // explicit vars (caught above). No comment as this is internal.
         exports = p.name;
       }
+      // Build calls do not export themselves, so don't export unless they have
+      // explicit vars (caught above). No comment as this is internal.
       return exports ? 'module.exports = ' + exports + ';' : '';
     }
 
@@ -2320,7 +2341,7 @@ function buildNpmPackages(p, rebuild) {
       }
     }
 
-    function getEntryPointTypeForPackageType(p) {
+    function getEntryPointTypeForPackage(p) {
       if (p.alias) {
         return 'alias';
       } else {
@@ -2474,10 +2495,6 @@ function buildNpmPackages(p, rebuild) {
   // referring to something beyond that.
   function findDependency(name, p) {
     return sourcePackages.findByDependencyName(name) || sourcePackages.findByDependentPackage(p);
-  }
-
-  function sourcePackageIsPublic(p) {
-    return PUBLIC_TYPES.indexOf(p.type) !== -1;
   }
 
   return stream;
@@ -3046,7 +3063,6 @@ function buildJSONSource() {
     delete p.comments;
     delete p.defineMethod;
     delete p.varDependencies;
-    compactField(p, 'static');
     compactField(p, 'bodyWithComments');
     compactField(p, 'dependencies');
   }
@@ -3101,8 +3117,12 @@ function testWatch(runTests, rebuildDist, rebuildNpm) {
 }
 
 function testRunDefault() {
+  var path = './test/node';
+  if (args.test) {
+    path += '/' + args.test;
+  }
   notify('Running tests');
-  require('./test/node');
+  require(path);
 }
 
 function testRunNpm() {
