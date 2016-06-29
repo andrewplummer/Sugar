@@ -275,21 +275,21 @@ namespace('Date | Japanese', function () {
 
     var d = new Date(2016,3,14,22,47,52,500);
 
-    assertRelativeTo(d, new Date(2015,3,14,22,47,52,500), '1年');
-    assertRelativeTo(d, new Date(2016,2,14,22,47,52,500), '1ヶ月');
-    assertRelativeTo(d, new Date(2016,3,13,22,47,52,500), '1日');
-    assertRelativeTo(d, new Date(2016,3,14,21,47,52,500), '1時間');
-    assertRelativeTo(d, new Date(2016,3,14,22,46,52,500), '1分');
-    assertRelativeTo(d, new Date(2016,3,14,22,47,51,500), '1秒');
-    assertRelativeTo(d, new Date(2016,3,14,22,47,51,499), '1秒');
+    assertRelativeTo(d, [new Date(2015,3,14,22,47,52,500)], '1年');
+    assertRelativeTo(d, [new Date(2016,2,14,22,47,52,500)], '1ヶ月');
+    assertRelativeTo(d, [new Date(2016,3,13,22,47,52,500)], '1日');
+    assertRelativeTo(d, [new Date(2016,3,14,21,47,52,500)], '1時間');
+    assertRelativeTo(d, [new Date(2016,3,14,22,46,52,500)], '1分');
+    assertRelativeTo(d, [new Date(2016,3,14,22,47,51,500)], '1秒');
+    assertRelativeTo(d, [new Date(2016,3,14,22,47,51,499)], '1秒');
 
-    assertRelativeTo(d, new Date(2017,3,14,22,47,52,500), '1年');
-    assertRelativeTo(d, new Date(2016,4,14,22,47,52,500), '1ヶ月');
-    assertRelativeTo(d, new Date(2016,3,15,22,47,52,500), '1日');
-    assertRelativeTo(d, new Date(2016,3,14,23,47,52,500), '1時間');
-    assertRelativeTo(d, new Date(2016,3,14,22,48,52,500), '1分');
-    assertRelativeTo(d, new Date(2016,3,14,22,47,53,500), '1秒');
-    assertRelativeTo(d, new Date(2016,3,14,22,47,51,501), '1秒');
+    assertRelativeTo(d, [new Date(2017,3,14,22,47,52,500)], '1年');
+    assertRelativeTo(d, [new Date(2016,4,14,22,47,52,500)], '1ヶ月');
+    assertRelativeTo(d, [new Date(2016,3,15,22,47,52,500)], '1日');
+    assertRelativeTo(d, [new Date(2016,3,14,23,47,52,500)], '1時間');
+    assertRelativeTo(d, [new Date(2016,3,14,22,48,52,500)], '1分');
+    assertRelativeTo(d, [new Date(2016,3,14,22,47,53,500)], '1秒');
+    assertRelativeTo(d, [new Date(2016,3,14,22,47,51,501)], '1秒');
 
   });
 
