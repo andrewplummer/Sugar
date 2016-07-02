@@ -777,11 +777,11 @@ var SOURCE_PACKAGE_DEPENDENCY_TYPES = [
 ];
 
 function sourcePackageIsDependency(p) {
-  return SOURCE_PACKAGE_DEPENDENCY_TYPES.includes(p.type);
+  return SOURCE_PACKAGE_DEPENDENCY_TYPES.indexOf(p.type) !== -1;
 }
 
 function sourcePackageIsListed(p) {
-  return SOURCE_PACKAGE_LISTED_TYPES.includes(p.type);
+  return SOURCE_PACKAGE_LISTED_TYPES.indexOf(p.type) !== -1;
 }
 
 function sourcePackageExportsMethod(p) {
