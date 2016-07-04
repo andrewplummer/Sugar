@@ -28,6 +28,28 @@ assertRandomized = function(arr, iterFn) {
   equal(allOne, false, 'sufficiently randomized');
 }
 
+assertFromIndex = function(arr, methodName, args, expected, msg) {
+  equal(run(arr, methodName + 'FromIndex', args), expected, msg);
+}
+
+assertFromIndexArgs = function(arr, methodName, args, expected, msg) {
+  var called = false;
+  var fn = function(acc, val, idx, a) {
+    called = true;
+    for (var i = 0; i < expected.length; i++) {
+      var obj = expected[i];
+      equal(arguments[i], obj, 'argument ' + i + ' should be ' + obj);
+    }
+    equal(arguments[arguments.length - 1], arr, 'last argument should be the array');
+  }
+  args.push(fn);
+  run(arr, methodName + 'FromIndex', args);
+  if (!expected) {
+    equal(called, false, 'should not have been called');
+  }
+}
+
+
 oneUndefined    = safeArray(undefined);
 twoUndefined    = safeArray(undefined, undefined);
 threeUndefined  = safeArray(undefined, undefined, undefined);
