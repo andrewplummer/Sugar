@@ -67,11 +67,10 @@ v2.0.0
 - Added `Array#isEqual`.
 - Renamed `RegExp#addFlag` and `RegExp#removeFlag` to `RegExp#addFlags` and `RegExp#removeFlags`, and ensured they work on multiple flags.
 - Created new module `enumerable`, and split out array methods.
-- Removed `Array#findAll` in favor of `Array#filter` and `Array#filterFrom`.
+- Removed `Array#findAll` in favor of `Array#filter` and `Array#filterFromIndex`.
 - Replaced `Object.findAll` with `Object.filter`.
 - `Array#isEmpty` now only checks for zero length.
 - Moved `Object.select` and `Object.reject` to enumerable module and updated to match objects on key existence.
-- Added `forEachFrom` alias for `each`.
 - Added `Object.remove` and `Object.exclude`.
 - Added `Array#append` to take the place of `Array#add`. `Array#add` now is non-destructive. `Array#insert` now aliases `append` instead of `add`.
 - Removed `Array#include` (now is identical to `Array#add`).
@@ -87,6 +86,8 @@ v2.0.0
 - Updated `Array#sortBy` to not clone the array by default.
 - Modified `Date#reset` to use higher units to make more semantic sense.
 - Reversed arguments in `Date#relative`.
+- Removed `Array#each` in favor of `Array#forEachFromIndex` in cases where the index is needed.
+- Added `fromIndex` methods. Moved `findFrom` and `findIndexFrom` to be inline with these.
 
 
 v1.4.2

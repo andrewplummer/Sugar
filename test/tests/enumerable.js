@@ -145,10 +145,29 @@ namespace('Array', function() {
     equal(count1, 2, 'first mapping function should have run twice');
     equal(count2, 2, 'second mapping function should have run twice');
 
+    // Testing the context
+
+    var resultContext = null;
+    var fn = function() {
+      resultContext = this;
+    }
+    run(['x'], 'map', [fn]);
+    equal(resultContext, testNullScope, 'Context should be passable with explicit mapping fn');
+
+    var resultContext = null;
+    var fakeContext = {};
+    var fn = function() {
+      resultContext = this;
+    }
+    run(['x'], 'map', [fn, fakeContext]);
+    equal(resultContext, fakeContext, 'Context should be passable with explicit mapping fn');
+
   });
 
   method('every', function() {
     var fn, arr;
+
+    raisesError(function() { run([1,2,3], 'every', []); }, 'should error with no args');
 
     test([1,1,1], [1], true, 'accepts a number shortcut match');
     test([1,1,2], [1], false, 'accepts a number shortcut no match');
@@ -166,13 +185,13 @@ namespace('Array', function() {
     test([12,5,8,130,44], [fn], false, 'not every element is greater than 10');
     test([12,54,18,130,44], [fn], true, 'every element is greater than 10');
 
-    test(threeUndefined, oneUndefined, true, 'all undefined');
-    test(['a', 'b'], oneUndefined, false, 'none undefined');
+    test(threeUndefined, [undefined], true, 'all undefined');
+    test(['a', 'b'], [undefined], false, 'none undefined');
 
     arr = testClone(threeUndefined);
     arr.push('a');
 
-    test(arr, oneUndefined, false, 'every undefined');
+    test(arr, [oneUndefined], false, 'every undefined');
 
     fn = function(el, i, a) {
       equal(el, 'a', 'First parameter is the element');
@@ -386,7 +405,7 @@ namespace('Array', function() {
 
     var date = new Date(2001, 3, 15);
     var timestamp = date.getTime();
-    var obj = { a: { getTime: function () { return timestamp; } }};
+    var obj = { a: { getTime: function() { return timestamp; } }};
     test([obj], [{ a: date }], [obj], 'duck typing for date matching');
 
     var five = new Foo(one);
@@ -680,13 +699,13 @@ namespace('Array', function() {
     x = new Soup();
     count = 0;
 
-    run(x, 'each', [function() {
+    run(x, 'forEachFromIndex', [0, function() {
       count++;
     }]);
-    run(x, 'find', [function() {
+    run(x, 'findFromIndex', [0, function() {
       count++;
     }]);
-    run(x, 'filter', [function() {
+    run(x, 'filterFromIndex', [0, function() {
       count++;
     }]);
 
@@ -703,7 +722,7 @@ namespace('Array', function() {
     x = new Soup();
     count = 0;
 
-    run(x, 'each', [function() {
+    run(x, 'forEachFromIndex', [0, function() {
       count++;
     }]);
 
@@ -712,297 +731,231 @@ namespace('Array', function() {
     // This test cannot be framed in a meaninful way... IE will not set the length property
     // when pushing new elements and other browsers will not work on sparse arrays...
     // equal(count, 6, 'Array | objects that inherit from arrays can still iterate');
-  });
-
-  method('findFrom', function() {
-
-    test(['foo','bar'], [/^[a-f]/, 1], 'bar', '/a-f/ from index 1');
-    test(['foo','bar','zak'], [/^[a-f]/, 2, true], 'foo', '/a-f/ from index 1 looping');
-
-    test([1,2,3], [function(e) { return e > 0; }, 0], 1, 'greater than 0 from index 0');
-    test([1,2,3], [function(e) { return e > 0; }, 1], 2, 'greater than 0 from index 1');
-    test([1,2,3], [function(e) { return e > 0; }, 2], 3, 'greater than 0 from index 2');
-    test([1,2,3], [function(e) { return e > 0; }, 3], undefined, 'greater than 0 from index 3');
-    test([1,2,3], [function(e) { return e > 1; }, 0], 2, 'greater than 1 from index 0');
-    test([1,2,3], [function(e) { return e > 1; }, 1], 2, 'greater than 1 from index 1');
-    test([1,2,3], [function(e) { return e > 1; }, 2], 3, 'greater than 1 from index 2');
-    test([1,2,3], [function(e) { return e > 2; }, 0], 3, 'greater than 2 from index 0');
-    test([1,2,3], [function(e) { return e > 3; }, 0], undefined, 'greater than 3 from index 0');
-
-    test([1,2,3], [function(e) { return e > 0; }, 0, true], 1, 'loop | greater than 0 from index 0');
-    test([1,2,3], [function(e) { return e > 0; }, 1, true], 2, 'loop | greater than 0 from index 1');
-    test([1,2,3], [function(e) { return e > 0; }, 2, true], 3, 'loop | greater than 0 from index 2');
-    test([1,2,3], [function(e) { return e > 0; }, 3, true], 1, 'loop | greater than 0 from index 3');
-    test([1,2,3], [function(e) { return e > 1; }, 0, true], 2, 'loop | greater than 1 from index 0');
-    test([1,2,3], [function(e) { return e > 1; }, 1, true], 2, 'loop | greater than 1 from index 1');
-    test([1,2,3], [function(e) { return e > 1; }, 2, true], 3, 'loop | greater than 1 from index 2');
-    test([1,2,3], [function(e) { return e > 2; }, 0, true], 3, 'loop | greater than 2 from index 0');
-    test([1,2,3], [function(e) { return e > 3; }, 0, true], undefined, 'loop | greater than 3 from index 0');
-
-    test([{a:10},{a:8},{a:3}], [function(e) { return e['a'] > 5; }, 0], {a:10}, 'key "a" greater than 5');
-    test([{a:10},{a:8},{a:3}], [function(e) { return e['a'] > 5; }, 1], {a:8}, 'key "a" greater than 5 from index 1');
-    test([{a:10},{a:8},{a:3}], [function(e) { return e['a'] > 5; }, 2], undefined, 'key "a" greater than 5 from index 2');
-    test([function() {}], [function(e) {}, 1], undefined, 'null function from index 1');
-    test([null, null], [null, 1], null, 'null from index 1');
-    test(threeUndefined, [undefined, 1], undefined, 'undefined from index 1');
 
   });
 
-  method('filterFrom', function() {
+  method('forEachFromIndex', function() {
 
-    test(['foo','bar'], [/[a-f]/, 1], ['bar'], '/[a-f]/ from index 1');
-    test(['foo','bar'], [/[a-f]/, 1, true], ['bar','foo'], '/[a-f]/ from index 1');
-    test([1,2,3], [function(e) { return e > 0; }, 0], [1,2,3], 'greater than 0 from index 0');
-    test([1,2,3], [function(e) { return e > 0; }, 1], [2,3], 'greater than 0 from index 1');
-    test([1,2,3], [function(e) { return e > 0; }, 2], [3], 'greater than 0 from index 2');
-    test([1,2,3], [function(e) { return e > 0; }, 3], [], 'greater than 0 from index 3');
-    test([1,2,3], [function(e) { return e > 0; }, 4], [], 'greater than 0 from index 4');
-    test([1,2,3], [function(e) { return e > 1; }, 0], [2,3], 'greater than 1 from index 0');
-    test([1,2,3], [function(e) { return e > 1; }, 1], [2,3], 'greater than 1 from index 1');
-    test([1,2,3], [function(e) { return e > 1; }, 2], [3], 'greater than 1 from index 2');
-    test([1,2,3], [function(e) { return e > 2; }, 0], [3], 'greater than 2 from index 0');
-    test([1,2,3], [function(e) { return e > 3; }, 0], [], 'greater than 3 from index 0');
+    var xyz = ['x','y','z'];
 
-    test([1,2,3], [function(e) { return e > 0; }, 0, true], [1,2,3], 'looping | greater than 0 from index 0');
-    test([1,2,3], [function(e) { return e > 0; }, 1, true], [2,3,1], 'looping | greater than 0 from index 1');
-    test([1,2,3], [function(e) { return e > 0; }, 2, true], [3,1,2], 'looping | greater than 0 from index 2');
-    test([1,2,3], [function(e) { return e > 0; }, 3, true], [1,2,3], 'looping | greater than 0 from index 3');
-    test([1,2,3], [function(e) { return e > 1; }, 0, true], [2,3], 'looping | greater than 1 from index 0');
-    test([1,2,3], [function(e) { return e > 1; }, 1, true], [2,3], 'looping | greater than 1 from index 1');
-    test([1,2,3], [function(e) { return e > 1; }, 2, true], [3,2], 'looping | greater than 1 from index 2');
-    test([1,2,3], [function(e) { return e > 2; }, 0, true], [3], 'looping | greater than 2 from index 0');
-    test([1,2,3], [function(e) { return e > 3; }, 0, true], [], 'looping | greater than 3 from index 0');
+    function assertForEachFromIndex(arr, args, expectedEls, expectedIdx) {
+      var els = [], idx = [];
 
-    test([{a:10},{a:8},{a:3}], [function(e) { return e['a'] > 5; }, 0], [{a:10},{a:8}], 'key "a" is greater than 5');
-    test([{a:10},{a:8},{a:3}], [function(e) { return e['a'] > 5; }, 1], [{a:8}], 'key "a" is greater than 5 from index 1');
-    test([{a:10},{a:8},{a:3}], [function(e) { return e['a'] > 5; }, 2], [], 'key "a" is greater than 5 from index 2');
+      var fn = function(el, i) {
+        els.push(el);
+        idx.push(i);
+      }
+      args.push(fn);
+      run(arr, 'forEachFromIndex', args);
+      equal(els, expectedEls, 'forEachFromIndex | els');
+      equal(idx, expectedIdx, 'forEachFromIndex | idx');
+    }
 
-    test([{a:10},{a:8},{a:3}], [function(e) { return e['a'] > 5; }, 0, true], [{a:10},{a:8}], 'looping | key "a" is greater than 5');
-    test([{a:10},{a:8},{a:3}], [function(e) { return e['a'] > 5; }, 1, true], [{a:8},{a:10}], 'looping | key "a" is greater than 5 from index 1');
-    test([{a:10},{a:8},{a:3}], [function(e) { return e['a'] > 5; }, 2, true], [{a:10},{a:8}], 'looping | key "a" is greater than 5 from index 2');
+    // Return value
+    equal(run(xyz, 'forEachFromIndex', [0, function(){}]), undefined, 'Should return the same as forEach');
 
-    test([function() {}], [function(e) {}, 0], [], 'null function');
-    test([function() {}], [function(e) {}, 1], [], 'null function from index 1');
-    test([null, null], [null, 0], [null, null], 'null');
-    test([null, null], [null, 1], [null], 'null from index 1');
+    // Errors
+    raisesError(function() { run(xyz, 'forEachFromIndex', []); }, 'error with no args', TypeError);
+    raisesError(function() { run(xyz, 'forEachFromIndex', [4]); }, 'error with only start index', TypeError);
 
-    test([function() {}], [function(e) {}, 0, true], [], 'looping | null function');
-    test([function() {}], [function(e) {}, 1, true], [], 'looping | null function from index 1');
-    test([null, null], [null, 0, true], [null, null], 'looping | null');
-    test([null, null], [null, 1, true], [null, null], 'looping | null from index 1');
+    // No looping, pos index
+    assertForEachFromIndex(xyz, [0], ['x','y','z'], [0, 1, 2]);
+    assertForEachFromIndex(xyz, [1], ['y','z'], [1, 2]);
+    assertForEachFromIndex(xyz, [2], ['z'], [2]);
+    assertForEachFromIndex(xyz, [3], [], []);
 
-    // Example: finding last from an index. (reverse order). This means we don't need a filterFromLastIndex
-    var arr = [1,2,3,4,5,6,7,8,9];
-    test(arr, [function(n) { return n % 3 == 0; }, 4], [6,9], 'n % 3 from index 4');
-    test(arr, [function(n) { return n % 3 == 0; }, 4, true], [6,9,3], 'looping | n % 3 from index 4');
+    // No looping, neg index
+    assertForEachFromIndex(xyz, [-1], ['z'], [2]);
+    assertForEachFromIndex(xyz, [-2], ['y','z'], [1, 2]);
+    assertForEachFromIndex(xyz, [-3], ['x','y','z'], [0, 1, 2]);
+    assertForEachFromIndex(xyz, [-4], ['x','y','z'], [0, 1, 2]);
 
-    arr.reverse();
-    test(arr, [function(n) { return n % 3 == 0; }, 4], [3], 'reversed | n % 3 from index 4 reversed');
-    test(arr, [function(n) { return n % 3 == 0; }, 4, true], [3,9,6], 'looping | reversed | n % 3 from index 4 reversed');
+    // No looping explicit, pos index
+    assertForEachFromIndex(xyz, [0, false], ['x','y','z'], [0, 1, 2]);
+    assertForEachFromIndex(xyz, [1, false], ['y','z'], [1, 2]);
+    assertForEachFromIndex(xyz, [2, false], ['z'], [2]);
+    assertForEachFromIndex(xyz, [3, false], [], []);
 
-  });
+    // No looping explicit, neg index
+    assertForEachFromIndex(xyz, [-1, false], ['z'], [2]);
+    assertForEachFromIndex(xyz, [-2, false], ['y','z'], [1, 2]);
+    assertForEachFromIndex(xyz, [-3, false], ['x','y','z'], [0, 1, 2]);
+    assertForEachFromIndex(xyz, [-4, false], ['x','y','z'], [0, 1, 2]);
 
-  method('findIndexFrom', function() {
+    // Looping, pos index
+    assertForEachFromIndex(xyz, [0, true], ['x','y','z'], [0, 1, 2]);
+    assertForEachFromIndex(xyz, [1, true], ['y','z','x'], [1, 2, 0]);
+    assertForEachFromIndex(xyz, [2, true], ['z','x','y'], [2, 0, 1]);
+    assertForEachFromIndex(xyz, [3, true], ['x','y','z'], [0, 1, 2]);
+    assertForEachFromIndex(xyz, [4, true], ['x','y','z'], [0, 1, 2]);
 
-    test(['a','b','c','b'], ['b', 2], 3, 'finds first instance from index');
-    test([5,2,4,4], [4, 3], 3, '4 in 5,2,4,4 from index 3');
-    test([5,2,4,4], [4, 10], -1, '4 in 5,2,4,4 from index 10');
-    test([5,2,4,4], [4, -10], 2, '4 in 5,2,4,4 from index -10');
-    test([5,2,4,4], [4, -1], 3, '4 in 5,2,4,4 from index -1');
+    // Looping, neg index
+    assertForEachFromIndex(xyz, [-1, true], ['z','x','y'], [2, 0, 1]);
+    assertForEachFromIndex(xyz, [-2, true], ['y','z','x'], [1, 2, 0]);
+    assertForEachFromIndex(xyz, [-3, true], ['x','y','z'], [0, 1, 2]);
+    assertForEachFromIndex(xyz, [-4, true], ['x','y','z'], [0, 1, 2]);
 
-    test(['a','b','c','b'], ['b', 1, true], 1, 'finds first instance from index');
-    test([5,2,4,4,7,0], [4, 4, true], 2, '4 in 5,2,4,4 from index 3');
-    test([5,2,4,4,7,0], [4, 10, true], 2, '4 in 5,2,4,4 from index 10');
-    test([5,2,4,4,7,0], [8, 10, true], -1, '8 in 5,2,4,4 from index 10');
-    test([5,2,4,4,7,0], [4, -10, true], 2, '4 in 5,2,4,4 from index -10');
-    test([5,2,4,4,7,0], [4, -1, true], 2, '4 in 5,2,4,4 from index -1');
+    // Args
+    assertFromIndexArgs(['x'], 'forEach', [0], ['x', 0]);
+    assertFromIndexArgs(['x','y'], 'forEach', [1], ['y', 1]);
 
-  });
+    // Passing context value
+    var fn = function() { actualContext = this;}, actualContext, fakeContext = {};
+    run([1], 'forEachFromIndex', [0, fn, fakeContext]);
+    equal(actualContext, fakeContext, 'Context should be passable');
 
-  method('each', function() {
+    // Moved from Array#each
 
-    var arr, fn, result, count, indexes;
-
-    arr = [2, 5, 9];
-    fn = function(el, i, a) {
+    var arr = [2, 5, 9];
+    var fn = function(el, i, a) {
       equal(el, arr[i], 'looping successfully');
     };
-    run(arr, 'each', [fn]);
+    run(arr, 'forEachFromIndex', [0, fn]);
 
-    arr = ['a', [1], { foo: 'bar' }, 352];
-    count = 0;
-    fn = function() {
+    var arr = ['a', [1], { foo: 'bar' }, 352];
+    var count = 0;
+    var fn = function() {
         count++;
     };
-    run(arr, 'each', [fn]);
+    run(arr, 'forEachFromIndex', [0, fn]);
     equal(count, 4, 'complex array | should have looped 4 times');
 
-    fn = function(el, i, a) {
+    var fn = function(el, i, a) {
       equal(el, 'a', 'first parameter is the element');
       equal(i, 0, 'second parameter is the index');
       equal(a, ['a'], 'third parameter is the array');
-      equal(this, a, 'scope is also the array');
+      equal(this, 'this', 'scope is also the array');
     };
-    run(['a'], 'each', [fn, 'this']);
+    run(['a'], 'forEachFromIndex', [0, fn, 'this']);
 
-    count = 0;
+    var count = 0;
 
-    run({'0':'a','length':'1'}, 'each', [function() { count++; }]);
+    run({'0':'a','length':'1'}, 'forEachFromIndex', [0, function() { count++; }]);
 
     equal(count, 1, 'looping over array-like objects with string lengths');
 
-    result = [];
-    count = 0;
-    fn = function(s, i) {
+    var result = [];
+    var count = 0;
+    var fn = function(s, i) {
       result.push(s);
       equal(i, count + 1, 'index should be correct');
       count++;
     }
-    run(['a','b','c'], 'each', [fn, 1]);
+    run(['a','b','c'], 'forEachFromIndex', [1, fn]);
     equal(count, 2, 'should have run 2 times');
     equal(result, ['b','c'], 'result');
 
-    result = [];
-    indexes = [1,2,0];
-    count = 0;
-    fn = function(s, i) {
+    var result = [];
+    var indexes = [1,2,0];
+    var count = 0;
+    var fn = function(s, i) {
       result.push(s);
       equal(i, indexes[count], 'looping from index 1 | index should be correct');
       count++;
     }
-    run(['a','b','c'], 'each', [fn, 1, true]);
+    run(['a','b','c'], 'forEachFromIndex', [1, true, fn]);
     equal(count, 3, 'looping from index 1 | should have run 3 times')
     equal(result, ['b','c','a'], 'looping from index 1 | result');
 
-    result = [];
-    indexes = [0,1,2];
-    count = 0;
-    fn = function(s, i) {
+    var result = [];
+    var indexes = [0,1,2];
+    var count = 0;
+    var fn = function(s, i) {
       result.push(s);
       equal(i, indexes[count], 'looping from index 0 | index should be correct')
       count++;
     }
-    run(['a','b','c'], 'each', [fn, 0, true]);
+    run(['a','b','c'], 'forEachFromIndex', [0, true, fn]);
     equal(count, 3, 'looping from index 0 | should have run 3 times')
     equal(result, ['a','b','c'], 'looping from index 0 | result');
 
-    result = [];
-    indexes = [2,0,1];
-    count = 0;
-    fn = function(s, i) {
+    var result = [];
+    var indexes = [2,0,1];
+    var count = 0;
+    var fn = function(s, i) {
       result.push(s);
       equal(i, indexes[count], 'looping from index 2 | index should be correct');
       count++;
     }
-    run(['a','b','c'], 'each', [fn, 2, true]);
+    run(['a','b','c'], 'forEachFromIndex', [2, true, fn]);
     equal(count, 3, 'looping from index 2 | should have run 3 times')
     equal(result, ['c','a','b'], 'looping from index 2 | result');
 
-    result = [];
-    count = 0;
-    fn = function(s, i) {
+    var result = [];
+    var count = 0;
+    var fn = function(s, i) {
       result.push(s);
       count++;
     }
-    run(['a','b','c'], 'each', [fn, 3, true]);
+    run(['a','b','c'], 'forEachFromIndex', [3, true, fn]);
     equal(count, 3, 'looping from index 3 | should have run 3 times')
     equal(result, ['a','b','c'], 'looping from index 3 | result');
 
-    result = [];
-    count = 0;
-    fn = function(s, i) {
+    var result = [];
+    var count = 0;
+    var fn = function(s, i) {
       result.push(s);
       count++;
     }
-    run(['a','b','c'], 'each', [fn, 4, true]);
+    run(['a','b','c'], 'forEachFromIndex', [4, true, fn]);
     equal(count, 3, 'looping from index 4 | should have run 3 times')
-    equal(result, ['b','c','a'], 'looping from index 4 | result');
+    equal(result, ['a','b','c'], 'looping from index 4 | result');
 
-    result = [];
-    count = 0;
-    fn = function(s, i) {
+    var result = [];
+    var count = 0;
+    var fn = function(s, i) {
       result.push(s);
       count++;
     }
-    run(['a','b','c'], 'each', [fn, 49, true]);
+    run(['a','b','c'], 'forEachFromIndex', [49, true, fn]);
     equal(count, 3, 'looping from index 49 | should have run 3 times')
-    equal(result, ['b','c','a'], 'looping from index 49 | result');
+    equal(result, ['a','b','c'], 'looping from index 49 | result');
 
-    result = [];
-    count = 0;
-    fn = function(s, i) {
+    var result = [];
+    var count = 0;
+    var fn = function(s, i) {
       result.push(s);
       count++;
     }
-    run(['a','b','c'], 'each', [fn, 'hoofa']);
+    run(['a','b','c'], 'forEachFromIndex', [0, fn, 'hoofa']);
     equal(count, 3, 'string index should default to 0 | should have run 3 times')
     equal(result, ['a','b','c'], 'string index should default to 0 | result');
 
-
-    test(['a','b','c'], [function(){}], ['a','b','c'], 'null function returns the array');
-    raisesError(function(){ run([1], 'each') }, 'raises an error if no callback', TypeError);
-
-    count = 0;
-    fn = function() {
-      count++;
-      return false;
-    }
-    run(['a','b','c'], 'each', [fn]);
-    equal(count, 1, 'returning false will break the loop');
-
-    count = 0;
-    fn = function() {
-      count++;
-      return true;
-    };
-    run(['a','b','c'], 'each', [fn]);
-    equal(count, 3, 'returning true will not break the loop');
-
-    count = 0;
-    fn = function() {
-      count++;
-    }
-    run(['a','b','c'], 'each', [fn]);
-    equal(count, 3, 'returning undefined will not break the loop');
-
-
     // Sparse array handling
-
-    var arr, expected, expectedIndexes, count, fn;
 
     var arr = ['a'];
     arr[Math.pow(2,32) - 2] = 'b';
     var expectedValues = ['a','b'];
     var expectedIndexes = [0, Math.pow(2,32) - 2];
     var count = 0;
-    fn = function(el, i, a) {
-      equal(this, arr, 'sparse | this object should be the array');
+    var fn = function(el, i, a) {
+      equal(this, testNullScope, 'sparse | this object should be default');
       equal(el, expectedValues[count], 'sparse | first argument should be the current element');
       equal(i, expectedIndexes[count], 'sparse | second argument should be the current index');
       equal(a, arr, 'sparse | third argument should be the array');
       count++;
     }
-    run(arr, 'each', [fn]);
+    run(arr, 'forEachFromIndex', [0, fn]);
     equal(count, 2, 'sparse | count should match');
 
-    arr = [];
+    var arr = [];
     arr[-2] = 'd';
     arr[2]  = 'f';
-    arr[Math.pow(2,32)] = 'c';
-    count = 0;
-    fn = function(el, i) {
+    arr[Math.pow(2, 32)] = 'c';
+    var count = 0;
+    var fn = function(el, i) {
       equal(el, 'f', 'sparse | values outside range are not iterated over | el');
       equal(i, 2, 'sparse | values outside range are not iterated over | index');
       count++;
     }
-    run(arr, 'each', [fn]);
+    run(arr, 'forEachFromIndex', [0, fn]);
     equal(count, 1, 'sparse | values outside range are not iterated over | count');
 
     var arr = [];
     arr[9] = 'd';
     arr[2] = 'f';
     arr[5] = 'c';
-    count = 0;
+    var count = 0;
     var values = [];
     var indexes = [];
     var expectedValues = ['f','c','d'];
@@ -1011,7 +964,7 @@ namespace('Array', function() {
       values.push(val);
       indexes.push(i);
     }
-    run(arr, 'each', [fn]);
+    run(arr, 'forEachFromIndex', [0, fn]);
     equal(values, expectedValues, 'sparse | unordered should produce correct values');
     equal(indexes, expectedIndexes, 'sparse | unordered should produce correct indexes');
 
@@ -1023,38 +976,536 @@ namespace('Array', function() {
     var indexes = [];
     var expectedValues = ['d','f','c'];
     var expectedIndexes = [9,2,5];
-    fn = function(val, i) {
+    var fn = function(val, i) {
       values.push(val);
       indexes.push(i);
     }
-    run(arr, 'each', [fn, 7, true]);
+    run(arr, 'forEachFromIndex', [7, true, fn]);
     equal(values, expectedValues, 'sparse | looping should return correct values');
     equal(indexes, expectedIndexes, 'sparse | looping should return correct indexes');
 
-    count = 0;
-    fn = function() {
+    var count = 0;
+    var fn = function() {
       count++;
     }
-    run(threeUndefined, 'each', [fn]);
+    run(threeUndefined, 'forEachFromIndex', [0, fn]);
     equal(count, 3, 'simply having an undefined in an array does not qualify it as sparse');
 
   });
 
-  method('forEachFrom', function() {
+  method('mapFromIndex', function() {
 
-    var arr = [2, 5, 9];
-    var fn = function(el, i, a) {
-      equal(el, arr[i], 'looping successfully');
-    };
-    run(arr, 'forEachFrom', [fn]);
+    var arr = [
+      { name: 'John' },
+      { name: 'Karen' },
+      { name: 'Marty' }
+    ];
 
-    var fn = function(el, i, a) {
-      equal(el, 'a', 'first parameter is the element');
-      equal(i, 0, 'second parameter is the index');
-      equal(a, ['a'], 'third parameter is the array');
-      equal(this, a, 'scope is also the array');
-    };
-    run(['a'], 'forEachFrom', [fn, 'this']);
+    // No looping, pos index
+    assertFromIndex(arr, 'map', [0, 'name'], ['John', 'Karen', 'Marty']);
+    assertFromIndex(arr, 'map', [1, 'name'], ['Karen', 'Marty']);
+    assertFromIndex(arr, 'map', [2, 'name'], ['Marty']);
+    assertFromIndex(arr, 'map', [3, 'name'], []);
+    assertFromIndex(arr, 'map', [4, 'name'], []);
+
+    // No looping, neg index
+    assertFromIndex(arr, 'map', [-1, 'name'], ['Marty']);
+    assertFromIndex(arr, 'map', [-2, 'name'], ['Karen', 'Marty']);
+    assertFromIndex(arr, 'map', [-3, 'name'], ['John', 'Karen', 'Marty']);
+    assertFromIndex(arr, 'map', [-4, 'name'], ['John', 'Karen', 'Marty']);
+
+    // Looping, pos index
+    assertFromIndex(arr, 'map', [0, true, 'name'], ['John', 'Karen', 'Marty']);
+    assertFromIndex(arr, 'map', [1, true, 'name'], ['Karen', 'Marty', 'John']);
+    assertFromIndex(arr, 'map', [2, true, 'name'], ['Marty', 'John', 'Karen']);
+    assertFromIndex(arr, 'map', [3, true, 'name'], ['John', 'Karen', 'Marty']);
+    assertFromIndex(arr, 'map', [4, true, 'name'], ['John', 'Karen', 'Marty']);
+
+    // Looping, neg index
+    assertFromIndex(arr, 'map', [-1, true, 'name'], ['Marty', 'John', 'Karen']);
+    assertFromIndex(arr, 'map', [-2, true, 'name'], ['Karen', 'Marty', 'John']);
+    assertFromIndex(arr, 'map', [-3, true, 'name'], ['John', 'Karen', 'Marty']);
+    assertFromIndex(arr, 'map', [-4, true, 'name'], ['John', 'Karen', 'Marty']);
+
+    // Function
+    assertFromIndex(arr, 'map', [0, function(el) { return el.name; }], ['John', 'Karen', 'Marty']);
+    assertFromIndex(arr, 'map', [1, function(el) { return el.name; }], ['Karen', 'Marty']);
+    assertFromIndex(arr, 'map', [2, function(el) { return el.name; }], ['Marty']);
+    assertFromIndex(arr, 'map', [3, function(el) { return el.name; }], []);
+
+  });
+
+  method('filterFromIndex', function() {
+
+    var xyz = ['x','y','z'];
+
+    // No looping, pos index
+    assertFromIndex(xyz, 'filter', [0, 'y'], ['y']);
+    assertFromIndex(xyz, 'filter', [1, 'y'], ['y']);
+    assertFromIndex(xyz, 'filter', [2, 'y'], []);
+    assertFromIndex(xyz, 'filter', [3, 'y'], []);
+    assertFromIndex(xyz, 'filter', [4, 'y'], []);
+
+    // No looping, neg index
+    assertFromIndex(xyz, 'filter', [-1, 'y'], []);
+    assertFromIndex(xyz, 'filter', [-2, 'y'], ['y']);
+    assertFromIndex(xyz, 'filter', [-3, 'y'], ['y']);
+    assertFromIndex(xyz, 'filter', [-4, 'y'], ['y']);
+
+    // Looping, pos index
+    assertFromIndex(xyz, 'filter', [0, true, 'y'], ['y']);
+    assertFromIndex(xyz, 'filter', [1, true, 'y'], ['y']);
+    assertFromIndex(xyz, 'filter', [2, true, 'y'], ['y']);
+    assertFromIndex(xyz, 'filter', [3, true, 'y'], ['y']);
+    assertFromIndex(xyz, 'filter', [4, true, 'y'], ['y']);
+
+    // Looping, neg index
+    assertFromIndex(xyz, 'filter', [-1, true, 'y'], ['y']);
+    assertFromIndex(xyz, 'filter', [-2, true, 'y'], ['y']);
+    assertFromIndex(xyz, 'filter', [-3, true, 'y'], ['y']);
+    assertFromIndex(xyz, 'filter', [-4, true, 'y'], ['y']);
+
+    // Looping, pos index, does not exist
+    assertFromIndex(xyz, 'filter', [0, true, 'q'], []);
+    assertFromIndex(xyz, 'filter', [1, true, 'q'], []);
+    assertFromIndex(xyz, 'filter', [2, true, 'q'], []);
+    assertFromIndex(xyz, 'filter', [3, true, 'q'], []);
+    assertFromIndex(xyz, 'filter', [4, true, 'q'], []);
+
+    // Looping, neg index, does not exist
+    assertFromIndex(xyz, 'filter', [-1, true, 'q'], []);
+    assertFromIndex(xyz, 'filter', [-2, true, 'q'], []);
+    assertFromIndex(xyz, 'filter', [-3, true, 'q'], []);
+    assertFromIndex(xyz, 'filter', [-4, true, 'q'], []);
+
+    // Regex
+    assertFromIndex(xyz, 'filter', [0, /[xy]/], ['x', 'y']);
+    assertFromIndex(xyz, 'filter', [1, /[xy]/], ['y']);
+    assertFromIndex(xyz, 'filter', [2, /[xy]/], []);
+    assertFromIndex(xyz, 'filter', [3, /[xy]/], []);
+
+    // Function
+    assertFromIndex(xyz, 'filter', [0, function(el) { return el === 'y'; }], ['y']);
+    assertFromIndex(xyz, 'filter', [1, function(el) { return el === 'y'; }], ['y']);
+    assertFromIndex(xyz, 'filter', [2, function(el) { return el === 'y'; }], []);
+    assertFromIndex(xyz, 'filter', [3, function(el) { return el === 'y'; }], []);
+
+
+    // Moved from "filterFrom"
+
+    test(['foo','bar'], [1, /[a-f]/], ['bar'], '/[a-f]/ from index 1');
+    test(['foo','bar'], [1, true, /[a-f]/], ['bar','foo'], '/[a-f]/ from index 1');
+    test([1,2,3], [0, function(e) { return e > 0; }], [1,2,3], 'greater than 0 from index 0');
+    test([1,2,3], [1, function(e) { return e > 0; }], [2,3], 'greater than 0 from index 1');
+    test([1,2,3], [2, function(e) { return e > 0; }], [3], 'greater than 0 from index 2');
+    test([1,2,3], [3, function(e) { return e > 0; }], [], 'greater than 0 from index 3');
+    test([1,2,3], [4, function(e) { return e > 0; }], [], 'greater than 0 from index 4');
+    test([1,2,3], [0, function(e) { return e > 1; }], [2,3], 'greater than 1 from index 0');
+    test([1,2,3], [1, function(e) { return e > 1; }], [2,3], 'greater than 1 from index 1');
+    test([1,2,3], [2, function(e) { return e > 1; }], [3], 'greater than 1 from index 2');
+    test([1,2,3], [0, function(e) { return e > 2; }], [3], 'greater than 2 from index 0');
+    test([1,2,3], [0, function(e) { return e > 3; }], [], 'greater than 3 from index 0');
+
+    test([1,2,3], [0, true, function(e) { return e > 0; }], [1,2,3], 'looping | greater than 0 from index 0');
+    test([1,2,3], [1, true, function(e) { return e > 0; }], [2,3,1], 'looping | greater than 0 from index 1');
+    test([1,2,3], [2, true, function(e) { return e > 0; }], [3,1,2], 'looping | greater than 0 from index 2');
+    test([1,2,3], [3, true, function(e) { return e > 0; }], [1,2,3], 'looping | greater than 0 from index 3');
+    test([1,2,3], [0, true, function(e) { return e > 1; }], [2,3], 'looping | greater than 1 from index 0');
+    test([1,2,3], [1, true, function(e) { return e > 1; }], [2,3], 'looping | greater than 1 from index 1');
+    test([1,2,3], [2, true, function(e) { return e > 1; }], [3,2], 'looping | greater than 1 from index 2');
+    test([1,2,3], [0, true, function(e) { return e > 2; }], [3], 'looping | greater than 2 from index 0');
+    test([1,2,3], [0, true, function(e) { return e > 3; }], [], 'looping | greater than 3 from index 0');
+
+    test([{a:10},{a:8},{a:3}], [0, function(e) { return e['a'] > 5; }], [{a:10},{a:8}], 'key "a" is greater than 5');
+    test([{a:10},{a:8},{a:3}], [1, function(e) { return e['a'] > 5; }], [{a:8}], 'key "a" is greater than 5 from index 1');
+    test([{a:10},{a:8},{a:3}], [2, function(e) { return e['a'] > 5; }], [], 'key "a" is greater than 5 from index 2');
+
+    test([{a:10},{a:8},{a:3}], [0, true, function(e) { return e['a'] > 5; }], [{a:10},{a:8}], 'looping | key "a" is greater than 5');
+    test([{a:10},{a:8},{a:3}], [1, true, function(e) { return e['a'] > 5; }], [{a:8},{a:10}], 'looping | key "a" is greater than 5 from index 1');
+    test([{a:10},{a:8},{a:3}], [2, true, function(e) { return e['a'] > 5; }], [{a:10},{a:8}], 'looping | key "a" is greater than 5 from index 2');
+
+    test([function() {}], [0, function(e) {}], [], 'null function');
+    test([function() {}], [1, function(e) {}], [], 'null function from index 1');
+    test([null, null], [0, null], [null, null], 'null');
+    test([null, null], [1, null], [null], 'null from index 1');
+
+    test([function() {}], [0, true, function(e) {}], [], 'looping | null function');
+    test([function() {}], [1, true, function(e) {}], [], 'looping | null function from index 1');
+    test([null, null], [0, true, null], [null, null], 'looping | null');
+    test([null, null], [1, true, null], [null, null], 'looping | null from index 1');
+
+    // Example: finding last from an index. (reverse order). This means we don't need a filterFromLastIndex
+    var arr = [1,2,3,4,5,6,7,8,9];
+    test(arr, [4, function(n) { return n % 3 == 0; }], [6,9], 'n % 3 from index 4');
+    test(arr, [4, true, function(n) { return n % 3 == 0; }], [6,9,3], 'looping | n % 3 from index 4');
+
+    arr.reverse();
+    test(arr, [4, function(n) { return n % 3 == 0; }], [3], 'reversed | n % 3 from index 4 reversed');
+    test(arr, [4, true, function(n) { return n % 3 == 0; }], [3,9,6], 'looping | reversed | n % 3 from index 4 reversed');
+
+  });
+
+  method('someFromIndex', function() {
+
+    var xyz = ['x','y','z'];
+
+    // No looping, pos index
+    assertFromIndex(xyz, 'some', [0, 'y'], true);
+    assertFromIndex(xyz, 'some', [1, 'y'], true);
+    assertFromIndex(xyz, 'some', [2, 'y'], false);
+    assertFromIndex(xyz, 'some', [3, 'y'], false);
+    assertFromIndex(xyz, 'some', [4, 'y'], false);
+
+    // No looping, neg index
+    assertFromIndex(xyz, 'some', [-1, 'y'], false);
+    assertFromIndex(xyz, 'some', [-2, 'y'], true);
+    assertFromIndex(xyz, 'some', [-3, 'y'], true);
+    assertFromIndex(xyz, 'some', [-4, 'y'], true);
+
+    // Looping should always be true if the element exists
+    assertFromIndex(xyz, 'some', [0, true, 'y'], true);
+    assertFromIndex(xyz, 'some', [1, true, 'y'], true);
+    assertFromIndex(xyz, 'some', [2, true, 'y'], true);
+    assertFromIndex(xyz, 'some', [3, true, 'y'], true);
+    assertFromIndex(xyz, 'some', [4, true, 'y'], true);
+
+    assertFromIndex(xyz, 'some', [-1, true, 'y'], true);
+    assertFromIndex(xyz, 'some', [-2, true, 'y'], true);
+    assertFromIndex(xyz, 'some', [-3, true, 'y'], true);
+    assertFromIndex(xyz, 'some', [-4, true, 'y'], true);
+
+    // Looping should never be true if the element does not exist
+    assertFromIndex(xyz, 'some', [0, true, 'q'], false);
+    assertFromIndex(xyz, 'some', [1, true, 'q'], false);
+    assertFromIndex(xyz, 'some', [2, true, 'q'], false);
+    assertFromIndex(xyz, 'some', [3, true, 'q'], false);
+    assertFromIndex(xyz, 'some', [4, true, 'q'], false);
+
+    assertFromIndex(xyz, 'some', [-1, true, 'q'], false);
+    assertFromIndex(xyz, 'some', [-2, true, 'q'], false);
+    assertFromIndex(xyz, 'some', [-3, true, 'q'], false);
+    assertFromIndex(xyz, 'some', [-4, true, 'q'], false);
+
+    // Regex
+    assertFromIndex(xyz, 'some', [0, /[xy]/], true);
+    assertFromIndex(xyz, 'some', [1, /[xy]/], true);
+    assertFromIndex(xyz, 'some', [2, /[xy]/], false);
+    assertFromIndex(xyz, 'some', [3, /[xy]/], false);
+
+    // Function
+    assertFromIndex(xyz, 'some', [0, function(el) { return el === 'y'; }], true);
+    assertFromIndex(xyz, 'some', [1, function(el) { return el === 'y'; }], true);
+    assertFromIndex(xyz, 'some', [2, function(el) { return el === 'y'; }], false);
+    assertFromIndex(xyz, 'some', [3, function(el) { return el === 'y'; }], false);
+
+    // Can still run against an array of true
+    assertFromIndex([true, true], 'some', [1, true, true], true);
+
+  });
+
+  method('everyFromIndex', function() {
+
+    var xyz = ['x','y','z'];
+    var zzz = ['z','z','z'];
+
+    // No looping, pos index
+    assertFromIndex(xyz, 'every', [0, 'z'], false);
+    assertFromIndex(xyz, 'every', [1, 'z'], false);
+    assertFromIndex(xyz, 'every', [2, 'z'], true);
+
+    // As described on MDN, every is "vacuously true", or true even if the array is an empty set.
+    // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/every
+    // https://en.wikipedia.org/wiki/Vacuous_truth#Vacuous_truths_in_mathematics
+    assertFromIndex(xyz, 'every', [3, 'z'], true);
+    assertFromIndex(xyz, 'every', [4, 'z'], true);
+
+    // No looping, neg index
+    assertFromIndex(xyz, 'every', [-1, 'z'], true);
+    assertFromIndex(xyz, 'every', [-2, 'z'], false);
+    assertFromIndex(xyz, 'every', [-3, 'z'], false);
+    assertFromIndex(xyz, 'every', [-4, 'z'], false);
+
+    // Looping, pos index
+    assertFromIndex(xyz, 'every', [0, true, 'y'], false);
+    assertFromIndex(xyz, 'every', [1, true, 'y'], false);
+    assertFromIndex(xyz, 'every', [2, true, 'y'], false);
+    assertFromIndex(xyz, 'every', [3, true, 'y'], false);
+    assertFromIndex(xyz, 'every', [4, true, 'y'], false);
+
+    // Looping, neg index
+    assertFromIndex(xyz, 'every', [-1, true, 'y'], false);
+    assertFromIndex(xyz, 'every', [-2, true, 'y'], false);
+    assertFromIndex(xyz, 'every', [-3, true, 'y'], false);
+    assertFromIndex(xyz, 'every', [-4, true, 'y'], false);
+
+    // Looping, all true
+    assertFromIndex(zzz, 'every', [0, true, 'z'], true);
+    assertFromIndex(zzz, 'every', [1, true, 'z'], true);
+    assertFromIndex(zzz, 'every', [2, true, 'z'], true);
+    assertFromIndex(zzz, 'every', [3, true, 'z'], true);
+    assertFromIndex(zzz, 'every', [4, true, 'z'], true);
+
+    assertFromIndex(zzz, 'every', [-1, true, 'z'], true);
+    assertFromIndex(zzz, 'every', [-2, true, 'z'], true);
+    assertFromIndex(zzz, 'every', [-3, true, 'z'], true);
+    assertFromIndex(zzz, 'every', [-4, true, 'z'], true);
+
+    // Regex
+    assertFromIndex(xyz, 'every', [0, /[yz]/], false);
+    assertFromIndex(xyz, 'every', [1, /[yz]/], true);
+    assertFromIndex(xyz, 'every', [2, /[yz]/], true);
+    assertFromIndex(xyz, 'every', [3, /[yz]/], true);
+
+    // Function
+    assertFromIndex(xyz, 'every', [0, function(el) { return el === 'z'; }], false);
+    assertFromIndex(xyz, 'every', [1, function(el) { return el === 'z'; }], false);
+    assertFromIndex(xyz, 'every', [2, function(el) { return el === 'z'; }], true);
+    assertFromIndex(xyz, 'every', [3, function(el) { return el === 'z'; }], true);
+
+    // Can still run against an array of true
+    assertFromIndex([true, true], 'every', [1, true, true], true);
+
+  });
+
+  method('reduceFromIndex', function() {
+
+    var xy  = ['x','y'];
+    var xyz = ['x','y','z'];
+
+    function addArgs(a, b) {
+      return a + b;
+    }
+
+    raisesError(function() { run(arr, 'reduceFromIndex', [3, addArgs]); }, '3 index is no elements');
+
+    assertFromIndex(xyz, 'reduce', [0, addArgs], 'xyz', 'Reducing from 0');
+    assertFromIndex(xyz, 'reduce', [1, addArgs], 'yz', 'Reducing from 1');
+    assertFromIndex(xyz, 'reduce', [2, addArgs], 'z', 'Reducing from 2');
+
+    assertFromIndex(xyz, 'reduce', [-1, addArgs], 'z', 'Reducing from -1');
+    assertFromIndex(xyz, 'reduce', [-2, addArgs], 'yz', 'Reducing from -2');
+    assertFromIndex(xyz, 'reduce', [-3, addArgs], 'xyz', 'Reducing from -3');
+
+    assertFromIndex(xyz, 'reduce', [0, addArgs, 'I: '], 'I: xyz', 'Reducing from 0 with init');
+    assertFromIndex(xyz, 'reduce', [1, addArgs, 'I: '], 'I: yz', 'Reducing from 1 with init');
+    assertFromIndex(xyz, 'reduce', [2, addArgs, 'I: '], 'I: z', 'Reducing from 2 with init');
+
+    assertFromIndex(xyz, 'reduce', [-1, addArgs, 'I: '], 'I: z', 'Reducing from -1 with init');
+    assertFromIndex(xyz, 'reduce', [-2, addArgs, 'I: '], 'I: yz', 'Reducing from -2 with init');
+    assertFromIndex(xyz, 'reduce', [-3, addArgs, 'I: '], 'I: xyz', 'Reducing from -3 with init');
+
+    assertFromIndexArgs(xy,  'reduce', [0], ['x', 'y', 1]);
+    assertFromIndexArgs(xyz, 'reduce', [1], ['y', 'z', 2]);
+    assertFromIndexArgs(xyz, 'reduce', [2],  null);
+    assertFromIndexArgs(xyz, 'reduce', [-1], null);
+    assertFromIndexArgs(xyz, 'reduce', [-2], ['y','z', 2]);
+    assertFromIndexArgs(xy,  'reduce', [-2], ['x','y', 1]);
+    assertFromIndexArgs(xy,  'reduce', [-3], ['x','y', 1]);
+
+  });
+
+  method('reduceRightFromIndex', function() {
+
+    var xy  = ['x','y'];
+    var xyz = ['x','y','z'];
+
+    function addArgs(a, b) {
+      return a + b;
+    }
+
+    raisesError(function() { run([],  'reduceRightFromIndex', [ 0,  addArgs]); }, 'no elements from 0');
+    raisesError(function() { run([],  'reduceRightFromIndex', [ 1,  addArgs]); }, 'no elements from 1');
+    raisesError(function() { run([],  'reduceRightFromIndex', [-1,  addArgs]); }, 'no elements from -1');
+    raisesError(function() { run(xyz, 'reduceRightFromIndex', [-4, addArgs]); }, '-4 is no elements');
+    raisesError(function() { run(xyz, 'reduceRightFromIndex', [-5, addArgs]); }, '-5 is no elements');
+
+    assertFromIndex(xyz, 'reduceRight', [0, addArgs], 'x',   'Reducing right from 0');
+    assertFromIndex(xyz, 'reduceRight', [1, addArgs], 'yx',  'Reducing right from 1');
+    assertFromIndex(xyz, 'reduceRight', [2, addArgs], 'zyx', 'Reducing right from 2');
+    assertFromIndex(xyz, 'reduceRight', [3, addArgs], 'zyx', 'Reducing right from 3');
+
+    assertFromIndex(xyz, 'reduceRight', [-1, addArgs], 'zyx', 'Reducing right from -1');
+    assertFromIndex(xyz, 'reduceRight', [-2, addArgs], 'yx',  'Reducing right from -2');
+    assertFromIndex(xyz, 'reduceRight', [-3, addArgs], 'x',   'Reducing from -3');
+
+    assertFromIndex(xyz, 'reduceRight', [0, addArgs, 'I: '], 'I: x', 'Reducing right from 0 with init');
+    assertFromIndex(xyz, 'reduceRight', [1, addArgs, 'I: '], 'I: yx', 'Reducing right from 1 with init');
+    assertFromIndex(xyz, 'reduceRight', [2, addArgs, 'I: '], 'I: zyx', 'Reducing right from 2 with init');
+    assertFromIndex(xyz, 'reduceRight', [3, addArgs, 'I: '], 'I: zyx', 'Reducing right from 3 with init');
+
+    assertFromIndex(xyz, 'reduceRight', [-1, addArgs, 'I: '], 'I: zyx', 'Reducing right from -1 with init');
+    assertFromIndex(xyz, 'reduceRight', [-2, addArgs, 'I: '], 'I: yx', 'Reducing right from -2 with init');
+    assertFromIndex(xyz, 'reduceRight', [-3, addArgs, 'I: '], 'I: x', 'Reducing right from -3 with init');
+    assertFromIndex(xyz, 'reduceRight', [-4, addArgs, 'I: '], 'I: ', 'Reducing right from -4 with init');
+
+    assertFromIndexArgs(xy,  'reduceRight', [1], ['y', 'x', 1]);
+    assertFromIndexArgs(xyz, 'reduceRight', [1], ['y', 'x', 1]);
+    assertFromIndexArgs(xyz, 'reduceRight', [0],  null);
+    assertFromIndexArgs(xy,  'reduceRight', [-1], ['y','x', 1]);
+    assertFromIndexArgs(xyz, 'reduceRight', [-2], ['y','x', 1]);
+    assertFromIndexArgs(xyz, 'reduceRight', [-3], ['x','y', 1]);
+
+  });
+
+  method('findFromIndex', function() {
+
+    var xyz = ['x','y','z'];
+
+    // No looping, pos index
+    assertFromIndex(xyz, 'find', [0, 'y'], 'y');
+    assertFromIndex(xyz, 'find', [1, 'y'], 'y');
+    assertFromIndex(xyz, 'find', [2, 'y'], undefined);
+    assertFromIndex(xyz, 'find', [3, 'y'], undefined);
+    assertFromIndex(xyz, 'find', [4, 'y'], undefined);
+
+    // No looping, neg index
+    assertFromIndex(xyz, 'find', [-1, 'y'], undefined);
+    assertFromIndex(xyz, 'find', [-2, 'y'], 'y');
+    assertFromIndex(xyz, 'find', [-3, 'y'], 'y');
+    assertFromIndex(xyz, 'find', [-4, 'y'], 'y');
+
+    // Looping, pos index
+    assertFromIndex(xyz, 'find', [0, true, 'y'], 'y');
+    assertFromIndex(xyz, 'find', [1, true, 'y'], 'y');
+    assertFromIndex(xyz, 'find', [2, true, 'y'], 'y');
+    assertFromIndex(xyz, 'find', [3, true, 'y'], 'y');
+    assertFromIndex(xyz, 'find', [4, true, 'y'], 'y');
+
+    // Looping, neg index
+    assertFromIndex(xyz, 'find', [-1, true, 'y'], 'y');
+    assertFromIndex(xyz, 'find', [-2, true, 'y'], 'y');
+    assertFromIndex(xyz, 'find', [-3, true, 'y'], 'y');
+    assertFromIndex(xyz, 'find', [-4, true, 'y'], 'y');
+
+    // Looping, pos index, does not exist
+    assertFromIndex(xyz, 'find', [0, true, 'q'], undefined);
+    assertFromIndex(xyz, 'find', [1, true, 'q'], undefined);
+    assertFromIndex(xyz, 'find', [2, true, 'q'], undefined);
+    assertFromIndex(xyz, 'find', [3, true, 'q'], undefined);
+    assertFromIndex(xyz, 'find', [4, true, 'q'], undefined);
+
+    // Looping, neg index, does not exist
+    assertFromIndex(xyz, 'find', [-1, true, 'q'], undefined);
+    assertFromIndex(xyz, 'find', [-2, true, 'q'], undefined);
+    assertFromIndex(xyz, 'find', [-3, true, 'q'], undefined);
+    assertFromIndex(xyz, 'find', [-4, true, 'q'], undefined);
+
+    // Regex
+    assertFromIndex(xyz, 'find', [0, /[xy]/], 'x');
+    assertFromIndex(xyz, 'find', [1, /[xy]/], 'y');
+    assertFromIndex(xyz, 'find', [2, /[xy]/], undefined);
+    assertFromIndex(xyz, 'find', [3, /[xy]/], undefined);
+
+    // Function
+    assertFromIndex(xyz, 'find', [0, function(el) { return el === 'y'; }], 'y');
+    assertFromIndex(xyz, 'find', [1, function(el) { return el === 'y'; }], 'y');
+    assertFromIndex(xyz, 'find', [2, function(el) { return el === 'y'; }], undefined);
+    assertFromIndex(xyz, 'find', [3, function(el) { return el === 'y'; }], undefined);
+
+    // Moved from "findFrom"
+
+    test([1,2,3], [0, function(e) { return e > 0; }], 1, 'greater than 0 from index 0');
+    test([1,2,3], [1, function(e) { return e > 0; }], 2, 'greater than 0 from index 1');
+    test([1,2,3], [2, function(e) { return e > 0; }], 3, 'greater than 0 from index 2');
+    test([1,2,3], [3, function(e) { return e > 0; }], undefined, 'greater than 0 from index 3');
+    test([1,2,3], [0, function(e) { return e > 1; }], 2, 'greater than 1 from index 0');
+    test([1,2,3], [1, function(e) { return e > 1; }], 2, 'greater than 1 from index 1');
+    test([1,2,3], [2, function(e) { return e > 1; }], 3, 'greater than 1 from index 2');
+    test([1,2,3], [0, function(e) { return e > 2; }], 3, 'greater than 2 from index 0');
+    test([1,2,3], [0, function(e) { return e > 3; }], undefined, 'greater than 3 from index 0');
+
+    test([1,2,3], [0, true, function(e) { return e > 0; }], 1, 'loop | greater than 0 from index 0');
+    test([1,2,3], [1, true, function(e) { return e > 0; }], 2, 'loop | greater than 0 from index 1');
+    test([1,2,3], [2, true, function(e) { return e > 0; }], 3, 'loop | greater than 0 from index 2');
+    test([1,2,3], [3, true, function(e) { return e > 0; }], 1, 'loop | greater than 0 from index 3');
+    test([1,2,3], [0, true, function(e) { return e > 1; }], 2, 'loop | greater than 1 from index 0');
+    test([1,2,3], [1, true, function(e) { return e > 1; }], 2, 'loop | greater than 1 from index 1');
+    test([1,2,3], [2, true, function(e) { return e > 1; }], 3, 'loop | greater than 1 from index 2');
+    test([1,2,3], [0, true, function(e) { return e > 2; }], 3, 'loop | greater than 2 from index 0');
+    test([1,2,3], [0, true, function(e) { return e > 3; }], undefined, 'loop | greater than 3 from index 0');
+
+    test([{a:10},{a:8},{a:3}], [0, function(e) { return e['a'] > 5; }], {a:10}, 'key "a" greater than 5');
+    test([{a:10},{a:8},{a:3}], [1, function(e) { return e['a'] > 5; }], {a:8}, 'key "a" greater than 5 from index 1');
+    test([{a:10},{a:8},{a:3}], [2, function(e) { return e['a'] > 5; }], undefined, 'key "a" greater than 5 from index 2');
+    test([function() {}], [1, function(e) {}], undefined, 'null function from index 1');
+    test([null, null], [1, null], null, 'null from index 1');
+    test(threeUndefined, [1, undefined], undefined, 'undefined from index 1');
+
+    test(['foo','bar'], [1, /^[a-f]/], 'bar', '/a-f/ from index 1');
+    test(['foo','bar','zak'], [2, true, /^[a-f]/], 'foo', '/a-f/ from index 1 looping');
+
+  });
+
+  method('findIndexFromIndex', function() {
+
+    var xyz = ['x','y','z'];
+
+    // No looping, pos index
+    assertFromIndex(xyz, 'findIndex', [0, 'y'], 1);
+    assertFromIndex(xyz, 'findIndex', [1, 'y'], 1);
+    assertFromIndex(xyz, 'findIndex', [2, 'y'], -1);
+    assertFromIndex(xyz, 'findIndex', [3, 'y'], -1);
+    assertFromIndex(xyz, 'findIndex', [4, 'y'], -1);
+
+    // No looping, neg index
+    assertFromIndex(xyz, 'findIndex', [-1, 'y'], -1);
+    assertFromIndex(xyz, 'findIndex', [-2, 'y'], 1);
+    assertFromIndex(xyz, 'findIndex', [-3, 'y'], 1);
+    assertFromIndex(xyz, 'findIndex', [-4, 'y'], 1);
+
+    // Looping, pos index
+    assertFromIndex(xyz, 'findIndex', [0, true, 'y'], 1);
+    assertFromIndex(xyz, 'findIndex', [1, true, 'y'], 1);
+    assertFromIndex(xyz, 'findIndex', [2, true, 'y'], 1);
+    assertFromIndex(xyz, 'findIndex', [3, true, 'y'], 1);
+    assertFromIndex(xyz, 'findIndex', [4, true, 'y'], 1);
+
+    // Looping, neg index
+    assertFromIndex(xyz, 'findIndex', [-1, true, 'y'], 1);
+    assertFromIndex(xyz, 'findIndex', [-2, true, 'y'], 1);
+    assertFromIndex(xyz, 'findIndex', [-3, true, 'y'], 1);
+    assertFromIndex(xyz, 'findIndex', [-4, true, 'y'], 1);
+
+    // Looping, pos index, does not exist
+    assertFromIndex(xyz, 'findIndex', [0, true, 'q'], -1);
+    assertFromIndex(xyz, 'findIndex', [1, true, 'q'], -1);
+    assertFromIndex(xyz, 'findIndex', [2, true, 'q'], -1);
+    assertFromIndex(xyz, 'findIndex', [3, true, 'q'], -1);
+    assertFromIndex(xyz, 'findIndex', [4, true, 'q'], -1);
+
+    // Looping, neg index, does not exist
+    assertFromIndex(xyz, 'findIndex', [-1, true, 'q'], -1);
+    assertFromIndex(xyz, 'findIndex', [-2, true, 'q'], -1);
+    assertFromIndex(xyz, 'findIndex', [-3, true, 'q'], -1);
+    assertFromIndex(xyz, 'findIndex', [-4, true, 'q'], -1);
+
+    // Regex
+    assertFromIndex(xyz, 'findIndex', [0, /[xy]/], 0);
+    assertFromIndex(xyz, 'findIndex', [1, /[xy]/], 1);
+    assertFromIndex(xyz, 'findIndex', [2, /[xy]/], -1);
+    assertFromIndex(xyz, 'findIndex', [3, /[xy]/], -1);
+
+    // Function
+    assertFromIndex(xyz, 'findIndex', [0, function(el) { return el === 'y'; }], 1);
+    assertFromIndex(xyz, 'findIndex', [1, function(el) { return el === 'y'; }], 1);
+    assertFromIndex(xyz, 'findIndex', [2, function(el) { return el === 'y'; }], -1);
+    assertFromIndex(xyz, 'findIndex', [3, function(el) { return el === 'y'; }], -1);
+
+
+    // Moved from Array#findIndexFrom
+
+    test(['a','b','c','b'], [2, 'b'], 3, 'finds first instance from index');
+    test([5,2,4,4], [3, 4], 3, '4 in 5,2,4,4 from index 3');
+    test([5,2,4,4], [10, 4], -1, '4 in 5,2,4,4 from index 10');
+    test([5,2,4,4], [-10, 4], 2, '4 in 5,2,4,4 from index -10');
+    test([5,2,4,4], [-1, 4], 3, '4 in 5,2,4,4 from index -1');
+
+    test(['a','b','c','b'], [1, true, 'b'], 1, 'finds first instance from index');
+    test([5,2,4,4,7,0], [4, true, 4], 2, '4 in 5,2,4,4 from index 3');
+    test([5,2,4,4,7,0], [10, true, 4], 2, '4 in 5,2,4,4 from index 10');
+    test([5,2,4,4,7,0], [10, true, 8], -1, '8 in 5,2,4,4 from index 10');
+    test([5,2,4,4,7,0], [-10, true, 4], 2, '4 in 5,2,4,4 from index -10');
+    test([5,2,4,4,7,0], [-1, true, 4], 2, '4 in 5,2,4,4 from index -1');
 
   });
 
@@ -1406,7 +1857,8 @@ namespace('Object', function() {
   });
 
   method('each', function() {
-    var fn = function () {};
+
+    var fn = function() {};
     var d = new Date();
     var obj = {
       number: 3,
@@ -1432,7 +1884,7 @@ namespace('Object', function() {
       run({foo:'bar'}, 'each', []);
     }, 'no iterator raises an error');
 
-    test(obj, [function () {}], obj, 'each returns itself');
+    test(obj, [function() {}], obj, 'each returns itself');
 
 
     var count = 0;
@@ -1647,8 +2099,8 @@ namespace('Object', function() {
 
     test(obj, [fn], 48, 'reduced value should be 48');
     test(obj, [fn, 10], 480, 'reduced value with initial should be 480');
-    test(obj, [function () {}], undefined, 'reduced with anonymous function');
-    test(obj, [function () {}, 10], undefined, 'reduced with anonymous function and initial');
+    test(obj, [function() {}], undefined, 'reduced with anonymous function');
+    test(obj, [function() {}, 10], undefined, 'reduced with anonymous function and initial');
 
     // These tests are making an assumption that objects
     // will be iterated over in a specific order. This is

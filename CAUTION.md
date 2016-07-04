@@ -38,7 +38,13 @@ Drop it in before upgrading to get a general idea of what needs to change, or up
   - `Array#include` was removed as it is now identical to `Array#add`.
 
 - Level: Major
-  - `Array#findAll` was replaced with `Array#filterFrom` in cases that require a start index. For cases without a start index, simply use `Array#filter` instead.
+  - `Array#findAll` was replaced with `Array#filterFromIndex` in cases that require a start index. For cases without a start index, simply use native `Array#filter`. Additionally, the "index" and "loop" arguments now come before the callback.
+
+- Level: Major
+  - `Array#each` was replaced with `Array#forEachFromIndex` in cases that require a start index. For cases without a start index, simply use native `Array#forEach`. Additionally, the "index" and "loop" arguments now come before the callback. For iterating until a return value is passed, use `Array#some`.
+
+- Level: Major
+  - `Array#findFrom` and `Array#findIndexFrom` are now `Array#findFromIndex` and `Array#findIndexFromIndex` and exist alongside other "from index" methods with similar naming. Additionally, the "index" and "loop" arguments now come before the callback.
 
 - Level: Major
   - `Object.findAll` was replaced with `Object.filter`, which parallels `Array#filter` by returning a filtered object.
