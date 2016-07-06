@@ -138,8 +138,8 @@ namespace('Array', function () {
   method('add', function() {
 
     test([], [], [], 'nothing');
-    test([1], [[2]], [1,2], '1 + 2');
-    test([], [[1]], [1], 'empty + 1');
+    test([1], [[2]], [1,2], '[1] + [2]');
+    test([], [[1]], [1], '[] + [1]');
 
     test(['a','b','d'], ['c', 2], ['a','b','c','d'], 'nothing');
 
@@ -160,28 +160,114 @@ namespace('Array', function () {
 
   });
 
+  method('subtract', function() {
+
+    test([1,2,3], [[3,4,5]], [1,2], '[1,2,3] - [3,4,5]');
+    test([1,1,2,2,3,3,4,4,5,5], [[2,3,4]], [1,1,5,5], '[1,1,2,2,3,3,4,4,5,5] - [2,3,4]');
+    test(['a','b','c'], [['c','d','e']], ['a','b'], '[a,b,c] - [c,d,e]');
+    test([1,2,3], [[1,2,3]], [], '[1,2,3] - [1,2,3]');
+    test([1,2,3], [[3,2,1]], [], '[1,2,3] - [3,2,1]');
+    test([], [[3]], [], '[] - [3]');
+    test([3], [[]], [3], '[3] - []');
+    test([], [[]], [], '[] - []');
+    test([null], [[]], [null], '[null] - []');
+    test([null], [[null]], [], '[null] - [null]');
+    test([false], [[false]], [], '[false] - [false]');
+    test([false], [[0]], [false], '[false] - [0]');
+    test([false], [[null]], [false], '[false] - [null]');
+    test([false], nestedUndefined, [false], '[false] - [undefined]');
+    test([{a:1},{b:2}], [[{b:2},{c:3}]], [{a:1}], '[a:1,b:2] - [b:2,c:3]');
+    test([1,1,3], [[1,5,6]], [3], '[1,1,3] - [1,5,6]');
+    test([1,2,3], [[4,5,6]], [1,2,3], '[1,2,3] - [4,5,6]');
+    test([1,2,3], [[2]], [1,3], '[1,2,3] - [2]');
+    test([1,2,3], [2], [1,3], '[1,2,3] - 2');
+    test(safeArray(undefined), [undefined], [], '[undefined] - undefined');
+
+    test([0,1,2,3], [undefined], [0,1,2,3], '[0,1,2,3] - undefined');
+    test([0,1,2,3], [null], [0,1,2,3], '[0,1,2,3] - null');
+    test([0,1,2,3], [{0:0}], [0,1,2,3], '[0,1,2,3] - {0:0}');
+
+    var arr = [1,2,3];
+    run(arr, 'subtract', [[3]]);
+    equal(arr, [1,2,3], 'is non-destructive');
+
+    var s1 = testGetSparseArray(3, 'a','b');
+    var s2 = testGetSparseArray(3, 'c','b');
+    test(s1, [s2], ['a'], 'works on sparse arrays');
+
+    var yFunc = function () { return 'y'; }
+    var xFunc = function () { return 'x'; }
+
+    test([xFunc], [[]], [xFunc], 'functions with different content | [x] - []');
+    test([yFunc], [[]], [yFunc], 'functions with different content | [y] - []');
+    test([], [[xFunc]], [], 'functions with different content | [] - [x]');
+    test([], [[yFunc]], [], 'functions with different content | [] - [y]');
+    test([], [[xFunc, yFunc]], [], 'functions with different content | [] - [x,y]');
+    test([xFunc], [[xFunc]], [], 'functions with different content | [x] - [x]');
+    test([xFunc], [[yFunc]], [xFunc], 'functions with different content | [x] - [y]');
+    test([xFunc], [[xFunc, yFunc]], [], 'functions with different content | [x] - [x,y]');
+    test([xFunc, xFunc], [[xFunc, yFunc]], [], 'functions with different content | [x,x] - [x,y]');
+    test([xFunc, xFunc], [[xFunc, xFunc]], [], 'functions with different content | [x,x] - [x,x]');
+    test([xFunc, yFunc], [[xFunc, yFunc]], [], 'functions with different content | [x,y] - [x,y]');
+    test([xFunc, yFunc], [[yFunc, xFunc]], [], 'functions with different content | [x,y] - [y,x]');
+    test([xFunc, yFunc], [[yFunc, yFunc]], [xFunc], 'functions with different content | [x,y] - [y,y]');
+    test([yFunc, xFunc], [[yFunc, xFunc]], [], 'functions with different content | [y,x] - [y,x]');
+    test([yFunc, xFunc], [[xFunc, yFunc]], [], 'functions with different content | [y,x] - [x,y]');
+    test([yFunc, xFunc], [[xFunc, xFunc]], [yFunc], 'functions with different content | [y,x] - [x,x]');
+    test([xFunc, xFunc], [[yFunc, yFunc]], [xFunc,xFunc], 'functions with different content | [x,x] - [y,y]');
+    test([yFunc, yFunc], [[xFunc, xFunc]], [yFunc,yFunc], 'functions with different content | [y,y] - [x,x]');
+
+    var xFunc = function() {};
+    var yFunc = function() {};
+
+    test([xFunc], [[]], [xFunc], 'functions with identical content | [x] - []');
+    test([yFunc], [[]], [yFunc], 'functions with identical content | [y] - []');
+    test([], [[xFunc]], [], 'functions with identical content | [] - [x]');
+    test([], [[yFunc]], [], 'functions with identical content | [] - [y]');
+    test([], [[xFunc, yFunc]], [], 'functions with identical content | [] - [x,y]');
+    test([xFunc], [[xFunc]], [], 'functions with identical content | [x] - [x]');
+    test([xFunc], [[yFunc]], [xFunc], 'functions with identical content | [x] - [y]');
+    test([xFunc], [[xFunc, yFunc]], [], 'functions with identical content | [x] - [x,y]');
+    test([xFunc, xFunc], [[xFunc, yFunc]], [], 'functions with identical content | [x,x] - [x,y]');
+    test([xFunc, xFunc], [[xFunc, xFunc]], [], 'functions with identical content | [x,x] - [x,x]');
+    test([xFunc, yFunc], [[xFunc, yFunc]], [], 'functions with identical content | [x,y] - [x,y]');
+    test([xFunc, yFunc], [[yFunc, xFunc]], [], 'functions with identical content | [x,y] - [y,x]');
+    test([xFunc, yFunc], [[yFunc, yFunc]], [xFunc], 'functions with identical content | [x,y] - [y,y]');
+    test([yFunc, xFunc], [[yFunc, xFunc]], [], 'functions with identical content | [y,x] - [y,x]');
+    test([yFunc, xFunc], [[xFunc, yFunc]], [], 'functions with identical content | [y,x] - [x,y]');
+    test([yFunc, xFunc], [[xFunc, xFunc]], [yFunc], 'functions with identical content | [y,x] - [x,x]');
+    test([xFunc, xFunc], [[yFunc, yFunc]], [xFunc,xFunc], 'functions with identical content | [x,x] - [y,y]');
+    test([yFunc, yFunc], [[xFunc, xFunc]], [yFunc,yFunc], 'functions with identical content | [y,y] - [x,x]');
+
+    equal(run([function(){ return 'a' }, function() { return 'b'; }], 'subtract', [[function() { return 'a'; }]]).length, 2, 'functions are always unique');
+    test([xFunc, yFunc], [[xFunc]], [yFunc], 'function references are ===');
+
+  });
+
   method('append', function() {
 
-    test([1,2,3], [4], [1,2,3,4], '1,2,3 + 4');
-    test(['a','b','c'], ['d'], ['a','b','c','d'], 'a,b,c + d');
-    test([{a:1},{a:2}], [{a:3}], [{a:1},{a:2},{a:3}], 'a:1,a:2 + a:3');
-    test([1,2,3], [[3,4,5]], [1,2,3,3,4,5], '1,2,3 + 3,4,5');
-    test(['a','b','c'], [['c','d','e']], ['a','b','c','c','d','e'], 'a,b,c + c,d,e');
-    test([1,2,3], [[1,2,3]], [1,2,3,1,2,3], '1,2,3 + 1,2,3');
-    test([1,2,3], [[3,2,1]], [1,2,3,3,2,1], '1,2,3 + 3,2,1');
-    test([], [[3]], [3], 'empty array + 3');
-    test([3], [[]], [3], '3 + empty array');
-    test([], [[]], [], '2 empty arrays');
-    test([null], [[]], [null], '[null] + empty array');
+    test([1,2,3], [4], [1,2,3,4], '[1,2,3] + 4');
+    test(['a','b','c'], ['d'], ['a','b','c','d'], '[a,b,c] + d');
+    test([{a:1},{a:2}], [{a:3}], [{a:1},{a:2},{a:3}], '[a:1,a:2] + a:3');
+    test([1,2,3], [[3,4,5]], [1,2,3,3,4,5], '[1,2,3] + [3,4,5]');
+    test(['a','b','c'], [['c','d','e']], ['a','b','c','c','d','e'], '[a,b,c] + [c,d,e]');
+    test([1,2,3], [[1,2,3]], [1,2,3,1,2,3], '[1,2,3] + [1,2,3]');
+    test([1,2,3], [[3,2,1]], [1,2,3,3,2,1], '[1,2,3] + [3,2,1]');
+    test([], [[3]], [3], '[] + [3]');
+    test([3], [[]], [3], '[3] + []');
+    test([], [[]], [], '[] + []');
+    test([null], [[]], [null], '[null] + []');
     test([null], [[null]], [null, null], '[null] + [null]');
     test([false], [[false]], [false, false], '[false] + [false]');
     test([false], [[0]], [false, 0], '[false] + [0]');
     test([false], [[null]], [false, null], '[false] + [null]');
     test([false], nestedUndefined, safeArray(false, undefined), '[false] + [undefined]');
-    test([{a:1},{b:2}], [[{b:2},{c:3}]], [{a:1},{b:2},{b:2},{c:3}], 'a:1,b:2 + b:2,c:3');
-    test([1,1,3], [[1,5,6]], [1,1,3,1,5,6], '1,1,3 + 1,5,6');
-    test([1,2,3], [[4,5,6]], [1,2,3,4,5,6], '1,2,3 + 4,5,6');
-    test([1,2,3], [1], [1,2,3,1], '1,2,3 + 1');
+    test([{a:1},{b:2}], [[{b:2},{c:3}]], [{a:1},{b:2},{b:2},{c:3}], '[a:1,b:2] + [b:2,c:3]');
+    test([1,1,3], [[1,5,6]], [1,1,3,1,5,6], '[1,1,3] + [1,5,6]');
+    test([1,2,3], [[4,5,6]], [1,2,3,4,5,6], '[1,2,3] + [4,5,6]');
+    test([1,2,3], [1], [1,2,3,1], '[1,2,3] + [1]');
+
+    test(['c','d'], [['a','b'], 0], ['a','b','c','d'], 'can effectively prepend');
 
     test([1,2,3], [4, 1], [1,4,2,3], 'index 1 | 4');
     test(['a','b','c'], ['d', 1], ['a','d','b','c'], 'index 1 | d');
@@ -210,26 +296,26 @@ namespace('Array', function () {
 
   method('insert', function() {
 
-    test([1,2,3], [4], [1,2,3,4], '1,2,3 + 4');
-    test(['a','b','c'], ['d'], ['a','b','c','d'], 'a,b,c + d');
-    test([{a:1},{a:2}], [{a:3}], [{a:1},{a:2},{a:3}], 'a:1,a:2 + a:3');
-    test([1,2,3], [[3,4,5]], [1,2,3,3,4,5], '1,2,3 + 3,4,5');
-    test(['a','b','c'], [['c','d','e']], ['a','b','c','c','d','e'], 'a,b,c + c,d,e');
-    test([1,2,3], [[1,2,3]], [1,2,3,1,2,3], '1,2,3 + 1,2,3');
-    test([1,2,3], [[3,2,1]], [1,2,3,3,2,1], '1,2,3 + 3,2,1');
-    test([], [[3]], [3], 'empty array + 3');
-    test([3], [[]], [3], '3 + empty array');
-    test([], [[]], [], '2 empty arrays');
-    test([null], [[]], [null], '[null] + empty array');
+    test([1,2,3], [4], [1,2,3,4], '[1,2,3] + 4');
+    test(['a','b','c'], ['d'], ['a','b','c','d'], '[a,b,c] + d');
+    test([{a:1},{a:2}], [{a:3}], [{a:1},{a:2},{a:3}], '[a:1,a:2] + a:3');
+    test([1,2,3], [[3,4,5]], [1,2,3,3,4,5], '[1,2,3] + [3,4,5]');
+    test(['a','b','c'], [['c','d','e']], ['a','b','c','c','d','e'], '[a,b,c] + [c,d,e]');
+    test([1,2,3], [[1,2,3]], [1,2,3,1,2,3], '[1,2,3] + [1,2,3]');
+    test([1,2,3], [[3,2,1]], [1,2,3,3,2,1], '[1,2,3] + [3,2,1]');
+    test([], [[3]], [3], '[] + [3]');
+    test([3], [[]], [3], '[3] + []');
+    test([], [[]], [], '[] + []');
+    test([null], [[]], [null], '[null] + []');
     test([null], [[null]], [null, null], '[null] + [null]');
     test([false], [[false]], [false, false], '[false] + [false]');
     test([false], [[0]], [false, 0], '[false] + [0]');
     test([false], [[null]], [false, null], '[false] + [null]');
     test([false], nestedUndefined, safeArray(false, undefined), '[false] + [undefined]');
-    test([{a:1},{b:2}], [[{b:2},{c:3}]], [{a:1},{b:2},{b:2},{c:3}], 'a:1,b:2 + b:2,c:3');
-    test([1,1,3], [[1,5,6]], [1,1,3,1,5,6], '1,1,3 + 1,5,6');
-    test([1,2,3], [[4,5,6]], [1,2,3,4,5,6], '1,2,3 + 4,5,6');
-    test([1,2,3], [1], [1,2,3,1], '1,2,3 + 1');
+    test([{a:1},{b:2}], [[{b:2},{c:3}]], [{a:1},{b:2},{b:2},{c:3}], '[a:1,b:2] + [b:2,c:3]');
+    test([1,1,3], [[1,5,6]], [1,1,3,1,5,6], '[1,1,3] + [1,5,6]');
+    test([1,2,3], [[4,5,6]], [1,2,3,4,5,6], '[1,2,3] + [4,5,6]');
+    test([1,2,3], [1], [1,2,3,1], '[1,2,3] + 1');
 
     test([1,2,3], [4, 1], [1,4,2,3], 'index 1 | 4');
     test(['a','b','c'], ['d', 1], ['a','d','b','c'], 'index 1 | d');
@@ -618,7 +704,6 @@ namespace('Array', function () {
     test([1,2,3], [[4]], [1,2,3,4], '1,2,3 + 4');
 
     test([1,2,3], [[4,8,10]], [1,2,3,4,8,10], '1,2,3 + 4 8 10');
-    test([1,2,3], [[4],[8],[10]], [1,2,3,4,8,10], '1,2,3 + [4] [8] [10]');
 
     var arr = [1,2,3];
     run(arr, 'union', [[4,5,6]]);
@@ -844,9 +929,9 @@ namespace('Array', function () {
     test([{a:1},{b:2}], [[{b:2},{c:3}]], [{b:2}], 'a:1,b:2 & b:2,c:3');
     test([1,1,3], [[1,5,6]], [1], '1,1,3 & 1,5,6');
     test([1,2,3], [[4,5,6]], [], '1,1,3 & 4,5,6');
-    test([1,2,3], [[3,4,5],[0,1]], [1,3], 'handles multiple arguments');
     test([1,1], [[1,1,[1,1]]], [1], 'assure uniqueness');
     test([1,2,3], [[1]], [1], '1,2,3 + 1');
+    test(safeArray(undefined), [undefined], safeArray(undefined), '[undefined] & undefined');
 
     var arr = [1,2,3];
     run(arr, 'intersect', [[3,4,5]]);
@@ -901,85 +986,6 @@ namespace('Array', function () {
     test([yFunc, xFunc], [[xFunc, xFunc]], [xFunc], 'functions with identical content | [y,x] & [x,x]');
     test([xFunc, xFunc], [[yFunc, yFunc]], [], 'functions with identical content | [x,x] & [y,y]');
     test([yFunc, yFunc], [[xFunc, xFunc]], [], 'functions with identical content | [y,y] & [x,x]');
-
-  });
-
-  method('subtract', function() {
-
-    test([1,2,3], [[3,4,5]], [1,2], '1,2,3 + 3,4,5');
-    test([1,1,2,2,3,3,4,4,5,5], [[2,3,4]], [1,1,5,5], '1,1,2,2,3,3,4,4,5,5 + 2,3,4');
-    test(['a','b','c'], [['c','d','e']], ['a','b'], 'a,b,c + c,d,e');
-    test([1,2,3], [[1,2,3]], [], '1,2,3 + 1,2,3');
-    test([1,2,3], [[3,2,1]], [], '1,2,3 + 3,2,1');
-    test([], [[3]], [], 'empty array + [3]');
-    test([3], [[]], [3], '[3] + empty array');
-    test([], [[]], [], '2 empty arrays');
-    test([null], [[]], [null], '[null] + empty array');
-    test([null], [[null]], [], '[null] + [null]');
-    test([false], [[false]], [], '[false] + [false]');
-    test([false], [[0]], [false], '[false] + [0]');
-    test([false], [[null]], [false], '[false] + [null]');
-    test([false], nestedUndefined, [false], '[false] + [undefined]');
-    test([{a:1},{b:2}], [[{b:2},{c:3}]], [{a:1}], 'a:1,b:2 + b:2,c:3');
-    test([1,1,3], [[1,5,6]], [3], '1,1,3 + 1,5,6');
-    test([1,2,3], [[4,5,6]], [1,2,3], '1,2,3 + 4,5,6');
-    test([1,2,3], [[1]], [2,3], '1,2,3 + 1');
-    test([1,2,3,4,5], [[1],[3],[5]], [2,4], 'handles multiple arguments');
-
-    var arr = [1,2,3];
-    run(arr, 'subtract', [[3]]);
-    equal(arr, [1,2,3], 'is non-destructive');
-
-    var s1 = testGetSparseArray(3, 'a','b');
-    var s2 = testGetSparseArray(3, 'c','b');
-    test(s1, [s2], ['a'], 'works on sparse arrays');
-
-    var yFunc = function () { return 'y'; }
-    var xFunc = function () { return 'x'; }
-
-    test([xFunc], [[]], [xFunc], 'functions with different content | [x] - []');
-    test([yFunc], [[]], [yFunc], 'functions with different content | [y] - []');
-    test([], [[xFunc]], [], 'functions with different content | [] - [x]');
-    test([], [[yFunc]], [], 'functions with different content | [] - [y]');
-    test([], [[xFunc, yFunc]], [], 'functions with different content | [] - [x,y]');
-    test([xFunc], [[xFunc]], [], 'functions with different content | [x] - [x]');
-    test([xFunc], [[yFunc]], [xFunc], 'functions with different content | [x] - [y]');
-    test([xFunc], [[xFunc, yFunc]], [], 'functions with different content | [x] - [x,y]');
-    test([xFunc, xFunc], [[xFunc, yFunc]], [], 'functions with different content | [x,x] - [x,y]');
-    test([xFunc, xFunc], [[xFunc, xFunc]], [], 'functions with different content | [x,x] - [x,x]');
-    test([xFunc, yFunc], [[xFunc, yFunc]], [], 'functions with different content | [x,y] - [x,y]');
-    test([xFunc, yFunc], [[yFunc, xFunc]], [], 'functions with different content | [x,y] - [y,x]');
-    test([xFunc, yFunc], [[yFunc, yFunc]], [xFunc], 'functions with different content | [x,y] - [y,y]');
-    test([yFunc, xFunc], [[yFunc, xFunc]], [], 'functions with different content | [y,x] - [y,x]');
-    test([yFunc, xFunc], [[xFunc, yFunc]], [], 'functions with different content | [y,x] - [x,y]');
-    test([yFunc, xFunc], [[xFunc, xFunc]], [yFunc], 'functions with different content | [y,x] - [x,x]');
-    test([xFunc, xFunc], [[yFunc, yFunc]], [xFunc,xFunc], 'functions with different content | [x,x] - [y,y]');
-    test([yFunc, yFunc], [[xFunc, xFunc]], [yFunc,yFunc], 'functions with different content | [y,y] - [x,x]');
-
-    var xFunc = function() {};
-    var yFunc = function() {};
-
-    test([xFunc], [[]], [xFunc], 'functions with identical content | [x] - []');
-    test([yFunc], [[]], [yFunc], 'functions with identical content | [y] - []');
-    test([], [[xFunc]], [], 'functions with identical content | [] - [x]');
-    test([], [[yFunc]], [], 'functions with identical content | [] - [y]');
-    test([], [[xFunc, yFunc]], [], 'functions with identical content | [] - [x,y]');
-    test([xFunc], [[xFunc]], [], 'functions with identical content | [x] - [x]');
-    test([xFunc], [[yFunc]], [xFunc], 'functions with identical content | [x] - [y]');
-    test([xFunc], [[xFunc, yFunc]], [], 'functions with identical content | [x] - [x,y]');
-    test([xFunc, xFunc], [[xFunc, yFunc]], [], 'functions with identical content | [x,x] - [x,y]');
-    test([xFunc, xFunc], [[xFunc, xFunc]], [], 'functions with identical content | [x,x] - [x,x]');
-    test([xFunc, yFunc], [[xFunc, yFunc]], [], 'functions with identical content | [x,y] - [x,y]');
-    test([xFunc, yFunc], [[yFunc, xFunc]], [], 'functions with identical content | [x,y] - [y,x]');
-    test([xFunc, yFunc], [[yFunc, yFunc]], [xFunc], 'functions with identical content | [x,y] - [y,y]');
-    test([yFunc, xFunc], [[yFunc, xFunc]], [], 'functions with identical content | [y,x] - [y,x]');
-    test([yFunc, xFunc], [[xFunc, yFunc]], [], 'functions with identical content | [y,x] - [x,y]');
-    test([yFunc, xFunc], [[xFunc, xFunc]], [yFunc], 'functions with identical content | [y,x] - [x,x]');
-    test([xFunc, xFunc], [[yFunc, yFunc]], [xFunc,xFunc], 'functions with identical content | [x,x] - [y,y]');
-    test([yFunc, yFunc], [[xFunc, xFunc]], [yFunc,yFunc], 'functions with identical content | [y,y] - [x,x]');
-
-    equal(run([function(){ return 'a' }, function() { return 'b'; }], 'subtract', [[function() { return 'a'; }]]).length, 2, 'functions are always unique');
-    test([xFunc, yFunc], [[xFunc]], [yFunc], 'function references are ===');
 
   });
 
