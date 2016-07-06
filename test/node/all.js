@@ -7,7 +7,6 @@ runner.notice('Polyfills');
 // Cannot practially run ES5 tests here as resetting
 // native methods breaks the node require system.
 runner.load('./default/sugar-es6.js');
-runner.load('./default/sugar-es7.js');
 
 runner.notice('Default');
 runner.load('./default/dist.js');

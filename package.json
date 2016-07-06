@@ -43,8 +43,6 @@
     "glob": "^5.0.14",
     "google-closure-compiler": "^20160517.1.0",
     "gulp": "^3.9.0",
-    "gulp-concat-util": "^0.5.2",
-    "gulp-replace": "^0.5.3",
     "gulp-util": "^3.0.6",
     "merge-stream": "^0.1.8",
     "mkdirp": "^0.5.1",

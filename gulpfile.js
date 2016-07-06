@@ -3,6 +3,7 @@ var fs      = require('fs'),
     gulp    = require('gulp'),
     path    = require('path'),
     args    = require('yargs').argv,
+    file    = require('gulp-file'),
     gutil   = require('gulp-util'),
     mkdirp  = require('mkdirp'),
     through = require('through2');
@@ -445,6 +446,13 @@ var ALL_MODULES = [
   'language'
 ];
 
+var SPLIT_MODULES = [
+  'es5',
+  'es6',
+  'es7',
+  'range'
+];
+
 var LICENSE = block`
 /*
  *  Sugar ${getVersion()}
@@ -503,32 +511,18 @@ function getQmlWrapper() {
   return [LICENSE, QML_WRAPPER].join('\n');
 }
 
-function createDevelopmentBuild(outputPath, moduleNames, localeCodes) {
+function createDevelopmentBuild(outputPath, modules, locales) {
 
-  var concat  = require('gulp-concat-util');
-  var replace = require('gulp-replace');
+  outputPath = outputPath || getBuildPath();
+  var src = getSource(modules, locales);
 
-  var filename = outputPath || getBuildPath();
-  var wrapper  = getWrapper(args.qml);
-
-  var modules = getModules(moduleNames);
-  var locales = getLocales(localeCodes);
-
-  return gulp.src(modules.concat(locales))
-    .pipe(concat(path.basename(filename), { newLine: '' }))
-    .pipe(replace(/^'use strict';\n/gm, ''))
-    .pipe(replace(/^(?=.)/gm, '  '))
-    .pipe(replace(/^([\s\S]+)$/m, wrapper))
-    .pipe(replace(/edge/, getVersion()))
-    .pipe(gulp.dest(path.dirname(filename)));
+  return file(path.basename(outputPath), src, { src: true })
+    .pipe(gulp.dest(path.dirname(outputPath)));
 }
 
-function createMinifiedBuild(outputPath, moduleNames, localeCodes) {
+function createMinifiedBuild(outputPath, modules, locales) {
 
-  var filename = outputPath || getBuildPath(true);
-
-  var modules = getModules(moduleNames);
-  var locales = getLocales(localeCodes);
+  outputPath = outputPath || getBuildPath(true);
 
   try {
     fs.lstatSync(COMPILER_JAR_PATH);
@@ -536,17 +530,84 @@ function createMinifiedBuild(outputPath, moduleNames, localeCodes) {
     gutil.log(gutil.colors.red('Closure compiler missing!'), 'Run', gutil.colors.yellow('bower install'));
     return;
   }
-  return gulp.src(modules.concat(locales))
-    .pipe(compileSingle(filename))
+
+  // closure-compiler-stream does not handle direct input,
+  // so need to write a temp file here to pass to compiler args.
+  // Ensure unique path in case multiple streams are compiling
+  // at the same time.
+  var tmpPath = path.join(path.dirname(outputPath), path.basename(outputPath, '.min.js')) +  '.tmp.js';
+  writeFile(tmpPath, getSource(modules, locales));
+
+  return gulp.src(tmpPath)
+    .pipe(compileSingle(outputPath))
     .pipe(through.obj(function(file, enc, cb) {
-      setTimeout(function() {
-        // Extremely hacky way of replacing the version in the compiler output
-        // due to the fact that closure-compiler-stream doesn't return a reference
-        // to the final writeStream.
-        writeFile(file.path, readFile(file.path).replace(/edge/, getVersion()));
-      }, 100);
+      fs.unlink(tmpPath);
       cb();
     }));
+}
+
+function getSource(m, l) {
+
+  var src = '';
+
+  var modulePaths = getModulePaths(m);
+  var localePaths = getLocalePaths(l);
+
+  var namespaceConstraints = getNamespaceConstraints();
+
+  modulePaths.forEach(function(p, i) {
+    var content = readFile(p);
+    var moduleName = path.basename(p, '.js');
+    var namespaceName = namespaceConstraints[moduleName];
+    if (moduleName === 'core') {
+      content = content.replace(/edge/, getVersion());
+    } else if (namespaceName) {
+      content = getSplitModule(content, namespaceName);
+    }
+    src += content;
+  });
+  localePaths.forEach(function(p) {
+    src += readFile(p);
+  });
+
+  src = src.replace(/^'use strict';\n/gm, '');
+  src = src.replace(/^(?=.)/gm, '  ');
+  src = src.replace(/^([\s\S]+)$/m, getWrapper(args.qml));
+
+  // Allowing namespace constraints such as
+  // ES5:String to only build for that namespace.
+  function getNamespaceConstraints() {
+    var map = {};
+    getModuleNames(m).forEach(function(n) {
+      var split = n.split(':');
+      var moduleName = split[0];
+      var namespaceName = split[1];
+      if (namespaceName) {
+        if (SPLIT_MODULES.indexOf(moduleName) === -1) {
+          warn('Module ' + moduleName + ' is not ready to be split!');
+          warn('Exiting...');
+          process.exit();
+        }
+        map[moduleName] = namespaceName;
+      }
+    });
+    return map;
+  }
+
+  // Split the module into namespaces here and match on the allowed one.
+  function getSplitModule(content, namespace) {
+    var src = '', lastIdx = 0, currentNamespace;
+    content.replace(/\/\*\*\* @namespace (\w+) \*\*\*\/\n|$/g, function(match, nextNamespace, idx) {
+      if (!currentNamespace || currentNamespace === namespace) {
+        src += content.slice(lastIdx, idx);
+      }
+      currentNamespace = (nextNamespace || '').toLowerCase();
+      lastIdx = idx;
+    });
+    return src;
+  }
+
+  return src;
 }
 
 function logBuildResults(stream) {
@@ -589,52 +650,74 @@ function getBuildPath(min) {
 
 function getModuleNames(m) {
 
-  var names = (m || args.m || args.module || args.modules || 'default').split(',');
+  var moduleNames, sortedModuleNames;
+
+  moduleNames = (m || args.m || args.module || args.modules || 'default').toLowerCase().split(',');
 
   function alias(name, modules) {
-    var index = names.indexOf(name);
+    var index = moduleNames.indexOf(name);
     if (index !== -1) {
-      names.splice.apply(names, [index, 1].concat(modules));
+      moduleNames.splice.apply(moduleNames, [index, 1].concat(modules));
     }
+  }
+
+  function nameRank(moduleName) {
+    var rank = moduleIsPolyfill(moduleName) ? 0 : 10;
+    rank += moduleNames.indexOf(moduleName);
+    return rank;
   }
 
   alias('all', ALL_MODULES);
   alias('default', DEFAULT_MODULES);
 
   if (args.es5) {
-    names.unshift('es5');
+    moduleNames.unshift('es5');
   }
 
   if (args.polyfills === false) {
-    names = names.filter(function(n) {
-      return !n.match(/^es[567]$/);
+    moduleNames = moduleNames.filter(function(moduleName) {
+      return !moduleIsPolyfill(moduleName);
     });
   }
-  return names;
+
+  // Keeping the names sorted as input except to push
+  // polyfill modules to the top where they need to be.
+  sortedModuleNames = moduleNames.concat();
+
+  sortedModuleNames.sort(function(a, b) {
+    var aRank = nameRank(a);
+    var bRank = nameRank(b);
+    return aRank - bRank;
+  });
+
+  return sortedModuleNames;
 }
 
-function getModules(m) {
+function getModulePaths(m) {
 
-  var names = getModuleNames(m);
+  var names = getModuleNames(m), paths = [], namespaces = {};
 
   function getPath(name) {
     return path.join('lib', name.toLowerCase() + '.js');
   }
 
-  names.forEach(function(n) {
+  names = names.map(function(n) {
+    var moduleName = n.split(':')[0];
     try {
-      fs.lstatSync(getPath(n));
+      fs.lstatSync(getPath(moduleName));
     } catch(e) {
-      warn('Cannot find module ' + n + '!');
+      warn('Cannot find module ' + moduleName + '!');
       warn('Exiting...');
       process.exit();
     }
+    return moduleName;
   });
 
   if (!names.length || names[0] !== 'core') {
     names.unshift('common');
   }
   names.unshift('core');
+
   return uniq(names).map(getPath);
 }
 
@@ -650,7 +733,7 @@ function getLocaleCodes(l) {
   return names || [];
 }
 
-function getLocales(l) {
+function getLocalePaths(l) {
 
   var codes = getLocaleCodes(l);
 
@@ -692,7 +775,7 @@ function buildHasCustomLocales() {
 var PACKAGE_DEFINITIONS = {
   'sugar': {
     bower: false, // Same as distributed build
-    modules: 'ES6,ES7,String,Number,Array,Enumerable,Object,Date,Locales,Range,Function,RegExp',
+    modules: 'ES5,ES6,ES7,String,Number,Array,Enumerable,Object,Date,Locales,Range,Function,RegExp',
     description: 'This build includes default Sugar modules, polyfills, and optional date locales.'
   },
   'sugar-core': {
@@ -701,38 +784,36 @@ var PACKAGE_DEFINITIONS = {
   },
   'sugar-es5': {
     modules: 'ES5',
+    polyfill: true,
     description: 'This build includes all ES5 polyfills not included in the default build.'
   },
   'sugar-es6': {
     modules: 'ES6',
+    polyfill: true,
     description: 'This build includes all ES6 polyfills bundled with Sugar. Currently this is String#includes, String#startsWith, String#endsWith, String#repeat, Number.isNaN, Array#find, Array#findIndex, and Array.from.'
   },
-  'sugar-es7': {
-    modules: 'ES7',
-    description: 'This build includes all ES7 polyfills bundled with Sugar. Currently this is only Array#includes.'
-  },
   'sugar-string': {
-    modules: 'String,ES6:String,Range:String',
+    modules: 'ES5:String,ES6:String,String,Range:String',
     description: 'This build includes methods for string manipulation, escaping, encoding, truncation, and conversion.'
   },
   'sugar-number': {
-    modules: 'Number,ES6:Number,Range:Number',
+    modules: 'ES6:Number,Number,Range:Number',
     description: 'This build includes methods for number formatting, rounding (with precision), and aliases to Math methods.'
   },
   'sugar-enumerable': {
-    modules: 'Enumerable,ES6:Array,ES7:Array',
+    modules: 'ES5:Array,ES6:Array,ES7:Array,Enumerable',
     description: 'This build includes methods common to arrays and objects, such as matching elements/properties, mapping, counting, and averaging. Also included are polyfills for methods that enhance arrays: Array#find, Array#findIndex, Array#includes.'
   },
   'sugar-array': {
-    modules: 'Array,ES6:Array,ES7:Array',
+    modules: 'ES5:Array,ES6:Array,ES7:Array,Array',
     description: 'This build includes methods for array manipulation, grouping, randomizing, and alphanumeric sorting and collation.'
   },
   'sugar-object': {
-    modules: 'Object',
+    modules: 'ES5:Object,Object',
     description: 'This build includes methods for object creation, manipulation, comparison, and type checking. Note that Object.prototype is not extended by default. See the README for more.'
   },
   'sugar-date': {
-    modules: 'Date,Locales,Range:Date',
+    modules: 'ES5:Date,Date,Locales,Range:Date',
     description: 'This build includes methods for date parsing and formatting, relative formats like "1 minute ago", number methods like "daysAgo", and optional date locales.'
   },
   'sugar-range': {
@@ -740,7 +821,7 @@ var PACKAGE_DEFINITIONS = {
     description: 'This build includes number, string, and date ranges. Ranges can be iterated over, compared, and manipulated.'
   },
   'sugar-function': {
-    modules: 'Function',
+    modules: 'ES5:Function,Function',
     description: 'This build includes methods for lazy, throttled, and memoized functions, delayed functions, timers, and argument currying.'
   },
   'sugar-regexp': {
@@ -789,7 +870,7 @@ function sourcePackageExportsMethod(p) {
 }
 
 function moduleIsPolyfill(moduleName) {
-  return /ES[567]/i.test(moduleName);
+  return /^ES[567]/i.test(moduleName);
 }
 
 // -------------- Package Util ----------------
@@ -818,41 +899,57 @@ function copyPackageMeta(packageDir) {
 
 function copyLocales(l, dir) {
   mkdirp.sync(dir);
-  getLocales(l).forEach(function(src) {
+  getLocalePaths(l).forEach(function(src) {
     writeFile(path.join(dir, path.basename(src)), readFile(src));
   });
 }
 
 function buildPackageDist(packageName, packageDir) {
 
+  var stream = getEmptyStream();
   var definition = getPackageDefinition(packageName);
 
-  function write(modules) {
-    var stream = getEmptyStream();
-    var devFilename = path.join(packageDir, getDistFilename(packageName));
-    var minFilename = path.join(packageDir, getDistFilename(packageName, true));
-    addStream(stream, createDevelopmentBuild(devFilename, modules, ''));
-    addStream(stream, createMinifiedBuild(minFilename, modules, ''));
-    return stream;
-  }
-
-  function getFilteredModules(moduleDefinitions) {
-    return moduleDefinitions.split(',').map(function(md) {
-      return md.split(':')[0];
-    }).filter(function(m) {
+  function getPackageModules() {
+    return definition.modules.split(',').filter(function(m) {
       if (m === 'Locales') {
         copyLocales('all', path.join(packageDir, 'locales'));
         return false;
       }
       return true;
-    }).join(',');
+    });
   }
 
-  return write(getFilteredModules(definition.modules));
+  function buildSet(modules, es5) {
+    modules = modules.join(',');
+    var devFilename = path.join(packageDir, getDistFilename(packageName, es5));
+    var minFilename = path.join(packageDir, getDistFilename(packageName, es5, true));
+    addStream(stream, createDevelopmentBuild(devFilename, modules, ''));
+    addStream(stream, createMinifiedBuild(minFilename, modules, ''));
+    return stream;
+  }
+
+  function buildSets() {
+    var allModules = getPackageModules(), filteredModules;
+
+    filteredModules = allModules.filter(function(m) {
+      return !/^ES5/.test(m);
+    });
+
+    if (packageName !== 'sugar-es5') {
+      if (filteredModules.length !== allModules.length) {
+        buildSet(allModules, true);
+      }
+    }
+    buildSet(filteredModules);
+  }
+
+  buildSets();
+
+  return stream;
 }
 
-function getDistFilename(packageName, min) {
-  return packageName + (min ? '.min' : '') + '.js';
+function getDistFilename(packageName, es5, min) {
+  return packageName + (es5 ? '-es5' : '') + (min ? '.min' : '') + '.js';
 }
 
 function getPackageNames(p) {
@@ -1941,13 +2038,61 @@ function buildNpmPackages(p, rebuild) {
       });
     }
 
+    function createPackageEntryPoints(moduleDefinitions, packageDefinition) {
+      createPackageMainEntryPoint(moduleDefinitions, packageDefinition);
+      if (!packageDefinition.polyfill) {
+        createPackagePolyfillEntryPoint(moduleDefinitions, /^ES[567]/, 'polyfills');
+        createPackagePolyfillEntryPoint(moduleDefinitions, /^ES5/, 'polyfills', 'es5');
+        createPackagePolyfillEntryPoint(moduleDefinitions, /^ES6/, 'polyfills', 'es6');
+        createPackagePolyfillEntryPoint(moduleDefinitions, /^ES6/, 'polyfills', 'es6');
+      }
+    }
+
+    function createPackageMainEntryPoint(moduleDefinitions, packageDefinition) {
+      // Filtering out polyfills in main entry point
+      // except for packages that only define polyfills.
+      var paths = moduleDefinitions.filter(function(md) {
+        return (md.type === 'polyfill') === !!packageDefinition.polyfill;
+      }).map(function(md) {
+        return md.path;
+      });
+      createEntryPoint(paths);
+    }
+
+    function createPackagePolyfillEntryPoint(moduleDefinitions, match, subPath, entryPointName) {
+      var paths = moduleDefinitions.filter(function(md) {
+        return md.type === 'polyfill' && match.test(md.name);
+      }).map(function(md) {
+        return path.join('..', md.path);
+      });
+      if (paths.length) {
+        createEntryPoint(paths, subPath, entryPointName);
+      }
+    }
+
+    function createPackageEntryPoint(moduleDefinitions, polyfillMatch, subPath) {
+      // Filtering out polyfills in main entry point
+      // except for packages that only define polyfills.
+      var paths = moduleDefinitions.filter(function(md) {
+        if (polyfillMatch) {
+          return;
+        }
+        return (md.type === 'polyfill') === !!polyfill;
+      }).map(function(md) {
+        return polyfill ? path.join('..', md.path) : md.path;
+      });
+      if (paths.length) {
+        createEntryPoint(paths, subPath);
+      }
+    }
+
     function exportAllModules() {
       var packageDefinition = getPackageDefinition(packageName);
       var moduleDefinitions = getModuleDefinitions(packageDefinition.modules);
       moduleDefinitions.forEach(function(m) {
         exportModule(m.name, m.namespace);
       });
-      createEntryPoint(groupBy(moduleDefinitions, 'type'));
+      createPackageEntryPoints(moduleDefinitions, packageDefinition);
     }
 
     function exportModule(moduleName, restrictedNamespace) {
@@ -2273,8 +2418,8 @@ function buildNpmPackages(p, rebuild) {
 
     // --- Entry Point ---
 
-    function createEntryPoint(paths, subPath) {
-      var outputPath = path.join(packageDir, subPath || '', 'index.js'), requires;
+    function createEntryPoint(paths, subPath, name) {
+      var outputPath = path.join(packageDir, subPath || '', (name || 'index') + '.js'), requires;
       requires = Array.isArray(paths) ? getRequiresForArray(paths) : getRequiresForGroup(paths);
       var exports = "module.exports = require('sugar-core');";
       var outputBody = [STRICT, requires, exports].join('\n\n');
@@ -2640,7 +2785,7 @@ function getJSONDocs() {
 
   var currentNamespace;
   var currentModuleName;
-  var modules = getModules('all');
+  var modules = getModulePaths('all');
   var modulePathMap = {};
 
   function getNamespaceForModuleName(name) {
