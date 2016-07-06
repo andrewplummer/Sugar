@@ -307,6 +307,47 @@ namespace('Number', function () {
     test(-5, [-10], -10, '-5 capped to -10');
   });
 
+  method('upto', function() {
+
+    var ret;
+    var counter = 0;
+    var dCounter = 1;
+    var callback = function(n, i) {
+      equal(n, dCounter, 'n is set');
+      equal(i, counter, 'index is set');
+      counter++;
+      dCounter++;
+    };
+    var ret = run(1, 'upto', [5, callback]);
+    equal(counter, 5, 'iterated 5 times');
+    equal(ret, [1,2,3,4,5], 'returns array');
+
+    var counter = 0;
+    var dCounter = 5;
+    var callback = function(n, i) {
+      equal(n, dCounter, 'n is set');
+      equal(i, counter, 'index is set');
+      counter++;
+      dCounter--;
+    };
+    var ret = run(5, 'upto', [1, callback]);
+    equal(counter, 5, 'up to 1 | iterates 5 times');
+    equal(ret, [5,4,3,2,1], 'up to 1 | returns equivalent of downto');
+
+    test(3, [9, 3], [3,6,9], 'step by 3');
+    test(3, [10, 3], [3,6,9], 'step by 3 | stops at 9');
+    test(3, [8, 3], [3,6], 'step by 3 | stops at 8');
+
+
+    // Issue #394 - Ranges using infinity are not valid.
+
+    test(1, [Infinity], [], 'cannot go up to infinity');
+    test(1, [-Infinity], [], 'cannot go up to negative infinity');
+    test(Infinity, [1], [], 'cannot go up from infinity');
+    test(-Infinity, [1], [], 'cannot go up from negative infinity');
+
+  });
+
   method('downto', function() {
     var ret;
     var counter = 0;
@@ -335,49 +376,10 @@ namespace('Number', function () {
     equal(counter, 6, '5 downto 10 | iterates 6 times');
     equal(ret, [5,6,7,8,9,10], '5 downto 10 | returns equivalent of upto');
 
-    test(9, [3, null, 3], [9,6,3], 'can handle multiples');
-    test(9, [4, null, 3], [9,6], 'can handle multiples stops at 4');
-    test(9, [2, null, 3], [9,6,3], 'can handle multiples stops at 2');
+    test(9, [3, 3], [9,6,3], 'can handle multiples');
+    test(9, [4, 3], [9,6], 'can handle multiples stops at 4');
+    test(9, [2, 3], [9,6,3], 'can handle multiples stops at 2');
 
-  });
-
-  method('upto', function() {
-    var ret;
-    var counter = 0;
-    var dCounter = 1;
-    var callback = function(n, i) {
-      equal(n, dCounter, 'n is set');
-      equal(i, counter, 'index is set');
-      counter++;
-      dCounter++;
-    };
-    ret = run(1, 'upto', [5, callback]);
-    equal(counter, 5, 'iterated 5 times');
-    equal(ret, [1,2,3,4,5], 'returns array');
-
-    counter = 0;
-    dCounter = 5;
-    callback = function(n, i) {
-      equal(n, dCounter, 'n is set');
-      equal(i, counter, 'index is set');
-      counter++;
-      dCounter--;
-    };
-    ret = run(5, 'upto', [1, callback]);
-    equal(counter, 5, 'up to 1 | iterates 5 times');
-    equal(ret, [5,4,3,2,1], 'up to 1 | returns equivalent of downto');
-
-    test(3, [9, null, 3], [3,6,9], 'can handle multiples');
-    test(3, [10, null, 3], [3,6,9], 'can handle multiples stops at 9');
-    test(3, [8, null, 3], [3,6], 'can handle multiples stops at 8');
-
-
-    // Issue #394 - Ranges using infinity are not valid.
-
-    test(1, [Infinity], [], 'cannot go up to infinity');
-    test(1, [-Infinity], [], 'cannot go up to negative infinity');
-    test(Infinity, [1], [], 'cannot go up from infinity');
-    test(-Infinity, [1], [], 'cannot go up from negative infinity');
   });
 
 
