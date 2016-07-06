@@ -88,6 +88,12 @@ v2.0.0
 - Reversed arguments in `Date#relative`.
 - Removed `Array#each` in favor of `Array#forEachFromIndex` in cases where the index is needed.
 - Added `fromIndex` methods. Moved `findFrom` and `findIndexFrom` to be inline with these.
+- Renamed `Object.each` to `Object.forEach` to bring it in line with other methods.
+- Moved `Array#subtract`, `Array#intersect`, and `Array#union` to `defineInstance` block to follow other methods more closely.
+- Removed `String#add`, which on its own is largely useless in favor of `String#insert` which was previously an alias.
+- Removed `all` and `any` aliases.
+- Moved the `step` argument in `Number#upto` and `Number#downto` to be an optional 2nd argument.
+- Removed callbacks in `Object.keys` and `Object.values`. `Object.forEach` should be preferred method of iteration.
 
 
 v1.4.2
