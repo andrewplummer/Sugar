@@ -33,13 +33,6 @@ namespace('Array', function () {
       test([el1,el2], [[el1,el2]], [el1,el2], 'DOM Elements | [a,b] & [b]');
     });
 
-    method('any', function() {
-      test([el1,el2], [el1], true, 'DOM Elements | a in [a,b]');
-      test([el1,el2], [el2], true, 'DOM Elements | b in [a,b]');
-      test([el1], [el1], true, 'DOM Elements | a in [a]');
-      test([el1], [el2], false, 'DOM Elements | b in [a]');
-    });
-
     method('every', function() {
       test([el1,el2], [el1], false, 'DOM Elements | a in [a,b]');
       test([el1,el2], [el2], false, 'DOM Elements | b in [a,b]');
