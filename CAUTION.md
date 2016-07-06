@@ -50,6 +50,9 @@ Drop it in before upgrading to get a general idea of what needs to change, or up
   - `Object.findAll` was replaced with `Object.filter`, which parallels `Array#filter` by returning a filtered object.
 
 - Level: Major
+  - `Object.each` was renamed as `Object.forEach` to bring it more in line with other object methods. Additionally it no longer allows a return value to break the loop. Use `Object.some` instead for this functionality.
+
+- Level: Major
   - `Date#utc` is now `Date#setUTC`, and now requires explicitly passing `true` as the first argument to set the flag to true.
 
 - Level: Major
@@ -94,6 +97,15 @@ Drop it in before upgrading to get a general idea of what needs to change, or up
 - Level: Major
   - `String#capitalize` will now only capitalize the first letter of a string by default. If you want to downcase the rest of the string, pass true for the 1st argument. Capitalizing all words is now the 2nd argument.
 
+- Level: Major
+  - `String#add` was removed and now exists only as `String#insert`, which it was mainly providing the basis for.
+
+- Level: Major
+  - `Array#all`, `Array#any`, `Object.all`, and `Object.any` aliases were removed to align Sugar more with native methods. If needed, these can still easily be aliased with `Sugar.Array.alias('all', 'every');`.
+
+- Level: Moderate
+  - `Object.keys` and `Object.values` no longer have callbacks as second arguments. Use `Object.forEach` for iteration over an object's properties.
+
 - Level: Moderate
   - `Number#format` no longer accepts arguments for the thousands separator and decimal point. Instead these can now be set globally using Sugar.Number.thousands() and Sugar.Number.decimal(). These will also be respected by Number#abbr, Number#metric, and Number#bytes as well.
 
@@ -121,6 +133,9 @@ Drop it in before upgrading to get a general idea of what needs to change, or up
 - Level: Moderate
   - `Date#reset` now requires one unit higher when resetting units based on a string. For example, d.reset('day') will now "reset the day", where it's previous behavior was to shift the date to the beginning of the month. Default is also shifted so no change should be necessary when resetting the time.
 
+- Level: Moderate
+  - `Array#subtract`, `Array#union`, and `Array#intersect` all no longer accept multiple arguments. Simply chain them if more than one argument is needed.
+
 - Level: Minor
   - `Date#relative` arguments `fn` and `localeCode` are now reversed (`localeCode` first). As this method was previously accepting `localeCode` as a single argument anyway, this change will only have have an effect if both arguments are used together.
 
@@ -140,7 +155,7 @@ Drop it in before upgrading to get a general idea of what needs to change, or up
   - `Date.SugarNewDate` is now `Sugar.Date.newDateInternal`. This method is always on the `Sugar` global (not `Date`).
 
 - Level: Minor
-  - `Object.map`, `Object.each`, and `Object.size` were moved to the Object module from the Array module. If you were using these methods and making custom builds you may have to include the Object module now as well.
+  - `Object.map`, `Object.each`, (now `Object.forEach`) and `Object.size` were moved to the Object module from the Array module. If you were using these methods and making custom builds you may have to include the Object module now as well.
 
 - Level: Minor
   - `Date#unitSince` (`Date#hoursSince`, etc) now assumes that the passed in format is UTC if the context date is also flagged as UTC (if you're using `setUTC`). This behavior can be overriden by passing `{ fromUTC: false }` to these methods.
@@ -162,6 +177,9 @@ Drop it in before upgrading to get a general idea of what needs to change, or up
 
 - Level: Minor
   - `String.Inflector` has been removed from the inflections module in favor of the static methods `addAcronym`, `addPlural`, and `addHuman`.
+
+- Level: Minor
+  - `String#upto` and `String#downto` now accept "step", which was previously the third argument, as an optional second argument.
 
 - Level: Very Minor
   - `Array#map`, `Array#unique`, `Array#groupBy`, `Array#min`, `Array#max`, `Array#least`, `Array#most`, `Array#sortBy`: Mapping shortcut strings now accept deep matchers with the dot `.` token. If you have objects that use `.` in the keys and are using these methods, be careful as this now makes the methods try to go deep. Pass a function instead to map as before.
