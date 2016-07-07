@@ -548,6 +548,15 @@ function createMinifiedBuild(outputPath, modules, locales) {
 
 function getSource(m, l) {
 
+  // When the source is modularized variables defined in the core
+  // will be lost so they need to be redefined in common, however
+  // these re-defines aren't necessary when the core is bundled
+  // together, so we can strip them out.
+  var CORE_REDEFINES = [
+    'Core utility aliases',
+    'Internal reference to check if an object can be serialized.'
+  ];
+
   var src = '';
 
   var modulePaths = getModulePaths(m);
@@ -558,11 +567,11 @@ function getSource(m, l) {
   modulePaths.forEach(function(p, i) {
     var content = readFile(p);
     var moduleName = path.basename(p, '.js');
-    var namespaceName = namespaceConstraints[moduleName];
+    var constraints = namespaceConstraints[moduleName];
     if (moduleName === 'core') {
       content = content.replace(/edge/, getVersion());
-    } else if (namespaceName) {
-      content = getSplitModule(content, namespaceName);
+    } else if (constraints) {
+      content = getSplitModule(content, constraints);
     }
     src += content;
   });
@@ -574,8 +583,13 @@ function getSource(m, l) {
   src = src.replace(/^(?=.)/gm, '  ');
   src = src.replace(/^([\s\S]+)$/m, getWrapper(args.qml));
 
+  CORE_REDEFINES.forEach(function(str) {
+    var reg = RegExp('^  \\/\\/ ' + str + '[\\s\\S]+?\\n$', 'm');
+    src = src.replace(reg, '');
+  });
+
   // Allowing namespace constraints such as
-  // ES5:String to only build for that namespace.
+  // ES6:String to only build for that namespace.
   function getNamespaceConstraints() {
     var map = {};
     getModuleNames(m).forEach(function(n) {
@@ -588,17 +602,19 @@ function getSource(m, l) {
           warn('Exiting...');
           process.exit();
         }
-        map[moduleName] = namespaceName;
+        var constraints = map[moduleName] || {};
+        constraints[namespaceName] = true;
+        map[moduleName] = constraints;
       }
     });
     return map;
   }
 
   // Split the module into namespaces here and match on the allowed one.
-  function getSplitModule(content, namespace) {
+  function getSplitModule(content, constraints) {
     var src = '', lastIdx = 0, currentNamespace;
     content.replace(/\/\*\*\* @namespace (\w+) \*\*\*\/\n|$/g, function(match, nextNamespace, idx) {
-      if (!currentNamespace || currentNamespace === namespace) {
+      if (!currentNamespace || constraints[currentNamespace]) {
         src += content.slice(lastIdx, idx);
       }
       currentNamespace = (nextNamespace || '').toLowerCase();
@@ -702,6 +718,7 @@ function getModulePaths(m) {
   }
 
   names = names.map(function(n) {
+
     var moduleName = n.split(':')[0];
     try {
       fs.lstatSync(getPath(moduleName));
@@ -775,11 +792,13 @@ function buildHasCustomLocales() {
 var PACKAGE_DEFINITIONS = {
   'sugar': {
     bower: false, // Same as distributed build
+    es5_dist: true,
     modules: 'ES5,ES6,ES7,String,Number,Array,Enumerable,Object,Date,Locales,Range,Function,RegExp',
     description: 'This build includes default Sugar modules, polyfills, and optional date locales.'
   },
   'sugar-core': {
     modules: 'Core',
+    es5_dist: true,
     description: 'This build is the core module, which allows custom methods to be defined and extended later.'
   },
   'sugar-es5': {
@@ -793,47 +812,58 @@ var PACKAGE_DEFINITIONS = {
     description: 'This build includes all ES6 polyfills bundled with Sugar. Currently this is String#includes, String#startsWith, String#endsWith, String#repeat, Number.isNaN, Array#find, Array#findIndex, and Array.from.'
   },
   'sugar-string': {
-    modules: 'ES5:String,ES6:String,String,Range:String',
+    modules: 'ES6:String,String,Range:String',
+    es5_dist: true,
     description: 'This build includes methods for string manipulation, escaping, encoding, truncation, and conversion.'
   },
   'sugar-number': {
     modules: 'ES6:Number,Number,Range:Number',
+    es5_dist: true,
     description: 'This build includes methods for number formatting, rounding (with precision), and aliases to Math methods.'
   },
   'sugar-enumerable': {
-    modules: 'ES5:Array,ES6:Array,ES7:Array,Enumerable',
-    description: 'This build includes methods common to arrays and objects, such as matching elements/properties, mapping, counting, and averaging. Also included are polyfills for methods that enhance arrays: Array#find, Array#findIndex, Array#includes.'
+    modules: 'ES6:Array,ES7:Array,Enumerable',
+    es5_dist: true,
+    description: 'This build includes methods common to arrays and objects, such as matching elements/properties, mapping, counting, and averaging. Also included are polyfills for methods that enhance arrays: Array#find, Array#findIndex, Array#includes, as well as Object.keys.'
   },
   'sugar-array': {
-    modules: 'ES5:Array,ES6:Array,ES7:Array,Array',
+    modules: 'ES6:Array,ES7:Array,Array',
+    es5_dist: true,
     description: 'This build includes methods for array manipulation, grouping, randomizing, and alphanumeric sorting and collation.'
   },
   'sugar-object': {
-    modules: 'ES5:Object,Object',
+    modules: 'Object',
+    es5_dist: true,
     description: 'This build includes methods for object creation, manipulation, comparison, and type checking. Note that Object.prototype is not extended by default. See the README for more.'
   },
   'sugar-date': {
-    modules: 'ES5:Date,Date,Locales,Range:Date',
+    modules: 'Date,Locales,Range:Date',
+    es5_dist: true,
     description: 'This build includes methods for date parsing and formatting, relative formats like "1 minute ago", number methods like "daysAgo", and optional date locales.'
   },
   'sugar-range': {
     modules: 'Range',
+    es5_dist: true,
     description: 'This build includes number, string, and date ranges. Ranges can be iterated over, compared, and manipulated.'
   },
   'sugar-function': {
-    modules: 'ES5:Function,Function',
+    modules: 'Function',
+    es5_dist: true,
     description: 'This build includes methods for lazy, throttled, and memoized functions, delayed functions, timers, and argument currying.'
   },
   'sugar-regexp': {
     modules: 'RegExp',
+    es5_dist: true,
     description: 'This build includes methods for escaping regexes and manipulating their flags.'
   },
   'sugar-inflections': {
     modules: 'Inflections',
+    es5_dist: true,
     description: 'This build includes methods for pluralization similar to ActiveSupport including uncountable words and acronyms, humanized and URL-friendly strings.'
   },
   'sugar-language': {
     modules: 'Language',
+    es5_dist: true,
     description: 'This build includes helpers for detecting language by character block, full-width <-> half-width character conversion, and Hiragana and Katakana conversions.'
   }
 };
@@ -906,8 +936,14 @@ function copyLocales(l, dir) {
 
 function buildPackageDist(packageName, packageDir) {
 
-  var stream = getEmptyStream();
+  var stream     = getEmptyStream();
   var definition = getPackageDefinition(packageName);
+  var modules    = getPackageModules();
+
+  buildDist(modules);
+  if (definition.es5_dist) {
+    buildDist(modules, true);
+  }
 
   function getPackageModules() {
     return definition.modules.split(',').filter(function(m) {
@@ -919,7 +955,10 @@ function buildPackageDist(packageName, packageDir) {
     });
   }
 
-  function buildSet(modules, es5) {
+  function buildDist(modules, es5) {
+    if (es5) {
+      modules = ['ES5'].concat(modules);
+    }
     modules = modules.join(',');
     var devFilename = path.join(packageDir, getDistFilename(packageName, es5));
     var minFilename = path.join(packageDir, getDistFilename(packageName, es5, true));
@@ -927,23 +966,6 @@ function buildPackageDist(packageName, packageDir) {
     addStream(stream, createMinifiedBuild(minFilename, modules, ''));
     return stream;
   }
-
-  function buildSets() {
-    var allModules = getPackageModules(), filteredModules;
-
-    filteredModules = allModules.filter(function(m) {
-      return !/^ES5/.test(m);
-    });
-
-    if (packageName !== 'sugar-es5') {
-      if (filteredModules.length !== allModules.length) {
-        buildSet(allModules, true);
-      }
-    }
-    buildSet(filteredModules);
-  }
-
-  buildSets();
 
   return stream;
 }
@@ -2475,6 +2497,8 @@ function buildNpmPackages(p, rebuild) {
         return '// Aliases';
       } else if (type === 'accessor') {
         return '// Accessors';
+      } else if(type === 'fix') {
+        return '// Fixes';
       } else if (type === 'static') {
         return '// Static Methods';
       } else if (type === 'instance') {
