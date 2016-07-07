@@ -8,10 +8,11 @@
   <body>
     <!-- jQuery -->
     <script type="text/javascript" src="../../javascripts/jquery-1.7.1.js"></script>
-    <!-- ES5 Polyfills -->
-    <!--[if lte IE 8]><script type="text/javascript" src="../../../../lib/es5.js"></script><![endif]-->
+    <!-- Reset polyfills -->
+    <script type="text/javascript" src="../../../suite/resets/es6.js"></script>
+    <script type="text/javascript" src="../../../suite/resets/es7.js"></script>
     <!-- Sugar NPM package -->
-    <script type="text/javascript" src="../../../../release/npm/sugar-array/dist/sugar-array.js"></script>
+    <script type="text/javascript" src="../../../../release/npm/sugar-array/dist/sugar-array-es5.js"></script>
     <!-- Test suite -->
     <script type="text/javascript" src="../../../suite/suite.js"></script>
     <script type="text/javascript" src="../../../suite/overrides.js"></script>
@@ -23,5 +24,7 @@
     <script type="text/javascript" src="../../javascripts/runner-chained.js"></script>
     <!-- Tests -->
     <script type="text/javascript" src="../../../tests/array.js"></script>
+    <script type="text/javascript" src="../../../tests/es6/array.js"></script>
+    <script type="text/javascript" src="../../../tests/es7/array.js"></script>
   </body>
 </html>
