@@ -313,12 +313,19 @@ assertRelative = function(format, expected) {
     // addition to the margin in getAdjustedUnitForDate which
     // is to account for the same thing, however this effect
     // can be exaggerated when the entire test suite is running.
-    d = new Date(d.getTime() + 80);
+    d = new Date(d.getTime() + 100);
   }
   equal(run(d, 'relative'), expected, 'relative | ' + format);
 }
 
-assertRelativeTo = function(d, args, expected) {
+assertRelativeTo = function(d, args, expected, addBuffer) {
+  if (addBuffer) {
+    // The relative date will not be created until it enters
+    // the method, as opposed to above where we know it's
+    // always relative to now, so relying on the test to know
+    // when to add an extra buffer here for potential failures.
+    d = new Date(d.getTime() + 100);
+  }
   equal(run(d, 'relativeTo', args), expected, 'relativeTo | ' + expected);
 }
 

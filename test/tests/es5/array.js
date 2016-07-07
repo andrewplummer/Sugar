@@ -1,4 +1,5 @@
-namespace('ES5', function () {
+
+namespace('Array', function () {
   'use strict';
 
   method('isArray', function() {
@@ -833,7 +834,7 @@ namespace('ES5', function () {
   });
 
 
-  group('inheritance', function() {
+  group('Array Inheritance', function() {
     var count;
 
     var Soup = function() {};
@@ -868,170 +869,6 @@ namespace('ES5', function () {
     equal(count, 19, 'array elements in the prototype chain are also properly iterated');
     equal(x.indexOf(2), 1, 'indexOf | array elements in the prototype chain are also properly iterated');
     equal(x.lastIndexOf(2), 1, 'lastIndexOf | array elements in the prototype chain are also properly iterated');
-  });
-
-
-  group('trim', function() {
-    var whiteSpace = '\u0009\u000B\u000C\u0020\u00A0\uFEFF\u1680\u180E\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u202F\u205F\u3000';
-    var lineTerminators = '\u000A\u000D\u2028\u2029';
-
-    equal(String.prototype.trim.length, 0, 'should have argument length of 1');
-
-    equal(whiteSpace.trim(), '', 'should trim all WhiteSpace characters defined in 7.2 and Unicode "space, separator and Unicode "space, separator""');
-    equal(lineTerminators.trim(), '', 'should trim all LineTerminator characters defined in 7.3');
-
-
-    equal('   wasabi   '.trim(), 'wasabi', 'should trim both left and right whitespace');
-    equal(''.trim(), '', 'blank');
-    equal(' wasabi '.trim(), 'wasabi', 'wasabi with whitespace');
-
-
-    equal(String.prototype.trim.call([1]), '1', 'should handle objects as well');
-
-  });
-
-
-  group('keys', function() {
-    var Person;
-
-    equal(Object.keys.length, 1, 'should have argument length of 1');
-
-    raisesError(function() { Object.keys(undefined); }, 'raises a TypeError for undefined');
-    raisesError(function() { Object.keys(null); }, 'raises a TypeError for null');
-
-    // ES5 states that a TypeError must be thrown when non-objects are
-    // passed to Object.keys. However, ES6 revises this and performs
-    // a coercion instead. The Sugar polyfills follow the ES5 spec for now,
-    // however some browsers have already started to implement ES6 behavior,
-    // so this is not consistent at the moment, so comment these tests out.
-
-    // raisesError(function() { Object.keys(true); }, 'raises a TypeError for boolean');
-    // raisesError(function() { Object.keys(3); }, 'raises a TypeError for number');
-    // raisesError(function() { Object.keys(NaN); }, 'raises a TypeError for NaN');
-    // raisesError(function() { Object.keys('wasabi'); }, 'raises a TypeError for string');
-
-    equal(Object.keys('abc'), ['0','1','2'], 'returns indexes of a string');
-    equal(Object.keys({ moo:'bar', broken:'wear' }), ['moo','broken'], 'returns keys of an object');
-    equal(Object.keys(['a','b','c']), ['0','1','2'], 'returns indexes of an array');
-    equal(Object.keys(/foobar/), [], 'regexes return a blank array');
-    equal(Object.keys(function() {}), [], 'functions return a blank array');
-    equal(Object.keys(new Date), [], 'dates return a blank array');
-    equal(Object.keys({toString:1}), ['toString'], 'should enumerate toString');
-
-    Person = function() {
-      this.broken = 'wear';
-    };
-    Person.prototype = { cat: 'dog' };
-
-    equal(Object.keys(new Person), ['broken'], 'will get instance properties but not inherited properties');
-  });
-
-
-  group('now', function() {
-    equal(Date.now.length, 0, 'should have argument length of 1');
-    equalWithMargin(Date.now(), new Date().getTime(), 5, 'basic functionality');
-  });
-
-  group('toISOString', function() {
-    equal(Date.prototype.toISOString.length, 0, 'should have argument length of 1');
-    equal(new Date(Date.UTC(2000, 0, 1)).toISOString(), '2000-01-01T00:00:00.000Z', 'new millenium!');
-    equal(new Date(Date.UTC(1978, 7, 25)).toISOString(), '1978-08-25T00:00:00.000Z', 'happy birthday!');
-    equal(new Date(Date.UTC(1978, 7, 25, 11, 45, 33, 456)).toISOString(), '1978-08-25T11:45:33.456Z', 'with time');
-  });
-
-
-  group('toJSON', function() {
-    equal(Date.prototype.toJSON.length, 1, 'should have argument length of 1');
-    equal(new Date(2002, 7, 25).toJSON(), new Date(2002, 7, 25).toISOString(), 'output');
-  });
-
-  group('bind', function() {
-    var instance, BoundPerson, Person;
-
-    equal(Function.prototype.bind.length, 1, 'should have argument length of 1');
-
-    raisesError(function() { Function.prototype.bind.call('mooo'); }, 'Raises an error when used on anything un-callable');
-    raisesError(function() { Function.prototype.bind.call(/mooo/); }, 'Regexes are functions in chrome');
-
-    equal((function() { return this; }).bind('yellow')().toString(), 'yellow', 'basic binding of this arg');
-    equal((function() { return arguments[0]; }).bind('yellow', 'mellow')(), 'mellow', 'currying argument 1');
-    equal((function() { return arguments[1]; }).bind('yellow', 'mellow', 'fellow')(), 'fellow', 'currying argument 2');
-    equal((function() { return this; }).bind(undefined)(), testNullScope, 'passing undefined as the scope');
-
-    (function(a, b) {
-      equal(this.toString(), 'yellow', 'ensure only one call | this object');
-      equal(a, 'mellow', 'ensure only one call | argument 1');
-      equal(b, 'fellow', 'ensure only one call | argument 2');
-    }).bind('yellow', 'mellow', 'fellow')();
-
-    // It seems this functionality can't be achieved in a JS polyfill...
-    // equal((function() {}).bind().prototype, undefined, 'currying argument 2'); 
-
-    Person = function(a, b) {
-      this.first = a;
-      this.second = b;
-    };
-
-    BoundPerson = Person.bind({ mellow: 'yellow' }, 'jump');
-    instance = new BoundPerson('jumpy');
-
-    equal(instance.mellow, undefined, 'passed scope is ignored when used with the new keyword');
-    equal(instance.first, 'jump', 'curried argument makes it to the constructor');
-    equal(instance.second, 'jumpy', 'argument passed to the constructor makes it in as the second arg');
-    equal(instance instanceof Person, true, 'instance of the class');
-
-    equal(instance instanceof BoundPerson, true, 'instance of the bound class');
-
-    // Note that this spec appears to be wrong in the MDN docs:
-    // https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Function/bind
-    // Changing this test to assert true as native implementations all function this way.
-    equal(new Person() instanceof BoundPerson, true, 'instance of unbound class is not an instance of the bound class');
-
-    // Binding functions without a prototype should not explode.
-    Object.prototype.toString.bind('hooha')();
-
-
-    // function.js
-
-    var bound, obj, result;
-
-    obj = { foo: 'bar' };
-
-    bound = (function(num, bool, str, fourth, fifth) {
-      equal(this === obj, true, 'Bound object is strictly equal');
-      equal(num, 1, 'first parameter');
-      equal(bool, true, 'second parameter');
-      equal(str, 'wasabi', 'third parameter');
-      equal(fourth, 'fourth', 'fourth parameter');
-      equal(fifth, 'fifth', 'fifth parameter');
-      return 'howdy';
-    }).bind(obj, 1, true, 'wasabi');
-
-    result = bound('fourth','fifth');
-    equal(result, 'howdy', 'result is correctly returned');
-
-    (function(first) {
-      equal(Array.prototype.slice.call(arguments), [], 'arguments array is empty');
-      equal(first, undefined, 'first argument is undefined');
-    }).bind('foo')();
-
-  });
-
-  group('overwrite', function() {
-
-    // Ensure that all prototype methods affected by Sugar are still overwriteable.
-
-    var storedEach = Array.prototype.each;
-    var storedEachExisted = 'each' in Array.prototype;
-    var a = [];
-    a.each = 'OH PLEASE';
-    equal(a.each, 'OH PLEASE', 'Sugar methods can ALL be overwritten!');
-    if(!storedEachExisted) {
-      delete Array.prototype.each;
-    } else {
-      Array.prototype.each = storedEach;
-    }
-
   });
 
 });

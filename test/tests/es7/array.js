@@ -1,4 +1,4 @@
-namespace('ES7', function () {
+namespace('Array', function () {
   'use strict';
 
   method('includes', function() {

@@ -24,6 +24,10 @@ namespace('Core', function() {
     restoreNativeState();
   });
 
+  group('Version prop', function () {
+    equal(typeof Sugar.VERSION, 'string', 'Version property should exist');
+  });
+
   group('Sugar namespace', function () {
     Sugar();
     assertAllMethodsMappedToNative(['Array', 'Boolean', 'Number', 'String', 'Date', 'RegExp', 'Function']);
@@ -542,6 +546,7 @@ namespace('Core', function() {
   });
 
   group('Chainable built-in methods', function() {
+
     defineCustom(Sugar.String);
     var str = new Sugar.String('wow');
     equal(str.charCodeAt(0).toFixed(2).raw, '119.00', 'Chaining built-ins');
@@ -565,9 +570,11 @@ namespace('Core', function() {
     var dcp = testGetDefaultChainablePrototype();
     equal(dcp.hasOwnProperty === Sugar.Object.prototype.hasOwnProperty, true, 'Object#hasOwnProperty should not require disambiguation');
     equal(testHasOwn(Sugar.String.prototype, 'hasOwnProperty'), true, 'Sugar.String should now have its own hasOwnProperty chainable method');
+
   });
 
   group('Chainable valueOf behavior', function() {
+
     var eight = new Sugar.Number(8);
     equal(eight + 8, 16, 'lhs can add primitives');
     equal(12 + eight, 20, 'rhs can be added to primitives');
@@ -591,6 +598,7 @@ namespace('Core', function() {
     equal(f.test('q') == false, true, '== equality is false');
     equal(f.test('f') == true,  true, '== equality is true');
     equal(f.test('f') === false, false, '=== equality is always false');
+
   });
 
   group('Chainable toString behavior', function() {

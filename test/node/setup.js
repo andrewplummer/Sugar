@@ -41,7 +41,7 @@ function load(loadPath) {
   try {
     return require(loadPath);
   } catch (e) {
-    var match = loadPath.match(/(sugar(-\w+)?)$/);
+    var match = e.message.match(/Cannot find module (.+)/);
     if (e.code === 'MODULE_NOT_FOUND' && match) {
       var message = [
         '',
@@ -131,7 +131,7 @@ module.exports = {
   },
 
   resetPolyfills: function(name) {
-    load('../suite/helpers/' + name + '-reset.js');
+    load('../suite/resets/' + name + '-node.js');
   },
 
   logTotals: function() {

@@ -2269,11 +2269,12 @@ namespace('Date', function () {
     assertRelativeTo(new Date(2010,0,18), ['The first day of January, 2010'], '2 weeks');
     assertRelativeTo(new Date(2010,0),    ['August 10, 2010'], '7 months');
 
+    assertRelativeTo(new Date(), ['last week'],  '1 week',  true);
+    assertRelativeTo(new Date(), ['last month'], '1 month', true);
+    assertRelativeTo(new Date(), ['last year'],  '1 year',  true);
+
     assertRelativeTo(new Date(), ['next week'],  '1 week');
-    assertRelativeTo(new Date(), ['last week'],  '1 week');
-    assertRelativeTo(new Date(), ['last month'], '1 month');
     assertRelativeTo(new Date(), ['next month'], '1 month');
-    assertRelativeTo(new Date(), ['last year'],  '1 year');
     assertRelativeTo(new Date(), ['next year'],  '1 year');
 
     raisesError(function(){ test(new Date(NaN)); }, 'Invalid date raises error', TypeError);
@@ -2421,7 +2422,7 @@ namespace('Date', function () {
     test(testCreateDate('tomorrow'), ['past'], false, 'tomorrow is the past');
 
     test(new Date(), ['future'], false, 'now is the future');
-    test(new Date(), ['past'], false, 'now is the past');
+    test(new Date(), ['past', 50], false, 'now is the past');
 
     test(testCreateDate('yesterday'), ['future'], false, 'yesterday is the future');
     test(testCreateDate('yesterday'), ['past'], true, 'yesterday is the past');
