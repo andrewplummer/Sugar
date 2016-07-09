@@ -564,7 +564,7 @@ function getSource(m, l) {
 
   var namespaceConstraints = getNamespaceConstraints();
 
-  modulePaths.forEach(function(p, i) {
+  modulePaths.forEach(function(p) {
     var content = readFile(p);
     var moduleName = path.basename(p, '.js');
     var constraints = namespaceConstraints[moduleName];
@@ -648,7 +648,7 @@ function logBuildResults(stream) {
 }
 
 function getVersion() {
-  var ver = args.v || args.version || 'edge', hasCustomModules, hasCustomLocales;
+  var ver = args.v || args.version || 'edge';
   if (ver && ver.match(/^[\d.]+$/)) {
     ver = 'v' + ver;
   }
@@ -711,7 +711,7 @@ function getModuleNames(m) {
 
 function getModulePaths(m) {
 
-  var names = getModuleNames(m), paths = [], namespaces = {};
+  var names = getModuleNames(m);
 
   function getPath(name) {
     return path.join('lib', name.toLowerCase() + '.js');
@@ -884,7 +884,7 @@ var SOURCE_PACKAGE_LISTED_TYPES = [
 var SOURCE_PACKAGE_DEPENDENCY_TYPES = [
   'internal',
   'build',
-  'var',
+  'var'
 ];
 
 function sourcePackageIsDependency(p) {
@@ -1438,7 +1438,7 @@ function getModularSource() {
           var methodBlock = {
             name: methodMatch[1],
             static: /@static/.test(block),
-            accessor: /@accessor/.test(block),
+            accessor: /@accessor/.test(block)
           };
           var setMatch = block.match(/@set([^@\/]+)/);
           if (setMatch) {
@@ -2056,7 +2056,7 @@ function buildNpmPackages(p, rebuild) {
           path: path,
           type: type,
           namespace: split[1]
-        }
+        };
       });
     }
 
@@ -2089,22 +2089,6 @@ function buildNpmPackages(p, rebuild) {
       });
       if (paths.length) {
         createEntryPoint(paths, subPath, entryPointName);
-      }
-    }
-
-    function createPackageEntryPoint(moduleDefinitions, polyfillMatch, subPath) {
-      // Filtering out polyfills in main entry point
-      // except for packages that only define polyfills.
-      var paths = moduleDefinitions.filter(function(md) {
-        if (polyfillMatch) {
-          return;
-        }
-        return (md.type === 'polyfill') === !!polyfill;
-      }).map(function(md) {
-        return polyfill ? path.join('..', md.path) : md.path;
-      });
-      if (paths.length) {
-        createEntryPoint(paths, subPath);
       }
     }
 
@@ -2795,7 +2779,7 @@ function getJSONDocs() {
     'defineStatic': '#/Sugar/defineStatic',
     'defineInstance': '#/Sugar/defineInstance',
     'defineInstanceWithArguments': '#/Sugar/defineInstanceWithArguments',
-    'defineStaticWithArguments': '#/Sugar/defineStaticWithArguments',
+    'defineStaticWithArguments': '#/Sugar/defineStaticWithArguments'
   };
 
   var POLYFILL_HTML    = getReplacements('This method is provided as a `polyfill`.');
@@ -2981,7 +2965,6 @@ function getJSONDocs() {
   }
 
   function getExamples(str) {
-    var result = [];
     var lines = getMultiline(str, true);
 
     function getLine() {
@@ -2989,34 +2972,42 @@ function getJSONDocs() {
       return line ? line.replace(/\s*->.+$/, '') : '';
     }
 
-    for (var i = 0; i < lines.length; i++) {
-      var line = lines[i];
-      var nextLine = lines[i + 1];
-      if (line.match(/{$/)) {
-        break;
-      }
-      if (line.match(/^\w+ = /) && !line.match(/->/) && nextLine && nextLine.trim()) {
-        while (nextLine) {
-          lines[i] += '\n' + nextLine;
-          lines.splice(i + 1, 1);
-          nextLine = lines[i + 1];
+    function groupLines() {
+      for (var i = 0; i < lines.length; i++) {
+        var line = lines[i];
+        var nextLine = lines[i + 1];
+        if (line.match(/{$/)) {
+          break;
+        }
+        if (line.match(/^\w+ = /) && !line.match(/->/) && nextLine && nextLine.trim()) {
+          while (nextLine) {
+            lines[i] += '\n' + nextLine;
+            lines.splice(i + 1, 1);
+            nextLine = lines[i + 1];
+          }
         }
       }
     }
 
-    for (var line; line = getLine();) {
-      var braceLevel = getBraceLevel(line);
-      while (braceLevel > 0) {
-        var nextLine = getLine();
-        var nextBraceLevel = braceLevel + getBraceLevel(nextLine);
-        var indent = '  '.repeat(nextBraceLevel > braceLevel ? braceLevel : nextBraceLevel);
-        line += '\n' + indent  + nextLine;
-        braceLevel = nextBraceLevel;
+    function getLines() {
+      var result = [];
+      for (var line; line = getLine();) {
+        var braceLevel = getBraceLevel(line);
+        while (braceLevel > 0) {
+          var nextLine = getLine();
+          var nextBraceLevel = braceLevel + getBraceLevel(nextLine);
+          var indent = '  '.repeat(nextBraceLevel > braceLevel ? braceLevel : nextBraceLevel);
+          line += '\n' + indent  + nextLine;
+          braceLevel = nextBraceLevel;
+        }
+        result.push(line);
       }
-      result.push(line);
+      return result;
     }
 
-    return result;
+    groupLines();
+
+    return getLines();
   }
 
   function getBraceLevel(str) {
@@ -3157,7 +3148,7 @@ function buildJSONSource() {
 
   function addCorePackage() {
     data.modules.unshift({
-      name: 'Core',
+      name: 'Core'
     });
     data.packages.unshift({
       name: 'Sugar',
