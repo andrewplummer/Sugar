@@ -964,6 +964,32 @@ namespace('Object', function () {
     test(Object, [undefined], false, 'undefined');
   });
 
+  method('isError', function() {
+    test(new Error(),          true, 'Error');
+    test(new TypeError(),      true, 'TypeError');
+    test(new RangeError(),     true, 'RangeError');
+    test(new EvalError(),      true, 'EvalError');
+    test(new URIError(),       true, 'URIError');
+    test(new SyntaxError(),    true, 'SyntaxError');
+    test(new ReferenceError(), true, 'ReferenceError');
+    test('Error!', false, 'Error!');
+  });
+
+  method('isSet', function() {
+    if (typeof Set === 'undefined') return;
+    test(new Set(), true, '{}');
+    test(new Set('123'), true, '{1,2,3}');
+    test([], false, 'Array');
+    test({}, false, 'Object');
+  });
+
+  method('isMap', function() {
+    if (typeof Map === 'undefined') return;
+    test(new Map(), true, '{}');
+    test([], false, 'Array');
+    test({}, false, 'Object');
+  });
+
   method('merge', function() {
 
     // Basic no-conflict merging
