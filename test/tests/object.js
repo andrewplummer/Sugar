@@ -145,9 +145,9 @@ namespace('Object', function () {
 
 
     var count = 0;
-    var testTransformArguments = function(key, value, obj, str) {
-      equal(key, 'foo', 'first argument should be the key');
-      equal(value, 'bar', 'second argument should be the value');
+    var testTransformArguments = function(val, key, obj, str) {
+      equal(val, 'bar', 'first argument should be the value');
+      equal(key, 'foo', 'second argument should be the key');
       count++;
     }
     run(Object, 'fromQueryString', ['foo=bar', {transform:testTransformArguments}]);
@@ -157,9 +157,9 @@ namespace('Object', function () {
     var expectedKeys = ['foo[name]', 'moo[]'];
     var expectedValues = ['bar', 'beer'];
     var capturedObj;
-    var testTransformArgumentsDeep = function(key, value, obj) {
+    var testTransformArgumentsDeep = function(val, key, obj) {
       equal(key, expectedKeys[count], 'first argument');
-      equal(value, expectedValues[count], 'second argument');
+      equal(val, expectedValues[count], 'second argument');
       capturedObj = obj;
       count++;
     }
@@ -168,16 +168,16 @@ namespace('Object', function () {
     equal(capturedObj, result, 'third argument should be equal to the result');
     equal(count, 2, 'should have run twice');
 
-    var onlyUserName = function(key) {
+    var onlyUserName = function(val, key) {
       if (key === 'user_name') {
         return 'Harry';
       }
     }
     test(Object, ['user_name=moo&user_id=12345', {transform:onlyUserName}], {user_name:'Harry',user_id:12345}, 'only user name');
 
-    var numeralToBoolean = function(key, value) {
-      if (value === '1' || value === '0') {
-        return !!+value;
+    var numeralToBoolean = function(val) {
+      if (val === '1' || val === '0') {
+        return !!+val;
       }
     }
     var subject = 'user[profile][agreed]=1&user[address][street]=12345%20Foo%20St.&user[profile][friends][]=Mary&user[profile][friends][]=Jerry&user[profile][paid]=0';
@@ -196,9 +196,9 @@ namespace('Object', function () {
     test(Object, [subject, {deep:true,transform:numeralToBoolean}], expected, 'complex object with numeral cast to boolean');
 
 
-    var toArray = function(key, value, obj) {
+    var toArray = function(val, key, obj) {
       if (key === 'foo' && !obj[key]) {
-        return [value];
+        return [val];
       }
     }
     test(Object, ['foo=bar', {transform:toArray}], {'foo':['bar']}, 'single can still be converted to array with cast function');
@@ -1966,15 +1966,15 @@ namespace('Object', function () {
     assertQueryString(['Rails', 'coding'], [{prefix:'hobbies'}], 'hobbies=Rails&hobbies=coding', 'ActiveSupport example no brackets');
     assertQueryString(['Rails', 'coding'], [{deep:true,prefix:'hobbies'}], 'hobbies[]=Rails&hobbies[]=coding', 'ActiveSupport example with brackets');
 
-    var booleanToNumber = function(key, val) {
+    var booleanToNumber = function(val) {
       return typeof val === 'boolean' ? +val : val;
     }
     assertQueryString({a:true,b:'b',c:false}, [{transform:booleanToNumber}], 'a=1&b=b&c=0', 'values can be overridden with transform');
     assertQueryString({foo:{a:true,b:'b',c:false}}, [{deep:true,transform:booleanToNumber}], 'foo[a]=1&foo[b]=b&foo[c]=0', 'deep values can be overridden with transform');
 
-    var testTransformArguments = function(key, value) {
-      equal(key, 'foo', 'first argument should be the key');
-      equal(value, 'bar', 'second argument should be the value');
+    var testTransformArguments = function(val, key) {
+      equal(val, 'bar', 'first argument should be the value');
+      equal(key, 'foo', 'second argument should be the key');
     }
     run({foo:'bar'}, 'toQueryString', [{transform:testTransformArguments}]);
 
@@ -2007,15 +2007,15 @@ namespace('Object', function () {
     test({one:'a',two:'a'}, ['a'], {}, 'should remove multiple');
 
     var obj = {a:1,b:2,c:3,d:4,e:5};
-    var fn = function(key, val, o) {
+    var fn = function(val, key, o) {
       return val % 2 === 0;
     }
     test(obj, [fn], {a:1,c:3,e:5}, 'allows function matcher');
 
     var obj = {a:1};
-    var fn = function(key, val, o) {
-      equal(key, 'a', 'first param should be the key');
-      equal(val, 1, 'second param should be value');
+    var fn = function(val, key, o) {
+      equal(val, 1, 'first argument should be value');
+      equal(key, 'a', 'second argument should be the key');
       equal(o, obj, 'third param should be the object');
     }
     run(obj, 'remove', [fn]);
@@ -2042,15 +2042,15 @@ namespace('Object', function () {
     test({one:'a',two:'a'}, ['a'], {}, 'should remove multiple');
 
     var obj = {a:1,b:2,c:3,d:4,e:5};
-    var fn = function(key, val, o) {
+    var fn = function(val, key, o) {
       return val % 2 === 0;
     }
     test(obj, [fn], {a:1,c:3,e:5}, 'allows function matcher');
 
     var obj = {a:1};
-    var fn = function(key, val, o) {
-      equal(key, 'a', 'first param should be the key');
-      equal(val, 1, 'second param should be value');
+    var fn = function(val, key, o) {
+      equal(val, 1, 'first argument should be value');
+      equal(key, 'a', 'second argument should be the key');
       equal(o, obj, 'third param should be the object');
     }
     run(obj, 'exclude', [fn]);

@@ -94,6 +94,7 @@ v2.0.0
 - Removed `all` and `any` aliases.
 - Moved the `step` argument in `Number#upto` and `Number#downto` to be an optional 2nd argument.
 - Removed callbacks in `Object.keys` and `Object.values`. `Object.forEach` should be preferred method of iteration.
+- Changed object iteration callbacks to be value first.
 
 
 v1.4.2

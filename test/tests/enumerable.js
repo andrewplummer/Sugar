@@ -1777,9 +1777,9 @@ namespace('Object', function() {
     var keys = ['number','person','date','func'];
     var values = [3, 'jim', d, fn];
     var count = 0;
-    var callback = function(key, value, o) {
+    var callback = function(val, key, o) {
       equal(key, keys[count], 'accepts a function');
-      equal(value, values[count], 'accepts a function');
+      equal(val, values[count], 'accepts a function');
       equal(o, obj, 'accepts a function | object is third param');
       count++;
     }
@@ -1792,7 +1792,6 @@ namespace('Object', function() {
     }, 'no iterator raises an error');
 
     test(obj, [function() {}], obj, 'each returns itself');
-
 
     var count = 0;
     var callback = function() { count++; return false; }
@@ -1810,20 +1809,20 @@ namespace('Object', function() {
 
     var xyz = {x:'x',y:'y',z:'z'};
 
-    test(obj1, [function(key, value) { return key == 'foo'; }], true, 'key is foo');
-    test(obj1, [function(key, value, o) {
-      equal(typeof key, 'string', 'first argument is always the key');
-      equal(value, obj1[key],     'second argument is always the value');
-      equal(o, obj1,              'third argument is always the original object');
-      equal(this, obj1,           '"this" is always the original object');
+    test(obj1, [function(val, key) { return key == 'foo'; }], true, 'key is foo');
+    test(obj1, [function(val, key, o) {
+      equal(val, obj1[key], 'first argument is the value');
+      equal(typeof key, 'string', 'second argument is the key');
+      equal(o, obj1, 'third argument is the original object');
+      equal(this, obj1, '"this" is the original object');
       return true;
     }], true, 'placeholder for callback arguments');
-    test(obj1, [function(key, value) { return key == 'foo'; }], true, 'key is foo');
-    test(obj1, [function(key, value) { return key.length > 3; }], false, 'key length is greater than 3');
-    test(obj1, [function(key, value) { return key.length > 0; }], true, 'key length is greater than 0');
-    test(obj1, [function(key, value) { return value > 0; }], true, 'value is greater than 0');
-    test(obj1, [function(key, value) { return value > 5; }], true, 'value is greater than 5');
-    test(obj1, [function(key, value) { return value > 6; }], false, 'value is greater than 6');
+    test(obj1, [function(val, key) { return key == 'foo'; }], true, 'key is foo');
+    test(obj1, [function(val, key) { return key.length > 3; }], false, 'key length is greater than 3');
+    test(obj1, [function(val, key) { return key.length > 0; }], true, 'key length is greater than 0');
+    test(obj1, [function(val, key) { return val > 0; }], true, 'value is greater than 0');
+    test(obj1, [function(val, key) { return val > 5; }], true, 'value is greater than 5');
+    test(obj1, [function(val, key) { return val > 6; }], false, 'value is greater than 6');
     test(obj1, [2], true,  'shortcut | 2');
     test(obj1, [7], false, 'shortcut | 7');
 
@@ -1835,35 +1834,35 @@ namespace('Object', function() {
   });
 
   method('every', function() {
-    test(obj1, [function(key, value) { return key == 'foo'; }], false, 'key is foo');
-    test(obj1, [function(key, value) { return key.length > 3; }], false, 'key length is greater than 3');
-    test(obj1, [function(key, value) { return key.length > 0; }], true, 'key length is greater than 0');
-    test(obj1, [function(key, value) { return value > 0; }], true, 'value is greater than 0');
-    test(obj1, [function(key, value) { return value > 5; }], false, 'value is greater than 5');
-    test(obj1, [function(key, value) { return value > 6; }], false, 'value is greater than 6');
+    test(obj1, [function(val, key) { return key == 'foo'; }], false, 'key is foo');
+    test(obj1, [function(val, key) { return key.length > 3; }], false, 'key length is greater than 3');
+    test(obj1, [function(val, key) { return key.length > 0; }], true, 'key length is greater than 0');
+    test(obj1, [function(val, key) { return val > 0; }], true, 'value is greater than 0');
+    test(obj1, [function(val, key) { return val > 5; }], false, 'value is greater than 5');
+    test(obj1, [function(val, key) { return val > 6; }], false, 'value is greater than 6');
     test(obj1, [2], false,  'shortcut | 2');
     test(obj1, [7], false, 'shortcut | 7');
   });
 
   method('find', function() {
-    test(obj1, [function(key, value) { return key == 'foo'; }], 'foo', 'key is foo');
-    test(obj1, [function(key, value) { return key.length > 3; }], undefined, 'key length is greater than 3');
-    test(obj1, [function(key, value) { return key.length > 0; }], 'foo', 'key length is greater than 0');
-    test(obj1, [function(key, value) { return value > 0; }], 'foo', 'value is greater than 0');
-    test(obj1, [function(key, value) { return value > 5; }], 'moo', 'value is greater than 5');
-    test(obj1, [function(key, value) { return value > 6; }], undefined, 'value is greater than 6');
+    test(obj1, [function(val, key) { return key == 'foo'; }], 'foo', 'key is foo');
+    test(obj1, [function(val, key) { return key.length > 3; }], undefined, 'key length is greater than 3');
+    test(obj1, [function(val, key) { return key.length > 0; }], 'foo', 'key length is greater than 0');
+    test(obj1, [function(val, key) { return val > 0; }], 'foo', 'value is greater than 0');
+    test(obj1, [function(val, key) { return val > 5; }], 'moo', 'value is greater than 5');
+    test(obj1, [function(val, key) { return val > 6; }], undefined, 'value is greater than 6');
     test(obj1, [2], 'foo',  'shortcut | 2');
     test(obj1, [7], undefined, 'shortcut | 7');
     test({foo:'bar'}, [/b/], 'foo', 'uses multi-match');
   });
 
   method('filter', function() {
-    test(obj1, [function(key, value) { return key == 'foo'; }], {foo:2}, 'key is foo');
-    test(obj1, [function(key, value) { return key.length > 3; }], {}, 'key length is greater than 3');
-    test(obj1, [function(key, value) { return key.length > 0; }], obj1, 'key length is greater than 0');
-    test(obj1, [function(key, value) { return value > 0; }], obj1, 'value is greater than 0');
-    test(obj1, [function(key, value) { return value > 5; }], {moo:6,car:6}, 'value is greater than 5');
-    test(obj1, [function(key, value) { return value > 6; }], {}, 'value is greater than 6');
+    test(obj1, [function(val, key) { return key == 'foo'; }], {foo:2}, 'key is foo');
+    test(obj1, [function(val, key) { return key.length > 3; }], {}, 'key length is greater than 3');
+    test(obj1, [function(val, key) { return key.length > 0; }], obj1, 'key length is greater than 0');
+    test(obj1, [function(val, key) { return val > 0; }], obj1, 'value is greater than 0');
+    test(obj1, [function(val, key) { return val > 5; }], {moo:6,car:6}, 'value is greater than 5');
+    test(obj1, [function(val, key) { return val > 6; }], {}, 'value is greater than 6');
     test(obj1, [2], {foo:2},  'shortcut | 2');
     test(obj1, [7], {}, 'shortcut | 7');
     test({foo:'bar',moo:'car'}, [/a/], {foo:'bar',moo:'car'}, 'uses multi-match');
@@ -1872,8 +1871,8 @@ namespace('Object', function() {
 
   method('sum', function() {
     test(obj1, [], 18, 'no args is sum of values');
-    test(obj1, [function(key, value) { return value; }], 18, 'should sum values');
-    test(obj1, [function(key, value) { return key === 'foo' ? 0 : value; }], 16, 'without foo');
+    test(obj1, [function(val, key) { return val; }], 18, 'should sum values');
+    test(obj1, [function(val, key) { return key === 'foo' ? 0 : val; }], 16, 'without foo');
     test(obj2, ['age'], 110, 'accepts a string shortcut');
     test(deepObj2, ['user.age'], 110, 'accepts a deep string shortcut');
     test([{age:2},{age:3}], ['age'], 5, 'called on arrays should still work');
@@ -1881,8 +1880,8 @@ namespace('Object', function() {
 
   method('average', function() {
     test(obj1, [], 4.5, 'no args is average of values');
-    test(obj1, [function(key, value) { return value; }], 4.5, 'should average values');
-    test(obj1, [function(key, value) { return key === 'foo' ? 0 : value; }], 4, 'without foo');
+    test(obj1, [function(val, key) { return val; }], 4.5, 'should average values');
+    test(obj1, [function(val, key) { return key === 'foo' ? 0 : val; }], 4, 'without foo');
     test(obj2, ['age'], 27.5, 'accepts a string shortcut');
     test(deepObj2, ['user.age'], 27.5, 'accepts a deep string shortcut');
     test([{age:2},{age:4}], ['age'], 3, 'called on arrays should still work');
@@ -1890,8 +1889,8 @@ namespace('Object', function() {
 
   method('median', function() {
     test(obj1, [], 5, 'no args is average of values');
-    test(obj1, [function(key, value) { return value; }], 5, 'should average values');
-    test(obj1, [function(key, value) { return key === 'moo' ? 0 : value; }], 3, 'without moo');
+    test(obj1, [function(val, key) { return val; }], 5, 'should average values');
+    test(obj1, [function(val, key) { return key === 'moo' ? 0 : val; }], 3, 'without moo');
     test(obj2, ['age'], 27.5, 'accepts a string shortcut');
     test(deepObj2, ['user.age'], 27.5, 'accepts a deep string shortcut');
     test([{age:2},{age:2},{age:4}], ['age'], 2, 'called on arrays should still work');
@@ -1899,76 +1898,76 @@ namespace('Object', function() {
 
   method('min', function() {
     test(obj3, [], 'foo', 'no args is min of values');
-    test(obj3, [function(key, value) { return value; }], 'foo', 'return value');
-    test(obj3, [function(key, value) { return key.length; }], 'foo', 'return key.length');
-    test(obj3, [function(key, value) { return key.length; }, true], {foo:2,bar:4,moo:6,car:6}, 'return key.length');
-    test(obj3, [function(key, value) { return key.charCodeAt(0); }, true], {bar: 4,blue:4}, 'all | return the char code of first letter');
+    test(obj3, [function(val, key) { return val; }], 'foo', 'return value');
+    test(obj3, [function(val, key) { return key.length; }], 'foo', 'return key.length');
+    test(obj3, [function(val, key) { return key.length; }, true], {foo:2,bar:4,moo:6,car:6}, 'return key.length');
+    test(obj3, [function(val, key) { return key.charCodeAt(0); }, true], {bar: 4,blue:4}, 'all | return the char code of first letter');
     test(obj4, ['age'], 'foo', 'accepts a string shortcut');
     test(obj4, ['age', true], {foo: {age:11},blue:{age:11}}, 'all | accepts a string shortcut');
     test(deepObj2, ['user.age'], 'foo', 'accepts a deep string shortcut');
 
-    test([{age:2},{age:4}], ['age'], '0', 'called on arrays returns index');
+    test([{age:2},{age:4}], ['age'], 0, 'called on arrays returns index');
     test([{age:2},{age:2}], ['age', true], {'0':{age:2},'1':{age:2}}, 'all | called on arrays returns object');
   });
 
   method('max', function() {
     test(obj3, [], 'moo', 'no args is first object');
-    test(obj3, [function(key, value) { return value; }], 'moo', 'return value');
-    test(obj3, [function(key, value) { return key.length; }], 'blue', 'return key.length');
-    test(obj3, [function(key, value) { return key.charCodeAt(0); }], 'moo', 'return the char code of first letter');
+    test(obj3, [function(val, key) { return val; }], 'moo', 'return value');
+    test(obj3, [function(val, key) { return key.length; }], 'blue', 'return key.length');
+    test(obj3, [function(val, key) { return key.charCodeAt(0); }], 'moo', 'return the char code of first letter');
     test(obj4, ['age'], 'car', 'accepts a string shortcut');
-    test(obj3, [function(key, value) { return value; }, true], {moo:6,car:6}, 'all | return value');
-    test(obj3, [function(key, value) { return key.length; }, true], {blue:4}, 'all | return key.length');
-    test(obj3, [function(key, value) { return key.charCodeAt(0); }, true], {moo:6}, 'all | return the char code of first letter');
+    test(obj3, [function(val, key) { return val; }, true], {moo:6,car:6}, 'all | return value');
+    test(obj3, [function(val, key) { return key.length; }, true], {blue:4}, 'all | return key.length');
+    test(obj3, [function(val, key) { return key.charCodeAt(0); }, true], {moo:6}, 'all | return the char code of first letter');
     test(obj4, ['age', true], {car:{age:44}}, 'all | accepts a string shortcut');
     test(deepObj2, ['user.age'], 'car', 'accepts a deep string shortcut');
 
-    test([{age:2},{age:4}], ['age'], '1', 'called on arrays returns index');
+    test([{age:2},{age:4}], ['age'], 1, 'called on arrays returns index');
     test([{age:2},{age:4}], ['age', true], {'1':{age:4}}, 'all | called on arrays returns object');
   });
 
   method('least', function() {
     test(obj3, [], 'foo', 'no args is least of values');
-    test(obj3, [function(key, value) { return value; }], 'foo', 'return value');
-    test(obj3, [function(key, value) { return key.length; }], 'blue', 'return key.length');
+    test(obj3, [function(val, key) { return val; }], 'foo', 'return value');
+    test(obj3, [function(val, key) { return key.length; }], 'blue', 'return key.length');
     test(obj4, ['age'], 'bar', 'accepts a string shortcut');
-    test(obj3, [function(key, value) { return value; }, true], {foo:2}, 'all | return value');
-    test(obj3, [function(key, value) { return key.length; }, true], {blue:4}, 'all | return key.length');
+    test(obj3, [function(val, key) { return val; }, true], {foo:2}, 'all | return value');
+    test(obj3, [function(val, key) { return key.length; }, true], {blue:4}, 'all | return key.length');
     test(obj4, ['age', true], {bar: {age:22},moo:{age:33},car:{age:44}}, 'all | accepts a string shortcut');
     test(deepObj4, ['user.age',true], {bar:{user:{age:22}},moo:{user:{age:33}},car:{user:{age:44}}}, 'all | accepts a deep string shortcut');
   });
 
   method('most', function() {
     test(obj3, [], 'bar', 'no args is most of values');
-    test(obj3, [function(key, value) { return value; }], 'bar', 'return value');
-    test(obj3, [function(key, value) { return key.length; }], 'foo', 'return key.length');
-    test(obj3, [function(key, value) { return key.charCodeAt(0); }], 'bar', 'return the char code of first letter');
+    test(obj3, [function(val, key) { return val; }], 'bar', 'return value');
+    test(obj3, [function(val, key) { return key.length; }], 'foo', 'return key.length');
+    test(obj3, [function(val, key) { return key.charCodeAt(0); }], 'bar', 'return the char code of first letter');
     test(obj4, ['age'], 'foo', 'accepts a string shortcut');
-    test(obj3, [function(key, value) { return value; }, true], {bar:4,blue:4,moo:6,car:6}, 'all | return value');
-    test(obj3, [function(key, value) { return key.length; }, true], {foo:2,bar:4,moo:6,car:6}, 'all | return key.length');
-    test(obj3, [function(key, value) { return key.charCodeAt(0); }, true], {bar: 4,blue:4}, 'all | return the char code of first letter');
+    test(obj3, [function(val, key) { return val; }, true], {bar:4,blue:4,moo:6,car:6}, 'all | return value');
+    test(obj3, [function(val, key) { return key.length; }, true], {foo:2,bar:4,moo:6,car:6}, 'all | return key.length');
+    test(obj3, [function(val, key) { return key.charCodeAt(0); }, true], {bar: 4,blue:4}, 'all | return the char code of first letter');
     test(obj4, ['age', true], {foo: {age:11},blue:{age:11}}, 'all | accepts a string shortcut');
     test(deepObj4, ['user.age', true], {foo:{user:{age:11}},blue:{user:{age:11}}}, 'all | accepts a deep string shortcut');
   });
 
   method('count', function() {
-    test(obj1, [function(key, value) { return key == 'foo'; }], 1, 'key is foo');
-    test(obj1, [function(key, value) { return key.length > 3; }], 0, 'key length is greater than 3');
-    test(obj1, [function(key, value) { return key.length > 0; }], 4, 'key length is greater than 0');
-    test(obj1, [function(key, value) { return value > 0; }], 4, 'value is greater than 0');
-    test(obj1, [function(key, value) { return value > 5; }], 2, 'value is greater than 5');
-    test(obj1, [function(key, value) { return value > 6; }], 0, 'value is greater than 6');
+    test(obj1, [function(val, key) { return key == 'foo'; }], 1, 'key is foo');
+    test(obj1, [function(val, key) { return key.length > 3; }], 0, 'key length is greater than 3');
+    test(obj1, [function(val, key) { return key.length > 0; }], 4, 'key length is greater than 0');
+    test(obj1, [function(val, key) { return val > 0; }], 4, 'value is greater than 0');
+    test(obj1, [function(val, key) { return val > 5; }], 2, 'value is greater than 5');
+    test(obj1, [function(val, key) { return val > 6; }], 0, 'value is greater than 6');
     test(obj1, [2], 1,  'shortcut | 2');
     test(obj1, [7], 0, 'shortcut | 7');
   });
 
   method('none', function() {
-    test(obj1, [function(key, value) { return key == 'foo'; }], false, 'key is foo');
-    test(obj1, [function(key, value) { return key.length > 3; }], true, 'key length is greater than 3');
-    test(obj1, [function(key, value) { return key.length > 0; }], false, 'key length is greater than 0');
-    test(obj1, [function(key, value) { return value > 0; }], false, 'value is greater than 0');
-    test(obj1, [function(key, value) { return value > 5; }], false, 'value is greater than 5');
-    test(obj1, [function(key, value) { return value > 6; }], true, 'value is greater than 6');
+    test(obj1, [function(val, key) { return key == 'foo'; }], false, 'key is foo');
+    test(obj1, [function(val, key) { return key.length > 3; }], true, 'key length is greater than 3');
+    test(obj1, [function(val, key) { return key.length > 0; }], false, 'key length is greater than 0');
+    test(obj1, [function(val, key) { return val > 0; }], false, 'value is greater than 0');
+    test(obj1, [function(val, key) { return val > 5; }], false, 'value is greater than 5');
+    test(obj1, [function(val, key) { return val > 6; }], true, 'value is greater than 6');
     test(obj1, [2], false,  'shortcut | 2');
     test(obj1, [7], true, 'shortcut | 7');
   });

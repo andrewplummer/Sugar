@@ -17,6 +17,9 @@ Drop it in before upgrading to get a general idea of what needs to change, or up
 ### v2.0.0+
 
 - Level: Major
+  - Callbacks for iterating over object properties are now value first, key second. This includes `Object.each` (now renamed to `Object.forEach`), `Object.map`, `Object.every`, `Object.find`, `Object.count`, `Object.none`, `Object.sum`, `Object.average`, `Object.min`, `Object.max`, `Object.least`, `Object.most`, and `Array#groupBy`.
+
+- Level: Major
   - `String#assign` is now `String#format`, and behaves very closely to Python's method of the same name. Tokens are now zero based, and start with `{0}`. Also, errors will be thrown when tokens cannot be matched. Braces can now be escaped by repeating them. Lastly, multiple objects passed will no longer be merged together. Instead either access with new dot syntax (0.prop) or merge together with Object.merge beforehand.
 
 - Level: Major
