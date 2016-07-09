@@ -102,17 +102,6 @@ testGetArgs = function(args) {
   return Array.prototype.slice.call(args);
 }
 
-// iOS 8 supports Set but not the iterable constructor syntax (it simply adds
-// the array as a set member instead). So this helper method helps creates sets
-// from arguments.
-testGetSet = function() {
-  var s = new Set();
-  for (var i = 0; i < arguments.length; i++) {
-    s.add(arguments[i]);
-  }
-  return s;
-}
-
 testCapitalize = function(str) {
   return str.slice(0,1).toUpperCase() + str.slice(1);
 }

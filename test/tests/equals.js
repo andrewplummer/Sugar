@@ -34,13 +34,15 @@ namespace('Object | Equality', function() {
 
 
   group('Basic equality and identity comparisons', function() {
-    equal(callObjectEqual(0, -0), false, "`0` is not equal to `-0`");
-    equal(callObjectEqual(-0, 0), false, "Commutative equality is implemented for `0` and `-0`");
+    equal(callObjectEqual(0, 0), true, "0 is equal to 0");
+    equal(callObjectEqual(-0, -0), true, "-0 is equal to -0");
+    equal(callObjectEqual(0, -0), false, "0 is not equal to -0");
+    equal(callObjectEqual(-0, 0), false, "Commutative equality is implemented for 0 and -0");
 
-    equal(callObjectEqual(), true, "`undefined` is equal to `undefined`");
-    equal(callObjectEqual(null, null), true, "`null` is equal to `null`");
-    equal(callObjectEqual(null, undefined), false, "`null` is not equal to `undefined`");
-    equal(callObjectEqual(undefined, null), false, "Commutative equality is implemented for `null` and `undefined`");
+    equal(callObjectEqual(), true, "undefined is equal to undefined");
+    equal(callObjectEqual(null, null), true, "null is equal to null");
+    equal(callObjectEqual(null, undefined), false, "null is not equal to undefined");
+    equal(callObjectEqual(undefined, null), false, "Commutative equality is implemented for null and undefined");
   });
 
   group('String object and primitive comparisons', function() {
@@ -51,7 +53,7 @@ namespace('Object | Equality', function() {
     equal(callObjectEqual(new String("Curly"), "Curly"), false, "String primitives and their corresponding object wrappers are not equal");
     equal(callObjectEqual("Curly", new String("Curly")), false, "Commutative equality is implemented for string objects and primitives");
     equal(callObjectEqual(new String("Curly"), new String("Larry")), false, "String objects with different primitive values are not equal");
-    equal(callObjectEqual(new String("Curly"), {toString: function(){ return "Curly"; }}), false, "String objects and objects with a custom `toString` method are not equal");
+    equal(callObjectEqual(new String("Curly"), {toString: function(){ return "Curly"; }}), false, "String objects and objects with a custom toString method are not equal");
   });
 
   group('Number object and primitive comparisons', function() {
@@ -61,14 +63,14 @@ namespace('Object | Equality', function() {
     equal(callObjectEqual(75, new Number(75)), false, "Number primitives and their corresponding object wrappers are not equal");
     equal(callObjectEqual(new Number(75), 75), false, "Commutative equality is implemented for number objects and primitives");
     equal(callObjectEqual(new Number(75), new Number(63)), false, "Number objects with different primitive values are not equal");
-    equal(callObjectEqual(new Number(63), {valueOf: function(){ return 63; }}), false, "Number objects and objects with a `valueOf` method are not equal");
+    equal(callObjectEqual(new Number(63), {valueOf: function(){ return 63; }}), false, "Number objects and objects with a valueOf method are not equal");
   });
 
   group('Comparisons involving NaN', function() {
-    equal(callObjectEqual(NaN, NaN), true, "`NaN` is equal to `NaN`");
-    equal(callObjectEqual(61, NaN), false, "A number primitive is not equal to `NaN`");
-    equal(callObjectEqual(new Number(79), NaN), false, "A number object is not equal to `NaN`");
-    equal(callObjectEqual(Infinity, NaN), false, "`Infinity` is not equal to `NaN`");
+    equal(callObjectEqual(NaN, NaN), true, "NaN is equal to NaN");
+    equal(callObjectEqual(61, NaN), false, "A number primitive is not equal to NaN");
+    equal(callObjectEqual(new Number(79), NaN), false, "A number object is not equal to NaN");
+    equal(callObjectEqual(Infinity, NaN), false, "Infinity is not equal to NaN");
   });
 
   group('Boolean object and primitive comparisons', function() {
@@ -81,7 +83,7 @@ namespace('Object | Equality', function() {
 
 
   group('Common type coercions', function() {
-    equal(callObjectEqual(true, new Boolean(false)), false, "Boolean objects are not equal to the boolean primitive `true`");
+    equal(callObjectEqual(true, new Boolean(false)), false, "Boolean objects are not equal to the boolean primitive true");
     equal(callObjectEqual("75", 75), false, "String and number primitives with like values are not equal");
     equal(callObjectEqual(new Number(63), new String(63)), false, "String and number objects with like values are not equal");
     equal(callObjectEqual(75, "75"), false, "Commutative equality is implemented for like string and number values");
@@ -100,7 +102,7 @@ namespace('Object | Equality', function() {
       getTime: function(){
         return 12606876e5;
       }
-    }), false, "Date objects and objects with a `getTime` method are not equal");
+    }), false, "Date objects and objects with a getTime method are not equal");
     equal(callObjectEqual(new Date("Curly"), new Date("Curly")), true, "Invalid dates are equal");
   });
 
@@ -166,7 +168,7 @@ namespace('Object | Equality', function() {
     equal(callObjectEqual({a: 1}, {a: 1, b: 2}), false, "Commutative equality is implemented for objects");
     equal(callObjectEqual({x: 1, y: undefined}, {x: 1, z: 2}), false, "Objects with identical keys and different values are not equivalent");
 
-    // `A` contains nested objects and arrays.
+    // A contains nested objects and arrays.
     var a = {
       name: new String("Moe Howard"),
       age: new Number(77),
@@ -181,7 +183,7 @@ namespace('Object | Equality', function() {
       }
     };
 
-    // `B` contains equivalent nested objects and arrays.
+    // B contains equivalent nested objects and arrays.
     var b = {
       name: new String("Moe Howard"),
       age: new Number(77),
@@ -257,15 +259,100 @@ namespace('Object | Equality', function() {
     equal(callObjectEqual(a, b), true, "Cyclic structures with nested and identically-named properties are equal");
   })
 
-
   group('Custom isEqual methods', function() {
     var isEqualObj = {isEqual: function (o) { return o.isEqual == this.isEqual; }, unique: {}};
     var isEqualObjClone = {isEqual: isEqualObj.isEqual, unique: {}};
 
-    equal(callObjectEqual(isEqualObj, isEqualObjClone), true, 'Both objects implement identical `isEqual` methods');
-    equal(callObjectEqual(isEqualObjClone, isEqualObj), true, 'Commutative equality is implemented for objects with custom `isEqual` methods');
-    equal(callObjectEqual(isEqualObj, {}), false, 'Objects that do not implement equivalent `isEqual` methods are not equal');
-    equal(callObjectEqual({}, isEqualObj), false, 'Commutative equality is implemented for objects with different `isEqual` methods');
+    equal(callObjectEqual(isEqualObj, isEqualObjClone), true, 'Both objects implement identical isEqual methods');
+    equal(callObjectEqual(isEqualObjClone, isEqualObj), true, 'Commutative equality is implemented for objects with custom isEqual methods');
+    equal(callObjectEqual(isEqualObj, {}), false, 'Objects that do not implement equivalent isEqual methods are not equal');
+    equal(callObjectEqual({}, isEqualObj), false, 'Commutative equality is implemented for objects with different isEqual methods');
+  });
+
+  group('Errors', function() {
+
+    function assertErrorPasses(ErrorClass) {
+      var name = ErrorClass.name;
+      equal(callObjectEqual(new ErrorClass('foo'), new ErrorClass('foo')), true, name + ' | foo == foo');
+      equal(callObjectEqual(new ErrorClass('foo'), new ErrorClass('bar')), false, name + ' | foo != bar');
+    }
+
+    assertErrorPasses(Error);
+    assertErrorPasses(TypeError);
+    assertErrorPasses(RangeError);
+    assertErrorPasses(EvalError);
+    assertErrorPasses(ReferenceError);
+    assertErrorPasses(SyntaxError);
+    assertErrorPasses(URIError);
+
+    equal(callObjectEqual(new TypeError('foo'), new RangeError('foo')), false, 'different types are never equal');
+
+  });
+
+  group('Sets', function() {
+    equal(callObjectEqual(new Set(), new Set()),        true,  '{} == {}');
+    equal(callObjectEqual(new Set('a'), new Set()),     false, '{a} != {}');
+    equal(callObjectEqual(new Set('a'), new Set()),     false, '{} != {a}');
+    equal(callObjectEqual(new Set('a'), new Set('a')),  true,  '{a} == {a}');
+    equal(callObjectEqual(new Set('a'), new Set('b')),  false, '{a} != {b}');
+    equal(callObjectEqual(new Set([5]), new Set([5])),  true,  '{5} == {5}');
+    equal(callObjectEqual(new Set([5]), new Set([10])), false, '{5} != {10}');
+
+    equal(callObjectEqual(new Set([[1,2,3]]), new Set([[1,2,3]])), true,  '{1,2,3} == {1,2,3}');
+    equal(callObjectEqual(new Set([[1,2,3]]), new Set([[1,2]])),   false, '{1,2,3} != {1,2}');
+    equal(callObjectEqual(new Set([{a:'a'}]), new Set([{a:'a'}])), true,  '{a:a} == {a:a}');
+    equal(callObjectEqual(new Set([{a:'a'}]), new Set([{a:'b'}])), false, '{a:a} != {a:b}');
+  });
+
+  group('Maps', function() {
+    equal(callObjectEqual(new Map(), new Map()), true,  'empty == empty');
+    equal(callObjectEqual(new Map([['a','a']]), new Map([['a','a']])), true, 'a => a == a => a');
+    equal(callObjectEqual(new Map([['a','a']]), new Map([['a','b']])), false, 'a => a != a => b');
+    equal(callObjectEqual(new Map([['a','a']]), new Map([['b','a']])), false, 'a => a != a => b');
+  });
+
+  group('Typed Arrays', function() {
+
+    function createTypedArray(ArrayClass, src) {
+      var arr = new ArrayClass(src.length);
+      for (var i = 0; i < src.length; i++) {
+        arr[i] = src[i];
+      }
+      return arr;
+    }
+
+    function assertTypedArrayEquality(ArrayClass, s1, s2, expected) {
+      var arr1 = createTypedArray(ArrayClass, s1);
+      var arr2 = createTypedArray(ArrayClass, s2);
+      equal(callObjectEqual(arr1, arr2), expected, ArrayClass.name + ' | ' + expected);
+    }
+
+    function assertTypedArrayPasses(ArrayClass) {
+      assertTypedArrayEquality(ArrayClass, [], [], true);
+      assertTypedArrayEquality(ArrayClass, [256], [], false);
+      assertTypedArrayEquality(ArrayClass, [], [256], false);
+      assertTypedArrayEquality(ArrayClass, [256], [256], true);
+    }
+
+    assertTypedArrayPasses(Int8Array);
+    assertTypedArrayPasses(Uint8Array);
+    assertTypedArrayPasses(Uint8ClampedArray);
+    assertTypedArrayPasses(Int16Array);
+    assertTypedArrayPasses(Uint16Array);
+    assertTypedArrayPasses(Int32Array);
+    assertTypedArrayPasses(Uint32Array);
+    assertTypedArrayPasses(Float32Array);
+    assertTypedArrayPasses(Float64Array);
+
+    equal(callObjectEqual(createTypedArray(Int8Array, [256]), createTypedArray(Int32Array, [256])), false, 'different types are never equal');
+  });
+
+  group('Symbols', function() {
+    var sym = Symbol('a');
+    equal(callObjectEqual(Symbol('a'), Symbol('a')), false, 'Symbols are never equivalent');
+    equal(callObjectEqual(sym, sym), true, 'Symbols are still equal by reference');
+    equal(callObjectEqual(Object(sym), sym), false, 'First symbol wrapped by Object');
+    equal(callObjectEqual(Object(sym), Object(sym)), false, 'Both symbols wrapped by object');
   });
 
 });
