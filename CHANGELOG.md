@@ -96,6 +96,7 @@ v2.0.0
 - Removed callbacks in `Object.keys` and `Object.values`. `Object.forEach` should be preferred method of iteration.
 - Changed object iteration callbacks to be value first.
 - Renamed `String#each` to `String#forEach`.
+- Changed `min/max/least/most` args to put the callback at the end.
 
 
 v1.4.2

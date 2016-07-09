@@ -1430,13 +1430,13 @@ namespace('Array', function() {
     test([{a:1,b:5},{a:2,b:4},{a:3,b:3}], [function(el) { return el['b']; }], {a:3,b:3}, 'key "b", 1 found');
     test([{a:1,b:5},{a:3,b:3},{a:3,b:3}], [function(el) { return el['b']; }], {a:3,b:3}, 'key "b", 1 found');
     test([{a:1,b:3},{a:2,b:4},{a:3,b:3}], [function(el) { return el['b']; }], {a:1,b:3}, 'key "b", first found');
-    test([{a:1,b:3},{a:2,b:4},{a:3,b:3}], [function(el) { return el['b']; }, true], [{a:1,b:3},{a:3,b:3}], 'key "b", 2 found');
+    test([{a:1,b:3},{a:2,b:4},{a:3,b:3}], [true, function(el) { return el['b']; }], [{a:1,b:3},{a:3,b:3}], 'key "b", 2 found');
     test([{a:-1,b:-5},{a:-2,b:-4},{a:-3,b:-3}], [function(el) { return el['b']; }], {a:-1,b:-5}, 'key "b", 1 found');
     test(['short','and','mort'], [function(el) { return el.length; }], 'and', 'length');
-    test(['short','and','mort','fat'], [function(el) { return el.length; }, true], ['and','fat'], 'and,fat');
+    test(['short','and','mort','fat'], [true, function(el) { return el.length; }], ['and','fat'], 'and,fat');
     test(['short','and','mort'], ['length'], 'and', 'length with shortcut');
-    test(['short','and','mort'], ['length', true], ['and'], 'length with shortcut');
-    test([12,12,12], [function(n) { return n; }, true], [12,12,12], 'should not unique');
+    test(['short','and','mort'], [true, 'length'], ['and'], 'length with shortcut');
+    test([12,12,12], [true, function(n) { return n; }], [12,12,12], 'should not unique');
 
     var fn = function(el,i,a) {
       equal(this, [1], 'scope should be the array');
@@ -1458,7 +1458,7 @@ namespace('Array', function() {
       {id:4,a:{b:{c:4}}}
     ];
     test(arr, ['a.b.c'], {id:3,a:{b:{c:4}}}, 'by deep dot operator');
-    test(arr, ['a.b.c', true], [{id:3,a:{b:{c:4}}},{id:4,a:{b:{c:4}}}], 'by deep dot operator multiple');
+    test(arr, [true, 'a.b.c'], [{id:3,a:{b:{c:4}}},{id:4,a:{b:{c:4}}}], 'by deep dot operator multiple');
   });
 
   method('max', function() {
@@ -1476,14 +1476,14 @@ namespace('Array', function() {
     test([{a:1,b:3},{a:2,b:4},{a:3,b:3}], [function(el) { return el['b']; }], {a:2,b:4}, 'key "b" returns b:4');
     test([{a:1,b:3},{a:2,b:4},{a:2,b:4}], [function(el) { return el['b']; }], {a:2,b:4}, 'key "b" returns b:4 uniqued');
     test([{a:1,b:3},{a:2,b:1},{a:3,b:3}], [function(el) { return el['b']; }], {a:1,b:3}, 'key "b", first found');
-    test([{a:1,b:3},{a:2,b:1},{a:3,b:3}], [function(el) { return el['b']; }, true], [{a:1,b:3},{a:3,b:3}], 'key "b", 2 found');
+    test([{a:1,b:3},{a:2,b:1},{a:3,b:3}], [true, function(el) { return el['b']; }], [{a:1,b:3},{a:3,b:3}], 'key "b", 2 found');
     test([{a:-1,b:-5},{a:-2,b:-4},{a:-3,b:-3}], [function(el) { return el['b']; }], {a:-3,b:-3}, 'key "b" returns b:-3');
     test(['short','and', 'mort'], [function(el) { return el.length; }], 'short', 'length');
-    test(['short','and', 'morts', 'fat'], [function(el) { return el.length; }, true], ['short','morts'], 'short,morts');
-    test([12,12,12], [function(n){ return n; }, true], [12,12,12], 'should not unique');
+    test(['short','and', 'morts', 'fat'], [true, function(el) { return el.length; }], ['short','morts'], 'short,morts');
+    test([12,12,12], [true, function(n){ return n; }], [12,12,12], 'should not unique');
 
     test([{foo:'bar'}], [], {foo:'bar'}, 'object passed should return itself');
-    test([{foo:'bar'}], ['foo', true], [{foo:'bar'}], 'object passed with multiple returns array');
+    test([{foo:'bar'}], [true, 'foo'], [{foo:'bar'}], 'object passed with multiple returns array');
 
     var fn = function(el,i,a) {
       equal(this, [1], 'scope should be the array');
@@ -1504,7 +1504,7 @@ namespace('Array', function() {
       {id:4,a:{b:{c:4}}}
     ];
     test(arr, ['a.b.c'], {id:1,a:{b:{c:6}}}, 'by deep dot operator');
-    test(arr, ['a.b.c', true], [{id:1,a:{b:{c:6}}},{id:2,a:{b:{c:6}}}], 'by deep dot operator multiple');
+    test(arr, [true, 'a.b.c'], [{id:1,a:{b:{c:6}}},{id:2,a:{b:{c:6}}}], 'by deep dot operator multiple');
 
   });
 
@@ -1528,7 +1528,7 @@ namespace('Array', function() {
     fn = function(person) {
       return person.age;
     }
-    arr = run(people, 'least', [fn, true]);
+    arr = run(people, 'least', [true, fn]);
     arr.sort(function(a, b) {
       return a.name > b.name;
     });
@@ -1545,12 +1545,12 @@ namespace('Array', function() {
     test([], undefined, 'empty array');
     test([1,2,3], 1, '1,2,3');
     test([1,2,3,3], 1, '1,2,3,3');
-    test([1,2,3,3], [function(n){ return n; }, true], [1,2], '1,2,3,3 | all');
+    test([1,2,3,3], [true, function(n){ return n; }], [1,2], '1,2,3,3 | all');
     test([1,1,2,3,3], 2, '1,1,2,3,3');
     test([1,1,1,2,2,3,3,3], 2, '1,1,1,2,2,3,3,3');
     test(['a','b','c'], 'a', 'a,b,c');
     test(['a','b','c','c'], 'a', 'a,b,c,c');
-    test(['a','b','c','c'], [function(n) { return n; }, true], ['a','b'], 'a,b,c,c | all');
+    test(['a','b','c','c'], [true, function(n) { return n; }], ['a','b'], 'a,b,c,c | all');
     test(['a','a','b','c','c'], 'b', 'a,a,b,c,c');
 
     fn = function(el,i,a) {
@@ -1568,7 +1568,7 @@ namespace('Array', function() {
       {id:4,a:{b:{c:4}}}
     ];
     test(arr, ['a.b.c'], {id:1,a:{b:{c:6}}}, 'by deep dot operator');
-    test(arr, ['a.b.c', true], [{id:1,a:{b:{c:6}}}], 'by deep dot operator multiple');
+    test(arr, [true, 'a.b.c'], [{id:1,a:{b:{c:6}}}], 'by deep dot operator multiple');
 
   });
 
@@ -1585,18 +1585,18 @@ namespace('Array', function() {
     test([1,2,3], [4], 1, 'number | returns first');
 
     equal(run(people, 'most', [function(person) { return person.age; }]).age, 27, 'age | age is 27');
-    test(people, [function(person) { return person.age; }, true], [{name:'jim',age:27,hair:'brown'},{name:'edmund',age:27,hair:'blonde'}], 'age | returns all');
+    test(people, [true, function(person) { return person.age; }], [{name:'jim',age:27,hair:'brown'},{name:'edmund',age:27,hair:'blonde'}], 'age | returns all');
     test(people, [function(person) { return person.hair; }], {name:'jim',age:27,hair:'brown'}, 'hair');
 
     test([], undefined, 'empty array');
     test([1,2,3], 1, '1,2,3');
     test([1,2,3,3], 3, '1,2,3,3');
     test([1,1,2,3,3], 1, '1,1,2,3,3 | first');
-    test([1,1,2,3,3], [function(n) { return n; }, true], [1,1,3,3], '1,1,2,3,3 | all');
+    test([1,1,2,3,3], [true, function(n) { return n; }], [1,1,3,3], '1,1,2,3,3 | all');
     test(['a','b','c'], 'a', 'a,b,c');
     test(['a','b','c','c'], 'c', 'a,b,c,c');
     test(['a','a','b','c','c'], 'a', 'a,a,b,c,c | first');
-    test(['a','a','b','c','c'], [function(s){ return s; }, true], ['a','a','c','c'], 'a,a,b,c,c | all');
+    test(['a','a','b','c','c'], [true, function(s){ return s; }], ['a','a','c','c'], 'a,a,b,c,c | all');
 
     var fn = function(el,i,a) {
       equal(this, [1], 'scope should be the array');
@@ -1613,7 +1613,7 @@ namespace('Array', function() {
       {id:4,a:{b:{c:4}}}
     ];
     test(arr, ['a.b.c'], {id:2,a:{b:{c:4}}}, 'by deep dot operator');
-    test(arr, ['a.b.c', true], [{id:2,a:{b:{c:4}}},{id:3,a:{b:{c:4}}},{id:4,a:{b:{c:4}}}], 'by deep dot operator multiple');
+    test(arr, [true, 'a.b.c'], [{id:2,a:{b:{c:4}}},{id:3,a:{b:{c:4}}},{id:4,a:{b:{c:4}}}], 'by deep dot operator multiple');
 
   });
 
@@ -1900,14 +1900,14 @@ namespace('Object', function() {
     test(obj3, [], 'foo', 'no args is min of values');
     test(obj3, [function(val, key) { return val; }], 'foo', 'return value');
     test(obj3, [function(val, key) { return key.length; }], 'foo', 'return key.length');
-    test(obj3, [function(val, key) { return key.length; }, true], {foo:2,bar:4,moo:6,car:6}, 'return key.length');
-    test(obj3, [function(val, key) { return key.charCodeAt(0); }, true], {bar: 4,blue:4}, 'all | return the char code of first letter');
+    test(obj3, [true, function(val, key) { return key.length; }], {foo:2,bar:4,moo:6,car:6}, 'return key.length');
+    test(obj3, [true, function(val, key) { return key.charCodeAt(0); }], {bar: 4,blue:4}, 'all | return the char code of first letter');
     test(obj4, ['age'], 'foo', 'accepts a string shortcut');
-    test(obj4, ['age', true], {foo: {age:11},blue:{age:11}}, 'all | accepts a string shortcut');
+    test(obj4, [true, 'age'], {foo: {age:11},blue:{age:11}}, 'all | accepts a string shortcut');
     test(deepObj2, ['user.age'], 'foo', 'accepts a deep string shortcut');
 
     test([{age:2},{age:4}], ['age'], 0, 'called on arrays returns index');
-    test([{age:2},{age:2}], ['age', true], {'0':{age:2},'1':{age:2}}, 'all | called on arrays returns object');
+    test([{age:2},{age:2}], [true, 'age'], {'0':{age:2},'1':{age:2}}, 'all | called on arrays returns object');
   });
 
   method('max', function() {
@@ -1916,14 +1916,14 @@ namespace('Object', function() {
     test(obj3, [function(val, key) { return key.length; }], 'blue', 'return key.length');
     test(obj3, [function(val, key) { return key.charCodeAt(0); }], 'moo', 'return the char code of first letter');
     test(obj4, ['age'], 'car', 'accepts a string shortcut');
-    test(obj3, [function(val, key) { return val; }, true], {moo:6,car:6}, 'all | return value');
-    test(obj3, [function(val, key) { return key.length; }, true], {blue:4}, 'all | return key.length');
-    test(obj3, [function(val, key) { return key.charCodeAt(0); }, true], {moo:6}, 'all | return the char code of first letter');
-    test(obj4, ['age', true], {car:{age:44}}, 'all | accepts a string shortcut');
+    test(obj3, [true, function(val, key) { return val; }], {moo:6,car:6}, 'all | return value');
+    test(obj3, [true, function(val, key) { return key.length; }], {blue:4}, 'all | return key.length');
+    test(obj3, [true, function(val, key) { return key.charCodeAt(0); }], {moo:6}, 'all | return the char code of first letter');
+    test(obj4, [true, 'age'], {car:{age:44}}, 'all | accepts a string shortcut');
     test(deepObj2, ['user.age'], 'car', 'accepts a deep string shortcut');
 
     test([{age:2},{age:4}], ['age'], 1, 'called on arrays returns index');
-    test([{age:2},{age:4}], ['age', true], {'1':{age:4}}, 'all | called on arrays returns object');
+    test([{age:2},{age:4}], [true, 'age'], {'1':{age:4}}, 'all | called on arrays returns object');
   });
 
   method('least', function() {
@@ -1931,10 +1931,10 @@ namespace('Object', function() {
     test(obj3, [function(val, key) { return val; }], 'foo', 'return value');
     test(obj3, [function(val, key) { return key.length; }], 'blue', 'return key.length');
     test(obj4, ['age'], 'bar', 'accepts a string shortcut');
-    test(obj3, [function(val, key) { return val; }, true], {foo:2}, 'all | return value');
-    test(obj3, [function(val, key) { return key.length; }, true], {blue:4}, 'all | return key.length');
-    test(obj4, ['age', true], {bar: {age:22},moo:{age:33},car:{age:44}}, 'all | accepts a string shortcut');
-    test(deepObj4, ['user.age',true], {bar:{user:{age:22}},moo:{user:{age:33}},car:{user:{age:44}}}, 'all | accepts a deep string shortcut');
+    test(obj3, [true, function(val, key) { return val; }], {foo:2}, 'all | return value');
+    test(obj3, [true, function(val, key) { return key.length; }], {blue:4}, 'all | return key.length');
+    test(obj4, [true, 'age'], {bar: {age:22},moo:{age:33},car:{age:44}}, 'all | accepts a string shortcut');
+    test(deepObj4, [true, 'user.age'], {bar:{user:{age:22}},moo:{user:{age:33}},car:{user:{age:44}}}, 'all | accepts a deep string shortcut');
   });
 
   method('most', function() {
@@ -1943,11 +1943,11 @@ namespace('Object', function() {
     test(obj3, [function(val, key) { return key.length; }], 'foo', 'return key.length');
     test(obj3, [function(val, key) { return key.charCodeAt(0); }], 'bar', 'return the char code of first letter');
     test(obj4, ['age'], 'foo', 'accepts a string shortcut');
-    test(obj3, [function(val, key) { return val; }, true], {bar:4,blue:4,moo:6,car:6}, 'all | return value');
-    test(obj3, [function(val, key) { return key.length; }, true], {foo:2,bar:4,moo:6,car:6}, 'all | return key.length');
-    test(obj3, [function(val, key) { return key.charCodeAt(0); }, true], {bar: 4,blue:4}, 'all | return the char code of first letter');
-    test(obj4, ['age', true], {foo: {age:11},blue:{age:11}}, 'all | accepts a string shortcut');
-    test(deepObj4, ['user.age', true], {foo:{user:{age:11}},blue:{user:{age:11}}}, 'all | accepts a deep string shortcut');
+    test(obj3, [true, function(val, key) { return val; }], {bar:4,blue:4,moo:6,car:6}, 'all | return value');
+    test(obj3, [true, function(val, key) { return key.length; }], {foo:2,bar:4,moo:6,car:6}, 'all | return key.length');
+    test(obj3, [true, function(val, key) { return key.charCodeAt(0); }], {bar: 4,blue:4}, 'all | return the char code of first letter');
+    test(obj4, [true, 'age'], {foo: {age:11},blue:{age:11}}, 'all | accepts a string shortcut');
+    test(deepObj4, [true, 'user.age'], {foo:{user:{age:11}},blue:{user:{age:11}}}, 'all | accepts a deep string shortcut');
   });
 
   method('count', function() {

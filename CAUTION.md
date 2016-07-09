@@ -142,6 +142,9 @@ Drop it in before upgrading to get a general idea of what needs to change, or up
 - Level: Moderate
   - `Array#subtract`, `Array#union`, and `Array#intersect` all no longer accept multiple arguments. Simply chain them if more than one argument is needed.
 
+- Level: Moderate
+  - `Array#min`, `Array#max`, `Array#least`, `Array#most`, `Object.min`, `Object.max`, `Object.least`, `Object.most`: The `all` argument is now passed before `map` as an optional argument. This will always put the function callback as the last argument.
+
 - Level: Minor
   - `Date#relative` arguments `fn` and `localeCode` are now reversed (`localeCode` first). As this method was previously accepting `localeCode` as a single argument anyway, this change will only have have an effect if both arguments are used together.
 
