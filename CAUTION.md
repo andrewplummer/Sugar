@@ -56,6 +56,9 @@ Drop it in before upgrading to get a general idea of what needs to change, or up
   - `Object.each` was renamed as `Object.forEach` to bring it more in line with other object methods. Additionally it no longer allows a return value to break the loop. Use `Object.some` instead for this functionality.
 
 - Level: Major
+  - `String#each` was renamed to `String#forEach` to bring it more in line with other methods.
+
+- Level: Major
   - `Date#utc` is now `Date#setUTC`, and now requires explicitly passing `true` as the first argument to set the flag to true.
 
 - Level: Major

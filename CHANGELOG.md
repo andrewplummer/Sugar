@@ -16,7 +16,7 @@ v2.0.0
 - Moved `Object.map`, `Object.each`, and `Object.size` to the object module.
 - Removed `Object.reduce`.
 - Added `Object.isArguments`.
-- Changed `String#each` to allow breaking the loop with `false`.
+- Changed `String#each` (renamed to `String#forEach`) to allow breaking the loop with `false`.
 - Added `String#map`.
 - Added ability fo `String#stripTags` and `Strip#removeTags` to pass a callback.
 - Made `String#stripTags` and `String#removeTags` much more robust.
@@ -95,6 +95,7 @@ v2.0.0
 - Moved the `step` argument in `Number#upto` and `Number#downto` to be an optional 2nd argument.
 - Removed callbacks in `Object.keys` and `Object.values`. `Object.forEach` should be preferred method of iteration.
 - Changed object iteration callbacks to be value first.
+- Renamed `String#each` to `String#forEach`.
 
 
 v1.4.2

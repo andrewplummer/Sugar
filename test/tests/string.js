@@ -301,7 +301,7 @@ namespace('String', function () {
 
   });
 
-  method('each', function() {
+  method('forEach', function() {
 
     var callbackTest, result;
 
@@ -314,7 +314,7 @@ namespace('String', function () {
     }
 
     // Each without a first parameter assumes "each character"
-    result = run('g', 'each', [callbackTest]);
+    result = run('g', 'forEach', [callbackTest]);
     equal(result, ['g'], "['g'] should be the resulting value");
 
 
@@ -324,7 +324,7 @@ namespace('String', function () {
       equal(i, counter, 'index should be passed as the second argument');
       counter++;
     }
-    result = run('ginger', 'each', [callback]);
+    result = run('ginger', 'forEach', [callback]);
     equal(counter, 6, 'should have ran 6 times');
     equal(result, ['g','i','n','g','e','r'], 'resulting array should contain all the characters');
 
@@ -336,7 +336,7 @@ namespace('String', function () {
       counter++;
     }
 
-    result = run('ginger', 'each', ['g', callback]);
+    result = run('ginger', 'forEach', ['g', callback]);
     equal(counter, 2, 'string argument | should have ran 2 times');
     equal(result, ['g','g'], "string argument | resulting array should be ['g','g']");
 
@@ -349,7 +349,7 @@ namespace('String', function () {
       counter++;
     }
 
-    result = run('ginger', 'each', [/[a-i]/g, callback]);
+    result = run('ginger', 'forEach', [/[a-i]/g, callback]);
     equal(counter, 4, 'regexp argument | should have ran 4 times');
     equal(result, ['g','i','g','e'], "regexp argument | resulting array should have been ['g','i','g','e']");
 
@@ -372,7 +372,7 @@ namespace('String', function () {
       letters.push(l);
       return false;
     }
-    result = run('foo', 'each', [fn])
+    result = run('foo', 'forEach', [fn])
 
     equal(result, ['f'], 'returning false should break the loop - result');
     equal(letters, ['f'], 'returning false should break the loop - pushed');
