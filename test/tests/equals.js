@@ -22,6 +22,45 @@ namespace('Object | Equality', function() {
     return run(a, 'isEqual', [b]);
   }
 
+  function createSet(str) {
+    var s = new Set();
+    if (str) {
+      s.add(str);
+    }
+    return s;
+  }
+
+  function createMap(arr) {
+    var m = new Map();
+    if (arr) {
+      m.set(arr[0], arr[1]);
+    }
+    return m;
+  }
+
+  function createTypedArray(ArrayClass, src) {
+    var arr = new ArrayClass(src.length);
+    for (var i = 0; i < src.length; i++) {
+      arr[i] = src[i];
+    }
+    return arr;
+  }
+
+  function assertTypedArrayEquality(ArrayClass) {
+
+    function callTypedArrayEqual(ArrayClass, s1, s2, expected) {
+      var arr1 = createTypedArray(ArrayClass, s1);
+      var arr2 = createTypedArray(ArrayClass, s2);
+      equal(callObjectEqual(arr1, arr2), expected, ArrayClass.name + ' | ' + expected);
+    }
+
+    callTypedArrayEqual(ArrayClass, [], [], true);
+    callTypedArrayEqual(ArrayClass, [256], [], false);
+    callTypedArrayEqual(ArrayClass, [], [256], false);
+    callTypedArrayEqual(ArrayClass, [256], [256], true);
+
+  }
+
   function First() {
     this.value = 1;
   }
@@ -285,69 +324,59 @@ namespace('Object | Equality', function() {
     assertErrorPasses(SyntaxError);
     assertErrorPasses(URIError);
 
-    equal(callObjectEqual(new TypeError('foo'), new RangeError('foo')), false, 'different types are never equal');
+    // Unfortunately this test won't pass in < IE8 as Error objects seem to have
+    // no way to distinguish their type, as calling toString on both the objects
+    // themselves and their constructor only returns [object Error].
+    // equal(callObjectEqual(new TypeError('foo'), new RangeError('foo')), false, 'different types are never equal');
 
   });
 
   group('Sets', function() {
-    equal(callObjectEqual(new Set(), new Set()),        true,  '{} == {}');
-    equal(callObjectEqual(new Set('a'), new Set()),     false, '{a} != {}');
-    equal(callObjectEqual(new Set('a'), new Set()),     false, '{} != {a}');
-    equal(callObjectEqual(new Set('a'), new Set('a')),  true,  '{a} == {a}');
-    equal(callObjectEqual(new Set('a'), new Set('b')),  false, '{a} != {b}');
-    equal(callObjectEqual(new Set([5]), new Set([5])),  true,  '{5} == {5}');
-    equal(callObjectEqual(new Set([5]), new Set([10])), false, '{5} != {10}');
+    if (typeof Set === 'undefined') return;
+    equal(callObjectEqual(createSet(), createSet()),        true,  '{} == {}');
+    equal(callObjectEqual(createSet('a'), createSet()),     false, '{a} != {}');
+    equal(callObjectEqual(createSet('a'), createSet()),     false, '{} != {a}');
+    equal(callObjectEqual(createSet('a'), createSet('a')),  true,  '{a} == {a}');
+    equal(callObjectEqual(createSet('a'), createSet('b')),  false, '{a} != {b}');
+    equal(callObjectEqual(createSet([5]), createSet([5])),  true,  '{5} == {5}');
+    equal(callObjectEqual(createSet([5]), createSet([10])), false, '{5} != {10}');
 
-    equal(callObjectEqual(new Set([[1,2,3]]), new Set([[1,2,3]])), true,  '{1,2,3} == {1,2,3}');
-    equal(callObjectEqual(new Set([[1,2,3]]), new Set([[1,2]])),   false, '{1,2,3} != {1,2}');
-    equal(callObjectEqual(new Set([{a:'a'}]), new Set([{a:'a'}])), true,  '{a:a} == {a:a}');
-    equal(callObjectEqual(new Set([{a:'a'}]), new Set([{a:'b'}])), false, '{a:a} != {a:b}');
+    equal(callObjectEqual(createSet([[1,2,3]]), createSet([[1,2,3]])), true,  '{1,2,3} == {1,2,3}');
+    equal(callObjectEqual(createSet([[1,2,3]]), createSet([[1,2]])),   false, '{1,2,3} != {1,2}');
+    equal(callObjectEqual(createSet([{a:'a'}]), createSet([{a:'a'}])), true,  '{a:a} == {a:a}');
+    equal(callObjectEqual(createSet([{a:'a'}]), createSet([{a:'b'}])), false, '{a:a} != {a:b}');
   });
 
   group('Maps', function() {
-    equal(callObjectEqual(new Map(), new Map()), true,  'empty == empty');
-    equal(callObjectEqual(new Map([['a','a']]), new Map([['a','a']])), true, 'a => a == a => a');
-    equal(callObjectEqual(new Map([['a','a']]), new Map([['a','b']])), false, 'a => a != a => b');
-    equal(callObjectEqual(new Map([['a','a']]), new Map([['b','a']])), false, 'a => a != a => b');
+    if (typeof Map === 'undefined') return;
+    equal(callObjectEqual(createMap(), createMap()), true,  'empty == empty');
+    equal(callObjectEqual(createMap(['a','a']), createMap(['a','a'])), true, 'a => a == a => a');
+    equal(callObjectEqual(createMap(['a','a']), createMap(['a','b'])), false, 'a => a != a => b');
+    equal(callObjectEqual(createMap(['a','a']), createMap(['b','a'])), false, 'a => a != a => b');
   });
 
   group('Typed Arrays', function() {
+    if (typeof ArrayBuffer === 'undefined') return;
 
-    function createTypedArray(ArrayClass, src) {
-      var arr = new ArrayClass(src.length);
-      for (var i = 0; i < src.length; i++) {
-        arr[i] = src[i];
-      }
-      return arr;
-    }
-
-    function assertTypedArrayEquality(ArrayClass, s1, s2, expected) {
-      var arr1 = createTypedArray(ArrayClass, s1);
-      var arr2 = createTypedArray(ArrayClass, s2);
-      equal(callObjectEqual(arr1, arr2), expected, ArrayClass.name + ' | ' + expected);
-    }
-
-    function assertTypedArrayPasses(ArrayClass) {
-      assertTypedArrayEquality(ArrayClass, [], [], true);
-      assertTypedArrayEquality(ArrayClass, [256], [], false);
-      assertTypedArrayEquality(ArrayClass, [], [256], false);
-      assertTypedArrayEquality(ArrayClass, [256], [256], true);
-    }
-
-    assertTypedArrayPasses(Int8Array);
-    assertTypedArrayPasses(Uint8Array);
-    assertTypedArrayPasses(Uint8ClampedArray);
-    assertTypedArrayPasses(Int16Array);
-    assertTypedArrayPasses(Uint16Array);
-    assertTypedArrayPasses(Int32Array);
-    assertTypedArrayPasses(Uint32Array);
-    assertTypedArrayPasses(Float32Array);
-    assertTypedArrayPasses(Float64Array);
+    assertTypedArrayEquality(Int8Array);
+    assertTypedArrayEquality(Uint8Array);
+    assertTypedArrayEquality(Int16Array);
+    assertTypedArrayEquality(Uint16Array);
+    assertTypedArrayEquality(Int32Array);
+    assertTypedArrayEquality(Uint32Array);
+    assertTypedArrayEquality(Float32Array);
+    assertTypedArrayEquality(Float64Array);
 
     equal(callObjectEqual(createTypedArray(Int8Array, [256]), createTypedArray(Int32Array, [256])), false, 'different types are never equal');
   });
 
+  group('Uint8ClampedArray', function() {
+    if (typeof Uint8ClampedArray === 'undefined') return;
+    assertTypedArrayEquality(Uint8ClampedArray);
+  });
+
   group('Symbols', function() {
+    if (typeof Symbol === 'undefined') return;
     var sym = Symbol('a');
     equal(callObjectEqual(Symbol('a'), Symbol('a')), false, 'Symbols are never equivalent');
     equal(callObjectEqual(sym, sym), true, 'Symbols are still equal by reference');

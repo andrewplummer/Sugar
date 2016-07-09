@@ -49,7 +49,6 @@ assertFromIndexArgs = function(arr, methodName, args, expected, msg) {
   }
 }
 
-
 oneUndefined    = safeArray(undefined);
 twoUndefined    = safeArray(undefined, undefined);
 threeUndefined  = safeArray(undefined, undefined, undefined);
