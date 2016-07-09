@@ -1,52 +1,53 @@
 {
   "name": "sugar",
-  "version": "1.4.1",
-  "description": "A Javascript library for working with native objects.",
+  "version": "2.0.0",
+  "description": "A utility library that provides helpful methods for working effortlessly with native Javascript objects.",
   "keywords": [
+    "sugar",
     "sugarjs",
     "functional",
+    "browser",
     "utility",
     "util",
-    "browser",
     "date",
-    "time",
-    "parse",
-    "format"
+    "time"
   ],
   "homepage": "http://sugarjs.com/",
-  "author": "Andrew Plummer",
-  "main": "./release/sugar-full.dev.js",
-  "directories": {
-    "lib": "./release"
-  },
-  "files": [
-    "release/sugar-full.dev.js",
-    "test/javascripts/date-helpers.js",
-    "test/javascripts/helpers.js",
-    "test/javascripts/suite.js",
-    "test/environments/sugar/",
-    "test/environments/node/"
-  ],
+  "author": "Andrew Plummer <plummer.andrew@gmail.com>",
+  "license": "MIT",
+  "main": "sugar.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/andrewplummer/Sugar.git"
+    "url": "git:https://github.com/andrewplummer/Sugar.git"
   },
+  "bugs": {
+    "url": "https://github.com/andrewplummer/Sugar/issues"
+  },
+  "files": [
+    "CAUTION.md",
+    "sugar.js",
+    "sugar.min.js"
+  ],
   "engines": {
     "node": ">= 0.8.23"
   },
-  "scripts": {
-    "test": "node test/environments/node/test.js"
+  "browser": {
+    "buffer": false
   },
-  "license": "MIT",
+  "scripts": {
+    "test": "node test/node"
+  },
   "devDependencies": {
+    "acorn": "^2.7.0",
     "closure-compiler-stream": "^0.1.15",
     "glob": "^5.0.14",
+    "google-closure-compiler": "^20160517.1.0",
     "gulp": "^3.9.0",
-    "gulp-concat-util": "^0.5.2",
-    "gulp-npm-run": "0.0.1",
-    "gulp-replace": "^0.5.3",
+    "gulp-file": "^0.3.0",
     "gulp-util": "^3.0.6",
     "merge-stream": "^0.1.8",
+    "mkdirp": "^0.5.1",
+    "rimraf": "^2.4.4",
     "sinon": "^1.15.4",
     "through2": "^2.0.0",
     "yargs": "^3.15.0"

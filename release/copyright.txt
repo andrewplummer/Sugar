@@ -1,8 +1,0 @@
-/*
- *  Sugar Library VERSION
- *
- *  Freely distributable and licensed under the MIT-style license.
- *  Copyright (c) YEAR Andrew Plummer
- *  http://sugarjs.com/
- *
- * ---------------------------- */

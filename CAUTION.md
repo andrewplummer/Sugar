@@ -1,73 +1,209 @@
-## Caution!
+### Caution!
 
 Here you will find points of caution when updating Sugar to a new version.
 Think of it as a pruned Changelog with the most front-facing changes surfaced.
 If your code breaks on update check here first! Read all the ones that are greater than the version you are migrating from.
 
-### Note about versions < 1.3.9
 
-Version 1.4.0 improves future-compatibility by ensuring that browser updates do not cause breakages going forward. Upgrading is highly recommended, however as there are also many API changes, [this patch](https://raw.github.com/andrewplummer/Sugar/master/lib/patches/sugar-es6-patch.min.js) was created for older versions. Just drop it in after the main script.
+### Upgrade Script
+
+[upgrade.js](lib/extras/upgrade.js)
+
+When upgrading to a new major version, it's hard to know what changes you will be affected by. This document was meant to help, but now there is also the upgrade script! Just include it immediately after Sugar is loaded, and it will log any method calls that may potentially break!
+
+Drop it in before upgrading to get a general idea of what needs to change, or upgrade and fix as you go!
 
 
-
-v1.5.0+
-=======
+### v2.0.0+
 
 - Level: Major
-  - `String#has` is now removed in favor of `String#contains` to be in compliance with the ES6 spec. For more complex string checking, use `String#match` with standard regexes instead.
+  - Callbacks for iterating over object properties are now value first, key second. This includes `Object.each` (now renamed to `Object.forEach`), `Object.map`, `Object.every`, `Object.find`, `Object.count`, `Object.none`, `Object.sum`, `Object.average`, `Object.min`, `Object.max`, `Object.least`, `Object.most`, and `Array#groupBy`.
+
+- Level: Major
+  - `String#assign` is now `String#format`, and behaves very closely to Python's method of the same name. Tokens are now zero based, and start with `{0}`. Also, errors will be thrown when tokens cannot be matched. Braces can now be escaped by repeating them. Lastly, multiple objects passed will no longer be merged together. Instead either access with new dot syntax (0.prop) or merge together with Object.merge beforehand.
+
+- Level: Major
+  - `Function#fill` was renamed to `Function#partial`. Additionally, it no longer accepts `null` as a placeholder. Use `undefined` instead.
+
+- Level: Major
+  - `Object.equal` is renamed to `Object.isEqual` in both the static and instance method types.
+
+- Level: Major
+  - `Object.extended` was removed in favor of chainables. The equivalent is now `new Sugar.Object()`, however the result will be wrapped in a property called `.raw`. See the docs for more details.
+
+- Level: Major
+  - `Object.merge` now takes an options object instead of a list of arguments. The 3rd argument is now "deep" in the options object, and the 4th is "resolve". Resolver functions will now abort the merge (for a single property) if `undefined` is the return value. To tell the resolver function to continue as normal, return the `Sugar` global object instead. Any non-undefined value returned by the function will now resolve the conflict completely and will not continue traversing into it when in "deep" mode. To tell the resolver function to continue with the merge, return the Sugar global object instead.
+
+- Level: Major
+  - `String#has` is now removed in favor of `String#includes` to be in compliance with the ES6 spec. The ES6 method only accepts a string as input, however Sugar enhances this method to allow regexes (can be opted-out).
+
+- Level: Major
+  - `Array#include` was removed as it is now identical to `Array#add`.
+
+- Level: Major
+  - `Array#findAll` was replaced with `Array#filterFromIndex` in cases that require a start index. For cases without a start index, simply use native `Array#filter`. Additionally, the "index" and "loop" arguments now come before the callback.
+
+- Level: Major
+  - `Array#each` was replaced with `Array#forEachFromIndex` in cases that require a start index. For cases without a start index, simply use native `Array#forEach`. Additionally, the "index" and "loop" arguments now come before the callback. For iterating until a return value is passed, use `Array#some`.
+
+- Level: Major
+  - `Array#findFrom` and `Array#findIndexFrom` are now `Array#findFromIndex` and `Array#findIndexFromIndex` and exist alongside other "from index" methods with similar naming. Additionally, the "index" and "loop" arguments now come before the callback.
+
+- Level: Major
+  - `Object.findAll` was replaced with `Object.filter`, which parallels `Array#filter` by returning a filtered object.
+
+- Level: Major
+  - `Object.each` was renamed as `Object.forEach` to bring it more in line with other object methods. Additionally it no longer allows a return value to break the loop. Use `Object.some` instead for this functionality.
+
+- Level: Major
+  - `String#each` was renamed to `String#forEach` to bring it more in line with other methods.
 
 - Level: Major
   - `Date#utc` is now `Date#setUTC`, and now requires explicitly passing `true` as the first argument to set the flag to true.
 
 - Level: Major
+  - `Date#format` shortcuts ("short", "long", "full", etc) have significantly changed. See the docs for the new formats. Tokens `f`, `fff`, `izotz`, and `ord`, have been replaced with `S`, `SSS`, `Z`, and `do` to align better with Moment/LDML. `Dow` and `Mon` were previously always 3 characters and uppercased. Both of these are now locale dependent, as certain locales may prefer different casing or abbreviation length. Lowercased formats `dow` and `mon` are also locale-dependent in length, but always lowercased.
+
+- Level: Major
+  - `Array#randomize` was renamed to `Array#shuffle`.
+
+- Level: Major
+  - `Array.create` now only accepts one argument. See the docs for more details or use ES6 method `Array.from` instead. Sugar provides this as a polyfill in the default bundle.
+
+- Level: Major
+  - `Object.watch` was removed. This method was the only part of Sugar that was not 100% compatible in all environments, and was an overly simplistic solution to a difficult problem that others have done better (see discussions around Object.observe and polling). As a quick and dirty solution, this will be made available as a [plugin](https://github.com/andrewplummer/sugar-plugins). Also includes `Object.unwatch`.
+
+- Level: Major
+  - `Function#after` has changed behavior. Previously it would fire every `n` times. Now it will fire after `n` calls. Additionally it will not immediately fire when `0` is passed.
+
+- Level: Major
+  - `Array#add` is now non-destructive. To append to the array in place, use `Array#append`.
+
+- Level: Major
+  - `Object.toQueryString` no longer uses square bracket syntax by default. To enable this pass `deep` in the options object which is now the second argument to the function. `namespace`, which was previously the second argument to this method, is now `prefix` in the same options object.
+
+- Level: Major
+  - `Object.fromQueryString` now performs "smart" conversion of numerals, booleans, and multiple keys by default. To turn this off, pass `smart: false` in the options object which is now the second argument to the function. Deep bracket syntax (`[]` in keys) is now off by defualt but can be enabled with `deep` on the options object.
+
+- Level: Major
+  - `RegExp#addFlag` and `RegExp#removeFlag` are now `RegExp#addFlags` and `RegExp#removeFlags` and now work on multiple flags at once.
+
+- Level: Major
+  - `Date.past`, `Date.future`, `Date.utc.create`, `Date.utc.past`, and `Date.utc.future` are all deprecated. Instead, pass an options object as the second argument to `Date.create` with the equivalent properties. For example: `Date.create('March', { future: true, fromUTC: true, locale: 'ja' })`, etc. Additionally, the `utc` parameter is now `fromUTC` and a new parameter `setUTC` has been added to clear up confusion about what the flag was doing. `fromUTC` assumes the input to be UTC but the output is a normal Javascript local date. `setUTC` sets an internal flag which tells Sugar to use utc methods like `getUTCHours`.
+
+- Level: Major
   - `String#startsWith` and `String#endsWith` are now more in compliance with the ES6 spec. They now no longer accept a RegExp (will throw an error) or a `case` parameter. If you need to do more complex string checking, use `String#match` with standard regexes instead. Also minor differences in the way the starting/ending positions are coerced may also be present.
 
 - Level: Major
-  - `Object.reduce` is now deprecated. Use `Array#reduce` together with `Object.keys` instead.
+  - `Object.isNaN` was removed in favor of native `Number.isNaN`, which Sugar provides a polyfill for.
 
 - Level: Major
-  - `Object.merge` and `Object.clone` now work on non-enumerable properties if supported. This is great for more robust merging of objects, but there are some side effects. The most major is that when arrays are merged together now (as objects) their length property will be merged as well. This will effectively mean that if an array of length 3 is merged into an array of length 4, the result will also have length 3 (depending on the merge strategy) which will chop off the last element. This is also true for nested arrays in the case of deep merging. If you are performing simple operations on straight arrays, consider using `Array#intersect` or `Array#union` instead, which are much more optimized for arrays. If you are doing complex, deep merging with nested arrays of varying length, you will need to pass a function as the resolve strategy and check for arrays using `Array.isArray` and handle appropriately. Additionally, IE8 and below do not have support for iterating over non-enumerable properties, so the results can be different here depending on environment. Sticking to standard object literals when merging/cloning will ensure maximum browser support.
+  - `String#normalize` was removed to comply with the ES6 spec. It was also a brute force approach and most likely overkill for most situations. It will be made available as a [plugin](https://github.com/andrewplummer/sugar-plugins) under the name `String#toAscii`.
 
 - Level: Major
-  - `Object.merge` will now treat null properties as if they did not exist (previously only undefined properties were treated this way). All other falsy properties such as empty strings and `false` will not be overwritten.
+  - `String#capitalize` will now only capitalize the first letter of a string by default. If you want to downcase the rest of the string, pass true for the 1st argument. Capitalizing all words is now the 2nd argument.
+
+- Level: Major
+  - `String#add` was removed and now exists only as `String#insert`, which it was mainly providing the basis for.
+
+- Level: Major
+  - `Array#all`, `Array#any`, `Object.all`, and `Object.any` aliases were removed to align Sugar more with native methods. If needed, these can still easily be aliased with `Sugar.Array.alias('all', 'every');`.
 
 - Level: Moderate
-  - `Object.merge` will not continue traversing into an object if a resolve function is passed and returns something (anything but undefined). This means that you can selectively choose to handle certain conflicts differently by returning something, or use the merging defaults by returning undefined. It also means that a resolve function can no longer intentionally use `undefined` itself as a conflict resolution value - use `null` or another value instead.
+  - `Object.keys` and `Object.values` no longer have callbacks as second arguments. Use `Object.forEach` for iteration over an object's properties.
 
 - Level: Moderate
-  - `Number#format` no longer accepts arguments for the thousands separator and decimal point. Instead these can now be set on the global object Sugar.Number.thousands and Sugar.Number.decimal. These will also be respected by Number#abbr, Number#metric, and Number#bytes as well.
+  - `Number#format` no longer accepts arguments for the thousands separator and decimal point. Instead these can now be set globally using Sugar.Number.thousands() and Sugar.Number.decimal(). These will also be respected by Number#abbr, Number#metric, and Number#bytes as well.
 
 - Level: Moderate
-  - Alphanumeric array options are now defined on the global object `Sugar.Array` instead of `Array` itself.
+  - `Number#bytes` now uses powers of 1000 by default instead of powers of 1024. For the old behavior, pass "true" as the 2nd argument (after precision). Further, when using the "binary" flag, units will be standard binary units (KiB, MiB, etc.). For standard units (KB, MB, etc.) pass 'si' for the 3rd argument.
 
 - Level: Moderate
-  - `Object.extend` is now `Sugar.extendObject`.
+  - Alphanumeric array options are now defined on the global object `Sugar` instead of `Array` itself.
 
 - Level: Moderate
-  - `String#normalize` is now renamed to `String#toAscii` to comply with the ES6 spec.
+  - `Array#at` and `String#at` now no longer accept enumerated arguments. To get an multiple indexes, pass an array instead.
+
+- Level: Moderate
+  - `Array#at` and `String#at` now have their `loop` argument off by default.
+
+- Level: Moderate
+  - Array natural sort options (`AlphanumericSortOrder`, `AlphanumericSortIgnore`, etc) now no longer have `Alphanumeric` in the name, and are now options that are set by the accessor methods `Sugar.Array.getOption` and `Sugar.Array.setOption`. Lastly, `AlphanumericSort`, which simply exposed Sugar's internal sort algorithm is now `sortCollate`.
+
+- Level: Moderate
+  - `Array#sortBy` will now not clone the array by default. This will prevent unnecessary work when it is not needed, however it means that the method is now destructive. Simply use `clone` or `concat` on the array first for the old behavior.
+
+- Level: Moderate
+  - `Object.select` and `Object.reject` now, when passed an object as a matcher, only check for key existence, not whether values also match or not. To do the "intersect" operation that these methods previously performed, `Object.filter`, `Object.remove`, or `Object.exclude` can instead be used.
+
+- Level: Moderate
+  - `Date#reset` now requires one unit higher when resetting units based on a string. For example, d.reset('day') will now "reset the day", where it's previous behavior was to shift the date to the beginning of the month. Default is also shifted so no change should be necessary when resetting the time.
+
+- Level: Moderate
+  - `Array#subtract`, `Array#union`, and `Array#intersect` all no longer accept multiple arguments. Simply chain them if more than one argument is needed.
 
 - Level: Minor
-  - `String#escapeHTML` now double escapes entities, meaning '&amp;' will become '&amp;amp;', etc.
+  - `Date#relative` arguments `fn` and `localeCode` are now reversed (`localeCode` first). As this method was previously accepting `localeCode` as a single argument anyway, this change will only have have an effect if both arguments are used together.
+
+- Level: Minor
+  - `Array#remove` and `Array#exclude` no longer accept enumerated paramters. To remove multiple elements, depending on the type a regex or function may be used. Otherwise the method must be called multiple times.
+
+- Level: Minor
+  - `Date.create` no longer accepts enumerated parameters (2001, 5, 31, ...). Use the normal date constructor instead.
+
+- Level: Minor
+  - `Number#metric` now uses a "units" string instead of the "limit" argument, which allows a more flexible, intuitive way to define custom units and min/max ranges. Check the docs for more about this.
+
+- Level: Minor
+  - `Date#set` now rewinds dates that have accidentally traversed into a new month, such as setting `{ month: 1 }` on `January 31st`. This behavior was previously only on `advance` and `rewind`.
 
 - Level: Minor
   - `Date.SugarNewDate` is now `Sugar.Date.newDateInternal`. This method is always on the `Sugar` global (not `Date`).
 
 - Level: Minor
-  - `Object.map`, `Object.each`, and `Object.size` were moved to the Object package from the Array package. If you were using these methods and making custom builds you may have to include the Object package now as well.
+  - `Object.map`, `Object.each`, (now `Object.forEach`) and `Object.size` were moved to the Object module from the Array module. If you were using these methods and making custom builds you may have to include the Object module now as well.
+
+- Level: Minor
+  - `Date#unitSince` (`Date#hoursSince`, etc) now assumes that the passed in format is UTC if the context date is also flagged as UTC (if you're using `setUTC`). This behavior can be overriden by passing `{ fromUTC: false }` to these methods.
+
+- Level: Minor
+  - `Object.clone` now clones both non-enumerable properties if they exist and the attribute accessors "get" and "set".
+
+- Level: Minor
+  - `Array#isEmpty` now does a simple check if the length is zero. To also check if `undefined`, `null`, or `NaN` are present, use `Array#compact` first.
+
+- Level: Minor
+  - `Object.fromQueryString` now returns a plain object. If you want what was previously an extended object, use a chainable on the result with `new Sugar.Object()`.
+
+- Level: Minor
+  - `String#stripTags` and `String#removeTags` no longer accept enumerated arguments. Simply pass an array of tags to remove multiple.
+
+- Level: Minor
+  - `String#titleize` was moved from the Inflections module to String.
+
+- Level: Minor
+  - `String.Inflector` has been removed from the inflections module in favor of the static methods `addAcronym`, `addPlural`, and `addHuman`.
+
+- Level: Minor
+  - `String#upto` and `String#downto` now accept "step", which was previously the third argument, as an optional second argument.
 
 - Level: Very Minor
-  - Some minor behavior changes around the way `String#removeTags` works on malformed html. Unmatched closing tags will now be removed.
+  - `Array#map`, `Array#unique`, `Array#groupBy`, `Array#min`, `Array#max`, `Array#least`, `Array#most`, `Array#sortBy`: Mapping shortcut strings now accept deep matchers with the dot `.` token. If you have objects that use `.` in the keys and are using these methods, be careful as this now makes the methods try to go deep. Pass a function instead to map as before.
+
+- Level: Very Minor
+  - Some minor behavior changes around the way `String#removeTags` works on malformed html. Unmatched closing tags are removed.
+
+- Level: Very Minor
+  - `String#hankaku` and `String#zenkaku` now don't take multiple arguments for modes. Just mix them together in the first argument as a string. See docs for more.
 
 
-v1.4.1+
-=======
+### v1.4.1+
 
 - Level: Minor
   - `Object.select` and `Object.reject` now will match values when passed an object. This means that if you pass `{foo:'bar'}`, it will no longer match if the value of `foo` in your object is not `bar`. Previously it would match simply if the key existed.
 
 
-v1.4.0+
-=======
+### v1.4.0+
 
 - Level: Major
   - `pad`, `padLeft`, and `padRight` now pad to the exact character. This means that `padLeft(20)` will produce a string exactly 20 characters long, instead of adding 20 characters worth of padding to the left side of the string as before. You can use `String#repeat` for the same effect as the old functionality.
@@ -103,16 +239,16 @@ v1.4.0+
   - The `split` argument was removed from `String#truncate`. For truncating without splitting words, use `String#truncateOnWord` instead. Argument position is adjusted accordingly.
 
 - Level: Moderate
-  - Class instances are now internally matched by reference only. This means that `Object.equal(new Person, new Person)` will now be `false`. This was in fact the original intended behavior but a bug had not been closed here leading to it not actually being `false`. Although a case can be made for matching class instances by value, in the end it is too expensive and tricky to distinguish them from host objects, which should never be matched by value. Instead it is better to check for equality of class instances on a unique identifier or the like.
+  - Class instances are now internally matched by reference only. This means that `Object.equal(new Person, new Person)` is `false`. This was in fact the original intended behavior but a bug had not been closed here leading to it not actually being `false`. Although a case can be made for matching class instances by value, in the end it is too expensive and tricky to distinguish them from host objects, which should never be matched by value. Instead it is better to check for equality of class instances on a unique identifier or the like.
 
 - Level: Moderate
-  - `Object.isObject` will now no longer return true for class instances for the same reasons listed above. This also was intended behavior but was defective.
+  - `Object.isObject` no longer returns true for class instances for the same reasons listed above. This also was intended behavior but was defective.
 
 - Level: Moderate
   - `String#normalize` is now deprecated, but still available as a separate script in the `lib/plugins` directory.
 
 - Level: Moderate
-  - Date ranges are now their own package (the "range" package), are not dependent on the Date package, and work on numbers and strings as well.
+  - Date ranges are now their own module (the "range" module), and are not dependent on the Date module, and work on numbers and strings as well.
 
 - Level: Minor
   - Enumerable methods on object will now coerce primitive types. This means that `Object.findAll('foo')` will now treat `'foo'` as `new String('foo')`. This is reversed from the previous behavior which would error on primitive types and coerce objects to primitive types where possible.
@@ -136,15 +272,18 @@ v1.4.0+
   - `String#pad/padLeft/padRight` will now raise an error on padding to a negative number. Conversely, they will no longer raise an error on undefined/null/NaN.
 
 
-v1.3.9+
-=======
+### Note about versions < 1.3.9
+
+Version 1.4.0 improves future-compatibility by ensuring that browser updates do not cause breakages going forward. Upgrading is highly recommended, however as there are also many API changes, [this patch](https://raw.github.com/andrewplummer/Sugar/master/lib/extras/patches/sugar-es6-patch.min.js) was created for older versions. Just drop it in after the main script.
+
+
+### v1.3.9+
 
 - Level: Major
   - Removed `String#namespace`.
 
 
-v1.3.8+
-=======
+### v1.3.8+
 
 - Level: Major
   - Renamed `Date#getWeek` and `Date#setWeek` to `Date#getISOWeek` and `Date#setISOWeek`.
@@ -153,8 +292,7 @@ v1.3.8+
   - Object.clone will now preserve a date's internal utc flag when set.
 
 
-v1.3.7+
-=======
+### v1.3.7+
 
 - Level: Major
   - `String#startsWith` and `String#endsWith` now accept different arguments to better align them with the Harmony proposal of the same name. The second argument is now the "position" that limits where the string starts/ends, and the "case" flag indicating case sensitivity is now pushed to the 3rd argument.
@@ -166,8 +304,7 @@ v1.3.7+
   - Aliases on dates such as `daysAgo` will now count "past" an integer instead of rounding. This means that `Date.create('23 hours ago').daysAgo()` will now be `0`. There is however a small margin of error (roughly 0.1%) that will trigger a round up, which is higher for months, which have a more vague definition and a higher margin for error.
 
 
-v1.3.6+
-=======
+### v1.3.6+
 
 - Level: Very Minor
   - Float values should be properly parsed in `Object.fromQueryString`, meaning IP addresses and the like will now parse as strings instead of truncated numbers.
@@ -179,22 +316,19 @@ v1.3.6+
   - Date parsing now only allows a maximum of 59 for minutes and seconds.
 
 
-v1.3.5+
-=======
+### v1.3.5+
 
 - Level: Very Minor
   - `Array.create` now properly creates arrays from objects.
 
 
-v1.3.2+
-=======
+### v1.3.2+
 
 - Level: Minor
   - `Date.create` will no longer set the UTC flag on dates created from an ISO string with the "Z" flag. This can be considered a bug introduced in the last release. The "Z" flag indicates that a date is in UTC time, but should not serve as an indication that the date should further be manipulated as UTC, only as a cue when parsing. If you want the date to actually behave as UTC (internally call UTC methods), then you need to explicitly set with `Date#utc(true)` now.
 
 
-v1.3.1+
-=======
+### v1.3.1+
 
 
 - Level: Major
@@ -216,6 +350,9 @@ v1.3.1+
   - `Date#setUTCWeekday` deprecated. Set the utc flag and use `Date#setWeekday` instead.
 
 - Level: Minor
+  - `Number#times` now returns an array which is the collected return values of the function passed.
+
+- Level: Minor
   - `Date#clone` will now preserve the utc flag.
 
 - Level: Minor
@@ -225,12 +362,11 @@ v1.3.1+
   - `Date#setWeekday` now returns a timestamp instead of `undefined`.
 
 
-v1.3+
-=======
+### v1.3+
 
 
 - Level: Major
-  - Date locales are now moved into a separate package. This means that now with the default download package, setting the date locale to anything other than English will throw an error. If you require locales other than English, please include them from [the customize page](http://sugarjs.com/customize).
+  - Date locales are now moved into a separate module. This means that now with the default download, setting the date locale to anything other than English will throw an error. If you require locales other than English, please include them from [the customize page](http://sugarjs.com/customize).
 
 - Level: Major
   - `Array#min`, `Array#max`, `Array#least`, and `Array#most` now return a single value instead of an array. If you need to get "all min" or "all max" values, then pass `true` as the second argument to these methods.
@@ -270,8 +406,7 @@ v1.3+
 
 
 
-v1.2.5+
-=======
+### v1.2.5+
 
 - Level: Major
   - `String#truncate` arguments changed. `ellipsis` (`"..."` by default) is now the last argument of four. Second argument is now `split` which is true by default, so the method will behave like standard truncate methods by default. `from` added as the third parameter and determines where to truncate. Can be `"right"` (default), `"left"`, or `"middle"`.
@@ -283,8 +418,7 @@ v1.2.5+
   - `Object.isObject` now returns `true` for extended objects.
 
 
-v1.2.4+
-=======
+### v1.2.4+
 
 - Level: Minor
   - Object.equal and its instance method form "equals" is now considered "egal". This means that, for example, new String('w') will NOT be equal to 'w', etc. Previously equal was nearly egal, but not quite, so this should only affect very small edge cases. This now means that Sugar will match Underscore's _.isEqual method 100% of the time with the only exception being custom "isEqual" methods that Underscore checks explicitly.
@@ -294,8 +428,7 @@ v1.2.4+
 
 
 
-v1.2.3+
-=======
+### v1.2.3+
 
 - Level: Major
   - String#compare, Number#compare, and Date#compare are deprecated
@@ -309,16 +442,14 @@ v1.2.3+
 
 
 
-v1.2.2+
-=======
+### v1.2.2+
 
 - Level: Very Minor
   - Extended objects now keep their "Hash" constructor (which is internal) so they no longer have `Object` as their constructor. If you are doing instanceof checks here this may break (which you shouldn't be doing anyway)
 
 
 
-v1.2+
-=====
+### v1.2+
 
 - Level: Major
   - Array methods now use "fuzzy object matching" when passing an object. As an example, `arr.find({ foo: 'bar' })` would previously only match an identical object, now it will match any object whose `foo` property is `bar`. Additionally, note that passing regexes and functions will be used to match (regexes match against strings, functions are callbacks that return `true`/`false`), not compared directly. This applies to the following array methods: `every`, `some`, `filter`, `find`, `findAll`, `findIndex`, `remove`, `none`, `count`, and `exclude`.
@@ -331,8 +462,7 @@ v1.2+
 
 
 
-v1.1.2+
-=======
+### v1.1.2+
 
 - Level: Minor
   - Function#after will now call a method immediately if the passed value is `0`.
@@ -342,8 +472,7 @@ v1.1.2+
 
 
 
-v1.1.1+
-=======
+### v1.1.1+
 
 - Level: Major
   - Object.merge no longer merges an arbitrary number of arguments. Use extended objects and chaining instead.
@@ -353,8 +482,7 @@ v1.1.1+
 
 
 
-v1.1+
-=====
+### v1.1+
 
 - Level: Major
   - Object.equals renamed to Object.equal.
@@ -373,8 +501,7 @@ v1.1+
 
 
 
-v1.0+
-=====
+### v1.0+
 
 
 - Level: Major
@@ -400,8 +527,7 @@ v1.0+
 
 
 
-v0.9.5+
-=======
+### v0.9.5+
 
 
 - Level: Major
@@ -421,8 +547,7 @@ v0.9.5+
 
 
 
-v0.9.3+
-=======
+### v0.9.3+
 
 
 - Level: Major
@@ -457,8 +582,7 @@ v0.9.3+
 
 
 
-v0.9.1+
-=======
+### v0.9.1+
 
 - Level: Major
   - Object.create changed to Object.extended.

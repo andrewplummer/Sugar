@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Sugar Performance</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head>
+  <style type="text/css">
+
+    body {
+      margin: 0;
+      padding: 5px 30px;
+    }
+
+    table {
+      border-collapse: separate;
+    }
+
+    ol {
+      list-style-position: inside;
+      padding: 0;
+    }
+
+    h3, p {
+      margin: 0 0 .3em;
+    }
+
+    td {
+      background-color: #f6f6f6;
+      padding: 10px;
+    }
+
+    td[data-iterations] {
+      cursor: pointer;
+    }
+
+    th {
+      cursor: pointer;
+      text-align: left;
+    }
+
+    .active {
+background-color: teal;
+    }
+
+    #output {
+      margin-top: 15px;
+    }
+
+    #code li {
+      margin: 1em 0;
+    }
+
+    #run-all, #show-results {
+      font-size: 13px;
+      margin: 15px 0;
+      background: #3878B5;
+      border: none;
+      border-radius: 3px;
+      color: white;
+      cursor: pointer;
+    }
+
+  </style>
+  <body>
+    <ol id="code"></ol>
+    <div id="output"></div>
+    <button id="run-all">Run All</button>
+    <button id="show-results">Show Results</button>
+    <!-- jQuery -->
+    <script type="text/javascript" src="../javascripts/jquery-1.7.1.js"></script>
+    <!-- Sugar -->
+    <script type="text/javascript" src="../../../lib/core.js"></script>
+    <script type="text/javascript" src="../../../lib/common.js"></script>
+    <script type="text/javascript" src="../../../lib/es5.js"></script>
+    <script type="text/javascript" src="../../../lib/object.js"></script>
+    <script type="text/javascript" src="../../../lib/array.js"></script>
+    <script type="text/javascript" src="../../../lib/enumerable.js"></script>
+    <script type="text/javascript" src="../../../lib/string.js"></script>
+    <script type="text/javascript" src="../../../lib/number.js"></script>
+    <script type="text/javascript" src="../../../lib/function.js"></script>
+    <script type="text/javascript" src="../../../lib/date.js"></script>
+    <script type="text/javascript" src="../../../lib/range.js"></script>
+    <script type="text/javascript" src="../../../lib/regexp.js"></script>
+    <!-- testing -->
+    <script type="text/javascript" src="../javascripts/benchmark.js"></script>
+    <script type="text/javascript" src="../javascripts/fixtures.js"></script>
+    <script src="tests.js"></script>
+  </body>
+  <script>
+
+    var results = {};
+
+    Sugar.extend();
+
+    tests.forEach(function(test, i) {
+      test.name = test.name || i + 1;
+      test.targets = test.targets.map(function(t) {
+        var s = t.split(' * ');
+        return {
+          src: t,
+          name: s[0],
+          count: s[1]
+        };
+      });
+      var html =
+      '<li>' +
+        (test.name ?
+        '<h3>'+ test.name +'</h3>' :
+        '<pre>'+ test.fn.toString() +'</pre>') +
+        '<div class="targets">' +
+          test.targets.map(function(target) {
+            return '<p>' + target.src + '</p>';
+          }).join('') +
+        '</div>' +
+      '</li>';
+      var runButton = $('<button>Run!</button>').click(function() {
+        runTests([test]);
+      });
+      var onceButton = $('<button>Test once</button>').click(function() {
+        testOnce(test);
+      });
+      $('#code').append($(html).append(runButton).append(onceButton));
+    });
+
+    $('#run-all').click(function() {
+      runTests(tests);
+    });
+
+    $('#show-results').click(function() {
+      renderResults(tests);
+    });
+
+    function setVars(v) {
+      if (v) {
+        Object.keys(v).forEach(function(key) {
+          window[key] = v[key];
+        });
+      }
+    }
+
+    function runTests(tests) {
+      // Delay to show it's running
+      setTimeout(function() {
+        tests.forEach(function(test) {
+          setVars(test.vars);
+          test.targets.forEach(function(t) {
+            var ms = runMultipleTestsWithArgumentAndAverage(test.name, test.fn, window[t.name], t.count, 10);
+            t.average = ms;
+          });
+        });
+        renderResults();
+      }, 1);
+    }
+
+    function renderResults() {
+      var results = {};
+      tests.forEach(function(test, i) {
+        test.average = 0;
+        test.targets.forEach(function(t) {
+          test.average += t.average;
+        });
+        test.average = Math.round(test.average / test.targets.length);
+      });
+      tests.concat().sort(function(a, b) {
+        return a.average - b.average;
+      }).forEach(function(test, i) {
+        test.rank = (i + 1);
+      });
+      tests.forEach(function(test, i) {
+        var r = {};
+        test.targets.forEach(function(t, j) {
+          var average = null;
+          if (typeof t.average === 'number') {
+            average = t.average;
+          }
+          r['Target ' + (j + 1)] = average;
+        });
+        r['Average'] = test.average;
+        r['Rank'] = test.rank;
+        results[test.name] = r;
+      });
+      console.table(results);
+    }
+
+    function testOnce(test) {
+      $('#output').empty();
+      setVars(test.vars);
+      test.targets.forEach(function(t) {
+        var result = test.fn(window[t.name]);
+        $('#output').append('<p>Test #' + test.name + ' ran using <code>' + t.name + '</code> and returned:</p><p>' + JSON.stringify(result) + '</p>')
+      });
+    }
+
+  </script>
+</html>

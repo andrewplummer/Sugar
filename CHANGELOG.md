@@ -1,4 +1,4 @@
-v1.5.0
+v2.0.0
 ======
 
 ### API Changes ###
@@ -6,26 +6,25 @@ v1.5.0
 - Added global objects. All methods will also be defined here.
 - Removed String#escapeRegExp. Use RegExp.escape instead.
 - Changed String#escapeHTML to double-escape entities.
-- Object.extend() is now Sugar.extendObject().
+- Object.extend() is now passed as a flag on the global Sugar.Object.extend(true).
 - `Date#utc` is now `Date#setUTC`.
 - Renamed `Date.SugarNewDate` to `Sugar.Date.newDateInternal`.
 - Modified `String#startsWith` and `String#endsWith` to be more in compliance with ES6. See CAUTION.md for details.
-- Removed `String#has` in favor of `String#contains` to be more in compliance with ES6. See CAUTION.md for details.
-- Added `Number.isNaN` shim.
+- Removed `String#has` in favor of `String#includes` to be more in compliance with ES6. See CAUTION.md for details.
+- Added `Number.isNaN` shim. Removed `Object.isNaN` in favor of this.
 - Alphanumeric array options are now on the global object.
-- Moved `Object.map`, `Object.each`, and `Object.size` to the object package.
+- Moved `Object.map`, `Object.each`, and `Object.size` to the object module.
 - Removed `Object.reduce`.
 - Added `Object.isArguments`.
-- Changed `String#each` to allow breaking the loop with `false`.
+- Changed `String#each` (renamed to `String#forEach`) to allow breaking the loop with `false`.
 - Added `String#map`.
-- Added non-enumerable property support to `Object.merge`.
 - Added ability fo `String#stripTags` and `Strip#removeTags` to pass a callback.
 - Made `String#stripTags` and `String#removeTags` much more robust.
-- Renamed `String#normalize` to `String#toAscii`.
+- Removed `String#normalize` and will put into its own plugin module as `String#toAscii` later.
 - Updated `Array#sortBy` to handle sorting on multiple properties (Issue #386, thanks to @eric-weiser).
 - Fixed `String#unescapeHTML` to handle HTML (and hex) codes. Also now handling &nbsp;
 - Added a third argument to `Number#bytes` to allow normal SI units.
-- Updated `Object.merge` to stop traversing into objects that have been resolved via a function.
+- `Object.merge` updated to take an options object. Non-enumerable property support is now an option, as well as property descriptors. Resolver function now will not traverse further into a deep merge if it has been resolved with a function. Sugar global object continues the merge.
 - Allowing a global thousands and decimal marker to be set.
 - `String#hankaku` now makes a hyphen from hyphen-like fullwidth chars in number mode.
 - Fixed issue with the digit `ten` in date creation (Issue #431).
@@ -38,6 +37,65 @@ v1.5.0
 - Added `Date#get` allowing date creation with a context date that can be used as a starting point for relative dates.
 - Added `Function#memoize` (Issue #486)
 - Async functions are now synchronous with Sinon.
+- Renamed `Object.equal` and `Object#equals` to `isEqual` for parity.
+- Removed `Date.utc` object as well as `Date.past` and `Date.future` in favor of an options object on `Date#create`.
+- Renamed `Function#fill` to `Function#partial`. Tests from Underscore and Lodash brought in to confirm conformitive behavior.
+- `null` now no longer acts as a placeholder in `Function#partial`. Other bugs fixed around this including using `partial` on constructors.
+- Options object now uses `fromUTC` instead of just `utc`. A new option `setUTC` is also added which will set the internal utc flag on creation.
+- `String#assign` refactored and renamed to `String#format`. Tokens are zero based and a few other changes.
+- Added `Object.get` and `Object.set`, allowed them to use dot, bracket, range, and push syntax, and allowed deep object transforms on `Array#map`, and other methods.
+- Fixed many issues with DST and simplified month traversal.
+- Renamed `Array#randomize` to `Array#shuffle`
+- Added `Array#sample` ability to remove sampled elements and performance optimization.
+- Added `String#replaceAll` and `String#removeAll`.
+- Added polyfill for `Array.from` and modified `Array.create` to return a reference by default.
+- Changed behavior of `Function#after` to more closely match that of Underscore/Lodash.
+- Changed behavior of `Number#times` to return an array of return values.
+- Changed `Object.fromQueryString` to return a plain object.
+- Removed `Object.watch` and `Object.unwatch`.
+- Removed ability for `Date.create` to accept enumerated arguments.
+- Removed `String#map`.
+- Modified `Object.toQueryString` to accept an options object.
+- Modified `Object.fromQueryString` to accept an options object.
+- Added support for Sets in `isEqual`.
+- Added `Array#median`.
+- Modified `Number#metric` to use a more flexible system of defining units.
+- Added strf tokens to `Date#format` as well as a number of new standard tokens. Aligned tokens more with moment/ldml and renamed to ldml in the code.
+- Modified `Array#at` and `String#at` to use arrays instead of enumerated arguments.
+- Removed mixed modes for `String#hankaku` and `String#zenkaku`.
+- Modified `String#replaceTags` and `String#stripTags` to simplify argument signature and small performance boost.
+- Added `Array#isEqual`.
+- Renamed `RegExp#addFlag` and `RegExp#removeFlag` to `RegExp#addFlags` and `RegExp#removeFlags`, and ensured they work on multiple flags.
+- Created new module `enumerable`, and split out array methods.
+- Removed `Array#findAll` in favor of `Array#filter` and `Array#filterFromIndex`.
+- Replaced `Object.findAll` with `Object.filter`.
+- `Array#isEmpty` now only checks for zero length.
+- Moved `Object.select` and `Object.reject` to enumerable module and updated to match objects on key existence.
+- Added `Object.remove` and `Object.exclude`.
+- Added `Array#append` to take the place of `Array#add`. `Array#add` now is non-destructive. `Array#insert` now aliases `append` instead of `add`.
+- Removed `Array#include` (now is identical to `Array#add`).
+- Added `Object.invert`.
+- Moved `String#titleize` to String module from Inflections.
+- Modified `Object.has` to allow deep keys. Also added a flag to allow properties in the prototype.
+- Removed `Object.extended` and all trace of Hashes in favor of Sugar chainables.
+- Added date unit methods to ranges.
+- Allowed excepting and allowing entire namespaces.
+- Flipped "si" argument to Number#bytes to instead be "binary".
+- Modified `String#capitalize` to have an extra parameter for downcasing.
+- Refactored inflections module to have a more straightforward API.
+- Updated `Array#sortBy` to not clone the array by default.
+- Modified `Date#reset` to use higher units to make more semantic sense.
+- Reversed arguments in `Date#relative`.
+- Removed `Array#each` in favor of `Array#forEachFromIndex` in cases where the index is needed.
+- Added `fromIndex` methods. Moved `findFrom` and `findIndexFrom` to be inline with these.
+- Renamed `Object.each` to `Object.forEach` to bring it in line with other methods.
+- Moved `Array#subtract`, `Array#intersect`, and `Array#union` to `defineInstance` block to follow other methods more closely.
+- Removed `String#add`, which on its own is largely useless in favor of `String#insert` which was previously an alias.
+- Removed `all` and `any` aliases.
+- Moved the `step` argument in `Number#upto` and `Number#downto` to be an optional 2nd argument.
+- Removed callbacks in `Object.keys` and `Object.values`. `Object.forEach` should be preferred method of iteration.
+- Changed object iteration callbacks to be value first.
+- Renamed `String#each` to `String#forEach`.
 
 
 v1.4.2
@@ -67,7 +125,7 @@ v1.4.0
 ### API Changes ###
 
 - Adding generalized ranges for Numbers and Strings in addition to Dates.
-- Date ranges are now part of the Range package and are no longer dependent on the Date package.
+- Date ranges are now part of the Range module and are no longer dependent on the Date module.
 - Adding `clamp` for ranges and an alias for Number.
 - Adding `cap` for ranges and an alias for Number.
 - Added `String#truncateOnWords`. Part of the `String#truncate` functionality is now here.
@@ -105,7 +163,6 @@ v1.4.0
 - Fixed `String#truncate` not returning primitives.
 - `String#repeat` is now aligned more with spec. `String#pad` follows suit.
 - Added `Array#findFrom` and `Array#findIndexFrom`.
-- Removed `String#normalize`.
 - Removed `Range#step` alias.
 - Removed `deep` argument from `Object.fromQueryString` and replaced with optional boolean casting.
 
@@ -253,21 +310,21 @@ v1.3
 
 ### API Changes ###
 
-- Sugar packages are now further split up and can easily be customized and repackaged. Aside from "core" there is the "es5" package that can be opted out of if <= IE8 support isn't an issue. DateRanges (below) are now their own package, as are inflections.
-- Date locales are now a separate package, only English is included in the base "date" package.
+- Sugar modules are now further split up and can easily be customized and repackaged. Aside from "core" there is the "es5" module that can be opted out of if <= IE8 support isn't an issue. DateRanges (below) are now their own module, as are inflections.
+- Date locales are now a separate module, only English is included in the base "date" module.
 - Enumerable methods are now available as class methods on Object, and instance methods on extended objects. This includes: map, any, all, none, count, sum, average, find, findAll, min, max, least, most, and reduce.
 - Added Object.size (also available to extended objects)
 - Array#min, Array#max, Array#least, and Array#most now return a single element by default with the option to return multiple elements.
 - Object.equals now considers identical objects vs. extended objects to be the same
-- Refactored Object.isEmpty to be an enumerable method in the Array package. This means that it will error on non-objects now.
-- Added "language" package.
-- String#normalize moved from Inflections to Language package
-- String#has[Script] moved from String to Language package
-- String#hankaku and String#zenkaku moved from String to Language package
-- String#hiragana and String#katakana moved from String to Language package
-- String#namespace moved from Inflections to String package
+- Refactored Object.isEmpty to be an enumerable method in the Array module. This means that it will error on non-objects now.
+- Added "language" module.
+- String#normalize moved from Inflections to Language module
+- String#has[Script] moved from String to Language module
+- String#hankaku and String#zenkaku moved from String to Language module
+- String#hiragana and String#katakana moved from String to Language module
+- String#namespace moved from Inflections to String module
 - String#parameterize now checks for normalize and also uses encodeURI for final output
-- String#split patching for regexes is now removed from the String package and is on its own in /lib/extra. It can be dropped in anywhere after Sugar is loaded.
+- String#split patching for regexes is now removed from the String module and is on its own in /lib/extra. It can be dropped in anywhere after Sugar is loaded.
 
 - Array#has is deprecated
 - Array#groupBy no longer returns extended objects
@@ -300,8 +357,7 @@ v1.3
 - Added support for time suffixes in Asian time strings (時 etc)
 - Added support for various relative formats in CKJ dates  (先週水曜日 etc)
 - Fixed inconsistently not allowing spaces before am/pm (Issue 144)
-
-- Added DateRange, accessed through Date.range as a separate package
+- Added DateRange, accessed through Date.range
 
 
 v1.2.5
@@ -351,7 +407,7 @@ v1.2.3
 - Added Array.AlphanumericSortIgnoreCase
 - Added Array.AlphanumericSortEquivalents
 - Object.merge defaults are now more sensible. shallow/deep is 3rd with shallow default and resolve is 4th
-- Added Number#duration to dates package.
+- Added Number#duration to dates module.
 - Bugfix for leaking globals.
 - Bugfix for String#compact (Issue 115)
 
@@ -433,7 +489,7 @@ v1.2
 - String#toDate will now check for Date.create before hooking into it.
 - String#underscore will now check for acronyms if Inflectors module is present.
 - String#camelize will now check for acronyms if Inflectors module is present.
-- RegExp.escape will now perform a [toString] operation on non-strings (ie. numbers, etc).
+- RegExp.escape will now perform a [toString] operation on non-strings (i.e. numbers, etc).
 - Function#fill now uses internal Array#splice to fill in arguments.
 - Added support for JSON date format Date(xxxxxxxxxx).
 - Fixed issues with Date#getWeek.
@@ -504,7 +560,7 @@ v1.1.1
 - Added Object.tap
 - Consolidated the arguments that are passed to mapping functions on methods such as Array#min/max/groupBy/sortBy. All such functions will now be passed the array element, array index, and array object, in that order, to conform to ES5 Array#map behavior.
 - Array#flatten can now accept a level of nesting to flatten to. Default is all levels.
-- Array#remove no longer works like a reverse concat (ie. no longer flattens arguments passed to it as if they were passed as separate arguments, so removing arrays within arrays should now work properly. This applies to Array#exclude as well.
+- Array#remove no longer works like a reverse concat (i.e. no longer flattens arguments passed to it as if they were passed as separate arguments, so removing arrays within arrays should now work properly. This applies to Array#exclude as well.
 - Added Array#zip
 
 ### Internal Changes ###
