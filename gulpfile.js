@@ -557,6 +557,13 @@ function getSource(m, l) {
     'Internal reference to check if an object can be serialized.'
   ];
 
+  function replaceCoreRedefine(block, comment) {
+    if (CORE_REDEFINES.indexOf(comment) !== -1) {
+      block = '';
+    }
+    return block;
+  }
+
   var src = '';
 
   var modulePaths = getModulePaths(m);
@@ -582,11 +589,7 @@ function getSource(m, l) {
   src = src.replace(/^'use strict';\n/gm, '');
   src = src.replace(/^(?=.)/gm, '  ');
   src = src.replace(/^([\s\S]+)$/m, getWrapper(args.qml));
-
-  CORE_REDEFINES.forEach(function(str) {
-    var reg = RegExp('^  \\/\\/ ' + str + '[\\s\\S]+?\\n$', 'm');
-    src = src.replace(reg, '');
-  });
+  src = src.replace(/^  \/\/ ([\w .]+)[\s\S]+?\n$\n/gm, replaceCoreRedefine);
 
   // Allowing namespace constraints such as
   // ES6:String to only build for that namespace.
