@@ -534,11 +534,16 @@ namespace('Array', function () {
     test([1,2,3], [4], { 'undefined': [1,2,3] }, 'number');
 
     var counter = 0;
-    var fn = function() {
+    var expectedGroups = [['one','two'],['three']], expectedKeys = ['3','5'], groups = [], keys = [];
+    var fn = function(group, key) {
+      groups.push(group);
+      keys.push(key);
       counter++;
     }
     run(['one','two','three'], 'groupBy', ['length', fn]);
     equal(counter, 2, 'should allow a callback fn');
+    equal(groups, expectedGroups, 'Groups should be equal');
+    equal(keys, expectedKeys, 'Keys should be equal');
 
     var arr1 = ['a','b','c'];
     var arr2 = ['d','e','f'];
