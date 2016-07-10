@@ -163,6 +163,14 @@ namespace('Date Ranges', function () {
 
   });
 
+  group('Every: Weeks', function() {
+    // Week
+    var range = getRange(new Date(2010,6,10), new Date(2010,6,28));
+    equal(range.every('week'), [new Date(2010,6,10), new Date(2010,6,17), new Date(2010,6,24)], '2010-07-10 - 2010-07-28 | every week');
+    equal(range.every('2 weeks'), [new Date(2010,6,10), new Date(2010,6,24)], '2010-07-10 - 2010-07-28 | every week');
+  });
+
+
   method('contains', function() {
     var range = getRange(new Date(2010,6,10,9), new Date(2010,8,10,9));
     equal(range.contains(new Date(2010, 5,  10)), false, 'before');
