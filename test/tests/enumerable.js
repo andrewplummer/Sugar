@@ -1746,10 +1746,10 @@ namespace('Object', function() {
      car: { age: 44 }
     }
 
-    test(obj1, [function(k, v) { return v * 2; }], {foo:6,bar:8,moo:10,car:12}, 'function');
+    test(obj1, [function(val, key) { return val * 2; }], {foo:6,bar:8,moo:10,car:12}, 'function');
     test(obj1, ['toString'], {foo:'3',bar:'4',moo:'5',car:'6'}, 'string shortcut');
     test(obj1, [], obj1, 'no args');
-    test(obj2, [function(k, v) { return v.age; }], {foo:11,bar:22,moo:33,car:44}, 'mapping nested properties');
+    test(obj2, [function(val, key) { return val.age; }], {foo:11,bar:22,moo:33,car:44}, 'mapping nested properties');
     test(obj2, ['age'], {foo:11,bar:22,moo:33,car:44}, 'mapping nested properties with string shortcut');
 
     var obj = {
