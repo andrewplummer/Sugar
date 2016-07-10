@@ -109,6 +109,9 @@ Drop it in before upgrading to get a general idea of what needs to change, or up
 - Level: Major
   - `Array#all`, `Array#any`, `Object.all`, and `Object.any` aliases were removed to align Sugar more with native methods. If needed, these can still easily be aliased with `Sugar.Array.alias('all', 'every');`.
 
+- Level: Major
+  - `String#paragraphs` was removed.
+
 - Level: Moderate
   - `Object.keys` and `Object.values` no longer have callbacks as second arguments. Use `Object.forEach` for iteration over an object's properties.
 

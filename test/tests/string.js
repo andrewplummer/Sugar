@@ -458,31 +458,6 @@ namespace('String', function () {
 
   });
 
-  method('paragraphs', function() {
-
-    var counter = 0;
-    var essay = 'the history of the united states\n\n';
-    essay +=    'it all began back in 1776 when someone declared something from someone.\n';
-    essay +=    'it was at this point that we had to get our rears in gear\n\n';
-    essay +=    'The British got their revenge in the late 60s with the British Invasion,\n';
-    essay +=    'which claimed the lives of over 32,352 young women across the nation.\n\n\n\n\n';
-    essay +=    'The End\n\n\n\n\n\n\n';
-    var paragraphs = ['the history of the united states', 'it all began back in 1776 when someone declared something from someone.\nit was at this point that we had to get our rears in gear', 'The British got their revenge in the late 60s with the British Invasion,\nwhich claimed the lives of over 32,352 young women across the nation.', 'The End'];
-    var indexes = [0,1,2,3];
-    var callback = function(p, i, a) {
-      equal(p, paragraphs[i], 'First argument should be the paragraph.');
-      equal(i, indexes[i], 'Second argument should be the index.');
-      equal(a, paragraphs, 'Third argument the array of paragraphs.');
-      counter ++;
-    };
-    var result = run(essay, 'paragraphs', [callback]);
-    equal(counter, 4, 'should have run 4 times');
-    equal(result, paragraphs, 'result should be an array of matches');
-
-    test('', [''], 'empty string');
-
-  });
-
   method('codes', function() {
 
     test('jumpy', [106,117,109,112,121], 'jumpy');
