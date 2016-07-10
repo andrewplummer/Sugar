@@ -1265,7 +1265,8 @@ function getModularSource() {
     function addSugarBuiltMethod(name, buildFn, type, opts) {
       var sp = addSourcePackage(name, buildFn.node, type, opts);
 
-      sp.namespace    = getNamespaceForNode(buildFn.node);
+      sp.namespace = opts.namespace || getNamespaceForNode(buildFn.node);
+
       sp.dependencies = [buildFn.name];
 
       // Built methods are essentially null. They don't have any body
@@ -1278,6 +1279,9 @@ function getModularSource() {
 
     function addSugarFix(name, buildFn) {
       var sp = addSourcePackage(name, buildFn.node, 'fix');
+
+      var comment = getLastCommentForNode(buildFn.node, 1);
+      sp.description = comment.match(/@short (.+)$/m)[1];
 
       sp.dependencies = [buildFn.name];
 
@@ -1366,6 +1370,11 @@ function getModularSource() {
       // Both @module and @namespace may be defined in the same comment block.
       match = text.match(/@(namespace|module) \w+/g);
       if (match) {
+        if (text.match(/@method/)) {
+          // Don't allow temporary namespace renamings
+          // in method block.
+          return;
+        }
         var namespace = match[match.length - 1].match(/@(namespace|module) (\w+)/)[2];
         namespaceBoundary(namespace, endLoc.line);
       }
@@ -1392,7 +1401,7 @@ function getModularSource() {
             return '\/\/' + l;
           }).join('\n');
         } else {
-          if (!comment.text.match(/@(module|namespace)/)) {
+          if (!comment.text.match(/@(module|namespace)/) || comment.text.match(/@method/)) {
             return '\/*' + comment.text + '*\/';
           }
         }
@@ -1411,6 +1420,11 @@ function getModularSource() {
       type = type || 'instance';
 
       methodBlocks.forEach(function(block) {
+
+        if (block.namespace) {
+          opts.namespace = block.namespace;
+        }
+
         if (block.static) {
           type = 'static';
         } else if (block.accessor) {
@@ -1446,6 +1460,10 @@ function getModularSource() {
           var setMatch = block.match(/@set([^@\/]+)/);
           if (setMatch) {
             methodBlock.set = setMatch[1].replace(/^[\s*]*|[\s*]*$/g, '').replace(/[\s*]+/g, ',').split(',');
+          }
+          var namespaceMatch = block.match(/@namespace (\w+)/);
+          if (namespaceMatch) {
+            methodBlock.namespace = namespaceMatch[1];
           }
           methodBlocks.push(methodBlock);
         }
@@ -3173,8 +3191,9 @@ function buildJSONSource() {
         // If the package has been handled already then just skip.
         if (!handledSets[p.namespace + p.setName]) {
           packages.push({
+            setName: p.setName,
             name: p.setName.replace(/[\[\]]/g, ''),
-            sample: p.set.slice(0, 2).concat('...').join(', '),
+            sample: p.set.slice(0, 3).concat('...').join(', '),
             type: p.type,
             alias: p.alias,
             module: p.module,
