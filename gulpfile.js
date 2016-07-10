@@ -3023,7 +3023,8 @@ function getJSONDocs() {
     var match = block.match(/@method ([\w\[\]]+)\((.*)\)$/m);
     if (match) {
       var method = {};
-      var name = match[1].replace(/(\w*)\[(\w+)\](\w*)/, function(full, left, mid, right) {
+      var name = match[1];
+      var nameClean = match[1].replace(/(\w*)\[(\w+)\](\w*)/, function(full, left, mid, right) {
         method['name_html'] = left + '<span class="docs-method__set">' + mid + '</span>' + right;
         return left + mid + right;
       });
@@ -3031,7 +3032,7 @@ function getJSONDocs() {
         return a;
       });
 
-      method.name = name;
+      method.name = nameClean;
       method.module = currentModuleName;
 
       setAllFields(method, block);
@@ -3091,7 +3092,8 @@ function getJSONDocs() {
 
   function getLineNumber(methodName, lines) {
     var lineNum;
-    var reg = RegExp('@method ' + methodName + '\\b');
+    var src = methodName.replace(/(\[|\])/g, '\\$1');
+    var reg = RegExp('@method ' + src);
     lines.some(function(l, i) {
       if (l.match(reg)) {
         lineNum = i + 1;
