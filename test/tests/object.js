@@ -978,7 +978,7 @@ namespace('Object', function () {
   method('isSet', function() {
     if (typeof Set === 'undefined') return;
     test(new Set(), true, '{}');
-    test(new Set('123'), true, '{1,2,3}');
+    test(new Set(['1','2','3']), true, '{1,2,3}');
     test([], false, 'Array');
     test({}, false, 'Object');
   });
