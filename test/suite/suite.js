@@ -377,7 +377,10 @@
     var i, result = true, key;
     if (one === two) {
       return true;
+    } else if (one.length !== two.length) {
+      return false;
     }
+
     if (!one || !two || typeof one !== 'object' || typeof two !== 'object') {
       return false;
     }
@@ -401,7 +404,7 @@
       if (!two.hasOwnProperty(key)) continue;
       twop++;
     }
-    return result && one.length === two.length && onep === twop;
+    return result && onep === twop;
   }
 
   function objectIsEqual(one, two) {
@@ -417,6 +420,13 @@
       for(key in two) {
         if (!two.hasOwnProperty(key)) continue;
         twop++;
+      }
+    }
+    if (Object.getOwnPropertySymbols) {
+      var symOne = Object.getOwnPropertySymbols(one);
+      var symTwo = Object.getOwnPropertySymbols(two);
+      if (!arrayIsEqual(symOne, symTwo)) {
+        return false;
       }
     }
     return onep === twop && String(one) === String(two);

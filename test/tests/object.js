@@ -1513,6 +1513,23 @@ namespace('Object', function () {
     test({a:''}, [{a:{b:1}}, opts], {a:{b:1}}, 'source object wins with empty string');
     test({a:'1'}, [{a:{b:1}}, opts], {a:{b:1}}, 'source object wins with number as string');
 
+    if (typeof Symbol !== 'undefined') {
+      var sym = Symbol();
+      var obj = {};
+      var expected = {};
+      obj[sym] = 'sym';
+      expected[sym] = 'sym';
+      test({}, [obj], expected, 'Symbol was merged');
+
+      var sym = Symbol();
+      var obj = {};
+      Object.defineProperty(obj, sym, {
+        value: 'sym',
+        enumerable: false
+      });
+      test({}, [obj], {}, 'Non-enumerable symbol was not merged');
+    }
+
   });
 
   method('add', function() {
