@@ -563,7 +563,6 @@ namespace('Function', function () {
 
   });
 
-
   method('once', function() {
     var fn, count;
 
@@ -618,12 +617,11 @@ namespace('Function', function () {
   });
 
   method('memoize', function() {
-    var fn, count;
 
     // Simple memoization
 
-    count = 0;
-    fn = run(function(n) {
+    var count = 0;
+    var fn = run(function(n) {
       count++;
       return n + 1;
     }, 'memoize');
@@ -644,9 +642,8 @@ namespace('Function', function () {
     var firstArgument = function(x) {
       return x;
     }
-
-    count = 0;
-    fn = run(function(n) {
+    var count = 0;
+    var fn = run(function(n) {
       count++;
       return n + 1;
     }, 'memoize', [firstArgument]);
@@ -663,8 +660,8 @@ namespace('Function', function () {
     var foo2 = { foo: 'bar' };
     var foo3 = { foo: 'bar', moo: 'car' };
 
-    count = 0;
-    fn = run(function(n) {
+    var count = 0;
+    var fn = run(function(n) {
       count++;
     }, 'memoize');
     fn(foo1); // Should run
@@ -686,8 +683,8 @@ namespace('Function', function () {
     var p4 = { name: { first: 'Joe', last: 'Rogan'  }};
     var p5 = { name: { first: 'Tom', last: 'Waits'  }};
 
-    count = 0;
-    fn = run(function(obj) {
+    var count = 0;
+    var fn = run(function(obj) {
       count++;
       return obj.name.first + ' ' + obj.name.last;
     }, 'memoize', ['name.first']);
@@ -698,6 +695,53 @@ namespace('Function', function () {
     equal(fn(p4), 'Joe Rogan', 'fourth should run');
     equal(fn(p5), 'Tom Hanks', 'fifth should run');
     equal(count, 3, 'should have run 3 times');
+
+
+    // Limit argument
+
+    var count = 0;
+    var fn = run(function() { count++; }, 'memoize', [function() {}, 1]);
+    fn(1);
+    fn(2);
+    fn(3);
+    fn(4);
+    // Noop hash function always returns undefined, which means
+    // the function will be memoized indefinitely, so limit is ignored.
+    equal(count, 1, 'limit ignored with noop');
+
+    var count = 0;
+    var fn = run(function() { count++; }, 'memoize', [2]);
+    fn(1); // First hit, not cached. +1
+    fn(2); // First hit, not cached. +1
+    fn(1); // Second hit, cached. +0
+    fn(2); // Second hit, cached. +0
+    fn(3); // First hit, not cached. +1 - overflow so cache reset
+    fn(1); // Second hit, was reset. +1
+    fn(2); // Second hit, was reset. +1
+    fn(3); // Third hit, was reset. +1
+    fn(4); // First ,hit, not cached. +1
+
+    // Cache was cleared once, fn should have been called 7 times.
+    equal(count, 7, 'limit hit 7 times');
+
+
+    // Class instances
+
+    function Foo() {}
+    var o1 = new Foo;
+    var o2 = new Foo;
+
+    var count = 0;
+    var fn = run(function() { count++; }, 'memoize', []);
+    fn(o1);
+    fn(o1);
+    equal(count, 1, 'instances | same reference is memoized');
+
+    var count = 0;
+    var fn = run(function() { count++; }, 'memoize', []);
+    fn(o1);
+    fn(o2);
+    equal(count, 2, 'instances | different references are not memoized');
 
   });
 

@@ -405,6 +405,19 @@ namespace('Array', function () {
 
     test([['a'], {0:'a'}], [], [['a'],{0:'a'}], 'cannot be fooled by array-like');
 
+    // Class Instances
+
+    function Foo () {}
+    var f1 = new Foo;
+    var f2 = new Foo;
+    var o1 = { foo: f1 };
+    var o2 = { foo: f1 };
+    var o3 = { foo: f2 };
+    test([f1, f2], [f1, f2], 'instances | separate');
+    test([f1, f1], [f1], 'instances | same');
+    test([o1, o2], [o1], 'instances | same deep reference is equal');
+    test([o1, o3], [o1, o3], 'instances | different deep reference is not equal');
+
   });
 
   method('flatten', function() {
@@ -818,9 +831,12 @@ namespace('Array', function () {
 
     assertArrayEquivalent(run([aObj, bObj, cObj, dObj, eObj], 'union', [[aObj, bObj, cObj, dObj, eObj]]), [aObj, cObj, dObj, eObj], 'Nested objects a,b,c,d,e + a,b,c,d,e');
 
+    var fnA = function() { return 'a'; }
+    var fnC = function() { return 'c'; }
+
     var aFuncObj = {
       text: 'foo',
-      func: function() { return 'a'; },
+      func: fnA,
       arr:  ['a','b','c'],
       reg: /moofa/,
       date: new Date(2001, 5, 15)
@@ -828,7 +844,7 @@ namespace('Array', function () {
 
     var bFuncObj = {
       text: 'foo',
-      func: function() { return 'a'; },
+      func: fnA,
       arr:  ['a','b','c'],
       reg: /moofa/,
       date: new Date(2001, 5, 15)
@@ -836,7 +852,7 @@ namespace('Array', function () {
 
     var cFuncObj = {
       text: 'foo',
-      func: function() { return 'c'; },
+      func: fnC,
       arr:  ['a','b','c'],
       reg: /moofa/,
       date: new Date(2001, 5, 15)
