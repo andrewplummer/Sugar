@@ -1,3 +1,6 @@
+// These methods are used in node require so cannot reset.
+// delete Object.keys;
+
 delete Array.isArray;
 delete Array.prototype.every;
 delete Array.prototype.filter;
@@ -14,9 +17,5 @@ delete Date.prototype.toISOString;
 delete Date.prototype.toJSON;
 
 delete Function.prototype.bind;
-
-delete Number.isNaN;
-
-delete Object.keys;
 
 delete String.prototype.trim;

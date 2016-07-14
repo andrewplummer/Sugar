@@ -19,8 +19,10 @@ runner.loadTest('regexp');
 runner.loadTest('string');
 runner.loadTest('enumerable');
 
-runner.loadTest('es6');
-runner.loadTest('es7');
+runner.loadTest('es6/array');
+runner.loadTest('es6/number');
+runner.loadTest('es6/string');
+runner.loadTest('es7/array');
 
 runner.loadTest('range/date');
 runner.loadTest('range/number');

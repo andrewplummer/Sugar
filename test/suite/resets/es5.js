@@ -15,8 +15,6 @@ delete Date.prototype.toJSON;
 
 delete Function.prototype.bind;
 
-delete Number.isNaN;
-
 delete Object.keys;
 
 delete String.prototype.trim;
