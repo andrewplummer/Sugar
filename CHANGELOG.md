@@ -6,19 +6,16 @@ v2.0.0
 - Added global objects. All methods will also be defined here.
 - Removed String#escapeRegExp. Use RegExp.escape instead.
 - Changed String#escapeHTML to double-escape entities.
-- Object.extend() is now passed as a flag on the global Sugar.Object.extend(true).
 - `Date#utc` is now `Date#setUTC`.
-- Renamed `Date.SugarNewDate` to `Sugar.Date.newDateInternal`.
+- `Date.SugarNewDate` is now an option accessor `Sugar.Date.setOption('newDateInternal', fn)`
 - Modified `String#startsWith` and `String#endsWith` to be more in compliance with ES6. See CAUTION.md for details.
 - Removed `String#has` in favor of `String#includes` to be more in compliance with ES6. See CAUTION.md for details.
 - Added `Number.isNaN` shim. Removed `Object.isNaN` in favor of this.
 - Alphanumeric array options are now on the global object.
 - Moved `Object.map`, `Object.each`, and `Object.size` to the object module.
-- Removed `Object.reduce`.
 - Added `Object.isArguments`.
 - Changed `String#each` (renamed to `String#forEach`) to allow breaking the loop with `false`.
-- Added `String#map`.
-- Added ability fo `String#stripTags` and `Strip#removeTags` to pass a callback.
+- Added ability for `String#stripTags` and `Strip#removeTags` to pass a callback.
 - Made `String#stripTags` and `String#removeTags` much more robust.
 - Removed `String#normalize` and will put into its own plugin module as `String#toAscii` later.
 - Updated `Array#sortBy` to handle sorting on multiple properties (Issue #386, thanks to @eric-weiser).
@@ -41,7 +38,7 @@ v2.0.0
 - Removed `Date.utc` object as well as `Date.past` and `Date.future` in favor of an options object on `Date#create`.
 - Renamed `Function#fill` to `Function#partial`. Tests from Underscore and Lodash brought in to confirm conformitive behavior.
 - `null` now no longer acts as a placeholder in `Function#partial`. Other bugs fixed around this including using `partial` on constructors.
-- Options object now uses `fromUTC` instead of just `utc`. A new option `setUTC` is also added which will set the internal utc flag on creation.
+- `Date#create` options object now uses `fromUTC` instead of just `utc`. A new option `setUTC` is also added which will set the internal utc flag on creation.
 - `String#assign` refactored and renamed to `String#format`. Tokens are zero based and a few other changes.
 - Added `Object.get` and `Object.set`, allowed them to use dot, bracket, range, and push syntax, and allowed deep object transforms on `Array#map`, and other methods.
 - Fixed many issues with DST and simplified month traversal.
@@ -54,7 +51,6 @@ v2.0.0
 - Changed `Object.fromQueryString` to return a plain object.
 - Removed `Object.watch` and `Object.unwatch`.
 - Removed ability for `Date.create` to accept enumerated arguments.
-- Removed `String#map`.
 - Modified `Object.toQueryString` to accept an options object.
 - Modified `Object.fromQueryString` to accept an options object.
 - Added support for Sets in `isEqual`.
@@ -89,7 +85,7 @@ v2.0.0
 - Removed `Array#each` in favor of `Array#forEachFromIndex` in cases where the index is needed.
 - Added `fromIndex` methods. Moved `findFrom` and `findIndexFrom` to be inline with these.
 - Renamed `Object.each` to `Object.forEach` to bring it in line with other methods.
-- Moved `Array#subtract`, `Array#intersect`, and `Array#union` to `defineInstance` block to follow other methods more closely.
+- Changed `Array#subtract`, `Array#intersect`, and `Array#union` to only accept a single argument to follow other methods more closely.
 - Removed `String#add`, which on its own is largely useless in favor of `String#insert` which was previously an alias.
 - Removed `all` and `any` aliases.
 - Moved the `step` argument in `Number#upto` and `Number#downto` to be an optional 2nd argument.
