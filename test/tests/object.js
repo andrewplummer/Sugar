@@ -4,6 +4,7 @@ namespace('Object', function () {
   group('Chainable', function() {
     equal(new Sugar.Object({foo:'bar'}).raw, {foo:'bar'}, 'argument should be converted to object');
     equal(typeof new Sugar.Object('foo').raw, 'string', 'primitive should not be coerced into object');
+    equal(new Sugar.Object({foo:'bar',boo:'mar'}).keys().raw, ['foo','boo'], 'should have keys as instance');
   });
 
   group('Static Extended', function() {

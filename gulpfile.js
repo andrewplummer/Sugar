@@ -2803,8 +2803,8 @@ function getJSONDocs() {
     'defineStaticWithArguments': '#/Sugar/defineStaticWithArguments'
   };
 
-  var POLYFILL_HTML    = getReplacements('This method is provided as a `polyfill`.');
-  var ENHANCED_HTML    = getReplacements('This method is also provided as a `polyfill` in the MOD module.');
+  var POLYFILL_HTML = getReplacements('This method is provided as a `polyfill`.');
+  var ENHANCED_HTML = getReplacements('This method is also provided as a `polyfill` in the MOD module.');
 
   var POLYFILL_REPLACE_REG = /This method is (also )?provided as a .*polyfill.*\./;
 
