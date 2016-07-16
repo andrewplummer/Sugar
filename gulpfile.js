@@ -2791,7 +2791,6 @@ function getJSONDocs() {
     'unitsFromNow': '#/Date/unitsFromNow',
     'thousands': '#/Number/thousands',
     'decimal': '#/Number/decimal',
-    'metric': '#/Number/metric',
     'log': '#/Number/log',
     'addHuman': '#/String/addHuman',
     'addPlural': '#/String/addPlural',
