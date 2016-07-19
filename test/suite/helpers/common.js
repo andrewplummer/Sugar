@@ -2,7 +2,8 @@
 // Properties
 
 
-testNullScope = (function() { 'use strict'; return this; }).call();
+// Scope will be undefined for environments that support strict mode.
+testNullScope = (function() { 'use strict'; return this; }).call(undefined);
 canTestPrimitiveScope = testNullScope === undefined;
 
 // Methods
