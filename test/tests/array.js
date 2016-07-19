@@ -52,11 +52,10 @@ namespace('Array', function () {
     test(Array, [0], [], '0 constructs an empty array');
     test(Array, [null], [], 'null constructs an empty array');
     test(Array, [3, parseInt], [0,1,2], 'works with parseInt');
-
-    raisesError(function() { run(Array, 'construct'); }, 'no arguments raises error');
-    raisesError(function() { run(Array, 'construct', [NaN]); }, 'no arguments raises error');
-    raisesError(function() { run(Array, 'construct', [undefined]); }, 'no arguments raises error');
-    raisesError(function() { run(Array, 'construct', ['foo']); }, 'non-numeric string raises error');
+    test(Array, [], [], 'no arguments is an empty array');
+    test(Array, [NaN], [], 'NaN is an empty array');
+    test(Array, [undefined], [], 'NaN is an empty array');
+    test(Array, ['foo'], [], 'non-numeric string is empty array');
 
   });
 
