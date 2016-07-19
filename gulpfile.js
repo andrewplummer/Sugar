@@ -2087,7 +2087,7 @@ function buildNpmPackages(p, rebuild) {
         createPackagePolyfillEntryPoint(moduleDefinitions, /^ES[567]/, 'polyfills');
         createPackagePolyfillEntryPoint(moduleDefinitions, /^ES5/, 'polyfills', 'es5');
         createPackagePolyfillEntryPoint(moduleDefinitions, /^ES6/, 'polyfills', 'es6');
-        createPackagePolyfillEntryPoint(moduleDefinitions, /^ES6/, 'polyfills', 'es6');
+        createPackagePolyfillEntryPoint(moduleDefinitions, /^ES7/, 'polyfills', 'es7');
       }
     }
 
