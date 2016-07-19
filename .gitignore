@@ -16,7 +16,6 @@ tmtags
 ## PROJECT::GENERAL
 tmp
 node_modules
-bower_components
 
 ## PROJECT::SPECIFIC
 release

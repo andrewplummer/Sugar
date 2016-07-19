@@ -33,8 +33,5 @@
     "globals",
     "node"
   ],
-  "devDependencies": {
-    "closure-compiler": "http://dl.google.com/closure-compiler/compiler-latest.zip"
-  },
   "license": "MIT"
 }
