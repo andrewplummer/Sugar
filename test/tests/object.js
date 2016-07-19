@@ -1286,7 +1286,7 @@ namespace('Object', function () {
     test(Object, [null, 'b'], 'b', 'merge string into null');
     test(Object, [null, {a:'a'}], {a:'a'}, 'merge object into null');
 
-    if (canTestPrimitiveScope()) {
+    if (canTestPrimitiveScope) {
       test('a', ['b'], 'b', 'merge string into string');
       test('a', [{a:'a'}], {a:'a'}, 'merge object into string');
       test(0, ['b'], 'b', 'merge string into 0');
@@ -2112,7 +2112,7 @@ namespace('Object', function () {
     test({foo:'bar',moo:'car'}, [], {foo:'bar',moo:'car'}, 'No arguments produces original');
     test(Object, [null, {foo:'bar'}], null, 'object on null produces null');
 
-    if (canTestPrimitiveScope()) {
+    if (canTestPrimitiveScope) {
       test('foo', [], 'foo', 'no argument on primitive produces original');
       test('foo', ['str'], 'foo', 'primitive on primitive produces original');
       test('foo', [null], 'foo', 'null on primitive produces original');

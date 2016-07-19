@@ -382,7 +382,7 @@ namespace('String | Inflections', function () {
 
   method('pluralize', function() {
 
-    if (canTestPrimitiveScope()) {
+    if (canTestPrimitiveScope) {
       test(null, 'nulls', 'null');
       test(undefined, 'undefineds', 'null');
     }
@@ -440,7 +440,7 @@ namespace('String | Inflections', function () {
 
   method('singularize', function() {
 
-    if (canTestPrimitiveScope()) {
+    if (canTestPrimitiveScope) {
       test(null, 'null', 'null');
       test(undefined, 'undefined', 'null');
     }

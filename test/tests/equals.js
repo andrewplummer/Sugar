@@ -6,7 +6,7 @@ namespace('Object | Equality', function() {
   // wrappers, and more. Sugar's callObjectEqual should now be considered "egal".
 
   function callObjectEqual(a, b) {
-    if (!canTestPrimitiveScope()) {
+    if (!isDefaultMode() && !canTestPrimitiveScope) {
       // If the environment doesn't allow null scope, then there's no way
       // to predict how the scope will be mangled by running "a" through it,
       // so run isEqual as a static method instead. This is simulating a real
