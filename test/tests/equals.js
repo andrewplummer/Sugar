@@ -309,6 +309,12 @@ namespace('Object | Equality', function() {
   });
 
   group('Errors', function() {
+    if (new TypeError('foo').toString() === '[object Error]') {
+      // Unfortunately these tests won't pass in < IE8 as Error objects seem to have
+      // no way to distinguish their type, as calling toString on both the objects
+      // themselves and their constructor only returns [object Error].
+      return;
+    }
 
     function assertErrorPasses(ErrorClass) {
       var name = ErrorClass.name;
@@ -324,10 +330,7 @@ namespace('Object | Equality', function() {
     assertErrorPasses(SyntaxError);
     assertErrorPasses(URIError);
 
-    // Unfortunately this test won't pass in < IE8 as Error objects seem to have
-    // no way to distinguish their type, as calling toString on both the objects
-    // themselves and their constructor only returns [object Error].
-    // equal(callObjectEqual(new TypeError('foo'), new RangeError('foo')), false, 'different types are never equal');
+    equal(callObjectEqual(new TypeError('foo'), new RangeError('foo')), false, 'different types are never equal');
 
   });
 
