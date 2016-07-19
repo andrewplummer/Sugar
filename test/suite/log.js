@@ -34,7 +34,7 @@ logResults = function(runtime, results, testName) {
       logRed('Failure:');
       logRed(failure.message);
       try {
-        logRed('Expected: ' + JSON.stringify(failure.expected) + ' but was: ' + JSON.stringify(failure.actual));
+        logRed('Expected: ' + logStringify(failure.expected) + ' but was: ' + logStringify(failure.actual));
       } catch(e) {
         if (e instanceof TypeError) {
           // Sugar.Date has a "toJSON" method which means if it or the Sugar
@@ -62,6 +62,13 @@ logResults = function(runtime, results, testName) {
     logRed(assertions + ' assertions, ' + failures + ' failures, ' + skipped + time + 's');
   }
   globalFailures += totalFailures;
+}
+
+function logStringify(obj) {
+  if (typeof JSON !== 'undefined') {
+    return JSON.stringify(obj);
+  }
+  return String(obj);
 }
 
 function formatNumber(n) {

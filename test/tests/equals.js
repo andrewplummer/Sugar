@@ -6,7 +6,7 @@ namespace('Object | Equality', function() {
   // wrappers, and more. Sugar's callObjectEqual should now be considered "egal".
 
   function callObjectEqual(a, b) {
-    if (!canTestPrimitiveScope) {
+    if (!canTestPrimitiveScope()) {
       // If the environment doesn't allow null scope, then there's no way
       // to predict how the scope will be mangled by running "a" through it,
       // so run isEqual as a static method instead. This is simulating a real
@@ -184,7 +184,7 @@ namespace('Object | Equality', function() {
     b.pop = b.reverse = b.shift = b.slice = b.splice = b.concat = b.sort = b.unshift = null;
 
     // Array elements and properties.
-    equal(callObjectEqual(a, b), true, "Arrays containing equivalent elements and different non-numeric properties are equal");
+    equal(callObjectEqual(a, b), false, "Arrays with different overwritten inherited properties are not equal");
     a.push("White Rocks");
     equal(callObjectEqual(a, b), false, "Arrays of different lengths are not equal");
     a.push("East Boulder");
@@ -195,7 +195,7 @@ namespace('Object | Equality', function() {
   group('Sparse arrays', function() {
     equal(callObjectEqual(Array(3), Array(3)), true, "Sparse arrays of identical lengths are equal");
     equal(callObjectEqual(Array(3), Array(6)), false, "Sparse arrays of different lengths are not equal when both are empty");
-    equal(callObjectEqual(Array(3), safeArray(undefined, undefined, undefined)), true, "Sparse arrays are treated as dense");
+    equal(callObjectEqual(Array(3), safeArray(undefined, undefined, undefined)), false, "Sparse arrays are not treated as dense");
   });
 
   group('Simple objects', function() {

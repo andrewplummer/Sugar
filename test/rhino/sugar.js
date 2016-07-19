@@ -1,3 +1,27 @@
+/*
+ * RUN THESE TESTS:
+ *
+ * java -jar /path/to/rhino-1.7.7.1.jar -f test/rhino/sugar.js
+ *
+ * 1.7 KNOWN ISSUES:
+ *
+ * Typed Arrays incorrectly skip the 0 index when enumerating with for..in
+ * so certain isEqual tests will break here.
+ *
+ * Object(str) produces type "object" but has no defined keys. This breaks a
+ * number of tests including Object.isEmpty, Object.size, etc for strings.
+ *
+ * Additionally Rhino appears to allow overwriting non-writable attributes, so
+ * tests that assert on those errors will fail.
+ *
+ * The function module cannot be used at all as it doesn't have a setTimeout
+ * method. A workaround for this can be found here:
+ * http://stackoverflow.com/questions/2261705/how-to-run-a-javascript-function-asynchronously-without-using-settimeout
+ *
+ * However the test suite still cannot be loaded as Rhino shadows the "global"
+ * object which causes sinon to break.
+ *
+ */
 
 load('sugar.js');
 
@@ -26,23 +50,6 @@ load('test/suite/helpers/array.js');
 load('test/suite/helpers/date.js');
 load('test/suite/helpers/object.js');
 
-/*
- * 1.7 KNOWN ISSUES:
- *
- * Object(str) produces type "object" but has no defined keys. This breaks a
- * number of tests including Object.isEmpty, Object.size, etc for strings.
- *
- * Additionally Rhino appears to allow overwriting non-writable attributes, so
- * tests that assert on those errors will fail.
- *
- * The function module cannot be used at all as it doesn't have a setTimeout
- * method. A workaround for this can be found here:
- * http://stackoverflow.com/questions/2261705/how-to-run-a-javascript-function-asynchronously-without-using-settimeout
- *
- * However the test suite still cannot be loaded as Rhino shadows the "global"
- * object which causes sinon to break.
- *
- */
 
 load('test/tests/core.js');
 load('test/tests/array.js');

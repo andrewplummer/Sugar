@@ -185,7 +185,7 @@ namespace('String', function () {
       '[a-z]+/(bar)?/'.startsWith(/(bar)?/);
     }, 'String#startsWith | slashes starting with regex', TypeError);
 
-    if(canTestPrimitiveScope) {
+    if(canTestPrimitiveScope()) {
       raisesError(function() {
         String.prototype.startsWith.call(undefined);
       }, 'String#startsWith | undefined', TypeError);
@@ -452,7 +452,7 @@ namespace('String', function () {
       '[a-z]+/(bar)?/'.endsWith(/(bar)?/);
     }, 'String#endsWith | slashes starting with regex', TypeError);
 
-    if(canTestPrimitiveScope) {
+    if(canTestPrimitiveScope()) {
       raisesError(function() {
         String.prototype.endsWith.call(undefined);
       }, 'String#endsWith | undefined', TypeError);
@@ -565,7 +565,7 @@ namespace('String', function () {
       'abc'.repeat(+Infinity);
     }, 'String#repeat | +Infinity throws RangeError', RangeError);
 
-    if(canTestPrimitiveScope) {
+    if(canTestPrimitiveScope()) {
       raisesError(function() {
         String.prototype.repeat.call(undefined);
       }, 'String#repeat | undefined throws error', TypeError);
@@ -679,7 +679,7 @@ namespace('String', function () {
     equal(string.includes('\u2603'), true);
     equal(string.includes('\uD83D\uDCA9'), true);
 
-    if(canTestPrimitiveScope) {
+    if(canTestPrimitiveScope()) {
       raisesError(function() { String.prototype.includes.call(undefined); }, 'undefined', TypeError);
       raisesError(function() { String.prototype.includes.call(undefined, 'b'); }, 'undefined | b', TypeError);
       raisesError(function() { String.prototype.includes.call(undefined, 'b', 4); }, 'undefined | b | 4', TypeError);

@@ -3,8 +3,9 @@
 
 
 testNullScope = (function() { 'use strict'; return this; }).call();
-canTestPrimitiveScope = isDefaultMode() || testNullScope === undefined;
-
+canTestPrimitiveScope = function() {
+  return isDefaultMode() || testNullScope === undefined;
+}
 
 // Methods
 
