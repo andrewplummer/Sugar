@@ -94,6 +94,7 @@ v2.0.0
 - Renamed `String#each` to `String#forEach`.
 - Changed `min/max/least/most` args to put the callback at the end.
 - Removed `String#paragraphs`.
+- Added `Object.addAll`.
 
 
 v1.4.2

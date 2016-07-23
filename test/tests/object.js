@@ -1533,6 +1533,50 @@ namespace('Object', function () {
 
   });
 
+  method('mergeAll', function() {
+
+    var obj1 = {a:'a'};
+    var obj2 = {b:'b'};
+    var obj3 = {c:'c'};
+
+    var target = {};
+    var result = run(target, 'mergeAll', [[obj1, obj2, obj3]]);
+    equal(target, {a:'a',b:'b',c:'c'}, 'All objects should be merged into the result');
+    equal(obj1, {a:'a'}, 'object 1 should be unchanged');
+    equal(obj2, {b:'b'}, 'object 2 should be unchanged');
+    equal(obj3, {c:'c'}, 'object 3 should be unchanged');
+    equal(result === target, true, 'Returned result should be equal to the target object');
+
+    test({foo:undefined,bar:undefined}, [[{bar:3},{foo:1}]], {foo:1,bar:3}, 'overwrites undefined');
+    test({foo:3}, [[{foo:4},{foo:5}]], {foo:5}, 'last wins');
+    test({foo:3}, [[{foo:4},{bar:5}],{resolve:false}], {foo:3,bar:5}, 'used as defaults');
+
+    var result = run({}, 'mergeAll', [[{one:obj1}],{deep:true}]);
+    equal(result, {one:{a:'a'}}, true, 'object was merged');
+    equal(result.one === obj1, false, 'object was deep merged');
+
+    var fn = function(key, a, b) { return a + b; };
+    test({a:1}, [[{a:2},{a:5},{a:8}],{resolve:fn}], {a:16}, 'custom resolver works on all merged objects');
+
+    test({name:'Anonymous'}, [{name:'Frank'}], {name:'Frank'}, 'passing a single object should still work');
+
+    if (testDefinePropertySupport) {
+      var obj1 = testGetAccessorObject('one');
+      var obj2 = testGetAccessorObject('two');
+      var result = run({}, 'mergeAll',  [[obj1, obj2], {descriptor:true}]);
+      result.data.one = 'hoo';
+      result.data.two = 'ha';
+      equal(result.one + result.two, 'hooha', 'both descriptors were merged');
+
+      var fn = function(key, a, b) { return (a || '') + b; };
+      var obj1 = testGetDescriptorObject();
+      var obj2 = testGetDescriptorObject();
+      var obj3 = testGetDescriptorObject();
+      test({}, [[obj1, obj2, obj3],{hidden:true,resolve:fn}],{foo:'barbarbar'}, 'can handle hidden properties');
+    }
+
+  });
+
   method('add', function() {
 
     var obj = {foo:'foo'};
@@ -1600,40 +1644,40 @@ namespace('Object', function () {
 
   });
 
-  method('mergeAll', function() {
+  method('addAll', function() {
 
     var obj1 = {a:'a'};
     var obj2 = {b:'b'};
     var obj3 = {c:'c'};
 
     var target = {};
-    var result = run(target, 'mergeAll', [[obj1, obj2, obj3]]);
-    equal(target, {a:'a',b:'b',c:'c'}, 'All objects should be merged into the result');
-    equal(obj1, {a:'a'}, 'object 1 should be unchanged');
-    equal(obj2, {b:'b'}, 'object 2 should be unchanged');
-    equal(obj3, {c:'c'}, 'object 3 should be unchanged');
-    equal(result === target, true, 'Returned result should be equal to the target object');
+    var result = run(obj1, 'addAll', [[obj2, obj3]]);
+    equal(result, {a:'a',b:'b',c:'c'}, 'Result should have all properties added');
+    equal(result === obj1, false, 'Result should not be the same reference as target');
+    equal(obj1, {a:'a'}, 'Target should be untouched');
+    equal(obj2, {b:'b'}, 'First source should be untouched');
+    equal(obj3, {c:'c'}, 'Second source should be untouched');
 
     test({foo:undefined,bar:undefined}, [[{bar:3},{foo:1}]], {foo:1,bar:3}, 'overwrites undefined');
     test({foo:3}, [[{foo:4},{foo:5}]], {foo:5}, 'last wins');
     test({foo:3}, [[{foo:4},{bar:5}],{resolve:false}], {foo:3,bar:5}, 'used as defaults');
 
-    var result = run({}, 'mergeAll', [[{one:obj1}],{deep:true}]);
-    equal(result, {one:{a:'a'}}, true, 'object was merged');
-    equal(result.one === obj1, false, 'object was deep merged');
+    var result = run({}, 'addAll', [[{one:obj1}],{deep:true}]);
+    equal(result, {one:{a:'a'}}, true, 'object was added');
+    equal(result.one === obj1, false, 'object was deep added');
 
     var fn = function(key, a, b) { return a + b; };
-    test({a:1}, [[{a:2},{a:5},{a:8}],{resolve:fn}], {a:16}, 'custom resolver works on all merged objects');
+    test({a:1}, [[{a:2},{a:5},{a:8}],{resolve:fn}], {a:16}, 'custom resolver works on all added objects');
 
     test({name:'Anonymous'}, [{name:'Frank'}], {name:'Frank'}, 'passing a single object should still work');
 
     if (testDefinePropertySupport) {
       var obj1 = testGetAccessorObject('one');
       var obj2 = testGetAccessorObject('two');
-      var result = run({}, 'mergeAll',  [[obj1, obj2], {descriptor:true}]);
+      var result = run({}, 'addAll',  [[obj1, obj2], {descriptor:true}]);
       result.data.one = 'hoo';
       result.data.two = 'ha';
-      equal(result.one + result.two, 'hooha', 'both descriptors were merged');
+      equal(result.one + result.two, 'hooha', 'both descriptors were added');
 
       var fn = function(key, a, b) { return (a || '') + b; };
       var obj1 = testGetDescriptorObject();
