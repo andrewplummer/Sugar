@@ -1088,7 +1088,7 @@ namespace('Date', function () {
 
     var d = run(testCreateUTCDate('2001-06-15'), 'setUTC', [true]);
 
-    equal(run(d, 'format', ['{tz}']), '+0000', 'format UTC date will have +0000 offset');
+    equal(run(d, 'format', ['{ZZ}']), '+0000', 'format UTC date will have +0000 offset');
     equal(run(d, 'getUTCOffset'), '+0000', 'getUTCOffset');
     equal(dateRun(d, 'advance', ['1 month']), new Date(Date.UTC(2001, 6, 15)), 'advancing');
 
@@ -2112,7 +2112,7 @@ namespace('Date', function () {
     assertFormatShortcut(then, 'full', 'Tuesday, 5 January, 2010 15:52', 'en-CA');
 
     // Issue #262
-    equal(/\d+-/.test(run(new Date(), 'format', ['{tz}'])), false, 'Timezone format should not include hyphens')
+    equal(/\d+-/.test(run(new Date(), 'format', ['{ZZ}'])), false, 'Timezone format should not include hyphens')
 
     // Issue #498
     test(new Date(1901, 0, 2), ['{yy}'], '01', 'Zero padded year should respect yy format');
