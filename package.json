@@ -12,7 +12,8 @@
     "date",
     "time"
   ],
-  "homepage": "http://sugarjs.com/",
+  "homepage": "https://sugarjs.com/",
+  "icon": "https://sugarjs.com/icon.svg",
   "author": "Andrew Plummer <plummer.andrew@gmail.com>",
   "license": "MIT",
   "main": "sugar.js",
