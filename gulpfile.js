@@ -459,7 +459,7 @@ var LICENSE = block`
  *
  *  Freely distributable and licensed under the MIT-style license.
  *  Copyright (c) Andrew Plummer
- *  http://sugarjs.com/
+ *  https://sugarjs.com/
  *
  * ---------------------------- */
 `;
