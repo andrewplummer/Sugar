@@ -2765,7 +2765,7 @@ function getJSONDocs() {
     'default build': '#/Modules',
     'extending': '#/Extending',
     'object methods': '#/ObjectMethods',
-    'enhanced matching': '#/EnhancedMatching',
+    'enhanced matching': '#/ArrayMatching',
     'enhanced methods': '#/EnhancedMethods',
     'enhanced method': '#/EnhancedMethods',
     'enhances': '#/EnhancedMethods',
@@ -2977,9 +2977,7 @@ function getJSONDocs() {
       return line.replace(/^[\s*]*|[\s*]*$/g, '');
     });
     if (clean) {
-      lines = lines.filter(function(l) {
-        return l;
-      });
+      lines = lines.join('\n').replace(/^\n+|\n+$/g, '').split('\n');
     }
     return lines;
   }
@@ -2998,8 +2996,12 @@ function getJSONDocs() {
         var nextLine = lines[i + 1];
         if (line.match(/{$/)) {
           break;
+        } else if (line == '') {
+          lines.splice(i, 1);
+          i--;
+          continue;
         }
-        if (line.match(/^\w+ = /) && !line.match(/->/) && nextLine && nextLine.trim()) {
+        if (line.match(/^(var )?\w+ = /) && !line.match(/->/) && nextLine && nextLine.trim()) {
           while (nextLine) {
             lines[i] += '\n' + nextLine;
             lines.splice(i + 1, 1);
