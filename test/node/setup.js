@@ -1,7 +1,7 @@
 // Node test suite
 
+var fs = require('fs');
 var path = require('path');
-var glob = require('glob');
 
 var baseDir = path.resolve(__dirname, '../..');
 
@@ -98,7 +98,10 @@ module.exports = {
   },
 
   loadLocaleTests: function() {
-    glob.sync(path.join(__dirname, '../tests/locales/*.js')).forEach(load);
+    var files = fs.readdirSync(path.join(__dirname, '../tests/locales/'));
+    files.forEach(function(filename) {
+      load(path.join(__dirname, '../tests/locales', filename));
+    });
   },
 
   run: function(mod, mode, localSugar) {
