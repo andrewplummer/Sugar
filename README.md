@@ -17,6 +17,19 @@ includes default packages.
 
 In npm, use `npm install sugar@1.5` for the full build.
 
+## Usage
+
+Note that this version of Sugar modifies natives on initialization. All methods
+are mapped to the global namespace, either built-in classes or their prototypes,
+and all methods are called directly on them. Polyfills are applied if the native
+implementation is broken or missing.
+
+## Docs
+
+Limited API documentation for v1.5 is available on the [site](https://sugarjs.com/docs/),
+however note that documentation outside the API reference may no longer be
+applicable.
+
 ## Upgrading
 
 If you are upgrading from an older version, please have a look at
@@ -26,7 +39,7 @@ applies to versions prior to v1.3.9.
 
 ## Custom Builds
 
-Custom builds can no longer be created for v1.5.0 from the main site. However,
+Custom builds can no longer be created for v1.5 from the main site. However,
 build tools in this repo can create them manually. Remove unneeded code from
 the modules in the `lib` directory, then run `gulp build`. Only remove entire
 modules, (never `core` or `common`), or methods within `extend()` blocks.
