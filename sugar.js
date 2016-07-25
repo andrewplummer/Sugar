@@ -1,5 +1,5 @@
 /*
- *  Sugar edge
+ *  Sugar v2.0.0
  *
  *  Freely distributable and licensed under the MIT-style license.
  *  Copyright (c) Andrew Plummer
@@ -476,8 +476,6 @@
   }
 
   function setGlobalProperties() {
-    setProperty(Sugar, 'VERSION', 'edge');
-
     setProperty(Sugar, 'extend', Sugar);
     setProperty(Sugar, 'toString', toString);
     setProperty(Sugar, 'createNamespace', createNamespace);
@@ -3051,7 +3049,7 @@
 
   function getDateParamsFromString(str) {
     var match, num, params = {};
-    match = str.match(/^(-?\d+)?\s?(\w+?)s?$/i);
+    match = str.match(/^(-?\d*[\d.]\d*)?\s?(\w+?)s?$/i);
     if (match) {
       if (isUndefined(num)) {
         num = +match[1];
@@ -7652,14 +7650,16 @@
   }
 
   // Avoids issues with concat in < IE8
-  function arraySafeConcat(arr1, arr2) {
-    var result = arrayClone(arr1), len = result.length;
-    result.length += len;
+  function arraySafeConcat(arr, arg) {
+    var result = arrayClone(arr), len = result.length, arr2;
+    arr2 = isArray(arg) ? arg : [arg];
+    result.length += arr2.length;
     forEach(arr2, function(el, i) {
       result[len + i] = el;
     });
     return result;
   }
+
 
   function arrayAppend(arr, el, index) {
     var spliceArgs;
