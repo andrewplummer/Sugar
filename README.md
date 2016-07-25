@@ -3,9 +3,9 @@
 A Javascript library for working with native objects.
 https://sugarjs.com/
 
-## Version
+## Version 1.5
 
-This readme applies to Sugar v1.5. Note that information here may differ from
+Note that this readme applies to Sugar v1.5. Information here may differ from
 the latest documentation found on the site.
 
 ## Installing
@@ -30,11 +30,11 @@ build tools in this repo can create them manually. Remove unneeded code from
 the modules in the `lib` directory, then run `gulp build`. Only remove entire
 modules, (never `core` or `common`), or methods within `extend()` blocks.
 
-## Date Localizations
+## Date Locales
 
-Sugar has the following localizations available:
+Sugar includes English as the default locale. In addition, the following locales
+are also available. These files must be added after Sugar is loaded.
 
-- English (en, required)
 - [Danish (da)](lib/locales/da.js)
 - [Dutch (nl)](lib/locales/nl.js)
 - [Finnish (fi)](lib/locales/fi.js)
@@ -51,5 +51,3 @@ Sugar has the following localizations available:
 - [Swedish (sv)](lib/locales/sv.js)
 - [Simplified Chinese (zh-CN)](lib/locales/zh-CN.js)
 - [Traditional Chinese (zh-TW)](lib/locales/zh-TW.js)
-
-These files must be added after Sugar is loaded.
