@@ -6,7 +6,6 @@ A Javascript library for working with native objects.
 
 ---------------------------------------
 
-- [**Version**](#version)
 - [**Download**](#download)
 - [**Install**](#install)
 - [**Upgrading**](#upgrading)
@@ -23,9 +22,7 @@ A Javascript library for working with native objects.
 ---------------------------------------
 
 
-## Version
-
-### 2.0.0
+# v2.0.0
 
 
 ## Download
@@ -115,8 +112,8 @@ packages beginning with `sugar-`. The following modules are available:
 
 #### Default:
 
-- [ES6](lib/es6.js) (Polyfill)
-- [ES7](lib/es7.js) (Polyfill)
+- [ES6](lib/es6.js) (Polyfills)
+- [ES7](lib/es7.js) (Polyfills)
 - [Array](lib/array.js)
 - [Date](lib/date.js)
 - [Enumerable](lib/enumerable.js) (shared methods on Array and Object)
@@ -129,7 +126,7 @@ packages beginning with `sugar-`. The following modules are available:
 
 #### Non-default:
 
-- [ES5](lib/es5.js) (Polyfill, adds IE6-8 Support)
+- [ES5](lib/es5.js) (Polyfills, adds IE6-8 Support)
 - [Language](lib/language.js) (Character conversion and script detection)
 - [Inflections](lib/inflections.js) (Pluralization and string normalization)
 
