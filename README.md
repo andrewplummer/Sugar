@@ -12,11 +12,11 @@ A Javascript library for working with native objects.
 - [**Download**](#download)
 - [**Install**](#install)
 - [**Upgrading**](#upgrading)
+- [**Custom Builds**](#custom-builds)
 - [**Documentation**](#documentation)
 - [**Getting Started**](#getting-started)
 - [**npm**](#npm)
 - [**Modules**](#modules)
-- [**Custom Builds**](#custom-builds)
 - [**Date Locales**](#date-locales)
 - [**Timezones**](#timezones)
 - [**Defining Methods**](#defining-methods)
@@ -29,9 +29,10 @@ A Javascript library for working with native objects.
 
 ### [sugar.js](sugar.js) | [sugar.min.js (24kb gz)](sugar.min.js)
 
+
 ## Install
 
-### `npm install sugar`
+#### `npm install sugar`
 
 
 ## Upgrading
@@ -40,6 +41,15 @@ If you are upgrading from v1, there is now an upgrade [helper script](https://su
 available that makes upgrading easier by warning you about breaking changes as
 your code is run. The [CAUTIONLOG](CAUTION.md) is also available, which is a
 vetted changelog showing breaking changes in order of severity.
+
+## Custom Builds
+
+#### [https://sugarjs.com/download/](https://sugarjs.com/download/)
+
+Custom browser builds can be created on the site download page. In addition,
+tools like Browserify can also be used to create custom builds, as npm packages
+are now fully modular. The main repo also has tasks to create custom builds as
+well. Simply clone, run `npm install` then `gulp`.
 
 ## Documentation
 
@@ -121,15 +131,6 @@ creating a [custom build](#custom-builds). The main npm package includes the ES5
 module, polyfills are disabled by default and must be explicitly required.
 Other non-default modules can be found individually (i.e. `sugar-language`, etc).
 
-## Custom Builds
-
-#### [https://sugarjs.com/download/](https://sugarjs.com/download/)
-
-Custom browser builds can be created on the site download page. In addition,
-tools like Browserify can also be used to create custom builds, as npm packages
-are now fully modular. The main repo also has tasks to create custom builds as
-well. Simply clone, run `npm install` then `gulp`.
-
 ## Date Locales
 
 Locale definition files are in the [locales](locales/) directory. They can be
@@ -158,19 +159,17 @@ the Date module. Currently available locales are:
 #### Adding/Customizing Locales
 
 If a locale or format is missing, it can easily be added by modifying or adding
-the definition. See [this guide](https://sugarjs.com/docs/#/DateLocales) for
-more on this.
-
-Please consider contributing any changes made back to the community!
+the definition. See [here](https://sugarjs.com/docs/#/DateLocales) for more on
+this. Please consider contributing any changes made back to the community!
 
 
 ## Timezones
 
-Sugar does not deal with timezone abbreviations. Timezone offsets will be
-correctly parsed if they are in ISO-8601 format (+09:00, +0900, or Z for UTC),
-however if an abbreviation like PST exists it will be ignored. Sugar however
-plays nicely with other libraries that offer full timezone support such as
-[timezone.js](https://github.com/mde/timezone-js).
+Sugar does not deal with timezone abbreviations (i.e. "PST", etc). Timezone
+offsets will be correctly parsed if they are in ISO-8601 format (+09:00, +0900,
+or Z for UTC), however if an abbreviation exists it will be ignored. Sugar
+however plays nicely with other libraries that offer full timezone support such
+as [timezone.js](https://github.com/mde/timezone-js).
 
 `Date.create` allows two options for dealing with UTC dates. `fromUTC` will
 parse the string as UTC, but return a normal date. In contrast, `setUTC` tells
