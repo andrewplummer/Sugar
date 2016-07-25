@@ -9,26 +9,29 @@ A Javascript library for working with native objects.
 
 ---------------------------------------
 
-- [Installing](#installing)
-- [Upgrading](#upgrading)
-- [Documentation](#documentation)
-- [Getting Started](#getting-started)
-- [npm](#npm)
-- [Modules](#modules)
-- [Custom Builds](#custom-builds)
-- [Date Locales](#date-locales)
-- [Timezones](#timezones)
-- [Defining Methods](#defining-methods)
-- [Contributing](#contributing)
+- [**Download**](#download)
+- [**Install**](#install)
+- [**Upgrading**](#upgrading)
+- [**Documentation**](#documentation)
+- [**Getting Started**](#getting-started)
+- [**npm**](#npm)
+- [**Modules**](#modules)
+- [**Custom Builds**](#custom-builds)
+- [**Date Locales**](#date-locales)
+- [**Timezones**](#timezones)
+- [**Defining Methods**](#defining-methods)
+- [**Contributing**](#contributing)
 
 ---------------------------------------
 
 
-## Installing
+## Download
 
-#### [sugar.js](sugar.js) | [sugar.min.js (24kb gz)](sugar.min.js)
+### [sugar.js](sugar.js) | [sugar.min.js (24kb gz)](sugar.min.js)
 
-`npm install sugar`
+## Install
+
+### `npm install sugar`
 
 
 ## Upgrading
@@ -66,12 +69,10 @@ a reference to its static form that can be called immediately:
 ```javascript
 // Require all modules
 var Sugar = require('sugar');
-
 Sugar.Number.round(3.1415);
 
-// Require only the Number module
+// Require the Number module
 var Sugar = require('sugar/number');
-
 Sugar.Number.round(3.1415);
 
 // Require only the "round" method
@@ -95,23 +96,23 @@ used as an intuitive way of grouping similar methods. Sugar npm packages make
 use of modules, both in the main `sugar` package as well as individual module
 packages beginning with `sugar-`. The following modules are available:
 
-##### Default:
+#### Default:
 
-- [Date](https://sugarjs.com/docs/#/Date)
-- [String](https://sugarjs.com/docs/#/String)
-- [Array](https://sugarjs.com/docs/#/Array)
-- [Object](https://sugarjs.com/docs/#/Object)
-- [Function](https://sugarjs.com/docs/#/Function)
-- [Number](https://sugarjs.com/docs/#/Number)
-- [RegExp](https://sugarjs.com/docs/#/RegExp)
+- [Array](lib/array.js)
+- [Date](lib/date.js)
 - [Enumerable](lib/enumerable.js) (shared methods on Array and Object)
-- [Range](https://sugarjs.com/docs/#/Range) (String, Number, and Date ranges)
-- [ES6](#polyfills) (Polyfills)
-- [ES7](#polyfills) (Polyfills)
+- [Function](lib/function.js)
+- [Number](lib/number.js)
+- [Object](lib/object.js)
+- [Range](lib/range.js) (String, Number, and Date ranges)
+- [RegExp](lib/regexp.js)
+- [String](lib/string.js)
+- [ES6](lib/es6.js) (Polyfills)
+- [ES7](lib/es7.js) (Polyfills)
 
-##### Non-default:
+#### Non-default:
 
-- [ES5](#polyfills) (Adds IE6-8 Support)
+- [ES5](lib/es5.js) (Adds IE6-8 Support)
 - [Language](lib/language.js) (Character conversion and script detection)
 - [Inflections](lib/inflections.js) (Pluralization and string normalization)
 
@@ -127,7 +128,7 @@ Other non-default modules can be found individually (i.e. `sugar-language`, etc)
 Custom browser builds can be created on the site download page. In addition,
 tools like Browserify can also be used to create custom builds, as npm packages
 are now fully modular. The main repo also has tasks to create custom builds as
-well. Simply clone and run `gulp`.
+well. Simply clone, run `npm install` then `gulp`.
 
 ## Date Locales
 
@@ -154,7 +155,7 @@ the Date module. Currently available locales are:
 - [Simplified Chinese (zh-CN)](locales/zh-CN.js)
 - [Traditional Chinese (zh-TW)](locales/zh-TW.js)
 
-##### Adding/Customizing Locales
+#### Adding/Customizing Locales
 
 If a locale or format is missing, it can easily be added by modifying or adding
 the definition. See [this guide](https://sugarjs.com/docs/#/DateLocales) for
