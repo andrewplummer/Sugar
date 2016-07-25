@@ -802,6 +802,7 @@ var PACKAGE_DEFINITIONS = {
   },
   'sugar-core': {
     modules: 'Core',
+    es5_dist: true,
     description: 'Core package for the Sugar Javascript utility library.'
   },
   'sugar-es5': {
