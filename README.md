@@ -6,7 +6,6 @@ A Javascript library for working with native objects.
 
 ---------------------------------------
 
-- [**Download**](#download)
 - [**Install**](#install)
 - [**Upgrading**](#upgrading)
 - [**Getting Started**](#getting-started)
