@@ -5,8 +5,9 @@ https://sugarjs.com/
 
 ## Version 1.5
 
-Note that this readme applies to Sugar v1.5. Information here may differ from
-the latest documentation found on the site.
+Note that this readme applies to Sugar v1.5. This version will continue to be
+supported as needed. Note that information here may differ from the latest
+documentation found on the site.
 
 ## Installing
 
