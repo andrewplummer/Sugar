@@ -4,11 +4,9 @@
 
 A Javascript library for working with native objects.
 
----
-#### Draft! Not all these links work yet!
-
 ---------------------------------------
 
+- [**Version**](#version)
 - [**Download**](#download)
 - [**Install**](#install)
 - [**Upgrading**](#upgrading)
@@ -25,9 +23,14 @@ A Javascript library for working with native objects.
 ---------------------------------------
 
 
+## Version
+
+### 2.0.0
+
+
 ## Download
 
-### [sugar.js](sugar.js) | [sugar.min.js (24kb gz)](sugar.min.js)
+### [sugar.js](https://raw.githubusercontent.com/andrewplummer/Sugar/2.0.0/sugar.js) | [sugar.min.js (24kb gz)](https://raw.githubusercontent.com/andrewplummer/Sugar/2.0.0/sugar.min.js)
 
 
 ## Install
@@ -73,7 +76,7 @@ All packages also include pre-built distributions in the `dist/` directory.
 In addition to the main `sugar` package, there are also packages separated by
 Sugar module, i.e. `sugar-date`, `sugar-array`, etc.
 
-When an entry point is required (the package name or entire modules), it will
+When an entry point is required (the package name or an entire module), it will
 return a reference to `Sugar`, which is equivalent to the global object in the
 browser. All methods will be defined on this object and can be called as normal.
 Requiring an individual method will define it on `Sugar` and additionally return
@@ -112,6 +115,8 @@ packages beginning with `sugar-`. The following modules are available:
 
 #### Default:
 
+- [ES6](lib/es6.js) (Polyfill)
+- [ES7](lib/es7.js) (Polyfill)
 - [Array](lib/array.js)
 - [Date](lib/date.js)
 - [Enumerable](lib/enumerable.js) (shared methods on Array and Object)
@@ -121,12 +126,10 @@ packages beginning with `sugar-`. The following modules are available:
 - [Range](lib/range.js) (String, Number, and Date ranges)
 - [RegExp](lib/regexp.js)
 - [String](lib/string.js)
-- [ES6](lib/es6.js) (Polyfills)
-- [ES7](lib/es7.js) (Polyfills)
 
 #### Non-default:
 
-- [ES5](lib/es5.js) (Adds IE6-8 Support)
+- [ES5](lib/es5.js) (Polyfill, adds IE6-8 Support)
 - [Language](lib/language.js) (Character conversion and script detection)
 - [Inflections](lib/inflections.js) (Pluralization and string normalization)
 
