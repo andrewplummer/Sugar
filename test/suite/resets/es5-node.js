@@ -1,9 +1,9 @@
-// These methods are used in node require so cannot reset.
+// These methods are required internally, so cannot reset:
 // delete Object.keys;
+// delete Array.isArray;
+// delete Array.prototype.filter;
 
-delete Array.isArray;
 delete Array.prototype.every;
-delete Array.prototype.filter;
 delete Array.prototype.forEach;
 delete Array.prototype.indexOf;
 delete Array.prototype.lastIndexOf;
