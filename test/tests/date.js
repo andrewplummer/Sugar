@@ -1633,9 +1633,8 @@ namespace('Date', function () {
   });
 
   method('advance', function() {
-    var d;
 
-    d = new Date('August 25, 2010 11:45:20');
+    var d = new Date('August 25, 2010 11:45:20');
 
     run(d, 'advance', [1,-3,2,8,12,-2,44]);
 
@@ -1649,7 +1648,7 @@ namespace('Date', function () {
 
 
 
-    d = new Date('August 25, 2010 11:45:20');
+    var d = new Date('August 25, 2010 11:45:20');
     run(d, 'advance', [{ year: 1, month: -3, days: 2, hours: 8, minutes: 12, seconds: -2, milliseconds: 44 }]);
 
     equal(d.getFullYear(), 2011, 'object | year');
@@ -1660,7 +1659,7 @@ namespace('Date', function () {
     equal(d.getSeconds(), 18, 'object | seconds');
     equal(d.getMilliseconds(), 44, 'object | milliseconds');
 
-    d = new Date('August 25, 2010 11:45:20');
+    var d = new Date('August 25, 2010 11:45:20');
     run(d, 'advance', [{ week: 1}]);
     equal(d, new Date(2010, 8, 1, 11, 45, 20), 'positive weeks supported');
     run(d, 'advance', [{ week: -2}]);
@@ -1678,7 +1677,7 @@ namespace('Date', function () {
 
     // Advance also allows resetting.
 
-    d = new Date(2011, 0, 31, 23, 40, 28, 500);
+    var d = new Date(2011, 0, 31, 23, 40, 28, 500);
     dateTest(d, [{ year: 1 }, true], new Date(2012, 0), 'with reset | year');
     dateTest(d, [{ month: 1 }, true], new Date(2011, 1), 'with reset | month');
     dateTest(d, [{ week: 1 }, true], new Date(2011, 1, 7), 'with reset | week');
@@ -1690,7 +1689,7 @@ namespace('Date', function () {
 
     // Advance also allows string methods
 
-    d = new Date(2011, 0, 31, 23, 40, 28, 500);
+    var d = new Date(2011, 0, 31, 23, 40, 28, 500);
     dateTest(d, ['3 years'], new Date(2014, 0, 31, 23, 40, 28, 500), 'string input | year');
     dateTest(d, ['3 months'], new Date(2011, 3, 30, 23, 40, 28, 500), 'string input | month');
     dateTest(d, ['3 weeks'], new Date(2011, 1, 21, 23, 40, 28, 500), 'string input | week');
@@ -1699,6 +1698,22 @@ namespace('Date', function () {
     dateTest(d, ['3 minutes'], new Date(2011, 0, 31, 23, 43, 28, 500), 'string input | minute');
     dateTest(d, ['3 seconds'], new Date(2011, 0, 31, 23, 40, 31, 500), 'string input | second');
     dateTest(d, ['3 milliseconds'], new Date(2011, 0, 31, 23, 40, 28, 503), 'string input | millisecond');
+
+    // Issue #549 - Fractions in string units
+
+    var d = new Date(2016, 0, 5, 12);
+    dateTest(d, ['10.33 minutes'], new Date(2016, 0, 5, 12, 10, 20), 'string | 10.333 minutes');
+
+    var d = new Date(2016, 0, 5, 12);
+    dateTest(d, ['2.25 hours'], new Date(2016, 0, 5, 14, 15), 'string | 2.25 hours');
+
+    var d = new Date(2016, 0, 5, 12);
+    dateTest(d, ['11.5 days'], new Date(2016, 0, 17), 'string | 11.5 days');
+
+    var d = new Date(2016, 0, 5, 12);
+    dateTest(d, ['-2.25 hours'], new Date(2016, 0, 5, 9, 45), 'string | -2.25 hours');
+
+    // Notably leaving off higher order units here to avoid ambiguity.
 
   });
 
