@@ -12,9 +12,9 @@ A Javascript library for working with native objects.
 - [**Download**](#download)
 - [**Install**](#install)
 - [**Upgrading**](#upgrading)
-- [**Custom Builds**](#custom-builds)
-- [**Documentation**](#documentation)
 - [**Getting Started**](#getting-started)
+- [**Documentation**](#documentation)
+- [**Custom Builds**](#custom-builds)
 - [**npm**](#npm)
 - [**Modules**](#modules)
 - [**Date Locales**](#date-locales)
@@ -42,6 +42,17 @@ available that makes upgrading easier by warning you about breaking changes as
 your code is run. The [CAUTIONLOG](CAUTION.md) is also available, which is a
 vetted changelog showing breaking changes in order of severity.
 
+
+## Getting Started
+
+#### [https://sugarjs.com/quickstart/](https://sugarjs.com/quickstart/)
+
+
+## Documentation
+
+#### [https://sugarjs.com/docs/](https://sugarjs.com/docs/)
+
+
 ## Custom Builds
 
 #### [https://sugarjs.com/download/](https://sugarjs.com/download/)
@@ -51,13 +62,6 @@ tools like Browserify can also be used to create custom builds, as npm packages
 are now fully modular. The main repo also has tasks to create custom builds as
 well. Simply clone, run `npm install` then `gulp`.
 
-## Documentation
-
-#### [https://sugarjs.com/docs/](https://sugarjs.com/docs/)
-
-## Getting Started
-
-#### [https://sugarjs.com/quickstart/](https://sugarjs.com/quickstart/)
 
 ## npm
 
