@@ -5483,6 +5483,847 @@
     });
 
     /***
+     * @module Inflections
+     * @dependency string
+     * @description Pluralization similar to ActiveSupport including uncountable words and acronyms. Humanized and URL-friendly strings.
+     *
+     ***/
+
+    /***
+     * @namespace String
+     *
+     ***/
+
+
+    var plurals      = [],
+        singulars    = [],
+        uncountables = [],
+        humans       = [],
+        acronyms     = {},
+        Downcased,
+        Inflector,
+        NormalizeMap = {},
+        NormalizeReg,
+        NormalizeSource;
+
+    function removeFromArray(arr, find) {
+      var index = arr.indexOf(find);
+      if (index > -1) {
+        arr.splice(index, 1);
+      }
+    }
+
+    function removeFromUncountablesAndAddTo(arr, rule, replacement) {
+      if (isString(rule)) {
+        removeFromArray(uncountables, rule);
+      }
+      removeFromArray(uncountables, replacement);
+      arr.unshift({ rule: rule, replacement: replacement })
+    }
+
+    function paramMatchesType(param, type) {
+      return param == type || param == 'all' || !param;
+    }
+
+    function isUncountable(word) {
+      return uncountables.some(function(uncountable) {
+        return new RegExp('\\b' + uncountable + '$', 'i').test(word);
+      });
+    }
+
+    function inflect(word, pluralize) {
+      word = isString(word) ? word.toString() : '';
+      if (isBlank(word) || isUncountable(word)) {
+        return word;
+      } else {
+        return runReplacements(word, pluralize ? plurals : singulars);
+      }
+    }
+
+    function runReplacements(word, table) {
+      iterateOverObject(table, function(i, inflection) {
+        if (word.match(inflection.rule)) {
+          word = word.replace(inflection.rule, inflection.replacement);
+          return false;
+        }
+      });
+      return word;
+    }
+
+    function capitalizeWithoutDowncasing(word) {
+      return word.replace(/^\W*[a-z]/, function(w){
+        return w.toUpperCase();
+      });
+    }
+
+    function humanize(str) {
+      var str = runReplacements(str, humans), acronym;
+      str = str.replace(/_id$/g, '');
+      str = str.replace(/(_)?([a-z\d]*)/gi, function(match, _, word){
+        var lower = word.toLowerCase();
+        acronym = hasOwnProperty(acronyms, lower) ? acronyms[lower] : null;
+        return (_ ? ' ' : '') + (acronym || lower);
+      });
+      return capitalizeWithoutDowncasing(str);
+    }
+
+    function toAscii(str) {
+      return str.replace(NormalizeReg, function(character) {
+        return NormalizeMap[character];
+      });
+    }
+
+    function buildNormalizeMap() {
+      var normalized, str, all = '';
+      for(normalized in NormalizeSource) {
+        if (!NormalizeSource.hasOwnProperty(normalized)) continue;
+        str = NormalizeSource[normalized];
+        str.split('').forEach(function(character) {
+          NormalizeMap[character] = normalized;
+        });
+        all += str;
+      }
+      NormalizeReg = RegExp('[' + all + ']', 'g');
+    }
+
+
+    Inflector = {
+
+      /*
+       * Specifies a new acronym. An acronym must be specified as it will appear in a camelized string.  An underscore
+       * string that contains the acronym will retain the acronym when passed to %camelize%, %humanize%, or %titleize%.
+       * A camelized string that contains the acronym will maintain the acronym when titleized or humanized, and will
+       * convert the acronym into a non-delimited single lowercase word when passed to String#underscore.
+       *
+       * Examples:
+       *   String.Inflector.acronym('HTML')
+       *   'html'.titleize()     -> 'HTML'
+       *   'html'.camelize()     -> 'HTML'
+       *   'MyHTML'.underscore() -> 'my_html'
+       *
+       * The acronym, however, must occur as a delimited unit and not be part of another word for conversions to recognize it:
+       *
+       *   String.Inflector.acronym('HTTP')
+       *   'my_http_delimited'.camelize() -> 'MyHTTPDelimited'
+       *   'https'.camelize()             -> 'Https', not 'HTTPs'
+       *   'HTTPS'.underscore()           -> 'http_s', not 'https'
+       *
+       *   String.Inflector.acronym('HTTPS')
+       *   'https'.camelize()   -> 'HTTPS'
+       *   'HTTPS'.underscore() -> 'https'
+       *
+       * Note: Acronyms that are passed to %pluralize% will no longer be recognized, since the acronym will not occur as
+       * a delimited unit in the pluralized result. To work around this, you must specify the pluralized form as an
+       * acronym as well:
+       *
+       *    String.Inflector.acronym('API')
+       *    'api'.pluralize().camelize() -> 'Apis'
+       *
+       *    String.Inflector.acronym('APIs')
+       *    'api'.pluralize().camelize() -> 'APIs'
+       *
+       * %acronym% may be used to specify any word that contains an acronym or otherwise needs to maintain a non-standard
+       * capitalization. The only restriction is that the word must begin with a capital letter.
+       *
+       * Examples:
+       *   String.Inflector.acronym('RESTful')
+       *   'RESTful'.underscore()           -> 'restful'
+       *   'RESTfulController'.underscore() -> 'restful_controller'
+       *   'RESTfulController'.titleize()   -> 'RESTful Controller'
+       *   'restful'.camelize()             -> 'RESTful'
+       *   'restful_controller'.camelize()  -> 'RESTfulController'
+       *
+       *   String.Inflector.acronym('McDonald')
+       *   'McDonald'.underscore() -> 'mcdonald'
+       *   'mcdonald'.camelize()   -> 'McDonald'
+       */
+      'acronym': function(word) {
+        acronyms[word.toLowerCase()] = word;
+        var all = Object.keys(acronyms).map(function(key) {
+          return acronyms[key];
+        });
+        Inflector.acronymRegExp = RegExp(all.join('|'), 'g');
+      },
+
+      /*
+       * Specifies a new pluralization rule and its replacement. The rule can either be a string or a regular expression.
+       * The replacement should always be a string that may include references to the matched data from the rule.
+       */
+      'plural': function(rule, replacement) {
+        removeFromUncountablesAndAddTo(plurals, rule, replacement);
+      },
+
+      /*
+       * Specifies a new singularization rule and its replacement. The rule can either be a string or a regular expression.
+       * The replacement should always be a string that may include references to the matched data from the rule.
+       */
+      'singular': function(rule, replacement) {
+        removeFromUncountablesAndAddTo(singulars, rule, replacement);
+      },
+
+      /*
+       * Specifies a new irregular that applies to both pluralization and singularization at the same time. This can only be used
+       * for strings, not regular expressions. You simply pass the irregular in singular and plural form.
+       *
+       * Examples:
+       *   String.Inflector.irregular('octopus', 'octopi')
+       *   String.Inflector.irregular('person', 'people')
+       */
+      'irregular': function(singular, plural) {
+        var singularFirst      = stringFirst(singular),
+            singularRest       = stringFrom(singular, 1),
+            pluralFirst        = stringFirst(plural),
+            pluralRest         = stringFrom(plural, 1),
+            pluralFirstUpper   = pluralFirst.toUpperCase(),
+            pluralFirstLower   = pluralFirst.toLowerCase(),
+            singularFirstUpper = singularFirst.toUpperCase(),
+            singularFirstLower = singularFirst.toLowerCase();
+        removeFromArray(uncountables, singular);
+        removeFromArray(uncountables, plural);
+        if (singularFirstUpper == pluralFirstUpper) {
+          Inflector.plural(new RegExp(stringAssign('({1}){2}$', [singularFirst, singularRest]), 'i'), '$1' + pluralRest);
+          Inflector.plural(new RegExp(stringAssign('({1}){2}$', [pluralFirst, pluralRest]), 'i'), '$1' + pluralRest);
+          Inflector.singular(new RegExp(stringAssign('({1}){2}$', [pluralFirst, pluralRest]), 'i'), '$1' + singularRest);
+        } else {
+          Inflector.plural(new RegExp(stringAssign('{1}{2}$', [singularFirstUpper, singularRest])), pluralFirstUpper + pluralRest);
+          Inflector.plural(new RegExp(stringAssign('{1}{2}$', [singularFirstLower, singularRest])), pluralFirstLower + pluralRest);
+          Inflector.plural(new RegExp(stringAssign('{1}{2}$', [pluralFirstUpper, pluralRest])), pluralFirstUpper + pluralRest);
+          Inflector.plural(new RegExp(stringAssign('{1}{2}$', [pluralFirstLower, pluralRest])), pluralFirstLower + pluralRest);
+          Inflector.singular(new RegExp(stringAssign('{1}{2}$', [pluralFirstUpper, pluralRest])), singularFirstUpper + singularRest);
+          Inflector.singular(new RegExp(stringAssign('{1}{2}$', [pluralFirstLower, pluralRest])), singularFirstLower + singularRest);
+        }
+      },
+
+      /*
+       * Add uncountable words that shouldn't be attempted inflected.
+       *
+       * Examples:
+       *   String.Inflector.uncountable('money')
+       *   String.Inflector.uncountable('money', 'information')
+       *   String.Inflector.uncountable(['money', 'information', 'rice'])
+       */
+      'uncountable': function(first) {
+        var add;
+        if (Array.isArray(first)) {
+          add = first;
+        } else {
+          // Optimized: no leaking arguments
+          var args = [], $i; for($i = 0; $i < arguments.length; $i++) args.push(arguments[$i]);
+          add = args;
+        }
+        uncountables = uncountables.concat(add);
+      },
+
+      /*
+       * Specifies a humanized form of a string by a regular expression rule or by a string mapping.
+       * When using a regular expression based replacement, the normal humanize formatting is called after the replacement.
+       * When a string is used, the human form should be specified as desired (example: 'The name', not 'the_name')
+       *
+       * Examples:
+       *   String.Inflector.human(/_cnt$/i, '_count')
+       *   String.Inflector.human('legacy_col_person_name', 'Name')
+       */
+      'human': function(rule, replacement) {
+        humans.unshift({ rule: rule, replacement: replacement })
+      },
+
+
+      /*
+       * Clears the loaded inflections within a given scope (default is 'all').
+       * Options are: 'all', 'plurals', 'singulars', 'uncountables', 'humans'.
+       *
+       * Examples:
+       *   String.Inflector.clear('all')
+       *   String.Inflector.clear('plurals')
+       */
+      'clear': function(type) {
+        if (paramMatchesType(type, 'singulars'))    singulars    = [];
+        if (paramMatchesType(type, 'plurals'))      plurals      = [];
+        if (paramMatchesType(type, 'uncountables')) uncountables = [];
+        if (paramMatchesType(type, 'humans'))       humans       = [];
+        if (paramMatchesType(type, 'acronyms'))     acronyms     = {};
+      }
+
+    };
+
+    Downcased = [
+      'and', 'or', 'nor', 'a', 'an', 'the', 'so', 'but', 'to', 'of', 'at',
+      'by', 'from', 'into', 'on', 'onto', 'off', 'out', 'in', 'over',
+      'with', 'for'
+    ];
+
+    Inflector.plural(/$/, 's');
+    Inflector.plural(/s$/gi, 's');
+    Inflector.plural(/(ax|test)is$/gi, '$1es');
+    Inflector.plural(/(octop|fung|foc|radi|alumn|cact)(i|us)$/gi, '$1i');
+    Inflector.plural(/(census|alias|status|fetus|genius|virus)$/gi, '$1es');
+    Inflector.plural(/(bu)s$/gi, '$1ses');
+    Inflector.plural(/(buffal|tomat)o$/gi, '$1oes');
+    Inflector.plural(/([ti])um$/gi, '$1a');
+    Inflector.plural(/([ti])a$/gi, '$1a');
+    Inflector.plural(/sis$/gi, 'ses');
+    Inflector.plural(/f+e?$/gi, 'ves');
+    Inflector.plural(/(cuff|roof)$/gi, '$1s');
+    Inflector.plural(/([ht]ive)$/gi, '$1s');
+    Inflector.plural(/([^aeiouy]o)$/gi, '$1es');
+    Inflector.plural(/([^aeiouy]|qu)y$/gi, '$1ies');
+    Inflector.plural(/(x|ch|ss|sh)$/gi, '$1es');
+    Inflector.plural(/(tr|vert)(?:ix|ex)$/gi, '$1ices');
+    Inflector.plural(/([ml])ouse$/gi, '$1ice');
+    Inflector.plural(/([ml])ice$/gi, '$1ice');
+    Inflector.plural(/^(ox)$/gi, '$1en');
+    Inflector.plural(/^(oxen)$/gi, '$1');
+    Inflector.plural(/(quiz)$/gi, '$1zes');
+    Inflector.plural(/(phot|cant|hom|zer|pian|portic|pr|quart|kimon)o$/gi, '$1os');
+    Inflector.plural(/(craft)$/gi, '$1');
+    Inflector.plural(/([ft])[eo]{2}(th?)$/gi, '$1ee$2');
+
+    Inflector.singular(/s$/gi, '');
+    Inflector.singular(/([pst][aiu]s)$/gi, '$1');
+    Inflector.singular(/([aeiouy])ss$/gi, '$1ss');
+    Inflector.singular(/(n)ews$/gi, '$1ews');
+    Inflector.singular(/([ti])a$/gi, '$1um');
+    Inflector.singular(/((a)naly|(b)a|(d)iagno|(p)arenthe|(p)rogno|(s)ynop|(t)he)ses$/gi, '$1$2sis');
+    Inflector.singular(/(^analy)ses$/gi, '$1sis');
+    Inflector.singular(/(i)(f|ves)$/i, '$1fe');
+    Inflector.singular(/([aeolr]f?)(f|ves)$/i, '$1f');
+    Inflector.singular(/([ht]ive)s$/gi, '$1');
+    Inflector.singular(/([^aeiouy]|qu)ies$/gi, '$1y');
+    Inflector.singular(/(s)eries$/gi, '$1eries');
+    Inflector.singular(/(m)ovies$/gi, '$1ovie');
+    Inflector.singular(/(x|ch|ss|sh)es$/gi, '$1');
+    Inflector.singular(/([ml])(ous|ic)e$/gi, '$1ouse');
+    Inflector.singular(/(bus)(es)?$/gi, '$1');
+    Inflector.singular(/(o)es$/gi, '$1');
+    Inflector.singular(/(shoe)s?$/gi, '$1');
+    Inflector.singular(/(cris|ax|test)[ie]s$/gi, '$1is');
+    Inflector.singular(/(octop|fung|foc|radi|alumn|cact)(i|us)$/gi, '$1us');
+    Inflector.singular(/(census|alias|status|fetus|genius|virus)(es)?$/gi, '$1');
+    Inflector.singular(/^(ox)(en)?/gi, '$1');
+    Inflector.singular(/(vert)(ex|ices)$/gi, '$1ex');
+    Inflector.singular(/tr(ix|ices)$/gi, 'trix');
+    Inflector.singular(/(quiz)(zes)?$/gi, '$1');
+    Inflector.singular(/(database)s?$/gi, '$1');
+    Inflector.singular(/ee(th?)$/gi, 'oo$1');
+
+    Inflector.irregular('person', 'people');
+    Inflector.irregular('man', 'men');
+    Inflector.irregular('deer', 'deer');
+    Inflector.irregular('human', 'humans');
+    Inflector.irregular('child', 'children');
+    Inflector.irregular('sex', 'sexes');
+    Inflector.irregular('move', 'moves');
+    Inflector.irregular('save', 'saves');
+    Inflector.irregular('goose', 'geese');
+    Inflector.irregular('zombie', 'zombies');
+
+    Inflector.uncountable('equipment,information,rice,money,species,series,fish,sheep,jeans'.split(','));
+
+    NormalizeSource = {
+      'A':  'AⒶＡÀÁÂẦẤẪẨÃĀĂẰẮẴẲȦǠÄǞẢÅǺǍȀȂẠẬẶḀĄȺⱯ',
+      'B':  'BⒷＢḂḄḆɃƂƁ',
+      'C':  'CⒸＣĆĈĊČÇḈƇȻꜾ',
+      'D':  'DⒹＤḊĎḌḐḒḎĐƋƊƉꝹ',
+      'E':  'EⒺＥÈÉÊỀẾỄỂẼĒḔḖĔĖËẺĚȄȆẸỆȨḜĘḘḚƐƎ',
+      'F':  'FⒻＦḞƑꝻ',
+      'G':  'GⒼＧǴĜḠĞĠǦĢǤƓꞠꝽꝾ',
+      'H':  'HⒽＨĤḢḦȞḤḨḪĦⱧⱵꞍ',
+      'I':  'IⒾＩÌÍÎĨĪĬİÏḮỈǏȈȊỊĮḬƗ',
+      'J':  'JⒿＪĴɈ',
+      'K':  'KⓀＫḰǨḲĶḴƘⱩꝀꝂꝄꞢ',
+      'L':  'LⓁＬĿĹĽḶḸĻḼḺŁȽⱢⱠꝈꝆꞀ',
+      'M':  'MⓂＭḾṀṂⱮƜ',
+      'N':  'NⓃＮǸŃÑṄŇṆŅṊṈȠƝꞐꞤ',
+      'O':  'OⓄＯÒÓÔỒỐỖỔÕṌȬṎŌṐṒŎȮȰÖȪỎŐǑȌȎƠỜỚỠỞỢỌỘǪǬØǾƆƟꝊꝌ',
+      'P':  'PⓅＰṔṖƤⱣꝐꝒꝔ',
+      'Q':  'QⓆＱꝖꝘɊ',
+      'R':  'RⓇＲŔṘŘȐȒṚṜŖṞɌⱤꝚꞦꞂ',
+      'S':  'SⓈＳẞŚṤŜṠŠṦṢṨȘŞⱾꞨꞄ',
+      'T':  'TⓉＴṪŤṬȚŢṰṮŦƬƮȾꞆ',
+      'U':  'UⓊＵÙÚÛŨṸŪṺŬÜǛǗǕǙỦŮŰǓȔȖƯỪỨỮỬỰỤṲŲṶṴɄ',
+      'V':  'VⓋＶṼṾƲꝞɅ',
+      'W':  'WⓌＷẀẂŴẆẄẈⱲ',
+      'X':  'XⓍＸẊẌ',
+      'Y':  'YⓎＹỲÝŶỸȲẎŸỶỴƳɎỾ',
+      'Z':  'ZⓏＺŹẐŻŽẒẔƵȤⱿⱫꝢ',
+      'a':  'aⓐａẚàáâầấẫẩãāăằắẵẳȧǡäǟảåǻǎȁȃạậặḁąⱥɐ',
+      'b':  'bⓑｂḃḅḇƀƃɓ',
+      'c':  'cⓒｃćĉċčçḉƈȼꜿↄ',
+      'd':  'dⓓｄḋďḍḑḓḏđƌɖɗꝺ',
+      'e':  'eⓔｅèéêềếễểẽēḕḗĕėëẻěȅȇẹệȩḝęḙḛɇɛǝ',
+      'f':  'fⓕｆḟƒꝼ',
+      'g':  'gⓖｇǵĝḡğġǧģǥɠꞡᵹꝿ',
+      'h':  'hⓗｈĥḣḧȟḥḩḫẖħⱨⱶɥ',
+      'i':  'iⓘｉìíîĩīĭïḯỉǐȉȋịįḭɨı',
+      'j':  'jⓙｊĵǰɉ',
+      'k':  'kⓚｋḱǩḳķḵƙⱪꝁꝃꝅꞣ',
+      'l':  'lⓛｌŀĺľḷḹļḽḻſłƚɫⱡꝉꞁꝇ',
+      'm':  'mⓜｍḿṁṃɱɯ',
+      'n':  'nⓝｎǹńñṅňṇņṋṉƞɲŉꞑꞥ',
+      'o':  'oⓞｏòóôồốỗổõṍȭṏōṑṓŏȯȱöȫỏőǒȍȏơờớỡởợọộǫǭøǿɔꝋꝍɵ',
+      'p':  'pⓟｐṕṗƥᵽꝑꝓꝕ',
+      'q':  'qⓠｑɋꝗꝙ',
+      'r':  'rⓡｒŕṙřȑȓṛṝŗṟɍɽꝛꞧꞃ',
+      's':  'sⓢｓśṥŝṡšṧṣṩșşȿꞩꞅẛ',
+      't':  'tⓣｔṫẗťṭțţṱṯŧƭʈⱦꞇ',
+      'u':  'uⓤｕùúûũṹūṻŭüǜǘǖǚủůűǔȕȗưừứữửựụṳųṷṵʉ',
+      'v':  'vⓥｖṽṿʋꝟʌ',
+      'w':  'wⓦｗẁẃŵẇẅẘẉⱳ',
+      'x':  'xⓧｘẋẍ',
+      'y':  'yⓨｙỳýŷỹȳẏÿỷẙỵƴɏỿ',
+      'z':  'zⓩｚźẑżžẓẕƶȥɀⱬꝣ',
+      'AA': 'Ꜳ',
+      'AE': 'ÆǼǢ',
+      'AO': 'Ꜵ',
+      'AU': 'Ꜷ',
+      'AV': 'ꜸꜺ',
+      'AY': 'Ꜽ',
+      'DZ': 'ǱǄ',
+      'Dz': 'ǲǅ',
+      'LJ': 'Ǉ',
+      'Lj': 'ǈ',
+      'NJ': 'Ǌ',
+      'Nj': 'ǋ',
+      'OI': 'Ƣ',
+      'OO': 'Ꝏ',
+      'OU': 'Ȣ',
+      'TZ': 'Ꜩ',
+      'VY': 'Ꝡ',
+      'aa': 'ꜳ',
+      'ae': 'æǽǣ',
+      'ao': 'ꜵ',
+      'au': 'ꜷ',
+      'av': 'ꜹꜻ',
+      'ay': 'ꜽ',
+      'dz': 'ǳǆ',
+      'hv': 'ƕ',
+      'lj': 'ǉ',
+      'nj': 'ǌ',
+      'oi': 'ƣ',
+      'ou': 'ȣ',
+      'oo': 'ꝏ',
+      'ss': 'ß',
+      'tz': 'ꜩ',
+      'vy': 'ꝡ'
+    };
+
+
+
+    extend(String, {
+
+      /***
+       * @method pluralize()
+       * @returns String
+       * @short Returns the plural form of the word in the string.
+       * @example
+       *
+       *   'post'.pluralize()         -> 'posts'
+       *   'octopus'.pluralize()      -> 'octopi'
+       *   'sheep'.pluralize()        -> 'sheep'
+       *   'words'.pluralize()        -> 'words'
+       *   'CamelOctopus'.pluralize() -> 'CamelOctopi'
+       *
+       ***/
+      'pluralize': function() {
+        return inflect(this, true);
+      },
+
+      /***
+       * @method singularize()
+       * @returns String
+       * @short The reverse of String#pluralize. Returns the singular form of a word in a string.
+       * @example
+       *
+       *   'posts'.singularize()       -> 'post'
+       *   'octopi'.singularize()      -> 'octopus'
+       *   'sheep'.singularize()       -> 'sheep'
+       *   'word'.singularize()        -> 'word'
+       *   'CamelOctopi'.singularize() -> 'CamelOctopus'
+       *
+       ***/
+      'singularize': function() {
+        return inflect(this, false);
+      },
+
+      /***
+       * @method humanize()
+       * @returns String
+       * @short Creates a human readable string.
+       * @extra Capitalizes the first word and turns underscores into spaces and strips a trailing '_id', if any. Like String#titleize, this is meant for creating pretty output.
+       * @example
+       *
+       *   'employee_salary'.humanize() -> 'Employee salary'
+       *   'author_id'.humanize()       -> 'Author'
+       *
+       ***/
+      'humanize': function() {
+        return humanize(this);
+      },
+
+      /***
+       * @method titleize()
+       * @returns String
+       * @short Creates a title version of the string.
+       * @extra Capitalizes all the words and replaces some characters in the string to create a nicer looking title. String#titleize is meant for creating pretty output.
+       * @example
+       *
+       *   'man from the boondocks'.titleize() -> 'Man from the Boondocks'
+       *   'x-men: the last stand'.titleize() -> 'X Men: The Last Stand'
+       *   'TheManWithoutAPast'.titleize() -> 'The Man Without a Past'
+       *   'raiders_of_the_lost_ark'.titleize() -> 'Raiders of the Lost Ark'
+       *
+       ***/
+      'titleize': function() {
+        var fullStopPunctuation = /[.:;!]$/, hasPunctuation, lastHadPunctuation, isFirstOrLast;
+        var str = humanize(spacify(this));
+        return eachWord(str, function(word, index, words) {
+          hasPunctuation = fullStopPunctuation.test(word);
+          isFirstOrLast = index == 0 || index == words.length - 1 || hasPunctuation || lastHadPunctuation;
+          lastHadPunctuation = hasPunctuation;
+          if (isFirstOrLast || Downcased.indexOf(word) === -1) {
+            return capitalizeWithoutDowncasing(word, true);
+          } else {
+            return word;
+          }
+        }).join(' ');
+      },
+
+      /***
+       * @method parameterize()
+       * @returns String
+       * @short Replaces special characters in a string so that it may be used as part of a pretty URL.
+       * @example
+       *
+       *   'hell, no!'.parameterize() -> 'hell-no'
+       *
+       ***/
+      'parameterize': function(separator) {
+        var str = toAscii(this);
+        if (separator === undefined) separator = '-';
+        str = str.replace(/[^a-z0-9\-_]+/gi, separator)
+        if (separator) {
+          str = str.replace(new RegExp(stringAssign('^{sep}+|{sep}+$|({sep}){sep}+', [{ 'sep': escapeRegExp(separator) }]), 'g'), '$1');
+        }
+        return encodeURI(str.toLowerCase());
+      },
+
+      /***
+       * @method toAscii()
+       * @returns String
+       * @short Returns the string with accented and non-standard Latin-based characters converted into ASCII approximate equivalents.
+       * @example
+       *
+       *   'á'.toAscii()                  -> 'a'
+       *   'Ménage à trois'.toAscii()     -> 'Menage a trois'
+       *   'Volkswagen'.toAscii()         -> 'Volkswagen'
+       *   'ＦＵＬＬＷＩＤＴＨ'.toAscii() -> 'FULLWIDTH'
+       *
+       ***/
+      'toAscii': function() {
+        return toAscii(this);
+      }
+
+    });
+
+    String.Inflector = Inflector;
+    String.Inflector.acronyms = acronyms;
+
+    buildNormalizeMap();
+
+    /***
+     * @module Language
+     * @dependency string
+     * @description Detecting language by character block. Full-width <-> half-width character conversion. Hiragana and Katakana conversions.
+     *
+     ***/
+
+    /***
+     * @namespace String
+     *
+     ***/
+
+
+    /***
+     * @method has[Script]()
+     * @returns Boolean
+     * @short Returns true if the string contains any characters in that script.
+     *
+     * @set
+     *   hasArabic
+     *   hasCyrillic
+     *   hasGreek
+     *   hasHangul
+     *   hasHan
+     *   hasKanji
+     *   hasHebrew
+     *   hasHiragana
+     *   hasKana
+     *   hasKatakana
+     *   hasLatin
+     *   hasThai
+     *   hasDevanagari
+     *
+     * @example
+     *
+     *   'أتكلم'.hasArabic()          -> true
+     *   'визит'.hasCyrillic()        -> true
+     *   '잘 먹겠습니다!'.hasHangul() -> true
+     *   'ミックスです'.hasKatakana() -> true
+     *   "l'année".hasLatin()         -> true
+     *
+     ***
+     * @method is[Script]()
+     * @returns Boolean
+     * @short Returns true if the string contains only characters in that script. Whitespace is ignored.
+     *
+     * @set
+     *   isArabic
+     *   isCyrillic
+     *   isGreek
+     *   isHangul
+     *   isHan
+     *   isKanji
+     *   isHebrew
+     *   isHiragana
+     *   isKana
+     *   isKatakana
+     *   isThai
+     *   isDevanagari
+     *
+     * @example
+     *
+     *   'أتكلم'.isArabic()          -> true
+     *   'визит'.isCyrillic()        -> true
+     *   '잘 먹겠습니다!'.isHangul() -> true
+     *   'ミックスです'.isKatakana() -> false
+     *   "l'année".isLatin()         -> true
+     *
+     ***/
+    var unicodeScripts = [
+      { names: ['Arabic'],      source: '\u0600-\u06FF' },
+      { names: ['Cyrillic'],    source: '\u0400-\u04FF' },
+      { names: ['Devanagari'],  source: '\u0900-\u097F' },
+      { names: ['Greek'],       source: '\u0370-\u03FF' },
+      { names: ['Hangul'],      source: '\uAC00-\uD7AF\u1100-\u11FF' },
+      { names: ['Han','Kanji'], source: '\u4E00-\u9FFF\uF900-\uFAFF' },
+      { names: ['Hebrew'],      source: '\u0590-\u05FF' },
+      { names: ['Hiragana'],    source: '\u3040-\u309F\u30FB-\u30FC' },
+      { names: ['Kana'],        source: '\u3040-\u30FF\uFF61-\uFF9F' },
+      { names: ['Katakana'],    source: '\u30A0-\u30FF\uFF61-\uFF9F' },
+      { names: ['Latin'],       source: '\u0001-\u007F\u0080-\u00FF\u0100-\u017F\u0180-\u024F' },
+      { names: ['Thai'],        source: '\u0E00-\u0E7F' }
+    ];
+
+    function buildUnicodeScripts() {
+      extendSimilar(String, unicodeScripts, function(methods, script) {
+        var is = RegExp('^['+ script.source +'\\s]+$');
+        var has = RegExp('['+ script.source +']');
+        script.names.forEach(function(name) {
+          methods['is' + name] = function() {
+            return is.test(this.trim());
+          }
+          methods['has' + name] = function() {
+            return has.test(this.trim());
+          }
+        });
+      });
+    }
+
+    // Support for converting character widths and katakana to hiragana.
+
+    var HALF_WIDTH_TO_FULL_WIDTH_TRAVERSAL = 65248;
+
+    var widthConversionRanges = [
+      { type: 'a', start: 65,  end: 90  },
+      { type: 'a', start: 97,  end: 122 },
+      { type: 'n', start: 48,  end: 57  },
+      { type: 'p', start: 33,  end: 47  },
+      { type: 'p', start: 58,  end: 64  },
+      { type: 'p', start: 91,  end: 96  },
+      { type: 'p', start: 123, end: 126 }
+    ];
+
+    var WidthConversionTable;
+    var allHankaku   = /[\u0020-\u00A5]|[\uFF61-\uFF9F][ﾞﾟ]?/g;
+    var allZenkaku   = /[\u2212\u3000-\u301C\u301A-\u30FC\uFF01-\uFF60\uFFE0-\uFFE6]/g;
+    var hankakuPunctuation  = '｡､｢｣¥¢£';
+    var zenkakuPunctuation  = '。、「」￥￠￡';
+    var voicedKatakana      = /[カキクケコサシスセソタチツテトハヒフヘホ]/;
+    var semiVoicedKatakana  = /[ハヒフヘホヲ]/;
+    var hankakuKatakana     = 'ｱｲｳｴｵｧｨｩｪｫｶｷｸｹｺｻｼｽｾｿﾀﾁﾂｯﾃﾄﾅﾆﾇﾈﾉﾊﾋﾌﾍﾎﾏﾐﾑﾒﾓﾔｬﾕｭﾖｮﾗﾘﾙﾚﾛﾜｦﾝｰ･';
+    var zenkakuKatakana     = 'アイウエオァィゥェォカキクケコサシスセソタチツッテトナニヌネノハヒフヘホマミムメモヤャユュヨョラリルレロワヲンー・';
+
+    function convertCharacterWidth(str, args, reg, type) {
+      if (!WidthConversionTable) {
+        buildWidthConversionTables();
+      }
+      var mode = args.join(''), table = WidthConversionTable[type];
+      mode = mode.replace(/all/, '').replace(/(\w)lphabet|umbers?|atakana|paces?|unctuation/g, '$1');
+      return str.replace(reg, function(c) {
+        var entry = table[c], to;
+        if (entry) {
+          if (mode === '' && entry.all) {
+            return entry.all;
+          } else {
+            for (var i = 0, len = mode.length; i < len; i++) {
+              to = entry[mode.charAt(i)];
+              if (to) {
+                return to;
+              }
+            }
+          }
+        }
+        return c;
+      });
+    }
+
+    function buildWidthConversionTables() {
+      var hankaku;
+      WidthConversionTable = {
+        'zenkaku': {},
+        'hankaku': {}
+      };
+      widthConversionRanges.forEach(function(r) {
+        simpleRepeat(r.end - r.start + 1, function(n) {
+          n += r.start;
+          setWidthConversion(r.type, chr(n), chr(n + HALF_WIDTH_TO_FULL_WIDTH_TRAVERSAL));
+        });
+      });
+      stringEach(zenkakuKatakana, function(c, i) {
+        hankaku = hankakuKatakana.charAt(i);
+        setWidthConversion('k', hankaku, c);
+        if (c.match(voicedKatakana)) {
+          setWidthConversion('k', hankaku + 'ﾞ', shiftChar(c, 1));
+        }
+        if (c.match(semiVoicedKatakana)) {
+          setWidthConversion('k', hankaku + 'ﾟ', shiftChar(c, 2));
+        }
+      });
+      stringEach(zenkakuPunctuation, function(c, i) {
+        setWidthConversion('p', hankakuPunctuation.charAt(i), c);
+      });
+      setWidthConversion('s', ' ', '　');
+      setWidthConversion('k', 'ｳﾞ', 'ヴ');
+      setWidthConversion('k', 'ｦﾞ', 'ヺ');
+      setConversionTableEntry('hankaku', 'n', '−', '-');
+      setConversionTableEntry('hankaku', 'n', 'ー', '-', false);
+      setConversionTableEntry('zenkaku', 'n', '-', '－', false);
+    }
+
+    function setWidthConversion(type, half, full) {
+      setConversionTableEntry('zenkaku', type, half, full);
+      setConversionTableEntry('hankaku', type, full, half);
+    }
+
+    function setConversionTableEntry(width, type, from, to, all) {
+      var obj = WidthConversionTable[width][from] || {};
+      if (all !== false) {
+        obj.all = to;
+      }
+      obj[type]  = to;
+      WidthConversionTable[width][from] = obj;
+    }
+
+    function hankaku(str, args) {
+      return convertCharacterWidth(str, args, allZenkaku, 'hankaku');
+    }
+
+    function zenkaku(str, args) {
+      return convertCharacterWidth(str, args, allHankaku, 'zenkaku');
+    }
+
+
+    extend(String, {
+
+      /***
+       * @method hankaku([mode] = 'all')
+       * @returns String
+       * @short Converts full-width characters (zenkaku) to half-width (hankaku).
+       * @extra [mode] accepts any combination of "a" (alphabet), "n" (numbers), "k" (katakana), "s" (spaces), "p" (punctuation), or "all".
+       * @example
+       *
+       *   'タロウ　ＹＡＭＡＤＡです！'.hankaku()                      -> 'ﾀﾛｳ YAMADAです!'
+       *   'タロウ　ＹＡＭＡＤＡです！'.hankaku('a')                   -> 'タロウ　YAMADAです！'
+       *   'タロウ　ＹＡＭＡＤＡです！'.hankaku('alphabet')            -> 'タロウ　YAMADAです！'
+       *   'タロウです！　２５歳です！'.hankaku('katakana', 'numbers') -> 'ﾀﾛｳです！　25歳です！'
+       *   'タロウです！　２５歳です！'.hankaku('k', 'n')              -> 'ﾀﾛｳです！　25歳です！'
+       *   'タロウです！　２５歳です！'.hankaku('kn')                  -> 'ﾀﾛｳです！　25歳です！'
+       *   'タロウです！　２５歳です！'.hankaku('sp')                  -> 'タロウです! ２５歳です!'
+       *
+       ***/
+      'hankaku': function() {
+        // Optimized: no leaking arguments
+        var args = [], $i; for($i = 0; $i < arguments.length; $i++) args.push(arguments[$i]);
+        return hankaku(this, args);
+      },
+
+      /***
+       * @method zenkaku([mode] = 'all')
+       * @returns String
+       * @short Converts half-width characters (hankaku) to full-width (zenkaku).
+       * @extra [mode] accepts any combination of "a" (alphabet), "n" (numbers), "k" (katakana), "s" (spaces), "p" (punctuation), or "all".
+       * @example
+       *
+       *   'ﾀﾛｳ YAMADAです!'.zenkaku()                         -> 'タロウ　ＹＡＭＡＤＡです！'
+       *   'ﾀﾛｳ YAMADAです!'.zenkaku('a')                      -> 'ﾀﾛｳ ＹＡＭＡＤＡです!'
+       *   'ﾀﾛｳ YAMADAです!'.zenkaku('alphabet')               -> 'ﾀﾛｳ ＹＡＭＡＤＡです!'
+       *   'ﾀﾛｳです! 25歳です!'.zenkaku('katakana', 'numbers') -> 'タロウです! ２５歳です!'
+       *   'ﾀﾛｳです! 25歳です!'.zenkaku('k', 'n')              -> 'タロウです! ２５歳です!'
+       *   'ﾀﾛｳです! 25歳です!'.zenkaku('kn')                  -> 'タロウです! ２５歳です!'
+       *   'ﾀﾛｳです! 25歳です!'.zenkaku('sp')                  -> 'ﾀﾛｳです！　25歳です！'
+       *
+       ***/
+      'zenkaku': function() {
+        // Optimized: no leaking arguments
+        var args = [], $i; for($i = 0; $i < arguments.length; $i++) args.push(arguments[$i]);
+        return zenkaku(this, args);
+      },
+
+      /***
+       * @method hiragana([all] = true)
+       * @returns String
+       * @short Converts katakana into hiragana.
+       * @extra If [all] is false, only full-width katakana will be converted.
+       * @example
+       *
+       *   'カタカナ'.hiragana()   -> 'かたかな'
+       *   'コンニチハ'.hiragana() -> 'こんにちは'
+       *   'ｶﾀｶﾅ'.hiragana()       -> 'かたかな'
+       *   'ｶﾀｶﾅ'.hiragana(false)  -> 'ｶﾀｶﾅ'
+       *
+       ***/
+      'hiragana': function(all) {
+        var str = this;
+        if (all !== false) {
+          str = zenkaku(str, ['k']);
+        }
+        return str.replace(/[\u30A1-\u30F6]/g, function(c) {
+          return shiftChar(c, -96);
+        });
+      },
+
+      /***
+       * @method katakana()
+       * @returns String
+       * @short Converts hiragana into katakana.
+       * @example
+       *
+       *   'かたかな'.katakana()   -> 'カタカナ'
+       *   'こんにちは'.katakana() -> 'コンニチハ'
+       *
+       ***/
+      'katakana': function() {
+        return this.replace(/[\u3041-\u3096]/g, function(c) {
+          return shiftChar(c, 96);
+        });
+      }
+
+
+    });
+
+    buildUnicodeScripts();
+
+    /***
      * @module Number
      * @dependency core
      * @description Number formatting, rounding (with precision), and ranges. Aliases to Math methods.
@@ -8291,6 +9132,1314 @@
 
     buildStartEndsWith();
     buildBase64('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=');
+
+  /*
+   *
+   * Date.addLocale(<code>) adds this locale to Sugar.
+   * To set the locale globally, simply call:
+   *
+   * Date.setLocale('da');
+   *
+   * var locale = Date.getLocale(<code>) will return this object, which
+   * can be tweaked to change the behavior of parsing/formatting in the locales.
+   *
+   * locale.addFormat adds a date format (see this file for examples).
+   * Special tokens in the date format will be parsed out into regex tokens:
+   *
+   * {0} is a reference to an entry in locale.tokens. Output: (?:the)?
+   * {unit} is a reference to all units. Output: (day|week|month|...)
+   * {unit3} is a reference to a specific unit. Output: (hour)
+   * {unit3-5} is a reference to a subset of the units array. Output: (hour|day|week)
+   * {unit?} "?" makes that token optional. Output: (day|week|month)?
+   *
+   * {day} Any reference to tokens in the modifiers array will include all with the same name. Output: (yesterday|today|tomorrow)
+   *
+   * All spaces are optional and will be converted to "\s*"
+   *
+   * Locale arrays months, weekdays, units, numbers, as well as the "src" field for
+   * all entries in the modifiers array follow a special format indicated by a colon:
+   *
+   * minute:|s  = minute|minutes
+   * thicke:n|r = thicken|thicker
+   *
+   * Additionally in the months, weekdays, units, and numbers array these will be added at indexes that are multiples
+   * of the relevant number for retrieval. For example having "sunday:|s" in the units array will result in:
+   *
+   * units: ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sundays']
+   *
+   * When matched, the index will be found using:
+   *
+   * units.indexOf(match) % 7;
+   *
+   * Resulting in the correct index with any number of alternates for that entry.
+   *
+   */
+
+  Date.addLocale('da', {
+    'plural': true,
+    'months': 'januar,februar,marts,april,maj,juni,juli,august,september,oktober,november,december',
+    'weekdays': 'søndag|sondag,mandag,tirsdag,onsdag,torsdag,fredag,lørdag|lordag',
+    'units': 'millisekund:|er,sekund:|er,minut:|ter,tim:e|er,dag:|e,ug:e|er|en,måned:|er|en+maaned:|er|en,år:||et+aar:||et',
+    'numbers': 'en|et,to,tre,fire,fem,seks,syv,otte,ni,ti',
+    'tokens': 'den,for',
+    'articles': 'den',
+    'short':'d. {d}. {month} {yyyy}',
+    'long': 'den {d}. {month} {yyyy} {H}:{mm}',
+    'full': '{Weekday} den {d}. {month} {yyyy} {H}:{mm}:{ss}',
+    'past': '{num} {unit} {sign}',
+    'future': '{sign} {num} {unit}',
+    'duration': '{num} {unit}',
+    'ampm': 'am,pm',
+    'modifiers': [
+      { 'name': 'day', 'src': 'forgårs|i forgårs|forgaars|i forgaars', 'value': -2 },
+      { 'name': 'day', 'src': 'i går|igår|i gaar|igaar', 'value': -1 },
+      { 'name': 'day', 'src': 'i dag|idag', 'value': 0 },
+      { 'name': 'day', 'src': 'i morgen|imorgen', 'value': 1 },
+      { 'name': 'day', 'src': 'over morgon|overmorgen|i over morgen|i overmorgen|iovermorgen', 'value': 2 },
+      { 'name': 'sign', 'src': 'siden', 'value': -1 },
+      { 'name': 'sign', 'src': 'om', 'value':  1 },
+      { 'name': 'shift', 'src': 'i sidste|sidste', 'value': -1 },
+      { 'name': 'shift', 'src': 'denne', 'value': 0 },
+      { 'name': 'shift', 'src': 'næste|naeste', 'value': 1 }
+    ],
+    'dateParse': [
+      '{num} {unit} {sign}',
+      '{sign} {num} {unit}',
+      '{1?} {num} {unit} {sign}',
+      '{shift} {unit=5-7}'
+    ],
+    'timeParse': [
+      '{0?} {weekday?} {date?} {month} {year}',
+      '{date} {month}',
+      '{shift} {weekday}'
+    ]
+  });
+
+  /*
+   *
+   * Date.addLocale(<code>) adds this locale to Sugar.
+   * To set the locale globally, simply call:
+   *
+   * Date.setLocale('de');
+   *
+   * var locale = Date.getLocale(<code>) will return this object, which
+   * can be tweaked to change the behavior of parsing/formatting in the locales.
+   *
+   * locale.addFormat adds a date format (see this file for examples).
+   * Special tokens in the date format will be parsed out into regex tokens:
+   *
+   * {0} is a reference to an entry in locale.tokens. Output: (?:the)?
+   * {unit} is a reference to all units. Output: (day|week|month|...)
+   * {unit3} is a reference to a specific unit. Output: (hour)
+   * {unit3-5} is a reference to a subset of the units array. Output: (hour|day|week)
+   * {unit?} "?" makes that token optional. Output: (day|week|month)?
+   *
+   * {day} Any reference to tokens in the modifiers array will include all with the same name. Output: (yesterday|today|tomorrow)
+   *
+   * All spaces are optional and will be converted to "\s*"
+   *
+   * Locale arrays months, weekdays, units, numbers, as well as the "src" field for
+   * all entries in the modifiers array follow a special format indicated by a colon:
+   *
+   * minute:|s  = minute|minutes
+   * thicke:n|r = thicken|thicker
+   *
+   * Additionally in the months, weekdays, units, and numbers array these will be added at indexes that are multiples
+   * of the relevant number for retrieval. For example having "sunday:|s" in the units array will result in:
+   *
+   * units: ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sundays']
+   *
+   * When matched, the index will be found using:
+   *
+   * units.indexOf(match) % 7;
+   *
+   * Resulting in the correct index with any number of alternates for that entry.
+   *
+   */
+
+  Date.addLocale('de', {
+    'plural': true,
+    'capitalizeUnit': true,
+    'weekdayAbbreviate': 2,
+    'months': 'Januar,Februar,März|Marz,April,Mai,Juni,Juli,August,September,Oktober,November,Dezember',
+    'weekdays': 'Sonntag,Montag,Dienstag,Mittwoch,Donnerstag,Freitag,Samstag',
+    'units': 'Millisekunde:|n,Sekunde:|n,Minute:|n,Stunde:|n,Tag:|en,Woche:|n,Monat:|en,Jahr:|en',
+    'numbers': 'ein:|e|er|en|em,zwei,drei,vier,fuenf,sechs,sieben,acht,neun,zehn',
+    'tokens': 'der',
+    'short':'{d}. {Month} {yyyy}',
+    'long': '{d}. {Month} {yyyy} {H}:{mm}',
+    'full': '{Weekday} {d}. {Month} {yyyy} {H}:{mm}:{ss}',
+    'past': '{sign} {num} {unit}',
+    'future': '{sign} {num} {unit}',
+    'duration': '{num} {unit}',
+    'timeMarker': 'um',
+    'ampm': 'am,pm',
+    'modifiers': [
+      { 'name': 'day', 'src': 'vorgestern', 'value': -2 },
+      { 'name': 'day', 'src': 'gestern', 'value': -1 },
+      { 'name': 'day', 'src': 'heute', 'value': 0 },
+      { 'name': 'day', 'src': 'morgen', 'value': 1 },
+      { 'name': 'day', 'src': 'übermorgen|ubermorgen|uebermorgen', 'value': 2 },
+      { 'name': 'sign', 'src': 'vor:|her', 'value': -1 },
+      { 'name': 'sign', 'src': 'in', 'value': 1 },
+      { 'name': 'shift', 'src': 'letzte:|r|n|s', 'value': -1 },
+      { 'name': 'shift', 'src': 'nächste:|r|n|s+nachste:|r|n|s+naechste:|r|n|s+kommende:n|r', 'value': 1 }
+    ],
+    'dateParse': [
+      '{sign} {num} {unit}',
+      '{num} {unit} {sign}',
+      '{shift} {unit=5-7}'
+    ],
+    'timeParse': [
+      '{weekday?} {date?} {month} {year?}',
+      '{shift} {weekday}'
+    ]
+  });
+
+  /*
+   *
+   * Date.addLocale(<code>) adds this locale to Sugar.
+   * To set the locale globally, simply call:
+   *
+   * Date.setLocale('es');
+   *
+   * var locale = Date.getLocale(<code>) will return this object, which
+   * can be tweaked to change the behavior of parsing/formatting in the locales.
+   *
+   * locale.addFormat adds a date format (see this file for examples).
+   * Special tokens in the date format will be parsed out into regex tokens:
+   *
+   * {0} is a reference to an entry in locale.tokens. Output: (?:the)?
+   * {unit} is a reference to all units. Output: (day|week|month|...)
+   * {unit3} is a reference to a specific unit. Output: (hour)
+   * {unit3-5} is a reference to a subset of the units array. Output: (hour|day|week)
+   * {unit?} "?" makes that token optional. Output: (day|week|month)?
+   *
+   * {day} Any reference to tokens in the modifiers array will include all with the same name. Output: (yesterday|today|tomorrow)
+   *
+   * All spaces are optional and will be converted to "\s*"
+   *
+   * Locale arrays months, weekdays, units, numbers, as well as the "src" field for
+   * all entries in the modifiers array follow a special format indicated by a colon:
+   *
+   * minute:|s  = minute|minutes
+   * thicke:n|r = thicken|thicker
+   *
+   * Additionally in the months, weekdays, units, and numbers array these will be added at indexes that are multiples
+   * of the relevant number for retrieval. For example having "sunday:|s" in the units array will result in:
+   *
+   * units: ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sundays']
+   *
+   * When matched, the index will be found using:
+   *
+   * units.indexOf(match) % 7;
+   *
+   * Resulting in the correct index with any number of alternates for that entry.
+   *
+   */
+
+  Date.addLocale('es', {
+    'plural': true,
+    'months': 'enero,febrero,marzo,abril,mayo,junio,julio,agosto,septiembre,octubre,noviembre,diciembre',
+    'weekdays': 'domingo,lunes,martes,miércoles|miercoles,jueves,viernes,sábado|sabado',
+    'units': 'milisegundo:|s,segundo:|s,minuto:|s,hora:|s,día|días|dia|dias,semana:|s,mes:|es,año|años|ano|anos',
+    'numbers': 'uno,dos,tres,cuatro,cinco,seis,siete,ocho,nueve,diez',
+    'tokens': 'el,la,de',
+    'short':'{d} {month} {yyyy}',
+    'long': '{d} {month} {yyyy} {H}:{mm}',
+    'full': '{Weekday} {d} {month} {yyyy} {H}:{mm}:{ss}',
+    'past': '{sign} {num} {unit}',
+    'future': '{sign} {num} {unit}',
+    'duration': '{num} {unit}',
+    'timeMarker': 'a las',
+    'ampm': 'am,pm',
+    'modifiers': [
+      { 'name': 'day', 'src': 'anteayer', 'value': -2 },
+      { 'name': 'day', 'src': 'ayer', 'value': -1 },
+      { 'name': 'day', 'src': 'hoy', 'value': 0 },
+      { 'name': 'day', 'src': 'mañana|manana', 'value': 1 },
+      { 'name': 'sign', 'src': 'hace', 'value': -1 },
+      { 'name': 'sign', 'src': 'dentro de', 'value': 1 },
+      { 'name': 'shift', 'src': 'pasad:o|a', 'value': -1 },
+      { 'name': 'shift', 'src': 'próximo|próxima|proximo|proxima', 'value': 1 }
+    ],
+    'dateParse': [
+      '{sign} {num} {unit}',
+      '{num} {unit} {sign}',
+      '{0?}{1?} {unit=5-7} {shift}',
+      '{0?}{1?} {shift} {unit=5-7}'
+    ],
+    'timeParse': [
+      '{shift} {weekday}',
+      '{weekday} {shift}',
+      '{date?} {2?} {month} {2?} {year?}'
+    ]
+  });
+  /*
+   *
+   * Date.addLocale(<code>) adds this locale to Sugar.
+   * To set the locale globally, simply call:
+   *
+   * Date.setLocale('ja');
+   *
+   * var locale = Date.getLocale(<code>) will return this object, which
+   * can be tweaked to change the behavior of parsing/formatting in the locales.
+   *
+   * locale.addFormat adds a date format (see this file for examples).
+   * Special tokens in the date format will be parsed out into regex tokens:
+   *
+   * {0} is a reference to an entry in locale.tokens. Output: (?:the)?
+   * {unit} is a reference to all units. Output: (day|week|month|...)
+   * {unit3} is a reference to a specific unit. Output: (hour)
+   * {unit3-5} is a reference to a subset of the units array. Output: (hour|day|week)
+   * {unit?} "?" makes that token optional. Output: (day|week|month)?
+   *
+   * {day} Any reference to tokens in the modifiers array will include all with the same name. Output: (yesterday|today|tomorrow)
+   *
+   * All spaces are optional and will be converted to "\s*"
+   *
+   * Locale arrays months, weekdays, units, numbers, as well as the "src" field for
+   * all entries in the modifiers array follow a special format indicated by a colon:
+   *
+   * minute:|s  = minute|minutes
+   * thicke:n|r = thicken|thicker
+   *
+   * Additionally in the months, weekdays, units, and numbers array these will be added at indexes that are multiples
+   * of the relevant number for retrieval. For example having "sunday:|s" in the units array will result in:
+   *
+   * units: ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sundays']
+   *
+   * When matched, the index will be found using:
+   *
+   * units.indexOf(match) % 7;
+   *
+   * Resulting in the correct index with any number of alternates for that entry.
+   *
+   */
+
+  Date.addLocale('fi', {
+      'plural':     true,
+      'timeMarker': 'kello',
+      'ampm':       ',',
+      'months':     'tammikuu,helmikuu,maaliskuu,huhtikuu,toukokuu,kesäkuu,heinäkuu,elokuu,syyskuu,lokakuu,marraskuu,joulukuu',
+      'weekdays':   'sunnuntai,maanantai,tiistai,keskiviikko,torstai,perjantai,lauantai',
+      'units':         'millisekun:ti|tia|nin|teja|tina,sekun:ti|tia|nin|teja|tina,minuut:ti|tia|in|teja|tina,tun:ti|tia|nin|teja|tina,päiv:ä|ää|än|iä|änä,viik:ko|koa|on|olla|koja|kona,kuukau:si|tta|den+kuussa,vuo:si|tta|den|sia|tena|nna',
+      'numbers':    'yksi|ensimmäinen,kaksi|toinen,kolm:e|as,neljä:s,vii:si|des,kuu:si|des,seitsemä:n|s,kahdeksa:n|s,yhdeksä:n|s,kymmene:n|s',
+      'articles':   '',
+      'optionals':  '',
+      'short':      '{d}. {month}ta {yyyy}',
+      'long':       '{d}. {month}ta {yyyy} kello {H}.{mm}',
+      'full':       '{Weekday}na {d}. {month}ta {yyyy} kello {H}.{mm}',
+      'relative':       function(num, unit, ms, format) {
+        var units = this['units'];
+        function numberWithUnit(mult) {
+          return num + ' ' + units[(8 * mult) + unit];
+        }
+        function baseUnit() {
+          return numberWithUnit(num === 1 ? 0 : 1);
+        }
+        switch(format) {
+          case 'duration':  return baseUnit();
+          case 'past':      return baseUnit() + ' sitten';
+          case 'future':    return numberWithUnit(2) + ' kuluttua';
+        }
+      },
+      'modifiers': [
+          { 'name': 'day',   'src': 'toissa päivänä|toissa päiväistä', 'value': -2 },
+          { 'name': 'day',   'src': 'eilen|eilistä', 'value': -1 },
+          { 'name': 'day',   'src': 'tänään', 'value': 0 },
+          { 'name': 'day',   'src': 'huomenna|huomista', 'value': 1 },
+          { 'name': 'day',   'src': 'ylihuomenna|ylihuomista', 'value': 2 },
+          { 'name': 'sign',  'src': 'sitten|aiemmin', 'value': -1 },
+          { 'name': 'sign',  'src': 'päästä|kuluttua|myöhemmin', 'value': 1 },
+          { 'name': 'edge',  'src': 'viimeinen|viimeisenä', 'value': -2 },
+          { 'name': 'edge',  'src': 'lopussa', 'value': -1 },
+          { 'name': 'edge',  'src': 'ensimmäinen|ensimmäisenä', 'value': 1 },
+          { 'name': 'shift', 'src': 'edellinen|edellisenä|edeltävä|edeltävänä|viime|toissa', 'value': -1 },
+          { 'name': 'shift', 'src': 'tänä|tämän', 'value': 0 },
+          { 'name': 'shift', 'src': 'seuraava|seuraavana|tuleva|tulevana|ensi', 'value': 1 }
+      ],
+      'dateParse': [
+          '{num} {unit} {sign}',
+          '{sign} {num} {unit}',
+          '{num} {unit=4-5} {sign} {day}',
+          '{month} {year}',
+          '{shift} {unit=5-7}'
+      ],
+      'timeParse': [
+          '{0} {num}{1} {day} of {month} {year?}',
+          '{weekday?} {month} {date}{1} {year?}',
+          '{date} {month} {year}',
+          '{shift} {weekday}',
+          '{shift} week {weekday}',
+          '{weekday} {2} {shift} week',
+          '{0} {date}{1} of {month}',
+          '{0}{month?} {date?}{1} of {shift} {unit=6-7}'
+      ]
+  });
+  /*
+   *
+   * Date.addLocale(<code>) adds this locale to Sugar.
+   * To set the locale globally, simply call:
+   *
+   * Date.setLocale('fr');
+   *
+   * var locale = Date.getLocale(<code>) will return this object, which
+   * can be tweaked to change the behavior of parsing/formatting in the locales.
+   *
+   * locale.addFormat adds a date format (see this file for examples).
+   * Special tokens in the date format will be parsed out into regex tokens:
+   *
+   * {0} is a reference to an entry in locale.tokens. Output: (?:the)?
+   * {unit} is a reference to all units. Output: (day|week|month|...)
+   * {unit3} is a reference to a specific unit. Output: (hour)
+   * {unit3-5} is a reference to a subset of the units array. Output: (hour|day|week)
+   * {unit?} "?" makes that token optional. Output: (day|week|month)?
+   *
+   * {day} Any reference to tokens in the modifiers array will include all with the same name. Output: (yesterday|today|tomorrow)
+   *
+   * All spaces are optional and will be converted to "\s*"
+   *
+   * Locale arrays months, weekdays, units, numbers, as well as the "src" field for
+   * all entries in the modifiers array follow a special format indicated by a colon:
+   *
+   * minute:|s  = minute|minutes
+   * thicke:n|r = thicken|thicker
+   *
+   * Additionally in the months, weekdays, units, and numbers array these will be added at indexes that are multiples
+   * of the relevant number for retrieval. For example having "sunday:|s" in the units array will result in:
+   *
+   * units: ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sundays']
+   *
+   * When matched, the index will be found using:
+   *
+   * units.indexOf(match) % 7;
+   *
+   * Resulting in the correct index with any number of alternates for that entry.
+   *
+   */
+
+  Date.addLocale('fr', {
+    'plural': true,
+    'months': 'janvier,février|fevrier,mars,avril,mai,juin,juillet,août,septembre,octobre,novembre,décembre|decembre',
+    'weekdays': 'dimanche,lundi,mardi,mercredi,jeudi,vendredi,samedi',
+    'units': 'milliseconde:|s,seconde:|s,minute:|s,heure:|s,jour:|s,semaine:|s,mois,an:|s|née|nee',
+    'numbers': 'un:|e,deux,trois,quatre,cinq,six,sept,huit,neuf,dix',
+    'tokens': "l'|la|le",
+    'short':'{d} {month} {yyyy}',
+    'long': '{d} {month} {yyyy} {H}:{mm}',
+    'full': '{Weekday} {d} {month} {yyyy} {H}:{mm}:{ss}',
+    'past': '{sign} {num} {unit}',
+    'future': '{sign} {num} {unit}',
+    'duration': '{num} {unit}',
+    'timeMarker': 'à',
+    'ampm': 'am,pm',
+    'modifiers': [
+      { 'name': 'day', 'src': 'hier', 'value': -1 },
+      { 'name': 'day', 'src': "aujourd'hui", 'value': 0 },
+      { 'name': 'day', 'src': 'demain', 'value': 1 },
+      { 'name': 'sign', 'src': 'il y a', 'value': -1 },
+      { 'name': 'sign', 'src': "dans|d'ici", 'value': 1 },
+      { 'name': 'shift', 'src': 'derni:èr|er|ère|ere', 'value': -1 },
+      { 'name': 'shift', 'src': 'prochain:|e', 'value': 1 }
+    ],
+    'dateParse': [
+      '{sign} {num} {unit}',
+      '{sign} {num} {unit}',
+      '{0?} {unit=5-7} {shift}'
+    ],
+    'timeParse': [
+      '{weekday?} {0?} {date?} {month} {year?}',
+      '{0?} {weekday} {shift}'
+    ]
+  });
+
+  /*
+   *
+   * Date.addLocale(<code>) adds this locale to Sugar.
+   * To set the locale globally, simply call:
+   *
+   * Date.setLocale('it');
+   *
+   * var locale = Date.getLocale(<code>) will return this object, which
+   * can be tweaked to change the behavior of parsing/formatting in the locales.
+   *
+   * locale.addFormat adds a date format (see this file for examples).
+   * Special tokens in the date format will be parsed out into regex tokens:
+   *
+   * {0} is a reference to an entry in locale.tokens. Output: (?:the)?
+   * {unit} is a reference to all units. Output: (day|week|month|...)
+   * {unit3} is a reference to a specific unit. Output: (hour)
+   * {unit3-5} is a reference to a subset of the units array. Output: (hour|day|week)
+   * {unit?} "?" makes that token optional. Output: (day|week|month)?
+   *
+   * {day} Any reference to tokens in the modifiers array will include all with the same name. Output: (yesterday|today|tomorrow)
+   *
+   * All spaces are optional and will be converted to "\s*"
+   *
+   * Locale arrays months, weekdays, units, numbers, as well as the "src" field for
+   * all entries in the modifiers array follow a special format indicated by a colon:
+   *
+   * minute:|s  = minute|minutes
+   * thicke:n|r = thicken|thicker
+   *
+   * Additionally in the months, weekdays, units, and numbers array these will be added at indexes that are multiples
+   * of the relevant number for retrieval. For example having "sunday:|s" in the units array will result in:
+   *
+   * units: ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sundays']
+   *
+   * When matched, the index will be found using:
+   *
+   * units.indexOf(match) % 7;
+   *
+   * Resulting in the correct index with any number of alternates for that entry.
+   *
+   */
+
+  Date.addLocale('it', {
+    'plural': true,
+    'months': 'Gennaio,Febbraio,Marzo,Aprile,Maggio,Giugno,Luglio,Agosto,Settembre,Ottobre,Novembre,Dicembre',
+    'weekdays': 'Domenica,Luned:ì|i,Marted:ì|i,Mercoled:ì|i,Gioved:ì|i,Venerd:ì|i,Sabato',
+    'units': 'millisecond:o|i,second:o|i,minut:o|i,or:a|e,giorn:o|i,settiman:a|e,mes:e|i,ann:o|i',
+    'numbers': "un:|a|o|',due,tre,quattro,cinque,sei,sette,otto,nove,dieci",
+    'tokens': "l'|la|il",
+    'short':'{d} {Month} {yyyy}',
+    'long': '{d} {Month} {yyyy} {H}:{mm}',
+    'full': '{Weekday} {d} {Month} {yyyy} {H}:{mm}:{ss}',
+    'past': '{num} {unit} {sign}',
+    'future': '{num} {unit} {sign}',
+    'duration': '{num} {unit}',
+    'timeMarker': 'alle',
+    'ampm': 'am,pm',
+    'modifiers': [
+      { 'name': 'day', 'src': 'ieri', 'value': -1 },
+      { 'name': 'day', 'src': 'oggi', 'value': 0 },
+      { 'name': 'day', 'src': 'domani', 'value': 1 },
+      { 'name': 'day', 'src': 'dopodomani', 'value': 2 },
+      { 'name': 'sign', 'src': 'fa', 'value': -1 },
+      { 'name': 'sign', 'src': 'da adesso', 'value': 1 },
+      { 'name': 'shift', 'src': 'scors:o|a', 'value': -1 },
+      { 'name': 'shift', 'src': 'prossim:o|a', 'value': 1 }
+    ],
+    'dateParse': [
+      '{num} {unit} {sign}',
+      '{0?} {unit=5-7} {shift}',
+      '{0?} {shift} {unit=5-7}'
+    ],
+    'timeParse': [
+      '{weekday?} {date?} {month} {year?}',
+      '{shift} {weekday}'
+    ]
+  });
+
+  /*
+   *
+   * Date.addLocale(<code>) adds this locale to Sugar.
+   * To set the locale globally, simply call:
+   *
+   * Date.setLocale('ja');
+   *
+   * var locale = Date.getLocale(<code>) will return this object, which
+   * can be tweaked to change the behavior of parsing/formatting in the locales.
+   *
+   * locale.addFormat adds a date format (see this file for examples).
+   * Special tokens in the date format will be parsed out into regex tokens:
+   *
+   * {0} is a reference to an entry in locale.tokens. Output: (?:the)?
+   * {unit} is a reference to all units. Output: (day|week|month|...)
+   * {unit3} is a reference to a specific unit. Output: (hour)
+   * {unit3-5} is a reference to a subset of the units array. Output: (hour|day|week)
+   * {unit?} "?" makes that token optional. Output: (day|week|month)?
+   *
+   * {day} Any reference to tokens in the modifiers array will include all with the same name. Output: (yesterday|today|tomorrow)
+   *
+   * All spaces are optional and will be converted to "\s*"
+   *
+   * Locale arrays months, weekdays, units, numbers, as well as the "src" field for
+   * all entries in the modifiers array follow a special format indicated by a colon:
+   *
+   * minute:|s  = minute|minutes
+   * thicke:n|r = thicken|thicker
+   *
+   * Additionally in the months, weekdays, units, and numbers array these will be added at indexes that are multiples
+   * of the relevant number for retrieval. For example having "sunday:|s" in the units array will result in:
+   *
+   * units: ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sundays']
+   *
+   * When matched, the index will be found using:
+   *
+   * units.indexOf(match) % 7;
+   *
+   * Resulting in the correct index with any number of alternates for that entry.
+   *
+   */
+
+  Date.addLocale('ja', { 'monthSuffix': '月',
+    'weekdays': '日曜日,月曜日,火曜日,水曜日,木曜日,金曜日,土曜日',
+    'units': 'ミリ秒,秒,分,時間,日,週間|週,ヶ月|ヵ月|月,年',
+    'short': '{yyyy}年{M}月{d}日',
+    'long': '{yyyy}年{M}月{d}日 {H}時{mm}分',
+    'full': '{yyyy}年{M}月{d}日 {Weekday} {H}時{mm}分{ss}秒',
+    'past': '{num}{unit}{sign}',
+    'future': '{num}{unit}{sign}',
+    'duration': '{num}{unit}',
+    'timeSuffixes': '時,分,秒',
+    'ampm': '午前,午後',
+    'modifiers': [
+      { 'name': 'day', 'src': '一昨日', 'value': -2 },
+      { 'name': 'day', 'src': '昨日', 'value': -1 },
+      { 'name': 'day', 'src': '今日', 'value': 0 },
+      { 'name': 'day', 'src': '明日', 'value': 1 },
+      { 'name': 'day', 'src': '明後日', 'value': 2 },
+      { 'name': 'sign', 'src': '前', 'value': -1 },
+      { 'name': 'sign', 'src': '後', 'value':  1 },
+      { 'name': 'shift', 'src': '去|先', 'value': -1 },
+      { 'name': 'shift', 'src': '来', 'value':  1 }
+    ],
+    'dateParse': [
+      '{num}{unit}{sign}'
+    ],
+    'timeParse': [
+      '{shift}{unit=5-7}{weekday?}',
+      '{year}年{month?}月?{date?}日?',
+      '{month}月{date?}日?',
+      '{date}日'
+    ]
+  });
+
+  /*
+   *
+   * Date.addLocale(<code>) adds this locale to Sugar.
+   * To set the locale globally, simply call:
+   *
+   * Date.setLocale('ko');
+   *
+   * var locale = Date.getLocale(<code>) will return this object, which
+   * can be tweaked to change the behavior of parsing/formatting in the locales.
+   *
+   * locale.addFormat adds a date format (see this file for examples).
+   * Special tokens in the date format will be parsed out into regex tokens:
+   *
+   * {0} is a reference to an entry in locale.tokens. Output: (?:the)?
+   * {unit} is a reference to all units. Output: (day|week|month|...)
+   * {unit3} is a reference to a specific unit. Output: (hour)
+   * {unit3-5} is a reference to a subset of the units array. Output: (hour|day|week)
+   * {unit?} "?" makes that token optional. Output: (day|week|month)?
+   *
+   * {day} Any reference to tokens in the modifiers array will include all with the same name. Output: (yesterday|today|tomorrow)
+   *
+   * All spaces are optional and will be converted to "\s*"
+   *
+   * Locale arrays months, weekdays, units, numbers, as well as the "src" field for
+   * all entries in the modifiers array follow a special format indicated by a colon:
+   *
+   * minute:|s  = minute|minutes
+   * thicke:n|r = thicken|thicker
+   *
+   * Additionally in the months, weekdays, units, and numbers array these will be added at indexes that are multiples
+   * of the relevant number for retrieval. For example having "sunday:|s" in the units array will result in:
+   *
+   * units: ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sundays']
+   *
+   * When matched, the index will be found using:
+   *
+   * units.indexOf(match) % 7;
+   *
+   * Resulting in the correct index with any number of alternates for that entry.
+   *
+   */
+
+  Date.addLocale('ko', {
+    'digitDate': true,
+    'monthSuffix': '월',
+    'weekdays': '일요일,월요일,화요일,수요일,목요일,금요일,토요일',
+    'units': '밀리초,초,분,시간,일,주,개월|달,년|해',
+    'numbers': '일|한,이,삼,사,오,육,칠,팔,구,십',
+    'short': '{yyyy}년{M}월{d}일',
+    'long': '{yyyy}년{M}월{d}일 {H}시{mm}분',
+    'full': '{yyyy}년{M}월{d}일 {Weekday} {H}시{mm}분{ss}초',
+    'past': '{num}{unit} {sign}',
+    'future': '{num}{unit} {sign}',
+    'duration': '{num}{unit}',
+    'timeSuffixes': '시,분,초',
+    'ampm': '오전,오후',
+    'modifiers': [
+      { 'name': 'day', 'src': '그저께', 'value': -2 },
+      { 'name': 'day', 'src': '어제', 'value': -1 },
+      { 'name': 'day', 'src': '오늘', 'value': 0 },
+      { 'name': 'day', 'src': '내일', 'value': 1 },
+      { 'name': 'day', 'src': '모레', 'value': 2 },
+      { 'name': 'sign', 'src': '전', 'value': -1 },
+      { 'name': 'sign', 'src': '후', 'value':  1 },
+      { 'name': 'shift', 'src': '지난|작', 'value': -1 },
+      { 'name': 'shift', 'src': '이번|올', 'value': 0 },
+      { 'name': 'shift', 'src': '다음|내', 'value': 1 }
+    ],
+    'dateParse': [
+      '{num}{unit} {sign}',
+      '{shift?} {unit=5-7}'
+    ],
+    'timeParse': [
+      '{shift} {unit=5?} {weekday}',
+      '{year}년 {month?}월? {date?}일? {weekday?}',
+      '{month}월 {date?}일?',
+      '{date}일'
+    ]
+  });
+
+  /*
+   *
+   * Date.addLocale(<code>) adds this locale to Sugar.
+   * To set the locale globally, simply call:
+   *
+   * Date.setLocale('nl');
+   *
+   * var locale = Date.getLocale(<code>) will return this object, which
+   * can be tweaked to change the behavior of parsing/formatting in the locales.
+   *
+   * locale.addFormat adds a date format (see this file for examples).
+   * Special tokens in the date format will be parsed out into regex tokens:
+   *
+   * {0} is a reference to an entry in locale.tokens. Output: (?:the)?
+   * {unit} is a reference to all units. Output: (day|week|month|...)
+   * {unit3} is a reference to a specific unit. Output: (hour)
+   * {unit3-5} is a reference to a subset of the units array. Output: (hour|day|week)
+   * {unit?} "?" makes that token optional. Output: (day|week|month)?
+   *
+   * {day} Any reference to tokens in the modifiers array will include all with the same name. Output: (yesterday|today|tomorrow)
+   *
+   * All spaces are optional and will be converted to "\s*"
+   *
+   * Locale arrays months, weekdays, units, numbers, as well as the "src" field for
+   * all entries in the modifiers array follow a special format indicated by a colon:
+   *
+   * minute:|s  = minute|minutes
+   * thicke:n|r = thicken|thicker
+   *
+   * Additionally in the months, weekdays, units, and numbers array these will be added at indexes that are multiples
+   * of the relevant number for retrieval. For example having "sunday:|s" in the units array will result in:
+   *
+   * units: ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sundays']
+   *
+   * When matched, the index will be found using:
+   *
+   * units.indexOf(match) % 7;
+   *
+   * Resulting in the correct index with any number of alternates for that entry.
+   *
+   */
+
+  Date.addLocale('nl', {
+    'plural': true,
+    'months': 'januari,februari,maart,april,mei,juni,juli,augustus,september,oktober,november,december',
+    'weekdays': 'zondag|zo,maandag|ma,dinsdag|di,woensdag|woe|wo,donderdag|do,vrijdag|vrij|vr,zaterdag|za',
+    'units': 'milliseconde:|n,seconde:|n,minu:ut|ten,uur,dag:|en,we:ek|ken,maand:|en,jaar',
+    'numbers': 'een,twee,drie,vier,vijf,zes,zeven,acht,negen',
+    'tokens': '',
+    'short':'{d} {Month} {yyyy}',
+    'long': '{d} {Month} {yyyy} {H}:{mm}',
+    'full': '{Weekday} {d} {Month} {yyyy} {H}:{mm}:{ss}',
+    'past': '{num} {unit} {sign}',
+    'future': '{num} {unit} {sign}',
+    'duration': '{num} {unit}',
+    'timeMarker': "'s|om",
+    'modifiers': [
+      { 'name': 'day', 'src': 'gisteren', 'value': -1 },
+      { 'name': 'day', 'src': 'vandaag', 'value': 0 },
+      { 'name': 'day', 'src': 'morgen', 'value': 1 },
+      { 'name': 'day', 'src': 'overmorgen', 'value': 2 },
+      { 'name': 'sign', 'src': 'geleden', 'value': -1 },
+      { 'name': 'sign', 'src': 'vanaf nu', 'value': 1 },
+      { 'name': 'shift', 'src': 'laatste|vorige|afgelopen', 'value': -1 },
+      { 'name': 'shift', 'src': 'volgend:|e', 'value': 1 }
+    ],
+    'dateParse': [
+      '{num} {unit} {sign}',
+      '{0?} {unit=5-7} {shift}',
+      '{0?} {shift} {unit=5-7}'
+    ],
+    'timeParse': [
+      '{weekday?} {date?} {month} {year?}',
+      '{shift} {weekday}'
+    ]
+  });
+
+  /*
+   *
+   * Date.addLocale(<code>) adds this locale to Sugar.
+   * To set the locale globally, simply call:
+   *
+   * Date.setLocale('no');
+   *
+   * var locale = Date.getLocale(<code>) will return this object, which
+   * can be tweaked to change the behavior of parsing/formatting in the locales.
+   *
+   * locale.addFormat adds a date format (see this file for examples).
+   * Special tokens in the date format will be parsed out into regex tokens:
+   *
+   * {0} is a reference to an entry in locale.tokens. Output: (?:the)?
+   * {unit} is a reference to all units. Output: (day|week|month|...)
+   * {unit3} is a reference to a specific unit. Output: (hour)
+   * {unit3-5} is a reference to a subset of the units array. Output: (hour|day|week)
+   * {unit?} "?" makes that token optional. Output: (day|week|month)?
+   *
+   * {day} Any reference to tokens in the modifiers array will include all with the same name. Output: (yesterday|today|tomorrow)
+   *
+   * All spaces are optional and will be converted to "\s*"
+   *
+   * Locale arrays months, weekdays, units, numbers, as well as the "src" field for
+   * all entries in the modifiers array follow a special format indicated by a colon:
+   *
+   * minute:|s  = minute|minutes
+   * thicke:n|r = thicken|thicker
+   *
+   * Additionally in the months, weekdays, units, and numbers array these will be added at indexes that are multiples
+   * of the relevant number for retrieval. For example having "sunday:|s" in the units array will result in:
+   *
+   * units: ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sundays']
+   *
+   * When matched, the index will be found using:
+   *
+   * units.indexOf(match) % 7;
+   *
+   * Resulting in the correct index with any number of alternates for that entry.
+   *
+   */
+
+  Date.addLocale('no', {
+    'plural': true,
+    'months': 'januar,februar,mars,april,mai,juni,juli,august,september,oktober,november,desember',
+    'weekdays': 'søndag|sondag,mandag,tirsdag,onsdag,torsdag,fredag,lørdag|lordag',
+    'units': 'millisekund:|er,sekund:|er,minutt:|er,tim:e|er,dag:|er,uk:e|er|en,måned:|er|en+maaned:|er|en,år:||et+aar:||et',
+    'numbers': 'en|et,to,tre,fire,fem,seks,sju|syv,åtte,ni,ti',
+    'tokens': 'den,for',
+    'articles': 'den',
+    'short':'d. {d}. {month} {yyyy}',
+    'long': 'den {d}. {month} {yyyy} {H}:{mm}',
+    'full': '{Weekday} den {d}. {month} {yyyy} {H}:{mm}:{ss}',
+    'past': '{num} {unit} {sign}',
+    'future': '{sign} {num} {unit}',
+    'duration': '{num} {unit}',
+    'ampm': 'am,pm',
+    'modifiers': [
+      { 'name': 'day', 'src': 'forgårs|i forgårs|forgaars|i forgaars', 'value': -2 },
+      { 'name': 'day', 'src': 'i går|igår|i gaar|igaar', 'value': -1 },
+      { 'name': 'day', 'src': 'i dag|idag', 'value': 0 },
+      { 'name': 'day', 'src': 'i morgen|imorgen', 'value': 1 },
+      { 'name': 'day', 'src': 'overimorgen|overmorgen|over i morgen', 'value': 2 },
+      { 'name': 'sign', 'src': 'siden', 'value': -1 },
+      { 'name': 'sign', 'src': 'om', 'value':  1 },
+      { 'name': 'shift', 'src': 'i siste|siste', 'value': -1 },
+      { 'name': 'shift', 'src': 'denne', 'value': 0 },
+      { 'name': 'shift', 'src': 'neste', 'value': 1 }
+    ],
+    'dateParse': [
+      '{num} {unit} {sign}',
+      '{sign} {num} {unit}',
+      '{1?} {num} {unit} {sign}',
+      '{shift} {unit=5-7}'
+    ],
+    'timeParse': [
+      '{0?} {weekday?} {date?} {month} {year}',
+      '{date} {month}',
+      '{shift} {weekday}'
+    ]
+  });
+  /*
+   *
+   * Date.addLocale(<code>) adds this locale to Sugar.
+   * To set the locale globally, simply call:
+   *
+   * Date.setLocale('pl');
+   *
+   * var locale = Date.getLocale(<code>) will return this object, which
+   * can be tweaked to change the behavior of parsing/formatting in the locales.
+   *
+   * locale.addFormat adds a date format (see this file for examples).
+   * Special tokens in the date format will be parsed out into regex tokens:
+   *
+   * {0} is a reference to an entry in locale.optionals. Output: (?:the)?
+   * {unit} is a reference to all units. Output: (day|week|month|...)
+   * {unit3} is a reference to a specific unit. Output: (hour)
+   * {unit3-5} is a reference to a subset of the units array. Output: (hour|day|week)
+   * {unit?} "?" makes that token optional. Output: (day|week|month)?
+   *
+   * {day} Any reference to tokens in the modifiers array will include all with the same name. Output: (yesterday|today|tomorrow)
+   *
+   * All spaces are optional and will be converted to "\s*"
+   *
+   * Locale arrays months, weekdays, units, numbers, as well as the "src" field for
+   * all entries in the modifiers array follow a special format indicated by a colon:
+   *
+   * minute:|s  = minute|minutes
+   * thicke:n|r = thicken|thicker
+   *
+   * Additionally in the months, weekdays, units, and numbers array these will be added at indexes that are multiples
+   * of the relevant number for retrieval. For example having "sunday:|s" in the units array will result in:
+   *
+   * units: ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sundays']
+   *
+   * When matched, the index will be found using:
+   *
+   * units.indexOf(match) % 7;
+   *
+   * Resulting in the correct index with any number of alternates for that entry.
+   *
+   */
+
+  Date.addLocale('pl', {
+    'plural':    true,
+    'months':    'Styczeń|Stycznia,Luty|Lutego,Marzec|Marca,Kwiecień|Kwietnia,Maj|Maja,Czerwiec|Czerwca,Lipiec|Lipca,Sierpień|Sierpnia,Wrzesień|Września,Październik|Października,Listopad|Listopada,Grudzień|Grudnia',
+    'weekdays':  'Niedziela|Niedzielę,Poniedziałek,Wtorek,Środ:a|ę,Czwartek,Piątek,Sobota|Sobotę',
+    'units':     'milisekund:a|y|,sekund:a|y|,minut:a|y|,godzin:a|y|,dzień|dni,tydzień|tygodnie|tygodni,miesiące|miesiące|miesięcy,rok|lata|lat',
+    'numbers':   'jeden|jedną,dwa|dwie,trzy,cztery,pięć,sześć,siedem,osiem,dziewięć,dziesięć',
+    'optionals': 'w|we,roku',
+    'short':     '{d} {Month} {yyyy}',
+    'long':      '{d} {Month} {yyyy} {H}:{mm}',
+    'full' :     '{Weekday}, {d} {Month} {yyyy} {H}:{mm}:{ss}',
+    'past':      '{num} {unit} {sign}',
+    'future':    '{sign} {num} {unit}',
+    'duration':  '{num} {unit}',
+    'timeMarker':'o',
+    'ampm':      'am,pm',
+    'modifiers': [
+      { 'name': 'day', 'src': 'przedwczoraj', 'value': -2 },
+      { 'name': 'day', 'src': 'wczoraj', 'value': -1 },
+      { 'name': 'day', 'src': 'dzisiaj|dziś', 'value': 0 },
+      { 'name': 'day', 'src': 'jutro', 'value': 1 },
+      { 'name': 'day', 'src': 'pojutrze', 'value': 2 },
+      { 'name': 'sign', 'src': 'temu|przed', 'value': -1 },
+      { 'name': 'sign', 'src': 'za', 'value': 1 },
+      { 'name': 'shift', 'src': 'zeszły|zeszła|ostatni|ostatnia', 'value': -1 },
+      { 'name': 'shift', 'src': 'następny|następna|następnego|przyszły|przyszła|przyszłego', 'value': 1 }
+    ],
+    'dateParse': [
+      '{num} {unit} {sign}',
+      '{sign} {num} {unit}',
+      '{month} {year}',
+      '{shift} {unit=5-7}',
+      '{0} {shift?} {weekday}'
+    ],
+    'timeParse': [
+      '{date} {month} {year?} {1}',
+      '{0} {shift?} {weekday}'
+    ]
+  });
+
+  /*
+   *
+   * Date.addLocale(<code>) adds this locale to Sugar.
+   * To set the locale globally, simply call:
+   *
+   * Date.setLocale('pt');
+   *
+   * var locale = Date.getLocale(<code>) will return this object, which
+   * can be tweaked to change the behavior of parsing/formatting in the locales.
+   *
+   * locale.addFormat adds a date format (see this file for examples).
+   * Special tokens in the date format will be parsed out into regex tokens:
+   *
+   * {0} is a reference to an entry in locale.tokens. Output: (?:the)?
+   * {unit} is a reference to all units. Output: (day|week|month|...)
+   * {unit3} is a reference to a specific unit. Output: (hour)
+   * {unit3-5} is a reference to a subset of the units array. Output: (hour|day|week)
+   * {unit?} "?" makes that token optional. Output: (day|week|month)?
+   *
+   * {day} Any reference to tokens in the modifiers array will include all with the same name. Output: (yesterday|today|tomorrow)
+   *
+   * All spaces are optional and will be converted to "\s*"
+   *
+   * Locale arrays months, weekdays, units, numbers, as well as the "src" field for
+   * all entries in the modifiers array follow a special format indicated by a colon:
+   *
+   * minute:|s  = minute|minutes
+   * thicke:n|r = thicken|thicker
+   *
+   * Additionally in the months, weekdays, units, and numbers array these will be added at indexes that are multiples
+   * of the relevant number for retrieval. For example having "sunday:|s" in the units array will result in:
+   *
+   * units: ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sundays']
+   *
+   * When matched, the index will be found using:
+   *
+   * units.indexOf(match) % 7;
+   *
+   * Resulting in the correct index with any number of alternates for that entry.
+   *
+   */
+
+  Date.addLocale('pt', {
+    'plural': true,
+    'months': 'janeiro,fevereiro,março,abril,maio,junho,julho,agosto,setembro,outubro,novembro,dezembro',
+    'weekdays': 'domingo,segunda-feira,terça-feira,quarta-feira,quinta-feira,sexta-feira,sábado|sabado',
+    'units': 'milisegundo:|s,segundo:|s,minuto:|s,hora:|s,dia:|s,semana:|s,mês|mêses|mes|meses,ano:|s',
+    'numbers': 'um:|a,dois|duas,três|tres,quatro,cinco,seis,sete,oito,nove,dez',
+    'tokens': 'a,de',
+    'short':'{d} de {month} de {yyyy}',
+    'long': '{d} de {month} de {yyyy} {H}:{mm}',
+    'full': '{Weekday}, {d} de {month} de {yyyy} {H}:{mm}:{ss}',
+    'past': '{num} {unit} {sign}',
+    'future': '{sign} {num} {unit}',
+    'duration': '{num} {unit}',
+    'timeMarker': 'às',
+    'ampm': 'am,pm',
+    'modifiers': [
+      { 'name': 'day', 'src': 'anteontem', 'value': -2 },
+      { 'name': 'day', 'src': 'ontem', 'value': -1 },
+      { 'name': 'day', 'src': 'hoje', 'value': 0 },
+      { 'name': 'day', 'src': 'amanh:ã|a', 'value': 1 },
+      { 'name': 'sign', 'src': 'atrás|atras|há|ha', 'value': -1 },
+      { 'name': 'sign', 'src': 'daqui a', 'value': 1 },
+      { 'name': 'shift', 'src': 'passad:o|a', 'value': -1 },
+      { 'name': 'shift', 'src': 'próximo|próxima|proximo|proxima', 'value': 1 }
+    ],
+    'dateParse': [
+      '{num} {unit} {sign}',
+      '{sign} {num} {unit}',
+      '{0?} {unit=5-7} {shift}',
+      '{0?} {shift} {unit=5-7}'
+    ],
+    'timeParse': [
+      '{date?} {1?} {month} {1?} {year?}',
+      '{0?} {shift} {weekday}'
+    ]
+  });
+
+  /*
+   *
+   * Date.addLocale(<code>) adds this locale to Sugar.
+   * To set the locale globally, simply call:
+   *
+   * Date.setLocale('ru');
+   *
+   * var locale = Date.getLocale(<code>) will return this object, which
+   * can be tweaked to change the behavior of parsing/formatting in the locales.
+   *
+   * locale.addFormat adds a date format (see this file for examples).
+   * Special tokens in the date format will be parsed out into regex tokens:
+   *
+   * {0} is a reference to an entry in locale.tokens. Output: (?:the)?
+   * {unit} is a reference to all units. Output: (day|week|month|...)
+   * {unit3} is a reference to a specific unit. Output: (hour)
+   * {unit3-5} is a reference to a subset of the units array. Output: (hour|day|week)
+   * {unit?} "?" makes that token optional. Output: (day|week|month)?
+   *
+   * {day} Any reference to tokens in the modifiers array will include all with the same name. Output: (yesterday|today|tomorrow)
+   *
+   * All spaces are optional and will be converted to "\s*"
+   *
+   * Locale arrays months, weekdays, units, numbers, as well as the "src" field for
+   * all entries in the modifiers array follow a special format indicated by a colon:
+   *
+   * minute:|s  = minute|minutes
+   * thicke:n|r = thicken|thicker
+   *
+   * Additionally in the months, weekdays, units, and numbers array these will be added at indexes that are multiples
+   * of the relevant number for retrieval. For example having "sunday:|s" in the units array will result in:
+   *
+   * units: ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sundays']
+   *
+   * When matched, the index will be found using:
+   *
+   * units.indexOf(match) % 7;
+   *
+   * Resulting in the correct index with any number of alternates for that entry.
+   *
+   */
+
+  Date.addLocale('ru', {
+    'months': 'Январ:я|ь,Феврал:я|ь,Март:а|,Апрел:я|ь,Ма:я|й,Июн:я|ь,Июл:я|ь,Август:а|,Сентябр:я|ь,Октябр:я|ь,Ноябр:я|ь,Декабр:я|ь',
+    'weekdays': 'Воскресенье,Понедельник,Вторник,Среда,Четверг,Пятница,Суббота',
+    'units': 'миллисекунд:а|у|ы|,секунд:а|у|ы|,минут:а|у|ы|,час:||а|ов,день|день|дня|дней,недел:я|ю|и|ь|е,месяц:||а|ев|е,год|год|года|лет|году',
+    'numbers': 'од:ин|ну,дв:а|е,три,четыре,пять,шесть,семь,восемь,девять,десять',
+    'tokens': 'в|на,г\\.?(?:ода)?',
+    'short':'{d} {month} {yyyy} года',
+    'long': '{d} {month} {yyyy} года {H}:{mm}',
+    'full': '{Weekday} {d} {month} {yyyy} года {H}:{mm}:{ss}',
+    'relative': function(num, unit, ms, format) {
+      var numberWithUnit, last = num.toString().slice(-1), mult;
+      switch(true) {
+        case num >= 11 && num <= 15: mult = 3; break;
+        case last == 1: mult = 1; break;
+        case last >= 2 && last <= 4: mult = 2; break;
+        default: mult = 3;
+      }
+      numberWithUnit = num + ' ' + this['units'][(mult * 8) + unit];
+      switch(format) {
+        case 'duration':  return numberWithUnit;
+        case 'past':      return numberWithUnit + ' назад';
+        case 'future':    return 'через ' + numberWithUnit;
+      }
+    },
+    'timeMarker': 'в',
+    'ampm': ' утра, вечера',
+    'modifiers': [
+      { 'name': 'day', 'src': 'позавчера', 'value': -2 },
+      { 'name': 'day', 'src': 'вчера', 'value': -1 },
+      { 'name': 'day', 'src': 'сегодня', 'value': 0 },
+      { 'name': 'day', 'src': 'завтра', 'value': 1 },
+      { 'name': 'day', 'src': 'послезавтра', 'value': 2 },
+      { 'name': 'sign', 'src': 'назад', 'value': -1 },
+      { 'name': 'sign', 'src': 'через', 'value': 1 },
+      { 'name': 'shift', 'src': 'прошл:ый|ой|ом', 'value': -1 },
+      { 'name': 'shift', 'src': 'следующ:ий|ей|ем', 'value': 1 }
+    ],
+    'dateParse': [
+      '{num} {unit} {sign}',
+      '{sign} {num} {unit}',
+      '{month} {year}',
+      '{0?} {shift} {unit=5-7}'
+    ],
+    'timeParse': [
+      '{date} {month} {year?} {1?}',
+      '{0?} {shift} {weekday}'
+    ]
+  });
+
+  /*
+   *
+   * Date.addLocale(<code>) adds this locale to Sugar.
+   * To set the locale globally, simply call:
+   *
+   * Date.setLocale('sv');
+   *
+   * var locale = Date.getLocale(<code>) will return this object, which
+   * can be tweaked to change the behavior of parsing/formatting in the locales.
+   *
+   * locale.addFormat adds a date format (see this file for examples).
+   * Special tokens in the date format will be parsed out into regex tokens:
+   *
+   * {0} is a reference to an entry in locale.tokens. Output: (?:the)?
+   * {unit} is a reference to all units. Output: (day|week|month|...)
+   * {unit3} is a reference to a specific unit. Output: (hour)
+   * {unit3-5} is a reference to a subset of the units array. Output: (hour|day|week)
+   * {unit?} "?" makes that token optional. Output: (day|week|month)?
+   *
+   * {day} Any reference to tokens in the modifiers array will include all with the same name. Output: (yesterday|today|tomorrow)
+   *
+   * All spaces are optional and will be converted to "\s*"
+   *
+   * Locale arrays months, weekdays, units, numbers, as well as the "src" field for
+   * all entries in the modifiers array follow a special format indicated by a colon:
+   *
+   * minute:|s  = minute|minutes
+   * thicke:n|r = thicken|thicker
+   *
+   * Additionally in the months, weekdays, units, and numbers array these will be added at indexes that are multiples
+   * of the relevant number for retrieval. For example having "sunday:|s" in the units array will result in:
+   *
+   * units: ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sundays']
+   *
+   * When matched, the index will be found using:
+   *
+   * units.indexOf(match) % 7;
+   *
+   * Resulting in the correct index with any number of alternates for that entry.
+   *
+   */
+
+  Date.addLocale('sv', {
+    'plural': true,
+    'months': 'januari,februari,mars,april,maj,juni,juli,augusti,september,oktober,november,december',
+    'weekdays': 'söndag|sondag,måndag:|en+mandag:|en,tisdag,onsdag,torsdag,fredag,lördag|lordag',
+    'units': 'millisekund:|er,sekund:|er,minut:|er,timm:e|ar,dag:|ar,veck:a|or|an,månad:|er|en+manad:|er|en,år:||et+ar:||et',
+    'numbers': 'en|ett,två|tva,tre,fyra,fem,sex,sju,åtta|atta,nio,tio',
+    'tokens': 'den,för|for',
+    'articles': 'den',
+    'short':'den {d} {month} {yyyy}',
+    'long': 'den {d} {month} {yyyy} {H}:{mm}',
+    'full': '{Weekday} den {d} {month} {yyyy} {H}:{mm}:{ss}',
+    'past': '{num} {unit} {sign}',
+    'future': '{sign} {num} {unit}',
+    'duration': '{num} {unit}',
+    'ampm': 'am,pm',
+    'modifiers': [
+      { 'name': 'day', 'src': 'förrgår|i förrgår|iförrgår|forrgar|i forrgar|iforrgar', 'value': -2 },
+      { 'name': 'day', 'src': 'går|i går|igår|gar|i gar|igar', 'value': -1 },
+      { 'name': 'day', 'src': 'dag|i dag|idag', 'value': 0 },
+      { 'name': 'day', 'src': 'morgon|i morgon|imorgon', 'value': 1 },
+      { 'name': 'day', 'src': 'över morgon|övermorgon|i över morgon|i övermorgon|iövermorgon|over morgon|overmorgon|i over morgon|i overmorgon|iovermorgon', 'value': 2 },
+      { 'name': 'sign', 'src': 'sedan|sen', 'value': -1 },
+      { 'name': 'sign', 'src': 'om', 'value':  1 },
+      { 'name': 'shift', 'src': 'i förra|förra|i forra|forra', 'value': -1 },
+      { 'name': 'shift', 'src': 'denna', 'value': 0 },
+      { 'name': 'shift', 'src': 'nästa|nasta', 'value': 1 }
+    ],
+    'dateParse': [
+      '{num} {unit} {sign}',
+      '{sign} {num} {unit}',
+      '{1?} {num} {unit} {sign}',
+      '{shift} {unit=5-7}'
+    ],
+    'timeParse': [
+      '{0?} {weekday?} {date?} {month} {year}',
+      '{date} {month}',
+      '{shift} {weekday}'
+    ]
+  });
+
+  /*
+   *
+   * Date.addLocale(<code>) adds this locale to Sugar.
+   * To set the locale globally, simply call:
+   *
+   * Date.setLocale('zh-CN');
+   *
+   * var locale = Date.getLocale(<code>) will return this object, which
+   * can be tweaked to change the behavior of parsing/formatting in the locales.
+   *
+   * locale.addFormat adds a date format (see this file for examples).
+   * Special tokens in the date format will be parsed out into regex tokens:
+   *
+   * {0} is a reference to an entry in locale.tokens. Output: (?:the)?
+   * {unit} is a reference to all units. Output: (day|week|month|...)
+   * {unit3} is a reference to a specific unit. Output: (hour)
+   * {unit3-5} is a reference to a subset of the units array. Output: (hour|day|week)
+   * {unit?} "?" makes that token optional. Output: (day|week|month)?
+   *
+   * {day} Any reference to tokens in the modifiers array will include all with the same name. Output: (yesterday|today|tomorrow)
+   *
+   * All spaces are optional and will be converted to "\s*"
+   *
+   * Locale arrays months, weekdays, units, numbers, as well as the "src" field for
+   * all entries in the modifiers array follow a special format indicated by a colon:
+   *
+   * minute:|s  = minute|minutes
+   * thicke:n|r = thicken|thicker
+   *
+   * Additionally in the months, weekdays, units, and numbers array these will be added at indexes that are multiples
+   * of the relevant number for retrieval. For example having "sunday:|s" in the units array will result in:
+   *
+   * units: ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sundays']
+   *
+   * When matched, the index will be found using:
+   *
+   * units.indexOf(match) % 7;
+   *
+   * Resulting in the correct index with any number of alternates for that entry.
+   *
+   */
+
+  Date.addLocale('zh-CN', {
+    'variant': true,
+    'monthSuffix': '月',
+    'weekdays': '星期日|周日|星期天,星期一|周一,星期二|周二,星期三|周三,星期四|周四,星期五|周五,星期六|周六',
+    'units': '毫秒,秒钟,分钟,小时,天,个星期|周,个月,年',
+    'tokens': '日|号',
+    'short':'{yyyy}年{M}月{d}日',
+    'long': '{yyyy}年{M}月{d}日 {tt}{h}:{mm}',
+    'full': '{yyyy}年{M}月{d}日 {weekday} {tt}{h}:{mm}:{ss}',
+    'past': '{num}{unit}{sign}',
+    'future': '{num}{unit}{sign}',
+    'duration': '{num}{unit}',
+    'timeSuffixes': '点|时,分钟?,秒',
+    'ampm': '上午,下午',
+    'modifiers': [
+      { 'name': 'day', 'src': '大前天', 'value': -3 },
+      { 'name': 'day', 'src': '前天', 'value': -2 },
+      { 'name': 'day', 'src': '昨天', 'value': -1 },
+      { 'name': 'day', 'src': '今天', 'value': 0 },
+      { 'name': 'day', 'src': '明天', 'value': 1 },
+      { 'name': 'day', 'src': '后天', 'value': 2 },
+      { 'name': 'day', 'src': '大后天', 'value': 3 },
+      { 'name': 'sign', 'src': '前', 'value': -1 },
+      { 'name': 'sign', 'src': '后', 'value':  1 },
+      { 'name': 'shift', 'src': '上|去', 'value': -1 },
+      { 'name': 'shift', 'src': '这', 'value':  0 },
+      { 'name': 'shift', 'src': '下|明', 'value':  1 }
+    ],
+    'dateParse': [
+      '{num}{unit}{sign}',
+      '{shift}{unit=5-7}'
+    ],
+    'timeParse': [
+      '{shift}{weekday}',
+      '{year}年{month?}月?{date?}{0?}',
+      '{month}月{date?}{0?}',
+      '{date}[日号]'
+    ]
+  });
+
+  /*
+   *
+   * Date.addLocale(<code>) adds this locale to Sugar.
+   * To set the locale globally, simply call:
+   *
+   * Date.setLocale('zh-TW');
+   *
+   * var locale = Date.getLocale(<code>) will return this object, which
+   * can be tweaked to change the behavior of parsing/formatting in the locales.
+   *
+   * locale.addFormat adds a date format (see this file for examples).
+   * Special tokens in the date format will be parsed out into regex tokens:
+   *
+   * {0} is a reference to an entry in locale.tokens. Output: (?:the)?
+   * {unit} is a reference to all units. Output: (day|week|month|...)
+   * {unit3} is a reference to a specific unit. Output: (hour)
+   * {unit3-5} is a reference to a subset of the units array. Output: (hour|day|week)
+   * {unit?} "?" makes that token optional. Output: (day|week|month)?
+   *
+   * {day} Any reference to tokens in the modifiers array will include all with the same name. Output: (yesterday|today|tomorrow)
+   *
+   * All spaces are optional and will be converted to "\s*"
+   *
+   * Locale arrays months, weekdays, units, numbers, as well as the "src" field for
+   * all entries in the modifiers array follow a special format indicated by a colon:
+   *
+   * minute:|s  = minute|minutes
+   * thicke:n|r = thicken|thicker
+   *
+   * Additionally in the months, weekdays, units, and numbers array these will be added at indexes that are multiples
+   * of the relevant number for retrieval. For example having "sunday:|s" in the units array will result in:
+   *
+   * units: ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sundays']
+   *
+   * When matched, the index will be found using:
+   *
+   * units.indexOf(match) % 7;
+   *
+   * Resulting in the correct index with any number of alternates for that entry.
+   *
+   */
+
+  Date.addLocale('zh-TW', {
+    'monthSuffix': '月',
+    'weekdays': '星期日|週日|星期天,星期一|週一,星期二|週二,星期三|週三,星期四|週四,星期五|週五,星期六|週六',
+    'units': '毫秒,秒鐘,分鐘,小時,天,個星期|週,個月,年',
+    'tokens': '日|號',
+    'short':'{yyyy}年{M}月{d}日',
+    'long': '{yyyy}年{M}月{d}日 {tt}{h}:{mm}',
+    'full': '{yyyy}年{M}月{d}日 {Weekday} {tt}{h}:{mm}:{ss}',
+    'past': '{num}{unit}{sign}',
+    'future': '{num}{unit}{sign}',
+    'duration': '{num}{unit}',
+    'timeSuffixes': '點|時,分鐘?,秒',
+    'ampm': '上午,下午',
+    'modifiers': [
+      { 'name': 'day', 'src': '大前天', 'value': -3 },
+      { 'name': 'day', 'src': '前天', 'value': -2 },
+      { 'name': 'day', 'src': '昨天', 'value': -1 },
+      { 'name': 'day', 'src': '今天', 'value': 0 },
+      { 'name': 'day', 'src': '明天', 'value': 1 },
+      { 'name': 'day', 'src': '後天', 'value': 2 },
+      { 'name': 'day', 'src': '大後天', 'value': 3 },
+      { 'name': 'sign', 'src': '前', 'value': -1 },
+      { 'name': 'sign', 'src': '後', 'value': 1 },
+      { 'name': 'shift', 'src': '上|去', 'value': -1 },
+      { 'name': 'shift', 'src': '這', 'value':  0 },
+      { 'name': 'shift', 'src': '下|明', 'value':  1 }
+    ],
+    'dateParse': [
+      '{num}{unit}{sign}',
+      '{shift}{unit=5-7}'
+    ],
+    'timeParse': [
+      '{shift}{weekday}',
+      '{year}年{month?}月?{date?}{0?}',
+      '{month}月{date?}{0?}',
+      '{date}[日號]'
+    ]
+  });
 
 
 }).call(this);

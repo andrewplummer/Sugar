@@ -1,6 +1,6 @@
 var runner = require('../setup');
 
-runner.resetPolyfills('es6');
+runner.load('../../sugar-full');
 
 // Tests
 runner.loadTest('array');
@@ -34,4 +34,4 @@ runner.loadTest('regexp');
 runner.loadTest('string');
 runner.loadTest('string-range');
 
-runner.runExtended(module);
+runner.run(module, 'extended');
