@@ -3,7 +3,6 @@ var fs      = require('fs'),
     gulp    = require('gulp'),
     path    = require('path'),
     args    = require('yargs').argv,
-    file    = require('gulp-file'),
     gutil   = require('gulp-util'),
     mkdirp  = require('mkdirp'),
     through = require('through2');
@@ -513,10 +512,13 @@ function getQmlWrapper() {
 
 function createDevelopmentBuild(outputPath, modules, locales) {
 
+  var gulpFile = require('gulp-file');
+
   outputPath = outputPath || getBuildPath();
   var src = getSource(modules, locales);
 
-  return file(path.basename(outputPath), src, { src: true })
+
+  return gulpFile(path.basename(outputPath), src, { src: true })
     .pipe(gulp.dest(path.dirname(outputPath)));
 }
 

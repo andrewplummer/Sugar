@@ -1,7 +1,7 @@
 {
   "name": "sugar",
   "version": "2.0.0",
-  "description": "A utility library that provides helpful methods for working effortlessly with native Javascript objects.",
+  "description": "A JavaScript utility library for working with native objects.",
   "keywords": [
     "sugar",
     "sugarjs",
@@ -19,7 +19,7 @@
   "main": "sugar.js",
   "repository": {
     "type": "git",
-    "url": "git:https://github.com/andrewplummer/Sugar.git"
+    "url": "git+https://github.com/andrewplummer/Sugar.git"
   },
   "bugs": {
     "url": "https://github.com/andrewplummer/Sugar/issues"
