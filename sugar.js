@@ -1125,6 +1125,11 @@
      *
      ***/
 
+    // Undefined array elements in < IE8 will not be visited by concat
+    // and so will not be copied. This means that non-sparse arrays will
+    // become sparse, so detect for this here.
+    var HAS_CONCAT_BUG = !('0' in [].concat(undefined).concat());
+
     function regexMatcher(reg) {
       reg = RegExp(reg);
       return function (el) {
@@ -1368,7 +1373,7 @@
       var result = [];
       arrayEach(arr, function(el) {
         if (isArray(el) && current < level) {
-          result = result.concat(arrayFlatten(el, level, current + 1));
+          result = arrayConcat(result, arrayFlatten(el, level, current + 1));
         } else {
           result.push(el);
         }
@@ -1421,7 +1426,29 @@
     }
 
     function arrayClone(arr) {
-      return simpleMerge([], arr);
+      var len = arr.length, clone = new Array(len);
+      for (var i = 0; i < len; i++) {
+        clone[i] = arr[i];
+      }
+      return clone;
+    }
+
+    function arrayConcat(arr1, arr2) {
+      if (HAS_CONCAT_BUG) {
+        return arraySafeConcat(arr1, arr2);
+      }
+      return arr1.concat(arr2);
+    }
+
+    // Avoids issues with concat in < IE8
+    function arraySafeConcat(arr, arg) {
+      var result = arrayClone(arr), len = result.length, arr2;
+      arr2 = isArray(arg) ? arg : [arg];
+      result.length += arr2.length;
+      for (var i = 0, len2 = arr2.length; i < len2; i++) {
+        result[len + i] = arr2[i];
+      }
+      return result;
     }
 
     function isArrayLike(obj) {
@@ -1644,7 +1671,7 @@
             }
             continue;
           }
-          result = result.concat(a);
+          result = arrayConcat(result, a);
         }
         return result;
       }
@@ -1888,7 +1915,7 @@
       'union': function() {
         // Optimized: no leaking arguments (flat)
         var args = [], $i; for($i = 0; $i < arguments.length; $i++) args = args.concat(arguments[$i]);
-        return arrayUnique(this.concat(args));
+        return arrayUnique(arrayConcat(this, args));
       },
 
       /***
@@ -2246,7 +2273,7 @@
         // Optimized: no leaking arguments
         var args = [], $i; for($i = 0; $i < arguments.length; $i++) args.push(arguments[$i]);
         return this.map(function(el, i) {
-          return [el].concat(args.map(function(k) {
+          return arrayConcat([el], args.map(function(k) {
             return (i in k) ? k[i] : null;
           }));
         });
@@ -7362,7 +7389,7 @@
     }
 
     function replaceTags(str, args, strip) {
-      var lastIndex = args.length - 1, lastArg = args[lastIndex], replacementFn, tags, reg;
+      var lastIndex = args.length - 1, lastArg = args[lastIndex], replacementFn, tags, src, reg;
       if (isFunction(lastArg)) {
         replacementFn = lastArg;
         args.length = lastIndex;

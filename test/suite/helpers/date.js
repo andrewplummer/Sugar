@@ -24,7 +24,7 @@ dateTest = function(d) {
 }
 
 dateEqual = function(a, b, message, tzReference) {
-  var buffer = 50, tzOffset = 0; // Number of milliseconds of "play" to make sure these tests pass.
+  var buffer = 100, tzOffset = 0; // Number of milliseconds of "play" to make sure these tests pass.
   if(typeof b == 'number') {
     var d = new Date();
     d.setTime(d.getTime() + b);
