@@ -24,10 +24,6 @@ namespace('Core', function() {
     restoreNativeState();
   });
 
-  group('Version prop', function () {
-    equal(typeof Sugar.VERSION, 'string', 'Version property should exist');
-  });
-
   group('Sugar namespace', function () {
     Sugar();
     assertAllMethodsMappedToNative(['Array', 'Boolean', 'Number', 'String', 'Date', 'RegExp', 'Function']);
