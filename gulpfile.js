@@ -454,7 +454,7 @@ var SPLIT_MODULES = [
 
 var LICENSE = block`
 /*
- *  Sugar ${getVersion()}
+ *  Sugar ${getVersion(true)}
  *
  *  Freely distributable and licensed under the MIT-style license.
  *  Copyright (c) Andrew Plummer
@@ -652,9 +652,9 @@ function logBuildResults(stream) {
   return stream;
 }
 
-function getVersion() {
+function getVersion(v) {
   var ver = args.v || args.version || 'edge';
-  if (ver && ver.match(/^[\d.]+$/)) {
+  if (v && ver.match(/^[\d.]+$/)) {
     ver = 'v' + ver;
   }
   if (buildHasCustomModules() || buildHasCustomLocales()) {
@@ -798,78 +798,76 @@ var PACKAGE_DEFINITIONS = {
   'sugar': {
     bower: false, // Same as distributed build
     es5_dist: true,
-    modules: 'ES5,ES6,ES7,String,Number,Array,Enumerable,Object,Date,Locales,Range,Function,RegExp',
-    description: 'This build includes default Sugar modules, polyfills, and optional date locales.'
+    modules: 'ES5,ES6,ES7,String,Number,Array,Enumerable,Object,Date,Locales,Range,Function,RegExp'
   },
   'sugar-core': {
     modules: 'Core',
-    es5_dist: true,
-    description: 'This build is the core module, which allows custom methods to be defined and extended later.'
+    description: 'Core package for the Sugar Javascript utility library.'
   },
   'sugar-es5': {
     modules: 'ES5',
     polyfill: true,
-    description: 'This build includes all ES5 polyfills not included in the default build.'
+    extra: 'ES5 polyfill module.'
   },
   'sugar-es6': {
     modules: 'ES6',
     polyfill: true,
-    description: 'This build includes all ES6 polyfills bundled with Sugar. Currently this is String#includes, String#startsWith, String#endsWith, String#repeat, Number.isNaN, Array#find, Array#findIndex, and Array.from.'
+    extra: 'ES6 polyfill module.'
   },
   'sugar-string': {
     modules: 'ES6:String,String,Range:String',
     es5_dist: true,
-    description: 'This build includes methods for string manipulation, escaping, encoding, truncation, and conversion.'
+    extra: 'String module.'
   },
   'sugar-number': {
     modules: 'ES6:Number,Number,Range:Number',
     es5_dist: true,
-    description: 'This build includes methods for number formatting, rounding (with precision), and aliases to Math methods.'
+    extra: 'Number module.'
   },
   'sugar-enumerable': {
     modules: 'ES6:Array,ES7:Array,Enumerable',
     es5_dist: true,
-    description: 'This build includes methods common to arrays and objects, such as matching elements/properties, mapping, counting, and averaging. Also included are polyfills for methods that enhance arrays: Array#find, Array#findIndex, Array#includes, as well as Object.keys.'
+    extra: 'Enumerable module (shared methods on Array and Object).'
   },
   'sugar-array': {
     modules: 'ES6:Array,ES7:Array,Array',
     es5_dist: true,
-    description: 'This build includes methods for array manipulation, grouping, randomizing, and alphanumeric sorting and collation.'
+    extra: 'Array module.'
   },
   'sugar-object': {
     modules: 'Object',
     es5_dist: true,
-    description: 'This build includes methods for object creation, manipulation, comparison, and type checking. Note that Object.prototype is not extended by default. See the README for more.'
+    extra: 'Object module.'
   },
   'sugar-date': {
     modules: 'Date,Locales,Range:Date',
     es5_dist: true,
-    description: 'This build includes methods for date parsing and formatting, relative formats like "1 minute ago", number methods like "daysAgo", and optional date locales.'
+    extra: 'Date module.'
   },
   'sugar-range': {
     modules: 'Range',
     es5_dist: true,
-    description: 'This build includes number, string, and date ranges. Ranges can be iterated over, compared, and manipulated.'
+    extra: 'Range module.'
   },
   'sugar-function': {
     modules: 'Function',
     es5_dist: true,
-    description: 'This build includes methods for lazy, throttled, and memoized functions, delayed functions, timers, and argument currying.'
+    extra: 'Function module.'
   },
   'sugar-regexp': {
     modules: 'RegExp',
     es5_dist: true,
-    description: 'This build includes methods for escaping regexes and manipulating their flags.'
+    extra: 'RegExp module.'
   },
   'sugar-inflections': {
     modules: 'Inflections',
     es5_dist: true,
-    description: 'This build includes methods for pluralization similar to ActiveSupport including uncountable words and acronyms, humanized and URL-friendly strings.'
+    extra: 'Inflections module.'
   },
   'sugar-language': {
     modules: 'Language',
     es5_dist: true,
-    description: 'This build includes helpers for detecting language by character block, full-width <-> half-width character conversion, and Hiragana and Katakana conversions.'
+    extra: 'Language module.'
   }
 };
 
@@ -920,16 +918,20 @@ function getPackageDefinition(packageName) {
   return def;
 }
 
-function copyPackageMeta(packageDir) {
+function copyPackageMeta(packageName, packageDir) {
 
   function copyMeta(srcPath) {
     writeFile(path.join(packageDir, path.basename(srcPath)), readFile(srcPath));
   }
 
+  if (packageName === 'sugar-core') {
+    copyMeta('lib/extras/core/README.md');
+  } else {
+    copyMeta('README.md');
+    copyMeta('CHANGELOG.md');
+    copyMeta('CAUTION.md');
+  }
   copyMeta('LICENSE');
-  copyMeta('README.md');
-  copyMeta('CHANGELOG.md');
-  copyMeta('CAUTION.md');
 }
 
 function copyLocales(l, dir) {
@@ -1016,7 +1018,11 @@ function exportPackageJson(packageName, packageDir) {
   json.version = getVersion();
   json.name = packageName;
   json.keywords = getKeywords(packageName, json.keywords);
-  json.description += ' ' + def.description;
+  if (def.description) {
+    json.description = def.description;
+  } else if (def.extra) {
+    json.description += ' ' + def.extra;
+  }
   delete json.files;
   delete json.scripts;
   delete json.devDependencies;
@@ -2051,7 +2057,7 @@ function buildNpmPackages(p, rebuild) {
       var distDir = isModular ? path.join(packageDir, 'dist') : packageDir;
       addStream(stream, buildPackageDist(packageName, distDir));
       exportPackageJson(packageName, packageDir);
-      copyPackageMeta(packageDir);
+      copyPackageMeta(packageName, packageDir);
     }
 
   }
@@ -2710,7 +2716,7 @@ function buildBowerPackages(p) {
     var packageDir = path.join(baseDir, packageName);
     notify('Building bower ' + packageName);
     exportBowerJson(packageName, packageDir);
-    copyPackageMeta(packageDir);
+    copyPackageMeta(packageName, packageDir);
     addStream(stream, buildPackageDist(packageName, packageDir));
   }
 
