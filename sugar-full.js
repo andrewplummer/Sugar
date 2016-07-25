@@ -53,7 +53,7 @@
       }, false);
     }
 
-    function extend(klass, methods, instance, polyfill, override) {
+    function extend(klass, methods, instance, polyfill) {
       var extendee;
       instance = instance !== false;
       extendee = instance ? klass.prototype : klass;
@@ -1116,7 +1116,7 @@
                padNumber(this.getUTCSeconds(), 2) + '.' +
                padNumber(this.getUTCMilliseconds(), 3) + 'Z';
       }
-    }, true, true, !hasISOStringSupport());
+    }, true, hasISOStringSupport());
 
     /***
      * @module Array
@@ -7037,7 +7037,7 @@
         });
         return true;
       }
-    }, false, true, true);
+    }, false, false);
 
     extend(Object, {
 
@@ -8039,30 +8039,52 @@
     }
 
     function stringEach(str, search, fn) {
-      var i, len, result, chunks;
+      var chunks, chunk, reg, result = [];
       if (isFunction(search)) {
         fn = search;
-        search = /[\s\S]/g;
+        reg = /[\s\S]/g;
       } else if (!search) {
-        search = /[\s\S]/g
+        reg = /[\s\S]/g;
       } else if (isString(search)) {
-        search = RegExp(escapeRegExp(search), 'gi');
+        reg = RegExp(escapeRegExp(search), 'gi');
       } else if (isRegExp(search)) {
-        search = RegExp(search.source, getRegExpFlags(search, 'g'));
+        reg = RegExp(search.source, getRegExpFlags(search, 'g'));
       }
-      chunks = str.match(search) || [];
-      if (fn) {
-        for(i = 0, len = chunks.length; i < len; i++) {
-          result = fn.call(str, chunks[i], i, chunks);
-          if (result === false) {
-            chunks.length = i + 1;
-            break;
-          } else if (isDefined(result)) {
-            chunks[i] = result;
+      // Getting the entire array of chunks up front as we need to
+      // pass this into the callback function as an argument.
+      chunks = runGlobalMatch(str, reg);
+
+      if (chunks) {
+        for(var i = 0, len = chunks.length, r; i < len; i++) {
+          chunk = chunks[i];
+          result[i] = chunk;
+          if (fn) {
+            r = fn.call(str, chunk, i, chunks);
+            if (r === false) {
+              break;
+            } else if (isDefined(r)) {
+              result[i] = r;
+            }
           }
         }
       }
-      return chunks;
+      return result;
+    }
+
+    // "match" in < IE9 has enumable properties that will confuse for..in
+    // loops, so ensure that the match is a normal array by manually running
+    // "exec". Note that this method is also slightly more performant.
+    function runGlobalMatch(str, reg) {
+      var result = [], match, lastLastIndex;
+      while ((match = reg.exec(str)) != null) {
+        if (reg.lastIndex === lastLastIndex) {
+          reg.lastIndex += 1;
+        } else {
+          result.push(match[0]);
+        }
+        lastLastIndex = reg.lastIndex;
+      }
+      return result;
     }
 
     function eachWord(str, fn) {
@@ -8189,8 +8211,10 @@
       tags = args.map(function(tag) {
         return escapeRegExp(tag);
       }).join('|');
-      reg = RegExp('<(\\/)?(' + (tags || '[^\\s>]+') + ')(\\s+[^<>]*?)?\\s*(\\/)?>', 'gi');
-      return runTagReplacements(str, reg, strip, replacementFn);
+      src = tags.replace('all', '') || '[^\\s>]+';
+      src = '<(\\/)?(' + src + ')(\\s+[^<>]*?)?\\s*(\\/)?>';
+      reg = RegExp(src, 'gi');
+      return runTagReplacements(str.toString(), reg, strip, replacementFn);
     }
 
     function runTagReplacements(str, reg, strip, replacementFn, fullString) {

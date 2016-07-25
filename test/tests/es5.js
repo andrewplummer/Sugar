@@ -24,7 +24,7 @@ package('ES5', function () {
     test(Array, [], false, 'no param');
     test(Array, [{}], false, 'object');
     test(Array, [null], false, 'null');
-    test(Array, [undefined], false, 'undefined');
+    test(Array, safeArray(undefined), false, 'undefined');
     test(Array, [17], false, 'number');
     test(Array, ["Array"], false, 'string');
     test(Array, [true], false, 'true');
