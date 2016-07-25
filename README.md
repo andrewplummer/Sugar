@@ -26,9 +26,8 @@ implementation is broken or missing.
 
 ## Docs
 
-Limited API documentation for v1.5 is available on the [site](https://sugarjs.com/docs/),
-however note that documentation outside the API reference may no longer be
-applicable.
+A limited API reference for v1.5 is available on the [site](https://sugarjs.com/docs/),
+however note that documentation outside of this may no longer be applicable.
 
 ## Upgrading
 
@@ -42,7 +41,7 @@ applies to versions prior to v1.3.9.
 Custom builds can no longer be created for v1.5 from the main site. However,
 build tools in this repo can create them manually. Remove unneeded code from
 the modules in the `lib` directory, then run `gulp build`. Only remove entire
-modules, (never `core` or `common`), or methods within `extend()` blocks.
+modules or methods within `extend()` blocks. Never remove `core` or `common`.
 
 ## Date Locales
 
