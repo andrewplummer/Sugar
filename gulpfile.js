@@ -476,9 +476,10 @@ function buildDefault() {
   notify('Exporting: ' + getBuildPath());
   notify('Minifying: ' + getBuildPath(true));
   return logBuildResults(mergeStreams([
-    createDevelopmentBuild('sugar-full.js', 'all', 'all'),
-    createDevelopmentBuild(),
-    createMinifiedBuild()
+    createDevelopmentBuild('release/sugar-full.development.js', 'all', 'all'),
+    createMinifiedBuild('release/sugar-full.min.js', 'all', 'all'),
+    createDevelopmentBuild('release/sugar.js'),
+    createMinifiedBuild('release/sugar.min.js')
   ]));
 }
 

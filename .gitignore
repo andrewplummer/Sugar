@@ -21,8 +21,7 @@ node_modules
 bower_components
 
 ## PROJECT::SPECIFIC
-release/precompiled
-release/
+release/npm
 
 ## Want to test these across branches/tags
 performance/javascripts/tests.js
