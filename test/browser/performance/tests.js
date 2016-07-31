@@ -25,6 +25,27 @@ arr = arr.concat(arr);
 arr = arr.concat(arr);
 arr = arr.concat(arr);
 
+
+function ebFormat(str, obj) {
+  var expressions = [];
+  for (var key in obj){
+    expressions.push({
+      expression: new RegExp(
+        ["\\{", key, "\\}"].join(""), 
+        "gim"
+      ),
+      value: obj[key]
+    })
+  }
+
+  var replaced = str;
+  expressions.forEach(function(expression) {
+    replaced = replaced.replace(expression.expression, expression.value);
+  });
+
+  return replaced;
+}
+
 var tests = [
   {
     name: 'Original',
@@ -37,6 +58,18 @@ var tests = [
       'complexUniqueTemplateString * 1000'
     ]
   },
+  {
+    name: 'Earl-Brown',
+    fn: function(arg) {
+      return ebFormat(arg, templateKey);
+    },
+    targets: [
+      'simpleTemplateString * 10000',
+      'complexTemplateString * 1000',
+      'complexUniqueTemplateString * 1000'
+    ]
+  },
+  /*
   {
     name: 'Ermouth key pass',
     fn: function(arg) {
@@ -136,5 +169,6 @@ var tests = [
       'complexUniqueTemplateString * 1000'
     ]
   },
+ */
 ];
 
