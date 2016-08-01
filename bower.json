@@ -19,7 +19,7 @@
     "date",
     "time"
   ],
-  "main": "sugar.js",
+  "main": "release/sugar.js",
   "ignore": [
     "lib",
     "test",
