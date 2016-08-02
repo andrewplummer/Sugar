@@ -18,7 +18,7 @@
     "type": "git",
     "url": "git+https://github.com/andrewplummer/Sugar.git"
   },
-  "main": "sugar.js",
+  "main": "release/sugar.js",
   "ignore": [
     "gulpfile.js",
     "package.json",
