@@ -802,13 +802,11 @@ function buildHasCustomLocales() {
 
 var PACKAGE_DEFINITIONS = {
   'sugar': {
-    es5_dist: true,
     modules: 'ES5,ES6,ES7,String,Number,Array,Enumerable,Object,Date,Locales,Range,Function,RegExp',
     keywords: ['date', 'time', 'polyfill']
   },
   'sugar-core': {
     modules: 'Core',
-    es5_dist: true,
     description: 'Core package for the Sugar Javascript utility library.'
   },
   'sugar-es5': {
@@ -825,67 +823,56 @@ var PACKAGE_DEFINITIONS = {
   },
   'sugar-string': {
     modules: 'ES6:String,String,Range:String',
-    es5_dist: true,
     extra: 'String module.',
     keywords: ['string']
   },
   'sugar-number': {
     modules: 'ES6:Number,Number,Range:Number',
-    es5_dist: true,
     extra: 'Number module.',
     keywords: ['number']
   },
   'sugar-enumerable': {
     modules: 'ES6:Array,ES7:Array,Enumerable',
-    es5_dist: true,
     extra: 'Enumerable module (shared methods on Array and Object).',
     keywords: ['array', 'object']
   },
   'sugar-array': {
     modules: 'ES6:Array,ES7:Array,Array',
-    es5_dist: true,
     extra: 'Array module.',
     keywords: ['array']
   },
   'sugar-object': {
     modules: 'Object',
-    es5_dist: true,
     extra: 'Object module.',
     keywords: ['object']
   },
   'sugar-date': {
     modules: 'Date,Locales,Range:Date',
-    es5_dist: true,
     extra: 'Date module.',
     keywords: ['date','time']
   },
   'sugar-range': {
     modules: 'Range',
-    es5_dist: true,
     extra: 'Range module.',
     keywords: ['range', 'number', 'string', 'date']
   },
   'sugar-function': {
     modules: 'Function',
-    es5_dist: true,
     extra: 'Function module.',
     keywords: ['function']
   },
   'sugar-regexp': {
     modules: 'RegExp',
-    es5_dist: true,
     extra: 'RegExp module.',
     keywords: ['regexp']
   },
   'sugar-inflections': {
     modules: 'Inflections',
-    es5_dist: true,
     extra: 'Inflections module.',
     keywords: ['inflections']
   },
   'sugar-language': {
     modules: 'Language',
-    es5_dist: true,
     extra: 'Language module.',
     keywords: ['language']
   }
@@ -952,6 +939,7 @@ function copyPackageMeta(packageName, packageDir) {
     copyMeta('README.md');
   }
   copyMeta('LICENSE');
+  copyMeta('.npmignore');
 }
 
 function copyLocales(l, dir) {
@@ -968,7 +956,7 @@ function buildPackageDist(packageName, packageDir) {
   var modules    = getPackageModules();
 
   buildDist(modules);
-  if (definition.es5_dist) {
+  if (!definition.polyfill) {
     buildDist(modules, true);
   }
 
@@ -1022,9 +1010,28 @@ function getPackageNames(p) {
   return packages;
 }
 
-function exportPackageManagers(packageName, packageDir) {
+function buildIgnoreFiles(packageName, packageDir) {
+  var def = getPackageDefinition(packageName), paths = [];
+  // Also ignore the package.json file here as anything to be checked in to
+  // a modularized repo should be for the sake of bower. Modularized npm
+  // packages are built for now and should not exist in version control.
+  paths.push('package.json');
+  paths.push('index.js');
+  paths.push('common');
+  paths.push('polyfills');
+  paths = paths.concat(def.modules.toLowerCase().split(','));
+  writeFile(path.join(packageDir, '.gitignore'), paths.join('\n'));
+}
+
+function buildPackageManagerJson(packageName, packageDir) {
   exportPackageJson(packageName, packageDir);
-  exportBowerJson(packageName, packageDir);
+  if (packageName !== 'sugar') {
+    // The npm package should be ignoring bower.json anyway, so this
+    // check should not be necessary, but just a safety guard to make
+    // clear the intent that the modularized "sugar" package should
+    // be published only to npm, not bower, as it is the main repo.
+    exportBowerJson(packageName, packageDir);
+  }
 }
 
 function getCommonJson(file, packageName, def) {
@@ -2075,7 +2082,8 @@ function buildPackages(p, rebuild) {
     if (!rebuild) {
       var distDir = isModular ? path.join(packageDir, 'dist') : packageDir;
       addStream(stream, buildPackageDist(packageName, distDir));
-      exportPackageManagers(packageName, packageDir);
+      buildPackageManagerJson(packageName, packageDir);
+      buildIgnoreFiles(packageName, packageDir);
       copyPackageMeta(packageName, packageDir);
     }
 
@@ -2098,7 +2106,13 @@ function buildPackages(p, rebuild) {
         var split = md.split(':'), name, path, type;
         name = split[0];
         path = './' + name.toLowerCase();
-        type = moduleIsPolyfill(name) ? 'polyfill' : 'module';
+        if (name === 'Locales') {
+          type = 'locales';
+        } else if (moduleIsPolyfill(name)) {
+          type = 'polyfill';
+        } else {
+          type = 'module';
+        }
         return {
           name: name,
           path: path,
@@ -2122,7 +2136,7 @@ function buildPackages(p, rebuild) {
       // Filtering out polyfills in main entry point
       // except for packages that only define polyfills.
       var paths = moduleDefinitions.filter(function(md) {
-        return (md.type === 'polyfill') === !!packageDefinition.polyfill;
+        return md.type === 'module' || (md.type === 'polyfill' && packageDefinition.polyfill);
       }).map(function(md) {
         return md.path;
       });

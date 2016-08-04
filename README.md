@@ -108,6 +108,15 @@ apply themselves if the methods they polyfill are missing.
 require('sugar/polyfills/es6');
 ```
 
+Similarly, date locales must be explicitly required as well:
+```javascript
+// Require the Japanese date locale
+require('sugar/locales/ja');
+// Require all date locales
+require('sugar/locales');
+```
+
+
 All Sugar npm packages are dependent on the `sugar-core` package.
 
 ## Modules
