@@ -1,6 +1,7 @@
 var runner = require('../setup');
 
-var Sugar = runner.load('../../dist/sugar');
+Sugar = runner.load('../../dist/sugar');
+runner.loadAll('../../dist/locales');
 
 // Tests
 runner.loadTest('array');
@@ -16,5 +17,7 @@ runner.loadTest('enumerable');
 runner.loadTest('range/date');
 runner.loadTest('range/number');
 runner.loadTest('range/string');
+
+runner.loadLocaleTests();
 
 runner.run(module, 'chained', Sugar);

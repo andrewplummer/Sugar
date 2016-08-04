@@ -97,6 +97,13 @@ module.exports = {
     return load('../tests/' + name);
   },
 
+  loadAll: function(subdir) {
+    var files = fs.readdirSync(path.join(__dirname, subdir));
+    files.forEach(function(filename) {
+      load(path.join(__dirname, subdir, filename));
+    });
+  },
+
   loadLocaleTests: function() {
     var files = fs.readdirSync(path.join(__dirname, '../tests/locales/'));
     files.forEach(function(filename) {
