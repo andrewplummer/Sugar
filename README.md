@@ -11,6 +11,7 @@ A Javascript library for working with native objects.
 - [**Getting Started**](#getting-started)
 - [**Documentation**](#documentation)
 - [**Custom Builds**](#custom-builds)
+- [**Browser**](#browser)
 - [**npm**](#npm)
 - [**Modules**](#modules)
 - [**Date Locales**](#date-locales)
@@ -60,9 +61,17 @@ are now fully modular. The main repo also has tasks to create custom builds as
 well. Simply clone, run `npm install` then `gulp`.
 
 
+## Browser
+
+The `dist` directory holds builds that are ready to be loaded in the browser.
+These builds include the `core` module, and so have no dependencies. Bower
+packages at the moment include only this directory. Use the `es5` builds if you
+require support for environments that do not support ES5 natively (IE8 and below).
+
+
 ## npm
 
-The sugar npm package allows methods as well as entire modules to be required
+The `sugar` npm package allows methods as well as entire modules to be required
 individually. If you are using a build tool like Browserify, this will make it
 simple to create smaller custom builds without going through the download page.
 All packages also include pre-built distributions in the `dist/` directory.
@@ -75,7 +84,6 @@ return a reference to `Sugar`, which is equivalent to the global object in the
 browser. All methods will be defined on this object and can be called as normal.
 Requiring an individual method will define it on `Sugar` and additionally return
 a reference to its static form that can be called immediately:
-
 
 ```javascript
 // Require all modules
@@ -99,6 +107,8 @@ apply themselves if the methods they polyfill are missing.
 // Require and apply ES6 polyfills
 require('sugar/polyfills/es6');
 ```
+
+All Sugar npm packages are dependent on the `sugar-core` package.
 
 ## Modules
 
