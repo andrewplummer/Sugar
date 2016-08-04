@@ -29,6 +29,7 @@ A Javascript library for working with native objects.
 ## Install
 
 #### `npm install sugar`
+#### `bower install sugar`
 
 
 ## Upgrading
