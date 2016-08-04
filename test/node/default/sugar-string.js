@@ -1,6 +1,6 @@
 var runner = require('../setup');
 
-runner.load('../../release/npm/sugar-string');
+runner.load('../../packages/sugar-string');
 
 // Tests
 runner.loadTest('string');

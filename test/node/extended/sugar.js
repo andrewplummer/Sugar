@@ -3,9 +3,9 @@ var runner = require('../setup');
 runner.resetPolyfills('es6');
 runner.resetPolyfills('es7');
 
-runner.load('../../release/npm/sugar/polyfills');
-runner.load('../../release/npm/sugar');
-runner.load('../../release/npm/sugar/locales');
+runner.load('../../packages/sugar/polyfills');
+runner.load('../../packages/sugar');
+runner.load('../../packages/sugar/locales');
 
 // Tests
 runner.loadTest('array');

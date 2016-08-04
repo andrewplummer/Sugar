@@ -1,7 +1,7 @@
 var runner = require('../setup');
 
-runner.load('../../release/npm/sugar-date');
-runner.load('../../release/npm/sugar-date/locales');
+runner.load('../../packages/sugar-date');
+runner.load('../../packages/sugar-date/locales');
 
 // Tests
 runner.loadTest('date');

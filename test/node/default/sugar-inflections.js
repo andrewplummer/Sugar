@@ -1,6 +1,6 @@
 var runner = require('../setup');
 
-runner.load('../../release/npm/sugar-inflections');
+runner.load('../../packages/sugar-inflections');
 
 // Tests
 runner.loadTest('inflections');

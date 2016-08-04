@@ -1,6 +1,6 @@
 var runner = require('../setup');
 
-runner.load('../../release/npm/sugar-language');
+runner.load('../../packages/sugar-language');
 
 // Tests
 runner.loadTest('language');

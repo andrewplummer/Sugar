@@ -1,6 +1,6 @@
 var runner = require('../setup');
 
-runner.load('../../release/npm/sugar-number');
+runner.load('../../packages/sugar-number');
 
 // Tests
 runner.loadTest('number');

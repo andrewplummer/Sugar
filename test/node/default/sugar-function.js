@@ -1,6 +1,6 @@
 var runner = require('../setup');
 
-runner.load('../../release/npm/sugar-function');
+runner.load('../../packages/sugar-function');
 
 // Tests
 runner.loadTest('function');

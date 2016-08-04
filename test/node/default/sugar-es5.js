@@ -2,7 +2,7 @@ var runner = require('../setup');
 
 runner.resetPolyfills('es5');
 
-runner.load('../../release/npm/sugar-es5');
+runner.load('../../packages/sugar-es5');
 
 // Tests
 runner.loadTest('es5/array');
