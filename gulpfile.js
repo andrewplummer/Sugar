@@ -1011,15 +1011,16 @@ function getPackageNames(p) {
 }
 
 function buildIgnoreFiles(packageName, packageDir) {
-  var def = getPackageDefinition(packageName), paths = [];
-  // Also ignore the package.json file here as anything to be checked in to
+  var paths = ALL_MODULES.concat();
+  paths.push('common');
+  paths.push('polyfills');
+  paths.push('index.js');
+
+  // Ignore the package.json file as well as anything to be checked in to
   // a modularized repo should be for the sake of bower. Modularized npm
   // packages are built for now and should not exist in version control.
   paths.push('package.json');
-  paths.push('index.js');
-  paths.push('common');
-  paths.push('polyfills');
-  paths = paths.concat(def.modules.toLowerCase().split(','));
+
   writeFile(path.join(packageDir, '.gitignore'), paths.join('\n'));
 }
 
@@ -2065,6 +2066,8 @@ function buildPackages(p, rebuild) {
     var packageDir = path.join(baseDir, packageName), isModular;
 
     isModular = packageName !== 'sugar-core';
+
+    cleanDir(packageDir);
 
     if (isModular && !sourcePackages) {
       notify('Getting source packages');
