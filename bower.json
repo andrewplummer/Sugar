@@ -21,7 +21,12 @@
   "main": "dist/sugar.js",
   "ignore": [
     "**/*",
-    "!dist/*"
+    "!dist/*",
+    "!dist/locales/*",
+    "!CHANGELOG.md",
+    "!CAUTION.md",
+    "!README.md",
+    "!LICENSE"
   ],
   "moduleType": [
     "globals"
