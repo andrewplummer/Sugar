@@ -931,13 +931,19 @@ function copyPackageMeta(packageName, packageDir) {
     writeFile(path.join(packageDir, path.basename(srcPath)), readFile(srcPath));
   }
 
-  if (packageName === 'sugar-core') {
+  if(packageName.match(/^sugar-/)) {
+    buildModuleReadme(packageName, packageDir);
+  } else if(packageName === 'sugar-core') {
     copyMeta('lib/extras/core/README.md');
   } else {
-    copyMeta('CHANGELOG.md');
-    copyMeta('CAUTION.md');
     copyMeta('README.md');
   }
+
+  if (packageName !== 'sugar-core') {
+    copyMeta('CHANGELOG.md');
+    copyMeta('CAUTION.md');
+  }
+
   copyMeta('LICENSE');
   copyMeta('.npmignore');
 }
@@ -1091,6 +1097,49 @@ function exportBowerJson(packageName, packageDir) {
 
   delete json.repository;
   writeFile(path.join(packageDir, 'bower.json'), JSON.stringify(json, null, 2));
+}
+
+function buildModuleReadme(packageName, packageDir) {
+  var moduleName = packageName.replace(/^sugar-/, '');
+  var moduleCaps = getCapitalizedModuleName(moduleName);
+
+  var src = [
+    '# Sugar',
+    '',
+    '[![Build Status](https://secure.travis-ci.org/andrewplummer/Sugar.png)](http://travis-ci.org/andrewplummer/Sugar)',
+    '',
+    'A Javascript library for working with native objects.',
+    '',
+    '## %MODULE% Module',
+    '',
+    'Note that this build includes only the "%MODULE_LOWER%" module. This repo is a modularized build of the main [Sugar](https://github.com/andrewplummer/Sugar) repo. Please post all issues there.',
+    '',
+    '## Install',
+    '',
+    '#### `npm install sugar-%MODULE_LOWER%`',
+    '#### `bower install sugar-%MODULE_LOWER%`',
+    '',
+    '## Getting Started',
+    '',
+    '#### [https://sugarjs.com/quickstart/](https://sugarjs.com/quickstart/)',
+    '',
+    '## Documentation',
+    '',
+    '#### [https://sugarjs.com/docs/](https://sugarjs.com/docs/)'
+  ].join('\n');
+  src = src.replace(/%MODULE%/g, moduleCaps);
+  src = src.replace(/%MODULE_LOWER%/g, moduleName);
+  writeFile(path.join(packageDir, 'README.md'), src);
+}
+
+function getCapitalizedModuleName(moduleName) {
+  if (moduleName.match(/^ES\d/i)) {
+    return moduleName.toUpperCase();
+  } else if (moduleName === 'regexp') {
+    return 'RegExp';
+  } else {
+    return moduleName.slice(0, 1).toUpperCase() + moduleName.slice(1);
+  }
 }
 
 // ------------ Dependency Tree --------------
@@ -2081,7 +2130,7 @@ function buildPackages(p, rebuild) {
 
     isModular = packageName !== 'sugar-core';
 
-    cleanDir(packageDir);
+    cleanDir(path.join(packageDir, '*'));
 
     if (isModular && !sourcePackages) {
       notify('Getting source packages');
