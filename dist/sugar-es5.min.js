@@ -1,5 +1,5 @@
 /*
- *  Sugar edge
+ *  Sugar v2.0.0
  *
  *  Freely distributable and licensed under the MIT-style license.
  *  Copyright (c) Andrew Plummer
