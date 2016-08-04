@@ -1095,7 +1095,6 @@ function exportBowerJson(packageName, packageDir) {
     json.main = path.join('dist', packageName + '.js');
   }
 
-  delete json.repository;
   writeFile(path.join(packageDir, 'bower.json'), JSON.stringify(json, null, 2));
 }
 
