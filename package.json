@@ -1,6 +1,5 @@
 {
   "name": "sugar",
-  "version": "edge",
   "description": "A Javascript utility library for working with native objects.",
   "homepage": "https://sugarjs.com/",
   "icon": "https://sugarjs.com/icon.svg",
