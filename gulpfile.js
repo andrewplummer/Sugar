@@ -1067,6 +1067,7 @@ function exportPackageJson(packageName, packageDir) {
       'sugar-core': '^' + json.version
     };
   }
+
   writeFile(path.join(packageDir, 'package.json'), JSON.stringify(json, null, 2));
 }
 
@@ -1074,7 +1075,19 @@ function exportBowerJson(packageName, packageDir) {
   var def = getPackageDefinition(packageName);
   var json = getCommonJson('./bower.json', packageName, def);
 
-  json.main = path.join('dist', packageName + '.js');
+  if (packageName === 'sugar-core') {
+    json.main = 'sugar-core.js';
+    json.ignore = [
+      "**/*",
+      "!README.md",
+      "!LICENSE",
+      "!*.map",
+      "!*.js"
+    ];
+  } else {
+    json.main = path.join('dist', packageName + '.js');
+  }
+
   delete json.repository;
   writeFile(path.join(packageDir, 'bower.json'), JSON.stringify(json, null, 2));
 }
