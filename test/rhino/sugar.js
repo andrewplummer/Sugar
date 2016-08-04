@@ -23,7 +23,7 @@
  *
  */
 
-load('sugar.js');
+load('dist/sugar.js');
 
 load('locales/ca.js');
 load('locales/da.js');
