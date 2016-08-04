@@ -1020,6 +1020,7 @@ function buildIgnoreFiles(packageName, packageDir) {
   // a modularized repo should be for the sake of bower. Modularized npm
   // packages are built for now and should not exist in version control.
   paths.push('package.json');
+  paths.push('.npmignore');
 
   writeFile(path.join(packageDir, '.gitignore'), paths.join('\n'));
 }
