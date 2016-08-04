@@ -1,33 +1,26 @@
 {
   "name": "sugar",
+  "version": "edge",
   "description": "A Javascript utility library for working with native objects.",
+  "homepage": "https://sugarjs.com/",
+  "icon": "https://sugarjs.com/icon.svg",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/andrewplummer/Sugar.git"
+  },
+  "license": "MIT",
+  "author": "Andrew Plummer <plummer.andrew@gmail.com>",
   "keywords": [
     "sugar",
     "sugarjs",
     "functional",
     "browser",
     "utility",
-    "util",
-    "date",
-    "time"
+    "util"
   ],
-  "homepage": "https://sugarjs.com/",
-  "icon": "https://sugarjs.com/icon.svg",
-  "author": "Andrew Plummer <plummer.andrew@gmail.com>",
-  "license": "MIT",
-  "main": "sugar.js",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/andrewplummer/Sugar.git"
-  },
   "bugs": {
     "url": "https://github.com/andrewplummer/Sugar/issues"
   },
-  "files": [
-    "CAUTION.md",
-    "sugar.js",
-    "sugar.min.js"
-  ],
   "engines": {
     "node": ">= 0.8.23"
   },

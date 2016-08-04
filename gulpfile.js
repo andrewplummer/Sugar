@@ -17,18 +17,14 @@ gulp.task('more',    showMore);
 gulp.task('build',       buildDefault);
 gulp.task('build:dev',   buildDevelopment);
 gulp.task('build:min',   buildMinified);
-gulp.task('build:qml',   buildQml);
-gulp.task('build:clean', buildClean);
 
-gulp.task('build:npm',       buildNpmDefault);
-gulp.task('build:npm:core',  buildNpmCore);
-gulp.task('build:npm:all',   buildNpmAll);
-gulp.task('build:npm:clean', buildNpmClean);
+gulp.task('build:qml',     buildQml);
+gulp.task('build:locales', buildLocales);
 
-gulp.task('build:bower',       buildBowerDefault);
-gulp.task('build:bower:clean', buildBowerClean);
-gulp.task('build:bower:core',  buildBowerCore);
-gulp.task('build:bower:all',   buildBowerAll);
+gulp.task('build:packages',       buildPackagesDefault);
+gulp.task('build:packages:core',  buildPackagesCore);
+gulp.task('build:packages:core',  buildPackagesSugar);
+gulp.task('build:packages:clean', buildPackagesClean);
 
 gulp.task('build:release', buildRelease);
 
@@ -59,22 +55,19 @@ var MESSAGE_TASKS = `
        |build:dev|                      Create development build (concatenate files only).
        |build:min|                      Create minified build (closure compiler).
 
-       |build:npm|                      Builds modularized npm packages ("sugar" by default).
-       |build:npm:core|                 Builds "sugar-core" npm package.
-       |build:npm:all|                  Builds all npm packages (slow).
-       |build:npm:clean|                Cleans npm package output directory ("release/npm" by default).
-
-       |build:bower|                    Builds bower packages (none by default).
-       |build:bower:all|                Builds all bower packages (slow).
-       |build:bower:clean|              Cleans bower package output directory ("release/bower" by default).
+       |build:packages|                 Builds modularized packages (all by default).
+       |build:packages:core|            Builds the "sugar-core" package.
+       |build:packages:sugar|           Builds the "sugar" npm package.
+       |build:packages:clean|           Cleans package output directory ("packages" by default).
 
        |build:qml|                      Creates a QML compatible build.
+       |build:locales|                  Exports locale files to "dist" directory.
 
        |build:release|                  Create a release. Requires a version.
 
        |test|                           Run tests against distributed build (build:dev).
        |test:npm|                       Run tests against npm packages (build:npm:all).
-       |test:all|                       Run tests against distributed and npm (build:dev, build:npm:all).
+       |test:all|                       Run tests against distributed and npm (build:dev, build:packages).
 
        |test:watch|                     Watch for changes and run "test".
        |test:watch:npm|                 Watch for changes and run "test:npm".
@@ -94,10 +87,10 @@ var MESSAGE_TASKS = `
        |-l, --locales|                  Comma separated date locales to include (dev/min tasks).
                                         Run "gulp more" for locales. English packaged with date module.
 
-       |-p, --packages|                 Comma separated packages to build (npm/bower tasks).
+       |-p, --packages|                 Comma separated packages to build ("packages" tasks).
                                         Run "gulp more" for packages.
 
-       |-o, --output|                   Build output path (default is "sugar.js" or "sugar.min.js").
+       |-o, --output|                   Build output path (default is "dist/sugar.js" or "dist/sugar.min.js").
                                         Also output file for JSON tasks.
 
        |-v, --version|                  Version for "release" build.
@@ -176,10 +169,11 @@ var MESSAGE_EXTRA = `
        of these tasks will be identical to the packages hosted on npm.
        For more information on how to include them, see the README.
 
-       Bower packages contain only the bundles in the "dist/" directory.
+       Bower packages contain only the builds in the "dist/" directory.
        As bower requires a public git endpoint, the result of these tasks
-       will be identical to the repos on Github. This also means that there
-       is no "sugar" package for bower as it is identical to the main repo.
+       will be identical to the modularized repos on Github. This also means
+       that there is no separate "sugar" package for bower as it is identical
+       to this repo.
 
 `;
 
@@ -226,16 +220,11 @@ function buildRelease() {
     warn('Release requires a valid x.x.x version!');
     run = false;
   }
-  if (typeof args.b !== 'string') {
-    warn('Release requires an explicit bower output directory (use -b).');
-    run = false;
-  }
   if (!run) process.exit();
   return mergeStreams([
     buildDevelopment(),
     buildMinified(),
-    buildBowerAll(),
-    buildNpmAll()
+    buildPackagesAll()
   ]);
 }
 
@@ -471,14 +460,10 @@ var LOCALES_MODULE_COMMENT = block`
  ***/
 `;
 
-function buildClean() {
-  buildNpmClean();
-  buildBowerClean();
-}
-
 function buildDefault() {
   notify('Exporting: ' + getBuildPath());
   notify('Minifying: ' + getBuildPath(true));
+  buildLocales();
   return logBuildResults(mergeStreams([createDevelopmentBuild(), createMinifiedBuild()]));
 }
 
@@ -490,6 +475,10 @@ function buildDevelopment() {
 function buildMinified() {
   notify('Minifying: ' + getBuildPath(true));
   return logBuildResults(createMinifiedBuild());
+}
+
+function buildLocales() {
+  copyLocales('all', path.join('dist', 'locales'));
 }
 
 function buildQml() {
@@ -529,7 +518,7 @@ function createMinifiedBuild(outputPath, modules, locales) {
   try {
     fs.lstatSync(COMPILER_JAR_PATH);
   } catch(e) {
-    gutil.log(gutil.colors.red('Closure compiler missing!'), 'Run', gutil.colors.yellow('bower install'));
+    gutil.log(gutil.colors.red('Closure compiler missing!'), 'Run', gutil.colors.yellow('npm install'));
     return;
   }
 
@@ -666,7 +655,20 @@ function getVersion(v) {
 }
 
 function getBuildPath(min) {
-  return args.o || args.output || 'sugar' + (min ? '.min' : '') + '.js';
+  return args.o || args.output || getDefaultBuildPath(min);
+}
+
+function getDefaultBuildPath(min) {
+  var names = ['sugar'], dir = '';
+  if (buildHasCustomModules() || buildHasCustomLocales()) {
+    names.push('custom');
+  } else {
+    if (args.es5) {
+      names.push('es5');
+    }
+    dir = 'dist/';
+  }
+  return dir + names.join('-') + (min ? '.min' : '') + '.js';
 }
 
 function getModuleNames(m) {
@@ -760,7 +762,7 @@ function getLocalePaths(l) {
   var codes = getLocaleCodes(l);
 
   function getPath(l) {
-    return path.join('locales', l.toLowerCase() + '.js');
+    return path.join('lib', 'locales', l.toLowerCase() + '.js');
   }
 
   codes.forEach(function(n) {
@@ -777,11 +779,15 @@ function getLocalePaths(l) {
 }
 
 function getAllLocales() {
-  return require('glob').sync('locales/*.js');
+  return require('glob').sync('lib/locales/*.js');
 }
 
 function buildHasCustomModules() {
-  var moduleNames = getModuleNames();
+  var moduleNames = getModuleNames().filter(function(n) {
+    // Not counting ES5 module as being custom as it is
+    // also used in the default build.
+    return n !== 'es5';
+  });
   var hasNonDefault = moduleNames.some(function(n) {
     return DEFAULT_MODULES.indexOf(n) === -1;
   });
@@ -796,9 +802,9 @@ function buildHasCustomLocales() {
 
 var PACKAGE_DEFINITIONS = {
   'sugar': {
-    bower: false, // Same as distributed build
     es5_dist: true,
-    modules: 'ES5,ES6,ES7,String,Number,Array,Enumerable,Object,Date,Locales,Range,Function,RegExp'
+    modules: 'ES5,ES6,ES7,String,Number,Array,Enumerable,Object,Date,Locales,Range,Function,RegExp',
+    keywords: ['date', 'time', 'polyfill']
   },
   'sugar-core': {
     modules: 'Core',
@@ -808,67 +814,80 @@ var PACKAGE_DEFINITIONS = {
   'sugar-es5': {
     modules: 'ES5',
     polyfill: true,
-    extra: 'ES5 polyfill module.'
+    extra: 'ES5 polyfill module.',
+    keywords: ['polyfill']
   },
   'sugar-es6': {
     modules: 'ES6',
     polyfill: true,
-    extra: 'ES6 polyfill module.'
+    extra: 'ES6 polyfill module.',
+    keywords: ['polyfill']
   },
   'sugar-string': {
     modules: 'ES6:String,String,Range:String',
     es5_dist: true,
-    extra: 'String module.'
+    extra: 'String module.',
+    keywords: ['string']
   },
   'sugar-number': {
     modules: 'ES6:Number,Number,Range:Number',
     es5_dist: true,
-    extra: 'Number module.'
+    extra: 'Number module.',
+    keywords: ['number']
   },
   'sugar-enumerable': {
     modules: 'ES6:Array,ES7:Array,Enumerable',
     es5_dist: true,
-    extra: 'Enumerable module (shared methods on Array and Object).'
+    extra: 'Enumerable module (shared methods on Array and Object).',
+    keywords: ['array', 'object']
   },
   'sugar-array': {
     modules: 'ES6:Array,ES7:Array,Array',
     es5_dist: true,
-    extra: 'Array module.'
+    extra: 'Array module.',
+    keywords: ['array']
   },
   'sugar-object': {
     modules: 'Object',
     es5_dist: true,
-    extra: 'Object module.'
+    extra: 'Object module.',
+    keywords: ['object']
   },
   'sugar-date': {
     modules: 'Date,Locales,Range:Date',
     es5_dist: true,
-    extra: 'Date module.'
+    extra: 'Date module.',
+    keywords: ['date','time']
   },
   'sugar-range': {
     modules: 'Range',
     es5_dist: true,
-    extra: 'Range module.'
+    extra: 'Range module.',
+    keywords: ['range', 'number', 'string', 'date']
   },
   'sugar-function': {
     modules: 'Function',
     es5_dist: true,
-    extra: 'Function module.'
+    extra: 'Function module.',
+    keywords: ['function']
   },
   'sugar-regexp': {
     modules: 'RegExp',
     es5_dist: true,
-    extra: 'RegExp module.'
+    extra: 'RegExp module.',
+    keywords: ['regexp']
   },
   'sugar-inflections': {
     modules: 'Inflections',
     es5_dist: true,
-    extra: 'Inflections module.'
+    extra: 'Inflections module.',
+    keywords: ['inflections']
   },
   'sugar-language': {
     modules: 'Language',
     es5_dist: true,
-    extra: 'Language module.'
+    extra: 'Language module.',
+    keywords: ['language']
   }
 };
 
@@ -928,9 +947,9 @@ function copyPackageMeta(packageName, packageDir) {
   if (packageName === 'sugar-core') {
     copyMeta('lib/extras/core/README.md');
   } else {
-    copyMeta('README.md');
     copyMeta('CHANGELOG.md');
     copyMeta('CAUTION.md');
+    copyMeta('README.md');
   }
   copyMeta('LICENSE');
 }
@@ -1003,22 +1022,17 @@ function getPackageNames(p) {
   return packages;
 }
 
-function getKeywords(name, keywords) {
-  if (name !== 'sugar' && name !== 'sugar-date') {
-    keywords = keywords.filter(function(k) {
-      return k !== 'date' && k !== 'time';
-    });
-  }
-  return keywords;
+function exportPackageManagers(packageName, packageDir) {
+  exportPackageJson(packageName, packageDir);
+  exportBowerJson(packageName, packageDir);
 }
 
-function exportPackageJson(packageName, packageDir) {
-
-  var def = getPackageDefinition(packageName);
-  var json = JSON.parse(JSON.stringify(require('./package.json')));
-  json.version = getVersion();
+function getCommonJson(file, packageName, def) {
+  var json = JSON.parse(JSON.stringify(require(file)));
   json.name = packageName;
-  json.keywords = getKeywords(packageName, json.keywords);
+  if (def.keywords) {
+    json.keywords = json.keywords.concat(def.keywords);
+  }
   if (def.description) {
     json.description = def.description;
   } else if (def.extra) {
@@ -1027,6 +1041,14 @@ function exportPackageJson(packageName, packageDir) {
   delete json.files;
   delete json.scripts;
   delete json.devDependencies;
+  return json;
+}
+
+function exportPackageJson(packageName, packageDir) {
+  var def = getPackageDefinition(packageName);
+  var json = getCommonJson('./package.json', packageName, def);
+
+  json.version = getVersion();
 
   // Add sugar-core as a dependency
   if (packageName === 'sugar-core') {
@@ -1042,14 +1064,10 @@ function exportPackageJson(packageName, packageDir) {
 
 function exportBowerJson(packageName, packageDir) {
   var def = getPackageDefinition(packageName);
-  var json = JSON.parse(JSON.stringify(require('./bower.json')));
-  json.name = packageName;
-  json.main = packageName + '.js';
-  // Bower throws a warning if "ignore" isn't defined.
-  json.ignore = [];
-  json.keywords = getKeywords(packageName, json.keywords);
-  json.description += ' ' + def.description;
-  delete json.devDependencies;
+  var json = getCommonJson('./bower.json', packageName, def);
+
+  json.main = path.join('dist', packageName + '.js');
+  delete json.repository;
   writeFile(path.join(packageDir, 'bower.json'), JSON.stringify(json, null, 2));
 }
 
@@ -2006,28 +2024,28 @@ function getModularSource() {
 
 }
 
-// -------------- npm ----------------
+// -------------- Packages ----------------
 
-function buildNpmClean() {
-  cleanDir(args.o || args.output || 'release/npm');
+function buildPackagesClean() {
+  cleanDir(args.o || args.output || 'packages');
 }
 
-function buildNpmDefault() {
-  return buildNpmPackages(args.p || args.package || args.packages || 'sugar');
+function buildPackagesDefault() {
+  return buildPackages(args.p || args.package || args.packages || 'all');
 }
 
-function buildNpmCore() {
-  return buildNpmPackages('sugar-core');
+function buildPackagesCore() {
+  return buildPackages('sugar-core');
 }
 
-function buildNpmAll() {
-  return buildNpmPackages('all');
+function buildPackagesSugar() {
+  return buildPackages('sugar');
 }
 
-function buildNpmPackages(p, rebuild) {
+function buildPackages(p, rebuild) {
 
   var sourcePackages;
-  var baseDir = args.o || args.output || 'release/npm';
+  var baseDir = args.o || args.output || 'packages';
   var stream = getEmptyStream();
 
   buildAllPackages(p);
@@ -2048,7 +2066,7 @@ function buildNpmPackages(p, rebuild) {
       bundleCircularDependencies();
     }
 
-    notify('Building npm ' + packageName);
+    notify('Building ' + packageName);
 
     if (isModular) {
       buildModularPackage(packageName, packageDir);
@@ -2057,7 +2075,7 @@ function buildNpmPackages(p, rebuild) {
     if (!rebuild) {
       var distDir = isModular ? path.join(packageDir, 'dist') : packageDir;
       addStream(stream, buildPackageDist(packageName, distDir));
-      exportPackageJson(packageName, packageDir);
+      exportPackageManagers(packageName, packageDir);
       copyPackageMeta(packageName, packageDir);
     }
 
@@ -2683,49 +2701,6 @@ function buildNpmPackages(p, rebuild) {
   return stream;
 }
 
-// -------------- bower ----------------
-
-
-function buildBowerClean() {
-  cleanDir(args.o || args.output || 'release/bower');
-}
-
-function buildBowerDefault() {
-  return buildBowerPackages(args.p || args.package || args.packages || 'sugar', true);
-}
-
-function buildBowerCore() {
-  return buildBowerPackages('sugar-core', true);
-}
-
-function buildBowerAll() {
-  return buildBowerPackages('all', true);
-}
-
-
-function buildBowerPackages(p) {
-
-  var stream = getEmptyStream();
-  var packageNames = getPackageNames(p);
-  var baseDir = args.b || args.o || args.output || 'release/bower';
-
-  function exportPackage(packageName) {
-    var def = getPackageDefinition(packageName);
-    if (def.bower === false) {
-      return;
-    }
-    var packageDir = path.join(baseDir, packageName);
-    notify('Building bower ' + packageName);
-    exportBowerJson(packageName, packageDir);
-    copyPackageMeta(packageName, packageDir);
-    addStream(stream, buildPackageDist(packageName, packageDir));
-  }
-
-  packageNames.forEach(exportPackage);
-
-  return stream;
-}
-
 // -------------- JSON Docs ----------------
 
 function buildJSONAPI() {
@@ -3272,7 +3247,7 @@ function buildJSONSource() {
 
 // -------------- Tests ----------------
 
-function testWatch(runTests, rebuildDist, rebuildNpm) {
+function testWatch(runTests, rebuildDist, rebuildMod) {
 
   function attemptTestRun() {
     try {
@@ -3289,8 +3264,8 @@ function testWatch(runTests, rebuildDist, rebuildNpm) {
     if (rebuildDist) {
       addStream(stream, buildDevelopment());
     }
-    if (rebuildNpm) {
-      addStream(stream, buildNpmPackages('modular', true));
+    if (rebuildMod) {
+      addStream(stream, buildPackages('modular', true));
     }
     onStreamEnd(stream, function() {
       attemptTestRun();
