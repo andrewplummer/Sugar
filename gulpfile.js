@@ -1042,8 +1042,25 @@ function buildPackageManagerJson(packageName, packageDir) {
   }
 }
 
+function cloneJson(file) {
+  var json = JSON.parse(JSON.stringify(require(file))), out = {};
+
+  // This function is simply to get the "version", which is dynamically
+  // generated, next to the "description" in package.json to make this
+  // file slightly more user friendly.
+  out.name = json.name;
+  out.description = json.description;
+  out.version = json.version;
+
+  for (var key in json) {
+    if(!json.hasOwnProperty(key) || out.hasOwnProperty(key)) continue;
+    out[key] = json[key];
+  };
+  return out;
+}
+
 function getCommonJson(file, packageName, def) {
-  var json = JSON.parse(JSON.stringify(require(file)));
+  var json = cloneJson(file);
   json.name = packageName;
   if (def.keywords) {
     json.keywords = json.keywords.concat(def.keywords);
