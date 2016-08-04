@@ -1027,6 +1027,7 @@ function buildIgnoreFiles(packageName, packageDir) {
   // packages are built for now and should not exist in version control.
   paths.push('package.json');
   paths.push('.npmignore');
+  paths.push('node_modules');
 
   writeFile(path.join(packageDir, '.gitignore'), paths.join('\n'));
 }
