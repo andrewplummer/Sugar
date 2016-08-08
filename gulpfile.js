@@ -2814,7 +2814,8 @@ function buildJSONAPI() {
       name: ns.name,
       methods: ns.methods.map(function(m) {
         var p = {
-          name: m.name
+          name: m.name,
+          module: m.module
         };
         if (m.set) {
           p.set = m.set.filter(function(name) {
