@@ -1017,17 +1017,20 @@ function getPackageNames(p) {
 }
 
 function buildIgnoreFiles(packageName, packageDir) {
-  var paths = ALL_MODULES.concat();
-  paths.push('common');
-  paths.push('polyfills');
-  paths.push('index.js');
+  var paths = ALL_MODULES.map(function(m) {
+    return '/' + m;
+  });
+  paths.push('/common');
+  paths.push('/polyfills');
+  paths.push('/locales');
+  paths.push('/index.js');
 
   // Ignore the package.json file as well as anything to be checked in to
   // a modularized repo should be for the sake of bower. Modularized npm
   // packages are built for now and should not exist in version control.
-  paths.push('package.json');
-  paths.push('.npmignore');
-  paths.push('node_modules');
+  paths.push('/package.json');
+  paths.push('/node_modules');
+  paths.push('/.npmignore');
 
   writeFile(path.join(packageDir, '.gitignore'), paths.join('\n'));
 }
