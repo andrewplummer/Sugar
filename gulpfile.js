@@ -23,7 +23,7 @@ gulp.task('build:locales', buildLocales);
 
 gulp.task('build:packages',       buildPackagesDefault);
 gulp.task('build:packages:core',  buildPackagesCore);
-gulp.task('build:packages:core',  buildPackagesSugar);
+gulp.task('build:packages:sugar', buildPackagesSugar);
 gulp.task('build:packages:clean', buildPackagesClean);
 
 gulp.task('build:release', buildRelease);
@@ -807,73 +807,74 @@ var PACKAGE_DEFINITIONS = {
   },
   'sugar-core': {
     modules: 'Core',
-    description: 'Core package for the Sugar Javascript utility library.'
+    description: 'Core module for the Sugar Javascript utility library.'
   },
   'sugar-es5': {
     modules: 'ES5',
     polyfill: true,
-    extra: 'ES5 polyfill module.',
+    description: 'ES5 polyfill module for the Sugar Javascript utility library.',
     keywords: ['polyfill']
   },
   'sugar-es6': {
     modules: 'ES6',
     polyfill: true,
-    extra: 'ES6 polyfill module.',
+    description: 'ES6 polyfill module for the Sugar Javascript utility library.',
     keywords: ['polyfill']
   },
   'sugar-string': {
     modules: 'ES6:String,String,Range:String',
-    extra: 'String module.',
+    description: 'String module for the Sugar Javascript utility library.',
     keywords: ['string']
   },
   'sugar-number': {
     modules: 'ES6:Number,Number,Range:Number',
-    extra: 'Number module.',
+    description: 'Number module for the Sugar Javascript utility library.',
     keywords: ['number']
   },
   'sugar-enumerable': {
     modules: 'ES6:Array,ES7:Array,Enumerable',
-    extra: 'Enumerable module (shared methods on Array and Object).',
+    description: 'Enumerable module for the Sugar Javascript utility library.',
     keywords: ['array', 'object']
   },
   'sugar-array': {
     modules: 'ES6:Array,ES7:Array,Array',
-    extra: 'Array module.',
+    description: 'Array module for the Sugar Javascript utility library.',
     keywords: ['array']
   },
   'sugar-object': {
     modules: 'Object',
     extra: 'Object module.',
+    description: 'Object module for the Sugar Javascript utility library.',
     keywords: ['object']
   },
   'sugar-date': {
     modules: 'Date,Locales,Range:Date',
-    extra: 'Date module.',
+    description: 'Date module for the Sugar Javascript utility library.',
     keywords: ['date','time']
   },
   'sugar-range': {
     modules: 'Range',
-    extra: 'Range module.',
+    description: 'Range module for the Sugar Javascript utility library.',
     keywords: ['range', 'number', 'string', 'date']
   },
   'sugar-function': {
     modules: 'Function',
-    extra: 'Function module.',
+    description: 'Function module for the Sugar Javascript utility library.',
     keywords: ['function']
   },
   'sugar-regexp': {
     modules: 'RegExp',
-    extra: 'RegExp module.',
+    description: 'RegExp module for the Sugar Javascript utility library.',
     keywords: ['regexp']
   },
   'sugar-inflections': {
     modules: 'Inflections',
-    extra: 'Inflections module.',
+    description: 'Inflections module for the Sugar Javascript utility library.',
     keywords: ['inflections']
   },
   'sugar-language': {
     modules: 'Language',
-    extra: 'Language module.',
+    description: 'Language module for the Sugar Javascript utility library.',
     keywords: ['language']
   }
 };
@@ -931,10 +932,10 @@ function copyPackageMeta(packageName, packageDir) {
     writeFile(path.join(packageDir, path.basename(srcPath)), readFile(srcPath));
   }
 
-  if(packageName.match(/^sugar-/)) {
-    buildModuleReadme(packageName, packageDir);
-  } else if(packageName === 'sugar-core') {
+  if(packageName === 'sugar-core') {
     copyMeta('lib/extras/core/README.md');
+  } else if(packageName.match(/^sugar-/)) {
+    buildModuleReadme(packageName, packageDir);
   } else {
     copyMeta('README.md');
   }
@@ -1071,8 +1072,6 @@ function getCommonJson(file, packageName, def) {
   }
   if (def.description) {
     json.description = def.description;
-  } else if (def.extra) {
-    json.description += ' ' + def.extra;
   }
   delete json.files;
   delete json.scripts;
@@ -2117,9 +2116,6 @@ function getModularSource() {
 
 // -------------- Packages ----------------
 
-function buildPackagesClean() {
-  cleanDir(args.o || args.output || 'packages');
-}
 
 function buildPackagesDefault() {
   return buildPackages(args.p || args.package || args.packages || 'all');
@@ -2131,6 +2127,10 @@ function buildPackagesCore() {
 
 function buildPackagesSugar() {
   return buildPackages('sugar');
+}
+
+function buildPackagesClean() {
+  cleanDir(args.o || args.output || 'packages');
 }
 
 function buildPackages(p, rebuild) {
