@@ -18,6 +18,7 @@ A Javascript library for working with native objects.
 - [**Timezones**](#timezones)
 - [**Defining Methods**](#defining-methods)
 - [**Contributing**](#contributing)
+- [**Road Map**](#road-map)
 
 ---------------------------------------
 
@@ -239,3 +240,11 @@ See the [docs](https://sugarjs.com/docs/#/Sugar) for options and other helpers.
 If you would like to issue a pull request, please first consider adding well
 formed [unit tests](test/tests/). These tests can be run directly in the browser
 from the [test/browser/](test/browser/) directory or in node with `npm test`.
+
+## Road Map
+
+Proposals for core features or major method changes will be added to the
+[road map](https://github.com/andrewplummer/Sugar/wiki/Road-Map). New methods
+may or may not be accepted, depending on their utility. Generally, they will
+first be delegated to plugins that may eventually be added to the main library
+when they reach a certain stage of popularity.
