@@ -1,5 +1,4 @@
 language: node_js
-install: npm install sinon
 node_js:
   - "node"
   - "iojs"
@@ -9,3 +8,9 @@ node_js:
 branches:
   only:
     - master
+cache:
+  directories:
+    - node_modules
+git:
+  depth: 3
+install: npm install sinon
