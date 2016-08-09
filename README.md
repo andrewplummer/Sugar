@@ -1,6 +1,6 @@
 # Sugar
 
-[![Build Status](https://secure.travis-ci.org/andrewplummer/Sugar.png)](http://travis-ci.org/andrewplummer/Sugar)
+[![Build Status](https://travis-ci.org/andrewplummer/Sugar.svg)](http://travis-ci.org/andrewplummer/Sugar)
 
 A Javascript library for working with native objects.
 
