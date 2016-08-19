@@ -387,6 +387,8 @@ function block(strings) {
 
 // -------------- Build ----------------
 
+var CORE_MIN_VERSION = '^2.0.0';
+
 var CLOSURE_WRAPPER = block`
 (function() {
   'use strict';
@@ -1091,7 +1093,7 @@ function exportPackageJson(packageName, packageDir) {
   } else {
     json.main = 'index.js';
     json.dependencies = {
-      'sugar-core': '^' + json.version
+      'sugar-core': CORE_MIN_VERSION
     };
   }
 
