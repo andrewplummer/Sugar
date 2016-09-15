@@ -708,6 +708,21 @@ namespace('Array', function () {
     test([4, 5, 6], [[1, 2], [8]], [[4, 1, 8], [5, 2, null], [6, null, null]], 'filled with null');
   });
 
+	method('iSlice', function() {
+		var arr1 = [1, 2, 3];
+		var arr2 = [1, 2, 3, 4, 5, 6, 7];
+
+		test(arr1, [0, 1], [2, 3], 'Simple iSplice');
+		test(arr2, [5, 8], [1, 2, 3, 4, 5], 'End iSplice');
+    test([1, 2, 3, 4, 5, 6, 7], [2, 4], [1, 2, 5, 6, 7], 'In the middle iSplice');
+
+		// Check that no variables was modified
+    equal(arr1.length, 3, 'should not have changed');
+    equal(arr1, [1, 2, 3], 'should not have changed');
+    equal(arr2.length, 7, 'should not have changed');
+
+  });
+
   method('union', function() {
 
     test([1,2,3], [[3,4,5]], [1,2,3,4,5], '1,2,3 + 3,4,5');
@@ -1769,4 +1784,3 @@ namespace('Array', function () {
 
 
 });
-
