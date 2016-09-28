@@ -17,6 +17,7 @@ A Javascript library for working with native objects.
 - [**Date Locales**](#date-locales)
 - [**Timezones**](#timezones)
 - [**Defining Methods**](#defining-methods)
+- [**Plugins**](#plugins)
 - [**Contributing**](#contributing)
 - [**Road Map**](#road-map)
 
@@ -234,6 +235,13 @@ Number.randomish(); // ???
 ```
 
 See the [docs](https://sugarjs.com/docs/#/Sugar) for options and other helpers.
+
+## Plugins
+
+If you are defining methods that are useful to the general public, please consider
+releasing them as a Sugar plugin! Refer to the
+[plugin boilerplate](https://github.com/andrewplummer/sugar-plugin-boilerplate)
+repo for an example to get started.
 
 ## Contributing
 
