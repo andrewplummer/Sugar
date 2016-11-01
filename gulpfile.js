@@ -3483,7 +3483,7 @@ function buildJSONSource() {
 
 var TS_LICENSE = block`
 // Type definitions for Sugar ${getVersion(true)}
-// Project: Sugar
+// Project: https://sugarjs.com/
 // Definitions by: Andrew Plummer <plummer.andrew@gmail.com>
 `;
 
