@@ -74,6 +74,11 @@ namespace('Core', function() {
     assertNoMethodsMappedToNative(['Array', 'Boolean', 'Number', 'Date', 'String', 'RegExp', 'Function']);
   });
 
+  group('Extend return values', function () {
+    equal(Sugar.extend(), Sugar, 'Global extend should return Sugar');
+    equal(Sugar.String.extend(), Sugar.String, 'Namespace extend should return the namespace');
+  });
+
   group('Custom with no arguments', function () {
     Sugar.String.defineInstance({
       foo: function() {
@@ -259,11 +264,12 @@ namespace('Core', function() {
 
   group('Aliasing', function() {
     defineCustom(Sugar.String);
-    Sugar.String.alias('foo2', Sugar.String.foo);
+    var result = Sugar.String.alias('foo2', Sugar.String.foo);
     Sugar.String.alias('bar2', 'bar');
     Sugar.String.extend();
     equal(('').foo2(), 'foo!', 'foo2 is an alias of foo');
     equal(('').bar2(), 'bar!', 'bar2 is an alias of foo');
+    equal(result, Sugar.String, 'return value should be the namespace');
     delete Sugar.String.foo2;
     delete Sugar.String.bar2;
   });
@@ -308,6 +314,30 @@ namespace('Core', function() {
     });
     equal('hi'.foo(), 'something native!', 'foo should not be enhanced');
     equal('hi'.foo2(), 'hi enhanced!', 'foo2 should be extended');
+  });
+
+  group('Defining static polyfills', function() {
+    var nativeFrom = Array.from;
+    delete Array.from;
+    function testFrom() {
+      return 'polyfilled!';
+    }
+    var result = Sugar.Array.defineStaticPolyfill('from', testFrom);
+    equal(Array.from(), 'polyfilled!', 'from should be polyfilled');
+    equal(result, Sugar.Array, 'defineStaticPolyfill should return the namespace');
+    Array.from = nativeFrom;
+  });
+
+  group('Defining instance polyfills', function() {
+    var nativeForEach = Array.prototype.forEach;
+    delete Array.prototype.forEach;
+    function testForEach() {
+      return 'polyfilled!';
+    }
+    var result = Sugar.Array.defineInstancePolyfill('forEach', testForEach);
+    equal([].forEach(), 'polyfilled!', 'forEach should be polyfilled');
+    equal(result, Sugar.Array, 'defineInstancePolyfill should return the namespace');
+    Array.prototype.forEach = nativeForEach;
   });
 
   group('Array enhancements', function() {
