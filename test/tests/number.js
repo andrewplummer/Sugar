@@ -422,6 +422,16 @@ namespace('Number', function () {
     test(553599.435, [-3], '554,000', 'to -3 places');
     test(553599.435, [-4], '550,000', 'to -4 places');
     test(553599.435, [-5], '600,000', 'to -5 places');
+
+    // Testing object form
+    Sugar.Number.setOption({
+      thousands: 'y'
+    });
+    test(1000, [null, ' '], '1y000', 'y as separator');
+    Sugar.Number.setOption({
+      thousands: null
+    });
+
   });
 
   method('pad', function() {
