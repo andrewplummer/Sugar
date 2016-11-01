@@ -40,6 +40,7 @@ gulp.task('json:api',    buildJSONAPI);
 gulp.task('json:docs',   buildJSONDocs);
 gulp.task('json:source', buildJSONSource);
 
+gulp.task('tsd', buildTypescriptDeclarations);
 
 // -------------- Help ----------------
 
@@ -77,6 +78,9 @@ var MESSAGE_TASKS = `
        |json:docs|                      Builds full docs set as JSON.
        |json:source|                    Builds modularized source as JSON.
 
+       |tsd|                            Builds typescript declarations (sugar.d.ts).
+                                        Run "gulp more" for more options.
+
        |more|                           Show more help details.
 
      # Options
@@ -105,7 +109,6 @@ var MESSAGE_TASKS = `
        |--source-map|                   Compiler source map filename. Default is "sugar.min.map".
 
        |--no-source-map|                Do not output a source map.
-
 `;
 
 var MESSAGE_EXTRA = `
@@ -175,6 +178,21 @@ var MESSAGE_EXTRA = `
        that there is no separate "sugar" package for bower as it is identical
        to this repo.
 
+     # Typescript Options
+
+       By default the "tsd" task builds Typescript declarations for Sugar in
+       extended mode, but without Object.prototype modifications. The task can
+       be modified to change these defaults, or include/exclude methods or modules:
+
+
+       |--no-extended-mode|             When this flag is present, declarations for extended mode
+                                        (i.e. native objects) are not output.
+
+       |--include|                      Whitelist methods or modules to be included:
+                                        --include=Array --include=Array:unique.
+
+       |--exclude|                      Blacklist methods or modules to be excluded:
+                                        --exclude=Array --exclude=Array:unique.
 `;
 
 function showTasks() {
@@ -267,8 +285,12 @@ function writeFile(outputPath, body) {
   fs.writeFileSync(outputPath, body, 'utf-8');
 }
 
-function writeJSON(obj, f) {
-  var filename = args.o || args.output || f;
+function outputFile(outputPath, body) {
+  writeFile(args.o || args.output || outputPath, body);
+}
+
+function outputJSON(outputPath, obj) {
+  var filename = args.o || args.output || outputPath;
   writeFile(filename, JSON.stringify(obj));
   notify('Wrote: ' + filename, false);
 }
@@ -360,8 +382,8 @@ function compact(arr) {
 
 function iter(obj, fn) {
   for (var key in obj) {
-    if(!obj.hasOwnProperty(key)) continue;
-      if(fn(key, obj[key]) === false) {
+    if (!obj.hasOwnProperty(key)) continue;
+      if (fn(key, obj[key]) === false) {
         break;
       }
   }
@@ -934,9 +956,9 @@ function copyPackageMeta(packageName, packageDir) {
     writeFile(path.join(packageDir, path.basename(srcPath)), readFile(srcPath));
   }
 
-  if(packageName === 'sugar-core') {
+  if (packageName === 'sugar-core') {
     copyMeta('lib/extras/core/README.md');
-  } else if(packageName.match(/^sugar-/)) {
+  } else if (packageName.match(/^sugar-/)) {
     buildModuleReadme(packageName, packageDir);
   } else {
     copyMeta('README.md');
@@ -1060,7 +1082,7 @@ function cloneJson(file) {
   out.version = json.version;
 
   for (var key in json) {
-    if(!json.hasOwnProperty(key) || out.hasOwnProperty(key)) continue;
+    if (!json.hasOwnProperty(key) || out.hasOwnProperty(key)) continue;
     out[key] = json[key];
   };
   return out;
@@ -2625,13 +2647,13 @@ function buildPackages(p, rebuild) {
     }
 
     function getCommentForEntryPointType(type) {
-      if(type === 'polyfill') {
+      if (type === 'polyfill') {
         return '// Polyfills';
-      } else if(type === 'alias') {
+      } else if (type === 'alias') {
         return '// Aliases';
       } else if (type === 'accessor') {
         return '// Accessors';
-      } else if(type === 'fix') {
+      } else if (type === 'fix') {
         return '// Fixes';
       } else if (type === 'static') {
         return '// Static Methods';
@@ -2829,11 +2851,11 @@ function buildJSONAPI() {
     };
   });
 
-  writeJSON(data, 'api.json');
+  outputJSON('api.json', data);
 }
 
 function buildJSONDocs() {
-  writeJSON(getJSONDocs(), 'docs.json');
+  outputJSON('docs.json', getJSONDocs());
 }
 
 function getJSONDocs() {
@@ -2893,6 +2915,9 @@ function getJSONDocs() {
   var ENHANCED_HTML = getReplacements('This method is also provided as a `polyfill` in the MOD module.');
 
   var POLYFILL_REPLACE_REG = /This method is (also )?provided as a .*polyfill.*\./;
+
+  var JSDOC_PARAM_REG = /\{([\w<>|\[\]]+)\} (\[)?(\w+)\]?(?: - (.+))?[\s\*]*$/;
+  var JSDOC_SIGNATURE_REG = /([\w\[\]]+)\((.*)\)$/m;
 
   var docs = {
     namespaces: []
@@ -2964,6 +2989,23 @@ function getJSONDocs() {
         value = getCallback(value, obj[field]);
       } else if (field === 'set') {
         value = getMultiline(value, true);
+      } else if (field === 'param') {
+        mapParamType(value, obj);
+        return;
+      } else if (field === 'callbackParam') {
+        mapCallbackParamType(value, obj);
+        return;
+      } else if (field === 'callbackReturns') {
+        mapCallbackReturnType(value, obj);
+        return;
+      } else if (field === 'option') {
+        mapOptionType(value, obj['options']);
+        return;
+      } else if (field === 'returns') {
+        value = getSingleline(value);
+      } else if (field === 'signature') {
+        field = 'signatures';
+        value = pushSignature(getSingleline(value), obj[field]);
       } else {
         value = getTextField(value);
         if (field === 'extra' && obj[field]) {
@@ -3010,21 +3052,21 @@ function getJSONDocs() {
       callbackName = match;
       return '';
     });
-    var args = [];
+    var params = [];
     getMultiline(str, true).forEach(function(line) {
       var match = line.match(/^(\w+)\s{2,}(.+)$/);
       if (match) {
-        args.push({
+        params.push({
           name: match[1],
           description: getReplacements(match[2])
         });
       } else {
-        args[args.length - 1].description += ' ' + getReplacements(line);
+        params[params.length - 1].description += ' ' + getReplacements(line);
       }
     });
     callbacks.push({
       name: callbackName,
-      args: args
+      params: params
     });
     return callbacks;
   }
@@ -3058,6 +3100,10 @@ function getJSONDocs() {
     });
   }
 
+  function getSingleline(str) {
+    return getMultiline(str, true)[0];
+  }
+
   function getMultiline(str, clean) {
 
     var lines = str.split('\n').map(function(line) {
@@ -3067,6 +3113,81 @@ function getJSONDocs() {
       lines = lines.join('\n').replace(/^\n+|\n+$/g, '').split('\n');
     }
     return lines;
+  }
+
+  function getParamMatch(str) {
+    var match = str.match(JSDOC_PARAM_REG);
+    return {
+      type: match[1],
+      name: match[3],
+      required: !match[2],
+      description: match[4]
+    };
+  }
+
+  function mapParamType(str, method) {
+
+    var param = getParamMatch(str);
+
+
+    function map(signature) {
+      signature.forEach(function(p) {
+        if (p.name === param.name) {
+          p.type = param.type;
+          p.description = param.description;
+        }
+      });
+    }
+
+    map(method.params);
+    if (method.signatures) {
+      method.signatures.forEach(map);
+    }
+  }
+
+  function mapCallbackParamType(str, method) {
+    var param = getParamMatch(str);
+    method.callbacks.forEach(function(callback) {
+      callback.params.forEach(function(p) {
+        if (p.name === param.name) {
+          p.type = param.type;
+          p.required = param.required;
+        }
+      });
+    });
+  }
+
+  function mapCallbackReturnType(str, method) {
+    var returns = getParamMatch(str);
+    method.callbacks.forEach(function(callback) {
+      if (callback.name === returns.name) {
+        callback.returns = returns.type;
+      }
+    });
+  }
+
+  function pushSignature(str, signatures) {
+    var match = str.match(JSDOC_SIGNATURE_REG);
+    var signature = getParams(match[2]);
+    if (!signatures) {
+      signatures = [];
+    }
+    signatures.push(signature);
+    return signatures;
+  }
+
+  function mapOptionType(str, options) {
+    var match = str.match(JSDOC_PARAM_REG);
+
+    var optionType = match[1];
+    var optionName = match[3];
+    var required  = !match[2];
+
+    var option = options.find(function(o) {
+      return o.name === optionName;
+    });
+    option.type = optionType;
+    option.required = required;
   }
 
   function getExamples(str) {
@@ -3134,40 +3255,47 @@ function getJSONDocs() {
         method['name_html'] = left + '<span class="docs-method__set">' + mid + '</span>' + right;
         return left + mid + right;
       });
-      var args = match[2].split(', ').filter(function(a) {
-        return a;
-      });
 
       method.name = nameClean;
       method.module = currentModuleName;
+      method.params = getParams(match[2]);
 
       setAllFields(method, block);
 
       method.line = getLineNumber(name, lines);
       method.type = getMethodType(method);
 
-      if (args.length) {
-        method['args'] = args.map(function(a) {
-          var s = a.split(' = ');
-          var m = s[0].match(/([<\[])(\w+)[>\]]|(\.\.\.)/);
-          var arg = {};
-          if (m[2]) {
-            arg.name = m[2];
-            arg.required = m[1] === '<';
-          }
-          if (m[3]) {
-            arg.glob = true;
-            arg.name = '...';
-          }
-          if (s[1]) {
-            arg.default = s[1];
-          }
-          return arg;
-        });
-      }
       checkAlias(method, name);
       currentNamespace.methods.push(method);
     }
+  }
+
+  function getParams(str) {
+    var params = str && str.split(', ').filter(function(a) {
+      return !!a;
+    });
+
+    if (!params) {
+      params = [];
+    }
+
+    return params.map(function(p) {
+      var s = p.split(' = ');
+      var m = s[0].match(/(\[)?(\w+)\]?|(\.\.\.)/);
+      var param = {};
+      if (m[2]) {
+        param.name = m[2];
+        param.required = !m[1];
+      }
+      if (m[3]) {
+        param.glob = true;
+        param.name = '...';
+      }
+      if (s[1]) {
+        param.default = s[1];
+      }
+      return param;
+    });
   }
 
   function checkAlias(method, name) {
@@ -3233,9 +3361,11 @@ function getJSONDocs() {
   }
 
   function getMethodType(method) {
+    if (method.namespace === 'Sugar' || method.namespace === 'SugarNamespace') {
+      return 'namespace';
+    }
     switch (true) {
       case method.global:    return 'global';
-      case method.namespace: return 'namespace';
       case method.static:    return 'static';
       case method.accessor:  return 'accessor';
       default:               return 'instance';
@@ -3255,7 +3385,7 @@ function buildJSONSource() {
 
   addCorePackage();
   prepareData();
-  writeJSON(data, 'source.json');
+  outputJSON('source.json', data);
 
   function addCorePackage() {
     data.modules.unshift({
@@ -3346,6 +3476,1003 @@ function buildJSONSource() {
     }
   }
 
+}
+
+// -------------- Typescript Declarations ----------------
+
+
+var TS_LICENSE = block`
+// Type definitions for Sugar ${getVersion(true)}
+// Project: Sugar
+// Definitions by: Andrew Plummer <plummer.andrew@gmail.com>
+`;
+
+function buildTypescriptDeclarations() {
+
+  var CHAINABLE_RAW_TYPE = 'RawValue';
+
+  var CHAINABLE_NATIVE_METHODS = {
+
+    Array: [
+      'toLocaleString(): string;',
+      'push(...items: T[]): number;',
+      'pop(): T | undefined;',
+      'concat(...items: T[][]): T[];',
+      'concat(...items: (T | T[])[]): T[];',
+      'join(separator?: string): string;',
+      'reverse(): T[];',
+      'shift(): T | undefined;',
+      'slice(start?: number, end?: number): T[];',
+      'sort(compareFn?: (a: T, b: T) => number): this;',
+      'splice(start: number): T[];',
+      'splice(start: number, deleteCount: number, ...items: T[]): T[];',
+      'unshift(...items: T[]): number;',
+      'indexOf(searchElement: T, fromIndex?: number): number;',
+      'lastIndexOf(searchElement: T, fromIndex?: number): number;',
+      'every(callbackfn: (value: T, index: number, array: T[]) => boolean, thisArg?: any): boolean;',
+      'some(callbackfn: (value: T, index: number, array: T[]) => boolean, thisArg?: any): boolean;',
+      'forEach(callbackfn: (value: T, index: number, array: T[]) => void, thisArg?: any): void;',
+      'map<U>(callbackfn: (value: T, index: number, array: T[]) => U, thisArg?: any): U[];',
+      'filter(callbackfn: (value: T, index: number, array: T[]) => any, thisArg?: any): T[];',
+      'reduce(callbackfn: (previousValue: T, currentValue: T, currentIndex: number, array: T[]) => T, initialValue?: T): T;',
+      'reduce<U>(callbackfn: (previousValue: U, currentValue: T, currentIndex: number, array: T[]) => U, initialValue: U): U;',
+      'reduceRight(callbackfn: (previousValue: T, currentValue: T, currentIndex: number, array: T[]) => T, initialValue?: T): T;',
+      'reduceRight<U>(callbackfn: (previousValue: U, currentValue: T, currentIndex: number, array: T[]) => U, initialValue: U): U;',
+
+      // ES6
+      'find(predicate: (value: T, index: number, obj: Array<T>) => boolean, thisArg?: any): T | undefined;',
+      'findIndex(predicate: (value: T, index: number, obj: Array<T>) => boolean, thisArg?: any): number;',
+      'fill(value: T, start?: number, end?: number): this;',
+      'copyWithin(target: number, start: number, end?: number): this;',
+
+    ],
+
+    Date: [
+      'toDateString(): string;',
+      'toTimeString(): string;',
+      'toLocaleString(): string;',
+      'toLocaleDateString(): string;',
+      'toLocaleTimeString(): string;',
+      'getTime(): number;',
+      'getFullYear(): number;',
+      'getUTCFullYear(): number;',
+      'getMonth(): number;',
+      'getUTCMonth(): number;',
+      'getDate(): number;',
+      'getUTCDate(): number;',
+      'getDay(): number;',
+      'getUTCDay(): number;',
+      'getHours(): number;',
+      'getUTCHours(): number;',
+      'getMinutes(): number;',
+      'getUTCMinutes(): number;',
+      'getSeconds(): number;',
+      'getUTCSeconds(): number;',
+      'getMilliseconds(): number;',
+      'getUTCMilliseconds(): number;',
+      'getTimezoneOffset(): number;',
+      'setTime(time: number): number;',
+      'setMilliseconds(ms: number): number;',
+      'setUTCMilliseconds(ms: number): number;',
+      'setSeconds(sec: number, ms?: number): number;',
+      'setUTCSeconds(sec: number, ms?: number): number;',
+      'setMinutes(min: number, sec?: number, ms?: number): number;',
+      'setUTCMinutes(min: number, sec?: number, ms?: number): number;',
+      'setHours(hours: number, min?: number, sec?: number, ms?: number): number;',
+      'setUTCHours(hours: number, min?: number, sec?: number, ms?: number): number;',
+      'setDate(date: number): number;',
+      'setUTCDate(date: number): number;',
+      'setMonth(month: number, date?: number): number;',
+      'setUTCMonth(month: number, date?: number): number;',
+      'setFullYear(year: number, month?: number, date?: number): number;',
+      'setUTCFullYear(year: number, month?: number, date?: number): number;',
+      'toUTCString(): string;',
+      'toISOString(): string;',
+      'toJSON(key?: any): string;',
+
+      // ES6
+      'toLocaleString(locales?: string | string[], options?: Intl.DateTimeFormatOptions): string;',
+      'toLocaleDateString(locales?: string | string[], options?: Intl.DateTimeFormatOptions): string;',
+      'toLocaleTimeString(locales?: string | string[], options?: Intl.DateTimeFormatOptions): string;',
+
+    ],
+
+    String: [
+      'charAt(pos: number): string;',
+      'charCodeAt(index: number): number;',
+      'concat(...strings: string[]): string;',
+      'indexOf(searchString: string, position?: number): number;',
+      'lastIndexOf(searchString: string, position?: number): number;',
+      'localeCompare(that: string): number;',
+      'match(regexp: string): RegExpMatchArray | null;',
+      'match(regexp: RegExp): RegExpMatchArray | null;',
+      'replace(searchValue: string, replaceValue: string): string;',
+      'replace(searchValue: string, replacer: (substring: string, ...args: any[]) => string): string;',
+      'replace(searchValue: RegExp, replaceValue: string): string;',
+      'replace(searchValue: RegExp, replacer: (substring: string, ...args: any[]) => string): string;',
+      'search(regexp: string): number;',
+      'search(regexp: RegExp): number;',
+      'slice(start?: number, end?: number): string;',
+      'split(separator: string, limit?: number): string[];',
+      'split(separator: RegExp, limit?: number): string[];',
+      'substring(start: number, end?: number): string;',
+      'toLowerCase(): string;',
+      'toLocaleLowerCase(): string;',
+      'toUpperCase(): string;',
+      'toLocaleUpperCase(): string;',
+      'trim(): string;',
+      'substr(from: number, length?: number): string;',
+
+      // ES6
+      'localeCompare(that: string, locales?: string | string[], options?: Intl.CollatorOptions): number;',
+      'codePointAt(pos: number): number | undefined;',
+      'includes(searchString: string, position?: number): boolean;',
+      'endsWith(searchString: string, endPosition?: number): boolean;',
+      'normalize(form: "NFC" | "NFD" | "NFKC" | "NFKD"): string;',
+      'normalize(form?: string): string;',
+      'repeat(count: number): string;',
+      'startsWith(searchString: string, position?: number): boolean;',
+      'anchor(name: string): string;',
+      'big(): string;',
+      'blink(): string;',
+      'bold(): string;',
+      'fixed(): string;',
+      'fontcolor(color: string): string;',
+      'fontsize(size: number): string;',
+      'fontsize(size: string): string;',
+      'italics(): string;',
+      'link(url: string): string;',
+      'small(): string;',
+      'strike(): string;',
+      'sub(): string;',
+      'sup(): string;',
+    ],
+
+    Number: [
+      'toFixed(fractionDigits?: number): string;',
+      'toExponential(fractionDigits?: number): string;',
+      'toPrecision(precision?: number): string;',
+
+      // ES6
+      'toLocaleString(locales?: string | string[], options?: Intl.NumberFormatOptions): string;',
+    ],
+
+    Function: [
+      'apply(thisArg: any, argArray?: any): any;',
+      'call(thisArg: any, ...argArray: any[]): any;',
+      'bind(thisArg: any, ...argArray: any[]): any;',
+    ],
+
+    RegExp: [
+      'exec(string: string): RegExpExecArray | null;',
+      'test(string: string): boolean;',
+    ]
+
+  };
+
+  var LOCALE_METHODS = [
+    'getMonthName(n: number): string;',
+    'getWeekdayName(n: number): string;',
+    'getDuration(ms: number): string;',
+    'getFirstDayOfWeek(): number;',
+    'getFirstDayOfWeekYear(): number;',
+    'addFormat(src:string, to?: Array<string>): void;'
+  ];
+
+
+  var whitelist, blacklist;
+  var optionInterfaceNamespaces = {};
+
+
+  /* ------------ Modules -------------- */
+
+  function getModule(name) {
+    return {
+      name: name,
+      types: [],
+      modules: [],
+      interfaces: []
+    }
+  }
+
+  function getModuleSource(module, top) {
+    var blocks = [];
+
+    function addBlock(arr, sep, map) {
+      if (arr.length) {
+        arr = compact(arr);
+        if (map) {
+          arr = arr.map(map);
+        }
+        blocks.push(indent(arr.join(sep), 1));
+      }
+    }
+
+    function mapType(type) {
+      return 'type ' + type.name + ' = ' + type.type + ';'
+    }
+
+    addBlock(module.types, '\n', mapType);
+    addBlock(module.interfaces, '\n\n');
+    addBlock(module.modules, '\n\n');
+
+    blocks.unshift((top ? 'declare ' : '') + 'module ' + module.name + ' {');
+    blocks.push('}');
+    return blocks.join('\n\n');
+  }
+
+  function getInterfaceBlocks(interfaces) {
+    return interfaces.filter(function(interface) {
+      return interface;
+    }).join('\n\n');
+  }
+
+  /* ------------ Interfaces -------------- */
+
+  function getConstructorInterface(namespace, module) {
+
+    var methods = [];
+
+
+    // Add the main chainable type.
+
+    var chainableGenerics = getChainableBaseGenerics(namespace.name)
+    var chainableType = 'ChainableBase' + chainableGenerics;
+
+    if (namespace.name !== 'Object') {
+      chainableType += ' & Object.ChainableBase' + getChainableBaseGenerics('Object');
+    }
+    module.types.push({
+      name: 'Chainable' + chainableGenerics,
+      type: chainableType
+    });
+
+
+    // Set up constructor methods.
+
+    var rawType = getRawType(namespace.name);
+
+    var constructorMethod = {
+      name: 'new',
+      type: 'constructor',
+      generics: getNamespaceBaseGenerics(namespace.name),
+      returns: 'Chainable' + getChainableInstanceGenerics(namespace.name),
+      params: [{
+        name: 'raw',
+        type: rawType
+      }]
+    };
+
+    var createMethod = namespace.methods.find(function(method) {
+      return method.name === 'create';
+    });
+
+    if (createMethod) {
+      // If the namespace has a "create" method, then it will be mapped
+      // to the chainable constructor, so accomodate for that here.
+      constructorMethod.params = createMethod.params;
+      constructorMethod.params[0].required = false;
+    }
+
+    var factoryMethod = clone(constructorMethod);
+    factoryMethod.name = '';
+
+    methods.push(constructorMethod);
+    methods.push(factoryMethod);
+
+
+    // Set up all remaining methods.
+
+    var instanceParam = {
+      name: 'instance',
+      required: true,
+      type: rawType
+    };
+
+    namespace.methods.forEach(function(method) {
+      var method = clone(method);
+      if (method.type === 'instance') {
+        method.params.unshift(instanceParam);
+        if (method.signatures) {
+          method.signatures.forEach(function(signature) {
+            signature.unshift(instanceParam);
+          });
+        }
+        if (namespace.name === 'Array') {
+          method.generics = ['T'];
+        }
+      }
+      methods.push(method);
+    });
+
+    methods = buildMethods(methods, namespace, 'static');
+    return getInterfaceSource('Constructor', methods.join('\n'), null, 'SugarNamespace');
+  }
+
+  function getChainableBaseInterface(namespace) {
+    var methods, existing = {};
+
+    // Add native methods that are aliased onto the chainable prototype.
+    methods = getRawMethods(CHAINABLE_NATIVE_METHODS[namespace.name], 'chainable');
+
+    // Add all instance methods.
+    namespace.methods.forEach(function(method) {
+      if (method.type === 'instance') {
+        existing[method.name] = true;
+        methods.push(method);
+      }
+    });
+
+    methods = buildMethods(methods, namespace, 'chainable');
+
+    var chainableDefaults = [
+      'raw: ' + CHAINABLE_RAW_TYPE + ';',
+      'valueOf: () => ' + CHAINABLE_RAW_TYPE + ';',
+      'toString: () => string;'
+    ];
+
+    var src = chainableDefaults.concat(methods).join('\n');
+    return getInterfaceSource('ChainableBase', src, getChainableBaseGenerics(namespace.name));
+  }
+
+  function getExtendedConstructorInterface(namespace) {
+    var methods = getExtendedMethods(namespace, 'static');
+
+    // Add object instance methods as static, i.e.
+    // Object.forEach, etc.
+    if (namespace.name === 'Object') {
+      var objectInstanceParam = {
+        name: 'instance',
+        type: 'Object',
+        required: true
+      };
+      var objectInstanceMethods = getExtendedMethods(namespace, 'instance');
+      getExtendedMethods(namespace, 'instance').forEach(function(method) {
+        method = clone(method);
+        method.params.unshift(objectInstanceParam);
+        if (method.signatures) {
+          method.signatures.forEach(function(signature) {
+            signature.unshift(objectInstanceParam);
+          });
+        }
+        methods.push(method);
+      });
+    }
+
+    methods = buildMethods(methods, namespace, 'extended');
+    return getInterfaceSource(namespace.name + 'Constructor', methods.join('\n'));
+  }
+
+  function getExtendedInstanceInterface(namespace) {
+    var methods = buildMethods(getExtendedMethods(namespace, 'instance'), namespace, 'extended');
+    var generics = getGenericSource(getNamespaceBaseGenerics(namespace.name));
+    return getInterfaceSource(namespace.name, methods.join('\n'), generics);
+  }
+
+  function getExtendedMethods(namespace, findType) {
+    return namespace.methods.filter(function(method) {
+      return method.type === findType;
+    });
+  }
+
+  function getSugarInterface(namespace, namespaces) {
+
+    var extendAlias = clone(namespace.methods.find(function(method) {
+      return method.name === 'extend';
+    }));
+    extendAlias.name = '';
+
+    var methods;
+    methods = [extendAlias].concat(namespace.methods);
+    methods = buildMethods(methods, namespace, 'standard');
+
+    namespaces = namespaces.filter(function(namespace) {
+      return !namespace.name.match(/^Sugar/) && namespace.name !== 'Range';
+    }).map(function(namespace) {
+      return namespace.name + ': ' + namespace.name + '.Constructor;';
+    });
+
+    var src = [methods.join('\n'), namespaces.join('\n')].join('\n');
+    return getInterfaceSource(namespace.name, src);
+  }
+
+  function getSugarNamespaceInterface(namespace) {
+    methods = buildMethods(namespace.methods, namespace, 'namespace');
+    return getInterfaceSource(namespace.name, methods.join('\n'));
+  }
+
+  function getRangeInterface(namespace) {
+    var methods = buildMethods(namespace.methods, namespace, 'extended');
+    return getInterfaceSource('Range', methods.join('\n'));
+  }
+
+  function getLocaleInterface() {
+    var methods = buildMethods(getRawMethods(LOCALE_METHODS), {}, 'extended');
+    return getInterfaceSource('Locale', methods.join('\n'));
+  }
+
+  function getInterfaceSource(interfaceName, src, generics, ext) {
+    if (!src) {
+      return '';
+    }
+    ext = ext ? ' extends ' + ext : '';
+    return [
+      'interface ' + interfaceName + (generics || '') + ext + ' {',
+        indent(src, 1),
+      '}'
+    ].join('\n');
+  }
+
+  /* ------------ Types -------------- */
+
+  function getType(type, method) {
+    var generics = [];
+    switch (type) {
+      case 'Array':
+        type = 'T[]';
+        generics.push('T');
+        break;
+      case 'New Array':
+        type = 'U[]';
+        generics.push('T');
+        generics.push('U');
+        break;
+      case 'ArrayElement':
+        type = 'T';
+        generics.push('T');
+        break;
+      case 'Mixed':
+        type = 'T';
+        generics.push('T');
+        break;
+      case 'Property':
+        type = 'T';
+        generics.push('T');
+        break;
+      case 'NewArrayElement':
+        type = 'U';
+        generics.push('T');
+        generics.push('U');
+        break;
+      case 'NewProperty':
+        type = 'U';
+        generics.push('T');
+        generics.push('U');
+        break;
+      case 'RangeElement':
+        type = 'T';
+        generics.push('T');
+        break;
+      case 'String':
+      case 'Number':
+      case 'Boolean':
+        type = type.toLowerCase();
+        break;
+    }
+    if (method && generics) {
+      addMethodGenerics(method, generics);
+    }
+    return type;
+  }
+
+  function getRawType(nativeName) {
+    var type = nativeName;
+    if (type && type.match(/^(string|number|boolean)$/i)) {
+      type = type.toLowerCase();
+    } else if (type === 'Array') {
+      type = 'T[]';
+    }
+    return type;
+  }
+
+  /* ------------ Generics -------------- */
+
+  function getNamespaceBaseGenerics(namespaceName) {
+    var generics = [];
+    if (namespaceName === 'Array') {
+      generics.push('T');
+    }
+    return generics;
+  }
+
+  function getChainableBaseGenerics(namespaceName, wrappedGeneric, arrayGeneric) {
+    var generics = [wrappedGeneric || CHAINABLE_RAW_TYPE];
+    if (namespaceName === 'Array') {
+      generics.unshift(arrayGeneric || 'T');
+    }
+    return getGenericSource(generics);
+  }
+
+  function getChainableInstanceGenerics(namespaceName) {
+    return getChainableBaseGenerics(namespaceName, getType(namespaceName));
+  }
+
+  function getGenericSource(generic) {
+    if (generic instanceof Array) {
+      generic = generic.join(', ');
+    }
+    if (!generic) {
+      return '';
+    } else if (generic.charAt(0) !== '<') {
+      return '<' + generic + '>';
+    }
+    return generic;
+  }
+
+  function addMethodGenerics(method, generics) {
+    if (typeof generics === 'string') {
+      generics = [generics];
+    }
+
+    // Initialize generics array
+    method.generics = method.generics || [];
+
+    generics.forEach(function(g) {
+      if (method.generics.indexOf(g) === -1) {
+        method.generics.push(g);
+      }
+    });
+  }
+
+  /* ------------ Methods -------------- */
+
+  function buildMethods(methods, namespace, mode) {
+    methods.sort(collateMethods);
+    methods = methods.map(function(method) {
+      return getMethod(method, namespace, mode);
+    });
+    return compact(methods);
+  }
+
+  function getParams(params, method, namespace, mode) {
+    var result = [];
+
+    function getFunctionSource(obj) {
+      var returns = getReturns(obj.returns, method, namespace, mode);
+      return '('+  getParams(obj.params, method, namespace, mode) +') => ' + returns;
+    }
+
+    (params || []).forEach(function(param, i) {
+      if (param.glob) {
+        for (var j = i - 1, p; j >= 0; j--) {
+          p = params[j];
+          if (p.name.match(/\d$/)) {
+            result.splice(j, 1);
+          }
+        }
+        result.push('...args: any[]');
+      } else {
+        var src = param.name + (param.required ? '' : '?') + ': ';
+        if (param.params) {
+          src += getFunctionSource(param);
+        } else {
+          src += (param.type || '').split('|').map(function(type) {
+            type = getType(type, method) || 'undefined';
+            if (type.match(/Fn$/)) {
+              if (param.type.indexOf('|') === -1) {
+                // If a callback is the ONLY type allowed for this parameter
+                // (no alternates), then it can be inlined directly into the
+                // definition, so do that here. Otherwise it needs to be moved
+                // out into a named type and referenced.
+                var callback = method.callbacks.find(function(callback) {
+                  return callback.name === type;
+                });
+                type = getFunctionSource(callback);
+              } else if (mode === 'extended') {
+                // If we are in extended mode and referencing a callback interface,
+                // then it needs to have its fully qualified namespace.
+                type = ['sugarjs', namespace.name, type].join('.');
+              }
+            } else if (type.match(/Options$/)) {
+              var optionsNamespace = optionInterfaceNamespaces[type];
+              if (mode === 'extended') {
+                // If we are in extended mode and referencing an options inteface,
+                // then it needs to have its fully qualified namespace.
+                type = ['sugarjs', optionsNamespace, type].join('.');
+              } else if (optionsNamespace && optionsNamespace !== namespace.name) {
+                // Options interfaces can be referenced across namespaces, so
+                // qualify them when necessary.
+                type = [optionsNamespace, type].join('.');
+              }
+            } else if (mode === 'extended' && (type === 'Range' || type === 'Locale')) {
+              // Ranges exist inside the sugarjs module, so qualify them
+              // as well when beind referenced in extended mode.
+              type = ['sugarjs', type].join('.');
+            }
+            return type;
+          }).join('|');
+        }
+        result.push(src);
+      }
+    });
+    return result.join(', ');
+  }
+
+  function getReturns(returns, method, namespace, mode) {
+    var src = getType(returns, method) || 'void', match;
+    if (src === 'SugarNamespace' && mode === 'constructor') {
+      src = 'Sugar' + namespace.name + 'Constructor';
+    } else if (src === 'SugarNamespace' && mode === 'namespace') {
+      src = 'this';
+    } else if ((src === 'Range' || src === 'Locale') && mode === 'extended') {
+      src = ['sugarjs', src].join('.');
+    } else if (mode === 'chainable') {
+      src = 'SugarDefaultChainable<' + src + '>';
+    } else if ((match = src.match(/Array<(.+)>/))) {
+      src = 'Array<' + getReturns(match[1], method, namespace, mode) + '>';
+    }
+    return src;
+  }
+
+  function getMethod(method, namespace, mode) {
+
+    if (methodIsBlacklisted(namespace.name, method.name)) {
+      return;
+    }
+
+    if (method.raw) {
+      return method.raw;
+    }
+
+    function getSignature(signature, returns) {
+      var params = getParams(signature, method, namespace, mode);
+      var generics = getMethodGenerics();
+      return method.name + generics + '(' +  params + '): ' + returns + ';';
+    }
+
+    function getMethodGenerics() {
+      var generics = method.generics;
+      if (mode !== 'static' && method.type === 'instance' && namespace.name === 'Array') {
+        generics = generics.filter(function(g) {
+          return g !== 'T';
+        });
+      }
+      return getGenericSource(generics);
+    }
+
+    var returns = getReturns(method.returns, method, namespace, mode);
+
+    return [method.params].concat(method.signatures || []).map(function(signature) {
+      return getSignature(signature, returns);
+    }).join('\n');
+
+  }
+
+  function getRawMethods(methods, mode) {
+    return (methods || []).map(function(src) {
+      var match = src.match(/(\w+)(<.+>)?\((.*)\): (.+);$/);
+      var name = match[1];
+      var generic = match[2] || src.match(/\bU\b/) ? '<U>' : '';
+      var returns = match[4];
+      if (mode === 'chainable') {
+        returns = 'SugarDefaultChainable<' + returns + '>';
+      }
+      var raw = name + generic + '(' + match[3] + '): '+ returns + ';';
+      return {
+        name: name,
+        raw: raw
+      }
+    });
+  }
+
+  /* ------------ Sorting -------------- */
+
+  function collateNamespaces(a, b) {
+    if (a.name === 'Sugar') {
+      return -1;
+    } else if (b.name === 'Sugar') {
+      return 1;
+    }
+    return 0;
+  }
+
+  function collateMethods(a, b) {
+    var aVal = getMethodCollateValue(a);
+    var bVal = getMethodCollateValue(b);
+    return aVal < bVal ? -1 : aVal > bVal ? 1 : 0;
+  }
+
+  function getMethodCollateValue(method) {
+    return getMethodRankForType(method) + method.name;
+  }
+
+  function getMethodRankForType(method) {
+    switch (method.type) {
+      case 'constructor': return 0;
+      case 'namespace':   return 1;
+      case 'static':      return 2;
+      case 'instance':    return 3;
+      case 'accessor':    return 4;
+      default:            return 5;
+    }
+  }
+
+  /* ------------ Util -------------- */
+
+  function indent(str, level) {
+    return str.replace(/^(?=.)/gm, '  '.repeat(level));
+  }
+
+  function clone(src) {
+    var target = src instanceof Array ? [] : {};
+    for (var key in src) {
+      if(src.hasOwnProperty(key)) {
+        var val = src[key];
+        if (val && typeof val === 'object') {
+          val = clone(val);
+        }
+        target[key] = val;
+      }
+    };
+    return target;
+  }
+
+  // Expands method sets and merges declaration supplements.
+  function unpackMethodSets(methods) {
+    var result = [];
+
+    methods.forEach(function(method) {
+      if (method.set) {
+        method.set.forEach(function(name) {
+          var setMethod = clone(method);
+          setMethod.name = name;
+          result.push(setMethod);
+        });
+      } else {
+        result.push(method);
+      }
+    });
+    return result;
+  }
+
+  /* ------------ Command Line Options -------------- */
+
+  function setCommandLineOptions() {
+
+    function getList(name) {
+      var arr = args[name], list;
+      if (typeof arr === 'string') {
+        arr = [arr];
+      }
+      if (arr) {
+        list = {};
+        arr.forEach(function(item) {
+          list[item] = true;
+        });
+      }
+      return list;
+    }
+
+    blacklist = getList('exclude');
+    whitelist = getList('include');
+  }
+
+  function methodIsBlacklisted(namespaceName, methodName) {
+    var key = namespaceName + ':' + methodName;
+    if (namespaceName && namespaceName.match(/^Sugar/)) {
+      // Core methods are always output
+      return false;
+    }
+    if (whitelist && !whitelist[namespaceName] && !whitelist[key]) {
+      return true;
+    }
+    if (blacklist && (blacklist[namespaceName] || blacklist[key])) {
+      return true;
+    }
+    return false;
+  }
+
+  /* ------------ Exporting -------------- */
+
+  function exportDeclarations() {
+
+    var docs = getJSONDocs();
+    var sugarjs = getModule('sugarjs');
+
+    var extendedInterfaces = [], nativeNames = [];
+
+    function getNamespaceTypesMerged(num, suffixVal, join, supplementary) {
+      var types = nativeNames.concat(supplementary || []);
+      var indent = ' '.repeat(num);
+      return types.map(function(type) {
+        var suffix = typeof suffixVal === 'function' ? suffixVal(type) : suffixVal;
+        return type + suffix;
+      }).join(' ' + join + '\n' + indent);
+    }
+
+    function getChainableNameExternal(type) {
+      return '.Chainable' + getChainableBaseGenerics(type, CHAINABLE_RAW_TYPE, 'any');
+    }
+
+    sugarjs.interfaces.push(getLocaleInterface());
+
+    // Sort namespaces for Sugar to come before SugarNamespace
+    // as it has ExtendOptions which are defined first.
+    docs.namespaces.sort(collateNamespaces);
+
+    docs.namespaces.forEach(function(namespace) {
+
+      function addExtras(module) {
+        addCallbackTypes(module, namespace.methods);
+        addOptionsInterfaces(module, namespace.methods);
+      }
+
+      function addCallbackTypes(module, methods) {
+
+        // If the param has multiple types, then move callbacks into the
+        // module as named types. Only do this if there are multiple
+        // types, otherwise the callback signature can be inlined into
+        // the method declaration.
+        function getAlternateTypes(method) {
+          var types = [];
+
+          function process(arr) {
+            if (arr) {
+              arr.forEach(function(obj) {
+                if (obj.type) {
+                  var split = obj.type.split('|');
+                  if (split.length > 1) {
+                    types = types.concat(split);
+                  }
+                }
+              });
+            }
+          }
+
+          process(method.params);
+          process(method.options);
+
+          return types;
+        }
+
+        function addModuleCallbackType(method, callback) {
+          var typeExists = module.types.some(function(t) {
+            return t.name === callback.name;
+          });
+          if (!typeExists) {
+            module.types.push({
+              name: callback.name,
+              type: getCallbackSignature(callback, method, namespace)
+            });
+          }
+        }
+
+        methods.forEach(function(method) {
+          if (!method.callbacks) {
+            return;
+          }
+          getAlternateTypes(method).forEach(function(type) {
+            if (type.match(/Fn$/)) {
+              var callback = findMethodCallbackByName(method, type);
+              addModuleCallbackType(method, callback);
+            }
+          });
+        });
+
+      }
+
+      function addOptionsInterfaces(module, methods) {
+        methods.forEach(function(method) {
+          if (method.options) {
+
+            var params = method.params;
+            (method.signatures || []).forEach(function(signature) {
+              params = params.concat(signature);
+            })
+
+            var optionsParam = params.find(function(param) {
+              return param.type.match(/Options$/);
+            });
+
+            var src = method.options.map(function(option) {
+              var types = option.type.split('|');
+              types = types.map(function(type) {
+                if (types.length === 1 && type.match(/Fn$/)) {
+                  var callback = findMethodCallbackByName(method, type);
+                  type = getCallbackSignature(callback, method, namespace);
+                }
+                return type;
+              });
+              return option.name + (option.required ? '' : '?') + ': ' + types.join('|') + ';';
+            }).join('\n');
+
+            // Store references to the namespaces that option interfaces exist in
+            // so that we can reference them externally later.
+            if (!namespace.name.match(/^Sugar/)) {
+              optionInterfaceNamespaces[optionsParam.type] = namespace.name;
+            }
+
+            module.interfaces.push(getInterfaceSource(optionsParam.type, src));
+          }
+        });
+      }
+
+      function getCallbackSignature(callback, method, namespace) {
+        var params = getParams(callback.params, method, namespace);
+        var returns = callback.returns ? getType(callback.returns, method) : 'void';
+        return getGenericSource(method.generics) + '(' + params + ') => ' + returns;
+      }
+
+      function findMethodCallbackByName(method, name) {
+        return method.callbacks.find(function(callback) {
+          return callback.name === name;
+        });
+      }
+
+      // Exclude polyfills
+      namespace.methods = namespace.methods.filter(function(method) {
+        return !method.module.match(/ES[5-7]/);
+      });
+
+      // Unpack sets like "[unit]FromNow"
+      namespace.methods = unpackMethodSets(namespace.methods);
+
+      if (namespace.name === 'Sugar') {
+        addExtras(sugarjs);
+        sugarjs.interfaces.push(getSugarInterface(namespace, docs.namespaces));
+      } else if (namespace.name === 'SugarNamespace') {
+        // The generic "SugarNamespace" interface is required for the
+        // "createNamespace" method that needs to return an as-yet undefined
+        // type. For existing namespaces, the methods here will instead be
+        // mixed into each individual interface. This is required, as each
+        // namespace returns a reference to itself, and so (it would appear)
+        // cannot use extend.
+        addExtras(sugarjs);
+        sugarjs.interfaces.push(getSugarNamespaceInterface(namespace));
+      } else if (namespace.name === 'Range') {
+        sugarjs.interfaces.push(getRangeInterface(namespace));
+      } else {
+        var module = getModule(namespace.name);
+        module.interfaces.push(getConstructorInterface(namespace, module));
+        module.interfaces.push(getChainableBaseInterface(namespace));
+
+        addExtras(module);
+
+        // Export extended interfaces unless opting out.
+        if (args['extended-mode'] !== false) {
+          extendedInterfaces.push(getExtendedConstructorInterface(namespace));
+
+          // Note: due to Typescript quirkiness about incompatible interfaces,
+          // Object.prototype mode cannot be supported here for now.
+          if (namespace.name !== 'Object') {
+            extendedInterfaces.push(getExtendedInstanceInterface(namespace));
+          }
+        }
+
+        sugarjs.modules.push(getModuleSource(module));
+        nativeNames.push(namespace.name);
+      }
+
+    });
+
+    sugarjs.types.push({
+      name: 'DisambiguationFunction',
+      type: 'Function'
+    });
+
+    var wrappedGeneric = getGenericSource(CHAINABLE_RAW_TYPE);
+    sugarjs.types.push({
+      name: 'SugarDefaultChainable' + wrappedGeneric,
+      type: getNamespaceTypesMerged(39, getChainableNameExternal, '&'),
+    });
+
+    sugarjs.types.push({
+      name: 'NativeConstructor',
+      type: getNamespaceTypesMerged(25, 'Constructor', '|', ['Boolean', 'Error']),
+    });
+
+
+    var blocks = [];
+    blocks.push(TS_LICENSE);
+    blocks.push(getModuleSource(sugarjs, true));
+    blocks.push(getInterfaceBlocks(extendedInterfaces));
+    blocks.push('declare var Sugar: sugarjs.Sugar;');
+
+    outputFile('sugar.d.ts', compact(blocks).join('\n\n'));
+  }
+
+  setCommandLineOptions();
+  exportDeclarations();
 }
 
 // -------------- Tests ----------------
