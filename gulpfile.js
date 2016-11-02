@@ -3487,6 +3487,12 @@ var TS_LICENSE = block`
 // Definitions by: Andrew Plummer <plummer.andrew@gmail.com>
 `;
 
+var TS_EXTENDED_LICENSE = block`
+// Extended type definitions for Sugar ${getVersion(true)}
+// Project: https://sugarjs.com/
+// Definitions by: Andrew Plummer <plummer.andrew@gmail.com>
+`;
+
 function buildTypescriptDeclarations() {
 
   var CHAINABLE_RAW_TYPE = 'RawValue';
@@ -4462,13 +4468,17 @@ function buildTypescriptDeclarations() {
     });
 
 
-    var blocks = [];
-    blocks.push(TS_LICENSE);
-    blocks.push(getModuleSource(sugarjs, true));
-    blocks.push(getInterfaceBlocks(extendedInterfaces));
-    blocks.push('declare var Sugar: sugarjs.Sugar;');
+    var baseDeclarations = [];
+    baseDeclarations.push(TS_LICENSE);
+    baseDeclarations.push(getModuleSource(sugarjs, true));
+    baseDeclarations.push('declare var Sugar: sugarjs.Sugar;');
 
-    outputFile('sugar.d.ts', compact(blocks).join('\n\n'));
+    var extendedDeclarations = [];
+    extendedDeclarations.push(TS_EXTENDED_LICENSE);
+    extendedDeclarations.push(getInterfaceBlocks(extendedInterfaces));
+
+    outputFile('sugar.d.ts', compact(baseDeclarations).join('\n\n'));
+    outputFile('sugar-extended.d.ts', compact(extendedDeclarations).join('\n\n'));
   }
 
   setCommandLineOptions();
