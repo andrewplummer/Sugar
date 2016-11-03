@@ -1,3 +1,9 @@
+v2.0.1
+======
+
+- Fixed issues with locales not being ignored in modularized repos.
+
+
 v2.0.0
 ======
 
