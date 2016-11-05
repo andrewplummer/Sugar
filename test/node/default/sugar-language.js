@@ -1,8 +1,8 @@
 var runner = require('../setup');
 
-runner.load('../../packages/sugar-language');
+Sugar = runner.load('../../packages/sugar-language');
 
 // Tests
 runner.loadTest('language');
 
-runner.run(module);
+runner.run(module, 'default', Sugar);

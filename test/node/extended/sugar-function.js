@@ -1,8 +1,8 @@
 var runner = require('../setup');
 
-runner.load('../../packages/sugar-function');
+Sugar = runner.load('../../packages/sugar-function');
 
 // Tests
 runner.loadTest('function');
 
-runner.run(module, 'extended');
+runner.run(module, 'extended', Sugar);

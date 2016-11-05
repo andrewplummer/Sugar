@@ -1,8 +1,8 @@
 var runner = require('../setup');
 
-runner.load('../../packages/sugar-enumerable');
+Sugar = runner.load('../../packages/sugar-enumerable');
 
 // Tests
 runner.loadTest('enumerable');
 
-runner.run(module, 'extended');
+runner.run(module, 'extended', Sugar);

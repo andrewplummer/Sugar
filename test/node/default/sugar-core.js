@@ -1,6 +1,6 @@
 var runner = require('../setup');
 
-var Sugar = runner.load('../../packages/sugar-core');
+Sugar = runner.load('../../packages/sugar-core');
 
 // Tests
 runner.loadTest('core');

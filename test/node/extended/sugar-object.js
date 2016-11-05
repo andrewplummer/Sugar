@@ -1,9 +1,9 @@
 var runner = require('../setup');
 
-runner.load('../../packages/sugar-object');
+Sugar = runner.load('../../packages/sugar-object');
 
 // Tests
 runner.loadTest('object');
 runner.loadTest('equals');
 
-runner.run(module, 'extended');
+runner.run(module, 'extended', Sugar);

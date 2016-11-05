@@ -4,7 +4,8 @@ runner.resetPolyfills('es6');
 runner.resetPolyfills('es7');
 
 runner.load('../../packages/sugar/polyfills');
-runner.load('../../packages/sugar');
+
+Sugar = runner.load('../../packages/sugar');
 runner.load('../../packages/sugar/locales');
 
 // Tests
@@ -31,4 +32,4 @@ runner.loadTest('range/string');
 // Locales
 runner.loadLocaleTests()
 
-runner.run(module);
+runner.run(module, 'default', Sugar);

@@ -61,7 +61,7 @@ function load(loadPath) {
 }
 
 function pathIsLocal(p) {
-  return p.indexOf(baseDir) === 0 && !/node_modules/.test(p);
+  return !/node_modules/.test(p);
 }
 
 function pathIsCore(p) {

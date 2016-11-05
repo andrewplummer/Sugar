@@ -1,8 +1,8 @@
 var runner = require('../setup');
 
-runner.load('../../packages/sugar-inflections');
+Sugar = runner.load('../../packages/sugar-inflections');
 
 // Tests
 runner.loadTest('inflections');
 
-runner.run(module, 'chained');
+runner.run(module, 'chained', Sugar);
