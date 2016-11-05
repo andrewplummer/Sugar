@@ -24,9 +24,9 @@ A Javascript library for working with native objects.
 ---------------------------------------
 
 
-# v2.0.0
+# v2.0.2
 
-### [sugar.js](https://raw.githubusercontent.com/andrewplummer/Sugar/2.0.0/dist/sugar.js) | [sugar.min.js (24kb gz)](https://raw.githubusercontent.com/andrewplummer/Sugar/2.0.0/dist/sugar.min.js)
+### [sugar.js](https://raw.githubusercontent.com/andrewplummer/Sugar/2.0.2/dist/sugar.js) | [sugar.min.js (24kb gz)](https://raw.githubusercontent.com/andrewplummer/Sugar/2.0.2/dist/sugar.min.js)
 
 
 ## Install

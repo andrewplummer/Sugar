@@ -1,4 +1,4 @@
-// Extended type definitions for Sugar v2.0.0
+// Extended type definitions for Sugar v2.0.2
 // Project: https://sugarjs.com/
 // Definitions by: Andrew Plummer <plummer.andrew@gmail.com>
 
@@ -79,7 +79,7 @@ interface DateConstructor {
   create(d?: string|number|Date, options?: sugarjs.Date.DateCreateOptions): Date;
   getAllLocaleCodes(): string[];
   getAllLocales(): Array<sugarjs.Locale>;
-  getLocale(code?: string): sugarjs.Locale;
+  getLocale(localeCode?: string): sugarjs.Locale;
   range(start?: string|Date, end?: string|Date): sugarjs.Range;
   removeLocale(code: string): sugarjs.Locale;
   setLocale(code: string): sugarjs.Locale;
@@ -97,24 +97,24 @@ interface Date {
   advance(set: string|Object, reset?: boolean): Date;
   advance(milliseconds: number): Date;
   advance(year: number, month: number, day?: number, hour?: number, minute?: number, second?: number, millliseconds?: undefined): Date;
-  beginningOfDay(code?: string): Date;
+  beginningOfDay(localeCode?: string): Date;
   beginningOfISOWeek(): Date;
-  beginningOfMonth(code?: string): Date;
-  beginningOfWeek(code?: string): Date;
-  beginningOfYear(code?: string): Date;
+  beginningOfMonth(localeCode?: string): Date;
+  beginningOfWeek(localeCode?: string): Date;
+  beginningOfYear(localeCode?: string): Date;
   clone(): Date;
   daysAgo(): number;
   daysFromNow(): number;
   daysInMonth(): number;
   daysSince(d: string|number|Date, options?: sugarjs.Date.DateCreateOptions): number;
   daysUntil(d?: string|number|Date, options?: sugarjs.Date.DateCreateOptions): number;
-  endOfDay(code?: string): Date;
+  endOfDay(localeCode?: string): Date;
   endOfISOWeek(): Date;
-  endOfMonth(code?: string): Date;
-  endOfWeek(code?: string): Date;
-  endOfYear(code?: string): Date;
-  format(f?: string, code?: string): string;
-  full(code?: string): string;
+  endOfMonth(localeCode?: string): Date;
+  endOfWeek(localeCode?: string): Date;
+  endOfYear(localeCode?: string): Date;
+  format(f?: string, localeCode?: string): string;
+  full(localeCode?: string): string;
   get(d: string|number|Date, options?: sugarjs.Date.DateCreateOptions): Date;
   getISOWeek(): number;
   getUTCOffset(iso?: boolean): string;
@@ -130,20 +130,20 @@ interface Date {
   isBetween(d1: string|number|Date, d2: string|number|Date, margin?: number): boolean;
   isFriday(): boolean;
   isFuture(): boolean;
-  isLastMonth(code?: string): boolean;
-  isLastWeek(code?: string): boolean;
-  isLastYear(code?: string): boolean;
+  isLastMonth(localeCode?: string): boolean;
+  isLastWeek(localeCode?: string): boolean;
+  isLastYear(localeCode?: string): boolean;
   isLeapYear(): boolean;
   isMonday(): boolean;
-  isNextMonth(code?: string): boolean;
-  isNextWeek(code?: string): boolean;
-  isNextYear(code?: string): boolean;
+  isNextMonth(localeCode?: string): boolean;
+  isNextWeek(localeCode?: string): boolean;
+  isNextYear(localeCode?: string): boolean;
   isPast(): boolean;
   isSaturday(): boolean;
   isSunday(): boolean;
-  isThisMonth(code?: string): boolean;
-  isThisWeek(code?: string): boolean;
-  isThisYear(code?: string): boolean;
+  isThisMonth(localeCode?: string): boolean;
+  isThisWeek(localeCode?: string): boolean;
+  isThisYear(localeCode?: string): boolean;
   isThursday(): boolean;
   isToday(): boolean;
   isTomorrow(): boolean;
@@ -155,8 +155,8 @@ interface Date {
   isWeekend(): boolean;
   isYesterday(): boolean;
   iso(): string;
-  long(code?: string): string;
-  medium(code?: string): string;
+  long(localeCode?: string): string;
+  medium(localeCode?: string): string;
   millisecondsAgo(): number;
   millisecondsFromNow(): number;
   millisecondsSince(d: string|number|Date, options?: sugarjs.Date.DateCreateOptions): number;
@@ -169,10 +169,10 @@ interface Date {
   monthsFromNow(): number;
   monthsSince(d: string|number|Date, options?: sugarjs.Date.DateCreateOptions): number;
   monthsUntil(d?: string|number|Date, options?: sugarjs.Date.DateCreateOptions): number;
-  relative(code?: string, fn?: (num: number, unit: number, ms: number, loc: sugarjs.Locale) => string): string;
+  relative(localeCode?: string, fn?: (num: number, unit: number, ms: number, loc: sugarjs.Locale) => string): string;
   relative(fn?: (num: number, unit: number, ms: number, loc: sugarjs.Locale) => string): string;
-  relativeTo(d: string|number|Date, code?: string): string;
-  reset(unit?: string, code?: string): Date;
+  relativeTo(d: string|number|Date, localeCode?: undefined): string;
+  reset(unit?: string, localeCode?: string): Date;
   rewind(set: string|Object, reset?: boolean): Date;
   rewind(milliseconds: number): Date;
   rewind(year: number, month: number, day?: number, hour?: number, minute?: number, second?: number, millliseconds?: undefined): Date;
@@ -186,7 +186,7 @@ interface Date {
   setISOWeek(num: number): void;
   setUTC(on?: boolean): Date;
   setWeekday(dow: number): void;
-  short(code?: string): string;
+  short(localeCode?: string): string;
   weeksAgo(): number;
   weeksFromNow(): number;
   weeksSince(d: string|number|Date, options?: sugarjs.Date.DateCreateOptions): number;
@@ -240,7 +240,7 @@ interface Number {
   daysFromNow(): Date;
   downto<T>(num: number, step?: number, fn?: (el: T, i: number, r: sugarjs.Range) => void): T[];
   downto<T>(num: number, fn?: (el: T, i: number, r: sugarjs.Range) => void): T[];
-  duration(code?: string): string;
+  duration(localeCode?: string): string;
   exp(): number;
   floor(precision?: number): number;
   format(place?: number): string;

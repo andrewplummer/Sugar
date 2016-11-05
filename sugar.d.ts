@@ -1,4 +1,4 @@
-// Type definitions for Sugar v2.0.0
+// Type definitions for Sugar v2.0.2
 // Project: https://sugarjs.com/
 // Definitions by: Andrew Plummer <plummer.andrew@gmail.com>
 
@@ -42,9 +42,9 @@ declare module sugarjs {
   }
 
   interface Sugar {
-    (options?: ExtendOptions): Sugar;
+    (opts?: ExtendOptions): Sugar;
     createNamespace(name: string): SugarNamespace;
-    extend(options?: ExtendOptions): Sugar;
+    extend(opts?: ExtendOptions): Sugar;
     Array: Array.Constructor;
     Date: Date.Constructor;
     Function: Function.Constructor;
@@ -92,7 +92,7 @@ declare module sugarjs {
     defineStaticPolyfill(methodName: string, methodFn: Function): this;
     defineStaticWithArguments(methods: Object): this;
     defineStaticWithArguments(methodName: string, methodFn: Function): this;
-    extend(options?: ExtendOptions): this;
+    extend(opts?: ExtendOptions): this;
   }
 
   module Array {
@@ -296,7 +296,7 @@ declare module sugarjs {
       create(d?: string|number|Date, options?: DateCreateOptions): Date;
       getAllLocaleCodes(): string[];
       getAllLocales(): Array<Locale>;
-      getLocale(code?: string): Locale;
+      getLocale(localeCode?: string): Locale;
       range(start?: string|Date, end?: string|Date): Range;
       removeLocale(code: string): Locale;
       setLocale(code: string): Locale;
@@ -311,24 +311,24 @@ declare module sugarjs {
       advance(instance: Date, set: string|Object, reset?: boolean): Date;
       advance(instance: Date, milliseconds: number): Date;
       advance(instance: Date, year: number, month: number, day?: number, hour?: number, minute?: number, second?: number, millliseconds?: undefined): Date;
-      beginningOfDay(instance: Date, code?: string): Date;
+      beginningOfDay(instance: Date, localeCode?: string): Date;
       beginningOfISOWeek(instance: Date): Date;
-      beginningOfMonth(instance: Date, code?: string): Date;
-      beginningOfWeek(instance: Date, code?: string): Date;
-      beginningOfYear(instance: Date, code?: string): Date;
+      beginningOfMonth(instance: Date, localeCode?: string): Date;
+      beginningOfWeek(instance: Date, localeCode?: string): Date;
+      beginningOfYear(instance: Date, localeCode?: string): Date;
       clone(instance: Date): Date;
       daysAgo(instance: Date): number;
       daysFromNow(instance: Date): number;
       daysInMonth(instance: Date): number;
       daysSince(instance: Date, d: string|number|Date, options?: DateCreateOptions): number;
       daysUntil(instance: Date, d?: string|number|Date, options?: DateCreateOptions): number;
-      endOfDay(instance: Date, code?: string): Date;
+      endOfDay(instance: Date, localeCode?: string): Date;
       endOfISOWeek(instance: Date): Date;
-      endOfMonth(instance: Date, code?: string): Date;
-      endOfWeek(instance: Date, code?: string): Date;
-      endOfYear(instance: Date, code?: string): Date;
-      format(instance: Date, f?: string, code?: string): string;
-      full(instance: Date, code?: string): string;
+      endOfMonth(instance: Date, localeCode?: string): Date;
+      endOfWeek(instance: Date, localeCode?: string): Date;
+      endOfYear(instance: Date, localeCode?: string): Date;
+      format(instance: Date, f?: string, localeCode?: string): string;
+      full(instance: Date, localeCode?: string): string;
       get(instance: Date, d: string|number|Date, options?: DateCreateOptions): Date;
       getISOWeek(instance: Date): number;
       getUTCOffset(instance: Date, iso?: boolean): string;
@@ -344,20 +344,20 @@ declare module sugarjs {
       isBetween(instance: Date, d1: string|number|Date, d2: string|number|Date, margin?: number): boolean;
       isFriday(instance: Date): boolean;
       isFuture(instance: Date): boolean;
-      isLastMonth(instance: Date, code?: string): boolean;
-      isLastWeek(instance: Date, code?: string): boolean;
-      isLastYear(instance: Date, code?: string): boolean;
+      isLastMonth(instance: Date, localeCode?: string): boolean;
+      isLastWeek(instance: Date, localeCode?: string): boolean;
+      isLastYear(instance: Date, localeCode?: string): boolean;
       isLeapYear(instance: Date): boolean;
       isMonday(instance: Date): boolean;
-      isNextMonth(instance: Date, code?: string): boolean;
-      isNextWeek(instance: Date, code?: string): boolean;
-      isNextYear(instance: Date, code?: string): boolean;
+      isNextMonth(instance: Date, localeCode?: string): boolean;
+      isNextWeek(instance: Date, localeCode?: string): boolean;
+      isNextYear(instance: Date, localeCode?: string): boolean;
       isPast(instance: Date): boolean;
       isSaturday(instance: Date): boolean;
       isSunday(instance: Date): boolean;
-      isThisMonth(instance: Date, code?: string): boolean;
-      isThisWeek(instance: Date, code?: string): boolean;
-      isThisYear(instance: Date, code?: string): boolean;
+      isThisMonth(instance: Date, localeCode?: string): boolean;
+      isThisWeek(instance: Date, localeCode?: string): boolean;
+      isThisYear(instance: Date, localeCode?: string): boolean;
       isThursday(instance: Date): boolean;
       isToday(instance: Date): boolean;
       isTomorrow(instance: Date): boolean;
@@ -369,8 +369,8 @@ declare module sugarjs {
       isWeekend(instance: Date): boolean;
       isYesterday(instance: Date): boolean;
       iso(instance: Date): string;
-      long(instance: Date, code?: string): string;
-      medium(instance: Date, code?: string): string;
+      long(instance: Date, localeCode?: string): string;
+      medium(instance: Date, localeCode?: string): string;
       millisecondsAgo(instance: Date): number;
       millisecondsFromNow(instance: Date): number;
       millisecondsSince(instance: Date, d: string|number|Date, options?: DateCreateOptions): number;
@@ -383,10 +383,10 @@ declare module sugarjs {
       monthsFromNow(instance: Date): number;
       monthsSince(instance: Date, d: string|number|Date, options?: DateCreateOptions): number;
       monthsUntil(instance: Date, d?: string|number|Date, options?: DateCreateOptions): number;
-      relative(instance: Date, code?: string, fn?: (num: number, unit: number, ms: number, loc: Locale) => string): string;
+      relative(instance: Date, localeCode?: string, fn?: (num: number, unit: number, ms: number, loc: Locale) => string): string;
       relative(instance: Date, fn?: (num: number, unit: number, ms: number, loc: Locale) => string): string;
-      relativeTo(instance: Date, d: string|number|Date, code?: string): string;
-      reset(instance: Date, unit?: string, code?: string): Date;
+      relativeTo(instance: Date, d: string|number|Date, localeCode?: undefined): string;
+      reset(instance: Date, unit?: string, localeCode?: string): Date;
       rewind(instance: Date, set: string|Object, reset?: boolean): Date;
       rewind(instance: Date, milliseconds: number): Date;
       rewind(instance: Date, year: number, month: number, day?: number, hour?: number, minute?: number, second?: number, millliseconds?: undefined): Date;
@@ -400,7 +400,7 @@ declare module sugarjs {
       setISOWeek(instance: Date, num: number): void;
       setUTC(instance: Date, on?: boolean): Date;
       setWeekday(instance: Date, dow: number): void;
-      short(instance: Date, code?: string): string;
+      short(instance: Date, localeCode?: string): string;
       weeksAgo(instance: Date): number;
       weeksFromNow(instance: Date): number;
       weeksSince(instance: Date, d: string|number|Date, options?: DateCreateOptions): number;
@@ -429,24 +429,24 @@ declare module sugarjs {
       advance(set: string|Object, reset?: boolean): SugarDefaultChainable<Date>;
       advance(milliseconds: number): SugarDefaultChainable<Date>;
       advance(year: number, month: number, day?: number, hour?: number, minute?: number, second?: number, millliseconds?: undefined): SugarDefaultChainable<Date>;
-      beginningOfDay(code?: string): SugarDefaultChainable<Date>;
+      beginningOfDay(localeCode?: string): SugarDefaultChainable<Date>;
       beginningOfISOWeek(): SugarDefaultChainable<Date>;
-      beginningOfMonth(code?: string): SugarDefaultChainable<Date>;
-      beginningOfWeek(code?: string): SugarDefaultChainable<Date>;
-      beginningOfYear(code?: string): SugarDefaultChainable<Date>;
+      beginningOfMonth(localeCode?: string): SugarDefaultChainable<Date>;
+      beginningOfWeek(localeCode?: string): SugarDefaultChainable<Date>;
+      beginningOfYear(localeCode?: string): SugarDefaultChainable<Date>;
       clone(): SugarDefaultChainable<Date>;
       daysAgo(): SugarDefaultChainable<number>;
       daysFromNow(): SugarDefaultChainable<number>;
       daysInMonth(): SugarDefaultChainable<number>;
       daysSince(d: string|number|Date, options?: DateCreateOptions): SugarDefaultChainable<number>;
       daysUntil(d?: string|number|Date, options?: DateCreateOptions): SugarDefaultChainable<number>;
-      endOfDay(code?: string): SugarDefaultChainable<Date>;
+      endOfDay(localeCode?: string): SugarDefaultChainable<Date>;
       endOfISOWeek(): SugarDefaultChainable<Date>;
-      endOfMonth(code?: string): SugarDefaultChainable<Date>;
-      endOfWeek(code?: string): SugarDefaultChainable<Date>;
-      endOfYear(code?: string): SugarDefaultChainable<Date>;
-      format(f?: string, code?: string): SugarDefaultChainable<string>;
-      full(code?: string): SugarDefaultChainable<string>;
+      endOfMonth(localeCode?: string): SugarDefaultChainable<Date>;
+      endOfWeek(localeCode?: string): SugarDefaultChainable<Date>;
+      endOfYear(localeCode?: string): SugarDefaultChainable<Date>;
+      format(f?: string, localeCode?: string): SugarDefaultChainable<string>;
+      full(localeCode?: string): SugarDefaultChainable<string>;
       get(d: string|number|Date, options?: DateCreateOptions): SugarDefaultChainable<Date>;
       getISOWeek(): SugarDefaultChainable<number>;
       getUTCOffset(iso?: boolean): SugarDefaultChainable<string>;
@@ -462,20 +462,20 @@ declare module sugarjs {
       isBetween(d1: string|number|Date, d2: string|number|Date, margin?: number): SugarDefaultChainable<boolean>;
       isFriday(): SugarDefaultChainable<boolean>;
       isFuture(): SugarDefaultChainable<boolean>;
-      isLastMonth(code?: string): SugarDefaultChainable<boolean>;
-      isLastWeek(code?: string): SugarDefaultChainable<boolean>;
-      isLastYear(code?: string): SugarDefaultChainable<boolean>;
+      isLastMonth(localeCode?: string): SugarDefaultChainable<boolean>;
+      isLastWeek(localeCode?: string): SugarDefaultChainable<boolean>;
+      isLastYear(localeCode?: string): SugarDefaultChainable<boolean>;
       isLeapYear(): SugarDefaultChainable<boolean>;
       isMonday(): SugarDefaultChainable<boolean>;
-      isNextMonth(code?: string): SugarDefaultChainable<boolean>;
-      isNextWeek(code?: string): SugarDefaultChainable<boolean>;
-      isNextYear(code?: string): SugarDefaultChainable<boolean>;
+      isNextMonth(localeCode?: string): SugarDefaultChainable<boolean>;
+      isNextWeek(localeCode?: string): SugarDefaultChainable<boolean>;
+      isNextYear(localeCode?: string): SugarDefaultChainable<boolean>;
       isPast(): SugarDefaultChainable<boolean>;
       isSaturday(): SugarDefaultChainable<boolean>;
       isSunday(): SugarDefaultChainable<boolean>;
-      isThisMonth(code?: string): SugarDefaultChainable<boolean>;
-      isThisWeek(code?: string): SugarDefaultChainable<boolean>;
-      isThisYear(code?: string): SugarDefaultChainable<boolean>;
+      isThisMonth(localeCode?: string): SugarDefaultChainable<boolean>;
+      isThisWeek(localeCode?: string): SugarDefaultChainable<boolean>;
+      isThisYear(localeCode?: string): SugarDefaultChainable<boolean>;
       isThursday(): SugarDefaultChainable<boolean>;
       isToday(): SugarDefaultChainable<boolean>;
       isTomorrow(): SugarDefaultChainable<boolean>;
@@ -487,8 +487,8 @@ declare module sugarjs {
       isWeekend(): SugarDefaultChainable<boolean>;
       isYesterday(): SugarDefaultChainable<boolean>;
       iso(): SugarDefaultChainable<string>;
-      long(code?: string): SugarDefaultChainable<string>;
-      medium(code?: string): SugarDefaultChainable<string>;
+      long(localeCode?: string): SugarDefaultChainable<string>;
+      medium(localeCode?: string): SugarDefaultChainable<string>;
       millisecondsAgo(): SugarDefaultChainable<number>;
       millisecondsFromNow(): SugarDefaultChainable<number>;
       millisecondsSince(d: string|number|Date, options?: DateCreateOptions): SugarDefaultChainable<number>;
@@ -501,10 +501,10 @@ declare module sugarjs {
       monthsFromNow(): SugarDefaultChainable<number>;
       monthsSince(d: string|number|Date, options?: DateCreateOptions): SugarDefaultChainable<number>;
       monthsUntil(d?: string|number|Date, options?: DateCreateOptions): SugarDefaultChainable<number>;
-      relative(code?: string, fn?: (num: number, unit: number, ms: number, loc: Locale) => SugarDefaultChainable<string>): SugarDefaultChainable<string>;
+      relative(localeCode?: string, fn?: (num: number, unit: number, ms: number, loc: Locale) => SugarDefaultChainable<string>): SugarDefaultChainable<string>;
       relative(fn?: (num: number, unit: number, ms: number, loc: Locale) => SugarDefaultChainable<string>): SugarDefaultChainable<string>;
-      relativeTo(d: string|number|Date, code?: string): SugarDefaultChainable<string>;
-      reset(unit?: string, code?: string): SugarDefaultChainable<Date>;
+      relativeTo(d: string|number|Date, localeCode?: undefined): SugarDefaultChainable<string>;
+      reset(unit?: string, localeCode?: string): SugarDefaultChainable<Date>;
       rewind(set: string|Object, reset?: boolean): SugarDefaultChainable<Date>;
       rewind(milliseconds: number): SugarDefaultChainable<Date>;
       rewind(year: number, month: number, day?: number, hour?: number, minute?: number, second?: number, millliseconds?: undefined): SugarDefaultChainable<Date>;
@@ -518,7 +518,7 @@ declare module sugarjs {
       setISOWeek(num: number): SugarDefaultChainable<void>;
       setUTC(on?: boolean): SugarDefaultChainable<Date>;
       setWeekday(dow: number): SugarDefaultChainable<void>;
-      short(code?: string): SugarDefaultChainable<string>;
+      short(localeCode?: string): SugarDefaultChainable<string>;
       weeksAgo(): SugarDefaultChainable<number>;
       weeksFromNow(): SugarDefaultChainable<number>;
       weeksSince(d: string|number|Date, options?: DateCreateOptions): SugarDefaultChainable<number>;
@@ -663,7 +663,7 @@ declare module sugarjs {
       daysFromNow(instance: number): Date;
       downto<T>(instance: number, num: number, step?: number, fn?: (el: T, i: number, r: Range) => void): T[];
       downto<T>(instance: number, num: number, fn?: (el: T, i: number, r: Range) => void): T[];
-      duration(instance: number, code?: string): string;
+      duration(instance: number, localeCode?: string): string;
       exp(instance: number): number;
       floor(instance: number, precision?: number): number;
       format(instance: number, place?: number): string;
@@ -787,7 +787,7 @@ declare module sugarjs {
       daysFromNow(): SugarDefaultChainable<Date>;
       downto<T>(num: number, step?: number, fn?: (el: T, i: number, r: Range) => SugarDefaultChainable<void>): SugarDefaultChainable<T[]>;
       downto<T>(num: number, fn?: (el: T, i: number, r: Range) => SugarDefaultChainable<void>): SugarDefaultChainable<T[]>;
-      duration(code?: string): SugarDefaultChainable<string>;
+      duration(localeCode?: string): SugarDefaultChainable<string>;
       exp(): SugarDefaultChainable<number>;
       floor(precision?: number): SugarDefaultChainable<number>;
       format(place?: number): SugarDefaultChainable<string>;

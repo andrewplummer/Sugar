@@ -1,3 +1,10 @@
+
+v2.0.2
+======
+
+- Added Typescript declaration files.
+
+
 v2.0.1
 ======
 
