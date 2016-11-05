@@ -268,7 +268,7 @@ function getDefaultFlags() {
     jar: COMPILER_JAR_PATH,
     compilation_level: 'ADVANCED',
     assume_function_wrapper: true,
-    jscomp_off: ['globalThis', 'misplacedTypeAnnotation', 'checkTypes'],
+    jscomp_off: ['globalThis', 'checkTypes'],
     output_wrapper: LICENSE + "\n(function(){'use strict';%output%}).call(this);",
     externs: 'lib/extras/externs.js'
   };
@@ -283,10 +283,6 @@ function readFile(path) {
 function writeFile(outputPath, body) {
   mkdirp.sync(path.dirname(outputPath));
   fs.writeFileSync(outputPath, body, 'utf-8');
-}
-
-function outputFile(outputPath, body) {
-  writeFile(args.o || args.output || outputPath, body);
 }
 
 function outputJSON(outputPath, obj) {
@@ -551,7 +547,7 @@ function createMinifiedBuild(outputPath, modules, locales) {
   // Ensure unique path in case multiple streams are compiling
   // at the same time.
   var tmpPath = path.join(path.dirname(outputPath), path.basename(outputPath, '.min.js')) +  '.tmp.js';
-  writeFile(tmpPath, getSource(modules, locales));
+  writeFile(tmpPath, stripDocs(getSource(modules, locales)));
 
   return gulp.src(tmpPath)
     .pipe(compileSingle(outputPath))
@@ -642,6 +638,13 @@ function getSource(m, l) {
   }
 
   return src;
+}
+
+
+// The closure compiler has issues with non-standard
+// docs so strip all docs out here.
+function stripDocs(str) {
+  return str.replace(/\/\*\*\*[\s\S]+?\*\*\*\//gm, '');
 }
 
 function logBuildResults(stream) {
@@ -971,6 +974,10 @@ function copyPackageMeta(packageName, packageDir) {
 
   copyMeta('LICENSE');
   copyMeta('.npmignore');
+}
+
+function exportPackageDeclarations(packageName, packageDir) {
+  exportTypescriptDeclarations(packageDir, packageName.replace(/^sugar-?/, ''));
 }
 
 function copyLocales(l, dir) {
@@ -2195,6 +2202,7 @@ function buildPackages(p, rebuild) {
       buildPackageManagerJson(packageName, packageDir);
       buildIgnoreFiles(packageName, packageDir);
       copyPackageMeta(packageName, packageDir);
+      exportPackageDeclarations(packageName, packageDir);
     }
 
   }
@@ -3494,6 +3502,16 @@ var TS_EXTENDED_LICENSE = block`
 `;
 
 function buildTypescriptDeclarations() {
+  exportTypescriptDeclarations('', null, args.include, args.exclude);
+}
+
+function exportTypescriptDeclarations(basePath, moduleFilter, include, exclude) {
+
+  var optionInterfaceNamespaces = {};
+
+  var whitelist = getMethodList(include);
+  var blacklist = getMethodList(exclude);
+
 
   var CHAINABLE_RAW_TYPE = 'RawValue';
 
@@ -3666,10 +3684,6 @@ function buildTypescriptDeclarations() {
   ];
 
 
-  var whitelist, blacklist;
-  var optionInterfaceNamespaces = {};
-
-
   /* ------------ Modules -------------- */
 
   function getModule(name) {
@@ -3741,6 +3755,7 @@ function buildTypescriptDeclarations() {
     var constructorMethod = {
       name: 'new',
       type: 'constructor',
+      module: namespace.name,
       generics: getNamespaceBaseGenerics(namespace.name),
       returns: 'Chainable' + getChainableInstanceGenerics(namespace.name),
       params: [{
@@ -3799,7 +3814,7 @@ function buildTypescriptDeclarations() {
     var methods, existing = {};
 
     // Add native methods that are aliased onto the chainable prototype.
-    methods = getRawMethods(CHAINABLE_NATIVE_METHODS[namespace.name], 'chainable');
+    methods = getRawMethods(CHAINABLE_NATIVE_METHODS[namespace.name], namespace.name, true);
 
     // Add all instance methods.
     namespace.methods.forEach(function(method) {
@@ -3892,8 +3907,11 @@ function buildTypescriptDeclarations() {
     return getInterfaceSource('Range', methods.join('\n'));
   }
 
-  function getLocaleInterface() {
-    var methods = buildMethods(getRawMethods(LOCALE_METHODS), {}, 'extended');
+  function getLocaleInterface(namespaces) {
+    var namespace = namespaces.find(function(namespace) {
+      return namespace.name === 'Date';
+    });
+    var methods = buildMethods(getRawMethods(LOCALE_METHODS, 'Date'), namespace);
     return getInterfaceSource('Locale', methods.join('\n'));
   }
 
@@ -4112,7 +4130,7 @@ function buildTypescriptDeclarations() {
 
   function getMethod(method, namespace, mode) {
 
-    if (methodIsBlacklisted(namespace.name, method.name)) {
+    if (methodIsBlacklisted(namespace.name, method)) {
       return;
     }
 
@@ -4144,19 +4162,21 @@ function buildTypescriptDeclarations() {
 
   }
 
-  function getRawMethods(methods, mode) {
+  function getRawMethods(methods, module, nativeChainable) {
     return (methods || []).map(function(src) {
       var match = src.match(/(\w+)(<.+>)?\((.*)\): (.+);$/);
       var name = match[1];
       var generic = match[2] || src.match(/\bU\b/) ? '<U>' : '';
       var returns = match[4];
-      if (mode === 'chainable') {
+      if (nativeChainable) {
         returns = 'SugarDefaultChainable<' + returns + '>';
       }
       var raw = name + generic + '(' + match[3] + '): '+ returns + ';';
       return {
+        raw: raw,
         name: name,
-        raw: raw
+        module: module,
+        native: nativeChainable
       }
     });
   }
@@ -4231,33 +4251,35 @@ function buildTypescriptDeclarations() {
     return result;
   }
 
-  /* ------------ Command Line Options -------------- */
+  /* ------------ Options -------------- */
 
-  function setCommandLineOptions() {
-
-    function getList(name) {
-      var arr = args[name], list;
-      if (typeof arr === 'string') {
-        arr = [arr];
-      }
-      if (arr) {
-        list = {};
-        arr.forEach(function(item) {
-          list[item] = true;
-        });
-      }
-      return list;
+  function getMethodList(obj) {
+    var arr = obj && typeof obj === 'string' ? [obj] : obj, list;
+    if (arr) {
+      list = {};
+      arr.forEach(function(item) {
+        list[item.toLowerCase()] = true;
+      });
     }
-
-    blacklist = getList('exclude');
-    whitelist = getList('include');
+    return list;
   }
 
-  function methodIsBlacklisted(namespaceName, methodName) {
-    var key = namespaceName + ':' + methodName;
-    if (namespaceName && namespaceName.match(/^Sugar/)) {
+  function methodIsBlacklisted(namespaceName, method) {
+    var key;
+
+    // Normalize
+    namespaceName = namespaceName.toLowerCase();
+    moduleName    = method.module.toLowerCase();
+    methodName    = method.name.toLowerCase();
+
+    key = namespaceName + ':' + methodName;
+
+    if (namespaceName && namespaceName.match(/^sugar/) || method.native) {
       // Core methods are always output
       return false;
+    }
+    if (moduleIsBlacklisted(moduleName)) {
+      return true;
     }
     if (whitelist && !whitelist[namespaceName] && !whitelist[key]) {
       return true;
@@ -4266,6 +4288,10 @@ function buildTypescriptDeclarations() {
       return true;
     }
     return false;
+  }
+
+  function moduleIsBlacklisted(moduleName) {
+    return moduleFilter && moduleFilter.toLowerCase() !== moduleName.toLowerCase();
   }
 
   /* ------------ Exporting -------------- */
@@ -4290,7 +4316,15 @@ function buildTypescriptDeclarations() {
       return '.Chainable' + getChainableBaseGenerics(type, CHAINABLE_RAW_TYPE, 'any');
     }
 
-    sugarjs.interfaces.push(getLocaleInterface());
+    function writeDeclarations(filename, declarations) {
+      declarations = compact(declarations);
+      if (declarations.length === 1) {
+        return;
+      }
+      writeFile(path.join(basePath || '', filename), compact(declarations).join('\n\n'));
+    }
+
+    sugarjs.interfaces.push(getLocaleInterface(docs.namespaces));
 
     // Sort namespaces for Sugar to come before SugarNamespace
     // as it has ExtendOptions which are defined first.
@@ -4299,11 +4333,11 @@ function buildTypescriptDeclarations() {
     docs.namespaces.forEach(function(namespace) {
 
       function addExtras(module) {
-        addCallbackTypes(module, namespace.methods);
-        addOptionsInterfaces(module, namespace.methods);
+        addCallbackTypes(module);
+        addOptionsInterfaces(module);
       }
 
-      function addCallbackTypes(module, methods) {
+      function addCallbackTypes(module) {
 
         // If the param has multiple types, then move callbacks into the
         // module as named types. Only do this if there are multiple
@@ -4343,8 +4377,8 @@ function buildTypescriptDeclarations() {
           }
         }
 
-        methods.forEach(function(method) {
-          if (!method.callbacks) {
+        namespace.methods.forEach(function(method) {
+          if (!method.callbacks || methodIsBlacklisted(namespace.name, method)) {
             return;
           }
           getAlternateTypes(method).forEach(function(type) {
@@ -4357,39 +4391,40 @@ function buildTypescriptDeclarations() {
 
       }
 
-      function addOptionsInterfaces(module, methods) {
-        methods.forEach(function(method) {
-          if (method.options) {
-
-            var params = method.params;
-            (method.signatures || []).forEach(function(signature) {
-              params = params.concat(signature);
-            })
-
-            var optionsParam = params.find(function(param) {
-              return param.type.match(/Options$/);
-            });
-
-            var src = method.options.map(function(option) {
-              var types = option.type.split('|');
-              types = types.map(function(type) {
-                if (types.length === 1 && type.match(/Fn$/)) {
-                  var callback = findMethodCallbackByName(method, type);
-                  type = getCallbackSignature(callback, method, namespace);
-                }
-                return type;
-              });
-              return option.name + (option.required ? '' : '?') + ': ' + types.join('|') + ';';
-            }).join('\n');
-
-            // Store references to the namespaces that option interfaces exist in
-            // so that we can reference them externally later.
-            if (!namespace.name.match(/^Sugar/)) {
-              optionInterfaceNamespaces[optionsParam.type] = namespace.name;
-            }
-
-            module.interfaces.push(getInterfaceSource(optionsParam.type, src));
+      function addOptionsInterfaces(module) {
+        namespace.methods.forEach(function(method) {
+          if (!method.options || methodIsBlacklisted(namespace.name, method)) {
+            return;
           }
+
+          var params = method.params;
+          (method.signatures || []).forEach(function(signature) {
+            params = params.concat(signature);
+          })
+
+          var optionsParam = params.find(function(param) {
+            return param.type.match(/Options$/);
+          });
+
+          var src = method.options.map(function(option) {
+            var types = option.type.split('|');
+            types = types.map(function(type) {
+              if (types.length === 1 && type.match(/Fn$/)) {
+                var callback = findMethodCallbackByName(method, type);
+                type = getCallbackSignature(callback, method, namespace);
+              }
+              return type;
+            });
+            return option.name + (option.required ? '' : '?') + ': ' + types.join('|') + ';';
+          }).join('\n');
+
+          // Store references to the namespaces that option interfaces exist in
+          // so that we can reference them externally later.
+          if (!namespace.name.match(/^Sugar/)) {
+            optionInterfaceNamespaces[optionsParam.type] = namespace.name;
+          }
+
+          module.interfaces.push(getInterfaceSource(optionsParam.type, src));
         });
       }
 
@@ -4404,6 +4439,7 @@ function buildTypescriptDeclarations() {
           return callback.name === name;
         });
       }
+
 
       // Exclude polyfills
       namespace.methods = namespace.methods.filter(function(method) {
@@ -4477,11 +4513,10 @@ function buildTypescriptDeclarations() {
     extendedDeclarations.push(TS_EXTENDED_LICENSE);
     extendedDeclarations.push(getInterfaceBlocks(extendedInterfaces));
 
-    outputFile('sugar.d.ts', compact(baseDeclarations).join('\n\n'));
-    outputFile('sugar-extended.d.ts', compact(extendedDeclarations).join('\n\n'));
+    writeDeclarations('sugar.d.ts', baseDeclarations);
+    writeDeclarations('sugar-extended.d.ts', extendedDeclarations);
   }
 
-  setCommandLineOptions();
   exportDeclarations();
 }
 
