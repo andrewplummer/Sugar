@@ -268,6 +268,7 @@ function getDefaultFlags() {
     jar: COMPILER_JAR_PATH,
     compilation_level: 'ADVANCED',
     assume_function_wrapper: true,
+    rewrite_polyfills: false,
     jscomp_off: ['globalThis', 'checkTypes'],
     output_wrapper: LICENSE + "\n(function(){'use strict';%output%}).call(this);",
     externs: 'lib/extras/externs.js'
