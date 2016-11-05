@@ -29,6 +29,7 @@
   "scripts": {
     "test": "node test/node"
   },
+  "typings": "sugar.d.ts",
   "devDependencies": {
     "acorn": "^2.7.0",
     "closure-compiler-stream": "^0.1.15",
