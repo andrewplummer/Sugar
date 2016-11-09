@@ -377,7 +377,7 @@
     var i, result = true, key;
     if (one === two) {
       return true;
-    } else if (one.length !== two.length) {
+    } else if (!two || one.length !== two.length) {
       return false;
     }
 

@@ -363,6 +363,8 @@ namespace('Date Ranges', function () {
     equal(getRange(1, 2001).seconds(), 2, 'Number ranges are taken as milliseconds');
     equal(getRange('a', 'f').seconds(), NaN, 'String ranges return NaN for date units');
 
+    equal(getRange(new Date(NaN), new Date(NaN)).days(), NaN, 'Invalid ranges should return undefined');
+
   });
 
 });
