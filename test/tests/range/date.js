@@ -75,6 +75,7 @@ namespace('Date Ranges', function () {
 
 
   group('Creation with Date.create support', function() {
+
     if(!Sugar.Date.create) return;
 
     // Date ranges should be able to be created from a string
@@ -98,6 +99,7 @@ namespace('Date Ranges', function () {
     dateRangeEqual(getRange('1 hour starting at 3:15 monday'), getRange('3:15 monday', '4:15 monday'), 'advanced text ranges | starting at');
     dateRangeEqual(getRange('1 hour starting at 3:15 on monday'), getRange('3:15 monday', '4:15 monday'), 'advanced text ranges | starting at..on');
     dateRangeEqual(getRange('for 1 hour starting at 3:15 monday'), getRange('3:15 monday', '4:15 monday'), 'advanced text ranges | for..starting at');
+    dateRangeEqual(getRange('for 5 days starting Tuesday'), getRange('Tuesday', 'next Sunday'), 'advanced text ranges | for..starting');
 
     dateRangeEqual(getRange('monday'), getRange('monday', new Date()), 'advanced text ranges | single date');
     dateRangeEqual(getRange('foobar'), getRange(NaN, new Date()), 'invalid string is the same as no arguments');
