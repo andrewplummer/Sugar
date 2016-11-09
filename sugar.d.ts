@@ -4,7 +4,6 @@
 
 declare module sugarjs {
 
-  type DisambiguationFunction = Function;
   type SugarDefaultChainable<RawValue> = Array.Chainable<any, RawValue> &
                                          Date.Chainable<RawValue> &
                                          Function.Chainable<RawValue> &
@@ -12,6 +11,7 @@ declare module sugarjs {
                                          Object.Chainable<RawValue> &
                                          RegExp.Chainable<RawValue> &
                                          String.Chainable<RawValue>;
+
   type NativeConstructor = ArrayConstructor |
                            DateConstructor |
                            FunctionConstructor |
@@ -292,14 +292,14 @@ declare module sugarjs {
     interface Constructor extends SugarNamespace {
       (d?: string|number|Date, options?: DateCreateOptions): Chainable<Date>;
       new(d?: string|number|Date, options?: DateCreateOptions): Chainable<Date>;
-      addLocale(code: string, def: Object): Locale;
+      addLocale(localeCode: string, def: Object): Locale;
       create(d?: string|number|Date, options?: DateCreateOptions): Date;
       getAllLocaleCodes(): string[];
       getAllLocales(): Array<Locale>;
       getLocale(localeCode?: string): Locale;
       range(start?: string|Date, end?: string|Date): Range;
-      removeLocale(code: string): Locale;
-      setLocale(code: string): Locale;
+      removeLocale(localeCode: string): Locale;
+      setLocale(localeCode: string): Locale;
       addDays(instance: Date, n: number, reset?: boolean): Date;
       addHours(instance: Date, n: number, reset?: boolean): Date;
       addMilliseconds(instance: Date, n: number, reset?: boolean): Date;
@@ -385,7 +385,7 @@ declare module sugarjs {
       monthsUntil(instance: Date, d?: string|number|Date, options?: DateCreateOptions): number;
       relative(instance: Date, localeCode?: string, fn?: (num: number, unit: number, ms: number, loc: Locale) => string): string;
       relative(instance: Date, fn?: (num: number, unit: number, ms: number, loc: Locale) => string): string;
-      relativeTo(instance: Date, d: string|number|Date, localeCode?: undefined): string;
+      relativeTo(instance: Date, d: string|number|Date, localeCode?: string): string;
       reset(instance: Date, unit?: string, localeCode?: string): Date;
       rewind(instance: Date, set: string|Object, reset?: boolean): Date;
       rewind(instance: Date, milliseconds: number): Date;
@@ -503,7 +503,7 @@ declare module sugarjs {
       monthsUntil(d?: string|number|Date, options?: DateCreateOptions): SugarDefaultChainable<number>;
       relative(localeCode?: string, fn?: (num: number, unit: number, ms: number, loc: Locale) => SugarDefaultChainable<string>): SugarDefaultChainable<string>;
       relative(fn?: (num: number, unit: number, ms: number, loc: Locale) => SugarDefaultChainable<string>): SugarDefaultChainable<string>;
-      relativeTo(d: string|number|Date, localeCode?: undefined): SugarDefaultChainable<string>;
+      relativeTo(d: string|number|Date, localeCode?: string): SugarDefaultChainable<string>;
       reset(unit?: string, localeCode?: string): SugarDefaultChainable<Date>;
       rewind(set: string|Object, reset?: boolean): SugarDefaultChainable<Date>;
       rewind(milliseconds: number): SugarDefaultChainable<Date>;
@@ -919,19 +919,19 @@ declare module sugarjs {
       intersect(instance: Object, obj: Object): Object;
       invert(instance: Object, multi?: boolean): Object;
       isArguments(instance: Object): boolean;
-      isArray(instance: Object): boolean;
-      isBoolean(instance: Object): boolean;
-      isDate(instance: Object): boolean;
+      isArray<T>(instance: Object): instance is Array<T>;
+      isBoolean(instance: Object): instance is Boolean;
+      isDate(instance: Object): instance is Date;
       isEmpty(instance: Object): boolean;
       isEqual(instance: Object, obj: Object): boolean;
-      isError(instance: Object): boolean;
-      isFunction(instance: Object): boolean;
-      isMap(instance: Object): boolean;
-      isNumber(instance: Object): boolean;
+      isError(instance: Object): instance is Error;
+      isFunction(instance: Object): instance is Function;
+      isMap<K, V>(instance: Object): instance is Map<K,V>;
+      isNumber(instance: Object): instance is Number;
       isObject(instance: Object): boolean;
-      isRegExp(instance: Object): boolean;
-      isSet(instance: Object): boolean;
-      isString(instance: Object): boolean;
+      isRegExp(instance: Object): instance is RegExp;
+      isSet<T>(instance: Object): instance is Set<T>;
+      isString(instance: Object): instance is String;
       keys<T>(instance: Object): T[];
       least<T>(instance: Object, all?: boolean, map?: string|mapFn): T;
       least<T>(instance: Object, map?: string|mapFn): T;
@@ -1097,53 +1097,21 @@ declare module sugarjs {
       forEach<T>(instance: string, callback: (match: string, i: number, arr: Array<string>) => void): T[];
       format(instance: string, ...args: any[]): string;
       from(instance: string, index?: number): string;
-      hankaku(instance: string, mode?: string): string;
-      hasArabic(instance: string): boolean;
-      hasCyrillic(instance: string): boolean;
-      hasDevanagari(instance: string): boolean;
-      hasGreek(instance: string): boolean;
-      hasHan(instance: string): boolean;
-      hasHangul(instance: string): boolean;
-      hasHebrew(instance: string): boolean;
-      hasHiragana(instance: string): boolean;
-      hasKana(instance: string): boolean;
-      hasKanji(instance: string): boolean;
-      hasKatakana(instance: string): boolean;
-      hasLatin(instance: string): boolean;
-      hasThai(instance: string): boolean;
-      hiragana(instance: string, all?: boolean): string;
-      humanize(instance: string): string;
       insert(instance: string, str: string, index?: number): string;
-      isArabic(instance: string): boolean;
       isBlank(instance: string): boolean;
-      isCyrillic(instance: string): boolean;
-      isDevanagari(instance: string): boolean;
       isEmpty(instance: string): boolean;
-      isGreek(instance: string): boolean;
-      isHan(instance: string): boolean;
-      isHangul(instance: string): boolean;
-      isHebrew(instance: string): boolean;
-      isHiragana(instance: string): boolean;
-      isKana(instance: string): boolean;
-      isKanji(instance: string): boolean;
-      isKatakana(instance: string): boolean;
-      isLatin(instance: string): boolean;
-      isThai(instance: string): boolean;
-      katakana(instance: string): string;
       last(instance: string, n?: number): string;
       lines<T>(instance: string, callback?: (line: string, i: number, arr: Array<string>) => void): T[];
       pad(instance: string, num: number, padding?: string): string;
       padLeft(instance: string, num: number, padding?: string): string;
       padRight(instance: string, num: number, padding?: string): string;
       parameterize(instance: string): string;
-      pluralize(instance: string, num?: number): string;
       remove(instance: string, f: string|RegExp): string;
       removeAll(instance: string, f: string|RegExp): string;
       removeTags(instance: string, tag?: string, replace?: string|tagReplaceFn): string;
       replaceAll(instance: string, f: string|RegExp, ...args: any[]): string;
       reverse(instance: string): string;
       shift<T>(instance: string, n: number): T[];
-      singularize(instance: string): string;
       spacify(instance: string): string;
       stripTags(instance: string, tag?: string, replace?: string|tagReplaceFn): string;
       titleize(instance: string): string;
@@ -1157,10 +1125,6 @@ declare module sugarjs {
       unescapeHTML(instance: string): string;
       unescapeURL(instance: string, partial?: boolean): string;
       words<T>(instance: string, callback?: (word: string, i: number, arr: Array<string>) => void): T[];
-      zenkaku(instance: string, mode?: string): string;
-      addAcronym(src: string): void;
-      addHuman(src: string|RegExp, human: string): void;
-      addPlural(singular: string, plural?: string): void;
     }
 
     interface ChainableBase<RawValue> {
@@ -1183,53 +1147,21 @@ declare module sugarjs {
       forEach<T>(callback: (match: string, i: number, arr: Array<string>) => SugarDefaultChainable<void>): SugarDefaultChainable<T[]>;
       format(...args: any[]): SugarDefaultChainable<string>;
       from(index?: number): SugarDefaultChainable<string>;
-      hankaku(mode?: string): SugarDefaultChainable<string>;
-      hasArabic(): SugarDefaultChainable<boolean>;
-      hasCyrillic(): SugarDefaultChainable<boolean>;
-      hasDevanagari(): SugarDefaultChainable<boolean>;
-      hasGreek(): SugarDefaultChainable<boolean>;
-      hasHan(): SugarDefaultChainable<boolean>;
-      hasHangul(): SugarDefaultChainable<boolean>;
-      hasHebrew(): SugarDefaultChainable<boolean>;
-      hasHiragana(): SugarDefaultChainable<boolean>;
-      hasKana(): SugarDefaultChainable<boolean>;
-      hasKanji(): SugarDefaultChainable<boolean>;
-      hasKatakana(): SugarDefaultChainable<boolean>;
-      hasLatin(): SugarDefaultChainable<boolean>;
-      hasThai(): SugarDefaultChainable<boolean>;
-      hiragana(all?: boolean): SugarDefaultChainable<string>;
-      humanize(): SugarDefaultChainable<string>;
       insert(str: string, index?: number): SugarDefaultChainable<string>;
-      isArabic(): SugarDefaultChainable<boolean>;
       isBlank(): SugarDefaultChainable<boolean>;
-      isCyrillic(): SugarDefaultChainable<boolean>;
-      isDevanagari(): SugarDefaultChainable<boolean>;
       isEmpty(): SugarDefaultChainable<boolean>;
-      isGreek(): SugarDefaultChainable<boolean>;
-      isHan(): SugarDefaultChainable<boolean>;
-      isHangul(): SugarDefaultChainable<boolean>;
-      isHebrew(): SugarDefaultChainable<boolean>;
-      isHiragana(): SugarDefaultChainable<boolean>;
-      isKana(): SugarDefaultChainable<boolean>;
-      isKanji(): SugarDefaultChainable<boolean>;
-      isKatakana(): SugarDefaultChainable<boolean>;
-      isLatin(): SugarDefaultChainable<boolean>;
-      isThai(): SugarDefaultChainable<boolean>;
-      katakana(): SugarDefaultChainable<string>;
       last(n?: number): SugarDefaultChainable<string>;
       lines<T>(callback?: (line: string, i: number, arr: Array<string>) => SugarDefaultChainable<void>): SugarDefaultChainable<T[]>;
       pad(num: number, padding?: string): SugarDefaultChainable<string>;
       padLeft(num: number, padding?: string): SugarDefaultChainable<string>;
       padRight(num: number, padding?: string): SugarDefaultChainable<string>;
       parameterize(): SugarDefaultChainable<string>;
-      pluralize(num?: number): SugarDefaultChainable<string>;
       remove(f: string|RegExp): SugarDefaultChainable<string>;
       removeAll(f: string|RegExp): SugarDefaultChainable<string>;
       removeTags(tag?: string, replace?: string|tagReplaceFn): SugarDefaultChainable<string>;
       replaceAll(f: string|RegExp, ...args: any[]): SugarDefaultChainable<string>;
       reverse(): SugarDefaultChainable<string>;
       shift<T>(n: number): SugarDefaultChainable<T[]>;
-      singularize(): SugarDefaultChainable<string>;
       spacify(): SugarDefaultChainable<string>;
       stripTags(tag?: string, replace?: string|tagReplaceFn): SugarDefaultChainable<string>;
       titleize(): SugarDefaultChainable<string>;
@@ -1243,7 +1175,6 @@ declare module sugarjs {
       unescapeHTML(): SugarDefaultChainable<string>;
       unescapeURL(partial?: boolean): SugarDefaultChainable<string>;
       words<T>(callback?: (word: string, i: number, arr: Array<string>) => SugarDefaultChainable<void>): SugarDefaultChainable<T[]>;
-      zenkaku(mode?: string): SugarDefaultChainable<string>;
       anchor(name: string): SugarDefaultChainable<string>;
       big(): SugarDefaultChainable<string>;
       blink(): SugarDefaultChainable<string>;

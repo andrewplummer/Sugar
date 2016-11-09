@@ -188,10 +188,15 @@ var MESSAGE_EXTRA = `
        |--no-extended-mode|             When this flag is present, declarations for extended mode
                                         (i.e. native objects) are not output.
 
-       |--include|                      Whitelist methods or modules to be included:
+       |--modules|                      Filter exported methods by module. This argument
+                                        is required for non-default modules. Also accepts
+                                        "all" or "default".
+                                        --modules=String,Inflections
+
+       |--include|                      Whitelist methods or namespaces to be included:
                                         --include=Array --include=Array:unique.
 
-       |--exclude|                      Blacklist methods or modules to be excluded:
+       |--exclude|                      Blacklist methods or namespaces to be excluded:
                                         --exclude=Array --exclude=Array:unique.
 `;
 
@@ -3503,16 +3508,25 @@ var TS_EXTENDED_LICENSE = block`
 `;
 
 function buildTypescriptDeclarations() {
-  exportTypescriptDeclarations('', null, args.include, args.exclude);
+  var basePath = args.o || args.output || '';
+  var moduleNames = getModuleNames();
+  exportTypescriptDeclarations(basePath, moduleNames, args.include, args.exclude);
 }
 
-function exportTypescriptDeclarations(basePath, moduleFilter, include, exclude) {
+function exportTypescriptDeclarations(basePath, allowedModules, include, exclude) {
 
   var optionInterfaceNamespaces = {};
 
   var whitelist = getMethodList(include);
   var blacklist = getMethodList(exclude);
 
+  var TYPE_GUARD_REG = /is(Boolean|Number|String|Date|RegExp|Function|Array|Error|Set|Map)$/;
+
+  var TYPE_GUARD_GENERICS = {
+    Array: ['T'],
+    Map: ['K', 'V'],
+    Set: ['T']
+  }
 
   var CHAINABLE_RAW_TYPE = 'RawValue';
 
@@ -3713,7 +3727,7 @@ function exportTypescriptDeclarations(basePath, moduleFilter, include, exclude) 
       return 'type ' + type.name + ' = ' + type.type + ';'
     }
 
-    addBlock(module.types, '\n', mapType);
+    addBlock(module.types, '\n'.repeat(top ? 2 : 1), mapType);
     addBlock(module.interfaces, '\n\n');
     addBlock(module.modules, '\n\n');
 
@@ -4114,15 +4128,34 @@ function exportTypescriptDeclarations(basePath, moduleFilter, include, exclude) 
   }
 
   function getReturns(returns, method, namespace, mode) {
+
+    function referencesExternal(src) {
+      return mode === 'extended' &&
+             (src === 'Range' || src === 'Locale');
+    }
+
+    function requiresTypeGuard() {
+      return method.name.match(TYPE_GUARD_REG) &&
+             (mode === 'static' || mode === 'extended');
+    }
+
     var src = getType(returns, method) || 'void', match;
     if (src === 'SugarNamespace' && mode === 'constructor') {
       src = 'Sugar' + namespace.name + 'Constructor';
     } else if (src === 'SugarNamespace' && mode === 'namespace') {
       src = 'this';
-    } else if ((src === 'Range' || src === 'Locale') && mode === 'extended') {
+    } else if (referencesExternal(src)) {
       src = ['sugarjs', src].join('.');
     } else if (mode === 'chainable') {
       src = 'SugarDefaultChainable<' + src + '>';
+    } else if (requiresTypeGuard()) {
+      var type = method.name.replace(/^is/, '');
+      var generics = TYPE_GUARD_GENERICS[type];
+      if (generics) {
+        addMethodGenerics(method, generics);
+        type += '<' + generics.join(',') + '>';
+      }
+      src = 'instance is ' + type;
     } else if ((match = src.match(/Array<(.+)>/))) {
       src = 'Array<' + getReturns(match[1], method, namespace, mode) + '>';
     }
@@ -4292,7 +4325,9 @@ function exportTypescriptDeclarations(basePath, moduleFilter, include, exclude) 
   }
 
   function moduleIsBlacklisted(moduleName) {
-    return moduleFilter && moduleFilter.toLowerCase() !== moduleName.toLowerCase();
+    return !allowedModules.some(function(name) {
+      return name.toLowerCase() === moduleName.toLowerCase();
+    });
   }
 
   /* ------------ Exporting -------------- */
@@ -4486,11 +4521,6 @@ function exportTypescriptDeclarations(basePath, moduleFilter, include, exclude) 
         nativeNames.push(namespace.name);
       }
 
-    });
-
-    sugarjs.types.push({
-      name: 'DisambiguationFunction',
-      type: 'Function'
     });
 
     var wrappedGeneric = getGenericSource(CHAINABLE_RAW_TYPE);

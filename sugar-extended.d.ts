@@ -75,14 +75,14 @@ interface Array<T> {
 }
 
 interface DateConstructor {
-  addLocale(code: string, def: Object): sugarjs.Locale;
+  addLocale(localeCode: string, def: Object): sugarjs.Locale;
   create(d?: string|number|Date, options?: sugarjs.Date.DateCreateOptions): Date;
   getAllLocaleCodes(): string[];
   getAllLocales(): Array<sugarjs.Locale>;
   getLocale(localeCode?: string): sugarjs.Locale;
   range(start?: string|Date, end?: string|Date): sugarjs.Range;
-  removeLocale(code: string): sugarjs.Locale;
-  setLocale(code: string): sugarjs.Locale;
+  removeLocale(localeCode: string): sugarjs.Locale;
+  setLocale(localeCode: string): sugarjs.Locale;
 }
 
 interface Date {
@@ -171,7 +171,7 @@ interface Date {
   monthsUntil(d?: string|number|Date, options?: sugarjs.Date.DateCreateOptions): number;
   relative(localeCode?: string, fn?: (num: number, unit: number, ms: number, loc: sugarjs.Locale) => string): string;
   relative(fn?: (num: number, unit: number, ms: number, loc: sugarjs.Locale) => string): string;
-  relativeTo(d: string|number|Date, localeCode?: undefined): string;
+  relativeTo(d: string|number|Date, localeCode?: string): string;
   reset(unit?: string, localeCode?: string): Date;
   rewind(set: string|Object, reset?: boolean): Date;
   rewind(milliseconds: number): Date;
@@ -352,19 +352,19 @@ interface ObjectConstructor {
   intersect(instance: Object, obj: Object): Object;
   invert(instance: Object, multi?: boolean): Object;
   isArguments(instance: Object): boolean;
-  isArray(instance: Object): boolean;
-  isBoolean(instance: Object): boolean;
-  isDate(instance: Object): boolean;
+  isArray<T>(instance: Object): instance is Array<T>;
+  isBoolean(instance: Object): instance is Boolean;
+  isDate(instance: Object): instance is Date;
   isEmpty(instance: Object): boolean;
   isEqual(instance: Object, obj: Object): boolean;
-  isError(instance: Object): boolean;
-  isFunction(instance: Object): boolean;
-  isMap(instance: Object): boolean;
-  isNumber(instance: Object): boolean;
+  isError(instance: Object): instance is Error;
+  isFunction(instance: Object): instance is Function;
+  isMap<K, V>(instance: Object): instance is Map<K,V>;
+  isNumber(instance: Object): instance is Number;
   isObject(instance: Object): boolean;
-  isRegExp(instance: Object): boolean;
-  isSet(instance: Object): boolean;
-  isString(instance: Object): boolean;
+  isRegExp(instance: Object): instance is RegExp;
+  isSet<T>(instance: Object): instance is Set<T>;
+  isString(instance: Object): instance is String;
   keys<T>(instance: Object): T[];
   least<T>(instance: Object, all?: boolean, map?: string|sugarjs.Object.mapFn): T;
   least<T>(instance: Object, map?: string|sugarjs.Object.mapFn): T;
@@ -425,53 +425,21 @@ interface String {
   forEach<T>(callback: (match: string, i: number, arr: Array<string>) => void): T[];
   format(...args: any[]): string;
   from(index?: number): string;
-  hankaku(mode?: string): string;
-  hasArabic(): boolean;
-  hasCyrillic(): boolean;
-  hasDevanagari(): boolean;
-  hasGreek(): boolean;
-  hasHan(): boolean;
-  hasHangul(): boolean;
-  hasHebrew(): boolean;
-  hasHiragana(): boolean;
-  hasKana(): boolean;
-  hasKanji(): boolean;
-  hasKatakana(): boolean;
-  hasLatin(): boolean;
-  hasThai(): boolean;
-  hiragana(all?: boolean): string;
-  humanize(): string;
   insert(str: string, index?: number): string;
-  isArabic(): boolean;
   isBlank(): boolean;
-  isCyrillic(): boolean;
-  isDevanagari(): boolean;
   isEmpty(): boolean;
-  isGreek(): boolean;
-  isHan(): boolean;
-  isHangul(): boolean;
-  isHebrew(): boolean;
-  isHiragana(): boolean;
-  isKana(): boolean;
-  isKanji(): boolean;
-  isKatakana(): boolean;
-  isLatin(): boolean;
-  isThai(): boolean;
-  katakana(): string;
   last(n?: number): string;
   lines<T>(callback?: (line: string, i: number, arr: Array<string>) => void): T[];
   pad(num: number, padding?: string): string;
   padLeft(num: number, padding?: string): string;
   padRight(num: number, padding?: string): string;
   parameterize(): string;
-  pluralize(num?: number): string;
   remove(f: string|RegExp): string;
   removeAll(f: string|RegExp): string;
   removeTags(tag?: string, replace?: string|sugarjs.String.tagReplaceFn): string;
   replaceAll(f: string|RegExp, ...args: any[]): string;
   reverse(): string;
   shift<T>(n: number): T[];
-  singularize(): string;
   spacify(): string;
   stripTags(tag?: string, replace?: string|sugarjs.String.tagReplaceFn): string;
   titleize(): string;
@@ -485,5 +453,4 @@ interface String {
   unescapeHTML(): string;
   unescapeURL(partial?: boolean): string;
   words<T>(callback?: (word: string, i: number, arr: Array<string>) => void): T[];
-  zenkaku(mode?: string): string;
 }
