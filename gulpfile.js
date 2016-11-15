@@ -983,7 +983,7 @@ function copyPackageMeta(packageName, packageDir) {
 }
 
 function exportPackageDeclarations(packageName, packageDir) {
-  exportTypescriptDeclarations(packageDir, packageName.replace(/^sugar-?/, ''));
+  exportTypescriptDeclarations(packageDir, [packageName.replace(/^sugar-?/, '')]);
 }
 
 function copyLocales(l, dir) {
