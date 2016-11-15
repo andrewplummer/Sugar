@@ -2,7 +2,7 @@
 // Project: https://sugarjs.com/
 // Definitions by: Andrew Plummer <plummer.andrew@gmail.com>
 
-declare module sugarjs {
+declare namespace sugarjs {
 
   type SugarDefaultChainable<RawValue> = Array.Chainable<any, RawValue> &
                                          Date.Chainable<RawValue> &
@@ -95,7 +95,7 @@ declare module sugarjs {
     extend(opts?: ExtendOptions): this;
   }
 
-  module Array {
+  namespace Array {
 
     type Chainable<T, RawValue> = ChainableBase<T, RawValue> & Object.ChainableBase<RawValue>;
     type mapFn = <T, U>(el: T, i: number, arr: T[]) => U;
@@ -285,7 +285,7 @@ declare module sugarjs {
 
   }
 
-  module Date {
+  namespace Date {
 
     type Chainable<RawValue> = ChainableBase<RawValue> & Object.ChainableBase<RawValue>;
 
@@ -589,7 +589,7 @@ declare module sugarjs {
 
   }
 
-  module Function {
+  namespace Function {
 
     type Chainable<RawValue> = ChainableBase<RawValue> & Object.ChainableBase<RawValue>;
 
@@ -631,7 +631,7 @@ declare module sugarjs {
 
   }
 
-  module Number {
+  namespace Number {
 
     type Chainable<RawValue> = ChainableBase<RawValue> & Object.ChainableBase<RawValue>;
 
@@ -892,7 +892,7 @@ declare module sugarjs {
 
   }
 
-  module Object {
+  namespace Object {
 
     type Chainable<RawValue> = ChainableBase<RawValue>;
     type resolveFn = <T>(key: string, targetVal: T, sourceVal: T, target: Object, source: Object) => boolean;
@@ -1044,7 +1044,7 @@ declare module sugarjs {
 
   }
 
-  module RegExp {
+  namespace RegExp {
 
     type Chainable<RawValue> = ChainableBase<RawValue> & Object.ChainableBase<RawValue>;
 
@@ -1072,7 +1072,7 @@ declare module sugarjs {
 
   }
 
-  module String {
+  namespace String {
 
     type Chainable<RawValue> = ChainableBase<RawValue> & Object.ChainableBase<RawValue>;
     type tagReplaceFn = (tag: string, inner: string, attr: string, outer: string) => string;
@@ -1225,6 +1225,11 @@ declare module sugarjs {
 
   }
 
+}
+
+declare module "sugar" {
+  const Sugar: sugarjs.Sugar;
+  export = Sugar;
 }
 
 declare var Sugar: sugarjs.Sugar;

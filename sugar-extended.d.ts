@@ -2,6 +2,8 @@
 // Project: https://sugarjs.com/
 // Definitions by: Andrew Plummer <plummer.andrew@gmail.com>
 
+// <reference path="sugar.d.ts" />
+
 interface ArrayConstructor {
   construct<T>(n: number, map: (i: number) => any): T[];
   create<T>(obj?: number|ArrayLike<T>, clone?: boolean): T[];

@@ -3699,18 +3699,32 @@ function exportTypescriptDeclarations(basePath, allowedModules, include, exclude
   ];
 
 
-  /* ------------ Modules -------------- */
+  /* ------------ Declared Module -------------- */
 
-  function getModule(name) {
+  function getDeclaredModuleSource() {
+    var body = [
+      'const Sugar: sugarjs.Sugar;',
+      'export = Sugar;'
+    ].join('\n');
+    return [
+      'declare module "sugar" {',
+        indent(body, 1),
+      '}'
+    ].join('\n');
+  }
+
+  /* ------------ Declared Namespace -------------- */
+
+  function getDeclaredNamespace(name) {
     return {
       name: name,
       types: [],
-      modules: [],
+      namespaces: [],
       interfaces: []
     }
   }
 
-  function getModuleSource(module, top) {
+  function getDeclaredNamespaceSource(module, top) {
     var blocks = [];
 
     function addBlock(arr, sep, map) {
@@ -3729,9 +3743,9 @@ function exportTypescriptDeclarations(basePath, allowedModules, include, exclude
 
     addBlock(module.types, '\n'.repeat(top ? 2 : 1), mapType);
     addBlock(module.interfaces, '\n\n');
-    addBlock(module.modules, '\n\n');
+    addBlock(module.namespaces, '\n\n');
 
-    blocks.unshift((top ? 'declare ' : '') + 'module ' + module.name + ' {');
+    blocks.unshift((top ? 'declare ' : '') + 'namespace ' + module.name + ' {');
     blocks.push('}');
     return blocks.join('\n\n');
   }
@@ -4335,7 +4349,7 @@ function exportTypescriptDeclarations(basePath, allowedModules, include, exclude
   function exportDeclarations() {
 
     var docs = getJSONDocs();
-    var sugarjs = getModule('sugarjs');
+    var sugarjs = getDeclaredNamespace('sugarjs');
 
     var extendedInterfaces = [], nativeNames = [];
 
@@ -4500,7 +4514,7 @@ function exportTypescriptDeclarations(basePath, allowedModules, include, exclude
       } else if (namespace.name === 'Range') {
         sugarjs.interfaces.push(getRangeInterface(namespace));
       } else {
-        var module = getModule(namespace.name);
+        var module = getDeclaredNamespace(namespace.name);
         module.interfaces.push(getConstructorInterface(namespace, module));
         module.interfaces.push(getChainableBaseInterface(namespace));
 
@@ -4517,7 +4531,7 @@ function exportTypescriptDeclarations(basePath, allowedModules, include, exclude
           }
         }
 
-        sugarjs.modules.push(getModuleSource(module));
+        sugarjs.namespaces.push(getDeclaredNamespaceSource(module));
         nativeNames.push(namespace.name);
       }
 
@@ -4537,11 +4551,13 @@ function exportTypescriptDeclarations(basePath, allowedModules, include, exclude
 
     var baseDeclarations = [];
     baseDeclarations.push(TS_LICENSE);
-    baseDeclarations.push(getModuleSource(sugarjs, true));
+    baseDeclarations.push(getDeclaredNamespaceSource(sugarjs, true));
+    baseDeclarations.push(getDeclaredModuleSource());
     baseDeclarations.push('declare var Sugar: sugarjs.Sugar;');
 
     var extendedDeclarations = [];
     extendedDeclarations.push(TS_EXTENDED_LICENSE);
+    extendedDeclarations.push('// <reference path="sugar.d.ts" />');
     extendedDeclarations.push(getInterfaceBlocks(extendedInterfaces));
 
     writeDeclarations('sugar.d.ts', baseDeclarations);
