@@ -4153,6 +4153,13 @@ function exportTypescriptDeclarations(basePath, allowedModules, include, exclude
              (mode === 'static' || mode === 'extended');
     }
 
+    function getTypeGuard(type) {
+      if (type.match(/^String|Number|Boolean$/)) {
+        type = type.toLowerCase();
+      }
+      return 'instance is ' + type;
+    }
+
     var src = getType(returns, method) || 'void', match;
     if (src === 'SugarNamespace' && mode === 'constructor') {
       src = 'Sugar' + namespace.name + 'Constructor';
@@ -4169,7 +4176,7 @@ function exportTypescriptDeclarations(basePath, allowedModules, include, exclude
         addMethodGenerics(method, generics);
         type += '<' + generics.join(',') + '>';
       }
-      src = 'instance is ' + type;
+      src = getTypeGuard(type);
     } else if ((match = src.match(/Array<(.+)>/))) {
       src = 'Array<' + getReturns(match[1], method, namespace, mode) + '>';
     }
