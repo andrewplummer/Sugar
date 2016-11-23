@@ -983,7 +983,18 @@ function copyPackageMeta(packageName, packageDir) {
 }
 
 function exportPackageDeclarations(packageName, packageDir) {
-  exportTypescriptDeclarations(packageDir, [packageName.replace(/^sugar-?/, '')]);
+  var allowedModules;
+  switch (packageName) {
+    case 'sugar':
+      allowedModules = 'all';
+      break;
+    case 'sugar-core':
+      allowedModules = 'none';
+      break;
+    default:
+      allowedModules = [packageName.replace(/^sugar-?/, '')];
+  }
+  exportTypescriptDeclarations(packageDir, allowedModules);
 }
 
 function copyLocales(l, dir) {
@@ -4346,6 +4357,11 @@ function exportTypescriptDeclarations(basePath, allowedModules, include, exclude
   }
 
   function moduleIsBlacklisted(moduleName) {
+    if (allowedModules === 'all') {
+      return false;
+    } else if (allowedModules === 'none') {
+      return true;
+    }
     return !allowedModules.some(function(name) {
       return name.toLowerCase() === moduleName.toLowerCase();
     });
@@ -4375,7 +4391,10 @@ function exportTypescriptDeclarations(basePath, allowedModules, include, exclude
 
     function writeDeclarations(filename, declarations) {
       declarations = compact(declarations);
-      if (declarations.length === 1) {
+      var hasNoDeclarations = declarations.every(function(dec) {
+        return /^\/\//.test(dec);
+      });
+      if (hasNoDeclarations) {
         return;
       }
       writeFile(path.join(basePath || '', filename), compact(declarations).join('\n\n'));
@@ -4564,7 +4583,7 @@ function exportTypescriptDeclarations(basePath, allowedModules, include, exclude
 
     var extendedDeclarations = [];
     extendedDeclarations.push(TS_EXTENDED_LICENSE);
-    extendedDeclarations.push('// <reference path="sugar.d.ts" />');
+    extendedDeclarations.push('/// <reference path="sugar.d.ts" />');
     extendedDeclarations.push(getInterfaceBlocks(extendedInterfaces));
 
     writeDeclarations('sugar.d.ts', baseDeclarations);
