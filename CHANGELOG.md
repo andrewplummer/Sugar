@@ -1,4 +1,7 @@
+v2.0.3
+======
 
+- Updated Typescript declaration files to better handle modules.
 - Fixed issue with Range date unit methods on invalid ranges.
 
 v2.0.2
