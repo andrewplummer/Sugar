@@ -144,11 +144,14 @@ module.exports = {
     load('../suite/resets/' + name + '-node.js');
   },
 
-  logTotals: function() {
+  logTotals: function(exitOnError) {
     if (globalFailures) {
       notice('Fail! ' + globalFailures + ' failures', logRed);
     } else {
       notice('Success! 0 failures', logBlue);
+    }
+    if (exitOnError && globalFailures) {
+      process.exit(1);
     }
     globalFailures = 0;
   },

@@ -9,4 +9,4 @@ runner.load('./chained/dist.js');
 runner.notice('Extended');
 runner.load('./extended/dist.js');
 
-runner.logTotals();
+runner.logTotals(true);
