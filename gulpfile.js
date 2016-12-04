@@ -3,9 +3,7 @@ var fs      = require('fs'),
     gulp    = require('gulp'),
     path    = require('path'),
     args    = require('yargs').argv,
-    gutil   = require('gulp-util'),
-    mkdirp  = require('mkdirp'),
-    through = require('through2');
+    gutil   = require('gulp-util');
 
 // -------------- Tasks ----------------
 
@@ -287,7 +285,7 @@ function readFile(path) {
 }
 
 function writeFile(outputPath, body) {
-  mkdirp.sync(path.dirname(outputPath));
+  require('mkdirp').sync(path.dirname(outputPath));
   fs.writeFileSync(outputPath, body, 'utf-8');
 }
 
@@ -322,7 +320,7 @@ function onStreamEnd(stream, fn) {
   if (stream.isEmpty()) {
     return fn();
   }
-  return stream.pipe(through.obj(function(file, enc, cb) {
+  return stream.pipe(require('through2').obj(function(file, enc, cb) {
     fn();
     cb();
   }));
@@ -557,7 +555,7 @@ function createMinifiedBuild(outputPath, modules, locales) {
 
   return gulp.src(tmpPath)
     .pipe(compileSingle(outputPath))
-    .pipe(through.obj(function(file, enc, cb) {
+    .pipe(require('through2').obj(function(file, enc, cb) {
       fs.unlink(tmpPath);
       cb();
     }));
@@ -998,7 +996,7 @@ function exportPackageDeclarations(packageName, packageDir) {
 }
 
 function copyLocales(l, dir) {
-  mkdirp.sync(dir);
+  require('mkdirp').sync(dir);
   getLocalePaths(l).forEach(function(src) {
     writeFile(path.join(dir, path.basename(src)), readFile(src));
   });
