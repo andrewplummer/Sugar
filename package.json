@@ -27,17 +27,20 @@
     "buffer": false
   },
   "scripts": {
-    "test": "node test/node"
+    "test": "node test/node",
+    "coveralls": "cat ./coverage/lcov.info | ./node_modules/.bin/coveralls"
   },
   "typings": "sugar.d.ts",
   "devDependencies": {
     "acorn": "^2.7.0",
     "closure-compiler-stream": "^0.1.15",
+    "coveralls": "^2.11.15",
     "glob": "^5.0.14",
     "google-closure-compiler": "^20160517.1.0",
     "gulp": "^3.9.0",
     "gulp-file": "^0.3.0",
     "gulp-util": "^3.0.6",
+    "istanbul": "^0.4.5",
     "merge-stream": "^0.1.8",
     "mkdirp": "^0.5.1",
     "rimraf": "^2.4.4",

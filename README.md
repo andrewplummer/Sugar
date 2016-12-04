@@ -1,6 +1,7 @@
 # Sugar
 
 [![Build Status](https://travis-ci.org/andrewplummer/Sugar.svg)](http://travis-ci.org/andrewplummer/Sugar)
+[![Coverage Status](https://coveralls.io/repos/andrewplummer/Sugar/badge.svg?branch=master)](https://coveralls.io/r/andrewplummer/Sugar?branch=master)
 
 A Javascript library for working with native objects.
 
