@@ -12,7 +12,7 @@ cache:
     - node_modules
 git:
   depth: 3
-install: npm install gulp gulp-util gulp-file yargs sinon istanbul
+install: npm install gulp gulp-util gulp-file yargs sinon istanbul coveralls
 before_script:
   - 'gulp build:dev'
 after_success:
