@@ -25,22 +25,22 @@
 
 load('dist/sugar.js');
 
-load('locales/ca.js');
-load('locales/da.js');
-load('locales/de.js');
-load('locales/es.js');
-load('locales/fi.js');
-load('locales/fr.js');
-load('locales/it.js');
-load('locales/ja.js');
-load('locales/ko.js');
-load('locales/nl.js');
-load('locales/pl.js');
-load('locales/pt.js');
-load('locales/ru.js');
-load('locales/sv.js');
-load('locales/zh-CN.js');
-load('locales/zh-TW.js');
+load('lib/locales/ca.js');
+load('lib/locales/da.js');
+load('lib/locales/de.js');
+load('lib/locales/es.js');
+load('lib/locales/fi.js');
+load('lib/locales/fr.js');
+load('lib/locales/it.js');
+load('lib/locales/ja.js');
+load('lib/locales/ko.js');
+load('lib/locales/nl.js');
+load('lib/locales/pl.js');
+load('lib/locales/pt.js');
+load('lib/locales/ru.js');
+load('lib/locales/sv.js');
+load('lib/locales/zh-CN.js');
+load('lib/locales/zh-TW.js');
 
 load('test/suite/suite.js');
 load('test/suite/log.js');
