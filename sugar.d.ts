@@ -1,4 +1,4 @@
-// Type definitions for Sugar v2.0.4
+// Type definitions for Sugar edge
 // Project: https://sugarjs.com/
 // Definitions by: Andrew Plummer <plummer.andrew@gmail.com>
 
@@ -97,34 +97,43 @@ declare namespace sugarjs {
 
   namespace Array {
 
+    type mapFn<T, U> = (el: T, i: number, arr: T[]) => U;
+    type sortMapFn<T, U> = (el: T) => U;
+    type searchFn<T> = (el: T, i: number, arr: T[]) => boolean;
     type Chainable<T, RawValue> = ChainableBase<T, RawValue> & Object.ChainableBase<RawValue>;
-    type mapFn = <T, U>(el: T, i: number, arr: T[]) => U;
-    type sortMapFn = <T, U>(el: T) => U;
-    type searchFn = <T>(el: T, i: number, arr: T[]) => boolean;
+
+    interface ArrayOptions {
+      sortIgnore?: RegExp;
+      sortIgnoreCase?: boolean;
+      sortNatural?: boolean;
+      sortOrder?: string;
+      sortEquivalents?: Object;
+      sortCollate?: Function;
+    }
 
     interface Constructor extends SugarNamespace {
       <T>(obj?: number|ArrayLike<T>, clone?: boolean): Chainable<T, T[]>;
       new<T>(obj?: number|ArrayLike<T>, clone?: boolean): Chainable<T, T[]>;
-      construct<T>(n: number, map: (i: number) => any): T[];
+      construct<T>(n: number, map: (i: number) => T): T[];
       create<T>(obj?: number|ArrayLike<T>, clone?: boolean): T[];
       add<T>(instance: T[], item: T|T[], index?: number): T[];
       append<T>(instance: T[], item: T|T[], index?: number): T[];
       at<T>(instance: T[], index: number|number[], loop?: boolean): T;
-      average<T>(instance: T[], map?: string|mapFn): number;
+      average<T, U>(instance: T[], map?: string|mapFn<T, U>): number;
       clone<T>(instance: T[]): T[];
       compact<T>(instance: T[], all?: boolean): T[];
-      count<T>(instance: T[], search: T|searchFn, context?: any): number;
-      every<T>(instance: T[], search: T|searchFn, context?: any): boolean;
+      count<T>(instance: T[], search: T|searchFn<T>, context?: any): number;
+      every<T>(instance: T[], search: T|searchFn<T>, context?: any): boolean;
       everyFromIndex<T>(instance: T[], startIndex: number, loop?: boolean, ...args: any[]): T;
       everyFromIndex<T>(instance: T[], startIndex: number, ...args: any[]): T;
-      exclude<T>(instance: T[], search: T|searchFn): T[];
-      filter<T>(instance: T[], search: T|searchFn, context?: any): T[];
+      exclude<T>(instance: T[], search: T|searchFn<T>): T[];
+      filter<T>(instance: T[], search: T|searchFn<T>, context?: any): T[];
       filterFromIndex<T>(instance: T[], startIndex: number, loop?: boolean, ...args: any[]): T;
       filterFromIndex<T>(instance: T[], startIndex: number, ...args: any[]): T;
-      find<T>(instance: T[], search: T|searchFn, context?: any): T;
+      find<T>(instance: T[], search: T|searchFn<T>, context?: any): T;
       findFromIndex<T>(instance: T[], startIndex: number, loop?: boolean, ...args: any[]): T;
       findFromIndex<T>(instance: T[], startIndex: number, ...args: any[]): T;
-      findIndex<T>(instance: T[], search: T|searchFn, context?: any): number;
+      findIndex<T>(instance: T[], search: T|searchFn<T>, context?: any): number;
       findIndexFromIndex<T>(instance: T[], startIndex: number, loop?: boolean, ...args: any[]): T;
       findIndexFromIndex<T>(instance: T[], startIndex: number, ...args: any[]): T;
       first<T>(instance: T[], num?: number): T;
@@ -132,7 +141,7 @@ declare namespace sugarjs {
       forEachFromIndex<T>(instance: T[], startIndex: number, loop?: boolean, ...args: any[]): T;
       forEachFromIndex<T>(instance: T[], startIndex: number, ...args: any[]): T;
       from<T>(instance: T[], index: number): T[];
-      groupBy<T>(instance: T[], map: string|mapFn, fn?: (arr: T[], key: string, obj: Object) => void): Object;
+      groupBy<T, U>(instance: T[], map: string|mapFn<T, U>, fn?: (arr: T[], key: string, obj: Object) => void): Object;
       inGroups<T>(instance: T[], num: number, padding?: any): T[];
       inGroupsOf<T>(instance: T[], num: number, padding?: any): T[];
       insert<T>(instance: T[], item: T|T[], index?: number): T[];
@@ -140,36 +149,36 @@ declare namespace sugarjs {
       isEmpty<T>(instance: T[]): boolean;
       isEqual<T>(instance: T[], arr: T[]): boolean;
       last<T>(instance: T[], num?: number): T;
-      least<T>(instance: T[], all?: boolean, map?: string|mapFn): T[];
-      least<T>(instance: T[], map?: string|mapFn): T[];
-      map<T, U>(instance: T[], map: string|mapFn, context?: any): U[];
+      least<T, U>(instance: T[], all?: boolean, map?: string|mapFn<T, U>): T[];
+      least<T, U>(instance: T[], map?: string|mapFn<T, U>): T[];
+      map<T, U>(instance: T[], map: string|mapFn<T, U>, context?: any): U[];
       mapFromIndex<T>(instance: T[], startIndex: number, loop?: boolean, ...args: any[]): T;
       mapFromIndex<T>(instance: T[], startIndex: number, ...args: any[]): T;
-      max<T>(instance: T[], all?: boolean, map?: string|mapFn): T;
-      max<T>(instance: T[], map?: string|mapFn): T;
-      median<T>(instance: T[], map?: string|mapFn): number;
-      min<T>(instance: T[], all?: boolean, map?: string|mapFn): T;
-      min<T>(instance: T[], map?: string|mapFn): T;
-      most<T>(instance: T[], all?: boolean, map?: string|mapFn): T[];
-      most<T>(instance: T[], map?: string|mapFn): T[];
-      none<T>(instance: T[], search: T|searchFn, context?: any): boolean;
+      max<T, U>(instance: T[], all?: boolean, map?: string|mapFn<T, U>): T;
+      max<T, U>(instance: T[], map?: string|mapFn<T, U>): T;
+      median<T, U>(instance: T[], map?: string|mapFn<T, U>): number;
+      min<T, U>(instance: T[], all?: boolean, map?: string|mapFn<T, U>): T;
+      min<T, U>(instance: T[], map?: string|mapFn<T, U>): T;
+      most<T, U>(instance: T[], all?: boolean, map?: string|mapFn<T, U>): T[];
+      most<T, U>(instance: T[], map?: string|mapFn<T, U>): T[];
+      none<T>(instance: T[], search: T|searchFn<T>, context?: any): boolean;
       reduceFromIndex<T>(instance: T[], startIndex: number, loop?: boolean, ...args: any[]): T;
       reduceFromIndex<T>(instance: T[], startIndex: number, ...args: any[]): T;
       reduceRightFromIndex<T>(instance: T[], startIndex: number, loop?: boolean, ...args: any[]): T;
       reduceRightFromIndex<T>(instance: T[], startIndex: number, ...args: any[]): T;
-      remove<T>(instance: T[], search: T|searchFn): T[];
+      remove<T>(instance: T[], search: T|searchFn<T>): T[];
       removeAt<T>(instance: T[], start: number, end?: number): T[];
       sample<T>(instance: T[], num?: number, remove?: boolean): T;
       shuffle<T>(instance: T[]): T[];
-      some<T>(instance: T[], search: T|searchFn, context?: any): boolean;
+      some<T>(instance: T[], search: T|searchFn<T>, context?: any): boolean;
       someFromIndex<T>(instance: T[], startIndex: number, loop?: boolean, ...args: any[]): T;
       someFromIndex<T>(instance: T[], startIndex: number, ...args: any[]): T;
-      sortBy<T>(instance: T[], map?: string|sortMapFn, desc?: boolean): T[];
+      sortBy<T, U>(instance: T[], map?: string|sortMapFn<T, U>, desc?: boolean): T[];
       subtract<T>(instance: T[], item: T|T[]): T[];
-      sum<T>(instance: T[], map?: string|mapFn): number;
+      sum<T, U>(instance: T[], map?: string|mapFn<T, U>): number;
       to<T>(instance: T[], index: number): T[];
       union<T>(instance: T[], arr: T[]): T[];
-      unique<T>(instance: T[], map?: string|mapFn): T[];
+      unique<T, U>(instance: T[], map?: string|mapFn<T, U>): T[];
       zip<T>(instance: T[], ...args: any[]): T[];
       getOption<T>(name: string): T;
       setOption(name: string, value: any): void;
@@ -183,21 +192,21 @@ declare namespace sugarjs {
       add(item: T|T[], index?: number): SugarDefaultChainable<T[]>;
       append(item: T|T[], index?: number): SugarDefaultChainable<T[]>;
       at(index: number|number[], loop?: boolean): SugarDefaultChainable<T>;
-      average(map?: string|mapFn): SugarDefaultChainable<number>;
+      average<U>(map?: string|mapFn<T, U>): SugarDefaultChainable<number>;
       clone(): SugarDefaultChainable<T[]>;
       compact(all?: boolean): SugarDefaultChainable<T[]>;
-      count(search: T|searchFn, context?: any): SugarDefaultChainable<number>;
-      every(search: T|searchFn, context?: any): SugarDefaultChainable<boolean>;
+      count(search: T|searchFn<T>, context?: any): SugarDefaultChainable<number>;
+      every(search: T|searchFn<T>, context?: any): SugarDefaultChainable<boolean>;
       everyFromIndex(startIndex: number, loop?: boolean, ...args: any[]): SugarDefaultChainable<T>;
       everyFromIndex(startIndex: number, ...args: any[]): SugarDefaultChainable<T>;
-      exclude(search: T|searchFn): SugarDefaultChainable<T[]>;
-      filter(search: T|searchFn, context?: any): SugarDefaultChainable<T[]>;
+      exclude(search: T|searchFn<T>): SugarDefaultChainable<T[]>;
+      filter(search: T|searchFn<T>, context?: any): SugarDefaultChainable<T[]>;
       filterFromIndex(startIndex: number, loop?: boolean, ...args: any[]): SugarDefaultChainable<T>;
       filterFromIndex(startIndex: number, ...args: any[]): SugarDefaultChainable<T>;
-      find(search: T|searchFn, context?: any): SugarDefaultChainable<T>;
+      find(search: T|searchFn<T>, context?: any): SugarDefaultChainable<T>;
       findFromIndex(startIndex: number, loop?: boolean, ...args: any[]): SugarDefaultChainable<T>;
       findFromIndex(startIndex: number, ...args: any[]): SugarDefaultChainable<T>;
-      findIndex(search: T|searchFn, context?: any): SugarDefaultChainable<number>;
+      findIndex(search: T|searchFn<T>, context?: any): SugarDefaultChainable<number>;
       findIndexFromIndex(startIndex: number, loop?: boolean, ...args: any[]): SugarDefaultChainable<T>;
       findIndexFromIndex(startIndex: number, ...args: any[]): SugarDefaultChainable<T>;
       first(num?: number): SugarDefaultChainable<T>;
@@ -205,7 +214,7 @@ declare namespace sugarjs {
       forEachFromIndex(startIndex: number, loop?: boolean, ...args: any[]): SugarDefaultChainable<T>;
       forEachFromIndex(startIndex: number, ...args: any[]): SugarDefaultChainable<T>;
       from(index: number): SugarDefaultChainable<T[]>;
-      groupBy(map: string|mapFn, fn?: (arr: T[], key: string, obj: Object) => SugarDefaultChainable<void>): SugarDefaultChainable<Object>;
+      groupBy<U>(map: string|mapFn<T, U>, fn?: (arr: T[], key: string, obj: Object) => SugarDefaultChainable<void>): SugarDefaultChainable<Object>;
       inGroups(num: number, padding?: any): SugarDefaultChainable<T[]>;
       inGroupsOf(num: number, padding?: any): SugarDefaultChainable<T[]>;
       insert(item: T|T[], index?: number): SugarDefaultChainable<T[]>;
@@ -213,36 +222,36 @@ declare namespace sugarjs {
       isEmpty(): SugarDefaultChainable<boolean>;
       isEqual(arr: T[]): SugarDefaultChainable<boolean>;
       last(num?: number): SugarDefaultChainable<T>;
-      least(all?: boolean, map?: string|mapFn): SugarDefaultChainable<T[]>;
-      least(map?: string|mapFn): SugarDefaultChainable<T[]>;
-      map<U>(map: string|mapFn, context?: any): SugarDefaultChainable<U[]>;
+      least<U>(all?: boolean, map?: string|mapFn<T, U>): SugarDefaultChainable<T[]>;
+      least<U>(map?: string|mapFn<T, U>): SugarDefaultChainable<T[]>;
+      map<U>(map: string|mapFn<T, U>, context?: any): SugarDefaultChainable<U[]>;
       mapFromIndex(startIndex: number, loop?: boolean, ...args: any[]): SugarDefaultChainable<T>;
       mapFromIndex(startIndex: number, ...args: any[]): SugarDefaultChainable<T>;
-      max(all?: boolean, map?: string|mapFn): SugarDefaultChainable<T>;
-      max(map?: string|mapFn): SugarDefaultChainable<T>;
-      median(map?: string|mapFn): SugarDefaultChainable<number>;
-      min(all?: boolean, map?: string|mapFn): SugarDefaultChainable<T>;
-      min(map?: string|mapFn): SugarDefaultChainable<T>;
-      most(all?: boolean, map?: string|mapFn): SugarDefaultChainable<T[]>;
-      most(map?: string|mapFn): SugarDefaultChainable<T[]>;
-      none(search: T|searchFn, context?: any): SugarDefaultChainable<boolean>;
+      max<U>(all?: boolean, map?: string|mapFn<T, U>): SugarDefaultChainable<T>;
+      max<U>(map?: string|mapFn<T, U>): SugarDefaultChainable<T>;
+      median<U>(map?: string|mapFn<T, U>): SugarDefaultChainable<number>;
+      min<U>(all?: boolean, map?: string|mapFn<T, U>): SugarDefaultChainable<T>;
+      min<U>(map?: string|mapFn<T, U>): SugarDefaultChainable<T>;
+      most<U>(all?: boolean, map?: string|mapFn<T, U>): SugarDefaultChainable<T[]>;
+      most<U>(map?: string|mapFn<T, U>): SugarDefaultChainable<T[]>;
+      none(search: T|searchFn<T>, context?: any): SugarDefaultChainable<boolean>;
       reduceFromIndex(startIndex: number, loop?: boolean, ...args: any[]): SugarDefaultChainable<T>;
       reduceFromIndex(startIndex: number, ...args: any[]): SugarDefaultChainable<T>;
       reduceRightFromIndex(startIndex: number, loop?: boolean, ...args: any[]): SugarDefaultChainable<T>;
       reduceRightFromIndex(startIndex: number, ...args: any[]): SugarDefaultChainable<T>;
-      remove(search: T|searchFn): SugarDefaultChainable<T[]>;
+      remove(search: T|searchFn<T>): SugarDefaultChainable<T[]>;
       removeAt(start: number, end?: number): SugarDefaultChainable<T[]>;
       sample(num?: number, remove?: boolean): SugarDefaultChainable<T>;
       shuffle(): SugarDefaultChainable<T[]>;
-      some(search: T|searchFn, context?: any): SugarDefaultChainable<boolean>;
+      some(search: T|searchFn<T>, context?: any): SugarDefaultChainable<boolean>;
       someFromIndex(startIndex: number, loop?: boolean, ...args: any[]): SugarDefaultChainable<T>;
       someFromIndex(startIndex: number, ...args: any[]): SugarDefaultChainable<T>;
-      sortBy(map?: string|sortMapFn, desc?: boolean): SugarDefaultChainable<T[]>;
+      sortBy<U>(map?: string|sortMapFn<T, U>, desc?: boolean): SugarDefaultChainable<T[]>;
       subtract(item: T|T[]): SugarDefaultChainable<T[]>;
-      sum(map?: string|mapFn): SugarDefaultChainable<number>;
+      sum<U>(map?: string|mapFn<T, U>): SugarDefaultChainable<number>;
       to(index: number): SugarDefaultChainable<T[]>;
       union(arr: T[]): SugarDefaultChainable<T[]>;
-      unique(map?: string|mapFn): SugarDefaultChainable<T[]>;
+      unique<U>(map?: string|mapFn<T, U>): SugarDefaultChainable<T[]>;
       zip(...args: any[]): SugarDefaultChainable<T[]>;
       concat(...items: (T | T[])[]): SugarDefaultChainable<T[]>;
       concat(...items: T[][]): SugarDefaultChainable<T[]>;
@@ -274,20 +283,25 @@ declare namespace sugarjs {
       unshift(...items: T[]): SugarDefaultChainable<number>;
     }
 
-    interface ArrayOptions {
-      sortIgnore?: RegExp;
-      sortIgnoreCase?: boolean;
-      sortNatural?: boolean;
-      sortOrder?: string;
-      sortEquivalents?: Object;
-      sortCollate?: Function;
-    }
-
   }
 
   namespace Date {
 
     type Chainable<RawValue> = ChainableBase<RawValue> & Object.ChainableBase<RawValue>;
+
+    interface DateOptions {
+      newDateInternal: Function;
+    }
+
+    interface DateCreateOptions {
+      locale?: string;
+      past?: boolean;
+      future?: boolean;
+      fromUTC?: boolean;
+      setUTC?: boolean;
+      clone?: boolean;
+      params?: Object;
+    }
 
     interface Constructor extends SugarNamespace {
       (d?: string|number|Date, options?: DateCreateOptions): Chainable<Date>;
@@ -573,20 +587,6 @@ declare namespace sugarjs {
       toUTCString(): SugarDefaultChainable<string>;
     }
 
-    interface DateOptions {
-      newDateInternal: Function;
-    }
-
-    interface DateCreateOptions {
-      locale?: string;
-      past?: boolean;
-      future?: boolean;
-      fromUTC?: boolean;
-      setUTC?: boolean;
-      clone?: boolean;
-      params?: Object;
-    }
-
   }
 
   namespace Function {
@@ -634,6 +634,11 @@ declare namespace sugarjs {
   namespace Number {
 
     type Chainable<RawValue> = ChainableBase<RawValue> & Object.ChainableBase<RawValue>;
+
+    interface NumberOptions {
+      decimal: string;
+      thousands: string;
+    }
 
     interface Constructor extends SugarNamespace {
       (raw?: number): Chainable<number>;
@@ -885,78 +890,94 @@ declare namespace sugarjs {
       toPrecision(precision?: number): SugarDefaultChainable<string>;
     }
 
-    interface NumberOptions {
-      decimal: string;
-      thousands: string;
-    }
-
   }
 
   namespace Object {
 
+    type resolveFn<T> = (key: string, targetVal: T, sourceVal: T, target: Object, source: Object) => boolean;
+    type searchFn<T> = (key: string, val: T, obj: Object) => boolean;
+    type mapFn<T, U> = (val: T, key: string, obj: Object) => U;
     type Chainable<RawValue> = ChainableBase<RawValue>;
-    type resolveFn = <T>(key: string, targetVal: T, sourceVal: T, target: Object, source: Object) => boolean;
-    type searchFn = <T>(key: string, val: T, obj: Object) => boolean;
-    type mapFn = <T, U>(val: T, key: string, obj: Object) => U;
+
+    interface QueryStringParseOptions<T, U> {
+      deep?: boolean;
+      auto?: boolean;
+      transform?: (key: string, val: T, obj: Object) => U;
+      separator?: string;
+    }
+
+    interface QueryStringOptions<T, U> {
+      deep?: boolean;
+      prefix?: string;
+      transform?: (key: string, val: T, obj: Object) => U;
+      separator?: string;
+    }
+
+    interface ObjectMergeOptions<T> {
+      deep?: boolean;
+      hidden?: boolean;
+      descriptor?: boolean;
+      resolve?: boolean|resolveFn<T>;
+    }
 
     interface Constructor extends SugarNamespace {
       (raw?: Object): Chainable<Object>;
       new(raw?: Object): Chainable<Object>;
-      fromQueryString(str: string, options?: QueryStringParseOptions): Object;
-      add(instance: Object, obj: Object, options?: ObjectMergeOptions): Object;
-      addAll(instance: Object, sources: Array<Object>, options?: ObjectMergeOptions): Object;
-      average(instance: Object, map?: string|mapFn): number;
+      fromQueryString<T, U>(str: string, options?: QueryStringParseOptions<T, U>): Object;
+      add<T>(instance: Object, obj: Object, options?: ObjectMergeOptions<T>): Object;
+      addAll<T>(instance: Object, sources: Array<Object>, options?: ObjectMergeOptions<T>): Object;
+      average<T, U>(instance: Object, map?: string|mapFn<T, U>): number;
       clone(instance: Object, deep?: boolean): Object;
-      count<T>(instance: Object, search: T|searchFn): number;
-      defaults(instance: Object, sources: Array<Object>, options?: ObjectMergeOptions): Object;
-      every<T>(instance: Object, search: T|searchFn): boolean;
-      exclude<T>(instance: Object, search: T|searchFn): Object;
-      filter<T>(instance: Object, search: T|searchFn): T[];
-      find<T>(instance: Object, search: T|searchFn): boolean;
+      count<T>(instance: Object, search: T|searchFn<T>): number;
+      defaults<T>(instance: Object, sources: Array<Object>, options?: ObjectMergeOptions<T>): Object;
+      every<T>(instance: Object, search: T|searchFn<T>): boolean;
+      exclude<T>(instance: Object, search: T|searchFn<T>): Object;
+      filter<T>(instance: Object, search: T|searchFn<T>): T[];
+      find<T>(instance: Object, search: T|searchFn<T>): boolean;
       forEach<T>(instance: Object, fn: (val: T, key: string, obj: Object) => void): Object;
       get<T>(instance: Object, key: string, inherited?: boolean): T;
       has(instance: Object, key: string, inherited?: boolean): boolean;
       intersect(instance: Object, obj: Object): Object;
       invert(instance: Object, multi?: boolean): Object;
       isArguments(instance: Object): boolean;
-      isArray<T>(instance: Object): instance is Array<T>;
-      isBoolean(instance: Object): instance is boolean;
-      isDate(instance: Object): instance is Date;
+      isArray(instance: any): instance is Array<any>;
+      isBoolean(instance: any): instance is boolean;
+      isDate(instance: any): instance is Date;
       isEmpty(instance: Object): boolean;
       isEqual(instance: Object, obj: Object): boolean;
-      isError(instance: Object): instance is Error;
-      isFunction(instance: Object): instance is Function;
-      isMap<K, V>(instance: Object): instance is Map<K,V>;
-      isNumber(instance: Object): instance is number;
+      isError(instance: any): instance is Error;
+      isFunction(instance: any): instance is Function;
+      isMap(instance: any): instance is Map<any, any>;
+      isNumber(instance: any): instance is number;
       isObject(instance: Object): boolean;
-      isRegExp(instance: Object): instance is RegExp;
-      isSet<T>(instance: Object): instance is Set<T>;
-      isString(instance: Object): instance is string;
+      isRegExp(instance: any): instance is RegExp;
+      isSet(instance: any): instance is Set<any>;
+      isString(instance: any): instance is string;
       keys<T>(instance: Object): T[];
-      least<T>(instance: Object, all?: boolean, map?: string|mapFn): T;
-      least<T>(instance: Object, map?: string|mapFn): T;
-      map(instance: Object, map: string|mapFn): Object;
-      max<T>(instance: Object, all?: boolean, map?: string|mapFn): T;
-      max<T>(instance: Object, map?: string|mapFn): T;
-      median(instance: Object, map?: string|mapFn): number;
-      merge(instance: Object, source: Object, options?: ObjectMergeOptions): Object;
-      mergeAll(instance: Object, sources: Array<Object>, options?: ObjectMergeOptions): Object;
-      min<T>(instance: Object, all?: boolean, map?: string|mapFn): T;
-      min<T>(instance: Object, map?: string|mapFn): T;
-      most<T>(instance: Object, all?: boolean, map?: string|mapFn): T;
-      most<T>(instance: Object, map?: string|mapFn): T;
-      none<T>(instance: Object, search: T|searchFn): boolean;
+      least<T, U>(instance: Object, all?: boolean, map?: string|mapFn<T, U>): T;
+      least<T, U>(instance: Object, map?: string|mapFn<T, U>): T;
+      map<T, U>(instance: Object, map: string|mapFn<T, U>): Object;
+      max<T, U>(instance: Object, all?: boolean, map?: string|mapFn<T, U>): T;
+      max<T, U>(instance: Object, map?: string|mapFn<T, U>): T;
+      median<T, U>(instance: Object, map?: string|mapFn<T, U>): number;
+      merge<T>(instance: Object, source: Object, options?: ObjectMergeOptions<T>): Object;
+      mergeAll<T>(instance: Object, sources: Array<Object>, options?: ObjectMergeOptions<T>): Object;
+      min<T, U>(instance: Object, all?: boolean, map?: string|mapFn<T, U>): T;
+      min<T, U>(instance: Object, map?: string|mapFn<T, U>): T;
+      most<T, U>(instance: Object, all?: boolean, map?: string|mapFn<T, U>): T;
+      most<T, U>(instance: Object, map?: string|mapFn<T, U>): T;
+      none<T>(instance: Object, search: T|searchFn<T>): boolean;
       reduce<T>(instance: Object, reduceFn: (acc: T, val: T, key: string, obj: Object) => void, init?: any): T;
       reject(instance: Object, find: string|RegExp|Array<string>|Object): Object;
-      remove<T>(instance: Object, search: T|searchFn): Object;
+      remove<T>(instance: Object, search: T|searchFn<T>): Object;
       select(instance: Object, find: string|RegExp|Array<string>|Object): Object;
       set<T>(instance: Object, key: string, val: T): Object;
       size(instance: Object): number;
-      some<T>(instance: Object, search: T|searchFn): boolean;
+      some<T>(instance: Object, search: T|searchFn<T>): boolean;
       subtract(instance: Object, obj: Object): Object;
-      sum(instance: Object, map?: string|mapFn): number;
+      sum<T, U>(instance: Object, map?: string|mapFn<T, U>): number;
       tap(instance: Object, fn: (obj: Object) => any): Object;
-      toQueryString(instance: Object, options?: QueryStringOptions): Object;
+      toQueryString<T, U>(instance: Object, options?: QueryStringOptions<T, U>): Object;
       values<T>(instance: Object): T[];
     }
 
@@ -964,16 +985,16 @@ declare namespace sugarjs {
       raw: RawValue;
       valueOf: () => RawValue;
       toString: () => string;
-      add(obj: Object, options?: ObjectMergeOptions): SugarDefaultChainable<Object>;
-      addAll(sources: Array<Object>, options?: ObjectMergeOptions): SugarDefaultChainable<Object>;
-      average(map?: string|mapFn): SugarDefaultChainable<number>;
+      add<T>(obj: Object, options?: ObjectMergeOptions<T>): SugarDefaultChainable<Object>;
+      addAll<T>(sources: Array<Object>, options?: ObjectMergeOptions<T>): SugarDefaultChainable<Object>;
+      average<T, U>(map?: string|mapFn<T, U>): SugarDefaultChainable<number>;
       clone(deep?: boolean): SugarDefaultChainable<Object>;
-      count<T>(search: T|searchFn): SugarDefaultChainable<number>;
-      defaults(sources: Array<Object>, options?: ObjectMergeOptions): SugarDefaultChainable<Object>;
-      every<T>(search: T|searchFn): SugarDefaultChainable<boolean>;
-      exclude<T>(search: T|searchFn): SugarDefaultChainable<Object>;
-      filter<T>(search: T|searchFn): SugarDefaultChainable<T[]>;
-      find<T>(search: T|searchFn): SugarDefaultChainable<boolean>;
+      count<T>(search: T|searchFn<T>): SugarDefaultChainable<number>;
+      defaults<T>(sources: Array<Object>, options?: ObjectMergeOptions<T>): SugarDefaultChainable<Object>;
+      every<T>(search: T|searchFn<T>): SugarDefaultChainable<boolean>;
+      exclude<T>(search: T|searchFn<T>): SugarDefaultChainable<Object>;
+      filter<T>(search: T|searchFn<T>): SugarDefaultChainable<T[]>;
+      find<T>(search: T|searchFn<T>): SugarDefaultChainable<boolean>;
       forEach<T>(fn: (val: T, key: string, obj: Object) => SugarDefaultChainable<void>): SugarDefaultChainable<Object>;
       get<T>(key: string, inherited?: boolean): SugarDefaultChainable<T>;
       has(key: string, inherited?: boolean): SugarDefaultChainable<boolean>;
@@ -994,52 +1015,31 @@ declare namespace sugarjs {
       isSet(): SugarDefaultChainable<boolean>;
       isString(): SugarDefaultChainable<boolean>;
       keys<T>(): SugarDefaultChainable<T[]>;
-      least<T>(all?: boolean, map?: string|mapFn): SugarDefaultChainable<T>;
-      least<T>(map?: string|mapFn): SugarDefaultChainable<T>;
-      map(map: string|mapFn): SugarDefaultChainable<Object>;
-      max<T>(all?: boolean, map?: string|mapFn): SugarDefaultChainable<T>;
-      max<T>(map?: string|mapFn): SugarDefaultChainable<T>;
-      median(map?: string|mapFn): SugarDefaultChainable<number>;
-      merge(source: Object, options?: ObjectMergeOptions): SugarDefaultChainable<Object>;
-      mergeAll(sources: Array<Object>, options?: ObjectMergeOptions): SugarDefaultChainable<Object>;
-      min<T>(all?: boolean, map?: string|mapFn): SugarDefaultChainable<T>;
-      min<T>(map?: string|mapFn): SugarDefaultChainable<T>;
-      most<T>(all?: boolean, map?: string|mapFn): SugarDefaultChainable<T>;
-      most<T>(map?: string|mapFn): SugarDefaultChainable<T>;
-      none<T>(search: T|searchFn): SugarDefaultChainable<boolean>;
+      least<T, U>(all?: boolean, map?: string|mapFn<T, U>): SugarDefaultChainable<T>;
+      least<T, U>(map?: string|mapFn<T, U>): SugarDefaultChainable<T>;
+      map<T, U>(map: string|mapFn<T, U>): SugarDefaultChainable<Object>;
+      max<T, U>(all?: boolean, map?: string|mapFn<T, U>): SugarDefaultChainable<T>;
+      max<T, U>(map?: string|mapFn<T, U>): SugarDefaultChainable<T>;
+      median<T, U>(map?: string|mapFn<T, U>): SugarDefaultChainable<number>;
+      merge<T>(source: Object, options?: ObjectMergeOptions<T>): SugarDefaultChainable<Object>;
+      mergeAll<T>(sources: Array<Object>, options?: ObjectMergeOptions<T>): SugarDefaultChainable<Object>;
+      min<T, U>(all?: boolean, map?: string|mapFn<T, U>): SugarDefaultChainable<T>;
+      min<T, U>(map?: string|mapFn<T, U>): SugarDefaultChainable<T>;
+      most<T, U>(all?: boolean, map?: string|mapFn<T, U>): SugarDefaultChainable<T>;
+      most<T, U>(map?: string|mapFn<T, U>): SugarDefaultChainable<T>;
+      none<T>(search: T|searchFn<T>): SugarDefaultChainable<boolean>;
       reduce<T>(reduceFn: (acc: T, val: T, key: string, obj: Object) => SugarDefaultChainable<void>, init?: any): SugarDefaultChainable<T>;
       reject(find: string|RegExp|Array<string>|Object): SugarDefaultChainable<Object>;
-      remove<T>(search: T|searchFn): SugarDefaultChainable<Object>;
+      remove<T>(search: T|searchFn<T>): SugarDefaultChainable<Object>;
       select(find: string|RegExp|Array<string>|Object): SugarDefaultChainable<Object>;
       set<T>(key: string, val: T): SugarDefaultChainable<Object>;
       size(): SugarDefaultChainable<number>;
-      some<T>(search: T|searchFn): SugarDefaultChainable<boolean>;
+      some<T>(search: T|searchFn<T>): SugarDefaultChainable<boolean>;
       subtract(obj: Object): SugarDefaultChainable<Object>;
-      sum(map?: string|mapFn): SugarDefaultChainable<number>;
+      sum<T, U>(map?: string|mapFn<T, U>): SugarDefaultChainable<number>;
       tap(fn: (obj: Object) => SugarDefaultChainable<any>): SugarDefaultChainable<Object>;
-      toQueryString(options?: QueryStringOptions): SugarDefaultChainable<Object>;
+      toQueryString<T, U>(options?: QueryStringOptions<T, U>): SugarDefaultChainable<Object>;
       values<T>(): SugarDefaultChainable<T[]>;
-    }
-
-    interface QueryStringParseOptions {
-      deep?: boolean;
-      auto?: boolean;
-      transform?: <T, U>(key: string, val: T, obj: Object) => U;
-      separator?: string;
-    }
-
-    interface QueryStringOptions {
-      deep?: boolean;
-      prefix?: string;
-      transform?: <T, U>(key: string, val: T, obj: Object) => U;
-      separator?: string;
-    }
-
-    interface ObjectMergeOptions {
-      deep?: boolean;
-      hidden?: boolean;
-      descriptor?: boolean;
-      resolve?: boolean|resolveFn;
     }
 
   }
@@ -1074,8 +1074,8 @@ declare namespace sugarjs {
 
   namespace String {
 
-    type Chainable<RawValue> = ChainableBase<RawValue> & Object.ChainableBase<RawValue>;
     type tagReplaceFn = (tag: string, inner: string, attr: string, outer: string) => string;
+    type Chainable<RawValue> = ChainableBase<RawValue> & Object.ChainableBase<RawValue>;
 
     interface Constructor extends SugarNamespace {
       (raw?: string): Chainable<string>;

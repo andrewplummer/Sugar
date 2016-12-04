@@ -1,11 +1,11 @@
-// Extended type definitions for Sugar v2.0.4
+// Extended type definitions for Sugar edge
 // Project: https://sugarjs.com/
 // Definitions by: Andrew Plummer <plummer.andrew@gmail.com>
 
 /// <reference path="sugar.d.ts" />
 
 interface ArrayConstructor {
-  construct<T>(n: number, map: (i: number) => any): T[];
+  construct<T>(n: number, map: (i: number) => T): T[];
   create<T>(obj?: number|ArrayLike<T>, clone?: boolean): T[];
 }
 
@@ -13,21 +13,21 @@ interface Array<T> {
   add(item: T|T[], index?: number): T[];
   append(item: T|T[], index?: number): T[];
   at(index: number|number[], loop?: boolean): T;
-  average(map?: string|sugarjs.Array.mapFn): number;
+  average<U>(map?: string|sugarjs.Array.mapFn<T, U>): number;
   clone(): T[];
   compact(all?: boolean): T[];
-  count(search: T|sugarjs.Array.searchFn, context?: any): number;
-  every(search: T|sugarjs.Array.searchFn, context?: any): boolean;
+  count(search: T|sugarjs.Array.searchFn<T>, context?: any): number;
+  every(search: T|sugarjs.Array.searchFn<T>, context?: any): boolean;
   everyFromIndex(startIndex: number, loop?: boolean, ...args: any[]): T;
   everyFromIndex(startIndex: number, ...args: any[]): T;
-  exclude(search: T|sugarjs.Array.searchFn): T[];
-  filter(search: T|sugarjs.Array.searchFn, context?: any): T[];
+  exclude(search: T|sugarjs.Array.searchFn<T>): T[];
+  filter(search: T|sugarjs.Array.searchFn<T>, context?: any): T[];
   filterFromIndex(startIndex: number, loop?: boolean, ...args: any[]): T;
   filterFromIndex(startIndex: number, ...args: any[]): T;
-  find(search: T|sugarjs.Array.searchFn, context?: any): T;
+  find(search: T|sugarjs.Array.searchFn<T>, context?: any): T;
   findFromIndex(startIndex: number, loop?: boolean, ...args: any[]): T;
   findFromIndex(startIndex: number, ...args: any[]): T;
-  findIndex(search: T|sugarjs.Array.searchFn, context?: any): number;
+  findIndex(search: T|sugarjs.Array.searchFn<T>, context?: any): number;
   findIndexFromIndex(startIndex: number, loop?: boolean, ...args: any[]): T;
   findIndexFromIndex(startIndex: number, ...args: any[]): T;
   first(num?: number): T;
@@ -35,7 +35,7 @@ interface Array<T> {
   forEachFromIndex(startIndex: number, loop?: boolean, ...args: any[]): T;
   forEachFromIndex(startIndex: number, ...args: any[]): T;
   from(index: number): T[];
-  groupBy(map: string|sugarjs.Array.mapFn, fn?: (arr: T[], key: string, obj: Object) => void): Object;
+  groupBy<U>(map: string|sugarjs.Array.mapFn<T, U>, fn?: (arr: T[], key: string, obj: Object) => void): Object;
   inGroups(num: number, padding?: any): T[];
   inGroupsOf(num: number, padding?: any): T[];
   insert(item: T|T[], index?: number): T[];
@@ -43,36 +43,36 @@ interface Array<T> {
   isEmpty(): boolean;
   isEqual(arr: T[]): boolean;
   last(num?: number): T;
-  least(all?: boolean, map?: string|sugarjs.Array.mapFn): T[];
-  least(map?: string|sugarjs.Array.mapFn): T[];
-  map<U>(map: string|sugarjs.Array.mapFn, context?: any): U[];
+  least<U>(all?: boolean, map?: string|sugarjs.Array.mapFn<T, U>): T[];
+  least<U>(map?: string|sugarjs.Array.mapFn<T, U>): T[];
+  map<U>(map: string|sugarjs.Array.mapFn<T, U>, context?: any): U[];
   mapFromIndex(startIndex: number, loop?: boolean, ...args: any[]): T;
   mapFromIndex(startIndex: number, ...args: any[]): T;
-  max(all?: boolean, map?: string|sugarjs.Array.mapFn): T;
-  max(map?: string|sugarjs.Array.mapFn): T;
-  median(map?: string|sugarjs.Array.mapFn): number;
-  min(all?: boolean, map?: string|sugarjs.Array.mapFn): T;
-  min(map?: string|sugarjs.Array.mapFn): T;
-  most(all?: boolean, map?: string|sugarjs.Array.mapFn): T[];
-  most(map?: string|sugarjs.Array.mapFn): T[];
-  none(search: T|sugarjs.Array.searchFn, context?: any): boolean;
+  max<U>(all?: boolean, map?: string|sugarjs.Array.mapFn<T, U>): T;
+  max<U>(map?: string|sugarjs.Array.mapFn<T, U>): T;
+  median<U>(map?: string|sugarjs.Array.mapFn<T, U>): number;
+  min<U>(all?: boolean, map?: string|sugarjs.Array.mapFn<T, U>): T;
+  min<U>(map?: string|sugarjs.Array.mapFn<T, U>): T;
+  most<U>(all?: boolean, map?: string|sugarjs.Array.mapFn<T, U>): T[];
+  most<U>(map?: string|sugarjs.Array.mapFn<T, U>): T[];
+  none(search: T|sugarjs.Array.searchFn<T>, context?: any): boolean;
   reduceFromIndex(startIndex: number, loop?: boolean, ...args: any[]): T;
   reduceFromIndex(startIndex: number, ...args: any[]): T;
   reduceRightFromIndex(startIndex: number, loop?: boolean, ...args: any[]): T;
   reduceRightFromIndex(startIndex: number, ...args: any[]): T;
-  remove(search: T|sugarjs.Array.searchFn): T[];
+  remove(search: T|sugarjs.Array.searchFn<T>): T[];
   removeAt(start: number, end?: number): T[];
   sample(num?: number, remove?: boolean): T;
   shuffle(): T[];
-  some(search: T|sugarjs.Array.searchFn, context?: any): boolean;
+  some(search: T|sugarjs.Array.searchFn<T>, context?: any): boolean;
   someFromIndex(startIndex: number, loop?: boolean, ...args: any[]): T;
   someFromIndex(startIndex: number, ...args: any[]): T;
-  sortBy<U>(map?: string|sugarjs.Array.sortMapFn, desc?: boolean): T[];
+  sortBy<U>(map?: string|sugarjs.Array.sortMapFn<T, U>, desc?: boolean): T[];
   subtract(item: T|T[]): T[];
-  sum(map?: string|sugarjs.Array.mapFn): number;
+  sum<U>(map?: string|sugarjs.Array.mapFn<T, U>): number;
   to(index: number): T[];
   union(arr: T[]): T[];
-  unique<U>(map?: string|sugarjs.Array.mapFn): T[];
+  unique<U>(map?: string|sugarjs.Array.mapFn<T, U>): T[];
   zip(...args: any[]): T[];
 }
 
@@ -337,61 +337,61 @@ interface Number {
 }
 
 interface ObjectConstructor {
-  fromQueryString<T, U>(str: string, options?: sugarjs.Object.QueryStringParseOptions): Object;
-  add(instance: Object, obj: Object, options?: sugarjs.Object.ObjectMergeOptions): Object;
-  addAll(instance: Object, sources: Array<Object>, options?: sugarjs.Object.ObjectMergeOptions): Object;
-  average(instance: Object, map?: string|sugarjs.Object.mapFn): number;
+  fromQueryString<T, U>(str: string, options?: sugarjs.Object.QueryStringParseOptions<T, U>): Object;
+  add<T>(instance: Object, obj: Object, options?: sugarjs.Object.ObjectMergeOptions<T>): Object;
+  addAll<T>(instance: Object, sources: Array<Object>, options?: sugarjs.Object.ObjectMergeOptions<T>): Object;
+  average<T, U>(instance: Object, map?: string|sugarjs.Object.mapFn<T, U>): number;
   clone(instance: Object, deep?: boolean): Object;
-  count<T>(instance: Object, search: T|sugarjs.Object.searchFn): number;
-  defaults(instance: Object, sources: Array<Object>, options?: sugarjs.Object.ObjectMergeOptions): Object;
-  every<T>(instance: Object, search: T|sugarjs.Object.searchFn): boolean;
-  exclude<T>(instance: Object, search: T|sugarjs.Object.searchFn): Object;
-  filter<T>(instance: Object, search: T|sugarjs.Object.searchFn): T[];
-  find<T>(instance: Object, search: T|sugarjs.Object.searchFn): boolean;
+  count<T>(instance: Object, search: T|sugarjs.Object.searchFn<T>): number;
+  defaults<T>(instance: Object, sources: Array<Object>, options?: sugarjs.Object.ObjectMergeOptions<T>): Object;
+  every<T>(instance: Object, search: T|sugarjs.Object.searchFn<T>): boolean;
+  exclude<T>(instance: Object, search: T|sugarjs.Object.searchFn<T>): Object;
+  filter<T>(instance: Object, search: T|sugarjs.Object.searchFn<T>): T[];
+  find<T>(instance: Object, search: T|sugarjs.Object.searchFn<T>): boolean;
   forEach<T>(instance: Object, fn: (val: T, key: string, obj: Object) => void): Object;
   get<T>(instance: Object, key: string, inherited?: boolean): T;
   has(instance: Object, key: string, inherited?: boolean): boolean;
   intersect(instance: Object, obj: Object): Object;
   invert(instance: Object, multi?: boolean): Object;
   isArguments(instance: Object): boolean;
-  isArray<T>(instance: Object): instance is Array<T>;
-  isBoolean(instance: Object): instance is boolean;
-  isDate(instance: Object): instance is Date;
+  isArray(instance: any): instance is Array<any>;
+  isBoolean(instance: any): instance is boolean;
+  isDate(instance: any): instance is Date;
   isEmpty(instance: Object): boolean;
   isEqual(instance: Object, obj: Object): boolean;
-  isError(instance: Object): instance is Error;
-  isFunction(instance: Object): instance is Function;
-  isMap<K, V>(instance: Object): instance is Map<K,V>;
-  isNumber(instance: Object): instance is number;
+  isError(instance: any): instance is Error;
+  isFunction(instance: any): instance is Function;
+  isMap(instance: any): instance is Map<any, any>;
+  isNumber(instance: any): instance is number;
   isObject(instance: Object): boolean;
-  isRegExp(instance: Object): instance is RegExp;
-  isSet<T>(instance: Object): instance is Set<T>;
-  isString(instance: Object): instance is string;
+  isRegExp(instance: any): instance is RegExp;
+  isSet(instance: any): instance is Set<any>;
+  isString(instance: any): instance is string;
   keys<T>(instance: Object): T[];
-  least<T>(instance: Object, all?: boolean, map?: string|sugarjs.Object.mapFn): T;
-  least<T>(instance: Object, map?: string|sugarjs.Object.mapFn): T;
-  map<T, U>(instance: Object, map: string|sugarjs.Object.mapFn): Object;
-  max<T>(instance: Object, all?: boolean, map?: string|sugarjs.Object.mapFn): T;
-  max<T>(instance: Object, map?: string|sugarjs.Object.mapFn): T;
-  median(instance: Object, map?: string|sugarjs.Object.mapFn): number;
-  merge<T>(instance: Object, source: Object, options?: sugarjs.Object.ObjectMergeOptions): Object;
-  mergeAll(instance: Object, sources: Array<Object>, options?: sugarjs.Object.ObjectMergeOptions): Object;
-  min<T>(instance: Object, all?: boolean, map?: string|sugarjs.Object.mapFn): T;
-  min<T>(instance: Object, map?: string|sugarjs.Object.mapFn): T;
-  most<T>(instance: Object, all?: boolean, map?: string|sugarjs.Object.mapFn): T;
-  most<T>(instance: Object, map?: string|sugarjs.Object.mapFn): T;
-  none<T>(instance: Object, search: T|sugarjs.Object.searchFn): boolean;
+  least<T, U>(instance: Object, all?: boolean, map?: string|sugarjs.Object.mapFn<T, U>): T;
+  least<T, U>(instance: Object, map?: string|sugarjs.Object.mapFn<T, U>): T;
+  map<T, U>(instance: Object, map: string|sugarjs.Object.mapFn<T, U>): Object;
+  max<T, U>(instance: Object, all?: boolean, map?: string|sugarjs.Object.mapFn<T, U>): T;
+  max<T, U>(instance: Object, map?: string|sugarjs.Object.mapFn<T, U>): T;
+  median<T, U>(instance: Object, map?: string|sugarjs.Object.mapFn<T, U>): number;
+  merge<T>(instance: Object, source: Object, options?: sugarjs.Object.ObjectMergeOptions<T>): Object;
+  mergeAll<T>(instance: Object, sources: Array<Object>, options?: sugarjs.Object.ObjectMergeOptions<T>): Object;
+  min<T, U>(instance: Object, all?: boolean, map?: string|sugarjs.Object.mapFn<T, U>): T;
+  min<T, U>(instance: Object, map?: string|sugarjs.Object.mapFn<T, U>): T;
+  most<T, U>(instance: Object, all?: boolean, map?: string|sugarjs.Object.mapFn<T, U>): T;
+  most<T, U>(instance: Object, map?: string|sugarjs.Object.mapFn<T, U>): T;
+  none<T>(instance: Object, search: T|sugarjs.Object.searchFn<T>): boolean;
   reduce<T>(instance: Object, reduceFn: (acc: T, val: T, key: string, obj: Object) => void, init?: any): T;
   reject(instance: Object, find: string|RegExp|Array<string>|Object): Object;
-  remove<T>(instance: Object, search: T|sugarjs.Object.searchFn): Object;
+  remove<T>(instance: Object, search: T|sugarjs.Object.searchFn<T>): Object;
   select(instance: Object, find: string|RegExp|Array<string>|Object): Object;
   set<T>(instance: Object, key: string, val: T): Object;
   size(instance: Object): number;
-  some<T>(instance: Object, search: T|sugarjs.Object.searchFn): boolean;
+  some<T>(instance: Object, search: T|sugarjs.Object.searchFn<T>): boolean;
   subtract(instance: Object, obj: Object): Object;
-  sum(instance: Object, map?: string|sugarjs.Object.mapFn): number;
+  sum<T, U>(instance: Object, map?: string|sugarjs.Object.mapFn<T, U>): number;
   tap(instance: Object, fn: (obj: Object) => any): Object;
-  toQueryString<T, U>(instance: Object, options?: sugarjs.Object.QueryStringOptions): Object;
+  toQueryString<T, U>(instance: Object, options?: sugarjs.Object.QueryStringOptions<T, U>): Object;
   values<T>(instance: Object): T[];
 }
 

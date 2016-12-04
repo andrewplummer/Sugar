@@ -3527,16 +3527,18 @@ function buildTypescriptDeclarations() {
 function exportTypescriptDeclarations(basePath, allowedModules, include, exclude) {
 
   var optionInterfaceNamespaces = {};
+  var moduleCallbackGenerics = {};
+  var moduleOptionsGenerics = {};
 
   var whitelist = getMethodList(include);
   var blacklist = getMethodList(exclude);
 
-  var TYPE_GUARD_REG = /is(Boolean|Number|String|Date|RegExp|Function|Array|Error|Set|Map)$/;
+  var TYPE_REG = /is(Boolean|Number|String|Date|RegExp|Function|Array|Error|Set|Map)$/;
 
   var TYPE_GUARD_GENERICS = {
-    Array: ['T'],
-    Map: ['K', 'V'],
-    Set: ['T']
+    Array: ['any'],
+    Map: ['any', 'any'],
+    Set: ['any']
   }
 
   var CHAINABLE_RAW_TYPE = 'RawValue';
@@ -3749,7 +3751,7 @@ function exportTypescriptDeclarations(basePath, allowedModules, include, exclude
     }
 
     function mapType(type) {
-      return 'type ' + type.name + ' = ' + type.type + ';'
+      return 'type ' + type.name + (type.generics || '') + ' = ' + type.type + ';'
     }
 
     addBlock(module.types, '\n'.repeat(top ? 2 : 1), mapType);
@@ -3824,13 +3826,12 @@ function exportTypescriptDeclarations(basePath, allowedModules, include, exclude
 
     // Set up all remaining methods.
 
-    var instanceParam = {
-      name: 'instance',
-      required: true,
-      type: rawType
-    };
-
     namespace.methods.forEach(function(method) {
+      var instanceParam = {
+        name: 'instance',
+        required: true,
+        type: getInstanceParamType(method, rawType)
+      };
       var method = clone(method);
       if (method.type === 'instance') {
         method.params.unshift(instanceParam);
@@ -3882,13 +3883,13 @@ function exportTypescriptDeclarations(basePath, allowedModules, include, exclude
     // Add object instance methods as static, i.e.
     // Object.forEach, etc.
     if (namespace.name === 'Object') {
-      var objectInstanceParam = {
-        name: 'instance',
-        type: 'Object',
-        required: true
-      };
       var objectInstanceMethods = getExtendedMethods(namespace, 'instance');
       getExtendedMethods(namespace, 'instance').forEach(function(method) {
+        var objectInstanceParam = {
+          name: 'instance',
+          type: getInstanceParamType(method, 'Object'),
+          required: true
+        };
         method = clone(method);
         method.params.unshift(objectInstanceParam);
         if (method.signatures) {
@@ -4053,7 +4054,7 @@ function exportTypescriptDeclarations(basePath, allowedModules, include, exclude
 
   function getGenericSource(generic) {
     if (generic instanceof Array) {
-      generic = generic.join(', ');
+      generic = getUniqueGenerics(generic).join(', ');
     }
     if (!generic) {
       return '';
@@ -4063,7 +4064,18 @@ function exportTypescriptDeclarations(basePath, allowedModules, include, exclude
     return generic;
   }
 
+  function getUniqueGenerics(generics) {
+    var result = [];
+    generics.forEach(function(g) {
+      if (g === 'any' || result.indexOf(g) === -1) {
+        result.push(g);
+      }
+    });
+    return result;
+  }
+
   function addMethodGenerics(method, generics) {
+    generics = generics || [];
     if (typeof generics === 'string') {
       generics = [generics];
     }
@@ -4079,6 +4091,14 @@ function exportTypescriptDeclarations(basePath, allowedModules, include, exclude
   }
 
   /* ------------ Methods -------------- */
+
+  function isTypeCheck(method) {
+    return method.name.match(TYPE_REG);
+  }
+
+  function getInstanceParamType(method, type) {
+    return isTypeCheck(method) ? 'any' : type;
+  }
 
   function buildMethods(methods, namespace, mode) {
     methods.sort(collateMethods);
@@ -4113,22 +4133,32 @@ function exportTypescriptDeclarations(basePath, allowedModules, include, exclude
           src += (param.type || '').split('|').map(function(type) {
             type = getType(type, method) || 'undefined';
             if (type.match(/Fn$/)) {
+              var callback = method.callbacks.find(function(callback) {
+                return callback.name === type;
+              });
               if (param.type.indexOf('|') === -1) {
                 // If a callback is the ONLY type allowed for this parameter
                 // (no alternates), then it can be inlined directly into the
                 // definition, so do that here. Otherwise it needs to be moved
                 // out into a named type and referenced.
-                var callback = method.callbacks.find(function(callback) {
-                  return callback.name === type;
-                });
                 type = getFunctionSource(callback);
-              } else if (mode === 'extended') {
-                // If we are in extended mode and referencing a callback interface,
-                // then it needs to have its fully qualified namespace.
-                type = ['sugarjs', namespace.name, type].join('.');
+              } else {
+                if (mode === 'extended') {
+                  // If we are in extended mode and referencing a callback interface,
+                  // then it needs to have its fully qualified namespace.
+                  type = ['sugarjs', namespace.name, type].join('.');
+                }
+                var generics = moduleCallbackGenerics[namespace.name + ':' + callback.name];
+                if (generics) {
+                  addMethodGenerics(method, generics);
+                  type += getGenericSource(generics);
+                }
               }
             } else if (type.match(/Options$/)) {
               var optionsNamespace = optionInterfaceNamespaces[type];
+              var generics = moduleOptionsGenerics[namespace.name + ':' + type];
+              type += getGenericSource(generics);
+              addMethodGenerics(method, generics);
               if (mode === 'extended') {
                 // If we are in extended mode and referencing an options inteface,
                 // then it needs to have its fully qualified namespace.
@@ -4160,7 +4190,7 @@ function exportTypescriptDeclarations(basePath, allowedModules, include, exclude
     }
 
     function requiresTypeGuard() {
-      return method.name.match(TYPE_GUARD_REG) &&
+      return isTypeCheck(method) &&
              (mode === 'static' || mode === 'extended');
     }
 
@@ -4184,8 +4214,7 @@ function exportTypescriptDeclarations(basePath, allowedModules, include, exclude
       var type = method.name.replace(/^is/, '');
       var generics = TYPE_GUARD_GENERICS[type];
       if (generics) {
-        addMethodGenerics(method, generics);
-        type += '<' + generics.join(',') + '>';
+        type += getGenericSource(generics);
       }
       src = getTypeGuard(type);
     } else if ((match = src.match(/Array<(.+)>/))) {
@@ -4446,9 +4475,14 @@ function exportTypescriptDeclarations(basePath, allowedModules, include, exclude
             return t.name === callback.name;
           });
           if (!typeExists) {
+            var signature = getCallbackSignature(callback, method, namespace);
+            if (method.generics) {
+              moduleCallbackGenerics[namespace.name + ':' + callback.name] = method.generics;
+            }
             module.types.push({
               name: callback.name,
-              type: getCallbackSignature(callback, method, namespace)
+              generics: getGenericSource(callback.generics),
+              type: signature
             });
           }
         }
@@ -4482,12 +4516,21 @@ function exportTypescriptDeclarations(basePath, allowedModules, include, exclude
             return param.type.match(/Options$/);
           });
 
+          var optionsGenerics = [];
+
           var src = method.options.map(function(option) {
             var types = option.type.split('|');
             types = types.map(function(type) {
-              if (types.length === 1 && type.match(/Fn$/)) {
+              if (type.match(/Fn$/)) {
                 var callback = findMethodCallbackByName(method, type);
-                type = getCallbackSignature(callback, method, namespace);
+                if (types.length === 1 && type.match(/Fn$/)) {
+                  // Inline a callback delcaration
+                  type = getCallbackSignature(callback, method, namespace);
+                } else {
+                  // Refer to callback externally
+                  type += getGenericSource(moduleCallbackGenerics[namespace.name + ':' + callback.name]);
+                }
+                optionsGenerics = optionsGenerics.concat(callback.generics);
               }
               return type;
             });
@@ -4500,14 +4543,20 @@ function exportTypescriptDeclarations(basePath, allowedModules, include, exclude
             optionInterfaceNamespaces[optionsParam.type] = namespace.name;
           }
 
-          module.interfaces.push(getInterfaceSource(optionsParam.type, src));
+          moduleOptionsGenerics[namespace.name + ':' + optionsParam.type] = optionsGenerics;
+          var name = optionsParam.type + getGenericSource(optionsGenerics);
+          module.interfaces.push(getInterfaceSource(name, src));
         });
       }
 
       function getCallbackSignature(callback, method, namespace) {
+        var genericsLength = method.generic && method.generics.length || 0, gen;
         var params = getParams(callback.params, method, namespace);
         var returns = callback.returns ? getType(callback.returns, method) : 'void';
-        return getGenericSource(method.generics) + '(' + params + ') => ' + returns;
+        // Slightly convoluted way of getting generics for the callback by
+        // subtracting method generics from what they were previously.
+        callback.generics = method.generics.slice(genericsLength);
+        return '(' + params + ') => ' + returns;
       }
 
       function findMethodCallbackByName(method, name) {
@@ -4541,10 +4590,10 @@ function exportTypescriptDeclarations(basePath, allowedModules, include, exclude
         sugarjs.interfaces.push(getRangeInterface(namespace));
       } else {
         var module = getDeclaredNamespace(namespace.name);
+        addExtras(module);
         module.interfaces.push(getConstructorInterface(namespace, module));
         module.interfaces.push(getChainableBaseInterface(namespace));
 
-        addExtras(module);
 
         // Export extended interfaces unless opting out.
         if (args['extended-mode'] !== false) {
