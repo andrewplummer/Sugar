@@ -13,6 +13,6 @@ cache:
     - node_modules
 git:
   depth: 3
-install: npm install sinon
+install: npm install sinon istanbul
 after_success:
   - 'npm run coveralls'
