@@ -27,7 +27,7 @@
     "buffer": false
   },
   "scripts": {
-    "test": "node test/node",
+    "test": "istanbul cover test/node --report=lcovonly",
     "coveralls": "cat ./coverage/lcov.info | ./node_modules/.bin/coveralls"
   },
   "typings": "sugar.d.ts",
