@@ -152,6 +152,14 @@ namespace('String', function () {
     test('सभी मनुष्यों', true, 'basic');
   });
 
+  method('isEthiopic', function() {
+    test('አቡጊዳ', true, 'basic');
+  });
+
+  method('hasEthiopic', function() {
+    test('አቡጊዳ', true, 'basic');
+  });
+
   method('isLatin', function() {
     test('ā', true, 'Extended set A');
     test('Ɖ', true, 'Extended set B');
