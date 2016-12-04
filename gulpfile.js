@@ -399,7 +399,7 @@ function padNumber(n, place) {
 
 // Template tag
 function block(strings) {
-  var result = Array.from(strings);
+  var result = strings.concat();
   for (var i = 1, j = 1; i < arguments.length; i++) {
     result.splice(j, 0, arguments[i]);
     j += 2;
