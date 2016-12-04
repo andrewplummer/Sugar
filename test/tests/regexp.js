@@ -13,6 +13,7 @@ namespace('RegExp', function () {
     test(RegExp, ['\\?'], '\\\\\\?', 'two slashes and ?');
     test(RegExp, ['\\?'], '\\\\\\?', 'two slashes and ?');
     test(RegExp, ['-'], '\\-', 'dash');
+    test(RegExp, [8], '8', 'non-string will be coerced to string');
   });
 
   method('setFlags', function() {

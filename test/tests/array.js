@@ -372,6 +372,7 @@ namespace('Array', function () {
 
     test([1,1,3], [1,3], '1,1,3');
     test([0,0,0], [0], '0,0,0');
+    test([-0,-0,-0], [-0], '-0,-0,-0');
     test(['a','b','c'], ['a','b','c'], 'a,b,c');
     test(['a','a','c'], ['a','c'], 'a,a,c');
     test([NaN,NaN], [NaN], 'NaN');

@@ -24,6 +24,11 @@ namespace('Core', function() {
     restoreNativeState();
   });
 
+  group('Core toString behavior', function () {
+    equal(Sugar.toString(), 'Sugar', 'Global toString should return "Sugar"');
+  });
+
+
   group('Sugar namespace', function () {
     Sugar();
     assertAllMethodsMappedToNative(['Array', 'Boolean', 'Number', 'String', 'Date', 'RegExp', 'Function']);
