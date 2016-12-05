@@ -47,6 +47,8 @@ namespace('Array', function () {
     equal(includes.call(sparseish, 'a', -4), false, 'does not find -5th item with -4 fromIndex');
     equal(includes.call(sparseish, 'a', -5), true, 'finds -5th item with -5 fromIndex');
 
+    equal(Array.prototype.includes.call('abc', 'c'), true, 'can call with string');
+
     raisesError(function() {
       Array.prototype.includes.call([0], 0, thrower);
     }, 'fromIndex conversion throws', RangeError);

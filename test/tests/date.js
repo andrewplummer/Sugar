@@ -148,7 +148,7 @@ namespace('Date', function () {
       fromUTC: true,
       locale: 'fo',
       future: true
-    }
+    };
 
     var now = new Date();
     var d1 = testCreateDate('March', { future: true });
@@ -156,6 +156,13 @@ namespace('Date', function () {
 
     equal(d2 > now, true, 'compound options | future is true');
     equal(d1 - d2, d1.getTimezoneOffset() * 60 * 1000, 'compound options | utc is true');
+
+    // Testing native fallback parsing.
+    if (new Date('10 06 2014').getTime() > 0) {
+      var d1 = testCreateDate('10 06 2014', { fromUTC: true });
+      var d2 = new Date(2014, 9, 6);
+      equal(d1 - d2, d1.getTimezoneOffset() * 60 * 1000, 'native fallback will still honor fromUTC flag');
+    }
 
     // setUTC option
 
@@ -1647,7 +1654,6 @@ namespace('Date', function () {
     equal(d.getMilliseconds(), 44, 'milliseconds');
 
 
-
     var d = new Date('August 25, 2010 11:45:20');
     run(d, 'advance', [{ year: 1, month: -3, days: 2, hours: 8, minutes: 12, seconds: -2, milliseconds: 44 }]);
 
@@ -1698,6 +1704,8 @@ namespace('Date', function () {
     dateTest(d, ['3 minutes'], new Date(2011, 0, 31, 23, 43, 28, 500), 'string input | minute');
     dateTest(d, ['3 seconds'], new Date(2011, 0, 31, 23, 40, 31, 500), 'string input | second');
     dateTest(d, ['3 milliseconds'], new Date(2011, 0, 31, 23, 40, 28, 503), 'string input | millisecond');
+
+    dateTest(d, ['day'], new Date(2011, 1, 1, 23, 40, 28, 500), 'string input | millisecond');
 
     // Issue #549 - Fractions in string units
 

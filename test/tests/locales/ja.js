@@ -90,6 +90,8 @@ namespace('Date | Japanese', function () {
     assertDateParsed('5年後',     getRelativeDate(5));
 
     assertDateParsed('２０１１年５月２５日', new Date(2011, 4, 25));
+    assertDateParsed('２０１１年５月', new Date(2011, 4));
+    assertDateParsed('２０１１年', new Date(2011, 0));
 
     assertDateParsed('５ミリ秒後', getRelativeDate(0,0,0,0,0,0,5));
     assertDateParsed('５秒後',     getRelativeDate(0,0,0,0,0,5));

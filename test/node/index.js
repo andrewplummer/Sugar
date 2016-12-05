@@ -1,8 +1,5 @@
 var runner = require('./setup');
 
-runner.resetPolyfills('es6');
-runner.resetPolyfills('es7');
-
 runner.notice('Default');
 runner.load('./default/dist.js');
 

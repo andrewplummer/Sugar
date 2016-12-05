@@ -348,7 +348,7 @@
     if (type === 'string' || type === 'boolean' || one == null) {
       return one === two;
     } else if (type === 'number') {
-      return typeof two === 'number' && ((isNaN(one) && isNaN(two)) || one === two);
+      return typeof two === 'number' && numberIsEqual(one, two);
     }
 
     klass = testInternalToString.call(one);
@@ -363,11 +363,15 @@
       return objectIsEqual(one, two) && klass === testInternalToString.call(two);
     } else if (klass === '[object Number]' && isNaN(one) && isNaN(two)) {
       return true;
-    } else if (klass === '[object String]') {
+    } else if (klass === '[object String]' || klass === '[object Number]') {
       return one.valueOf() === two.valueOf();
     }
 
     return one === two;
+  }
+
+  function numberIsEqual(one, two) {
+    return (isNaN(one) && isNaN(two)) || (one === two && 1 / one === 1 / two);
   }
 
   // Arrays and objects must be treated separately here because in IE arrays with undefined
