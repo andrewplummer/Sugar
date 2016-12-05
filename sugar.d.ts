@@ -59,7 +59,7 @@ declare namespace sugarjs {
     clone(): sugarjs.Range;
     contains<T>(el: T): boolean;
     days(): number;
-    every<T>(amount: string|number, fn?: (el: T, i: number, r: sugarjs.Range) => void): T[];
+    every<T>(amount: string|number, everyFn?: (el: T, i: number, r: sugarjs.Range) => void): T[];
     hours(): number;
     intersect(range: sugarjs.Range): sugarjs.Range;
     isValid(): boolean;
@@ -114,7 +114,7 @@ declare namespace sugarjs {
     interface Constructor extends SugarNamespace {
       <T>(obj?: number|ArrayLike<T>, clone?: boolean): Chainable<T, T[]>;
       new<T>(obj?: number|ArrayLike<T>, clone?: boolean): Chainable<T, T[]>;
-      construct<T>(n: number, map: (i: number) => T): T[];
+      construct<T>(n: number, indexMapFn: (i: number) => T): T[];
       create<T>(obj?: number|ArrayLike<T>, clone?: boolean): T[];
       add<T>(instance: T[], item: T|T[], index?: number): T[];
       append<T>(instance: T[], item: T|T[], index?: number): T[];
@@ -141,7 +141,7 @@ declare namespace sugarjs {
       forEachFromIndex<T>(instance: T[], startIndex: number, loop?: boolean, ...args: any[]): T;
       forEachFromIndex<T>(instance: T[], startIndex: number, ...args: any[]): T;
       from<T>(instance: T[], index: number): T[];
-      groupBy<T, U>(instance: T[], map: string|mapFn<T, U>, fn?: (arr: T[], key: string, obj: Object) => void): Object;
+      groupBy<T, U>(instance: T[], map: string|mapFn<T, U>, groupFn?: (arr: T[], key: string, obj: Object) => void): Object;
       inGroups<T>(instance: T[], num: number, padding?: any): T[];
       inGroupsOf<T>(instance: T[], num: number, padding?: any): T[];
       insert<T>(instance: T[], item: T|T[], index?: number): T[];
@@ -214,7 +214,7 @@ declare namespace sugarjs {
       forEachFromIndex(startIndex: number, loop?: boolean, ...args: any[]): SugarDefaultChainable<T>;
       forEachFromIndex(startIndex: number, ...args: any[]): SugarDefaultChainable<T>;
       from(index: number): SugarDefaultChainable<T[]>;
-      groupBy<U>(map: string|mapFn<T, U>, fn?: (arr: T[], key: string, obj: Object) => SugarDefaultChainable<void>): SugarDefaultChainable<Object>;
+      groupBy<U>(map: string|mapFn<T, U>, groupFn?: (arr: T[], key: string, obj: Object) => SugarDefaultChainable<void>): SugarDefaultChainable<Object>;
       inGroups(num: number, padding?: any): SugarDefaultChainable<T[]>;
       inGroupsOf(num: number, padding?: any): SugarDefaultChainable<T[]>;
       insert(item: T|T[], index?: number): SugarDefaultChainable<T[]>;
@@ -397,8 +397,8 @@ declare namespace sugarjs {
       monthsFromNow(instance: Date): number;
       monthsSince(instance: Date, d: string|number|Date, options?: DateCreateOptions): number;
       monthsUntil(instance: Date, d?: string|number|Date, options?: DateCreateOptions): number;
-      relative(instance: Date, localeCode?: string, fn?: (num: number, unit: number, ms: number, loc: Locale) => string): string;
-      relative(instance: Date, fn?: (num: number, unit: number, ms: number, loc: Locale) => string): string;
+      relative(instance: Date, localeCode?: string, relativeFn?: (num: number, unit: number, ms: number, loc: Locale) => string): string;
+      relative(instance: Date, relativeFn?: (num: number, unit: number, ms: number, loc: Locale) => string): string;
       relativeTo(instance: Date, d: string|number|Date, localeCode?: string): string;
       reset(instance: Date, unit?: string, localeCode?: string): Date;
       rewind(instance: Date, set: string|Object, reset?: boolean): Date;
@@ -515,8 +515,8 @@ declare namespace sugarjs {
       monthsFromNow(): SugarDefaultChainable<number>;
       monthsSince(d: string|number|Date, options?: DateCreateOptions): SugarDefaultChainable<number>;
       monthsUntil(d?: string|number|Date, options?: DateCreateOptions): SugarDefaultChainable<number>;
-      relative(localeCode?: string, fn?: (num: number, unit: number, ms: number, loc: Locale) => SugarDefaultChainable<string>): SugarDefaultChainable<string>;
-      relative(fn?: (num: number, unit: number, ms: number, loc: Locale) => SugarDefaultChainable<string>): SugarDefaultChainable<string>;
+      relative(localeCode?: string, relativeFn?: (num: number, unit: number, ms: number, loc: Locale) => SugarDefaultChainable<string>): SugarDefaultChainable<string>;
+      relative(relativeFn?: (num: number, unit: number, ms: number, loc: Locale) => SugarDefaultChainable<string>): SugarDefaultChainable<string>;
       relativeTo(d: string|number|Date, localeCode?: string): SugarDefaultChainable<string>;
       reset(unit?: string, localeCode?: string): SugarDefaultChainable<Date>;
       rewind(set: string|Object, reset?: boolean): SugarDefaultChainable<Date>;
@@ -666,8 +666,8 @@ declare namespace sugarjs {
       daysAgo(instance: number): Date;
       daysBefore(instance: number, d: string|number|Date, options?: Date.DateCreateOptions): Date;
       daysFromNow(instance: number): Date;
-      downto<T>(instance: number, num: number, step?: number, fn?: (el: T, i: number, r: Range) => void): T[];
-      downto<T>(instance: number, num: number, fn?: (el: T, i: number, r: Range) => void): T[];
+      downto<T>(instance: number, num: number, step?: number, everyFn?: (el: T, i: number, r: Range) => void): T[];
+      downto<T>(instance: number, num: number, everyFn?: (el: T, i: number, r: Range) => void): T[];
       duration(instance: number, localeCode?: string): string;
       exp(instance: number): number;
       floor(instance: number, precision?: number): number;
@@ -736,10 +736,10 @@ declare namespace sugarjs {
       sin(instance: number): number;
       sqrt(instance: number): number;
       tan(instance: number): number;
-      times<T>(instance: number, fn: (i: number) => any): T;
+      times<T>(instance: number, indexMapFn: (i: number) => any): T;
       toNumber(instance: number): number;
-      upto<T>(instance: number, num: number, step?: number, fn?: (el: T, i: number, r: Range) => void): T[];
-      upto<T>(instance: number, num: number, fn?: (el: T, i: number, r: Range) => void): T[];
+      upto<T>(instance: number, num: number, step?: number, everyFn?: (el: T, i: number, r: Range) => void): T[];
+      upto<T>(instance: number, num: number, everyFn?: (el: T, i: number, r: Range) => void): T[];
       week(instance: number): number;
       weekAfter(instance: number, d: string|number|Date, options?: Date.DateCreateOptions): Date;
       weekAgo(instance: number): Date;
@@ -790,8 +790,8 @@ declare namespace sugarjs {
       daysAgo(): SugarDefaultChainable<Date>;
       daysBefore(d: string|number|Date, options?: Date.DateCreateOptions): SugarDefaultChainable<Date>;
       daysFromNow(): SugarDefaultChainable<Date>;
-      downto<T>(num: number, step?: number, fn?: (el: T, i: number, r: Range) => SugarDefaultChainable<void>): SugarDefaultChainable<T[]>;
-      downto<T>(num: number, fn?: (el: T, i: number, r: Range) => SugarDefaultChainable<void>): SugarDefaultChainable<T[]>;
+      downto<T>(num: number, step?: number, everyFn?: (el: T, i: number, r: Range) => SugarDefaultChainable<void>): SugarDefaultChainable<T[]>;
+      downto<T>(num: number, everyFn?: (el: T, i: number, r: Range) => SugarDefaultChainable<void>): SugarDefaultChainable<T[]>;
       duration(localeCode?: string): SugarDefaultChainable<string>;
       exp(): SugarDefaultChainable<number>;
       floor(precision?: number): SugarDefaultChainable<number>;
@@ -860,10 +860,10 @@ declare namespace sugarjs {
       sin(): SugarDefaultChainable<number>;
       sqrt(): SugarDefaultChainable<number>;
       tan(): SugarDefaultChainable<number>;
-      times<T>(fn: (i: number) => SugarDefaultChainable<any>): SugarDefaultChainable<T>;
+      times<T>(indexMapFn: (i: number) => SugarDefaultChainable<any>): SugarDefaultChainable<T>;
       toNumber(): SugarDefaultChainable<number>;
-      upto<T>(num: number, step?: number, fn?: (el: T, i: number, r: Range) => SugarDefaultChainable<void>): SugarDefaultChainable<T[]>;
-      upto<T>(num: number, fn?: (el: T, i: number, r: Range) => SugarDefaultChainable<void>): SugarDefaultChainable<T[]>;
+      upto<T>(num: number, step?: number, everyFn?: (el: T, i: number, r: Range) => SugarDefaultChainable<void>): SugarDefaultChainable<T[]>;
+      upto<T>(num: number, everyFn?: (el: T, i: number, r: Range) => SugarDefaultChainable<void>): SugarDefaultChainable<T[]>;
       week(): SugarDefaultChainable<number>;
       weekAfter(d: string|number|Date, options?: Date.DateCreateOptions): SugarDefaultChainable<Date>;
       weekAgo(): SugarDefaultChainable<Date>;
@@ -934,7 +934,7 @@ declare namespace sugarjs {
       exclude<T>(instance: Object, search: T|searchFn<T>): Object;
       filter<T>(instance: Object, search: T|searchFn<T>): T[];
       find<T>(instance: Object, search: T|searchFn<T>): boolean;
-      forEach<T>(instance: Object, fn: (val: T, key: string, obj: Object) => void): Object;
+      forEach<T>(instance: Object, eachFn: (val: T, key: string, obj: Object) => void): Object;
       get<T>(instance: Object, key: string, inherited?: boolean): T;
       has(instance: Object, key: string, inherited?: boolean): boolean;
       intersect(instance: Object, obj: Object): Object;
@@ -976,7 +976,7 @@ declare namespace sugarjs {
       some<T>(instance: Object, search: T|searchFn<T>): boolean;
       subtract(instance: Object, obj: Object): Object;
       sum<T, U>(instance: Object, map?: string|mapFn<T, U>): number;
-      tap(instance: Object, fn: (obj: Object) => any): Object;
+      tap(instance: Object, tapFn: (obj: Object) => any): Object;
       toQueryString<T, U>(instance: Object, options?: QueryStringOptions<T, U>): Object;
       values<T>(instance: Object): T[];
     }
@@ -995,7 +995,7 @@ declare namespace sugarjs {
       exclude<T>(search: T|searchFn<T>): SugarDefaultChainable<Object>;
       filter<T>(search: T|searchFn<T>): SugarDefaultChainable<T[]>;
       find<T>(search: T|searchFn<T>): SugarDefaultChainable<boolean>;
-      forEach<T>(fn: (val: T, key: string, obj: Object) => SugarDefaultChainable<void>): SugarDefaultChainable<Object>;
+      forEach<T>(eachFn: (val: T, key: string, obj: Object) => SugarDefaultChainable<void>): SugarDefaultChainable<Object>;
       get<T>(key: string, inherited?: boolean): SugarDefaultChainable<T>;
       has(key: string, inherited?: boolean): SugarDefaultChainable<boolean>;
       intersect(obj: Object): SugarDefaultChainable<Object>;
@@ -1037,7 +1037,7 @@ declare namespace sugarjs {
       some<T>(search: T|searchFn<T>): SugarDefaultChainable<boolean>;
       subtract(obj: Object): SugarDefaultChainable<Object>;
       sum<T, U>(map?: string|mapFn<T, U>): SugarDefaultChainable<number>;
-      tap(fn: (obj: Object) => SugarDefaultChainable<any>): SugarDefaultChainable<Object>;
+      tap(tapFn: (obj: Object) => SugarDefaultChainable<any>): SugarDefaultChainable<Object>;
       toQueryString<T, U>(options?: QueryStringOptions<T, U>): SugarDefaultChainable<Object>;
       values<T>(): SugarDefaultChainable<T[]>;
     }
@@ -1074,7 +1074,7 @@ declare namespace sugarjs {
 
   namespace String {
 
-    type tagReplaceFn = (tag: string, inner: string, attr: string, outer: string) => string;
+    type replaceFn = (tag: string, inner: string, attr: string, outer: string) => string;
     type Chainable<RawValue> = ChainableBase<RawValue> & Object.ChainableBase<RawValue>;
 
     interface Constructor extends SugarNamespace {
@@ -1084,8 +1084,8 @@ declare namespace sugarjs {
       at<T>(instance: string, index: number|Array<number>, loop?: boolean): T;
       camelize(instance: string, upper?: boolean): string;
       capitalize(instance: string, lower?: boolean, all?: boolean): string;
-      chars<T>(instance: string, callback?: (char: string, i: number, arr: Array<string>) => void): T[];
-      codes<T>(instance: string, callback?: (code: number, i: number, str: string) => void): T[];
+      chars<T>(instance: string, eachCharFn?: (char: string, i: number, arr: Array<string>) => void): T[];
+      codes<T>(instance: string, eachCodeFn?: (code: number, i: number, str: string) => void): T[];
       compact(instance: string): string;
       dasherize(instance: string): string;
       decodeBase64(instance: string): string;
@@ -1093,27 +1093,27 @@ declare namespace sugarjs {
       escapeHTML(instance: string): string;
       escapeURL(instance: string, param?: boolean): string;
       first(instance: string, n?: number): string;
-      forEach<T>(instance: string, search?: string|RegExp, callback?: (match: string, i: number, arr: Array<string>) => void): T[];
-      forEach<T>(instance: string, callback: (match: string, i: number, arr: Array<string>) => void): T[];
+      forEach<T>(instance: string, search?: string|RegExp, eachFn?: (match: string, i: number, arr: Array<string>) => void): T[];
+      forEach<T>(instance: string, eachFn: (match: string, i: number, arr: Array<string>) => void): T[];
       format(instance: string, ...args: any[]): string;
       from(instance: string, index?: number): string;
       insert(instance: string, str: string, index?: number): string;
       isBlank(instance: string): boolean;
       isEmpty(instance: string): boolean;
       last(instance: string, n?: number): string;
-      lines<T>(instance: string, callback?: (line: string, i: number, arr: Array<string>) => void): T[];
+      lines<T>(instance: string, eachLineFn?: (line: string, i: number, arr: Array<string>) => void): T[];
       pad(instance: string, num: number, padding?: string): string;
       padLeft(instance: string, num: number, padding?: string): string;
       padRight(instance: string, num: number, padding?: string): string;
       parameterize(instance: string): string;
       remove(instance: string, f: string|RegExp): string;
       removeAll(instance: string, f: string|RegExp): string;
-      removeTags(instance: string, tag?: string, replace?: string|tagReplaceFn): string;
+      removeTags(instance: string, tag?: string, replace?: string|replaceFn): string;
       replaceAll(instance: string, f: string|RegExp, ...args: any[]): string;
       reverse(instance: string): string;
       shift<T>(instance: string, n: number): T[];
       spacify(instance: string): string;
-      stripTags(instance: string, tag?: string, replace?: string|tagReplaceFn): string;
+      stripTags(instance: string, tag?: string, replace?: string|replaceFn): string;
       titleize(instance: string): string;
       to(instance: string, index?: number): string;
       toNumber(instance: string, base?: number): number;
@@ -1124,7 +1124,7 @@ declare namespace sugarjs {
       underscore(instance: string): string;
       unescapeHTML(instance: string): string;
       unescapeURL(instance: string, partial?: boolean): string;
-      words<T>(instance: string, callback?: (word: string, i: number, arr: Array<string>) => void): T[];
+      words<T>(instance: string, eachWordFn?: (word: string, i: number, arr: Array<string>) => void): T[];
     }
 
     interface ChainableBase<RawValue> {
@@ -1134,8 +1134,8 @@ declare namespace sugarjs {
       at<T>(index: number|Array<number>, loop?: boolean): SugarDefaultChainable<T>;
       camelize(upper?: boolean): SugarDefaultChainable<string>;
       capitalize(lower?: boolean, all?: boolean): SugarDefaultChainable<string>;
-      chars<T>(callback?: (char: string, i: number, arr: Array<string>) => SugarDefaultChainable<void>): SugarDefaultChainable<T[]>;
-      codes<T>(callback?: (code: number, i: number, str: string) => SugarDefaultChainable<void>): SugarDefaultChainable<T[]>;
+      chars<T>(eachCharFn?: (char: string, i: number, arr: Array<string>) => SugarDefaultChainable<void>): SugarDefaultChainable<T[]>;
+      codes<T>(eachCodeFn?: (code: number, i: number, str: string) => SugarDefaultChainable<void>): SugarDefaultChainable<T[]>;
       compact(): SugarDefaultChainable<string>;
       dasherize(): SugarDefaultChainable<string>;
       decodeBase64(): SugarDefaultChainable<string>;
@@ -1143,27 +1143,27 @@ declare namespace sugarjs {
       escapeHTML(): SugarDefaultChainable<string>;
       escapeURL(param?: boolean): SugarDefaultChainable<string>;
       first(n?: number): SugarDefaultChainable<string>;
-      forEach<T>(search?: string|RegExp, callback?: (match: string, i: number, arr: Array<string>) => SugarDefaultChainable<void>): SugarDefaultChainable<T[]>;
-      forEach<T>(callback: (match: string, i: number, arr: Array<string>) => SugarDefaultChainable<void>): SugarDefaultChainable<T[]>;
+      forEach<T>(search?: string|RegExp, eachFn?: (match: string, i: number, arr: Array<string>) => SugarDefaultChainable<void>): SugarDefaultChainable<T[]>;
+      forEach<T>(eachFn: (match: string, i: number, arr: Array<string>) => SugarDefaultChainable<void>): SugarDefaultChainable<T[]>;
       format(...args: any[]): SugarDefaultChainable<string>;
       from(index?: number): SugarDefaultChainable<string>;
       insert(str: string, index?: number): SugarDefaultChainable<string>;
       isBlank(): SugarDefaultChainable<boolean>;
       isEmpty(): SugarDefaultChainable<boolean>;
       last(n?: number): SugarDefaultChainable<string>;
-      lines<T>(callback?: (line: string, i: number, arr: Array<string>) => SugarDefaultChainable<void>): SugarDefaultChainable<T[]>;
+      lines<T>(eachLineFn?: (line: string, i: number, arr: Array<string>) => SugarDefaultChainable<void>): SugarDefaultChainable<T[]>;
       pad(num: number, padding?: string): SugarDefaultChainable<string>;
       padLeft(num: number, padding?: string): SugarDefaultChainable<string>;
       padRight(num: number, padding?: string): SugarDefaultChainable<string>;
       parameterize(): SugarDefaultChainable<string>;
       remove(f: string|RegExp): SugarDefaultChainable<string>;
       removeAll(f: string|RegExp): SugarDefaultChainable<string>;
-      removeTags(tag?: string, replace?: string|tagReplaceFn): SugarDefaultChainable<string>;
+      removeTags(tag?: string, replace?: string|replaceFn): SugarDefaultChainable<string>;
       replaceAll(f: string|RegExp, ...args: any[]): SugarDefaultChainable<string>;
       reverse(): SugarDefaultChainable<string>;
       shift<T>(n: number): SugarDefaultChainable<T[]>;
       spacify(): SugarDefaultChainable<string>;
-      stripTags(tag?: string, replace?: string|tagReplaceFn): SugarDefaultChainable<string>;
+      stripTags(tag?: string, replace?: string|replaceFn): SugarDefaultChainable<string>;
       titleize(): SugarDefaultChainable<string>;
       to(index?: number): SugarDefaultChainable<string>;
       toNumber(base?: number): SugarDefaultChainable<number>;
@@ -1174,7 +1174,7 @@ declare namespace sugarjs {
       underscore(): SugarDefaultChainable<string>;
       unescapeHTML(): SugarDefaultChainable<string>;
       unescapeURL(partial?: boolean): SugarDefaultChainable<string>;
-      words<T>(callback?: (word: string, i: number, arr: Array<string>) => SugarDefaultChainable<void>): SugarDefaultChainable<T[]>;
+      words<T>(eachWordFn?: (word: string, i: number, arr: Array<string>) => SugarDefaultChainable<void>): SugarDefaultChainable<T[]>;
       anchor(name: string): SugarDefaultChainable<string>;
       big(): SugarDefaultChainable<string>;
       blink(): SugarDefaultChainable<string>;

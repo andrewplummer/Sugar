@@ -3384,11 +3384,9 @@ function getJSONDocs() {
   }
 
   function getMethodType(method) {
-    if (method.namespace === 'Sugar' || method.namespace === 'SugarNamespace') {
-      return 'namespace';
-    }
     switch (true) {
-      case method.global:    return 'global';
+      case method.namespace === 'Sugar':          return 'global';
+      case method.namespace === 'SugarNamespace': return 'namespace';
       case method.static:    return 'static';
       case method.accessor:  return 'accessor';
       default:               return 'instance';

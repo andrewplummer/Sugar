@@ -5,7 +5,7 @@
 /// <reference path="sugar.d.ts" />
 
 interface ArrayConstructor {
-  construct<T>(n: number, map: (i: number) => T): T[];
+  construct<T>(n: number, indexMapFn: (i: number) => T): T[];
   create<T>(obj?: number|ArrayLike<T>, clone?: boolean): T[];
 }
 
@@ -35,7 +35,7 @@ interface Array<T> {
   forEachFromIndex(startIndex: number, loop?: boolean, ...args: any[]): T;
   forEachFromIndex(startIndex: number, ...args: any[]): T;
   from(index: number): T[];
-  groupBy<U>(map: string|sugarjs.Array.mapFn<T, U>, fn?: (arr: T[], key: string, obj: Object) => void): Object;
+  groupBy<U>(map: string|sugarjs.Array.mapFn<T, U>, groupFn?: (arr: T[], key: string, obj: Object) => void): Object;
   inGroups(num: number, padding?: any): T[];
   inGroupsOf(num: number, padding?: any): T[];
   insert(item: T|T[], index?: number): T[];
@@ -171,8 +171,8 @@ interface Date {
   monthsFromNow(): number;
   monthsSince(d: string|number|Date, options?: sugarjs.Date.DateCreateOptions): number;
   monthsUntil(d?: string|number|Date, options?: sugarjs.Date.DateCreateOptions): number;
-  relative(localeCode?: string, fn?: (num: number, unit: number, ms: number, loc: sugarjs.Locale) => string): string;
-  relative(fn?: (num: number, unit: number, ms: number, loc: sugarjs.Locale) => string): string;
+  relative(localeCode?: string, relativeFn?: (num: number, unit: number, ms: number, loc: sugarjs.Locale) => string): string;
+  relative(relativeFn?: (num: number, unit: number, ms: number, loc: sugarjs.Locale) => string): string;
   relativeTo(d: string|number|Date, localeCode?: string): string;
   reset(unit?: string, localeCode?: string): Date;
   rewind(set: string|Object, reset?: boolean): Date;
@@ -240,8 +240,8 @@ interface Number {
   daysAgo(): Date;
   daysBefore(d: string|number|Date, options?: sugarjs.Date.DateCreateOptions): Date;
   daysFromNow(): Date;
-  downto<T>(num: number, step?: number, fn?: (el: T, i: number, r: sugarjs.Range) => void): T[];
-  downto<T>(num: number, fn?: (el: T, i: number, r: sugarjs.Range) => void): T[];
+  downto<T>(num: number, step?: number, everyFn?: (el: T, i: number, r: sugarjs.Range) => void): T[];
+  downto<T>(num: number, everyFn?: (el: T, i: number, r: sugarjs.Range) => void): T[];
   duration(localeCode?: string): string;
   exp(): number;
   floor(precision?: number): number;
@@ -310,10 +310,10 @@ interface Number {
   sin(): number;
   sqrt(): number;
   tan(): number;
-  times<T>(fn: (i: number) => any): T;
+  times<T>(indexMapFn: (i: number) => any): T;
   toNumber(): number;
-  upto<T>(num: number, step?: number, fn?: (el: T, i: number, r: sugarjs.Range) => void): T[];
-  upto<T>(num: number, fn?: (el: T, i: number, r: sugarjs.Range) => void): T[];
+  upto<T>(num: number, step?: number, everyFn?: (el: T, i: number, r: sugarjs.Range) => void): T[];
+  upto<T>(num: number, everyFn?: (el: T, i: number, r: sugarjs.Range) => void): T[];
   week(): number;
   weekAfter(d: string|number|Date, options?: sugarjs.Date.DateCreateOptions): Date;
   weekAgo(): Date;
@@ -348,7 +348,7 @@ interface ObjectConstructor {
   exclude<T>(instance: Object, search: T|sugarjs.Object.searchFn<T>): Object;
   filter<T>(instance: Object, search: T|sugarjs.Object.searchFn<T>): T[];
   find<T>(instance: Object, search: T|sugarjs.Object.searchFn<T>): boolean;
-  forEach<T>(instance: Object, fn: (val: T, key: string, obj: Object) => void): Object;
+  forEach<T>(instance: Object, eachFn: (val: T, key: string, obj: Object) => void): Object;
   get<T>(instance: Object, key: string, inherited?: boolean): T;
   has(instance: Object, key: string, inherited?: boolean): boolean;
   intersect(instance: Object, obj: Object): Object;
@@ -390,7 +390,7 @@ interface ObjectConstructor {
   some<T>(instance: Object, search: T|sugarjs.Object.searchFn<T>): boolean;
   subtract(instance: Object, obj: Object): Object;
   sum<T, U>(instance: Object, map?: string|sugarjs.Object.mapFn<T, U>): number;
-  tap(instance: Object, fn: (obj: Object) => any): Object;
+  tap(instance: Object, tapFn: (obj: Object) => any): Object;
   toQueryString<T, U>(instance: Object, options?: sugarjs.Object.QueryStringOptions<T, U>): Object;
   values<T>(instance: Object): T[];
 }
@@ -414,8 +414,8 @@ interface String {
   at<T>(index: number|Array<number>, loop?: boolean): T;
   camelize(upper?: boolean): string;
   capitalize(lower?: boolean, all?: boolean): string;
-  chars<T>(callback?: (char: string, i: number, arr: Array<string>) => void): T[];
-  codes<T>(callback?: (code: number, i: number, str: string) => void): T[];
+  chars<T>(eachCharFn?: (char: string, i: number, arr: Array<string>) => void): T[];
+  codes<T>(eachCodeFn?: (code: number, i: number, str: string) => void): T[];
   compact(): string;
   dasherize(): string;
   decodeBase64(): string;
@@ -423,27 +423,27 @@ interface String {
   escapeHTML(): string;
   escapeURL(param?: boolean): string;
   first(n?: number): string;
-  forEach<T>(search?: string|RegExp, callback?: (match: string, i: number, arr: Array<string>) => void): T[];
-  forEach<T>(callback: (match: string, i: number, arr: Array<string>) => void): T[];
+  forEach<T>(search?: string|RegExp, eachFn?: (match: string, i: number, arr: Array<string>) => void): T[];
+  forEach<T>(eachFn: (match: string, i: number, arr: Array<string>) => void): T[];
   format(...args: any[]): string;
   from(index?: number): string;
   insert(str: string, index?: number): string;
   isBlank(): boolean;
   isEmpty(): boolean;
   last(n?: number): string;
-  lines<T>(callback?: (line: string, i: number, arr: Array<string>) => void): T[];
+  lines<T>(eachLineFn?: (line: string, i: number, arr: Array<string>) => void): T[];
   pad(num: number, padding?: string): string;
   padLeft(num: number, padding?: string): string;
   padRight(num: number, padding?: string): string;
   parameterize(): string;
   remove(f: string|RegExp): string;
   removeAll(f: string|RegExp): string;
-  removeTags(tag?: string, replace?: string|sugarjs.String.tagReplaceFn): string;
+  removeTags(tag?: string, replace?: string|sugarjs.String.replaceFn): string;
   replaceAll(f: string|RegExp, ...args: any[]): string;
   reverse(): string;
   shift<T>(n: number): T[];
   spacify(): string;
-  stripTags(tag?: string, replace?: string|sugarjs.String.tagReplaceFn): string;
+  stripTags(tag?: string, replace?: string|sugarjs.String.replaceFn): string;
   titleize(): string;
   to(index?: number): string;
   toNumber(base?: number): number;
@@ -454,5 +454,5 @@ interface String {
   underscore(): string;
   unescapeHTML(): string;
   unescapeURL(partial?: boolean): string;
-  words<T>(callback?: (word: string, i: number, arr: Array<string>) => void): T[];
+  words<T>(eachWordFn?: (word: string, i: number, arr: Array<string>) => void): T[];
 }
