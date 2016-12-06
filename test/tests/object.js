@@ -1013,6 +1013,11 @@ namespace('Object', function () {
     test({a:'a'}, [8], {a:'a'}, 'number has no properties');
     test({}, [{}], {}, 'empty object has no properties');
 
+    // Simple merging with known types
+
+    test(undefined, [RegExp(/foobar/)], RegExp(/foobar/), 'regexes merged');
+    test(undefined, [new Date(2012, 5)], new Date(2012, 5), 'dates merged');
+
     // Merging with conflicts
 
     test({a:'a'}, [{a:'b'}], {a:'b'}, 'source should win by default');

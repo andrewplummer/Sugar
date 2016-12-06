@@ -51,6 +51,18 @@ namespace('Date Ranges', function () {
 
     equal(range.every('year'), [new Date(2010,6,10,9)], 'Range#every | 2010-9 - 2010-11');
 
+    // Testing without Sugar.Date.create
+
+    var capturedCreate = Sugar.Date.create;
+    delete Sugar.Date.create;
+
+    var d1 = new Date(2011,8,10,9), d2 = new Date(2010,10,10,9);
+    var range = getRange(d1.getTime(), d2.getTime());
+    equal(range.isValid(), true, 'Range created from native constructor is valid');
+    equal(range.span(), Math.abs(d2 - d1) + 1, 'Range created from native constructor has correct span');
+
+    Sugar.Date.create = capturedCreate;
+
   });
 
   group('Creation', function() {
