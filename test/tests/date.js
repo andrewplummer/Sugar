@@ -2445,7 +2445,7 @@ namespace('Date', function () {
     test(testCreateDate('tomorrow'), ['past'], false, 'tomorrow is the past');
 
     test(new Date(), ['future'], false, 'now is the future');
-    test(new Date(), ['past', 50], false, 'now is the past');
+    test(new Date(), ['past', 100], false, 'now is the past');
 
     test(testCreateDate('yesterday'), ['future'], false, 'yesterday is the future');
     test(testCreateDate('yesterday'), ['past'], true, 'yesterday is the past');
