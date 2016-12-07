@@ -591,7 +591,7 @@ function getSource(m, l) {
     var moduleName = path.basename(p, '.js');
     var constraints = namespaceConstraints[moduleName];
     if (moduleName === 'core') {
-      content = content.replace(/edge/, getVersion());
+      content = content.replace(/\{VERSION\}/, getVersion());
     } else if (constraints) {
       content = getSplitModule(content, constraints);
     }
