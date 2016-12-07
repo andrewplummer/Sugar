@@ -340,6 +340,8 @@
 
   // Equality test methods.
 
+  testIsEqual = isEqual;
+
   function isEqual(one, two) {
     var type, klass;
 
@@ -437,15 +439,12 @@
   }
 
   function dateIsEqual(a, b) {
-    // Margin of error in ms.
-    var margin = 80;
-    if (typeof b == 'number') {
-      var d = new Date();
-      d.setTime(d.getTime() + b);
-      b = d;
+    var aTime = a.getTime(), bTime = b.getTime(), margin = 80;
+
+    if (aTime !== aTime && bTime !== bTime) {
+      return true;
     }
-    var offset = Math.abs(a.getTime() - b.getTime());
-    return offset < margin;
+    return Math.abs(aTime - bTime) < margin;
   }
 
   function sortOnStringValue(arr) {
