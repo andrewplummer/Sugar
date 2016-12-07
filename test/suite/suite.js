@@ -88,6 +88,10 @@
     equal(sortOnStringValue(a), sortOnStringValue(b), message);
   }
 
+  assertRangeEqual = function(a, b, message) {
+    equal(isEqual(a.start, b.start) && isEqual(a.end, b.end), true, message);
+  }
+
   notEqual = function (actual, expected, message) {
     equal(actual !== expected, true, message + ' | strict equality', 1);
   }
@@ -339,8 +343,6 @@
   }
 
   // Equality test methods.
-
-  testIsEqual = isEqual;
 
   function isEqual(one, two) {
     var type, klass;

@@ -102,19 +102,19 @@ namespace('Date Ranges', function () {
     equal(range.end,   testEnd, 'Date.range | strings | end is equal');
 
     // Issue #367 Advanced date ranges
-    dateRangeEqual(getRange('monday to thursday'), getRange('monday', 'thursday'), 'advanced text ranges');
-    dateRangeEqual(getRange('from monday to thursday'), getRange('monday', 'thursday'), 'advanced text ranges | from');
-    dateRangeEqual(getRange('from monday until thursday'), getRange('monday', 'thursday'), 'advanced text ranges | from..until');
-    dateRangeEqual(getRange('tomorrow at 3pm for 30 minutes'), getRange('3pm tomorrow', '3:30pm tomorrow'), 'advanced text ranges | for');
-    dateRangeEqual(getRange('tomorrow from 3pm to 5pm'), getRange('3pm tomorrow', '5pm tomorrow'), 'advanced text ranges | from');
-    dateRangeEqual(getRange('monday 3pm to saturday 5pm'), getRange('3pm monday', '5pm saturday'), 'advanced text ranges | from different days');
-    dateRangeEqual(getRange('1 hour starting at 3:15 monday'), getRange('3:15 monday', '4:15 monday'), 'advanced text ranges | starting at');
-    dateRangeEqual(getRange('1 hour starting at 3:15 on monday'), getRange('3:15 monday', '4:15 monday'), 'advanced text ranges | starting at..on');
-    dateRangeEqual(getRange('for 1 hour starting at 3:15 monday'), getRange('3:15 monday', '4:15 monday'), 'advanced text ranges | for..starting at');
-    dateRangeEqual(getRange('for 5 days starting Tuesday'), getRange('Tuesday', 'next Sunday'), 'advanced text ranges | for..starting');
+    assertRangeEqual(getRange('monday to thursday'), getRange('monday', 'thursday'), 'advanced text ranges');
+    assertRangeEqual(getRange('from monday to thursday'), getRange('monday', 'thursday'), 'advanced text ranges | from');
+    assertRangeEqual(getRange('from monday until thursday'), getRange('monday', 'thursday'), 'advanced text ranges | from..until');
+    assertRangeEqual(getRange('tomorrow at 3pm for 30 minutes'), getRange('3pm tomorrow', '3:30pm tomorrow'), 'advanced text ranges | for');
+    assertRangeEqual(getRange('tomorrow from 3pm to 5pm'), getRange('3pm tomorrow', '5pm tomorrow'), 'advanced text ranges | from');
+    assertRangeEqual(getRange('monday 3pm to saturday 5pm'), getRange('3pm monday', '5pm saturday'), 'advanced text ranges | from different days');
+    assertRangeEqual(getRange('1 hour starting at 3:15 monday'), getRange('3:15 monday', '4:15 monday'), 'advanced text ranges | starting at');
+    assertRangeEqual(getRange('1 hour starting at 3:15 on monday'), getRange('3:15 monday', '4:15 monday'), 'advanced text ranges | starting at..on');
+    assertRangeEqual(getRange('for 1 hour starting at 3:15 monday'), getRange('3:15 monday', '4:15 monday'), 'advanced text ranges | for..starting at');
+    assertRangeEqual(getRange('for 5 days starting Tuesday'), getRange('Tuesday', 'next Sunday'), 'advanced text ranges | for..starting');
 
-    dateRangeEqual(getRange('monday'), getRange('monday', new Date()), 'advanced text ranges | single date');
-    dateRangeEqual(getRange('foobar'), getRange(NaN, new Date()), 'invalid string is the same as no arguments');
+    assertRangeEqual(getRange('monday'), getRange('monday', new Date()), 'advanced text ranges | single date');
+    assertRangeEqual(getRange('foobar'), getRange(NaN, new Date()), 'invalid string is the same as no arguments');
 
   });
 
@@ -200,9 +200,9 @@ namespace('Date Ranges', function () {
     var range2 = getRange(new Date(2002, 0), new Date(2004, 0));
     var range = range1.union(range2);
 
-    dateRangeEqual(range, getRange(new Date(2001, 0), new Date(2004, 0)), 'simple merge');
-    dateRangeEqual(range1, getRange(new Date(2001, 0), new Date(2003, 0)), 'range1 has not changed');
-    dateRangeEqual(range2, getRange(new Date(2002, 0), new Date(2004, 0)), 'range2 has not changed');
+    assertRangeEqual(range, getRange(new Date(2001, 0), new Date(2004, 0)), 'simple merge');
+    assertRangeEqual(range1, getRange(new Date(2001, 0), new Date(2003, 0)), 'range1 has not changed');
+    assertRangeEqual(range2, getRange(new Date(2002, 0), new Date(2004, 0)), 'range2 has not changed');
 
     // Union of non-overlapping ranges
 
@@ -210,9 +210,9 @@ namespace('Date Ranges', function () {
     var range2 = getRange(new Date(2005, 0), new Date(2008, 0));
     var range = range1.union(range2);
 
-    dateRangeEqual(range, getRange(new Date(2001, 0), new Date(2008, 0)), 'non-overlapping includes middle');
-    dateRangeEqual(range1, getRange(new Date(2001, 0), new Date(2003, 0)), 'range1 has not changed');
-    dateRangeEqual(range2, getRange(new Date(2005, 0), new Date(2008, 0)), 'range2 has not changed');
+    assertRangeEqual(range, getRange(new Date(2001, 0), new Date(2008, 0)), 'non-overlapping includes middle');
+    assertRangeEqual(range1, getRange(new Date(2001, 0), new Date(2003, 0)), 'range1 has not changed');
+    assertRangeEqual(range2, getRange(new Date(2005, 0), new Date(2008, 0)), 'range2 has not changed');
 
     // Union of reversed overlapping ranges
 
@@ -220,7 +220,7 @@ namespace('Date Ranges', function () {
     var range2 = getRange(new Date(2001, 0), new Date(2003, 0));
     var range = range1.union(range2);
 
-    dateRangeEqual(range, getRange(new Date(2001, 0), new Date(2004, 0)), 'reversed | simple merge');
+    assertRangeEqual(range, getRange(new Date(2001, 0), new Date(2004, 0)), 'reversed | simple merge');
 
 
     // Union of reversed non-overlapping ranges
@@ -229,7 +229,7 @@ namespace('Date Ranges', function () {
     var range2 = getRange(new Date(2001, 0), new Date(2003, 0));
     var range = range1.union(range2);
 
-    dateRangeEqual(range, getRange(new Date(2001, 0), new Date(2008, 0)), 'reversed | includes middle');
+    assertRangeEqual(range, getRange(new Date(2001, 0), new Date(2008, 0)), 'reversed | includes middle');
 
   });
 
@@ -241,9 +241,9 @@ namespace('Date Ranges', function () {
     var range2 = getRange(new Date(2002, 0), new Date(2004, 0));
     var range = range1.intersect(range2);
 
-    dateRangeEqual(range, getRange(new Date(2002, 0), new Date(2003, 0)), 'simple merge');
-    dateRangeEqual(range1, getRange(new Date(2001, 0), new Date(2003, 0)), 'range1 has not changed');
-    dateRangeEqual(range2, getRange(new Date(2002, 0), new Date(2004, 0)), 'range2 has not changed');
+    assertRangeEqual(range, getRange(new Date(2002, 0), new Date(2003, 0)), 'simple merge');
+    assertRangeEqual(range1, getRange(new Date(2001, 0), new Date(2003, 0)), 'range1 has not changed');
+    assertRangeEqual(range2, getRange(new Date(2002, 0), new Date(2004, 0)), 'range2 has not changed');
 
     // Intersect of non-overlapping ranges
 
@@ -260,7 +260,7 @@ namespace('Date Ranges', function () {
     var range2 = getRange(new Date(2001, 0), new Date(2003, 0));
     var range = range1.intersect(range2);
 
-    dateRangeEqual(range, getRange(new Date(2002, 0), new Date(2003, 0)), 'simple merge');
+    assertRangeEqual(range, getRange(new Date(2002, 0), new Date(2003, 0)), 'simple merge');
 
     // Intersect of reversed non-overlapping ranges
 
