@@ -192,7 +192,8 @@ namespace('Date', function () {
     equal(params.date, 13, 'Set object should expose date');
 
     // Issue #572 No disambiguation of separated units
-    assertDateParsed('this week tuesday at 5pm', { future: true}, testGetWeekday(2, 0, 17));
+    assertDateParsed('this week tuesday at 5pm', { future: true }, testGetWeekday(2, 0, 17));
+    assertDateParsed('today at 5pm', { future: true }, new Date(now.getFullYear(), now.getMonth(), now.getDate(), 17));
 
   });
 
