@@ -191,6 +191,9 @@ namespace('Date', function () {
     equal(params.month, 0, 'Set object should expose month');
     equal(params.date, 13, 'Set object should expose date');
 
+    // Issue #572 No disambiguation of separated units
+    assertDateParsed('this week tuesday at 5pm', { future: true}, testGetWeekday(2, 0, 17));
+
   });
 
   group('Create | Simple', function() {

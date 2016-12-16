@@ -3,6 +3,7 @@ v2.0.5
 
 - More fixes for Typescript declarations including better handling of generics.
 - Restored VERSION property to the core.
+- Fixed issue with future dates (#572).
 
 v2.0.4
 ======
