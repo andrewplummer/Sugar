@@ -2448,24 +2448,26 @@ namespace('Date', function () {
     test(getRelativeDate(-5), ['7 years ago'], false, '7 years ago is not 5 years ago');
 
     test(testCreateDate('tomorrow'), ['future'], true, 'tomorrow is the future');
-    test(testCreateDate('tomorrow'), ['past'], false, 'tomorrow is the past');
+    test(testCreateDate('tomorrow'), ['past'], false, 'tomorrow is not the past');
 
-    test(new Date(), ['future'], false, 'now is the future');
-    test(new Date(), ['past', 100], false, 'now is the past');
+    // Note: not testing "now is not the past" as it can be affected by CPU lag
+    test(new Date(), ['future'], false, 'now is not the future');
 
-    test(testCreateDate('yesterday'), ['future'], false, 'yesterday is the future');
+    // test(new Date(), ['past'], false, 'now is the past');
+
+    test(testCreateDate('yesterday'), ['future'], false, 'yesterday is not the future');
     test(testCreateDate('yesterday'), ['past'], true, 'yesterday is the past');
 
     test(testCreateDate('monday'), ['weekday'], true, 'monday is a weekday');
-    test(testCreateDate('monday'), ['weekend'], false, 'monday is a weekend');
+    test(testCreateDate('monday'), ['weekend'], false, 'monday is not a weekend');
 
     test(testCreateDate('friday'), ['weekday'], true, 'friday is a weekday');
-    test(testCreateDate('friday'), ['weekend'], false, 'friday is a weekend');
+    test(testCreateDate('friday'), ['weekend'], false, 'friday is not a weekend');
 
-    test(testCreateDate('saturday'), ['weekday'], false, 'saturday is a weekday');
+    test(testCreateDate('saturday'), ['weekday'], false, 'saturday is not a weekday');
     test(testCreateDate('saturday'), ['weekend'], true, 'saturday is a weekend');
 
-    test(testCreateDate('sunday'), ['weekday'], false, 'sunday is a weekday');
+    test(testCreateDate('sunday'), ['weekday'], false, 'sunday is not a weekday');
     test(testCreateDate('sunday'), ['weekend'], true, 'sunday is a weekend');
 
     test(new Date(2001,5,4,12,22,34,445), [new Date(2001,5,4,12,22,34,445)], true, 'straight dates passed in are accurate to the millisecond');
