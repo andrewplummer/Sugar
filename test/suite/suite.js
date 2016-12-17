@@ -344,7 +344,7 @@
 
   // Equality test methods.
 
-  function isEqual(one, two) {
+  function isEqual(one, two, stack) {
     var type, klass;
 
     type = typeof one;
@@ -364,7 +364,7 @@
     } else if (klass === '[object Array]' || klass === '[object Arguments]') {
       return arrayIsEqual(one, two) && klass === testInternalToString.call(two);
     } else if (klass === '[object Object]' && ('hasOwnProperty' in one) && type === 'object') {
-      return objectIsEqual(one, two) && klass === testInternalToString.call(two);
+      return objectIsEqual(one, two, stack) && klass === testInternalToString.call(two);
     } else if (klass === '[object Number]' && isNaN(one) && isNaN(two)) {
       return true;
     } else if (klass === '[object String]' || klass === '[object Number]') {
@@ -415,13 +415,34 @@
     return result && onep === twop;
   }
 
-  function objectIsEqual(one, two) {
+  function objectIsEqual(one, two, stack) {
     var onep = 0, twop = 0, key;
+
+    stack = stack || [];
+
     if (one && two) {
+      isEqual:
       for(key in one) {
         if (!one.hasOwnProperty(key)) continue;
         onep++;
-        if (!isEqual(one[key], two[key])) {
+
+        // Cyclic structure check
+        if (stack.length > 1) {
+          var i = stack.length;
+          while (i--) {
+            if (stack[i] === one[key]) {
+              if (one[key] !== two[key]) {
+                return false;
+              } else {
+                continue isEqual;
+              }
+            }
+          }
+        }
+
+        stack.push(one[key]);
+
+        if (!isEqual(one[key], two[key], stack)) {
           return false;
         }
       }

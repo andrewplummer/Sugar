@@ -69,8 +69,8 @@
     }
   };
 
-  function getStringified(p) {
-    var str, arr, isArray = p && p.join, arrayHasUndefined;
+  function getStringified(p, stack) {
+    var str, arr, isArray = p && p.join, arrayHasUndefined, isCyc;
     if (p && p.getTime && p.setHours) {
       return p.toString();
     }
@@ -80,6 +80,9 @@
     if(typeof p !== 'object') return String(p);
     str = isArray ? '[' : '{';
     arr = [];
+    stack = stack || [];
+
+    stringify:
     for(var key in p){
       if(!p.hasOwnProperty(key)) continue;
       if(p[key] === undefined) {
@@ -89,7 +92,21 @@
         if (typeof val === 'string') {
           val = '"' + val + '"';
         }
-        arr.push((isArray ? '' : key + ': ') + getStringified(val));
+        isCyc = false;
+
+        // Cyclic structure check
+        if (stack.length > 1) {
+          var i = stack.length;
+          while (i--) {
+            if (stack[i] === val) {
+              arr.push(key + ':CYC');
+              continue stringify;
+            }
+          }
+        }
+
+        stack.push(val);
+        arr.push((isArray ? '' : key + ': ') + getStringified(val, stack));
       }
     }
     str += arr.join(',');

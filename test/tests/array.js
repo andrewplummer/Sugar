@@ -420,6 +420,13 @@ namespace('Array', function () {
     test([o1, o2], [o1], 'instances | same deep reference is equal');
     test([o1, o3], [o1, o3], 'instances | different deep reference is not equal');
 
+    var foo = {};
+    test([{foo:foo}], [{foo:foo}], 'Handles cyclic structures');
+
+    var foo = {};
+    foo.bar = foo;
+    test([foo], [foo], 'Handles cyclic structures');
+
   });
 
   method('flatten', function() {

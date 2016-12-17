@@ -128,6 +128,8 @@ namespace('Date', function () {
     assertDateParsed('Friday',    opt, testCreateDate('Friday'));
     assertDateParsed('Saturday',  opt, testCreateDate('Saturday'));
 
+    // Relative dates with future
+    assertDateParsed('the 15th', { future: true }, testDateSet(getRelativeDateReset(0,1),{date:15}));
 
     // fromUTC option
 
