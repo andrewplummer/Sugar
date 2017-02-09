@@ -3514,8 +3514,187 @@ var TS_EXTENDED_LICENSE = block`
 // Definitions by: Andrew Plummer <plummer.andrew@gmail.com>
 `;
 
+var TS_TYPE_REG = /is(Boolean|Number|String|Date|RegExp|Function|Array|Error|Set|Map)$/;
+
+var TS_TYPE_GUARD_GENERICS = {
+  Array: ['any'],
+  Map: ['any', 'any'],
+  Set: ['any']
+}
+
+var TS_CHAINABLE_RAW_TYPE = 'RawValue';
+
+var TS_CHAINABLE_NATIVE_METHODS = {
+
+  Array: [
+    'toLocaleString(): string;',
+    'push(...items: T[]): number;',
+    'pop(): T | undefined;',
+    'concat(...items: T[][]): T[];',
+    'concat(...items: (T | T[])[]): T[];',
+    'join(separator?: string): string;',
+    'reverse(): T[];',
+    'shift(): T | undefined;',
+    'slice(start?: number, end?: number): T[];',
+    'sort(compareFn?: (a: T, b: T) => number): this;',
+    'splice(start: number): T[];',
+    'splice(start: number, deleteCount: number, ...items: T[]): T[];',
+    'unshift(...items: T[]): number;',
+    'indexOf(searchElement: T, fromIndex?: number): number;',
+    'lastIndexOf(searchElement: T, fromIndex?: number): number;',
+    'every(callbackfn: (value: T, index: number, array: T[]) => boolean, thisArg?: any): boolean;',
+    'some(callbackfn: (value: T, index: number, array: T[]) => boolean, thisArg?: any): boolean;',
+    'forEach(callbackfn: (value: T, index: number, array: T[]) => void, thisArg?: any): void;',
+    'map<U>(callbackfn: (value: T, index: number, array: T[]) => U, thisArg?: any): U[];',
+    'filter(callbackfn: (value: T, index: number, array: T[]) => any, thisArg?: any): T[];',
+    'reduce(callbackfn: (previousValue: T, currentValue: T, currentIndex: number, array: T[]) => T, initialValue?: T): T;',
+    'reduce<U>(callbackfn: (previousValue: U, currentValue: T, currentIndex: number, array: T[]) => U, initialValue: U): U;',
+    'reduceRight(callbackfn: (previousValue: T, currentValue: T, currentIndex: number, array: T[]) => T, initialValue?: T): T;',
+    'reduceRight<U>(callbackfn: (previousValue: U, currentValue: T, currentIndex: number, array: T[]) => U, initialValue: U): U;',
+
+    // ES6
+    'find(predicate: (value: T, index: number, obj: Array<T>) => boolean, thisArg?: any): T | undefined;',
+    'findIndex(predicate: (value: T, index: number, obj: Array<T>) => boolean, thisArg?: any): number;',
+    'fill(value: T, start?: number, end?: number): this;',
+    'copyWithin(target: number, start: number, end?: number): this;',
+
+  ],
+
+  Date: [
+    'toDateString(): string;',
+    'toTimeString(): string;',
+    'toLocaleString(): string;',
+    'toLocaleDateString(): string;',
+    'toLocaleTimeString(): string;',
+    'getTime(): number;',
+    'getFullYear(): number;',
+    'getUTCFullYear(): number;',
+    'getMonth(): number;',
+    'getUTCMonth(): number;',
+    'getDate(): number;',
+    'getUTCDate(): number;',
+    'getDay(): number;',
+    'getUTCDay(): number;',
+    'getHours(): number;',
+    'getUTCHours(): number;',
+    'getMinutes(): number;',
+    'getUTCMinutes(): number;',
+    'getSeconds(): number;',
+    'getUTCSeconds(): number;',
+    'getMilliseconds(): number;',
+    'getUTCMilliseconds(): number;',
+    'getTimezoneOffset(): number;',
+    'setTime(time: number): number;',
+    'setMilliseconds(ms: number): number;',
+    'setUTCMilliseconds(ms: number): number;',
+    'setSeconds(sec: number, ms?: number): number;',
+    'setUTCSeconds(sec: number, ms?: number): number;',
+    'setMinutes(min: number, sec?: number, ms?: number): number;',
+    'setUTCMinutes(min: number, sec?: number, ms?: number): number;',
+    'setHours(hours: number, min?: number, sec?: number, ms?: number): number;',
+    'setUTCHours(hours: number, min?: number, sec?: number, ms?: number): number;',
+    'setDate(date: number): number;',
+    'setUTCDate(date: number): number;',
+    'setMonth(month: number, date?: number): number;',
+    'setUTCMonth(month: number, date?: number): number;',
+    'setFullYear(year: number, month?: number, date?: number): number;',
+    'setUTCFullYear(year: number, month?: number, date?: number): number;',
+    'toUTCString(): string;',
+    'toISOString(): string;',
+    'toJSON(key?: any): string;',
+
+    // ES6
+    'toLocaleString(locales?: string | string[], options?: Intl.DateTimeFormatOptions): string;',
+    'toLocaleDateString(locales?: string | string[], options?: Intl.DateTimeFormatOptions): string;',
+    'toLocaleTimeString(locales?: string | string[], options?: Intl.DateTimeFormatOptions): string;',
+
+  ],
+
+  String: [
+    'charAt(pos: number): string;',
+    'charCodeAt(index: number): number;',
+    'concat(...strings: string[]): string;',
+    'indexOf(searchString: string, position?: number): number;',
+    'lastIndexOf(searchString: string, position?: number): number;',
+    'localeCompare(that: string): number;',
+    'match(regexp: string): RegExpMatchArray | null;',
+    'match(regexp: RegExp): RegExpMatchArray | null;',
+    'replace(searchValue: string, replaceValue: string): string;',
+    'replace(searchValue: string, replacer: (substring: string, ...args: any[]) => string): string;',
+    'replace(searchValue: RegExp, replaceValue: string): string;',
+    'replace(searchValue: RegExp, replacer: (substring: string, ...args: any[]) => string): string;',
+    'search(regexp: string): number;',
+    'search(regexp: RegExp): number;',
+    'slice(start?: number, end?: number): string;',
+    'split(separator: string, limit?: number): string[];',
+    'split(separator: RegExp, limit?: number): string[];',
+    'substring(start: number, end?: number): string;',
+    'toLowerCase(): string;',
+    'toLocaleLowerCase(): string;',
+    'toUpperCase(): string;',
+    'toLocaleUpperCase(): string;',
+    'trim(): string;',
+    'substr(from: number, length?: number): string;',
+
+    // ES6
+    'localeCompare(that: string, locales?: string | string[], options?: Intl.CollatorOptions): number;',
+    'codePointAt(pos: number): number | undefined;',
+    'includes(searchString: string, position?: number): boolean;',
+    'endsWith(searchString: string, endPosition?: number): boolean;',
+    'normalize(form: "NFC" | "NFD" | "NFKC" | "NFKD"): string;',
+    'normalize(form?: string): string;',
+    'repeat(count: number): string;',
+    'startsWith(searchString: string, position?: number): boolean;',
+    'anchor(name: string): string;',
+    'big(): string;',
+    'blink(): string;',
+    'bold(): string;',
+    'fixed(): string;',
+    'fontcolor(color: string): string;',
+    'fontsize(size: number): string;',
+    'fontsize(size: string): string;',
+    'italics(): string;',
+    'link(url: string): string;',
+    'small(): string;',
+    'strike(): string;',
+    'sub(): string;',
+    'sup(): string;',
+  ],
+
+  Number: [
+    'toFixed(fractionDigits?: number): string;',
+    'toExponential(fractionDigits?: number): string;',
+    'toPrecision(precision?: number): string;',
+
+    // ES6
+    'toLocaleString(locales?: string | string[], options?: Intl.NumberFormatOptions): string;',
+  ],
+
+  Function: [
+    'apply(thisArg: any, argArray?: any): any;',
+    'call(thisArg: any, ...argArray: any[]): any;',
+    'bind(thisArg: any, ...argArray: any[]): any;',
+  ],
+
+  RegExp: [
+    'exec(string: string): RegExpExecArray | null;',
+    'test(string: string): boolean;',
+  ]
+
+};
+
+var TS_LOCALE_METHODS = [
+  'getMonthName(n: number): string;',
+  'getWeekdayName(n: number): string;',
+  'getDuration(ms: number): string;',
+  'getFirstDayOfWeek(): number;',
+  'getFirstDayOfWeekYear(): number;',
+  'addFormat(src:string, to?: Array<string>): void;'
+];
+
+
 function buildTypescriptDeclarations() {
-  var basePath = args.o || args.output || '';
+  var basePath = args.o || args.output || 'types';
   var moduleNames = getModuleNames();
   exportTypescriptDeclarations(basePath, moduleNames, args.include, args.exclude);
 }
@@ -3529,184 +3708,14 @@ function exportTypescriptDeclarations(basePath, allowedModules, include, exclude
   var whitelist = getMethodList(include);
   var blacklist = getMethodList(exclude);
 
-  var TYPE_REG = /is(Boolean|Number|String|Date|RegExp|Function|Array|Error|Set|Map)$/;
+  var docs = getJSONDocs();
+  var typePackages = {};
 
-  var TYPE_GUARD_GENERICS = {
-    Array: ['any'],
-    Map: ['any', 'any'],
-    Set: ['any']
-  }
-
-  var CHAINABLE_RAW_TYPE = 'RawValue';
-
-  var CHAINABLE_NATIVE_METHODS = {
-
-    Array: [
-      'toLocaleString(): string;',
-      'push(...items: T[]): number;',
-      'pop(): T | undefined;',
-      'concat(...items: T[][]): T[];',
-      'concat(...items: (T | T[])[]): T[];',
-      'join(separator?: string): string;',
-      'reverse(): T[];',
-      'shift(): T | undefined;',
-      'slice(start?: number, end?: number): T[];',
-      'sort(compareFn?: (a: T, b: T) => number): this;',
-      'splice(start: number): T[];',
-      'splice(start: number, deleteCount: number, ...items: T[]): T[];',
-      'unshift(...items: T[]): number;',
-      'indexOf(searchElement: T, fromIndex?: number): number;',
-      'lastIndexOf(searchElement: T, fromIndex?: number): number;',
-      'every(callbackfn: (value: T, index: number, array: T[]) => boolean, thisArg?: any): boolean;',
-      'some(callbackfn: (value: T, index: number, array: T[]) => boolean, thisArg?: any): boolean;',
-      'forEach(callbackfn: (value: T, index: number, array: T[]) => void, thisArg?: any): void;',
-      'map<U>(callbackfn: (value: T, index: number, array: T[]) => U, thisArg?: any): U[];',
-      'filter(callbackfn: (value: T, index: number, array: T[]) => any, thisArg?: any): T[];',
-      'reduce(callbackfn: (previousValue: T, currentValue: T, currentIndex: number, array: T[]) => T, initialValue?: T): T;',
-      'reduce<U>(callbackfn: (previousValue: U, currentValue: T, currentIndex: number, array: T[]) => U, initialValue: U): U;',
-      'reduceRight(callbackfn: (previousValue: T, currentValue: T, currentIndex: number, array: T[]) => T, initialValue?: T): T;',
-      'reduceRight<U>(callbackfn: (previousValue: U, currentValue: T, currentIndex: number, array: T[]) => U, initialValue: U): U;',
-
-      // ES6
-      'find(predicate: (value: T, index: number, obj: Array<T>) => boolean, thisArg?: any): T | undefined;',
-      'findIndex(predicate: (value: T, index: number, obj: Array<T>) => boolean, thisArg?: any): number;',
-      'fill(value: T, start?: number, end?: number): this;',
-      'copyWithin(target: number, start: number, end?: number): this;',
-
-    ],
-
-    Date: [
-      'toDateString(): string;',
-      'toTimeString(): string;',
-      'toLocaleString(): string;',
-      'toLocaleDateString(): string;',
-      'toLocaleTimeString(): string;',
-      'getTime(): number;',
-      'getFullYear(): number;',
-      'getUTCFullYear(): number;',
-      'getMonth(): number;',
-      'getUTCMonth(): number;',
-      'getDate(): number;',
-      'getUTCDate(): number;',
-      'getDay(): number;',
-      'getUTCDay(): number;',
-      'getHours(): number;',
-      'getUTCHours(): number;',
-      'getMinutes(): number;',
-      'getUTCMinutes(): number;',
-      'getSeconds(): number;',
-      'getUTCSeconds(): number;',
-      'getMilliseconds(): number;',
-      'getUTCMilliseconds(): number;',
-      'getTimezoneOffset(): number;',
-      'setTime(time: number): number;',
-      'setMilliseconds(ms: number): number;',
-      'setUTCMilliseconds(ms: number): number;',
-      'setSeconds(sec: number, ms?: number): number;',
-      'setUTCSeconds(sec: number, ms?: number): number;',
-      'setMinutes(min: number, sec?: number, ms?: number): number;',
-      'setUTCMinutes(min: number, sec?: number, ms?: number): number;',
-      'setHours(hours: number, min?: number, sec?: number, ms?: number): number;',
-      'setUTCHours(hours: number, min?: number, sec?: number, ms?: number): number;',
-      'setDate(date: number): number;',
-      'setUTCDate(date: number): number;',
-      'setMonth(month: number, date?: number): number;',
-      'setUTCMonth(month: number, date?: number): number;',
-      'setFullYear(year: number, month?: number, date?: number): number;',
-      'setUTCFullYear(year: number, month?: number, date?: number): number;',
-      'toUTCString(): string;',
-      'toISOString(): string;',
-      'toJSON(key?: any): string;',
-
-      // ES6
-      'toLocaleString(locales?: string | string[], options?: Intl.DateTimeFormatOptions): string;',
-      'toLocaleDateString(locales?: string | string[], options?: Intl.DateTimeFormatOptions): string;',
-      'toLocaleTimeString(locales?: string | string[], options?: Intl.DateTimeFormatOptions): string;',
-
-    ],
-
-    String: [
-      'charAt(pos: number): string;',
-      'charCodeAt(index: number): number;',
-      'concat(...strings: string[]): string;',
-      'indexOf(searchString: string, position?: number): number;',
-      'lastIndexOf(searchString: string, position?: number): number;',
-      'localeCompare(that: string): number;',
-      'match(regexp: string): RegExpMatchArray | null;',
-      'match(regexp: RegExp): RegExpMatchArray | null;',
-      'replace(searchValue: string, replaceValue: string): string;',
-      'replace(searchValue: string, replacer: (substring: string, ...args: any[]) => string): string;',
-      'replace(searchValue: RegExp, replaceValue: string): string;',
-      'replace(searchValue: RegExp, replacer: (substring: string, ...args: any[]) => string): string;',
-      'search(regexp: string): number;',
-      'search(regexp: RegExp): number;',
-      'slice(start?: number, end?: number): string;',
-      'split(separator: string, limit?: number): string[];',
-      'split(separator: RegExp, limit?: number): string[];',
-      'substring(start: number, end?: number): string;',
-      'toLowerCase(): string;',
-      'toLocaleLowerCase(): string;',
-      'toUpperCase(): string;',
-      'toLocaleUpperCase(): string;',
-      'trim(): string;',
-      'substr(from: number, length?: number): string;',
-
-      // ES6
-      'localeCompare(that: string, locales?: string | string[], options?: Intl.CollatorOptions): number;',
-      'codePointAt(pos: number): number | undefined;',
-      'includes(searchString: string, position?: number): boolean;',
-      'endsWith(searchString: string, endPosition?: number): boolean;',
-      'normalize(form: "NFC" | "NFD" | "NFKC" | "NFKD"): string;',
-      'normalize(form?: string): string;',
-      'repeat(count: number): string;',
-      'startsWith(searchString: string, position?: number): boolean;',
-      'anchor(name: string): string;',
-      'big(): string;',
-      'blink(): string;',
-      'bold(): string;',
-      'fixed(): string;',
-      'fontcolor(color: string): string;',
-      'fontsize(size: number): string;',
-      'fontsize(size: string): string;',
-      'italics(): string;',
-      'link(url: string): string;',
-      'small(): string;',
-      'strike(): string;',
-      'sub(): string;',
-      'sup(): string;',
-    ],
-
-    Number: [
-      'toFixed(fractionDigits?: number): string;',
-      'toExponential(fractionDigits?: number): string;',
-      'toPrecision(precision?: number): string;',
-
-      // ES6
-      'toLocaleString(locales?: string | string[], options?: Intl.NumberFormatOptions): string;',
-    ],
-
-    Function: [
-      'apply(thisArg: any, argArray?: any): any;',
-      'call(thisArg: any, ...argArray: any[]): any;',
-      'bind(thisArg: any, ...argArray: any[]): any;',
-    ],
-
-    RegExp: [
-      'exec(string: string): RegExpExecArray | null;',
-      'test(string: string): boolean;',
-    ]
-
-  };
-
-  var LOCALE_METHODS = [
-    'getMonthName(n: number): string;',
-    'getWeekdayName(n: number): string;',
-    'getDuration(ms: number): string;',
-    'getFirstDayOfWeek(): number;',
-    'getFirstDayOfWeekYear(): number;',
-    'addFormat(src:string, to?: Array<string>): void;'
-  ];
-
+  var nativeNames = docs.namespaces.map(function(namespace) {
+    return namespace.name;
+  }).filter(function(name) {
+    return !name.match(/^Sugar|Range/);
+  });
 
   /* ------------ Declared Module -------------- */
 
@@ -3913,7 +3922,85 @@ function exportTypescriptDeclarations(basePath, allowedModules, include, exclude
     });
   }
 
-  function getSugarInterface(namespace, namespaces) {
+  function getNewModule() {
+    return {
+      types: [],
+      modules: [],
+      interfaces: [],
+      declares: []
+    }
+  }
+
+  function indent(str, level) {
+    return '  '.repeat(level) + str;
+  }
+
+  function getSource(obj, level, padding) {
+    if (obj.lines) {
+      return obj.lines.join(`${obj.join ? ' ' + obj.join : ''}\n${' '.repeat(padding)}`);
+    } else {
+      return obj.src;
+    }
+  }
+
+  function compileTypes(types, level) {
+    return types.map(function(type) {
+      var assign = indent(`type ${type.name} = `, level);
+      return `${assign}${getSource(type, level, assign.length)};`;
+    }).join('\n\n');
+  }
+
+  function compileDeclares(declares, level) {
+    return declares.map(function(d) {
+      var src;
+      if (d.type === 'namespace') {
+        src = `{\n\n${compileNamespace(d.namespace, level + 1)}\n}`;
+      } else {
+        src = indent(d.src);
+      }
+      return `declare ${d.type} ${d.name} ${src}`;
+    }).join('\n\n');
+  }
+
+  // TODO: namespace?? rename this?
+  function compileNamespace(namespace, level) {
+    var blocks = [];
+    blocks.push(compileTypes(namespace.types, level));
+    blocks.push(compileDeclares(namespace.declares, level));
+    return blocks.join('\n\n');
+  }
+
+  function compileModule(module) {
+    return {
+      src: compileNamespace(module, 0),
+      modules: module.modules.map(function(module) {
+        return compileNamespace(module, 0);
+      })
+    }
+  }
+
+  function getSugarModule(namespace, namespaces) {
+
+    var module = getNewModule();
+    var sugarNamespace = getNewModule();
+
+    sugarNamespace.types.push({
+      name: 'DefaultChainable<RawValue>',
+      join: '&',
+      lines: getNativeNames(getChainableNameExternal)
+    });
+
+    module.types.push({
+      name: 'NativeConstructor',
+      join: '|',
+      lines: getNativeNames('Constructor', ['Boolean', 'Error']),
+    });
+
+    module.declares.push({
+      name: 'Sugar',
+      type: 'namespace',
+      namespace: sugarNamespace
+    });
 
     var extendAlias = clone(namespace.methods.find(function(method) {
       return method.name === 'extend';
@@ -3931,7 +4018,8 @@ function exportTypescriptDeclarations(basePath, allowedModules, include, exclude
     });
 
     var src = [methods.join('\n'), namespaces.join('\n')].join('\n');
-    return getInterfaceSource(namespace.name, src);
+    //return compileModule(getInterfaceSource(namespace.name, src));
+    return compileModule(module);
   }
 
   function getSugarNamespaceInterface(namespace) {
@@ -3948,7 +4036,7 @@ function exportTypescriptDeclarations(basePath, allowedModules, include, exclude
     var namespace = namespaces.find(function(namespace) {
       return namespace.name === 'Date';
     });
-    var methods = buildMethods(getRawMethods(LOCALE_METHODS, 'Date'), namespace);
+    var methods = buildMethods(getRawMethods(TS_LOCALE_METHODS, 'Date'), namespace);
     return getInterfaceSource('Locale', methods.join('\n'));
   }
 
@@ -4089,7 +4177,7 @@ function exportTypescriptDeclarations(basePath, allowedModules, include, exclude
   /* ------------ Methods -------------- */
 
   function isTypeCheck(method) {
-    return method.name.match(TYPE_REG);
+    return method.name.match(TS_TYPE_REG);
   }
 
   function getInstanceParamType(method, type) {
@@ -4392,38 +4480,36 @@ function exportTypescriptDeclarations(basePath, allowedModules, include, exclude
     });
   }
 
+  function getNativeNames(suffixVal, supplementary) {
+    var types = nativeNames.concat(supplementary || []);
+    return types.map(function(type, i) {
+      var suffix = typeof suffixVal === 'function' ? suffixVal(type) : suffixVal;
+      return type + suffix;
+    });
+  }
+
   /* ------------ Exporting -------------- */
 
-  function exportDeclarations() {
+  function writeDeclarations(filename, blocks) {
+    blocks = compact(blocks);
+    var hasNoDeclarations = blocks.every(function(dec) {
+      return /^\/\//.test(dec);
+    });
+    if (hasNoDeclarations) {
+      return;
+    }
+    writeFile(path.join(basePath || '', filename), compact(blocks).join('\n\n'));
+  }
 
-    var docs = getJSONDocs();
+  function getChainableNameExternal(type) {
+    return '.Chainable' + getChainableBaseGenerics(type, TS_CHAINABLE_RAW_TYPE, 'any');
+  }
+
+  function compilePackages() {
+
     var sugarjs = getDeclaredNamespace('sugarjs');
 
-    var extendedInterfaces = [], nativeNames = [];
-
-    function getNamespaceTypesMerged(num, suffixVal, join, supplementary) {
-      var types = nativeNames.concat(supplementary || []);
-      var indent = ' '.repeat(num);
-      return types.map(function(type) {
-        var suffix = typeof suffixVal === 'function' ? suffixVal(type) : suffixVal;
-        return type + suffix;
-      }).join(' ' + join + '\n' + indent);
-    }
-
-    function getChainableNameExternal(type) {
-      return '.Chainable' + getChainableBaseGenerics(type, CHAINABLE_RAW_TYPE, 'any');
-    }
-
-    function writeDeclarations(filename, declarations) {
-      declarations = compact(declarations);
-      var hasNoDeclarations = declarations.every(function(dec) {
-        return /^\/\//.test(dec);
-      });
-      if (hasNoDeclarations) {
-        return;
-      }
-      writeFile(path.join(basePath || '', filename), compact(declarations).join('\n\n'));
-    }
+    var extendedInterfaces = [];
 
     sugarjs.interfaces.push(getLocaleInterface(docs.namespaces));
 
@@ -4572,8 +4658,10 @@ function exportTypescriptDeclarations(basePath, allowedModules, include, exclude
 
       if (namespace.name === 'Sugar') {
         addExtras(sugarjs);
-        sugarjs.interfaces.push(getSugarInterface(namespace, docs.namespaces));
+        typePackages['sugar-core'] = getSugarModule(namespace, docs.namespaces);
+        //sugarjs.interfaces.push(getSugarInterface(namespace, docs.namespaces));
       } else if (namespace.name === 'SugarNamespace') {
+        return;
         // The generic "SugarNamespace" interface is required for the
         // "createNamespace" method that needs to return an as-yet undefined
         // type. For existing namespaces, the methods here will instead be
@@ -4583,8 +4671,10 @@ function exportTypescriptDeclarations(basePath, allowedModules, include, exclude
         addExtras(sugarjs);
         sugarjs.interfaces.push(getSugarNamespaceInterface(namespace));
       } else if (namespace.name === 'Range') {
+        return;
         sugarjs.interfaces.push(getRangeInterface(namespace));
       } else {
+        return;
         var module = getDeclaredNamespace(namespace.name);
         addExtras(module);
         module.interfaces.push(getConstructorInterface(namespace, module));
@@ -4608,18 +4698,9 @@ function exportTypescriptDeclarations(basePath, allowedModules, include, exclude
 
     });
 
-    var wrappedGeneric = getGenericSource(CHAINABLE_RAW_TYPE);
-    sugarjs.types.push({
-      name: 'SugarDefaultChainable' + wrappedGeneric,
-      type: getNamespaceTypesMerged(39, getChainableNameExternal, '&'),
-    });
+    var wrappedGeneric = getGenericSource(TS_CHAINABLE_RAW_TYPE);
 
-    sugarjs.types.push({
-      name: 'NativeConstructor',
-      type: getNamespaceTypesMerged(25, 'Constructor', '|', ['Boolean', 'Error']),
-    });
-
-
+    /*
     var baseDeclarations = [];
     baseDeclarations.push(TS_LICENSE);
     baseDeclarations.push(getDeclaredNamespaceSource(sugarjs, true));
@@ -4633,9 +4714,18 @@ function exportTypescriptDeclarations(basePath, allowedModules, include, exclude
 
     writeDeclarations('sugar.d.ts', baseDeclarations);
     writeDeclarations('sugar-extended.d.ts', extendedDeclarations);
+    */
   }
 
-  exportDeclarations();
+  compilePackages();
+
+  iter(typePackages, function(packageName, package) {
+    var blocks = [];
+    blocks.push(TS_LICENSE);
+    blocks.push(package.src);
+    writeDeclarations(path.join(packageName, 'index.d.ts'), blocks);
+  });
+
 }
 
 // -------------- Tests ----------------
