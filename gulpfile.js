@@ -3935,7 +3935,7 @@ function exportTypescriptDeclarations(basePath, allowedModules, include, exclude
     return '  '.repeat(level) + str;
   }
 
-  function getSource(obj, level, padding) {
+  function getSource(obj, padding) {
     if (obj.lines) {
       return obj.lines.join(`${obj.join ? ' ' + obj.join : ''}\n${' '.repeat(padding)}`);
     } else {
@@ -3946,7 +3946,18 @@ function exportTypescriptDeclarations(basePath, allowedModules, include, exclude
   function compileTypes(types, level) {
     return types.map(function(type) {
       var assign = indent(`type ${type.name} = `, level);
-      return `${assign}${getSource(type, level, assign.length)};`;
+      return `${assign}${getSource(type, assign.length)};`;
+    }).join('\n\n');
+  }
+
+  function compileInterfaces(interfaces, level) {
+    return interfaces.map(function(interface) {
+      var open = indent(`interface ${interface.name} {\n`, level);
+      var src = interface.members.map(function(line) {
+        return indent(line, level + 1);
+      }).join('\n');
+      var close = indent('\n}', level);
+      return open + src + close;
     }).join('\n\n');
   }
 
@@ -3954,11 +3965,11 @@ function exportTypescriptDeclarations(basePath, allowedModules, include, exclude
     return declares.map(function(d) {
       var src;
       if (d.type === 'namespace') {
-        src = `{\n\n${compileNamespace(d.namespace, level + 1)}\n}`;
+        src = `${d.type} ${d.name} {\n\n${compileNamespace(d.namespace, level + 1)}\n}`;
       } else {
         src = indent(d.src);
       }
-      return `declare ${d.type} ${d.name} ${src}`;
+      return 'declare ' + src;
     }).join('\n\n');
   }
 
@@ -3966,6 +3977,7 @@ function exportTypescriptDeclarations(basePath, allowedModules, include, exclude
   function compileNamespace(namespace, level) {
     var blocks = [];
     blocks.push(compileTypes(namespace.types, level));
+    blocks.push(compileInterfaces(namespace.interfaces, level));
     blocks.push(compileDeclares(namespace.declares, level));
     return blocks.join('\n\n');
   }
@@ -3979,6 +3991,48 @@ function exportTypescriptDeclarations(basePath, allowedModules, include, exclude
     }
   }
 
+  function getFooSignatures(method, namespace, mode) {
+
+    if (methodIsBlacklisted(namespace.name, method)) {
+      return;
+    }
+
+    if (method.raw) {
+      return method.raw;
+    }
+
+    function getSignature(signature, returns) {
+      var params = getParams(signature, method, namespace, mode);
+      var generics = getMethodGenerics();
+      return method.name + generics + '(' +  params + '): ' + returns + ';';
+    }
+
+    function getMethodGenerics() {
+      var generics = method.generics;
+      if (mode !== 'static' && method.type === 'instance' && namespace.name === 'Array') {
+        generics = generics.filter(function(g) {
+          return g !== 'T';
+        });
+      }
+      return getGenericSource(generics);
+    }
+
+    var returns = getReturns(method.returns, method, namespace, mode);
+
+    return [method.params].concat(method.signatures || []).map(function(signature) {
+      return getSignature(signature, returns);
+    });
+
+  }
+
+  function getFooMethods(namespace) {
+    var props = [];
+    namespace.methods.forEach(function(method) {
+      props = props.concat(getFooSignatures(method, namespace));
+    });
+    return props;
+  }
+
   function getSugarModule(namespace, namespaces) {
 
     var module = getNewModule();
@@ -3990,10 +4044,25 @@ function exportTypescriptDeclarations(basePath, allowedModules, include, exclude
       lines: getNativeNames(getChainableNameExternal)
     });
 
+    sugarNamespace.interfaces.push({
+      name: 'BaseChainableConstructor',
+      members: getFooMethods(namespace)
+    });
+
+  //interface BaseChainableConstructor {
+    module.types.push({
+      name: 'Sugar',
+      src: '(opts?: ExtendOptions) => Sugar'
+    });
+
     module.types.push({
       name: 'NativeConstructor',
       join: '|',
       lines: getNativeNames('Constructor', ['Boolean', 'Error']),
+    });
+
+    module.declares.push({
+      src: 'function Sugar(opts?: ExtendOptions): Sugar'
     });
 
     module.declares.push({
@@ -4019,7 +4088,29 @@ function exportTypescriptDeclarations(basePath, allowedModules, include, exclude
 
     var src = [methods.join('\n'), namespaces.join('\n')].join('\n');
     //return compileModule(getInterfaceSource(namespace.name, src));
-    return compileModule(module);
+    return module;
+  }
+
+  function findModuleInterface(module, interfaceName) {
+    return module.interfaces.find(function(m) {
+      return m.name === interfaceName;
+    });
+  }
+
+  function findModuleNamespace(module, namespaceName) {
+    return module.declares.find(function(d) {
+      return d.type === 'namespace' && d.name === namespaceName;
+    });
+  }
+
+  function mergeInterfaceMembers(module, interfaceName, members) {
+    var interface = findModuleInterface(module, interfaceName);
+    interface.members = interface.members.concat(members);
+  }
+
+  function mergeSugarNamespaceModule(module, namespace) {
+    var sugarNamespace = findModuleNamespace(module, 'Sugar');
+    mergeInterfaceMembers(sugarNamespace.namespace, 'BaseChainableConstructor', getFooMethods(namespace));
   }
 
   function getSugarNamespaceInterface(namespace) {
@@ -4504,6 +4595,127 @@ function exportTypescriptDeclarations(basePath, allowedModules, include, exclude
   function getChainableNameExternal(type) {
     return '.Chainable' + getChainableBaseGenerics(type, TS_CHAINABLE_RAW_TYPE, 'any');
   }
+  // -------------------------- extras
+
+  function addExtras(module, namespace) {
+    addCallbackTypes(module, namespace);
+    addOptionsInterfaces(module, namespace);
+  }
+
+  function addCallbackTypes(module, namespace) {
+
+    // If the param has multiple types, then move callbacks into the
+    // module as named types. Only do this if there are multiple
+    // types, otherwise the callback signature can be inlined into
+    // the method declaration.
+    function getAlternateTypes(method) {
+      var types = [];
+
+      function process(arr) {
+        if (arr) {
+          arr.forEach(function(obj) {
+            if (obj.type) {
+              var split = obj.type.split('|');
+              if (split.length > 1) {
+                types = types.concat(split);
+              }
+            }
+          });
+        }
+      }
+
+      process(method.params);
+      process(method.options);
+
+      return types;
+    }
+
+    function addModuleCallbackType(method, callback) {
+      var typeExists = module.types.some(function(t) {
+        return t.name === callback.name;
+      });
+      if (!typeExists) {
+        var signature = getCallbackSignature(callback, method, namespace);
+        if (method.generics) {
+          moduleCallbackGenerics[namespace.name + ':' + callback.name] = method.generics;
+        }
+        module.types.push({
+          name: callback.name,
+          generics: getGenericSource(callback.generics),
+          type: signature
+        });
+      }
+    }
+
+    namespace.methods.forEach(function(method) {
+      if (!method.callbacks || methodIsBlacklisted(namespace.name, method)) {
+        return;
+      }
+      getAlternateTypes(method).forEach(function(type) {
+        if (type.match(/Fn$/)) {
+          var callback = findMethodCallbackByName(method, type);
+          addModuleCallbackType(method, callback);
+        }
+      });
+    });
+
+  }
+
+  function addOptionsInterfaces(module, namespace) {
+
+    namespace.methods.forEach(function(method) {
+      if (!method.options || methodIsBlacklisted(namespace.name, method)) {
+        return;
+      }
+
+      var params = method.params;
+      (method.signatures || []).forEach(function(signature) {
+        params = params.concat(signature);
+      })
+
+      var optionsParam = params.find(function(param) {
+        return param.type.match(/Options$/);
+      });
+
+      var optionsGenerics = [];
+
+      var members = method.options.map(function(option) {
+        var types = option.type.split('|');
+        types = types.map(function(type) {
+          if (type.match(/Fn$/)) {
+            var callback = findMethodCallbackByName(method, type);
+            if (types.length === 1 && type.match(/Fn$/)) {
+              // Inline a callback delcaration
+              type = getCallbackSignature(callback, method, namespace);
+            } else {
+              // Refer to callback externally
+              type += getGenericSource(moduleCallbackGenerics[namespace.name + ':' + callback.name]);
+            }
+            optionsGenerics = optionsGenerics.concat(callback.generics);
+          }
+          return type;
+        });
+        return option.name + (option.required ? '' : '?') + ': ' + types.join('|') + ';';
+      });
+      var name = optionsParam.type + getGenericSource(optionsGenerics);
+
+      // Store references to the namespaces that option interfaces exist in
+      // so that we can reference them externally later.
+      //if (!namespace.name.match(/^Sugar/)) {
+        //optionInterfaceNamespaces[optionsParam.type] = namespace.name;
+      //}
+      //
+      //moduleOptionsGenerics[namespace.name + ':' + optionsParam.type] = optionsGenerics;
+      ////module.interfaces.push(getInterfaceSource(name, src));
+      module.interfaces.push({
+        name: name,
+        members: members
+      });
+    });
+  }
+
+
+  // ---------------------------endextras
 
   function compilePackages() {
 
@@ -4518,118 +4730,6 @@ function exportTypescriptDeclarations(basePath, allowedModules, include, exclude
     docs.namespaces.sort(collateNamespaces);
 
     docs.namespaces.forEach(function(namespace) {
-
-      function addExtras(module) {
-        addCallbackTypes(module);
-        addOptionsInterfaces(module);
-      }
-
-      function addCallbackTypes(module) {
-
-        // If the param has multiple types, then move callbacks into the
-        // module as named types. Only do this if there are multiple
-        // types, otherwise the callback signature can be inlined into
-        // the method declaration.
-        function getAlternateTypes(method) {
-          var types = [];
-
-          function process(arr) {
-            if (arr) {
-              arr.forEach(function(obj) {
-                if (obj.type) {
-                  var split = obj.type.split('|');
-                  if (split.length > 1) {
-                    types = types.concat(split);
-                  }
-                }
-              });
-            }
-          }
-
-          process(method.params);
-          process(method.options);
-
-          return types;
-        }
-
-        function addModuleCallbackType(method, callback) {
-          var typeExists = module.types.some(function(t) {
-            return t.name === callback.name;
-          });
-          if (!typeExists) {
-            var signature = getCallbackSignature(callback, method, namespace);
-            if (method.generics) {
-              moduleCallbackGenerics[namespace.name + ':' + callback.name] = method.generics;
-            }
-            module.types.push({
-              name: callback.name,
-              generics: getGenericSource(callback.generics),
-              type: signature
-            });
-          }
-        }
-
-        namespace.methods.forEach(function(method) {
-          if (!method.callbacks || methodIsBlacklisted(namespace.name, method)) {
-            return;
-          }
-          getAlternateTypes(method).forEach(function(type) {
-            if (type.match(/Fn$/)) {
-              var callback = findMethodCallbackByName(method, type);
-              addModuleCallbackType(method, callback);
-            }
-          });
-        });
-
-      }
-
-      function addOptionsInterfaces(module) {
-        namespace.methods.forEach(function(method) {
-          if (!method.options || methodIsBlacklisted(namespace.name, method)) {
-            return;
-          }
-
-          var params = method.params;
-          (method.signatures || []).forEach(function(signature) {
-            params = params.concat(signature);
-          })
-
-          var optionsParam = params.find(function(param) {
-            return param.type.match(/Options$/);
-          });
-
-          var optionsGenerics = [];
-
-          var src = method.options.map(function(option) {
-            var types = option.type.split('|');
-            types = types.map(function(type) {
-              if (type.match(/Fn$/)) {
-                var callback = findMethodCallbackByName(method, type);
-                if (types.length === 1 && type.match(/Fn$/)) {
-                  // Inline a callback delcaration
-                  type = getCallbackSignature(callback, method, namespace);
-                } else {
-                  // Refer to callback externally
-                  type += getGenericSource(moduleCallbackGenerics[namespace.name + ':' + callback.name]);
-                }
-                optionsGenerics = optionsGenerics.concat(callback.generics);
-              }
-              return type;
-            });
-            return option.name + (option.required ? '' : '?') + ': ' + types.join('|') + ';';
-          }).join('\n');
-
-          // Store references to the namespaces that option interfaces exist in
-          // so that we can reference them externally later.
-          if (!namespace.name.match(/^Sugar/)) {
-            optionInterfaceNamespaces[optionsParam.type] = namespace.name;
-          }
-
-          moduleOptionsGenerics[namespace.name + ':' + optionsParam.type] = optionsGenerics;
-          var name = optionsParam.type + getGenericSource(optionsGenerics);
-          module.interfaces.push(getInterfaceSource(name, src));
-        });
-      }
 
       function getCallbackSignature(callback, method, namespace) {
         var genericsLength = method.generic && method.generics.length || 0, gen;
@@ -4656,11 +4756,18 @@ function exportTypescriptDeclarations(basePath, allowedModules, include, exclude
       // Unpack sets like "[unit]FromNow"
       namespace.methods = unpackMethodSets(namespace.methods);
 
+      // TODO: cleanup
+      var module;
+
       if (namespace.name === 'Sugar') {
-        addExtras(sugarjs);
-        typePackages['sugar-core'] = getSugarModule(namespace, docs.namespaces);
+        module = getSugarModule(namespace, docs.namespaces);
+        addExtras(module, namespace);
+        typePackages['sugar-core'] = module;
         //sugarjs.interfaces.push(getSugarInterface(namespace, docs.namespaces));
       } else if (namespace.name === 'SugarNamespace') {
+        module = typePackages['sugar-core'];
+        addExtras(module, namespace);
+        mergeSugarNamespaceModule(module, namespace);
         return;
         // The generic "SugarNamespace" interface is required for the
         // "createNamespace" method that needs to return an as-yet undefined
@@ -4722,7 +4829,7 @@ function exportTypescriptDeclarations(basePath, allowedModules, include, exclude
   iter(typePackages, function(packageName, package) {
     var blocks = [];
     blocks.push(TS_LICENSE);
-    blocks.push(package.src);
+    blocks.push(compileModule(package).src);
     writeDeclarations(path.join(packageName, 'index.d.ts'), blocks);
   });
 
