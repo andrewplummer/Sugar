@@ -3522,7 +3522,7 @@ var TS_TYPE_GUARD_GENERICS = {
   Set: ['any']
 }
 
-var TS_CHAINABLE_RAW_TYPE = 'RawValue';
+//var TS_CHAINABLE_RAW_TYPE = 'RawValue';
 
 var TS_CHAINABLE_NATIVE_METHODS = {
 
@@ -3922,13 +3922,21 @@ function exportTypescriptDeclarations(basePath, allowedModules, include, exclude
     });
   }
 
-  function getNewModule() {
+  function getNewContext() {
     return {
+      vars: [],
       types: [],
       modules: [],
       interfaces: [],
       declares: []
     }
+  }
+
+  function getNewNamespace(name) {
+    var namespace = getNewContext();
+    namespace.name = name;
+    namespace.type = 'namespace';
+    return namespace;
   }
 
   function indent(str, level) {
@@ -3952,46 +3960,65 @@ function exportTypescriptDeclarations(basePath, allowedModules, include, exclude
 
   function compileInterfaces(interfaces, level) {
     return interfaces.map(function(interface) {
-      var open = indent(`interface ${interface.name} {\n`, level);
-      var src = interface.members.map(function(line) {
-        return indent(line, level + 1);
-      }).join('\n');
-      var close = indent('\n}', level);
-      return open + src + close;
+      var open = '', lines = [];
+      open += indent(`interface ${interface.name}`, level);
+      if (interface.extends) {
+        open += ` extends ${interface.extends}`;
+      }
+      open += ' {';
+      lines.push(open);
+      if (interface.members) {
+        lines = lines.concat(interface.members.map(function(line) {
+          return indent(line, level + 1);
+        }));
+      }
+      lines.push(indent('}', level));
+      return lines.join('\n');
     }).join('\n\n');
   }
 
   function compileDeclares(declares, level) {
     return declares.map(function(d) {
-      var src;
-      if (d.type === 'namespace') {
-        src = `${d.type} ${d.name} {\n\n${compileNamespace(d.namespace, level + 1)}\n}`;
-      } else {
-        src = indent(d.src);
+      var src = indent('', level);
+      if (level === 0) {
+        src += 'declare ';
       }
-      return 'declare ' + src;
-    }).join('\n\n');
+      if (d.type === 'namespace') {
+        src =  '\n' + src;
+        src += `${d.type} ${d.name} {\n\n${compileContext(d, level + 1)}`;
+        src += indent('\n}', level);
+      } else {
+        src += indent(d.src, level);
+      }
+      return src;
+    }).join('\n');
   }
 
-  // TODO: namespace?? rename this?
-  function compileNamespace(namespace, level) {
+  function compileVars(vars, level) {
+    return vars.map(function(v) {
+      return indent(`var ${v.name}: ${v.type};`, level);
+    }).join('\n');
+  }
+
+  function compileContext(namespace, level) {
     var blocks = [];
     blocks.push(compileTypes(namespace.types, level));
     blocks.push(compileInterfaces(namespace.interfaces, level));
     blocks.push(compileDeclares(namespace.declares, level));
+    blocks.push(compileVars(namespace.vars, level));
     return blocks.join('\n\n');
   }
 
   function compileModule(module) {
     return {
-      src: compileNamespace(module, 0),
+      src: compileContext(module, 0),
       modules: module.modules.map(function(module) {
-        return compileNamespace(module, 0);
+        return compileContext(module, 0);
       })
     }
   }
 
-  function getFooSignatures(method, namespace, mode) {
+  function getMethodSignatures(method, namespace, mode) {
 
     if (methodIsBlacklisted(namespace.name, method)) {
       return;
@@ -4025,31 +4052,99 @@ function exportTypescriptDeclarations(basePath, allowedModules, include, exclude
 
   }
 
-  function getFooMethods(namespace) {
+  function getAllNamspaceSignatures(namespace) {
     var props = [];
     namespace.methods.forEach(function(method) {
-      props = props.concat(getFooSignatures(method, namespace));
+      props = props.concat(getMethodSignatures(method, namespace));
     });
     return props;
   }
 
-  function getSugarModule(namespace, namespaces) {
+  function addSignaturesToDeclares(context, methods) {
+    methods.forEach(function(method) {
+      context.declares.push({
+        src: 'function ' + method
+      });
+    });
+  }
 
-    var module = getNewModule();
-    var sugarNamespace = getNewModule();
+  /**
+  function addVars(context, vars) {
+    vars.forEach(function(v) {
+      context.vars.push(v);
+    });
+  }
+  */
+
+  function newGetGenericForType(type) {
+    
+  }
+
+  function createSugarModule(namespace) {
+
+    function addNativeChainable(name) {
+
+      if (name === 'Array') {
+
+        sugarNamespace.interfaces.push({
+          name: 'ArrayChainableConstructor',
+          extends: 'BaseChainableConstructor',
+          members: [
+            `<T>(raw?: T[]): ArrayChainable<T, T[]> & ObjectChainable<T[]>;`,
+            `new<T>(raw?: T[]): ArrayChainable<T, T[]> & ObjectChainable<T[]>;`,
+          ]
+        });
+
+        sugarNamespace.interfaces.push({
+          name: 'ArrayChainable<T, RawValue>',
+          extends: `BaseChainable<RawValue>`
+        });
+
+
+      } else {
+
+        sugarNamespace.interfaces.push({
+          name: `${name}ChainableConstructor`,
+          extends: 'BaseChainableConstructor',
+          members: [
+            `<RawValue>(raw?: RawValue): ${name}Chainable<RawValue> & ObjectChainable<RawValue>;`,
+            `new<RawValue>(raw?: RawValue): ${name}Chainable<RawValue> & ObjectChainable<RawValue>;`,
+          ]
+        });
+
+        sugarNamespace.interfaces.push({
+          name: `${name}Chainable<RawValue>`,
+          extends: `BaseChainable<RawValue>`
+        });
+
+      }
+
+      sugarNamespace.vars.push({
+        name: name,
+        type: `${name}ChainableConstructor`
+      });
+
+    }
+
+    var module = getNewContext();
+    var sugarNamespace = getNewNamespace('Sugar');
+
+    /*
+  type DefaultChainable<RawValue> = ArrayChainable<any, RawValue> &
+                                    DateChainable<RawValue> &
+                                    FunctionChainable<RawValue> &
+                                    NumberChainable<RawValue> &
+                                    ObjectChainable<RawValue> &
+                                    RegExpChainable<RawValue> &
+                                    StringChainable<RawValue>;
+                                    */
 
     sugarNamespace.types.push({
       name: 'DefaultChainable<RawValue>',
       join: '&',
-      lines: getNativeNames(getChainableNameExternal)
+      lines: getNativeNames('Chainable<RawValue>')
     });
 
-    sugarNamespace.interfaces.push({
-      name: 'BaseChainableConstructor',
-      members: getFooMethods(namespace)
-    });
-
-  //interface BaseChainableConstructor {
     module.types.push({
       name: 'Sugar',
       src: '(opts?: ExtendOptions) => Sugar'
@@ -4062,15 +4157,19 @@ function exportTypescriptDeclarations(basePath, allowedModules, include, exclude
     });
 
     module.declares.push({
-      src: 'function Sugar(opts?: ExtendOptions): Sugar'
+      src: 'function Sugar(opts?: ExtendOptions): Sugar;'
     });
 
-    module.declares.push({
-      name: 'Sugar',
-      type: 'namespace',
-      namespace: sugarNamespace
-    });
+    addSignaturesToDeclares(sugarNamespace, getAllNamspaceSignatures(namespace));
 
+    nativeNames.forEach(addNativeChainable);
+
+    module.declares.push(sugarNamespace);
+
+    addExtras(module, namespace);
+    typePackages['sugar-core'] = module;
+
+    /*
     var extendAlias = clone(namespace.methods.find(function(method) {
       return method.name === 'extend';
     }));
@@ -4087,8 +4186,28 @@ function exportTypescriptDeclarations(basePath, allowedModules, include, exclude
     });
 
     var src = [methods.join('\n'), namespaces.join('\n')].join('\n');
-    //return compileModule(getInterfaceSource(namespace.name, src));
-    return module;
+    return compileModule(getInterfaceSource(namespace.name, src));
+    */
+  }
+
+  function mergeSugarNamespace(namespace) {
+    var sugarNamespace = findModuleNamespace(typePackages['sugar-core'], 'Sugar');
+
+    sugarNamespace.interfaces.push({
+      name: 'BaseChainableConstructor',
+      members: getAllNamspaceSignatures(namespace)
+    });
+
+    sugarNamespace.interfaces.push({
+      name: 'BaseChainable<RawValue>',
+      members: [
+        'raw: RawValue;',
+        'valueOf: () => RawValue;',
+        'toString: () => string;',
+      ]
+    });
+
+    addExtras(sugarNamespace, namespace);
   }
 
   function findModuleInterface(module, interfaceName) {
@@ -4103,16 +4222,7 @@ function exportTypescriptDeclarations(basePath, allowedModules, include, exclude
     });
   }
 
-  function mergeInterfaceMembers(module, interfaceName, members) {
-    var interface = findModuleInterface(module, interfaceName);
-    interface.members = interface.members.concat(members);
-  }
-
-  function mergeSugarNamespaceModule(module, namespace) {
-    var sugarNamespace = findModuleNamespace(module, 'Sugar');
-    mergeInterfaceMembers(sugarNamespace.namespace, 'BaseChainableConstructor', getFooMethods(namespace));
-  }
-
+  /*
   function getSugarNamespaceInterface(namespace) {
     methods = buildMethods(namespace.methods, namespace, 'namespace');
     return getInterfaceSource(namespace.name, methods.join('\n'));
@@ -4142,6 +4252,7 @@ function exportTypescriptDeclarations(basePath, allowedModules, include, exclude
       '}'
     ].join('\n');
   }
+  */
 
   /* ------------ Types -------------- */
 
@@ -4358,6 +4469,14 @@ function exportTypescriptDeclarations(basePath, allowedModules, include, exclude
   }
 
   function getReturns(returns, method, namespace, mode) {
+    if (returns === 'SugarNamespace' && namespace.name === 'SugarNamespace') {
+      return 'this';
+    }
+    return returns;
+  }
+
+  /*
+  function getReturns(returns, method, namespace, mode) {
 
     function referencesExternal(src) {
       return mode === 'extended' &&
@@ -4397,6 +4516,7 @@ function exportTypescriptDeclarations(basePath, allowedModules, include, exclude
     }
     return src;
   }
+  */
 
   function getMethod(method, namespace, mode) {
 
@@ -4592,9 +4712,12 @@ function exportTypescriptDeclarations(basePath, allowedModules, include, exclude
     writeFile(path.join(basePath || '', filename), compact(blocks).join('\n\n'));
   }
 
+  /*
   function getChainableNameExternal(type) {
-    return '.Chainable' + getChainableBaseGenerics(type, TS_CHAINABLE_RAW_TYPE, 'any');
+    return 'Chainable' + getChainableBaseGenerics(type, TS_CHAINABLE_RAW_TYPE, 'any');
   }
+  */
+
   // -------------------------- extras
 
   function addExtras(module, namespace) {
@@ -4719,11 +4842,11 @@ function exportTypescriptDeclarations(basePath, allowedModules, include, exclude
 
   function compilePackages() {
 
-    var sugarjs = getDeclaredNamespace('sugarjs');
+    //var sugarjs = getDeclaredNamespace('sugarjs');
 
-    var extendedInterfaces = [];
+    //var extendedInterfaces = [];
 
-    sugarjs.interfaces.push(getLocaleInterface(docs.namespaces));
+    //sugarjs.interfaces.push(getLocaleInterface(docs.namespaces));
 
     // Sort namespaces for Sugar to come before SugarNamespace
     // as it has ExtendOptions which are defined first.
@@ -4760,14 +4883,10 @@ function exportTypescriptDeclarations(basePath, allowedModules, include, exclude
       var module;
 
       if (namespace.name === 'Sugar') {
-        module = getSugarModule(namespace, docs.namespaces);
-        addExtras(module, namespace);
-        typePackages['sugar-core'] = module;
+        createSugarModule(namespace);
         //sugarjs.interfaces.push(getSugarInterface(namespace, docs.namespaces));
       } else if (namespace.name === 'SugarNamespace') {
-        module = typePackages['sugar-core'];
-        addExtras(module, namespace);
-        mergeSugarNamespaceModule(module, namespace);
+        mergeSugarNamespace(namespace);
         return;
         // The generic "SugarNamespace" interface is required for the
         // "createNamespace" method that needs to return an as-yet undefined
@@ -4775,11 +4894,11 @@ function exportTypescriptDeclarations(basePath, allowedModules, include, exclude
         // mixed into each individual interface. This is required, as each
         // namespace returns a reference to itself, and so (it would appear)
         // cannot use extend.
-        addExtras(sugarjs);
-        sugarjs.interfaces.push(getSugarNamespaceInterface(namespace));
+        //addExtras(sugarjs);
+        //sugarjs.interfaces.push(getSugarNamespaceInterface(namespace));
       } else if (namespace.name === 'Range') {
         return;
-        sugarjs.interfaces.push(getRangeInterface(namespace));
+        //sugarjs.interfaces.push(getRangeInterface(namespace));
       } else {
         return;
         var module = getDeclaredNamespace(namespace.name);
@@ -4799,13 +4918,13 @@ function exportTypescriptDeclarations(basePath, allowedModules, include, exclude
           }
         }
 
-        sugarjs.namespaces.push(getDeclaredNamespaceSource(module));
+        //sugarjs.namespaces.push(getDeclaredNamespaceSource(module));
         nativeNames.push(namespace.name);
       }
 
     });
 
-    var wrappedGeneric = getGenericSource(TS_CHAINABLE_RAW_TYPE);
+    var wrappedGeneric = getGenericSource('RawValue');
 
     /*
     var baseDeclarations = [];
