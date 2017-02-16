@@ -380,6 +380,10 @@ function compact(arr) {
   });
 }
 
+function flatten(arr) {
+  return Array.prototype.concat.apply([], arr);
+}
+
 function iter(obj, fn) {
   for (var key in obj) {
     if (!obj.hasOwnProperty(key)) continue;
@@ -3708,14 +3712,53 @@ function exportTypescriptDeclarations(basePath, allowedModules, include, exclude
   var whitelist = getMethodList(include);
   var blacklist = getMethodList(exclude);
 
-  var docs = getJSONDocs();
+  var [nativeNames, docsModules] = unpackDocs(getJSONDocs());
   var typePackages = {};
 
-  var nativeNames = docs.namespaces.map(function(namespace) {
-    return namespace.name;
-  }).filter(function(name) {
-    return !name.match(/^Sugar|Range/);
-  });
+  function unpackDocs(docs) {
+    var nativeNames = [], docsModules = [];
+
+    function findOrCreate(arr, name, collectionName) {
+      var entry = arr.find(function(el) {
+        return el.name === name;
+      });
+      if (!entry) {
+        entry = { name: name };
+        entry[collectionName] = [];
+        arr.push(entry);
+      }
+      return entry;
+    }
+
+    function addMethod(moduleName, namespaceName, method) {
+      var module = findOrCreate(docsModules, moduleName, 'namespaces');
+      var namespace = findOrCreate(module.namespaces, namespaceName, 'methods');
+      namespace.methods.push(method);
+    }
+
+    docs.namespaces.forEach(function(namespace) {
+
+      if (!namespace.name.match(/^Sugar|Range/)) {
+        nativeNames.push(namespace.name);
+      }
+
+      // Unpack sets like "[unit]FromNow"
+      namespace.methods = unpackMethodSets(namespace.methods)
+
+      namespace.methods.forEach(function(method) {
+        if (moduleIsFiltered(method.module)) {
+          return;
+        }
+        addMethod(method.module, namespace.name, method);
+      });
+    });
+
+    return [nativeNames, docsModules];
+  }
+
+  function moduleIsFiltered(moduleName) {
+    return moduleName.match(/ES[5-7]/);
+  }
 
   /* ------------ Declared Module -------------- */
 
@@ -3779,6 +3822,11 @@ function exportTypescriptDeclarations(basePath, allowedModules, include, exclude
   function getConstructorSignatures(namespace) {
     var signatures = [];
     namespace.methods.forEach(function(method) {
+      signatures = signatures.concat(getMethodSignatures(method, namespace, 'static'));
+    });
+    return signatures;
+    /*
+    namespace.methods.forEach(function(method) {
       var params = [];
       //var method = clone(method);
       if (method.type === 'instance') {
@@ -3786,11 +3834,9 @@ function exportTypescriptDeclarations(basePath, allowedModules, include, exclude
           name: 'instance',
           type: getInstanceParamType(method, namespace.name)
         });
-        /*
         method.signatures.forEach(function(signature) {
           signature.unshift(instanceParam);
         });
-        */
         //if (namespace.name === 'Array') {
           //method.generics = ['T'];
         //}
@@ -3799,10 +3845,11 @@ function exportTypescriptDeclarations(basePath, allowedModules, include, exclude
         name: method.name,
         generics: method.generics,
         params: params.concat(method.params),
-        returns: method.returns
+        returns: getReturns(method.returns)
       });
     });
-    return signatures;
+    */
+    //return signatures;
   }
 
   /*
@@ -4004,9 +4051,7 @@ function exportTypescriptDeclarations(basePath, allowedModules, include, exclude
     }
     // TODO: remove if
     src += '(';
-    src += signature.params.map(function(param) {
-      return `${param.name}${param.optional ? '?' : ''}: ${param.type}`;
-    }).join(', ');
+    src += signature.params.map(compileEntry).join(', ');
     src += ')';
     src += `: ${signature.returns};`;
     //at(instance: T[], index: number|number[], loop: boolean):ArrayElement;
@@ -4014,6 +4059,10 @@ function exportTypescriptDeclarations(basePath, allowedModules, include, exclude
     //atinstance: T[], index: number|number[], loop: boolean
     //getOption<T>(name: string): T;
     return src;
+  }
+
+  function compileEntry(entry) {
+    return `${entry.name}${entry.required ? '': '?'}: ${entry.type}`;
   }
 
   function compileInterfaces(interfaces, level) {
@@ -4024,12 +4073,17 @@ function exportTypescriptDeclarations(basePath, allowedModules, include, exclude
         open += ` extends ${interface.extends}`;
       }
       open += ' {';
-      if (interface.signatures) {
-        interface.members = interface.signatures.map(compileSignature);
-      }
       if (interface.members) {
         lines.push(open);
-        lines = lines.concat(interface.members.map(function(line) {
+        lines = lines.concat(interface.members.map(function(member) {
+          var line;
+          if (typeof member === 'string') {
+            line = member;
+          } else if (member.params) {
+            line = compileSignature(member);
+          } else {
+            line = compileEntry(member) + ';'
+          }
           return indent(line, level + 1);
         }));
         lines.push(indent('}', level));
@@ -4047,7 +4101,6 @@ function exportTypescriptDeclarations(basePath, allowedModules, include, exclude
         src += 'declare ';
       }
       if (d.type === 'module') {
-        src =  '\n' + src;
         src += `module '${d.name}' {\n\n${compileContext(d, level + 1)}`;
         src += indent('\n\n}', level);
       } else if (d.type === 'namespace') {
@@ -4091,18 +4144,22 @@ function exportTypescriptDeclarations(basePath, allowedModules, include, exclude
   function getMethodSignatures(method, namespace, mode) {
 
     if (methodIsBlacklisted(namespace.name, method)) {
-      return;
+      return [];
     }
 
+    /*
     if (method.raw) {
       return method.raw;
     }
+    */
 
+    /*
     function getSignature(signature, returns) {
       var params = getParams(signature, method, namespace, mode);
       var generics = getMethodGenerics();
       return method.name + generics + '(' +  params + '): ' + returns + ';';
     }
+    */
 
     function getMethodGenerics() {
       var generics = method.generics;
@@ -4114,12 +4171,26 @@ function exportTypescriptDeclarations(basePath, allowedModules, include, exclude
       return getGenericSource(generics);
     }
 
-    var returns = getReturns(method.returns, method, namespace, mode);
+    var generics = getMethodGenerics();
+    var returns = getReturns(method.returns);
 
-    return [method.params].concat(method.signatures || []).map(function(signature) {
-      return getSignature(signature, returns);
+    return [method.params].concat(method.signatures || []).map(function(params) {
+
+      if (mode === 'static' && method.type === 'instance') {
+        params = [{
+          name: 'instance',
+          required: true,
+          type: getInstanceParamType(method, getRawType(namespace.name))
+        }].concat(params);
+      }
+      return {
+        name: method.name,
+        returns: returns,
+        generics: generics,
+        params: params
+      };
+      //return getSignature(signature, returns);
     });
-
   }
 
   function getAllNamspaceSignatures(namespace) {
@@ -4153,15 +4224,17 @@ function exportTypescriptDeclarations(basePath, allowedModules, include, exclude
     return "* as Sugar from 'sugar-core'";
   }
 
-  function createAugmentModule(namespace) {
+  function createAugmentModule(docsModule) {
 
-    function getAugmentModule() {
+    function getAugments() {
       var module = getNewContext('sugar-core');
-      addExtras(module, namespace);
 
-      module.interfaces.push({
-        name: namespace.name + 'ChainableConstructor',
-        signatures: getConstructorSignatures(namespace)
+      docsModule.namespaces.forEach(function(namespace) {
+        addExtras(module, namespace);
+        module.interfaces.push({
+          name: namespace.name + 'ChainableConstructor',
+          members: getConstructorSignatures(namespace)
+        });
       });
 
       return module;
@@ -4172,8 +4245,8 @@ function exportTypescriptDeclarations(basePath, allowedModules, include, exclude
 
     var module = getNewContext();
     module.imports.push(getCoreImport());
-    module.declares.push(getAugmentModule());
-    typePackages[`sugar/modules/${namespace.name.toLowerCase()}.d.ts`] = module;
+    module.declares.push(getAugments());
+    typePackages[`sugar/modules/${docsModule.name.toLowerCase()}.d.ts`] = module;
 
     //import * as Sugar from 'sugar-core';
 
@@ -4191,7 +4264,7 @@ function exportTypescriptDeclarations(basePath, allowedModules, include, exclude
 
   }
 
-  function createSugarModule(namespace) {
+  function createSugarModule(methods) {
 
     function getGlobals() {
       var globals = getNewContext('Sugar', 'global');
@@ -4325,6 +4398,7 @@ function exportTypescriptDeclarations(basePath, allowedModules, include, exclude
     module.declares.push(getSugarNamespace());
     module.declares.push(getGlobals());
     module.export = 'Sugar';
+    module.root = true;
 
     typePackages['sugar-core'] = module;
   }
@@ -4533,6 +4607,7 @@ function exportTypescriptDeclarations(basePath, allowedModules, include, exclude
     return compact(methods);
   }
 
+  /*
   function getParams(params, method, namespace, mode) {
     var result = [];
 
@@ -4606,10 +4681,24 @@ function exportTypescriptDeclarations(basePath, allowedModules, include, exclude
     });
     return result.join(', ');
   }
+  */
 
-  function getReturns(returns, method, namespace, mode) {
-    if (returns === 'SugarNamespace') {
-      return namespace.name === 'Sugar' ? 'BaseChainableConstructor' : 'this';
+  function isPrimitive(type) {
+    return type.match(/^(string|number|boolean)$/i);
+  }
+
+  function getReturns(returns) {
+
+    if (!returns) {
+      return 'void';
+    } else if (isPrimitive(returns)) {
+      returns = returns.toLowerCase();
+    }
+
+    switch (returns) {
+      case 'SugarNamespace': return 'BaseChainableConstructor';
+      case 'Mixed': return 'any';
+      case 'self': return 'this';
     }
     return returns;
   }
@@ -4863,6 +4952,10 @@ function exportTypescriptDeclarations(basePath, allowedModules, include, exclude
     });
   }
 
+  function getParams(signature) {
+    console.info('OHFUCK', signature);
+  }
+
   function getCallbackSignature(callback, method, namespace) {
     var genericsLength = method.generic && method.generics.length || 0, gen;
     var params = getParams(callback.params, method, namespace);
@@ -4877,7 +4970,7 @@ function exportTypescriptDeclarations(basePath, allowedModules, include, exclude
   // -------------------------- extras
 
   function addExtras(module, namespace) {
-    addCallbackTypes(module, namespace);
+    //addCallbackTypes(module, namespace);
     addOptionsInterfaces(module, namespace);
   }
 
@@ -4943,6 +5036,25 @@ function exportTypescriptDeclarations(basePath, allowedModules, include, exclude
   }
 
   function addOptionsInterfaces(module, namespace) {
+    namespace.methods.forEach(function(method) {
+      if (!method.options || methodIsBlacklisted(namespace.name, method)) {
+        return;
+      }
+
+      var name = flatten([method.params].concat(method.signatures || [])).map(function(param) {
+        return param.type;
+      }).find(function(type) {
+        return type.match(/Options$/);
+      });
+
+      module.interfaces.push({
+        name: name,
+        members: method.options
+      });
+    });
+  }
+  /*
+  function addOptionsInterfaces(module, namespace) {
 
     namespace.methods.forEach(function(method) {
       if (!method.options || methodIsBlacklisted(namespace.name, method)) {
@@ -4994,6 +5106,7 @@ function exportTypescriptDeclarations(basePath, allowedModules, include, exclude
       });
     });
   }
+  */
 
 
   // ---------------------------endextras
@@ -5008,6 +5121,7 @@ function exportTypescriptDeclarations(basePath, allowedModules, include, exclude
     });
 
     module.export = 'Sugar';
+    module.root = true;
 
     typePackages['sugar'] = module;
   }
@@ -5022,26 +5136,23 @@ function exportTypescriptDeclarations(basePath, allowedModules, include, exclude
 
     // Sort namespaces for Sugar to come before SugarNamespace
     // as it has ExtendOptions which are defined first.
-    docs.namespaces.sort(collateNamespaces);
+    //docs.namespaces.sort(collateNamespaces);
 
-    docs.namespaces.forEach(function(namespace) {
+    docsModules.forEach(function(docsModule) {
 
       // Exclude polyfills
-      namespace.methods = namespace.methods.filter(function(method) {
-        return !method.module.match(/ES[5-7]/);
-      });
-
-      // Unpack sets like "[unit]FromNow"
-      namespace.methods = unpackMethodSets(namespace.methods);
+      //namespace.methods = namespace.methods.filter(function(method) {
+        //return !method.module.match(/ES[5-7]/);
+      //});
 
       // TODO: cleanup
-      var module;
+      //var module;
 
-      if (namespace.name === 'Sugar') {
-        createSugarModule(namespace);
+      if (false && docsModule.name === 'Core') {
+        createSugarModule(moduleName, methods);
         //sugarjs.interfaces.push(getSugarInterface(namespace, docs.namespaces));
-      } else if (namespace.name === 'SugarNamespace') {
-        mergeSugarNamespace(namespace);
+      } else if (docsModule.name === 'SugarNamespace') {
+        mergeSugarNamespace(moduleName, methods);
         return;
         // The generic "SugarNamespace" interface is required for the
         // "createNamespace" method that needs to return an as-yet undefined
@@ -5051,11 +5162,11 @@ function exportTypescriptDeclarations(basePath, allowedModules, include, exclude
         // cannot use extend.
         //addExtras(sugarjs);
         //sugarjs.interfaces.push(getSugarNamespaceInterface(namespace));
-      } else if (namespace.name === 'Range') {
+      } else if (docsModule.name === 'Range') {
         return;
         //sugarjs.interfaces.push(getRangeInterface(namespace));
       } else {
-        createAugmentModule(namespace);
+        createAugmentModule(docsModule);
         return;
         var module = getDeclaredNamespace(namespace.name);
         addExtras(module);
@@ -5079,6 +5190,10 @@ function exportTypescriptDeclarations(basePath, allowedModules, include, exclude
       }
 
     });
+
+    //docs.namespaces.forEach(function(namespace) {
+
+    //});
 
     //var wrappedGeneric = getGenericSource('RawValue');
 
@@ -5109,7 +5224,9 @@ function exportTypescriptDeclarations(basePath, allowedModules, include, exclude
     }
 
     var blocks = [];
-    blocks.push(TS_LICENSE);
+    if (package.root) {
+      blocks.push(TS_LICENSE);
+    }
     blocks.push(compileContext(package, 0));
     writeDeclarations(outputPath, blocks);
 
