@@ -1087,13 +1087,16 @@ namespace('Date', function () {
     equal(dateRun(d, 'endOfMonth'), new Date(Date.UTC(2001, 5, 30, 23, 59, 59, 999)), 'the end of the month');
     equal(run(d, 'minutesSince', [testCreateUTCDate('2001-06-15')]), d.getTimezoneOffset(), 'minutesSince is equal to the timezone offset');
 
-    // In this example the date is flagged as UTC but was not parsed that way.
-    // In JST timezone this would be 2001-06-15 09:00:00. However since the UTC
-    // flag will be presumed (unless specifically overridden) when a context date
-    // is flagged as UTC, the test date will be UTC (2001-06-15 00:00:00), so the
-    // hours offset should be equal to 24 minus whatever timezone offset we're in.
+    // Hours since:
+    //
+    // 2001-06-15 00:00 (UTC)
+    // 2001-06-14 00:00 (Local)
+    //
+    // This should return 24 as the date objects are still exactly
+    // 24 hours apart. Using "setUTC" does not force the date into
+    // UTC time, simply uses it's UTC methods under the hood.
     var d = run(new Date(2001, 5, 15), 'setUTC', [true]);
-    equal(run(d, 'hoursSince', ['2001-6-14']), 24 + (d.getTimezoneOffset() / 60), 'hoursSince | preserves UTC flag');
+    equal(run(d, 'hoursSince', ['2001-6-14']), 24, 'hoursSince | preserves UTC flag');
 
     // This effect can be overridden using the fromUTC flag.
     var d = run(new Date(2001, 5, 15), 'setUTC', [true]);
@@ -1101,7 +1104,9 @@ namespace('Date', function () {
 
     // Passing just an options object without a date will still parse
     var d = run(new Date(2001, 5, 15), 'setUTC', [true]);
-    equal(run(d, 'hoursSince', [{ fromUTC: false }]), 0, 'hoursSince | needs more than just an options object');
+    var h1 = run(d, 'hoursSince', [{ fromUTC: false }]);
+    var h2 = run(d, 'hoursSince', [new Date()]);
+    equal(h1, h2, 'hoursSince | options object should be equivalent to no properties set');
 
     var d = run(testCreateDate('1 month ago'), 'setUTC', [true])
     equal(run(d, 'isLastMonth'), true, 'isLastMonth');
@@ -2586,12 +2591,17 @@ namespace('Date', function () {
     equal(run(d, 'yearsSince', ['the last day of 2011']), -1, 'years since the last day of 2011');
     equal(run(d, 'yearsUntil', ['the last day of 2011']), 1, 'years until the last day of 2011');
 
+
+    var d = new Date(2010, 10);
+    var years = Math.round((new Date() - d) / 1000 / 60 / 60 / 24 / 365.25);
+    equal(run(d, 'yearsUntil', ['Thursday']), years, 'Relative dates should not be influenced by other input');
+
     var d = new Date();
     var offset = d.getTime() - getRelativeDate(0, 0, -7).getTime();
     var since, until;
 
     // I'm occasionally seeing some REALLY big lags with IE here (up to 500ms), so giving a 1s buffer here.
-    //
+
     var msSince = run(d, 'millisecondsSince', ['last week']);
     var msUntil = run(d, 'millisecondsUntil', ['last week']);
     var actualMsSince = Math.round(offset);
@@ -2608,18 +2618,18 @@ namespace('Date', function () {
     equal((secSince <= actualSecSince + 5) && (secSince >= actualSecSince - 5), true, 'seconds since last week');
     equal((secUntil <= actualSecUntil + 5) && (secUntil >= actualSecUntil - 5), true, 'seconds until last week');
 
-    equal(run(d, 'minutesSince', ['last week']), Math.round(offset / 1000 / 60), 'minutes since last week');
-    equal(run(d, 'minutesUntil', ['last week']), Math.round(-offset / 1000 / 60), 'minutes until last week');
-    equal(run(d, 'hoursSince', ['last week']), Math.round(offset / 1000 / 60 / 60), 'hours since last week');
-    equal(run(d, 'hoursUntil', ['last week']), Math.round(-offset / 1000 / 60 / 60), 'hours until last week');
-    equal(run(d, 'daysSince', ['last week']), Math.round(offset / 1000 / 60 / 60 / 24), 'days since last week');
-    equal(run(d, 'daysUntil', ['last week']), Math.round(-offset / 1000 / 60 / 60 / 24), 'days until last week');
-    equal(run(d, 'weeksSince', ['last week']), Math.round(offset / 1000 / 60 / 60 / 24 / 7), 'weeks since last week');
-    equal(run(d, 'weeksUntil', ['last week']), Math.round(-offset / 1000 / 60 / 60 / 24 / 7), 'weeks until last week');
-    equal(run(d, 'monthsSince', ['last week']), Math.round(offset / 1000 / 60 / 60 / 24 / 30.4375), 'months since last week');
-    equal(run(d, 'monthsUntil', ['last week']), Math.round(-offset / 1000 / 60 / 60 / 24 / 30.4375), 'months until last week');
-    equal(run(d, 'yearsSince', ['last week']), Math.round(offset / 1000 / 60 / 60 / 24 / 365.25), 'years since last week');
-    equal(run(d, 'yearsUntil', ['last week']), Math.round(-offset / 1000 / 60 / 60 / 24 / 365.25), 'years until the last day of 2011');
+    equal(run(new Date(), 'minutesSince', ['last week']), Math.round(offset / 1000 / 60), 'minutes since last week');
+    equal(run(new Date(), 'minutesUntil', ['last week']), Math.round(-offset / 1000 / 60), 'minutes until last week');
+    equal(run(new Date(), 'hoursSince', ['last week']), Math.round(offset / 1000 / 60 / 60), 'hours since last week');
+    equal(run(new Date(), 'hoursUntil', ['last week']), Math.round(-offset / 1000 / 60 / 60), 'hours until last week');
+    equal(run(new Date(), 'daysSince', ['last week']), Math.round(offset / 1000 / 60 / 60 / 24), 'days since last week');
+    equal(run(new Date(), 'daysUntil', ['last week']), Math.round(-offset / 1000 / 60 / 60 / 24), 'days until last week');
+    equal(run(new Date(), 'weeksSince', ['last week']), Math.round(offset / 1000 / 60 / 60 / 24 / 7), 'weeks since last week');
+    equal(run(new Date(), 'weeksUntil', ['last week']), Math.round(-offset / 1000 / 60 / 60 / 24 / 7), 'weeks until last week');
+    equal(run(new Date(), 'monthsSince', ['last week']), Math.round(offset / 1000 / 60 / 60 / 24 / 30.4375), 'months since last week');
+    equal(run(new Date(), 'monthsUntil', ['last week']), Math.round(-offset / 1000 / 60 / 60 / 24 / 30.4375), 'months until last week');
+    equal(run(new Date(), 'yearsSince', ['last week']), Math.round(offset / 1000 / 60 / 60 / 24 / 365.25), 'years since last week');
+    equal(run(new Date(), 'yearsUntil', ['last week']), Math.round(-offset / 1000 / 60 / 60 / 24 / 365.25), 'years until the last day of 2011');
 
     // Issue #236
     var d = getRelativeDate(0, 0, 0, 14);
