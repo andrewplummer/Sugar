@@ -80,7 +80,7 @@
   }
 
   equalWithMargin = function (actual, expected, margin, message) {
-    equal((actual > expected - margin) && (actual < expected + margin), true, message, null, 1);
+    equal((actual >= expected - margin) && (actual <= expected + margin), true, message, null, 1);
   }
 
   // Array content is equal, but order may differ

@@ -2616,18 +2616,23 @@ namespace('Date', function () {
     equal((secSince <= actualSecSince + 5) && (secSince >= actualSecSince - 5), true, 'seconds since last week');
     equal((secUntil <= actualSecUntil + 5) && (secUntil >= actualSecUntil - 5), true, 'seconds until last week');
 
-    equal(run(new Date(), 'minutesSince', ['last week']), Math.round(offset / 1000 / 60), 'minutes since last week');
-    equal(run(new Date(), 'minutesUntil', ['last week']), Math.round(-offset / 1000 / 60), 'minutes until last week');
-    equal(run(new Date(), 'hoursSince', ['last week']), Math.round(offset / 1000 / 60 / 60), 'hours since last week');
-    equal(run(new Date(), 'hoursUntil', ['last week']), Math.round(-offset / 1000 / 60 / 60), 'hours until last week');
-    equal(run(new Date(), 'daysSince', ['last week']), Math.round(offset / 1000 / 60 / 60 / 24), 'days since last week');
-    equal(run(new Date(), 'daysUntil', ['last week']), Math.round(-offset / 1000 / 60 / 60 / 24), 'days until last week');
-    equal(run(new Date(), 'weeksSince', ['last week']), Math.round(offset / 1000 / 60 / 60 / 24 / 7), 'weeks since last week');
-    equal(run(new Date(), 'weeksUntil', ['last week']), Math.round(-offset / 1000 / 60 / 60 / 24 / 7), 'weeks until last week');
-    equal(run(new Date(), 'monthsSince', ['last week']), Math.round(offset / 1000 / 60 / 60 / 24 / 30.4375), 'months since last week');
-    equal(run(new Date(), 'monthsUntil', ['last week']), Math.round(-offset / 1000 / 60 / 60 / 24 / 30.4375), 'months until last week');
-    equal(run(new Date(), 'yearsSince', ['last week']), Math.round(offset / 1000 / 60 / 60 / 24 / 365.25), 'years since last week');
-    equal(run(new Date(), 'yearsUntil', ['last week']), Math.round(-offset / 1000 / 60 / 60 / 24 / 365.25), 'years until the last day of 2011');
+    function fromLastWeek(method) {
+      return run(new Date(), method, ['last week'])
+    }
+
+    equalWithMargin(fromLastWeek('minutesSince'), Math.round(offset / 1000 / 60), 1, 'minutes since last week');
+    equalWithMargin(fromLastWeek('minutesUntil'), Math.round(-offset / 1000 / 60), 1, 'minutes until last week');
+    equalWithMargin(fromLastWeek('hoursSince'),   Math.round(offset / 1000 / 60 / 60), 1, 'hours since last week');
+    equalWithMargin(fromLastWeek('hoursUntil'),   Math.round(-offset / 1000 / 60 / 60), 1, 'hours until last week');
+    equalWithMargin(fromLastWeek('daysSince'),    Math.round(offset / 1000 / 60 / 60 / 24), 1, 'days since last week');
+    equalWithMargin(fromLastWeek('daysUntil'),    Math.round(-offset / 1000 / 60 / 60 / 24), 1, 'days until last week');
+    equalWithMargin(fromLastWeek('weeksSince'),   Math.round(offset / 1000 / 60 / 60 / 24 / 7), 1, 'weeks since last week');
+    equalWithMargin(fromLastWeek('weeksUntil'),   Math.round(-offset / 1000 / 60 / 60 / 24 / 7), 1, 'weeks until last week');
+
+    equal(fromLastWeek('monthsSince'),   0, 'months since last week');
+    equal(fromLastWeek('monthsUntil'),  -0, 'months until last week');
+    equal(fromLastWeek('yearsSince'),    0, 'years since last week');
+    equal(fromLastWeek('yearsUntil'),   -0, 'years until last week');
 
     // Issue #236
     var d = getRelativeDate(0, 0, 0, 14);
