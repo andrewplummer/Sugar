@@ -1,5 +1,5 @@
 /*
- *  Sugar v2.0.2
+ *  Sugar edge
  *
  *  Freely distributable and licensed under the MIT-style license.
  *  Copyright (c) Andrew Plummer
@@ -37,6 +37,7 @@
 
   // The global context. Rhino uses a different "global" keyword so
   // do an extra check to be sure that it's actually the global context.
+  // istanbul ignore next
   var globalContext = typeof global !== 'undefined' && global.Object === Object ? global : this;
 
   // Is the environment node?
@@ -52,6 +53,7 @@
   var namespacesByClassString = {};
 
   // Defining properties.
+  // istanbul ignore next
   var defineProperty = PROPERTY_DESCRIPTOR_SUPPORT ?  Object.defineProperty : definePropertyShim;
 
   // A default chainable class for unknown types.
@@ -62,6 +64,7 @@
 
   function setupGlobal() {
     Sugar = globalContext[SUGAR_GLOBAL];
+    // istanbul ignore if
     if (Sugar) {
       // Reuse already defined Sugar global object.
       return;
@@ -78,6 +81,7 @@
       });
       return Sugar;
     };
+    // istanbul ignore else
     if (hasExports) {
       module.exports = Sugar;
     } else {
@@ -434,7 +438,9 @@
      *        not already exist.
      * @extra Intended only for use creating polyfills that follow the ECMAScript
      *        spec. Accepts either a single object mapping names to functions, or
-     *        name and function as two arguments.
+     *        name and function as two arguments. Note that polyfill methods will
+     *        be immediately mapped onto their native prototype regardless of the
+     *        use of `extend`.
      *
      * @example
      *
@@ -466,7 +472,8 @@
      *        name and function as two arguments. This method differs from
      *        `defineInstance` as there is no static signature (as the method
      *        is mapped as-is to the native), so it should refer to its `this`
-     *        object.
+     *        object. Note that polyfill methods will be immediately mapped onto
+     *        their native prototype regardless of the use of `extend`.
      *
      * @example
      *
@@ -527,6 +534,7 @@
   }
 
   function setGlobalProperties() {
+    setProperty(Sugar, 'VERSION', 'edge');
     setProperty(Sugar, 'extend', Sugar);
     setProperty(Sugar, 'toString', toString);
     setProperty(Sugar, 'createNamespace', createNamespace);
@@ -758,7 +766,7 @@
 
   function disambiguateMethod(methodName) {
     var fn = function() {
-      var raw = this.raw, sugarNamespace, fn;
+      var raw = this.raw, sugarNamespace;
       if (raw != null) {
         // Find the Sugar namespace for this unknown.
         sugarNamespace = namespacesByClassString[classToString(raw)];
@@ -771,16 +779,7 @@
         sugarNamespace = Sugar.Object;
       }
 
-      fn = new sugarNamespace(raw)[methodName];
-
-      if (fn.disambiguate) {
-        // If the method about to be called on this chainable is
-        // itself a disambiguation method, then throw an error to
-        // prevent infinite recursion.
-        throw new TypeError('Cannot resolve namespace for ' + raw);
-      }
-
-      return fn.apply(this, arguments);
+      return new sugarNamespace(raw)[methodName].apply(this, arguments);
     };
     fn.disambiguate = true;
     return fn;
@@ -840,6 +839,7 @@
     }
   };
 
+  // istanbul ignore next
   function definePropertyShim(obj, prop, descriptor) {
     obj[prop] = descriptor.value;
   }
@@ -878,7 +878,7 @@
    * @description Internal utility and common methods.
    ***/
 
-  // Flag allowing native methods to be enhanced
+  // Flag allowing native methods to be enhanced.
   var ENHANCEMENTS_FLAG = 'enhance';
 
   // For type checking, etc. Excludes object as this is more nuanced.
@@ -887,16 +887,16 @@
   // Do strings have no keys?
   var NO_KEYS_IN_STRING_OBJECTS = !('0' in Object('a'));
 
-  // Prefix for private properties
+  // Prefix for private properties.
   var PRIVATE_PROP_PREFIX = '_sugar_';
 
-  // Matches 1..2 style ranges in properties
+  // Matches 1..2 style ranges in properties.
   var PROPERTY_RANGE_REG = /^(.*?)\[([-\d]*)\.\.([-\d]*)\](.*)$/;
 
   // WhiteSpace/LineTerminator as defined in ES5.1 plus Unicode characters in the Space, Separator category.
   var TRIM_CHARS = '\u0009\u000A\u000B\u000C\u000D\u0020\u00A0\u1680\u180E\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u202F\u205F\u2028\u2029\u3000\uFEFF';
 
-  // Regex for matching a formatted string
+  // Regex for matching a formatted string.
   var STRING_FORMAT_REG = /([{}])\1|\{([^}]*)\}|(%)%|(%(\w*))/g;
 
   // Common chars
@@ -949,7 +949,7 @@
       //    https://bugzilla.mozilla.org/show_bug.cgi?id=268945 (won't fix)
       isFunction = buildClassCheck(names[5]);
 
-
+      // istanbul ignore next
       isArray = Array.isArray || buildClassCheck(names[6]);
       isError = buildClassCheck(names[7]);
 
@@ -985,6 +985,7 @@
     }
 
     function buildClassCheck(className, globalObject) {
+      // istanbul ignore if
       if (globalObject && isClass(new globalObject, 'Object')) {
         return getConstructorClassCheck(globalObject);
       } else {
@@ -992,6 +993,10 @@
       }
     }
 
+    // Map and Set may be [object Object] in certain IE environments.
+    // In this case we need to perform a check using the constructor
+    // instead of Object.prototype.toString.
+    // istanbul ignore next
     function getConstructorClassCheck(obj) {
       var ctorStr = String(obj);
       return function(obj) {
@@ -1023,7 +1028,6 @@
       // of classes. The latter can arguably be matched by value, but
       // distinguishing between these and host objects -- which should never be
       // compared by value -- is very tricky so not dealing with it here.
-      className = className || classToString(obj);
       return isKnownType(className) || isPlainObject(obj, className);
     };
 
@@ -1505,6 +1509,7 @@
     if (isPrimitive(obj)) {
       obj = Object(obj);
     }
+    // istanbul ignore next
     if (NO_KEYS_IN_STRING_OBJECTS && isString(obj)) {
       forceStringCoercion(obj);
     }
@@ -1513,6 +1518,7 @@
 
   // Force strings to have their indexes set in
   // environments that don't do this automatically.
+  // istanbul ignore next
   function forceStringCoercion(obj) {
     var i = 0, chr;
     while (chr = obj.charAt(i)) {
@@ -1522,6 +1528,7 @@
 
   // Equality helpers
 
+  // Perf
   function isEqual(a, b, stack) {
     var aClass, bClass;
     if (a === b) {
@@ -1548,6 +1555,7 @@
     return false;
   }
 
+  // Perf
   function objectIsEqual(a, b, aClass, stack) {
     var aType = typeof a, bType = typeof b, propsEqual, count;
     if (aType !== bType) {
@@ -1582,11 +1590,16 @@
   // for the object. This array is passed from outside so that the
   // calling function can decide when to dispose of this array.
   function serializeInternal(obj, refs, stack) {
-    var type = typeof obj, className, value, ref;
+    var type = typeof obj, sign = '', className, value, ref;
+
+    // Return up front on
+    if (1 / obj === -Infinity) {
+      sign = '-';
+    }
 
     // Return quickly for primitives to save cycles
     if (isPrimitive(obj, type) && !isRealNaN(obj)) {
-      return type + obj;
+      return type + sign + obj;
     }
 
     className = classToString(obj);
@@ -1600,12 +1613,10 @@
       return ref;
     } else if (isObjectType(obj)) {
       value = serializeDeep(obj, refs, stack) + obj.toString();
-    } else if (1 / obj === -Infinity) {
-      value = '-0';
     } else if (obj.valueOf) {
       value = obj.valueOf();
     }
-    return type + className + value;
+    return type + className + sign + value;
   }
 
   function serializeDeep(obj, refs, stack) {
@@ -1684,6 +1695,7 @@
   function getSparseArrayIndexes(arr, fromIndex, loop, fromRight) {
     var indexes = [], i;
     for (i in arr) {
+      // istanbul ignore next
       if (isArrayIndex(i) && (loop || (fromRight ? i <= fromIndex : i >= fromIndex))) {
         indexes.push(+i);
       }
@@ -1691,6 +1703,8 @@
     indexes.sort(function(a, b) {
       var aLoop = a > fromIndex;
       var bLoop = b > fromIndex;
+      // This block cannot be reached unless ES5 methods are being shimmed.
+      // istanbul ignore if
       if (aLoop !== bLoop) {
         return aLoop ? -1 : 1;
       }
@@ -1728,7 +1742,7 @@
     if (!f) {
       return el;
     } else if (f.apply) {
-      return f.apply(context, mapArgs || []);
+      return f.apply(context, mapArgs);
     } else if (isArray(f)) {
       return f.map(function(m) {
         return mapWithShortcuts(el, m, context, mapArgs);
@@ -1792,6 +1806,7 @@
 
   // Number helpers
 
+  // istanbul ignore next
   var trunc = Math.trunc || function(n) {
     if (n === 0 || !isFinite(n)) return n;
     return n < 0 ? ceil(n) : floor(n);
@@ -1985,14 +2000,17 @@
   var Inflections = {};
 
   function getAcronym(str) {
+    // istanbul ignore next
     return Inflections.acronyms && Inflections.acronyms.find(str);
   }
 
   function getHumanWord(str) {
+    // istanbul ignore next
     return Inflections.human && Inflections.human.find(str);
   }
 
   function runHumanRules(str) {
+    // istanbul ignore next
     return Inflections.human && Inflections.human.runRules(str) || str;
   }
 
@@ -2058,6 +2076,7 @@
       if (hasOwn(memo, key)) {
         return memo[key];
       }
+      // istanbul ignore if
       if (counter === INTERNAL_MEMOIZE_LIMIT) {
         memo = {};
         counter = 0;
@@ -2231,6 +2250,7 @@
 
   /*** @namespace Number ***/
 
+  // istanbul ignore next
   defineStaticPolyfill(sugarNumber, {
 
     /***
@@ -2267,15 +2287,15 @@
   defineStaticPolyfill(sugarArray, {
 
     /***
-     * @method from(a, [map], [context])
+     * @method from(a, [mapFn], [context])
      * @returns Mixed
      * @polyfill ES6
      * @static
      * @short Creates an array from an array-like object.
-     * @extra If a function is passed for [map], it will be map each element of
-     *        the array. [context] is the `this` object if passed.
+     * @extra If [mapFn] is passed, it will be map each element of the array.
+     *        [context] is the `this` object if passed.
      *
-     * @callback map
+     * @callback mapFn
      *
      *   el   The element of the current iteration.
      *   i    The index of the current iteration.
@@ -2288,10 +2308,10 @@
      ***/
     'from': function(a) {
       // Force compiler to respect argument length.
-      var argLen = arguments.length, map = arguments[1], context = arguments[2];
+      var argLen = arguments.length, mapFn = arguments[1], context = arguments[2];
       var len, arr;
-      if (isDefined(map)) {
-        assertCallable(map);
+      if (isDefined(mapFn)) {
+        assertCallable(mapFn);
       }
       a = getCoercedObject(a);
       len = trunc(max(0, a.length || 0));
@@ -2305,7 +2325,7 @@
         arr = new Array(len);
       }
       for (var i = 0; i < len; i++) {
-        setProperty(arr, i, isDefined(map) ? map.call(context, a[i], i) : a[i], true);
+        setProperty(arr, i, isDefined(mapFn) ? mapFn.call(context, a[i], i) : a[i], true);
       }
       return arr;
     }
@@ -2378,7 +2398,9 @@
       // Force compiler to respect argument length.
       var argLen = arguments.length, fromIndex = arguments[1];
       var arr = this, len;
-      if (isString(arr)) return arr.includes(search, fromIndex);
+      if (isString(arr)) {
+        return arr.includes(search, fromIndex);
+      }
       fromIndex = fromIndex ? fromIndex.valueOf() : 0;
       len = arr.length;
       if (fromIndex < 0) {
@@ -2412,7 +2434,7 @@
   ];
 
   // Regex for stripping Timezone Abbreviations
-  var TIMEZONE_ABBREVIATION_REG = /(\w{3})[()\s\d]*$/;
+  var TIMEZONE_ABBREVIATION_REG = /\(([-+]\d{2,4}|\w{3,5})\)$/;
 
   // One minute in milliseconds
   var MINUTES = 60 * 1000;
@@ -2824,7 +2846,8 @@
         // It will continue to be supported for Node and usage with the
         // understanding that it may be blank.
         var match = d.toString().match(TIMEZONE_ABBREVIATION_REG);
-        return match ? match[1]: '';
+        // istanbul ignore next
+        return match ? match[1] : '';
       }
     },
     {
@@ -2928,7 +2951,7 @@
    * @method getOption(name)
    * @returns Mixed
    * @accessor
-   * @short Gets an option used interally by Date.
+   * @short Gets an option used internally by Date.
    * @example
    *
    *   Sugar.Date.getOption('newDateInternal');
@@ -2938,7 +2961,7 @@
    ***
    * @method setOption(name, value)
    * @accessor
-   * @short Sets an option used interally by Date.
+   * @short Sets an option used internally by Date.
    * @extra If `value` is `null`, the default value will be restored.
    * @options
    *
@@ -3296,8 +3319,16 @@
       num = trunc(num / unit.multiplier);
     }
     // For higher order with potential ambiguity, use the numeric calculation
-    // as a starting point, then iterate until we pass the target date.
+    // as a starting point, then iterate until we pass the target date. Decrement
+    // starting point by 1 to prevent overshooting the date due to inconsistencies
+    // in ambiguous units numerically. For example, calculating the number of days
+    // from the beginning of the year to August 5th at 11:59:59 by doing a simple
+    // d2 - d1 will produce different results depending on whether or not a
+    // timezone shift was encountered due to DST, however that should not have an
+    // effect on our calculation here, so subtract by 1 to ensure that the
+    // starting point has not already overshot our target date.
     if (unit.ambiguous) {
+      num -= 1;
       d1 = cloneDate(d1);
       if (num) {
         advanceDate(d1, unit.name, num);
@@ -3321,8 +3352,6 @@
       val = token.val;
     } else if (token.sign) {
       val = str === '+' ? 1 : -1;
-    } else if (token.bool) {
-      val = !!val;
     } else {
       val = +str.replace(/,/, '.');
     }
@@ -3726,6 +3755,7 @@
     min = p.date.getTime();
     max = max || min;
     timezoneShift = getTimezoneShift();
+    // istanbul ignore if
     if (timezoneShift) {
       min -= timezoneShift;
       max -= timezoneShift;
@@ -3755,25 +3785,34 @@
 
   function getExtendedDate(contextDate, d, opt, forceClone) {
 
-    var date, set, loc, options, afterCallbacks, relative, weekdayDir;
+    // Locals
+    var date, set, loc, afterCallbacks, relative, weekdayDir;
+
+    // Options
+    var optPrefer, optLocale, optFromUTC, optSetUTC, optParams, optClone;
 
     afterCallbacks = [];
-    options = getDateOptions(opt);
 
-    function getDateOptions(opt) {
-      var options = isString(opt) ? { locale: opt } : opt || {};
-      options.prefer = +!!getOwn(options, 'future') - +!!getOwn(options, 'past');
-      return options;
+    setupOptions(opt);
+
+    function setupOptions(opt) {
+      opt = isString(opt) ? { locale: opt } : opt || {};
+      optPrefer  = +!!getOwn(opt, 'future') - +!!getOwn(opt, 'past');
+      optLocale  = getOwn(opt, 'locale');
+      optFromUTC = getOwn(opt, 'fromUTC');
+      optSetUTC  = getOwn(opt, 'setUTC');
+      optParams  = getOwn(opt, 'params');
+      optClone   = getOwn(opt, 'clone');
     }
 
     function getFormatParams(match, dif) {
-      var set = getOwn(options, 'params') || {};
+      var set = optParams || {};
       forEach(dif.to, function(field, i) {
         var str = match[i + 1], token, val;
         if (!str) return;
         if (field === 'yy' || field === 'y') {
           field = 'year';
-          val = getYearFromAbbreviation(str, date, getOwn(options, 'prefer'));
+          val = getYearFromAbbreviation(str, date, optPrefer);
         } else if (token = getOwn(ParsingTokens, field)) {
           field = token.param || field;
           val = getParsingTokenValue(token, str);
@@ -3785,14 +3824,14 @@
       return set;
     }
 
-    // Clone date will set the utc flag, but it will
-    // be overriden later, so set option flags instead.
+    // Force the UTC flags to be true if the source date
+    // date is UTC, as they will be overwritten later.
     function cloneDateByFlag(d, clone) {
-      if (_utc(d) && !isDefined(getOwn(options, 'fromUTC'))) {
-        options.fromUTC = true;
+      if (_utc(d) && !isDefined(optFromUTC)) {
+        optFromUTC = true;
       }
-      if (_utc(d) && !isDefined(getOwn(options, 'setUTC'))) {
-        options.setUTC = true;
+      if (_utc(d) && !isDefined(optSetUTC)) {
+        optSetUTC = true;
       }
       if (clone) {
         d = new Date(d.getTime());
@@ -3816,7 +3855,7 @@
 
       // The act of getting the locale will initialize
       // if it is missing and add the required formats.
-      loc = localeManager.get(getOwn(options, 'locale'));
+      loc = localeManager.get(optLocale);
 
       for (var i = 0, dif, match; dif = loc.compiledFormats[i]; i++) {
         match = str.match(dif.reg);
@@ -3885,7 +3924,7 @@
       if (!set) {
         // Fall back to native parsing
         date = new Date(str);
-        if (getOwn(options, 'fromUTC')) {
+        if (optFromUTC && dateIsValid(date)) {
           // Falling back to system date here which cannot be parsed as UTC,
           // so if we're forcing UTC then simply add the offset.
           date.setTime(date.getTime() + (tzOffset(date) * MINUTES));
@@ -3893,12 +3932,7 @@
       } else if (relative) {
         updateDate(date, set, false, 1);
       } else {
-        if (_utc(date)) {
-          // UTC times can traverse into other days or even months,
-          // so preemtively reset the time here to prevent this.
-          resetTime(date);
-        }
-        updateDate(date, set, true, 0, getOwn(options, 'prefer'), weekdayDir);
+        updateDate(date, set, true, 0, optPrefer, weekdayDir);
       }
       fireCallbacks();
       return date;
@@ -4049,13 +4083,13 @@
         // year is -2 and the end of the year is 2. Conversely, the "last day" is
         // actually 00:00am so it is 1. -1 is reserved but unused for now.
         if (edge < 0) {
-          moveToBeginningOfUnit(date, edgeIndex, getOwn(options, 'locale'));
+          moveToBeginningOfUnit(date, edgeIndex, optLocale);
         } else if (edge > 0) {
           if (edge === 1) {
             stopIndex = DAY_INDEX;
             moveToBeginningOfUnit(date, DAY_INDEX);
           }
-          moveToEndOfUnit(date, edgeIndex, getOwn(options, 'locale'), stopIndex);
+          moveToEndOfUnit(date, edgeIndex, optLocale, stopIndex);
         }
         if (isDefined(weekdayOfMonth)) {
           setWeekday(date, weekdayOfMonth, -edge);
@@ -4100,7 +4134,7 @@
       });
       if (params) {
         afterDateSet(function() {
-          updateDate(date, params, true, false, getOwn(options, 'prefer'), weekdayDir);
+          updateDate(date, params, true, 0, false, weekdayDir);
         });
         if (set.edge) {
           // "the end of March of next year"
@@ -4118,12 +4152,12 @@
       date = getNewDate();
     }
 
-    _utc(date, getOwn(options, 'fromUTC'));
+    _utc(date, optFromUTC);
 
     if (isString(d)) {
       date = parseStringDate(d);
     } else if (isDate(d)) {
-      date = cloneDateByFlag(d, hasOwn(options, 'clone') || forceClone);
+      date = cloneDateByFlag(d, optClone || forceClone);
     } else if (isObjectType(d)) {
       set = simpleClone(d);
       updateDate(date, set, true);
@@ -4136,7 +4170,7 @@
     // "2012-11-15T12:00:00Z", in the majority of cases you are using it to create
     // a date that will, after creation, be manipulated as local, so reset the utc
     // flag here unless "setUTC" is also set.
-    _utc(date, !!getOwn(options, 'setUTC'));
+    _utc(date, !!optSetUTC);
     return {
       set: set,
       date: date
@@ -4446,12 +4480,7 @@
         if (!isNaN(num)) {
           return num;
         }
-        num = this.getNumeralValue(str);
-        if (!isNaN(num)) {
-          this.numeralMap[str] = num;
-          return num;
-        }
-        return num;
+        return this.numeralMap[str] = this.getNumeralValue(str);
       },
 
       getNumeralValue: function(str) {
@@ -5152,10 +5181,10 @@
       };
 
       var since = function(date, d, options) {
-        return getTimeDistanceForUnit(date, createDateWithContext(date, d, options, true), unit);
+        return getTimeDistanceForUnit(date, createDate(d, options, true), unit);
       };
       var until = function(date, d, options) {
-        return getTimeDistanceForUnit(createDateWithContext(date, d, options, true), date, unit);
+        return getTimeDistanceForUnit(createDate(d, options, true), date, unit);
       };
 
       methods[name + 'sAgo']   = methods[name + 'sUntil']   = until;
@@ -5354,7 +5383,7 @@
     },
 
     /***
-     * @method setLocale(code)
+     * @method setLocale(localeCode)
      * @returns Locale
      * @static
      * @short Sets the current locale to be used with dates.
@@ -5364,7 +5393,7 @@
      *
      *   Date.setLocale('en')
      *
-     * @param {string} code
+     * @param {string} localeCode
      *
      ***/
     'setLocale': function(code) {
@@ -5372,7 +5401,7 @@
     },
 
     /***
-     * @method addLocale(code, def)
+     * @method addLocale(localeCode, def)
      * @returns Locale
      * @static
      * @short Adds a locale definition to the locales understood by Sugar.
@@ -5382,7 +5411,7 @@
      *
      *   Date.addLocale('eo', {})
      *
-     * @param {string} code
+     * @param {string} localeCode
      * @param {Object} def
      *
      ***/
@@ -5391,16 +5420,16 @@
     },
 
     /***
-     * @method removeLocale(code)
+     * @method removeLocale(localeCode)
      * @returns Locale
      * @static
-     * @short Deletes the the locale by `code` from Sugar's known locales.
+     * @short Deletes the the locale by `localeCode` from Sugar's known locales.
      * @extra For more, see `date locales`.
      * @example
      *
      *   Date.removeLocale('foo')
      *
-     * @param {string} code
+     * @param {string} localeCode
      *
      ***/
     'removeLocale': function(code) {
@@ -5654,9 +5683,15 @@
      * @short Controls a flag on the date that tells Sugar to internally use UTC
      *        methods like `getUTCHours`.
      * @extra This flag is most commonly used for output in UTC time with the
-     *        `format` method. Note that this flag only governs which methods are
-     *        called internally – date native methods like `setHours` will still
-     *        return local non-UTC values. This method will modify the date!
+     *        `format` method. Note that this flag only governs which native
+     *        methods are called internally – date native methods like `setHours`
+     *        will still return local non-UTC values. Also note that other date
+     *        operations such as comparison and subtraction still work as normal.
+     *        This effectively makes it not meaningful to use date comparison
+     *        methods like `isBefore` or difference methods like `hoursBefore`
+     *        unless these flags are both the same, as the date is not actually
+     *        in UTC time. If such a usage is required, the timezone offset should
+     *        instead be manually subtracted. This method will modify the date!
      *
      * @example
      *
@@ -5886,15 +5921,15 @@
     },
 
     /***
-     * @method relative([localeCode] = currentLocaleCode, [fn])
+     * @method relative([localeCode] = currentLocaleCode, [relativeFn])
      * @returns String
      * @short Returns the date in a text format relative to the current time,
      *        such as "5 minutes ago".
-     * @extra [fn] is a function that can be passed to provide more granular
+     * @extra [relativeFn] is a function that can be passed to provide more granular
      *        control over the resulting string. Its return value will be passed
      *        to `format`. If nothing is returned, the relative format will be
-     *        used. [fn] may be passed as the first argument in place of [locale].
-     *        For more about formats, see `date formatting`.
+     *        used. [relativeFn] can be passed as the first argument in place of
+     *        [locale]. For more about formats, see `date formatting`.
      *
      * @callback relativeFn
      *
@@ -5916,9 +5951,9 @@
      *     }
      *   }); -> ex. 5 months ago
      *
-     * @signature relative([fn])
+     * @signature relative([relativeFn])
      * @param {string} [localeCode]
-     * @param {relativeFn} [fn]
+     * @param {relativeFn} [relativeFn]
      * @callbackParam {number} num
      * @callbackParam {number} unit
      * @callbackParam {number} ms
@@ -5926,8 +5961,8 @@
      * @callbackReturns {string} relativeFn
      *
      ***/
-    'relative': function(date, localeCode, fn) {
-      return dateRelative(date, null, localeCode, fn);
+    'relative': function(date, localeCode, relativeFn) {
+      return dateRelative(date, null, localeCode, relativeFn);
     },
 
     /***
@@ -5944,7 +5979,7 @@
      *   yesterday.relativeTo('today', 'ja') -> 一日
      *
      * @param {string|number|Date} d
-     * @param {string} code
+     * @param {string} localeCode
      *
      *
      ***/
@@ -6327,7 +6362,7 @@
       '{months},?(?:[-.\\/\\s]{year})?',
       '{edge} of (?:day)? {day|weekday}',
       '{0} {num}{1?} {weekday} {2} {months},? {year?}',
-      '{shift?} {day?} {weekday?} {timeMarker?} {midday}',
+      '{shift?} {day?} {weekday?} (?:at)? {midday}',
       '{sign?} {3?} {half} {3?} {unit:3-4|unit:7} {sign?}',
       '{0?} {edge} {weekday?} {2} {shift?} {unit:4-7?} {months?},? {year?}'
     ],
@@ -6400,7 +6435,7 @@
    *
    ***/
 
-  // Flag allowing native string methods to be enhanced
+  // Flag allowing native string methods to be enhanced.
   var STRING_ENHANCEMENTS_FLAG = 'enhanceString';
 
   // Matches non-punctuation characters except apostrophe for capitalization.
@@ -6546,11 +6581,14 @@
 
   function stringUnderscore(str) {
     var areg = Inflections.acronyms && Inflections.acronyms.reg;
-    return str
-      .replace(/[-\s]+/g, '_')
-      .replace(areg, function(acronym, index) {
+    // istanbul ignore if
+    if (areg) {
+      str = str.replace(areg, function(acronym, index) {
         return (index > 0 ? '_' : '') + acronym.toLowerCase();
       })
+    }
+    return str
+      .replace(/[-\s]+/g, '_')
       .replace(/([A-Z\d]+)([A-Z][a-z])/g,'$1_$2')
       .replace(/([a-z\d])([A-Z])/g,'$1_$2')
       .toLowerCase();
@@ -6561,6 +6599,7 @@
     return str.replace(CAMELIZE_REG, function(match, pre, word, index) {
       var cap = upper !== false || index > 0, acronym;
       acronym = getAcronym(word);
+      // istanbul ignore if
       if (acronym && cap) {
         return acronym;
       }
@@ -6753,6 +6792,7 @@
   function buildBase64() {
     var encodeAscii, decodeAscii;
 
+    // istanbul ignore next
     function catchEncodingError(fn) {
       return function(str) {
         try {
@@ -6763,6 +6803,7 @@
       };
     }
 
+    // istanbul ignore if
     if (typeof Buffer !== 'undefined') {
       encodeBase64 = function(str) {
         return new Buffer(str).toString('base64');
@@ -6772,6 +6813,8 @@
       };
       return;
     }
+
+    // istanbul ignore if
     if (typeof btoa !== 'undefined') {
       encodeAscii = catchEncodingError(btoa);
       decodeAscii = catchEncodingError(atob);
@@ -6969,11 +7012,11 @@
      * @short Strips HTML tags from the string.
      * @extra [tag] may be an array of tags or 'all', in which case all tags will
      *        be stripped. [replace] will replace what was stripped, and may be a
-     *        string or a function to handle replacements. If this function returns
-     *        a string, then it will be used for the replacement. If it returns
-     *        `undefined`, the tags will be stripped normally.
+     *        string or a function of type `replaceFn` to handle replacements. If
+     *        this function returns a string, then it will be used for the
+     *        replacement. If it returns `undefined`, the tags will be stripped normally.
      *
-     * @callback tagReplaceFn
+     * @callback replaceFn
      *
      *   tag     The tag name.
      *   inner   The tag content.
@@ -6989,12 +7032,12 @@
      *   }); -> '|hi!|'
      *
      * @param {string} tag
-     * @param {string|tagReplaceFn} replace
+     * @param {string|replaceFn} replace
      * @callbackParam {string} tag
      * @callbackParam {string} inner
      * @callbackParam {string} attr
      * @callbackParam {string} outer
-     * @callbackReturns {string} tagReplaceFn
+     * @callbackReturns {string} replaceFn
      *
      ***/
     'stripTags': function(str, tag, replace) {
@@ -7007,11 +7050,11 @@
      * @short Removes HTML tags and their contents from the string.
      * @extra [tag] may be an array of tags or 'all', in which case all tags will
      *        be removed. [replace] will replace what was removed, and may be a
-     *        string or a function to handle replacements. If this function returns
-     *        a string, then it will be used for the replacement. If it returns
-     *        `undefined`, the tags will be removed normally.
+     *        string or a function of type `replaceFn` to handle replacements. If
+     *        this function returns a string, then it will be used for the
+     *        replacement. If it returns `undefined`, the tags will be removed normally.
      *
-     * @callback tagReplaceFn
+     * @callback replaceFn
      *
      *   tag     The tag name.
      *   inner   The tag content.
@@ -7027,12 +7070,12 @@
      *   }); -> 'bye!'
      *
      * @param {string} tag
-     * @param {string|tagReplaceFn} replace
+     * @param {string|replaceFn} replace
      * @callbackParam {string} tag
      * @callbackParam {string} inner
      * @callbackParam {string} attr
      * @callbackParam {string} outer
-     * @callbackReturns {string} tagReplaceFn
+     * @callbackReturns {string} replaceFn
      *
      ***/
     'removeTags': function(str, tag, replace) {
@@ -7076,15 +7119,15 @@
     },
 
     /***
-     * @method forEach([search], [callback])
+     * @method forEach([search], [eachFn])
      * @returns Array
-     * @short Runs callback [fn] against every character in the string, or every
-     *        every occurence of [search] if it is provided.
+     * @short Runs callback [eachFn] against every character in the string, or
+     *        every every occurence of [search] if it is provided.
      * @extra Returns an array of matches. [search] may be either a string or
-     *        regex, and defaults to every character in the string. If [fn]
+     *        regex, and defaults to every character in the string. If [eachFn]
      *        returns false at any time it will break out of the loop.
      *
-     * @callback stringEachFn
+     * @callback eachFn
      *
      *   match  The current match.
      *   i      The current index.
@@ -7099,22 +7142,22 @@
      *     // Called twice: "u", "y"
      *   });
      *
-     * @signature forEach(callback)
+     * @signature forEach(eachFn)
      * @param {string|RegExp} [search]
-     * @param {stringEachFn} [callback]
+     * @param {eachFn} [eachFn]
      * @callbackParam {string} match
      * @callbackParam {number} i
      * @callbackParam {Array<string>} arr
      *
      ***/
-    'forEach': function(str, search, fn) {
-      return stringEach(str, search, fn);
+    'forEach': function(str, search, eachFn) {
+      return stringEach(str, search, eachFn);
     },
 
     /***
-     * @method chars([callback])
+     * @method chars([eachCharFn])
      * @returns Array
-     * @short Runs [fn] against each character in the string, and returns an array.
+     * @short Runs [eachCharFn] against each character in the string, and returns an array.
      *
      * @callback eachCharFn
      *
@@ -7129,20 +7172,20 @@
      *     // Called 5 times: "j","u","m","p","y"
      *   });
      *
-     * @param {eachCharFn} [callback]
+     * @param {eachCharFn} [eachCharFn]
      * @callbackParam {string} char
      * @callbackParam {number} i
      * @callbackParam {Array<string>} arr
      *
      ***/
-    'chars': function(str, search, fn) {
-      return stringEach(str, search, fn);
+    'chars': function(str, search, eachCharFn) {
+      return stringEach(str, search, eachCharFn);
     },
 
     /***
-     * @method words([callback])
+     * @method words([eachWordFn])
      * @returns Array
-     * @short Runs [fn] against each word in the string, and returns an array.
+     * @short Runs [eachWordFn] against each word in the string, and returns an array.
      * @extra A "word" is defined as any sequence of non-whitespace characters.
      *
      * @callback eachWordFn
@@ -7158,20 +7201,20 @@
      *     // Called twice: "broken", "wear"
      *   });
      *
-     * @param {eachWordFn} [callback]
+     * @param {eachWordFn} [eachWordFn]
      * @callbackParam {string} word
      * @callbackParam {number} i
      * @callbackParam {Array<string>} arr
      *
      ***/
-    'words': function(str, fn) {
-      return stringEach(trim(str), /\S+/g, fn);
+    'words': function(str, eachWordFn) {
+      return stringEach(trim(str), /\S+/g, eachWordFn);
     },
 
     /***
-     * @method lines([callback])
+     * @method lines([eachLineFn])
      * @returns Array
-     * @short Runs [fn] against each line in the string, and returns an array.
+     * @short Runs [eachLineFn] against each line in the string, and returns an array.
      *
      * @callback eachLineFn
      *
@@ -7186,20 +7229,20 @@
      *     // Called once per line
      *   });
      *
-     * @param {eachLineFn} [callback]
+     * @param {eachLineFn} [eachLineFn]
      * @callbackParam {string} line
      * @callbackParam {number} i
      * @callbackParam {Array<string>} arr
      *
      ***/
-    'lines': function(str, fn) {
-      return stringEach(trim(str), /^.*$/gm, fn);
+    'lines': function(str, eachLineFn) {
+      return stringEach(trim(str), /^.*$/gm, eachLineFn);
     },
 
     /***
-     * @method codes([callback])
+     * @method codes([eachCodeFn])
      * @returns Array
-     * @short Runs callback [fn] against each character code in the string.
+     * @short Runs callback [eachCodeFn] against each character code in the string.
      *        Returns an array of character codes.
      *
      * @callback eachCodeFn
@@ -7215,14 +7258,14 @@
      *     // Called 5 times: 106, 117, 109, 112, 121
      *   });
      *
-     * @param {eachCodeFn} [callback]
+     * @param {eachCodeFn} [eachCodeFn]
      * @callbackParam {number} code
      * @callbackParam {number} i
      * @callbackParam {string} str
      *
      ***/
-    'codes': function(str, fn) {
-      return stringCodes(str, fn);
+    'codes': function(str, eachCodeFn) {
+      return stringCodes(str, eachCodeFn);
     },
 
     /***
@@ -7819,7 +7862,7 @@
    * @method getOption(name)
    * @returns Mixed
    * @accessor
-   * @short Gets an option used interally by Array.
+   * @short Gets an option used internally by Array.
    * @extra Options listed below. Current options are for sorting strings with
    *        `sortBy`.
    *
@@ -7832,7 +7875,7 @@
    ***
    * @method setOption(name, value)
    * @accessor
-   * @short Sets an option used interally by Array.
+   * @short Sets an option used internally by Array.
    * @extra Options listed below. Current options are for sorting strings with
    *        `sortBy`. If `value` is `null`, the default value will be restored.
    *
@@ -7915,6 +7958,7 @@
   }
 
   function arrayConcat(arr1, arr2) {
+    // istanbul ignore if
     if (HAS_CONCAT_BUG) {
       return arraySafeConcat(arr1, arr2);
     }
@@ -7929,6 +7973,7 @@
   }
 
   // Avoids issues with concat in < IE8
+  // istanbul ignore next
   function arraySafeConcat(arr, arg) {
     var result = arrayClone(arr), len = result.length, arr2;
     arr2 = isArray(arg) ? arg : [arg];
@@ -8124,7 +8169,6 @@
   }
 
   function getCollationReadyString(str, sortIgnore, sortIgnoreCase) {
-    if (!isString(str)) str = String(str);
     if (sortIgnoreCase) {
       str = str.toLowerCase();
     }
@@ -8198,10 +8242,10 @@
 
     /***
      *
-     * @method construct(n, map)
+     * @method construct(n, indexMapFn)
      * @returns Array
      * @static
-     * @short Constructs an array of `n` length from the values of `map`.
+     * @short Constructs an array of `n` length from the values of `indexMapFn`.
      * @extra This function is essentially a shortcut for using `Array.from` with
      *        `new Array(n)`.
      *
@@ -8216,15 +8260,15 @@
      *   }); -> [0, 1, 4]
      *
      * @param {number} n
-     * @param {indexMapFn} map
+     * @param {indexMapFn} indexMapFn
      * @callbackParam {number} i
-     * @callbackReturns {any} indexMapFn
+     * @callbackReturns {ArrayElement} indexMapFn
      *
      ***/
-    'construct': function(n, fn) {
+    'construct': function(n, indexMapFn) {
       n = coercePositiveInteger(n);
       return Array.from(new Array(n), function(el, i) {
-        return fn && fn(i);
+        return indexMapFn && indexMapFn(i);
       });
     }
 
@@ -8251,7 +8295,7 @@
      * @method isEqual(arr)
      * @returns Boolean
      * @short Returns true if the array is equal to `arr`.
-     * @extra Objects in the array are considered equal if they are not obserably
+     * @extra Objects in the array are considered equal if they are not observably
      *        distinguishable. This method is an instance alias for
      *        `Object.isEqual()`.
      *
@@ -8288,7 +8332,7 @@
      * @returns ArrayElement
      * @short Gets the element(s) at `index`.
      * @extra When [loop] is true, overshooting the end of the array will begin
-     *        counting from the other end. `index` may be negative. If `index` is
+     *        counting from the other end. `index` can be negative. If `index` is
      *        an array, multiple elements will be returned.
      *
      * @example
@@ -8400,12 +8444,12 @@
      * @method unique([map])
      * @returns Array
      * @short Removes all duplicate elements in the array.
-     * @extra [map] may be a function returning the value to be uniqued or a
-     *        string acting as a shortcut. This is most commonly used when you
-     *        only need to check a single field that can ensure the object's
-     *        uniqueness (such as an `id` field). If [map] is not passed, then
-     *        objects will be deep checked for equality. Supports
-     *        `deep properties`.
+     * @extra [map] can be a string or callback type `mapFn` that returns the value
+     *        to be uniqued or a string acting as a shortcut. This is most commonly
+     *        used when you only need to check a single field that can ensure the
+     *        object's uniqueness (such as an `id` field). If [map] is not passed,
+     *        then objects will be deep checked for equality.
+     *        Supports `deep properties`.
      *
      * @callback mapFn
      *
@@ -8551,12 +8595,12 @@
     },
 
     /***
-     * @method groupBy(map, [fn])
+     * @method groupBy(map, [groupFn])
      * @returns Object
      * @short Groups the array by `map`.
      * @extra Will return an object whose keys are the mapped from `map`, which
-     *        may be a mapping function, or a string acting as a shortcut. `map`
-     *        supports `deep properties`. Optionally calls [fn] for each group.
+     *        can be a callback of type `mapFn`, or a string acting as a shortcut.
+     *        `map` supports `deep properties`. Optionally calls [groupFn] for each group.
      *
      * @callback mapFn
      *
@@ -8583,7 +8627,7 @@
      *   });
      *
      * @param {string|mapFn} map
-     * @param {groupFn} fn
+     * @param {groupFn} groupFn
      * @callbackParam {ArrayElement} el
      * @callbackParam {number} i
      * @callbackParam {Array} arr
@@ -8592,8 +8636,8 @@
      * @callbackReturns {NewArrayElement} mapFn
      *
      ***/
-    'groupBy': function(arr, map, fn) {
-      return arrayGroupBy(arr, map, fn);
+    'groupBy': function(arr, map, groupFn) {
+      return arrayGroupBy(arr, map, groupFn);
     },
 
     /***
@@ -8720,14 +8764,14 @@
      * @method sortBy([map], [desc] = false)
      * @returns Array
      * @short Enhanced sorting function that will sort the array by `map`.
-     * @extra `map` may be a function, a string acting as a shortcut, an array
-     *        (comparison by multiple values), or blank (direct comparison of
-     *        array values). `map` supports `deep properties`. [desc] will sort
-     *        the array in descending order. When the field being sorted on is
-     *        a string, the resulting order will be determined by an internal
-     *        collation algorithm that is optimized for major Western languages,
-     *        but can be customized using sorting accessors such as `sortIgnore`.
-     *        This method will modify the array!
+     * @extra `map` can be a function of type `sortMapFn`, a string acting as a
+     *        shortcut, an array (comparison by multiple values), or blank (direct
+     *        comparison of array values). `map` supports `deep properties`.
+     *        [desc] will sort the array in descending order. When the field being
+     *        sorted on is a string, the resulting order will be determined by an
+     *        internal collation algorithm that is optimized for major Western
+     *        languages, but can be customized using sorting accessors such as
+     *        `sortIgnore`. This method will modify the array!
      *
      * @callback sortMapFn
      *
@@ -8761,7 +8805,8 @@
      * @method remove(search)
      * @returns Array
      * @short Removes any element in the array that matches `search`.
-     * @extra This method will modify the array! Use `exclude` for a
+     * @extra `search` can be an array element or a function of type `searchFn`.
+     *        This method will modify the array! Use `exclude` for a
      *        non-destructive alias. This method implements `enhanced matching`.
      *
      * @callback searchFn
@@ -8793,7 +8838,8 @@
      * @method exclude(search)
      * @returns Array
      * @short Returns a new array with every element that does not match `search`.
-     * @extra This method can be thought of as the inverse of `Array#filter`. It
+     * @extra `search` can be an array element or a function of type `searchFn`.
+     *        This method can be thought of as the inverse of `Array#filter`. It
      *        will not modify the original array, Use `remove` to modify the
      *        array in place. Implements `enhanced matching`.
      *
@@ -9422,15 +9468,15 @@
      *               (repeated keys) will be automatically cast to native
      *               values. (Default `true`)
      *
-     *   transform   A function whose return value becomes the final value. If
-     *               the function returns `undefined`, then the original value
-     *               will be used. This allows the function to intercept only
-     *               certain keys or values. (Default `undefined`)
+     *   transform   A function of type `transformFn` whose return value becomes
+     *               the final value. If the function returns `undefined`, then the
+     *               original value will be used. This allows the function to
+     *               intercept only certain keys or values. (Default `undefined`)
      *
      *   separator   If passed, keys will be split on this string to extract
      *               deep values. (Default `''`)
      *
-     * @callback queryStringTransformFn
+     * @callback transformFn
      *
      *   key   The key component of the query string (before `=`).
      *   val   The value component of the query string (after `=`).
@@ -9448,11 +9494,11 @@
      * @callbackParam {string} key
      * @callbackParam {Property} val
      * @callbackParam {Object} obj
-     * @callbackReturns {NewProperty} queryStringTransformFn
+     * @callbackReturns {NewProperty} transformFn
      * @option {boolean} [deep]
      * @option {boolean} [auto]
      * @option {string} [separator]
-     * @option {queryStringTransformFn} [transform]
+     * @option {transformFn} [transform]
      *
      ***/
     'fromQueryString': function(obj, options) {
@@ -9589,17 +9635,17 @@
      *   prefix      If passed, this string will be prefixed to all keys,
      *               separated by the `separator`. (Default `''`).
      *
-     *   transform   A function whose return value becomes the final value
-     *               in the string. (Default `undefined`)
+     *   transform   A function of type `transformFn` whose return value becomes
+     *               the final value in the string. (Default `undefined`)
      *
      *   separator   A string that is used to separate keys, either for deep
      *               objects, or when `prefix` is passed.(Default `_`).
      *
-     * @callback queryStringTransformFn
+     * @callback transformFn
      *
-     *   key  The key of the current iteration.
-     *   val  The value of the current iteration.
-     *   obj  A reference to the object.
+     *   key   The key of the current iteration.
+     *   val   The value of the current iteration.
+     *   obj   A reference to the object.
      *
      * @example
      *
@@ -9612,11 +9658,11 @@
      * @callbackParam {string} key
      * @callbackParam {Property} val
      * @callbackParam {Object} obj
-     * @callbackReturns {NewProperty} queryStringTransformFn
+     * @callbackReturns {NewProperty} transformFn
      * @option {boolean} [deep]
      * @option {string} [prefix]
      * @option {string} [separator]
-     * @option {queryStringTransformFn} [transform]
+     * @option {transformFn} [transform]
      *
      ***/
     'toQueryString': function(obj, options) {
@@ -9626,13 +9672,14 @@
     /***
      * @method isEqual(obj)
      * @returns Boolean
-     * @short Returns true if `obj` is equivalent to the object.
+     * @short Returns `true` if `obj` is equivalent to the object.
      * @extra If both objects are built-in types, they will be considered
      *        equivalent if they are not "observably distinguishable". This means
-     *        that primitives and object types, `0` and `-0`, and sparse and
-     *        dense arrays are all not equal. Functions and non-built-ins like
-     *        instances of user-defined classes and host objects like Element and
-     *        Event are strictly compared `===`, and will only be equal if they
+     *        that objects that can otherwise be considered equivalent (primitives
+     *        and their object counterparts, `0` and `-0`, sparse and dense arrays)
+     *        will return `false`. Functions and non-built-ins like instances of
+     *        user-defined classes and host objects like Element and Event are
+     *        strictly compared with `===`, and will only be equivalent if they
      *        are the same reference. Plain objects as well as Arrays will be
      *        traversed into and deeply checked by their non-inherited, enumerable
      *        properties. Other allowed types include Typed Arrays, Sets, Maps,
@@ -9674,13 +9721,14 @@
      *                (Default `false`)
      *
      *   resolve      Determines which property wins in the case of conflicts.
-     *                If `true`, `source` wins. If `false`, the original property wins.
-     *                If a function is passed, its return value will decide the result.
-     *                Any non-undefined return value will resolve the conflict
-     *                for that property (will not continue if `deep`). Returning
-     *                `undefined` will do nothing (no merge). Finally, returning
-     *                the global object `Sugar` will allow Sugar to handle the
-     *                merge as normal. (Default `true`)
+     *                If `true`, `source` wins. If `false`, the original property
+     *                wins. A function of type `resolveFn` may also be passed,
+     *                whose return value will decide the result. Any non-undefined
+     *                return value will resolve the conflict for that property
+     *                (will not continue if `deep`). Returning `undefined` will do
+     *                nothing (no merge). Finally, returning the global object
+     *                `Sugar` will allow Sugar to handle the merge as normal.
+     *                (Default `true`)
      *
      * @callback resolveFn
      *
@@ -9898,10 +9946,10 @@
     },
 
     /***
-     * @method tap(fn)
+     * @method tap(tapFn)
      * @returns Object
-     * @short Runs `fn` and returns the object.
-     * @extra A string can also be used as a shortcut to a method. This method is
+     * @short Runs `tapFn` and returns the object.
+     * @extra A string can also be used as a shortcut to `tapFn`. This method is
      *        designed to run an intermediary function that "taps into" a method
      *        chain. As such, it is fairly useless as a static method. However it
      *        can be quite useful when combined with chainables.
@@ -9915,7 +9963,7 @@
      *   Sugar.Array([1,4,9]).map(Math.sqrt).tap('pop') -> [1,2]
      *   Sugar.Object({a:'a'}).tap(logArgs).merge({b:'b'})  -> {a:'a',b:'b'}
      *
-     * @param {tapFn} fn
+     * @param {tapFn} tapFn
      * @callbackParam {Object} obj
      * @callbackReturns {any} tapFn
      *
@@ -9958,7 +10006,8 @@
      * @method remove(search)
      * @returns Object
      * @short Deletes all properties in the object matching `search`.
-     * @extra This method will modify the object!. Implements `enhanced matching`.
+     * @extra `search` may be any property or a function of type `searchFn`. This
+     *        method will modify the object!. Implements `enhanced matching`.
      *
      * @callback searchFn
      *
@@ -9986,8 +10035,9 @@
      * @method exclude(search)
      * @returns Object
      * @short Returns a new object with all properties matching `search` removed.
-     * @extra This is a non-destructive version of `remove` and will not modify
-     *        the object. Implements `enhanced matching`.
+     * @extra `search` may be any property or a function of type `searchFn`. This
+     *        is a non-destructive version of `remove` and will not modify the
+     *        object. Implements `enhanced matching`.
      *
      * @callback searchFn
      *
@@ -10461,7 +10511,7 @@
      * @returns New Array
      * @polyfill ES5
      * @short Maps the array to another array whose elements are the values
-     *        returned by the `map` callback.
+     *        returned by `map`.
      * @extra [context] is the `this` object. Sugar enhances this method to accept
      *        a string for `map`, which is a shortcut for a function that gets
      *        a property or invokes a function on each element.
@@ -10498,7 +10548,8 @@
      * @returns Boolean
      * @polyfill ES5
      * @short Returns true if `search` is true for any element in the array.
-     * @extra [context] is the `this` object. Implements `enhanced matching`.
+     * @extra `search` can be an array element or a function of type `searchFn`.
+     *        [context] is the `this` object. Implements `enhanced matching`.
      *
      * @callback searchFn
      *
@@ -10533,7 +10584,8 @@
      * @returns Boolean
      * @polyfill ES5
      * @short Returns true if `search` is true for all elements of the array.
-     * @extra [context] is the `this` object. Implements `enhanced matching`.
+     * @extra `search` can be an array element or a function of type `searchFn`.
+     *        [context] is the `this` object. Implements `enhanced matching`.
      *
      * @callback searchFn
      *
@@ -10565,7 +10617,8 @@
      * @returns Array
      * @polyfill ES5
      * @short Returns any elements in the array that match `search`.
-     * @extra [context] is the `this` object. Implements `enhanced matching`.
+     * @extra `search` can be an array element or a function of type `searchFn`.
+     *        [context] is the `this` object. Implements `enhanced matching`.
      *
      * @callback searchFn
      *
@@ -10596,7 +10649,8 @@
      * @returns Mixed
      * @polyfill ES6
      * @short Returns the first element in the array that matches `search`.
-     * @extra Implements `enhanced matching`.
+     * @extra `search` can be an array element or a function of type `searchFn`.
+     *        Implements `enhanced matching`.
      *
      * @callback searchFn
      *
@@ -10630,7 +10684,8 @@
      * @polyfill ES6
      * @short Returns the index of the first element in the array that matches
      *        `search`, or `-1` if none.
-     * @extra [context] is the `this` object. Implements `enhanced matching`.
+     * @extra `search` can be an array element or a function of type `searchFn`.
+     *        [context] is the `this` object. Implements `enhanced matching`.
      *
      * @callback searchFn
      *
@@ -10666,7 +10721,8 @@
      *
      * @returns Boolean
      * @short Returns true if none of the elements in the array match `search`.
-     * @extra [context] is the `this` object. Implements `enhanced matching`.
+     * @extra `search` can be an array element or a function of type `searchFn`.
+     *        [context] is the `this` object. Implements `enhanced matching`.
      *
      * @callback searchFn
      *
@@ -10697,7 +10753,8 @@
      * @method count(search, [context])
      * @returns Number
      * @short Counts all elements in the array that match `search`.
-     * @extra Implements `enhanced matching`.
+     * @extra `search` can be an element or a function of type `searchFn`.
+     *        Implements `enhanced matching`.
      *
      * @callback searchFn
      *
@@ -10727,9 +10784,10 @@
      * @method min([all] = false, [map])
      * @returns Mixed
      * @short Returns the element in the array with the lowest value.
-     * @extra [map] may be passed in place of [all], and is a function mapping the
-     *        value to be checked or a string acting as a shortcut. If [all] is
-     *        true, multiple elements will be returned. Supports `deep properties`.
+     * @extra [map] can be passed in place of [all], and is a function of type
+     *        `mapFn` that maps the value to be checked or a string acting as a
+     *        shortcut. If [all] is true, multiple elements will be returned.
+     *        Supports `deep properties`.
      *
      * @callback mapFn
      *
@@ -10765,9 +10823,10 @@
      * @method max([all] = false, [map])
      * @returns Mixed
      * @short Returns the element in the array with the greatest value.
-     * @extra [map] may be passed in place of [all], and is a function mapping the
-     *        value to be checked or a string acting as a shortcut. If [all] is
-     *        true, multiple elements will be returned. Supports `deep properties`.
+     * @extra [map] can be passed in place of [all], and is a function of type
+     *        `mapFn` that maps the value to be checked or a string acting as a
+     *        shortcut. If [all] is true, multiple elements will be returned.
+     *        Supports `deep properties`.
      *
      * @callback mapFn
      *
@@ -10803,9 +10862,9 @@
      * @method least([all] = false, [map])
      * @returns Array
      * @short Returns the elements in the array with the least commonly occuring value.
-     * @extra [map] may be passed in place of [all], and is a function mapping the
-     *        value to be checked or a string acting as a shortcut. If [all] is
-     *        true, will return multiple values in an array.
+     * @extra [map] can be passed in place of [all], and is a function of type
+     *        `mapFn` that maps the value to be checked or a string acting as a
+     *        shortcut. If [all] is true, will return multiple values in an array.
      *        Supports `deep properties`.
      *
      * @callback mapFn
@@ -10838,9 +10897,9 @@
      * @method most([all] = false, [map])
      * @returns Array
      * @short Returns the elements in the array with the most commonly occuring value.
-     * @extra [map] may be passed in place of [all], and is a function mapping the
-     *        value to be checked or a string acting as a shortcut. If [all] is
-     *        true, will return multiple values in an array.
+     * @extra [map] can be passed in place of [all], and is a function of type
+     *        `mapFn` that maps the value to be checked or a string acting as a
+     *        shortcut. If [all] is true, will return multiple values in an array.
      *        Supports `deep properties`.
      *
      * @callback mapFn
@@ -10873,8 +10932,8 @@
      * @method sum([map])
      * @returns Number
      * @short Sums all values in the array.
-     * @extra [map] may be a function mapping the value to be summed or a string
-     *        acting as a shortcut.
+     * @extra [map] can be a function of type `mapFn` that maps the value to be
+     *        summed or a string acting as a shortcut.
      *
      * @callback mapFn
      *
@@ -10905,8 +10964,8 @@
      * @method average([map])
      * @returns Number
      * @short Gets the mean average for all values in the array.
-     * @extra [map] may be a function mapping the value to be averaged or a string
-     *        acting as a shortcut. Supports `deep properties`.
+     * @extra [map] can be a function of type `mapFn` that maps the value to be
+     *        averaged or a string acting as a shortcut. Supports `deep properties`.
      *
      * @callback mapFn
      *
@@ -10938,8 +10997,8 @@
      * @method median([map])
      * @returns Number
      * @short Gets the median average for all values in the array.
-     * @extra [map] may be a function mapping the value to be averaged or a string
-     *        acting as a shortcut.
+     * @extra [map] can be a function of type `mapFn` that maps the value to be
+     *        averaged or a string acting as a shortcut.
      *
      * @callback mapFn
      *
@@ -11043,9 +11102,9 @@
   defineInstanceAndStatic(sugarObject, {
 
     /***
-     * @method forEach(fn)
+     * @method forEach(eachFn)
      * @returns Object
-     * @short Runs `fn` against each property in the object.
+     * @short Runs `eachFn` against each property in the object.
      * @extra Does not iterate over inherited or non-enumerable properties.
      *
      * @callback eachFn
@@ -11060,14 +11119,14 @@
      *     // val = 'b', key = a
      *   });
      *
-     * @param {eachFn} fn
+     * @param {eachFn} eachFn
      * @callbackParam {Property} val
      * @callbackParam {string} key
      * @callbackParam {Object} obj
      *
      ***/
-    'forEach': function(obj, fn) {
-      return objectForEach(obj, fn);
+    'forEach': function(obj, eachFn) {
+      return objectForEach(obj, eachFn);
     },
 
     /***
@@ -11075,8 +11134,8 @@
      * @returns Object
      * @short Maps the object to another object whose properties are the values
      *        returned by `map`.
-     * @extra `map` can also be a string, which is a shortcut for a function that
-     *        gets that property (or invokes a function) on each element.
+     * @extra `map` can be a function of type `mapFn` or a string that acts as a
+     *        shortcut and gets a property or invokes a function on each element.
      *        Supports `deep properties`.
      *
      * @callback mapFn
@@ -11107,7 +11166,8 @@
      * @method some(search)
      * @returns Boolean
      * @short Returns true if `search` is true for any property in the object.
-     * @extra Implements `enhanced matching`.
+     * @extra `search` can be any property or a function of type `searchFn`.
+     *        Implements `enhanced matching`.
      *
      * @callback searchFn
      *
@@ -11135,7 +11195,8 @@
      * @method every(search)
      * @returns Boolean
      * @short Returns true if `search` is true for all properties in the object.
-     * @extra Implements `enhanced matching`.
+     * @extra `search` can be any property or a function of type `searchFn`.
+     *        Implements `enhanced matching`.
      *
      * @callback searchFn
      *
@@ -11163,7 +11224,8 @@
      * @method filter(search)
      * @returns Array
      * @short Returns a new object with properties that match `search`.
-     * @extra Implements `enhanced matching`.
+     * @extra `search` can be any property or a function of type `searchFn`.
+     *        Implements `enhanced matching`.
      *
      * @callback searchFn
      *
@@ -11241,7 +11303,8 @@
      * @method find(search)
      * @returns Boolean
      * @short Returns the first key whose value matches `search`.
-     * @extra Implements `enhanced matching`. Note that "first" is
+     * @extra `search` can be any property or a function of type `searchFn`.
+     *        Implements `enhanced matching`. Note that "first" is
      *        implementation-dependent. If order is important an array should be
      *        used instead.
      *
@@ -11271,7 +11334,8 @@
      * @method count(search)
      * @returns Number
      * @short Counts all properties in the object that match `search`.
-     * @extra Implements `enhanced matching`.
+     * @extra `search` can be any property or a function of type `searchFn`.
+     *        Implements `enhanced matching`.
      *
      * @callback searchFn
      *
@@ -11302,7 +11366,8 @@
      * @method none(search)
      * @returns Boolean
      * @short Returns true if none of the properties in the object match `search`.
-     * @extra Implements `enhanced matching`.
+     * @extra `search` can be any property or a function of type `searchFn`.
+     *        Implements `enhanced matching`.
      *
      * @callback searchFn
      *
@@ -11332,8 +11397,8 @@
      * @method sum([map])
      * @returns Number
      * @short Sums all properties in the object.
-     * @extra [map] may be a function mapping the value to be summed or a string
-     *        acting as a shortcut.
+     * @extra [map] can be a function of type `mapFn` that maps the value to be
+     *        summed or a string acting as a shortcut.
      *
      * @callback mapFn
      *
@@ -11363,8 +11428,8 @@
      * @method average([map])
      * @returns Number
      * @short Gets the mean average of all properties in the object.
-     * @extra [map] may be a function mapping the value to be averaged or a string
-     *        acting as a shortcut.
+     * @extra [map] can be a function of type `mapFn` that maps the value to be
+     *        averaged or a string acting as a shortcut.
      *
      * @callback mapFn
      *
@@ -11393,8 +11458,8 @@
      * @method median([map])
      * @returns Number
      * @short Gets the median average of all properties in the object.
-     * @extra [map] may be a function mapping the value to be averaged or a string
-     *        acting as a shortcut.
+     * @extra [map] can be a function of type `mapFn` that maps the value to be
+     *        averaged or a string acting as a shortcut.
      *
      * @callback mapFn
      *
@@ -11424,9 +11489,9 @@
      * @returns Mixed
      * @short Returns the key of the property in the object with the lowest value.
      * @extra If [all] is true, will return an object with all properties in the
-     *        object with the lowest value. [map] may be passed in place of [all]
-     *        and is a function mapping the value to be checked or a string acting
-     *        as a shortcut.
+     *        object with the lowest value. [map] can be passed in place of [all]
+     *        and is a function of type `mapFn` that maps the value to be checked
+     *        or a string acting as a shortcut.
      *
      * @callback mapFn
      *
@@ -11458,9 +11523,9 @@
      * @returns Mixed
      * @short Returns the key of the property in the object with the highest value.
      * @extra If [all] is true, will return an object with all properties in the
-     *        object with the highest value. [map] may be passed in place of [all]
-     *        and is a function mapping the value to be checked or a string acting
-     *        as a shortcut.
+     *        object with the highest value. [map] can be passed in place of [all]
+     *        and is a function of type `mapFn` that maps the value to be checked
+     *        or a string acting as a shortcut.
      *
      * @callback mapFn
      *
@@ -11493,9 +11558,9 @@
      * @short Returns the key of the property in the object with the least commonly
      *        occuring value.
      * @extra If [all] is true, will return an object with all properties in the
-     *        object with the least common value. [map] may be passed in place of
-     *        [all] and is a function mapping the value to be checked or a string
-     *        acting as a shortcut.
+     *        object with the least common value. [map] can be passed in place of
+     *        [all] and is a function of type `mapFn` that maps the value to be
+     *        checked or a string acting as a shortcut.
      *
      * @callback mapFn
      *
@@ -11528,9 +11593,9 @@
      * @short Returns the key of the property in the object with the most commonly
      *        occuring value.
      * @extra If [all] is true, will return an object with all properties in the
-     *        object with the most common value. [map] may be passed in place of
-     *        [all] and is a function mapping the value to be checked or a string
-     *        acting as a shortcut.
+     *        object with the most common value. [map] can be passed in place of
+     *        [all] and is a function of type `mapFn` that maps the value to be
+     *        checked or a string acting as a shortcut.
      *
      * @callback mapFn
      *
@@ -11586,7 +11651,7 @@
    * @method getOption(name)
    * @returns Mixed
    * @accessor
-   * @short Gets an option used interally by Number.
+   * @short Gets an option used internally by Number.
    * @example
    *
    *   Sugar.Number.getOption('thousands');
@@ -11596,7 +11661,7 @@
    ***
    * @method setOption(name, value)
    * @accessor
-   * @short Sets an option used interally by Number.
+   * @short Sets an option used internally by Number.
    * @extra If `value` is `null`, the default value will be restored.
    * @options
    *
@@ -11945,11 +12010,11 @@
     },
 
     /***
-     * @method times(fn)
+     * @method times(indexMapFn)
      * @returns Mixed
-     * @short Calls `fn` a number of times equivalent to the number.
-     * @extra Any non-undefined return values of `fn` will be collected and
-     *        returned in an array.
+     * @short Calls `indexMapFn` a number of times equivalent to the number.
+     * @extra Any non-undefined return values of `indexMapFn` will be collected
+     *        and returned in an array.
      *
      * @callback indexMapFn
      *
@@ -11964,13 +12029,13 @@
      *
      * @callbackParam {number} i
      * @callbackReturns {any} indexMapFn
-     * @param {indexMapFn} fn
+     * @param {indexMapFn} indexMapFn
      *
      ***/
-    'times': function(n, fn) {
+    'times': function(n, indexMapFn) {
       var arr, result;
       for(var i = 0; i < n; i++) {
-        result = fn.call(n, i);
+        result = indexMapFn.call(n, i);
         if (isDefined(result)) {
           if (!arr) {
             arr = [];
@@ -12153,6 +12218,7 @@
   var _partial  = privatePropertyAccessor('partial');
   var _canceled = privatePropertyAccessor('canceled');
 
+  // istanbul ignore next
   var createInstanceFromPrototype = Object.create || function(prototype) {
     var ctor = function() {};
     ctor.prototype = prototype;
@@ -12803,7 +12869,7 @@
         result  = [];
 
     if (!rangeIsValid(range)) {
-      return [];
+      return countOnly ? NaN : [];
     }
     if (isFunction(step)) {
       fn = step;
@@ -12979,16 +13045,16 @@
     },
 
     /***
-     * @method every(amount, [fn])
+     * @method every(amount, [everyFn])
      * @returns Array
-     * @short Iterates through the range by `amount`, calling [fn] for each step.
+     * @short Iterates through the range by `amount`, calling [everyFn] for each step.
      * @extra Returns an array of each increment visited. For date ranges,
      *        `amount` can also be a string like `"2 days"`. This will step
      *        through the range by incrementing a date object by that specific
      *        unit, and so is generally preferable for vague units such as
      *        `"2 months"`.
      *
-     * @callback rangeEveryFn
+     * @callback everyFn
      *
      *   el   The element of the current iteration.
      *   i    The index of the current iteration.
@@ -13004,14 +13070,14 @@
      *   })
      *
      * @param {string|number} amount
-     * @param {rangeEveryFn} [fn]
+     * @param {everyFn} [everyFn]
      * @callbackParam {RangeElement} el
      * @callbackParam {number} i
      * @callbackParam {Range} r
      *
      ***/
-    'every': function(amount, fn) {
-      return rangeEvery(this, amount, false, fn);
+    'every': function(amount, everyFn) {
+      return rangeEvery(this, amount, false, everyFn);
     },
 
     /***
@@ -13140,13 +13206,13 @@
   defineInstance(sugarNumber, {
 
     /***
-     * @method upto(num, [step] = 1, [fn])
+     * @method upto(num, [step] = 1, [everyFn])
      * @returns Array
      * @short Returns an array containing numbers from the number up to `num`.
-     * @extra Optionally calls [fn] for each number in that array. [step] allows
-     *        multiples other than 1. [fn] can be passed in place of [step].
+     * @extra Optionally calls [everyFn] for each number in that array. [step] allows
+     *        multiples other than 1. [everyFn] can be passed in place of [step].
      *
-     * @callback rangeEveryFn
+     * @callback everyFn
      *
      *   el   The element of the current iteration.
      *   i    The index of the current iteration.
@@ -13160,17 +13226,17 @@
      *   });
      *   (2).upto(8, 2) -> [2, 4, 6, 8]
      *
-     * @signature upto(num, [fn])
+     * @signature upto(num, [everyFn])
      * @param {number} num
      * @param {number} [step]
-     * @param {rangeEveryFn} [fn]
+     * @param {everyFn} [everyFn]
      * @callbackParam {RangeElement} el
      * @callbackParam {number} i
      * @callbackParam {Range} r
      *
      ***/
-    'upto': function(n, num, step, fn) {
-      return rangeEvery(new Range(n, num), step, false, fn);
+    'upto': function(n, num, step, everyFn) {
+      return rangeEvery(new Range(n, num), step, false, everyFn);
     },
 
     /***
@@ -13213,13 +13279,13 @@
   });
 
   /***
-   * @method downto(num, [step] = 1, [fn])
+   * @method downto(num, [step] = 1, [everyFn])
    * @returns Array
    * @short Returns an array containing numbers from the number down to `num`.
-   * @extra Optionally calls [fn] for each number in that array. [step] allows
-   *        multiples other than 1. [fn] can be passed in place of [step].
+   * @extra Optionally calls [everyFn] for each number in that array. [step] allows
+   *        multiples other than 1. [everyFn] can be passed in place of [step].
    *
-   * @callback rangeEveryFn
+   * @callback everyFn
    *
    *   el   The element of the current iteration.
    *   i    The index of the current iteration.
@@ -13233,10 +13299,10 @@
    *   });
    *   (8).downto(2, 2) -> [8, 6, 4, 2]
    *
-   * @signature upto(num, [fn])
+   * @signature upto(num, [everyFn])
    * @param {number} num
    * @param {number} [step]
-   * @param {rangeEveryFn} [fn]
+   * @param {everyFn} [everyFn]
    * @callbackParam {RangeElement} el
    * @callbackParam {number} i
    * @callbackParam {Range} r
@@ -13278,7 +13344,7 @@
   // Duration text formats
   var RANGE_REG_FROM_TO        = /(?:from)?\s*(.+)\s+(?:to|until)\s+(.+)$/i,
       RANGE_REG_REAR_DURATION  = RegExp('(.+)\\s*for\\s*' + FULL_CAPTURED_DURATION, 'i'),
-      RANGE_REG_FRONT_DURATION = RegExp('(?:for)?\\s*'+ FULL_CAPTURED_DURATION +'\\s*(?:starting)?\\s*at\\s*(.+)', 'i');
+      RANGE_REG_FRONT_DURATION = RegExp('(?:for)?\\s*'+ FULL_CAPTURED_DURATION +'\\s*(?:starting)?\\s(?:at\\s)?(.+)', 'i');
 
   var DateRangeConstructor = function(start, end) {
     if (arguments.length === 1 && isString(start)) {
