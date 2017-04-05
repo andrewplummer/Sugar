@@ -231,8 +231,7 @@ namespace('Date', function () {
     // which is abbreviated ISO-8601 format: yy-mm-dd
     assertDateParsed('01/02/03', new Date(2003, 0, 2));
 
-    var d = testCreateDate('08/25/0001');
-    d = new Date(d.getTime() - (d.getTimezoneOffset() * 60 * 1000));
+    var d = testSubtractTimezoneOffset(testCreateDate('08/25/0001'));
     equal(d, new Date(-62115206400000), 'mm/dd/0001');
   });
 
@@ -1073,8 +1072,7 @@ namespace('Date', function () {
     // New handling of UTC dates
 
     var date1 = testCreateUTCDate('2001-06-15');
-    var date2 = new Date(2001, 5, 15);
-    date2.setTime(date2.getTime() - (date2.getTimezoneOffset() * 60 * 1000));
+    var date2 = testSubtractTimezoneOffset(new Date(2001, 5, 15));
 
     equal(date1, date2, 'is equal to date with timezone subtracted');
     equal(testIsUTC(date1), false, 'does not set internal flag');

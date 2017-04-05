@@ -117,9 +117,13 @@ testIsUTC = function(d) {
   return testGetPrivateProp(d, 'utc');
 }
 
-testSetUTC = function(d) {
-  d.setTime(d.getTime() + d.getTimezoneOffset() * 60 * 1000);
+testSubtractTimezoneOffset = function(d) {
+  d.setTime(d.getTime() - d.getTimezoneOffset() * 60 * 1000);
   return d;
+}
+
+testGetTimezoneDiff = function(d1, d2) {
+  return (d2.getTimezoneOffset() - d1.getTimezoneOffset()) * 60 * 1000;
 }
 
 testGetWeekday = function(weekday, weekOffset, hours, minutes, seconds, milliseconds) {
@@ -208,10 +212,6 @@ getMonthFromDate = function(d, utc) {
 
 testGetHours = function(num) {
   return Math.floor(num < 0 ? 24 + num : num);
-}
-
-testGetTimezoneDiff = function(d1, d2) {
-  return (d2.getTimezoneOffset() - d1.getTimezoneOffset()) * 60 * 1000;
 }
 
 getExpectedTimezoneOffset = function(d, iso) {
