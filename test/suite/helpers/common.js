@@ -48,6 +48,10 @@ testGetPrivateProp = function(obj, name) {
   return obj[testGetPrivatePropKey(name)];
 }
 
+testGetStringified = function(obj) {
+  return typeof obj === 'object' && typeof JSON !== 'undefined' ? JSON.stringify(obj) : obj;
+}
+
 testClone = function (obj) {
   if (obj == null || typeof obj === 'string' || typeof obj === 'number' || typeof obj === 'boolean') {
     return obj;

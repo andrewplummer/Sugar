@@ -367,10 +367,14 @@ namespace('Date Ranges', function () {
     equal(getRange(new Date(2001, 0), new Date(2004, 0)).years(), 3, '5 year range');
     equal(getRange(new Date(2001, 0), new Date(2001, 2)).months(), 2, 'January to March in months');
     equal(getRange(new Date(2001, 0), new Date(2001, 2)).days(), 59, 'January to March in days');
-    equal(getRange(new Date(2001, 0), new Date(2001, 2)).hours(), 1416, 'January to March in hours');
-    equal(getRange(new Date(2001, 0), new Date(2001, 2)).minutes(), 84960, 'January to March in minutes');
-    equal(getRange(new Date(2001, 0), new Date(2001, 2)).seconds(), 5097600, 'January to March in seconds');
-    equal(getRange(new Date(2001, 0), new Date(2001, 2)).milliseconds(), 5097600000, 'January to March in ms');
+
+    var range = getRange(new Date(2001, 0), new Date(2001, 2))
+    var tzShift = (range.end.getTimezoneOffset() - range.start.getTimezoneOffset());
+
+    equal(range.hours(), 1416 + tzShift / 60, 'January to March in hours');
+    equal(range.minutes(), 84960 + tzShift, 'January to March in minutes');
+    equal(range.seconds(), 5097600 + tzShift * 60, 'January to March in seconds');
+    equal(range.milliseconds(), 5097600000 + tzShift * 60 * 1000, 'January to March in ms');
 
     equal(getRange(1, 2001).seconds(), 2, 'Number ranges are taken as milliseconds');
     equal(getRange('a', 'f').seconds(), NaN, 'String ranges return NaN for date units');

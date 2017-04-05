@@ -201,6 +201,9 @@ namespace('Date', function () {
     assertDateParsed('this week tuesday at 5pm', { future: true }, testGetWeekday(2, 0, 17));
     assertDateParsed('today at 5pm', { future: true }, new Date(now.getFullYear(), now.getMonth(), now.getDate(), 17));
 
+    // Issue #582 "now" with "fromUTC"
+    assertDateParsed('now', { fromUTC: true }, new Date(), 'now with fromUTC');
+
   });
 
   group('Create | Simple', function() {
@@ -1917,7 +1920,7 @@ namespace('Date', function () {
     raisesError(function(){ run(d, 'format', ['{foo}']); }, 'unknown ldml token raises error', TypeError);
 
     // Not all environments provide that so just make sure it returns the abbreviation or nothing.
-    equal(/\w{3}|^$/.test(run(d, 'format', ['{z}'])), true, 'Timezone abbreviation');
+    equal(/[-+]\d{2,4}|\w{3,5}|^$/.test(run(d, 'format', ['{z}'])), true, 'Timezone abbreviation');
 
     test(new Date('January 4, 2010'), ['{D}'], '4', 'Day of the year');
     test(new Date('January 4, 2010'), ['{DDD}'], '004', 'Day of the year padded');
@@ -2065,7 +2068,8 @@ namespace('Date', function () {
     raisesError(function(){ run(d, 'format', ['%foo']); }, 'unknown strf token raises error', TypeError);
 
     equal(/[+-]\d{4}/.test(run(d, 'format', ['%z'])), true, 'Timezone offset');
-    equal(/\w{3}/.test(run(d, 'format', ['%Z'])), true, 'Timezone abbreviation');
+    equal(/[-+]\d{2,4}|\w{3,5}|^$/.test(run(d, 'format', ['%Z'])), true, 'Timezone abbreviation');
+    equal(/[-+]\d{2,4}|\w{3,5}|^$/.test(run(d, 'format', ['{z}'])), true, 'Timezone abbreviation');
 
     test(new Date('January 1, 2010'), ['%c', 'en-GB'], 'Fri 1 Jan 2010 0:00', 'Preferred stamp | UK');
 
