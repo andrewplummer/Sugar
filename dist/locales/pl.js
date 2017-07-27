@@ -9,7 +9,7 @@
 Sugar.Date.addLocale('pl', {
   'plural': true,
   'units': 'milisekund:a|y|,sekund:a|y|,minut:a|y|,godzin:a|y|,dzień|dni|dni,tydzień|tygodnie|tygodni,miesiąc|miesiące|miesięcy,rok|lata|lat',
-  'months': 'sty:cznia||czeń,lut:ego||y,mar:ca||zec,kwi:etnia||ecień,maj:a|,cze:rwca||rwiec,lip:ca||iec,sie:rpnia||rpień,wrz:eśnia||esień,paź:dziernika||dziernik,lis:topada||topad,gru:dnia||dzień',
+  'months': 'sty:czeń||cznia,lut:y||ego,mar:zec||ca,kwi:ecień||etnia,maj:||a,cze:rwiec||rwca,lip:iec||ca,sie:rpień||rpnia,wrz:esień||eśnia,paź:dziernik||dziernika,lis:topad||topada,gru:dzień||dnia',
   'weekdays': 'nie:dziela||dzielę,pon:iedziałek|,wt:orek|,śr:oda||odę,czw:artek|,piątek|pt,sobota|sb|sobotę',
   'numerals': 'zero,jeden|jedną,dwa|dwie,trzy,cztery,pięć,sześć,siedem,osiem,dziewięć,dziesięć',
   'tokens': 'w|we,roku',
