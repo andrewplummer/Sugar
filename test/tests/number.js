@@ -130,7 +130,7 @@ namespace('Number', function () {
   });
 
   method('exp', function() {
-    test(1, Math.E);
+    equalWithMargin(run(1, 'exp', []), Math.E, 0.000000000000001);
     test(0, 1);
   });
 
