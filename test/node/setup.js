@@ -143,10 +143,6 @@ module.exports = {
     expireCache();
   },
 
-  resetPolyfills: function(name) {
-    load('../suite/resets/' + name + '-node.js');
-  },
-
   logTotals: function(exitOnError) {
     if (globalFailures) {
       notice('Fail! ' + globalFailures + ' failures', logRed);

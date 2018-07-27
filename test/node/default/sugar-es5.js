@@ -1,7 +1,5 @@
 var runner = require('../setup');
 
-runner.resetPolyfills('es5');
-
 Sugar = runner.load('../../packages/sugar-es5');
 
 // Tests

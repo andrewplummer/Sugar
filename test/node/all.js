@@ -3,10 +3,6 @@ var runner = require('./setup');
 runner.notice('Core');
 runner.load('./default/sugar-core.js');
 
-runner.notice('Polyfills');
-runner.load('./default/sugar-es5.js');
-runner.load('./default/sugar-es6.js');
-
 runner.notice('Default');
 runner.load('./default/dist.js');
 runner.load('./default/sugar.js');

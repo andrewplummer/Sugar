@@ -58,8 +58,6 @@ namespace('Array', function () {
     }, 'fromIndex conversion throws', RangeError);
 
     equal([0].includes(0),   true,  '[0] includes 0');
-    equal([0].includes(-0),  false, '[0] includes -0');
-    equal([-0].includes(0),  false, '[0] includes 0');
     equal([-0].includes(-0), true,  '[0] includes -0');
 
   });

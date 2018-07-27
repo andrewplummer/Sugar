@@ -1,1 +1,0 @@
-delete Array.prototype.includes;

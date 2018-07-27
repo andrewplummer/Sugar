@@ -1,9 +1,5 @@
 var runner = require('../setup');
 
-runner.resetPolyfills('b64');
-runner.resetPolyfills('es6');
-runner.resetPolyfills('es7');
-
 Sugar = runner.load('../../dist/sugar');
 runner.loadAll('../../dist/locales');
 
