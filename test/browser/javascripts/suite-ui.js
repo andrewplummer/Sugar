@@ -1,5 +1,9 @@
 (function($) {
 
+  function hasOwnProperty(obj, key) {
+    return Object.prototype.hasOwnProperty.call(obj, key);
+  }
+
   function arrayEach(arr, fn) {
     for(var i = 0; i < arr.length; i++) {
       fn(arr[i], i, arr);
@@ -59,7 +63,7 @@
       return '<p class="warning">Warning: ' + message + '</p>';
     } else {
       var html = '<p class="fail">' + message;
-      if (f.hasOwnProperty('expected') && f.hasOwnProperty('actual')) {
+      if (hasOwnProperty(f, 'expected') && hasOwnProperty(f, 'actual')) {
         expected = getStringified(f.expected);
         actual = getStringified(f.actual);
         html += ' | expected: ' + escapeHTML(expected) + ' actual: ' + escapeHTML(actual);
@@ -84,7 +88,7 @@
 
     stringify:
     for(var key in p){
-      if(!p.hasOwnProperty(key)) continue;
+      if(!hasOwnProperty(p, key)) continue;
       if(p[key] === undefined) {
         arr.push(key + ': undefined');
       } else {
