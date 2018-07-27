@@ -556,7 +556,7 @@ function createMinifiedBuild(outputPath, modules, locales) {
   return gulp.src(tmpPath)
     .pipe(compileSingle(outputPath))
     .pipe(require('through2').obj(function(file, enc, cb) {
-      fs.unlink(tmpPath);
+      fs.unlinkSync(tmpPath);
       cb();
     }));
 }
@@ -863,12 +863,12 @@ var PACKAGE_DEFINITIONS = {
     keywords: ['number']
   },
   'sugar-enumerable': {
-    modules: 'ES6:Array,ES7:Array,Enumerable',
+    modules: 'ES6:Array,ES6:String,ES7:Array,Enumerable',
     description: 'Enumerable module for the Sugar Javascript utility library.',
     keywords: ['array', 'object']
   },
   'sugar-array': {
-    modules: 'ES6:Array,ES7:Array,Array',
+    modules: 'ES6:Array,ES6:String,ES7:Array,Array',
     description: 'Array module for the Sugar Javascript utility library.',
     keywords: ['array']
   },
