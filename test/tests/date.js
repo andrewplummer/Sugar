@@ -18,9 +18,9 @@ namespace('Date', function () {
 
     // Issue #219
 
-    test(testCreateDate('29:00'),  true,  'hours may fall outside range');
-    test(testCreateDate('30:00'),  false, 'no hours allowed outside range');
-    test(testCreateDate('139:00'), false, '3 digits not supported');
+    assertDateNotParsed('29:00');
+    assertDateNotParsed('30:00');
+    assertDateNotParsed('139:00');
 
     // These dates actually will parse out natively in V8
     // equal(Date.create('05:75').isValid(), false, 'no minutes allowed outside range');
@@ -231,8 +231,11 @@ namespace('Date', function () {
     // which is abbreviated ISO-8601 format: yy-mm-dd
     assertDateParsed('01/02/03', new Date(2003, 0, 2));
 
+    // Failing in Chrome 68
+    // Chromium Issue tracker #867806
     var d = testSubtractTimezoneOffset(testCreateDate('08/25/0001'));
-    equal(d, new Date(-62115206400000), 'mm/dd/0001');
+    //equal(d, new Date(-62115206400000), 'mm/dd/0001');
+
   });
 
   group('Create | American Style Dashes', function() {
@@ -591,6 +594,13 @@ namespace('Date', function () {
     // the ES6 spec does not, so disallowing this format.
     assertDateNotParsed('1998-12-31T23:59:60Z');
 
+    // Year tokens beyond 4 digits must be prefixed with - or +
+    assertDateParsed('-10000-05-05', new Date(-10000, 4, 5));
+    assertDateParsed('+10000-05-05', new Date(10000, 4, 5));
+
+    assertDateParsed('-100000-05-05', new Date(-100000, 4, 5));
+    assertDateParsed('+100000-05-05', new Date(100000, 4, 5));
+
   });
 
   group('Create | Time Formats', function() {
@@ -599,6 +609,9 @@ namespace('Date', function () {
     assertDateParsed('1:30:22pm',     new Date(now.getFullYear(), now.getMonth(), now.getDate(), 13, 30, 22));
     assertDateParsed('1:30:22.432pm', new Date(now.getFullYear(), now.getMonth(), now.getDate(), 13, 30, 22, 432));
     assertDateParsed('17:48:03.947',  new Date(now.getFullYear(), now.getMonth(), now.getDate(), 17, 48, 3, 947));
+
+    // Issue #634 Partial Time
+    assertDateParsed('10:', new Date(now.getFullYear(), now.getMonth(), now.getDate(), 10));
   });
 
   group('Create | .NET JSON', function() {
@@ -765,8 +778,23 @@ namespace('Date', function () {
     assertDateParsed('the beginning of next year', getRelativeDateReset(1));
     assertDateParsed('the beginning of last year', getRelativeDateReset(-1));
 
+    assertDateParsed('the end of the year', new Date(now.getFullYear(), 11, 31, 23, 59, 59, 999));
+    assertDateParsed('the end of this year', new Date(now.getFullYear(), 11, 31, 23, 59, 59, 999));
+
+    // TODO: why not more simple?
     assertDateParsed('the end of next year', testGetEndOfMonth(now.getFullYear() + 1, 11));
     assertDateParsed('the end of last year', testGetEndOfMonth(now.getFullYear() - 1, 11));
+
+    // Without articles
+    assertDateParsed('beginning of year', new Date(now.getFullYear(), 0, 1));
+    assertDateParsed('beginning of month', new Date(now.getFullYear(), now.getMonth(), 1));
+    assertDateParsed('beginning of week', testGetWeekday(0));
+    assertDateParsed('beginning of day', new Date(now.getFullYear(), now.getMonth(), now.getDate()));
+
+    assertDateParsed('end of year', new Date(now.getFullYear(), 11, 31, 23, 59, 59, 999));
+    assertDateParsed('end of month', testGetEndOfRelativeMonth(0));
+    assertDateParsed('end of week', testGetWeekday(6, 0, 23, 59, 59, 999));
+    assertDateParsed('end of day', new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999));
 
     assertDateParsed('the beginning of the day', getRelativeDateReset(0,0,0));
 
@@ -1295,6 +1323,51 @@ namespace('Date', function () {
     equal(run(testCreateDate('1 day ago', 'en'), 'isPast'), true, 'isPast should always work regardless of locale');
     equal(run(testCreateDate('1 day from now', 'en'), 'isFuture'), true, 'isFuture should always work regardless of locale');
     testSetLocale('en');
+
+  });
+
+  group('Create | Out of bounds', function() {
+
+    // Issue #636 - Months
+    // Note that formats like 2/30/2018 are intentionally
+    // NOT considered out of bounds to simplify logic as well
+    // as retain parity with most browser vendors.
+    assertDateNotParsed('19/6/2018');
+    assertDateNotParsed('13/6/2018');
+    assertDateNotParsed('0/6/2018');
+
+    // Years
+    assertDateParsed('1/1/10000',  new Date(10000, 0, 1));
+    assertDateParsed('1/1/100000', new Date(100000, 0, 1));
+
+    // Note that spec indicates valid dates are 8.64E15 ms on
+    // either side of the unix epoch. This translates to the
+    // year 275760, however for simplicity parsing allows any
+    // year between 4-6 digits.
+    assertDateNotParsed('1/1/1000000');
+
+    // Dates
+    assertDateNotParsed('1/0/2018');
+    assertDateNotParsed('1/32/2018');
+    assertDateNotParsed('1/0/2018');
+    assertDateNotParsed('1/00/2018');
+
+    // Hours
+    assertDateNotParsed('25:00');
+    assertDateNotParsed('30:00');
+    assertDateNotParsed('125:00');
+
+    // Chrome seems to (mistakenly?) parse minutes and seconds here as years.
+    // Can add this back when native fallbacks are turned off.
+
+    // Minutes
+    //assertDateNotParsed('00:60');
+    //assertDateNotParsed('00:125');
+
+    // Seconds
+    //assertDateNotParsed('00:00:60');
+    //assertDateNotParsed('00:00:125');
+    assertDateNotParsed('00:00:125.999');
 
   });
 
@@ -2591,7 +2664,7 @@ namespace('Date', function () {
 
 
     var d = new Date(2010, 10);
-    var years = Math.round((new Date() - d) / 1000 / 60 / 60 / 24 / 365.25);
+    var years = Math.floor((new Date() - d) / 1000 / 60 / 60 / 24 / 365.25);
     equal(run(d, 'yearsUntil', ['Thursday']), years, 'Relative dates should not be influenced by other input');
 
     var d = new Date();
