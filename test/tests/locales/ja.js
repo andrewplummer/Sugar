@@ -24,8 +24,8 @@ namespace('Date | Japanese', function () {
     assertDateParsed('3時45分', new Date(now.getFullYear(), now.getMonth(), now.getDate(), 3, 45));
     assertDateParsed('月曜日3時45分', testGetWeekday(1,0,3,45));
 
-    // KABUKICHO!
-    assertDateParsed('29時', testDateSet(getRelativeDateReset(0,0,1),{hour:5}));
+    // Sorry Kabukicho
+    assertDateNotParsed('29時');
 
     assertDateParsed('一月',   new Date(now.getFullYear(), 0));
     assertDateParsed('二月',   new Date(now.getFullYear(), 1));
