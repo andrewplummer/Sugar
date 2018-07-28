@@ -1438,7 +1438,6 @@ namespace('Date', function () {
   });
 
   method('get', function() {
-
     var d = new Date('August 25, 2010 11:45:20');
 
     test(d, ['next week'], new Date('September 1, 2010 11:45:20'), 'next week');
@@ -1475,6 +1474,8 @@ namespace('Date', function () {
     equal(d2, new Date(2010, 7, d1.getDate() + 1), 'fromUTC can override utc preservation');
     equal(testIsUTC(d2), false, 'setUTC can override utc preservation');
 
+    // Issue #620 - Get with preference
+    test(new Date(1833, 11, 1), ['December', { past: true }], new Date(1832, 11, 1), 'Preference option should work');
   });
 
   method('set', function() {
