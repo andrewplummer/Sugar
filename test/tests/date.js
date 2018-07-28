@@ -452,6 +452,12 @@ namespace('Date', function () {
     // Date should not override an incorrect weekday
     assertDateParsed('Wednesday July 3rd, 2008', new Date(2008, 6, 2));
 
+    // Issue #630 Month and date with dashes
+    assertDateParsed('Mar-03', new Date(now.getFullYear(), 2, 3));
+    assertDateParsed('Mar-3', new Date(now.getFullYear(), 2, 3));
+    assertDateParsed('03-Mar', new Date(now.getFullYear(), 2, 3));
+    assertDateParsed('3-Mar', new Date(now.getFullYear(), 2, 3));
+
   });
 
   group('Create | Core Formats', function() {
