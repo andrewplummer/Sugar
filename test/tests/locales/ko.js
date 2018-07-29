@@ -11,6 +11,9 @@ namespace('Date | Korean', function () {
 
   method('create', function() {
 
+    // Order here for ambiguity in Korean dates.
+    assertDateParsed('내일',   getRelativeDateReset(0,0,1));
+
     assertDateParsed('15일', new Date(now.getFullYear(), now.getMonth(), 15));
 
     assertDateParsed('2011년5월15일', new Date(2011, 4, 15));
