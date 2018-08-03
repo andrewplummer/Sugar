@@ -1462,6 +1462,7 @@ namespace('Array', function() {
   });
 
   method('max', function() {
+
     test([12,87,55], 87, 'no argument');
     test([12,87,55], oneUndefined, 87, 'undefined');
     test([12,87,55], [null], 87, 'null');
@@ -1506,7 +1507,11 @@ namespace('Array', function() {
     test(arr, ['a.b.c'], {id:1,a:{b:{c:6}}}, 'by deep dot operator');
     test(arr, [true, 'a.b.c'], [{id:1,a:{b:{c:6}}},{id:2,a:{b:{c:6}}}], 'by deep dot operator multiple');
 
+    test(['one','two','three'], ['length'], 'three', 'Shold allow a string property');
+    test(['','two','three'], ['length'], 'three', 'Shold allow an empty string');
+
   });
+
 
   method('least', function() {
 
