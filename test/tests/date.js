@@ -1476,6 +1476,7 @@ namespace('Date', function () {
 
     // Issue #620 - Get with preference
     test(new Date(1833, 11, 1), ['December', { past: true }], new Date(1832, 11, 1), 'Preference option should work');
+    test(new Date(2017, 7, 14), ['Saturday', { past: true }], new Date(2017, 7, 12), 'Preference option should work');
   });
 
   method('set', function() {
