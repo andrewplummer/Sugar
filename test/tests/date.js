@@ -3891,4 +3891,21 @@ namespace('Number', function () {
 
   });
 
+  group('Specificity', function() {
+    var obj;
+
+    obj = {};
+    Sugar.Date.create('tomorrow at 8:00pm', { params: obj });
+    // TODO: make these constants
+    equal(obj.specificity, 2);
+
+    obj = {};
+    Sugar.Date.create('tomorrow at noon', { params: obj });
+    equal(obj.specificity, 3);
+
+    obj = {};
+    Sugar.Date.create('the end of february', { params: obj });
+    equal(obj.specificity, 4);
+  });
+
 });
