@@ -276,7 +276,10 @@ namespace('Date', function () {
 
     // Dots
     assertDateParsed('08.10.1978', 'en-GB', new Date(1978, 9, 8));
-    assertDateParsed('8.10.1978', 'en-GB',  new Date(1978, 9, 8));
+    assertDateParsed('8.10.1978',  'en-GB', new Date(1978, 9, 8));
+    assertDateParsed('8.10',       'en-GB', new Date(thisYear, 9, 8));
+    assertDateParsed('1978.8.10',  'en-GB', new Date(1978, 7, 10));
+    assertDateParsed('10.1978',    'en-GB', new Date(1978, 9, 1));
 
     assertDateParsed('08-05-05', 'en-GB', new Date(2005, 4, 8));
     assertDateParsed('8/10/85', new Date(1985, 7, 10));

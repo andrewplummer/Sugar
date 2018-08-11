@@ -29,6 +29,10 @@ namespace('Date | Finnish', function () {
 
     assertDateParsed('torstaina 5. tammikuuta 2012 kello 15:45', new Date(2012, 0, 5, 15, 45));
 
+    // Standalone time format.
+    assertDateParsed('3.45', new Date(now.getFullYear(), now.getMonth(), now.getDate(), 3, 45));
+
+
     assertDateParsed('tammikuu',  new Date(now.getFullYear(),  0));
     assertDateParsed('helmikuu',  new Date(now.getFullYear(),  1));
     assertDateParsed('maaliskuu', new Date(now.getFullYear(),  2));
