@@ -355,6 +355,9 @@ namespace('Date', function () {
     assertDateParsed('1978.08',    new Date(1978, 7));
     assertDateParsed('1978.8',     new Date(1978, 7));
 
+    // American Style
+    assertDateParsed('4.15.16', new Date(2016, 3, 15));
+
     assertDateParsed('01-02-03', 'en-GB', new Date(2003, 1, 1));
     assertDateParsed('01/02/03', 'en-GB', new Date(2003, 1, 1));
 
