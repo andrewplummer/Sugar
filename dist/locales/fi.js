@@ -19,6 +19,7 @@ Sugar.Date.addLocale('fi', {
   'stamp': '{dow} {d} {mon} {yyyy} {time}',
   'time': '{H}.{mm}',
   'timeMarkers': 'klo,kello',
+  'timeSeparator': '.',
   'ordinalSuffix': '.',
   'relative': function(num, unit, ms, format) {
     var units = this['units'];
