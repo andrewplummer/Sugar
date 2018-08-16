@@ -59,10 +59,13 @@ namespace('Date | Italian', function () {
     assertDateParsed("l'anno scorso",   getRelativeDate(-1));
     assertDateParsed("l'anno prossimo", getRelativeDate(1));
 
-    assertDateParsed('prossimo lunedì', testGetWeekday(1, 1));
-    assertDateParsed('scorsa lunedì',   testGetWeekday(1, -1));
+    assertDateParsed('lunedì prossimo', testGetWeekday(1, 1));
+    assertDateParsed('lunedì scorsa',   testGetWeekday(1, -1));
 
-    assertDateParsed('scorsa lunedì 3:45', testGetWeekday(1, -1, 3, 45));
+    assertDateNotParsed('prossimo lunedì');
+    assertDateNotParsed('scorsa lunedì');
+
+    assertDateParsed('lunedì scorsa 3:45', testGetWeekday(1, -1, 3, 45));
 
     // No accents
     assertDateParsed('Giovedì, 5 Gennaio 2012', new Date(2012, 0, 5));
@@ -82,7 +85,7 @@ namespace('Date | Italian', function () {
     equal(run(testCreateDate('2012/08/25', 'ux_UX'), 'isValid'), true, 'System intelligible formats are still parsed');
 
     assertDateParsed('17:32 18 agosto', new Date(now.getFullYear(), 7, 18, 17, 32));
-    assertDateParsed('17:32 prossimo lunedì', testGetWeekday(1, 1, 17, 32));
+    assertDateParsed('17:32 lunedì prossimo', testGetWeekday(1, 1, 17, 32));
 
     assertDateParsed('domani alle 3:30', testDateSet(getRelativeDateReset(0,0,1), {hour:3,minute:30}));
 
