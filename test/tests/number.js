@@ -230,6 +230,7 @@ namespace('Number', function () {
   });
 
   method('ordinalize', function() {
+    test(0, '0th');
     test(1, '1st');
     test(2, '2nd');
     test(3, '3rd');

@@ -1339,14 +1339,16 @@ namespace('Date', function () {
   });
 
   group('Create | Out of bounds', function() {
+    // TODO: Note out of bounds dates here should no longer
+    // parse after native fallback is removed.
 
     // Issue #636 - Months
     // Note that formats like 2/30/2018 are intentionally
     // NOT considered out of bounds to simplify logic as well
     // as retain parity with most browser vendors.
-    assertDateNotParsed('19/6/2018');
-    assertDateNotParsed('13/6/2018');
-    assertDateNotParsed('0/6/2018');
+    assertDateParsed('19/6/2018', new Date('19/6/2018'));
+    assertDateParsed('13/6/2018', new Date('13/6/2018'));
+    assertDateParsed('0/6/2018',  new Date('0/6/2018'));
 
     // Years
     assertDateParsed('1/1/10000',  new Date(10000, 0, 1));
@@ -1359,10 +1361,10 @@ namespace('Date', function () {
     assertDateNotParsed('1/1/1000000');
 
     // Dates
-    assertDateNotParsed('1/0/2018');
-    assertDateNotParsed('1/32/2018');
-    assertDateNotParsed('1/0/2018');
-    assertDateNotParsed('1/00/2018');
+    assertDateParsed('1/0/2018',  new Date('1/0/2018'));
+    assertDateParsed('1/32/2018', new Date('1/32/2018'));
+    assertDateParsed('1/0/2018',  new Date('1/0/2018'));
+    assertDateParsed('1/00/2018', new Date('1/00/2018'));
 
     // Hours
     assertDateNotParsed('25:00');
