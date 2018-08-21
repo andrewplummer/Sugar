@@ -204,6 +204,14 @@ namespace('Date', function () {
     // Issue #582 "now" with "fromUTC"
     assertDateParsed('now', { fromUTC: true }, new Date(), 'now with fromUTC');
 
+    // Issue #569 Incorrect specificity and missing time
+    var params = {};
+    testCreateDate('yesterday at 2:30pm', { params: params });
+    equal(params.hour, 14);
+    equal(params.minute, 30);
+    equal(params.day, -1);
+    equal(params.specificity, 2);
+
   });
 
   group('Create | Simple', function() {
