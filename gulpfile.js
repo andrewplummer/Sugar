@@ -245,7 +245,7 @@ function buildRelease() {
   return mergeStreams([
     buildDevelopment(),
     buildMinified(),
-    buildPackagesAll()
+    buildPackagesDefault()
   ]);
 }
 
