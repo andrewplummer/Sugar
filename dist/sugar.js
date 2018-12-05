@@ -1,5 +1,5 @@
 /*
- *  Sugar edge
+ *  Sugar v2.0.5
  *
  *  Freely distributable and licensed under the MIT-style license.
  *  Copyright (c) Andrew Plummer
@@ -543,7 +543,7 @@
   }
 
   function setGlobalProperties() {
-    setProperty(Sugar, 'VERSION', 'edge');
+    setProperty(Sugar, 'VERSION', '2.0.5');
     setProperty(Sugar, 'extend', Sugar);
     setProperty(Sugar, 'toString', toString);
     setProperty(Sugar, 'createNamespace', createNamespace);
@@ -906,7 +906,7 @@
   var TRIM_CHARS = '\u0009\u000A\u000B\u000C\u000D\u0020\u00A0\u1680\u180E\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u202F\u205F\u2028\u2029\u3000\uFEFF';
 
   // Regex for matching a formatted string.
-  var STRING_FORMAT_REG = /([{}])\1|\{([^}]*)\}|(%)%|(%(\w*))/g;
+  var STRING_FORMAT_REG = /([{}])\1|{([^}]*)}|(%)%|(%(\w*))/g;
 
   // Common chars
   var HALF_WIDTH_ZERO = 0x30,
@@ -1433,7 +1433,7 @@
           // with the array index to be set.
           trailing = trailing.slice(1);
         }
-        return arr.map(function(el) {
+        return map(arr, function(el) {
           return handleDeepProperty(el, trailing);
         });
       }
@@ -1508,6 +1508,7 @@
     return simpleMerge({}, obj);
   }
 
+  // TODO: Use Object.assign here going forward.
   function simpleMerge(target, source) {
     forEachProperty(source, function(val, key) {
       target[key] = val;
@@ -1755,7 +1756,7 @@
     } else if (f.apply) {
       return f.apply(context, mapArgs);
     } else if (isArray(f)) {
-      return f.map(function(m) {
+      return map(f, function(m) {
         return mapWithShortcuts(el, m, context, mapArgs);
       });
     } else if (isFunction(el[f])) {
@@ -2048,7 +2049,7 @@
 
   function escapeRegExp(str) {
     if (!isString(str)) str = String(str);
-    return str.replace(/([\\\/\'*+?|()\[\]{}.^$-])/g,'\\$1');
+    return str.replace(/([\\/'*+?|()[\]{}.^$-])/g,'\\$1');
   }
 
   // Date helpers
@@ -2571,8 +2572,20 @@
       // 12/08/1978
       // 08/12/1978 (MDY)
       time: true,
-      src: '{dd}[-.\\/]{MM}(?:[-.\\/]{yyyy|yy|y})?',
-      mdy: '{MM}[-.\\/]{dd}(?:[-.\\/]{yyyy|yy|y})?'
+      src: '{dd}[-\\/]{MM}(?:[-\\/]{yyyy|yy|y})?',
+      mdy: '{MM}[-\\/]{dd}(?:[-\\/]{yyyy|yy|y})?'
+    },
+    {
+      // 12.08.1978
+      // 08.12.1978 (MDY)
+      time: true,
+      src: '{dd}\\.{MM}(?:\\.{yyyy|yy|y})?',
+      mdy: '{MM}\\.{dd}(?:\\.{yyyy|yy|y})?',
+      localeCheck: function(loc) {
+        // Do not allow this format if the locale
+        // uses a period as a time separator.
+        return loc.timeSeparator !== '.';
+      }
     },
     {
       // 1975-08-25
@@ -3148,10 +3161,7 @@
     match = str.match(/^(-?\d*[\d.]\d*)?\s?(\w+?)s?$/i);
     if (match) {
       if (isUndefined(num)) {
-        num = +match[1];
-        if (isNaN(num)) {
-          num = 1;
-        }
+        num = match[1] ? +match[1] : 1;
       }
       params[match[2].toLowerCase()] = num;
     }
@@ -4152,6 +4162,9 @@
       if (params) {
         afterDateSet(function() {
           updateDate(date, params, true, 0, false, weekdayDir);
+          if (optParams) {
+            simpleMerge(optParams, params);
+          }
         });
         if (set.edge) {
           // "the end of March of next year"
@@ -4646,7 +4659,7 @@
               // This is a hack to temporarily disallow parsing of single character
               // weekdays until the format can be changed to allow for this.
               if (param === 'weekday' && loc.code === 'ko') {
-                tmp = tmp.filter(function(str) {
+                tmp = filter(tmp, function(str) {
                   return str.length > 1;
                 });
               }
@@ -4800,18 +4813,27 @@
           loc.parsingAliases['tzOffset'] = getTZOffsetFormat();
         }
 
-        function getTimeFormat() {
-          var src;
+        function getTimeFormat(standalone) {
+          var src, sep;
+          sep = getTimeSeparatorSrc(standalone);
           if (loc.ampmFront) {
             // "ampmFront" exists mostly for CJK locales, which also presume that
             // time suffixes exist, allowing this to be a simpler regex.
             src = '{ampm?} {hour} (?:{minute} (?::?{second})?)?';
           } else if(loc.ampm.length) {
-            src = '{hour}(?:[.:]{minute?}(?:[.:]{second?})? {ampm?}| {ampm})';
+            src = '{hour}(?:'+sep+'{minute?}(?:'+sep+'{second?})? {ampm?}| {ampm})';
           } else {
-            src = '{hour}(?:[.:]{minute?}(?:[.:]{second?})?)';
+            src = '{hour}(?:'+sep+'{minute?}(?:'+sep+'{second?})?)';
           }
           return src;
+        }
+
+        function getTimeSeparatorSrc() {
+          if (loc.timeSeparator) {
+            return '[:' + loc.timeSeparator + ']';
+          } else {
+            return ':';
+          }
         }
 
         function getTZOffsetFormat() {
@@ -4833,7 +4855,7 @@
         }
 
         function getCoreTokensForBase(base) {
-          return base.split('|').map(function(key) {
+          return map(base.split('|'), function(key) {
             return CoreParsingTokens[key].src;
           }).join('|');
         }
@@ -4883,6 +4905,9 @@
         function addCoreFormats() {
           forEach(CoreParsingFormats, function(df) {
             var src = df.src;
+            if (df.localeCheck && !df.localeCheck(loc)) {
+              return;
+            }
             if (df.mdy && loc.mdy) {
               // Use the mm/dd/yyyy variant if it
               // exists and the locale requires it
@@ -6862,10 +6887,10 @@
     // istanbul ignore if
     if (typeof Buffer !== 'undefined') {
       encodeBase64 = function(str) {
-        return new Buffer(str).toString('base64');
+        return Buffer.from(str).toString('base64');
       };
       decodeBase64 = function(str) {
-        return new Buffer(str, 'base64').toString('utf8');
+        return Buffer.from(str, 'base64').toString('utf8');
       };
       return;
     }
@@ -10717,7 +10742,7 @@
      * @example
      *
      *   users.find(function(user) {
-     *     return user.name = 'Harry';
+     *     return user.name === 'Harry';
      *   }); -> harry!
      *
      *   users.find({ name: 'Harry' }); -> harry!
