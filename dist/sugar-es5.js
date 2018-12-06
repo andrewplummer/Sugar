@@ -1,5 +1,5 @@
 /*
- *  Sugar v2.0.5
+ *  Sugar v2.0.6
  *
  *  Freely distributable and licensed under the MIT-style license.
  *  Copyright (c) Andrew Plummer
@@ -543,7 +543,7 @@
   }
 
   function setGlobalProperties() {
-    setProperty(Sugar, 'VERSION', '2.0.5');
+    setProperty(Sugar, 'VERSION', '2.0.6');
     setProperty(Sugar, 'extend', Sugar);
     setProperty(Sugar, 'toString', toString);
     setProperty(Sugar, 'createNamespace', createNamespace);
