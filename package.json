@@ -1,5 +1,6 @@
 {
   "name": "sugar",
+  "version": "3.0.0",
   "description": "A Javascript utility library for working with native objects.",
   "homepage": "https://sugarjs.com/",
   "icon": "https://sugarjs.com/icon.svg",
@@ -27,14 +28,27 @@
     "buffer": false
   },
   "scripts": {
-    "test": "istanbul cover test/node --report=lcovonly",
+    "build": "webpack",
+    "test": "node -r esm ./node_modules/.bin/ready-test test/index.js",
+    "coverage": "istanbul cover --report=lcovonly ready-test test/index.js",
     "coveralls": "cat ./coverage/lcov.info | ./node_modules/.bin/coveralls"
   },
   "typings": "sugar.d.ts",
   "devDependencies": {
+    "@babel/core": "^7.2.0",
+    "@babel/plugin-transform-reserved-words": "^7.2.0",
+    "@babel/plugin-transform-runtime": "^7.2.0",
+    "@babel/polyfill": "^7.0.0",
+    "@babel/preset-env": "^7.2.0",
     "acorn": "^2.7.0",
+    "babel-loader": "^8.0.4",
+    "babel-plugin-transform-es3-member-expression-literals": "^6.22.0",
+    "babel-plugin-transform-es3-property-literals": "^6.22.0",
     "closure-compiler-stream": "^0.1.15",
     "coveralls": "^2.11.15",
+    "es3ify-loader": "^0.2.0",
+    "es5-shim": "^4.5.12",
+    "es6-shim": "^0.35.4",
     "glob": "^5.0.14",
     "google-closure-compiler": "^20180716.0.1",
     "gulp": "^3.9.0",
@@ -43,9 +57,23 @@
     "istanbul": "^0.4.5",
     "merge-stream": "^0.1.8",
     "mkdirp": "^0.5.1",
+    "promise-polyfill": "^8.1.0",
+    "ready-test": "^1.0.15",
     "rimraf": "^2.4.4",
     "sinon": "^1.15.4",
+    "string-replace-loader": "^2.1.1",
     "through2": "^2.0.0",
+    "webpack": "^4.27.1",
+    "webpack-cli": "^3.1.2",
     "yargs": "^3.15.0"
+  },
+  "dependencies": {
+    "@babel/cli": "^7.2.0",
+    "@babel/runtime": "^7.2.0",
+    "@babel/runtime-corejs2": "^7.2.0",
+    "babel-plugin-add-module-exports": "^1.0.0",
+    "babel-plugin-transform-es2015-modules-commonjs": "^6.26.2",
+    "lodash": "^4.17.11",
+    "remove-defineproperty-webpack-plugin": "0.0.3"
   }
 }

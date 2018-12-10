@@ -1,0 +1,10 @@
+{
+  "globals": {
+    "method": true,
+    "namespace": true,
+    "assertEqual": true,
+    "describe": true,
+    "assertNamedExports": true,
+    "it": true
+  }
+}

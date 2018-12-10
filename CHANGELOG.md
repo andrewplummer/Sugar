@@ -1,3 +1,27 @@
+v3.0.0
+======
+
+- Added defineAlias to core.
+- Added `Number#atan2` to math aliases.
+- Added Number aliases `Number#isNaN`, `Number#isFinite`, `Number#isInteger`, and `Number#isSafeInteger`.
+- Renamed `Number#chr` to `Number#toChar`.
+- Renamed `Number#ordinalize` to `Number#toOrdinal`.
+- Removed `Number#toNumber`.
+- Cannot instantiate chainable without new keyword anymore (ES6).
+- `Sugar()` alias is no longer supported. Use `Sugar.extend()` instead.
+- Removed `String#includes` with RegExp support.
+
+TODO:
+
+- String#padStart/String#padEnd?
+- String#trimStart/String#trimEnd?
+- Object.values / Object.entries?
+- Array#flat/Array#flatMap
+- String#matchAll - does it do what Sugar methods already do?
+- Object.is implications?
+- String#replaceAll?
+- Math.random with seed?
+
 v2.0.5
 ======
 
