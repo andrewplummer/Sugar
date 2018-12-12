@@ -13,4 +13,5 @@ import './helpers/namespace';
 import './core';
 import './number';
 import './modules';
+import './extended';
 import './chainable';

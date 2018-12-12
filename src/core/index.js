@@ -119,8 +119,96 @@ function createExport() {
   return obj;
 }
 
-export function extend() {
-  console.info('EXTENDINNNNNNNn');
+function methodIsIncluded(methodName, opt) {
+  return !opt.methods || opt.methods.includes(methodName);
+}
+
+function methodIsExcluded(methodName, opt) {
+  return opt.exclude && opt.exclude.includes(methodName);
+}
+
+function methodCanBeExtended(methodName, opt) {
+  return !opt || (methodIsIncluded(methodName, opt) && !methodIsExcluded(methodName, opt));
+}
+
+function collectExtendOptions(args) {
+  if (args.length) {
+    if (typeof args[0] == 'string') {
+      return {
+        methods: args
+      };
+    } else {
+      return args[0];
+    }
+  }
+}
+
+class SugarNamespace {
+
+    constructor(raw) {
+      this.raw = raw;
+    }
+
+    valueOf() {
+      return this.raw;
+    }
+}
+
+
+export function extend(...args) {
+  forEachProperty(Sugar, (key, val) => {
+    if (val.prototype instanceof SugarNamespace) {
+      extendNamespace(val, key, args);
+    }
+  });
+}
+
+export function extendNamespace(namespace, name, args) {
+  const native = globalContext[name];
+  const opt = collectExtendOptions(args);
+
+  forEachProperty(namespace, (methodName, fn) => {
+    if (methodCanBeExtended(methodName, opt)) {
+      const instanceFn = getInstanceMethod(namespace, methodName);
+      if (instanceFn && canExtendNativePrototype(native)) {
+        extendNative(native.prototype, methodName, instanceFn);
+      } else {
+        extendNative(native, methodName, fn);
+      }
+    }
+  });
+}
+
+function canExtendNativePrototype(native) {
+  return native !== Object;
+}
+
+function extendNative(target, methodName, fn) {
+  // Built-in methods MUST be configurable, writable, and non-enumerable.
+  Object.defineProperty(target, methodName, {
+    writable: true,
+    configurable: true,
+    value: fn
+  });
+}
+
+const methodsById = {};
+
+function getInstanceMethod(namespace, methodName) {
+  return methodsById[getMethodId(namespace, methodName)];
+}
+
+function storeInstanceMethod(namespace, methodName, fn) {
+  methodsById[getMethodId(namespace, methodName)] = fn;
+}
+
+function clearInstanceMethod(namespace, methodName) {
+  delete methodsById[getMethodId(namespace, methodName)];
+}
+
+function getMethodId(namespace, methodName) {
+  // Only need to store instance methods.
+  return namespace.toString() + '#' + methodName;
 }
 
 function assertMethodDoesNotExist(namespace, methodName) {
@@ -129,16 +217,21 @@ function assertMethodDoesNotExist(namespace, methodName) {
   }
 }
 
-function defineStatic(namespace, methodName, fn) {
+function defineStatic(namespace, methodName, staticFn) {
   assertMethodDoesNotExist(namespace, methodName);
-  return namespace[methodName] = fn;
+  // Clear an instance method that previously exists.
+  // Sugar will error when redefining methods, so this
+  // is mostly for the test suite.
+  clearInstanceMethod(namespace, methodName);
+  namespace[methodName] = staticFn;
 }
 
-function defineInstance(namespace, methodName, fn) {
+function defineInstance(namespace, methodName, staticFn) {
   assertMethodDoesNotExist(namespace, methodName);
-  const instance = wrapStaticMethodAsInstance(namespace, fn);
-  namespace[methodName] = fn;
-  namespace.prototype[methodName] = wrapChainableResult(instance);
+  const instanceFn = wrapStaticMethodAsInstance(namespace, staticFn);
+  storeInstanceMethod(namespace, methodName, instanceFn);
+  namespace.prototype[methodName] = wrapChainableResult(instanceFn);
+  namespace[methodName] = staticFn;
 }
 
 function wrapStaticMethodAsInstance(namespace, fn) {
@@ -182,10 +275,10 @@ export function createNamespace(name) {
     return Sugar[name];
   }
 
-  class SugarChainable {
+  class SugarChainable extends SugarNamespace {
 
-    constructor(raw) {
-      this.raw = raw;
+    static extend(...args) {
+      extendNamespace(SugarChainable, name, args);
     }
 
     static defineStatic(...args) {
@@ -206,10 +299,6 @@ export function createNamespace(name) {
 
     static toString() {
       return SUGAR + name;
-    }
-
-    valueOf() {
-      return this.raw;
     }
 
   }

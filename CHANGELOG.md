@@ -10,6 +10,8 @@ v3.0.0
 - Cannot instantiate chainable without new keyword anymore (ES6).
 - `Sugar()` alias is no longer supported. Use `Sugar.extend()` instead.
 - Removed `String#includes` with RegExp support.
+- Removed ability to extend Object.prototype
+- Removed support for bower.
 
 TODO:
 

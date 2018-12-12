@@ -3,7 +3,7 @@ const path = require('path');
 const VERSION = require('./package.json').version;
 
 module.exports = {
-  mode: 'none',
+  mode: 'development',
   devtool: 'cheap-module-eval-source-map',
   output: {
     filename: 'sugar.js'

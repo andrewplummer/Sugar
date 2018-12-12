@@ -1,5 +1,5 @@
-pass = function(instance, obj) {
-  return obj;
+arg = function(obj, arg) {
+  return arg;
 };
 
 add = function(n1, n2) {

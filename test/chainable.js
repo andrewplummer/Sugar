@@ -31,7 +31,8 @@ describe('Chainable', function () {
 
     it('should be able to accept an arbitrary number of arguments', function() {
       Sugar.Number.defineInstance('add', function() {
-        return Array.prototype.slice.call(arguments).reduce(function(sum, n) {
+        var args = Array.prototype.slice.call(arguments);
+        return args.reduce(function(sum, n) {
           return sum + n;
         }, 0);
       });
@@ -58,11 +59,11 @@ describe('Chainable', function () {
     it('should allow chaining across namespaces', function() {
       // Note that Object is being used here as a safeguard as
       // it's behavior differs slightly when extending.
-      Sugar.Number.defineInstance('passObject', pass);
-      Sugar.Object.defineInstance('passNumber', pass);
-      assertEqual(new Sugar.Number().passObject({}).passNumber(1).raw, 1);
-      delete Sugar.Number.passObject;
-      delete Sugar.Object.passNumber;
+      Sugar.Number.defineInstance('argObject', arg);
+      Sugar.Object.defineInstance('argNumber', arg);
+      assertEqual(new Sugar.Number().argObject({}).argNumber(1).raw, 1);
+      delete Sugar.Number.argObject;
+      delete Sugar.Object.argNumber;
     });
 
   });
@@ -70,56 +71,56 @@ describe('Chainable', function () {
   describe('Wrapping Behavior', function() {
 
     beforeEach(function() {
-      Sugar.Number.defineInstance('pass', pass);
+      Sugar.Number.defineInstance('arg', arg);
     });
 
     afterEach(function() {
-      delete Sugar.Number.pass;
+      delete Sugar.Number.arg;
     });
 
     it('should not wrap boolean result', function() {
-      assertFalse(new Sugar.Number(1).pass(false));
-      assertTrue(new Sugar.Number(2).pass(true));
+      assertFalse(new Sugar.Number(1).arg(false));
+      assertTrue(new Sugar.Number(2).arg(true));
     });
 
     it('should not wrap null', function() {
-      assertNull(new Sugar.Number(1).pass(null));
+      assertNull(new Sugar.Number(1).arg(null));
     });
 
     it('should not wrap undefined', function() {
-      assertUndefined(new Sugar.Number(1).pass(undefined));
+      assertUndefined(new Sugar.Number(1).arg(undefined));
     });
 
     it('should wrap empty string', function() {
-      assertEqual(new Sugar.Number(1).pass('').raw, '');
+      assertEqual(new Sugar.Number(1).arg('').raw, '');
     });
 
     it('should wrap 0', function() {
-      assertEqual(new Sugar.Number(1).pass(0).raw, 0);
+      assertEqual(new Sugar.Number(1).arg(0).raw, 0);
     });
 
     it('should wrap NaN', function() {
-      assertNaN(new Sugar.Number(1).pass(NaN).raw);
+      assertNaN(new Sugar.Number(1).arg(NaN).raw);
     });
 
     it('should wrap object result and initialize namespace', function() {
       ensureNamespaceNotInitialized('Object', function() {
         var obj = {};
-        assertEqual(new Sugar.Number(1).pass(obj).raw, obj);
+        assertEqual(new Sugar.Number(1).arg(obj).raw, obj);
         assertTrue(!!Sugar.Object);
       });
     });
 
     it('should not initialize namespace for custom classes', function() {
       function Foo() {}
-      new Sugar.Number(1).pass(new Foo);
+      new Sugar.Number(1).arg(new Foo);
       assertTrue(!Sugar.Foo);
     });
 
     it('should not initialize namespace for custom classes with same name as built-ins', function() {
       ensureNamespaceNotInitialized('Array', function() {
         function Array() {}
-        new Sugar.Number(1).pass(new Array);
+        new Sugar.Number(1).arg(new Array);
         assertTrue(!Sugar.Array);
       });
     });
@@ -127,7 +128,7 @@ describe('Chainable', function () {
     it('should not fail when object has no prototype', function() {
       if (Object.create) {
         var obj = Object.create(null);
-        assertEqual(new Sugar.Number(1).pass(obj).raw, obj);
+        assertEqual(new Sugar.Number(1).arg(obj).raw, obj);
       }
     });
 

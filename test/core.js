@@ -79,6 +79,7 @@ describe('Core', function () {
     });
 
     it('should be able to define static aliases', function() {
+      // TODO: maybe this should be a comma??
       Sugar.Number.defineStaticAlias('add1 add2', alias);
       assertEqual(Sugar.Number.add1(1), 2);
       assertEqual(Sugar.Number.add2(1), 3);

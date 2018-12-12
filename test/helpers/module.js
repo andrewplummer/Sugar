@@ -22,7 +22,7 @@ assertNamedExports = function(module) {
     var exportExists = typeof module[methodName] === 'function';
     var methodExists = typeof namespace[methodName] === 'function';
 
-    var msg = 'method ' + methodName + ' should be a named export and namespace metho and namespace methodd';
+    var msg = 'method ' + methodName + ' should be a named export and namespace method';
     assertTrue(exportExists && methodExists, msg);
   });
 }
