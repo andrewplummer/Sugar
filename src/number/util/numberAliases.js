@@ -1,7 +1,7 @@
 import SugarNumber, { defineInstanceAlias } from '../namespace';
 
 defineInstanceAlias('isNaN isFinite isInteger isSafeInteger', function(name) {
-  return function(n, place) {
+  return function(n) {
     return Number[name](n);
   };
 });

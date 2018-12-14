@@ -1,8 +1,8 @@
 'use strict';
 
-describe('Core', function () {
+describe('Core', function() {
 
-  describe('Global', function () {
+  describe('Global', function() {
 
     it('should have a toString', function() {
       assertEqual(Sugar.toString(), 'Sugar');
@@ -14,7 +14,7 @@ describe('Core', function () {
 
   });
 
-  describe('Namespace', function () {
+  describe('Namespace', function() {
 
     it('should have a toString', function() {
       assertEqual(Sugar.Number.toString(), 'SugarNumber');
@@ -45,13 +45,13 @@ describe('Core', function () {
 
   });
 
-  describe('Defining', function () {
+  describe('Defining', function() {
 
     function alias(name) {
       var add = Number(name.charAt(3));
       return function(n) {
         return n + add;
-      }
+      };
     }
 
     it('should be able to define static methods', function() {

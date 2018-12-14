@@ -1,19 +1,20 @@
-'use strict';
+import * as Sugar from '../src';
+import * as Number from '../src/number';
+import abs from '../src/number/abs';
 
-import * as NumberImport from '../src/number';
+describe('Modules', function() {
 
-import absStandalone from '../src/number/abs';
-import roundStandalone from '../src/number/round';
-
-describe('Modules', function () {
-
-  it('should have matching named exports', function() {
-    assertNamedExports(NumberImport);
+  it('should have exports for main entry point', function() {
+    assertMatchingNamedExports(Sugar);
   });
 
-  it('should have standalone exports', function() {
-    assertEqual(absStandalone(-5), 5);
-    assertEqual(roundStandalone(5.25, 1), 5.3);
+  it('should have exports for namespace entry points', function() {
+    // TODO: all other namespaces!
+    assertMatchingNamedExports(Number);
+  });
+
+  it('should have standlone exports', function() {
+    assertEqual(abs(-5), 5);
   });
 
 });

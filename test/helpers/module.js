@@ -1,29 +1,23 @@
 
-getModuleNamedExports = function(module) {
+function getModuleNamedExports(module) {
   return Object.keys(module).filter(function(name) {
     return name !== 'default';
   });
 }
 
-getNamespaceMethodNames = function(namespace) {
-  return Object.keys(namespace);
-}
-
-assertNamedExports = function(module) {
-  var namespace = module.default;
-  var methodNames = getModuleNamedExports(module).concat(getNamespaceMethodNames(namespace));
+assertMatchingNamedExports = function(module) {
+  var allNames = getModuleNamedExports(module).concat(Object.keys(module.default));
   var asserted = {};
-  methodNames.forEach(function(methodName) {
-    if (asserted[methodName]) {
+  allNames.forEach(function(name) {
+    if (asserted[name]) {
       return;
     }
-    asserted[methodName] = true;
+    asserted[name] = true;
 
-    var exportExists = typeof module[methodName] === 'function';
-    var methodExists = typeof namespace[methodName] === 'function';
+    var exportExists   = Object.prototype.hasOwnProperty.call(module, name);
+    var propertyExists = module.default.hasOwnProperty(name);
 
-    var msg = 'method ' + methodName + ' should be a named export and namespace method';
-    assertTrue(exportExists && methodExists, msg);
+    var msg = name + ' should be a named export and property';
+    assertTrue(exportExists && propertyExists, msg);
   });
-}
-
+};

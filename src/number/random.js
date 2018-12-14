@@ -1,5 +1,4 @@
 import { defineStatic } from './namespace';
-import trunc from './util/trunc';
 
 export default defineStatic('random', function(n1, n2) {
   if (arguments.length == 0) {

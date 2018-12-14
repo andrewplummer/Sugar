@@ -6,4 +6,3 @@ export default function(val, place, fn = Math.round) {
   }
   return fn(val * mult) / mult;
 }
-

@@ -1,6 +1,6 @@
 'use strict';
 
-namespace('Number', function () {
+namespace('Number', function() {
 
   /*
   TODO: what about these?

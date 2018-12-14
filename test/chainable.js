@@ -1,6 +1,6 @@
 'use strict';
 
-describe('Chainable', function () {
+describe('Chainable', function() {
 
   Sugar.createNamespace('Number');
   Sugar.createNamespace('String');
@@ -113,14 +113,14 @@ describe('Chainable', function () {
 
     it('should not initialize namespace for custom classes', function() {
       function Foo() {}
-      new Sugar.Number(1).arg(new Foo);
+      new Sugar.Number(1).arg(new Foo());
       assertTrue(!Sugar.Foo);
     });
 
     it('should not initialize namespace for custom classes with same name as built-ins', function() {
       ensureNamespaceNotInitialized('Array', function() {
         function Array() {}
-        new Sugar.Number(1).arg(new Array);
+        new Sugar.Number(1).arg(new Array());
         assertTrue(!Sugar.Array);
       });
     });
@@ -158,10 +158,13 @@ describe('Chainable', function () {
 
     var zero = new Sugar.Number(0);
     var two  = new Sugar.Number(2);
+    var a    = new Sugar.String('a');
 
     it('should coerce double equals', function() {
       assertTrue(two == 2);
       assertTrue(2 == two);
+      assertTrue(a == 'a');
+      assertTrue('a' == a);
     });
 
     it('should coerce comparison operators', function() {
@@ -206,7 +209,6 @@ describe('Chainable', function () {
     });
 
     it('should coerce string concatenation operator', function() {
-      var a = new Sugar.String('a');
       assertEqual(a + 'b', 'ab');
       assertEqual('b' + a, 'ba');
     });
@@ -232,8 +234,14 @@ describe('Chainable', function () {
     });
 
     it('should be equivalent to calling prototype.toString', function() {
-      assertEqual(new Sugar.Object(null).toString().raw, Object.prototype.toString.call(null));
-      assertEqual(new Sugar.Object(undefined).toString().raw, Object.prototype.toString.call(undefined));
+      assertEqual(
+        new Sugar.Object(null).toString().raw,
+        Object.prototype.toString.call(null)
+      );
+      assertEqual(
+        new Sugar.Object(undefined).toString().raw,
+        Object.prototype.toString.call(undefined)
+      );
     });
 
   });

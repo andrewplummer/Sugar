@@ -1,0 +1,46 @@
+{
+  "globals": {
+    "it": true,
+    "fit": true,
+    "xit": true,
+    "arg": true,
+    "add": true,
+    "mult": true,
+    "Sugar": true,
+    "method": true,
+    "xmethod": true,
+    "fmethod": true,
+    "namespace": true,
+    "xnamespace": true,
+    "fnamespace": true,
+    "describe": true,
+    "xdescribe": true,
+    "fdescribe": true,
+    "afterAll": true,
+    "afterEach": true,
+    "afterFalse": true,
+    "beforeAll": true,
+    "beforeEach": true,
+    "assertNaN": true,
+    "assertNull": true,
+    "assertTrue": true,
+    "assertFalse": true,
+    "assertError": true,
+    "assertEqual": true,
+    "assertOneOf": true,
+    "assertMatch": true,
+    "assertNoError": true,
+    "assertUndefined": true,
+    "assertInstanceOf": true,
+    "assertMatchingNamedExports": true,
+    "ensureNamespaceNotInitialized": true
+  },
+  "rules": {
+    "comma-dangle": ["error"],
+    "no-global-assign": [
+      "error", {
+        "exceptions": ["Number"]
+      }
+    ]
+  }
+}

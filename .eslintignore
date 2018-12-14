@@ -1,0 +1,7 @@
+test/tests
+test/suite
+test/rhino
+test/node
+test/browser
+dist
+lib

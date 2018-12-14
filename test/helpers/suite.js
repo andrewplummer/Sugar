@@ -1,4 +1,3 @@
-
 (function() {
 
   var currentNamespace;
@@ -14,7 +13,7 @@
         });
         suite();
       });
-    }
+    };
   }
 
   function withTest(testFn) {
@@ -22,7 +21,7 @@
       testFn(name, function() {
         test(currentNamespace[name]);
       });
-    }
+    };
   }
 
   namespace  = withSuite(describe);

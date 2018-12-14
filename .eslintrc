@@ -1,0 +1,32 @@
+{
+  "extends": "eslint:recommended",
+  "env": {
+    "node": true,
+    "browser": true
+  },
+  "rules": {
+    "semi": ["error"],
+    "new-cap": ["error"],
+    "new-parens": ["error"],
+    "keyword-spacing": ["error"],
+    "no-multiple-empty-lines": ["error"],
+    "object-shorthand": ["error", "consistent"],
+    "block-scoped-var": ["error"],
+    "operator-linebreak": ["error", "before"],
+    "space-before-function-paren": ["error", "never"],
+    "quotes": ["error", "single", "avoid-escape"],
+    "space-before-blocks": ["error", "always"],
+    "object-curly-newline": ["error", {
+      "consistent": true
+    }],
+    "padded-blocks": ["error", {
+      "classes": "always"
+    }],
+    "indent": ["error", 2, {
+      "SwitchCase": 1
+    }],
+  },
+  "parserOptions": {
+    "sourceType": "module"
+  }
+}
