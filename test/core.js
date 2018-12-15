@@ -75,7 +75,6 @@ describe('Core', function() {
     });
 
     it('should be able to define static aliases', function() {
-      // TODO: maybe this should be a comma??
       Sugar.Number.defineStaticAlias('add1 add2', alias);
       assertEqual(Sugar.Number.add1(1), 2);
       assertEqual(Sugar.Number.add2(1), 3);
@@ -85,6 +84,14 @@ describe('Core', function() {
 
     it('should be able to define instance aliases', function() {
       Sugar.Number.defineInstanceAlias('add1 add2', alias);
+      assertEqual(Sugar.Number.add1(1), 2);
+      assertEqual(Sugar.Number.add2(1), 3);
+      delete Sugar.Number.add1;
+      delete Sugar.Number.add2;
+    });
+
+    it('should be able to define aliases with a comma as well', function() {
+      Sugar.Number.defineInstanceAlias('add1,add2', alias);
       assertEqual(Sugar.Number.add1(1), 2);
       assertEqual(Sugar.Number.add2(1), 3);
       delete Sugar.Number.add1;

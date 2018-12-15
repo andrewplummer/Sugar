@@ -14,8 +14,8 @@ const nativeDescriptors = new NamespaceStore();
 const instanceMethods   = new NamespaceStore();
 
 const ERROR_METHOD_DEFINED  = 'Method already defined';
-const ERROR_NATIVE_UNKNOWN  = 'Native class does not exist';
-const ERROR_EXTEND_CONFLICT = 'Method cannot be both included and excluded';
+const ERROR_NATIVE_UNKNOWN  = 'Built-in class does not exist';
+const ERROR_EXTEND_CONFLICT = 'Extend options cannot have both include and exclude';
 
 export const VERSION = 'edge';
 
@@ -140,8 +140,10 @@ export function extend(opt) {
   try {
     opt = collectExtendOptions(opt);
     forEachNamespace(globalName => {
-      if (methodAllowedByArgs(globalName, opt)) {
-        extendNamespace(globalName);
+      if (namespaceIsAllowed(globalName, opt)) {
+        extendNamespace(globalName, {
+          existing: opt && opt.existing
+        });
       }
     });
   } catch (e) {
@@ -170,7 +172,7 @@ function extendNamespace(globalName, opt) {
   try {
     opt = collectExtendOptions(opt);
     forEachNamespaceMethod(globalName, (native, methodName, fn, isInstance) => {
-      if (methodAllowedByArgs(methodName, opt)) {
+      if (methodIsAllowed(methodName, native, opt)) {
         extendNative(native, globalName, methodName, fn, isInstance);
       }
     });
@@ -232,25 +234,44 @@ function restoreNative(native, globalName, methodName, fn, isInstance) {
   }
 }
 
-// TODO: rename me to be more generic!
-function methodIsIncluded(methodName, opt) {
-  return opt.include && arrayIncludes(opt.include, methodName);
+function extendOptionsInclude(name, opt) {
+  return opt && opt.include && arrayIncludes(opt.include, name);
 }
 
-function methodIsExcluded(methodName, opt) {
-  return opt.exclude && arrayIncludes(opt.exclude, methodName);
+function extendOptionsExclude(name, opt) {
+  return opt && opt.exclude && arrayIncludes(opt.exclude, name);
 }
 
-function methodAllowedByArgs(methodName, opt) {
-  if (!opt) {
-    return true;
+function extendOptionsDisallowExisting(opt) {
+  return opt && opt.existing === false;
+}
+
+function namespaceIsAllowed(globalName, opt) {
+  return extendIsAllowed(globalName, opt);
+}
+
+function methodIsAllowed(methodName, native, opt) {
+  if (isDisallowedEnhancement(methodName, native, opt)) {
+    return false;
   }
-  const included = methodIsIncluded(methodName, opt);
-  const excluded = methodIsExcluded(methodName, opt);
+  return extendIsAllowed(methodName, opt);
+}
+
+function isDisallowedEnhancement(methodName, native, opt) {
+  if (extendOptionsDisallowExisting(opt)) {
+    return hasOwnProperty(native, methodName);
+  }
+  return false;
+}
+
+function extendIsAllowed(name, opt) {
+  const included = extendOptionsInclude(name, opt);
+  const excluded = extendOptionsExclude(name, opt);
   if (included && excluded) {
     throw new Error(ERROR_EXTEND_CONFLICT);
   }
-  return included || (!opt.include && !excluded);
+  const isImplicitlyIncluded = !opt || !opt.include;
+  return included || (isImplicitlyIncluded && !excluded);
 }
 
 function canExtendNative(native) {
@@ -299,7 +320,7 @@ function defineWithArgs(globalName, defineMethod, args) {
 }
 
 function defineAliases(globalName, defineMethod, str, fn) {
-  str.split(' ').forEach(methodName => {
+  str.split(/[ ,]/).forEach(methodName => {
     defineMethod(globalName, methodName, fn(methodName));
   });
 }

@@ -58,7 +58,7 @@
     "merge-stream": "^0.1.8",
     "mkdirp": "^0.5.1",
     "promise-polyfill": "^8.1.0",
-    "ready-test": "^1.0.18",
+    "ready-test": "^1.0.20",
     "rimraf": "^2.4.4",
     "sinon": "^1.15.4",
     "string-replace-loader": "^2.1.1",

@@ -9,7 +9,7 @@
     "new-cap": ["error"],
     "new-parens": ["error"],
     "keyword-spacing": ["error"],
-    "no-multiple-empty-lines": [2, {"max": 3, "maxBOF": 0}],
+    "no-multiple-empty-lines": [2, {"max": 3, "maxBOF": 1}],
     "object-shorthand": ["error", "consistent"],
     "block-scoped-var": ["error"],
     "operator-linebreak": ["error", "before"],

@@ -158,23 +158,6 @@ describe('Extended', function() {
 
   });
 
-  xdescribe('Enhancing', function() {
-
-    it('should allow overwrite param', function() {
-      // TODO: work this out
-      Sugar.Number.defineInstance('every', stringCheck, function() {
-      });
-
-      Sugar.Number.extend({
-        overwrite: false
-      });
-      assertUndefined((5).add);
-      assertEqual((5).mult(5), 25);
-    });
-
-  });
-
-
   describe('Restore', function() {
 
     it('should restore all namespaces', function() {
@@ -254,7 +237,7 @@ describe('Extended', function() {
         // prototypes. Simulating this by using the "new" keyword.
         FakeNumber.prototype.valueOf = function() {
           return 5;
-        }
+        };
         Sugar.extend();
         assertEqual(new Number().add(5), 10);
       });
@@ -316,8 +299,95 @@ describe('Extended', function() {
 
   });
 
-  // TODO: how to handle enhanced methods? flags?? defineMathMethods?
-  // TODO: Sugar.Array.extend({ enhanceArray: false });
-  // TODO: document API changes in changelog!
+  describe('Enhanced methods', function() {
+
+    describe('Static', function() {
+
+      beforeEach(function() {
+        var nativeFromCharCode = String.fromCharCode;
+        Sugar.String.defineStatic('fromCharCode', function(num) {
+          if (num >= 97 && num <= 122) {
+            num -= 32;
+          }
+          return nativeFromCharCode(num);
+        });
+      });
+
+      afterEach(function() {
+        Sugar.restore();
+        delete Sugar.String.fromCharCode;
+      });
+
+      it('should allow enhanced methods via global', function() {
+        Sugar.extend();
+        assertEqual(String.fromCharCode(97), 'A');
+      });
+
+      it('should allow enhanced methods via namespace', function() {
+        Sugar.String.extend();
+        assertEqual(String.fromCharCode(97), 'A');
+      });
+
+      it('should exclude enhanced methods via global', function() {
+        Sugar.extend({
+          existing: false
+        });
+        assertEqual(String.fromCharCode(97), 'a');
+      });
+
+      it('should exclude enhanced methods via namespace', function() {
+        Sugar.String.extend({
+          existing: false
+        });
+        assertEqual(String.fromCharCode(97), 'a');
+      });
+
+    });
+
+    describe('Instance', function() {
+
+      beforeEach(function() {
+        var nativeToFixed = Number.prototype.toFixed;
+        Sugar.Number.defineInstance('toFixed', function(num, digits, sep) {
+          var str = nativeToFixed.call(num, digits);
+          if (sep) {
+            str = str.replace(/\./, sep);
+          }
+          return str;
+        });
+      });
+
+      afterEach(function() {
+        Sugar.restore();
+        delete Sugar.Number.toFixed;
+      });
+
+      it('should allow enhanced methods via global', function() {
+        Sugar.extend();
+        assertEqual((5).toFixed(2, ','), '5,00');
+      });
+
+      it('should allow enhanced methods via namespace', function() {
+        Sugar.Number.extend();
+        assertEqual((5).toFixed(2, ','), '5,00');
+      });
+
+      it('should exclude enhanced methods via global', function() {
+        Sugar.extend({
+          existing: false
+        });
+        assertEqual((5).toFixed(2, ','), '5.00');
+      });
+
+      it('should exclude enhanced methods via namespace', function() {
+        Sugar.extend({
+          existing: false
+        });
+        assertEqual((5).toFixed(2, ','), '5.00');
+      });
+
+    });
+
+  });
 
 });
