@@ -16,10 +16,6 @@ describe('Core', function() {
 
   describe('Namespace', function() {
 
-    it('should have a toString', function() {
-      assertEqual(Sugar.Number.toString(), 'SugarNumber');
-    });
-
     it('should be able to create a new namespace', function() {
       ensureNamespaceNotInitialized('Array', function() {
         var namespace = Sugar.createNamespace('Array');

@@ -15,6 +15,7 @@ v3.0.0
 
 TODO:
 
+- DOCUMENT CHANGES TO EXTEND API
 - String#padStart/String#padEnd?
 - String#trimStart/String#trimEnd?
 - Object.values / Object.entries?

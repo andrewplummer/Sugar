@@ -1,4 +1,3 @@
-
 import NamespaceStore from './NamespaceStore';
 
 const SUGAR = 'Sugar';
@@ -14,8 +13,9 @@ const globalContext = getGlobalContext();
 const nativeDescriptors = new NamespaceStore();
 const instanceMethods   = new NamespaceStore();
 
-const ERROR_METHOD_DEFINED = 'Method already defined';
-const ERROR_NATIVE_UNKNOWN = 'Native class does not exist';
+const ERROR_METHOD_DEFINED  = 'Method already defined';
+const ERROR_NATIVE_UNKNOWN  = 'Native class does not exist';
+const ERROR_EXTEND_CONFLICT = 'Method cannot be both included and excluded';
 
 export const VERSION = 'edge';
 
@@ -28,6 +28,10 @@ function forEachProperty(obj, fn) {
     if (!hasOwnProperty(obj, key)) continue;
     if (fn.call(obj, key, obj[key], obj) === false) break;
   }
+}
+
+function arrayIncludes(arr, el) {
+  return arr.includes ? arr.includes(el) : arr.indexOf(el) !== -1;
 }
 
 function getGlobalContext() {
@@ -63,9 +67,9 @@ function nativeMethodProhibitedOnChainable(methodName) {
          || methodName === '__proto__';
 }
 
-function mapNativeToChainable(Namespace, name) {
+function mapNativeToChainable(globalName, SugarChainable) {
 
-  const proto = globalContext[name].prototype;
+  const proto = globalContext[globalName].prototype;
 
   Object.getOwnPropertyNames(proto).forEach(methodName => {
     var fn;
@@ -84,7 +88,7 @@ function mapNativeToChainable(Namespace, name) {
       // will throw errors when accessed.
       return;
     }
-    return Namespace.prototype[methodName] = wrapChainableResult(fn);
+    return SugarChainable.prototype[methodName] = wrapChainableResult(fn);
   });
 }
 
@@ -100,12 +104,12 @@ function wrapChainableResult(fn) {
     }
     // Objects may not have prototypes.
     const ctor = result.constructor;
-    const name = ctor ? ctor.name : 'Object';
-    let Namespace = Sugar[name];
-    if (!Namespace && (!ctor || ctor === globalContext[name])) {
-      Namespace = createNamespace(name);
+    const globalName = ctor ? ctor.name : 'Object';
+    let SugarChainable = Sugar[globalName];
+    if (!SugarChainable && (!ctor || ctor === globalContext[globalName])) {
+      SugarChainable = createNamespace(globalName);
     }
-    return Namespace ? new Namespace(result) : result;
+    return SugarChainable ? new SugarChainable(result) : result;
   };
 }
 
@@ -120,7 +124,7 @@ function exportGlobal(obj) {
   }
 }
 
-class SugarNamespace {
+class SugarChainableBase {
 
   constructor(raw) {
     this.raw = raw;
@@ -134,9 +138,10 @@ class SugarNamespace {
 
 export function extend(opt) {
   try {
-    forEachNamespace((Namespace, name) => {
-      if (namespaceIsAllowed(Namespace, opt)) {
-        extendNamespace(Namespace, name, opt);
+    opt = collectExtendOptions(opt);
+    forEachNamespace(globalName => {
+      if (methodAllowedByArgs(globalName, opt)) {
+        extendNamespace(globalName);
       }
     });
   } catch (e) {
@@ -149,45 +154,42 @@ export function restore() {
   forEachNamespace(restoreNamespace);
 }
 
-function namespaceIsAllowed(Namespace, opt) {
-  // TODO: me!
-  return true;
-}
-
 function forEachNamespace(fn) {
   forEachProperty(Sugar, (key, val) => {
-    if (val.prototype instanceof SugarNamespace) {
-      fn(val, key);
+    if (val.prototype instanceof SugarChainableBase) {
+      fn(key);
     }
   });
 }
 
-function extendNamespace(Namespace, name, opt) {
+function collectExtendOptions(opt) {
+  return Array.isArray(opt) ? { include: opt } : opt;
+}
+
+function extendNamespace(globalName, opt) {
   try {
-    if (Array.isArray(opt)) {
-      opt = {
-        include: opt
-      };
-    }
-    forEachNamespaceMethod(Namespace, name, (native, methodName, fn, isInstance) => {
+    opt = collectExtendOptions(opt);
+    forEachNamespaceMethod(globalName, (native, methodName, fn, isInstance) => {
       if (methodAllowedByArgs(methodName, opt)) {
-        extendNative(native, methodName, fn, isInstance);
+        extendNative(native, globalName, methodName, fn, isInstance);
       }
     });
   } catch (e) {
-    restoreNamespace(Namespace, name);
+    restoreNamespace(globalName);
     throw e;
   }
 }
 
-function restoreNamespace(Namespace, name) {
-  forEachNamespaceMethod(Namespace, name, restoreNative);
+function restoreNamespace(globalName) {
+  forEachNamespaceMethod(globalName, (native, methodName, fn, isInstance) => {
+    restoreNative(native, globalName, methodName, fn, isInstance);
+  });
 }
 
-function forEachNamespaceMethod(Namespace, name, fn) {
-  const native = globalContext[name];
-  forEachProperty(Namespace, (methodName, staticFn) => {
-    const instanceFn = instanceMethods.get(methodName, true);
+function forEachNamespaceMethod(globalName, fn) {
+  const native = globalContext[globalName];
+  forEachProperty(Sugar[globalName], (methodName, staticFn) => {
+    const instanceFn = instanceMethods.get(globalName, methodName, true);
     if (instanceFn) {
       fn(native.prototype, methodName, instanceFn, true);
     } else {
@@ -196,135 +198,149 @@ function forEachNamespaceMethod(Namespace, name, fn) {
   });
 }
 
-function extendNative(native, methodName, fn, isInstance) {
+function extendNative(native, globalName, methodName, fn, isInstance) {
   if (canExtendNative(native)) {
     if (hasOwnProperty(native, methodName)) {
       const descriptor = Object.getOwnPropertyDescriptor(native, methodName);
-      nativeDescriptors.set(methodName, descriptor, isInstance);
+      nativeDescriptors.set(globalName, methodName, descriptor, isInstance);
     }
-    // Built-in methods MUST be configurable, writable, and non-enumerable.
-    Object.defineProperty(native, methodName, {
-      writable: true,
-      configurable: true,
-      value: fn
-    });
+    try {
+      // Built-in methods MUST be configurable, writable, and non-enumerable.
+      Object.defineProperty(native, methodName, {
+        writable: true,
+        configurable: true,
+        value: fn
+      });
+    } catch (e) {
+      // The extend operation may fail if a non-configurable property
+      // is set on the native.
+      nativeDescriptors.remove(globalName, methodName, isInstance);
+      throw e;
+    }
   }
 }
 
-function restoreNative(native, methodName, fn, isInstance) {
+function restoreNative(native, globalName, methodName, fn, isInstance) {
   if (native[methodName] === fn) {
-    if (nativeDescriptors.has(methodName, isInstance)) {
-      const descriptor = nativeDescriptors.get(methodName, isInstance);
+    if (nativeDescriptors.has(globalName, methodName, isInstance)) {
+      const descriptor = nativeDescriptors.get(globalName, methodName, isInstance);
       Object.defineProperty(native, methodName, descriptor);
-      nativeDescriptors.remove(methodName, isInstance);
+      nativeDescriptors.remove(globalName, methodName, isInstance);
     } else {
       delete native[methodName];
     }
   }
 }
 
+// TODO: rename me to be more generic!
 function methodIsIncluded(methodName, opt) {
-  return !opt.methods || opt.methods.includes(methodName);
+  return opt.include && arrayIncludes(opt.include, methodName);
 }
 
 function methodIsExcluded(methodName, opt) {
-  return opt.exclude && opt.exclude.includes(methodName);
+  return opt.exclude && arrayIncludes(opt.exclude, methodName);
 }
 
 function methodAllowedByArgs(methodName, opt) {
-  return !opt || (methodIsIncluded(methodName, opt) && !methodIsExcluded(methodName, opt));
+  if (!opt) {
+    return true;
+  }
+  const included = methodIsIncluded(methodName, opt);
+  const excluded = methodIsExcluded(methodName, opt);
+  if (included && excluded) {
+    throw new Error(ERROR_EXTEND_CONFLICT);
+  }
+  return included || (!opt.include && !excluded);
 }
 
 function canExtendNative(native) {
   return native !== Object.prototype;
 }
 
-function assertMethodDoesNotExist(Namespace, methodName) {
-  if (Namespace[methodName]) {
+function assertMethodDoesNotExist(SugarChainable, methodName) {
+  if (SugarChainable[methodName]) {
     throw new Error(ERROR_METHOD_DEFINED);
   }
 }
 
-function defineStatic(Namespace, methodName, staticFn) {
-  assertMethodDoesNotExist(Namespace, methodName);
+function defineStatic(globalName, methodName, staticFn) {
+  const SugarChainable = Sugar[globalName];
+  assertMethodDoesNotExist(SugarChainable, methodName);
   // Clear an instance method that previously exists.
   // Sugar will error when redefining methods, so this
   // is mostly for the test suite.
-  instanceMethods.remove(methodName, true);
-  Namespace[methodName] = staticFn;
+  instanceMethods.remove(globalName, methodName, true);
+  SugarChainable[methodName] = staticFn;
 }
 
-function defineInstance(Namespace, methodName, staticFn) {
-  assertMethodDoesNotExist(Namespace, methodName);
-  const instanceFn = wrapStaticMethodAsInstance(Namespace, staticFn);
-  instanceMethods.set(methodName, instanceFn, true);
-  Namespace.prototype[methodName] = wrapChainableResult(instanceFn);
-  Namespace[methodName] = staticFn;
+function defineInstance(globalName, methodName, staticFn) {
+  const SugarChainable = Sugar[globalName];
+  assertMethodDoesNotExist(SugarChainable, methodName);
+  const instanceFn = wrapStaticMethodAsInstance(SugarChainable, staticFn);
+  instanceMethods.set(globalName, methodName, instanceFn, true);
+  SugarChainable.prototype[methodName] = wrapChainableResult(instanceFn);
+  SugarChainable[methodName] = staticFn;
 }
 
-function wrapStaticMethodAsInstance(Namespace, fn) {
+function wrapStaticMethodAsInstance(SugarChainable, fn) {
   return function(...args) {
     args.unshift(this);
-    return fn.apply(Namespace, args);
+    return fn.apply(SugarChainable, args);
   };
 }
 
-function defineWithArgs(Namespace, defineMethod, args) {
+function defineWithArgs(globalName, defineMethod, args) {
   if (typeof args[0] !== 'object') {
-    return defineMethod(Namespace, args[0], args[1]);
+    return defineMethod(globalName, args[0], args[1]);
   }
   forEachProperty(args[0], (methodName, fn) => {
-    defineMethod(Namespace, methodName, fn);
+    defineMethod(globalName, methodName, fn);
   });
 }
 
-function defineAliases(Namespace, defineMethod, str, fn) {
+function defineAliases(globalName, defineMethod, str, fn) {
   str.split(' ').forEach(methodName => {
-    defineMethod(Namespace, methodName, fn(methodName));
+    defineMethod(globalName, methodName, fn(methodName));
   });
 }
 
-export function createNamespace(name) {
+export function createNamespace(globalName) {
 
-  if (!globalContext[name]) {
+  if (!globalContext[globalName]) {
     throw new Error(ERROR_NATIVE_UNKNOWN);
   }
 
-  if (Sugar[name]) {
-    return Sugar[name];
+  if (Sugar[globalName]) {
+    return Sugar[globalName];
   }
 
-  class SugarChainable extends SugarNamespace {
+  class SugarChainable extends SugarChainableBase {
 
     static extend(opt) {
-      extendNamespace(SugarChainable, name, opt);
+      extendNamespace(globalName, opt);
     }
 
     static defineStatic(...args) {
-      return defineWithArgs(SugarChainable, defineStatic, args);
+      return defineWithArgs(globalName, defineStatic, args);
     }
 
     static defineInstance(...args) {
-      return defineWithArgs(SugarChainable, defineInstance, args);
+      return defineWithArgs(globalName, defineInstance, args);
     }
 
     static defineStaticAlias(str, fn) {
-      return defineAliases(SugarChainable, defineStatic, str, fn);
+      return defineAliases(globalName, defineStatic, str, fn);
     }
 
     static defineInstanceAlias(str, fn) {
-      return defineAliases(SugarChainable, defineInstance, str, fn);
-    }
-
-    static toString() {
-      return SUGAR + name;
+      return defineAliases(globalName, defineInstance, str, fn);
     }
 
   }
 
-  mapNativeToChainable(SugarChainable, name);
+  mapNativeToChainable(globalName, SugarChainable);
 
-  return Sugar[name] = SugarChainable;
+  return Sugar[globalName] = SugarChainable;
 }
 
 const Sugar = {
