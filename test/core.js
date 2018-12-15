@@ -4,10 +4,6 @@ describe('Core', function() {
 
   describe('Global', function() {
 
-    it('should have a toString', function() {
-      assertEqual(Sugar.toString(), 'Sugar');
-    });
-
     it('should have a version', function() {
       assertMatch(Sugar.VERSION, /^(\d+\.\d+\.\d+|edge)$/);
     });
