@@ -271,32 +271,49 @@ namespace('Number', function() {
     assertEqual(isNaN(-Infinity), false);
   });
 
-  /*
+  method('times', function(times) {
 
-  method('times', function() {
-    var count = 0;
-    var callback = function(first) {
-      equal(first, count, 'first parameter is the index');
-      count++;
-      return count;
-    };
-    var result = run(5, 'times', [callback]);
-    equal(result, [1,2,3,4,5], 'result should be the collected return values');
-    equal(count, 5, 'iterated 5 times');
+    function assertTimesRan(n, actual) {
+      var count = 0;
+      times(n, function() {
+        count++;
+      });
+      assertEqual(count, actual);
+    }
 
-    var fn = function() {};
-    var result = run(3, 'times', [fn]);
-    equal(result, undefined, 'Returning undefined should return nothing');
+    function assertInvalidInput(n) {
+      assertError(function() {
+        times(n, function() {});
+      }, RangeError);
+    }
 
-    var fn = function(i) {
-      return i || undefined;
-    };
-    var result = run(3, 'times', [fn]);
-    equal(result, [1, 2], 'Mixed return values only collects non-undefined');
+    assertTimesRan(1, 1);
+    assertTimesRan(5, 5);
+    assertTimesRan(10, 10);
 
-    raisesError(function() { run(5, 'times', []); }, 'no callback raises error', TypeError);
+    assertInvalidInput(-1);
+    assertInvalidInput(1.5);
+    assertInvalidInput(NaN);
+    assertInvalidInput(null);
+    assertInvalidInput(undefined);
+    assertInvalidInput(Infinity);
+    assertInvalidInput(-Infinity);
+
+    assertArrayEqual(times(3, function(i) {
+      return Math.pow(2, i);
+    }), [1,2,4]);
+
+    assertArrayEqual(times(1, function(i, n) {
+      return n;
+    }), [1]);
+
+    assertError(function() {
+      times(1);
+    }, TypeError);
+
   });
 
+  /*
 
   method('format', function() {
 

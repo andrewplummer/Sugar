@@ -10,8 +10,8 @@ module.exports = {
   },
   entry: {
     sugar: [
-      './src',
-      './src/polyfills'
+      './src/polyfills',
+      './src'
     ]
   },
   module: {

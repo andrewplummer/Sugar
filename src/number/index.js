@@ -23,6 +23,7 @@ import './round';
 import './sin';
 import './sqrt';
 import './tan';
+import './times';
 import './toChar';
 import './toOrdinal';
 
@@ -50,6 +51,7 @@ export const {
   sin,
   sqrt,
   tan,
+  times,
   toChar,
   toOrdinal
 } = SugarNumber;

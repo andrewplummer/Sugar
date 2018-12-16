@@ -7,6 +7,8 @@ v3.0.0
 - Renamed `Number#chr` to `Number#toChar`.
 - Renamed `Number#ordinalize` to `Number#toOrdinal`.
 - Removed `Number#toNumber`.
+- `Number#times` now collects all return values including undefined.
+- `Number#times` now errors on any input that is not a positive finite integer.
 - Cannot instantiate chainable without new keyword anymore (ES6).
 - `Sugar()` alias is no longer supported. Use `Sugar.extend()` instead.
 - Removed `String#includes` with RegExp support.
