@@ -40,4 +40,3 @@ export function restoreNative(native, globalName, methodName, fn, isInstance) {
 function canExtendNative(native) {
   return native !== Object.prototype;
 }
-

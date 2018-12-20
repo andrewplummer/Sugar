@@ -1,14 +1,11 @@
 import SugarNumber from './namespace';
 
+import './abbr';
 import './abs';
-import './acos';
-import './asin';
-import './atan';
-import './atan2';
 import './ceil';
-import './cos';
 import './exp';
 import './floor';
+import './format';
 import './isEven';
 import './isFinite';
 import './isInteger';
@@ -17,26 +14,24 @@ import './isNaN';
 import './isOdd';
 import './isSafeInteger';
 import './log';
+import './pad';
 import './pow';
 import './random';
 import './round';
-import './sin';
 import './sqrt';
-import './tan';
 import './times';
 import './toChar';
+import './toHex';
 import './toOrdinal';
+import './trunc';
 
 export const {
+  abbr,
   abs,
-  acos,
-  asin,
-  atan,
-  atan2,
   ceil,
-  cos,
   exp,
   floor,
+  format,
   isEven,
   isFinite,
   isInteger,
@@ -45,15 +40,16 @@ export const {
   isOdd,
   isSafeInteger,
   log,
+  pad,
   pow,
   random,
   round,
-  sin,
   sqrt,
-  tan,
   times,
   toChar,
-  toOrdinal
+  toHex,
+  toOrdinal,
+  trunc
 } = SugarNumber;
 
 export default SugarNumber;

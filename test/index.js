@@ -1,10 +1,11 @@
 import Sugar from '../src';
 
 // Helpers
-import './helpers/suite';
-import './helpers/module';
-import './helpers/methods';
 import './helpers/namespace';
+import './helpers/methods';
+import './helpers/module';
+import './helpers/suite';
+import './helpers/intl';
 
 // Tests
 import './core';

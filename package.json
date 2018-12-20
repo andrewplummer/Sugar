@@ -55,10 +55,11 @@
     "gulp-file": "^0.3.0",
     "gulp-util": "^3.0.6",
     "istanbul": "^0.4.5",
+    "jsdoc": "^3.5.5",
     "merge-stream": "^0.1.8",
     "mkdirp": "^0.5.1",
     "promise-polyfill": "^8.1.0",
-    "ready-test": "^1.0.20",
+    "ready-test": "^1.0.22",
     "rimraf": "^2.4.4",
     "sinon": "^1.15.4",
     "string-replace-loader": "^2.1.1",
@@ -71,8 +72,10 @@
     "@babel/cli": "^7.2.0",
     "@babel/runtime": "^7.2.0",
     "@babel/runtime-corejs2": "^7.2.0",
+    "babel-eslint": "^10.0.1",
     "babel-plugin-add-module-exports": "^1.0.0",
     "babel-plugin-transform-es2015-modules-commonjs": "^6.26.2",
+    "depcheck": "^0.6.11",
     "lodash": "^4.17.11",
     "remove-defineproperty-webpack-plugin": "0.0.3"
   }

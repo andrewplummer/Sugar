@@ -14,6 +14,11 @@ v3.0.0
 - Removed `String#includes` with RegExp support.
 - Removed ability to extend Object.prototype
 - Removed support for bower.
+- `Number#format` no longer supports thousands or decimal separtors. Use Intl for this.
+- `String#padLeft` and `String#padRight` were removed in favor of native `String#padStart` and `String#padEnd`.
+- Renamed `Number#hex` to `Number#toHex`.
+- Removed `base` param of `Number#pad` in favor of `Number#toHex`.
+- Removed trigonometric aliases sin, cos, etc in favor of native Math.
 
 TODO:
 

@@ -1,1 +1,2 @@
-export { isSafeInteger as default } from './util/numberAliases';
+import { defineInstance } from './namespace';
+export default defineInstance('isSafeInteger', Number.isSafeInteger);

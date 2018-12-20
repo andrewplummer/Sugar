@@ -84,6 +84,7 @@ function defineStatic(globalName, methodName, staticFn) {
   // is mostly for the test suite.
   instanceMethods.remove(globalName, methodName, true);
   SugarChainable[methodName] = staticFn;
+  return staticFn;
 }
 
 function defineInstance(globalName, methodName, staticFn) {
@@ -93,6 +94,7 @@ function defineInstance(globalName, methodName, staticFn) {
   instanceMethods.set(globalName, methodName, instanceFn, true);
   SugarChainable.prototype[methodName] = wrapReturnWithChainable(instanceFn);
   SugarChainable[methodName] = staticFn;
+  return staticFn;
 }
 
 function assertMethodDoesNotExist(SugarChainable, methodName) {
@@ -253,7 +255,7 @@ function mapNativeToChainable(globalName, SugarChainable) {
         // Bail on anything not a function.
         return;
       }
-    } catch (e) {
+    } catch {
       // Function.prototype has properties that
       // will throw errors when accessed.
       return;
@@ -286,7 +288,7 @@ function exportToBrowser(obj) {
     try {
     // Reuse already defined Sugar global object.
       globalContext[SUGAR] = globalContext[SUGAR] || obj;
-    } catch (e) {
+    } catch {
       // Contexts such as QML have a read-only global context.
     }
   }

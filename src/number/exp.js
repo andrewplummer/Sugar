@@ -1,1 +1,2 @@
-export { exp as default } from './util/mathAliases';
+import { defineInstance } from './namespace';
+export default defineInstance('exp', Math.exp);

@@ -1,1 +1,2 @@
-export { isNaN as default } from './util/numberAliases';
+import { defineInstance } from './namespace';
+export default defineInstance('isNaN', Number.isNaN);

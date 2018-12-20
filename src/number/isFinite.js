@@ -1,1 +1,2 @@
-export { isFinite as default } from './util/numberAliases';
+import { defineInstance } from './namespace';
+export default defineInstance('isFinite', Number.isFinite);

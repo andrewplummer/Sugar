@@ -1,3 +1,4 @@
+import { assertInteger } from './assertions';
 
 function getSuffix(n) {
   if (n >= 11 && n <= 13) {
@@ -12,8 +13,6 @@ function getSuffix(n) {
 }
 
 export default function(n) {
-  if (!n || !isFinite(n)) {
-    throw new RangeError('Invalid number');
-  }
+  assertInteger(n);
   return n + getSuffix(n);
 }

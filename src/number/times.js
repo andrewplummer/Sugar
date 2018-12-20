@@ -1,11 +1,10 @@
 import { defineInstance } from './namespace';
+import { assertPositiveInteger } from '../util/assertions';
 
 export default defineInstance('times', function(n, fn) {
-  if (n <= 0 || !Number.isFinite(n) || !Number.isInteger(n)) {
-    throw new RangeError('Number must be a positive, finite integer');
-  }
+  assertPositiveInteger(n);
   const arr = [];
-  for(let i = 0; i < n; i++) {
+  for (let i = 0; i < n; i++) {
     arr.push(fn(i, n));
   }
   return arr;

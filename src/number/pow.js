@@ -1,1 +1,2 @@
-export { pow as default } from './util/mathAliases';
+import { defineInstance } from './namespace';
+export default defineInstance('pow', Math.pow);

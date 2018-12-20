@@ -8,14 +8,21 @@
     "semi": ["error"],
     "new-cap": ["error"],
     "new-parens": ["error"],
+    "no-unused-vars": ["error", {
+      args: "after-used"
+    }],
     "keyword-spacing": ["error"],
-    "no-multiple-empty-lines": [2, {"max": 3, "maxBOF": 1}],
     "object-shorthand": ["error", "consistent"],
     "block-scoped-var": ["error"],
     "operator-linebreak": ["error", "before"],
     "space-before-function-paren": ["error", "never"],
     "quotes": ["error", "single", "avoid-escape"],
     "space-before-blocks": ["error", "always"],
+    "no-multiple-empty-lines": [2, {
+      "max": 3,
+      "maxBOF": 1,
+      "maxEOF": 0
+    }],
     "object-curly-newline": ["error", {
       "consistent": true
     }],
@@ -27,6 +34,7 @@
     }],
   },
   "parserOptions": {
+    "ecmaVersion": 2019,
     "sourceType": "module"
   }
 }

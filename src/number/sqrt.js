@@ -1,1 +1,2 @@
-export { sqrt as default } from './util/mathAliases';
+import { defineInstance } from './namespace';
+export default defineInstance('sqrt', Math.sqrt);

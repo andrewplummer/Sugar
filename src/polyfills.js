@@ -5,3 +5,4 @@ import 'core-js/modules/es6.number.is-safe-integer';
 import 'core-js/modules/es6.number.is-integer';
 import 'core-js/modules/es6.number.is-finite';
 import 'core-js/modules/es6.number.is-nan';
+import 'core-js/modules/es7.string.pad-start';

@@ -31,9 +31,11 @@
     "assertMatch": true,
     "assertNoError": true,
     "assertUndefined": true,
+    "assertArrayEqual": true,
     "assertInstanceOf": true,
+    "withNumberFormatter": true,
     "assertMatchingNamedExports": true,
-    "ensureNamespaceNotInitialized": true
+    "ensureNamespaceNotInitialized": true,
   },
   "rules": {
     "comma-dangle": ["error"],
