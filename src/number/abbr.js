@@ -5,16 +5,26 @@ import { isNumber } from '../util/typeChecks';
 import formatNumber from './util/formatNumber';
 import clamp from './util/clamp';
 
-const ALIAS_METRIC  = 'si';
-const ALIAS_BASIC   = 'basic';
-const ALIAS_MEMORY  = 'memory';
-const ALIAS_BINARY  = 'binary';
+/**
+ * @typedef {"integer"|"common"|"metric"|"binary"} UnitAlias
+ *
+ * @prop integer - Units suitable for large integers. Equivalent to "tmbk|".
+ * @prop common  - Common si units, as used with "grams", "meters", etc. Equivalent to "k|mμn".
+ * @prop metric  - Full si units. Equivalent to "YZEPTGMk|mμnpfazy".
+ * @prop binary  - Alias for "metric", but considers the number as base 2.
+ *
+ */
 const ALIAS_INTEGER = 'integer';
+const ALIAS_COMMON  = 'common';
+const ALIAS_METRIC  = 'metric';
+const ALIAS_BINARY  = 'binary';
 
 const INTEGER_UNITS = 'tbmk|';
-const BASIC_UNITS   = 'k|mμn';
-const MEMORY_UNITS  = 'EPTGMK|';
-const METRIC_UNITS  = 'YZEPTGMk|mμnpfazy';
+const COMMON_UNITS  = 'k|mμn';
+const METRIC_UNITS  = 'YZEPTGMK|mμnpfazy';
+
+const UNIT_MID         = '|';
+const UNIT_PLACEHOLDER = '-';
 
 const SAFE_PRECISION = 10;
 
@@ -28,8 +38,11 @@ const SAFE_PRECISION = 10;
  * be 0 unless the number is between -1 and 1. A negative number
  * may also be passed.
  *
- * @param {string} [units="integer"] - A string representing the
- * units to be used.
+ * @param {string|UnitAlias} [units="integer"] - A string representing the
+ * units to be used, or an alias to a preset. The "|" token
+ * represents the midpoint, or zero. The "-" token represents a
+ * placeholder. If passed, the unit will be skipped and the next
+ * unit away from zero will be used.
  *
  * @param {Intl.NumberFormat} [formatter] - If an Intl number
  * formatter is passed, it will be used instead of the default
@@ -47,7 +60,7 @@ const SAFE_PRECISION = 10;
  * abbr(1234, 1); // "1.2k"
  * abbr(1234, 2); // "1.23k"
  * abbr(.15);     // "0.15"
- * abbr(.15, 2, 'basic'); // "150m"
+ * abbr(.15, 2, 'common'); // "150m"
  * abbr(1234, 2, null, deFormatter); // "1,23k"
  *
  */
@@ -62,10 +75,9 @@ function abbr(n, precision, units, formatter) {
   const mid = units.indexOf('|');
   const offset = Math.floor(getExponent(n, isBinary) / 3);
 
-  const index = clamp(mid - offset, 0, units.length - 1);
-  let unit = units.charAt(index);
+  let [unit, index] = getUnitAndIndex(mid, offset, units);
 
-  if (unit === '|') {
+  if (unit === UNIT_MID) {
     unit = '';
   } else {
     n = getNumberInUnit(n, index - mid, isBinary);
@@ -82,9 +94,8 @@ function abbr(n, precision, units, formatter) {
 
 function getUnitAlias(units) {
   switch (units) {
-    case ALIAS_BASIC:   return BASIC_UNITS;
-    case ALIAS_MEMORY:  return MEMORY_UNITS;
-    case ALIAS_BINARY:  return MEMORY_UNITS;
+    case ALIAS_COMMON:  return COMMON_UNITS;
+    case ALIAS_BINARY:  return METRIC_UNITS;
     case ALIAS_METRIC:  return METRIC_UNITS;
     case ALIAS_INTEGER: return INTEGER_UNITS;
   }
@@ -112,6 +123,18 @@ function getNumberInUnit(n, offset, isBinary) {
     n *= Math.pow(10, offset * 3);
   }
   return getSafe(n);
+}
+
+function getUnitAndIndex(mid, offset, units) {
+  let index = clamp(mid - offset, 0, units.length - 1);
+  let unit = units.charAt(index);
+  if (unit !== UNIT_MID) {
+    while (unit === UNIT_PLACEHOLDER && index >= 0 && index < units.length) {
+      index += index < mid ? -1 : 1;
+      unit = units.charAt(index);
+    }
+  }
+  return [unit, index];
 }
 
 function getTruncated(n, precision) {

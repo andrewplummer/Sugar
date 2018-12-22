@@ -2,14 +2,6 @@
 
 namespace('Number', function() {
 
-  /*
-  TODO: what about these?
-  group('Options', function() {
-    equal(Sugar.Number.getOption('thousands'), ',', 'Thousands should be comma by default');
-    equal(Sugar.Number.getOption('decimal'), '.', 'Decimal should be dot by default');
-  });
-  */
-
   method('random', function(random) {
     assertOneOf(random(), [0,1]);
     assertOneOf(random(10), [0,1,2,3,4,5,6,7,8,9,10]);
@@ -436,65 +428,65 @@ namespace('Number', function() {
     assertEqual(abbr(-155555, -1), '-150k');
     assertEqual(abbr(-155555, -2), '-100k');
 
-    // Basic si
-    assertEqual(abbr(1, 0, 'basic') + 'm', '1m');
-    assertEqual(abbr(10, 0, 'basic') + 'm', '10m');
-    assertEqual(abbr(100, 0, 'basic') + 'm', '100m');
-    assertEqual(abbr(1000, 0, 'basic') + 'm', '1km');
-    assertEqual(abbr(10000, 0, 'basic') + 'm', '10km');
-    assertEqual(abbr(10000000, 0, 'basic') + 'm', '10,000km');
+    // Common si
+    assertEqual(abbr(1, 0, 'common') + 'm', '1m');
+    assertEqual(abbr(10, 0, 'common') + 'm', '10m');
+    assertEqual(abbr(100, 0, 'common') + 'm', '100m');
+    assertEqual(abbr(1000, 0, 'common') + 'm', '1km');
+    assertEqual(abbr(10000, 0, 'common') + 'm', '10km');
+    assertEqual(abbr(10000000, 0, 'common') + 'm', '10,000km');
 
-    assertEqual(abbr(9, 0, 'basic') + 'm', '9m');
-    assertEqual(abbr(99, 0, 'basic') + 'm', '99m');
-    assertEqual(abbr(999, 0, 'basic') + 'm', '999m');
-    assertEqual(abbr(9999, 0, 'basic') + 'm', '9km');
-    assertEqual(abbr(99999, 0, 'basic') + 'm', '99km');
-    assertEqual(abbr(99999999, 0, 'basic') + 'm', '99,999km');
+    assertEqual(abbr(9, 0, 'common') + 'm', '9m');
+    assertEqual(abbr(99, 0, 'common') + 'm', '99m');
+    assertEqual(abbr(999, 0, 'common') + 'm', '999m');
+    assertEqual(abbr(9999, 0, 'common') + 'm', '9km');
+    assertEqual(abbr(99999, 0, 'common') + 'm', '99km');
+    assertEqual(abbr(99999999, 0, 'common') + 'm', '99,999km');
 
-    assertEqual(abbr(.1, 0, 'basic') + 'm', '100mm');
-    assertEqual(abbr(.01, 0, 'basic') + 'm', '10mm');
-    assertEqual(abbr(.001, 0, 'basic') + 'm', '1mm');
-    assertEqual(abbr(.0001, 0, 'basic') + 'm', '100μm');
-    assertEqual(abbr(.00001, 0, 'basic') + 'm', '10μm');
-    assertEqual(abbr(.000001, 0, 'basic') + 'm', '1μm');
-    assertEqual(abbr(.0000001, 0, 'basic') + 'm', '100nm');
-    assertEqual(abbr(.00000001, 0, 'basic') + 'm', '10nm');
-    assertEqual(abbr(.000000001, 0, 'basic') + 'm', '1nm');
+    assertEqual(abbr(.1, 0, 'common') + 'm', '100mm');
+    assertEqual(abbr(.01, 0, 'common') + 'm', '10mm');
+    assertEqual(abbr(.001, 0, 'common') + 'm', '1mm');
+    assertEqual(abbr(.0001, 0, 'common') + 'm', '100μm');
+    assertEqual(abbr(.00001, 0, 'common') + 'm', '10μm');
+    assertEqual(abbr(.000001, 0, 'common') + 'm', '1μm');
+    assertEqual(abbr(.0000001, 0, 'common') + 'm', '100nm');
+    assertEqual(abbr(.00000001, 0, 'common') + 'm', '10nm');
+    assertEqual(abbr(.000000001, 0, 'common') + 'm', '1nm');
 
-    assertEqual(abbr(.9, 0, 'basic') + 'm', '900mm');
-    assertEqual(abbr(.09, 0, 'basic') + 'm', '90mm');
-    assertEqual(abbr(.009, 0, 'basic') + 'm', '9mm');
-    assertEqual(abbr(.0009, 0, 'basic') + 'm', '900μm');
-    assertEqual(abbr(.00009, 0, 'basic') + 'm', '90μm');
-    assertEqual(abbr(.000009, 0, 'basic') + 'm', '9μm');
-    assertEqual(abbr(.0000009, 0, 'basic') + 'm', '900nm');
-    assertEqual(abbr(.00000009, 0, 'basic') + 'm', '90nm');
-    assertEqual(abbr(.000000009, 0, 'basic') + 'm', '9nm');
+    assertEqual(abbr(.9, 0, 'common') + 'm', '900mm');
+    assertEqual(abbr(.09, 0, 'common') + 'm', '90mm');
+    assertEqual(abbr(.009, 0, 'common') + 'm', '9mm');
+    assertEqual(abbr(.0009, 0, 'common') + 'm', '900μm');
+    assertEqual(abbr(.00009, 0, 'common') + 'm', '90μm');
+    assertEqual(abbr(.000009, 0, 'common') + 'm', '9μm');
+    assertEqual(abbr(.0000009, 0, 'common') + 'm', '900nm');
+    assertEqual(abbr(.00000009, 0, 'common') + 'm', '90nm');
+    assertEqual(abbr(.000000009, 0, 'common') + 'm', '9nm');
 
     // Full si
-    assertEqual(abbr(1, 0, 'si'), '1');
-    assertEqual(abbr(1000, 0, 'si'), '1k');
-    assertEqual(abbr(1000000, 0, 'si'), '1M');
-    assertEqual(abbr(1000000000, 0, 'si'), '1G');
-    assertEqual(abbr(1000000000000, 0, 'si'), '1T');
-    assertEqual(abbr(1000000000000000, 0, 'si'), '1P');
-    assertEqual(abbr(1000000000000000000, 0, 'si'), '1E');
-    assertEqual(abbr(1000000000000000000000, 0, 'si'), '1Z');
-    assertEqual(abbr(1000000000000000000000000, 0, 'si'), '1Y');
-    assertEqual(abbr(1000000000000000000000000000, 0, 'si'), '1,000Y');
+    assertEqual(abbr(1, 0, 'metric'), '1');
+    assertEqual(abbr(1000, 0, 'metric'), '1K');
+    assertEqual(abbr(1000000, 0, 'metric'), '1M');
+    assertEqual(abbr(1000000000, 0, 'metric'), '1G');
+    assertEqual(abbr(1000000000000, 0, 'metric'), '1T');
+    assertEqual(abbr(1000000000000000, 0, 'metric'), '1P');
+    assertEqual(abbr(1000000000000000000, 0, 'metric'), '1E');
+    assertEqual(abbr(1000000000000000000000, 0, 'metric'), '1Z');
+    assertEqual(abbr(1000000000000000000000000, 0, 'metric'), '1Y');
+    assertEqual(abbr(1000000000000000000000000000, 0, 'metric'), '1,000Y');
 
-    assertEqual(abbr(.001, 0, 'si'), '1m');
-    assertEqual(abbr(.000001, 0, 'si'), '1μ');
-    assertEqual(abbr(.000000001, 0, 'si'), '1n');
-    assertEqual(abbr(.000000000001, 0, 'si'), '1p');
-    assertEqual(abbr(.000000000000001, 0, 'si'), '1f');
-    assertEqual(abbr(.000000000000000001, 0, 'si'), '1a');
-    assertEqual(abbr(.000000000000000000001, 0, 'si'), '1z');
-    assertEqual(abbr(.000000000000000000000001, 0, 'si'), '1y');
-    assertEqual(abbr(.000000000000000000000000001, 0, 'si'), '0');
-    assertEqual(abbr(.000000000000000000000000001, null, 'si'), '0.001y');
+    assertEqual(abbr(.001, 0, 'metric'), '1m');
+    assertEqual(abbr(.000001, 0, 'metric'), '1μ');
+    assertEqual(abbr(.000000001, 0, 'metric'), '1n');
+    assertEqual(abbr(.000000000001, 0, 'metric'), '1p');
+    assertEqual(abbr(.000000000000001, 0, 'metric'), '1f');
+    assertEqual(abbr(.000000000000000001, 0, 'metric'), '1a');
+    assertEqual(abbr(.000000000000000000001, 0, 'metric'), '1z');
+    assertEqual(abbr(.000000000000000000000001, 0, 'metric'), '1y');
+    assertEqual(abbr(.000000000000000000000000001, 0, 'metric'), '0');
+    assertEqual(abbr(.000000000000000000000000001, null, 'metric'), '0.001y');
 
-    // Binary
+    // Binary (Base 2)
     assertEqual(abbr(1, 0, 'binary'), '1');
     assertEqual(abbr(Math.pow(2, 10), 0, 'binary') + 'B', '1KB');
     assertEqual(abbr(Math.pow(2, 20), 0, 'binary') + 'B', '1MB');
@@ -502,7 +494,7 @@ namespace('Number', function() {
     assertEqual(abbr(Math.pow(2, 40), 0, 'binary') + 'B', '1TB');
     assertEqual(abbr(Math.pow(2, 50), 0, 'binary') + 'B', '1PB');
     assertEqual(abbr(Math.pow(2, 60), 0, 'binary') + 'B', '1EB');
-    assertEqual(abbr(Math.pow(2, 70), 0, 'binary') + 'B', '1,024EB');
+    assertEqual(abbr(Math.pow(2, 70), 0, 'binary') + 'B', '1ZB');
 
     assertEqual(abbr(Math.pow(2, 10) - Math.pow(2,  0), 0, 'binary') + 'B', '1,023B');
     assertEqual(abbr(Math.pow(2, 20) - Math.pow(2, 10), 0, 'binary') + 'B', '1,023KB');
@@ -512,21 +504,26 @@ namespace('Number', function() {
     assertEqual(abbr(Math.pow(2, 60) - Math.pow(2, 50), 0, 'binary') + 'B', '1,023PB');
     assertEqual(abbr(Math.pow(2, 70) - Math.pow(2, 60), 0, 'binary') + 'B', '1,023EB');
 
-    // Memory
-    assertEqual(abbr(1, 0, 'memory'), '1');
-    assertEqual(abbr(1000, 0, 'memory'), '1K');
-    assertEqual(abbr(1000000, 0, 'memory'), '1M');
-    assertEqual(abbr(1000000000, 0, 'memory'), '1G');
-    assertEqual(abbr(1000000000000, 0, 'memory'), '1T');
-    assertEqual(abbr(1000000000000000, 0, 'memory'), '1P');
-    assertEqual(abbr(1000000000000000000, 0, 'memory'), '1E');
-    assertEqual(abbr(1000000000000000000000, 0, 'memory'), '1,000E');
+    // Memory (Base 10)
+    assertEqual(abbr(1, 0, 'metric'), '1');
+    assertEqual(abbr(1000, 0, 'metric'), '1K');
+    assertEqual(abbr(1000000, 0, 'metric'), '1M');
+    assertEqual(abbr(1000000000, 0, 'metric'), '1G');
+    assertEqual(abbr(1000000000000, 0, 'metric'), '1T');
+    assertEqual(abbr(1000000000000000, 0, 'metric'), '1P');
+    assertEqual(abbr(1000000000000000000, 0, 'metric'), '1E');
+    assertEqual(abbr(1000000000000000000000, 0, 'metric'), '1Z');
 
     // Other
     assertEqual(abbr(1755, 2, 'integer'), '1.75k');
     assertEqual(abbr(17555, 2, '|'), '17,555');
     assertEqual(abbr(.17555, 2, '|'), '0.17');
     assertEqual(abbr(.17555, null, '|'), '0.17555');
+    assertEqual(abbr(17555, 0, 'x|y'), '17x');
+    assertEqual(abbr(.17555, 0, 'x|y'), '175y');
+    assertEqual(abbr(175000, null, 'm-|'), '0.175m');
+    assertEqual(abbr(175000000, null, 'bm-|'), '175m');
+    assertEqual(abbr(.175, 0, 'x|-μ'), '175,000μ');
 
     // Errors
     assertError(function() { abbr(NaN); });
@@ -540,177 +537,5 @@ namespace('Number', function() {
     });
 
   });
-
-  /*
-
-
-    test(12334.5880, '12k', 'fractional | 0 places | 12334.5880');
-    test(12334.5880, [3], '12.335k', 'fractional | 3 places | 12334.5880');
-    test(.588500, [9], '588.5m', 'fractional | 9 places | .5885');
-    test(.580085, [9], '580.085m', 'fractional | 9 places | .580085');
-    test(.580085, [7], '580.085m', 'fractional | 7 places | .580085');
-    test(.580085, [5], '580.085m', 'fractional | 5 places | .580085');
-    test(.580085, [3], '580.085m', 'fractional | 3 places | .580085');
-    test(.580085, [1], '580.1m', 'fractional | 1 places | .580085');
-    test(12323.424558, [3, '|'], '12,323.425', 'limited and 3 decimals');
-
-    equal(run(1, 'metric', [0, '']) + 'm', '1m', 'no format uses short');
-    equal(run(1000, 'metric', [0, '|']) + 'm', '1,000m', 'simple placeholder limits');
-
-    equal(run(1, 'metric', [0, 'm']) + 'm', '1,000mm', 'millimeter max');
-    equal(run(1, 'metric', [0, 'μ_']) + 'm', '1,000,000μm', 'micrometer max');
-    equal(run(1, 'metric', [0, 'n__']) + 'm', '1,000,000,000nm', 'nanometer max');
-    equal(run(1, 'metric', [3, '_k']) + 'm', '0.001km', 'kilometer min');
-
-    equal(run(0.0000001, 'metric', [0, 'nμ_']) + 'm', '100nm', '100nm with micrometer max');
-    equal(run(0.0001,    'metric', [0, 'nμ_']) + 'm', '100μm', '100μm with micrometer max');
-
-    equal(run(1000000, 'metric', [3, '_KG']) + 'W', '1GW', 'minimum can format higher');
-  });
-
-  method('bytes', function() {
-
-    test(1,                  '1B',    'default | 1B   ');
-    test(10,                 '10B',   'default | 10B  ');
-    test(100,                '100B',  'default | 100B ');
-    test(1000,               '1KB',   'default | 1KB  ');
-    test(10000,              '10KB',  'default | 10KB ');
-    test(100000,             '100KB', 'default | 100KB');
-    test(1000000,            '1MB',   'default | 1MB  ');
-    test(10000000,           '10MB',  'default | 10MB ');
-    test(100000000,          '100MB', 'default | 100MB');
-    test(1000000000,         '1GB',   'default | 1GB  ');
-    test(10000000000,        '10GB',  'default | 10GB ');
-    test(100000000000,       '100GB', 'default | 100GB');
-    test(1000000000000,      '1TB',   'default | 1TB  ');
-    test(10000000000000,     '10TB',  'default | 10TB ');
-    test(100000000000000,    '100TB', 'default | 100TB');
-    test(1000000000000000,   '1PB',   'default | 1PB  ');
-    test(10000000000000000,  '10PB',  'default | 10PB ');
-    test(100000000000000000, '100PB', 'default | 100PB');
-
-    withArgs([2], function() {
-      test(1,                  '1B',    '2 places | 1B   ');
-      test(10,                 '10B',   '2 places | 10B  ');
-      test(100,                '100B',  '2 places | 100B ');
-      test(1000,               '1KB',   '2 places | 1KB  ');
-      test(10000,              '10KB',  '2 places | 10KB ');
-      test(100000,             '100KB', '2 places | 100KB');
-      test(1000000,            '1MB',   '2 places | 1MB  ');
-      test(10000000,           '10MB',  '2 places | 10MB ');
-      test(100000000,          '100MB', '2 places | 100MB');
-      test(1000000000,         '1GB',   '2 places | 1GB  ');
-      test(10000000000,        '10GB',  '2 places | 10GB ');
-      test(100000000000,       '100GB', '2 places | 100GB');
-      test(1000000000000,      '1TB',   '2 places | 1TB  ');
-      test(10000000000000,     '10TB',  '2 places | 10TB ');
-      test(100000000000000,    '100TB', '2 places | 100TB');
-      test(1000000000000000,   '1PB',   '2 places | 1PB  ');
-      test(10000000000000000,  '10PB',  '2 places | 10PB ');
-      test(100000000000000000, '100PB', '2 places | 100PB');
-    });
-
-    withArgs([0, true], function() {
-      test(1,                  '1B',    '0 places | base 2 | 1B    ');
-      test(10,                 '10B',   '0 places | base 2 | 10B   ');
-      test(100,                '100B',  '0 places | base 2 | 100B  ');
-      test(1000,               '1KiB',  '0 places | base 2 | 1KiB  ');
-      test(10000,              '10KiB', '0 places | base 2 | 10KiB ');
-      test(100000,             '98KiB', '0 places | base 2 | 100KiB');
-      test(1000000,            '1MiB',  '0 places | base 2 | 1MiB  ');
-      test(10000000,           '10MiB', '0 places | base 2 | 10MiB ');
-      test(100000000,          '95MiB', '0 places | base 2 | 100MiB');
-      test(1000000000,         '1GiB',  '0 places | base 2 | 1GiB  ');
-      test(10000000000,        '9GiB',  '0 places | base 2 | 10GiB ');
-      test(100000000000,       '93GiB', '0 places | base 2 | 100GiB');
-      test(1000000000000,      '1TiB',  '0 places | base 2 | 1TiB  ');
-      test(10000000000000,     '9TiB',  '0 places | base 2 | 10TiB ');
-      test(100000000000000,    '91TiB', '0 places | base 2 | 100TiB');
-      test(1000000000000000,   '1PiB',  '0 places | base 2 | 1PiB  ');
-      test(10000000000000000,  '9PiB',  '0 places | base 2 | 10PiB ');
-      test(100000000000000000, '89PiB', '0 places | base 2 | 100PiB');
-    });
-
-    withArgs([2, true], function() {
-
-      test(1,                  '1B',       '2 places | base 2 | 1B   ');
-      test(10,                 '10B',      '2 places | base 2 | 10B  ');
-      test(100,                '100B',     '2 places | base 2 | 100B ');
-      test(1000,               '0.98KiB',  '2 places | base 2 | 1KB  ');
-      test(10000,              '9.77KiB',  '2 places | base 2 | 10KB ');
-      test(100000,             '97.66KiB', '2 places | base 2 | 100KB');
-      test(1000000,            '0.95MiB',  '2 places | base 2 | 1MB  ');
-      test(10000000,           '9.54MiB',  '2 places | base 2 | 10MB ');
-      test(100000000,          '95.37MiB', '2 places | base 2 | 100MB');
-      test(1000000000,         '0.93GiB',  '2 places | base 2 | 1GB  ');
-      test(10000000000,        '9.31GiB',  '2 places | base 2 | 10GB ');
-      test(100000000000,       '93.13GiB', '2 places | base 2 | 100GB');
-      test(1000000000000,      '0.91TiB',  '2 places | base 2 | 1TB  ');
-      test(10000000000000,     '9.09TiB',  '2 places | base 2 | 10TB ');
-      test(100000000000000,    '90.95TiB', '2 places | base 2 | 100TB');
-      test(1000000000000000,   '0.89PiB',  '2 places | base 2 | 1PB  ');
-      test(10000000000000000,  '8.88PiB',  '2 places | base 2 | 10PB ');
-      test(100000000000000000, '88.82PiB', '2 places | base 2 | 100PB');
-
-      // Issue #422
-      Sugar.Number.setOption('decimal', ',');
-      test(1000, '0,98KiB', 'should respect global decimal');
-      Sugar.Number.setOption('decimal', null);
-
-    });
-
-    withArgs([0, true, 'si'], function() {
-      test(1,                  '1B',   'base 2 with si units | 1B    ');
-      test(10,                 '10B',  'base 2 with si units | 10B   ');
-      test(100,                '100B', 'base 2 with si units | 100B  ');
-      test(1000,               '1KB',  'base 2 with si units | 1KB  ');
-      test(10000,              '10KB', 'base 2 with si units | 10KB ');
-      test(100000,             '98KB', 'base 2 with si units | 100KB');
-      test(1000000,            '1MB',  'base 2 with si units | 1MB  ');
-      test(10000000,           '10MB', 'base 2 with si units | 10MB ');
-      test(100000000,          '95MB', 'base 2 with si units | 100MB');
-      test(1000000000,         '1GB',  'base 2 with si units | 1GB  ');
-      test(10000000000,        '9GB',  'base 2 with si units | 10GB ');
-      test(100000000000,       '93GB', 'base 2 with si units | 100GB');
-      test(1000000000000,      '1TB',  'base 2 with si units | 1TB  ');
-      test(10000000000000,     '9TB',  'base 2 with si units | 10TB ');
-      test(100000000000000,    '91TB', 'base 2 with si units | 100TB');
-      test(1000000000000000,   '1PB',  'base 2 with si units | 1PB  ');
-      test(10000000000000000,  '9PB',  'base 2 with si units | 10PB ');
-      test(100000000000000000, '89PB', 'base 2 with si units | 100PB');
-    });
-
-    withArgs([0, false, 'binary'], function() {
-
-      test(1,                  '1B',     'base 10 with binary units | 1B    ');
-      test(10,                 '10B',    'base 10 with binary units | 10B   ');
-      test(100,                '100B',   'base 10 with binary units | 100B  ');
-      test(1000,               '1KiB',   'base 10 with binary units | 1KiB  ');
-      test(10000,              '10KiB',  'base 10 with binary units | 10KiB ');
-      test(100000,             '100KiB', 'base 10 with binary units | 100KiB');
-      test(1000000,            '1MiB',   'base 10 with binary units | 1MiB  ');
-      test(10000000,           '10MiB',  'base 10 with binary units | 10MiB ');
-      test(100000000,          '100MiB', 'base 10 with binary units | 100MiB');
-      test(1000000000,         '1GiB',   'base 10 with binary units | 1GiB  ');
-      test(10000000000,        '10GiB',  'base 10 with binary units | 10GiB ');
-      test(100000000000,       '100GiB', 'base 10 with binary units | 100GiB');
-      test(1000000000000,      '1TiB',   'base 10 with binary units | 1TiB  ');
-      test(10000000000000,     '10TiB',  'base 10 with binary units | 10TiB ');
-      test(100000000000000,    '100TiB', 'base 10 with binary units | 100TiB');
-      test(1000000000000000,   '1PiB',   'base 10 with binary units | 1PiB  ');
-      test(10000000000000000,  '10PiB',  'base 10 with binary units | 10PiB ');
-      test(100000000000000000, '100PiB', 'base 10 with binary units | 100PiB');
-
-    });
-
-    test(1024,    [0, true], '1KiB', '1024 bytes is 1KiB');
-    test(1048576, [0, true], '1MiB', '2 places | 1048576 bytes is 1MiB');
-    test(1024,    [2, true], '1KiB', '2 places | 1024 bytes is 1KiB');
-    test(1048576, [2, true], '1MiB', '2 places | 1048576 bytes is 1MiB');
-
-    test(Math.pow(10, 16), [0,  true], '9PiB', '10 ^ 16 bytes');
-    test(Math.pow(10, 16), [-2, true], '0PiB', '10 ^ 16 bytes | -2 places');
-  });
-  */
 
 });

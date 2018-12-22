@@ -19,6 +19,7 @@ v3.0.0
 - Renamed `Number#hex` to `Number#toHex`.
 - Removed `base` param of `Number#pad` in favor of `Number#toHex`.
 - Removed trigonometric aliases sin, cos, etc in favor of native Math.
+- Changed `Number#metric` placeholder token from `_` to `-`.
 
 TODO:
 
