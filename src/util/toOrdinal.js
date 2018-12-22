@@ -12,7 +12,7 @@ function getSuffix(n) {
   }
 }
 
-export default function(n) {
+export default function toOrdinal(n) {
   assertInteger(n);
   return n + getSuffix(n);
 }

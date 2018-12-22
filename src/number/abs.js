@@ -1,6 +1,6 @@
-import { defineInstance } from './namespace';
+import { defineInstance } from '../core/number';
 
-export default defineInstance('abs', function(n) {
+export default defineInstance(function abs(n) {
   // Note that .valueOf() here is only required due to a
   // very strange bug in iOS7 that only occurs occasionally
   // in which Math.abs() called on non-primitive numbers

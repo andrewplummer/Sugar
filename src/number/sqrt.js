@@ -1,2 +1,2 @@
-import { defineInstance } from './namespace';
-export default defineInstance('sqrt', Math.sqrt);
+import { defineInstance } from '../core/number';
+export default defineInstance(Math.sqrt);

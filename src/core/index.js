@@ -1,17 +1,20 @@
-import NamespaceStore from './NamespaceStore';
-import SugarChainableBase from './SugarChainableBase';
-
-import globalContext from './globalContext';
-import { extendNative, restoreNative } from './extendUtils';
-import { hasOwnProperty, forEachProperty, arrayIncludes } from './utils';
+import globalContext from './util/globalContext';
+import NamespaceStore from './util/NamespaceStore';
+import SugarChainableBase from './util/SugarChainableBase';
+import { extendNative, restoreNative } from './util/extend';
+import { hasOwnProperty, forEachProperty, arrayIncludes } from './util/helpers';
+import { isString, isFunction } from '../util/typeChecks';
 
 
 // --- Constants
 
 const SUGAR = 'Sugar';
-const ERROR_METHOD_DEFINED  = 'Method already defined';
-const ERROR_NATIVE_UNKNOWN  = 'Built-in class does not exist';
-const ERROR_EXTEND_CONFLICT = 'Extend options cannot have both include and exclude';
+
+const ERROR_METHOD_DEFINED   = 'Method already defined';
+const ERROR_NATIVE_UNKNOWN   = 'Built-in class does not exist';
+const ERROR_EXTEND_CONFLICT  = 'Extend options cannot have both include and exclude';
+const ERROR_UNNAMED_FUNCTION = 'Function requires a name';
+
 export const VERSION = 'edge';
 
 
@@ -62,12 +65,16 @@ export function createNamespace(globalName) {
 // --- Defining methods
 
 function defineWithArgs(globalName, defineMethod, args) {
-  if (typeof args[0] !== 'object') {
-    return defineMethod(globalName, args[0], args[1]);
+  if (isString(args[0])) {
+    defineMethod(globalName, args[0], args[1]);
+  } else if (isFunction(args[0])) {
+    assertNamedFunction(args[0]);
+    defineMethod(globalName, args[0].name, args[0]);
+  } else {
+    forEachProperty(args[0], (methodName, fn) => {
+      defineMethod(globalName, methodName, fn);
+    });
   }
-  forEachProperty(args[0], (methodName, fn) => {
-    defineMethod(globalName, methodName, fn);
-  });
 }
 
 function defineAliases(globalName, defineMethod, str, fn) {
@@ -100,6 +107,12 @@ function defineInstance(globalName, methodName, staticFn) {
 function assertMethodDoesNotExist(SugarChainable, methodName) {
   if (SugarChainable[methodName]) {
     throw new Error(ERROR_METHOD_DEFINED);
+  }
+}
+
+function assertNamedFunction(fn) {
+  if (!fn.name) {
+    throw new TypeError(ERROR_UNNAMED_FUNCTION);
   }
 }
 
@@ -251,7 +264,7 @@ function mapNativeToChainable(globalName, SugarChainable) {
     }
     try {
       fn = proto[methodName];
-      if (typeof fn !== 'function') {
+      if (!isFunction(fn)) {
         // Bail on anything not a function.
         return;
       }

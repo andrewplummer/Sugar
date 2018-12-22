@@ -1,4 +1,4 @@
-import { defineInstance } from './namespace';
+import { defineInstance } from '../core/number';
 import toOrdinal from '../util/toOrdinal';
 
-export default defineInstance('toOrdinal', toOrdinal);
+export default defineInstance(toOrdinal);

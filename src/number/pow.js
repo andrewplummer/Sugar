@@ -1,2 +1,2 @@
-import { defineInstance } from './namespace';
-export default defineInstance('pow', Math.pow);
+import { defineInstance } from '../core/number';
+export default defineInstance(Math.pow);

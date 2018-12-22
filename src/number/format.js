@@ -1,3 +1,3 @@
-import { defineInstance } from './namespace';
-import formatNumber from './util/formatNumber';
-export default defineInstance('format', formatNumber);
+import { defineInstance } from '../core/number';
+import format from './util/format';
+export default defineInstance(format);

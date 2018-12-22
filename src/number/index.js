@@ -1,4 +1,4 @@
-import SugarNumber from './namespace';
+import SugarNumber from '../core/number';
 
 import './abbr';
 import './abs';

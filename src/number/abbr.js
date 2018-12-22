@@ -1,8 +1,8 @@
-import { defineInstance } from './namespace';
+import { defineInstance } from '../core/number';
 import { assertFinite } from '../util/assertions';
 import { trunc, round } from './util/math';
 import { isNumber } from '../util/typeChecks';
-import formatNumber from './util/formatNumber';
+import format from './util/format';
 import clamp from './util/clamp';
 
 /**
@@ -154,7 +154,7 @@ function getFormatted(n, formatter) {
   if (formatter) {
     return formatter.format(n);
   }
-  return formatNumber(n);
+  return format(n);
 }
 
 function getSafe(n) {
@@ -163,4 +163,4 @@ function getSafe(n) {
   return round(n, SAFE_PRECISION);
 }
 
-export default defineInstance('abbr', abbr);
+export default defineInstance(abbr);

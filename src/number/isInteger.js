@@ -1,2 +1,2 @@
-import { defineInstance } from './namespace';
-export default defineInstance('isInteger', Number.isInteger);
+import { defineInstance } from '../core/number';
+export default defineInstance(Number.isInteger);

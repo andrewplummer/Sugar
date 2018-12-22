@@ -8,11 +8,14 @@ import './helpers/suite';
 import './helpers/intl';
 
 // Tests
-import './core';
-import './number';
-import './modules';
-import './extended';
-import './chainable';
+import './tests/core';
+import './tests/number';
+import './tests/extended';
+import './tests/chainable';
+import './tests/modules/sugar';
+import './tests/modules/plugin';
+import './tests/modules/plugin-method';
+import './tests/modules/plugin-method-define';
 
 // Export Sugar to global for tests.
 global.Sugar = Sugar;
