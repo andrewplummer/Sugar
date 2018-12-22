@@ -10,11 +10,6 @@ import { isString, isFunction } from '../util/typeChecks';
 
 const SUGAR = 'Sugar';
 
-const ERROR_METHOD_DEFINED   = 'Method already defined';
-const ERROR_NATIVE_UNKNOWN   = 'Built-in class does not exist';
-const ERROR_EXTEND_CONFLICT  = 'Extend options cannot have both include and exclude';
-const ERROR_UNNAMED_FUNCTION = 'Function requires a name';
-
 export const VERSION = 'edge';
 
 
@@ -25,7 +20,7 @@ const instanceMethods = new NamespaceStore();
 export function createNamespace(globalName) {
 
   if (!globalContext[globalName]) {
-    throw new Error(ERROR_NATIVE_UNKNOWN);
+    throw new Error(`Built-in class ${globalName} does not exist`);
   }
 
   if (Sugar[globalName]) {
@@ -39,19 +34,19 @@ export function createNamespace(globalName) {
     }
 
     static defineStatic(...args) {
-      return defineWithArgs(globalName, defineStatic, args);
+      defineWithArgs(globalName, defineStatic, args);
     }
 
     static defineInstance(...args) {
-      return defineWithArgs(globalName, defineInstance, args);
+      defineWithArgs(globalName, defineInstance, args);
     }
 
     static defineStaticAlias(str, fn) {
-      return defineAliases(globalName, defineStatic, str, fn);
+      defineAliases(globalName, defineStatic, str, fn);
     }
 
     static defineInstanceAlias(str, fn) {
-      return defineAliases(globalName, defineInstance, str, fn);
+      defineAliases(globalName, defineInstance, str, fn);
     }
 
   }
@@ -91,7 +86,6 @@ function defineStatic(globalName, methodName, staticFn) {
   // is mostly for the test suite.
   instanceMethods.remove(globalName, methodName, true);
   SugarChainable[methodName] = staticFn;
-  return staticFn;
 }
 
 function defineInstance(globalName, methodName, staticFn) {
@@ -101,18 +95,17 @@ function defineInstance(globalName, methodName, staticFn) {
   instanceMethods.set(globalName, methodName, instanceFn, true);
   SugarChainable.prototype[methodName] = wrapReturnWithChainable(instanceFn);
   SugarChainable[methodName] = staticFn;
-  return staticFn;
 }
 
 function assertMethodDoesNotExist(SugarChainable, methodName) {
   if (SugarChainable[methodName]) {
-    throw new Error(ERROR_METHOD_DEFINED);
+    throw new Error(`Method ${methodName} is already defined`);
   }
 }
 
 function assertNamedFunction(fn) {
   if (!fn.name) {
-    throw new TypeError(ERROR_UNNAMED_FUNCTION);
+    throw new TypeError(`Function requires a name: ${fn}`);
   }
 }
 
@@ -162,7 +155,7 @@ function extendIsAllowed(name, opt) {
   const included = extendOptionsInclude(name, opt);
   const excluded = extendOptionsExclude(name, opt);
   if (included && excluded) {
-    throw new Error(ERROR_EXTEND_CONFLICT);
+    throw new Error('Extend options cannot have both include and exclude');
   }
   const isImplicitlyIncluded = !opt || !opt.include;
   return included || (isImplicitlyIncluded && !excluded);

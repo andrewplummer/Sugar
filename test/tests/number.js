@@ -2,7 +2,7 @@
 
 namespace('Number', function() {
 
-  method('random', function(random) {
+  staticMethod('random', function(random) {
     assertOneOf(random(), [0,1]);
     assertOneOf(random(10), [0,1,2,3,4,5,6,7,8,9,10]);
     assertOneOf(random(25, 30), [25,26,27,28,29,30]);
@@ -11,7 +11,7 @@ namespace('Number', function() {
     assertOneOf(random(0, 0), [0]);
   });
 
-  method('round', function(round) {
+  staticMethod('round', function(round) {
     assertEqual(round(3), 3);
     assertEqual(round(3.241), 3);
     assertEqual(round(3.752), 4);
@@ -31,7 +31,7 @@ namespace('Number', function() {
     assertEqual(round(1e-21, -1), 0);
   });
 
-  method('ceil', function(ceil) {
+  instanceMethod('ceil', function(ceil) {
     assertEqual(ceil(5.5), 6);
     assertEqual(ceil(5.14), 6);
     assertEqual(ceil(5), 5);
@@ -47,7 +47,7 @@ namespace('Number', function() {
     assertEqual(ceil(4417.1318, -3), 5000);
   });
 
-  method('floor', function(floor) {
+  instanceMethod('floor', function(floor) {
     assertEqual(floor(5.5), 5);
     assertEqual(floor(5.14), 5);
     assertEqual(floor(5.9), 5);
@@ -64,7 +64,7 @@ namespace('Number', function() {
     assertEqual(floor(4417.1318, [-3]), 4000);
   });
 
-  method('trunc', function(trunc) {
+  instanceMethod('trunc', function(trunc) {
     assertEqual(trunc(5), 5);
     assertEqual(trunc(5.25), 5);
     assertEqual(trunc(NaN), NaN);
@@ -75,14 +75,14 @@ namespace('Number', function() {
     assertEqual(trunc(-5.25, 2), -5.25);
   });
 
-  method('abs', function(abs) {
+  instanceMethod('abs', function(abs) {
     assertEqual(abs(-5), 5);
     assertEqual(abs(5), 5);
     assertEqual(abs(-3.324), 3.324);
     assertEqual(abs(3.324), 3.324);
   });
 
-  method('pow', function(pow) {
+  instanceMethod('pow', function(pow) {
     assertEqual(pow(3, [2]), 9);
     assertEqual(pow(3, [1]), 3);
     assertEqual(pow(12, [2]), 144);
@@ -91,30 +91,30 @@ namespace('Number', function() {
     assertEqual(pow(3), NaN);
   });
 
-  method('log', function(log) {
+  instanceMethod('log', function(log) {
     assertEqual(log(64, 2), 6);
     assertEqual(log(32, 2), 5);
     assertEqual(log(16, 2), 4);
     assertEqual(log(Math.E), 1);
   });
 
-  method('exp', function(exp) {
+  instanceMethod('exp', function(exp) {
     assertEqual(exp(0), 1);
     assertEqual(exp(1), Math.exp(1));
   });
 
-  method('sqrt', function(sqrt) {
+  instanceMethod('sqrt', function(sqrt) {
     assertEqual(sqrt(9), 3);
     assertEqual(sqrt(1024), 32);
   });
 
-  method('toChar', function(toChar) {
+  instanceMethod('toChar', function(toChar) {
     assertEqual(toChar(65), 'A');
     assertEqual(toChar(24536), '忘');
     assertEqual(toChar(20294), '但');
   });
 
-  method('isMultipleOf', function(isMultipleOf) {
+  instanceMethod('isMultipleOf', function(isMultipleOf) {
     assertEqual(isMultipleOf(2, 2), true);
     assertEqual(isMultipleOf(6, 2), true);
     assertEqual(isMultipleOf(100, 2), true);
@@ -130,7 +130,7 @@ namespace('Number', function() {
     assertEqual(isMultipleOf(2), false);
   });
 
-  method('isOdd', function(isOdd) {
+  instanceMethod('isOdd', function(isOdd) {
     assertEqual(isOdd(0), false);
     assertEqual(isOdd(1), true);
     assertEqual(isOdd(2), false);
@@ -142,7 +142,7 @@ namespace('Number', function() {
     assertEqual(isOdd(-Infinity), false);
   });
 
-  method('isEven', function(isEven) {
+  instanceMethod('isEven', function(isEven) {
     assertEqual(isEven(0), true);
     assertEqual(isEven(1), false);
     assertEqual(isEven(2), true);
@@ -154,7 +154,7 @@ namespace('Number', function() {
     assertEqual(isEven(-Infinity), false);
   });
 
-  method('toOrdinal', function(toOrdinal) {
+  instanceMethod('toOrdinal', function(toOrdinal) {
 
     assertEqual(toOrdinal(0), '0th');
     assertEqual(toOrdinal(1), '1st');
@@ -200,7 +200,7 @@ namespace('Number', function() {
 
   });
 
-  method('isInteger', function(isInteger) {
+  instanceMethod('isInteger', function(isInteger) {
     assertEqual(isInteger(15), true);
     assertEqual(isInteger(15.2), false);
     assertEqual(isInteger(15.2668), false);
@@ -209,7 +209,7 @@ namespace('Number', function() {
     assertEqual(isInteger('15.8'), false);
   });
 
-  method('isSafeInteger', function(isSafeInteger) {
+  instanceMethod('isSafeInteger', function(isSafeInteger) {
     assertEqual(isSafeInteger(-0), true);
     assertEqual(isSafeInteger(0), true);
     assertEqual(isSafeInteger(1), true);
@@ -218,7 +218,7 @@ namespace('Number', function() {
     assertEqual(isSafeInteger(Infinity), false);
   });
 
-  method('isFinite', function(isFinite) {
+  instanceMethod('isFinite', function(isFinite) {
     assertEqual(isFinite(-0), true);
     assertEqual(isFinite(0), true);
     assertEqual(isFinite(1), true);
@@ -228,14 +228,14 @@ namespace('Number', function() {
     assertEqual(isFinite(-Infinity), false);
   });
 
-  method('isNaN', function(isNaN) {
+  instanceMethod('isNaN', function(isNaN) {
     assertEqual(isNaN(1), false);
     assertEqual(isNaN(NaN), true);
     assertEqual(isNaN(Infinity), false);
     assertEqual(isNaN(-Infinity), false);
   });
 
-  method('times', function(times) {
+  instanceMethod('times', function(times) {
 
     function assertTimesRan(n, actual) {
       var count = 0;
@@ -277,7 +277,7 @@ namespace('Number', function() {
 
   });
 
-  method('format', function(format) {
+  instanceMethod('format', function(format) {
 
     assertEqual(format(1), '1');
     assertEqual(format(10), '10');
@@ -326,7 +326,7 @@ namespace('Number', function() {
 
   });
 
-  method('pad', function(pad) {
+  instanceMethod('pad', function(pad) {
 
     assertEqual(pad(1), '1');
     assertEqual(pad(1, 0), '1');
@@ -355,7 +355,7 @@ namespace('Number', function() {
 
   });
 
-  method('toHex', function(toHex) {
+  instanceMethod('toHex', function(toHex) {
 
     assertEqual(toHex(0), '0');
     assertEqual(toHex(0, 2), '00');
@@ -372,7 +372,7 @@ namespace('Number', function() {
 
   });
 
-  method('abbr', function(abbr) {
+  instanceMethod('abbr', function(abbr) {
 
     // Positive
     assertEqual(abbr(0), '0');

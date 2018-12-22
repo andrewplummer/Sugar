@@ -1,29 +1,29 @@
 import SugarNumber from '../core/number';
 
-import './abbr';
-import './abs';
-import './ceil';
-import './exp';
-import './floor';
-import './format';
-import './isEven';
-import './isFinite';
-import './isInteger';
-import './isMultipleOf';
-import './isNaN';
-import './isOdd';
-import './isSafeInteger';
-import './log';
-import './pad';
-import './pow';
-import './random';
-import './round';
-import './sqrt';
-import './times';
-import './toChar';
-import './toHex';
-import './toOrdinal';
-import './trunc';
+import './abbr/define';
+import './abs/define';
+import './ceil/define';
+import './exp/define';
+import './floor/define';
+import './format/define';
+import './isEven/define';
+import './isFinite/define';
+import './isInteger/define';
+import './isMultipleOf/define';
+import './isNaN/define';
+import './isOdd/define';
+import './isSafeInteger/define';
+import './log/define';
+import './pad/define';
+import './pow/define';
+import './random/define';
+import './round/define';
+import './sqrt/define';
+import './times/define';
+import './toChar/define';
+import './toHex/define';
+import './toOrdinal/define';
+import './trunc/define';
 
 export const {
   abbr,
