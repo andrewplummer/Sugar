@@ -1,7 +1,7 @@
 import Sugar from '../../../src/core';
-import * as Exports from '../../../src';
+import * as Exports from '../../../src/all';
 
-describe('Entry Module', function() {
+describe('All Module', function() {
 
   it('should export the core as default', function() {
     assertEqual(Exports.default, Sugar);
@@ -18,9 +18,9 @@ describe('Entry Module', function() {
     assertInstanceOf(Exports.Number, Function);
   });
 
-  it('should not have defined methods', function() {
-    assertUndefined(Exports.Number.abs);
-    assertUndefined(Exports.Number.prototype.abs);
+  it('should have defined methods', function() {
+    assertEqual(Exports.Number.abs(-5), 5);
+    assertEqual(new Exports.Number(-5).abs().raw, 5);
   });
 
 });

@@ -1,55 +1,27 @@
-import SugarNumber from '../core/number';
+export { default as abbr } from './abbr';
+export { default as abs } from './abs';
+export { default as ceil } from './ceil';
+export { default as exp } from './exp';
+export { default as floor } from './floor';
+export { default as format } from './format';
+export { default as isEven } from './isEven';
+export { default as isFinite } from './isFinite';
+export { default as isInteger } from './isInteger';
+export { default as isMultipleOf } from './isMultipleOf';
+export { default as isNaN } from './isNaN';
+export { default as isOdd } from './isOdd';
+export { default as isSafeInteger } from './isSafeInteger';
+export { default as log } from './log';
+export { default as pad } from './pad';
+export { default as pow } from './pow';
+export { default as random } from './random';
+export { default as round } from './round';
+export { default as sqrt } from './sqrt';
+export { default as times } from './times';
+export { default as toChar } from './toChar';
+export { default as toHex } from './toHex';
+export { default as toOrdinal } from './toOrdinal';
+export { default as trunc } from './trunc';
 
-import './abbr/define';
-import './abs/define';
-import './ceil/define';
-import './exp/define';
-import './floor/define';
-import './format/define';
-import './isEven/define';
-import './isFinite/define';
-import './isInteger/define';
-import './isMultipleOf/define';
-import './isNaN/define';
-import './isOdd/define';
-import './isSafeInteger/define';
-import './log/define';
-import './pad/define';
-import './pow/define';
-import './random/define';
-import './round/define';
-import './sqrt/define';
-import './times/define';
-import './toChar/define';
-import './toHex/define';
-import './toOrdinal/define';
-import './trunc/define';
-
-export const {
-  abbr,
-  abs,
-  ceil,
-  exp,
-  floor,
-  format,
-  isEven,
-  isFinite,
-  isInteger,
-  isMultipleOf,
-  isNaN,
-  isOdd,
-  isSafeInteger,
-  log,
-  pad,
-  pow,
-  random,
-  round,
-  sqrt,
-  times,
-  toChar,
-  toHex,
-  toOrdinal,
-  trunc
-} = SugarNumber;
-
-export default SugarNumber;
+export * from '../core/number';
+export { default } from '../core/number';

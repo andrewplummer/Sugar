@@ -1,12 +1,7 @@
-export { default as Number } from './number';
-export { default as String } from './string';
-export { default as Object } from './object';
-export { default as Array  } from './array';
+export { default as String } from './core/string';
+export { default as Number } from './core/number';
+export { default as Object } from './core/object';
+export { default as Array  } from './core/array';
 
-export {
-  VERSION,
-  extend,
-  restore,
-  createNamespace,
-  default,
-} from './core';
+export * from './core';
+export { default } from './core';

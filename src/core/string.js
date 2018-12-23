@@ -1,12 +1,12 @@
 import Sugar, { createNamespace } from '../core';
 
-createNamespace('Number');
+createNamespace('String');
 
 export const {
   defineStatic,
   defineInstance,
   defineStaticAlias,
   defineInstanceAlias,
-} = Sugar.Number;
+} = Sugar.String;
 
-export default Sugar.Number;
+export default Sugar.String;

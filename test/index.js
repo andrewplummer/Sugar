@@ -1,4 +1,12 @@
-import Sugar from '../src';
+import Sugar from '../src/all';
+
+// TODO: test browserify
+// TODO: test broccoli
+// TODO: test rhino
+// TODO: test QML
+
+// Export Sugar to global for tests.
+global.Sugar = Sugar;
 
 // Helpers
 import './helpers/namespace';
@@ -12,12 +20,4 @@ import './tests/core';
 import './tests/number';
 import './tests/extended';
 import './tests/chainable';
-import './tests/modules/sugar-entry';
-import './tests/modules/sugar-namespace-entry';
-import './tests/modules/sugar-method-entry';
-import './tests/modules/plugin-entry';
-import './tests/modules/plugin-method-entry';
-import './tests/modules/plugin-method-define';
-
-// Export Sugar to global for tests.
-global.Sugar = Sugar;
+import './tests/modules';

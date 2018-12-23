@@ -5,7 +5,6 @@ import { extendNative, restoreNative } from './util/extend';
 import { hasOwnProperty, forEachProperty, arrayIncludes } from './util/helpers';
 import { isString, isFunction } from '../util/typeChecks';
 
-
 // --- Constants
 
 const SUGAR = 'Sugar';
@@ -15,8 +14,6 @@ export const VERSION = 'edge';
 
 // --- Setup
 
-const instanceMethods = new NamespaceStore();
-
 export function createNamespace(globalName) {
 
   if (!globalContext[globalName]) {
@@ -24,7 +21,7 @@ export function createNamespace(globalName) {
   }
 
   if (Sugar[globalName]) {
-    return Sugar[globalName];
+    return;
   }
 
   class SugarChainable extends SugarChainableBase {
@@ -53,11 +50,13 @@ export function createNamespace(globalName) {
 
   mapNativeToChainable(globalName, SugarChainable);
 
-  return Sugar[globalName] = SugarChainable;
+  Sugar[globalName] = SugarChainable;
 }
 
 
 // --- Defining methods
+
+const instanceMethods = new NamespaceStore();
 
 function defineWithArgs(globalName, defineMethod, args) {
   if (isString(args[0])) {
@@ -233,7 +232,8 @@ function wrapReturnWithChainable(fn) {
     const globalName = ctor ? ctor.name : 'Object';
     let SugarChainable = Sugar[globalName];
     if (!SugarChainable && (!ctor || ctor === globalContext[globalName])) {
-      SugarChainable = createNamespace(globalName);
+      createNamespace(globalName);
+      SugarChainable = Sugar[globalName];
     }
     return SugarChainable ? new SugarChainable(result) : result;
   };
@@ -279,25 +279,6 @@ function nativeMethodProhibitedOnChainable(methodName) {
          || methodName === '__proto__';
 }
 
-
-// --- Misc
-
-function exportToBrowser(obj) {
-  // TODO: test browserify
-  // TODO: test broccoli
-  // TODO: test rhino
-  // TODO: test QML
-  if (typeof window !== 'undefined') {
-    try {
-    // Reuse already defined Sugar global object.
-      globalContext[SUGAR] = globalContext[SUGAR] || obj;
-    } catch {
-      // Contexts such as QML have a read-only global context.
-    }
-  }
-}
-
-
 // --- Default exports
 
 const Sugar = {
@@ -307,5 +288,4 @@ const Sugar = {
   createNamespace
 };
 
-exportToBrowser(Sugar);
 export default Sugar;

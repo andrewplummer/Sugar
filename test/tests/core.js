@@ -14,9 +14,9 @@ describe('Core', function() {
 
     it('should be able to create a new namespace', function() {
       ensureNamespaceNotInitialized('Array', function() {
-        var namespace = Sugar.createNamespace('Array');
-        assertEqual(namespace, Sugar.Array);
-        assertInstanceOf(namespace.defineInstance, Function);
+        Sugar.createNamespace('Array');
+        assertInstanceOf(Sugar.Array, Function);
+        assertInstanceOf(Sugar.Array.defineInstance, Function);
       });
     });
 

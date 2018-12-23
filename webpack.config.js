@@ -6,14 +6,15 @@ module.exports = {
   mode: 'development',
   devtool: 'cheap-module-eval-source-map',
   output: {
-    filename: 'sugar.js'
+    filename: 'sugar.js',
+    library: 'Sugar',
+    libraryExport: 'default'
   },
-  entry: {
-    sugar: [
-      './src/polyfills',
-      './src'
-    ]
+  optimization: {
+    usedExports: true
   },
+  // This can't be an array: https://webpack.js.org/guides/author-libraries/
+  entry: './src/all',
   module: {
     rules: [
       {
