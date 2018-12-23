@@ -8,11 +8,11 @@ describe('Extended', function() {
 
   beforeEach(function() {
     Sugar.Number.defineStatic('addStatic', add);
-    Sugar.Object.defineStatic('argStatic', arg);
+    Sugar.Object.defineStatic('argStatic', arg2);
     Sugar.Number.defineInstance('add', add);
     Sugar.Number.defineInstance('mult', mult);
     Sugar.String.defineInstance('add', add);
-    Sugar.Object.defineInstance('arg', arg);
+    Sugar.Object.defineInstance('arg', arg2);
   });
 
   afterEach(function() {

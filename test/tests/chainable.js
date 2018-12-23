@@ -59,8 +59,8 @@ describe('Chainable', function() {
     it('should allow chaining across namespaces', function() {
       // Note that Object is being used here as a safeguard as
       // it's behavior differs slightly when extending.
-      Sugar.Number.defineInstance('argObject', arg);
-      Sugar.Object.defineInstance('argNumber', arg);
+      Sugar.Number.defineInstance('argObject', arg2);
+      Sugar.Object.defineInstance('argNumber', arg2);
       assertEqual(new Sugar.Number().argObject({}).argNumber(1).raw, 1);
       delete Sugar.Number.argObject;
       delete Sugar.Object.argNumber;
@@ -71,7 +71,7 @@ describe('Chainable', function() {
   describe('Wrapping Behavior', function() {
 
     beforeEach(function() {
-      Sugar.Number.defineInstance('arg', arg);
+      Sugar.Number.defineInstance('arg', arg2);
     });
 
     afterEach(function() {

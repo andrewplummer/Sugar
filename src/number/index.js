@@ -17,6 +17,7 @@ export { default as log } from './log';
 export { default as pad } from './pad';
 export { default as pow } from './pow';
 export { default as random } from './random';
+export { default as range } from './range';
 export { default as round } from './round';
 export { default as sqrt } from './sqrt';
 export { default as times } from './times';

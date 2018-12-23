@@ -31,6 +31,89 @@ namespace('Number', function() {
     assertEqual(round(1e-21, -1), 0);
   });
 
+  staticMethod('range', function(range) {
+
+    // toString
+    assertEqual(range(1, 5).toString(), '1..5');
+    assertEqual(range(1, NaN).toString(), 'Invalid Range');
+
+    // isValid
+    assertTrue(range(1, 5).isValid());
+    assertTrue(range(5, 1).isValid());
+    assertTrue(range(0, 0).isValid());
+    assertFalse(range(5, NaN).isValid());
+    assertFalse(range(NaN, 5).isValid());
+    assertFalse(range(5, Infinity).isValid());
+    assertFalse(range(Infinity, 5).isValid());
+
+    // span
+    assertEqual(range(1, 5).span(), 5);
+    assertEqual(range(5, 1).span(), 5);
+    assertNaN(range(NaN, NaN).span());
+
+    // toArray
+    assertArrayEqual(range(1, 5).toArray(), [1,2,3,4,5]);
+    assertArrayEqual(range(5, 1).toArray(), [5,4,3,2,1]);
+    assertArrayEqual(range(-2, 2).toArray(), [-2,-1,0,1,2]);
+    assertArrayEqual(range(2, -2).toArray(), [2,1,0,-1,-2]);
+
+    // clone
+    assertEqual(range(1, 5).clone().toString(), '1..5');
+
+    // clamp
+    assertEqual(range(1, 5).clamp(8), 5);
+    assertEqual(range(1, 5).clamp(0), 1);
+    assertEqual(range(5, 1).clamp(8), 5);
+    assertEqual(range(5, 1).clamp(0), 1);
+
+    // contains
+    assertTrue(range(1, 5).contains(range(1, 3)));
+    assertTrue(range(1, 5).contains(range(1, 1)));
+    assertTrue(range(1, 5).contains(range(5, 5)));
+    assertTrue(range(1, 5).contains(range(5, 4)));
+    assertFalse(range(1, 5).contains(range(6, 8)));
+    assertFalse(range(1, 5).contains(range(0, 1)));
+    assertFalse(range(1, 5).contains(range(0, 2)));
+    assertFalse(range(1, 5).contains(range(2, 0)));
+    assertFalse(range(1, 5).contains(range(4, 6)));
+    assertFalse(range(1, 5).contains(range(6, 4)));
+    assertFalse(range(1, 5).contains(range(0, 6)));
+
+    // every
+    assertArrayEqual(range(1, 5).every(1), [1,2,3,4,5]);
+    assertArrayEqual(range(1, 5).every(2), [1,3,5]);
+    assertArrayEqual(range(1, 5).every(2, square), [1,9,25]);
+    assertArrayEqual(range(1, 2).every(1, args), [[1,0], [2,1]]);
+
+    // intersect
+    assertEqual(range(1,10).intersect(range(5,15)).toString(), '5..10');
+    assertEqual(range(1,10).intersect(range(15,5)).toString(), '5..10');
+    assertEqual(range(1,10).intersect(range(0,3)).toString(), '1..3');
+    assertEqual(range(1,10).intersect(range(3,0)).toString(), '1..3');
+    assertEqual(range(10,1).intersect(range(5,15)).toString(), '5..10');
+    assertEqual(range(10,1).intersect(range(15,5)).toString(), '5..10');
+    assertEqual(range(10,1).intersect(range(0,3)).toString(), '1..3');
+    assertEqual(range(10,1).intersect(range(3,0)).toString(), '1..3');
+
+    assertEqual(range(0,5).intersect(range(8,10)).toString(), 'Invalid Range');
+    assertEqual(range(0,5).intersect(range(NaN,NaN)).toString(), 'Invalid Range');
+    assertEqual(range(NaN,NaN).intersect(range(8,10)).toString(), 'Invalid Range');
+
+    // union
+    assertEqual(range(1,10).union(range(5,15)).toString(), '1..15');
+    assertEqual(range(1,10).union(range(15,5)).toString(), '1..15');
+    assertEqual(range(1,10).union(range(0,3)).toString(), '0..10');
+    assertEqual(range(1,10).union(range(3,0)).toString(), '0..10');
+    assertEqual(range(10,1).union(range(5,15)).toString(), '1..15');
+    assertEqual(range(10,1).union(range(15,5)).toString(), '1..15');
+    assertEqual(range(10,1).union(range(0,3)).toString(), '0..10');
+    assertEqual(range(10,1).union(range(3,0)).toString(), '0..10');
+
+    assertEqual(range(0,5).union(range(NaN,NaN)).toString(), 'Invalid Range');
+    assertEqual(range(NaN,NaN).union(range(8,10)).toString(), 'Invalid Range');
+
+  });
+
   instanceMethod('ceil', function(ceil) {
     assertEqual(ceil(5.5), 6);
     assertEqual(ceil(5.14), 6);
@@ -573,19 +656,11 @@ namespace('Number', function() {
 
     function assertPasses(fn, from, to, eCount, eResult) {
       var count = 0;
-      var result = fn(from, to, function(n) {
+      var result = fn(from, to, 1, function(n) {
         count++;
         return n;
       });
       assertEqual(count, eCount);
-      assertArrayEqual(result, eResult);
-    }
-
-    function assertArgs(fn, from, to, eResult) {
-      var result = [];
-      fn(from, to, function(n, i) {
-        result.push(Array.prototype.slice.call(arguments));
-      });
       assertArrayEqual(result, eResult);
     }
 
@@ -601,17 +676,29 @@ namespace('Number', function() {
       assertPasses(upto, -.5, .6, 2, [-.5,.5]);
       assertPasses(upto, -.5, .4, 1, [-.5]);
 
-      assertArgs(upto, -1, 1, [[-1,0],[0,1],[1,2]]);
-
       assertArrayEqual(upto(0, 5), [0,1,2,3,4,5]);
-      assertArrayEqual(upto(0, 1, noop), [undefined, undefined]);
+      assertArrayEqual(upto(0, 1, 1, noop), [undefined, undefined]);
 
+      assertArrayEqual(upto(0, 6, 10), [0]);
+      assertArrayEqual(upto(0, 6, 2), [0,2,4,6]);
+      assertArrayEqual(upto(0, 2, .5), [0,0.5,1,1.5,2]);
+
+      // Callback arguments
+      assertArrayEqual(upto(-1, 1, 1, args), [[-1,0],[0,1],[1,2]]);
+
+      // Invalid input
       assertError(function() { upto(null, 1); });
       assertError(function() { upto(1, null); });
       assertError(function() { upto(NaN, 1); });
       assertError(function() { upto(1, NaN); });
       assertError(function() { upto(-Infinity, 0); });
       assertError(function() { upto(0, Infinity); });
+
+      // Invalid step
+      assertError(function() { upto(1, 4, 0); });
+      assertError(function() { upto(1, 4, -2); });
+      assertError(function() { upto(1, 4, Infinity); });
+      assertError(function() { upto(1, 4, NaN); });
 
     });
 
@@ -627,17 +714,29 @@ namespace('Number', function() {
       assertPasses(downto, .5, -.6, 2, [.5,-.5]);
       assertPasses(downto, .5, -.4, 1, [.5]);
 
-      assertArgs(downto, 1, -1, [[1,0],[0,1],[-1,2]]);
-
       assertArrayEqual(downto(5, 0), [5,4,3,2,1,0]);
-      assertArrayEqual(downto(0, 1, noop), [undefined, undefined]);
+      assertArrayEqual(downto(0, 1, 1, noop), [undefined, undefined]);
 
+      assertArrayEqual(downto(0, 6, 10), [6]);
+      assertArrayEqual(downto(5, 0, 2), [5,3,1]);
+      assertArrayEqual(downto(2, 0, .5), [2,1.5,1,0.5,0]);
+
+      // Callback arguments
+      assertArrayEqual(downto(1,-1,1,args), [[1,0],[0,1],[-1,2]]);
+
+      // Invalid input
       assertError(function() { downto(null, 1); });
       assertError(function() { downto(1, null); });
       assertError(function() { downto(NaN, 1); });
       assertError(function() { downto(1, NaN); });
       assertError(function() { downto(-Infinity, 0); });
       assertError(function() { downto(0, Infinity); });
+
+      // Invalid step
+      assertError(function() { upto(1, 4, 0); });
+      assertError(function() { upto(1, 4, -2); });
+      assertError(function() { upto(1, 4, Infinity); });
+      assertError(function() { upto(1, 4, NaN); });
 
     });
 

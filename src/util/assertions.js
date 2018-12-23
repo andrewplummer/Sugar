@@ -16,6 +16,12 @@ export function assertNumber(n) {
   }
 }
 
+export function assertPositiveNumber(n) {
+  if (n <= 0) {
+    throw new TypeError(n + ' is not a positive number');
+  }
+}
+
 export function assertFinite(n) {
   if (!Number.isFinite(n)) {
     throw new TypeError(n + ' is not a finite number');

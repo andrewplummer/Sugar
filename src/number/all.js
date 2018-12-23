@@ -17,6 +17,7 @@ import './log/define';
 import './pad/define';
 import './pow/define';
 import './random/define';
+import './range/define';
 import './round/define';
 import './sqrt/define';
 import './times/define';
