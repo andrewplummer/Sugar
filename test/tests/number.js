@@ -112,6 +112,39 @@ namespace('Number', function() {
     assertEqual(toChar(65), 'A');
     assertEqual(toChar(24536), '忘');
     assertEqual(toChar(20294), '但');
+    assertError(function() { toChar(NaN); }, RangeError);
+    assertError(function() { toChar(-1); }, RangeError);
+    assertError(function() { toChar(.5); }, RangeError);
+    assertError(function() { toChar(0x110000); }, RangeError);
+  });
+
+  instanceMethod('clamp', function(clamp) {
+
+    assertEqual(clamp(0, 1, 10), 1);
+    assertEqual(clamp(1, 1, 10), 1);
+    assertEqual(clamp(5, 1, 10), 5);
+    assertEqual(clamp(10, 1, 10), 10);
+    assertEqual(clamp(20, 1, 10), 10);
+    assertEqual(clamp(1e21, 1, 10), 10);
+    assertEqual(clamp(Infinity, 1, 10), 10);
+    assertEqual(clamp(-Infinity, 1, 10), 1);
+
+    assertEqual(clamp(-5.5, 1, 10), 1);
+    assertEqual(clamp(5.5, 1, 10), 5.5);
+    assertEqual(clamp(15.5, 1, 10), 10);
+
+    assertEqual(clamp(-1, 10), -1);
+    assertEqual(clamp(0, 10), 0);
+    assertEqual(clamp(5, 10), 5);
+    assertEqual(clamp(10, 10), 10);
+    assertEqual(clamp(20, 10), 10);
+
+    assertEqual(clamp(5), 5);
+
+    assertError(function() { clamp(NaN); });
+    assertError(function() { clamp(null); });
+    assertError(function() { clamp(undefined); });
+
   });
 
   instanceMethod('isMultipleOf', function(isMultipleOf) {
@@ -192,11 +225,11 @@ namespace('Number', function() {
     assertEqual(toOrdinal(-4), '-4th');
     assertEqual(toOrdinal(-5), '-5th');
 
-    assertError(toOrdinal.bind(null, NaN));
-    assertError(toOrdinal.bind(null, 5.55));
-    assertError(toOrdinal.bind(null, null));
-    assertError(toOrdinal.bind(null, undefined));
-    assertError(toOrdinal.bind(null, Infinity));
+    assertError(function() { toOrdinal(NaN); });
+    assertError(function() { toOrdinal(5.55); });
+    assertError(function() { toOrdinal(null); });
+    assertError(function() { toOrdinal(undefined); });
+    assertError(function() { toOrdinal(Infinity); });
 
   });
 
@@ -248,7 +281,7 @@ namespace('Number', function() {
     function assertInvalidInput(n) {
       assertError(function() {
         times(n, function() {});
-      }, TypeError);
+      });
     }
 
     assertTimesRan(1, 1);
@@ -271,9 +304,7 @@ namespace('Number', function() {
       return n;
     }), [1]);
 
-    assertError(function() {
-      times(1);
-    }, TypeError);
+    assertError(function() { times(1); });
 
   });
 

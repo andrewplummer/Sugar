@@ -18,6 +18,12 @@ function isInteger(n) {
   return Number.isInteger(n);
 }
 
+export function assertValidNumber(n) {
+  if (!n && n !== 0) {
+    throw new TypeError(n + ' is not a valid number');
+  }
+}
+
 export function assertFinite(n) {
   if (!isFinite(n)) {
     throw new TypeError(n + ' is not a finite number');

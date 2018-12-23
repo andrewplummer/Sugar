@@ -1,6 +1,7 @@
 import './abbr/define';
 import './abs/define';
 import './ceil/define';
+import './clamp/define';
 import './exp/define';
 import './floor/define';
 import './format/define';
