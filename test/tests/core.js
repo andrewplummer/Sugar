@@ -65,17 +65,6 @@ describe('Core', function() {
         assertEqual(Sugar.Number.add(1, 2), 3);
       });
 
-      it('should be able to define instance with named function', function() {
-        Sugar.Number.defineInstance(add);
-        assertEqual(Sugar.Number.add(1, 2), 3);
-      });
-
-      it('should throw an error if function has no name', function() {
-        assertError(function() {
-          Sugar.Number.defineInstance(function() {});
-        });
-      });
-
     });
 
     describe('Aliases', function() {

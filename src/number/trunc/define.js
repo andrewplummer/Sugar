@@ -1,3 +1,3 @@
 import { defineInstance } from '../../core/number';
-import fn from './';
-defineInstance('trunc', fn);
+import trunc from './';
+defineInstance('trunc', trunc);

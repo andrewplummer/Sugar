@@ -1,3 +1,3 @@
 import { defineInstance } from '../../core/number';
-import fn from './';
-defineInstance(fn);
+import ceil from './';
+defineInstance('ceil', ceil);

@@ -1,3 +1,3 @@
 import { defineStatic } from '../../core/number';
-import fn from './';
-defineStatic(fn);
+import random from './';
+defineStatic('random', random);

@@ -1,3 +1,3 @@
 import { defineInstance } from '../../core/number';
-import fn from './';
-defineInstance(fn);
+import isNaN from './';
+defineInstance('isNaN', isNaN);

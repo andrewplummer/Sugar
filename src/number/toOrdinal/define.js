@@ -1,3 +1,3 @@
 import { defineInstance } from '../../core/number';
-import fn from './';
-defineInstance(fn);
+import toOrdinal from './';
+defineInstance('toOrdinal', toOrdinal);

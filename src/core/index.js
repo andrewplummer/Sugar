@@ -62,9 +62,6 @@ export function createNamespace(globalName) {
 function defineWithArgs(globalName, defineMethod, args) {
   if (isString(args[0])) {
     defineMethod(globalName, args[0], args[1]);
-  } else if (isFunction(args[0])) {
-    assertNamedFunction(args[0]);
-    defineMethod(globalName, args[0].name, args[0]);
   } else {
     forEachProperty(args[0], (methodName, fn) => {
       defineMethod(globalName, methodName, fn);
