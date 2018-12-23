@@ -2,6 +2,7 @@ export { default as abbr } from './abbr';
 export { default as abs } from './abs';
 export { default as ceil } from './ceil';
 export { default as clamp } from './clamp';
+export { default as downto } from './downto';
 export { default as exp } from './exp';
 export { default as floor } from './floor';
 export { default as format } from './format';
@@ -23,6 +24,7 @@ export { default as toChar } from './toChar';
 export { default as toHex } from './toHex';
 export { default as toOrdinal } from './toOrdinal';
 export { default as trunc } from './trunc';
+export { default as upto } from './trunc';
 
 export * from '../core/number';
 export { default } from '../core/number';

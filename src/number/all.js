@@ -2,6 +2,7 @@ import './abbr/define';
 import './abs/define';
 import './ceil/define';
 import './clamp/define';
+import './downto/define';
 import './exp/define';
 import './floor/define';
 import './format/define';
@@ -23,6 +24,7 @@ import './toChar/define';
 import './toHex/define';
 import './toOrdinal/define';
 import './trunc/define';
+import './upto/define';
 
 export * from '../core/number';
 export { default } from '../core/number';

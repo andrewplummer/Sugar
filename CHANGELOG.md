@@ -21,6 +21,8 @@ v3.0.0
 - Removed trigonometric aliases sin, cos, etc in favor of native Math.
 - Changed `Number#metric` placeholder token from `_` to `-`.
 - Removed `Number#cap` in favor of `Number#clamp` with one argument.
+- Changed `Number#upto` to always iterate from min to max.
+- Changed `Number#downto` to always iterate from max to min.
 
 TODO:
 

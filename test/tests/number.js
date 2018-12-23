@@ -270,12 +270,12 @@ namespace('Number', function() {
 
   instanceMethod('times', function(times) {
 
-    function assertTimesRan(n, actual) {
+    function assertCount(n, expected) {
       var count = 0;
       times(n, function() {
         count++;
       });
-      assertEqual(count, actual);
+      assertEqual(count, expected);
     }
 
     function assertInvalidInput(n) {
@@ -284,9 +284,9 @@ namespace('Number', function() {
       });
     }
 
-    assertTimesRan(1, 1);
-    assertTimesRan(5, 5);
-    assertTimesRan(10, 10);
+    assertCount(1, 1);
+    assertCount(5, 5);
+    assertCount(10, 10);
 
     assertInvalidInput(-1);
     assertInvalidInput(1.5);
@@ -565,6 +565,73 @@ namespace('Number', function() {
     withNumberFormatter('de-DE', function(formatter) {
       assertEqual(abbr(1755, 1, 'integer', formatter), '1,7k');
       assertEqual(abbr(1755, 2, 'integer', formatter), '1,75k');
+    });
+
+  });
+
+  describe('step', function() {
+
+    function assertPasses(fn, from, to, eCount, eResult) {
+      var count = 0;
+      var result = fn(from, to, function() {
+        count++;
+      });
+      assertEqual(count, eCount);
+      assertArrayEqual(result, eResult);
+    }
+
+    function assertArgs(fn, from, to, eResult) {
+      var result = [];
+      fn(from, to, function(n, i) {
+        result.push(Array.prototype.slice.call(arguments));
+      });
+      assertArrayEqual(result, eResult);
+    }
+
+    instanceMethod('upto', function(upto) {
+
+      assertPasses(upto, 0, 0, 1, [0]);
+      assertPasses(upto, 0, 1, 2, [0,1]);
+      assertPasses(upto, 0, 5, 6, [0,1,2,3,4,5]);
+      assertPasses(upto, 2,-2, 5, [-2,-1,0,1,2]);
+      assertPasses(upto,-2, 2, 5, [-2,-1,0,1,2]);
+
+      assertPasses(upto, -.5, .5, 2, [-.5,.5]);
+      assertPasses(upto, -.5, .6, 2, [-.5,.5]);
+      assertPasses(upto, -.5, .4, 1, [-.5]);
+
+      assertArgs(upto, -1, 1, [[-1,0],[0,1],[1,2]]);
+
+      assertError(function() { upto(null, 1); });
+      assertError(function() { upto(1, null); });
+      assertError(function() { upto(NaN, 1); });
+      assertError(function() { upto(1, NaN); });
+      assertError(function() { upto(-Infinity, 0); });
+      assertError(function() { upto(0, Infinity); });
+
+    });
+
+    instanceMethod('downto', function(downto) {
+
+      assertPasses(downto, 0, 0, 1, [0]);
+      assertPasses(downto, 1, 0, 2, [1,0]);
+      assertPasses(downto, 5, 0, 6, [5,4,3,2,1,0]);
+      assertPasses(downto, 2,-2, 5, [2,1,0,-1,-2]);
+      assertPasses(downto,-2, 2, 5, [2,1,0,-1,-2]);
+
+      assertPasses(downto, .5, -.5, 2, [.5,-.5]);
+      assertPasses(downto, .5, -.6, 2, [.5,-.5]);
+      assertPasses(downto, .5, -.4, 1, [.5]);
+
+      assertArgs(downto, 1, -1, [[1,0],[0,1],[-1,2]]);
+
+      assertError(function() { downto(null, 1); });
+      assertError(function() { downto(1, null); });
+      assertError(function() { downto(NaN, 1); });
+      assertError(function() { downto(1, NaN); });
+      assertError(function() { downto(-Infinity, 0); });
+      assertError(function() { downto(0, Infinity); });
+
     });
 
   });

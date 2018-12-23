@@ -11,7 +11,7 @@
 
   function assertInstance(methodName) {
     assertInstanceOf(currentNamespace.prototype[methodName], Function, {
-      message: '{methodName} should be a static method',
+      message: '{methodName} should be an instance method',
       methodName: methodName
     });
   }
