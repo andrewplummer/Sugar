@@ -2,7 +2,6 @@ v3.0.0
 ======
 
 - Added defineAlias to core.
-- Added `Number#atan2` to math aliases.
 - Added Number aliases `Number#isNaN`, `Number#isFinite`, `Number#isInteger`, and `Number#isSafeInteger`.
 - Renamed `Number#chr` to `Number#toChar`.
 - Renamed `Number#ordinalize` to `Number#toOrdinal`.

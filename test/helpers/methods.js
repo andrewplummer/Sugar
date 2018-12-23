@@ -1,3 +1,5 @@
+noop = function() {};
+
 arg = function(obj, arg) {
   return arg;
 };

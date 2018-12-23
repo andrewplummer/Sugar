@@ -11,8 +11,7 @@ export default function(n1, n2, args) {
   const result = [];
 
   for (let i = 0, n = n1; i <= len; i++) {
-    result.push(n);
-    fn(n, i);
+    result.push(fn ? fn(n, i) : n);
     n += inc;
   }
 

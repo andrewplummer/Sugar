@@ -280,7 +280,7 @@ namespace('Number', function() {
 
     function assertInvalidInput(n) {
       assertError(function() {
-        times(n, function() {});
+        times(n, noop);
       });
     }
 
@@ -573,8 +573,9 @@ namespace('Number', function() {
 
     function assertPasses(fn, from, to, eCount, eResult) {
       var count = 0;
-      var result = fn(from, to, function() {
+      var result = fn(from, to, function(n) {
         count++;
+        return n;
       });
       assertEqual(count, eCount);
       assertArrayEqual(result, eResult);
@@ -602,6 +603,9 @@ namespace('Number', function() {
 
       assertArgs(upto, -1, 1, [[-1,0],[0,1],[1,2]]);
 
+      assertArrayEqual(upto(0, 5), [0,1,2,3,4,5]);
+      assertArrayEqual(upto(0, 1, noop), [undefined, undefined]);
+
       assertError(function() { upto(null, 1); });
       assertError(function() { upto(1, null); });
       assertError(function() { upto(NaN, 1); });
@@ -624,6 +628,9 @@ namespace('Number', function() {
       assertPasses(downto, .5, -.4, 1, [.5]);
 
       assertArgs(downto, 1, -1, [[1,0],[0,1],[-1,2]]);
+
+      assertArrayEqual(downto(5, 0), [5,4,3,2,1,0]);
+      assertArrayEqual(downto(0, 1, noop), [undefined, undefined]);
 
       assertError(function() { downto(null, 1); });
       assertError(function() { downto(1, null); });
