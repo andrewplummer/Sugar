@@ -56,6 +56,7 @@ namespace('Number', function() {
     assertArrayEqual(range(5, 1).toArray(), [5,4,3,2,1]);
     assertArrayEqual(range(-2, 2).toArray(), [-2,-1,0,1,2]);
     assertArrayEqual(range(2, -2).toArray(), [2,1,0,-1,-2]);
+    assertArrayEqual(range(NaN, NaN).toArray(), []);
 
     // clone
     assertEqual(range(1, 5).clone().toString(), '1..5');
@@ -733,10 +734,10 @@ namespace('Number', function() {
       assertError(function() { downto(0, Infinity); });
 
       // Invalid step
-      assertError(function() { upto(1, 4, 0); });
-      assertError(function() { upto(1, 4, -2); });
-      assertError(function() { upto(1, 4, Infinity); });
-      assertError(function() { upto(1, 4, NaN); });
+      assertError(function() { downto(1, 4, 0); });
+      assertError(function() { downto(1, 4, -2); });
+      assertError(function() { downto(1, 4, Infinity); });
+      assertError(function() { downto(1, 4, NaN); });
 
     });
 

@@ -1,4 +1,3 @@
-import { isNumber } from './typeChecks';
 import { assertFinite, assertPositiveNumber } from './assertions';
 
 export default function(n1, n2, ...args) {
@@ -23,7 +22,7 @@ export default function(n1, n2, ...args) {
   return result;
 }
 
-function collectArgs(args) {
+export function collectArgs(args) {
   if (args.length === 0) {
     return [1];
   } else if (args.length === 1) {

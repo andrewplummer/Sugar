@@ -7,8 +7,6 @@ import { isString, isFunction } from '../util/typeChecks';
 
 // --- Constants
 
-const SUGAR = 'Sugar';
-
 export const VERSION = 'edge';
 
 
@@ -96,12 +94,6 @@ function defineInstance(globalName, methodName, staticFn) {
 function assertMethodDoesNotExist(SugarChainable, methodName) {
   if (SugarChainable[methodName]) {
     throw new Error(`Method ${methodName} is already defined`);
-  }
-}
-
-function assertNamedFunction(fn) {
-  if (!fn.name) {
-    throw new TypeError(`Function requires a name: ${fn}`);
   }
 }
 

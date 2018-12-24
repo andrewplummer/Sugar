@@ -18,4 +18,8 @@ square = function(n) {
 
 args = function() {
   return Array.prototype.slice.call(arguments);
-}
+};
+
+concatA = function(str) {
+  return str + 'A';
+};

@@ -1,8 +1,9 @@
 (function() {
+  /* eslint-disable no-undef */
 
   var currentNamespace;
 
-  function assertStatic(methodName, instanceFn) {
+  function assertStatic(methodName) {
     assertUndefined(currentNamespace.prototype[methodName], {
       message: '{methodName} should be a static method',
       methodName: methodName

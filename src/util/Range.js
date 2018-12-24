@@ -1,4 +1,4 @@
-import step from './step';
+import step, { collectArgs } from './step';
 
 export default class Range {
 
@@ -15,37 +15,45 @@ export default class Range {
     return this.isValidMember(this.start) && this.isValidMember(this.end);
   }
 
+  clone() {
+    return create(this, this.start, this.end);
+  }
+
   toArray() {
     return this.every(1);
   }
 
   span() {
-    return Math.abs(this.end - this.start) + 1;
+    return Math.abs(this.getStart() - this.getEnd()) + 1;
   }
 
-  clone() {
-    return create(this, this.start, this.end);
-  }
-
-  clamp(val) {
-    return Math.min(getMax(this), Math.max(getMin(this), val));
+  clamp(m) {
+    const val = Math.min(this.getMax(), Math.max(this.getMin(), this.getValue(m)));
+    return this.getMember(val);
   }
 
   every(...args) {
-    return step(...getValues(this), ...args);
+    if (!this.isValid()) {
+      return [];
+    }
+    const [n, fn] = collectArgs(args);
+    return step(this.getStart(), this.getEnd(), n, (val, ...args) => {
+      const m = this.getMember(val);
+      return fn ? fn.apply(this, [m, ...args]) : m;
+    });
   }
 
   contains(obj) {
     if (obj instanceof Range) {
-      return getMin(obj) >= getMin(this) && getMax(obj) <= getMax(this);
+      return obj.getMin() >= this.getMin() && obj.getMax() <= this.getMax();
     }
     return obj >= this.start && obj <= this.end;
   }
 
   intersect(r) {
     let start, end;
-    const [rMin, rMax] = [getMin(r), getMax(r)];
-    const [tMin, tMax] = [getMin(this), getMax(this)];
+    const [rMin, rMax] = [r.getMin(), r.getMax()];
+    const [tMin, tMax] = [this.getMin(), this.getMax()];
     if (rMin > tMax || rMax < tMin) {
       start = NaN;
       end   = NaN;
@@ -53,23 +61,45 @@ export default class Range {
       start = Math.max(rMin, tMin);
       end   = Math.min(rMax, tMax);
     }
-    return create(this, start, end);
+    return createFromValues(this, start, end);
   }
 
   union(r) {
-    const start = Math.min(getMin(r), getMin(this));
-    const end   = Math.max(getMax(r), getMax(this));
-    return create(this, start, end);
+    const start = Math.min(r.getMin(), this.getMin());
+    const end   = Math.max(r.getMax(), this.getMax());
+    return createFromValues(this, start, end);
   }
 
   // Protected
 
-  isValidMember(member) {
-    return Number.isFinite(this.toValue(member));
+  isValidMember(m) {
+    return Number.isFinite(this.getValue(m));
   }
 
-  toValue(val) {
-    return val.valueOf();
+  getValue(m) {
+    return m.valueOf();
+  }
+
+  getMember(val) {
+    return val;
+  }
+
+  // Private
+
+  getStart() {
+    return this.getValue(this.start);
+  }
+
+  getEnd() {
+    return this.getValue(this.end);
+  }
+
+  getMin() {
+    return Math.min(this.getStart(), this.getEnd());
+  }
+
+  getMax() {
+    return Math.max(this.getStart(), this.getEnd());
   }
 
 }
@@ -78,15 +108,6 @@ function create(r, start, end) {
   return new r.constructor(start, end);
 }
 
-function getMin(range) {
-  return Math.min(...getValues(range));
+function createFromValues(r, start, end) {
+  return create(r, r.getMember(start), r.getMember(end));
 }
-
-function getMax(range) {
-  return Math.max(...getValues(range));
-}
-
-function getValues(range) {
-  return [range.toValue(range.start), range.toValue(range.end)];
-}
-

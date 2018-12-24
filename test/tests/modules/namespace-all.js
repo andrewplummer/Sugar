@@ -20,6 +20,7 @@ describe('Namespace All Module', function() {
 
   it('should have defined methods', function() {
     assertEqual(Exports.default.abs(-5), 5);
+    /* eslint-disable-next-line new-cap */
     assertEqual(new Exports.default(-5).abs().raw, 5);
   });
 

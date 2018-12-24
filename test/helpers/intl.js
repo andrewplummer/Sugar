@@ -1,6 +1,6 @@
 (function() {
 
-  const INTL_SUPPORT = checkFullIntlSupport();
+  var INTL_SUPPORT = checkFullIntlSupport();
 
   function checkFullIntlSupport() {
     try {

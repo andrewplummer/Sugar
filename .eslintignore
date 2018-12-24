@@ -1,8 +1,4 @@
-test/tests
-test/suite
-test/rhino
-test/node
-test/browser
+test/OLD
 dist
 lib
 gulpfile.js
