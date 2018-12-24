@@ -2,26 +2,29 @@ v3.0.0
 ======
 
 - Added defineAlias to core.
-- Added Number aliases `Number#isNaN`, `Number#isFinite`, `Number#isInteger`, and `Number#isSafeInteger`.
-- Renamed `Number#chr` to `Number#toChar`.
-- Renamed `Number#ordinalize` to `Number#toOrdinal`.
-- Removed `Number#toNumber`.
-- `Number#times` now collects all return values including undefined.
-- `Number#times` now errors on any input that is not a positive finite integer.
 - Cannot instantiate chainable without new keyword anymore (ES6).
 - `Sugar()` alias is no longer supported. Use `Sugar.extend()` instead.
 - Removed `String#includes` with RegExp support.
 - Removed ability to extend Object.prototype
 - Removed support for bower.
-- `Number#format` no longer supports thousands or decimal separtors. Use Intl for this.
-- `String#padLeft` and `String#padRight` were removed in favor of native `String#padStart` and `String#padEnd`.
+- Removed `String#padLeft` and `String#padRight` in favor of native `String#padStart` and `String#padEnd`.
+- Added `Number#isNaN`, `Number#isFinite`, `Number#isInteger`, and `Number#isSafeInteger`.
+- Renamed `Number#chr` to `Number#toChar`.
+- Renamed `Number#ordinalize` to `Number#toOrdinal`.
+- Removed `Number#toNumber`.
 - Renamed `Number#hex` to `Number#toHex`.
-- Removed `base` param of `Number#pad` in favor of `Number#toHex`.
-- Removed trigonometric aliases sin, cos, etc in favor of native Math.
-- Changed `Number#metric` placeholder token from `_` to `-`.
+- Removed `Number#pad` `base` argument in favor of `Number#toHex`.
 - Removed `Number#cap` in favor of `Number#clamp` with one argument.
+- Removed `Number#bytes` in favor of `Number#abbr`.
+- Removed `Number#metric` in favor of `Number#abbr`.
+- Changed `Number#metric` placeholder token from `_` to `-`.
 - Changed `Number#upto` to always iterate from min to max.
 - Changed `Number#downto` to always iterate from max to min.
+- Changed `Number#times` to collects all return values including undefined.
+- Changed `Number#times` to error on any input that is not a positive finite integer.
+- Changed `Number#format` to no longer support thousands or decimal separtors. Use Intl for this.
+- Removed `Number#sin`, `Number#cos`, etc in favor of native Math.
+- Removed `RegExp#getFlags`, `RegExp#setFlags`, `RegExp#addFlags` and `RegExp#removeFlags`.
 
 TODO:
 

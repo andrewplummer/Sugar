@@ -18,6 +18,7 @@ import './helpers/intl';
 import './tests/core';
 import './tests/number';
 import './tests/string';
+import './tests/regexp';
 import './tests/extended';
 import './tests/chainable';
 import './tests/modules';
