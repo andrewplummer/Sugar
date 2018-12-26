@@ -9,6 +9,7 @@ import Sugar from '../src/all';
 global.Sugar = Sugar;
 
 // Helpers
+import './helpers/assertions';
 import './helpers/namespace';
 import './helpers/methods';
 import './helpers/suite';
@@ -16,9 +17,10 @@ import './helpers/intl';
 
 // Tests
 import './tests/core';
+import './tests/chainable';
+import './tests/extended';
 import './tests/number';
 import './tests/string';
 import './tests/regexp';
-import './tests/extended';
-import './tests/chainable';
+import './tests/function';
 import './tests/modules';

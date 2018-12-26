@@ -1,4 +1,4 @@
-import { isString } from './typeChecks';
+import { isString } from '../../util/typeChecks';
 
 const ESCAPE_REG = /([\\/'*+?|()[\]{}.^$-])/g;
 
@@ -8,4 +8,3 @@ export default function(str) {
   }
   return str.replace(ESCAPE_REG,'\\$1');
 }
-

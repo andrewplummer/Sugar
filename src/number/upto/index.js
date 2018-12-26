@@ -1,4 +1,4 @@
-import step from '../../util/step';
+import step from '../util/step';
 
 export default function(n1, n2, ...args) {
   if (n1 > n2) {

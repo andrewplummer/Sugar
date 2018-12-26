@@ -653,93 +653,83 @@ namespace('Number', function() {
 
   });
 
-  describe('step', function() {
+  instanceMethod('upto', function(upto) {
 
-    function assertPasses(fn, from, to, eCount, eResult) {
-      var count = 0;
-      var result = fn(from, to, 1, function(n) {
-        count++;
-        return n;
-      });
-      assertEqual(count, eCount);
-      assertArrayEqual(result, eResult);
-    }
+    assertArrayEqual(upto(0, 0), [0]);
+    assertArrayEqual(upto(0, 1), [0,1]);
+    assertArrayEqual(upto(0, 5), [0,1,2,3,4,5]);
+    assertArrayEqual(upto(2,-2), [-2,-1,0,1,2]);
+    assertArrayEqual(upto(-2, 2), [-2,-1,0,1,2]);
 
-    instanceMethod('upto', function(upto) {
+    assertArrayEqual(upto(-0.5, 0.5), [-0.5,0.5]);
+    assertArrayEqual(upto(-0.5, 0.6), [-0.5,0.5]);
+    assertArrayEqual(upto(-0.5, 0.4), [-0.5]);
 
-      assertPasses(upto, 0, 0, 1, [0]);
-      assertPasses(upto, 0, 1, 2, [0,1]);
-      assertPasses(upto, 0, 5, 6, [0,1,2,3,4,5]);
-      assertPasses(upto, 2,-2, 5, [-2,-1,0,1,2]);
-      assertPasses(upto,-2, 2, 5, [-2,-1,0,1,2]);
+    // With collecting callback.
+    assertArrayEqual(upto(0, 1, 1, noop), [undefined, undefined]);
+    assertArrayEqual(upto(-1, 1, 1, args), [[-1,0],[0,1],[1,2]]);
+    assertArrayEqual(upto(1, -1, 1, args), [[-1,0],[0,1],[1,2]]);
 
-      assertPasses(upto, -.5, .5, 2, [-.5,.5]);
-      assertPasses(upto, -.5, .6, 2, [-.5,.5]);
-      assertPasses(upto, -.5, .4, 1, [-.5]);
+    // With step
+    assertArrayEqual(upto(0, 6, 10), [0]);
+    assertArrayEqual(upto(0, 6, 2), [0,2,4,6]);
+    assertArrayEqual(upto(0, 2, 0.5), [0,0.5,1,1.5,2]);
 
-      assertArrayEqual(upto(0, 5), [0,1,2,3,4,5]);
-      assertArrayEqual(upto(0, 1, 1, noop), [undefined, undefined]);
+    // Invalid input
+    assertError(function() { upto(null, 1); });
+    assertError(function() { upto(1, null); });
+    assertError(function() { upto(NaN, 1); });
+    assertError(function() { upto(1, NaN); });
+    assertError(function() { upto(-Infinity, 0); });
+    assertError(function() { upto(0, Infinity); });
 
-      assertArrayEqual(upto(0, 6, 10), [0]);
-      assertArrayEqual(upto(0, 6, 2), [0,2,4,6]);
-      assertArrayEqual(upto(0, 2, .5), [0,0.5,1,1.5,2]);
+    // Invalid step
+    assertError(function() { upto(1, 4, 0); });
+    assertError(function() { upto(1, 4, 0, noop); });
+    assertError(function() { upto(1, 4, -2); });
+    assertError(function() { upto(1, 4, Infinity); });
+    assertError(function() { upto(1, 4, NaN); });
 
-      // Callback arguments
-      assertArrayEqual(upto(-1, 1, 1, args), [[-1,0],[0,1],[1,2]]);
+  });
 
-      // Invalid input
-      assertError(function() { upto(null, 1); });
-      assertError(function() { upto(1, null); });
-      assertError(function() { upto(NaN, 1); });
-      assertError(function() { upto(1, NaN); });
-      assertError(function() { upto(-Infinity, 0); });
-      assertError(function() { upto(0, Infinity); });
+  instanceMethod('downto', function(downto) {
 
-      // Invalid step
-      assertError(function() { upto(1, 4, 0); });
-      assertError(function() { upto(1, 4, -2); });
-      assertError(function() { upto(1, 4, Infinity); });
-      assertError(function() { upto(1, 4, NaN); });
+    assertArrayEqual(downto(0, 0), [0]);
+    assertArrayEqual(downto(1, 0), [1,0]);
+    assertArrayEqual(downto(5, 0), [5,4,3,2,1,0]);
+    assertArrayEqual(downto(2, -2), [2,1,0,-1,-2]);
+    assertArrayEqual(downto(-2, 2), [2,1,0,-1,-2]);
 
-    });
+    assertArrayEqual(downto(0.5, -0.5), [0.5,-0.5]);
+    assertArrayEqual(downto(0.5, -0.6), [0.5,-0.5]);
+    assertArrayEqual(downto(0.5, -0.4), [0.5]);
 
-    instanceMethod('downto', function(downto) {
+    // With collecting callback.
+    assertArrayEqual(downto(0, 1, 1, noop), [undefined, undefined]);
+    assertArrayEqual(downto(1, -1, 1, args), [[1,0],[0,1],[-1,2]]);
+    assertArrayEqual(downto(-1, 1, 1, args), [[1,0],[0,1],[-1,2]]);
 
-      assertPasses(downto, 0, 0, 1, [0]);
-      assertPasses(downto, 1, 0, 2, [1,0]);
-      assertPasses(downto, 5, 0, 6, [5,4,3,2,1,0]);
-      assertPasses(downto, 2,-2, 5, [2,1,0,-1,-2]);
-      assertPasses(downto,-2, 2, 5, [2,1,0,-1,-2]);
+    assertArrayEqual(downto(0, 6, 10), [6]);
+    assertArrayEqual(downto(5, 0, 2), [5,3,1]);
+    assertArrayEqual(downto(2, 0, 0.5), [2,1.5,1,0.5,0]);
 
-      assertPasses(downto, .5, -.5, 2, [.5,-.5]);
-      assertPasses(downto, .5, -.6, 2, [.5,-.5]);
-      assertPasses(downto, .5, -.4, 1, [.5]);
+    // Callback arguments
+    assertArrayEqual(downto(1,-1,1,args), [[1,0],[0,1],[-1,2]]);
 
-      assertArrayEqual(downto(5, 0), [5,4,3,2,1,0]);
-      assertArrayEqual(downto(0, 1, 1, noop), [undefined, undefined]);
+    // Invalid input
+    assertError(function() { downto(null, 1); });
+    assertError(function() { downto(1, null); });
+    assertError(function() { downto(NaN, 1); });
+    assertError(function() { downto(1, NaN); });
+    assertError(function() { downto(-Infinity, 0); });
+    assertError(function() { downto(0, Infinity); });
 
-      assertArrayEqual(downto(0, 6, 10), [6]);
-      assertArrayEqual(downto(5, 0, 2), [5,3,1]);
-      assertArrayEqual(downto(2, 0, .5), [2,1.5,1,0.5,0]);
-
-      // Callback arguments
-      assertArrayEqual(downto(1,-1,1,args), [[1,0],[0,1],[-1,2]]);
-
-      // Invalid input
-      assertError(function() { downto(null, 1); });
-      assertError(function() { downto(1, null); });
-      assertError(function() { downto(NaN, 1); });
-      assertError(function() { downto(1, NaN); });
-      assertError(function() { downto(-Infinity, 0); });
-      assertError(function() { downto(0, Infinity); });
-
-      // Invalid step
-      assertError(function() { downto(1, 4, 0); });
-      assertError(function() { downto(1, 4, -2); });
-      assertError(function() { downto(1, 4, Infinity); });
-      assertError(function() { downto(1, 4, NaN); });
-
-    });
+    // Invalid step
+    assertError(function() { downto(1, 4, 0); });
+    assertError(function() { downto(1, 4, 0, noop); });
+    assertError(function() { downto(1, 4, -2); });
+    assertError(function() { downto(1, 4, Infinity); });
+    assertError(function() { downto(1, 4, NaN); });
 
   });
 

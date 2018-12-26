@@ -1,4 +1,5 @@
-import { assertFinite, assertPositiveNumber } from './assertions';
+import { assertFinite, assertPositiveNumber } from '../../util/assertions';
+import { isFunction } from '../../util/typeChecks';
 
 export default function(n1, n2, ...args) {
 
@@ -10,7 +11,7 @@ export default function(n1, n2, ...args) {
   assertFinite(step);
   assertPositiveNumber(step);
 
-  const inc = (step || 1) * (n1 < n2 ? 1 : -1);
+  const inc = step * (n1 < n2 ? 1 : -1);
   const len = Math.abs(n2 - n1);
   const result = [];
 
@@ -23,10 +24,10 @@ export default function(n1, n2, ...args) {
 }
 
 export function collectArgs(args) {
-  if (args.length === 0) {
-    return [1];
+  if (args.length === 2) {
+    return [args[0], args[1]];
   } else if (args.length === 1) {
-    return [args[0]];
+    return isFunction(args[0]) ? [1, args[0]] : [args[0]];
   }
-  return [args[0], args[1]];
+  return [1];
 }

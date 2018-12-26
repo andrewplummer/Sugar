@@ -25,6 +25,7 @@ v3.0.0
 - Changed `Number#format` to no longer support thousands or decimal separtors. Use Intl for this.
 - Removed `Number#sin`, `Number#cos`, etc in favor of native Math.
 - Removed `RegExp#getFlags`, `RegExp#setFlags`, `RegExp#addFlags` and `RegExp#removeFlags`.
+- Removed `Function#memoize` ability to deeply serialize all arguments.
 
 TODO:
 

@@ -1,4 +1,4 @@
-import { assertInteger } from './assertions';
+import { assertInteger } from '../../util/assertions';
 
 function getSuffix(n) {
   if (n >= 11 && n <= 13) {

@@ -1,1 +1,1 @@
-export { default } from '../../util/toOrdinal';
+export { default } from '../util/toOrdinal';

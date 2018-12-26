@@ -1,4 +1,4 @@
-import step, { collectArgs } from './step';
+import step, { collectArgs } from '../number/util/step';
 
 export default class Range {
 

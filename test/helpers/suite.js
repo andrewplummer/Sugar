@@ -3,17 +3,15 @@
 
   var currentNamespace;
 
-  function assertStatic(methodName) {
-    assertUndefined(currentNamespace.prototype[methodName], {
-      message: '{methodName} should be a static method',
-      methodName: methodName
+  function assertStatic(methodName, testFn) {
+    testFn(methodName + ' should be a static method', function() {
+      assertUndefined(currentNamespace.prototype[methodName]);
     });
   }
 
-  function assertInstance(methodName) {
-    assertInstanceOf(currentNamespace.prototype[methodName], Function, {
-      message: '{methodName} should be an instance method',
-      methodName: methodName
+  function assertInstance(methodName, testFn) {
+    testFn(methodName + ' should be an instance method', function() {
+      assertInstanceOf(currentNamespace.prototype[methodName], Function);
     });
   }
 
@@ -31,10 +29,10 @@
     };
   }
 
-  function withTest(typeFn, testFn) {
+  function withTest(assertFn, testFn) {
     return function(methodName, test) {
+      assertFn(methodName, testFn);
       testFn(methodName, function() {
-        typeFn(methodName, currentNamespace.prototype[methodName]);
         test(currentNamespace[methodName]);
       });
     };
