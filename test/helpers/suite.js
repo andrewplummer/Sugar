@@ -3,51 +3,49 @@
 
   var currentNamespace;
 
-  function assertStatic(methodName, testFn) {
-    testFn(methodName + ' should be a static method', function() {
-      assertUndefined(currentNamespace.prototype[methodName]);
+  function staticTest(protoFn) {
+    it('should be a static method', function() {
+      assertUndefined(protoFn);
     });
   }
 
-  function assertInstance(methodName, testFn) {
-    testFn(methodName + ' should be an instance method', function() {
-      assertInstanceOf(currentNamespace.prototype[methodName], Function);
+  function instanceTest(protoFn) {
+    it('should be an instance method', function() {
+      assertInstanceOf(protoFn, Function);
     });
   }
 
-  function withSuite(describeFn) {
-    return function(name, suite) {
-      describeFn(name, function() {
-        beforeAll(function() {
-          currentNamespace = Sugar[name];
-        });
-        afterAll(function() {
-          currentNamespace = null;
-        });
+  function withNamespace(describeFn) {
+    return function(namespace, suite) {
+      describeFn(namespace, function() {
+        currentNamespace = Sugar[namespace];
         suite();
+        currentNamespace = null;
       });
     };
   }
 
-  function withTest(assertFn, testFn) {
-    return function(methodName, test) {
-      assertFn(methodName, testFn);
-      testFn(methodName, function() {
-        test(currentNamespace[methodName]);
+  function withMethod(typeTest, suiteFn) {
+    return function(methodName, suite) {
+      var method = currentNamespace[methodName];
+      var protoFn = currentNamespace.prototype[methodName];
+      suiteFn(methodName, function() {
+        typeTest(protoFn);
+        suite(method);
       });
     };
   }
 
-  namespace  = withSuite(describe);
-  fnamespace = withSuite(fdescribe);
-  xnamespace = withSuite(xdescribe);
+  namespace  = withNamespace(describe);
+  fnamespace = withNamespace(fdescribe);
+  xnamespace = withNamespace(xdescribe);
 
-  staticMethod  = withTest(assertStatic, it);
-  fstaticMethod = withTest(assertStatic, fit);
-  xstaticMethod = withTest(assertStatic, xit);
+  describeStatic  = withMethod(staticTest, describe);
+  fdescribeStatic = withMethod(staticTest, fdescribe);
+  xdescribeStatic = withMethod(staticTest, xdescribe);
 
-  instanceMethod  = withTest(assertInstance, it);
-  finstanceMethod = withTest(assertInstance, fit);
-  xinstanceMethod = withTest(assertInstance, xit);
+  describeInstance  = withMethod(instanceTest, describe);
+  fdescribeInstance = withMethod(instanceTest, fdescribe);
+  xdescribeInstance = withMethod(instanceTest, xdescribe);
 
 })();

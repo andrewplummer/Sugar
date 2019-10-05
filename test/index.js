@@ -1,4 +1,7 @@
 import Sugar from '../src/all';
+import Sinon from 'sinon';
+
+global.clock = Sinon.useFakeTimers();
 
 // TODO: test browserify
 // TODO: test broccoli
@@ -9,10 +12,9 @@ import Sugar from '../src/all';
 global.Sugar = Sugar;
 
 // Helpers
-import './helpers/assertions';
 import './helpers/namespace';
-import './helpers/methods';
 import './helpers/suite';
+import './helpers/util';
 import './helpers/intl';
 
 // Tests
