@@ -11,20 +11,12 @@ function clearCache() {
 }
 
 // To correctly test modules we need to clear the require
-// cache and dynamically import with require each time.
-
 clearCache();
-require('./sugar-entry');
-clearCache();
-require('./sugar-all');
+require('./main-entry');
 clearCache();
 require('./namespace-entry');
 clearCache();
-require('./namespace-all');
-clearCache();
 require('./method-entry');
-clearCache();
-require('./method-define');
 clearCache();
 require('./customized');
 clearCache();

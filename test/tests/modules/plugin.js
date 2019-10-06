@@ -1,14 +1,17 @@
-import Sugar, { createNamespace } from '../../../src/core';
-import String, { defineInstance } from '../../../src/core/string';
+import { createNamespace } from '../../../src/core';
+import { defineInstance } from '../../../src/core/string';
+
+const Boolean = createNamespace('Boolean');
+
+Boolean.defineInstance('maybe', function() {
+  return 0.5;
+});
+
+import { Sugar } from '../../../src';
+import { String } from '../../../src/string';
 
 defineInstance('hi', function(str) {
   return 'hi ' + str;
-});
-
-createNamespace('Boolean');
-
-Sugar.Boolean.defineInstance('maybe', function() {
-  return 0.5;
 });
 
 describe('Plugin Module', function() {

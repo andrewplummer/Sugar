@@ -7,13 +7,13 @@ module.exports = {
   output: {
     filename: 'sugar.js',
     library: 'Sugar',
-    libraryExport: 'default'
+    libraryExport: 'Sugar',
   },
   optimization: {
     usedExports: true
   },
   // This can't be an array: https://webpack.js.org/guides/author-libraries/
-  entry: './src/all',
+  entry: './src/index',
   module: {
     rules: [
       {

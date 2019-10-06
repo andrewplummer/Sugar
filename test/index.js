@@ -1,4 +1,4 @@
-import Sugar from '../src/all';
+import { Sugar } from '../src';
 import Sinon from 'sinon';
 
 global.clock = Sinon.useFakeTimers();

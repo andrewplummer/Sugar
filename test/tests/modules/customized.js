@@ -1,8 +1,12 @@
-import '../../../src/number/abbr/define';
-import '../../../src/number/abs/define';
+import { defineInstance } from '../../../src/core/number';
+import { abs, abbr } from '../../../src/number/methods';
+
+defineInstance('abs', abs);
+defineInstance('abbr', abbr);
 // TODO
 //import 'sugar/string/capitalize/define';
-import { Number, String } from '../../../src';
+import { Number } from '../../../src/core/number';
+import { String } from '../../../src/core/string';
 
 describe('Customized Module', function() {
 

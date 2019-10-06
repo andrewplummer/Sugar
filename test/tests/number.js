@@ -1,6 +1,6 @@
 'use strict';
 
-fnamespace('Number', function() {
+namespace('Number', function() {
 
   describeStatic('random', function(random) {
 
@@ -11,30 +11,6 @@ fnamespace('Number', function() {
       assertOneOf(random(30, 25), [25,26,27,28,29,30]);
       assertOneOf(random(-5, -2), [-5,-4,-3,-2]);
       assertOneOf(random(0, 0), [0]);
-    });
-
-  });
-
-  describeStatic('round', function(round) {
-
-    it('should round numbers', function() {
-      assertEqual(round(3), 3);
-      assertEqual(round(3.241), 3);
-      assertEqual(round(3.752), 4);
-      assertEqual(round(-3.241), -3);
-      assertEqual(round(-3.752), -4);
-      assertEqual(round(3.241, 1), 3.2);
-      assertEqual(round(3.752, 1), 3.8);
-      assertEqual(round(3.241, 2), 3.24);
-      assertEqual(round(3.752, 2), 3.75);
-      assertEqual(round(322855.241, -2), 322900);
-      assertEqual(round(322855.241, -3), 323000);
-      assertEqual(round(322855.241, -4), 320000);
-      assertEqual(round(322855.241, -6), 0);
-      assertEqual(round(722855.241, -6), 1000000);
-      assertEqual(round(722855.241, -8), 0);
-      assertEqual(round(1e-21, 1), 0);
-      assertEqual(round(1e-21, -1), 0);
     });
 
   });
@@ -129,6 +105,30 @@ fnamespace('Number', function() {
 
       assertEqual(range(0,5).union(range(NaN,NaN)).toString(), 'Invalid Range');
       assertEqual(range(NaN,NaN).union(range(8,10)).toString(), 'Invalid Range');
+    });
+
+  });
+
+  describeInstance('round', function(round) {
+
+    it('should round numbers', function() {
+      assertEqual(round(3), 3);
+      assertEqual(round(3.241), 3);
+      assertEqual(round(3.752), 4);
+      assertEqual(round(-3.241), -3);
+      assertEqual(round(-3.752), -4);
+      assertEqual(round(3.241, 1), 3.2);
+      assertEqual(round(3.752, 1), 3.8);
+      assertEqual(round(3.241, 2), 3.24);
+      assertEqual(round(3.752, 2), 3.75);
+      assertEqual(round(322855.241, -2), 322900);
+      assertEqual(round(322855.241, -3), 323000);
+      assertEqual(round(322855.241, -4), 320000);
+      assertEqual(round(322855.241, -6), 0);
+      assertEqual(round(722855.241, -6), 1000000);
+      assertEqual(round(722855.241, -8), 0);
+      assertEqual(round(1e-21, 1), 0);
+      assertEqual(round(1e-21, -1), 0);
     });
 
   });

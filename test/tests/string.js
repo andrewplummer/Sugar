@@ -2,7 +2,7 @@
 
 namespace('String', function() {
 
-  staticMethod('range', function(range) {
+  describeStatic('range', function(range) {
 
     it('#toString', function() {
       assertEqual(range('a', 'z').toString(), 'a..z');

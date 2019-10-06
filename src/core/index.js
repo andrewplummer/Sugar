@@ -9,7 +9,6 @@ import { isString, isFunction } from '../util/typeChecks';
 
 export const VERSION = 'edge';
 
-
 // --- Setup
 
 export function createNamespace(globalName) {
@@ -49,6 +48,8 @@ export function createNamespace(globalName) {
   mapNativeToChainable(globalName, SugarChainable);
 
   Sugar[globalName] = SugarChainable;
+
+  return SugarChainable;
 }
 
 
@@ -271,13 +272,11 @@ function nativeMethodProhibitedOnChainable(methodName) {
          || methodName === '__proto__';
 }
 
-// --- Default exports
+// --- Main Export
 
-const Sugar = {
+export const Sugar = {
   VERSION,
   extend,
   restore,
   createNamespace
 };
-
-export default Sugar;

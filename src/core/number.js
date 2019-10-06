@@ -1,12 +1,10 @@
-import Sugar, { createNamespace } from '../core';
+import { createNamespace } from '../core';
 
-createNamespace('Number');
+export const Number = createNamespace('Number')
 
 export const {
   defineStatic,
   defineInstance,
   defineStaticAlias,
   defineInstanceAlias,
-} = Sugar.Number;
-
-export default Sugar.Number;
+} = Number;

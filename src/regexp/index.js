@@ -1,4 +1,3 @@
-export { default as escape } from './escape';
-
 export * from '../core/regexp';
-export { default } from '../core/regexp';
+export * from './methods';
+import './define';
