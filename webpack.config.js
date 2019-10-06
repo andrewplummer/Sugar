@@ -1,4 +1,3 @@
-
 const path = require('path');
 const VERSION = require('./package.json').version;
 
@@ -20,28 +19,7 @@ module.exports = {
       {
         test: /\.js$/,
         exclude: /node_modules/,
-        use: {
-          loader: 'babel-loader',
-          options: {
-            presets: [
-              [
-                '@babel/preset-env',
-                {
-                  useBuiltIns: 'usage',
-                  targets: [
-                    '> 1%',
-                    'not dead',
-                    'last 2 versions',
-                    'ie >= 9',
-                  ]
-                }
-              ],
-            ],
-            plugins: [
-              '@babel/plugin-transform-runtime'
-            ]
-          }
-        }
+        loader: 'babel-loader'
       },
       {
         test: path.resolve(__dirname, './src/core/index.js'),
