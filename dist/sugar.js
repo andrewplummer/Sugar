@@ -10942,7 +10942,7 @@
     /***
      * @method least([all] = false, [map])
      * @returns Array
-     * @short Returns the elements in the array with the least commonly occuring value.
+     * @short Returns the elements in the array with the least commonly occurring value.
      * @extra [map] can be passed in place of [all], and is a function of type
      *        `mapFn` that maps the value to be checked or a string acting as a
      *        shortcut. If [all] is true, will return multiple values in an array.
@@ -10977,7 +10977,7 @@
     /***
      * @method most([all] = false, [map])
      * @returns Array
-     * @short Returns the elements in the array with the most commonly occuring value.
+     * @short Returns the elements in the array with the most commonly occurring value.
      * @extra [map] can be passed in place of [all], and is a function of type
      *        `mapFn` that maps the value to be checked or a string acting as a
      *        shortcut. If [all] is true, will return multiple values in an array.
@@ -11637,7 +11637,7 @@
      * @method least([all] = false, [map])
      * @returns Mixed
      * @short Returns the key of the property in the object with the least commonly
-     *        occuring value.
+     *        occurring value.
      * @extra If [all] is true, will return an object with all properties in the
      *        object with the least common value. [map] can be passed in place of
      *        [all] and is a function of type `mapFn` that maps the value to be
@@ -11672,7 +11672,7 @@
      * @method most([all] = false, [map])
      * @returns Mixed
      * @short Returns the key of the property in the object with the most commonly
-     *        occuring value.
+     *        occurring value.
      * @extra If [all] is true, will return an object with all properties in the
      *        object with the most common value. [map] can be passed in place of
      *        [all] and is a function of type `mapFn` that maps the value to be
