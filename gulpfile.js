@@ -793,7 +793,7 @@ function getLocalePaths(l) {
   var codes = getLocaleCodes(l);
 
   function getPath(l) {
-    return path.join('lib', 'locales', l.toLowerCase() + '.js');
+    return path.join('lib', 'locales', l + '.js');
   }
 
   codes.forEach(function(n) {
