@@ -1,3 +1,5 @@
+/** @module core */
+
 import globalContext from './util/globalContext';
 import NamespaceStore from './util/NamespaceStore';
 import SugarChainableBase from './util/SugarChainableBase';
@@ -11,6 +13,9 @@ export const VERSION = 'edge';
 
 // --- Setup
 
+/**
+ * createNamespace
+ */
 export function createNamespace(globalName) {
 
   if (!globalContext[globalName]) {
@@ -21,24 +26,56 @@ export function createNamespace(globalName) {
     return;
   }
 
+  /**
+   * A chainable object.
+   * @param {*} obj - The object to be wrapped by the chainable.
+   */
   class SugarChainable extends SugarChainableBase {
 
+    /**
+     * Extends Sugar defined methods onto natives.
+     *
+     * @example
+     *
+     *   Sugar.Array.extend();
+     *
+     * @param {Object} [options] - Options to control what methods are extended.
+     * @param {Array<string>} [options.include] - An array of methods to include
+     *   when extending.
+     * @param {Array<string>} [options.exclude] - An array of methods to exclude
+     *   when extending.
+     * @param {boolean} [options.existing] - Whether or not to override existing methods
+     *   when extending.
+     *
+     */
     static extend(opt) {
       extendNamespace(globalName, opt);
     }
 
+    /**
+     * defineStatic
+     */
     static defineStatic(...args) {
       defineWithArgs(globalName, defineStatic, args);
     }
 
+    /**
+     * defineInstance
+     */
     static defineInstance(...args) {
       defineWithArgs(globalName, defineInstance, args);
     }
 
+    /**
+     * defineStaticAlias
+     */
     static defineStaticAlias(str, fn) {
       defineAliases(globalName, defineStatic, str, fn);
     }
 
+    /**
+     * defineInstanceAlias
+     */
     static defineInstanceAlias(str, fn) {
       defineAliases(globalName, defineInstance, str, fn);
     }

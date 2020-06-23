@@ -6,4 +6,3 @@ export { Number } from './number';
 export { Object } from './object';
 export { RegExp } from './regexp';
 export { Function } from './function';
-

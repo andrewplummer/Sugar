@@ -40,6 +40,12 @@ export function assertPositiveInteger(n) {
   }
 }
 
+export function assertPositiveIntegerOrInfinity(n) {
+  if ((!Number.isInteger(n) || n <= 0) && n !== Infinity) {
+    throw new TypeError(n + ' is not a positive integer or Infinity');
+  }
+}
+
 export function assertDecimal(n) {
   if (!Number.isFinite(n) || usesScientificNotation(n)) {
     throw new TypeError(n + ' cannot be represented as a decimal');

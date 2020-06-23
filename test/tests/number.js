@@ -390,7 +390,7 @@ namespace('Number', function() {
       assertEqual(toOrdinal(-5), '-5th');
     });
 
-    it('should error on invalid values', function() {
+    it('should error on invalid input', function() {
       assertError(function() { toOrdinal(NaN); });
       assertError(function() { toOrdinal(5.55); });
       assertError(function() { toOrdinal(null); });

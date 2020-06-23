@@ -1,3 +1,5 @@
+/** @module */
+
 import { assertFinite } from '../util/assertions';
 import { trunc, round } from './util/math';
 import { isNumber } from '../util/typeChecks';
@@ -5,12 +7,12 @@ import format from './util/format';
 import clamp from './util/clamp';
 
 /**
- * @typedef {"integer"|"common"|"metric"|"binary"} UnitAlias
+ * @typedef {"integer" | "common" | "metric" | "binary"} UnitAlias
  *
- * @prop integer - Units suitable for large integers. Equivalent to "tmbk|".
- * @prop common  - Common si units, as used with "grams", "meters", etc. Equivalent to "k|mμn".
- * @prop metric  - Full si units. Equivalent to "YZEPTGMk|mμnpfazy".
- * @prop binary  - Alias for "metric", but considers the number as base 2.
+ * @property {string} integer - Units suitable for large integers. Equivalent to "tmbk|".
+ * @property {string} common  - Common si units, as used with "grams", "meters", etc. Equivalent to "k|mμn".
+ * @property {string} metric  - Full si units. Equivalent to "YZEPTGMk|mμnpfazy".
+ * @property {string} binary  - Alias for "metric", but considers the number as base 2.
  *
  */
 const ALIAS_INTEGER = 'integer';
@@ -61,6 +63,8 @@ const SAFE_PRECISION = 10;
  * abbr(.15);     // "0.15"
  * abbr(.15, 2, 'common'); // "150m"
  * abbr(1234, 2, null, deFormatter); // "1,23k"
+ *
+ * @method abbr
  *
  */
 export default function abbr(n, precision, units, formatter) {
