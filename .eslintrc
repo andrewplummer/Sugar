@@ -1,40 +1,16 @@
 {
-  "extends": "eslint:recommended",
   "env": {
+    "es6": true,
     "node": true,
-    "browser": true
-  },
-  "rules": {
-    "semi": ["error"],
-    "new-cap": ["error"],
-    "new-parens": ["error"],
-    "no-unused-vars": ["error", {
-      args: "after-used"
-    }],
-    "keyword-spacing": ["error"],
-    "object-shorthand": ["error", "consistent"],
-    "block-scoped-var": ["error"],
-    "operator-linebreak": ["error", "before"],
-    "space-before-function-paren": ["error", "never"],
-    "quotes": ["error", "single", "avoid-escape"],
-    "space-before-blocks": ["error", "always"],
-    "no-multiple-empty-lines": [2, {
-      "max": 3,
-      "maxBOF": 1,
-      "maxEOF": 0
-    }],
-    "object-curly-newline": ["error", {
-      "consistent": true
-    }],
-    "padded-blocks": ["error", {
-      "classes": "always"
-    }],
-    "indent": ["error", 2, {
-      "SwitchCase": 1
-    }],
+    "browser": true,
   },
   "parserOptions": {
-    "ecmaVersion": 2019,
+    "ecmaVersion": 2020,
     "sourceType": "module"
+  },
+  "extends": "eslint:recommended",
+  "rules": {
+    "comma-dangle": ["error", "only-multiline"],
+    "no-control-regex": "off",
   }
 }

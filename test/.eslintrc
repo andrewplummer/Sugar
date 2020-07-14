@@ -1,11 +1,43 @@
 {
+  "env": {
+    "es6": false,
+    "node": true,
+    "browser": true,
+  },
   "rules": {
-    "no-undef": ["off"],
-    "comma-dangle": ["error"],
-    "no-global-assign": [
-      "error", {
-        "exceptions": ["Number"]
-      }
-    ]
+    'no-global-assign': 'off',
+  },
+  "globals": {
+    it: true,
+    add: true,
+    mult: true,
+    noop: true,
+    arg2: true,
+    args: true,
+    clock: true,
+    square: true,
+    concatA: true,
+    describe: true,
+    namespace: true,
+    describeStatic: true,
+    describeInstance: true,
+    afterEach: true,
+    beforeEach: true,
+    assertNaN: true,
+    assertNull: true,
+    assertTrue: true,
+    assertFalse: true,
+    assertMatch: true,
+    assertOneOf: true,
+    assertEqual: true,
+    assertError: true,
+    assertNoError: true,
+    assertUndefined: true,
+    assertArrayEqual: true,
+    assertObjectEqual: true,
+    assertInstanceOf: true,
+    withNumberFormatter: true,
+    ensureNamespaceNotInitialized: true,
+    Sugar: true,
   }
 }

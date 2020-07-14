@@ -1,3 +1,4 @@
+import { hasOwnProperty } from '../../util/helpers';
 
 export default class NamespaceStore {
 
@@ -7,7 +8,7 @@ export default class NamespaceStore {
 
   has(name, member, isInstance) {
     const key = this.getKey(name, member, isInstance);
-    return this.store.hasOwnProperty(key);
+    return hasOwnProperty(this.store, key);
   }
 
   get(name, member, isInstance) {

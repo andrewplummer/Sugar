@@ -101,4 +101,72 @@ namespace('String', function() {
 
   });
 
+  describeInstance('capitalize', function(capitalize) {
+
+    it('should capitalize basic latin characters', function() {
+      assertEqual(capitalize('wasabi'), 'Wasabi');
+      assertEqual(capitalize('Wasabi'), 'Wasabi');
+      assertEqual(capitalize('WASABI'), 'WASABI');
+      assertEqual(capitalize('WasAbI'), 'WasAbI');
+      assertEqual(capitalize('wasabi sandwich'), 'Wasabi sandwich');
+      assertEqual(capitalize('WASABI SANDWICH'), 'WASABI SANDWICH');
+      assertEqual(capitalize("wasabi's SANDWICH"), "Wasabi's SANDWICH");
+      assertEqual(capitalize(''), '');
+    });
+
+    it('should force lower case', function() {
+      assertEqual(capitalize('wasabi', true), 'Wasabi');
+      assertEqual(capitalize('Wasabi', true), 'Wasabi');
+      assertEqual(capitalize('WASABI', true), 'Wasabi');
+      assertEqual(capitalize('WasAbI', true), 'Wasabi');
+      assertEqual(capitalize('wasabi sandwich', true), 'Wasabi sandwich');
+      assertEqual(capitalize('WASABI SANDWICH', true), 'Wasabi sandwich');
+      assertEqual(capitalize("wasabi's SANDWICH", true), "Wasabi's sandwich");
+      assertEqual(capitalize("wasabis' SANDWICH", true), "Wasabis' sandwich");
+      assertEqual(capitalize('reuben sandwich', true), 'Reuben sandwich');
+      assertEqual(capitalize('фыва йцук', true), 'Фыва йцук');
+    });
+
+    it('should work on all words', function() {
+      assertEqual(capitalize('wasabi', false, true), 'Wasabi');
+      assertEqual(capitalize('Wasabi', false, true), 'Wasabi');
+      assertEqual(capitalize('WASABI', false, true), 'WASABI');
+      assertEqual(capitalize('WasAbI', false, true), 'WasAbI');
+      assertEqual(capitalize('wasabi sandwich', false, true), 'Wasabi Sandwich');
+      assertEqual(capitalize('WASABI SANDWICH', false, true), 'WASABI SANDWICH');
+      assertEqual(capitalize("wasabi's SANDWICH", false, true), "Wasabi's SANDWICH");
+      assertEqual(capitalize("'you' and 'me'", false, true), "'You' And 'Me'");
+    });
+
+    it('should downcase with all words', function() {
+      assertEqual(capitalize('wasabi', true, true), 'Wasabi');
+      assertEqual(capitalize('Wasabi', true, true), 'Wasabi');
+      assertEqual(capitalize('WASABI', true, true), 'Wasabi');
+      assertEqual(capitalize('WasAbI', true, true), 'Wasabi');
+      assertEqual(capitalize('wasabi sandwich', true, true), 'Wasabi Sandwich');
+      assertEqual(capitalize('WASABI SANDWICH', true, true), 'Wasabi Sandwich');
+      assertEqual(capitalize("wasabi's SANDWICH", true, true), "Wasabi's Sandwich");
+
+      assertEqual(capitalize('reuben-sandwich', true, true), 'Reuben-Sandwich');
+      assertEqual(capitalize('reuben(sandwich)', true, true), 'Reuben(Sandwich)');
+      assertEqual(capitalize('reuben,sandwich', true, true), 'Reuben,Sandwich');
+      assertEqual(capitalize('reuben;sandwich', true, true), 'Reuben;Sandwich');
+      assertEqual(capitalize('reuben.sandwich', true, true), 'Reuben.Sandwich');
+      assertEqual(capitalize('reuben_sandwich', true, true), 'Reuben_Sandwich');
+      assertEqual(capitalize('reuben\nsandwich', true, true), 'Reuben\nSandwich');
+      assertEqual(capitalize("reuben's sandwich", true, true), "Reuben's Sandwich");
+
+      assertEqual(capitalize('фыва-йцук', true, true), 'Фыва-Йцук');
+      assertEqual(capitalize('фыва,йцук', true, true), 'Фыва,Йцук');
+      assertEqual(capitalize('фыва;йцук', true, true), 'Фыва;Йцук');
+      assertEqual(capitalize('фыва7йцук', true, true), 'Фыва7Йцук');
+
+      assertEqual(capitalize('what a shame of a title', true, true), 'What A Shame Of A Title');
+      assertEqual(capitalize('What A Shame Of A Title', true, true), 'What A Shame Of A Title');
+      assertEqual(capitalize(' what a shame of a title    ', true, true), ' What A Shame Of A Title    ');
+      assertEqual(capitalize(' what a shame of\n a title    ', true, true), ' What A Shame Of\n A Title    ');
+    });
+
+  });
+
 });

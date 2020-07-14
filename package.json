@@ -29,21 +29,27 @@
   },
   "scripts": {
     "build": "webpack",
-    "test": "node ./node_modules/.bin/ready-test test/index.js",
+    "test": "ready-test test/index.js",
+    "declares": "node -r esm ./scripts/generate-declares",
     "coverage": "istanbul cover --report=lcovonly ready-test test/index.js",
     "coveralls": "cat ./coverage/lcov.info | ./node_modules/.bin/coveralls"
   },
-  "typings": "sugar.d.ts",
   "devDependencies": {
     "@babel/core": "^7.6.2",
     "@babel/plugin-transform-runtime": "^7.6.2",
     "@babel/preset-env": "^7.6.2",
     "@babel/runtime": "^7.6.2",
     "babel-loader": "^8.0.6",
+    "circular-dependency-plugin": "^5.2.0",
+    "eslint": "^7.4.0",
+    "esm": "^3.2.25",
+    "jsdoc": "^3.6.4",
     "ready-test": "^1.0.28",
     "sinon": "^7.5.0",
     "string-replace-loader": "^2.2.0",
     "webpack": "^4.41.0",
-    "webpack-cli": "^3.3.9"
-  }
+    "webpack-cli": "^3.3.9",
+    "yargs": "^15.4.1"
+  },
+  "dependencies": {}
 }

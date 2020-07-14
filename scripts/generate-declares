@@ -1,0 +1,446 @@
+#!/usr/bin/env node
+
+const fs = require('fs-extra');
+const path = require('path');
+const util = require('util');
+const exec = util.promisify(require('child_process').exec);
+
+const { capitalize } = require('../src/string');
+const { groupBy } = require('../src/array');
+
+var argv = require('yargs')
+    .usage('Usage: $0 --out <dir>')
+    .demandOption('out')
+    .describe('out', 'Directory to output declares.')
+    .argv;
+
+// --- JSDocs
+
+async function getJSDocs() {
+  try {
+    const bin = path.resolve('node_modules/.bin/jsdoc');
+    const { stdout } = await exec(`${bin} -r -X src`, {
+      maxBuffer: 5 * 1024 * 1024,
+    });
+    let blocks = JSON.parse(stdout)
+      .filter((block) => !block.undocumented && block.kind !== 'package')
+      .map((block) => normalizeBlock(block));
+    blocks = groupMembers(blocks);
+    blocks = groupModules(blocks);
+    return blocks;
+  } catch (err) {
+    console.info(err);
+  }
+}
+
+function normalizeBlock(block) {
+  block.members = [];
+  block.options = [];
+  if (block.memberof === 'module') {
+    delete block.memberof;
+  }
+  if (block.kind === 'function') {
+    // JSDoc method name fails when placed before an export keyword
+    // so extract from the filename.
+    if (block.name === 'exports') {
+      block.name = block.meta.filename.replace(/\.js$/, '');
+    }
+
+    if (!block.params) {
+      block.params = [];
+    }
+    const options = getOptionsForBlock(block);
+    if (options.length) {
+      block.options = block.options.concat(options);
+    }
+    if (!block.returns) {
+      block.returns = [];
+    }
+  }
+  return block;
+}
+
+function getOptionsForBlock(block) {
+  let { params } = block;
+  const options = [];
+  block.params = params.filter((param) => {
+    if (param.name.includes('.')) {
+      return false;
+    } else {
+      const sub = params.filter((p) => {
+        return p.name.includes(`${param.name}.`);
+      });
+      if (sub.length) {
+        const type = getOptionTypeName(block, param);
+        param.type.names = [type];
+        options.push({
+          kind: 'options',
+          name: type,
+          params: sub.map((p) => {
+            return {
+              ...p,
+              name: p.name.replace(`${param.name}.`, '')
+            };
+          }),
+        });
+      }
+      return true;
+    }
+  });
+  return options;
+}
+
+function getOptionTypeName(block, param) {
+  let output = '';
+  if (block.memberof) {
+    output += block.memberof;
+  }
+  output += capitalize(block.name);
+  output += capitalize(param.name);
+  return output;
+}
+
+function groupMembers(blocks) {
+  return blocks.filter((block) => {
+    const { memberof } = block;
+    if (memberof) {
+      const parent = blocks.find((b) => {
+        return b.name === memberof;
+      });
+      parent.members.push(block);
+      block.parent = parent;
+      return false;
+    }
+    return true;
+  });
+}
+
+function groupModules(blocks) {
+  const groups = groupBy(blocks, (block) => {
+    return getModuleName(block);
+  });
+  for (let blocks of Object.values(groups)) {
+    dedupeOptionTypes(blocks);
+  }
+  return groups;
+}
+
+function dedupeOptionTypes(blocks) {
+  const allOptions = getFlatOptions(blocks);
+  for (let block of getFlatMembers(blocks)) {
+    if (block.options) {
+      for (let option of block.options) {
+        const duplicates = allOptions
+          .filter((o) => {
+            return paramsAreEqual(option.params, o.params);
+          }).sort((a, b) => {
+            return a.name.length - b.name.length;
+          });
+        if (duplicates.length) {
+          const [preferred] = duplicates;
+          if (preferred.name.length < option.name.length) {
+            block.options = block.options.filter((o) => o !== option);
+            for (let param of block.params) {
+              param.type.names = param.type.names.map((name) => {
+                if (name === option.name) {
+                  name = preferred.name;
+                }
+                return name;
+              });
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+function paramsAreEqual(params1, params2) {
+  if (params1.length === params2.length) {
+    return params1.every((p1, i) => {
+      const p2 = params2[i];
+      return p1.name === p2.name
+          && p1.optional === p2.optional
+          // TODO: use internal isEqual
+          && JSON.stringify(p1.type) === JSON.stringify(p2.type);
+    });
+  }
+  return false;
+}
+
+function getModuleName(doc) {
+  const match = doc.meta.path.match(/src\/(\w+)/);
+  switch (match[1]) {
+    case 'array':    return 'Array';
+    case 'date':     return 'Date';
+    case 'function': return 'Function';
+    case 'number':   return 'Number';
+    case 'object':   return 'Object';
+    case 'regexp':   return 'RegExp';
+    case 'string':   return 'String';
+    case 'core':     return 'Core';
+  }
+  throw new Error(`Unknown module ${match[1]}`);
+}
+
+async function generateDeclares() {
+  const modules = await getJSDocs();
+  const { Core, ...other } = modules;
+  //buildMain(Core, other);
+  buildModules(Core, other);
+  //exportChainables(other);
+}
+
+function buildModules(Core, modules) {
+  for (let [name, module] of Object.entries(modules)) {
+    buildModule(name, module, Core);
+  }
+}
+
+function buildModule(name, blocks, Core) {
+  const lower = name.toLowerCase();
+  writeFile(`${lower}/index.d.ts`, indent`
+    declare module 'sugar/${lower}' {
+
+      ${exportClasses(Core)}
+
+      ${exportFunctions(Core, 'export')}
+
+      ${exportChainable(name, blocks)}
+
+      export = ${name};
+    }
+  `);
+  writeFile(`${lower}/extended.d.ts`, exportExtendedModule(name, blocks));
+}
+
+function exportChainables(modules) {
+  const chainables = [];
+  for (let [name, blocks] of Object.entries(modules)) {
+    chainables.push(exportChainable(name, blocks));
+  }
+  return chainables.join('\n\n');
+}
+
+function exportChainable(name, blocks) {
+  return indent`
+
+    // ${name} Chainable
+
+    ${exportTypedefs(blocks)}
+
+    class ${name} extends SugarChainable {
+      ${exportFunctions(blocks, 'static')}
+      ${exportFunctions(blocks, 'instance')}
+    }
+  `;
+}
+
+function buildMain(Core, other) {
+  writeFile('index.d.ts', indent`
+    declare module 'sugar' {
+
+      ${exportOptionTypes(Core)}
+
+      ${exportClasses(Core)}
+
+      namespace Sugar {
+        ${exportConstants(Core)}
+
+        ${exportFunctions(Core, 'namespace')}
+
+        ${exportChainables(other)}
+      }
+      export = Sugar;
+    }
+  `);
+  writeFile('extended.d.ts', exportExtendedModules(other));
+}
+
+function exportExtendedModules(modules) {
+  const interfaces = [];
+  for (let [name, blocks] of Object.entries(modules)) {
+    interfaces.push(exportExtendedModule(name, blocks));
+  }
+  return interfaces.join('\n\n');
+}
+
+function exportExtendedModule(name, blocks) {
+  return indent`
+
+    ${exportTypedefs(blocks)}
+
+    ${exportOptionTypes(blocks)}
+
+    interface ${name} {
+      ${exportFunctions(blocks, 'instance')}
+    }
+  `;
+}
+
+function exportClasses(blocks) {
+  return exportBlocks(blocks.filter((b) => b.kind === 'class'));
+}
+
+function exportTypedefs(blocks) {
+  return exportBlocks(blocks.filter((b) => b.kind === 'typedef'));
+}
+
+function exportConstants(blocks) {
+  return exportBlocks(blocks.filter((b) => b.kind === 'constant'));
+}
+
+function exportOptionTypes(blocks) {
+  return exportBlocks(getFlatOptions(blocks));
+}
+
+function getFlatOptions(blocks) {
+  return getFlatMembers(blocks).flatMap((block) => {
+    return block.options;
+  });
+}
+
+function getFlatMembers(blocks) {
+  return blocks.flatMap((block) => {
+    return [block, ...getFlatMembers(block.members)];
+  });
+}
+
+function exportFunctions(blocks, type) {
+  return exportBlocks(blocks.filter((b) => b.kind === 'function'), type);
+}
+
+function indent(chunks, ...injected) {
+  let str = '', lines = [];
+  for (let [i, chunk] of Object.entries(chunks)) {
+    str += chunk;
+    str += injected[i] || '';
+  }
+  let indent = 0, lastWasEmpty = false;
+  for (let line of str.trim().split('\n')) {
+    line = line.trim();
+    if (line.match(/}/)) {
+      indent--;
+    }
+    if (line) {
+      lines.push('  '.repeat(indent) + line);
+    } else if (!lastWasEmpty) {
+      lines.push(line);
+    }
+    if (line.match(/{/)) {
+      indent++;
+    }
+    lastWasEmpty = !line;
+  }
+  return lines.join('\n');
+}
+
+function exportBlocks(blocks, type = 'static') {
+  return blocks.map((block) => {
+    if (block.kind === 'function') {
+      return exportFunction(block, type);
+    } else if (block.kind === 'class') {
+      return exportClass(block);
+    } else if (block.kind === 'options') {
+      return exportOptions(block);
+    } else if (block.kind === 'typedef') {
+      return exportTypedef(block);
+    } else if (block.kind === 'constant') {
+      return exportConstant(block);
+    } else {
+      console.info(block);
+      throw new Error('Unknown kind');
+    }
+  }).join('\n');
+}
+
+function exportTypedef(block) {
+  return `type ${block.name} = ${exportTypes(block)};`;
+}
+
+function exportConstant(block) {
+  return `const ${block.name}: ${exportTypes(block)};`;
+}
+
+function exportTypes(obj) {
+  return obj.type.names.join(' | ');
+}
+
+function exportFunction(block, type) {
+  let output = '';
+  if (type === 'static') {
+    output += 'static ';
+  } else if (type === 'export') {
+    output += 'export ';
+  }
+  output += exportFunctionName(block.name, type);
+  output += `(${exportParams(block.params, type)}): `;
+  output += `${exportReturns(block.returns)};`;
+  return output;
+}
+
+function exportOptions(block) {
+  return indent`
+    type ${block.name} = {
+      ${exportParams(block.params, 'options')}
+    }
+  `;
+}
+
+function exportClass(block) {
+  return indent`
+    class ${block.name} {
+      ${exportFunctions(block.members, 'static')}
+    }
+  `;
+}
+
+function exportFunctionName(name, type) {
+  let str = '';
+  if (type === 'namespace' || type === 'export') {
+    str += 'function ';
+  }
+  str += name;
+  return str;
+}
+
+function exportParams(params, type) {
+  if (type === 'instance') {
+    params = params.slice(1);
+  }
+  const output = params.map((param) => exportParam(param));
+  return output.join(type === 'options' ? ',\n' : ', ');
+}
+
+function exportParam(param) {
+  let output = '';
+  output += param.name;
+  if (param.optional) {
+    output += '?';
+  }
+  output += `: ${exportTypes(param)}`;
+  return output;
+}
+
+function exportReturns(returns) {
+  if (!returns.length) {
+    return 'void';
+  } else {
+    return returns.map((ret) => {
+      if (ret.description && ret.description.match(/Constructor$/)) {
+        return `typeof ${ret.description.replace(/Constructor$/, '')}`;
+      } else {
+        return `${exportTypes(ret)}`;
+      }
+    });
+  }
+}
+
+// Utils
+
+function writeFile(file, code) {
+  const outputPath = path.resolve(argv.out, file);
+  fs.outputFileSync(outputPath, code);
+}
+
+generateDeclares();

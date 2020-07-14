@@ -20,11 +20,8 @@ import { assertPositiveInteger } from '../util/assertions';
  *
  * @returns {Function}
  *
- * @method debounce
- * @static
- *
  */
-export function debounce(fn, ms = 0) {
+export default function debounce(fn, ms = 0) {
 
   assertPositiveInteger(ms);
 

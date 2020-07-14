@@ -1,5 +1,6 @@
 const path = require('path');
 const VERSION = require('./package.json').version;
+const CircularDependencyPlugin = require('circular-dependency-plugin');
 
 module.exports = {
   mode: 'development',
@@ -30,5 +31,12 @@ module.exports = {
         }
       }
     ]
-  }
+  },
+  plugins: [
+    new CircularDependencyPlugin({
+      exclude: /node_modules/,
+      failOnError: true,
+      cwd: process.cwd(),
+    }),
+  ],
 };

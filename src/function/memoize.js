@@ -1,4 +1,4 @@
-/** @module */
+import { hasOwnProperty } from '../util/helpers';
 
 /**
  * Creates a function that will memoize results for unique calls.
@@ -26,8 +26,6 @@
  *
  * @param {Function} fn - The function to memoize.
  * @param {Function} [hashFn] - The function to memoize.
- *
- * @method memoize
  * @static
  *
  */
@@ -36,7 +34,7 @@ export default function memoize(fn, hashFn) {
   hashFn = hashFn || defaultHashFn;
   return function memoized() {
     const key = hashFn.apply(this, arguments);
-    if (cache.hasOwnProperty(key)) {
+    if (hasOwnProperty(cache, key)) {
       return cache[key];
     }
     return cache[key] = fn.apply(this, arguments);

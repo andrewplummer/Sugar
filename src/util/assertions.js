@@ -1,3 +1,4 @@
+import { isArray, isFunction, isPrimitive } from './typeChecks';
 
 const MIN = 1e-6;
 const MAX = 1e21;
@@ -49,5 +50,33 @@ export function assertPositiveIntegerOrInfinity(n) {
 export function assertDecimal(n) {
   if (!Number.isFinite(n) || usesScientificNotation(n)) {
     throw new TypeError(n + ' cannot be represented as a decimal');
+  }
+}
+
+export function assertArgument(exists) {
+  if (!exists) {
+    throw new TypeError('Argument required');
+  }
+}
+
+export function assertCallable(obj) {
+  if (!isFunction(obj)) {
+    throw new TypeError('Function is not callable');
+  }
+}
+
+export function assertArray(obj) {
+  if (!isArray(obj)) {
+    throw new TypeError('Array required');
+  }
+}
+
+export function assertWritable(obj) {
+  if (isPrimitive(obj)) {
+    // If strict mode is active then primitives will throw an
+    // error when attempting to write properties. We can't be
+    // sure if strict mode is available, so pre-emptively
+    // throw an error here to ensure consistent behavior.
+    throw new TypeError('Property cannot be written');
   }
 }

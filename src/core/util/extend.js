@@ -1,5 +1,5 @@
 import NamespaceStore from './NamespaceStore';
-import { hasOwnProperty } from './helpers';
+import { hasOwnProperty } from '../../util/helpers';
 
 const nativeDescriptors = new NamespaceStore();
 

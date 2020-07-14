@@ -6,7 +6,6 @@ defineInstance('abbr', abbr);
 // TODO
 //import 'sugar/string/capitalize/define';
 import { Number } from '../../../src/core/number';
-import { String } from '../../../src/core/string';
 
 describe('Customized Module', function() {
 

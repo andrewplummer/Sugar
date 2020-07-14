@@ -1,5 +1,3 @@
-/** @module */
-
 import {
   assertPositiveInteger,
   assertPositiveIntegerOrInfinity,
@@ -20,11 +18,6 @@ const DEFAULT_OPTIONS = {
  * will receive the first arguments before it was locked, where `debounce`
  * will receive the last.
  *
- * @example
- *
- *   var fn = throttle(logHello, 50);
- *   runTenTimes(fn); // Will only log once
- *
  * @param {number} ms - The delay to throttle the function by.
  * @param {Object} [options] - Options to be passed to throttle.
  *
@@ -33,16 +26,13 @@ const DEFAULT_OPTIONS = {
  * @param {string} [options.immediate = false] - Whether to perform the initial
  *   execution immediately before waiting.
  *
- * @returns Function
+ * @example
  *
- * @method throttle
- * @static
+ *   var fn = throttle(logHello, 50);
+ *   runTenTimes(fn); // Will only log once
  *
- */
-/**
- * @memberof module:function.Function
- * @instance
- * @param {number} foo - foooooooooooooo
+ * @returns {Function}
+ *
  */
 export default function throttle(fn, ms = 0, options) {
 

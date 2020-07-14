@@ -1,5 +1,3 @@
-/** @module */
-
 import { assertFinite } from '../util/assertions';
 import { trunc, round } from './util/math';
 import { isNumber } from '../util/typeChecks';
@@ -32,9 +30,9 @@ const SAFE_PRECISION = 10;
 /**
  * Returns an abbreviated form of the number.
  *
- * @param {string} n - The number.
+ * @param {number} n - The number.
  *
- * @param {string} [precision] - When passed, will truncate
+ * @param {number} [precision] - When passed, will truncate
  * the number to the given precision. If null, the precision will
  * be 0 unless the number is between -1 and 1. A negative number
  * may also be passed.
@@ -63,8 +61,6 @@ const SAFE_PRECISION = 10;
  * abbr(.15);     // "0.15"
  * abbr(.15, 2, 'common'); // "150m"
  * abbr(1234, 2, null, deFormatter); // "1,23k"
- *
- * @method abbr
  *
  */
 export default function abbr(n, precision, units, formatter) {

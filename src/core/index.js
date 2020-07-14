@@ -1,20 +1,26 @@
-/** @module core */
-
 import globalContext from './util/globalContext';
 import NamespaceStore from './util/NamespaceStore';
 import SugarChainableBase from './util/SugarChainableBase';
 import { extendNative, restoreNative } from './util/extend';
-import { hasOwnProperty, forEachProperty, arrayIncludes } from './util/helpers';
+import { hasOwnProperty, forEachProperty, arrayIncludes } from '../util/helpers';
 import { isString, isFunction } from '../util/typeChecks';
 
 // --- Constants
 
+/** @const {string} */
 export const VERSION = 'edge';
 
 // --- Setup
 
 /**
- * createNamespace
+ * Creates a new Sugar namespace. This will be exposed on the Sugar object via
+ * `globalName`, as well as on the global namespace when extend functionality
+ * is enabled.
+ *
+ * @param {string} globalName - The name of the namespace to be created. This
+ * must match the name on the global context.
+ *
+ * @returns {Function} SugarChainableConstructor
  */
 export function createNamespace(globalName) {
 
@@ -23,29 +29,31 @@ export function createNamespace(globalName) {
   }
 
   if (Sugar[globalName]) {
-    return;
+    return Sugar[globalName];
   }
 
   /**
    * A chainable object.
+   *
    * @param {*} obj - The object to be wrapped by the chainable.
    */
   class SugarChainable extends SugarChainableBase {
 
     /**
-     * Extends Sugar defined methods onto natives.
+     * Extends Sugar defined methods onto built-in objects for this type.
+     *
+     * @param {Object} [options] - Options to control what methods are extended.
+     * @param {Array<string>} [options.include] - An array of methods to include
+     *   when extending. Cannot be used together with `options.exclude`.
+     * @param {Array<string>} [options.exclude] - An array of methods to exclude
+     *   when extending. Cannot be used together with `options.include`.
+     * @param {boolean} [options.existing] - Whether or not to override existing
+     *   methods when extending. This allows enhancements such as
+     *   `['a','b','c'].find('a')`. Default is false.
      *
      * @example
      *
      *   Sugar.Array.extend();
-     *
-     * @param {Object} [options] - Options to control what methods are extended.
-     * @param {Array<string>} [options.include] - An array of methods to include
-     *   when extending.
-     * @param {Array<string>} [options.exclude] - An array of methods to exclude
-     *   when extending.
-     * @param {boolean} [options.existing] - Whether or not to override existing methods
-     *   when extending.
      *
      */
     static extend(opt) {
@@ -54,6 +62,9 @@ export function createNamespace(globalName) {
 
     /**
      * defineStatic
+     *
+     * @param {string} name - Name of the static method to be defined.
+     * @param {Function} fn - Function to be added as a static method.
      */
     static defineStatic(...args) {
       defineWithArgs(globalName, defineStatic, args);
@@ -61,10 +72,15 @@ export function createNamespace(globalName) {
 
     /**
      * defineInstance
+     *
+     * @param {string} name - Name of the instance method to be defined.
+     * @param {Function} fn - Function to be added as a chainable instance method.
      */
     static defineInstance(...args) {
       defineWithArgs(globalName, defineInstance, args);
     }
+
+    // TODO: aliases needed???
 
     /**
      * defineStaticAlias
@@ -145,6 +161,23 @@ function wrapStaticMethodAsInstance(SugarChainable, fn) {
 
 // --- Extending
 
+/**
+ * Extends Sugar defined methods onto all built-in objects.
+ *
+ * @param {Object} [options] - Options to control what methods are extended.
+ * @param {Array<string>} [options.include] - An array of methods to include
+ *   when extending. Cannot be used together with `options.exclude`.
+ * @param {Array<string>} [options.exclude] - An array of methods to exclude
+ *   when extending. Cannot be used together with `options.include`.
+ * @param {boolean} [options.existing] - Whether or not to override existing
+ *   methods when extending. This allows enhancements such as
+ *   `['a','b','c'].find('a')`. Default is false.
+ *
+ * @example
+ *
+ *   Sugar.extend();
+ *
+ */
 export function extend(opt) {
   try {
     opt = collectExtendOptions(opt);
@@ -161,6 +194,15 @@ export function extend(opt) {
   }
 }
 
+/**
+ * Restores all built-ins to their original state, removing all Sugar defined
+ * methods.
+ *
+ * @example
+ *
+ *   Sugar.restore();
+ *
+ */
 export function restore() {
   forEachNamespace(restoreNamespace);
 }

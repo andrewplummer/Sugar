@@ -6,6 +6,7 @@ import { createNamespace } from '../core';
 const Namespace = createNamespace('Object');
 
 export const {
+  extend,
   defineStatic,
   defineInstance,
   defineStaticAlias,
