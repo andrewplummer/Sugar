@@ -8,6 +8,7 @@ v3.0.0
 - Removed ability to extend Object.prototype
 - Removed support for bower.
 - Removed `String#padLeft` and `String#padRight` in favor of native `String#padStart` and `String#padEnd`.
+- Removed `String#trimLeft` and `String#trimRight` in favor of native `String#trimStart` and `String#trimEnd`.
 - Added `Number#isNaN`, `Number#isFinite`, `Number#isInteger`, and `Number#isSafeInteger`.
 - Renamed `Number#chr` to `Number#toChar`.
 - Renamed `Number#ordinalize` to `Number#toOrdinal`.
@@ -33,8 +34,6 @@ v3.0.0
 TODO:
 
 - DOCUMENT CHANGES TO EXTEND API
-- String#padStart/String#padEnd?
-- String#trimStart/String#trimEnd?
 - Object.values / Object.entries?
 - Array#flat/Array#flatMap
 - String#matchAll - does it do what Sugar methods already do?
