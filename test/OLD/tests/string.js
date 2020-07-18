@@ -51,15 +51,11 @@ namespace('String', function () {
     raisesError(function() { run('% 23'); }, 'should raise an error for malformed urls');
   });
 
-
-
   method('escapeHTML', function() {
-
     test('<p>some text</p>', '&lt;p&gt;some text&lt;/p&gt;', '<p>some text</p>');
     test('war & peace & food', 'war &amp; peace &amp; food', 'war & peace');
     test('&amp;', '&amp;amp;', 'double escapes &amp;');
     test('&lt;span&gt;already escaped, yo&lt;/span&gt;', '&amp;lt;span&amp;gt;already escaped, yo&amp;lt;/span&amp;gt;', 'already escaped will be double-escaped');
-
   });
 
   method('unescapeHTML', function() {
@@ -134,88 +130,6 @@ namespace('String', function () {
     test(' wasabi ', ' wasabi', 'wasabi with whitespace');
     test(whiteSpace, '', 'should trim all WhiteSpace characters defined in 7.2 and Unicode "space, separator"');
     test(lineTerminators, '', 'should trim all LineTerminator characters defined in 7.3');
-  });
-
-  method('pad', function() {
-
-    raisesError(function(){ run('wasabi', 'pad', [-1]); }, '-1 raises error');
-    raisesError(function(){ run('wasabi', 'pad', [-Infinity]); }, '-Infinity raises error');
-    raisesError(function(){ run('wasabi', 'pad', [Infinity]); }, 'Infinity raises error');
-
-    test('wasabi', 'wasabi', 'no arguments default to 0');
-    test('wasabi', [undefined], 'wasabi', 'undefined defaults to 0');
-    test('wasabi', [null], 'wasabi', 'null defaults to 0');
-    test('wasabi', [NaN], 'wasabi', 'NaN defaults to 0');
-
-    test('', [false], '', 'false is 0');
-    test('', [true], ' ', 'true is 1');
-
-    test('wasabi', [0], 'wasabi', '0');
-    test('wasabi', [1], 'wasabi', '1');
-    test('wasabi', [2], 'wasabi', '2');
-    test('wasabi', [3], 'wasabi', '3');
-    test('wasabi', [4], 'wasabi', '4');
-    test('wasabi', [5], 'wasabi', '5');
-    test('wasabi', [6], 'wasabi', '6');
-    test('wasabi', [7], 'wasabi ', '7');
-    test('wasabi', [8], ' wasabi ', '8');
-    test('wasabi', [9], ' wasabi  ', '9');
-    test('wasabi', [10], '  wasabi  ', '10');
-    test('wasabi', [12], '   wasabi   ', '12');
-    test('wasabi', [20], '       wasabi       ', '12');
-
-    test('wasabi', [8, '"'], '"wasabi"', 'padding with quotes');
-    test('wasabi', [8, ''], 'wasabi', 'empty string should have no padding');
-    test('wasabi', [8, 's'], 'swasabis', 'padding with s');
-    test('wasabi', [8, 5], '5wasabi5', 'padding with a number');
-    test('wasabi', [12, '-'], '---wasabi---', 'should pad the string with 6 hyphens');
-
-  });
-
-  method('padLeft', function() {
-
-    raisesError(function() { run('wasabi', 'padLeft', [-1]); }, '-1 raises error');
-    raisesError(function() { run('wasabi', 'padLeft', [Infinity]); }, 'Infinity raises error');
-
-    test('wasabi', [0], 'wasabi', '0');
-    test('wasabi', [1], 'wasabi', '1');
-    test('wasabi', [2], 'wasabi', '2');
-    test('wasabi', [3], 'wasabi', '3');
-    test('wasabi', [4], 'wasabi', '4');
-    test('wasabi', [5], 'wasabi', '5');
-    test('wasabi', [6], 'wasabi', '6');
-    test('wasabi', [7], ' wasabi', '7');
-    test('wasabi', [8], '  wasabi', '8');
-    test('wasabi', [9], '   wasabi', '9');
-    test('wasabi', [10], '    wasabi', '10');
-    test('wasabi', [12], '      wasabi', '12');
-    test('wasabi', [20], '              wasabi', '20');
-    test('wasabi', [12, '-'], '------wasabi', '12 with hyphens');
-    test('wasabi', [12, '+'], '++++++wasabi', '12 with pluses');
-
-  });
-
-  method('padRight', function() {
-
-    raisesError(function() { run('wasabi', 'padRight', [-1]); }, '-1 raises error');
-    raisesError(function() { run('wasabi', 'padRight', [Infinity]); }, 'Infinity raises error');
-
-    test('wasabi', [0], 'wasabi', '0');
-    test('wasabi', [1], 'wasabi', '1');
-    test('wasabi', [2], 'wasabi', '2');
-    test('wasabi', [3], 'wasabi', '3');
-    test('wasabi', [4], 'wasabi', '4');
-    test('wasabi', [5], 'wasabi', '5');
-    test('wasabi', [6], 'wasabi', '6');
-    test('wasabi', [7], 'wasabi ', '7');
-    test('wasabi', [8], 'wasabi  ', '8');
-    test('wasabi', [9], 'wasabi   ', '9');
-    test('wasabi', [10], 'wasabi    ', '10');
-    test('wasabi', [12], 'wasabi      ', '12');
-    test('wasabi', [20], 'wasabi              ', '20');
-    test('wasabi', [12, '-'], 'wasabi------', '12 with hyphens');
-    test('wasabi', [12, '+'], 'wasabi++++++', '12 with pluses');
-
   });
 
   method('shift', function() {

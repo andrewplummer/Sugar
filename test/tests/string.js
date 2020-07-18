@@ -169,4 +169,65 @@ namespace('String', function() {
 
   });
 
+  describeInstance('pad', function(pad) {
+
+    it('should pad even length string to exact length', () => {
+      assertEqual(pad('wasabi', 0), 'wasabi');
+      assertEqual(pad('wasabi', 1), 'wasabi');
+      assertEqual(pad('wasabi', 2), 'wasabi');
+      assertEqual(pad('wasabi', 3), 'wasabi');
+      assertEqual(pad('wasabi', 4), 'wasabi');
+      assertEqual(pad('wasabi', 5), 'wasabi');
+      assertEqual(pad('wasabi', 6), 'wasabi');
+      assertEqual(pad('wasabi', 7), 'wasabi');
+      assertEqual(pad('wasabi', 8), ' wasabi ');
+      assertEqual(pad('wasabi', 9), ' wasabi ');
+      assertEqual(pad('wasabi', 10), '  wasabi  ');
+      assertEqual(pad('wasabi', 12), '   wasabi   ');
+      assertEqual(pad('wasabi', 20), '       wasabi       ');
+    });
+
+    it('should pad odd length string to target length + 1', () => {
+      assertEqual(pad('hello', 0), 'hello');
+      assertEqual(pad('hello', 1), 'hello');
+      assertEqual(pad('hello', 2), 'hello');
+      assertEqual(pad('hello', 3), 'hello');
+      assertEqual(pad('hello', 4), 'hello');
+      assertEqual(pad('hello', 5), 'hello');
+      assertEqual(pad('hello', 6), 'hello');
+      assertEqual(pad('hello', 7), ' hello ');
+      assertEqual(pad('hello', 8), ' hello ');
+      assertEqual(pad('hello', 9), '  hello  ');
+      assertEqual(pad('hello', 10), '  hello  ');
+      assertEqual(pad('hello', 12), '   hello   ');
+      assertEqual(pad('hello', 20), '       hello       ');
+    });
+
+    it('should pad with custom string', () => {
+      assertEqual(pad('wasabi', 8, '"'), '"wasabi"');
+      assertEqual(pad('wasabi', 8, ''), 'wasabi');
+      assertEqual(pad('wasabi', 8, 's'), 'swasabis');
+      assertEqual(pad('wasabi', 8, 5), '5wasabi5');
+      assertEqual(pad('wasabi', 12, '-'), '---wasabi---');
+      assertEqual(pad('hello', 12, '-'), '---hello---');
+    });
+
+    it('should pad with non-standard arguments', () => {
+      assertEqual(pad('wasabi'), 'wasabi');
+      assertEqual(pad('wasabi', undefined), 'wasabi');
+      assertEqual(pad('wasabi', null), 'wasabi');
+      assertEqual(pad('wasabi', NaN), 'wasabi');
+
+      assertEqual(pad('', false), '');
+      assertEqual(pad('', true), '');
+    });
+
+    it('should not throw equivalent errors to padStart/padEnd', () => {
+      assertNoError(function(){ pad('wasabi', -1); });
+      assertNoError(function(){ pad('wasabi', -Infinity); });
+      assertError(function(){ pad('wasabi',  Infinity); });
+    });
+
+  });
+
 });

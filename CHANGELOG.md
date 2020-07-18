@@ -9,6 +9,8 @@ v3.0.0
 - Removed support for bower.
 - Removed `String#padLeft` and `String#padRight` in favor of native `String#padStart` and `String#padEnd`.
 - Removed `String#trimLeft` and `String#trimRight` in favor of native `String#trimStart` and `String#trimEnd`.
+- `String#pad` will now place equal padding on either side, reducing the target length by 1 for odd lengths.
+- `String#pad` now internally uses `String#padStart` and `String#padEnd`, and will throw the same input errors.
 - Added `Number#isNaN`, `Number#isFinite`, `Number#isInteger`, and `Number#isSafeInteger`.
 - Renamed `Number#chr` to `Number#toChar`.
 - Renamed `Number#ordinalize` to `Number#toOrdinal`.
