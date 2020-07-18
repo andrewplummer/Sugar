@@ -23,9 +23,12 @@ v3.0.0
 - Changed `Number#times` to collects all return values including undefined.
 - Changed `Number#times` to error on any input that is not a positive finite integer.
 - Changed `Number#format` to no longer support thousands or decimal separtors. Use Intl for this.
-- Removed `Number#sin`, `Number#cos`, etc in favor of native Math.
 - Removed `RegExp#getFlags`, `RegExp#setFlags`, `RegExp#addFlags` and `RegExp#removeFlags`.
 - Removed `Function#memoize` ability to deeply serialize all arguments.
+- Removed Math aliases `Number#sin/asin/cos/acos/tan/atan/exp` in favor of directly using `Math`.
+  `Number#round/floor/ceil/abs/sqrt/pow` aliases are retained.
+- Added `Number#trunc` Math alias.
+
 
 TODO:
 

@@ -4,7 +4,7 @@ namespace('Number', function() {
 
   describeStatic('random', function(random) {
 
-    it('should generate random numbers', function() {
+    it('should generate random integers', function() {
       assertOneOf(random(), [0,1]);
       assertOneOf(random(10), [0,1,2,3,4,5,6,7,8,9,10]);
       assertOneOf(random(25, 30), [25,26,27,28,29,30]);
@@ -220,15 +220,6 @@ namespace('Number', function() {
       assertEqual(log(32, 2), 5);
       assertEqual(log(16, 2), 4);
       assertEqual(log(Math.E), 1);
-    });
-
-  });
-
-  describeInstance('exp', function(exp) {
-
-    it('should get exp', function() {
-      assertEqual(exp(0), 1);
-      assertEqual(exp(1), Math.exp(1));
     });
 
   });

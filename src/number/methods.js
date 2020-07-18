@@ -3,7 +3,6 @@ export { default as abs } from './abs';
 export { default as ceil } from './ceil';
 export { default as clamp } from './clamp';
 export { default as downto } from './downto';
-export { default as exp } from './exp';
 export { default as floor } from './floor';
 export { default as format } from './format';
 export { default as isEven } from './isEven';

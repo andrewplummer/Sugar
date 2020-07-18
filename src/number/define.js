@@ -9,7 +9,6 @@ defineInstance('abs', methods.abs);
 defineInstance('ceil', methods.ceil);
 defineInstance('clamp', methods.clamp);
 defineInstance('downto', methods.downto);
-defineInstance('exp', methods.exp);
 defineInstance('floor', methods.floor);
 defineInstance('format', methods.format);
 defineInstance('isEven', methods.isEven);
