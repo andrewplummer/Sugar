@@ -230,4 +230,170 @@ namespace('String', function() {
 
   });
 
+  describeInstance('truncate', function(truncate) {
+    var str = 'Gotta be an entire sentence.';
+
+    it('should truncate to a specific length', () => {
+      assertEqual(truncate(str, 29), 'Gotta be an entire sentence.');
+      assertEqual(truncate(str, 28), 'Gotta be an entire sentence.');
+      assertEqual(truncate(str, 21), 'Gotta be an entire se...');
+      assertEqual(truncate(str, 20), 'Gotta be an entire s...');
+      assertEqual(truncate(str, 14), 'Gotta be an en...');
+      assertEqual(truncate(str, 13), 'Gotta be an e...');
+      assertEqual(truncate(str, 11), 'Gotta be an...');
+      assertEqual(truncate(str, 10), 'Gotta be a...');
+      assertEqual(truncate(str, 4), 'Gott...');
+      assertEqual(truncate(str, 3), 'Got...');
+      assertEqual(truncate(str, 2), 'Go...');
+      assertEqual(truncate(str, 1), 'G...');
+      assertEqual(truncate(str, 0), '...');
+    });
+
+    it('should truncate from the left', () => {
+      assertEqual(truncate(str, 21, 'left'), '...e an entire sentence.');
+      assertEqual(truncate(str, 11, 'left'), '...e sentence.');
+      assertEqual(truncate(str, 9, 'left'), '...sentence.');
+      assertEqual(truncate(str, 4, 'left'), '...nce.');
+      assertEqual(truncate(str, 3, 'left'), '...ce.');
+      assertEqual(truncate(str, 2, 'left'), '...e.');
+      assertEqual(truncate(str, 0, 'left'), '...');
+      assertEqual(truncate(str, -100, 'left'), '...');
+    });
+
+    it('should should truncate from the middle', () => {
+      assertEqual(truncate(str, 21, 'middle'), 'Gotta be an... sentence.');
+      assertEqual(truncate(str, 11, 'middle'), 'Gotta ...ence.');
+      assertEqual(truncate(str, 4, 'middle'), 'Go...e.');
+      assertEqual(truncate(str, 3, 'middle'), 'Go....');
+      assertEqual(truncate(str, 2, 'middle'), 'G....');
+      assertEqual(truncate(str, 0, 'middle'), '...');
+      assertEqual(truncate(str, -100, 'middle'), '...');
+    });
+
+    it('should allow a custom ellipsis', () => {
+      assertEqual(truncate('string to truncate', 10, 'right', '|'), 'string to |');
+      assertEqual(truncate('string to truncate', 10, 'right', 0), 'string to 0');
+      assertEqual(truncate(str, 28, 'left', '>>> '), 'Gotta be an entire sentence.');
+      assertEqual(truncate(str, 23, 'left', '>>> '), '>>>  be an entire sentence.');
+      assertEqual(truncate(str, 5, 'left', '>>> '), '>>> ence.');
+      assertEqual(truncate(str, 4, 'left', '>>> '), '>>> nce.');
+      assertEqual(truncate(str, 3, 'middle', '-'), 'Go-.');
+      assertEqual(truncate('123456', 2, 'left'), '...56');
+      assertEqual(truncate('123456', 2, 'middle'), '1...6');
+      assertEqual(truncate('123456', 2), '12...');
+    });
+
+    it('should handle irregular input', () => {
+      assertEqual(truncate(500, 2), '50...');
+      assertEqual(truncate('short sentence', -1), '...');
+      assertEqual(truncate('short sentence', 8, 'bad input'), 'short se...');
+      assertEqual(truncate('short sentence', 8, 'right', 8), 'short se8');
+      assertEqual(truncate('short sentence', 8, 'right', ''), 'short se');
+      assertEqual(truncate('short sentence', 8, 'right', null), 'short senull');
+      assertEqual(truncate('short sentence', 8, 'right', undefined), 'short se...');
+      assertError(function(){ truncate('word', 'bad input'); });
+    });
+
+  });
+
+  describeInstance('truncateOnWord', function(truncateOnWord) {
+    var str = 'Gotta be an entire sentence.';
+
+    it('should truncate to a specific length', () => {
+      assertEqual(truncateOnWord(str, 100), 'Gotta be an entire sentence.');
+      assertEqual(truncateOnWord(str, 28), 'Gotta be an entire sentence.');
+      assertEqual(truncateOnWord(str, 27), 'Gotta be an entire...');
+      assertEqual(truncateOnWord(str, 21), 'Gotta be an entire...');
+      assertEqual(truncateOnWord(str, 20), 'Gotta be an entire...');
+      assertEqual(truncateOnWord(str, 19), 'Gotta be an entire...');
+      assertEqual(truncateOnWord(str, 18), 'Gotta be an entire...');
+      assertEqual(truncateOnWord(str, 17), 'Gotta be an...');
+      assertEqual(truncateOnWord(str, 14), 'Gotta be an...');
+      assertEqual(truncateOnWord(str, 13), 'Gotta be an...');
+      assertEqual(truncateOnWord(str, 11), 'Gotta be an...');
+      assertEqual(truncateOnWord(str, 10), 'Gotta be...');
+      assertEqual(truncateOnWord(str,  4), 'Gott...');
+      assertEqual(truncateOnWord(str,  3), 'Got...');
+      assertEqual(truncateOnWord(str,  2), 'Go...');
+      assertEqual(truncateOnWord(str,  1), 'G...');
+      assertEqual(truncateOnWord(str,  0), '...');
+    });
+
+    it('should truncate from left', () => {
+      assertEqual(truncateOnWord(str, 21, 'left'), '...an entire sentence.');
+      assertEqual(truncateOnWord(str, 20, 'left'), '...an entire sentence.');
+      assertEqual(truncateOnWord(str, 19, 'left'), '...an entire sentence.');
+      assertEqual(truncateOnWord(str, 18, 'left'), '...entire sentence.');
+      assertEqual(truncateOnWord(str, 17, 'left'), '...entire sentence.');
+      assertEqual(truncateOnWord(str, 14, 'left'), '...sentence.');
+      assertEqual(truncateOnWord(str, 13, 'left'), '...sentence.');
+      assertEqual(truncateOnWord(str, 11, 'left'), '...sentence.');
+      assertEqual(truncateOnWord(str, 10, 'left'), '...sentence.');
+      assertEqual(truncateOnWord(str,  9, 'left'), '...sentence.');
+      assertEqual(truncateOnWord(str,  8, 'left'), '...entence.');
+      assertEqual(truncateOnWord(str,  4, 'left'), '...nce.');
+      assertEqual(truncateOnWord(str,  3, 'left'), '...ce.');
+      assertEqual(truncateOnWord(str,  2, 'left'), '...e.');
+      assertEqual(truncateOnWord(str,  1, 'left'), '....');
+      assertEqual(truncateOnWord(str,  0, 'left'), '...');
+    });
+
+    it('should truncate from the middle', () => {
+      assertEqual(truncateOnWord(str, 21, 'middle'), 'Gotta be...sentence.');
+      assertEqual(truncateOnWord(str, 20, 'middle'), 'Gotta be...sentence.');
+      assertEqual(truncateOnWord(str, 19, 'middle'), 'Gotta be...sentence.');
+      assertEqual(truncateOnWord(str, 18, 'middle'), 'Gotta be...sentence.');
+      assertEqual(truncateOnWord(str, 17, 'middle'), 'Gotta be...entence.');
+      assertEqual(truncateOnWord(str, 14, 'middle'), 'Gotta...ntence.');
+      assertEqual(truncateOnWord(str, 13, 'middle'), 'Gotta...tence.');
+      assertEqual(truncateOnWord(str, 11, 'middle'), 'Gotta...ence.');
+      assertEqual(truncateOnWord(str, 10, 'middle'), 'Gotta...ence.');
+      assertEqual(truncateOnWord(str, 9, 'middle'), 'Gott...nce.');
+      assertEqual(truncateOnWord(str, 8, 'middle'), 'Gott...nce.');
+      assertEqual(truncateOnWord(str, 4, 'middle'), 'Go...e.');
+      assertEqual(truncateOnWord(str, 3, 'middle'), 'G....');
+      assertEqual(truncateOnWord(str, 2, 'middle'), 'G....');
+      assertEqual(truncateOnWord(str, 1, 'middle'), '...');
+      assertEqual(truncateOnWord(str, 0, 'middle'), '...');
+    });
+
+    it('should should break on non-space punctuation', () => {
+      assertEqual(truncateOnWord('a,short,string', 8), 'a,short...');
+      assertEqual(truncateOnWord('a|short|string', 8), 'a|short...');
+      assertEqual(truncateOnWord('a?short?string', 8), 'a?short...');
+      assertEqual(truncateOnWord('a]short]string', 8), 'a]short...');
+      assertEqual(truncateOnWord('a¿short¿string', 8), 'a¿short...');
+    });
+
+    it('should should break on non-standard whitespace', () => {
+      assertEqual(truncateOnWord('a　short　string', 8), 'a　short...');
+    });
+
+    it('should handle special cases', () => {
+      assertEqual(truncateOnWord('GOTTA BE AN ENTIRE SENTENCE.', 21), 'GOTTA BE AN ENTIRE...');
+      assertEqual(truncateOnWord('gotta. be. an. entire. sentence.', 17), 'gotta. be. an....');
+    });
+
+    it('should handle non-latin scripts', () => {
+      assertEqual(truncateOnWord('한국어 도 이렇게 할 수 있어요?', 9), '한국어 도 이렇게...');
+      assertEqual(truncateOnWord('文字列　の　全角　スペース', 12), '文字列　の　全角...');
+    });
+
+    it('should handle irregular input', () => {
+      assertEqual(truncateOnWord(500, 2), '50...');
+      assertEqual(truncateOnWord('short sentence', -1), '...');
+      assertEqual(truncateOnWord('short sentence', 8, 'bad input'), 'short...');
+      assertEqual(truncateOnWord('short sentence', 8, 'right', 8), 'short8');
+      assertEqual(truncateOnWord('short sentence', 8, 'right', ''), 'short');
+      assertEqual(truncateOnWord('short sentence', 8, 'right', null), 'shortnull');
+      assertEqual(truncateOnWord('short sentence', 8, 'right', undefined), 'short...');
+      assertError(function(){ truncate('word', '8'); });
+    });
+
+    it('should handle issues', () => {
+      // #311
+      assertEqual(truncateOnWord('Alpha Beta Gamma Delta Epsilon', 20, 'middle', ''), 'Alpha BetaEpsilon');
+    });
+
+  });
 });

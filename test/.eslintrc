@@ -9,6 +9,7 @@
   },
   "globals": {
     it: true,
+    fit: true,
     add: true,
     mult: true,
     noop: true,
