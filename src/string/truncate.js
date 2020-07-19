@@ -1,5 +1,5 @@
 import { assertInteger } from '../util/assertions';
-import { isString } from '../util/typeChecks';
+import coerce from './util/coerce';
 
 /**
  * Truncates the string to a specific length.
@@ -20,9 +20,7 @@ import { isString } from '../util/typeChecks';
  **/
 export default function truncate(str, length, from = 'right', ellipsis = '...') {
   assertInteger(length);
-  if (!isString(str)) {
-    str = String(str);
-  }
+  str = coerce(str);
   length = Math.max(0, length);
   if (str.length <= length) {
     return str;
@@ -31,10 +29,11 @@ export default function truncate(str, length, from = 'right', ellipsis = '...') 
     case 'left':
       str = str.slice(str.length - length);
       return ellipsis + str;
-    case 'middle':
+    case 'middle': {
       const str1 = str.slice(0, Math.ceil(length / 2));
       const str2 = str.slice(str.length - Math.floor(length / 2));
       return str1 + ellipsis + str2;
+    }
     default:
       return str.slice(0, length) + ellipsis;
   }

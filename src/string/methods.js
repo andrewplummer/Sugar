@@ -1,5 +1,11 @@
 export { default as range } from './range';
+export { default as camelize } from './camelize';
 export { default as capitalize } from './capitalize';
+export { default as dasherize } from './dasherize';
 export { default as pad } from './pad';
+export { default as parameterize } from './parameterize';
+export { default as spacify } from './spacify';
+export { default as titleize } from './titleize';
 export { default as truncate } from './truncate';
 export { default as truncateOnWord } from './truncateOnWord';
+export { default as underscore } from './underscore';

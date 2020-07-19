@@ -1,5 +1,5 @@
 import { assertInteger } from '../util/assertions';
-import { isString } from '../util/typeChecks';
+import coerce from './util/coerce';
 
 // Split on whitespace as well as sequences of known punctuation blocks.
 const SEPARATOR_REG = /[\s\u0021-\u002F\u003A-\u0040\u005B-\u0060\u007B-\u007E\u00A1-\u00BF\u2000-\u206F\u2E00-\u2E7F\u3000-\u303F]/;
@@ -23,9 +23,7 @@ const SEPARATOR_REG = /[\s\u0021-\u002F\u003A-\u0040\u005B-\u0060\u007B-\u007E\u
  **/
 export default function truncateOnWord(str, length, from = 'right', ellipsis = '...') {
   assertInteger(length);
-  if (!isString(str)) {
-    str = String(str);
-  }
+  str = coerce(str);
   if (str.length <= length) {
     return str;
   }

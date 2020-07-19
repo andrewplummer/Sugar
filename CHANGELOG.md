@@ -31,6 +31,7 @@ v3.0.0
 - Removed Math aliases `Number#sin/asin/cos/acos/tan/atan/exp` in favor of directly using `Math`.
   `Number#round/floor/ceil/abs/sqrt/pow` aliases are retained.
 - Added `Number#trunc` Math alias.
+- Removed Inflections modules. Affected methods `String#camelize/underscore/spacify/titleize`.
 
 
 TODO:
