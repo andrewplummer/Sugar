@@ -17,6 +17,7 @@ defineInstance('parameterize', methods.parameterize);
 defineInstance('spacify', methods.spacify);
 defineInstance('titleize', methods.titleize);
 defineInstance('to', methods.to);
+defineInstance('toNumber', methods.toNumber);
 defineInstance('truncate', methods.truncate);
 defineInstance('truncateOnWord', methods.truncateOnWord);
 defineInstance('underscore', methods.underscore);

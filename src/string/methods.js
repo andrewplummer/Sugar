@@ -14,6 +14,7 @@ export { default as range } from './range';
 export { default as spacify } from './spacify';
 export { default as titleize } from './titleize';
 export { default as to } from './to';
+export { default as toNumber } from './toNumber';
 export { default as truncate } from './truncate';
 export { default as truncateOnWord } from './truncateOnWord';
 export { default as underscore } from './underscore';

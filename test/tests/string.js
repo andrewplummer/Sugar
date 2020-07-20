@@ -796,4 +796,70 @@ namespace('String', function() {
     });
   });
 
+  describeInstance('toNumber', function(toNumber) {
+
+    it('should handle integers', function() {
+      assertEqual(toNumber('10'), 10);
+      assertEqual(toNumber('10,000'), 10000);
+      assertEqual(toNumber('5,322,144,444'), 5322144444);
+      assertEqual(toNumber('22.5'), 22.5);
+    });
+
+    it('should handle decimals', () => {
+      assertEqual(toNumber('10.532'), 10.532);
+      assertEqual(toNumber('10.848'), 10.848);
+      assertEqual(toNumber('95.25%'), 95.25);
+      assertEqual(toNumber('77.3'), 77.3);
+      assertEqual(toNumber('1.45kg'), 1.45);
+      assertEqual(toNumber('.3'), 0.3);
+    });
+
+    it('should handle trailing characters', () => {
+      assertEqual(toNumber('4em'), 4);
+      assertEqual(toNumber('10px'), 10);
+      assertEqual(toNumber('1234blue'), 1234);
+    });
+
+    it('should not convert octals', () => {
+      assertEqual(toNumber('010'), 10);
+      assertEqual(toNumber('0908'), 908);
+      assertEqual(toNumber('077.3'), 77.3);
+    });
+
+    it('should throw away redundant decimals', () => {
+      assertEqual(toNumber('22.34.5'), 22.34);
+    });
+
+    it('should handle hex strings', () => {
+      assertEqual(toNumber('0xFF'), 255);
+    });
+
+    it('should handle a different base', () => {
+      assertEqual(toNumber('FF', 16), 255);
+    });
+
+    it('should handle scientific notation', () => {
+      assertEqual(toNumber('1e6'), 1000000);
+      assertEqual(toNumber('0.1e6'), 100000);
+    });
+
+    it('should handle full-width characters', function() {
+      assertEqual(toNumber('２００'), 200);
+      assertEqual(toNumber('５．２３４５'), 5.2345);
+    });
+
+    it('should handle irregular input', function() {
+      assertEqual(toNumber(8), 8);
+      assertNaN(toNumber(null));
+      assertNaN(toNumber(NaN));
+      assertNaN(toNumber(''));
+      assertNaN(toNumber(' \r\n\t'));
+      assertEqual(toNumber('0xA'), 10);
+      assertEqual(toNumber('0x77.3'), 0);
+      assertNaN(toNumber('blue'), true);
+      assertNaN(toNumber('........'), true);
+    });
+
+  });
+
 });
