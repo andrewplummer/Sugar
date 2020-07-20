@@ -32,6 +32,7 @@ v3.0.0
   `Number#round/floor/ceil/abs/sqrt/pow` aliases are retained.
 - Added `Number#trunc` Math alias.
 - Removed Inflections modules. Affected methods `String#camelize/underscore/spacify/titleize`.
+- Removed `String#format` in favor of ES6 template literals.
 
 
 TODO:
