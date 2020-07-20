@@ -1,6 +1,7 @@
 v3.0.0
 ======
 
+- All polyfill support now dropped.
 - Added defineAlias to core.
 - Cannot instantiate chainable without new keyword anymore (ES6).
 - `Sugar()` alias is no longer supported. Use `Sugar.extend()` instead.
