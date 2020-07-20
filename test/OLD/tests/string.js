@@ -444,24 +444,6 @@ namespace('String', function () {
   });
 
 
-  method('compact', function() {
-    var largeJapaneseSpaces = '　　　日本語　　　　　の　　　　　スペース　　　　　も　　';
-    var compactedWithoutJapaneseSpaces = '日本語　の　スペース　も';
-    var compactedWithTrailingJapaneseSpaces = '　日本語　の　スペース　も　';
-
-    test('the rain in     spain    falls mainly   on     the        plain', 'the rain in spain falls mainly on the plain', 'basic');
-    test('\n\n\nthe \n\n\nrain in     spain    falls mainly   on     the        plain\n\n', 'the rain in spain falls mainly on the plain', 'with newlines');
-    test('\n\n\n\n           \t\t\t\t          \n\n      \t', '', 'with newlines and tabs');
-
-    test('moo\tmoo', 'moo moo', 'moo moo tab');
-    test('moo \tmoo', 'moo moo', 'moo moo space tab');
-    test('moo \t moo', 'moo moo', 'moo moo space tab space');
-
-    test('', '', 'blank');
-    test('run   tell    dat', 'run tell dat', 'with extra whitespace');
-  });
-
-
   method('stripTags', function() {
     var stripped, html, allStripped, malformed;
 

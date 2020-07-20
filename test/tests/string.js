@@ -568,7 +568,7 @@ namespace('String', function() {
 
   describeInstance('at', function(at) {
 
-    it('should find basic character at positition', () => {
+    it('should find basic character at positition', function() {
       assertEqual(at('foop', 0), 'f');
       assertEqual(at('foop', 1), 'o');
       assertEqual(at('foop', 2), 'o');
@@ -583,7 +583,7 @@ namespace('String', function() {
       assertEqual(at('foop', -1224), '');
     });
 
-    it('should allow looping from the start', () => {
+    it('should allow looping from the start', function() {
       assertEqual(at('foop', 0, true), 'f');
       assertEqual(at('foop', 1, true), 'o');
       assertEqual(at('foop', 2, true), 'o');
@@ -599,13 +599,13 @@ namespace('String', function() {
       assertEqual(at('foop', -1224, true), 'f');
     });
 
-    it('should accept an array', () => {
+    it('should accept an array', function() {
       assertArrayEqual(at('wowzers', [0,2,4,6,18]), ['w','w','e','s','']);
       assertArrayEqual(at('wowzers', [0,2,4,6], true), ['w','w','e','s']);
       assertArrayEqual(at('wowzers', [0,2,4,6,18], true), ['w','w','e','s','e']);
     });
 
-    it('should handle irregular input', () => {
+    it('should handle irregular input', function() {
       assertEqual(at('', 3), '');
       assertEqual(at(null, 0), 'n');
       assertEqual(at(8, 0), '8');
@@ -620,7 +620,7 @@ namespace('String', function() {
 
   describeInstance('first', function(first) {
 
-    it('should handle basic input', () => {
+    it('should handle basic input', function() {
       assertEqual(first('quack'), 'q');
       assertEqual(first('quack', 2), 'qu');
       assertEqual(first('quack', 3), 'qua');
@@ -632,7 +632,7 @@ namespace('String', function() {
       assertEqual(first('quack', -10), '');
     });
 
-    it('should handle irregular input', () => {
+    it('should handle irregular input', function() {
       assertEqual(first('', 3), '');
       assertEqual(first(null, 2), 'nu');
       assertEqual(first(800, 2), '80');
@@ -647,7 +647,7 @@ namespace('String', function() {
 
   describeInstance('last', function(last) {
 
-    it('should handle basic input', () => {
+    it('should handle basic input', function() {
       assertEqual(last('quack'), 'k');
       assertEqual(last('quack', 2), 'ck');
       assertEqual(last('quack', 3), 'ack');
@@ -658,7 +658,7 @@ namespace('String', function() {
       assertEqual(last('quack', -10), '');
     });
 
-    it('should handle irregular input', () => {
+    it('should handle irregular input', function() {
       assertEqual(last('', 3), '');
       assertEqual(last(null, 2), 'll');
       assertEqual(last(800, 2), '00');
@@ -672,7 +672,7 @@ namespace('String', function() {
 
   describeInstance('from', function(from) {
 
-    it('should handle basic input', () => {
+    it('should handle basic input', function() {
       assertEqual(from('quack'), 'quack');
       assertEqual(from('quack', 0), 'quack');
       assertEqual(from('quack', 2), 'ack');
@@ -690,7 +690,7 @@ namespace('String', function() {
       assertEqual(from('quack', 'quack'), 'quack');
     });
 
-    it('should handle irregular input', () => {
+    it('should handle irregular input', function() {
       assertEqual(from('', 3), '');
       assertEqual(from(null, 2), 'll');
       assertEqual(from(800, 2), '0');
@@ -703,7 +703,7 @@ namespace('String', function() {
 
   describeInstance('to', function(to) {
 
-    it('should handle basic input', () => {
+    it('should handle basic input', function() {
       assertEqual(to('quack'), 'quack');
       assertEqual(to('quack', 0), '');
       assertEqual(to('quack', 1), 'q');
@@ -722,7 +722,7 @@ namespace('String', function() {
       assertEqual(to('quack', 'quack'), '');
     });
 
-    it('should handle irregular input', () => {
+    it('should handle irregular input', function() {
       assertEqual(to('', 3), '');
       assertEqual(to(null, 2), 'nu');
       assertEqual(to(800, 2), '80');
@@ -735,7 +735,7 @@ namespace('String', function() {
 
   describeInstance('isEmpty', function(isEmpty) {
 
-    it('should handle basic input', () => {
+    it('should handle basic input', function() {
       assertEqual(isEmpty(''), true);
       assertEqual(isEmpty('0'), false);
       assertEqual(isEmpty(' '), false);
@@ -744,7 +744,7 @@ namespace('String', function() {
       assertEqual(isEmpty('\n'), false);
     });
 
-    it('should handle irregular input', () => {
+    it('should handle irregular input', function() {
       assertEqual(isEmpty(null), false);
       assertEqual(isEmpty(undefined), false);
       assertEqual(isEmpty(8), false);
@@ -754,7 +754,7 @@ namespace('String', function() {
 
   describeInstance('isBlank', function(isBlank) {
 
-    it('should handle basic input', () => {
+    it('should handle basic input', function() {
       assertEqual(isBlank(''), true);
       assertEqual(isBlank('0'), false);
       assertEqual(isBlank('            '), true);
@@ -764,12 +764,36 @@ namespace('String', function() {
       assertEqual(isBlank('mayonnaise'), false);
     });
 
-    it('should handle irregular input', () => {
+    it('should handle irregular input', function() {
       assertEqual(isBlank(null), false);
       assertEqual(isBlank(undefined), false);
       assertEqual(isBlank(8), false);
     });
 
+  });
+
+  describeInstance('compact', function(compact) {
+
+    it('should handle basic input', function() {
+      assertEqual(compact('the rain in     spain    falls mainly   on     the        plain'), 'the rain in spain falls mainly on the plain');
+      assertEqual(compact('\n\n\nthe \n\n\nrain in     spain    falls mainly   on     the        plain\n\n'), 'the rain in spain falls mainly on the plain');
+      assertEqual(compact('\n\n\n\n           \t\t\t\t          \n\n      \t'), '');
+      assertEqual(compact('moo\tmoo'), 'moo moo', 'moo moo tab');
+      assertEqual(compact('moo \tmoo'), 'moo moo', 'moo moo space tab');
+      assertEqual(compact('moo \t moo'), 'moo moo', 'moo moo space tab space');
+    });
+
+    it('should handle full-width spaces', function() {
+      assertEqual(compact('　　　全角　　　スペース　　　　も　'), '全角　スペース　も');
+      assertEqual(compact('全角　スペース　も'), '全角　スペース　も');
+      assertEqual(compact('　全角　スペース　も　'), '全角　スペース　も');
+    });
+
+    it('should handle irregular input', function() {
+      assertEqual(compact(null), 'null');
+      assertEqual(compact(undefined), 'undefined');
+      assertEqual(compact(800), '800');
+    });
   });
 
 });

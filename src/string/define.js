@@ -5,6 +5,7 @@ defineStatic('range', methods.range);
 defineInstance('at', methods.at);
 defineInstance('camelize', methods.camelize);
 defineInstance('capitalize', methods.capitalize);
+defineInstance('compact', methods.compact);
 defineInstance('dasherize', methods.dasherize);
 defineInstance('first', methods.first);
 defineInstance('from', methods.from);

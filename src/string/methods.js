@@ -1,6 +1,7 @@
 export { default as at } from './at';
 export { default as camelize } from './camelize';
 export { default as capitalize } from './capitalize';
+export { default as compact } from './compact';
 export { default as dasherize } from './dasherize';
 export { default as first } from './first';
 export { default as from } from './from';
