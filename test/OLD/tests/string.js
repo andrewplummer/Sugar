@@ -323,26 +323,6 @@ namespace('String', function () {
     test('', [], 'empty string');
   });
 
-  method('isEmpty', function() {
-    test('', true);
-    test('0', false);
-    test(' ', false);
-    test('　', false);
-    test('\t', false);
-    test('\n', false);
-  });
-
-  method('isBlank', function() {
-
-    test('', true, 'blank string');
-    test('0', false, '0');
-    test('            ', true, 'successive blanks');
-    test('\n', true, 'new line');
-    test('\t\t\t\t', true, 'tabs');
-    test('日本語では　「マス」　というの知ってた？', false, 'japanese');
-    test('mayonnaise', false, 'mayonnaise');
-  });
-
   method('insert', function() {
     test('schfifty', [' five'], 'schfifty five', 'schfifty five');
     test('dopamine', ['e', 3], 'dopeamine', 'dopeamine');

@@ -4,6 +4,8 @@ export { default as capitalize } from './capitalize';
 export { default as dasherize } from './dasherize';
 export { default as first } from './first';
 export { default as from } from './from';
+export { default as isBlank } from './isBlank';
+export { default as isEmpty } from './isEmpty';
 export { default as last } from './last';
 export { default as pad } from './pad';
 export { default as parameterize } from './parameterize';

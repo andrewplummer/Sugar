@@ -733,4 +733,43 @@ namespace('String', function() {
     });
   });
 
+  describeInstance('isEmpty', function(isEmpty) {
+
+    it('should handle basic input', () => {
+      assertEqual(isEmpty(''), true);
+      assertEqual(isEmpty('0'), false);
+      assertEqual(isEmpty(' '), false);
+      assertEqual(isEmpty('　'), false);
+      assertEqual(isEmpty('\t'), false);
+      assertEqual(isEmpty('\n'), false);
+    });
+
+    it('should handle irregular input', () => {
+      assertEqual(isEmpty(null), false);
+      assertEqual(isEmpty(undefined), false);
+      assertEqual(isEmpty(8), false);
+    });
+
+  });
+
+  describeInstance('isBlank', function(isBlank) {
+
+    it('should handle basic input', () => {
+      assertEqual(isBlank(''), true);
+      assertEqual(isBlank('0'), false);
+      assertEqual(isBlank('            '), true);
+      assertEqual(isBlank('\n'), true);
+      assertEqual(isBlank('\t\t\t\t'), true);
+      assertEqual(isBlank('日本語では　「マス」'), false);
+      assertEqual(isBlank('mayonnaise'), false);
+    });
+
+    it('should handle irregular input', () => {
+      assertEqual(isBlank(null), false);
+      assertEqual(isBlank(undefined), false);
+      assertEqual(isBlank(8), false);
+    });
+
+  });
+
 });
