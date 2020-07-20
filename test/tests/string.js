@@ -455,8 +455,8 @@ namespace('String', function() {
   describeInstance('dasherize', function(dasherize) {
 
     it('should handle basic input', function() {
-      assertEqual(dasherize('hop_on_pop'), 'hop-on-pop', 'underscores');
-      assertEqual(dasherize('HOP_ON_POP'), 'hop-on-pop', 'capitals and underscores');
+      assertEqual(dasherize('hop_on_pop'), 'hop-on-pop');
+      assertEqual(dasherize('HOP_ON_POP'), 'hop-on-pop');
       assertEqual(dasherize('hopOnPop'), 'hop-on-pop');
       assertEqual(dasherize('watch me fail'), 'watch-me-fail');
       assertEqual(dasherize('watch me fail_sad_face'), 'watch-me-fail-sad-face');
@@ -478,25 +478,25 @@ namespace('String', function() {
   describeInstance('titleize', function(titleize) {
 
     it('should handle basic input', function() {
-        assertEqual(titleize('active_record'), 'Active Record');
-        assertEqual(titleize('ActiveRecord'), 'Active Record');
-        assertEqual(titleize('action web service'), 'Action Web Service');
-        assertEqual(titleize('Action Web Service'), 'Action Web Service');
-        assertEqual(titleize('Action web service'), 'Action Web Service');
-        assertEqual(titleize('actionwebservice'), 'Actionwebservice');
-        assertEqual(titleize('Actionwebservice'), 'Actionwebservice');
-        assertEqual(titleize("david's code"), "David's Code");
-        assertEqual(titleize("David's code"), "David's Code");
-        assertEqual(titleize("david's Code"), "David's Code");
-        assertEqual(titleize('man from the boondocks'), 'Man from the Boondocks');
-        assertEqual(titleize('x-men: the last stand'), 'X Men: The Last Stand');
-        assertEqual(titleize('i am a sentence. and so am i.'), 'I Am a Sentence. And so Am I.');
-        assertEqual(titleize('hello! and goodbye!'), 'Hello! And Goodbye!');
-        assertEqual(titleize('hello, and goodbye'), 'Hello, and Goodbye');
-        assertEqual(titleize('hello; and goodbye'), 'Hello; And Goodbye');
-        assertEqual(titleize("about 'you' and 'me'"), "About 'You' and 'Me'");
-        assertEqual(titleize('TheManWithoutAPast'), 'The Man Without a Past');
-        assertEqual(titleize('raiders_of_the_lost_ark'), 'Raiders of the Lost Ark');
+      assertEqual(titleize('active_record'), 'Active Record');
+      assertEqual(titleize('ActiveRecord'), 'Active Record');
+      assertEqual(titleize('action web service'), 'Action Web Service');
+      assertEqual(titleize('Action Web Service'), 'Action Web Service');
+      assertEqual(titleize('Action web service'), 'Action Web Service');
+      assertEqual(titleize('actionwebservice'), 'Actionwebservice');
+      assertEqual(titleize('Actionwebservice'), 'Actionwebservice');
+      assertEqual(titleize("david's code"), "David's Code");
+      assertEqual(titleize("David's code"), "David's Code");
+      assertEqual(titleize("david's Code"), "David's Code");
+      assertEqual(titleize('man from the boondocks'), 'Man from the Boondocks');
+      assertEqual(titleize('x-men: the last stand'), 'X Men: The Last Stand');
+      assertEqual(titleize('i am a sentence. and so am i.'), 'I Am a Sentence. And so Am I.');
+      assertEqual(titleize('hello! and goodbye!'), 'Hello! And Goodbye!');
+      assertEqual(titleize('hello, and goodbye'), 'Hello, and Goodbye');
+      assertEqual(titleize('hello; and goodbye'), 'Hello; And Goodbye');
+      assertEqual(titleize("about 'you' and 'me'"), "About 'You' and 'Me'");
+      assertEqual(titleize('TheManWithoutAPast'), 'The Man Without a Past');
+      assertEqual(titleize('raiders_of_the_lost_ark'), 'Raiders of the Lost Ark');
     });
 
     it('should handle non-titleized words', function() {
@@ -563,6 +563,173 @@ namespace('String', function() {
       assertEqual(parameterize(800), '800');
       assertEqual(parameterize('Foo Bar', 8), 'foo8bar');
       assertEqual(parameterize('Foo \uDFFF Bar'), 'foo-bar');
+    });
+  });
+
+  describeInstance('at', function(at) {
+
+    it('should find basic character at positition', () => {
+      assertEqual(at('foop', 0), 'f');
+      assertEqual(at('foop', 1), 'o');
+      assertEqual(at('foop', 2), 'o');
+      assertEqual(at('foop', 3), 'p');
+      assertEqual(at('foop', 4), '');
+      assertEqual(at('foop', 1224), '');
+      assertEqual(at('foop', -1), 'p');
+      assertEqual(at('foop', -2), 'o');
+      assertEqual(at('foop', -3), 'o');
+      assertEqual(at('foop', -4), 'f');
+      assertEqual(at('foop', -5), '');
+      assertEqual(at('foop', -1224), '');
+    });
+
+    it('should allow looping from the start', () => {
+      assertEqual(at('foop', 0, true), 'f');
+      assertEqual(at('foop', 1, true), 'o');
+      assertEqual(at('foop', 2, true), 'o');
+      assertEqual(at('foop', 3, true), 'p');
+      assertEqual(at('foop', 4, true), 'f');
+      assertEqual(at('foop', 5, true), 'o');
+      assertEqual(at('foop', 1224, true), 'f');
+      assertEqual(at('foop', -1, true), 'p');
+      assertEqual(at('foop', -2, true), 'o');
+      assertEqual(at('foop', -3, true), 'o');
+      assertEqual(at('foop', -4, true), 'f');
+      assertEqual(at('foop', -5, true), 'p');
+      assertEqual(at('foop', -1224, true), 'f');
+    });
+
+    it('should accept an array', () => {
+      assertArrayEqual(at('wowzers', [0,2,4,6,18]), ['w','w','e','s','']);
+      assertArrayEqual(at('wowzers', [0,2,4,6], true), ['w','w','e','s']);
+      assertArrayEqual(at('wowzers', [0,2,4,6,18], true), ['w','w','e','s','e']);
+    });
+
+    it('should handle irregular input', () => {
+      assertEqual(at('', 3), '');
+      assertEqual(at(null, 0), 'n');
+      assertEqual(at(8, 0), '8');
+      assertError(function(){ at('foo', null); });
+      assertError(function(){ at('foo', NaN); });
+      assertError(function(){ at('foo', Infinity); });
+      assertError(function(){ at('foo', 2.2); });
+      assertError(function(){ at('foo', '0'); });
+    });
+
+  });
+
+  describeInstance('first', function(first) {
+
+    it('should handle basic input', () => {
+      assertEqual(first('quack'), 'q');
+      assertEqual(first('quack', 2), 'qu');
+      assertEqual(first('quack', 3), 'qua');
+      assertEqual(first('quack', 4), 'quac');
+      assertEqual(first('quack', 20), 'quack');
+      assertEqual(first('quack', 0), '');
+      assertEqual(first('quack', -1), '');
+      assertEqual(first('quack', -5), '');
+      assertEqual(first('quack', -10), '');
+    });
+
+    it('should handle irregular input', () => {
+      assertEqual(first('', 3), '');
+      assertEqual(first(null, 2), 'nu');
+      assertEqual(first(800, 2), '80');
+      assertError(function(){ first('foo', null); });
+      assertError(function(){ first('foo', NaN); });
+      assertError(function(){ first('foo', Infinity); });
+      assertError(function(){ first('foo', 2.2); });
+      assertError(function(){ first('foo', '0'); });
+    });
+
+  });
+
+  describeInstance('last', function(last) {
+
+    it('should handle basic input', () => {
+      assertEqual(last('quack'), 'k');
+      assertEqual(last('quack', 2), 'ck');
+      assertEqual(last('quack', 3), 'ack');
+      assertEqual(last('quack', 4), 'uack');
+      assertEqual(last('quack', 10), 'quack');
+      assertEqual(last('quack', -1), '');
+      assertEqual(last('quack', -5), '');
+      assertEqual(last('quack', -10), '');
+    });
+
+    it('should handle irregular input', () => {
+      assertEqual(last('', 3), '');
+      assertEqual(last(null, 2), 'll');
+      assertEqual(last(800, 2), '00');
+      assertError(function(){ last('foo', null); });
+      assertError(function(){ last('foo', NaN); });
+      assertError(function(){ last('foo', Infinity); });
+      assertError(function(){ last('foo', 2.2); });
+      assertError(function(){ last('foo', '0'); });
+    });
+  });
+
+  describeInstance('from', function(from) {
+
+    it('should handle basic input', () => {
+      assertEqual(from('quack'), 'quack');
+      assertEqual(from('quack', 0), 'quack');
+      assertEqual(from('quack', 2), 'ack');
+      assertEqual(from('quack', 4), 'k');
+      assertEqual(from('quack', -1), 'k');
+      assertEqual(from('quack', -3), 'ack');
+      assertEqual(from('quack', -4), 'uack');
+      assertEqual(from('quack', 'q'), 'quack');
+      assertEqual(from('quack', 'u'), 'uack');
+      assertEqual(from('quack', 'a'), 'ack');
+      assertEqual(from('quack', 'k'), 'k');
+      assertEqual(from('quack', ''), 'quack');
+      assertEqual(from('quack', 'ua'), 'uack');
+      assertEqual(from('quack', 'uo'), '');
+      assertEqual(from('quack', 'quack'), 'quack');
+    });
+
+    it('should handle irregular input', () => {
+      assertEqual(from('', 3), '');
+      assertEqual(from(null, 2), 'll');
+      assertEqual(from(800, 2), '0');
+      assertError(function(){ from('foo', null); });
+      assertError(function(){ from('foo', NaN); });
+      assertError(function(){ from('foo', Infinity); });
+      assertError(function(){ from('foo', 2.2); });
+    });
+  });
+
+  describeInstance('to', function(to) {
+
+    it('should handle basic input', () => {
+      assertEqual(to('quack'), 'quack');
+      assertEqual(to('quack', 0), '');
+      assertEqual(to('quack', 1), 'q');
+      assertEqual(to('quack', 2), 'qu');
+      assertEqual(to('quack', 4), 'quac');
+      assertEqual(to('quack', -1), 'quac');
+      assertEqual(to('quack', -3), 'qu');
+      assertEqual(to('quack', -4), 'q');
+      assertEqual(to('quack', 'q'), '');
+      assertEqual(to('quack', 'u'), 'q');
+      assertEqual(to('quack', 'a'), 'qu');
+      assertEqual(to('quack', 'k'), 'quac');
+      assertEqual(to('quack', ''), '');
+      assertEqual(to('quack', 'ua'), 'q');
+      assertEqual(to('quack', 'uo'), '');
+      assertEqual(to('quack', 'quack'), '');
+    });
+
+    it('should handle irregular input', () => {
+      assertEqual(to('', 3), '');
+      assertEqual(to(null, 2), 'nu');
+      assertEqual(to(800, 2), '80');
+      assertError(function(){ to('foo', null); });
+      assertError(function(){ to('foo', NaN); });
+      assertError(function(){ to('foo', Infinity); });
+      assertError(function(){ to('foo', 2.2); });
     });
   });
 
