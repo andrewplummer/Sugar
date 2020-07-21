@@ -7,6 +7,8 @@ defineInstance('camelize', methods.camelize);
 defineInstance('capitalize', methods.capitalize);
 defineInstance('compact', methods.compact);
 defineInstance('dasherize', methods.dasherize);
+defineInstance('decodeBase64', methods.decodeBase64);
+defineInstance('encodeBase64', methods.encodeBase64);
 defineInstance('first', methods.first);
 defineInstance('from', methods.from);
 defineInstance('isBlank', methods.isBlank);

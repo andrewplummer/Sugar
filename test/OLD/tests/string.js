@@ -80,42 +80,6 @@ namespace('String', function () {
   });
 
 
-  method('encodeBase64', function() {
-
-    test('This webpage is not available', 'VGhpcyB3ZWJwYWdlIGlzIG5vdCBhdmFpbGFibGU=', 'webpage');
-    test('I grow, I prosper; Now, gods, stand up for bastards!', 'SSBncm93LCBJIHByb3NwZXI7IE5vdywgZ29kcywgc3RhbmQgdXAgZm9yIGJhc3RhcmRzIQ==', 'gods');
-    test('räksmörgås', 'csOka3Ntw7ZyZ8Olcw==', 'shrimp sandwich');
-    test('rÃ¤ksmÃ¶rgÃ¥s', 'csODwqRrc23Dg8K2cmfDg8Klcw==', 'shrimp sandwich encoded');
-
-    test('АБВ', '0JDQkdCS', 'Russian');
-    test('日本語', '5pel5pys6Kqe', 'Japanese');
-    test('にほんご', '44Gr44G744KT44GU', 'Hiragana');
-    test('한국어', '7ZWc6rWt7Ja0', 'Korean');
-
-    // Ensure that btoa and atob don't leak in node
-    if(environment == 'node') {
-      equal(typeof btoa, 'undefined', 'btoa global does not exist in node');
-      equal(typeof atob, 'undefined', 'atob global does not exist in node');
-    }
-
-  });
-
-  method('decodeBase64', function() {
-
-    test(run('АБВ', 'encodeBase64'), 'АБВ', 'inverse | Russian');
-    test(run('日本語', 'encodeBase64'), '日本語', 'inverse | Japanese');
-    test(run('にほんご', 'encodeBase64'), 'にほんご', 'inverse | Hiragana');
-    test(run('한국어', 'encodeBase64'), '한국어', 'inverse | Korean');
-
-    test('L2hvd2FyZHNmaXJld29ya3MvYXBpL29yZGVyLzc1TU0lMjBNSVg=', '/howardsfireworks/api/order/75MM%20MIX', '%20')
-
-    test('VGhpcyB3ZWJwYWdlIGlzIG5vdCBhdmFpbGFibGU=', 'This webpage is not available', 'webpage');
-    test('SSBncm93LCBJIHByb3NwZXI7IE5vdywgZ29kcywgc3RhbmQgdXAgZm9yIGJhc3RhcmRzIQ==', 'I grow, I prosper; Now, gods, stand up for bastards!', 'gods');
-
-    test('@#$^#$^#@$^', '', 'non-base64 characters should produce a blank string');
-
-  });
-
   method('trimLeft', function() {
     test('   wasabi   ', 'wasabi   ', 'should trim left whitespace only');
     test('', '', 'blank');

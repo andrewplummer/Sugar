@@ -10,6 +10,7 @@
   "globals": {
     it: true,
     fit: true,
+    xit: true,
     add: true,
     mult: true,
     noop: true,

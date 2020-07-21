@@ -21,6 +21,7 @@ import './helpers/intl';
 import './tests/core';
 import './tests/chainable';
 import './tests/extended';
+import './tests/array';
 import './tests/number';
 import './tests/string';
 import './tests/regexp';

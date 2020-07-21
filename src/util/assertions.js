@@ -1,4 +1,4 @@
-import { isArray, isFunction, isPrimitive } from './typeChecks';
+import { isArray, isString, isFunction, isPrimitive } from './typeChecks';
 
 const MIN = 1e-6;
 const MAX = 1e21;
@@ -9,6 +9,12 @@ function usesScientificNotation(n) {
   }
   const abs = Math.abs(n);
   return abs >= MAX || abs <= MIN;
+}
+
+export function assertString(str) {
+  if (!isString(str)) {
+    throw new TypeError(str + ' is not a string');
+  }
 }
 
 export function assertNumber(n) {

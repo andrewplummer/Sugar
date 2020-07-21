@@ -805,7 +805,7 @@ namespace('String', function() {
       assertEqual(toNumber('22.5'), 22.5);
     });
 
-    it('should handle decimals', () => {
+    it('should handle decimals', function() {
       assertEqual(toNumber('10.532'), 10.532);
       assertEqual(toNumber('10.848'), 10.848);
       assertEqual(toNumber('95.25%'), 95.25);
@@ -814,31 +814,31 @@ namespace('String', function() {
       assertEqual(toNumber('.3'), 0.3);
     });
 
-    it('should handle trailing characters', () => {
+    it('should handle trailing characters', function() {
       assertEqual(toNumber('4em'), 4);
       assertEqual(toNumber('10px'), 10);
       assertEqual(toNumber('1234blue'), 1234);
     });
 
-    it('should not convert octals', () => {
+    it('should not convert octals', function() {
       assertEqual(toNumber('010'), 10);
       assertEqual(toNumber('0908'), 908);
       assertEqual(toNumber('077.3'), 77.3);
     });
 
-    it('should throw away redundant decimals', () => {
+    it('should throw away redundant decimals', function() {
       assertEqual(toNumber('22.34.5'), 22.34);
     });
 
-    it('should handle hex strings', () => {
+    it('should handle hex strings', function() {
       assertEqual(toNumber('0xFF'), 255);
     });
 
-    it('should handle a different base', () => {
+    it('should handle a different base', function() {
       assertEqual(toNumber('FF', 16), 255);
     });
 
-    it('should handle scientific notation', () => {
+    it('should handle scientific notation', function() {
       assertEqual(toNumber('1e6'), 1000000);
       assertEqual(toNumber('0.1e6'), 100000);
     });
@@ -864,11 +864,73 @@ namespace('String', function() {
 
   describeInstance('reverse', function(reverse) {
 
-    it('should handle basic input', () => {
+    it('should handle basic input', function() {
       assertEqual(reverse('spoon'), 'noops');
       assertEqual(reverse('amanaplanacanalpanama'), 'amanaplanacanalpanama');
       assertEqual(reverse(''), '');
       assertEqual(reverse('wasabi'), 'ibasaw');
+    });
+
+    it('should handle irregular input', function() {
+      assertEqual(reverse(null), 'llun');
+      assertEqual(reverse(undefined), 'denifednu');
+      assertEqual(reverse(NaN), 'NaN');
+      assertEqual(reverse(800), '008');
+    });
+
+  });
+
+  describeInstance('encodeBase64', function(encodeBase64) {
+
+    it('should handle ascii input', function() {
+      assertEqual(encodeBase64(''), '');
+      assertEqual(encodeBase64('foo'), 'Zm9v');
+      assertEqual(encodeBase64('This webpage is not available'), 'VGhpcyB3ZWJwYWdlIGlzIG5vdCBhdmFpbGFibGU=');
+    });
+
+    it('should handle non-ascii input', function() {
+      assertEqual(encodeBase64('✓ à la mode'), '4pyTIMOgIGxhIG1vZGU=');
+      assertEqual(encodeBase64('räksmörgås'), 'csOka3Ntw7ZyZ8Olcw==');
+      assertEqual(encodeBase64('rÃ¤ksmÃ¶rgÃ¥s'), 'csODwqRrc23Dg8K2cmfDg8Klcw==');
+      assertEqual(encodeBase64('АБВ'), '0JDQkdCS');
+      assertEqual(encodeBase64('日本語'), '5pel5pys6Kqe');
+      assertEqual(encodeBase64('にほんご'), '44Gr44G744KT44GU');
+      assertEqual(encodeBase64('한국어'), '7ZWc6rWt7Ja0');
+    });
+
+    it('should handle irregular input', function() {
+      assertEqual(encodeBase64('\n'), 'Cg==');
+      assertEqual(encodeBase64(null), 'bnVsbA==');
+      assertEqual(encodeBase64(NaN), 'TmFO');
+      assertEqual(encodeBase64(8), 'OA==');
+    });
+
+  });
+
+  describeInstance('decodeBase64', function(decodeBase64) {
+
+    it('should handle ascii input', function() {
+      assertEqual(decodeBase64(''), '');
+      assertEqual(decodeBase64('Zm9v'), 'foo');
+      assertEqual(decodeBase64('VGhpcyB3ZWJwYWdlIGlzIG5vdCBhdmFpbGFibGU='), 'This webpage is not available');
+      assertEqual(decodeBase64('L2hvd2FyZHNmaXJld29ya3MvYXBpL29yZGVyLzc1TU0lMjBNSVg='), '/howardsfireworks/api/order/75MM%20MIX')
+    });
+
+    it('should handle non-ascii input', function() {
+      assertEqual(decodeBase64('4pyTIMOgIGxhIG1vZGU='), '✓ à la mode');
+      assertEqual(decodeBase64('csOka3Ntw7ZyZ8Olcw=='), 'räksmörgås');
+      assertEqual(decodeBase64('csODwqRrc23Dg8K2cmfDg8Klcw=='), 'rÃ¤ksmÃ¶rgÃ¥s');
+      assertEqual(decodeBase64('0JDQkdCS'), 'АБВ');
+      assertEqual(decodeBase64('5pel5pys6Kqe'), '日本語');
+      assertEqual(decodeBase64('44Gr44G744KT44GU'), 'にほんご');
+      assertEqual(decodeBase64('7ZWc6rWt7Ja0'), '한국어');
+    });
+
+    it('should handle irregular input', function() {
+      assertError(function(){ decodeBase64(null); });
+      assertError(function(){ decodeBase64(NaN); });
+      assertError(function(){ decodeBase64(8); });
+      assertError(function(){ decodeBase64('@#$^#$^#@$^'); });
     });
 
   });

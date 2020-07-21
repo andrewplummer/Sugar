@@ -1,3 +1,5 @@
+import coerce from './util/coerce';
+
 /**
  * Reverses the string.
  *
@@ -10,6 +12,7 @@
  *
  ***/
 export default function reverse(str) {
+  str = coerce(str);
   return str.split('').reverse().join('');
 }
 

@@ -3,6 +3,8 @@ export { default as camelize } from './camelize';
 export { default as capitalize } from './capitalize';
 export { default as compact } from './compact';
 export { default as dasherize } from './dasherize';
+export { default as decodeBase64 } from './decodeBase64';
+export { default as encodeBase64 } from './encodeBase64';
 export { default as first } from './first';
 export { default as from } from './from';
 export { default as isBlank } from './isBlank';
