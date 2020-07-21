@@ -862,4 +862,15 @@ namespace('String', function() {
 
   });
 
+  describeInstance('reverse', function(reverse) {
+
+    it('should handle basic input', () => {
+      assertEqual(reverse('spoon'), 'noops');
+      assertEqual(reverse('amanaplanacanalpanama'), 'amanaplanacanalpanama');
+      assertEqual(reverse(''), '');
+      assertEqual(reverse('wasabi'), 'ibasaw');
+    });
+
+  });
+
 });

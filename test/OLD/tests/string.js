@@ -391,58 +391,6 @@ namespace('String', function () {
     test('abc', [], 'abc', 'no args');
   });
 
-  method('toNumber', function() {
-
-    test('4em', 4, '4em');
-    test('10px', 10, '10px');
-    test('10,000', 10000, '10,000');
-    test('5,322,144,444', 5322144444, '5,322,144,444');
-    test('10.532', 10.532, '10.532');
-    test('10', 10, '10');
-    test('95.25%', 95.25, '95.25%');
-    test('10.848', 10.848, '10.848');
-
-    test('1234blue', 1234, '1234blue');
-    test('22.5', 22.5, '22.5');
-
-    test('010', 10, '"010" should be 10');
-    test('0908', 908, '"0908" should be 908');
-    test('22.34.5', 22.34, '"22.34.5" should be 22.34');
-
-    test('1.45kg', 1.45, '"1.45kg"');
-    test('77.3', 77.3, '77.3');
-    test('077.3', 77.3, '"077.3" should be 77.3');
-    test('.3', 0.3, '".3" should be 0.3');
-    test('0.1e6', 100000, '"0.1e6" should be 100000');
-
-    test('２００', 200, 'full-width | should work on full-width integers');
-    test('５．２３４５', 5.2345, 'full-width | should work on full-width decimals');
-
-    equal(isNaN(run('0xA')), false, '"0xA" should not be NaN');
-    equal(isNaN(run('blue')), true, '"blue" should not be NaN');
-    equal(isNaN(run('........')), true, '"......." should be NaN');
-    equal(isNaN(run('0x77.3')), false, '"0x77.3" is not NaN');
-
-  });
-
-  // Hexadecimal
-  method('toNumber', function() {
-    test('ff', [16], 255, 'ff');
-    test('00', [16], 0, '00');
-    test('33', [16], 51, '33');
-    test('66', [16], 102, '66');
-    test('99', [16], 153, '99');
-    test('bb', [16], 187, 'bb');
-  });
-
-
-  method('reverse', function() {
-    test('spoon', 'noops', 'spoon');
-    test('amanaplanacanalpanama', 'amanaplanacanalpanama', 'amanaplanacanalpanama');
-    test('', '', 'blank');
-    test('wasabi', 'ibasaw', 'wasabi');
-  });
-
 
   method('stripTags', function() {
     var stripped, html, allStripped, malformed;

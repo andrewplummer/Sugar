@@ -14,6 +14,7 @@ defineInstance('isEmpty', methods.isEmpty);
 defineInstance('last', methods.last);
 defineInstance('pad', methods.pad);
 defineInstance('parameterize', methods.parameterize);
+defineInstance('reverse', methods.reverse);
 defineInstance('spacify', methods.spacify);
 defineInstance('titleize', methods.titleize);
 defineInstance('to', methods.to);
