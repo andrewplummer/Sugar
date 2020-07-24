@@ -79,23 +79,6 @@ namespace('String', function () {
     test('&nbsp;', ' ', 'non-breaking space');
   });
 
-
-  method('trimLeft', function() {
-    test('   wasabi   ', 'wasabi   ', 'should trim left whitespace only');
-    test('', '', 'blank');
-    test(' wasabi ', 'wasabi ', 'wasabi with whitespace');
-    test(whiteSpace, '', 'should trim all WhiteSpace characters defined in 7.2 and Unicode "space, separator"');
-    test(lineTerminators, '', 'should trim all LineTerminator characters defined in 7.3');
-  });
-
-  method('trimRight', function() {
-    test('   wasabi   ', '   wasabi', 'should trim right whitespace only');
-    test('', '', 'blank');
-    test(' wasabi ', ' wasabi', 'wasabi with whitespace');
-    test(whiteSpace, '', 'should trim all WhiteSpace characters defined in 7.2 and Unicode "space, separator"');
-    test(lineTerminators, '', 'should trim all LineTerminator characters defined in 7.3');
-  });
-
   method('shift', function() {
 
     test('ク', [1], 'グ', 'should shift 1 code up');
