@@ -38,6 +38,7 @@ v3.0.0
 - Removed `tag` argument from `String#stripTags`. Use the `replace` param instead
     to target specific tags.
 - Changed argument order of replacement function in `String#stripTags`.
+- Removed `String#removeAll`. Simply use a global regex here instead.
 
 TODO:
 

@@ -307,32 +307,6 @@ namespace('String', function () {
     test('b', ['-', 1], 'b-', 'b inserted at 1');
   });
 
-  method('remove', function() {
-    test('schfifty five', ['fi'], 'schfty five', 'should remove first fi only');
-    test('schfifty five', ['five'], 'schfifty ', 'should remove five');
-    test('schfifty five', [/five/], 'schfifty ', 'basic regex');
-    test('schfifty five', [/f/], 'schifty five', 'single char regex');
-    test('schfifty five', [/f/g], 'schity ive', 'respects global flag');
-    test('schfifty five', [/[a-f]/g], 'shity iv', 'character class');
-    test('?', ['?'], '', 'strings have tokens escaped');
-    test('?(', ['?('], '', 'strings have all tokens escaped');
-    test('schfifty five', ['F'], 'schfifty five', 'should be case sensitive');
-    test('schfifty five', [], 'schfifty five', 'no args');
-  });
-
-  method('removeAll', function() {
-    test('schfifty five', ['fi'], 'schfty ve', 'should remove all fi');
-    test('schfifty five', ['five'], 'schfifty ', 'should remove five');
-    test('schfifty five', [/five/], 'schfifty ', 'basic regex');
-    test('schfifty five', [/f/], 'schity ive', 'single char regex replaces all');
-    test('schfifty five', [/f/g], 'schity ive', 'global regex replaces all');
-    test('schfifty five', [/[a-f]/g], 'shity iv', 'character class');
-    test('?', ['?'], '', 'strings have tokens escaped');
-    test('?(', ['?('], '', 'strings have all tokens escaped');
-    test('schfifty five', ['F'], 'schfifty five', 'should be case sensitive');
-    test('schfifty five', [], 'schfifty five', 'no args');
-  });
-
   method('replaceAll', function() {
     test('-x -y -z', ['-', 1, 2, 3], '1x 2y 3z', 'basic');
     test('-x -y -z', ['-'], 'x y z', 'no args');

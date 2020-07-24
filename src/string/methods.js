@@ -13,6 +13,7 @@ export { default as last } from './last';
 export { default as pad } from './pad';
 export { default as parameterize } from './parameterize';
 export { default as range } from './range';
+export { default as remove } from './remove';
 export { default as reverse } from './reverse';
 export { default as spacify } from './spacify';
 export { default as stripTags } from './stripTags';

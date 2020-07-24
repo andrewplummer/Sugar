@@ -1107,4 +1107,32 @@ namespace('String', function() {
 
   });
 
+  describeInstance('remove', function(remove) {
+
+    it('should remove with a string', () => {
+      assertEqual(remove('schfifty five', 'fi'), 'schfty five');
+      assertEqual(remove('schfifty five', 'five'), 'schfifty ');
+      assertEqual(remove('?', '?'), '');
+      assertEqual(remove('?(', '?('), '');
+    });
+
+    it('should remove with a regex', () => {
+      assertEqual(remove('schfifty five', /five/), 'schfifty ');
+      assertEqual(remove('schfifty five', /f/), 'schifty five');
+      assertEqual(remove('schfifty five', /f/g), 'schity ive');
+      assertEqual(remove('schfifty five', /[a-f]/g), 'shity iv');
+    });
+
+    it('should be case sensitive', () => {
+      assertEqual(remove('schfifty five', 'F'), 'schfifty five');
+    });
+
+    it('should handle irregular input', () => {
+      assertEqual(remove('schfifty five'), 'schfifty five');
+      assertEqual(remove('schfifty five', null), 'schfifty five');
+      assertEqual(remove('schfifty five', 800), 'schfifty five');
+    });
+
+  });
+
 });
