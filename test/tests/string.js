@@ -1226,4 +1226,93 @@ namespace('String', function() {
 
   });
 
+  describeInstance('escapeHtml', function(escapeHtml) {
+
+    it('should escape basic input', () => {
+      assertEqual(escapeHtml('1 > 2'), '1 &gt; 2');
+      assertEqual(escapeHtml('<foo>'), '&lt;foo&gt;');
+      assertEqual(escapeHtml('<p>some text</p>'), '&lt;p&gt;some text&lt;/p&gt;');
+      assertEqual(escapeHtml('<img src="src" />'), '&lt;img src="src" /&gt;');
+    });
+
+    it('should escape entities', () => {
+      assertEqual(escapeHtml('war & peace & food'), 'war &amp; peace &amp; food');
+    });
+
+    it('should not escape apostrophes or quotes', () => {
+      assertEqual(escapeHtml('"foo"'), '"foo"');
+      assertEqual(escapeHtml("'foo'"), "'foo'");
+    });
+
+    it('should have expected results when already escaped', () => {
+      assertEqual(escapeHtml('&amp;'), '&amp;amp;');
+      assertEqual(escapeHtml('&lt;span&gt;escaped&lt;/span&gt;'), '&amp;lt;span&amp;gt;escaped&amp;lt;/span&amp;gt;');
+    });
+
+    it('should handle irregular input', () => {
+      assertEqual(escapeHtml(null), 'null');
+      assertEqual(escapeHtml(NaN), 'NaN');
+      assertEqual(escapeHtml(8), '8');
+      assertEqual(escapeHtml(), '');
+    });
+
+  });
+
+  describeInstance('unescapeHtml', function(unescapeHtml) {
+
+    it('should unescape basic input', () => {
+      assertEqual(unescapeHtml('1 &gt; 2'), '1 > 2');
+      assertEqual(unescapeHtml('&lt;foo&gt;'), '<foo>');
+      assertEqual(unescapeHtml('&lt;p&gt;some text&lt;/p&gt;'), '<p>some text</p>');
+      assertEqual(unescapeHtml('&lt;img src="src" /&gt;'), '<img src="src" />');
+    });
+
+    it('should unescape special entities', () => {
+      assertEqual(unescapeHtml('war &amp; peace'), 'war & peace');
+      assertEqual(unescapeHtml('it&apos;s'), "it's");
+      assertEqual(unescapeHtml('&quot;foo&quot;'), '"foo"');
+      assertEqual(unescapeHtml('&nbsp;'), ' ');
+    });
+
+    it('should unescape ascii decimal entities', () => {
+      assertEqual(unescapeHtml('&#32;'), ' ');
+      assertEqual(unescapeHtml('&#33;'), '!');
+    });
+
+    it('should unescape ascii hex entities', () => {
+      assertEqual(unescapeHtml('&#x20;'), ' ');
+      assertEqual(unescapeHtml('&#x21;'), '!');
+      assertEqual(unescapeHtml('&#x2f;'), '/');
+    });
+
+    it('should unescape non-ascii decimal entities', () => {
+      assertEqual(unescapeHtml('&#192;'), 'À');
+      assertEqual(unescapeHtml('&#64257;'), 'ﬁ');
+      assertEqual(unescapeHtml('&#12354;'), 'あ');
+    });
+
+    it('should unescape non-ascii hex entities', () => {
+      assertEqual(unescapeHtml('&#xC0;'), 'À');
+      assertEqual(unescapeHtml('&#x2b;'), '+');
+      assertEqual(unescapeHtml('&#x2B;'), '+');
+      assertEqual(unescapeHtml('&#x3042;'), 'あ');
+    });
+
+    it('should only escape once', () => {
+      assertEqual(unescapeHtml('&amp;lt;'), '&lt;');
+    });
+
+    it('should do nothing to plain html', () => {
+      assertEqual(unescapeHtml('<span>escaped</span>'), '<span>escaped</span>');
+    });
+
+    it('should handle irregular input', () => {
+      assertEqual(unescapeHtml(null), 'null');
+      assertEqual(unescapeHtml(NaN), 'NaN');
+      assertEqual(unescapeHtml(8), '8');
+      assertEqual(unescapeHtml(), '');
+    });
+
+  });
+
 });

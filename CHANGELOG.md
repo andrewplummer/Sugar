@@ -51,15 +51,17 @@ v3.0.0
 - Removed `String#removeAll`. Simply use a global regex here instead.
 - Renamed `String#replaceAll` to `String#replaceWith` to avoid naming conflict.
     Also no longer coerces non-global regexes to be global.
+- Renamed `String#escapeHTML` to `String#escapeHtml`.
+- Renamed `String#unescapeHTML` to `String#unescapeHtml`.
 
 TODO:
 
-- DOCUMENT CHANGES TO EXTEND API
+- Consider asserting types instead of coercion??
 - Object.values / Object.entries?
 - Array#flat/Array#flatMap
-- String#matchAll - does it do what Sugar methods already do?
 - Object.is implications?
 - Math.random with seed?
+- DOCUMENT CHANGES TO EXTEND API
 
 v2.0.5
 ======
