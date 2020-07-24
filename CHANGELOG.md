@@ -8,11 +8,16 @@ v3.0.0
 - Removed `String#includes` with RegExp support.
 - Removed ability to extend Object.prototype
 - Removed support for bower.
-- Removed `String#padLeft` and `String#padRight` in favor of native `String#padStart` and `String#padEnd`.
-- Removed `String#trimLeft` and `String#trimRight` in favor of native `String#trimStart` and `String#trimEnd`.
-- `String#pad` will now place equal padding on either side, reducing the target length by 1 for odd lengths.
-- `String#pad` now internally uses `String#padStart` and `String#padEnd`, and will throw the same input errors.
-- Added `Number#isNaN`, `Number#isFinite`, `Number#isInteger`, and `Number#isSafeInteger`.
+- Removed `String#padLeft` and `String#padRight` in favor of native
+    `String#padStart` and `String#padEnd`.
+- Removed `String#trimLeft` and `String#trimRight` in favor of native
+    `String#trimStart` and `String#trimEnd`.
+- `String#pad` will now place equal padding on either side, reducing the target
+    length by 1 for odd lengths.
+- `String#pad` now internally uses `String#padStart` and `String#padEnd`, and
+    will throw the same input errors.
+- Added `Number#isNaN`, `Number#isFinite`, `Number#isInteger`, and
+    `Number#isSafeInteger`.
 - Renamed `Number#chr` to `Number#toChar`.
 - Renamed `Number#ordinalize` to `Number#toOrdinal`.
 - Removed `Number#toNumber`.
@@ -25,20 +30,27 @@ v3.0.0
 - Changed `Number#upto` to always iterate from min to max.
 - Changed `Number#downto` to always iterate from max to min.
 - Changed `Number#times` to collects all return values including undefined.
-- Changed `Number#times` to error on any input that is not a positive finite integer.
-- Changed `Number#format` to no longer support thousands or decimal separtors. Use Intl for this.
-- Removed `RegExp#getFlags`, `RegExp#setFlags`, `RegExp#addFlags` and `RegExp#removeFlags`.
+- Changed `Number#times` to error on any input that is not a positive finite
+    integer.
+- Changed `Number#format` to no longer support thousands or decimal separtors.
+    Use Intl for this.
+- Removed `RegExp#getFlags`, `RegExp#setFlags`, `RegExp#addFlags` and
+    `RegExp#removeFlags`.
 - Removed `Function#memoize` ability to deeply serialize all arguments.
-- Removed Math aliases `Number#sin/asin/cos/acos/tan/atan/exp` in favor of directly using `Math`.
+- Removed Math aliases `Number#sin/asin/cos/acos/tan/atan/exp` in favor of
+    directly using `Math`.
   `Number#round/floor/ceil/abs/sqrt/pow` aliases are retained.
 - Added `Number#trunc` Math alias.
-- Removed Inflections modules. Affected methods `String#camelize/underscore/spacify/titleize`.
+- Removed Inflections modules. Affected methods:
+    `String#camelize/underscore/spacify/titleize`.
 - Removed `String#format` in favor of ES6 template literals.
 - Removed `String#removeTags`. This will no longer be supported going forward.
-- Removed `tag` argument from `String#stripTags`. Use the `replace` param instead
-    to target specific tags.
+- Removed `tag` argument from `String#stripTags`. Use the `replace` param
+    instead to target specific tags.
 - Changed argument order of replacement function in `String#stripTags`.
 - Removed `String#removeAll`. Simply use a global regex here instead.
+- Renamed `String#replaceAll` to `String#replaceWith` to avoid naming conflict.
+    Also no longer coerces non-global regexes to be global.
 
 TODO:
 
@@ -47,7 +59,6 @@ TODO:
 - Array#flat/Array#flatMap
 - String#matchAll - does it do what Sugar methods already do?
 - Object.is implications?
-- String#replaceAll?
 - Math.random with seed?
 
 v2.0.5

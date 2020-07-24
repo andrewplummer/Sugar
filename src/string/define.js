@@ -17,6 +17,7 @@ defineInstance('last', methods.last);
 defineInstance('pad', methods.pad);
 defineInstance('parameterize', methods.parameterize);
 defineInstance('remove', methods.remove);
+defineInstance('replaceWith', methods.replaceWith);
 defineInstance('reverse', methods.reverse);
 defineInstance('spacify', methods.spacify);
 defineInstance('stripTags', methods.stripTags);

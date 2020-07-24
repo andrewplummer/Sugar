@@ -307,26 +307,4 @@ namespace('String', function () {
     test('b', ['-', 1], 'b-', 'b inserted at 1');
   });
 
-  method('replaceAll', function() {
-    test('-x -y -z', ['-', 1, 2, 3], '1x 2y 3z', 'basic');
-    test('-x -y -z', ['-'], 'x y z', 'no args');
-    test('-x -y -z', ['-', 1, 2], '1x 2y z', 'not enough args');
-    test('-x -y -z', ['-', 1, 2, 3, 4], '1x 2y 3z', 'too many args');
-    test('-x -y -z', ['-', 1, 0, 3], '1x 0y 3z', 'arg can be 0');
-    test('-x -y -z', ['-', 1, null, 3], '1x y 3z', 'null arg will be blank');
-    test('-x -y -z', ['-', 1, undefined, 3], '1x y 3z', 'undefined will be blank');
-    test('-x -y -z', ['-', 1, NaN, 3], '1x NaNy 3z', 'NaN is stringifiable');
-
-    test('a', [/a/, 'hi'], 'hi', 'basic regex');
-    test('aaa', [/a/g,'b','c','d'], 'bcd', 'global regex');
-    test('aaa', [/a/,'b','c','d'], 'bcd', 'non-global regex still matches all');
-    test('a1 b2', [/a|b/, 'x', 'y'], 'x1 y2', 'alternator');
-
-    test('a', ['A', 'b'], 'a', 'should be case sensitive');
-    test('?', ['?', 'a'], 'a', 'strings have tokens escaped');
-    test('?(', ['?(', 'b'], 'b', 'strings have all tokens escaped');
-
-    test('abc', [], 'abc', 'no args');
-  });
-
 });

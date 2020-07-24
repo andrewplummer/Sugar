@@ -1109,28 +1109,76 @@ namespace('String', function() {
 
   describeInstance('remove', function(remove) {
 
-    it('should remove with a string', () => {
+    it('should remove with a string', function() {
       assertEqual(remove('schfifty five', 'fi'), 'schfty five');
       assertEqual(remove('schfifty five', 'five'), 'schfifty ');
       assertEqual(remove('?', '?'), '');
       assertEqual(remove('?(', '?('), '');
     });
 
-    it('should remove with a regex', () => {
+    it('should remove with a regex', function() {
       assertEqual(remove('schfifty five', /five/), 'schfifty ');
       assertEqual(remove('schfifty five', /f/), 'schifty five');
       assertEqual(remove('schfifty five', /f/g), 'schity ive');
       assertEqual(remove('schfifty five', /[a-f]/g), 'shity iv');
     });
 
-    it('should be case sensitive', () => {
+    it('should be case sensitive', function() {
       assertEqual(remove('schfifty five', 'F'), 'schfifty five');
     });
 
-    it('should handle irregular input', () => {
+    it('should handle irregular input', function() {
       assertEqual(remove('schfifty five'), 'schfifty five');
       assertEqual(remove('schfifty five', null), 'schfifty five');
       assertEqual(remove('schfifty five', 800), 'schfifty five');
+    });
+
+  });
+
+  describeInstance('replaceWith', function(replaceWith) {
+
+    it('should handle basic input', function() {
+      assertEqual(replaceWith('-x -y -z', '-', 1, 2, 3), '1x 2y 3z');
+      assertEqual(replaceWith('-x -y -z', '-', 1, 0, 3), '1x 0y 3z');
+      assertEqual(replaceWith('-x -y -z', '-', 'a', 'b', 'c'), 'ax by cz');
+    });
+
+    it('should handle regex input', function() {
+      assertEqual(replaceWith('a', /a/, 'hi'), 'hi');
+      assertEqual(replaceWith('aaa', /a/g, 'b', 'c', 'd'), 'bcd');
+      assertEqual(replaceWith('a1 b2', /a|b/g, 'x', 'y'), 'x1 y2');
+    });
+
+    it('should not replace regexp with global flag', function() {
+      assertEqual(replaceWith('aaa', /a/, 'b', 'c', 'd'), 'baa');
+    });
+
+    it('should use last argument when not enough', function() {
+      assertEqual(replaceWith('-x -y -z', '-', 1), '1x 1y 1z');
+      assertEqual(replaceWith('-x -y -z', '-', 1, 2), '1x 2y 2z');
+    });
+
+    it('should not use arguments when too many', function() {
+      assertEqual(replaceWith('-x -y -z', '-', 1, 2, 3, 4), '1x 2y 3z');
+    });
+
+    it('should allow regex tokens', function() {
+      assertEqual(replaceWith('?x ?y ?z', '?', 1), '1x 1y 1z');
+      assertEqual(replaceWith('-x -y -z', '-', '?'), '?x ?y ?z');
+    });
+
+    it('should be case sensitive', function() {
+      assertEqual(replaceWith('a', 'A', 'b'), 'a');
+    });
+
+    it('should handle irregular input', function() {
+      assertEqual(replaceWith('-x -y -z'), '-x -y -z');
+      assertEqual(replaceWith('-x -y -z', null), '-x -y -z');
+      assertEqual(replaceWith('-x -y -z', 8), '-x -y -z');
+      assertEqual(replaceWith('-x -y -z', '-'), 'x y z');
+      assertEqual(replaceWith('-x -y -z', '-', 1, null, 3), '1x y 3z');
+      assertEqual(replaceWith('-x -y -z', '-', 1, undefined, 3), '1x y 3z');
+      assertEqual(replaceWith('-x -y -z', '-', 1, NaN, 3), '1x NaNy 3z');
     });
 
   });
