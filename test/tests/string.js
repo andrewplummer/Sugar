@@ -1183,4 +1183,47 @@ namespace('String', function() {
 
   });
 
+  describeInstance('insert', function(insert) {
+
+    it('should handle basic input', function() {
+      assertEqual(insert('schfifty', ' five'), 'schfifty five');
+      assertEqual(insert('dopamine', 'e', 3), 'dopeamine');
+      assertEqual(insert('five', 'schfifty', 4), 'fiveschfifty');
+      assertEqual(insert('five', 'schfifty', 5), 'fiveschfifty');
+      assertEqual(insert('abcd', 'X', 2), 'abXcd');
+      assertEqual(insert('abcd', 'X', 1), 'aXbcd');
+      assertEqual(insert('abcd', 'X', -1), 'abcXd');
+      assertEqual(insert('abcd', 'X', -2), 'abXcd');
+    });
+
+    it('should handle negative indexes', function() {
+      assertEqual(insert('spelling eror', 'r', -3), 'spelling error');
+    });
+
+    it('should handle 0 and -0', function() {
+      assertEqual(insert('abcd', 'X', 0), 'Xabcd');
+      assertEqual(insert('abcd', 'X', -0), 'Xabcd');
+    });
+
+    it('should not go past string edges', function() {
+      assertEqual(insert('five', 'schfifty', 20), 'fiveschfifty');
+      assertEqual(insert('five', 'schfifty', -20), 'schfiftyfive');
+    });
+
+    it('should handle empty and short strings', function() {
+      assertEqual(insert('', '-', 0), '-');
+      assertEqual(insert('b', '--', 0), '--b');
+      assertEqual(insert('b', '--', 1), 'b--');
+    });
+
+    it('should handle irregular input', function() {
+      assertEqual(insert(null, '-'), 'null-');
+      assertEqual(insert(NaN, '-'), 'NaN-');
+      assertEqual(insert(8, '-'), '8-');
+      assertEqual(insert('', null), 'null');
+      assertEqual(insert('', 'a', null), 'a');
+    });
+
+  });
+
 });

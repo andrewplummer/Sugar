@@ -11,6 +11,7 @@ defineInstance('decodeBase64', methods.decodeBase64);
 defineInstance('encodeBase64', methods.encodeBase64);
 defineInstance('first', methods.first);
 defineInstance('from', methods.from);
+defineInstance('insert', methods.insert);
 defineInstance('isBlank', methods.isBlank);
 defineInstance('isEmpty', methods.isEmpty);
 defineInstance('last', methods.last);

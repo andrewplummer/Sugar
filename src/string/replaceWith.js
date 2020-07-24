@@ -1,6 +1,7 @@
 import coerce from './util/coerce';
 import { isRegExp } from '../util/typeChecks';
 import { escapeRegExp } from '../util/regexp';
+import { coalesceNull } from '../util/lang';
 
 /**
  * Replaces multiple occurrences of a substring with fixed arguments.
@@ -28,6 +29,6 @@ export default function replaceWith(str, find, ...args) {
   }
   let count = 0;
   return str.replace(find, () => {
-    return args[Math.min(count++, args.length - 1)] ?? '';
+    return coalesceNull(args[Math.min(count++, args.length - 1)], '');
   });
 }

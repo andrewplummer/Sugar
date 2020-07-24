@@ -270,24 +270,4 @@ namespace('String', function () {
     test('', [], 'empty string');
   });
 
-  method('insert', function() {
-    test('schfifty', [' five'], 'schfifty five', 'schfifty five');
-    test('dopamine', ['e', 3], 'dopeamine', 'dopeamine');
-    test('spelling eror', ['r', -3], 'spelling error', 'inserts from the end');
-    test('flack', ['a', 0], 'aflack', 'inserts at 0');
-    test('five', ['schfifty', 20], 'fiveschfifty', 'adds out of positive range');
-    test('five', ['schfifty', -20], 'schfiftyfive', 'adds out of negative range');
-    test('five', ['schfifty', 4], 'fiveschfifty', 'inserts at position 4');
-    test('five', ['schfifty', 5], 'fiveschfifty', 'inserts at position 5');
-    test('abcd', ['X', 2], 'abXcd', 'X | 2');
-    test('abcd', ['X', 1], 'aXbcd', 'X | 1');
-    test('abcd', ['X', 0], 'Xabcd', 'X | 0');
-    test('abcd', ['X', -1], 'abcXd', 'X | -1');
-    test('abcd', ['X', -2], 'abXcd', 'X | -2');
-
-    test('', ['-', 0], '-', '- inserted at 0');
-    test('b', ['-', 0], '-b', 'b inserted at 0');
-    test('b', ['-', 1], 'b-', 'b inserted at 1');
-  });
-
 });

@@ -7,6 +7,7 @@ export { default as decodeBase64 } from './decodeBase64';
 export { default as encodeBase64 } from './encodeBase64';
 export { default as first } from './first';
 export { default as from } from './from';
+export { default as insert } from './insert';
 export { default as isBlank } from './isBlank';
 export { default as isEmpty } from './isEmpty';
 export { default as last } from './last';
