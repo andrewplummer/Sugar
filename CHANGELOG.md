@@ -34,7 +34,10 @@ v3.0.0
 - Added `Number#trunc` Math alias.
 - Removed Inflections modules. Affected methods `String#camelize/underscore/spacify/titleize`.
 - Removed `String#format` in favor of ES6 template literals.
-
+- Removed `String#removeTags`. This will no longer be supported going forward.
+- Removed `tag` argument from `String#stripTags`. Use the `replace` param instead
+    to target specific tags.
+- Changed argument order of replacement function in `String#stripTags`.
 
 TODO:
 

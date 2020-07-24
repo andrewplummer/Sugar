@@ -18,6 +18,7 @@ defineInstance('pad', methods.pad);
 defineInstance('parameterize', methods.parameterize);
 defineInstance('reverse', methods.reverse);
 defineInstance('spacify', methods.spacify);
+defineInstance('stripTags', methods.stripTags);
 defineInstance('titleize', methods.titleize);
 defineInstance('to', methods.to);
 defineInstance('toNumber', methods.toNumber);

@@ -15,6 +15,7 @@ export { default as parameterize } from './parameterize';
 export { default as range } from './range';
 export { default as reverse } from './reverse';
 export { default as spacify } from './spacify';
+export { default as stripTags } from './stripTags';
 export { default as titleize } from './titleize';
 export { default as to } from './to';
 export { default as toNumber } from './toNumber';

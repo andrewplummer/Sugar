@@ -260,7 +260,7 @@ namespace('String', function() {
       assertEqual(truncate(str, -100, 'left'), '...');
     });
 
-    it('should should truncate from the middle', function() {
+    it('should truncate from the middle', function() {
       assertEqual(truncate(str, 21, 'middle'), 'Gotta be an... sentence.');
       assertEqual(truncate(str, 11, 'middle'), 'Gotta ...ence.');
       assertEqual(truncate(str, 4, 'middle'), 'Go...e.');
@@ -357,7 +357,7 @@ namespace('String', function() {
       assertEqual(truncateOnWord(str, 0, 'middle'), '...');
     });
 
-    it('should should break on non-space punctuation', function() {
+    it('should break on non-space punctuation', function() {
       assertEqual(truncateOnWord('a,short,string', 8), 'a,short...');
       assertEqual(truncateOnWord('a|short|string', 8), 'a|short...');
       assertEqual(truncateOnWord('a?short?string', 8), 'a?short...');
@@ -365,7 +365,7 @@ namespace('String', function() {
       assertEqual(truncateOnWord('a¿short¿string', 8), 'a¿short...');
     });
 
-    it('should should break on non-standard whitespace', function() {
+    it('should break on non-standard whitespace', function() {
       assertEqual(truncateOnWord('a　short　string', 8), 'a　short...');
     });
 
@@ -516,7 +516,7 @@ namespace('String', function() {
 
   describeInstance('spacify', function(spacify) {
 
-    it('should should handle basic input', function() {
+    it('should handle basic input', function() {
       assertEqual(spacify('hopOnPop'), 'hop on pop');
       assertEqual(spacify('HopOnPop'), 'hop on pop');
       assertEqual(spacify('HOPONPOP'), 'hoponpop');
@@ -931,6 +931,178 @@ namespace('String', function() {
       assertError(function(){ decodeBase64(NaN); });
       assertError(function(){ decodeBase64(8); });
       assertError(function(){ decodeBase64('@#$^#$^#@$^'); });
+    });
+
+  });
+
+  describeInstance('stripTags', function(stripTags) {
+
+    it('should work on basic tags', function() {
+      assertEqual(stripTags('<p>text</p>'), 'text');
+      assertEqual(stripTags('<span>text</span>'), 'text');
+      assertEqual(stripTags('<button>text</button>'), 'text');
+    });
+
+    it('should preserve empty space', function() {
+      assertEqual(stripTags(' <p>text</p> '), ' text ');
+      assertEqual(stripTags(' <p> text </p> '), '  text  ');
+      assertEqual(stripTags('\n<p>\ntext\n</p>\n'), '\n\ntext\n\n');
+    });
+
+    it('should handle self-closing tags', function() {
+      assertEqual(stripTags('<img src="src" />'), '');
+      assertEqual(stripTags('foo<img src="src" />bar'), 'foobar');
+    });
+
+    it('should handle emtpy tags', function() {
+      assertEqual(stripTags('<meta charset="utf-8">'), '');
+      assertEqual(stripTags('foo<meta charset="utf-8">bar'), 'foobar');
+      assertEqual(stripTags('<input type="text" />'), '');
+    });
+
+    it('should handle attributes', function() {
+      assertEqual(stripTags('<p id="id">'), '');
+      assertEqual(stripTags('foo<p id="id">bar'), 'foobar');
+      assertEqual(stripTags('<img data-name="name" />'), '');
+    });
+
+    it('should not work on malformed html without brackets', function() {
+      assertEqual(stripTags('<p id="id" foobar'), '<p id="id" foobar');
+      assertEqual(stripTags('p id="id" foobar>'), 'p id="id" foobar>');
+    });
+
+    it('should work on malformed html with brackets', function() {
+      assertEqual(stripTags('< p>'), '');
+      assertEqual(stripTags('</p />'), '');
+      assertEqual(stripTags('< / p / >'), '');
+      assertEqual(stripTags('</>'), '');
+      assertEqual(stripTags('<b NOT BOLD</b>'), '<b NOT BOLD');
+      assertEqual(stripTags('</foo  >>'), '>');
+    });
+
+    it('should ignore entities', function() {
+      assertEqual(stripTags('&quot;'), '&quot;');
+      assertEqual(stripTags('<p>&quot;</p>'), '&quot;');
+    });
+
+    it('should handle namespaced xml tags', function() {
+      assertEqual(stripTags('<xsl:template>text</xsl:template>'), 'text');
+      assertEqual(stripTags('<xsl/template>text</xsl/template>'), 'text');
+    });
+
+    it('should handle nested html', function() {
+      assertEqual(stripTags('<p><span>text</span></p>'), 'text');
+      assertEqual(stripTags('<p>one <span>two</span> three</p>'), 'one two three');
+      assertEqual(stripTags('<div>1 <p>2</p> <p>3</p> 4'), '1 2 3 4');
+    });
+
+    it('should handle slashes in attributes', function() {
+      assertEqual(stripTags('<a href="http://foobar.com/">links</a>'), 'links');
+      assertEqual(stripTags('<img src="http://foobar.com/" />'), '');
+    });
+
+    it('should handle upper case', function() {
+      assertEqual(stripTags('<P>text</P>'), 'text');
+      assertEqual(stripTags('<SPAN>text</SPAN>'), 'text');
+    });
+
+    it('should replace with string argument', function() {
+      assertEqual(stripTags('<p>text</p>', '|'), '|text|');
+      assertEqual(stripTags(' <p>text</p> ', '|'), ' |text| ');
+      assertEqual(stripTags('<p><span>text</span></p>', '|'), '||text||');
+      assertEqual(stripTags('<img src="src" />', 'hi'), 'hi');
+      assertEqual(stripTags('<meta charset="utf-8">', 'hi'), 'hi');
+    });
+
+    it('should replace with function argument', function() {
+      assertEqual(stripTags('<p>text</p>', (tag) => tag.toUpperCase()), 'PtextP');
+      assertEqual(stripTags('<p><span>text</span></p>', (tag) => {
+        return tag === 'span' ? '*' : '\n';
+      }), '\n*text*\n');
+    });
+
+    it('should have correct arguments in replace function', function() {
+      stripTags('<p id="id" class="class">', (tag, html, type, attr) => {
+        assertEqual(tag, 'p');
+        assertEqual(html, '<p id="id" class="class">');
+        assertEqual(type, 'open');
+        assertEqual(attr, 'id="id" class="class"');
+      });
+      stripTags('</p>', (tag, html, type, attr) => {
+        assertEqual(tag, 'p');
+        assertEqual(html, '</p>');
+        assertEqual(type, 'close');
+        assertEqual(attr, '');
+      });
+      stripTags('<img src="src" />', (tag, html, type, attr) => {
+        assertEqual(tag, 'img');
+        assertEqual(html, '<img src="src" />');
+        assertEqual(type, 'empty');
+        assertEqual(attr, 'src="src"');
+      });
+      stripTags('<meta charset="utf-8">', (tag, html, type, attr) => {
+        assertEqual(tag, 'meta');
+        assertEqual(html, '<meta charset="utf-8">');
+        assertEqual(type, 'empty');
+        assertEqual(attr, 'charset="utf-8"');
+      });
+      stripTags('<xsl:template>', (tag, html, type, attr) => {
+        assertEqual(tag, 'xsl:template');
+        assertEqual(html, '<xsl:template>');
+        assertEqual(type, 'open');
+        assertEqual(attr, '');
+      });
+      stripTags('</>', (tag, html, type, attr) => {
+        assertEqual(tag, '');
+        assertEqual(html, '</>');
+        assertEqual(type, 'close');
+        assertEqual(attr, '');
+      });
+    });
+
+    it('should handle complicated nested html', function() {
+      const html = [
+        '<form action="foo.php" method="post">',
+        '  <p>',
+        '    <label>label:</label>',
+        '    <input type="text" value="username" />',
+        '    <input type="submit" value="submit">',
+        '    <button>Submit</button>',
+        '  </p>',
+        '</form>',
+      ].join('\n');
+      const expected = [
+        '',
+        '  ',
+        '    label:',
+        '    ',
+        '    ',
+        '    Submit',
+        '  ',
+        '',
+      ].join('\n');
+      assertEqual(stripTags(html), expected);
+    });
+
+
+    it('should work on irregular input', function() {
+      assertEqual(stripTags(), 'undefined');
+      assertEqual(stripTags(''), '');
+      assertEqual(stripTags(null), 'null');
+      assertEqual(stripTags(8), '8');
+    });
+
+    it('should handle raised issues', function() {
+
+      // Issue #410 - replacing stripped tags
+      assertEqual(stripTags('<span>text</span>', function() {
+        return ' ';
+      }), ' text ');
+
+      // Issue #467 - targeting i vs img
+      assertEqual(stripTags('<img src="src">', function(tag, html) {
+        return tag === 'i' ? '' : html;
+      }), '<img src="src">');
     });
 
   });
