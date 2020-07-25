@@ -51,19 +51,6 @@ namespace('String', function () {
     raisesError(function() { run('% 23'); }, 'should raise an error for malformed urls');
   });
 
-  method('shift', function() {
-
-    test('ク', [1], 'グ', 'should shift 1 code up');
-    test('グ', [-1], 'ク', 'should shift 1 code down');
-    test('ヘ', [2], 'ペ', 'should shift 2 codes');
-    test('ペ', [-2], 'ヘ', 'should shift -2 codes');
-    test('ク', [0], 'ク', 'should shift 0 codes');
-    test('ク', 'ク', 'no params simply returns the string');
-    test('カキクケコ', [1], 'ガギグゲゴ', 'multiple characters up one');
-    test('ガギグゲゴ', [-1], 'カキクケコ', 'multiple characters down one');
-
-  });
-
   method('forEach', function() {
 
     var callbackTest, result;

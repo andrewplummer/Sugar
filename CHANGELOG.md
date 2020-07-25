@@ -53,6 +53,7 @@ v3.0.0
     Also no longer coerces non-global regexes to be global.
 - Renamed `String#escapeHTML` to `String#escapeHtml`.
 - Renamed `String#unescapeHTML` to `String#unescapeHtml`.
+- Removed `String#shift`.
 
 TODO:
 
