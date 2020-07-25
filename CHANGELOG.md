@@ -59,6 +59,7 @@ v3.0.0
 - Removed `String#lines`. Splitting on a new line should be used instead.
 - Removed `String#chars`. Splitting on an empty string should be used instead.
 - Renamed `String#codes` to `String#toCodes`. Added multi-byte support.
+- Removed `String#forEach`. Use `String#match` instead.
 
 TODO:
 
