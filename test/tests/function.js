@@ -44,6 +44,15 @@ namespace('Function', function() {
       }).call(1,2,3,4);
     });
 
+    it('should be able to clear the cache', function() {
+      var fn = memoize(captureArgs, () => true);
+      assertArrayEqual(fn('a'), ['a']);
+      assertArrayEqual(fn('b'), ['a']);
+      fn.cache.clear();
+      assertArrayEqual(fn('b'), ['b']);
+      assertArrayEqual(fn('c'), ['b']);
+    });
+
     it('should pass same args and context to the hash function', function() {
       memoize(noop, function(a, b, c) {
         assertArrayEqual([this, a, b, c], [1,2,3,4]);

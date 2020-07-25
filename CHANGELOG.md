@@ -66,7 +66,6 @@ v3.0.0
 
 TODO:
 
-- Function#memoize expose cache?
 - Consider asserting types instead of coercion??
 - Object.values / Object.entries?
 - Array#flat/Array#flatMap

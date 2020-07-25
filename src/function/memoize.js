@@ -1,11 +1,10 @@
-import { hasOwnProperty } from '../util/helpers';
-
 /**
  * Creates a function that will memoize results for unique calls.
  *
  * @extra `memoize` can be thought of as a more powerful `once`. Where `once`
  * will only call a function once ever, memoized functions will be
- * called once per "unique" call, which can be customized.
+ * called once per "unique" call, which can be customized. Custom cache control
+ * can also be achieved by the `cache` property on the memoized function.
  *
  * @param {Function} fn - The function to memoize.
  * @param {Function} [hashFn] - The hash function. This function should return
@@ -14,7 +13,9 @@ import { hasOwnProperty } from '../util/helpers';
  *   By default the first argument will coerced to a string and used as the
  *   cache key.
  *
- * @returns {Function}
+ * @returns {Function} - The returned function will have a `cache` property
+ *   defined on it of type Map, allowing clearing, setting, or removing items
+ *   from the cache.
  *
  * @callback hashFn
  * @param {...any} args - The arguments passed to the input function.
@@ -30,15 +31,20 @@ import { hasOwnProperty } from '../util/helpers';
  *
  */
 export default function memoize(fn, hashFn) {
-  const cache = {};
+  const cache = new Map();
   hashFn = hashFn || defaultHashFn;
-  return function memoized() {
+  const memoizedFn = function memoized() {
     const key = hashFn.apply(this, arguments);
-    if (hasOwnProperty(cache, key)) {
-      return cache[key];
+    if (cache.has(key)) {
+      return cache.get(key);
+    } else {
+      const val = fn.apply(this, arguments);
+      cache.set(key, val);
+      return val;
     }
-    return cache[key] = fn.apply(this, arguments);
   };
+  memoizedFn.cache = cache;
+  return memoizedFn;
 }
 
 function defaultHashFn(arg) {
