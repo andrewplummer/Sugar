@@ -60,6 +60,8 @@ v3.0.0
 - Removed `String#chars`. Splitting on an empty string should be used instead.
 - Renamed `String#codes` to `String#toCodes`. Added multi-byte support.
 - Removed `String#forEach`. Use `String#match` instead.
+- Renamed `String#escapeURL` to `String#encodeUrl` and `String#encodeUrlParam`.
+- Renamed `String#unesacpeURL` to `String#decodeUrl` and `String#decodeUrlParam`.
 
 TODO:
 

@@ -17,7 +17,7 @@ const PLANE_MAX = Math.pow(2, 16);
  *   '🍺'.toCodes()  -> [127866]
  *
  **/
-export default function toCodes(str) {
+export default function toCodes(str = '') {
   str = coerce(str);
   const codes = [];
   for (let i = 0, len = str.length; i < len; i++) {

@@ -1339,12 +1339,86 @@ namespace('String', function() {
     });
 
     it('should handle irregular input', function() {
+      assertArrayEqual(toCodes(), []);
       assertArrayEqual(toCodes(null), [110, 117, 108, 108]);
       assertArrayEqual(toCodes(NaN), [78, 97, 78]);
       assertArrayEqual(toCodes(8), [56]);
+    });
 
-      // "undefined"
-      assertArrayEqual(toCodes(), [117, 110, 100, 101, 102, 105, 110, 101, 100]);
+  });
+
+  describeInstance('encodeUrl', function(encodeUrl) {
+
+    it('should handle basic input', function() {
+      assertEqual(encodeUrl(';,/?:@&=+$#'), ';,/?:@&=+$#');
+      assertEqual(encodeUrl("-_.!~*'()"), "-_.!~*'()");
+      assertEqual(encodeUrl('ABC abc 123'), 'ABC%20abc%20123');
+    });
+
+    it('should handle irregular input', function() {
+      assertEqual(encodeUrl(), '');
+      assertEqual(encodeUrl(null), 'null');
+      assertEqual(encodeUrl(NaN), 'NaN');
+      assertEqual(encodeUrl(8), '8');
+    });
+
+  });
+
+  describeInstance('encodeUrlParam', function(encodeUrlParam) {
+
+    it('should handle basic input', function() {
+      assertEqual(encodeUrlParam(';,/?:@&=+$#'), '%3B%2C%2F%3F%3A%40%26%3D%2B%24%23');
+      assertEqual(encodeUrlParam("-_.!~*'()"), "-_.!~*'()");
+      assertEqual(encodeUrlParam('ABC abc 123'), 'ABC%20abc%20123');
+    });
+
+    it('should handle irregular input', function() {
+      assertEqual(encodeUrlParam(), '');
+      assertEqual(encodeUrlParam(null), 'null');
+      assertEqual(encodeUrlParam(NaN), 'NaN');
+      assertEqual(encodeUrlParam(8), '8');
+    });
+
+  });
+
+  describeInstance('decodeUrl', function(decodeUrl) {
+
+    it('should handle basic input', function() {
+      assertEqual(decodeUrl(';,/?:@&=+$#'), ';,/?:@&=+$#');
+      assertEqual(decodeUrl( "-_.!~*'()"), "-_.!~*'()");
+      assertEqual(decodeUrl( 'ABC%20abc%20123'), 'ABC abc 123');
+    });
+
+    it('should error on malformed urls', function() {
+      assertError(function () { decodeUrl('% 23'); });
+    });
+
+    it('should handle irregular input', function() {
+      assertEqual(decodeUrl(), '');
+      assertEqual(decodeUrl(null), 'null');
+      assertEqual(decodeUrl(NaN), 'NaN');
+      assertEqual(decodeUrl(8), '8');
+    });
+
+  });
+
+  describeInstance('decodeUrlParam', function(decodeUrlParam) {
+
+    it('should handle basic input', function() {
+      assertEqual(decodeUrlParam('%3B%2C%2F%3F%3A%40%26%3D%2B%24%23'), ';,/?:@&=+$#');
+      assertEqual(decodeUrlParam("-_.!~*'()"), "-_.!~*'()");
+      assertEqual(decodeUrlParam('ABC%20abc%20123'), 'ABC abc 123');
+    });
+
+    it('should error on malformed urls', function() {
+      assertError(function () { decodeUrlParam('% 23'); });
+    });
+
+    it('should handle irregular input', function() {
+      assertEqual(decodeUrlParam(), '');
+      assertEqual(decodeUrlParam(null), 'null');
+      assertEqual(decodeUrlParam(NaN), 'NaN');
+      assertEqual(decodeUrlParam(8), '8');
     });
 
   });
