@@ -473,59 +473,6 @@ namespace('Function', function () {
 
   });
 
-  method('once', function() {
-    var fn, count;
-
-    // Simple count
-    count = 0;
-    fn = run(function(one, two) {
-      count++;
-    }, 'once');
-
-    fn.call();
-    fn.call();
-    fn.call();
-
-    equal(count, 1, 'returning undefined will not affect the number of calls');
-
-    // Simple arguments
-    count = 0;
-    fn = run(function(n) {
-      count++;
-      return n + 1;
-    }, 'once');
-    equal(fn(3), 4, 'running with 3 should add 1');
-    equal(fn(4), 4, 'running with 4 should remain 4');
-    equal(fn(500), 4, 'running with 500 should still be 4');
-    // Runs
-    fn(1);
-    // Runs
-    fn(2);
-    // Cached
-    fn(3);
-    equal(count, 1, 'should have run once');
-
-    // Complex arguments
-    var obj = { foo: 'bar' };
-    count = 0;
-    fn = run(function(one, two) {
-      count++;
-      equal(this, obj, 'scope is properly set');
-      equal(one, 'one', 'first argument is passed');
-      equal(two, 'two', 'second argument is passed');
-      return count * 30;
-    }, 'once');
-
-    equal(fn.call(obj, 'one', 'two'), 30, 'first call calculates the result');
-    equal(fn.call(obj, 'one', 'two'), 30, 'second call memoizes the result');
-    equal(fn.call(obj, 'one', 'two'), 30, 'third call memoizes the result');
-    equal(fn.call(obj, 'one', 'two'), 30, 'fourth call memoizes the result');
-    equal(fn.call(obj, 'one', 'two'), 30, 'fifth call memoizes the result');
-
-    equal(count, 1, 'count is only incremented once');
-
-  });
-
   method('partial', function() {
 
     var format = function(place, last){

@@ -11,12 +11,12 @@ import { assertPositiveInteger } from '../util/assertions';
  * exception that a debounced function will receive the last arguments
  * supplied, while a throttled function will receive the first.
  *
+ * @param {Function} fn - The function to debounce.
+ *
  * @example
  *
  *   var fn = debounce(logHello, 250)
  *   runTenTimes(fn); -> called once 250ms later
- *
- * @param {Function} fn - The function to debounce.
  *
  * @returns {Function}
  *

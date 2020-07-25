@@ -21,14 +21,14 @@ namespace('Function', function() {
   describeInstance('memoize', function(memoize) {
 
     it('should perform basic caching', function() {
-      const fn = memoize(captureArgs);
+      var fn = memoize(captureArgs);
       assertArrayEqual(fn('a'), ['a']);
       assertArrayEqual(fn('a', 'b'), ['a']);
       assertArrayEqual(args, [['a']]);
     });
 
     it('should use hash function as the cache key', function() {
-      const fn = memoize(captureArgs, function(i) {
+      var fn = memoize(captureArgs, function(i) {
         return i % 2 === 0;
       });
       assertArrayEqual(fn(1), [1]);
@@ -46,6 +46,23 @@ namespace('Function', function() {
 
     it('should pass same args and context to the hash function', function() {
       memoize(noop, function(a, b, c) {
+        assertArrayEqual([this, a, b, c], [1,2,3,4]);
+      }).call(1,2,3,4);
+    });
+
+  });
+
+  describeInstance('once', function(once) {
+
+    it('should only run once', function() {
+      var fn = once(captureArgs);
+      assertArrayEqual(fn('a'), ['a']);
+      assertArrayEqual(fn('a', 'b'), ['a']);
+      assertArrayEqual(args, [['a']]);
+    });
+
+    it('should receive same args and context', function() {
+      once(function(a, b, c) {
         assertArrayEqual([this, a, b, c], [1,2,3,4]);
       }).call(1,2,3,4);
     });

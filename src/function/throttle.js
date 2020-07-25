@@ -18,6 +18,7 @@ const DEFAULT_OPTIONS = {
  * will receive the first arguments before it was locked, where `debounce`
  * will receive the last.
  *
+ * @param {Function} fn - The function to throttle.
  * @param {number} ms - The delay to throttle the function by.
  * @param {Object} [options] - Options to be passed to throttle.
  *
