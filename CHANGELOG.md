@@ -37,6 +37,7 @@ v3.0.0
 - Removed `RegExp#getFlags`, `RegExp#setFlags`, `RegExp#addFlags` and
     `RegExp#removeFlags`.
 - Removed `Function#memoize` ability to deeply serialize all arguments.
+- Removed `Function#memoize` `limit` argument.
 - Removed Math aliases `Number#sin/asin/cos/acos/tan/atan/exp` in favor of
     directly using `Math`.
   `Number#round/floor/ceil/abs/sqrt/pow` aliases are retained.
@@ -65,6 +66,7 @@ v3.0.0
 
 TODO:
 
+- Function#memoize expose cache?
 - Consider asserting types instead of coercion??
 - Object.values / Object.entries?
 - Array#flat/Array#flatMap

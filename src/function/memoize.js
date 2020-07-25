@@ -2,19 +2,23 @@ import { hasOwnProperty } from '../util/helpers';
 
 /**
  * Creates a function that will memoize results for unique calls.
- * `memoize` can be thought of as a more powerful `once`. Where `once`
+ *
+ * @extra `memoize` can be thought of as a more powerful `once`. Where `once`
  * will only call a function once ever, memoized functions will be
- * called once per unique call. A "unique call" is determined by the
- * return value of [hashFn], which is passed the arguments of each call.
- * If [hashFn] is undefined, it will deeply serialize all arguments,
- * such that any different argument signature will result in a unique
- * call. [hashFn] may be a string (allows `deep properties`) that acts
- * as a shortcut to return a property of the first argument passed.
- * [limit] sets an upper limit on memoized results. The default is no
- * limit, meaning that unique calls will continue to memoize results.
- * For most use cases this is fine, however [limit] is useful for more
- * persistent (often server-side) applications for whom memory leaks
- * are a concern.
+ * called once per "unique" call, which can be customized.
+ *
+ * @param {Function} fn - The function to memoize.
+ * @param {Function} [hashFn] - The hash function. This function should return
+ *   a string that will become the cache key. If the result of a previous call
+ *   to the returned function has the same key, the cached value will be used.
+ *   By default the first argument will coerced to a string and used as the
+ *   cache key.
+ *
+ * @returns {Function}
+ *
+ * @callback hashFn
+ * @param {...any} args - The arguments passed to the input function.
+ * @returns {string}    - The string that will determine the cache key.
  *
  * @example
  *
@@ -23,10 +27,6 @@ import { hasOwnProperty } from '../util/helpers';
  *
  *   var fn = calculateUserBalance.memoize('id');
  *   fn(Harry); fn(Mark); fn(Mark); -> logs twice, memoizing once
- *
- * @param {Function} fn - The function to memoize.
- * @param {Function} [hashFn] - The function to memoize.
- * @static
  *
  */
 export default function memoize(fn, hashFn) {
