@@ -1,4 +1,10 @@
-import { isArray, isString, isFunction, isPrimitive } from './typeChecks';
+import {
+  isArray,
+  isString,
+  isNumber,
+  isFunction,
+  isPrimitive,
+} from './typeChecks';
 
 const MIN = 1e-6;
 const MAX = 1e21;
@@ -18,7 +24,7 @@ export function assertString(str) {
 }
 
 export function assertNumber(n) {
-  if (!n && n !== 0) {
+  if (!isNumber(n)) {
     throw new TypeError(`${n} is not a valid number`);
   }
 }

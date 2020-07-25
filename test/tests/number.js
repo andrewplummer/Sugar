@@ -131,6 +131,12 @@ namespace('Number', function() {
       assertEqual(round(1e-21, -1), 0);
     });
 
+    it('should handle irregular input', function() {
+      assertNaN(round());
+      assertEqual(round('8'), 8);
+      assertEqual(round(null), 0);
+    });
+
   });
 
   describeInstance('ceil', function(ceil) {
@@ -149,6 +155,12 @@ namespace('Number', function() {
       assertEqual(ceil(4417.1318, -1), 4420);
       assertEqual(ceil(4417.1318, -2), 4500);
       assertEqual(ceil(4417.1318, -3), 5000);
+    });
+
+    it('should handle irregular input', function() {
+      assertNaN(ceil());
+      assertEqual(ceil('8'), 8);
+      assertEqual(ceil(null), 0);
     });
 
   });
@@ -172,6 +184,12 @@ namespace('Number', function() {
       assertEqual(floor(4417.1318, [-3]), 4000);
     });
 
+    it('should handle irregular input', function() {
+      assertNaN(floor());
+      assertEqual(floor('8'), 8);
+      assertEqual(floor(null), 0);
+    });
+
   });
 
   describeInstance('trunc', function(trunc) {
@@ -187,6 +205,12 @@ namespace('Number', function() {
       assertEqual(trunc(-5.25, 2), -5.25);
     });
 
+    it('should handle irregular input', function() {
+      assertNaN(trunc());
+      assertEqual(trunc('8'), 8);
+      assertEqual(trunc(null), 0);
+    });
+
   });
 
   describeInstance('abs', function(abs) {
@@ -196,6 +220,12 @@ namespace('Number', function() {
       assertEqual(abs(5), 5);
       assertEqual(abs(-3.324), 3.324);
       assertEqual(abs(3.324), 3.324);
+    });
+
+    it('should handle irregular input', function() {
+      assertNaN(abs());
+      assertEqual(abs('8'), 8);
+      assertEqual(abs(null), 0);
     });
 
   });
@@ -211,6 +241,14 @@ namespace('Number', function() {
       assertEqual(pow(3), NaN);
     });
 
+    it('should handle irregular input', function() {
+      assertNaN(pow());
+      assertNaN(pow('8'));
+      assertNaN(pow(null));
+      assertEqual(pow(2, '8'), 256);
+      assertEqual(pow(2, null), 1);
+    });
+
   });
 
   describeInstance('log', function(log) {
@@ -222,6 +260,18 @@ namespace('Number', function() {
       assertEqual(log(Math.E), 1);
     });
 
+    it('should get natural log of numbers', function() {
+      assertEqual(log(1), 0);
+    });
+
+    it('should handle irregular input', function() {
+      assertNaN(log());
+      assertEqual(log('1'), 0);
+      assertEqual(log(null), -Infinity);
+      assertEqual(log(64, '2'), 6);
+      assertEqual(log(64, null), -0);
+    });
+
   });
 
   describeInstance('sqrt', function(sqrt) {
@@ -229,6 +279,12 @@ namespace('Number', function() {
     it('should get square root', function() {
       assertEqual(sqrt(9), 3);
       assertEqual(sqrt(1024), 32);
+    });
+
+    it('should handle irregular input', function() {
+      assertNaN(sqrt());
+      assertEqual(sqrt('9'), 3);
+      assertEqual(sqrt(null), 0);
     });
 
   });
@@ -239,10 +295,20 @@ namespace('Number', function() {
       assertEqual(toChar(65), 'A');
       assertEqual(toChar(24536), '忘');
       assertEqual(toChar(20294), '但');
-      assertError(function() { toChar(NaN); }, RangeError);
-      assertError(function() { toChar(-1); }, RangeError);
-      assertError(function() { toChar(.5); }, RangeError);
-      assertError(function() { toChar(0x110000); }, RangeError);
+    });
+
+    it('should error on invalid input', function() {
+      assertError(function() { toChar(); });
+      assertError(function() { toChar(null); });
+      assertError(function() { toChar(undefined); });
+      assertError(function() { toChar(NaN); });
+      assertError(function() { toChar(-1); });
+      assertError(function() { toChar(.5); });
+      assertError(function() { toChar(0x110000); });
+    });
+
+    it('should handle irregular input', function() {
+      assertEqual(toChar('65'), 'A');
     });
 
   });
@@ -279,10 +345,12 @@ namespace('Number', function() {
       assertEqual(clamp(5), 5);
     });
 
-    it('should raise errors on invalid', function() {
-      assertError(function() { clamp(NaN); });
+    it('should handle irregular input', function() {
+      assertError(function() { clamp(); });
       assertError(function() { clamp(null); });
-      assertError(function() { clamp(undefined); });
+      assertEqual(clamp('8'), 8);
+      assertEqual(clamp(8, '5'), 5);
+      assertEqual(clamp(8, null), 8);
     });
 
   });
@@ -290,19 +358,28 @@ namespace('Number', function() {
   describeInstance('isMultipleOf', function(isMultipleOf) {
 
     it('should should determine if multiple', function() {
-      assertEqual(isMultipleOf(2, 2), true);
-      assertEqual(isMultipleOf(6, 2), true);
-      assertEqual(isMultipleOf(100, 2), true);
-      assertEqual(isMultipleOf(2, 100), false);
-      assertEqual(isMultipleOf(100, -2), true);
-      assertEqual(isMultipleOf(6, -2), true);
-      assertEqual(isMultipleOf(6, 3), true);
-      assertEqual(isMultipleOf(7, 3), false);
-      assertEqual(isMultipleOf(2.5, 1.25), true);
-      assertEqual(isMultipleOf(2, 'a'), false);
-      assertEqual(isMultipleOf(2, /af/), false);
-      assertEqual(isMultipleOf(2, null), false);
-      assertEqual(isMultipleOf(2), false);
+      assertTrue(isMultipleOf(2, 2));
+      assertTrue(isMultipleOf(6, 2));
+      assertTrue(isMultipleOf(100, 2));
+      assertFalse(isMultipleOf(2, 100));
+      assertTrue(isMultipleOf(100, -2));
+      assertTrue(isMultipleOf(6, -2));
+      assertTrue(isMultipleOf(6, 3));
+      assertFalse(isMultipleOf(7, 3));
+      assertTrue(isMultipleOf(2.5, 1.25));
+      assertFalse(isMultipleOf(2, 'a'));
+      assertFalse(isMultipleOf(2, /af/));
+      assertFalse(isMultipleOf(2, null));
+      assertFalse(isMultipleOf(2));
+    });
+
+    it('should handle irregular input', function() {
+      assertFalse(isMultipleOf());
+      assertFalse(isMultipleOf('8'));
+      assertFalse(isMultipleOf(null));
+      assertFalse(isMultipleOf(8));
+      assertFalse(isMultipleOf(8, '2'));
+      assertFalse(isMultipleOf(8, null));
     });
 
   });
@@ -310,15 +387,21 @@ namespace('Number', function() {
   describeInstance('isOdd', function(isOdd) {
 
     it('should determine if odd', function() {
-      assertEqual(isOdd(0), false);
-      assertEqual(isOdd(1), true);
-      assertEqual(isOdd(2), false);
-      assertEqual(isOdd(24), false);
-      assertEqual(isOdd(200), false);
-      assertEqual(isOdd(1.1), false);
-      assertEqual(isOdd(NaN), false);
-      assertEqual(isOdd(Infinity), false);
-      assertEqual(isOdd(-Infinity), false);
+      assertFalse(isOdd(0));
+      assertTrue(isOdd(1));
+      assertFalse(isOdd(2));
+      assertFalse(isOdd(24));
+      assertFalse(isOdd(200));
+      assertFalse(isOdd(1.1));
+      assertFalse(isOdd(NaN));
+      assertFalse(isOdd(Infinity));
+      assertFalse(isOdd(-Infinity));
+    });
+
+    it('should handle irregular input', function() {
+      assertFalse(isOdd());
+      assertFalse(isOdd('7'));
+      assertFalse(isOdd(null));
     });
 
   });
@@ -326,15 +409,21 @@ namespace('Number', function() {
   describeInstance('isEven', function(isEven) {
 
     it('should determine if even', function() {
-      assertEqual(isEven(0), true);
-      assertEqual(isEven(1), false);
-      assertEqual(isEven(2), true);
-      assertEqual(isEven(24), true);
-      assertEqual(isEven(200), true);
-      assertEqual(isEven(1.1), false);
-      assertEqual(isEven(NaN), false);
-      assertEqual(isEven(Infinity), false);
-      assertEqual(isEven(-Infinity), false);
+      assertTrue(isEven(0));
+      assertFalse(isEven(1));
+      assertTrue(isEven(2));
+      assertTrue(isEven(24));
+      assertTrue(isEven(200));
+      assertFalse(isEven(1.1));
+      assertFalse(isEven(NaN));
+      assertFalse(isEven(Infinity));
+      assertFalse(isEven(-Infinity));
+    });
+
+    it('should handle irregular input', function() {
+      assertFalse(isEven());
+      assertFalse(isEven('8'));
+      assertFalse(isEven(null));
     });
 
   });
@@ -394,12 +483,18 @@ namespace('Number', function() {
   describeInstance('isInteger', function(isInteger) {
 
     it('should find integers', function() {
-      assertEqual(isInteger(15), true);
-      assertEqual(isInteger(15.2), false);
-      assertEqual(isInteger(15.2668), false);
-      assertEqual(isInteger(15.0), true);
-      assertEqual(isInteger('15'), false);
-      assertEqual(isInteger('15.8'), false);
+      assertTrue(isInteger(15));
+      assertFalse(isInteger(15.2));
+      assertFalse(isInteger(15.2668));
+      assertTrue(isInteger(15.0));
+      assertFalse(isInteger('15'));
+      assertFalse(isInteger('15.8'));
+    });
+
+    it('should handle irregular input', function() {
+      assertFalse(isInteger());
+      assertFalse(isInteger('8'));
+      assertFalse(isInteger(null));
     });
 
   });
@@ -407,12 +502,18 @@ namespace('Number', function() {
   describeInstance('isSafeInteger', function(isSafeInteger) {
 
     it('should find safe integers', function() {
-      assertEqual(isSafeInteger(-0), true);
-      assertEqual(isSafeInteger(0), true);
-      assertEqual(isSafeInteger(1), true);
-      assertEqual(isSafeInteger(1e255), false);
-      assertEqual(isSafeInteger(NaN), false);
-      assertEqual(isSafeInteger(Infinity), false);
+      assertTrue(isSafeInteger(-0));
+      assertTrue(isSafeInteger(0));
+      assertTrue(isSafeInteger(1));
+      assertFalse(isSafeInteger(1e255));
+      assertFalse(isSafeInteger(NaN));
+      assertFalse(isSafeInteger(Infinity));
+    });
+
+    it('should handle irregular input', function() {
+      assertFalse(isSafeInteger());
+      assertFalse(isSafeInteger('8'));
+      assertFalse(isSafeInteger(null));
     });
 
   });
@@ -420,23 +521,36 @@ namespace('Number', function() {
   describeInstance('isFinite', function(isFinite) {
 
     it('should return true for finite numbers', function() {
-      assertEqual(isFinite(-0), true);
-      assertEqual(isFinite(0), true);
-      assertEqual(isFinite(1), true);
-      assertEqual(isFinite(1e255), true);
-      assertEqual(isFinite(NaN), false);
-      assertEqual(isFinite(Infinity), false);
-      assertEqual(isFinite(-Infinity), false);
+      assertTrue(isFinite(-0));
+      assertTrue(isFinite(0));
+      assertTrue(isFinite(1));
+      assertTrue(isFinite(1e255));
+      assertFalse(isFinite(NaN));
+      assertFalse(isFinite(Infinity));
+      assertFalse(isFinite(-Infinity));
     });
+
+    it('should handle irregular input', function() {
+      assertFalse(isFinite());
+      assertFalse(isFinite('8'));
+      assertFalse(isFinite(null));
+    });
+
   });
 
   describeInstance('isNaN', function(isNaN) {
 
     it('should return true for NaN', function() {
-      assertEqual(isNaN(1), false);
-      assertEqual(isNaN(NaN), true);
-      assertEqual(isNaN(Infinity), false);
-      assertEqual(isNaN(-Infinity), false);
+      assertFalse(isNaN(1));
+      assertTrue(isNaN(NaN));
+      assertFalse(isNaN(Infinity));
+      assertFalse(isNaN(-Infinity));
+    });
+
+    it('should handle irregular input', function() {
+      assertFalse(isNaN());
+      assertFalse(isNaN('8'));
+      assertFalse(isNaN(null));
     });
 
   });
@@ -463,16 +577,6 @@ namespace('Number', function() {
       assertCount(10, 10);
     });
 
-    it('should error on invalid input', function() {
-      assertInvalidInput(-1);
-      assertInvalidInput(1.5);
-      assertInvalidInput(NaN);
-      assertInvalidInput(null);
-      assertInvalidInput(undefined);
-      assertInvalidInput(Infinity);
-      assertInvalidInput(-Infinity);
-    });
-
     it('should produce correct return values', function() {
       assertArrayEqual(times(3, function(i) {
         return Math.pow(2, i);
@@ -485,6 +589,16 @@ namespace('Number', function() {
 
     it('should error when no function provided', function() {
       assertError(function() { times(1); });
+    });
+
+    it('should error on invalid input', function() {
+      assertInvalidInput(-1);
+      assertInvalidInput(1.5);
+      assertInvalidInput(NaN);
+      assertInvalidInput(null);
+      assertInvalidInput(undefined);
+      assertInvalidInput(Infinity);
+      assertInvalidInput(-Infinity);
     });
 
   });

@@ -3,5 +3,5 @@ export default function abs(n) {
   // very strange bug in iOS7 that only occurs occasionally
   // in which Math.abs() called on non-primitive numbers
   // returns a completely different number (Issue #400)
-  return Math.abs(n.valueOf());
+  return Math.abs((+n).valueOf());
 }

@@ -1,5 +1,6 @@
 function alias(fn) {
   return function(n, place) {
+
     if (!place) {
       return fn(n);
     }
