@@ -1228,28 +1228,28 @@ namespace('String', function() {
 
   describeInstance('escapeHtml', function(escapeHtml) {
 
-    it('should escape basic input', () => {
+    it('should escape basic input', function() {
       assertEqual(escapeHtml('1 > 2'), '1 &gt; 2');
       assertEqual(escapeHtml('<foo>'), '&lt;foo&gt;');
       assertEqual(escapeHtml('<p>some text</p>'), '&lt;p&gt;some text&lt;/p&gt;');
       assertEqual(escapeHtml('<img src="src" />'), '&lt;img src="src" /&gt;');
     });
 
-    it('should escape entities', () => {
+    it('should escape entities', function() {
       assertEqual(escapeHtml('war & peace & food'), 'war &amp; peace &amp; food');
     });
 
-    it('should not escape apostrophes or quotes', () => {
+    it('should not escape apostrophes or quotes', function() {
       assertEqual(escapeHtml('"foo"'), '"foo"');
       assertEqual(escapeHtml("'foo'"), "'foo'");
     });
 
-    it('should have expected results when already escaped', () => {
+    it('should have expected results when already escaped', function() {
       assertEqual(escapeHtml('&amp;'), '&amp;amp;');
       assertEqual(escapeHtml('&lt;span&gt;escaped&lt;/span&gt;'), '&amp;lt;span&amp;gt;escaped&amp;lt;/span&amp;gt;');
     });
 
-    it('should handle irregular input', () => {
+    it('should handle irregular input', function() {
       assertEqual(escapeHtml(null), 'null');
       assertEqual(escapeHtml(NaN), 'NaN');
       assertEqual(escapeHtml(8), '8');
@@ -1260,57 +1260,91 @@ namespace('String', function() {
 
   describeInstance('unescapeHtml', function(unescapeHtml) {
 
-    it('should unescape basic input', () => {
+    it('should unescape basic input', function() {
       assertEqual(unescapeHtml('1 &gt; 2'), '1 > 2');
       assertEqual(unescapeHtml('&lt;foo&gt;'), '<foo>');
       assertEqual(unescapeHtml('&lt;p&gt;some text&lt;/p&gt;'), '<p>some text</p>');
       assertEqual(unescapeHtml('&lt;img src="src" /&gt;'), '<img src="src" />');
     });
 
-    it('should unescape special entities', () => {
+    it('should unescape special entities', function() {
       assertEqual(unescapeHtml('war &amp; peace'), 'war & peace');
       assertEqual(unescapeHtml('it&apos;s'), "it's");
       assertEqual(unescapeHtml('&quot;foo&quot;'), '"foo"');
       assertEqual(unescapeHtml('&nbsp;'), ' ');
     });
 
-    it('should unescape ascii decimal entities', () => {
+    it('should unescape ascii decimal entities', function() {
       assertEqual(unescapeHtml('&#32;'), ' ');
       assertEqual(unescapeHtml('&#33;'), '!');
     });
 
-    it('should unescape ascii hex entities', () => {
+    it('should unescape ascii hex entities', function() {
       assertEqual(unescapeHtml('&#x20;'), ' ');
       assertEqual(unescapeHtml('&#x21;'), '!');
       assertEqual(unescapeHtml('&#x2f;'), '/');
     });
 
-    it('should unescape non-ascii decimal entities', () => {
+    it('should unescape non-ascii decimal entities', function() {
       assertEqual(unescapeHtml('&#192;'), 'À');
       assertEqual(unescapeHtml('&#64257;'), 'ﬁ');
       assertEqual(unescapeHtml('&#12354;'), 'あ');
     });
 
-    it('should unescape non-ascii hex entities', () => {
+    it('should unescape non-ascii hex entities', function() {
       assertEqual(unescapeHtml('&#xC0;'), 'À');
       assertEqual(unescapeHtml('&#x2b;'), '+');
       assertEqual(unescapeHtml('&#x2B;'), '+');
       assertEqual(unescapeHtml('&#x3042;'), 'あ');
     });
 
-    it('should only escape once', () => {
+    it('should only escape once', function() {
       assertEqual(unescapeHtml('&amp;lt;'), '&lt;');
     });
 
-    it('should do nothing to plain html', () => {
+    it('should do nothing to plain html', function() {
       assertEqual(unescapeHtml('<span>escaped</span>'), '<span>escaped</span>');
     });
 
-    it('should handle irregular input', () => {
+    it('should handle irregular input', function() {
       assertEqual(unescapeHtml(null), 'null');
       assertEqual(unescapeHtml(NaN), 'NaN');
       assertEqual(unescapeHtml(8), '8');
       assertEqual(unescapeHtml(), '');
+    });
+
+  });
+
+  describeInstance('toCodes', function(toCodes) {
+
+    it('should handle basic input', function() {
+      assertArrayEqual(toCodes(''), []);
+      assertArrayEqual(toCodes('foo'), [102, 111, 111]);
+      assertArrayEqual(toCodes('foo bar'), [102, 111, 111, 32, 98, 97, 114]);
+      assertArrayEqual(toCodes('foo\nbar'), [102, 111, 111, 10, 98, 97, 114]);
+    });
+
+    it('should handle non-ascii input', function() {
+      assertArrayEqual(toCodes('今日'), [20170, 26085]);
+      assertArrayEqual(toCodes('오늘'), [50724, 45720]);
+    });
+
+    it('should handle multi-byte', function() {
+      assertArrayEqual(toCodes('🍺'), [127866]);
+      assertArrayEqual(toCodes('🍺🍺'), [127866, 127866]);
+      assertArrayEqual(toCodes('ab🍺🍺cd'), [97, 98, 127866, 127866, 99, 100]);
+      assertArrayEqual(toCodes(
+        String.fromCodePoint(0x10FFFF) + String.fromCodePoint(0x10FFFF)
+      ), [0x10FFFF, 0x10FFFF]);
+    });
+
+    it('should handle irregular input', function() {
+      assertArrayEqual(toCodes(null), [110, 117, 108, 108]);
+      assertArrayEqual(toCodes(NaN), [78, 97, 78]);
+      assertArrayEqual(toCodes(8), [56]);
+
+      // "undefined"
+      assertArrayEqual(toCodes(), [117, 110, 100, 101, 102, 105, 110, 101, 100]);
     });
 
   });

@@ -22,6 +22,7 @@ export { default as spacify } from './spacify';
 export { default as stripTags } from './stripTags';
 export { default as titleize } from './titleize';
 export { default as to } from './to';
+export { default as toCodes } from './toCodes';
 export { default as toNumber } from './toNumber';
 export { default as truncate } from './truncate';
 export { default as truncateOnWord } from './truncateOnWord';

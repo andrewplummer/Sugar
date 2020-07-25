@@ -25,6 +25,7 @@ defineInstance('spacify', methods.spacify);
 defineInstance('stripTags', methods.stripTags);
 defineInstance('titleize', methods.titleize);
 defineInstance('to', methods.to);
+defineInstance('toCodes', methods.toCodes);
 defineInstance('toNumber', methods.toNumber);
 defineInstance('truncate', methods.truncate);
 defineInstance('truncateOnWord', methods.truncateOnWord);

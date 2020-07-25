@@ -54,6 +54,11 @@ v3.0.0
 - Renamed `String#escapeHTML` to `String#escapeHtml`.
 - Renamed `String#unescapeHTML` to `String#unescapeHtml`.
 - Removed `String#shift`.
+- Removed `String#words`. This method is highly use-case dependent and similar
+    functionality can be achieved using just `String#match`.
+- Removed `String#lines`. Splitting on a new line should be used instead.
+- Removed `String#chars`. Splitting on an empty string should be used instead.
+- Renamed `String#codes` to `String#toCodes`. Added multi-byte support.
 
 TODO:
 

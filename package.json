@@ -44,7 +44,7 @@
     "eslint": "^7.4.0",
     "esm": "^3.2.25",
     "jsdoc": "^3.6.4",
-    "ready-test": "^1.0.29",
+    "ready-test": "^1.0.31",
     "sinon": "^7.5.0",
     "string-replace-loader": "^2.2.0",
     "webpack": "^4.41.0",

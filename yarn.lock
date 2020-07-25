@@ -3496,10 +3496,10 @@ readdirp@~3.4.0:
   dependencies:
     picomatch "^2.2.1"
 
-ready-test@^1.0.29:
-  version "1.0.29"
-  resolved "https://registry.yarnpkg.com/ready-test/-/ready-test-1.0.29.tgz#943764c6dea38c1f57e245de1892fc1bdc214f9b"
-  integrity sha512-ISLxp5PvoUpi+NTVf1mzQvh1gzOK25+J5rxiOdLdgwmB41J8knj8ak6jJY1RmFvoLHqPzMjqc7WRcRlTC4cm5w==
+ready-test@^1.0.31:
+  version "1.0.31"
+  resolved "https://registry.yarnpkg.com/ready-test/-/ready-test-1.0.31.tgz#5860ab3b61eb4f1bebc442e90d3adf051e3724a2"
+  integrity sha512-2mXxmVAIVzPdqhjJiJAkMvMt6Q/+LXST1TKmoI+4tM//6cBekDxdgCmuwAek5CFUuTDA4/QFjj/el7X1W4T10g==
   dependencies:
     argv "^0.0.2"
     chalk "^2.4.2"
