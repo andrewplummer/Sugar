@@ -2,7 +2,7 @@
 
 namespace('Function', function() {
 
-  let args;
+  var args;
 
   function captureArgs() {
     var arr = Array.from(arguments);
@@ -45,7 +45,7 @@ namespace('Function', function() {
     });
 
     it('should be able to clear the cache', function() {
-      var fn = memoize(captureArgs, () => true);
+      var fn = memoize(captureArgs, function() { return true; });
       assertArrayEqual(fn('a'), ['a']);
       assertArrayEqual(fn('b'), ['a']);
       fn.cache.clear();
@@ -81,7 +81,7 @@ namespace('Function', function() {
   describeInstance('debounce', function(debounce) {
 
     it('should perform basic debounce', function() {
-      const fn = debounce(captureArgs, 200);
+      var fn = debounce(captureArgs, 200);
       fn('a');
       fn('b');
       fn('c');
@@ -94,7 +94,7 @@ namespace('Function', function() {
     });
 
     it('should be able to cancel', function() {
-      const fn = debounce(captureArgs, 200);
+      var fn = debounce(captureArgs, 200);
       fn('a');
       fn('b');
       assertArrayEqual(args, []);
@@ -104,7 +104,7 @@ namespace('Function', function() {
     });
 
     it('should be able to cancel after first execution', function() {
-      const fn = debounce(captureArgs, 200);
+      var fn = debounce(captureArgs, 200);
       fn('a');
       clock.tick(200);
       assertArrayEqual(args, [['a']]);
@@ -116,7 +116,7 @@ namespace('Function', function() {
 
     it('should retain the last value when called repeatedly', function() {
       // Note this differs from throttle with limit 1
-      const fn = debounce(captureArgs, 200, {
+      var fn = debounce(captureArgs, 200, {
         limit: 1
       });
       fn('a');
@@ -128,6 +128,20 @@ namespace('Function', function() {
       assertArrayEqual(args, [['c'],['d']]);
     });
 
+    it('should default to 1ms', function() {
+      var fn = debounce(captureArgs);
+      fn('a');
+      clock.tick(1);
+      assertArrayEqual(args, [['a']]);
+    });
+
+    it('should handle irregular input', function() {
+      assertError(function() { debounce() });
+      assertError(function() { debounce(captureArgs, 0) });
+      assertError(function() { debounce(captureArgs, 'str') });
+      assertError(function() { debounce(captureArgs, null) });
+      assertError(function() { debounce(captureArgs, NaN) });
+    });
 
   });
 
@@ -135,8 +149,15 @@ namespace('Function', function() {
 
     describe('No Args', function() {
 
+      it('should default to 1ms', function() {
+        var fn = throttle(captureArgs);
+        fn('a');
+        clock.tick(1);
+        assertArrayEqual(args, [['a']]);
+      });
+
       it('should queue execution with default arguments', function() {
-        const fn = throttle(captureArgs, 200);
+        var fn = throttle(captureArgs, 200);
         fn('a');
         fn('b');
         assertArrayEqual(args, []);
@@ -147,7 +168,7 @@ namespace('Function', function() {
       });
 
       it('should return value from last completed execution', function() {
-        const fn = throttle(captureArgs, 200);
+        var fn = throttle(captureArgs, 200);
         assertEqual(fn('a'), null);
         clock.tick(200);
         assertArrayEqual(fn('b'), ['a']);
@@ -158,7 +179,7 @@ namespace('Function', function() {
       });
 
       it('should pass all arguments to execution', function() {
-        const fn = throttle(captureArgs, 200);
+        var fn = throttle(captureArgs, 200);
         fn('a','b','c');
         clock.tick(200);
         assertArrayEqual(args, [['a','b','c']]);
@@ -169,7 +190,7 @@ namespace('Function', function() {
     describe('Limit option', function() {
 
       it('should not queue beyond limit', function() {
-        const fn = throttle(captureArgs, 200, {
+        var fn = throttle(captureArgs, 200, {
           limit: 2
         });
         fn('a');
@@ -187,7 +208,7 @@ namespace('Function', function() {
 
       it('should retain the first value when called repeatedly', function() {
         // Note this differs from debounce
-        const fn = throttle(captureArgs, 200, {
+        var fn = throttle(captureArgs, 200, {
           limit: 1
         });
         fn('a');
@@ -204,7 +225,7 @@ namespace('Function', function() {
     describe('Immediate Option', function() {
 
       it('should allow firing immediately', function() {
-        const fn = throttle(captureArgs, 200, {
+        var fn = throttle(captureArgs, 200, {
           immediate: true
         });
         fn('a');
@@ -217,7 +238,7 @@ namespace('Function', function() {
       });
 
       it('should continue firing immediately after timeout', function() {
-        const fn = throttle(captureArgs, 200, {
+        var fn = throttle(captureArgs, 200, {
           immediate: true
         });
         fn('a');
@@ -228,7 +249,7 @@ namespace('Function', function() {
       });
 
       it('should queue functions after first release', function() {
-        const fn = throttle(captureArgs, 200, {
+        var fn = throttle(captureArgs, 200, {
           immediate: true
         });
         fn('a');
@@ -242,7 +263,7 @@ namespace('Function', function() {
       });
 
       it('should lock an immediate function with limit of 1', function() {
-        const fn = throttle(captureArgs, 200, {
+        var fn = throttle(captureArgs, 200, {
           limit: 1,
           immediate: true
         });
@@ -261,7 +282,7 @@ namespace('Function', function() {
     describe('Canceling', function() {
 
       it('should cancel a lazy function', function() {
-        const fn = throttle(captureArgs, 200);
+        var fn = throttle(captureArgs, 200);
         fn('a');
         fn.cancel();
         clock.tick(200);
@@ -269,7 +290,7 @@ namespace('Function', function() {
       });
 
       it('should cancel a lazy function after first execution', function() {
-        const fn = throttle(captureArgs, 200);
+        var fn = throttle(captureArgs, 200);
         fn('a');
         fn('b');
         clock.tick(200);
@@ -279,7 +300,7 @@ namespace('Function', function() {
       });
 
       it('should cancel an immediate function', function() {
-        const fn = throttle(captureArgs, 200, {
+        var fn = throttle(captureArgs, 200, {
           immediate: true
         });
         fn('a');
@@ -291,7 +312,7 @@ namespace('Function', function() {
       });
 
       it('should cancel immediate function after first execution', function() {
-        const fn = throttle(captureArgs, 200, {
+        var fn = throttle(captureArgs, 200, {
           immediate: true
         });
         fn('a');
@@ -323,6 +344,57 @@ namespace('Function', function() {
         assertError(function() { throttle(captureArgs, 200, { limit: NaN } ); });
       });
 
+    });
+
+    it('should handle irregular input', function() {
+      assertError(function() { throttle() });
+      assertError(function() { throttle(captureArgs, 'str') });
+      assertError(function() { throttle(captureArgs, null) });
+      assertError(function() { throttle(captureArgs, NaN) });
+    });
+
+  });
+
+  describeInstance('delay', function(delay) {
+
+    var fn;
+
+    beforeEach(function() {
+      fn = function() {
+        return captureArgs.apply(this, arguments);
+      };
+    });
+
+    it('should delay execution of the function for 1s', function() {
+      delay(fn, 1000, 'a');
+      assertArrayEqual(args, []);
+      clock.tick(1000);
+      assertArrayEqual(args, [['a']]);
+      clock.tick(1000);
+      assertArrayEqual(args, [['a']]);
+    });
+
+    it('should default to 0ms with no args', function() {
+      delay(fn);
+      assertArrayEqual(args, []);
+      clock.tick(100);
+      assertArrayEqual(args, [[]]);
+    });
+
+    it('should be cancelable', function() {
+      delay(fn, 1000, 'a');
+      assertArrayEqual(args, []);
+      fn.cancel();
+      clock.tick(1000);
+      assertArrayEqual(args, []);
+      assertArrayEqual(fn.timers, []);
+    });
+
+    it('should handle irregular input', function() {
+      assertError(function() { delay() });
+      assertError(function() { delay(fn, 'str') });
+      assertError(function() { delay(fn, null) });
+      assertError(function() { delay(fn, NaN) });
     });
 
   });

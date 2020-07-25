@@ -52,43 +52,6 @@ namespace('Function', function () {
     clock.restore();
   });
 
-  method('delay', function() {
-    var fn, ret, count;
-    count = 0;
-    fn = function() {
-      count++;
-    }
-    run(fn, 'delay', []);
-    clock.tick(1);
-    equal(count, 1, 'no arguments should be equal to 1ms');
-
-    clock.reset();
-    count = 0;
-    fn = function(one, two) {
-      count++;
-      equal(this, fn, 'this object should be the function');
-      equal(one, 'one', 'first parameter');
-      equal(two, 'two', 'second parameter');
-    };
-    equal(getTimers(fn), undefined, 'timers object should not exist yet');
-    ret = run(fn, 'delay', [20, 'one', 'two']);
-    equal(typeof getTimers(fn), 'object', 'timers object should be exposed');
-    equal(typeof ret, 'function', 'returns the function');
-    equal(count, 0, 'should not have run yet');
-    clock.tick(20);
-    equal(count, 1, 'should have run once');
-    equal(getTimers(fn).length, 1, 'timers are not cleared after execution');
-
-    count = 0;
-    fn = function() {
-      count++;
-    }
-    run(fn, 'delay', []);
-    clock.tick(1);
-    equal(count, 1, 'no arguments should be equal to 1ms');
-
-  });
-
   method('cancel', function() {
     var fn, ref, count;
 

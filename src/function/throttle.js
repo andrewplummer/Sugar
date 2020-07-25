@@ -1,4 +1,5 @@
 import {
+  assertFunction,
   assertPositiveInteger,
   assertPositiveIntegerOrInfinity,
 } from '../util/assertions';
@@ -19,7 +20,7 @@ const DEFAULT_OPTIONS = {
  * will receive the last.
  *
  * @param {Function} fn - The function to throttle.
- * @param {number} ms - The delay to throttle the function by.
+ * @param {number} ms - The delay to throttle the function by. Default is `1`.
  * @param {Object} [options] - Options to be passed to throttle.
  *
  * @param {number} [options.limit = 1] - The number of executions allowed before
@@ -35,14 +36,15 @@ const DEFAULT_OPTIONS = {
  * @returns {Function}
  *
  */
-export default function throttle(fn, ms = 0, options) {
+export default function throttle(fn, ms = 1, options) {
+  assertFunction(fn);
+  assertPositiveInteger(ms);
 
   const opt = {
     ...DEFAULT_OPTIONS,
     ...options,
   };
 
-  assertPositiveInteger(ms);
   assertPositiveIntegerOrInfinity(opt.limit);
 
   const queue = [];

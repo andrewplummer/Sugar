@@ -1,4 +1,4 @@
-import { assertPositiveInteger } from '../util/assertions';
+import { assertFunction, assertPositiveInteger } from '../util/assertions';
 
 /**
  * Creates a "debounced" function that postpones its execution until
@@ -12,6 +12,7 @@ import { assertPositiveInteger } from '../util/assertions';
  * supplied, while a throttled function will receive the first.
  *
  * @param {Function} fn - The function to debounce.
+ * @param {number} ms - The delay to debounce the function by. Default is `1`.
  *
  * @example
  *
@@ -21,24 +22,24 @@ import { assertPositiveInteger } from '../util/assertions';
  * @returns {Function}
  *
  */
-export default function debounce(fn, ms = 0) {
-
+export default function debounce(fn, ms = 1) {
+  assertFunction(fn);
   assertPositiveInteger(ms);
 
   let timer = null;
   let returnValue = null;
 
-  const debounced = function() {
+  const debounced = function () {
     clearTimeout(timer);
     timer = setTimeout(() => {
       returnValue = fn.apply(this, arguments);
     }, ms);
     return returnValue;
-  }
+  };
 
   debounced.cancel = () => {
     clearTimeout(timer);
-  }
+  };
 
   return debounced;
 }

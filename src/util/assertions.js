@@ -13,49 +13,55 @@ function usesScientificNotation(n) {
 
 export function assertString(str) {
   if (!isString(str)) {
-    throw new TypeError(str + ' is not a string');
+    throw new TypeError(`${str} is not a string`);
   }
 }
 
 export function assertNumber(n) {
   if (!n && n !== 0) {
-    throw new TypeError(n + ' is not a valid number');
+    throw new TypeError(`${n} is not a valid number`);
   }
 }
 
 export function assertPositiveNumber(n) {
   if (n <= 0) {
-    throw new TypeError(n + ' is not a positive number');
+    throw new TypeError(`${n} is not a positive number`);
   }
 }
 
 export function assertFinite(n) {
   if (!Number.isFinite(n)) {
-    throw new TypeError(n + ' is not a finite number');
+    throw new TypeError(`${n} is not a finite number`);
   }
 }
 
 export function assertInteger(n) {
   if (!Number.isInteger(n)) {
-    throw new TypeError(n + ' is not an integer');
+    throw new TypeError(`${n} is not an integer`);
   }
 }
 
 export function assertPositiveInteger(n) {
   if (!Number.isInteger(n) || n <= 0) {
-    throw new TypeError(n + ' is not a positive integer');
+    throw new TypeError(`${n} is not a positive integer`);
+  }
+}
+
+export function assertNonNegativeInteger(n) {
+  if (!Number.isInteger(n) || n < 0) {
+    throw new TypeError(`${n} is not a non-negative integer`);
   }
 }
 
 export function assertPositiveIntegerOrInfinity(n) {
   if ((!Number.isInteger(n) || n <= 0) && n !== Infinity) {
-    throw new TypeError(n + ' is not a positive integer or Infinity');
+    throw new TypeError(`${n} is not a positive integer or Infinity`);
   }
 }
 
 export function assertDecimal(n) {
   if (!Number.isFinite(n) || usesScientificNotation(n)) {
-    throw new TypeError(n + ' cannot be represented as a decimal');
+    throw new TypeError(`${n} cannot be represented as a decimal`);
   }
 }
 
@@ -65,7 +71,7 @@ export function assertArgument(exists) {
   }
 }
 
-export function assertCallable(obj) {
+export function assertFunction(obj) {
   if (!isFunction(obj)) {
     throw new TypeError('Function is not callable');
   }
