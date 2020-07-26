@@ -12,6 +12,7 @@ namespace('Function', function() {
 
   beforeEach(function() {
     args = [];
+    clock.reset();
   });
 
   afterEach(function() {
@@ -147,35 +148,50 @@ namespace('Function', function() {
 
   describeInstance('throttle', function(throttle) {
 
-    describe('No Args', function() {
+    describe('no args', function() {
 
       it('should default to 1ms', function() {
         var fn = throttle(captureArgs);
         fn('a');
-        clock.tick(1);
+        fn('b');
         assertArrayEqual(args, [['a']]);
+        clock.tick(1);
+        assertArrayEqual(args, [['a'], ['b']]);
       });
 
       it('should queue execution with default arguments', function() {
         var fn = throttle(captureArgs, 200);
         fn('a');
         fn('b');
-        assertArrayEqual(args, []);
-        clock.tick(200);
+        fn('c');
         assertArrayEqual(args, [['a']]);
         clock.tick(200);
-        assertArrayEqual(args, [['a'],['b']]);
+        assertArrayEqual(args, [['a'], ['b']]);
+        clock.tick(200);
+        assertArrayEqual(args, [['a'], ['b'], ['c']]);
+      });
+
+      it('should remain locked white executions still queued', function() {
+        var fn = throttle(captureArgs, 200);
+        fn('a');
+        fn('b');
+        assertArrayEqual(args, [['a']]);
+        clock.tick(200);
+        assertArrayEqual(args, [['a'], ['b']]);
+        fn('c');
+        assertArrayEqual(args, [['a'], ['b']]);
+        clock.tick(200);
+        assertArrayEqual(args, [['a'], ['b'], ['c']]);
       });
 
       it('should return value from last completed execution', function() {
         var fn = throttle(captureArgs, 200);
-        assertEqual(fn('a'), null);
-        clock.tick(200);
+        assertArrayEqual(fn('a'), ['a']);
         assertArrayEqual(fn('b'), ['a']);
         clock.tick(200);
         assertArrayEqual(fn('c'), ['b']);
         clock.tick(200);
-        assertArrayEqual(args, [['a'],['b'],['c']]);
+        assertArrayEqual(fn('d'), ['c']);
       });
 
       it('should pass all arguments to execution', function() {
@@ -187,7 +203,7 @@ namespace('Function', function() {
 
     });
 
-    describe('Limit option', function() {
+    describe('limit', function() {
 
       it('should not queue beyond limit', function() {
         var fn = throttle(captureArgs, 200, {
@@ -197,9 +213,9 @@ namespace('Function', function() {
         fn('b');
         fn('c');
         fn('d');
-        assertArrayEqual(args, []);
-        clock.tick(200);
         assertArrayEqual(args, [['a']]);
+        clock.tick(200);
+        assertArrayEqual(args, [['a'],['b']]);
         clock.tick(200);
         assertArrayEqual(args, [['a'],['b']]);
         clock.tick(200);
@@ -214,58 +230,58 @@ namespace('Function', function() {
         fn('a');
         fn('b');
         fn('c');
-        clock.tick(200);
+        assertArrayEqual(args, [['a']]);
         assertArrayEqual(fn('d'), ['a']);
         clock.tick(200);
-        assertArrayEqual(args, [['a'],['d']]);
+        assertArrayEqual(fn('e'), ['e']);
+        clock.tick(200);
+        assertArrayEqual(args, [['a'], ['e']]);
       });
 
     });
 
-    describe('Immediate Option', function() {
+    describe('immediate', function() {
 
-      it('should allow firing immediately', function() {
-        var fn = throttle(captureArgs, 200, {
-          immediate: true
-        });
+      it('should be immediate by default', function() {
+        var fn = throttle(captureArgs, 200);
+        assertArrayEqual(args, []);
         fn('a');
+        assertArrayEqual(args, [['a']]);
         fn('b');
         assertArrayEqual(args, [['a']]);
         clock.tick(200);
-        assertArrayEqual(args, [['a'],['b']]);
+        assertArrayEqual(args, [['a'], ['b']]);
+        fn('c');
+        assertArrayEqual(args, [['a'], ['b']]);
         clock.tick(200);
-        assertArrayEqual(args, [['a'],['b']]);
+        assertArrayEqual(args, [['a'], ['b'], ['c']]);
       });
 
       it('should continue firing immediately after timeout', function() {
-        var fn = throttle(captureArgs, 200, {
-          immediate: true
-        });
+        var fn = throttle(captureArgs, 200);
         fn('a');
         assertArrayEqual(args, [['a']]);
         clock.tick(200);
         fn('b');
-        assertArrayEqual(args, [['a'],['b']]);
+        assertArrayEqual(args, [['a'], ['b']]);
       });
 
       it('should queue functions after first release', function() {
-        var fn = throttle(captureArgs, 200, {
-          immediate: true
-        });
+        var fn = throttle(captureArgs, 200);
         fn('a');
+        assertArrayEqual(args, [['a']]);
         clock.tick(200);
         assertArrayEqual(args, [['a']]);
         fn('b');
         fn('c');
-        assertArrayEqual(args, [['a'],['b']]);
+        assertArrayEqual(args, [['a'], ['b']]);
         clock.tick(200);
-        assertArrayEqual(args, [['a'],['b'],['c']]);
+        assertArrayEqual(args, [['a'], ['b'], ['c']]);
       });
 
       it('should lock an immediate function with limit of 1', function() {
         var fn = throttle(captureArgs, 200, {
           limit: 1,
-          immediate: true
         });
         fn('a');
         assertArrayEqual(args, [['a']]);
@@ -277,51 +293,77 @@ namespace('Function', function() {
         assertArrayEqual(args, [['a']]);
       });
 
+      it('should be able to defer execution', function() {
+        var fn = throttle(captureArgs, 200, {
+          immediate: false
+        });
+        fn('a');
+        assertArrayEqual(args, []);
+        fn('b');
+        assertArrayEqual(args, []);
+        clock.tick(200);
+        assertArrayEqual(args, [['a']]);
+        clock.tick(200);
+        assertArrayEqual(args, [['a'],['b']]);
+      });
+
+      it('should lock a deferred function with limit of 1', function() {
+        var fn = throttle(captureArgs, 200, {
+          limit: 1,
+          immediate: false,
+        });
+        fn('a');
+        assertArrayEqual(args, []);
+        fn('b');
+        assertArrayEqual(args, []);
+        fn('c');
+        assertArrayEqual(args, []);
+        clock.tick(200);
+        assertArrayEqual(args, [['a']]);
+      });
+
     });
 
-    describe('Canceling', function() {
+    describe('canceling', function() {
 
-      it('should cancel a lazy function', function() {
+      it('should cancel second execution of an immediate function', function() {
         var fn = throttle(captureArgs, 200);
+        fn('a');
+        fn.cancel();
+        fn('b');
+        clock.tick(200);
+        assertArrayEqual(args, [['a']]);
+      });
+
+      it('should cancel first execution of deferred function', function() {
+        var fn = throttle(captureArgs, 200, {
+          immediate: false,
+        });
         fn('a');
         fn.cancel();
         clock.tick(200);
         assertArrayEqual(args, []);
       });
 
-      it('should cancel a lazy function after first execution', function() {
+      it('should cancel immediate function after being queued', function() {
         var fn = throttle(captureArgs, 200);
         fn('a');
         fn('b');
-        clock.tick(200);
         fn.cancel();
         clock.tick(200);
         assertArrayEqual(args, [['a']]);
       });
 
-      it('should cancel an immediate function', function() {
+      it('should cancel deferred function after being queued', function() {
         var fn = throttle(captureArgs, 200, {
-          immediate: true
+          immediate: false,
         });
         fn('a');
         fn('b');
-        assertArrayEqual(args, [['a']]);
-        fn.cancel();
-        clock.tick(200);
-        assertArrayEqual(args, [['a']]);
-      });
-
-      it('should cancel immediate function after first execution', function() {
-        var fn = throttle(captureArgs, 200, {
-          immediate: true
-        });
-        fn('a');
-        fn('b');
-        fn('c');
         clock.tick(200);
         fn.cancel();
         clock.tick(200);
-        assertArrayEqual(args, [['a'],['b']]);
+        assertArrayEqual(args, [['a']]);
       });
 
     });

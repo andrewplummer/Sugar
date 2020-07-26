@@ -63,6 +63,7 @@ v3.0.0
 - Removed `String#forEach`. Use `String#match` instead.
 - Renamed `String#escapeURL` to `String#encodeUrl` and `String#encodeUrlParam`.
 - Renamed `String#unesacpeURL` to `String#decodeUrl` and `String#decodeUrlParam`.
+- Changed `Function#throttle` to always execute immediately before locking.
 
 TODO:
 
