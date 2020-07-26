@@ -52,36 +52,6 @@ namespace('Function', function () {
     clock.restore();
   });
 
-  method('every', function() {
-    var fn, count;
-
-    // Basic
-    clock.reset();
-    count = 0;
-    fn = function(one, two) {
-      equal(this, fn, 'this object should be the function');
-      equal(one, 'one', 'first argument should be curried');
-      equal(two, 'two', 'second argument should be curried');
-      count++;
-    };
-    run(fn, 'every' , [10, 'one', 'two']);
-    clock.tick(100);
-    equal(count, 10, 'should have been called 10 times');
-
-    // Issue #488
-    clock.reset();
-    count = 0;
-    fn = function(one, two) {
-      count++;
-      if (count === 5) {
-        run(fn, 'cancel');
-      }
-    };
-    run(fn, 'every' , [10]);
-    clock.tick(100);
-    equal(count, 5, 'should have been called 5 times');
-  });
-
 
   method('after', function() {
 

@@ -150,12 +150,12 @@ namespace('Function', function() {
 
     it('should retain the last return value when immediate', function() {
       var fn = debounce(captureArgs, 200, true);
-      assertArrayEqual(fn('a'), ['a']);;
-      assertArrayEqual(fn('b'), ['a']);;
-      assertArrayEqual(fn('c'), ['a']);;
+      assertArrayEqual(fn('a'), ['a']);
+      assertArrayEqual(fn('b'), ['a']);
+      assertArrayEqual(fn('c'), ['a']);
       clock.tick(200);
-      assertArrayEqual(fn('d'), ['d']);;
-      assertArrayEqual(fn('e'), ['d']);;
+      assertArrayEqual(fn('d'), ['d']);
+      assertArrayEqual(fn('e'), ['d']);
     });
 
     it('should handle irregular input', function() {
@@ -419,18 +419,10 @@ namespace('Function', function() {
 
   });
 
-  describeInstance('delay', function(delay) {
+  describeInstance('setTimeout', function(setTimeout) {
 
-    var fn;
-
-    beforeEach(function() {
-      fn = function() {
-        return captureArgs.apply(this, arguments);
-      };
-    });
-
-    it('should delay execution of the function for 1s', function() {
-      delay(fn, 1000, 'a');
+    it('should set a timeout of 1 second', function() {
+      setTimeout(captureArgs, 1000, 'a');
       assertArrayEqual(args, []);
       clock.tick(1000);
       assertArrayEqual(args, [['a']]);
@@ -439,39 +431,234 @@ namespace('Function', function() {
     });
 
     it('should default to 0ms with no args', function() {
-      delay(fn);
+      setTimeout(captureArgs);
       assertArrayEqual(args, []);
-      clock.tick(100);
+      clock.tick(0);
       assertArrayEqual(args, [[]]);
     });
 
     it('should be cancelable', function() {
-      delay(fn, 1000, 'a');
+      var promise = setTimeout(captureArgs, 1000, 'a');
       assertArrayEqual(args, []);
-      fn.cancel();
+      promise.cancel();
       clock.tick(1000);
       assertArrayEqual(args, []);
-      assertArrayEqual(fn.timers, []);
+    });
+
+    describe('promise behavior', function() {
+
+      it('should return a promise', function() {
+        assertInstanceOf(setTimeout(captureArgs, 1000), Promise);
+      });
+
+      it('should resolve the promise after execution', function() {
+        return new Promise(function(resolve) {
+          setTimeout(function() {}, 1000).then(function() {
+            assertTrue(true);
+            resolve();
+          });
+          clock.tick(1000);
+        });
+      });
+
+      it('should reject the promise on error', function() {
+        return new Promise(function(resolve) {
+          setTimeout(function() {
+            throw Error();
+          }, 1000).catch(function() {
+            assertTrue(true);
+            resolve();
+          });
+          clock.tick(1000);
+        });
+      });
+
+      it('should resolve the promise when canceled', function() {
+        return new Promise(function(resolve) {
+          var promise = setTimeout(function() {}, 1000);
+          promise.then(function() {
+            assertTrue(true);
+            resolve();
+          });
+          promise.cancel();
+        });
+      });
+
+      it('should set canceled property of false by default', function() {
+        var promise = setTimeout(function() {}, 1000);
+        assertFalse(promise.canceled);
+      });
+
+      it('should set canceled property to true when canceled', function() {
+        return new Promise(function(resolve) {
+          var promise = setTimeout(function() {}, 1000);
+          promise.then(function() {
+            assertTrue(promise.canceled);
+            resolve();
+          });
+          promise.cancel();
+        });
+      });
+
+      it('should not set canceled property to true when resolved', function() {
+        return new Promise(function(resolve) {
+          var promise = setTimeout(function() {}, 1000);
+          promise.then(function() {
+            assertFalse(promise.canceled);
+            resolve();
+          });
+          clock.tick(1000);
+        });
+      });
+
+      it('should not set canceled property to true when rejected', function() {
+        return new Promise(function(resolve) {
+          var promise = setTimeout(function() {
+            throw new Error();
+          }, 1000);
+          promise.catch(function() {
+            assertFalse(promise.canceled);
+            resolve();
+          });
+          clock.tick(1000);
+        });
+      });
+
     });
 
     it('should handle irregular input', function() {
-      assertError(function() { delay() });
-      assertError(function() { delay(fn, 'str') });
-      assertError(function() { delay(fn, null) });
-      assertError(function() { delay(fn, NaN) });
-    });
-
-    it('should handle issue #346', () => {
-      var fn = captureArgs;
-      fn = delay(fn, 10);
-      fn = delay(fn, 10);
-      fn = delay(fn, 10);
-      fn = delay(fn, 10);
-      fn.cancel();
-      clock.tick(200);
-      assertArrayEqual(args, []);
+      assertError(function() { setTimeout() });
+      assertError(function() { setTimeout(captureArgs, 'str') });
+      assertError(function() { setTimeout(captureArgs, null) });
+      assertError(function() { setTimeout(captureArgs, NaN) });
     });
 
   });
 
+  describeInstance('setInterval', function(setInterval) {
+
+    it('should set an interval of 1 second', function() {
+      setInterval(captureArgs, 1000, 'a');
+      assertArrayEqual(args, []);
+      clock.tick(1000);
+      assertArrayEqual(args, [['a']]);
+      clock.tick(1000);
+      assertArrayEqual(args, [['a'], ['a']]);
+      clock.tick(1000);
+      assertArrayEqual(args, [['a'], ['a'], ['a']]);
+    });
+
+    it('should default to 0ms with no args', function() {
+      setInterval(captureArgs);
+      assertArrayEqual(args, []);
+      clock.tick(0);
+      assertArrayEqual(args, [[]]);
+    });
+
+    it('should be cancelable', function() {
+      var promise = setInterval(captureArgs, 1000, 'a');
+      assertArrayEqual(args, []);
+      clock.tick(1000);
+      assertArrayEqual(args, [['a']]);
+      promise.cancel();
+      clock.tick(1000);
+      assertArrayEqual(args, [['a']]);
+      clock.tick(1000);
+      assertArrayEqual(args, [['a']]);
+    });
+
+    describe('promise behavior', function() {
+
+      it('should return a promise', function() {
+        assertInstanceOf(setInterval(captureArgs, 1000), Promise);
+      });
+
+      it('should resolve the promise after execution', function() {
+        return new Promise(function(resolve) {
+          var resolved = false;
+          setInterval(function() {}, 1000).then(function() {
+            resolved = true;
+          });
+          // Need to use tickAsync here as .then is always
+          // async and we're not expecting it to be called;
+          clock.tickAsync(1000).then(function() {
+            assertFalse(resolved);
+            resolve();
+          });
+        });
+      });
+
+      it('should reject the promise on error', function() {
+        return new Promise(function(resolve) {
+          setInterval(function() {
+            throw Error();
+          }, 1000).catch(function() {
+            assertTrue(true);
+            resolve();
+          });
+          clock.tick(1000);
+        });
+      });
+
+      it('should resolve the promise when canceled', function() {
+        return new Promise(function(resolve) {
+          var promise = setInterval(function() {}, 1000);
+          promise.then(function() {
+            assertTrue(true);
+            resolve();
+          });
+          promise.cancel();
+        });
+      });
+
+      it('should set canceled property of false by default', function() {
+        var promise = setInterval(function() {}, 1000);
+        assertFalse(promise.canceled);
+      });
+
+      it('should set canceled property to true when canceled', function() {
+        return new Promise(function(resolve) {
+          var promise = setInterval(function() {}, 1000);
+          promise.then(function() {
+            assertTrue(promise.canceled);
+            resolve();
+          });
+          promise.cancel();
+        });
+      });
+
+      it('should not set canceled property to true when rejected', function() {
+        return new Promise(function(resolve) {
+          var promise = setInterval(function() {
+            throw new Error();
+          }, 1000);
+          promise.catch(function() {
+            assertFalse(promise.canceled);
+            resolve();
+          });
+          clock.tick(1000);
+        });
+      });
+
+    });
+
+    it('should handle irregular input', function() {
+      assertError(function() { setInterval() });
+      assertError(function() { setInterval(captureArgs, 'str') });
+      assertError(function() { setInterval(captureArgs, null) });
+      assertError(function() { setInterval(captureArgs, NaN) });
+    });
+
+    it('should handle issue #488', function() {
+      var i = 0;
+      var promise = setInterval(function() {
+        if(++i >= 3) {
+          promise.cancel();
+        }
+      }, 1000);
+      clock.tick(5000);
+      assertEqual(i, 3);
+    });
+
+  });
 });

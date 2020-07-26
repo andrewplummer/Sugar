@@ -67,6 +67,11 @@ v3.0.0
 - Added `immediate` option to `Function#debounce`.
 - Removed `Function#lazy`. This functionality is now encapsulated by
     `Function#throttle`.
+- Replaced `Function#delay` with `Function#setTimeout` which is functionally
+    similar but returns a promise and is cancelable.
+- Replaced `Function#every` with `Function#setInterval` which is functionally
+    similar but returns a promise and is cancelable.
+
 
 TODO:
 

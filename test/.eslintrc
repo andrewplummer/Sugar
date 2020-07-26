@@ -45,5 +45,6 @@
     withNumberFormatter: true,
     ensureNamespaceNotInitialized: true,
     Sugar: true,
+    Promise: true,
   }
 }
