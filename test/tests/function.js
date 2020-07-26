@@ -461,6 +461,17 @@ namespace('Function', function() {
       assertError(function() { delay(fn, NaN) });
     });
 
+    it('should handle issue #346', () => {
+      var fn = captureArgs;
+      fn = delay(fn, 10);
+      fn = delay(fn, 10);
+      fn = delay(fn, 10);
+      fn = delay(fn, 10);
+      fn.cancel();
+      clock.tick(200);
+      assertArrayEqual(args, []);
+    });
+
   });
 
 });

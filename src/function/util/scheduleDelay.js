@@ -6,6 +6,7 @@ export default function scheduleDelay(fn, ms, args = []) {
   if (!fn.timers) {
     fn.timers = [];
   }
+
   if (!fn.cancel) {
     fn.cancel = () => {
       for (let timer of fn.timers) {
@@ -14,10 +15,12 @@ export default function scheduleDelay(fn, ms, args = []) {
       fn.timers = [];
     };
   }
+
   fn.timers.push(
     setTimeout(() => {
       fn.apply(null, args);
     }, ms)
   );
+
   return fn;
 }
