@@ -64,6 +64,7 @@ v3.0.0
 - Renamed `String#escapeURL` to `String#encodeUrl` and `String#encodeUrlParam`.
 - Renamed `String#unesacpeURL` to `String#decodeUrl` and `String#decodeUrlParam`.
 - Changed `Function#throttle` to always execute immediately before locking.
+- Added `immediate` option to `Function#debounce`.
 
 TODO:
 

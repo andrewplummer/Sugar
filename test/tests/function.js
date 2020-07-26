@@ -115,14 +115,12 @@ namespace('Function', function() {
       assertArrayEqual(args, [['a']]);
     });
 
-    it('should retain the last value when called repeatedly', function() {
+    it('should retain the last return value when not immediate', function() {
       // Note this differs from throttle with limit 1
-      var fn = debounce(captureArgs, 200, {
-        limit: 1
-      });
-      fn('a');
-      fn('b');
-      fn('c');
+      var fn = debounce(captureArgs, 200);
+      assertNull(fn('a'));
+      assertNull(fn('b'));
+      assertNull(fn('c'));
       clock.tick(200);
       assertArrayEqual(fn('d'), ['c']);
       clock.tick(200);
@@ -134,6 +132,30 @@ namespace('Function', function() {
       fn('a');
       clock.tick(1);
       assertArrayEqual(args, [['a']]);
+    });
+
+    it('should allow immediate execution of the function', function() {
+      var fn = debounce(captureArgs, 200, true);
+      fn('a');
+      fn('b');
+      fn('c');
+      assertArrayEqual(args, [['a']]);
+      clock.tick(200);
+      assertArrayEqual(args, [['a'], ['c']]);
+      fn('d');
+      assertArrayEqual(args, [['a'], ['c'], ['d']]);
+      clock.tick(200);
+      assertArrayEqual(args, [['a'], ['c'], ['d']]);
+    });
+
+    it('should retain the last return value when immediate', function() {
+      var fn = debounce(captureArgs, 200, true);
+      assertArrayEqual(fn('a'), ['a']);;
+      assertArrayEqual(fn('b'), ['a']);;
+      assertArrayEqual(fn('c'), ['a']);;
+      clock.tick(200);
+      assertArrayEqual(fn('d'), ['d']);;
+      assertArrayEqual(fn('e'), ['d']);;
     });
 
     it('should handle irregular input', function() {
