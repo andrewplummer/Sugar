@@ -71,6 +71,8 @@ v3.0.0
     similar but returns a promise and is cancelable.
 - Replaced `Function#every` with `Function#setInterval` which is functionally
     similar but returns a promise and is cancelable.
+- Removed complex interop between `Function#lock` and `Function#partial`. Simply
+call `Function#lock` first in the chain to achieve the same effect.
 
 
 TODO:

@@ -661,4 +661,422 @@ namespace('Function', function() {
     });
 
   });
+
+  describeInstance('partial', function(partial) {
+
+    var _ = partial.replace;
+
+    it('should perform basic currying of arguments', () => {
+      var fn = partial(captureArgs, 'a');
+      assertArrayEqual(fn('b'), ['a', 'b']);
+      assertArrayEqual(fn('b', 'c', 'd'), ['a', 'b', 'c', 'd']);
+    });
+
+    it('should allow a placeholder that is replaced', () => {
+      var fn = partial(captureArgs, _, 'b');
+      assertArrayEqual(fn('a'), ['a', 'b']);
+    });
+
+    it('should be able to curry past the placeholder', () => {
+      var fn = partial(captureArgs, 'a', _, 'c');
+      assertArrayEqual(fn('b', 'd'), ['a', 'b', 'c', 'd']);
+    });
+
+    it('should not accept undefined or null as a placeholder', () => {
+      var fn = partial(captureArgs, undefined, null);
+      assertArrayEqual(fn('a', 'b'), [undefined, null, 'a', 'b']);
+    });
+
+    it('should not have issues with 0', () => {
+      var fn = partial(captureArgs, 0);
+      assertArrayEqual(fn(0), [0, 0]);
+    });
+
+    it('should not have issues with passing non-primitive input', () => {
+      var fn = partial(captureArgs, [1], {}, captureArgs, NaN);
+      assertArrayEqual(fn(), [[1], {}, captureArgs, NaN]);
+    });
+
+    it('should not have issues with invoking with non-primitive input', () => {
+      var fn = partial(captureArgs);
+      assertArrayEqual(fn([1], {}, captureArgs, NaN), [[1], {}, captureArgs, NaN]);
+    });
+
+    it('should work with no arguments', () => {
+      var fn = partial(captureArgs);
+      assertArrayEqual(fn('a', 'b'), ['a', 'b']);
+    });
+
+    it('should error on invalid input', () => {
+      assertError(function() { partial(); });
+      assertError(function() { partial(null); });
+      assertError(function() { partial(undefined); });
+    });
+
+    describe('ported tests', () => {
+
+      function build() {
+        return partial.apply(null, [captureArgs].concat(
+          Array.prototype.slice.call(arguments)
+        ));
+      }
+
+      function assert(result, expected) {
+        assertArrayEqual(result, expected);
+      }
+
+      it('should handle various cases', () => {
+
+        assert(build(null, 'a')('b'), [null, 'a', 'b']);
+        assert(build('a', null)('b'), ['a', null, 'b']);
+        assert(build(null, null, 'a')(), [null, null, 'a']);
+        assert(build('a', null, null)(), ['a', null, null]);
+        assert(build(null, null, null)(), [null, null, null]);
+        assert(build(null, null, null)('a','b','c'), [null, null, null, 'a', 'b', 'c']);
+
+        assert(build(_, 'a')('b'), ['b', 'a']);
+        assert(build('a', _)('b'), ['a', 'b']);
+        assert(build(_, _, 'a')('a', 'b'), ['a', 'b', 'a']);
+        assert(build('a', _, _)('a', 'b'), ['a', 'a', 'b']);
+        assert(build(_, _, _)('a', 'b', 'c'), ['a', 'b', 'c']);
+        assert(build(_, _, _)('a', 'b'), ['a', 'b', undefined]);
+        assert(build(_, _, _)('a','b','c','d','e'), ['a', 'b', 'c', 'd', 'e']);
+
+        assert(build(null, _, null)(), [null, undefined, null]);
+        assert(build(null, _, null)('a'), [null, 'a', null]);
+        assert(build(null, _, null)('a', 'b'), [null, 'a', null, 'b']);
+        assert(build(null, _, null)('a', 'b', 'c'), [null, 'a', null, 'b', 'c']);
+
+        assert(build(_, null, _)(), [undefined, null, undefined]);
+        assert(build(_, null, _)('a'), ['a', null, undefined]);
+        assert(build(_, null, _)('a', 'b'), ['a', null, 'b']);
+        assert(build(_, null, _)('a', 'b', 'c'), ['a', null, 'b', 'c']);
+
+        assert(build('a')(undefined), ['a', undefined]);
+        assert(build('a')(undefined, 'b'), ['a', undefined, 'b']);
+        assert(build('a')('b', undefined), ['a', 'b', undefined]);
+
+        assert(build(_)(undefined), [undefined]);
+        assert(build(_)(undefined, 'b'), [undefined, 'b']);
+        assert(build(_)('b', undefined), ['b', undefined]);
+
+        assert(build('a')(null), ['a', null]);
+        assert(build('a')(null, 'b'), ['a', null, 'b']);
+        assert(build('a')('b', null), ['a', 'b', null]);
+
+        assert(build(_)(null), [null]);
+        assert(build(_)(null, 'b'), [null, 'b']);
+        assert(build(_)('b', null), ['b', null]);
+
+        assert(build([undefined])('a'), [[undefined], 'a']);
+      });
+
+      it('should handle more complex cases', () => {
+        assert(build([undefined])('a'), [[undefined], 'a']);
+        assert(build([undefined], _)('a'), [[undefined], 'a']);
+        assert(build(_, [undefined])('a'), ['a', [undefined]]);
+
+        assert(build([null])('a'), [[null], 'a']);
+        assert(build([null], _)('a'), [[null], 'a']);
+        assert(build(_, [null])('a'), ['a', [null]]);
+      });
+
+      it('should handle Underscore cases', () => {
+
+        var obj = {name: 'moe'};
+        var func = function() {
+          return this.name + ' ' + Array.prototype.slice.call(arguments).join(' ');
+        };
+
+        obj.func = partial(func, 'a', 'b');
+        assertEqual(obj.func('c', 'd'), 'moe a b c d');
+
+        obj.func = partial(func, _, 'b', _, 'd');
+        assertEqual(obj.func('a', 'c'), 'moe a b c d');
+
+        func = partial(function() {
+          return arguments.length;
+        }, _, 'b', _, 'd');
+        assertEqual(func('a', 'c', 'e'), 5);
+        assertEqual(func('a'), 4);
+
+        func = partial(function() {
+          return typeof arguments[2];
+        }, _, 'b', _, 'd');
+        assertEqual(func('a'), 'undefined');
+
+        // passes context
+        var widget;
+
+        function MyWidget(name, options) {
+          this.name = name;
+          this.options = options;
+        }
+        MyWidget.prototype.get = function() {
+          return this.name;
+        };
+
+        var MyWidgetWithCoolOpts = partial(MyWidget, _, {a: 1});
+        widget = new MyWidgetWithCoolOpts('foo');
+        assertInstanceOf(widget, MyWidget);
+        assertEqual(widget.get(), 'foo');
+        assertObjectEqual(widget.options, {a: 1});
+
+        // explicit return value in constructor
+        function MyWidget2() {
+          return {foo:'bar'};
+        }
+        var MyFilledWidget = partial(MyWidget2, _, {a: 1});
+        widget = new MyFilledWidget();
+        assertFalse(widget instanceof MyWidget);
+        assertEqual(widget.foo, 'bar');
+
+      });
+
+      it('should handle Lodash cases', () => {
+
+        var fn;
+        var object;
+        var a, b;
+
+        function identity(n) {
+          return n;
+        }
+
+        assertEqual(partial(identity, 'a')(), 'a');
+
+        fn = function(a, b) {
+          return [a, b];
+        };
+
+        // creates a function that can be invoked with additional arguments
+        assertArrayEqual(partial(fn, 'a')('b'), ['a', 'b']);
+
+        fn = function() {
+          return arguments.length;
+        };
+        // works when there are no partially applied arguments and the created function is invoked without additional arguments
+        assertEqual(partial(fn)(), 0);
+
+        // works when there are no partially applied arguments and the created function is invoked with additional arguments
+        assertEqual(partial(identity)('a'), 'a', '');
+
+
+        fn = function() {
+          return Array.prototype.slice.call(arguments);
+        };
+        assertArrayEqual(partial(fn, _, 'b', _)('a', 'c'), ['a','b','c']);
+        assertArrayEqual(partial(fn, _, 'b', _)('a'), ['a','b',undefined]);
+        assertArrayEqual(partial(fn, _, 'b', _)(), [undefined,'b',undefined]);
+        assertArrayEqual(partial(fn, _, 'b', _)('a','c','d'), ['a','b','c','d']);
+
+
+        /* eslint no-unused-vars: "off" */
+        fn = function(a, b, c) {};
+
+        // creates a function with a length of 0
+        assertEqual(partial(fn, 'a').length, 0);
+
+        object = {};
+        function Foo(value) {
+          return value && object;
+        }
+
+        // ensure new partialed is an instance of func
+        assertInstanceOf(new (partial(Foo)), Foo);
+
+        // ensure new partialed return value
+        assertObjectEqual(new (partial(Foo))(true), object);
+
+        function greet(greeting, name) {
+          return greeting + ' ' + name;
+        }
+        assertEqual(partial(greet, 'hi')('fred'), 'hi fred');
+        assertEqual(partial(partial(greet, 'hi'), 'barney')(), 'hi barney');
+        assertEqual(partial(partial(greet, 'hi'), 'pebbles')(), 'hi pebbles');
+
+        fn = function() {
+          var result = [this.a];
+          Array.prototype.push.apply(result, arguments);
+          return result;
+        };
+        object = {
+          'a': 1,
+          'fn': fn,
+        };
+
+        a = fn.bind(object);
+        b = partial(a, 2);
+
+        // should work with combinations of bound and partial functions
+        assertArrayEqual(b(3), [1,2,3]);
+
+        a = partial(fn, 2);
+        b = a.bind(object);
+
+        // should work with combinations of partial and bound functions
+        assertArrayEqual(b(3), [1,2,3]);
+
+
+        // Function#bind is spec so our hands are tied here
+
+        fn = function() {
+          return Array.prototype.slice.call(arguments);
+        };
+        object = { 'fn': fn };
+
+        a = fn.bind(object, _, 2);
+        b = partial(a, 1, _, 4);
+
+        // should not work when placeholder is passed to bind
+        assertArrayEqual(b(3, 5), [_, 2, 1, 3, 4, 5]);
+
+        a = partial(fn, _, 2);
+        b = a.bind(object, 1, _, 4);
+
+        // should not work when placeholder is passed to bind
+        assertArrayEqual(b(3, 5), [1, 2, _, 4, 3, 5]);
+
+      });
+
+    });
+
+  });
+
+  describeInstance('lock', function(lock) {
+
+    describe('returns undefined', () => {
+
+      function getThreeNoLength(args) {
+        var arr = [];
+        for (var i = 0; i < 3; i++) {
+          arr[i] = args[i];
+        }
+        return arr;
+      }
+
+      function takesNone() {
+        return getThreeNoLength(arguments);
+      }
+
+      function takesOne(a) {
+        return getThreeNoLength(arguments);
+      }
+
+      function takesTwo(a, b) {
+        return getThreeNoLength(arguments);
+      }
+
+      describe('default behavior', () => {
+
+        it('should take 0 arguments', () => {
+          var fn = lock(takesNone);
+          assertArrayEqual(fn(),      [undefined, undefined, undefined]);
+          assertArrayEqual(fn(1),     [undefined, undefined, undefined]);
+          assertArrayEqual(fn(1,2,3), [undefined, undefined, undefined]);
+        });
+
+        it('should take 1 argument', () => {
+          var fn = lock(takesOne);
+          assertArrayEqual(fn(),      [undefined, undefined, undefined]);
+          assertArrayEqual(fn(1),     [1, undefined, undefined]);
+          assertArrayEqual(fn(1,2,3), [1, undefined, undefined]);
+        });
+
+        it('should take 2 arguments', () => {
+          var fn = lock(takesTwo);
+          assertArrayEqual(fn(),      [undefined, undefined, undefined]);
+          assertArrayEqual(fn(1),     [1, undefined, undefined]);
+          assertArrayEqual(fn(1,2,3), [1, 2, undefined]);
+        });
+
+      });
+
+      describe('passing an arg', () => {
+
+        it('should take 0 arguments', () => {
+          var fn = lock(takesNone, 1);
+          assertArrayEqual(fn(),      [undefined, undefined, undefined]);
+          assertArrayEqual(fn(1),     [1, undefined, undefined]);
+          assertArrayEqual(fn(1,2,3), [1, undefined, undefined]);
+        });
+
+        it('should take 1 argument', () => {
+          var fn = lock(takesOne, 1);
+          assertArrayEqual(fn(),      [undefined, undefined, undefined]);
+          assertArrayEqual(fn(1),     [1, undefined, undefined]);
+          assertArrayEqual(fn(1,2,3), [1, undefined, undefined]);
+        });
+
+        it('should take 2 arguments', () => {
+          var fn = lock(takesTwo, 1);
+          assertArrayEqual(fn(),      [undefined, undefined, undefined]);
+          assertArrayEqual(fn(1),     [1, undefined, undefined]);
+          assertArrayEqual(fn(1,2,3), [1, undefined, undefined]);
+        });
+
+      });
+
+    });
+
+    describe('returns varied', () => {
+
+      // Get all arguments by length as forcing 3 could mask
+      // real number called with .apply
+      function getAllWithLength(args) {
+        var arr = [];
+        for (var i = 0; i < args.length; i++) {
+          arr[i] = args[i];
+        }
+        return arr;
+      }
+
+      function takesNoneReturnsVaried() {
+        return getAllWithLength(arguments);
+      }
+
+      function takesTwoReturnsVaried(a, b) {
+        return getAllWithLength(arguments);
+      }
+
+      describe('default behavior', () => {
+
+        it('should take 0 arguments', () => {
+          var fn = lock(takesNoneReturnsVaried);
+          assertArrayEqual(fn(),      []);
+          assertArrayEqual(fn(1),     []);
+          assertArrayEqual(fn(1,2,3), []);
+        });
+
+        it('should take 2 arguments', () => {
+          var fn = lock(takesTwoReturnsVaried);
+          assertArrayEqual(fn(),      []);
+          assertArrayEqual(fn(1),     [1]);
+          assertArrayEqual(fn(1,2,3), [1,2]);
+        });
+
+      });
+
+      describe('passing an arg', () => {
+
+        it('should take 0 arguments', () => {
+          var fn = lock(takesNoneReturnsVaried, 1);
+          assertArrayEqual(fn(),      []);
+          assertArrayEqual(fn(1),     [1]);
+          assertArrayEqual(fn(1,2,3), [1]);
+        });
+
+        it('should take 2 arguments', () => {
+          var fn = lock(takesTwoReturnsVaried, 1);
+          assertArrayEqual(fn(),      [],  'takes 2 returns varied | manual 1 | 0 args');
+          assertArrayEqual(fn(1),     [1], 'takes 2 returns varied | manual 1 | 1 arg');
+          assertArrayEqual(fn(1,2,3), [1], 'takes 2 returns varied | manual 1 | 3 args');
+        });
+
+      });
+
+    });
+
+  });
+
 });
