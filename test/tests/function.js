@@ -1079,4 +1079,259 @@ namespace('Function', function() {
 
   });
 
+  describeInstance('filter', function(filter) {
+
+    var captureFiltered = filter(captureArgs, function(n) {
+      return n > 3;
+    });
+
+    it('should filter out calls below 3', () => {
+      captureFiltered(0);
+      captureFiltered(1);
+      captureFiltered(2);
+      captureFiltered(3);
+      captureFiltered(4);
+      assertArrayEqual(args, [[4]]);
+    });
+
+    it('should not return a value when filtered', () => {
+      assertUndefined(captureFiltered(0));
+    });
+
+    it('should return when not filtered', () => {
+      assertArrayEqual(captureFiltered(4), [4]);
+    });
+
+    it('should filter when falsy', () => {
+      filter(captureArgs, function() {
+        return null;
+      })(1);
+      filter(captureArgs, function() {
+        return undefined;
+      })(2);
+      filter(captureArgs, function() {
+        return '';
+      })(3);
+      filter(captureArgs, function() {
+        return NaN;
+      })(4);
+      filter(captureArgs, function() {
+        return 'a';
+      })(5);
+      filter(captureArgs, function() {
+        return 8;
+      })(6);
+      filter(captureArgs, function() {
+        return [];
+      })(7);
+      assertArrayEqual(args, [[5], [6], [7]]);
+    });
+
+    it('should pass all args to the function', () => {
+      captureFiltered(4, 'a','b','c','d');
+      assertArrayEqual(args, [[4, 'a','b','c','d']]);
+    });
+
+    it('should pass all args to filter function', () => {
+      (filter(captureArgs, function(a, b, c, d) {
+        assertArrayEqual([a,b,c,d], ['a','b','c','d']);
+      }))('a','b','c','d');
+    });
+
+    it('should pass context to the function', () => {
+      filter(function() {
+        assertEqual(this, 'a');
+      }, function() {
+        return true;
+      }).call('a');
+    });
+
+    it('should pass context to filter function', () => {
+      filter(captureArgs, function() {
+        assertEqual(this, 'a');
+      }).call('a');
+    });
+
+    it('should work when typeof number', () => {
+      var fn = filter(captureArgs, function(n) {
+        return typeof n === 'number';
+      });
+      fn(0)
+      fn(1)
+      fn('1')
+      fn(null)
+      fn(NaN)
+      fn(true)
+      fn(false)
+      assertArrayEqual(args, [[0],[1],[NaN]]);
+    });
+
+    it('should work with Number', () => {
+      var fn = filter(captureArgs, Number);
+      fn(0)
+      fn(1)
+      fn('1')
+      fn(null)
+      fn(NaN)
+      fn(true)
+      fn(false)
+      assertArrayEqual(args, [[1],['1'],[true]]);
+    });
+
+    it('should error on invalid input', () => {
+      assertError(function() { filter() });
+      assertError(function() { filter(null) });
+      assertError(function() { filter(captureArgs) });
+      assertError(function() { filter(captureArgs, null) });
+    });
+
+  });
+
+  describeInstance('callAfter', function(callAfter) {
+
+    it('should capture after returning true', () => {
+      var fn = callAfter(captureArgs, function(arg) {
+        return arg === true;
+      });
+      fn(false, 1);
+      fn(false, 2);
+      fn(true, 3);
+      fn(false, 4);
+      fn(true, 5);
+      assertArrayEqual(args, [[true, 3], [false, 4], [true, 5]]);
+    });
+
+    it('should return values only after locked', () => {
+      var fn = callAfter(captureArgs, function(arg) {
+        return arg === true;
+      });
+      assertUndefined(fn(false, 1));
+      assertUndefined(fn(false, 2));
+      assertArrayEqual(fn(true, 3), [true, 3]);
+      assertArrayEqual(fn(false, 4), [false, 4]);
+      assertArrayEqual(fn(true, 5), [true, 5]);
+    });
+
+    it('should work with a number as a shortcut for iterations', () => {
+      var fn = callAfter(captureArgs, 3);
+      fn('a');
+      fn('b');
+      fn('c');
+      fn('d');
+      assertArrayEqual(args, [['c'], ['d']]);
+    });
+
+    it('should pass all args to the function', () => {
+      var fn = callAfter(captureArgs, function(arg) {
+        return arg === true;
+      });
+      assertArrayEqual(fn(true, 1, 2, 3, 4, 5), [true, 1, 2, 3, 4, 5]);
+    });
+
+    it('should pass context to the function', () => {
+      var fn = callAfter(function() {
+        assertEqual(this, 'a');
+      }, function(arg) {
+        return true;
+      }).call('a');
+    });
+
+    it('should pass all args to the filter function', () => {
+      (callAfter(captureArgs, function(a, b, c, d) {
+        assertArrayEqual([a,b,c,d], ['a','b','c','d']);
+      }))('a','b','c','d');
+    });
+
+    it('should pass context to the filter function', () => {
+      callAfter(captureArgs, function() {
+        assertEqual(this, 'a');
+      }).call('a');
+    });
+
+    it('should error on invalid input', () => {
+      assertError(function() { callAfter() });
+      assertError(function() { callAfter(null) });
+      assertError(function() { callAfter(captureArgs) });
+      assertError(function() { callAfter(captureArgs, null) });
+      assertError(function() { callAfter(captureArgs, '1') });
+      assertError(function() { callAfter(captureArgs, -1) });
+      assertError(function() { callAfter(captureArgs, Infinity) });
+      assertError(function() { callAfter(captureArgs, -Infinity) });
+    });
+
+  });
+
+  describeInstance('callUntil', function(callUntil) {
+
+    it('should capture until returning true', () => {
+      var fn = callUntil(captureArgs, function(arg) {
+        return arg === true;
+      });
+      fn(false, 1);
+      fn(false, 2);
+      fn(true, 3);
+      fn(false, 4);
+      fn(true, 5);
+      assertArrayEqual(args, [[false, 1], [false, 2]]);
+    });
+
+    it('should return values only until locked', () => {
+      var fn = callUntil(captureArgs, function(arg) {
+        return arg === true;
+      });
+      assertArrayEqual(fn(false, 1), [false, 1]);
+      assertArrayEqual(fn(false, 2), [false, 2]);
+      assertUndefined(fn(true, 3));
+      assertUndefined(fn(false, 4));
+      assertUndefined(fn(true, 5));
+    });
+
+    it('should work with a number as a shortcut for iterations', () => {
+      var fn = callUntil(captureArgs, 3);
+      fn('a');
+      fn('b');
+      fn('c');
+      fn('d');
+      assertArrayEqual(args, [['a'], ['b']]);
+    });
+
+    it('should pass all args to the function', () => {
+      var fn = callUntil(captureArgs, function(arg) {
+        return arg === false;
+      });
+      assertArrayEqual(fn(true, 1, 2, 3, 4, 5), [true, 1, 2, 3, 4, 5]);
+    });
+
+    it('should pass context to the function', () => {
+      var fn = callUntil(function() {
+        assertEqual(this, 'a');
+      }, function(arg) {
+        return false;
+      }).call('a');
+    });
+
+    it('should pass all args to the filter function', () => {
+      (callUntil(captureArgs, function(a, b, c, d) {
+        assertArrayEqual([a,b,c,d], ['a','b','c','d']);
+      }))('a','b','c','d');
+    });
+
+    it('should pass context to the filter function', () => {
+      callUntil(captureArgs, function() {
+        assertEqual(this, 'a');
+      }).call('a');
+    });
+
+    it('should error on invalid input', () => {
+      assertError(function() { callUntil() });
+      assertError(function() { callUntil(null) });
+      assertError(function() { callUntil(captureArgs) });
+      assertError(function() { callUntil(captureArgs, null) });
+      assertError(function() { callUntil(captureArgs, '1') });
+      assertError(function() { callUntil(captureArgs, -1) });
+      assertError(function() { callUntil(captureArgs, Infinity) });
+      assertError(function() { callUntil(captureArgs, -Infinity) });
+    });
+
+  });
 });

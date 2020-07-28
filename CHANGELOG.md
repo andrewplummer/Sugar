@@ -73,6 +73,9 @@ v3.0.0
     similar but returns a promise and is cancelable.
 - Removed complex interop between `Function#lock` and `Function#partial`. Simply
 call `Function#lock` first in the chain to achieve the same effect.
+- Renamed `Function#after` to `Function#callAfter` to better communicate intent.
+    Additionally allowing a function here to server as the lock condition.
+- Added `Function#callUntil`.
 
 
 TODO:

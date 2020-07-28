@@ -1,8 +1,11 @@
 import { defineInstance } from '../core/function';
 import * as methods from './methods';
 
+defineInstance('callAfter', methods.callAfter);
+defineInstance('callUntil', methods.callUntil);
 defineInstance('debounce', methods.debounce);
 defineInstance('lock', methods.lock);
+defineInstance('filter', methods.filter);
 defineInstance('memoize', methods.memoize);
 defineInstance('once', methods.once);
 defineInstance('partial', methods.partial);

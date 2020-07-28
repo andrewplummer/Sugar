@@ -1,4 +1,7 @@
+export { default as callAfter } from './callAfter';
+export { default as callUntil } from './callUntil';
 export { default as debounce } from './debounce';
+export { default as filter } from './filter';
 export { default as lock } from './lock';
 export { default as memoize } from './memoize';
 export { default as once } from './once';
