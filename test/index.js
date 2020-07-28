@@ -1,7 +1,10 @@
-import { Sugar } from '../src';
-import Sinon from 'sinon';
+// Note: cannot use modules here as Sinon needs to apply fake timers
+// before Sugar is imported to correctly mock setTimeout.
 
+const Sinon = require('sinon');
 global.clock = Sinon.useFakeTimers();
+
+const { Sugar } = require('../src');
 
 // TODO: test browserify
 // TODO: test broccoli
@@ -12,18 +15,18 @@ global.clock = Sinon.useFakeTimers();
 global.Sugar = Sugar;
 
 // Helpers
-import './helpers/namespace';
-import './helpers/suite';
-import './helpers/util';
-import './helpers/intl';
+require('./helpers/namespace');
+require('./helpers/suite');
+require('./helpers/util');
+require('./helpers/intl');
 
 // Tests
-import './tests/core';
-import './tests/chainable';
-import './tests/extended';
-import './tests/array';
-import './tests/number';
-import './tests/string';
-import './tests/regexp';
-import './tests/function';
-import './tests/modules';
+require('./tests/core');
+require('./tests/chainable');
+require('./tests/extended');
+require('./tests/array');
+require('./tests/number');
+require('./tests/string');
+require('./tests/regexp');
+require('./tests/function');
+require('./tests/modules');
