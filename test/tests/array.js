@@ -108,4 +108,86 @@ namespace('Array', function() {
 
   });
 
+  describeInstance('at', function(at) {
+
+    it('should work with normal indexes', function () {
+      assertEqual(at(['a','b','c'], 0), 'a');
+      assertEqual(at(['a','b','c'], 1), 'b');
+      assertEqual(at(['a','b','c'], 2), 'c');
+      assertUndefined(at(['a','b','c'], 3));
+    });
+
+    it('should work with negative indexes', function () {
+      assertEqual(at(['a','b','c'], -1), 'c');
+      assertEqual(at(['a','b','c'], -2), 'b');
+      assertEqual(at(['a','b','c'], -3), 'a');
+      assertUndefined(at(['a','b','c'], -4));
+    });
+
+    it('should allow looping with positive indexes', function () {
+      assertEqual(at(['a','b','c'], 3, true), 'a');
+      assertEqual(at(['a','b','c'], 4, true), 'b');
+      assertEqual(at(['a','b','c'], 5, true), 'c');
+      assertEqual(at(['a','b','c'], 6, true), 'a');
+      assertEqual(at(['a','b','c'], 6000, true), 'a');
+    });
+
+    it('should allow looping with negative indexes', function () {
+      assertEqual(at(['a','b','c'], -4, true), 'c');
+      assertEqual(at(['a','b','c'], -5, true), 'b');
+      assertEqual(at(['a','b','c'], -6, true), 'a');
+      assertEqual(at(['a','b','c'], -7, true), 'c');
+      assertEqual(at(['a','b','c'], -7000, true), 'c');
+    });
+
+    it('should return multiple elements with an array', function () {
+      assertArrayEqual(at(['a','b','c'], [0, 2]), ['a', 'c']);
+      assertArrayEqual(at(['a','b','c'], [1, 2]), ['b', 'c']);
+      assertArrayEqual(at(['a','b','c'], [1, 3]), ['b', undefined]);
+    });
+
+    it('should return multiple elements with negative indexes', function () {
+      assertArrayEqual(at(['a','b','c'], [-1, -2]), ['c', 'b']);
+      assertArrayEqual(at(['a','b','c'], [-1, -3]), ['c', 'a']);
+      assertArrayEqual(at(['a','b','c'], [-1, -4]), ['c', undefined]);
+    });
+
+    it('should return multiple elements with mixed indexes', function () {
+      assertArrayEqual(at(['a','b','c'], [-1, 1]), ['c', 'b']);
+      assertArrayEqual(at(['a','b','c'], [ 1,-1]), ['b', 'c']);
+    });
+
+    it('should return multiple elements with looping', function () {
+      assertArrayEqual(at(['a','b','c'], [1, 3], true), ['b', 'a']);
+      assertArrayEqual(at(['a','b','c'], [-1, -4], true), ['c', 'c']);
+      assertArrayEqual(at(['a','b','c'], [-4000, 5000], true), ['c', 'c']);
+    });
+
+    it('should have no issues with sparse arrays', function() {
+      assertEqual(at(['a',,'c'], 0), 'a');
+      assertUndefined(at(['a',,'c'], 1));
+      assertEqual(at(['a',,'c'], 2), 'c');
+      assertUndefined(at(['a',,'c'], 3));
+      assertEqual(at(['a',,'c'], 3, true), 'a');
+      assertEqual(at(['a',,'c'], -1), 'c');
+      assertUndefined(at(['a',,'c'], -2));
+      assertEqual(at(['a',,'c'], -3), 'a');
+      assertUndefined(at(['a',,'c'], -4));
+      assertEqual(at(['a',,'c'], -4, true), 'c');
+    });
+
+    it('should handle irregular input', function() {
+      assertEqual(at(['a','b','c'], '0'), 'a');
+      assertEqual(at(['a','b','c'], '1'), 'b');
+      assertEqual(at(['a','b','c'], '-1'), 'c');
+      assertEqual(at(['a','b','c'], '-0'), 'a');
+      assertEqual(at(['a','b','c'], null), 'a');
+      assertEqual(at(['a','b','c'], true), 'b');
+      assertEqual(at(['a','b','c'], false), 'a');
+      assertUndefined(at(['a','b','c']));
+      assertUndefined(at(['a','b','c'], undefined));
+    });
+
+  });
+
 });
