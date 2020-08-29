@@ -84,7 +84,7 @@ namespace('Array', function() {
     });
 
     it('should call a function if necessary', function () {
-      const arr = [
+      var arr = [
         { name: function() { return 'Jim'; } },
       ];
       assertObjectEqual(
@@ -164,6 +164,7 @@ namespace('Array', function() {
     });
 
     it('should have no issues with sparse arrays', function() {
+      /* eslint-disable no-sparse-arrays */
       assertEqual(at(['a',,'c'], 0), 'a');
       assertUndefined(at(['a',,'c'], 1));
       assertEqual(at(['a',,'c'], 2), 'c');
@@ -190,4 +191,145 @@ namespace('Array', function() {
 
   });
 
+  describeInstance('remove', function(remove) {
+
+    it('should modify the array', function() {
+      var arr1 = ['a', 'b', 'c'];
+      var arr2 = remove(arr1, 'c');
+      assertEqual(arr1.length, 2);
+      assertEqual(arr2, arr1);
+    });
+
+    it('should remove array members', function() {
+      assertArrayEqual(remove([1,2,2,3], 2), [1,3]);
+      assertArrayEqual(remove([0,1], 0), [1]);
+    });
+
+    it('should remove by regex', function() {
+      assertArrayEqual(remove(['a','b','c'], /[ac]/), ['b']);
+      assertArrayEqual(remove([1,2,3,4], /[2-3]/), [1,4]);
+    });
+
+    it('should remove by date', function() {
+      var d1 = new Date(2020, 7, 28);
+      var d2 = new Date(2020, 7, 29);
+      assertArrayEqual(remove([d1, d2], new Date(2020, 7, 28)), [d2]);
+    });
+
+    it('should remove by function', function() {
+      assertArrayEqual(remove([1,2,3,4], (n) => n % 2 === 0), [1,3]);
+      assertArrayEqual(remove([1,2,3,4], (n) => n > 5), [1,2,3,4]);
+      assertArrayEqual(remove([1,2,3,4], (n) => n > 2), [1,2]);
+    });
+
+    it('should remove by function when strictly equal', function() {
+      var fn1 = function(){};
+      var fn2 = function(){};
+      assertArrayEqual(remove([fn1, fn2], fn2), [fn1]);
+    });
+
+    it('should remove by fuzzy matching', function() {
+      assertArrayEqual(remove([{a:1,b:1},{a:2,b:2}], {a:1}), [{a:2,b:2}]);
+      assertArrayEqual(remove([{name:'Frank'},{name:'James'}], {name: /^[A-F]/}), [{name:'James'}]);
+    });
+
+    it('should pass correct params to callback', function() {
+      remove(['a'], function (el, i, arr) {
+        assertEqual(el, 'a');
+        assertEqual(i, 0);
+        assertArrayEqual(arr, ['a']);
+      });
+    });
+
+    it('should not iterate over all members of sparse arrays', function() {
+      var count = 0;
+      var arr = ['a'];
+      arr[8000] = 'b';
+      remove(arr, function () {
+        count++;
+      });
+      assertEqual(count, 2);
+    });
+
+    it('should handle irregular input', function() {
+      assertArrayEqual(remove([1,2,2,3]), [1,2,2,3]);
+      assertArrayEqual(remove([1,2,2,3], null), [1,2,2,3]);
+      assertArrayEqual(remove([1,2,2,3], NaN), [1,2,2,3]);
+      assertError(function() { remove(null); });
+      assertError(function() { remove('a'); });
+      assertError(function() { remove(1); });
+    });
+
+  });
+
+  describeInstance('exclude', function(exclude) {
+
+    it('should not modify the array', function() {
+      var arr1 = ['a', 'b', 'c'];
+      var arr2 = exclude(arr1, 'c');
+      assertEqual(arr1.length, 3);
+      assertEqual(arr2.length, 2);
+    });
+
+    it('should exclude array members', function() {
+      assertArrayEqual(exclude([1,2,2,3], 2), [1,3]);
+      assertArrayEqual(exclude([0,1], 0), [1]);
+    });
+
+    it('should exclude by regex', function() {
+      assertArrayEqual(exclude(['a','b','c'], /[ac]/), ['b']);
+      assertArrayEqual(exclude([1,2,3,4], /[2-3]/), [1,4]);
+    });
+
+    it('should exclude by date', function() {
+      var d1 = new Date(2020, 7, 28);
+      var d2 = new Date(2020, 7, 29);
+      assertArrayEqual(exclude([d1, d2], new Date(2020, 7, 28)), [d2]);
+    });
+
+    it('should exclude by function', function() {
+      assertArrayEqual(exclude([1,2,3,4], (n) => n % 2 === 0), [1,3]);
+      assertArrayEqual(exclude([1,2,3,4], (n) => n > 5), [1,2,3,4]);
+      assertArrayEqual(exclude([1,2,3,4], (n) => n > 2), [1,2]);
+    });
+
+    it('should exclude by function when strictly equal', function() {
+      var fn1 = function(){};
+      var fn2 = function(){};
+      assertArrayEqual(exclude([fn1, fn2], fn2), [fn1]);
+    });
+
+    it('should exclude by fuzzy matching', function() {
+      assertArrayEqual(exclude([{a:1,b:1},{a:2,b:2}], {a:1}), [{a:2,b:2}]);
+      assertArrayEqual(exclude([{name:'Frank'},{name:'James'}], {name: /^[A-F]/}), [{name:'James'}]);
+    });
+
+    it('should pass correct params to callback', function() {
+      exclude(['a'], function (el, i, arr) {
+        assertEqual(el, 'a');
+        assertEqual(i, 0);
+        assertArrayEqual(arr, ['a']);
+      });
+    });
+
+    it('should not iterate over all members of sparse arrays', function() {
+      var count = 0;
+      var arr = ['a'];
+      arr[8000] = 'b';
+      exclude(arr, function () {
+        count++;
+      });
+      assertEqual(count, 2);
+    });
+
+    it('should handle irregular input', function() {
+      assertArrayEqual(exclude([1,2,2,3]), [1,2,2,3]);
+      assertArrayEqual(exclude([1,2,2,3], null), [1,2,2,3]);
+      assertArrayEqual(exclude([1,2,2,3], NaN), [1,2,2,3]);
+      assertError(function() { exclude(null); });
+      assertError(function() { exclude('a'); });
+      assertError(function() { exclude(1); });
+    });
+
+  });
 });
