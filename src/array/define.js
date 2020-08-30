@@ -7,5 +7,7 @@ defineInstance('count', methods.count);
 defineInstance('exclude', methods.exclude);
 defineInstance('groupBy', methods.groupBy);
 defineInstance('median', methods.median);
+defineInstance('none', methods.none);
 defineInstance('remove', methods.remove);
+defineInstance('some', methods.some);
 defineInstance('sum', methods.sum);

@@ -333,6 +333,150 @@ namespace('Array', function() {
 
   });
 
+  describeInstance('some', function(some) {
+
+    it('should match by primitive matchers', function() {
+      assertEqual(some(['a','b','c'], 'a'), true);
+      assertEqual(some(['a','b','c'], 'd'), false);
+      assertEqual(some([3,1,2,3], 7), false);
+      assertEqual(some([true, true, false, true], true), true);
+      assertEqual(some([false, false, false], true), false);
+    });
+
+    it('should match by regex', function() {
+      assertEqual(some(['a','b','c'], /[ac]/), true);
+      assertEqual(some(['a','b','c'], /[AC]/), false);
+    });
+
+    it('should match by date', function() {
+      var d1 = new Date(2020, 7, 28);
+      var d2 = new Date(2020, 7, 29);
+      assertEqual(some([d1, d2], new Date(2020, 7, 28)), true);
+      assertEqual(some([d1, d2], new Date(2020, 7, 30)), false);
+    });
+
+    it('should match by function', function() {
+      assertEqual(some([1,2,3,4], (n) => n % 2 === 0), true);
+      assertEqual(some([2,4,6,8], (n) => n % 2 === 1), false);
+      assertEqual(some([1,2,3,4], (n) => n > 5), false);
+      assertEqual(some([1,2,3,4], (n) => n > 2), true);
+    });
+
+    it('should match by function when strictly equal', function() {
+      var fn1 = function(){};
+      var fn2 = function(){};
+      assertEqual(some([fn1, fn2], fn2), true);
+      assertEqual(some([fn1], fn2), false);
+    });
+
+    it('should match by fuzzy matching', function() {
+      assertEqual(some([{a:1,b:1},{a:2,b:2}], {a:1}), true);
+      assertEqual(some([{a:1,b:1},{a:2,b:2}], {a:5}), false);
+      assertEqual(some([{name:'Frank'},{name:'James'}], {name: /^[A-F]/}), true);
+      assertEqual(some([{name:'Frank'},{name:'James'}], {name: /^[N-Z]/}), false);
+    });
+
+    it('should pass correct params to callback', function() {
+      some(['a'], function (el, i, arr) {
+        assertEqual(el, 'a');
+        assertEqual(i, 0);
+        assertArrayEqual(arr, ['a']);
+      });
+    });
+
+    it('should not iterate over all members of sparse arrays', function() {
+      var n = 0;
+      var arr = ['a'];
+      arr[8000] = 'b';
+      some(arr, function () {
+        n++;
+      });
+      assertEqual(n, 2);
+    });
+
+    it('should handle irregular input', function() {
+      assertEqual(some([1,2,2,3], null), false);
+      assertEqual(some([1,2,2,3], NaN), false);
+      assertError(function() { some([1]); });
+      assertError(function() { some(null); });
+      assertError(function() { some('a'); });
+      assertError(function() { some(1); });
+    });
+
+  });
+
+  describeInstance('none', function(none) {
+
+    it('should match by primitive matchers', function() {
+      assertEqual(none(['a','b','c'], 'a'), false);
+      assertEqual(none(['a','b','c'], 'd'), true);
+      assertEqual(none([3,1,2,3], 7), true);
+      assertEqual(none([true, true, false, true], true), false);
+      assertEqual(none([false, false, false], true), true);
+    });
+
+    it('should match by regex', function() {
+      assertEqual(none(['a','b','c'], /[ac]/), false);
+      assertEqual(none(['a','b','c'], /[AC]/), true);
+    });
+
+    it('should match by date', function() {
+      var d1 = new Date(2020, 7, 28);
+      var d2 = new Date(2020, 7, 29);
+      assertEqual(none([d1, d2], new Date(2020, 7, 28)), false);
+      assertEqual(none([d1, d2], new Date(2020, 7, 30)), true);
+    });
+
+    it('should match by function', function() {
+      assertEqual(none([1,2,3,4], (n) => n % 2 === 0), false);
+      assertEqual(none([2,4,6,8], (n) => n % 2 === 1), true);
+      assertEqual(none([1,2,3,4], (n) => n > 5), true);
+      assertEqual(none([1,2,3,4], (n) => n > 2), false);
+    });
+
+    it('should match by function when strictly equal', function() {
+      var fn1 = function(){};
+      var fn2 = function(){};
+      assertEqual(none([fn1, fn2], fn2), false);
+      assertEqual(none([fn1], fn2), true);
+    });
+
+    it('should match by fuzzy matching', function() {
+      assertEqual(none([{a:1,b:1},{a:2,b:2}], {a:1}), false);
+      assertEqual(none([{a:1,b:1},{a:2,b:2}], {a:7}), true);
+      assertEqual(none([{name:'Frank'},{name:'James'}], {name: /^[A-F]/}), false);
+      assertEqual(none([{name:'Frank'},{name:'James'}], {name: /^[N-Z]/}), true);
+    });
+
+    it('should pass correct params to callback', function() {
+      none(['a'], function (el, i, arr) {
+        assertEqual(el, 'a');
+        assertEqual(i, 0);
+        assertArrayEqual(arr, ['a']);
+      });
+    });
+
+    it('should not iterate over all members of sparse arrays', function() {
+      var n = 0;
+      var arr = ['a'];
+      arr[8000] = 'b';
+      none(arr, function () {
+        n++;
+      });
+      assertEqual(n, 2);
+    });
+
+    it('should handle irregular input', function() {
+      assertEqual(none([1,2,2,3], null), true);
+      assertEqual(none([1,2,2,3], NaN), true);
+      assertError(function() { none([1]); });
+      assertError(function() { none(null); });
+      assertError(function() { none('a'); });
+      assertError(function() { none(1); });
+    });
+
+  });
+
   describeInstance('count', function(count) {
 
     it('should count all elements with no arguments', function() {

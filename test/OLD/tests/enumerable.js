@@ -527,59 +527,6 @@ namespace('Array', function() {
     test(people, [function(person) { return person.age == 13; }], 2, 'JSON objects');
   });
 
-  method('none', function() {
-
-    test([1,2,3], [1], false, 'numeric | 1');
-    test([1,2,3], [4], true, 'numeric | 4');
-    test([1,2,3], ['a'], true, 'numeric | a');
-    test(['a','b','c'], ['a'], false, 'alphabet | a');
-    test(['a','b','c'], ['f'], true, 'alphabet | f');
-    test(['a','b','c'], [/[a-f]/], false, 'alphabet | /[a-f]/');
-    test(['a','b','c'], [/[m-z]/], true, 'alphabet | /[m-z]/');
-    test([{a:1},{a:2},{a:1}], [1], true, 'objects | 1');
-    test([{a:1},{a:2},{a:1}], [{a:1}], false, 'objects | a:1');
-
-    test(['a','b','c'], [function(e) { return e.length > 1; }], true, 'alphabet | length is greater than 1');
-    test(['a','b','c'], [function(e) { return e.length < 2; }], false, 'alphabet | length is less than 2');
-    test(['a','bar','cat'], [function(e) { return e.length < 2; }], false, 'a,bar,cat | length is less than 2');
-    test([{a:1},{a:2},{a:1}], [function(e) { return e['a'] == 1; }], false, 'objects | key "a" is 1');
-    test([{a:1},{a:2},{a:1}], [function(e) { return e['b'] == 1; }], true, 'objects | key "b" is 1');
-
-    raisesError(function() { run([1,2,3], 'none'); }, 'no argument raises a TypeError');
-
-    test(threeUndefined, oneUndefined, false, 'undefined should match all undefined');
-    test(threeUndefined, [null], true, 'null should not match all undefined');
-    test(undefinedWithNull, oneUndefined, false, 'undefined should match one undefined');
-    test(undefinedWithNull, [null], false, 'null should match one null');
-    test([null, null], [null], false, 'null should match all null');
-    test([null, null], oneUndefined, true, 'undefined should not match all null');
-
-    var people = [
-      { name: 'jim',    age: 27, hair: 'brown'  },
-      { name: 'mary',   age: 52, hair: 'blonde' },
-      { name: 'ronnie', age: 13, hair: 'brown'  },
-      { name: 'edmund', age: 27, hair: 'blonde' },
-      { name: 'buddy',  age: 82, hair: { color: 'red', type: 'long', cost: 15, last_cut: new Date(2010, 4, 18) } }
-    ];
-
-    test(people, [{ age: 27 }], false, 'complex | one property');
-    test(people, [{ age: 27, hair: 'brown' }], false, 'complex | two properties');
-    test(people, [{ hair: { color: 'red' }}], false, 'complex | nested property');
-    test(people, [{ hair: { color: 'green' }}], true, 'complex | non-matching nested property');
-    test(people, [{ hair: { color: 'red', type: 'long' }}], false, 'complex | two nested properties');
-    test(people, [{ hair: { color: 'green', type: 'mean' }}], true, 'complex | two non-matching nested properties');
-    test(people, [{ hair: { color: 'red', type: 'mean' }}], true, 'complex | two nested properties, one non-matching');
-    test(people, [{ hair: { color: 'red', life: 'long' }}], true, 'complex | two nested properties, one non-existing');
-    test(people, [{ hair: { color: /r/ }}], false, 'complex | nested regex');
-    test(people, [{ hair: { cost: 15 }}], false, 'complex | nested number');
-    test(people, [{ hair: { cost: 23 }}], true, 'complex | nested non-matching number');
-    test(people, [{ hair: { cost: undefined }}], true, 'complex | nested undefined property');
-    test(people, [{ hair: { cost: NaN }}], true, 'complex | nested property is NaN');
-    test(people, [{ hair: { color: function(c){ return c == 'red'; } }}], false, 'complex | nested function');
-    test(people, [{ none: { random: { shit: {}}}}], true, 'complex | totally unrelated properties');
-    test(people, [{ hair: { last_cut: new Date(2010, 4, 18) }}], false, 'complex | simple date');
-
-  });
 
   group('Fuzzy Matching', function() {
     var arr = [{name: 'joe', age: 25}];
