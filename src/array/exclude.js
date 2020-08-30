@@ -3,7 +3,7 @@ import { assertArray } from '../util/assertions';
 import { forEachSparse } from '../util/array';
 
 /**
-   Returns a new array with elements removed.
+ * Returns a new array with elements removed.
  *
  * @extra This method can be thought of as the inverse of `Array#filter`. It
  *        will not modify the original array, Use `remove` to modify the

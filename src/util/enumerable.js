@@ -13,6 +13,6 @@ export function mapWithShortcuts(el, map, context, mapArgs) {
   } else if (isFunction(el[map])) {
     return el[map].call(el);
   } else {
-    return deepGetProperty(el, map, true);
+    return deepGetProperty(el, map);
   }
 }

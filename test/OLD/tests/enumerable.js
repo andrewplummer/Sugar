@@ -1622,31 +1622,6 @@ namespace('Array', function() {
 
   });
 
-  method('count', function() {
-    test([1,2,2,3], 4, 'no arugment numeric');
-    test([1,2,2,3], [2], 2, 'count 2s');
-    test(['a','b','c','c'], 4, 'no argument alphabet');
-    test(['a','b','c','c'], ['c'], 2, 'count "c"s');
-    test([1,2,2,3], [function(el) { return el % 2 == 0; }], 2, 'count all odd numbers');
-    test([1,2,2,3], [function(el) { return el > 2; }], 1, 'count all numbers greater than 2');
-    test([1,2,2,3], [function(el) { return el > 20; }], 0, 'count all numbers greater than 20');
-    test([{a:1},{a:2},{a:1}], [{a:1}], 2, 'count all a:1');
-  });
-
-  method('sum', function() {
-    test([12,87,55], 154, '12,87,55');
-    test([12,87,128], 227, '12,87,128');
-    test([], 0, 'empty array is 0');
-    test([null, false], 0, '[null,false] is 0');
-    test([{a:1,b:5},{a:2,b:5},{a:3,b:5}], [function(el) { return el['a']; }], 6, 'key "a"');
-    test([{a:1,b:5},{a:2,b:5},{a:3,b:5}], ['a'], 6, 'shortcut for key "a"');
-    test([{a:{b:5}},{a:{b:6}}], ['a.b'], 11, 'deep properties');
-
-    var arr = [1,2,3];
-    arr['foo'] = 5;
-    test(arr, 6, 'Should not enumerate over non-index properties');
-  });
-
   method('average', function() {
     var people = [
       { name: 'jim',    age: 27, hair: 'brown'  },

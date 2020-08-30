@@ -14,9 +14,7 @@ export function getMatcher(obj) {
       return getFuzzyMatcher(obj);
     }
   }
-  return (el) => {
-    return el === obj;
-  };
+  return getDefaultMatcher(obj);
 }
 
 function getRegexMatcher(reg) {
@@ -36,6 +34,12 @@ function getFunctionMatcher(fn) {
   return (el, i, arr) => {
     // Return true up front if match by reference
     return el === fn || fn.call(arr, el, i, arr);
+  };
+}
+
+function getDefaultMatcher(obj) {
+  return (el) => {
+    return el === obj;
   };
 }
 

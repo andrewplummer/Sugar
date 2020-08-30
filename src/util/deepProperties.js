@@ -2,23 +2,23 @@ import { isString, isObjectType } from './typeChecks';
 import { isDefined, hasOwnProperty } from './helpers';
 import { assertArray, assertWritable } from './assertions';
 
-export function deepHasProperty(obj, key, any) {
-  return handleDeepProperty(obj, key, any, true);
+export function deepHasProperty(obj, key) {
+  return handleDeepProperty(obj, key, true);
 }
 
-export function deepGetProperty(obj, key, any) {
-  return handleDeepProperty(obj, key, any, false);
+export function deepGetProperty(obj, key) {
+  return handleDeepProperty(obj, key, false);
 }
 
 export function deepSetProperty(obj, key, val) {
-  handleDeepProperty(obj, key, false, false, true, false, val);
+  handleDeepProperty(obj, key, false, true, false, val);
   return obj;
 }
 
 // Matches 1..2 style ranges in properties.
 const PROPERTY_RANGE_REG = /^(.*?)\[([-\d]*)\.\.([-\d]*)\](.*)$/;
 
-function handleDeepProperty(obj, key, any, has, fill, fillLast, val) {
+function handleDeepProperty(obj, key, has, fill, fillLast, val) {
   var ns, bs, ps, cbi, set, isLast, isPush, isIndex, nextIsIndex, exists;
   ns = obj;
   if (key == null) return;
@@ -29,7 +29,7 @@ function handleDeepProperty(obj, key, any, has, fill, fillLast, val) {
   } else {
     key = String(key);
     if (key.indexOf('..') !== -1) {
-      return handleArrayIndexRange(obj, key, any, val);
+      return handleArrayIndexRange(obj, key, val);
     }
     bs = key.split('[');
   }
@@ -81,9 +81,7 @@ function handleDeepProperty(obj, key, any, has, fill, fillLast, val) {
       // 2nd part, if there is only 1 part, or if there is an explicit key.
       if (i || key || blen === 1) {
 
-        // TODO: need to be sure this check handles ''.length when
-        // we refactor.
-        exists = any ? key in Object(ns) : hasOwnProperty(ns, key);
+        exists = hasOwnProperty(ns, key);
 
         // Non-existent namespaces are only filled if they are intermediate
         // (not at the end) or explicitly filling the last.
@@ -111,7 +109,7 @@ function handleDeepProperty(obj, key, any, has, fill, fillLast, val) {
 }
 
 // Get object property with support for 0..1 style range notation.
-function handleArrayIndexRange(obj, key, any, val) {
+function handleArrayIndexRange(obj, key, val) {
   var match, start, end, leading, trailing, arr, set;
   match = key.match(PROPERTY_RANGE_REG);
   if (!match) {
@@ -122,7 +120,7 @@ function handleArrayIndexRange(obj, key, any, val) {
   leading = match[1];
 
   if (leading) {
-    arr = handleDeepProperty(obj, leading, any, false, set ? true : false, true);
+    arr = handleDeepProperty(obj, leading, false, set ? true : false, true);
   } else {
     arr = obj;
   }
@@ -140,7 +138,7 @@ function handleArrayIndexRange(obj, key, any, val) {
 
   if (set) {
     for (var i = start; i < end; i++) {
-      handleDeepProperty(arr, i + trailing, any, false, true, false, val);
+      handleDeepProperty(arr, i + trailing, false, true, false, val);
     }
   } else {
     arr = arr.slice(start, end);

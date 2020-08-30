@@ -332,4 +332,131 @@ namespace('Array', function() {
     });
 
   });
+
+  describeInstance('count', function(count) {
+
+    it('should count all elements with no arguments', function() {
+      assertEqual(count(['a','b','c']), 3);
+    });
+
+    it('should count by primitive matchers', function() {
+      assertEqual(count(['a','b','c'], 'a'), 1);
+      assertEqual(count([3,1,2,3], 3), 2);
+      assertEqual(count([true, true, false, true], true), 3);
+    });
+
+    it('should match by regex', function() {
+      assertEqual(count(['a','b','c'], /[ac]/), 2);
+      assertEqual(count([1,2,3,4], /[3]/), 1);
+    });
+
+    it('should count by date', function() {
+      var d1 = new Date(2020, 7, 28);
+      var d2 = new Date(2020, 7, 29);
+      assertEqual(count([d1, d2], new Date(2020, 7, 28)), 1);
+    });
+
+    it('should count by function', function() {
+      assertEqual(count([1,2,3,4], (n) => n % 2 === 0), 2);
+      assertEqual(count([1,2,3,4], (n) => n > 5), 0);
+      assertEqual(count([1,2,3,4], (n) => n > 2), 2);
+    });
+
+    it('should count by function when strictly equal', function() {
+      var fn1 = function(){};
+      var fn2 = function(){};
+      assertEqual(count([fn1, fn2], fn2), 1);
+    });
+
+    it('should count by fuzzy matching', function() {
+      assertEqual(count([{a:1,b:1},{a:2,b:2}], {a:1}), 1);
+      assertEqual(count([{name:'Frank'},{name:'James'}], {name: /^[A-F]/}), 1);
+    });
+
+    it('should pass correct params to callback', function() {
+      count(['a'], function (el, i, arr) {
+        assertEqual(el, 'a');
+        assertEqual(i, 0);
+        assertArrayEqual(arr, ['a']);
+      });
+    });
+
+    it('should not iterate over all members of sparse arrays', function() {
+      var n = 0;
+      var arr = ['a'];
+      arr[8000] = 'b';
+      count(arr, function () {
+        n++;
+      });
+      assertEqual(n, 2);
+    });
+
+    it('should handle irregular input', function() {
+      assertEqual(count([1,2,2,3], null), 0);
+      assertEqual(count([1,2,2,3], NaN), 0);
+      assertError(function() { count(null); });
+      assertError(function() { count('a'); });
+      assertError(function() { count(1); });
+    });
+
+  });
+
+  describeInstance('sum', function(sum) {
+
+    it('should sum all elements with no arguments', function() {
+      assertEqual(sum([1,2,3]), 6);
+      assertEqual(sum([0,0,0]), 0);
+    });
+
+    it('should sum with function mapper', function() {
+      assertEqual(sum([1,2,3,4], (n) => n * 2), 20);
+      assertEqual(sum([1,2,3,4], (n) => n % 2 === 0 ? n : 0), 6);
+      assertEqual(sum([1,2,3,4], (n) => n > 5 ? n : 0), 0);
+      assertEqual(sum([1,2,3,4], (n) => n > 2 ? n : 0), 7);
+    });
+
+    it('should sum with string mapper', function() {
+      assertEqual(sum([{a:2},{a:5}], 'a'), 7);
+      assertNaN(sum([{a:2},{a:5}], 'b'));
+    });
+
+    it('should handle deep properties', function() {
+      assertEqual(sum([
+        { profile: { likes: 20 } },
+        { profile: { likes: 17 } },
+        { profile: { likes: 36 } },
+      ], 'profile.likes'), 73);
+      assertEqual(sum([
+        { posts: [{ views: 80 }] },
+        { posts: [{ views: 97 }] },
+        { posts: [{ views: 12 }] },
+      ], 'posts[0].views'), 189);
+      assertEqual(sum([
+        { posts: [{ views: 80 }] },
+        { posts: [{ views: 97 }] },
+        { posts: [{ views: 12 }] },
+      ], 'posts.0.views'), 189);
+    });
+
+    it('should not iterate over all members of sparse arrays', function() {
+      var count = 0;
+      var arr = ['a'];
+      arr[8000] = 'b';
+      sum(arr, function () {
+        count++;
+      });
+      assertEqual(count, 2);
+    });
+
+    it('should handle irregular input', function() {
+      assertEqual(sum([]), 0);
+      assertEqual(sum([null, false]), 0);
+      assertError(function() { sum(); });
+      assertError(function() { sum(null); });
+      assertError(function() { sum(1); });
+      assertError(function() { sum('a'); });
+    });
+
+  });
+
 });
