@@ -416,8 +416,8 @@ namespace('Array', function() {
     });
 
     it('should sum with string mapper', function() {
-      assertEqual(sum([{a:2},{a:5}], 'a'), 7);
-      assertNaN(sum([{a:2},{a:5}], 'b'));
+      assertEqual(sum([{age:2},{age:5}], 'age'), 7);
+      assertNaN(sum([{age:2},{age:5}], 'height'));
     });
 
     it('should handle deep properties', function() {
@@ -455,6 +455,129 @@ namespace('Array', function() {
       assertError(function() { sum(null); });
       assertError(function() { sum(1); });
       assertError(function() { sum('a'); });
+    });
+
+  });
+
+  describeInstance('average', function(average) {
+
+    it('should average all elements with no arguments', function() {
+      assertEqual(average([1,2,3]), 2);
+      assertEqual(average([0,0,0]), 0);
+    });
+
+    it('should average with function mapper', function() {
+      assertEqual(average([1,2,3,4], (n) => n * 2), 5);
+      assertEqual(average([1,2,3,4], (n) => n % 2 === 0 ? n : 0), 1.5);
+      assertEqual(average([1,2,3,4], (n) => n > 5 ? n : 0), 0);
+      assertEqual(average([1,2,3,4], (n) => n > 2 ? n : 0), 1.75);
+    });
+
+    it('should average with string mapper', function() {
+      assertEqual(average([{age:2},{age:5}], 'age'), 3.5);
+      assertNaN(average([{age:2},{age:5}], 'height'));
+    });
+
+    it('should handle deep properties', function() {
+      assertEqual(average([
+        { profile: { likes: 20 } },
+        { profile: { likes: 17 } },
+        { profile: { likes: 38 } },
+      ], 'profile.likes'), 25);
+      assertEqual(average([
+        { posts: [{ views: 80 }] },
+        { posts: [{ views: 97 }] },
+        { posts: [{ views: 12 }] },
+      ], 'posts[0].views'), 63);
+      assertEqual(average([
+        { posts: [{ views: 80 }] },
+        { posts: [{ views: 97 }] },
+        { posts: [{ views: 12 }] },
+      ], 'posts.0.views'), 63);
+    });
+
+    it('should not iterate over all members of sparse arrays', function() {
+      var count = 0;
+      var arr = ['a'];
+      arr[8000] = 'b';
+      average(arr, function () {
+        count++;
+      });
+      assertEqual(count, 2);
+    });
+
+    it('should handle irregular input', function() {
+      assertEqual(average([]), 0);
+      assertEqual(average([null, false]), 0);
+      assertNaN(average([NaN, NaN]));
+      assertError(function() { average(); });
+      assertError(function() { average(null); });
+      assertError(function() { average(1); });
+      assertError(function() { average('a'); });
+    });
+
+  });
+
+  describeInstance('median', function(median) {
+
+    it('should median average all elements with no arguments', function() {
+      assertEqual(median([1,2,5,6,7]), 5);
+      assertEqual(median([1,2,5,6,7,8]), 5.5);
+      assertEqual(median([8,7,6,5,2,1]), 5.5);
+      assertEqual(median([1,2,80,81,82]), 80);
+      assertEqual(median([0,0,0]), 0);
+    });
+
+    it('should median average with function mapper', function() {
+      assertEqual(median([1,2,3,4], (n) => n * 2), 5);
+      assertEqual(median([1,2,3,4], (n) => n % 2 === 0 ? n : 0), 1);
+      assertEqual(median([1,2,3,4], (n) => n > 5 ? n : 0), 0);
+      assertEqual(median([1,2,3,4], (n) => n > 2 ? n : 0), 1.5);
+    });
+
+    it('should average with string mapper', function() {
+      assertEqual(median([{age:2},{age:5}], 'age'), 3.5);
+      assertNaN(median([{age:2},{age:5}], 'height'));
+    });
+
+    it('should handle deep properties', function() {
+      assertEqual(median([
+        { profile: { likes: 10 } },
+        { profile: { likes: 17 } },
+        { profile: { likes: 38 } },
+        { profile: { likes: 18 } },
+      ], 'profile.likes'), 17.5);
+      assertEqual(median([
+        { posts: [{ views: 80 }] },
+        { posts: [{ views: 97 }] },
+        { posts: [{ views: 12 }] },
+      ], 'posts[0].views'), 80);
+      assertEqual(median([
+        { posts: [{ views: 20 }] },
+        { posts: [{ views: 80 }] },
+        { posts: [{ views: 97 }] },
+        { posts: [{ views: 12 }] },
+      ], 'posts.0.views'), 50);
+    });
+
+    it('should not iterate over all members of sparse arrays', function() {
+      var count = 0;
+      var arr = ['a'];
+      arr[8000] = 'b';
+      median(arr, function () {
+        count++;
+      });
+      assertEqual(count, 2);
+    });
+
+    it('should handle irregular input', function() {
+      assertEqual(median([]), 0);
+      assertEqual(median([null, false]), 0);
+      assertNaN(median([NaN, NaN]));
+      assertError(function() { median(); });
+      assertError(function() { median(null); });
+      assertError(function() { median(1); });
+      assertError(function() { median('a'); });
     });
 
   });
