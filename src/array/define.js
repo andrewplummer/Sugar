@@ -5,6 +5,7 @@ defineInstance('at', methods.at);
 defineInstance('average', methods.average);
 defineInstance('count', methods.count);
 defineInstance('exclude', methods.exclude);
+defineInstance('every', methods.every);
 defineInstance('groupBy', methods.groupBy);
 defineInstance('median', methods.median);
 defineInstance('none', methods.none);

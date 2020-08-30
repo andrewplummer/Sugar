@@ -477,6 +477,80 @@ namespace('Array', function() {
 
   });
 
+  describeInstance('every', function(every) {
+
+    it('should match by primitive matchers', function() {
+      assertEqual(every(['a','b','c'], 'a'), false);
+      assertEqual(every(['a','a','a'], 'a'), true);
+      assertEqual(every([1,1,1], 2), false);
+      assertEqual(every([1,1,1], 1), true);
+      assertEqual(every([false, false, true], false), false);
+      assertEqual(every([false, false, false], false), true);
+    });
+
+    it('should match by regex', function() {
+      assertEqual(every(['a','b','c'], /[ac]/), false);
+      assertEqual(every(['a','b','c'], /[a-c]/), true);
+    });
+
+    it('should match by date', function() {
+      var d1 = new Date(2020, 7, 28);
+      var d2 = new Date(2020, 7, 29);
+      assertEqual(every([d1, d2], new Date(2020, 7, 28)), false);
+      assertEqual(every([d1, d1], new Date(2020, 7, 28)), true);
+    });
+
+    it('should match by function', function() {
+      assertEqual(every([1,2,3,4], (n) => n % 2 === 0), false);
+      assertEqual(every([2,4,6,8], (n) => n % 2 === 0), true);
+      assertEqual(every([1,2,3,4], (n) => n > 5), false);
+      assertEqual(every([1,2,3,4], (n) => n > 0), true);
+    });
+
+    it('should match by function when strictly equal', function() {
+      var fn1 = function(){};
+      var fn2 = function(){};
+      assertEqual(every([fn1, fn2], fn2), false);
+      assertEqual(every([fn2, fn2], fn2), true);
+    });
+
+    it('should match by fuzzy matching', function() {
+      assertEqual(every([{a:1,b:1},{a:2,b:2}], {a:1}), false);
+      assertEqual(every([{a:1,b:1},{a:1,b:2}], {a:1}), true);
+      assertEqual(every([{name:'Frank'},{name:'James'}], {name: /^[A-F]/}), false);
+      assertEqual(every([{name:'Frank'},{name:'James'}], {name: /^[A-J]/}), true);
+    });
+
+    it('should pass correct params to callback', function() {
+      every(['a'], function (el, i, arr) {
+        assertEqual(el, 'a');
+        assertEqual(i, 0);
+        assertArrayEqual(arr, ['a']);
+      });
+    });
+
+    it('should not iterate over all members of sparse arrays', function() {
+      var n = 0;
+      var arr = ['a'];
+      arr[8000] = 'b';
+      every(arr, function () {
+        n++;
+        return true;
+      });
+      assertEqual(n, 2);
+    });
+
+    it('should handle irregular input', function() {
+      assertEqual(every([1,2,2,3], null), false);
+      assertEqual(every([1,2,2,3], NaN), false);
+      assertError(function() { every([1]); });
+      assertError(function() { every(null); });
+      assertError(function() { every('a'); });
+      assertError(function() { every(1); });
+    });
+
+  });
+
   describeInstance('count', function(count) {
 
     it('should count all elements with no arguments', function() {
