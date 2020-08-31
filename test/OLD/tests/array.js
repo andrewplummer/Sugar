@@ -89,19 +89,6 @@ namespace('Array', function () {
     test([user1], [[user1, user2]], false, 'array of objects 1:2');
   });
 
-  method('clone', function() {
-    var arr = [1,2,3];
-    var arr2 = run(arr, 'clone');
-    equal(arr, arr2, 'should clone the array');
-    arr2.splice(1, 1);
-    equal(arr, [1,2,3], 'original array should be untouched');
-
-    var arr = testGetSparseArray(5, 'a', 'b', 'c');
-    arr[9] = 'd';
-    test(arr, arr, 'should correctly clone a sparse array');
-
-  });
-
   method('add', function() {
 
     test([], [], [], 'nothing');
@@ -625,56 +612,6 @@ namespace('Array', function () {
     var arr = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20];
     run(arr, 'inGroupsOf', [3]);
     equal(arr.length, 20, 'does not corrupt original array length');
-
-  });
-
-  method('shuffle', function() {
-    var arr = run([1,2,3,4,5,6,7,8,9,10], 'shuffle');
-    var fn = function(i) {
-      return arr[i];
-    }
-    assertRandomized(arr, fn);
-  });
-
-  method('sample', function() {
-    var arr = [1,2,3,4,5,6,7,8,9,10];
-    var fn = function(i) {
-      return run(arr, 'sample');
-    }
-    assertRandomized(arr, fn);
-
-    equal(typeof run(arr, 'sample'), 'number', 'no params');
-    equal(run(arr, 'sample', [1]).length, 1, '1');
-    equal(run(arr, 'sample', [2]).length, 2, '2');
-    equal(run(arr, 'sample', [3]).length, 3, '3');
-    equal(run(arr, 'sample', [4]).length, 4, '4');
-    equal(run(arr, 'sample', [11]).length, 10, "can't sample more than the length of the array");
-
-    var arr2 = run(run(arr, 'sample', [10]), 'unique');
-    equal(arr2.length, arr.length, "should not sample the same element twice");
-
-    equal(run(arr, 'sample', [0]).length, 0, '0');
-
-
-    var arr = [1,2,3,4];
-    var result = run(arr, 'sample', [true])
-    equal(typeof result , 'number', 'should have returned single number');
-    equal(arr.length, 3, 'should have removed 1 element');
-
-    var arr = [1,2,3,4];
-    var result = run(arr, 'sample', [0, true])
-    equal(result.length, 0, 'should have returned 0 sampled elements');
-    equal(arr.length, 4, 'should have removed 0 elements');
-
-    var arr = [1,2,3,4];
-    var result = run(arr, 'sample', [1, true])
-    equal(result.length, 1, 'should have returned 1 sampled element');
-    equal(arr.length, 3, 'should have removed 1 element');
-
-    var arr = [1,2,3,4];
-    var result = run(arr, 'sample', [2, true])
-    equal(result.length, 2, 'should have returned 2 sampled elements');
-    equal(arr.length, 2, 'should have removed 2 elements');
 
   });
 

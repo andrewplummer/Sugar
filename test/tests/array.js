@@ -1262,4 +1262,69 @@ namespace('Array', function() {
 
   });
 
+  describeInstance('shuffle', function(shuffle) {
+
+    function assertRandomized(arr, fn) {
+      var result = fn(arr);
+      assertTrue(result.some(function(el, i) {
+        return el !== arr[i];
+      }));
+    }
+
+    it('should randomize a basic array', function() {
+      assertRandomized([1,2,3,4,5,6,7,8,9,10], function (arr) {
+        return shuffle(arr);
+      });
+    });
+
+    it('should handle irregular input', function() {
+      assertArrayEqual(shuffle([]), []);
+      assertError(function() { shuffle(); });
+      assertError(function() { shuffle(null); });
+      assertError(function() { shuffle(1); });
+      assertError(function() { shuffle('a'); });
+    });
+
+  });
+
+  describeInstance('sample', function(sample) {
+
+    function assertRandom(arr, fn) {
+      var last;
+      var equal = true;
+      for (var i = 0; i < 10; i++) {
+        var result = fn(arr);
+        if (i === 0) {
+          last = result;
+        } else if (result !== last) {
+          equal = false;
+        }
+      }
+      assertFalse(equal);
+    }
+
+    it('should sample from a basic array', function() {
+      assertRandom([1,2,3,4,5,6,7,8,9,10], function (arr) {
+        return sample(arr);
+      });
+    });
+
+    it('should optionally allow removal from the array', function() {
+      var arr = [1,2,3,4,5,6,7,8,9,10];
+      var len = arr.length;
+      var sampled = sample(arr, true);
+      assertFalse(arr.some(function(el) { return el === sampled; }));
+      assertEqual(arr.length, len - 1);
+    });
+
+    it('should handle irregular input', function() {
+      assertEqual(sample([]), undefined);
+      assertError(function() { sample(); });
+      assertError(function() { sample(null); });
+      assertError(function() { sample(1); });
+      assertError(function() { sample('a'); });
+    });
+
+  });
+
 });

@@ -80,6 +80,9 @@ call `Function#lock` first in the chain to achieve the same effect.
     `filterFromIndex`, `someFromIndex`, `everyFromIndex`, `reduceFromIndex`,
     `reduceRightFromIndex`, `findFromIndex`, `findIndexFromIndex`. Use
     `Array#slice` here instead for similar functionality.
+- Removed `Array#clone`.
+- Removed `Array#sample` ability to return multiple samples. Run the function
+    multiple times instead.
 
 
 TODO:
