@@ -1,6 +1,5 @@
 import { isPrimitive, isRegExp, isDate, isFunction, isObjectType } from './typeChecks';
 import { forEachProperty } from './helpers';
-import { isPlainObject } from './object';
 
 export function getMatcher(obj, context) {
   if (!isPrimitive(obj)) {
@@ -10,7 +9,7 @@ export function getMatcher(obj, context) {
       return getDateMatcher(obj);
     } else if (isFunction(obj)) {
       return getFunctionMatcher(obj, context);
-    } else if (isPlainObject(obj)) {
+    } else {
       return getFuzzyMatcher(obj);
     }
   }

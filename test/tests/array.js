@@ -658,6 +658,211 @@ namespace('Array', function() {
 
   });
 
+  describeInstance('filter', function(filter) {
+
+    it('should filter array members', function() {
+      assertArrayEqual(filter([1,2,2,3], 2), [2,2]);
+      assertArrayEqual(filter([0,1], 0), [0]);
+    });
+
+    it('should filter by regex', function() {
+      assertArrayEqual(filter(['a','b','c'], /[ac]/), ['a','c']);
+      assertArrayEqual(filter([1,2,3,4], /[2-3]/), [2,3]);
+    });
+
+    it('should filter by date', function() {
+      var d1 = new Date(2020, 7, 28);
+      var d2 = new Date(2020, 7, 29);
+      assertArrayEqual(filter([d1, d2], new Date(2020, 7, 28)), [d1]);
+    });
+
+    it('should filter by function', function() {
+      assertArrayEqual(filter([1,2,3,4], (n) => n % 2 === 0), [2,4]);
+      assertArrayEqual(filter([1,2,3,4], (n) => n > 5), []);
+      assertArrayEqual(filter([1,2,3,4], (n) => n > 2), [3,4]);
+    });
+
+    it('should filter by function when strictly equal', function() {
+      var fn1 = function() {};
+      var fn2 = function() {};
+      assertArrayEqual(filter([fn1, fn2], fn2), [fn2]);
+    });
+
+    it('should filter by fuzzy matching', function() {
+      assertArrayEqual(filter([{a:1,b:1},{a:2,b:2}], {a:1}), [{a:1,b:1}]);
+      assertArrayEqual(filter([{name:'Frank'},{name:'James'}], {name: /^[A-F]/}), [{name:'Frank'}]);
+    });
+
+    it('should allow fuzzy matches on non-plain objects', function() {
+      // Issue #157
+      function Foo(a) {
+        this.a = a;
+      }
+      assertArrayEqual(filter([{a:1},{b:2}], new Foo(1)), [{a:1}]);
+      assertArrayEqual(filter([{a:'a'},{a:'b'}], new Foo('a')), [{a:'a'}]);
+      assertArrayEqual(filter([{a:'a'},{a:'b'}], new Foo(/b/)), [{a:'b'}]);
+    });
+
+    it('should pass correct params to callback', function() {
+      filter(['a'], function (el, i, arr) {
+        assertEqual(el, 'a');
+        assertEqual(i, 0);
+        assertArrayEqual(arr, ['a']);
+        assertEqual(this, 'context');
+      }, 'context');
+    });
+
+    it('should not iterate over all members of sparse arrays', function() {
+      var count = 0;
+      var arr = ['a'];
+      arr[8000] = 'b';
+      filter(arr, function () {
+        count++;
+      });
+      assertEqual(count, 2);
+    });
+
+    it('should handle irregular input', function() {
+      assertArrayEqual(filter([1,2,2,3]), []);
+      assertArrayEqual(filter([1,2,2,3], null), []);
+      assertArrayEqual(filter([1,2,2,3], NaN), []);
+      assertError(function() { filter(null); });
+      assertError(function() { filter('a'); });
+      assertError(function() { filter(1); });
+    });
+
+  });
+
+  describeInstance('find', function(find) {
+
+    it('should find array members', function() {
+      assertEqual(find([1,2,2,3], 2), 2);
+      assertEqual(find([0,1], 0), 0);
+    });
+
+    it('should find by regex', function() {
+      assertEqual(find(['a','b','c'], /[ac]/), 'a');
+      assertEqual(find([1,2,3,4], /[2-3]/), 2);
+    });
+
+    it('should find by date', function() {
+      var d1 = new Date(2020, 7, 28);
+      var d2 = new Date(2020, 7, 29);
+      assertDateEqual(find([d1, d2], new Date(2020, 7, 28)), d1);
+    });
+
+    it('should find by function', function() {
+      assertEqual(find([1,2,3,4], (n) => n % 2 === 0), 2);
+      assertEqual(find([1,2,3,4], (n) => n > 5), undefined);
+      assertEqual(find([1,2,3,4], (n) => n > 2), 3);
+    });
+
+    it('should find by function when strictly equal', function() {
+      var fn1 = function() {};
+      var fn2 = function() {};
+      assertEqual(find([fn1, fn2], fn2), fn2);
+    });
+
+    it('should find by fuzzy matching', function() {
+      assertObjectEqual(find([{a:1,b:1},{a:2,b:2}], {a:1}), {a:1,b:1});
+      assertObjectEqual(find([{name:'Frank'},{name:'James'}], {name: /^[A-F]/}), {name:'Frank'});
+    });
+
+    it('should pass correct params to callback', function() {
+      find(['a'], function (el, i, arr) {
+        assertEqual(el, 'a');
+        assertEqual(i, 0);
+        assertArrayEqual(arr, ['a']);
+        assertEqual(this, 'context');
+      }, 'context');
+    });
+
+    it('should not iterate over all members of sparse arrays', function() {
+      var count = 0;
+      var arr = ['a'];
+      arr[8000] = 'b';
+      find(arr, function () {
+        count++;
+      });
+      assertEqual(count, 2);
+    });
+
+    it('should handle irregular input', function() {
+      assertEqual(find([1,2,2,3]), undefined);
+      assertEqual(find([1,2,2,3], null), undefined);
+      assertEqual(find([1,2,2,3], NaN), undefined);
+      assertError(function() { find(null); });
+      assertError(function() { find('a'); });
+      assertError(function() { find(1); });
+    });
+
+  });
+
+  describeInstance('findIndex', function(findIndex) {
+
+    it('should find array members', function() {
+      assertEqual(findIndex([1,2,2,3], 2), 1);
+      assertEqual(findIndex([0,1], 0), 0);
+    });
+
+    it('should find by regex', function() {
+      assertEqual(findIndex(['a','b','c'], /[ac]/), 0);
+      assertEqual(findIndex([1,2,3,4], /[2-3]/), 1);
+    });
+
+    it('should find by date', function() {
+      var d1 = new Date(2020, 7, 28);
+      var d2 = new Date(2020, 7, 29);
+      assertEqual(findIndex([d1, d2], new Date(2020, 7, 28)), 0);
+    });
+
+    it('should find by function', function() {
+      assertEqual(findIndex([1,2,3,4], (n) => n % 2 === 0), 1);
+      assertEqual(findIndex([1,2,3,4], (n) => n > 5), -1);
+      assertEqual(findIndex([1,2,3,4], (n) => n > 2), 2);
+    });
+
+    it('should find by function when strictly equal', function() {
+      var fn1 = function() {};
+      var fn2 = function() {};
+      assertEqual(findIndex([fn1, fn2], fn2), 1);
+    });
+
+    it('should find by fuzzy matching', function() {
+      assertEqual(findIndex([{a:1,b:1},{a:2,b:2}], {a:1}), 0);
+      assertEqual(findIndex([{name:'Frank'},{name:'James'}], {name: /^[A-F]/}), 0);
+    });
+
+    it('should pass correct params to callback', function() {
+      findIndex(['a'], function (el, i, arr) {
+        assertEqual(el, 'a');
+        assertEqual(i, 0);
+        assertArrayEqual(arr, ['a']);
+        assertEqual(this, 'context');
+      }, 'context');
+    });
+
+    it('should not iterate over all members of sparse arrays', function() {
+      var count = 0;
+      var arr = ['a'];
+      arr[8000] = 'b';
+      findIndex(arr, function () {
+        count++;
+      });
+      assertEqual(count, 2);
+    });
+
+    it('should handle irregular input', function() {
+      assertEqual(findIndex([1,2,2,3]), -1);
+      assertEqual(findIndex([1,2,2,3], null), -1);
+      assertEqual(findIndex([1,2,2,3], NaN), -1);
+      assertError(function() { findIndex(null); });
+      assertError(function() { findIndex('a'); });
+      assertError(function() { findIndex(1); });
+    });
+
+  });
+
   describeInstance('count', function(count) {
 
     it('should count all elements with no arguments', function() {
