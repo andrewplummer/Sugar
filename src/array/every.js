@@ -1,6 +1,7 @@
 import { getMatcher } from '../util/matchers';
 import { assertArray } from '../util/assertions';
-import { forEachSparse } from '../util/array';
+
+const nativeFn = Array.prototype.every;
 
 /**
  * Returns true if every element in the array matches input.
@@ -25,19 +26,11 @@ import { forEachSparse } from '../util/array';
  *   }); -> true if every user is older than 30
  *
  **/
-export default function every(arr, match) {
+export default function every(arr, match, context) {
   assertArray(arr);
   if (arguments.length === 1) {
     throw new Error('Match parameter is required');
   }
-  const matcher = getMatcher(match);
-  let result = true;
-  forEachSparse(arr, (el, i) => {
-    if (!matcher(arr[i], i, arr)) {
-      result = false;
-    }
-    return result;
-  });
-  return result;
+  return nativeFn.call(arr, getMatcher(match, context));
 }
 

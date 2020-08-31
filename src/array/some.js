@@ -1,6 +1,7 @@
 import { getMatcher } from '../util/matchers';
 import { assertArray } from '../util/assertions';
-import { forEachSparse } from '../util/array';
+
+const nativeFn = Array.prototype.some;
 
 /**
  * Returns true if any element in the array matches input.
@@ -12,6 +13,8 @@ import { forEachSparse } from '../util/array';
  * to match dates, a RegExp which will test against strings, or a plain object
  * which will perform a "fuzzy match" on specific properties. Values of a fuzzy
  * match can be any of the matcher types listed above.
+ * @param {any} [context] - The `this` argument to be passed to the matching
+ * function.
  *
  * @returns {boolean}
  *
@@ -25,19 +28,11 @@ import { forEachSparse } from '../util/array';
  *   }); -> true if any user is older than 30
  *
  **/
-export default function some(arr, match) {
+export default function some(arr, match, context) {
   assertArray(arr);
   if (arguments.length === 1) {
     throw new Error('Match parameter is required');
   }
-  const matcher = getMatcher(match);
-  let exists = false;
-  forEachSparse(arr, (el, i) => {
-    if (matcher(arr[i], i, arr)) {
-      exists = true;
-    }
-    return !exists;
-  });
-  return exists;
+  return nativeFn.call(arr, getMatcher(match, context));
 }
 

@@ -2,14 +2,14 @@ import { isPrimitive, isRegExp, isDate, isFunction, isObjectType } from './typeC
 import { forEachProperty } from './helpers';
 import { isPlainObject } from './object';
 
-export function getMatcher(obj) {
+export function getMatcher(obj, context) {
   if (!isPrimitive(obj)) {
     if (isRegExp(obj)) {
       return getRegexMatcher(obj);
     } else if (isDate(obj)) {
       return getDateMatcher(obj);
     } else if (isFunction(obj)) {
-      return getFunctionMatcher(obj);
+      return getFunctionMatcher(obj, context);
     } else if (isPlainObject(obj)) {
       return getFuzzyMatcher(obj);
     }
@@ -30,10 +30,10 @@ function getDateMatcher(date) {
   };
 }
 
-function getFunctionMatcher(fn) {
+function getFunctionMatcher(fn, context) {
   return (el, i, arr) => {
     // Return true up front if match by reference
-    return el === fn || fn.call(arr, el, i, arr);
+    return el === fn || fn.call(context || arr, el, i, arr);
   };
 }
 

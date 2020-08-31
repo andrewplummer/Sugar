@@ -1,6 +1,5 @@
 import { getMatcher } from '../util/matchers';
 import { assertArray } from '../util/assertions';
-import { forEachSparse } from '../util/array';
 
 /**
  * Removes an element from the array.
@@ -15,6 +14,8 @@ import { forEachSparse } from '../util/array';
  * RegExp which will test against strings, or a plain object which will perform
  * a "fuzzy match" on specific properties. Values of a fuzzy match can be any of
  * the matcher types listed above.
+ * @param {any} [context] - The `this` argument to be passed to the matching
+ * function.
  *
  * @returns {Array}
  *
@@ -33,12 +34,12 @@ import { forEachSparse } from '../util/array';
  *   }); -> [{b:2}]
  *
  **/
-export default function remove(arr, match) {
+export default function remove(arr, match, context) {
   assertArray(arr);
-  const matcher = getMatcher(match);
+  const matcher = getMatcher(match, context);
   const indexes = [];
-  forEachSparse(arr, (el, i) => {
-    if (matcher(arr[i], i, arr)) {
+  arr.forEach((el, i) => {
+    if (matcher(el, i, arr)) {
       indexes.push(i);
     }
   });

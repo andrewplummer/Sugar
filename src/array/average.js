@@ -1,5 +1,4 @@
 import { assertArray } from '../util/assertions';
-import { forEachSparse } from '../util/array';
 import { getMapper } from '../util/mappers';
 
 /**
@@ -9,6 +8,8 @@ import { getMapper } from '../util/mappers';
  * @param {string|mapFn} [map] - When passed, determines the values to average.
  * A function may be passed here similar to `Array#map` or a string acting as a
  * shortcut. Strings implement deep property matching.
+ * @param {any} [context] - The `this` argument to be passed to the mapping
+ * function.
  *
  * @returns {number}
  *
@@ -26,15 +27,15 @@ import { getMapper } from '../util/mappers';
  *   users.average('profile.likes')      -> // average profile likes
  *
  **/
-export default function average(arr, map) {
+export default function average(arr, map, context) {
   assertArray(arr);
   if (arr.length === 0) {
     return 0;
   }
   let sum = 0;
-  const mapper = getMapper(map);
-  forEachSparse(arr, (el, i) => {
-    sum += mapper(arr[i], i, arr);
+  const mapper = getMapper(map, context);
+  arr.forEach((el, i) => {
+    sum += mapper(el, i, arr);
   });
   return sum / arr.length;
 }

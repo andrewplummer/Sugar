@@ -1,6 +1,8 @@
 import { assertArray } from '../util/assertions';
 import { getMapper } from '../util/mappers';
 
+const nativeFn = Array.prototype.map;
+
 /**
  * Creates a new array whose values of are the result of a mapper function or
  * shortcut.
@@ -32,6 +34,6 @@ export default function map(arr, map, context) {
   if (arguments.length === 1) {
     throw new Error('Map parameter is required');
   }
-  return arr.map(getMapper(map), context);
+  return nativeFn.call(arr, getMapper(map, context));
 }
 

@@ -1,3 +1,5 @@
+// TODO: remove?
+
 import { hasOwnProperty, forEachProperty } from './helpers';
 
 // Iterate over arrays with fallback to prevent iterating

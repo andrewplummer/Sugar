@@ -238,7 +238,8 @@ namespace('Array', function() {
         assertEqual(el, 'a');
         assertEqual(i, 0);
         assertArrayEqual(arr, ['a']);
-      });
+        assertEqual(this, 'context');
+      }, 'context');
     });
 
     it('should not iterate over all members of sparse arrays', function() {
@@ -294,8 +295,8 @@ namespace('Array', function() {
     });
 
     it('should exclude by function when strictly equal', function() {
-      var fn1 = function(){};
-      var fn2 = function(){};
+      var fn1 = function() {};
+      var fn2 = function() {};
       assertArrayEqual(exclude([fn1, fn2], fn2), [fn1]);
     });
 
@@ -309,7 +310,8 @@ namespace('Array', function() {
         assertEqual(el, 'a');
         assertEqual(i, 0);
         assertArrayEqual(arr, ['a']);
-      });
+        assertEqual(this, 'context');
+      }, 'context');
     });
 
     it('should not iterate over all members of sparse arrays', function() {
@@ -413,7 +415,10 @@ namespace('Array', function() {
     });
 
     it('should be able to pass context', function() {
-      map([1], function (el) {
+      map(['a'], function (el, i, arr) {
+        assertEqual(el, 'a');
+        assertEqual(i, 0);
+        assertArrayEqual(arr, ['a']);
         assertEqual(this, 'context');
       }, 'context');
     });
@@ -480,7 +485,8 @@ namespace('Array', function() {
         assertEqual(el, 'a');
         assertEqual(i, 0);
         assertArrayEqual(arr, ['a']);
-      });
+        assertEqual(this, 'context');
+      }, 'context');
     });
 
     it('should not iterate over all members of sparse arrays', function() {
@@ -552,7 +558,8 @@ namespace('Array', function() {
         assertEqual(el, 'a');
         assertEqual(i, 0);
         assertArrayEqual(arr, ['a']);
-      });
+        assertEqual(this, 'context');
+      }, 'context');
     });
 
     it('should not iterate over all members of sparse arrays', function() {
@@ -625,7 +632,8 @@ namespace('Array', function() {
         assertEqual(el, 'a');
         assertEqual(i, 0);
         assertArrayEqual(arr, ['a']);
-      });
+        assertEqual(this, 'context');
+      }, 'context');
     });
 
     it('should not iterate over all members of sparse arrays', function() {
@@ -695,7 +703,8 @@ namespace('Array', function() {
         assertEqual(el, 'a');
         assertEqual(i, 0);
         assertArrayEqual(arr, ['a']);
-      });
+        assertEqual(this, 'context');
+      }, 'context');
     });
 
     it('should not iterate over all members of sparse arrays', function() {
@@ -753,6 +762,15 @@ namespace('Array', function() {
         { posts: [{ views: 97 }] },
         { posts: [{ views: 12 }] },
       ], 'posts.0.views'), 189);
+    });
+
+    it('should pass correct params to callback', function() {
+      sum(['a'], function (el, i, arr) {
+        assertEqual(el, 'a');
+        assertEqual(i, 0);
+        assertArrayEqual(arr, ['a']);
+        assertEqual(this, 'context');
+      }, 'context');
     });
 
     it('should not iterate over all members of sparse arrays', function() {

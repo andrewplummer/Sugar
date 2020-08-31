@@ -1,9 +1,9 @@
 import { isFunction, isArray } from './typeChecks';
 import { deepGetProperty } from './deepProperties';
 
-export function getMapper(obj) {
+export function getMapper(obj, context) {
   if (isFunction(obj)) {
-    return obj;
+    return obj.bind(context);
   } else if (isArray(obj)) {
     return getArrayMapper(obj);
   } else if (obj) {

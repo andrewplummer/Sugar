@@ -1,5 +1,4 @@
 import { assertArray } from '../util/assertions';
-import { forEachSparse } from '../util/array';
 import { getMapper } from '../util/mappers';
 
 /**
@@ -9,6 +8,8 @@ import { getMapper } from '../util/mappers';
  * @param {string|mapFn} [map] - When passed, determines the values to sum. A
  * function may be passed here similar to `Array#map` or a string acting as a
  * shortcut. Strings implement deep property matching.
+ * @param {any} [context] - The `this` argument to be passed to the mapping
+ * function.
  *
  * @returns {number}
  *
@@ -26,12 +27,12 @@ import { getMapper } from '../util/mappers';
  *   users.sum('profile.likes')      -> // total profile likes
  *
  **/
-export default function sum(arr, map) {
+export default function sum(arr, map, context) {
   assertArray(arr);
   let sum = 0;
-  const mapper = getMapper(map);
-  forEachSparse(arr, (el, i) => {
-    sum += mapper(arr[i], i, arr);
+  const mapper = getMapper(map, context);
+  arr.forEach((el, i) => {
+    sum += mapper(el, i, arr);
   });
   return sum;
 }

@@ -1,6 +1,5 @@
 import { getMatcher } from '../util/matchers';
 import { assertArray } from '../util/assertions';
-import { forEachSparse } from '../util/array';
 
 /**
  * Counts elements in the array.
@@ -12,6 +11,8 @@ import { forEachSparse } from '../util/array';
  * to match dates, a RegExp which will test against strings, or a plain object
  * which will perform a "fuzzy match" on specific properties. Values of a fuzzy
  * match can be any of the matcher types listed above.
+ * @param {any} [context] - The `this` argument to be passed to the matching
+ * function.
  *
  * @returns {number}
  *
@@ -24,15 +25,15 @@ import { forEachSparse } from '../util/array';
  *   }); -> number of users older than 30
  *
  **/
-export default function count(arr, match) {
+export default function count(arr, match, context) {
   assertArray(arr);
   if (arguments.length === 1) {
     return arr.length;
   }
   let count = 0;
-  const matcher = getMatcher(match);
-  forEachSparse(arr, (el, i) => {
-    if (matcher(arr[i], i, arr)) {
+  const matcher = getMatcher(match, context);
+  arr.forEach((el, i) => {
+    if (matcher(el, i, arr)) {
       count += 1;
     }
   });
