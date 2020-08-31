@@ -11,6 +11,8 @@ defineInstance('find', methods.find);
 defineInstance('findIndex', methods.findIndex);
 defineInstance('groupBy', methods.groupBy);
 defineInstance('map', methods.map);
+defineInstance('max', methods.max);
+defineInstance('min', methods.min);
 defineInstance('median', methods.median);
 defineInstance('none', methods.none);
 defineInstance('remove', methods.remove);

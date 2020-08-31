@@ -8,6 +8,8 @@ export { default as find } from './find';
 export { default as findIndex } from './findIndex';
 export { default as groupBy } from './groupBy';
 export { default as map } from './map';
+export { default as max } from './max';
+export { default as min } from './min';
 export { default as median } from './median';
 export { default as none } from './none';
 export { default as remove } from './remove';

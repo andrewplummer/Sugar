@@ -15,7 +15,7 @@ import { forEachSparse } from '../util/array';
  * @param {any} [context] - The `this` argument to be passed to the matching
  * function.
  *
- * @returns {Array}
+ * @returns {any}
  *
  * @callback searchFn
  *

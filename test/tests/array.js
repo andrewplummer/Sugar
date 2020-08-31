@@ -1122,4 +1122,144 @@ namespace('Array', function() {
 
   });
 
+  describeInstance('min', function(min) {
+
+    it('should work with no arguments', function() {
+      assertEqual(min([1,2,3]), 1);
+      assertEqual(min([0,0,0]), 0);
+    });
+
+    it('should allow a function mapper', function() {
+      assertEqual(min([1,2,3,4], (n) => 1 / n), 4);
+    });
+
+    it('should allow a string mapper', function() {
+      assertObjectEqual(min([{age:5},{age:2}], 'age'), {age:2});
+      assertObjectEqual(min([{age:2},{age:5}], 'height'), {age:2});
+    });
+
+    it('should handle deep properties', function() {
+      assertObjectEqual(min([
+        { profile: { likes: 20 } },
+        { profile: { likes: 17 } },
+        { profile: { likes: 36 } },
+      ], 'profile.likes'), { profile: { likes: 17 } });
+      assertObjectEqual(min([
+        { posts: [{ views: 80 }] },
+        { posts: [{ views: 97 }] },
+        { posts: [{ views: 12 }] },
+      ], 'posts[0].views'), { posts: [{ views: 12 }] });
+      assertObjectEqual(min([
+        { posts: [{ views: 80 }] },
+        { posts: [{ views: 97 }] },
+        { posts: [{ views: 12 }] },
+      ], 'posts.0.views'), { posts: [{ views: 12 }] });
+    });
+
+    it('should handle infinite values', function() {
+      assertEqual(min([Infinity]), Infinity);
+      assertEqual(min([-Infinity]), -Infinity);
+    });
+
+    it('should pass correct params to callback', function() {
+      min(['a'], function (el, i, arr) {
+        assertEqual(el, 'a');
+        assertEqual(i, 0);
+        assertArrayEqual(arr, ['a']);
+        assertEqual(this, 'context');
+      }, 'context');
+    });
+
+    it('should not iterate over all members of sparse arrays', function() {
+      var count = 0;
+      var arr = ['a'];
+      arr[8000] = 'b';
+      min(arr, function () {
+        count++;
+      });
+      assertEqual(count, 2);
+    });
+
+    it('should handle irregular input', function() {
+      assertEqual(min([]), undefined);
+      assertEqual(min(['c','b','a']), 'a');
+      assertEqual(min([null, false]), null);
+      assertError(function() { min(); });
+      assertError(function() { min(null); });
+      assertError(function() { min(1); });
+      assertError(function() { min('a'); });
+    });
+
+  });
+
+  describeInstance('max', function(max) {
+
+    it('should work with no arguments', function() {
+      assertEqual(max([1,2,3]), 3);
+      assertEqual(max([0,0,0]), 0);
+    });
+
+    it('should allow a function mapper', function() {
+      assertEqual(max([1,2,3,4], (n) => 1 / n), 1);
+    });
+
+    it('should allow a string mapper', function() {
+      assertObjectEqual(max([{age:5},{age:2}], 'age'), {age:5});
+      assertObjectEqual(max([{age:2},{age:5}], 'height'), {age:2});
+    });
+
+    it('should handle deep properties', function() {
+      assertObjectEqual(max([
+        { profile: { likes: 20 } },
+        { profile: { likes: 17 } },
+        { profile: { likes: 36 } },
+      ], 'profile.likes'), { profile: { likes: 36 } });
+      assertObjectEqual(max([
+        { posts: [{ views: 80 }] },
+        { posts: [{ views: 97 }] },
+        { posts: [{ views: 12 }] },
+      ], 'posts[0].views'), { posts: [{ views: 97 }] });
+      assertObjectEqual(max([
+        { posts: [{ views: 80 }] },
+        { posts: [{ views: 97 }] },
+        { posts: [{ views: 12 }] },
+      ], 'posts.0.views'), { posts: [{ views: 97 }] });
+    });
+
+    it('should handle infinite values', function() {
+      assertEqual(max([Infinity]), Infinity);
+      assertEqual(max([-Infinity]), -Infinity);
+    });
+
+    it('should pass correct params to callback', function() {
+      max(['a'], function (el, i, arr) {
+        assertEqual(el, 'a');
+        assertEqual(i, 0);
+        assertArrayEqual(arr, ['a']);
+        assertEqual(this, 'context');
+      }, 'context');
+    });
+
+    it('should not iterate over all members of sparse arrays', function() {
+      var count = 0;
+      var arr = ['a'];
+      arr[8000] = 'b';
+      max(arr, function () {
+        count++;
+      });
+      assertEqual(count, 2);
+    });
+
+    it('should handle irregular input', function() {
+      assertEqual(max([]), undefined);
+      assertEqual(max(['c','b','a']), 'c');
+      assertEqual(max([null, false]), null);
+      assertError(function() { max(); });
+      assertError(function() { max(null); });
+      assertError(function() { max(1); });
+      assertError(function() { max('a'); });
+    });
+
+  });
+
 });
