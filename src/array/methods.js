@@ -4,6 +4,7 @@ export { default as count } from './count';
 export { default as every } from './every';
 export { default as exclude } from './exclude';
 export { default as groupBy } from './groupBy';
+export { default as map } from './map';
 export { default as median } from './median';
 export { default as none } from './none';
 export { default as remove } from './remove';

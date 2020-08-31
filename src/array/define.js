@@ -7,6 +7,7 @@ defineInstance('count', methods.count);
 defineInstance('exclude', methods.exclude);
 defineInstance('every', methods.every);
 defineInstance('groupBy', methods.groupBy);
+defineInstance('map', methods.map);
 defineInstance('median', methods.median);
 defineInstance('none', methods.none);
 defineInstance('remove', methods.remove);

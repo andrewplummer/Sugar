@@ -333,6 +333,105 @@ namespace('Array', function() {
 
   });
 
+  describeInstance('map', function(map) {
+
+    it('should map with function mapper', function() {
+      assertArrayEqual(map([1,2,3,4], (n) => n * 2), [2,4,6,8]);
+      assertArrayEqual(map([1,2,3,4], (n) => n % 2 === 0 ? n : 0), [0,2,0,4]);
+      assertArrayEqual(map([1,2,3,4], (n) => n > 5 ? n : 0), [0,0,0,0]);
+      assertArrayEqual(map([1,2,3,4], (n) => n > 2 ? n : 0), [0,0,3,4]);
+    });
+
+    it('should map with string mapper', function() {
+      assertArrayEqual(map([{age:2},{age:5}], 'age'), [2,5]);
+      assertArrayEqual(map([{age:2},{age:5}], 'height'), [undefined, undefined]);
+    });
+
+    it('should handle deep properties', function() {
+      assertArrayEqual(map([
+        { profile: { likes: 20 } },
+        { profile: { likes: 17 } },
+        { profile: { likes: 36 } },
+      ], 'profile.likes'), [20,17,36]);
+      assertArrayEqual(map([
+        { posts: [{ views: 80 }] },
+        { posts: [{ views: 97 }] },
+        { posts: [{ views: 12 }] },
+      ], 'posts[0].views'), [80,97,12]);
+      assertArrayEqual(map([
+        { posts: [{ views: 80 }] },
+        { posts: [{ views: 97 }] },
+        { posts: [{ views: 12 }] },
+      ], 'posts[-1].views'), [80,97,12]);
+      assertArrayEqual(map([
+        { posts: [{ views: 80 }] },
+        { posts: [{ views: 97 }] },
+        { posts: [{ views: 12 }] },
+      ], 'posts.0.views'), [80,97,12]);
+    });
+
+    it('should be able multiple properties with an array', function() {
+      // Issue #386
+      assertArrayEqual(map([
+        { name: 'John', age: 25 },
+        { name: 'Fred', age: 85 },
+        { name: 'Kirk', age: 17 },
+      ], ['name', 'age']), [['John',25],['Fred',85],['Kirk',17]]);
+    });
+
+    it('should be able to map with array range syntax', function() {
+      assertArrayEqual(map([
+        { posts: [{ views: 80 }, { views: 40 }, { views: 20 }] },
+        { posts: [{ views: 97 }, { views: 13 }, { views: 52 }] },
+        { posts: [{ views: 11 }, { views: 45 }, { views: 81 }] },
+      ], 'posts[1..2].views'), [[40,20],[13,52],[45,81]]);
+    });
+
+    it('should not iterate over all members of sparse arrays', function() {
+      var count = 0;
+      var arr = ['a'];
+      arr[8000] = 'b';
+      map(arr, function () {
+        count++;
+      });
+      assertEqual(count, 2);
+    });
+
+    it('should be able to use built-in properties', function() {
+      assertArrayEqual(map(['a','aa','aaa'], 'length'), [1,2,3]);
+    });
+
+    it('should be able to use built-in functions', function() {
+      assertArrayEqual(map([1,4,9], Math.sqrt), [1,2,3]);
+    });
+
+    it('should handle issue #525', function() {
+      assertArrayEqual(
+        map([{foo:'foo'},{bar:'bar'}], Object.keys),
+        [['foo'],['bar']]
+      );
+    });
+
+    it('should be able to pass context', function() {
+      map([1], function (el) {
+        assertEqual(this, 'context');
+      }, 'context');
+    });
+
+    it('should handle irregular input', function() {
+      assertArrayEqual(map([1,2,3], null), [1,2,3]);
+      assertArrayEqual(map([1,2], '.'), [undefined, undefined]);
+      assertArrayEqual(map([1,2], '..'), [undefined, undefined]);
+      assertArrayEqual(map([1,2], 4), [undefined, undefined]);
+      assertError(function() { map(); });
+      assertError(function() { map([]); });
+      assertError(function() { map(null); });
+      assertError(function() { map(1); });
+      assertError(function() { map('a'); });
+    });
+
+  });
+
   describeInstance('some', function(some) {
 
     it('should match by primitive matchers', function() {
