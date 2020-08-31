@@ -76,6 +76,10 @@ call `Function#lock` first in the chain to achieve the same effect.
 - Renamed `Function#after` to `Function#callAfter` to better communicate intent.
     Additionally allowing a function here to server as the lock condition.
 - Added `Function#callUntil`.
+- Removed Array `fromIndex` aliases `mapFromIndex`, `forEachFromIndex`,
+    `filterFromIndex`, `someFromIndex`, `everyFromIndex`, `reduceFromIndex`,
+    `reduceRightFromIndex`, `findFromIndex`, `findIndexFromIndex`. Use
+    `Array#slice` here instead for similar functionality.
 
 
 TODO:
