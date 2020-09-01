@@ -168,7 +168,7 @@ namespace('Object', function () {
 
     it('should handle empty objects', () => {
       let iterated = false;
-      forEach({}, (key, val) => {
+      forEach({}, () => {
         iterated = true;
       });
       assertFalse(iterated);
@@ -199,5 +199,89 @@ namespace('Object', function () {
         forEach('1');
       });
     });
+  });
+
+  describeInstance('some', function(some) {
+
+    it('should match by primitive matchers', function() {
+      assertEqual(some({a:'a',b:'b'}, 'a'), true);
+      assertEqual(some({a:'a',b:'b'}, 'd'), false);
+      assertEqual(some({a:1,b:2}, 7), false);
+      assertEqual(some({a:true,b:false}, true), true);
+      assertEqual(some({a:false,b:false}, true), false);
+    });
+
+    it('should match by regex', function() {
+      assertEqual(some({a:'a',b:'b'}, /[ac]/), true);
+      assertEqual(some({a:'a',b:'b'}, /[AC]/), false);
+    });
+
+    it('should match by date', function() {
+      var d1 = new Date(2020, 7, 28);
+      var d2 = new Date(2020, 7, 29);
+      assertEqual(some({a:d1,b:d2}, new Date(2020, 7, 28)), true);
+      assertEqual(some({a:d1,b:d2}, new Date(2020, 7, 30)), false);
+    });
+
+    it('should match by function', function() {
+      assertEqual(some({a:1,b:2}, (key, n) => n % 2 === 0), true);
+      assertEqual(some({a:2,b:4}, (key, n) => n % 2 === 1), false);
+      assertEqual(some({a:1,b:2}, (key, n) => n > 5), false);
+      assertEqual(some({a:1,b:2}, (key, n) => n > 1), true);
+    });
+
+    it('should match by function when strictly equal', function() {
+      var fn1 = function(){};
+      var fn2 = function(){};
+      assertEqual(some({a:fn1, b:fn2}, fn2), true);
+      assertEqual(some({a:fn1}, fn2), false);
+    });
+
+    it('should match by fuzzy matching', function() {
+      assertEqual(
+        some({
+          1:{ name:'Frank'},
+          2:{ name:'James'},
+        },
+          {name:'Frank'}
+        ),
+        true
+      );
+      assertEqual(some({
+        1:{ name:'Frank'},
+        2:{ name:'James'},
+      }, {name:'Bob'}),
+        false
+      );
+      assertEqual(some({
+        1:{ name:'Frank'},
+        2:{ name:'James'},
+      }, {name:/^[A-F]/}),
+        true
+      );
+      assertEqual(some({
+        1:{ name:'Frank'},
+        2:{ name:'James'},
+      }, {name:/^[N-Z]/}),
+        false
+      );
+    });
+
+    it('should pass correct params', function() {
+      some({a:1}, function (key, val, obj) {
+        assertEqual(key, 'a');
+        assertEqual(val, 1);
+        assertObjectEqual(obj, {a:1});
+      });
+    });
+
+    it('should handle irregular input', function() {
+      assertEqual(some({a:1}, null), false);
+      assertEqual(some({a:1}, NaN), false);
+      assertError(function() { some(null); });
+      assertError(function() { some('a'); });
+      assertError(function() { some(1); });
+    });
+
   });
 });

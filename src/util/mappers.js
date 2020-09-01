@@ -1,52 +1,41 @@
 import { isFunction, isArray } from './typeChecks';
 import { deepGetProperty } from './deepProperties';
 
-export function getObjectMapper(obj) {
-  if (isFunction(obj)) {
-    return getFunctionMapper(obj);
-  } else if (obj) {
-    return getObjectPropertyMapper(String(obj));
-  }
-  return defaultMapper;
-}
-
 export function getMapper(obj, context) {
   if (isFunction(obj)) {
     return getFunctionMapper(obj, context);
   } else if (isArray(obj)) {
     return getArrayMapper(obj);
   } else if (obj) {
-    return getArrayPropertyMapper(String(obj));
+    return getPropertyMapper(String(obj));
   }
   return defaultMapper;
 }
 
-function getFunctionMapper(fn, context = null) {
-  if (context) {
-    fn = fn.bind(context);
-  }
-  return fn;
+function getFunctionMapper(fn, context) {
+  return (val, key, obj) => {
+    if (isArray(obj)) {
+      return fn.call(context || obj, val, key, obj);
+    } else {
+      return fn.call(context || obj, key, val, obj);
+    }
+  };
 }
+
 
 function getArrayMapper(obj) {
   const mappers = obj.map((el) => {
     return getMapper(el);
   });
-  return (el) => {
+  return (val) => {
     return mappers.map((mapper) => {
-      return mapper(el);
+      return mapper(val);
     });
   };
 }
 
-function getArrayPropertyMapper(str) {
-  return (el) => {
-    return deepGetProperty(el, str);
-  };
-}
-
-function getObjectPropertyMapper(str) {
-  return (key, val) => {
+function getPropertyMapper(str) {
+  return (val) => {
     return deepGetProperty(val, str);
   };
 }

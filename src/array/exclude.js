@@ -37,7 +37,6 @@ import { assertArray } from '../util/assertions';
  **/
 export default function exclude(arr, match, context) {
   assertArray(arr);
-  const result = [];
   const matcher = getMatcher(match, context);
   return arr.filter((el, i) => {
     return !matcher(el, i, arr);

@@ -1,6 +1,6 @@
 import { assertObject } from '../util/assertions';
 import { forEachProperty } from '../util/helpers';
-import { getObjectMapper } from '../util/mappers';
+import { getMapper } from '../util/mappers';
 
 /**
  * Creates a new object with keys that are the result of each enumerable
@@ -29,10 +29,10 @@ export default function mapKeys(obj, map) {
   if (arguments.length === 1) {
     throw new Error('Map parameter required');
   }
-  const mapper = getObjectMapper(map);
+  const mapper = getMapper(map);
   const result = {};
   forEachProperty(obj, (key, val) => {
-    key = mapper(key, val, obj);
+    key = mapper(val, key, obj);
     result[key] = val;
   });
   return result;

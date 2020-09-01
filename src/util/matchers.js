@@ -1,63 +1,70 @@
 import {
-  isPrimitive,
+  isArray,
   isObject,
   isDate,
   isRegExp,
   isFunction,
+  isPrimitive,
 } from './typeChecks';
 import { forEachProperty } from './helpers';
 
-export function getMatcher(obj, context) {
-  if (!isPrimitive(obj)) {
-    if (isRegExp(obj)) {
-      return getRegexMatcher(obj);
-    } else if (isDate(obj)) {
-      return getDateMatcher(obj);
-    } else if (isFunction(obj)) {
-      return getFunctionMatcher(obj, context);
+export function getMatcher(arg, context) {
+  if (!isPrimitive(arg)) {
+    if (isRegExp(arg)) {
+      return getRegexMatcher(arg);
+    } else if (isDate(arg)) {
+      return getDateMatcher(arg);
+    } else if (isFunction(arg)) {
+      return getFunctionMatcher(arg, context);
     } else {
-      return getFuzzyMatcher(obj);
+      return getFuzzyMatcher(arg);
     }
   }
-  return getDefaultMatcher(obj);
+  return getDefaultMatcher(arg);
 }
 
 function getRegexMatcher(reg) {
-  return (el) => {
-    return reg.test(el);
+  return (val) => {
+    return reg.test(val);
   };
 }
 
 function getDateMatcher(date) {
   const time = date.getTime();
-  return (el) => {
-    return isDate(el) && el.getTime() == time;
+  return (val) => {
+    return isDate(val) && val.getTime() == time;
   };
 }
 
 function getFunctionMatcher(fn, context) {
-  return (el, i, arr) => {
+  return (val, key, obj) => {
     // Return true up front if match by reference
-    return el === fn || fn.call(context || arr, el, i, arr);
+    if (val === fn) {
+      return true;
+    } else if (isArray(obj)) {
+      return fn.call(context || obj, val, key, obj);
+    } else {
+      return fn.call(context || obj, key, val, obj);
+    }
   };
 }
 
 function getDefaultMatcher(obj) {
-  return (el) => {
-    return el === obj;
+  return (val) => {
+    return val === obj;
   };
 }
 
-function getFuzzyMatcher(obj) {
+function getFuzzyMatcher(matcher) {
   const matchers = new Map();
-  return (el, i, arr) => {
-    if (!isObject(el)) {
+  return (val, key, obj) => {
+    if (!isObject(val)) {
       return false;
     }
     let matched = true;
-    forEachProperty(obj, (key, val) => {
-      matchers[key] = matchers[key] || getMatcher(val);
-      if (matchers[key].call(arr, el[key], i, arr) === false) {
+    forEachProperty(matcher, (mKey, mVal) => {
+      matchers[mKey] = matchers[mKey] || getMatcher(mVal);
+      if (matchers[mKey](val[mKey], mKey, obj) === false) {
         matched = false;
       }
       return matched;
