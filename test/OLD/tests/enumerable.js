@@ -26,48 +26,6 @@ namespace('Object', function() {
   var obj4 = testClone(obj2); obj4['blue'] = {age:11};
   var deepObj4 = testClone(deepObj2); deepObj4['blue'] = {user:{age:11}};
 
-  method('forEach', function() {
-
-    var fn = function() {};
-    var d = new Date();
-    var obj = {
-      number: 3,
-      person: 'jim',
-      date: d,
-      func: fn
-    };
-
-    var keys = ['number','person','date','func'];
-    var values = [3, 'jim', d, fn];
-    var count = 0;
-    var callback = function(val, key, o) {
-      equal(key, keys[count], 'accepts a function');
-      equal(val, values[count], 'accepts a function');
-      equal(o, obj, 'accepts a function | object is third param');
-      count++;
-    }
-    var result = run(obj, 'forEach', [callback]);
-    equal(count, 4, 'accepts a function | iterated properly');
-    equal(result, obj, 'accepts a function | result should equal object passed in');
-
-    raisesError(function(){
-      run({foo:'bar'}, 'forEach', []);
-    }, 'no iterator raises an error');
-
-    test(obj, [function() {}], obj, 'each returns itself');
-
-    var count = 0;
-    var callback = function() { count++; return false; }
-    run({foo:'bar',moo:'bap'}, 'forEach', [callback]);
-    equal(count, 2, 'returning false should not break the loop');
-
-    var count = 0;
-    var callback = function() { count++; return false; }
-    run({toString:1,valueOf:2,hasOwnProperty:3}, 'forEach', [callback]);
-    equal(count, 3, 'returning false with dontenum properties');
-
-  });
-
   method('some', function() {
 
     var xyz = {x:'x',y:'y',z:'z'};

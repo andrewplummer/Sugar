@@ -155,4 +155,49 @@ namespace('Object', function () {
       });
     });
   });
+
+  describeInstance('forEach', function (forEach) {
+
+    it('should iterate over an object', () => {
+      let count = 0;
+      forEach({ a: 1, b: 2, c: 3 }, (key, val) => {
+        count += val;
+      });
+      assertEqual(count, 6);
+    });
+
+    it('should handle empty objects', () => {
+      let iterated = false;
+      forEach({}, (key, val) => {
+        iterated = true;
+      });
+      assertFalse(iterated);
+    });
+
+    it('should pass correct params', function () {
+      forEach({ a: 1 }, function (key, val, obj) {
+        assertEqual(key, 'a');
+        assertEqual(val, 1);
+        assertObjectEqual(obj, { a: 1 });
+      });
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        forEach({ a: 1 });
+      });
+      assertError(() => {
+        forEach(null);
+      });
+      assertError(() => {
+        forEach(NaN);
+      });
+      assertError(() => {
+        forEach(1);
+      });
+      assertError(() => {
+        forEach('1');
+      });
+    });
+  });
 });
