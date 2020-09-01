@@ -83,6 +83,7 @@ call `Function#lock` first in the chain to achieve the same effect.
 - Removed `Array#clone`.
 - Removed `Array#sample` ability to return multiple samples. Run the function
     multiple times instead.
+- Removed `Array#least` and `Array#most`.
 
 
 TODO:
