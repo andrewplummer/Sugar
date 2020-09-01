@@ -26,6 +26,7 @@ require('./tests/chainable');
 require('./tests/extended');
 require('./tests/array');
 require('./tests/number');
+require('./tests/object');
 require('./tests/string');
 require('./tests/regexp');
 require('./tests/function');

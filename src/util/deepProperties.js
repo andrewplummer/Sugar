@@ -1,4 +1,4 @@
-import { isString, isObjectType } from './typeChecks';
+import { isString, isObject } from './typeChecks';
 import { isDefined, hasOwnProperty } from './helpers';
 import { assertArray, assertWritable } from './assertions';
 
@@ -23,7 +23,7 @@ function handleDeepProperty(obj, key, has, fill, fillLast, val) {
   ns = obj;
   if (key == null) return;
 
-  if (isObjectType(key)) {
+  if (isObject(key)) {
     // Allow array and array-like accessors
     bs = [key];
   } else {

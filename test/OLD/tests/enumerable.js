@@ -26,38 +26,6 @@ namespace('Object', function() {
   var obj4 = testClone(obj2); obj4['blue'] = {age:11};
   var deepObj4 = testClone(deepObj2); deepObj4['blue'] = {user:{age:11}};
 
-  method('map', function() {
-    var obj1 = {
-      foo: 3,
-      bar: 4,
-      moo: 5,
-      car: 6
-    }
-
-    var obj2 = {
-     foo: { age: 11 },
-     bar: { age: 22 },
-     moo: { age: 33 },
-     car: { age: 44 }
-    }
-
-    test(obj1, [function(val, key) { return val * 2; }], {foo:6,bar:8,moo:10,car:12}, 'function');
-    test(obj1, ['toString'], {foo:'3',bar:'4',moo:'5',car:'6'}, 'string shortcut');
-    test(obj1, [], obj1, 'no args');
-    test(obj2, [function(val, key) { return val.age; }], {foo:11,bar:22,moo:33,car:44}, 'mapping nested properties');
-    test(obj2, ['age'], {foo:11,bar:22,moo:33,car:44}, 'mapping nested properties with string shortcut');
-
-    var obj = {
-     foo:{a:{b:{c:11}}},
-     bar:{a:{b:{c:22}}},
-     moo:{a:{b:{c:33}}},
-     car:{a:{b:{c:44}}}
-    }
-
-    test(obj, ['a.b.c'], {foo:11,bar:22,moo:33,car:44}, 'mapping shortcut can go deep with dot syntax');
-
-  });
-
   method('forEach', function() {
 
     var fn = function() {};

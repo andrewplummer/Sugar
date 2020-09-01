@@ -35,7 +35,8 @@ export function isRealNaN(obj) {
   return obj != null && obj !== obj;
 }
 
-export function isObjectType(obj, type) {
+export function isObject(obj, type) {
+  // Protect against null.
   return !!obj && (type || typeof obj) === 'object';
 }
 

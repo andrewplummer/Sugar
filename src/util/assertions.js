@@ -1,5 +1,6 @@
 import {
   isArray,
+  isObject,
   isString,
   isNumber,
   isFunction,
@@ -86,6 +87,12 @@ export function assertFunction(obj) {
 export function assertArray(obj) {
   if (!isArray(obj)) {
     throw new TypeError('Array required');
+  }
+}
+
+export function assertObject(obj) {
+  if (!isObject(obj)) {
+    throw new TypeError('Object required');
   }
 }
 

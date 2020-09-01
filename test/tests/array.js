@@ -233,7 +233,7 @@ namespace('Array', function() {
       assertArrayEqual(remove([{name:'Frank'},{name:'James'}], {name: /^[A-F]/}), [{name:'James'}]);
     });
 
-    it('should pass correct params to callback', function() {
+    it('should pass correct params', function() {
       remove(['a'], function (el, i, arr) {
         assertEqual(el, 'a');
         assertEqual(i, 0);
@@ -305,7 +305,7 @@ namespace('Array', function() {
       assertArrayEqual(exclude([{name:'Frank'},{name:'James'}], {name: /^[A-F]/}), [{name:'James'}]);
     });
 
-    it('should pass correct params to callback', function() {
+    it('should pass correct params', function() {
       exclude(['a'], function (el, i, arr) {
         assertEqual(el, 'a');
         assertEqual(i, 0);
@@ -414,7 +414,7 @@ namespace('Array', function() {
       );
     });
 
-    it('should be able to pass context', function() {
+    it('should pass correct params', function() {
       map(['a'], function (el, i, arr) {
         assertEqual(el, 'a');
         assertEqual(i, 0);
@@ -480,7 +480,7 @@ namespace('Array', function() {
       assertEqual(some([{name:'Frank'},{name:'James'}], {name: /^[N-Z]/}), false);
     });
 
-    it('should pass correct params to callback', function() {
+    it('should pass correct params', function() {
       some(['a'], function (el, i, arr) {
         assertEqual(el, 'a');
         assertEqual(i, 0);
@@ -553,7 +553,7 @@ namespace('Array', function() {
       assertEqual(none([{name:'Frank'},{name:'James'}], {name: /^[N-Z]/}), true);
     });
 
-    it('should pass correct params to callback', function() {
+    it('should pass correct params', function() {
       none(['a'], function (el, i, arr) {
         assertEqual(el, 'a');
         assertEqual(i, 0);
@@ -627,7 +627,7 @@ namespace('Array', function() {
       assertEqual(every([{name:'Frank'},{name:'James'}], {name: /^[A-J]/}), true);
     });
 
-    it('should pass correct params to callback', function() {
+    it('should pass correct params', function() {
       every(['a'], function (el, i, arr) {
         assertEqual(el, 'a');
         assertEqual(i, 0);
@@ -703,7 +703,7 @@ namespace('Array', function() {
       assertArrayEqual(filter([{a:'a'},{a:'b'}], new Foo(/b/)), [{a:'b'}]);
     });
 
-    it('should pass correct params to callback', function() {
+    it('should pass correct params', function() {
       filter(['a'], function (el, i, arr) {
         assertEqual(el, 'a');
         assertEqual(i, 0);
@@ -768,7 +768,7 @@ namespace('Array', function() {
       assertObjectEqual(find([{name:'Frank'},{name:'James'}], {name: /^[A-F]/}), {name:'Frank'});
     });
 
-    it('should pass correct params to callback', function() {
+    it('should pass correct params', function() {
       find(['a'], function (el, i, arr) {
         assertEqual(el, 'a');
         assertEqual(i, 0);
@@ -833,7 +833,7 @@ namespace('Array', function() {
       assertEqual(findIndex([{name:'Frank'},{name:'James'}], {name: /^[A-F]/}), 0);
     });
 
-    it('should pass correct params to callback', function() {
+    it('should pass correct params', function() {
       findIndex(['a'], function (el, i, arr) {
         assertEqual(el, 'a');
         assertEqual(i, 0);
@@ -903,7 +903,7 @@ namespace('Array', function() {
       assertEqual(count([{name:'Frank'},{name:'James'}], {name: /^[A-F]/}), 1);
     });
 
-    it('should pass correct params to callback', function() {
+    it('should pass correct params', function() {
       count(['a'], function (el, i, arr) {
         assertEqual(el, 'a');
         assertEqual(i, 0);
@@ -969,7 +969,7 @@ namespace('Array', function() {
       ], 'posts.0.views'), 189);
     });
 
-    it('should pass correct params to callback', function() {
+    it('should pass correct params', function() {
       sum(['a'], function (el, i, arr) {
         assertEqual(el, 'a');
         assertEqual(i, 0);
@@ -1161,7 +1161,7 @@ namespace('Array', function() {
       assertEqual(min([-Infinity]), -Infinity);
     });
 
-    it('should pass correct params to callback', function() {
+    it('should pass correct params', function() {
       min(['a'], function (el, i, arr) {
         assertEqual(el, 'a');
         assertEqual(i, 0);
@@ -1231,7 +1231,7 @@ namespace('Array', function() {
       assertEqual(max([-Infinity]), -Infinity);
     });
 
-    it('should pass correct params to callback', function() {
+    it('should pass correct params', function() {
       max(['a'], function (el, i, arr) {
         assertEqual(el, 'a');
         assertEqual(i, 0);

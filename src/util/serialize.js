@@ -1,4 +1,4 @@
-import { isPrimitive, isObjectType, isRealNaN } from '../typeChecks';
+import { isPrimitive, isObject, isRealNaN } from '../typeChecks';
 import { isSerializable, iterateWithCyclicCheck } from './object';
 import { classToString } from './class';
 
@@ -30,7 +30,7 @@ export function serialize(obj, refs, stack) {
       refs.push(obj);
     }
     return ref;
-  } else if (isObjectType(obj)) {
+  } else if (isObject(obj)) {
     value = serializeDeep(obj, refs, stack) + obj.toString();
   } else if (obj.valueOf) {
     value = obj.valueOf();

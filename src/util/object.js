@@ -1,9 +1,9 @@
-import { isObjectType } from './typeChecks';
+import { isObject } from './typeChecks';
 import { hasOwnProperty, forEachProperty } from './helpers';
 import { isClass } from './class';
 
 export function isPlainObject(obj, classTag) {
-  return isObjectType(obj)
+  return isObject(obj)
       && isClass(obj, 'Object', classTag)
       && hasValidPlainObjectPrototype(obj)
       && hasOwnEnumeratedProperties(obj);

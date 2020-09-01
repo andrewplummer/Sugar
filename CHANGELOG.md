@@ -84,6 +84,8 @@ call `Function#lock` first in the chain to achieve the same effect.
 - Removed `Array#sample` ability to return multiple samples. Run the function
     multiple times instead.
 - Removed `Array#least` and `Array#most`.
+- Changed `Object.map` to be `Object.mapValues` with an equivalent `Objecxt.mapKeys`.
+- Changed `Object` method callbacks to pass key first.
 
 
 TODO:

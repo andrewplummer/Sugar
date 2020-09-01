@@ -1,4 +1,10 @@
-import { isPrimitive, isRegExp, isDate, isFunction, isObjectType } from './typeChecks';
+import {
+  isPrimitive,
+  isObject,
+  isDate,
+  isRegExp,
+  isFunction,
+} from './typeChecks';
 import { forEachProperty } from './helpers';
 
 export function getMatcher(obj, context) {
@@ -45,7 +51,7 @@ function getDefaultMatcher(obj) {
 function getFuzzyMatcher(obj) {
   const matchers = new Map();
   return (el, i, arr) => {
-    if (!isObjectType(el)) {
+    if (!isObject(el)) {
       return false;
     }
     let matched = true;
