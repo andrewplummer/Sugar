@@ -26,45 +26,6 @@ namespace('Object', function() {
   var obj4 = testClone(obj2); obj4['blue'] = {age:11};
   var deepObj4 = testClone(deepObj2); deepObj4['blue'] = {user:{age:11}};
 
-  method('some', function() {
-
-    var xyz = {x:'x',y:'y',z:'z'};
-
-    test(obj1, [function(val, key) { return key == 'foo'; }], true, 'key is foo');
-    test(obj1, [function(val, key, o) {
-      equal(val, obj1[key], 'first argument is the value');
-      equal(typeof key, 'string', 'second argument is the key');
-      equal(o, obj1, 'third argument is the original object');
-      equal(this, obj1, '"this" is the original object');
-      return true;
-    }], true, 'placeholder for callback arguments');
-    test(obj1, [function(val, key) { return key == 'foo'; }], true, 'key is foo');
-    test(obj1, [function(val, key) { return key.length > 3; }], false, 'key length is greater than 3');
-    test(obj1, [function(val, key) { return key.length > 0; }], true, 'key length is greater than 0');
-    test(obj1, [function(val, key) { return val > 0; }], true, 'value is greater than 0');
-    test(obj1, [function(val, key) { return val > 5; }], true, 'value is greater than 5');
-    test(obj1, [function(val, key) { return val > 6; }], false, 'value is greater than 6');
-    test(obj1, [2], true,  'shortcut | 2');
-    test(obj1, [7], false, 'shortcut | 7');
-
-    var count = 0;
-    var callback = function() { count++; return true; }
-    run(xyz, 'some', [callback]);
-    equal(count, 1, 'using return value to break out of the loop');
-
-  });
-
-  method('every', function() {
-    test(obj1, [function(val, key) { return key == 'foo'; }], false, 'key is foo');
-    test(obj1, [function(val, key) { return key.length > 3; }], false, 'key length is greater than 3');
-    test(obj1, [function(val, key) { return key.length > 0; }], true, 'key length is greater than 0');
-    test(obj1, [function(val, key) { return val > 0; }], true, 'value is greater than 0');
-    test(obj1, [function(val, key) { return val > 5; }], false, 'value is greater than 5');
-    test(obj1, [function(val, key) { return val > 6; }], false, 'value is greater than 6');
-    test(obj1, [2], false,  'shortcut | 2');
-    test(obj1, [7], false, 'shortcut | 7');
-  });
-
   method('find', function() {
     test(obj1, [function(val, key) { return key == 'foo'; }], 'foo', 'key is foo');
     test(obj1, [function(val, key) { return key.length > 3; }], undefined, 'key length is greater than 3');

@@ -3,7 +3,7 @@ import { forEachProperty } from '../util/helpers';
 import { getMatcher } from '../util/matchers';
 
 /**
- * Returns true if any value in the object matches input.
+ * Returns true if all values in the object match input.
  *
  * @param {Array} arr - The array.
  * @param {any|searchFn} match - A matcher to determine how values are checked.
@@ -17,26 +17,26 @@ import { getMatcher } from '../util/matchers';
  *
  * @example
  *
- *   Object.some({a:1,b:2}, 1) -> true
- *   Object.some({a:1,b:2}, 3) -> false
- *   Object.some({a:'a',b:'b'}, /[a-f]) -> true
- *   Object.some(usersById, user => {
+ *   Object.every({a:1,b:2}, 1) -> false
+ *   Object.every({a:1,b:1}, 1) -> true
+ *   Object.every({a:'a',b:'b'}, /[a-f]) -> true
+ *   Object.every(usersById, user => {
  *     return user.age > 30;
- *   }); -> true if any user is older than 30
+ *   }); -> true if all users are older than 30
  *
  **/
-export default function some(obj, match) {
+export default function every(obj, match) {
   assertObject(obj);
   if (arguments.length === 1) {
     throw new Error('Match parameter required');
   }
   const matcher = getMatcher(match);
-  let result = false;
+  let result = true;
   forEachProperty(obj, (key, val) => {
-    if (matcher(val, key, obj)) {
-      result = true;
+    if (!matcher(val, key, obj)) {
+      result = false;
     }
-    return !result;
+    return result;
   });
   return result;
 }

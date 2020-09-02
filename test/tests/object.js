@@ -278,10 +278,100 @@ namespace('Object', function () {
     it('should handle irregular input', function() {
       assertEqual(some({a:1}, null), false);
       assertEqual(some({a:1}, NaN), false);
+      assertError(function() { some({}); });
       assertError(function() { some(null); });
       assertError(function() { some('a'); });
       assertError(function() { some(1); });
     });
 
   });
+
+  describeInstance('every', function(every) {
+
+    it('should match by primitive matchers', function() {
+      assertEqual(every({a:'a',b:'b'}, 'c'), false);
+      assertEqual(every({a:'a',b:'b'}, 'a'), false);
+      assertEqual(every({a:'a',b:'a'}, 'a'), true);
+      assertEqual(every({a:1,b:2}, 3), false);
+      assertEqual(every({a:1,b:2}, 2), false);
+      assertEqual(every({a:1,b:1}, 1), true);
+      assertEqual(every({a:true,b:false}, true), false);
+      assertEqual(every({a:true,b:true}, true), true);
+    });
+
+    it('should match by regex', function() {
+      assertEqual(every({a:'a',b:'b'}, /[ac]/), false);
+      assertEqual(every({a:'a',b:'b'}, /[a-c]/), true);
+    });
+
+    it('should match by date', function() {
+      var d1 = new Date(2020, 7, 28);
+      var d2 = new Date(2020, 7, 29);
+      assertEqual(every({a:d1,b:d2}, new Date(2020, 7, 28)), false);
+      assertEqual(every({a:d1,b:d1}, new Date(2020, 7, 28)), true);
+    });
+
+    it('should match by function', function() {
+      assertEqual(every({a:1,b:2}, (key, n) => n % 2 === 0), false);
+      assertEqual(every({a:2,b:4}, (key, n) => n % 2 === 0), true);
+      assertEqual(every({a:1,b:2}, (key, n) => n > 5), false);
+      assertEqual(every({a:1,b:2}, (key, n) => n > 0), true);
+    });
+
+    it('should match by function when strictly equal', function() {
+      var fn1 = function(){};
+      var fn2 = function(){};
+      assertEqual(every({a:fn1, b:fn2}, fn2), false);
+      assertEqual(every({a:fn1, b:fn1}, fn1), true);
+    });
+
+    it('should match by fuzzy matching', function() {
+      assertEqual(
+        every({
+          1:{ name:'Frank'},
+          2:{ name:'James'},
+        },
+          {name:'Frank'}
+        ),
+        false
+      );
+      assertEqual(every({
+        1:{ name:'Frank'},
+        2:{ name:'Frank'},
+      }, {name:'Frank'}),
+        true
+      );
+      assertEqual(every({
+        1:{ name:'Frank'},
+        2:{ name:'James'},
+      }, {name:/^[A-J]/}),
+        true
+      );
+      assertEqual(every({
+        1:{ name:'Frank'},
+        2:{ name:'James'},
+      }, {name:/^[G-Z]/}),
+        false
+      );
+    });
+
+    it('should pass correct params', function() {
+      every({a:1}, function (key, val, obj) {
+        assertEqual(key, 'a');
+        assertEqual(val, 1);
+        assertObjectEqual(obj, {a:1});
+      });
+    });
+
+    it('should handle irregular input', function() {
+      assertEqual(every({a:1}, null), false);
+      assertEqual(every({a:1}, NaN), false);
+      assertError(function() { every({}); });
+      assertError(function() { every(null); });
+      assertError(function() { every('a'); });
+      assertError(function() { every(1); });
+    });
+
+  });
+
 });
