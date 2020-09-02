@@ -3,7 +3,7 @@ import { forEachProperty } from '../util/helpers';
 import { getMatcher } from '../util/matchers';
 
 /**
- * Returns true if any value in the object matches input.
+ * Returns a new object with properties matching input.
  *
  * @param {Object} obj - The object.
  * @param {any|searchFn} match - A matcher to determine how values are checked.
@@ -13,30 +13,29 @@ import { getMatcher } from '../util/matchers';
  * "fuzzy match" on specific properties. Values of a fuzzy match can be any of
  * the matcher types listed above.
  *
- * @returns {boolean}
+ * @returns {Object}
  *
  * @example
  *
- *   Object.some({a:1,b:2}, 1) -> true
- *   Object.some({a:1,b:2}, 3) -> false
- *   Object.some({a:'a',b:'b'}, /[a-f]) -> true
- *   Object.some(usersById, user => {
+ *   Object.filterValues({a:1,b:2}, 1) -> {a:1}
+ *   Object.filterValues({a:1,b:1}, 3) -> {}
+ *   Object.filterValues({a:'a',b:'b'}, /[a-f]) -> {a:'a',b:'b'}
+ *   Object.filterValues(usersById, user => {
  *     return user.age > 30;
- *   }); -> true if any user is older than 30
+ *   }); -> an object with all users over 30
  *
  **/
-export default function some(obj, match) {
+export default function filterValues(obj, match) {
   assertObject(obj);
   if (arguments.length === 1) {
     throw new Error('Match parameter required');
   }
   const matcher = getMatcher(match);
-  let result = false;
+  const result = {};
   forEachProperty(obj, (key, val) => {
     if (matcher(val, key, obj)) {
-      result = true;
+      result[key] = val;
     }
-    return !result;
   });
   return result;
 }

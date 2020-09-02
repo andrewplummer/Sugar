@@ -1,5 +1,12 @@
 export { default as every } from './every';
+export { default as exclude } from './exclude';
+export { default as excludeValues } from './excludeValues';
+export { default as filter } from './filter';
+export { default as filterValues } from './filterValues';
+export { default as findKey } from './findKey';
 export { default as forEach } from './forEach';
 export { default as mapKeys } from './mapKeys';
 export { default as mapValues } from './mapValues';
+export { default as remove } from './remove';
+export { default as removeValues } from './removeValues';
 export { default as some } from './some';

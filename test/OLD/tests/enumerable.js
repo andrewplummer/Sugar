@@ -26,31 +26,6 @@ namespace('Object', function() {
   var obj4 = testClone(obj2); obj4['blue'] = {age:11};
   var deepObj4 = testClone(deepObj2); deepObj4['blue'] = {user:{age:11}};
 
-  method('find', function() {
-    test(obj1, [function(val, key) { return key == 'foo'; }], 'foo', 'key is foo');
-    test(obj1, [function(val, key) { return key.length > 3; }], undefined, 'key length is greater than 3');
-    test(obj1, [function(val, key) { return key.length > 0; }], 'foo', 'key length is greater than 0');
-    test(obj1, [function(val, key) { return val > 0; }], 'foo', 'value is greater than 0');
-    test(obj1, [function(val, key) { return val > 5; }], 'moo', 'value is greater than 5');
-    test(obj1, [function(val, key) { return val > 6; }], undefined, 'value is greater than 6');
-    test(obj1, [2], 'foo',  'shortcut | 2');
-    test(obj1, [7], undefined, 'shortcut | 7');
-    test({foo:'bar'}, [/b/], 'foo', 'uses multi-match');
-  });
-
-  method('filter', function() {
-    test(obj1, [function(val, key) { return key == 'foo'; }], {foo:2}, 'key is foo');
-    test(obj1, [function(val, key) { return key.length > 3; }], {}, 'key length is greater than 3');
-    test(obj1, [function(val, key) { return key.length > 0; }], obj1, 'key length is greater than 0');
-    test(obj1, [function(val, key) { return val > 0; }], obj1, 'value is greater than 0');
-    test(obj1, [function(val, key) { return val > 5; }], {moo:6,car:6}, 'value is greater than 5');
-    test(obj1, [function(val, key) { return val > 6; }], {}, 'value is greater than 6');
-    test(obj1, [2], {foo:2},  'shortcut | 2');
-    test(obj1, [7], {}, 'shortcut | 7');
-    test({foo:'bar',moo:'car'}, [/a/], {foo:'bar',moo:'car'}, 'uses multi-match');
-    test(obj2, [{age:11}], {foo:{age:11}},  'shortcut | object matcher');
-  });
-
   method('sum', function() {
     test(obj1, [], 18, 'no args is sum of values');
     test(obj1, [function(val, key) { return val; }], 18, 'should sum values');

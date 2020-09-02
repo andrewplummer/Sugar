@@ -5,13 +5,13 @@ import { getMatcher } from '../util/matchers';
 /**
  * Returns true if all values in the object match input.
  *
- * @param {Array} arr - The array.
+ * @param {Object} obj - The object.
  * @param {any|searchFn} match - A matcher to determine how values are checked.
- * When a function is passed a truthy return value will match the value.
- * Primitives will directly match values. Can also be a Date object to match
- * dates, a RegExp which will test against strings, or a plain object which will
- * perform a "fuzzy match" on specific properties. Values of a fuzzy match can
- * be any of the matcher types listed above.
+ * When a function is passed a truthy return value will match. Primitives will
+ * directly match values. Can also be a Date object to match dates, a RegExp
+ * which will test against strings, or a plain object which will perform a
+ * "fuzzy match" on specific properties. Values of a fuzzy match can be any of
+ * the matcher types listed above.
  *
  * @returns {boolean}
  *

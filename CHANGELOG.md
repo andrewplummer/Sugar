@@ -86,6 +86,10 @@ call `Function#lock` first in the chain to achieve the same effect.
 - Removed `Array#least` and `Array#most`.
 - Changed `Object.map` to be `Object.mapValues` with an equivalent `Objecxt.mapKeys`.
 - Changed `Object` method callbacks to pass key first.
+- Renamed `Object.find` to `Object.findKey`.
+- `Object.filter` now filters by key. Equivalent is now `Object.filterValues`.
+- `Object.remove` now removes by key. Equivalent is now `Object.removeValues`.
+- `Object.exclude` now excludes by key. Equivalent is now `Object.excludeValues`.
 
 
 TODO:

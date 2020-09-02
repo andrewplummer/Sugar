@@ -374,4 +374,475 @@ namespace('Object', function () {
 
   });
 
+  describeInstance('findKey', function(findKey) {
+
+    it('should match by primitive matchers', function() {
+      assertEqual(findKey({a:'a',b:'b'}, 'a'), 'a');
+      assertEqual(findKey({a:'a',b:'b'}, 'c'), undefined);
+      assertEqual(findKey({a:1,b:2}, 2), 'b');
+      assertEqual(findKey({a:1,b:2}, 3), undefined);
+      assertEqual(findKey({a:true,b:false}, true), 'a');
+      assertEqual(findKey({a:true,b:true}, false), undefined);
+    });
+
+    it('should match by regex', function() {
+      assertEqual(findKey({a:'a',b:'b'}, /[a-c]/), 'a');
+      assertEqual(findKey({a:'a',b:'b'}, /[c-z]/), undefined);
+    });
+
+    it('should match by date', function() {
+      var d1 = new Date(2020, 7, 28);
+      var d2 = new Date(2020, 7, 29);
+      assertEqual(findKey({a:d1,b:d2}, new Date(2020, 7, 28)), 'a');
+      assertEqual(findKey({a:d1,b:d1}, new Date(2020, 7, 29)), undefined);
+    });
+
+    it('should match by function', function() {
+      assertEqual(findKey({a:1,b:2}, (key, n) => n % 2 === 0), 'b');
+      assertEqual(findKey({a:1,b:3}, (key, n) => n % 2 === 0), undefined);
+      assertEqual(findKey({a:1,b:2}, (key, n) => n > 5), undefined);
+      assertEqual(findKey({a:1,b:2}, (key, n) => n > 0), 'a');
+    });
+
+    it('should match by function when strictly equal', function() {
+      var fn1 = function(){};
+      var fn2 = function(){};
+      assertEqual(findKey({a:fn1, b:fn2}, fn2), 'b');
+      assertEqual(findKey({a:fn1, b:fn1}, fn2), undefined);
+    });
+
+    it('should match by fuzzy matching', function() {
+      assertEqual(
+        findKey({
+          1:{ name:'Frank'},
+          2:{ name:'James'},
+        },
+          {name:'Frank'}
+        ),
+        '1'
+      );
+      assertEqual(findKey({
+        1:{ name:'Frank'},
+        2:{ name:'James'},
+      }, {name:'Robert'}),
+        undefined
+      );
+      assertEqual(findKey({
+        1:{ name:'Frank'},
+        2:{ name:'James'},
+      }, {name:/^[A-J]/}),
+        '1'
+      );
+      assertEqual(findKey({
+        1:{ name:'Frank'},
+        2:{ name:'James'},
+      }, {name:/^[K-Z]/}),
+        undefined
+      );
+    });
+
+    it('should pass correct params', function() {
+      findKey({a:1}, function (key, val, obj) {
+        assertEqual(key, 'a');
+        assertEqual(val, 1);
+        assertObjectEqual(obj, {a:1});
+      });
+    });
+
+    it('should handle irregular input', function() {
+      assertEqual(findKey({a:1}, null), undefined);
+      assertEqual(findKey({a:1}, NaN), undefined);
+      assertError(function() { findKey({}); });
+      assertError(function() { findKey(null); });
+      assertError(function() { findKey('a'); });
+      assertError(function() { findKey(1); });
+    });
+
+  });
+
+  describeInstance('filterValues', function(filterValues) {
+
+    it('should match by primitive matchers', function() {
+      assertObjectEqual(filterValues({a:'a',b:'b'}, 'a'), {a:'a'});
+      assertObjectEqual(filterValues({a:'a',b:'b'}, 'c'), {});
+      assertObjectEqual(filterValues({a:1,b:2}, 2), {b:2});
+      assertObjectEqual(filterValues({a:1,b:2}, 3), {});
+      assertObjectEqual(filterValues({a:true,b:false}, true), {a:true});
+      assertObjectEqual(filterValues({a:true,b:true}, false), {});
+    });
+
+    it('should match by regex', function() {
+      assertObjectEqual(filterValues({a:'a',b:'b'}, /[a-c]/), {a:'a',b:'b'});
+      assertObjectEqual(filterValues({a:'a',b:'b'}, /[c-z]/), {});
+    });
+
+    it('should match by date', function() {
+      var d1 = new Date(2020, 7, 28);
+      var d2 = new Date(2020, 7, 29);
+      assertObjectEqual(filterValues({a:d1,b:d2}, new Date(2020, 7, 28)), {a:d1});
+      assertObjectEqual(filterValues({a:d1,b:d1}, new Date(2020, 7, 29)), {});
+    });
+
+    it('should match by function', function() {
+      assertObjectEqual(filterValues({a:1,b:2}, (key, n) => n % 2 === 0), {b:2});
+      assertObjectEqual(filterValues({a:1,b:3}, (key, n) => n % 2 === 0), {});
+      assertObjectEqual(filterValues({a:1,b:2}, (key, n) => n > 5), {});
+      assertObjectEqual(filterValues({a:1,b:2}, (key, n) => n > 0), {a:1,b:2});
+    });
+
+    it('should match by function when strictly equal', function() {
+      var fn1 = function(){};
+      var fn2 = function(){};
+      assertObjectEqual(filterValues({a:fn1, b:fn2}, fn2), {b:fn2});
+      assertObjectEqual(filterValues({a:fn1, b:fn1}, fn2), {});
+    });
+
+    it('should match by fuzzy matching', function() {
+      assertObjectEqual(
+        filterValues({
+          1:{ name:'Frank'},
+          2:{ name:'James'},
+        },
+          {name:'Frank'}
+        ),
+        { 1: { name:'Frank'} },
+      );
+      assertObjectEqual(filterValues({
+        1:{ name:'Frank'},
+        2:{ name:'James'},
+      }, {name:'Robert'}),
+        {},
+      );
+      assertObjectEqual(filterValues({
+        1:{ name:'Frank'},
+        2:{ name:'James'},
+      }, {name:/^[A-J]/}),
+        {
+          1: { name:'Frank'},
+          2: { name:'James'},
+        },
+      );
+      assertObjectEqual(filterValues({
+        1:{ name:'Frank'},
+        2:{ name:'James'},
+      }, {name:/^[K-Z]/}),
+        {}
+      );
+    });
+
+    it('should pass correct params', function() {
+      filterValues({a:1}, function (key, val, obj) {
+        assertEqual(key, 'a');
+        assertEqual(val, 1);
+        assertObjectEqual(obj, {a:1});
+      });
+    });
+
+    it('should not modify the object', function() {
+      const obj = {};
+      assertEqual(obj === filterValues(obj, 1), false);
+    });
+
+    it('should handle irregular input', function() {
+      assertObjectEqual(filterValues({a:1}, null), {});
+      assertObjectEqual(filterValues({a:1}, NaN), {});
+      assertError(function() { filterValues({}); });
+      assertError(function() { filterValues(null); });
+      assertError(function() { filterValues('a'); });
+      assertError(function() { filterValues(1); });
+    });
+
+  });
+
+  describeInstance('excludeValues', function(excludeValues) {
+
+    it('should match by primitive matchers', function() {
+      assertObjectEqual(excludeValues({a:'a',b:'b'}, 'a'), {b:'b'});
+      assertObjectEqual(excludeValues({a:'a',b:'b'}, 'c'), {a:'a',b:'b'});
+      assertObjectEqual(excludeValues({a:1,b:2}, 2), {a:1});
+      assertObjectEqual(excludeValues({a:1,b:2}, 3), {a:1,b:2});
+      assertObjectEqual(excludeValues({a:true,b:false}, true), {b:false});
+      assertObjectEqual(excludeValues({a:true,b:true}, false), {a:true,b:true});
+    });
+
+    it('should match by regex', function() {
+      assertObjectEqual(excludeValues({a:'a',b:'b'}, /[a-c]/), {});
+      assertObjectEqual(excludeValues({a:'a',b:'b'}, /[c-z]/), {a:'a',b:'b'});
+    });
+
+    it('should match by date', function() {
+      var d1 = new Date(2020, 7, 28);
+      var d2 = new Date(2020, 7, 29);
+      assertObjectEqual(excludeValues({a:d1,b:d2}, new Date(2020, 7, 28)), {b:d2});
+      assertObjectEqual(excludeValues({a:d1,b:d1}, new Date(2020, 7, 29)), {a:d1,b:d1});
+    });
+
+    it('should match by function', function() {
+      assertObjectEqual(excludeValues({a:1,b:2}, (key, n) => n % 2 === 0), {a:1});
+      assertObjectEqual(excludeValues({a:1,b:3}, (key, n) => n % 2 === 0), {a:1,b:3});
+      assertObjectEqual(excludeValues({a:1,b:2}, (key, n) => n > 5), {a:1,b:2});
+      assertObjectEqual(excludeValues({a:1,b:2}, (key, n) => n > 0), {});
+    });
+
+    it('should match by function when strictly equal', function() {
+      var fn1 = function(){};
+      var fn2 = function(){};
+      assertObjectEqual(excludeValues({a:fn1, b:fn2}, fn2), {a:fn1});
+      assertObjectEqual(excludeValues({a:fn1, b:fn1}, fn2), {a:fn1,b:fn1});
+    });
+
+    it('should match by fuzzy matching', function() {
+      assertObjectEqual(
+        excludeValues({
+          1:{ name:'Frank'},
+          2:{ name:'James'},
+        },
+          {name:'Frank'}
+        ),
+        { 2: { name:'James'} },
+      );
+      assertObjectEqual(excludeValues({
+        1:{ name:'Frank'},
+        2:{ name:'James'},
+      }, {name:'Robert'}),
+        {
+          1:{ name:'Frank'},
+          2:{ name:'James'},
+        },
+      );
+      assertObjectEqual(excludeValues({
+        1:{ name:'Frank'},
+        2:{ name:'James'},
+      }, {name:/^[A-J]/}),
+        {},
+      );
+      assertObjectEqual(excludeValues({
+        1:{ name:'Frank'},
+        2:{ name:'James'},
+      }, {name:/^[K-Z]/}),
+        {
+          1:{ name:'Frank'},
+          2:{ name:'James'},
+        }
+      );
+    });
+
+    it('should pass correct params', function() {
+      excludeValues({a:1}, function (key, val, obj) {
+        assertEqual(key, 'a');
+        assertEqual(val, 1);
+        assertObjectEqual(obj, {a:1});
+      });
+    });
+
+    it('should not modify the object', function() {
+      const obj = {};
+      assertEqual(obj === excludeValues(obj, 1), false);
+    });
+
+    it('should handle irregular input', function() {
+      assertObjectEqual(excludeValues({a:1}, null), {a:1});
+      assertObjectEqual(excludeValues({a:1}, NaN), {a:1});
+      assertError(function() { excludeValues({}); });
+      assertError(function() { excludeValues(null); });
+      assertError(function() { excludeValues('a'); });
+      assertError(function() { excludeValues(1); });
+    });
+
+  });
+
+  describeInstance('removeValues', function(removeValues) {
+
+    it('should match by primitive matchers', function() {
+      assertObjectEqual(removeValues({a:'a',b:'b'}, 'a'), {b:'b'});
+      assertObjectEqual(removeValues({a:'a',b:'b'}, 'c'), {a:'a',b:'b'});
+      assertObjectEqual(removeValues({a:1,b:2}, 2), {a:1});
+      assertObjectEqual(removeValues({a:1,b:2}, 3), {a:1,b:2});
+      assertObjectEqual(removeValues({a:true,b:false}, true), {b:false});
+      assertObjectEqual(removeValues({a:true,b:true}, false), {a:true,b:true});
+    });
+
+    it('should match by regex', function() {
+      assertObjectEqual(removeValues({a:'a',b:'b'}, /[a-c]/), {});
+      assertObjectEqual(removeValues({a:'a',b:'b'}, /[c-z]/), {a:'a',b:'b'});
+    });
+
+    it('should match by date', function() {
+      var d1 = new Date(2020, 7, 28);
+      var d2 = new Date(2020, 7, 29);
+      assertObjectEqual(removeValues({a:d1,b:d2}, new Date(2020, 7, 28)), {b:d2});
+      assertObjectEqual(removeValues({a:d1,b:d1}, new Date(2020, 7, 29)), {a:d1,b:d1});
+    });
+
+    it('should match by function', function() {
+      assertObjectEqual(removeValues({a:1,b:2}, (key, n) => n % 2 === 0), {a:1});
+      assertObjectEqual(removeValues({a:1,b:3}, (key, n) => n % 2 === 0), {a:1,b:3});
+      assertObjectEqual(removeValues({a:1,b:2}, (key, n) => n > 5), {a:1,b:2});
+      assertObjectEqual(removeValues({a:1,b:2}, (key, n) => n > 0), {});
+    });
+
+    it('should match by function when strictly equal', function() {
+      var fn1 = function(){};
+      var fn2 = function(){};
+      assertObjectEqual(removeValues({a:fn1, b:fn2}, fn2), {a:fn1});
+      assertObjectEqual(removeValues({a:fn1, b:fn1}, fn2), {a:fn1,b:fn1});
+    });
+
+    it('should match by fuzzy matching', function() {
+      assertObjectEqual(
+        removeValues({
+          1:{ name:'Frank'},
+          2:{ name:'James'},
+        },
+          {name:'Frank'}
+        ),
+        { 2: { name:'James'} },
+      );
+      assertObjectEqual(removeValues({
+        1:{ name:'Frank'},
+        2:{ name:'James'},
+      }, {name:'Robert'}),
+        {
+          1:{ name:'Frank'},
+          2:{ name:'James'},
+        },
+      );
+      assertObjectEqual(removeValues({
+        1:{ name:'Frank'},
+        2:{ name:'James'},
+      }, {name:/^[A-J]/}),
+        {},
+      );
+      assertObjectEqual(removeValues({
+        1:{ name:'Frank'},
+        2:{ name:'James'},
+      }, {name:/^[K-Z]/}),
+        {
+          1:{ name:'Frank'},
+          2:{ name:'James'},
+        }
+      );
+    });
+
+    it('should pass correct params', function() {
+      removeValues({a:1}, function (key, val, obj) {
+        assertEqual(key, 'a');
+        assertEqual(val, 1);
+        assertObjectEqual(obj, {a:1});
+      });
+    });
+
+    it('should modify the object', function() {
+      const obj1 = {a:1};
+      const obj2 = removeValues(obj1, 1);
+      assertEqual(obj1, obj2);
+      assertObjectEqual(obj1, {});
+    });
+
+    it('should handle irregular input', function() {
+      assertObjectEqual(removeValues({a:1}, null), {a:1});
+      assertObjectEqual(removeValues({a:1}, NaN), {a:1});
+      assertError(function() { removeValues({}); });
+      assertError(function() { removeValues(null); });
+      assertError(function() { removeValues('a'); });
+      assertError(function() { removeValues(1); });
+    });
+
+  });
+
+  describeInstance('filter', function(filter) {
+
+    it('should filter by enumerated arguments', function() {
+      assertObjectEqual(filter({a:1,b:2}, 'a'), {a:1});
+      assertObjectEqual(filter({a:1,b:2}, 'a', 'b'), {a:1,b:2});
+      assertObjectEqual(filter({a:1,b:2}), {});
+      assertObjectEqual(filter({a:1,b:2}, 'c'), {});
+    });
+
+    it('should filter by array argument', function() {
+      assertObjectEqual(filter({a:1,b:2}, ['a']), {a:1});
+      assertObjectEqual(filter({a:1,b:2}, ['a', 'b']), {a:1,b:2});
+      assertObjectEqual(filter({a:1,b:2}, []), {});
+      assertObjectEqual(filter({a:1,b:2}, ['c']), {});
+    });
+
+    it('should not modify the object', function() {
+      const obj1 = {a:1};
+      const obj2 = filter(obj1, 1);
+      assertFalse(obj1 === obj2);
+    });
+
+    it('should handle irregular input', function() {
+      assertObjectEqual(filter({a:1}, null), {});
+      assertObjectEqual(filter({a:1}, NaN), {});
+      assertError(function() { filter(null); });
+      assertError(function() { filter('a'); });
+      assertError(function() { filter(1); });
+    });
+
+  });
+
+  describeInstance('exclude', function(exclude) {
+
+    it('should exclude by enumerated arguments', function() {
+      assertObjectEqual(exclude({a:1,b:2}, 'a'), {b:2});
+      assertObjectEqual(exclude({a:1,b:2}, 'a', 'b'), {});
+      assertObjectEqual(exclude({a:1,b:2}), {a:1,b:2});
+      assertObjectEqual(exclude({a:1,b:2}, 'c'), {a:1,b:2});
+    });
+
+    it('should exclude by array argument', function() {
+      assertObjectEqual(exclude({a:1,b:2}, ['a']), {b:2});
+      assertObjectEqual(exclude({a:1,b:2}, ['a', 'b']), {});
+      assertObjectEqual(exclude({a:1,b:2}, []), {a:1,b:2});
+      assertObjectEqual(exclude({a:1,b:2}, ['c']), {a:1,b:2});
+    });
+
+    it('should not modify the object', function() {
+      const obj1 = {a:1};
+      const obj2 = exclude(obj1, 1);
+      assertFalse(obj1 === obj2);
+    });
+
+    it('should handle irregular input', function() {
+      assertObjectEqual(exclude({a:1}, null), {a:1});
+      assertObjectEqual(exclude({a:1}, NaN), {a:1});
+      assertError(function() { exclude(null); });
+      assertError(function() { exclude('a'); });
+      assertError(function() { exclude(1); });
+    });
+
+  });
+
+  describeInstance('remove', function(remove) {
+
+    it('should remove by enumerated arguments', function() {
+      assertObjectEqual(remove({a:1,b:2}, 'a'), {b:2});
+      assertObjectEqual(remove({a:1,b:2}, 'a', 'b'), {});
+      assertObjectEqual(remove({a:1,b:2}), {a:1,b:2});
+      assertObjectEqual(remove({a:1,b:2}, 'c'), {a:1,b:2});
+    });
+
+    it('should remove by array argument', function() {
+      assertObjectEqual(remove({a:1,b:2}, ['a']), {b:2});
+      assertObjectEqual(remove({a:1,b:2}, ['a', 'b']), {});
+      assertObjectEqual(remove({a:1,b:2}, []), {a:1,b:2});
+      assertObjectEqual(remove({a:1,b:2}, ['c']), {a:1,b:2});
+    });
+
+    it('should modify the object', function() {
+      const obj1 = {a:1};
+      const obj2 = remove(obj1, 1);
+      assertTrue(obj1 === obj2);
+    });
+
+    it('should handle irregular input', function() {
+      assertObjectEqual(remove({a:1}, null), {a:1});
+      assertObjectEqual(remove({a:1}, NaN), {a:1});
+      assertError(function() { remove(null); });
+      assertError(function() { remove('a'); });
+      assertError(function() { remove(1); });
+    });
+
+  });
 });
