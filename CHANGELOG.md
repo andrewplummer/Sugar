@@ -90,6 +90,9 @@ call `Function#lock` first in the chain to achieve the same effect.
 - `Object.filter` now filters by key. Equivalent is now `Object.filterValues`.
 - `Object.remove` now removes by key. Equivalent is now `Object.removeValues`.
 - `Object.exclude` now excludes by key. Equivalent is now `Object.excludeValues`.
+- `Object.min` and `Object.max` are now `Object.minKey` and `Object.maxKey`.
+- `Object.min` and `Object.max` with `all` flag are now refactored to
+    `Object.minKeys` and `Object.maxKeys`.
 
 
 TODO:

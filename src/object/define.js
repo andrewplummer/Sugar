@@ -1,6 +1,8 @@
 import { defineInstance } from '../core/object';
 import * as methods from './methods';
 
+defineInstance('average', methods.average);
+defineInstance('count', methods.count);
 defineInstance('every', methods.every);
 defineInstance('exclude', methods.exclude);
 defineInstance('excludeValues', methods.excludeValues);
@@ -10,6 +12,13 @@ defineInstance('findKey', methods.findKey);
 defineInstance('forEach', methods.forEach);
 defineInstance('mapKeys', methods.mapKeys);
 defineInstance('mapValues', methods.mapValues);
+defineInstance('median', methods.median);
+defineInstance('maxKey', methods.maxKey);
+defineInstance('maxKeys', methods.maxKeys);
+defineInstance('minKey', methods.minKey);
+defineInstance('minKeys', methods.minKeys);
+defineInstance('none', methods.none);
 defineInstance('remove', methods.remove);
 defineInstance('removeValues', methods.removeValues);
 defineInstance('some', methods.some);
+defineInstance('sum', methods.sum);
