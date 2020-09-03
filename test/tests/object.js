@@ -1416,4 +1416,57 @@ namespace('Object', function () {
 
   });
 
+  describeInstance('reduce', function(reduce) {
+
+    it('should accumulate the result of the passed function', function() {
+      assertEqual(reduce({a:1}, () => 1), 1);
+      assertEqual(reduce({a:1,b:2,c:3}, () => 1), 1);
+    });
+
+    it('should be able to perform basic sum', function() {
+      assertEqual(reduce({a:1,b:2,c:3}, (acc, key, val) => acc + val), 6);
+      assertEqual(reduce({a:1,b:2,c:3}, (acc, key, val) => acc + val, 0), 6);
+    });
+
+    it('should have correct arguments when no initial value passed', function() {
+      reduce({a:1,b:2}, (acc, key, val, obj) => {
+        assertEqual(acc, 1);
+        assertEqual(key, 'b');
+        assertEqual(val, 2);
+        assertObjectEqual(obj, {a:1,b:2});
+      });
+      reduce({1:{name:'John'},2:{name:'Frank'}}, (acc, key, val, obj) => {
+        assertObjectEqual(acc, {name:'John'});
+        assertEqual(key, '2');
+        assertObjectEqual(val, {name:'Frank'});
+        assertObjectEqual(obj, {1:{name:'John'},2:{name:'Frank'}});
+      });
+    });
+
+    it('should have correct arguments when initial value passed', function() {
+      reduce({a:1}, (acc, key, val, obj) => {
+        assertEqual(acc, 2);
+        assertEqual(key, 'a');
+        assertEqual(val, 1);
+        assertObjectEqual(obj, {a:1});
+      }, 2);
+      reduce({1:{name:'John'}}, (acc, key, val, obj) => {
+        assertObjectEqual(acc, {name:'Frank'});
+        assertEqual(key, '1');
+        assertObjectEqual(val, {name:'John'});
+        assertObjectEqual(obj, {1:{name:'John'}});
+      }, {name:'Frank'});
+    });
+
+    it('should correctly iterate when initial value is undefined', function() {
+      reduce({a:1}, (acc, key, val, obj) => {
+        assertEqual(acc, undefined);
+      }, undefined);
+    });
+
+    it('should error when object empty and no initial value', function() {
+      assertError(() => { reduce({}, () => {}) }, TypeError);
+    });
+  });
+
 });

@@ -15,6 +15,7 @@ export { default as maxKeys } from './maxKeys';
 export { default as minKey } from './minKey';
 export { default as minKeys } from './minKeys';
 export { default as none } from './none';
+export { default as reduce } from './reduce';
 export { default as remove } from './remove';
 export { default as removeValues } from './removeValues';
 export { default as some } from './some';

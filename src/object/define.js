@@ -18,6 +18,7 @@ defineInstance('maxKeys', methods.maxKeys);
 defineInstance('minKey', methods.minKey);
 defineInstance('minKeys', methods.minKeys);
 defineInstance('none', methods.none);
+defineInstance('reduce', methods.reduce);
 defineInstance('remove', methods.remove);
 defineInstance('removeValues', methods.removeValues);
 defineInstance('some', methods.some);

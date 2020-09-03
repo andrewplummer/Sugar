@@ -1,4 +1,5 @@
 import { assertObject, assertFunction } from '../util/assertions';
+import { forEachProperty } from '../util/helpers';
 
 /**
  * Iterates over each enumerable, non-inherited property of the object.
@@ -22,8 +23,8 @@ import { assertObject, assertFunction } from '../util/assertions';
 export default function forEach(obj, fn) {
   assertObject(obj);
   assertFunction(fn);
-  for (let [key, val] of Object.entries(obj)) {
+  forEachProperty(obj, (key, val) => {
     fn(key, val, obj);
-  }
+  });
 }
 
