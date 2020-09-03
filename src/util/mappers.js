@@ -13,11 +13,14 @@ export function getMapper(obj, context) {
 }
 
 function getFunctionMapper(fn, context) {
-  return (val, key, obj) => {
+  return (...args) => {
+    const obj = args[args.length - 1];
     if (isArray(obj)) {
-      return fn.call(context || obj, val, key, obj);
+      return fn.apply(context || obj, args);
     } else {
-      return fn.call(context || obj, key, val, obj);
+      // Flip key and val arguments.
+      const [val, key, ...rest] = args;
+      return fn.call(context || obj, key, val, ...rest);
     }
   };
 }

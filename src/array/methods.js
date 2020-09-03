@@ -19,4 +19,5 @@ export { default as remove } from './remove';
 export { default as sample } from './sample';
 export { default as shuffle } from './shuffle';
 export { default as some } from './some';
+export { default as sortBy } from './sortBy';
 export { default as sum } from './sum';

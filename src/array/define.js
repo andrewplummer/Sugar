@@ -22,4 +22,5 @@ defineInstance('remove', methods.remove);
 defineInstance('sample', methods.sample);
 defineInstance('shuffle', methods.shuffle);
 defineInstance('some', methods.some);
+defineInstance('sortBy', methods.sortBy);
 defineInstance('sum', methods.sum);

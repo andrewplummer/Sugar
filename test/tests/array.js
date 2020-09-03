@@ -1493,4 +1493,343 @@ namespace('Array', function() {
 
   });
 
+  describeInstance('sortBy', function(sortBy) {
+
+    it('should sort basic values without an argument', function() {
+      assertArrayEqual(sortBy([3,4,1,2]), [1,2,3,4]);
+      assertArrayEqual(sortBy(['c','a','b','d']), ['a','b','c','d']);
+    });
+
+    it('should sort in descending order', function() {
+      assertArrayEqual(sortBy([3,4,1,2], {
+        desc: true,
+      }), [4,3,2,1]);
+      assertArrayEqual(sortBy(['c','a','b','d'], {
+        desc: true,
+      }), ['d','c','b','a']);
+    });
+
+    it('should sort by mapping function', function() {
+      assertArrayEqual(
+        sortBy([
+          { age: 24 },
+          { age: 12 },
+        ], (obj) => obj.age),
+        [{ age: 12 },{ age: 24 }]
+      );
+    });
+
+    it('should sort by a string shortcut', function() {
+      assertArrayEqual(
+        sortBy([
+          { age:24 },
+          { age:12 },
+        ], 'age'),
+        [{ age: 12 },{ age: 24 }]
+      );
+    });
+
+    it('should handle deep properties', function() {
+      assertArrayEqual(sortBy([
+        { profile: { likes: 20 } },
+        { profile: { likes: 17 } },
+        { profile: { likes: 36 } },
+      ], 'profile.likes'), [
+        { profile: { likes: 17 } },
+        { profile: { likes: 20 } },
+        { profile: { likes: 36 } },
+      ]);
+      assertArrayEqual(sortBy([
+        { posts: [{ views: 80 }] },
+        { posts: [{ views: 97 }] },
+        { posts: [{ views: 12 }] },
+      ], 'posts[0].views'), [
+        { posts: [{ views: 12 }] },
+        { posts: [{ views: 80 }] },
+        { posts: [{ views: 97 }] },
+      ]);
+      assertArrayEqual(sortBy([
+        { posts: [{ views: 80 }] },
+        { posts: [{ views: 97 }] },
+        { posts: [{ views: 12 }] },
+      ], 'posts[-1].views'), [
+        { posts: [{ views: 12 }] },
+        { posts: [{ views: 80 }] },
+        { posts: [{ views: 97 }] },
+      ]);
+      assertArrayEqual(sortBy([
+        { posts: [{ views: 80 }] },
+        { posts: [{ views: 97 }] },
+        { posts: [{ views: 12 }] },
+      ], 'posts.0.views'), [
+        { posts: [{ views: 12 }] },
+        { posts: [{ views: 80 }] },
+        { posts: [{ views: 97 }] },
+      ]);
+    });
+
+    it('should be able to sort multiple fields', function() {
+      assertArrayEqual(
+        sortBy([
+          { age: 24, likes: 20 },
+          { age: 24, likes: 12 },
+          { age: 22, likes: 10 },
+        ], 'age', 'likes'),
+        [
+          { age: 22, likes: 10 },
+          { age: 24, likes: 12 },
+          { age: 24, likes: 20 },
+        ]
+      );
+      assertArrayEqual(
+        sortBy([
+          { age: 24, likes: 20 },
+          { age: 24, likes: 12 },
+          { age: 22, likes: 10 },
+        ], 'age', {
+          map: 'likes',
+          desc: true,
+        }),
+        [
+          { age: 22, likes: 10 },
+          { age: 24, likes: 20 },
+          { age: 24, likes: 12 },
+        ]
+      );
+      assertArrayEqual(
+        sortBy([
+          { age: 24, likes: 20 },
+          { age: 24, likes: 12 },
+          { age: 22, likes: 10 },
+        ], {
+          map: 'age',
+          desc: true,
+        }, {
+          map: 'likes',
+          desc: true,
+        }),
+        [
+          { age: 24, likes: 20 },
+          { age: 24, likes: 12 },
+          { age: 22, likes: 10 },
+        ]
+      );
+    });
+
+    it('should allow collator option', function() {
+      assertArrayEqual(
+        sortBy(['1', '2', '9', '10'], {
+          collator: new Intl.Collator('en', {
+            numeric: true,
+          })
+        }),
+        ['1','2','9','10']
+      );
+      assertArrayEqual(
+        sortBy(['*C', '#B', '#A', '@D'], {
+          collator: new Intl.Collator('en', {
+            ignorePunctuation: true,
+          })
+        }),
+        ['#A','#B','*C','@D']
+      );
+      assertArrayEqual(
+        sortBy(['jose', 'josy', 'Josy', 'Jose', 'José'], {
+          collator: new Intl.Collator('en', {
+            sensitivity: 'case',
+            caseFirst: 'upper',
+          })
+        }),
+        ['Jose','José','jose','Josy','josy']
+      );
+    });
+
+    it('should allow collator for French', function() {
+      assertArrayEqual(
+        sortBy([
+          'adélie',
+          'adélaïde',
+          'adeline',
+          'adelphe',
+          'adelle',
+          'adèle',
+          'adelais',
+        ], {
+          collator: new Intl.Collator('fr')
+        }),
+        [
+          'adélaïde',
+          'adelais',
+          'adèle',
+          'adélie',
+          'adeline',
+          'adelle',
+          'adelphe',
+        ]
+      );
+    });
+
+    it('should allow collator for Czech/Lithuanian', function() {
+      assertArrayEqual(
+        sortBy([
+          'zwect',
+          'čweet',
+          'žweat',
+          'cweat',
+          'sweat',
+          'swect',
+          'šweet',
+          'cwect',
+          'čweat',
+          'zweat',
+          'šweat',
+          'žweet'
+        ], {
+          collator: new Intl.Collator('cs')
+        }),
+        [
+          'cweat',
+          'cwect',
+          'čweat',
+          'čweet',
+          'sweat',
+          'swect',
+          'šweat',
+          'šweet',
+          'zweat',
+          'zwect',
+          'žweat',
+          'žweet'
+        ]
+      );
+    });
+
+    it('should allow collator for Swedish', function() {
+      assertArrayEqual(
+        sortBy([
+          'få',
+          'fästa',
+          'brinna',
+          'byta',
+          'duga',
+          'fängsla',
+          'bygga',
+          'fara',
+          'fånga',
+          'bränna',
+        ], {
+          collator: new Intl.Collator('sv')
+        }),
+        [
+          'brinna',
+          'bränna',
+          'bygga',
+          'byta',
+          'duga',
+          'fara',
+          'få',
+          'fånga',
+          'fängsla',
+          'fästa',
+        ]
+      );
+    });
+
+    it('should handle issue #282', function() {
+      assertArrayEqual(
+        sortBy([
+          'andere',
+          'ändere',
+          'cote',
+          'cotÉ',
+          'cÔte',
+          'cÔtÉ'
+        ]),
+        [
+          'andere',
+          'ändere',
+          'cote',
+          'cotÉ',
+          'cÔte',
+          'cÔtÉ'
+        ]
+      );
+    });
+
+    it('should handle special cases', function() {
+      assertArrayEqual(
+        sortBy([
+          '1.528535047e5',
+          '1.528535047e7',
+          '1.528535047e10',
+        ], {
+          collator: new Intl.Collator('en', {
+            numeric: true,
+          })
+        }),
+        [
+          '1.528535047e5',
+          '1.528535047e7',
+          '1.528535047e10',
+        ]
+      );
+      assertArrayEqual(
+        sortBy([
+          '192.168.1.1',
+          '192.168.0.2',
+          '192.168.100.1',
+          '192.168.0.1',
+          '192.168.0.100',
+        ], {
+          collator: new Intl.Collator('en', {
+            numeric: true,
+          })
+        }),
+        [
+          '192.168.0.1',
+          '192.168.0.2',
+          '192.168.0.100',
+          '192.168.1.1',
+          '192.168.100.1',
+        ]
+      );
+      assertArrayEqual(
+        sortBy([
+          '$10002.00',
+          '$10001.02',
+          '$10001.01',
+          '$999.00',
+        ], {
+          collator: new Intl.Collator('en', {
+            numeric: true,
+          })
+        }),
+        [
+          '$999.00',
+          '$10001.01',
+          '$10001.02',
+          '$10002.00',
+        ]
+      );
+    });
+
+    it('should be able to map instance values', function() {
+      function Foo(a) {
+        this.valueOf = () => a;
+      }
+      const a = new Foo(5);
+      const b = new Foo(2);
+      const c = new Foo(3);
+      const d = new Foo(1);
+      const e = new Foo(2);
+      assertArrayEqual(sortBy([a,b,c,d,e]), [d,b,e,c,a]);
+    });
+
+    it('should handle irregular input', function() {
+      assertError(() => { sortBy(null); });
+      assertError(() => { sortBy('8'); });
+      assertError(() => { sortBy(8); });
+    });
+
+  });
 });
