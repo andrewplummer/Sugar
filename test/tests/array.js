@@ -1192,6 +1192,77 @@ namespace('Array', function() {
 
   });
 
+  describeInstance('minAll', function(minAll) {
+
+    it('should work with no arguments', function() {
+      assertArrayEqual(minAll([1,2,3]), [1]);
+      assertArrayEqual(minAll([1,1,2,3]), [1,1]);
+      assertArrayEqual(minAll([0,0,0]), [0,0,0]);
+    });
+
+    it('should allow a function mapper', function() {
+      assertArrayEqual(minAll([1,2,3,4], (n) => 1 / n), [4]);
+    });
+
+    it('should allow a string mapper', function() {
+      assertArrayEqual(minAll([{age:5},{age:2}], 'age'), [{age:2}]);
+      assertArrayEqual(minAll([{age:2},{age:5}], 'height'), [{age:2},{age:5}]);
+    });
+
+    it('should handle deep properties', function() {
+      assertArrayEqual(minAll([
+        { profile: { likes: 20 } },
+        { profile: { likes: 17 } },
+        { profile: { likes: 36 } },
+      ], 'profile.likes'), [{ profile: { likes: 17 } }]);
+      assertArrayEqual(minAll([
+        { posts: [{ views: 80 }] },
+        { posts: [{ views: 97 }] },
+        { posts: [{ views: 12 }] },
+      ], 'posts[0].views'), [{ posts: [{ views: 12 }] }]);
+      assertArrayEqual(minAll([
+        { posts: [{ views: 80 }] },
+        { posts: [{ views: 97 }] },
+        { posts: [{ views: 12 }] },
+      ], 'posts.0.views'), [{ posts: [{ views: 12 }] }]);
+    });
+
+    it('should handle infinite values', function() {
+      assertArrayEqual(minAll([Infinity]), [Infinity]);
+      assertArrayEqual(minAll([-Infinity]), [-Infinity]);
+    });
+
+    it('should pass correct params', function() {
+      minAll(['a'], function (el, i, arr) {
+        assertEqual(el, 'a');
+        assertEqual(i, 0);
+        assertArrayEqual(arr, ['a']);
+        assertEqual(this, 'context');
+      }, 'context');
+    });
+
+    it('should not iterate over all members of sparse arrays', function() {
+      var count = 0;
+      var arr = ['a'];
+      arr[8000] = 'b';
+      minAll(arr, function () {
+        count++;
+      });
+      assertEqual(count, 2);
+    });
+
+    it('should handle irregular input', function() {
+      assertArrayEqual(minAll([]), []);
+      assertArrayEqual(minAll(['c','b','a']), ['a']);
+      assertArrayEqual(minAll([null, false]), [null]);
+      assertError(function() { minAll(); });
+      assertError(function() { minAll(null); });
+      assertError(function() { minAll(1); });
+      assertError(function() { minAll('a'); });
+    });
+
+  });
+
   describeInstance('max', function(max) {
 
     it('should work with no arguments', function() {
@@ -1258,6 +1329,77 @@ namespace('Array', function() {
       assertError(function() { max(null); });
       assertError(function() { max(1); });
       assertError(function() { max('a'); });
+    });
+
+  });
+
+  describeInstance('maxAll', function(maxAll) {
+
+    it('should work with no arguments', function() {
+      assertArrayEqual(maxAll([1,2,3]), [3]);
+      assertArrayEqual(maxAll([1,2,3,3]), [3,3]);
+      assertArrayEqual(maxAll([0,0,0]), [0,0,0]);
+    });
+
+    it('should allow a function mapper', function() {
+      assertArrayEqual(maxAll([1,2,3,4], (n) => 1 / n), [1]);
+    });
+
+    it('should allow a string mapper', function() {
+      assertArrayEqual(maxAll([{age:5},{age:2}], 'age'), [{age:5}]);
+      assertArrayEqual(maxAll([{age:2},{age:5}], 'height'), [{age:2},{age:5}]);
+    });
+
+    it('should handle deep properties', function() {
+      assertArrayEqual(maxAll([
+        { profile: { likes: 20 } },
+        { profile: { likes: 17 } },
+        { profile: { likes: 36 } },
+      ], 'profile.likes'), [{ profile: { likes: 36 } }]);
+      assertArrayEqual(maxAll([
+        { posts: [{ views: 80 }] },
+        { posts: [{ views: 97 }] },
+        { posts: [{ views: 12 }] },
+      ], 'posts[0].views'), [{ posts: [{ views: 97 }] }]);
+      assertArrayEqual(maxAll([
+        { posts: [{ views: 80 }] },
+        { posts: [{ views: 97 }] },
+        { posts: [{ views: 12 }] },
+      ], 'posts.0.views'), [{ posts: [{ views: 97 }] }]);
+    });
+
+    it('should handle infinite values', function() {
+      assertArrayEqual(maxAll([Infinity]), [Infinity]);
+      assertArrayEqual(maxAll([-Infinity]), [-Infinity]);
+    });
+
+    it('should pass correct params', function() {
+      maxAll(['a'], function (el, i, arr) {
+        assertEqual(el, 'a');
+        assertEqual(i, 0);
+        assertArrayEqual(arr, ['a']);
+        assertEqual(this, 'context');
+      }, 'context');
+    });
+
+    it('should not iterate over all members of sparse arrays', function() {
+      var count = 0;
+      var arr = ['a'];
+      arr[8000] = 'b';
+      maxAll(arr, function () {
+        count++;
+      });
+      assertEqual(count, 2);
+    });
+
+    it('should handle irregular input', function() {
+      assertArrayEqual(maxAll([]), []);
+      assertArrayEqual(maxAll(['c','b','a']), ['c']);
+      assertArrayEqual(maxAll([null, false]), [null]);
+      assertError(function() { maxAll(); });
+      assertError(function() { maxAll(null); });
+      assertError(function() { maxAll(1); });
+      assertError(function() { maxAll('a'); });
     });
 
   });

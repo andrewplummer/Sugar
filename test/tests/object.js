@@ -1237,65 +1237,6 @@ namespace('Object', function () {
 
   });
 
-  describeInstance('maxKey', function(maxKey) {
-
-    it('should work with no arguments', function() {
-      assertEqual(maxKey({a:1,b:2,c:3}), 'c');
-      assertEqual(maxKey({a:0,b:0,c:0}), 'a');
-    });
-
-    it('should allow a function mapper', function() {
-      assertEqual(maxKey({a:1,b:2,c:3,d:4}, (key, n) => 1 / n), 'a');
-    });
-
-    it('should allow a string mapper', function() {
-      assertEqual(maxKey({1:{age:5},2:{age:2}}, 'age'), '1');
-      assertEqual(maxKey({1:{age:2},2:{age:5}}, 'height'), '1');
-    });
-
-    it('should handle deep properties', function() {
-      assertEqual(maxKey({
-        1: { profile: { likes: 20 } },
-        2: { profile: { likes: 17 } },
-        3: { profile: { likes: 36 } },
-      }, 'profile.likes'), '3');
-      assertEqual(maxKey({
-        1: { posts: [{ views: 80 }] },
-        2: { posts: [{ views: 97 }] },
-        3: { posts: [{ views: 12 }] },
-      }, 'posts[0].views'), '2');
-      assertEqual(maxKey({
-        1: { posts: [{ views: 80 }] },
-        2: { posts: [{ views: 97 }] },
-        3: { posts: [{ views: 12 }] },
-      }, 'posts.0.views'), '2');
-    });
-
-    it('should handle infinite values', function() {
-      assertEqual(maxKey({a:Infinity}), 'a');
-      assertEqual(maxKey({a:-Infinity}), 'a');
-    });
-
-    it('should pass correct params', function() {
-      maxKey({a:1}, function (key, val, obj) {
-        assertEqual(key, 'a');
-        assertEqual(val, 1);
-        assertObjectEqual(obj, {a:1});
-      });
-    });
-
-    it('should handle irregular input', function() {
-      assertEqual(maxKey({}), undefined);
-      assertEqual(maxKey({a:'a',b:'b',c:'c'}), 'c');
-      assertEqual(maxKey({a:null, b:false}), 'a');
-      assertError(function() { maxKey(); });
-      assertError(function() { maxKey(null); });
-      assertError(function() { maxKey(1); });
-      assertError(function() { maxKey('a'); });
-    });
-
-  });
-
   describeInstance('minKeys', function(minKeys) {
 
     it('should work with no arguments', function() {
@@ -1352,6 +1293,65 @@ namespace('Object', function () {
       assertError(function() { minKeys(null); });
       assertError(function() { minKeys(1); });
       assertError(function() { minKeys('a'); });
+    });
+
+  });
+
+  describeInstance('maxKey', function(maxKey) {
+
+    it('should work with no arguments', function() {
+      assertEqual(maxKey({a:1,b:2,c:3}), 'c');
+      assertEqual(maxKey({a:0,b:0,c:0}), 'a');
+    });
+
+    it('should allow a function mapper', function() {
+      assertEqual(maxKey({a:1,b:2,c:3,d:4}, (key, n) => 1 / n), 'a');
+    });
+
+    it('should allow a string mapper', function() {
+      assertEqual(maxKey({1:{age:5},2:{age:2}}, 'age'), '1');
+      assertEqual(maxKey({1:{age:2},2:{age:5}}, 'height'), '1');
+    });
+
+    it('should handle deep properties', function() {
+      assertEqual(maxKey({
+        1: { profile: { likes: 20 } },
+        2: { profile: { likes: 17 } },
+        3: { profile: { likes: 36 } },
+      }, 'profile.likes'), '3');
+      assertEqual(maxKey({
+        1: { posts: [{ views: 80 }] },
+        2: { posts: [{ views: 97 }] },
+        3: { posts: [{ views: 12 }] },
+      }, 'posts[0].views'), '2');
+      assertEqual(maxKey({
+        1: { posts: [{ views: 80 }] },
+        2: { posts: [{ views: 97 }] },
+        3: { posts: [{ views: 12 }] },
+      }, 'posts.0.views'), '2');
+    });
+
+    it('should handle infinite values', function() {
+      assertEqual(maxKey({a:Infinity}), 'a');
+      assertEqual(maxKey({a:-Infinity}), 'a');
+    });
+
+    it('should pass correct params', function() {
+      maxKey({a:1}, function (key, val, obj) {
+        assertEqual(key, 'a');
+        assertEqual(val, 1);
+        assertObjectEqual(obj, {a:1});
+      });
+    });
+
+    it('should handle irregular input', function() {
+      assertEqual(maxKey({}), undefined);
+      assertEqual(maxKey({a:'a',b:'b',c:'c'}), 'c');
+      assertEqual(maxKey({a:null, b:false}), 'a');
+      assertError(function() { maxKey(); });
+      assertError(function() { maxKey(null); });
+      assertError(function() { maxKey(1); });
+      assertError(function() { maxKey('a'); });
     });
 
   });

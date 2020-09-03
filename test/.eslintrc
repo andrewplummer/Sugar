@@ -43,6 +43,7 @@
     assertError: true,
     assertNoError: true,
     assertUndefined: true,
+    assertDateEqual: true,
     assertArrayEqual: true,
     assertObjectEqual: true,
     assertInstanceOf: true,

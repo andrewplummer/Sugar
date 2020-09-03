@@ -93,6 +93,8 @@ call `Function#lock` first in the chain to achieve the same effect.
 - `Object.min` and `Object.max` are now `Object.minKey` and `Object.maxKey`.
 - `Object.min` and `Object.max` with `all` flag are now refactored to
     `Object.minKeys` and `Object.maxKeys`.
+- `Array#min` and `Array#max` with `all` flag are now refactored to
+    `Array#minAll` and `Array#maxAll`.
 
 
 TODO:
