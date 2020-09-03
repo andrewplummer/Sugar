@@ -32,8 +32,7 @@ export default function mapKeys(obj, map) {
   const mapper = getMapper(map);
   const result = {};
   forEachProperty(obj, (key, val) => {
-    key = mapper(val, key, obj);
-    result[key] = val;
+    result[mapper(val, key, obj)] = val;
   });
   return result;
 }
