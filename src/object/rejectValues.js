@@ -17,15 +17,15 @@ import { getMatcher } from '../util/matchers';
  *
  * @example
  *
- *   Object.excludeValues({a:1,b:2}, 1) -> {b:2}
- *   Object.excludeValues({a:1,b:1}, 3) -> {a:1,b:1}
- *   Object.excludeValues({a:'a',b:'b'}, /[a-f]) -> {}
- *   Object.excludeValues(usersById, user => {
+ *   Object.rejectValues({a:1,b:2}, 1) -> {b:2}
+ *   Object.rejectValues({a:1,b:1}, 3) -> {a:1,b:1}
+ *   Object.rejectValues({a:'a',b:'b'}, /[a-f]) -> {}
+ *   Object.rejectValues(usersById, user => {
  *     return user.age > 30;
  *   }); -> an object with all users under 30
  *
  **/
-export default function excludeValues(obj, match) {
+export default function rejectValues(obj, match) {
   assertObject(obj);
   if (arguments.length === 1) {
     throw new Error('Match parameter required');

@@ -87,14 +87,17 @@ call `Function#lock` first in the chain to achieve the same effect.
 - Changed `Object.map` to be `Object.mapValues` with an equivalent `Objecxt.mapKeys`.
 - Changed `Object` method callbacks to pass key first.
 - Renamed `Object.find` to `Object.findKey`.
-- `Object.filter` now filters by key. Equivalent is now `Object.filterValues`.
-- `Object.remove` now removes by key. Equivalent is now `Object.removeValues`.
-- `Object.exclude` now excludes by key. Equivalent is now `Object.excludeValues`.
+- Removed `Object.filter`. Equivalent is now `Object.selectValues`.
+- Removed `Object.exclude`. Equivalent is now `Object.rejectValues`.
+- `Object.remove` now removes by key (alias for `Object.removeKeys`).
+    Equivalent is now `Object.removeValues`.
 - `Object.min` and `Object.max` are now `Object.minKey` and `Object.maxKey`.
 - `Object.min` and `Object.max` with `all` flag are now refactored to
     `Object.minKeys` and `Object.maxKeys`.
 - `Array#min` and `Array#max` with `all` flag are now refactored to
     `Array#minAll` and `Array#maxAll`.
+- Changed `Object.select` and `Object.reject` now no longer accepts an object
+    to select keys by. Use `Object.keys` on the input object for this case.
 
 
 TODO:

@@ -24,10 +24,7 @@ import some from './some';
  *   }); -> true if no users are older than 30
  *
  **/
-export default function none(obj, match) {
+export default function none(obj, ...args) {
   assertObject(obj);
-  if (arguments.length === 1) {
-    throw new Error('Match parameter required');
-  }
-  return !some(obj, match);
+  return !some(obj, ...args);
 }

@@ -17,15 +17,15 @@ import { getMatcher } from '../util/matchers';
  *
  * @example
  *
- *   Object.filterValues({a:1,b:2}, 1) -> {a:1}
- *   Object.filterValues({a:1,b:1}, 3) -> {}
- *   Object.filterValues({a:'a',b:'b'}, /[a-f]) -> {a:'a',b:'b'}
- *   Object.filterValues(usersById, user => {
+ *   Object.selectValues({a:1,b:2}, 1) -> {a:1}
+ *   Object.selectValues({a:1,b:1}, 3) -> {}
+ *   Object.selectValues({a:'a',b:'b'}, /[a-f]) -> {a:'a',b:'b'}
+ *   Object.selectValues(usersById, user => {
  *     return user.age > 30;
  *   }); -> an object with all users over 30
  *
  **/
-export default function filterValues(obj, match) {
+export default function selectValues(obj, match) {
   assertObject(obj);
   if (arguments.length === 1) {
     throw new Error('Match parameter required');
