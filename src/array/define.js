@@ -10,6 +10,7 @@ defineInstance('filter', methods.filter);
 defineInstance('find', methods.find);
 defineInstance('findIndex', methods.findIndex);
 defineInstance('groupBy', methods.groupBy);
+defineInstance('isEmpty', methods.isEmpty);
 defineInstance('map', methods.map);
 defineInstance('max', methods.max);
 defineInstance('maxAll', methods.maxAll);

@@ -1469,4 +1469,28 @@ namespace('Array', function() {
 
   });
 
+  describeInstance('isEmpty', function(isEmpty) {
+
+    it('should report true for empty arrays', function() {
+      assertTrue(isEmpty([]));
+    });
+
+    it('should report false for non-empty arrays', function() {
+      assertFalse(isEmpty([1]));
+      assertFalse(isEmpty([null]));
+      assertFalse(isEmpty([undefined]));
+    });
+
+    it('should report false for sparse arrays', function() {
+      assertFalse(isEmpty([,]));
+    });
+
+    it('should handle irregular input', function() {
+      assertError(() => { isEmpty(null); });
+      assertError(() => { isEmpty('8'); });
+      assertError(() => { isEmpty(8); });
+    });
+
+  });
+
 });

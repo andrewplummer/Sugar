@@ -1607,18 +1607,5 @@ namespace('Array', function () {
 
   });
 
-  method('isEmpty', function() {
-
-    test([1,2,3], false, '1,2,3');
-    test([], true, 'empty array');
-    test([null], false, '[null]');
-    test(oneUndefined, false, '[undefined]');
-    test([null,null], false, '[null,null]');
-    test(twoUndefined, false, '[undefined,undefined]');
-    test([false,false], false, '[false,false]');
-    test([0,0], false, '[0,0]');
-
-  });
-
 });
 

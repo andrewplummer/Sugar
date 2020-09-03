@@ -1469,4 +1469,62 @@ namespace('Object', function () {
     });
   });
 
+  describeInstance('isEmpty', function(isEmpty) {
+
+    it('should report true for empty objects', function() {
+      assertTrue(isEmpty({}));
+    });
+
+    it('should report false for non-empty objects', function() {
+      assertFalse(isEmpty({a:1}));
+      assertFalse(isEmpty({a:null}));
+      assertFalse(isEmpty({a:undefined}));
+    });
+
+    it('should work correctly on class instances', function() {
+      function Foo(a) {
+        if (a) {
+          this.a = a;
+        }
+      };
+      assertTrue(isEmpty(new Foo));
+      assertFalse(isEmpty(new Foo(1)));
+    });
+
+    it('should handle irregular input', function() {
+      assertError(() => { isEmpty(null); });
+      assertError(() => { isEmpty('8'); });
+      assertError(() => { isEmpty(8); });
+    });
+
+  });
+
+  describeInstance('size', function(size) {
+
+    it('should report correct size of objects', function() {
+      assertEqual(size({}), 0);
+      assertEqual(size({a:1}), 1);
+      assertEqual(size({a:1,b:2,c:3}), 3);
+      assertEqual(size({a:null}), 1);
+      assertEqual(size({a:undefined}), 1);
+    });
+
+    it('should work correctly on class instances', function() {
+      function Foo(a) {
+        if (a) {
+          this.a = a;
+        }
+      };
+      assertEqual(size(new Foo), 0);
+      assertEqual(size(new Foo(1)), 1);
+    });
+
+    it('should handle irregular input', function() {
+      assertError(() => { size(null); });
+      assertError(() => { size('8'); });
+      assertError(() => { size(8); });
+    });
+
+  });
+
 });

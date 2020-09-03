@@ -7,6 +7,7 @@ export { default as filter } from './filter';
 export { default as find } from './find';
 export { default as findIndex } from './findIndex';
 export { default as groupBy } from './groupBy';
+export { default as isEmpty } from './isEmpty';
 export { default as map } from './map';
 export { default as max } from './max';
 export { default as maxAll } from './maxAll';
