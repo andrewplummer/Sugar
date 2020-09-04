@@ -1,4 +1,5 @@
 export { default as add } from './add';
+export { default as append } from './append';
 export { default as at } from './at';
 export { default as average } from './average';
 export { default as count } from './count';

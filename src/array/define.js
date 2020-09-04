@@ -2,6 +2,7 @@ import { defineInstance } from '../core/array';
 import * as methods from './methods';
 
 defineInstance('add', methods.add);
+defineInstance('append', methods.append);
 defineInstance('at', methods.at);
 defineInstance('average', methods.average);
 defineInstance('count', methods.count);

@@ -3,6 +3,8 @@ import { assertArray } from '../util/assertions';
 /**
  * Returns a new array with all elements in the second array added.
  *
+ * @extra Use `Array#append` to modify the first array.
+ *
  * @param {Array} arr1 - The array.
  * @param {Array} arr2 - The array whose elements will be added.
  *

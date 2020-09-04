@@ -2631,4 +2631,51 @@ namespace('Array', function() {
 
   });
 
+  describeInstance('append', function(append) {
+
+    it('should append basic values', function() {
+      assertArrayEqual(append([1,2], [2,3]), [1,2,2,3]);
+      assertArrayEqual(append(['a','b'], ['b','c']), ['a','b','b','c']);
+      assertArrayEqual(append([0,0], [0,0]), [0,0,0,0]);
+    });
+
+    it('should append object values', function() {
+      assertArrayEqual(
+        append([{a:1},{b:2}], [{b:2},{c:3}]),
+        [{a:1}, {b:2}, {b:2}, {c:3}]
+      );
+    });
+
+    it('should append falsy values', function() {
+      assertArrayEqual(append([null], [null]), [null, null]);
+      assertArrayEqual(append([NaN], [NaN]), [NaN, NaN]);
+      assertArrayEqual(append([undefined], [undefined]), [undefined, undefined]);
+      assertArrayEqual(append([false], [false]), [false, false]);
+      assertArrayEqual(append([''], ['']), ['', '']);
+    });
+
+    it('should modify the original array', function() {
+      const arr1 = [1,2];
+      const arr2 = [2,3];
+      const result = append(arr1, arr2);
+      assertTrue(result === arr1);
+    });
+
+    it('should work as expected on sparse arrays', function() {
+      const arr1 = [1];
+      arr1[2] = 2;
+      const arr2 = [2];
+      arr2[2] = 3;
+      assertArrayEqual(append(arr1, arr2), [1,,2,2,undefined,3]);
+    });
+
+    it('should handle irregular input', function() {
+      assertError(() => { append([1,2], null); });
+      assertError(() => { append(null); });
+      assertError(() => { append('8'); });
+      assertError(() => { append(8); });
+    });
+
+  });
+
 });
