@@ -12,6 +12,7 @@ defineInstance('filter', methods.filter);
 defineInstance('find', methods.find);
 defineInstance('findIndex', methods.findIndex);
 defineInstance('groupBy', methods.groupBy);
+defineInstance('insert', methods.insert);
 defineInstance('intersect', methods.intersect);
 defineInstance('isEmpty', methods.isEmpty);
 defineInstance('map', methods.map);

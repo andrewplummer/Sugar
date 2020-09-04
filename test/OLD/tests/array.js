@@ -89,55 +89,6 @@ namespace('Array', function () {
     test([user1], [[user1, user2]], false, 'array of objects 1:2');
   });
 
-  method('insert', function() {
-
-    test([1,2,3], [4], [1,2,3,4], '[1,2,3] + 4');
-    test(['a','b','c'], ['d'], ['a','b','c','d'], '[a,b,c] + d');
-    test([{a:1},{a:2}], [{a:3}], [{a:1},{a:2},{a:3}], '[a:1,a:2] + a:3');
-    test([1,2,3], [[3,4,5]], [1,2,3,3,4,5], '[1,2,3] + [3,4,5]');
-    test(['a','b','c'], [['c','d','e']], ['a','b','c','c','d','e'], '[a,b,c] + [c,d,e]');
-    test([1,2,3], [[1,2,3]], [1,2,3,1,2,3], '[1,2,3] + [1,2,3]');
-    test([1,2,3], [[3,2,1]], [1,2,3,3,2,1], '[1,2,3] + [3,2,1]');
-    test([], [[3]], [3], '[] + [3]');
-    test([3], [[]], [3], '[3] + []');
-    test([], [[]], [], '[] + []');
-    test([null], [[]], [null], '[null] + []');
-    test([null], [[null]], [null, null], '[null] + [null]');
-    test([false], [[false]], [false, false], '[false] + [false]');
-    test([false], [[0]], [false, 0], '[false] + [0]');
-    test([false], [[null]], [false, null], '[false] + [null]');
-    test([false], nestedUndefined, safeArray(false, undefined), '[false] + [undefined]');
-    test([{a:1},{b:2}], [[{b:2},{c:3}]], [{a:1},{b:2},{b:2},{c:3}], '[a:1,b:2] + [b:2,c:3]');
-    test([1,1,3], [[1,5,6]], [1,1,3,1,5,6], '[1,1,3] + [1,5,6]');
-    test([1,2,3], [[4,5,6]], [1,2,3,4,5,6], '[1,2,3] + [4,5,6]');
-    test([1,2,3], [1], [1,2,3,1], '[1,2,3] + 1');
-
-    test([1,2,3], [4, 1], [1,4,2,3], 'index 1 | 4');
-    test(['a','b','c'], ['d', 1], ['a','d','b','c'], 'index 1 | d');
-    test([{a:1},{a:2}], [{a:3}, 1], [{a:1},{a:3},{a:2}], 'index 1 | a:3');
-    test([1,2,3], [4, 2], [1,2,4,3], 'index 2 | 4');
-    test(['a','b','c'], ['d', 2], ['a','b','d','c'], 'index 2 | d');
-    test([{a:1},{a:2}], [{a:3}, 2], [{a:1},{a:2},{a:3}], 'index 2 | a:3');
-    test(['a','b','c'], ['d', 5], ['a','b','c','d'], 'index 5 | d');
-
-    test(['a','b','c'], ['d', 0], ['d','a','b','c'], 'index 0 | d');
-    test(['a','b','c'], ['d', -1], ['a','b','d','c'], 'index -1 | d');
-    test(['a','b','c'], ['d', -2], ['a','d','b','c'], 'index -2 | d');
-    test(['a','b','c'], ['d', -3], ['d','a','b','c'], 'index -3 | d');
-    test(['a','b','c'], ['d', -4], ['d','a','b','c'], 'index -4 | d');
-    test(['a','b','c'], ['d', null], ['d','a','b','c'], 'null index | d');
-    test(['a','b','c'], safeArray('d', undefined), ['a','b','c','d'], 'undefined index | d');
-    test(['a','b','c'], ['d', 'a'], ['a','b','c','d'], 'index a | d');
-    test(['a','b','c'], ['d', NaN], ['a','b','c','d'], 'index NaN | d');
-
-    test(['a','b','c'], ['d', '0'], ['d','a','b','c'], 'string numerals should also be recognized');
-
-    var arr = [1,2,3];
-    run(arr, 'insert', [4]);
-    equal(arr, [1,2,3,4], 'should affect the original array');
-
-  });
-
   method('removeAt', function() {
     test([1,2,2,3], [1,2,2,3], 'numeric | no argument');
     test([1,2,2,3], [0], [2,2,3], 'numeric | 0');

@@ -16,7 +16,7 @@ import { assertArray } from '../util/assertions';
  *   [user1, user2].add([user2, user3]) -> [user1, user2, user2, user3]
  *
  **/
-export default function arr(arr1, arr2) {
+export default function add(arr1, arr2) {
   assertArray(arr1);
   assertArray(arr2);
   return [...arr1, ...arr2];

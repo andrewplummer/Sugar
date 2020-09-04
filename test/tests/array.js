@@ -2678,4 +2678,31 @@ namespace('Array', function() {
 
   });
 
+  describeInstance('insert', function(insert) {
+
+    it('should insert element at a specific index', function() {
+      assertArrayEqual(insert([1,2], 3, 0), [3,1,2]);
+      assertArrayEqual(insert([1,2], 3, 1), [1,3,2]);
+      assertArrayEqual(insert([1,2], 3, 2), [1,2,3]);
+      assertArrayEqual(insert([1,2], 3, 3), [1,2,3]);
+    });
+
+    it('should insert multiple elements at a specific index', function() {
+      assertArrayEqual(insert([1,4], [2,3], 0), [2,3,1,4]);
+      assertArrayEqual(insert([1,4], [2,3], 1), [1,2,3,4]);
+      assertArrayEqual(insert([1,4], [2,3], 2), [1,4,2,3]);
+      assertArrayEqual(insert([1,4], [2,3], 3), [1,4,2,3]);
+    });
+
+    it('should handle irregular input', function() {
+      assertArrayEqual(insert([1,2], 3), [1,2,3]);
+      assertArrayEqual(insert([1,2], 3, null), [3,1,2]);
+      assertArrayEqual(insert([1,2], 3, undefined), [1,2,3]);
+      assertError(() => { insert(null); });
+      assertError(() => { insert('8'); });
+      assertError(() => { insert(8); });
+    });
+
+  });
+
 });

@@ -9,6 +9,7 @@ export { default as filter } from './filter';
 export { default as find } from './find';
 export { default as findIndex } from './findIndex';
 export { default as groupBy } from './groupBy';
+export { default as insert } from './insert';
 export { default as intersect } from './intersect';
 export { default as isEmpty } from './isEmpty';
 export { default as map } from './map';
