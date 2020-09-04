@@ -2733,4 +2733,22 @@ namespace('Array', function() {
 
   });
 
+  describeInstance('zip', function(zip) {
+
+    it('should handle basic functionality', function() {
+      assertArrayEqual(zip([1, 2, 3]), [[1], [2], [3]]);
+      assertArrayEqual(zip([1, 2, 3], [4, 5, 6]), [[1, 4], [2, 5], [3, 6]]);
+      assertArrayEqual(zip([1, 2, 3], [4, 5, 6], [7, 8, 9]), [[1, 4, 7], [2, 5, 8], [3, 6, 9]]);
+      assertArrayEqual(zip([1, 2], [4, 5, 6], [7, 8, 9]), [[1, 4, 7], [2, 5, 8]]);
+      assertArrayEqual(zip([4, 5, 6], [1, 2], [8]), [[4, 1, 8], [5, 2, null], [6, null, null]]);
+    });
+
+    it('should handle irregular input', function() {
+      assertError(() => { zip(null); });
+      assertError(() => { zip('8'); });
+      assertError(() => { zip(8); });
+    });
+
+  });
+
 });

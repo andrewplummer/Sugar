@@ -256,12 +256,4 @@ namespace('Array', function () {
 
   });
 
-  method('zip', function() {
-    test([1, 2, 3], [[1], [2], [3]], 'one array');
-    test([1, 2, 3], [[4, 5, 6]], [[1, 4], [2, 5], [3, 6]], 'two arrays');
-    test([1, 2, 3], [[4, 5, 6], [7, 8, 9]], [[1, 4, 7], [2, 5, 8], [3, 6, 9]], 'three arrays');
-    test([1, 2], [[4, 5, 6], [7, 8, 9]], [[1, 4, 7], [2, 5, 8]], 'constrained by length of first');
-    test([4, 5, 6], [[1, 2], [8]], [[4, 1, 8], [5, 2, null], [6, null, null]], 'filled with null');
-  });
-
 });

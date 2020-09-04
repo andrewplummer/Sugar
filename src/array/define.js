@@ -32,3 +32,4 @@ defineInstance('subtract', methods.subtract);
 defineInstance('sum', methods.sum);
 defineInstance('union', methods.union);
 defineInstance('unique', methods.unique);
+defineInstance('zip', methods.zip);

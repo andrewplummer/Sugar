@@ -29,3 +29,4 @@ export { default as subtract } from './subtract';
 export { default as sum } from './sum';
 export { default as union } from './union';
 export { default as unique } from './unique';
+export { default as zip } from './zip';
