@@ -11,8 +11,8 @@ import { getMapper } from '../util/mappers';
  * as a shortcut. Strings implement deep property matching. Default is a
  * function that will deeply serialize objects in a way that any plain objects
  * that cannot be observably distinguished are considered unique. Note that
- * class instances as well as browser host objects are not serialized and are
- * only unique by reference.
+ * functions, class instances, and browser host objects are not serialized and
+ * are only unique by reference.
  *
  * @returns {Array}
  *

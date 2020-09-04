@@ -24,4 +24,5 @@ defineInstance('shuffle', methods.shuffle);
 defineInstance('some', methods.some);
 defineInstance('sortBy', methods.sortBy);
 defineInstance('sum', methods.sum);
+defineInstance('union', methods.union);
 defineInstance('unique', methods.unique);

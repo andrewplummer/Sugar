@@ -1963,4 +1963,211 @@ namespace('Array', function() {
 
   });
 
+  describeInstance('union', function(union) {
+
+    it('should merge basic values', function() {
+      assertArrayEqual(union([1,2], [2,3]), [1,2,3]);
+      assertArrayEqual(union(['a','b'], ['b','c']), ['a','b','c']);
+      assertArrayEqual(union([0,0], [0,0]), [0]);
+    });
+
+    it('should accept multiple arguments', function() {
+      assertArrayEqual(union([1,2], [2,3], [3,4], [4,5]), [1,2,3,4,5]);
+    });
+
+    it('should object values', function() {
+      assertArrayEqual(
+        union([{a:1},{b:2}], [{b:2},{c:3}]),
+        [{a:1},{b:2},{c:3}]
+      );
+    });
+
+    it('should not affect the passed arrays', function() {
+      const arr1 = [1,2];
+      const arr2 = [2,3];
+      const result = union(arr1, arr2);
+      assertFalse(result === arr1);
+      assertFalse(result === arr2);
+    });
+
+    it('should distinguish between strings and numbers', function() {
+      assertArrayEqual(union([1,2,3], ['1','2','3']), [1,2,3,'1','2','3']);
+    });
+
+    it('should work on nested arrays', function() {
+      assertArrayEqual(union([[1,2]], [[1,2],[2,3]]), [[1,2],[2,3]]);
+    });
+
+    it('should work on nested booleans', function() {
+      assertArrayEqual(union([true, false], [false, true]), [true, false]);
+    });
+
+    it('should match functions by reference', function() {
+      const fn1 = () => {};
+      const fn2 = () => {};
+      const fn3 = () => {};
+      assertArrayEqual(union([fn1, fn2], [fn2, fn3]), [fn1, fn2, fn3]);
+    });
+
+    it('should handle complex nested objects', function() {
+      let obj1, obj2, obj3;
+
+      obj1 = {
+        text: 'foo',
+        arr:  ['a','b','c'],
+        reg: /foo/,
+        date: new Date(2001, 5, 15)
+      };
+      obj2 = {
+        text: 'foo',
+        arr:  ['a','b','c'],
+        reg: /foo/,
+        date: new Date(2001, 5, 15)
+      };
+      obj3 = {
+        text: 'foo',
+        arr:  ['a','b','c'],
+        reg: /foo/,
+        date: new Date(2001, 5, 15)
+      }
+      assertArrayEqual(union([obj1, obj2], [obj2, obj3]), [obj1]);
+
+      obj1 = {
+        text: 'foo1',
+        arr:  ['a','b','c'],
+        reg: /foo/,
+        date: new Date(2001, 5, 15)
+      };
+      obj2 = {
+        text: 'foo2',
+        arr:  ['a','b','c'],
+        reg: /foo/,
+        date: new Date(2001, 5, 15)
+      };
+      obj3 = {
+        text: 'foo3',
+        arr:  ['a','b','c'],
+        reg: /foo/,
+        date: new Date(2001, 5, 15)
+      }
+      assertArrayEqual(union([obj1, obj2], [obj2, obj3]), [obj1, obj2, obj3]);
+
+      obj1 = {
+        text: 'foo',
+        arr:  ['a','b','c'],
+        reg: /foo1/,
+        date: new Date(2001, 5, 15)
+      };
+      obj2 = {
+        text: 'foo',
+        arr:  ['a','b','c'],
+        reg: /foo2/,
+        date: new Date(2001, 5, 15)
+      };
+      obj3 = {
+        text: 'foo',
+        arr:  ['a','b','c'],
+        reg: /foo3/,
+        date: new Date(2001, 5, 15)
+      }
+      assertArrayEqual(union([obj1, obj2], [obj2, obj3]), [obj1, obj2, obj3]);
+
+      obj1 = {
+        text: 'foo',
+        arr:  ['a','b','c', '1'],
+        reg: /foo/,
+        date: new Date(2001, 5, 15)
+      };
+      obj2 = {
+        text: 'foo',
+        arr:  ['a','b','c', '2'],
+        reg: /foo/,
+        date: new Date(2001, 5, 15)
+      };
+      obj3 = {
+        text: 'foo',
+        arr:  ['a','b','c', '3'],
+        reg: /foo/,
+        date: new Date(2001, 5, 15)
+      }
+      assertArrayEqual(union([obj1, obj2], [obj2, obj3]), [obj1, obj2, obj3]);
+
+      obj1 = {
+        text: 'foo',
+        arr:  ['a','b','c'],
+        reg: /foo/,
+        date: new Date(2001, 5, 15)
+      };
+      obj2 = {
+        text: 'foo',
+        arr:  ['a','b','c'],
+        reg: /foo/,
+        date: new Date(2001, 5, 16)
+      };
+      obj3 = {
+        text: 'foo',
+        arr:  ['a','b','c'],
+        reg: /foo/,
+        date: new Date(2001, 5, 17)
+      }
+      assertArrayEqual(union([obj1, obj2], [obj2, obj3]), [obj1, obj2, obj3]);
+
+      const fn1 = () => {};
+      const fn2 = () => {};
+      const fn3 = () => {};
+
+      obj1 = {
+        fn: fn1,
+        text: 'foo',
+        arr:  ['a','b','c'],
+        reg: /foo/,
+        date: new Date(2001, 5, 15)
+      };
+      obj2 = {
+        fn: fn2,
+        text: 'foo',
+        arr:  ['a','b','c'],
+        reg: /foo/,
+        date: new Date(2001, 5, 16)
+      };
+      obj3 = {
+        fn: fn3,
+        text: 'foo',
+        arr:  ['a','b','c'],
+        reg: /foo/,
+        date: new Date(2001, 5, 17)
+      }
+      assertArrayEqual(union([obj1, obj2], [obj2, obj3]), [obj1, obj2, obj3]);
+    });
+
+    it('should handle class instances', function() {
+      function Foo() {}
+      const f1 = new Foo;
+      const f2 = new Foo;
+      const f3 = new Foo;
+
+      assertArrayEqual(union([f1, f2], [f2, f3]), [f1, f2, f3]);
+      assertArrayEqual(
+        union([{a:f1}, {a:f2}], [{a:f2}, {a:f3}]),
+        [{a:f1}, {a:f2}, {a:f3}]
+      );
+    });
+
+    it('should work on sparse arrays', function() {
+      const arr1 = [1];
+      arr1[10] = 2;
+      const arr2 = [];
+      arr2[20] = 2;
+      arr2[30] = 3;
+      assertArrayEqual(union(arr1, arr2), [1,2,3]);
+    });
+
+    it('should handle irregular input', function() {
+      assertError(() => { union([1,2], null); });
+      assertError(() => { union(null); });
+      assertError(() => { union('8'); });
+      assertError(() => { union(8); });
+    });
+
+  });
 });
