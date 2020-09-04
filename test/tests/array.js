@@ -2751,4 +2751,50 @@ namespace('Array', function() {
 
   });
 
+  describeInstance('inGroupsOf', function(inGroupsOf) {
+
+    it('should group elements', function() {
+      assertArrayEqual(inGroupsOf([1,2,3,4,5,6], 2), [[1,2],[3,4],[5,6]]);
+      assertArrayEqual(inGroupsOf([1,2,3,4,5,6], 3), [[1,2,3],[4,5,6]]);
+      assertArrayEqual(inGroupsOf([1,2,3], 1), [[1],[2],[3]]);
+      assertArrayEqual(inGroupsOf([1,2], 1), [[1],[2]]);
+      assertArrayEqual(inGroupsOf([1], 1), [[1]]);
+      assertArrayEqual(inGroupsOf([], 1), []);
+      assertArrayEqual(inGroupsOf([], 2), []);
+      assertArrayEqual(inGroupsOf([], 100), []);
+    });
+
+    it('should group elements without padding', function() {
+      assertArrayEqual(inGroupsOf([1,2,3,4,5], 3), [[1,2,3],[4,5]]);
+    });
+
+    it('should group elements with padding', function() {
+      assertArrayEqual(inGroupsOf([1,2,3,4,5], 3, null), [[1,2,3],[4,5,null]]);
+      assertArrayEqual(inGroupsOf([1,2,3,4,5], 2, null), [[1,2],[3,4],[5,null]]);
+      assertArrayEqual(inGroupsOf([1], 3, null), [[1,null,null]]);
+    });
+
+    it('should work as expected on sparse arrays', function() {
+      const arr = [1];
+      arr[3] = 3;
+      assertArrayEqual(inGroupsOf(arr, 2, null), [[1,null],[null,3]]);
+    });
+
+    it('should handle issue #142', () => {
+      const arr = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20];
+      inGroupsOf(arr, 3);
+      assertEqual(arr.length, 20);
+    });
+
+    it('should handle irregular input', function() {
+      assertError(() => { inGroupsOf([], null); });
+      assertError(() => { inGroupsOf([], -1); });
+      assertError(() => { inGroupsOf([], 0); });
+      assertError(() => { inGroupsOf(null); });
+      assertError(() => { inGroupsOf('8'); });
+      assertError(() => { inGroupsOf(8); });
+    });
+
+  });
+
 });
