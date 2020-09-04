@@ -2,7 +2,7 @@ import { assertArray } from '../util/assertions';
 import { getSerializer } from '../util/object';
 
 /**
- * Returns a new array containing with all elements in the second array removed.
+ * Returns a new array with all elements in the second array removed.
  *
  * @param {Array} arr1 - The array.
  * @param {Array} arr2 - The array whose values will be removed. Elements are
@@ -16,7 +16,6 @@ import { getSerializer } from '../util/object';
  *
  *   [1,2].subtract([2,3]) -> [1]
  *   [user1, user2].subtract([user2, user3]) -> [user1]
- *   [user1].subtract([user2], [user3]) -> [user1]
  *
  **/
 export default function subtract(arr1, arr2) {

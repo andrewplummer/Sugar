@@ -98,6 +98,10 @@ call `Function#lock` first in the chain to achieve the same effect.
     `Array#minAll` and `Array#maxAll`.
 - Changed `Object.select` and `Object.reject` now no longer accepts an object
     to select keys by. Use `Object.keys` on the input object for this case.
+- Changed `Array#subtract` to only accept another array to subtract on. To
+    remove elements by value use `Array#exclude` instead.
+- Changed `Array#add` second argument to add element at a specific index. Use
+    `Array#insert` for this instead.
 
 
 TODO:
