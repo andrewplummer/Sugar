@@ -1,4 +1,4 @@
-import { isPrimitive, isObject, isRealNaN } from './typeChecks';
+import { isPrimitive, isObject, isNaN } from './typeChecks';
 import { hasOwnProperty, forEachProperty } from './helpers';
 import { isClass, classToString } from './class';
 
@@ -33,7 +33,7 @@ export function serialize(obj, refs = [], stack = []) {
   const sign = 1 / obj === -Infinity ? '-' : '';
 
   // Return quickly for primitives to save cycles
-  if (isPrimitive(obj, type) && !isRealNaN(obj)) {
+  if (isPrimitive(obj, type) && !isNaN(obj)) {
     return type + sign + obj;
   }
 

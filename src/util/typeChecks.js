@@ -9,7 +9,8 @@ export const isRegExp = buildClassCheck('RegExp');
 
 export const isError = buildClassCheck('Error');
 
-export const isArray = Array.isArray || buildClassCheck('Array');
+export const isArray = Array.isArray;
+export const isNaN = Number.isNaN;
 
 export const isSet = buildClassCheck('Set', typeof Set !== 'undefined' && Set);
 export const isMap = buildClassCheck('Map', typeof Map !== 'undefined' && Map);
@@ -28,11 +29,6 @@ export const isFunction = buildClassCheck('Function');
 export function isPrimitive(obj, type) {
   type = type || typeof obj;
   return obj == null || type === 'string' || type === 'number' || type === 'boolean';
-}
-
-export function isRealNaN(obj) {
-  // This is only true of NaN
-  return obj != null && obj !== obj;
 }
 
 export function isObject(obj, type) {

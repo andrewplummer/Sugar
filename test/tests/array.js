@@ -2705,4 +2705,32 @@ namespace('Array', function() {
 
   });
 
+  describeInstance('compact', function(compact) {
+
+    it('should remove null and undefined', function() {
+      assertArrayEqual(compact([1,null,2]), [1,2]);
+      assertArrayEqual(compact([1,undefined,2]), [1,2]);
+      assertArrayEqual(compact([null, null]), []);
+      assertArrayEqual(compact([undefined, undefined]), []);
+    });
+
+    it('should remove NaN', function() {
+      assertArrayEqual(compact([NaN]), []);
+      assertArrayEqual(compact([0,NaN,1]), [0,1]);
+    });
+
+    it('should not remove false, 0, or empty strings', function() {
+      assertArrayEqual(compact(['']), ['']);
+      assertArrayEqual(compact([0]), [0]);
+      assertArrayEqual(compact([false]), [false]);
+    });
+
+    it('should handle irregular input', function() {
+      assertError(() => { compact(null); });
+      assertError(() => { compact('8'); });
+      assertError(() => { compact(8); });
+    });
+
+  });
+
 });
