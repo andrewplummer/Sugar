@@ -1,4 +1,5 @@
 'use strict';
+/* eslint-disable no-sparse-arrays */
 
 namespace('Array', function() {
 
@@ -84,15 +85,16 @@ namespace('Array', function() {
     });
 
     it('should call a function if necessary', function () {
-      var arr = [
-        { name: function() { return 'Jim'; } },
-      ];
+      const obj = {
+        name: function() {
+          assertEqual(this, obj);
+          return 'Jim';
+        }
+      };
       assertObjectEqual(
-        groupBy(arr, 'name'),
+        groupBy([obj], 'name'),
         {
-          'Jim': [
-            arr[0],
-          ],
+          'Jim': [obj],
         }
       );
     });
@@ -164,7 +166,6 @@ namespace('Array', function() {
     });
 
     it('should have no issues with sparse arrays', function() {
-      /* eslint-disable no-sparse-arrays */
       assertEqual(at(['a',,'c'], 0), 'a');
       assertUndefined(at(['a',,'c'], 1));
       assertEqual(at(['a',,'c'], 2), 'c');
@@ -233,7 +234,7 @@ namespace('Array', function() {
       assertArrayEqual(remove([{name:'Frank'},{name:'James'}], {name: /^[A-F]/}), [{name:'James'}]);
     });
 
-    it('should pass correct params', function() {
+    it('should pass correct arguments', function() {
       remove(['a'], function (el, i, arr) {
         assertEqual(el, 'a');
         assertEqual(i, 0);
@@ -242,7 +243,7 @@ namespace('Array', function() {
       }, 'context');
     });
 
-    it('should not iterate over all members of sparse arrays', function() {
+    it('should not iterate over non-members of sparse arrays', function() {
       var count = 0;
       var arr = ['a'];
       arr[8000] = 'b';
@@ -305,7 +306,7 @@ namespace('Array', function() {
       assertArrayEqual(exclude([{name:'Frank'},{name:'James'}], {name: /^[A-F]/}), [{name:'James'}]);
     });
 
-    it('should pass correct params', function() {
+    it('should pass correct arguments', function() {
       exclude(['a'], function (el, i, arr) {
         assertEqual(el, 'a');
         assertEqual(i, 0);
@@ -314,7 +315,7 @@ namespace('Array', function() {
       }, 'context');
     });
 
-    it('should not iterate over all members of sparse arrays', function() {
+    it('should not iterate over non-members of sparse arrays', function() {
       var count = 0;
       var arr = ['a'];
       arr[8000] = 'b';
@@ -389,7 +390,7 @@ namespace('Array', function() {
       ], 'posts[1..2].views'), [[40,20],[13,52],[45,81]]);
     });
 
-    it('should not iterate over all members of sparse arrays', function() {
+    it('should not iterate over non-members of sparse arrays', function() {
       var count = 0;
       var arr = ['a'];
       arr[8000] = 'b';
@@ -414,7 +415,7 @@ namespace('Array', function() {
       );
     });
 
-    it('should pass correct params', function() {
+    it('should pass correct arguments', function() {
       map(['a'], function (el, i, arr) {
         assertEqual(el, 'a');
         assertEqual(i, 0);
@@ -480,7 +481,7 @@ namespace('Array', function() {
       assertEqual(some([{name:'Frank'},{name:'James'}], {name: /^[N-Z]/}), false);
     });
 
-    it('should pass correct params', function() {
+    it('should pass correct arguments', function() {
       some(['a'], function (el, i, arr) {
         assertEqual(el, 'a');
         assertEqual(i, 0);
@@ -489,7 +490,7 @@ namespace('Array', function() {
       }, 'context');
     });
 
-    it('should not iterate over all members of sparse arrays', function() {
+    it('should not iterate over non-members of sparse arrays', function() {
       var n = 0;
       var arr = ['a'];
       arr[8000] = 'b';
@@ -553,7 +554,7 @@ namespace('Array', function() {
       assertEqual(none([{name:'Frank'},{name:'James'}], {name: /^[N-Z]/}), true);
     });
 
-    it('should pass correct params', function() {
+    it('should pass correct arguments', function() {
       none(['a'], function (el, i, arr) {
         assertEqual(el, 'a');
         assertEqual(i, 0);
@@ -562,7 +563,7 @@ namespace('Array', function() {
       }, 'context');
     });
 
-    it('should not iterate over all members of sparse arrays', function() {
+    it('should not iterate over non-members of sparse arrays', function() {
       var n = 0;
       var arr = ['a'];
       arr[8000] = 'b';
@@ -627,7 +628,7 @@ namespace('Array', function() {
       assertEqual(every([{name:'Frank'},{name:'James'}], {name: /^[A-J]/}), true);
     });
 
-    it('should pass correct params', function() {
+    it('should pass correct arguments', function() {
       every(['a'], function (el, i, arr) {
         assertEqual(el, 'a');
         assertEqual(i, 0);
@@ -636,7 +637,7 @@ namespace('Array', function() {
       }, 'context');
     });
 
-    it('should not iterate over all members of sparse arrays', function() {
+    it('should not iterate over non-members of sparse arrays', function() {
       var n = 0;
       var arr = ['a'];
       arr[8000] = 'b';
@@ -703,7 +704,7 @@ namespace('Array', function() {
       assertArrayEqual(filter([{a:'a'},{a:'b'}], new Foo(/b/)), [{a:'b'}]);
     });
 
-    it('should pass correct params', function() {
+    it('should pass correct arguments', function() {
       filter(['a'], function (el, i, arr) {
         assertEqual(el, 'a');
         assertEqual(i, 0);
@@ -712,7 +713,7 @@ namespace('Array', function() {
       }, 'context');
     });
 
-    it('should not iterate over all members of sparse arrays', function() {
+    it('should not iterate over non-members of sparse arrays', function() {
       var count = 0;
       var arr = ['a'];
       arr[8000] = 'b';
@@ -768,7 +769,7 @@ namespace('Array', function() {
       assertObjectEqual(find([{name:'Frank'},{name:'James'}], {name: /^[A-F]/}), {name:'Frank'});
     });
 
-    it('should pass correct params', function() {
+    it('should pass correct arguments', function() {
       find(['a'], function (el, i, arr) {
         assertEqual(el, 'a');
         assertEqual(i, 0);
@@ -777,7 +778,7 @@ namespace('Array', function() {
       }, 'context');
     });
 
-    it('should not iterate over all members of sparse arrays', function() {
+    it('should not iterate over non-members of sparse arrays', function() {
       var count = 0;
       var arr = ['a'];
       arr[8000] = 'b';
@@ -833,7 +834,7 @@ namespace('Array', function() {
       assertEqual(findIndex([{name:'Frank'},{name:'James'}], {name: /^[A-F]/}), 0);
     });
 
-    it('should pass correct params', function() {
+    it('should pass correct arguments', function() {
       findIndex(['a'], function (el, i, arr) {
         assertEqual(el, 'a');
         assertEqual(i, 0);
@@ -842,7 +843,7 @@ namespace('Array', function() {
       }, 'context');
     });
 
-    it('should not iterate over all members of sparse arrays', function() {
+    it('should not iterate over non-members of sparse arrays', function() {
       var count = 0;
       var arr = ['a'];
       arr[8000] = 'b';
@@ -903,7 +904,7 @@ namespace('Array', function() {
       assertEqual(count([{name:'Frank'},{name:'James'}], {name: /^[A-F]/}), 1);
     });
 
-    it('should pass correct params', function() {
+    it('should pass correct arguments', function() {
       count(['a'], function (el, i, arr) {
         assertEqual(el, 'a');
         assertEqual(i, 0);
@@ -912,7 +913,7 @@ namespace('Array', function() {
       }, 'context');
     });
 
-    it('should not iterate over all members of sparse arrays', function() {
+    it('should not iterate over non-members of sparse arrays', function() {
       var n = 0;
       var arr = ['a'];
       arr[8000] = 'b';
@@ -969,7 +970,7 @@ namespace('Array', function() {
       ], 'posts.0.views'), 189);
     });
 
-    it('should pass correct params', function() {
+    it('should pass correct arguments', function() {
       sum(['a'], function (el, i, arr) {
         assertEqual(el, 'a');
         assertEqual(i, 0);
@@ -978,7 +979,7 @@ namespace('Array', function() {
       }, 'context');
     });
 
-    it('should not iterate over all members of sparse arrays', function() {
+    it('should not iterate over non-members of sparse arrays', function() {
       var count = 0;
       var arr = ['a'];
       arr[8000] = 'b';
@@ -1036,7 +1037,7 @@ namespace('Array', function() {
       ], 'posts.0.views'), 63);
     });
 
-    it('should not iterate over all members of sparse arrays', function() {
+    it('should not iterate over non-members of sparse arrays', function() {
       var count = 0;
       var arr = ['a'];
       arr[8000] = 'b';
@@ -1100,7 +1101,7 @@ namespace('Array', function() {
       ], 'posts.0.views'), 50);
     });
 
-    it('should not iterate over all members of sparse arrays', function() {
+    it('should not iterate over non-members of sparse arrays', function() {
       var count = 0;
       var arr = ['a'];
       arr[8000] = 'b';
@@ -1161,7 +1162,7 @@ namespace('Array', function() {
       assertEqual(min([-Infinity]), -Infinity);
     });
 
-    it('should pass correct params', function() {
+    it('should pass correct arguments', function() {
       min(['a'], function (el, i, arr) {
         assertEqual(el, 'a');
         assertEqual(i, 0);
@@ -1170,7 +1171,7 @@ namespace('Array', function() {
       }, 'context');
     });
 
-    it('should not iterate over all members of sparse arrays', function() {
+    it('should not iterate over non-members of sparse arrays', function() {
       var count = 0;
       var arr = ['a'];
       arr[8000] = 'b';
@@ -1232,7 +1233,7 @@ namespace('Array', function() {
       assertArrayEqual(minAll([-Infinity]), [-Infinity]);
     });
 
-    it('should pass correct params', function() {
+    it('should pass correct arguments', function() {
       minAll(['a'], function (el, i, arr) {
         assertEqual(el, 'a');
         assertEqual(i, 0);
@@ -1241,7 +1242,7 @@ namespace('Array', function() {
       }, 'context');
     });
 
-    it('should not iterate over all members of sparse arrays', function() {
+    it('should not iterate over non-members of sparse arrays', function() {
       var count = 0;
       var arr = ['a'];
       arr[8000] = 'b';
@@ -1302,7 +1303,7 @@ namespace('Array', function() {
       assertEqual(max([-Infinity]), -Infinity);
     });
 
-    it('should pass correct params', function() {
+    it('should pass correct arguments', function() {
       max(['a'], function (el, i, arr) {
         assertEqual(el, 'a');
         assertEqual(i, 0);
@@ -1311,7 +1312,7 @@ namespace('Array', function() {
       }, 'context');
     });
 
-    it('should not iterate over all members of sparse arrays', function() {
+    it('should not iterate over non-members of sparse arrays', function() {
       var count = 0;
       var arr = ['a'];
       arr[8000] = 'b';
@@ -1373,7 +1374,7 @@ namespace('Array', function() {
       assertArrayEqual(maxAll([-Infinity]), [-Infinity]);
     });
 
-    it('should pass correct params', function() {
+    it('should pass correct arguments', function() {
       maxAll(['a'], function (el, i, arr) {
         assertEqual(el, 'a');
         assertEqual(i, 0);
@@ -1382,7 +1383,7 @@ namespace('Array', function() {
       }, 'context');
     });
 
-    it('should not iterate over all members of sparse arrays', function() {
+    it('should not iterate over non-members of sparse arrays', function() {
       var count = 0;
       var arr = ['a'];
       arr[8000] = 'b';
@@ -1832,4 +1833,134 @@ namespace('Array', function() {
     });
 
   });
+
+  describeInstance('unique', function(unique) {
+
+    it('should unique basic values without an argument', function() {
+      assertArrayEqual(unique([1,2,3]), [1,2,3]);
+      assertArrayEqual(unique([1,2,2,3]), [1,2,3]);
+      assertArrayEqual(unique([0,0,0]), [0]);
+      assertArrayEqual(unique([-0,-0,-0]), [-0]);
+      assertArrayEqual(unique([NaN,NaN,NaN]), [NaN]);
+      assertArrayEqual(unique([null,null,null]), [null]);
+      assertArrayEqual(unique([undefined,undefined,undefined]), [undefined]);
+      assertArrayEqual(unique(['a','b','c']), ['a','b','c']);
+      assertArrayEqual(unique(['a','b','c','c']), ['a','b','c']);
+    });
+
+    it('should unique objects with a mapper function', function() {
+      assertArrayEqual(unique([{a:1},{a:1}], (el) => el.a), [{a:1}]);
+    });
+
+    it('should unique objects with a string shortcut', function() {
+      assertArrayEqual(unique([{a:1},{a:1}], 'a'), [{a:1}]);
+      assertArrayEqual(
+        unique([
+          { age: 24 },
+          { age: 12 },
+          { age: 12 },
+        ], 'age'),
+        [{ age: 24 },{ age: 12 }]
+      );
+    });
+
+    it('should unique objects by deep equality by default', function() {
+      assertArrayEqual(unique([{a:1},{a:1}]), [{a:1}]);
+    });
+
+    it('should handle deep properties', function() {
+      assertArrayEqual(unique([
+        { profile: { likes: 17 } },
+        { profile: { likes: 17 } },
+        { profile: { likes: 36 } },
+      ], 'profile.likes'), [
+        { profile: { likes: 17 } },
+        { profile: { likes: 36 } },
+      ]);
+      assertArrayEqual(unique([
+        { posts: [{ views: 80 }] },
+        { posts: [{ views: 97 }] },
+        { posts: [{ views: 97 }] },
+      ], 'posts[0].views'), [
+        { posts: [{ views: 80 }] },
+        { posts: [{ views: 97 }] },
+      ]);
+      assertArrayEqual(unique([
+        { posts: [{ views: 80 }] },
+        { posts: [{ views: 97 }] },
+        { posts: [{ views: 97 }] },
+      ], 'posts[-1].views'), [
+        { posts: [{ views: 80 }] },
+        { posts: [{ views: 97 }] },
+      ]);
+      assertArrayEqual(unique([
+        { posts: [{ views: 80 }] },
+        { posts: [{ views: 97 }] },
+        { posts: [{ views: 97 }] },
+      ], 'posts.0.views'), [
+        { posts: [{ views: 80 }] },
+        { posts: [{ views: 97 }] },
+      ]);
+    });
+
+    it('should handle sparse arrays', function() {
+      const arr = ['a'];
+      arr[8000] = 'b';
+      assertArrayEqual(unique(arr), ['a','b']);
+    });
+
+    it('should not iterate over non-members of sparse arrays', function() {
+      var count = 0;
+      var arr = ['a'];
+      arr[8000] = 'b';
+      unique(arr, function () {
+        count++;
+      });
+      assertEqual(count, 2);
+    });
+
+    it('should pass correct arguments', function() {
+      unique(['a'], function (el, i, arr) {
+        assertEqual(el, 'a');
+        assertEqual(i, 0);
+        assertArrayEqual(arr, ['a']);
+      });
+    });
+
+    it('should treat array-like structures as separate', function() {
+      assertArrayEqual(unique([
+        ['a'],
+        {0:'a'},
+        ['a'],
+        {0:'a'},
+      ]), [
+        ['a'],
+        {0:'a'}
+      ]);
+    });
+
+    it('should handle class instances', function() {
+      function Foo () {}
+      const o1 = new Foo;
+      const o2 = new Foo;
+      assertArrayEqual(unique([o1, o1]), [o1]);
+      assertArrayEqual(unique([o1, o2]), [o1, o2]);
+      assertArrayEqual(unique([{a: o1}, {a: o1}]), [{a:o1}]);
+      assertArrayEqual(unique([{a: o1}, {a: o2}]), [{a:o1}, {a:o2}]);
+    });
+
+    it('should handle cyclic structures', function() {
+      const foo = {};
+      foo.bar = foo;
+      assertArrayEqual(unique([{foo},{foo}]), [{foo}]);
+    });
+
+    it('should handle irregular input', function() {
+      assertError(() => { unique(null); });
+      assertError(() => { unique('8'); });
+      assertError(() => { unique(8); });
+    });
+
+  });
+
 });

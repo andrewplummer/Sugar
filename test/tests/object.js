@@ -50,7 +50,7 @@ namespace('Object', function () {
       assertObjectEqual(obj, empty);
     });
 
-    it('should pass correct params', function () {
+    it('should pass correct arguments', function () {
       mapKeys({ a: 1 }, function (key, val, obj) {
         assertEqual(key, 'a');
         assertEqual(val, 1);
@@ -129,7 +129,7 @@ namespace('Object', function () {
       assertObjectEqual(obj, empty);
     });
 
-    it('should pass correct params', function () {
+    it('should pass correct arguments', function () {
       mapValues({ a: 1 }, function (key, val, obj) {
         assertEqual(key, 'a');
         assertEqual(val, 1);
@@ -174,7 +174,7 @@ namespace('Object', function () {
       assertFalse(iterated);
     });
 
-    it('should pass correct params', function () {
+    it('should pass correct arguments', function () {
       forEach({ a: 1 }, function (key, val, obj) {
         assertEqual(key, 'a');
         assertEqual(val, 1);
@@ -267,7 +267,7 @@ namespace('Object', function () {
       );
     });
 
-    it('should pass correct params', function() {
+    it('should pass correct arguments', function() {
       some({a:1}, function (key, val, obj) {
         assertEqual(key, 'a');
         assertEqual(val, 1);
@@ -355,7 +355,7 @@ namespace('Object', function () {
       );
     });
 
-    it('should pass correct params', function() {
+    it('should pass correct arguments', function() {
       every({a:1}, function (key, val, obj) {
         assertEqual(key, 'a');
         assertEqual(val, 1);
@@ -440,7 +440,7 @@ namespace('Object', function () {
       );
     });
 
-    it('should pass correct params', function() {
+    it('should pass correct arguments', function() {
       none({a:1}, function (key, val, obj) {
         assertEqual(key, 'a');
         assertEqual(val, 1);
@@ -526,7 +526,7 @@ namespace('Object', function () {
       );
     });
 
-    it('should pass correct params', function() {
+    it('should pass correct arguments', function() {
       findKey({a:1}, function (key, val, obj) {
         assertEqual(key, 'a');
         assertEqual(val, 1);
@@ -615,7 +615,7 @@ namespace('Object', function () {
       );
     });
 
-    it('should pass correct params', function() {
+    it('should pass correct arguments', function() {
       selectValues({a:1}, function (key, val, obj) {
         assertEqual(key, 'a');
         assertEqual(val, 1);
@@ -712,7 +712,7 @@ namespace('Object', function () {
       );
     });
 
-    it('should pass correct params', function() {
+    it('should pass correct arguments', function() {
       rejectValues({a:1}, function (key, val, obj) {
         assertEqual(key, 'a');
         assertEqual(val, 1);
@@ -809,7 +809,7 @@ namespace('Object', function () {
       );
     });
 
-    it('should pass correct params', function() {
+    it('should pass correct arguments', function() {
       removeValues({a:1}, function (key, val, obj) {
         assertEqual(key, 'a');
         assertEqual(val, 1);
@@ -1016,7 +1016,7 @@ namespace('Object', function () {
       );
     });
 
-    it('should pass correct params', function() {
+    it('should pass correct arguments', function() {
       count({a:1}, function (key, val, obj) {
         assertEqual(key, 'a');
         assertEqual(val, 1);
@@ -1074,7 +1074,7 @@ namespace('Object', function () {
       }, 'posts.0.views'), 189);
     });
 
-    it('should pass correct params', function() {
+    it('should pass correct arguments', function() {
       sum({a:1}, function (key, val, obj) {
         assertEqual(key, 'a');
         assertEqual(val, 1);
@@ -1235,7 +1235,7 @@ namespace('Object', function () {
       assertEqual(minKey({a:-Infinity}), 'a');
     });
 
-    it('should pass correct params', function() {
+    it('should pass correct arguments', function() {
       minKey({a:1}, function (key, val, obj) {
         assertEqual(key, 'a');
         assertEqual(val, 1);
@@ -1295,7 +1295,7 @@ namespace('Object', function () {
       assertArrayEqual(minKeys({a:-Infinity}), ['a']);
     });
 
-    it('should pass correct params', function() {
+    it('should pass correct arguments', function() {
       minKeys({a:1}, function (key, val, obj) {
         assertEqual(key, 'a');
         assertEqual(val, 1);
@@ -1354,7 +1354,7 @@ namespace('Object', function () {
       assertEqual(maxKey({a:-Infinity}), 'a');
     });
 
-    it('should pass correct params', function() {
+    it('should pass correct arguments', function() {
       maxKey({a:1}, function (key, val, obj) {
         assertEqual(key, 'a');
         assertEqual(val, 1);
@@ -1414,7 +1414,7 @@ namespace('Object', function () {
       assertArrayEqual(maxKeys({a:-Infinity}), ['a']);
     });
 
-    it('should pass correct params', function() {
+    it('should pass correct arguments', function() {
       maxKeys({a:1}, function (key, val, obj) {
         assertEqual(key, 'a');
         assertEqual(val, 1);

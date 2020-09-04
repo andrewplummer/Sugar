@@ -1,4 +1,5 @@
-import { mapWithShortcuts } from '../util/enumerable';
+import { assertArray } from '../util/assertions';
+import { getMapper } from '../util/mappers';
 import { hasOwnProperty, forEachProperty } from '../util/helpers';
 
 /**
@@ -37,15 +38,16 @@ import { hasOwnProperty, forEachProperty } from '../util/helpers';
  *
  **/
 export default function groupBy(arr, map, groupFn) {
+  assertArray(arr);
   const result = {};
-  for (let i = 0, len = arr.length; i < len; i++) {
-    const el = arr[i];
-    const key = mapWithShortcuts(el, map, arr, [el, i, arr]);
+  const mapper = getMapper(map);
+  arr.forEach((el, i) => {
+    const key = mapper(el, i, arr);
     if (!hasOwnProperty(result, key)) {
       result[key] = [];
     }
     result[key].push(el);
-  }
+  });
   if (groupFn) {
     forEachProperty(result, groupFn);
   }

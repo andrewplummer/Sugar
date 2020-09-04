@@ -39,7 +39,11 @@ function getArrayMapper(obj) {
 
 function getPropertyMapper(str) {
   return (val) => {
-    return deepGetProperty(val, str);
+    let result = deepGetProperty(val, str);
+    if (isFunction(result)) {
+      result = result.call(val);
+    }
+    return result;
   };
 }
 

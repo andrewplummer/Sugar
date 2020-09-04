@@ -323,67 +323,6 @@ namespace('Array', function () {
     equal(arr, [1,3], 'should affect the original array');
   });
 
-  method('unique', function() {
-
-    test([1,1,3], [1,3], '1,1,3');
-    test([0,0,0], [0], '0,0,0');
-    test([-0,-0,-0], [-0], '-0,-0,-0');
-    test([0,-0,0,-0], [0,-0], '0,-0,0,-0');
-    test([0, -0, new Number(0), new Number(-0)], [0, -0, new Number(0), new Number(-0)], '0,-0 with non-primitives');
-    test(['a','b','c'], ['a','b','c'], 'a,b,c');
-    test(['a','a','c'], ['a','c'], 'a,a,c');
-    test([NaN,NaN], [NaN], 'NaN');
-
-    test([{ foo:'bar' }, { foo:'bar' }], [{foo:'bar'}], 'objects uniqued as well');
-    test([{ first: 'John', last: 'Woo' }, { first: 'Reynold', last: 'Woo' }], [function(n){ return n.last; }], [{ first: 'John', last: 'Woo' }], 'can be uniqued via a mapping function');
-    test([{ first: 'John', last: 'Woo' }, { first: 'Reynold', last: 'Woo' }], ['last'], [{ first: 'John', last: 'Woo' }], 'can be uniqued via a mapping shortcut');
-    test([{name:{first:'John',last:'P'}}, {name:{first:'Reynold',last:'P'}}], ['name.last'], [{name:{first:'John',last:'P'}}], 'mapping function can go deep with dot operator');
-
-    var fn = function(el,i,a) {
-      equal(this, [1], 'scope should be the array');
-      equal(i, 0, 'second param should be the index');
-      equal(a, [1], 'third param should also be the array');
-    }
-    run([1], 'unique', [fn]);
-
-    equal(run([function(){ return 'a' }, function() { return 'a'; }, function() { return 'b'; }]).length, 3, 'Functions are always unique');
-
-    test(['toString'], [], ['toString'], 'toString is respected as unique');
-    test(['watch'], [], ['watch'], 'watch is respected as unique');
-    test(['watch', 'flowers', 'toString'], [], ['watch', 'flowers', 'toString'], 'toString and watch mixed');
-
-    test(testGetSparseArray(3, 'a','b','a'), ['a','b'], 'should handle sparse arrays');
-
-    var arr = ['a'];
-    arr[Math.pow(2, 32) - 2] = 'a';
-    // This test doesn't ever fail but is massively
-    // slow if not handling sparse arrays smartly.
-    test(arr, [], ['a'], 'does not take O(n) for sparse arrays');
-
-    test([['a'], {0:'a'}], [], [['a'],{0:'a'}], 'cannot be fooled by array-like');
-
-    // Class Instances
-
-    function Foo () {}
-    var f1 = new Foo;
-    var f2 = new Foo;
-    var o1 = { foo: f1 };
-    var o2 = { foo: f1 };
-    var o3 = { foo: f2 };
-    test([f1, f2], [f1, f2], 'instances | separate');
-    test([f1, f1], [f1], 'instances | same');
-    test([o1, o2], [o1], 'instances | same deep reference is equal');
-    test([o1, o3], [o1, o3], 'instances | different deep reference is not equal');
-
-    var foo = {};
-    test([{foo:foo}], [{foo:foo}], 'Handles cyclic structures');
-
-    var foo = {};
-    foo.bar = foo;
-    test([foo], [foo], 'Handles cyclic structures');
-
-  });
-
   method('flatten', function() {
 
     test([1,2,3], [1,2,3], '1,2,3');

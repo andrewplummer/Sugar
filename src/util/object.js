@@ -1,6 +1,8 @@
-import { isObject } from './typeChecks';
+import { isPrimitive, isObject, isRealNaN } from './typeChecks';
 import { hasOwnProperty, forEachProperty } from './helpers';
-import { isClass } from './class';
+import { isClass, classToString } from './class';
+
+const objectProto = Object.prototype;
 
 export function isPlainObject(obj, classTag) {
   return isObject(obj)
@@ -9,7 +11,59 @@ export function isPlainObject(obj, classTag) {
       && hasOwnEnumeratedProperties(obj);
 }
 
-export function isSerializable(obj, classTag) {
+// A function that will serialize objects holding an array of refs
+// to distinguish non-serializable objects (class instances, host objects, etc).
+export function getSerializer() {
+  const refs = [];
+  return (obj) => {
+    return serialize(obj, refs);
+  };
+}
+
+// Serializes an object in a way that will provide a token unique
+// to the type, class, and value of an object. Host objects, class
+// instances etc are not serializable, and are held in an array
+// of references that will return the index as a unique identifier
+// for the object. This array is passed from outside so that the
+// calling function can decide how to dispose of this array.
+export function serialize(obj, refs = [], stack = []) {
+  const type = typeof obj;
+
+  // Check for -0
+  const sign = 1 / obj === -Infinity ? '-' : '';
+
+  // Return quickly for primitives to save cycles
+  if (isPrimitive(obj, type) && !isRealNaN(obj)) {
+    return type + sign + obj;
+  }
+
+  const className = classToString(obj);
+
+  let value = '';
+  if (!isSerializable(obj, className)) {
+    let index = refs.indexOf(obj);
+    if (index === -1) {
+      index = refs.length;
+      refs.push(obj);
+    }
+    return index;
+  } else if (isObject(obj)) {
+    value = serializeDeep(obj, refs, stack) + obj.toString();
+  } else if (obj.valueOf) {
+    value = obj.valueOf();
+  }
+  return type + className + sign + value;
+}
+
+function serializeDeep(obj, refs, stack) {
+  let result = '';
+  iterateWithCyclicCheck(obj, true, stack, (key, val, cyc, stack) => {
+    result += cyc ? 'CYC' : key + serialize(val, refs, stack);
+  });
+  return result;
+}
+
+function isSerializable(obj, classTag) {
   // Only known objects can be serialized. This notably excludes functions,
   // host objects, Symbols (which are matched by reference), and instances
   // of classes. The latter can arguably be matched by value, but
@@ -18,16 +72,19 @@ export function isSerializable(obj, classTag) {
   return isKnownClassTag(classTag) || isPlainObject(obj, classTag);
 }
 
-export function iterateWithCyclicCheck(obj, sortedKeys, stack, fn) {
+// This method for checking for cyclic structures was egregiously stolen from
+// the ingenious method by @kitcambridge from the Underscore script:
+// https://github.com/documentcloud/underscore/issues/240
+function iterateWithCyclicCheck(obj, sortedKeys, stack, fn) {
 
   function next(val, key) {
-    var cyc = false;
+    let cyc = false;
 
     // Allowing a step into the structure before triggering this check to save
     // cycles on standard JSON structures and also to try as hard as possible to
     // catch basic properties that may have been modified.
     if (stack.length > 1) {
-      var i = stack.length;
+      let i = stack.length;
       while (i--) {
         if (stack[i] === val) {
           cyc = true;
@@ -43,18 +100,10 @@ export function iterateWithCyclicCheck(obj, sortedKeys, stack, fn) {
   function iterateWithSortedKeys() {
     // Sorted keys is required for serialization, where object order
     // does not matter but stringified order does.
-    var arr = Object.keys(obj).sort(), key;
-    for (var i = 0; i < arr.length; i++) {
-      key = arr[i];
-      next(obj[key], arr[i]);
+    const keys = Object.keys(obj).sort();
+    for (let key of keys) {
+      next(obj[key], key);
     }
-  }
-
-  // This method for checking for cyclic structures was egregiously stolen from
-  // the ingenious method by @kitcambridge from the Underscore script:
-  // https://github.com/documentcloud/underscore/issues/240
-  if (!stack) {
-    stack = [];
   }
 
   if (sortedKeys) {
@@ -96,8 +145,8 @@ function isKnownClassTag(classTag) {
 }
 
 function hasValidPlainObjectPrototype(obj) {
-  var hasToString = 'toString' in obj;
-  var hasConstructor = 'constructor' in obj;
+  const hasToString = 'toString' in obj;
+  const hasConstructor = 'constructor' in obj;
   // An object created with Object.create(null) has no methods in the
   // prototype chain, so check if any are missing. The additional hasToString
   // check is for false positives on some host objects in old IE which have
@@ -116,10 +165,8 @@ function hasOwnEnumeratedProperties(obj) {
   // all their own, however in early IE environments without defineProperty,
   // there may also be enumerated methods in the prototype chain, so check
   // for both of these cases.
-  var objectProto = Object.prototype;
-  for (var key in obj) {
-    var val = obj[key];
-    if (!hasOwnProperty(obj, key) && val !== objectProto[key]) {
+  for (let key in obj) {
+    if (!hasOwnProperty(obj, key) && obj[key] !== objectProto[key]) {
       return false;
     }
   }
