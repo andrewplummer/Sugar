@@ -115,31 +115,4 @@ namespace('Array', function () {
     equal(arr, [1,3], 'should affect the original array');
   });
 
-  method('flatten', function() {
-
-    test([1,2,3], [1,2,3], '1,2,3');
-    test(['a','b','c'], ['a','b','c'], 'a,b,c');
-    test([{a:1},{a:2},{a:1}], [{a:1},{a:2},{a:1}], 'a:1,a:2,a:1');
-    test([[1],[2],[3]], [1,2,3], '[1],[2],[3]');
-    test([[1,2],[3]], [1,2,3], '[1,2],[3]');
-    test([[1,2,3]], [1,2,3], '[1,2,3]');
-    test([['a'],['b'],['c']], ['a','b','c'], '[a],[b],[c]');
-    test([['a','b'],['c']], ['a','b','c'], '[a,b],[c]');
-    test([['a','b','c']], ['a','b','c'], '[a,b,c]');
-    test([[{a:1}],[{a:2}],[{a:1}]], [{a:1},{a:2},{a:1}], '[a:1],[a:2],[a:1]');
-    test([[{a:1},{a:2}],[{a:1}]], [{a:1},{a:2},{a:1}], '[a:1,a:2],[a:1]');
-    test([[{a:1},{a:2},{a:1}]], [{a:1},{a:2},{a:1}], '[a:1,a:2,a:1]');
-    test([[[['a','b'],'c',['d','e']],'f'],['g']], ['a','b','c','d','e','f','g'], '[[a,b],c,[d,e],f],g');
-
-    test([[[['a','b'],'c',['d','e']],'f'],['g']], [1], [[['a','b'],'c',['d','e']],'f','g'], 'can flatten only first level');
-    test([[[['a','b'],'c',['d','e']],'f'],['g']], [false], ['a','b','c','d','e','f','g'], 'wont explode on false');
-    test([[[['a','b'],'c',['d','e']],'f'],['g']], [true], [[['a','b'],'c',['d','e']],'f','g'], 'wont explode on true');
-
-    equal(run(oneUndefined, 'flatten').length, 1, 'should not compact arrays');
-
-    var arr = testGetSparseArray(2, 'a', testGetSparseArray(2, 'b'), 'c');
-    test(arr, [], ['a','b','c'], 'works on sparse arrays');
-
-  });
-
 });
