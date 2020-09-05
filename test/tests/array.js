@@ -2751,6 +2751,48 @@ namespace('Array', function() {
 
   });
 
+  describeInstance('inGroups', function(inGroups) {
+
+    it('should group elements', function() {
+      assertArrayEqual(inGroups([1,2,3,4,5,6], 1), [[1,2,3,4,5,6]]);
+      assertArrayEqual(inGroups([1,2,3,4,5,6], 2), [[1,2,3],[4,5,6]]);
+      assertArrayEqual(inGroups([1,2,3,4,5,6], 3), [[1,2],[3,4],[5,6]]);
+      assertArrayEqual(inGroups([1,2,3,4,5], 2), [[1,2,3],[4,5]]);
+      assertArrayEqual(inGroups([1,2], 1), [[1,2]]);
+      assertArrayEqual(inGroups([1], 1), [[1]]);
+      assertArrayEqual(inGroups([], 1), [[]]);
+      assertArrayEqual(inGroups([], 2), [[],[]]);
+    });
+
+    it('should group elements with padding', function() {
+      assertArrayEqual(inGroups([1,2,3,4,5], 2, null), [[1,2,3],[4,5,null]]);
+      assertArrayEqual(inGroups([1,2,3,4,5], 3, null), [[1,2],[3,4],[5,null]]);
+      assertArrayEqual(inGroups([1], 2, null), [[1],[null]]);
+    });
+
+    it('should work as expected on sparse arrays', function() {
+      const arr = [1];
+      arr[3] = 3;
+      assertArrayEqual(inGroups(arr, 2, null), [[1,null],[null,3]]);
+    });
+
+    it('should handle issue #142', () => {
+      const arr = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20];
+      inGroups(arr, 3);
+      assertEqual(arr.length, 20);
+    });
+
+    it('should handle irregular input', function() {
+      assertError(() => { inGroups([], null); });
+      assertError(() => { inGroups([], -1); });
+      assertError(() => { inGroups([], 0); });
+      assertError(() => { inGroups(null); });
+      assertError(() => { inGroups('8'); });
+      assertError(() => { inGroups(8); });
+    });
+
+  });
+
   describeInstance('inGroupsOf', function(inGroupsOf) {
 
     it('should group elements', function() {
@@ -2762,10 +2804,6 @@ namespace('Array', function() {
       assertArrayEqual(inGroupsOf([], 1), []);
       assertArrayEqual(inGroupsOf([], 2), []);
       assertArrayEqual(inGroupsOf([], 100), []);
-    });
-
-    it('should group elements without padding', function() {
-      assertArrayEqual(inGroupsOf([1,2,3,4,5], 3), [[1,2,3],[4,5]]);
     });
 
     it('should group elements with padding', function() {

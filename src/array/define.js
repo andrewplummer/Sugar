@@ -13,6 +13,7 @@ defineInstance('filter', methods.filter);
 defineInstance('find', methods.find);
 defineInstance('findIndex', methods.findIndex);
 defineInstance('groupBy', methods.groupBy);
+defineInstance('inGroups', methods.inGroups);
 defineInstance('inGroupsOf', methods.inGroupsOf);
 defineInstance('insert', methods.insert);
 defineInstance('intersect', methods.intersect);
