@@ -26,6 +26,7 @@ export { default as minAll } from './minAll';
 export { default as median } from './median';
 export { default as none } from './none';
 export { default as remove } from './remove';
+export { default as removeAt } from './removeAt';
 export { default as sample } from './sample';
 export { default as shuffle } from './shuffle';
 export { default as some } from './some';

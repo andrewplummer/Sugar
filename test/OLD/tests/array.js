@@ -89,30 +89,4 @@ namespace('Array', function () {
     test([user1], [[user1, user2]], false, 'array of objects 1:2');
   });
 
-  method('removeAt', function() {
-    test([1,2,2,3], [1,2,2,3], 'numeric | no argument');
-    test([1,2,2,3], [0], [2,2,3], 'numeric | 0');
-    test([1,2,2,3], [1], [1,2,3], 'numeric | 1');
-    test([1,2,2,3], [2], [1,2,3], 'numeric | 2');
-    test([1,2,2,3], [3], [1,2,2], 'numeric | 3');
-    test([1,2,2,3], [4], [1,2,2,3], 'numeric | 4');
-    test(['a','b','c','c'], ['a','b','c','c'], 'alphabet | no argument');
-    test(['a','b','c','c'], [0], ['b','c','c'], 'alphabet | 0');
-    test(['a','b','c','c'], [1], ['a','c','c'], 'alphabet | 1');
-    test(['a','b','c','c'], [2], ['a','b','c'], 'alphabet | 2');
-    test(['a','b','c','c'], [3], ['a','b','c'], 'alphabet | 3');
-    test(['a','b','c','c'], [4], ['a','b','c','c'], 'alphabet | 4');
-    test([{a:1},{a:2},{a:1}], [1], [{a:1},{a:1}], 'objects | 1');
-    test([1,2,2,3], [0,1], [2,3], '0 to 1');
-    test([1,2,2,3], [0,2], [3], '0 to 2');
-    test([1,2,2,3], [1,2], [1,3], '1 to 2');
-    test([1,2,2,3], [1,5], [1], '1 to 5');
-    test([1,2,2,3], [0,5], [], '0 to 5');
-    test([1,2,2,3], [null,5], [], 'also accepts null');
-
-    var arr = [1,2,3];
-    run(arr, 'removeAt', [1]);
-    equal(arr, [1,3], 'should affect the original array');
-  });
-
 });

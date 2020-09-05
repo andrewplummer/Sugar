@@ -2931,4 +2931,49 @@ namespace('Array', function() {
 
   });
 
+  describeInstance('removeAt', function(removeAt) {
+
+    it('should remove a single element', () => {
+      assertArrayEqual(removeAt([1,2,2,3], 0), [2,2,3]);
+      assertArrayEqual(removeAt([1,2,2,3], 1), [1,2,3]);
+      assertArrayEqual(removeAt([1,2,2,3], 2), [1,2,3]);
+      assertArrayEqual(removeAt([1,2,2,3], 3), [1,2,2]);
+      assertArrayEqual(removeAt([1,2,2,3], 4), [1,2,2,3]);
+    });
+
+    it('should remove multiple elements', () => {
+      assertArrayEqual(removeAt([1,2,2,3], 0, 1), [2,3]);
+      assertArrayEqual(removeAt([1,2,2,3], 0, 2), [3]);
+      assertArrayEqual(removeAt([1,2,2,3], 1, 2), [1,3]);
+      assertArrayEqual(removeAt([1,2,2,3], 1, 5), [1]);
+      assertArrayEqual(removeAt([1,2,2,3], 0, 5), []);
+    });
+
+    it('should accept negative indexes', () => {
+      assertArrayEqual(removeAt([1,2,2,3], -1), [1,2,2]);
+      assertArrayEqual(removeAt([1,2,2,3], -2), [1,2,3]);
+      assertArrayEqual(removeAt([1,2,2,3], -3, -2), [1,3]);
+      assertArrayEqual(removeAt([1,2,2,3], -2, 0), [1,2]);
+      assertArrayEqual(removeAt([1,2,2,3], -1, 1), [2,2]);
+      assertArrayEqual(removeAt([1,2,2,3], -2, 2), []);
+      assertArrayEqual(removeAt([1,2,3,4,5,6], -2, 2), [3,4]);
+    });
+
+    it('should modify the array', () => {
+      const arr = [1];
+      removeAt(arr, 0);
+      assertEqual(arr.length, 0);
+    });
+
+    it('should handle irregular input', function() {
+      assertError(() => { removeAt([]); });
+      assertError(() => { removeAt([], null); });
+      assertError(() => { removeAt([], 0, null); });
+      assertError(() => { removeAt(null); });
+      assertError(() => { removeAt('8'); });
+      assertError(() => { removeAt(8); });
+    });
+
+  });
+
 });

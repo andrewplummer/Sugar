@@ -29,6 +29,7 @@ defineInstance('minAll', methods.minAll);
 defineInstance('median', methods.median);
 defineInstance('none', methods.none);
 defineInstance('remove', methods.remove);
+defineInstance('removeAt', methods.removeAt);
 defineInstance('sample', methods.sample);
 defineInstance('shuffle', methods.shuffle);
 defineInstance('some', methods.some);
