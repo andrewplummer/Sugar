@@ -2835,4 +2835,100 @@ namespace('Array', function() {
 
   });
 
+  describeInstance('first', function(first) {
+
+    it('should get the first element with no argument', () => {
+      assertEqual(first(['a','b','c']), 'a');
+    });
+
+    it('should get the first n elements by argument', () => {
+      assertArrayEqual(first(['a','b','c'], 1), ['a']);
+      assertArrayEqual(first(['a','b','c'], 2), ['a','b']);
+      assertArrayEqual(first(['a','b','c'], 3), ['a','b','c']);
+      assertArrayEqual(first(['a','b','c'], 4), ['a','b','c']);
+    });
+
+    it('should handle irregular input', function() {
+      assertError(() => { first([], null); });
+      assertError(() => { first([], -1); });
+      assertError(() => { first([], 0); });
+      assertError(() => { first(null); });
+      assertError(() => { first('8'); });
+      assertError(() => { first(8); });
+    });
+
+  });
+
+  describeInstance('last', function(last) {
+
+    it('should get the last element with no argument', () => {
+      assertEqual(last(['a','b','c']), 'c');
+    });
+
+    it('should get the last n elements by argument', () => {
+      assertArrayEqual(last(['a','b','c'], 1), ['c']);
+      assertArrayEqual(last(['a','b','c'], 2), ['b','c']);
+      assertArrayEqual(last(['a','b','c'], 3), ['a','b','c']);
+      assertArrayEqual(last(['a','b','c'], 4), ['a','b','c']);
+    });
+
+    it('should handle irregular input', function() {
+      assertError(() => { last([], null); });
+      assertError(() => { last([], -1); });
+      assertError(() => { last([], 0); });
+      assertError(() => { last(null); });
+      assertError(() => { last('8'); });
+      assertError(() => { last(8); });
+    });
+
+  });
+
+  describeInstance('from', function(from) {
+
+    it('should get elements from an index', () => {
+      assertArrayEqual(from(['a','b','c'], 0), ['a','b','c']);
+      assertArrayEqual(from(['a','b','c'], 1), ['b','c']);
+      assertArrayEqual(from(['a','b','c'], 2), ['c']);
+      assertArrayEqual(from(['a','b','c'], 3), []);
+      assertArrayEqual(from(['a','b','c'], 4), []);
+      assertArrayEqual(from(['a','b','c'], -1), ['c']);
+      assertArrayEqual(from(['a','b','c'], -2), ['b','c']);
+      assertArrayEqual(from(['a','b','c'], -3), ['a','b','c']);
+      assertArrayEqual(from(['a','b','c'], -4), ['a','b','c']);
+    });
+
+    it('should handle irregular input', function() {
+      assertError(() => { from([]); });
+      assertError(() => { from([], null); });
+      assertError(() => { from(null); });
+      assertError(() => { from('8'); });
+      assertError(() => { from(8); });
+    });
+
+  });
+
+  describeInstance('to', function(to) {
+
+    it('should get elements to an index', () => {
+      assertArrayEqual(to(['a','b','c'], 0), []);
+      assertArrayEqual(to(['a','b','c'], 1), ['a']);
+      assertArrayEqual(to(['a','b','c'], 2), ['a','b']);
+      assertArrayEqual(to(['a','b','c'], 3), ['a','b','c']);
+      assertArrayEqual(to(['a','b','c'], 4), ['a','b','c']);
+      assertArrayEqual(to(['a','b','c'], -1), ['a','b']);
+      assertArrayEqual(to(['a','b','c'], -2), ['a']);
+      assertArrayEqual(to(['a','b','c'], -3), []);
+      assertArrayEqual(to(['a','b','c'], -4), []);
+    });
+
+    it('should handle irregular input', function() {
+      assertError(() => { to([]); });
+      assertError(() => { to([], null); });
+      assertError(() => { to(null); });
+      assertError(() => { to('8'); });
+      assertError(() => { to(8); });
+    });
+
+  });
+
 });
