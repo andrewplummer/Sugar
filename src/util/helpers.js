@@ -8,7 +8,9 @@ export function hasOwnProperty(obj, prop) {
 export function forEachProperty(obj, fn) {
   for (let key in obj) {
     if (!hasOwnProperty(obj, key)) continue;
-    if (fn.call(obj, key, obj[key], obj) === false) break;
+    if (fn.call(obj, key, obj[key], obj) === false) {
+      break;
+    }
   }
 }
 

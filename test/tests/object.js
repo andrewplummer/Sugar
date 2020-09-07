@@ -1477,7 +1477,7 @@ namespace('Object', function () {
     });
 
     it('should correctly iterate when initial value is undefined', function() {
-      reduce({a:1}, (acc, key, val, obj) => {
+      reduce({a:1}, (acc) => {
         assertEqual(acc, undefined);
       }, undefined);
     });
@@ -1504,7 +1504,7 @@ namespace('Object', function () {
         if (a) {
           this.a = a;
         }
-      };
+      }
       assertTrue(isEmpty(new Foo));
       assertFalse(isEmpty(new Foo(1)));
     });
@@ -1532,7 +1532,7 @@ namespace('Object', function () {
         if (a) {
           this.a = a;
         }
-      };
+      }
       assertEqual(size(new Foo), 0);
       assertEqual(size(new Foo(1)), 1);
     });
@@ -1541,6 +1541,348 @@ namespace('Object', function () {
       assertError(() => { size(null); });
       assertError(() => { size('8'); });
       assertError(() => { size(8); });
+    });
+
+  });
+
+  describeInstance('isEqual', function(isEqual) {
+
+    it('should handle primitives', function() {
+      assertEqual(isEqual(1, 1), true);
+      assertEqual(isEqual(1, 2), false);
+      assertEqual(isEqual(2, 1), false);
+      assertEqual(isEqual('a', 'a'), true);
+      assertEqual(isEqual('a', 'b'), false);
+      assertEqual(isEqual('b', 'a'), false);
+      assertEqual(isEqual(true, true), true);
+      assertEqual(isEqual(true, false), false);
+      assertEqual(isEqual(false, true), false);
+    });
+
+    it('should handle irregular primitive cases', function() {
+      assertEqual(isEqual(0, 0), true);
+      assertEqual(isEqual(-0, -0), true);
+      assertEqual(isEqual(-0, 0), false);
+      assertEqual(isEqual(0, -0), false);
+      assertEqual(isEqual(NaN, NaN), true);
+      assertEqual(isEqual(Infinity, Infinity), true);
+      assertEqual(isEqual(-Infinity, -Infinity), true);
+      assertEqual(isEqual(Infinity, -Infinity), false);
+      assertEqual(isEqual(-Infinity, Infinity), false);
+      assertEqual(isEqual(Infinity, NaN), false);
+      assertEqual(isEqual(NaN, Infinity), false);
+      assertEqual(isEqual(null, null), true);
+      assertEqual(isEqual(null, undefined), false);
+      assertEqual(isEqual(undefined, null), false);
+      assertEqual(isEqual(undefined, undefined), true);
+    });
+
+    it('should function as expected with insufficient arguments', function() {
+      assertEqual(isEqual(), true);
+      assertEqual(isEqual(undefined), true);
+      assertEqual(isEqual(null), false);
+      assertEqual(isEqual(''), false);
+      assertEqual(isEqual(NaN), false);
+      assertEqual(isEqual(0), false);
+    });
+
+    it('should distinguish primitives from wrapped counterparts', function() {
+      assertEqual(isEqual(new String('a'), new String('a')), true);
+      assertEqual(isEqual('a', new String('a')), false);
+      assertEqual(isEqual(new String('a'), 'a'), false);
+      assertEqual(isEqual(new String('a'), new String('b')), false);
+      assertEqual(isEqual(new String('a'), { toString: () => 'a' }), false);
+
+      assertEqual(isEqual(new Number(1), new Number(1)), true);
+      assertEqual(isEqual(1, new Number(1)), false);
+      assertEqual(isEqual(new Number(1), 1), false);
+      assertEqual(isEqual(new Number(1), new Number(2)), false);
+      assertEqual(isEqual(new Number(1), { valueOf: () => 1 }), false);
+
+      assertEqual(isEqual(new Boolean, new Boolean), true);
+      assertEqual(isEqual(true, new Boolean(true)), false);
+      assertEqual(isEqual(new Boolean(true), true), false);
+      assertEqual(isEqual(new Boolean(true), new Boolean(false)), false);
+    });
+
+    it('should distinguish common type coercions', function() {
+      assertEqual(isEqual('1', 1), false);
+      assertEqual(isEqual(1, '1'), false);
+      assertEqual(isEqual(new Number(1), new String(1)), false);
+      assertEqual(isEqual(new String(1), new Number(1)), false);
+      assertEqual(isEqual('', false), false);
+      assertEqual(isEqual(false, ''), false);
+      assertEqual(isEqual(0, ''), false);
+      assertEqual(isEqual('', 0), false);
+      assertEqual(isEqual(0, false), false);
+      assertEqual(isEqual(false, 0), false);
+      assertEqual(isEqual(1, true), false);
+      assertEqual(isEqual(true, 1), false);
+      assertEqual(isEqual(1599470036490, new Date(1599470036490)), false);
+      assertEqual(isEqual(new Date(1599470036490), 1599470036490), false);
+    });
+
+    it('should handle plain objects', function() {
+      assertEqual(isEqual({}, {}), true);
+      assertEqual(isEqual({a:1}, {a:1}), true);
+      assertEqual(isEqual({a:1}, {a:2}), false);
+      assertEqual(isEqual({a:1,b:2}, {a:1,b:2}), true);
+      assertEqual(isEqual({a:1,b:2}, {a:1}), false);
+      assertEqual(isEqual({b:2}, {a:1,b:2}), false);
+    });
+
+    it('should distinguish missing keys', function() {
+      assertEqual(isEqual({a:undefined}, {}), false);
+      assertEqual(isEqual({}, {a:undefined}), false);
+    });
+
+    it('should distinguish object types', function() {
+      assertEqual(isEqual([], {}), false);
+      assertEqual(isEqual({}, []), false);
+      assertEqual(isEqual([{}], [{}]), true);
+      assertEqual(isEqual([[]], [[]]), true);
+      assertEqual(isEqual([[]], [{}]), false);
+      assertEqual(isEqual([{}], [[]]), false);
+      assertEqual(isEqual(new Set(), {}), false);
+      assertEqual(isEqual(new Map(), {}), false);
+      assertEqual(isEqual({length:0}, []), false);
+      assertEqual(isEqual([], {length:0}), false);
+    });
+
+    it('should handle object references', function() {
+      const obj1 = {a:1};
+      const obj2 = {a:1};
+      assertEqual(isEqual({a:obj1,b:obj1}, {a:obj1,b:obj1}), true);
+      assertEqual(isEqual({a:obj2,b:obj1}, {a:obj1,b:obj1}), true);
+      assertEqual(isEqual({a:obj1,b:obj2}, {a:obj1,b:obj1}), true);
+      assertEqual(isEqual({a:obj1,b:obj1}, {a:obj2,b:obj1}), true);
+      assertEqual(isEqual({a:obj1,b:obj1}, {a:obj1,b:obj2}), true);
+    });
+
+    it('should handle cyclic references', function() {
+      const obj = {a:1};
+      obj.b = obj;
+      assertEqual(isEqual({a:obj,b:obj}, {a:obj,b:obj}), true);
+      assertEqual(isEqual({a:obj,b:obj}, {a:obj}), false);
+      assertEqual(isEqual({a:obj}, {a:obj,b:obj}), false);
+
+      const arr = [];
+      arr.push(arr);
+      assertEqual(isEqual(arr, arr), true);
+      assertEqual(isEqual([arr], [arr]), true);
+      assertEqual(isEqual([arr], [arr, arr]), false);
+      assertEqual(isEqual([arr, arr], [arr]), false);
+    });
+
+    it('should complex nested objects', function() {
+      assertEqual(isEqual({
+        obj: {
+          a: 'a',
+          b: 1,
+          c: true,
+          d: new Date(2000, 0, 1),
+          e: new String('a'),
+          f: ['a','b','c'],
+        }
+      }, {
+        obj: {
+          a: 'a',
+          b: 1,
+          c: true,
+          d: new Date(2000, 0, 1),
+          e: new String('a'),
+          f: ['a','b','c'],
+        }
+      }), true);
+      assertEqual(isEqual({
+        obj: {
+          a: 'a',
+          b: 1,
+          c: true,
+          d: new Date(2000, 0, 1),
+          e: new String('a'),
+          f: ['a','b','c'],
+        }
+      }, {
+        obj: {
+          a: 'b',
+          b: 1,
+          c: true,
+          d: new Date(2000, 0, 1),
+          e: new String('a'),
+          f: ['a','b','c'],
+        }
+      }), false);
+      assertEqual(isEqual({
+        obj: {
+          a: 'a',
+          b: 1,
+          c: true,
+          d: new Date(2000, 0, 1),
+          e: new String('a'),
+          f: ['a','b','c'],
+        }
+      }, {
+        obj: {
+          a: 'a',
+          b: 1,
+          c: true,
+          d: new Date(2000, 0, 1),
+          e: new String('a'),
+          f: ['a','a','c'],
+        }
+      }), false);
+      assertEqual(isEqual({
+        obj: {
+          a: 'a',
+          b: 1,
+          c: true,
+          d: new Date(2000, 0, 1),
+          e: new String('a'),
+          f: ['a','b','c'],
+        }
+      }, {
+        obj: {
+          a: 'a',
+          b: 1,
+          c: true,
+          d: new Date(2000, 0, 2),
+          e: new String('a'),
+          f: ['a','b','c'],
+        }
+      }), false);
+    });
+
+    it('should function as expected for arrays', function() {
+      assertEqual(isEqual([], []), true);
+      assertEqual(isEqual([], [1]), false);
+      assertEqual(isEqual([1], []), false);
+      assertEqual(isEqual([1], [1]), true);
+      assertEqual(isEqual([1], [2]), false);
+      assertEqual(isEqual([1], ['1']), false);
+      assertEqual(isEqual([1,2,3], [1,2,3]), true);
+      assertEqual(isEqual([1,2,3], [1,2,4]), false);
+      assertEqual(isEqual([1], {0:1,length:1}), false);
+      assertEqual(isEqual([1,'a',{a:1}], [1,'a',{a:1}]), true);
+      assertEqual(isEqual([1,'a',{a:1}], [1,'a',{a:2}]), false);
+      assertEqual(isEqual([1,'a',{a:1}], [1,'b',{a:1}]), false);
+    });
+
+    it('should handle object references inside arrays', function() {
+      const obj1 = {a:1};
+      const obj2 = {a:2};
+      assertEqual(isEqual([obj1, obj2], [obj1, obj2]), true);
+      assertEqual(isEqual([obj1, obj2], [obj2, obj1]), false);
+      assertEqual(isEqual([obj1, obj2], [obj1]), false);
+      assertEqual(isEqual([obj1], [obj1, obj2]), false);
+    });
+
+    it('should distinguish arrays and arguments', function() {
+      const args1 = (function() {
+        return arguments;
+      })('a','b','c');
+      const args2 = (function() {
+        return arguments;
+      })('a','b','c');
+      assertEqual(isEqual(args1, args2), true);
+      assertEqual(isEqual(['a','b','c'], args1), false);
+      assertEqual(isEqual(args1, ['a','b','c']), false);
+    });
+
+    it('should handle irregular array cases', function() {
+      assertEqual(isEqual([], {}), false);
+      assertEqual(isEqual([0], [0]), true);
+      assertEqual(isEqual([undefined], [undefined]), true);
+      assertEqual(isEqual([null], [null]), true);
+      assertEqual(isEqual([NaN], [NaN]), true);
+    });
+
+    it('should distinguish sparse and dense arrays', function() {
+      assertEqual(isEqual(new Array(3), new Array(3)), true);
+      assertEqual(isEqual(new Array(3), new Array(6)), false);
+      assertEqual(isEqual(new Array(6), new Array(3)), false);
+      assertEqual(isEqual([,1], [undefined,1]), false);
+    });
+
+    it('should function as expected for dates', function() {
+      assertEqual(isEqual(new Date(2020, 8, 7), new Date(2020, 8, 7)), true);
+      assertEqual(isEqual(new Date(2020, 8, 7), new Date(2020, 8, 8)), false);
+      assertEqual(isEqual(new Date(2020, 8, 7), new Date(2020, 8, 7, 0, 0, 0, 1)), false);
+      assertEqual(isEqual(new Date(1599470036490), { getTime: () => 1599470036490 }), false);
+      assertEqual(isEqual({ getTime: () => 1599470036490 }, new Date(1599470036490)), false);
+      assertEqual(isEqual(new Date('Invalid'), new Date('Invalid')), true);
+    });
+
+    it('should function as expected for functions', function() {
+      const fn1 = () => {};
+      const fn2 = () => {};
+      assertEqual(isEqual(fn1, fn1), true);
+      assertEqual(isEqual(fn1, fn2), false);
+      assertEqual(isEqual(fn2, fn1), false);
+    });
+
+    it('should function as expected for regexes', function() {
+      assertEqual(isEqual(/a/, /a/), true);
+      assertEqual(isEqual(/a/, /a/i), false);
+      assertEqual(isEqual(/a/i, /a/), false);
+      assertEqual(isEqual(/a/gim, /a/gim), true);
+      assertEqual(isEqual(/a/gim, /b/gim), false);
+      assertEqual(isEqual(/b/gim, /a/gim), false);
+    });
+
+    it('should function as expected for class instances', function() {
+      function Foo(val) {
+        this.value = val;
+      }
+      assertEqual(isEqual(new Foo, new Foo), false);
+      assertEqual(isEqual({value: 1}, new Foo(1)), false);
+      assertEqual(isEqual(new Foo(1), {value: 1}), false);
+    });
+
+    it('should function as expected for sets', function() {
+      assertEqual(isEqual(new Set([1]), new Set([1])), true);
+      assertEqual(isEqual(new Set([1]), new Set([2])), false);
+      assertEqual(isEqual(new Set([2]), new Set([1])), false);
+    });
+
+    it('should function as expected for maps', function() {
+      assertEqual(isEqual(new Map([[1,1]]), new Map([[1,1]])), true);
+      assertEqual(isEqual(new Map([[1,1]]), new Map([[1,2]])), false);
+      assertEqual(isEqual(new Map([[1,2]]), new Map([[1,1]])), false);
+    });
+
+    it('should function as expected for typed arrays', function() {
+      assertEqual(isEqual([1], Uint8Array.from(1)), false);
+      assertEqual(isEqual(Uint8Array.from(1), [1]), false);
+      assertEqual(isEqual(Int8Array.from(1), Int8Array.from(1)), true);
+      assertEqual(isEqual(Int8Array.from(1), Uint8Array.from(1)), false);
+      assertEqual(isEqual(Int16Array.from(1), Int32Array.from(1)), false);
+      assertEqual(isEqual(Int32Array.from(1), Int16Array.from(1)), false);
+      assertEqual(isEqual(Float32Array.from(1), Float32Array.from(1)), true);
+      assertEqual(isEqual(Float32Array.from(1), Float64Array.from(1)), false);
+      assertEqual(isEqual(Float64Array.from(1), Float32Array.from(1)), false);
+    });
+
+    it('should only return true for symbols by reference', function() {
+      const sym = Symbol('a');
+      assertEqual(isEqual(sym, sym), true);
+      assertEqual(isEqual(Symbol('a'), Symbol('a')), false);
+      assertEqual(isEqual(Object(sym), sym), false);
+      assertEqual(isEqual(Object(sym), Object(sym)), false);
+    });
+
+    it('should function as expected for errors', function() {
+      assertEqual(isEqual(new Error, new Error), true);
+      assertEqual(isEqual(new Error('a'), new Error('a')), true);
+      assertEqual(isEqual(new TypeError('a'), new TypeError('a')), true);
+      assertEqual(isEqual(new Error, new TypeError), false);
+      assertEqual(isEqual(new TypeError, new Error), false);
+    });
+
+    it('should function as expected with overwritten isEqual', function() {
+      assertEqual(isEqual({}, {
+        isEqual: () => true,
+      }), false);
     });
 
   });

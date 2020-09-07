@@ -20,6 +20,7 @@ defineInstance('inGroupsOf', methods.inGroupsOf);
 defineInstance('insert', methods.insert);
 defineInstance('intersect', methods.intersect);
 defineInstance('isEmpty', methods.isEmpty);
+defineInstance('isEqual', methods.isEqual);
 defineInstance('last', methods.last);
 defineInstance('map', methods.map);
 defineInstance('max', methods.max);

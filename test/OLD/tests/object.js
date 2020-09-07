@@ -1883,37 +1883,6 @@ namespace('Object', function () {
 
   });
 
-  method('isEqual', function() {
-
-    function assertChainableEqual(obj1, obj2, result, message) {
-      var obj = new Sugar.Object(obj1);
-      equal(obj.isEqual(obj2).raw, result, message);
-    }
-
-    test({ broken: 'wear' }, [{ broken: 'wear' }], true, 'objects are equal');
-    test({ broken: 'wear' }, [{ broken: 'jumpy' }], false, 'objects are not equal');
-    test({}, [{}], true, 'empty objects are equal');
-    test({}, [{ broken: 'wear' }], false, '1st empty');
-    test({ broken: 'wear' }, [{}], false, '2nd empty');
-
-    test({x:1,y:undefined}, [{x:1,z:2}], false, 'undefined keys');
-
-    assertChainableEqual({broken:'wear'},{broken:'wear'}, true, 'chainable is equal');
-    assertChainableEqual({},{}, true, 'empty chainable is equal to empty object');
-    assertChainableEqual({},[], false, 'empty object chainable is not equal to empty array');
-    assertChainableEqual([],{}, false, 'empty array chainable is not equal to empty object');
-
-    var obj1 = {foo:'bar'};
-    test({a:obj1,b:obj1}, [{a:obj1,b:obj1}], true, 'multiple references will not choke');
-
-    var obj1 = { foo: 'bar' };
-    obj1.moo = obj1;
-    test(obj1, [{foo:'bar',moo:obj1}], true, 'cyclical references handled');
-
-    test(Object, [undefined, 'one'], false, 'string to undefined');
-
-  });
-
   method('tap', function() {
 
     var fn = function(first) {

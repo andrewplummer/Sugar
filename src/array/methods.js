@@ -17,6 +17,7 @@ export { default as inGroupsOf } from './inGroupsOf';
 export { default as insert } from './insert';
 export { default as intersect } from './intersect';
 export { default as isEmpty } from './isEmpty';
+export { default as isEqual } from './isEqual';
 export { default as last } from './last';
 export { default as map } from './map';
 export { default as max } from './max';

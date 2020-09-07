@@ -2976,4 +2976,35 @@ namespace('Array', function() {
 
   });
 
+  describeInstance('isEqual', function(isEqual) {
+
+    // Note comprehensive tests are run through Object#isEqual.
+
+    it('should handle basic array equality', function() {
+      assertEqual(isEqual([], []), true);
+      assertEqual(isEqual([1], [1]), true);
+      assertEqual(isEqual([1], [2]), false);
+      assertEqual(isEqual([2], [1]), false);
+      assertEqual(isEqual([1], [1,2]), false);
+      assertEqual(isEqual([1,2], [1]), false);
+    });
+
+    it('should function as expected for nested cases', function() {
+      assertEqual(isEqual([[1,2,3]], [[1,2,3]]), true);
+      assertEqual(isEqual([[1,2,3]], [[1,2,4]]), false);
+      assertEqual(isEqual([1], {0:1,length:1}), false);
+      assertEqual(isEqual([1,'a',{a:1}], [1,'a',{a:1}]), true);
+      assertEqual(isEqual([1,'a',{a:1}], [1,'a',{a:2}]), false);
+      assertEqual(isEqual([1,'a',{a:1}], [1,'b',{a:1}]), false);
+    });
+
+    it('should distinguish sparse and dense arrays', function() {
+      assertEqual(isEqual(new Array(3), new Array(3)), true);
+      assertEqual(isEqual(new Array(3), new Array(6)), false);
+      assertEqual(isEqual(new Array(6), new Array(3)), false);
+      assertEqual(isEqual([,1], [undefined,1]), false);
+    });
+
+  });
+
 });

@@ -4,6 +4,7 @@ export { default as every } from './every';
 export { default as findKey } from './findKey';
 export { default as forEach } from './forEach';
 export { default as isEmpty } from './isEmpty';
+export { default as isEqual } from './isEqual';
 export { default as mapKeys } from './mapKeys';
 export { default as mapValues } from './mapValues';
 export { default as median } from './median';

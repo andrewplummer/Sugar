@@ -7,6 +7,7 @@ defineInstance('every', methods.every);
 defineInstance('findKey', methods.findKey);
 defineInstance('forEach', methods.forEach);
 defineInstance('isEmpty', methods.isEmpty);
+defineInstance('isEqual', methods.isEqual);
 defineInstance('mapKeys', methods.mapKeys);
 defineInstance('mapValues', methods.mapValues);
 defineInstance('median', methods.median);
