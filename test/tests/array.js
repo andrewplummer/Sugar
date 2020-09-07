@@ -3007,4 +3007,32 @@ namespace('Array', function() {
 
   });
 
+  describeInstance('clone', function(clone) {
+
+    it('should handle basic arrays', function() {
+      assertArrayEqual(clone([]), []);
+      assertArrayEqual(clone([1,2,3]), [1,2,3]);
+    });
+
+    it('should clone nested arrays', function() {
+      assertArrayEqual(clone([{a:1}]), [{a:1}]);
+    });
+
+    it('should be shallow', function() {
+      const obj = {};
+      assertEqual(clone([obj])[0], obj);
+    });
+
+    it('should work as expected on shallow arrays', function() {
+      assertArrayEqual(clone([,,]), [,,]);
+    });
+
+    it('should handle irregular input', function() {
+      assertError(() => { clone(null); });
+      assertError(() => { clone('8'); });
+      assertError(() => { clone(8); });
+    });
+
+  });
+
 });

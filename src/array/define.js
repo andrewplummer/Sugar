@@ -5,6 +5,7 @@ defineInstance('add', methods.add);
 defineInstance('append', methods.append);
 defineInstance('at', methods.at);
 defineInstance('average', methods.average);
+defineInstance('clone', methods.clone);
 defineInstance('compact', methods.compact);
 defineInstance('count', methods.count);
 defineInstance('exclude', methods.exclude);
