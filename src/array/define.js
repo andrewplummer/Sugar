@@ -1,5 +1,7 @@
-import { defineInstance } from '../core/array';
+import { defineStatic, defineInstance } from '../core/array';
 import * as methods from './methods';
+
+defineStatic('construct', methods.construct);
 
 defineInstance('add', methods.add);
 defineInstance('append', methods.append);

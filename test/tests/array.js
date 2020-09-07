@@ -3,6 +3,29 @@
 
 namespace('Array', function() {
 
+  describeStatic('construct', function(construct) {
+
+    it('should handle basic construction', function () {
+      assertArrayEqual(construct(3, (n) => n * n), [0,1,4]);
+    });
+
+    it('should work with parseInt', function () {
+      assertArrayEqual(construct(3, parseInt), [0, 1, 2]);
+    });
+
+    it('should handle irregular input', function () {
+      assertArrayEqual(construct(0, i => i), []);
+      assertError(() => { construct(); });
+      assertError(() => { construct(-1, (i) => i); });
+      assertError(() => { construct(2.2, (i) => i); });
+      assertError(() => { construct('3', (i) => i); });
+      assertError(() => { construct(NaN, (i) => i); });
+      assertError(() => { construct(null, (i) => i); });
+      assertError(() => { construct(undefined, (i) => i); });
+    });
+
+  });
+
   describeInstance('groupBy', function(groupBy) {
 
     var basic = [

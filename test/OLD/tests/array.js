@@ -40,23 +40,4 @@ namespace('Array', function () {
     test(Array, [args], ['a','b','c'], 'works on arguments object');
   });
 
-  method('construct', function() {
-
-    function square(i) {
-      return i * i;
-    }
-    test(Array, [3, square], [0,1,4], 'basic array construction');
-    test(Array, ['3', square], [0,1,4], 'numeric string creates the array');
-
-    test(Array, [3], safeArray(undefined, undefined, undefined), 'no function becomes all undefined');
-    test(Array, [0], [], '0 constructs an empty array');
-    test(Array, [null], [], 'null constructs an empty array');
-    test(Array, [3, parseInt], [0,1,2], 'works with parseInt');
-    test(Array, [], [], 'no arguments is an empty array');
-    test(Array, [NaN], [], 'NaN is an empty array');
-    test(Array, [undefined], [], 'NaN is an empty array');
-    test(Array, ['foo'], [], 'non-numeric string is empty array');
-
-  });
-
 });
