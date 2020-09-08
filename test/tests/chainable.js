@@ -66,8 +66,16 @@ describe('Chainable', function() {
 
     it('should correctly construct regexes', function() {
       assertRegExpEqual(new Sugar.RegExp(/abc/).raw, /abc/);
+      assertRegExpEqual(new Sugar.RegExp(5).raw, /5/);
+      assertRegExpEqual(new Sugar.RegExp('?').raw, /\?/);
       assertError(() => {
         new Sugar.RegExp();
+      });
+      assertError(() => {
+        new Sugar.RegExp(null);
+      });
+      assertError(() => {
+        new Sugar.RegExp(undefined);
       });
     });
 

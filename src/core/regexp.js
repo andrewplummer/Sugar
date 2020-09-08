@@ -1,4 +1,6 @@
 import { createNamespace } from '../core';
+import { isRegExp } from '../util/typeChecks';
+import { escapeRegExp } from '../util/regexp';
 
 /**
  * Creates a new wrapped RegExp chainable.
@@ -13,11 +15,14 @@ import { createNamespace } from '../core';
  *   new Sugar.RegExp(/abc/);
  *
  **/
-const Namespace = createNamespace('RegExp', (reg) => {
-  if (!reg) {
+const Namespace = createNamespace('RegExp', (arg) => {
+  if (!arg) {
     throw new TypeError('RegExp required');
+  } else if (!isRegExp(arg)) {
+    return RegExp(escapeRegExp(String(arg)));
+  } else {
+    return arg;
   }
-  return reg;
 });
 
 export const {
