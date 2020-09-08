@@ -3513,10 +3513,10 @@ readdirp@~3.4.0:
   dependencies:
     picomatch "^2.2.1"
 
-ready-test@^1.0.35:
-  version "1.0.35"
-  resolved "https://registry.yarnpkg.com/ready-test/-/ready-test-1.0.35.tgz#28c0a3560068e0c0947ba72d29bcf55d804371ef"
-  integrity sha512-3Yp2p4IJYO1SSjRSbRSKi8pxaNZU2B9itXuMcZ+pgov3Q2gMIks4S6RFPA5uEG5KFAET2vKcjljj9acVxlImrA==
+ready-test@^1.0.36:
+  version "1.0.36"
+  resolved "https://registry.yarnpkg.com/ready-test/-/ready-test-1.0.36.tgz#f08d27b1d70094b156093ee8077cae97e9c2ce17"
+  integrity sha512-wGkmF3vzFftct+aXRUtrAZ0iUcY8y2QCH3knmsJ/j/MeA3rf4I/FAEGzmGQuxtia4dQymJTU+nwd4sj8U8XEJQ==
   dependencies:
     argv "^0.0.2"
     chalk "^4.1.0"

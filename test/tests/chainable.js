@@ -6,6 +6,8 @@ describe('Chainable', function() {
   Sugar.createNamespace('String');
   Sugar.createNamespace('Object');
   Sugar.createNamespace('Array');
+  Sugar.createNamespace('RegExp');
+  Sugar.createNamespace('Function');
 
   describe('Constructor', function() {
 
@@ -16,6 +18,64 @@ describe('Chainable', function() {
     it('should throw an error without new keyword', function() {
       assertError(function() {
         Sugar.Number(1);
+      });
+    });
+
+    it('should correctly construct numbers', function() {
+      assertEqual(new Sugar.Number().raw, 0);
+      assertEqual(new Sugar.Number(null).raw, 0);
+      assertEqual(new Sugar.Number(5).raw, 5);
+      assertEqual(new Sugar.Number('5').raw, 5);
+      assertEqual(new Sugar.Number([]).raw, 0);
+      assertEqual(new Sugar.Number(undefined).raw, 0);
+      assertNaN(new Sugar.Number('a').raw);
+    });
+
+    it('should correctly construct strings', function() {
+      assertEqual(new Sugar.String().raw, '');
+      assertEqual(new Sugar.String(null).raw, 'null');
+      assertEqual(new Sugar.String(5).raw, '5');
+      assertEqual(new Sugar.String('5').raw, '5');
+      assertEqual(new Sugar.String([]).raw, '');
+      assertEqual(new Sugar.String(undefined).raw, '');
+      assertEqual(new Sugar.String('a').raw, 'a');
+    });
+
+    it('should correctly construct arrays', function() {
+      assertArrayEqual(new Sugar.Array().raw, []);
+      assertArrayEqual(new Sugar.Array(null).raw, []);
+      assertArrayEqual(new Sugar.Array(undefined).raw, []);
+      assertArrayEqual(new Sugar.Array('abc').raw, ['a','b','c']);
+      assertArrayEqual(new Sugar.Array({a:1}).raw, []);
+      assertArrayEqual(new Sugar.Array(new Set([1,2,3])).raw, [1,2,3]);
+      assertArrayEqual(new Sugar.Array(new Map([[1,2]])).raw, [[1,2]]);
+    });
+
+    it('should correctly construct objects', function() {
+      assertObjectEqual(new Sugar.Object().raw, {});
+      assertObjectEqual(new Sugar.Object(undefined).raw, {});
+      assertObjectEqual(new Sugar.Object({a:1}).raw, {a:1});
+      assertObjectEqual(new Sugar.Object(new Map([['a',1]])).raw, {a:1});
+      assertError(() => {
+        new Sugar.Object(null);
+      });
+      assertError(() => {
+        new Sugar.Object('abc');
+      });
+    });
+
+    it('should correctly construct regexes', function() {
+      assertRegExpEqual(new Sugar.RegExp(/abc/).raw, /abc/);
+      assertError(() => {
+        new Sugar.RegExp();
+      });
+    });
+
+    it('should correctly wrap Functions or throw', function() {
+      const fn = () => {};
+      assertEqual(new Sugar.Function(fn).raw, fn);
+      assertError(() => {
+        new Sugar.Function();
       });
     });
 
@@ -148,8 +208,8 @@ describe('Chainable', function() {
       delete Sugar.String.add;
     });
 
-    it('should not coerce non-primitives', function() {
-      assertEqual(typeof new Sugar.Number(new Number(1)).valueOf(), 'object');
+    it('should coerce non-primitives', function() {
+      assertEqual(new Sugar.Number(new Number(1)).raw, 1);
     });
 
   });
@@ -235,12 +295,8 @@ describe('Chainable', function() {
 
     it('should be equivalent to calling prototype.toString', function() {
       assertEqual(
-        new Sugar.Object(null).toString().raw,
-        Object.prototype.toString.call(null)
-      );
-      assertEqual(
-        new Sugar.Object(undefined).toString().raw,
-        Object.prototype.toString.call(undefined)
+        new Sugar.Object({}).toString().raw,
+        Object.prototype.toString.call({})
       );
     });
 

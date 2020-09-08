@@ -105,7 +105,8 @@ call `Function#lock` first in the chain to achieve the same effect.
 - Removed `Array#append` second argument to add element at a specific index. Use
     `Array#insert` for this instead.
 - Removed `all` flag from `Array#compact`. Use `Array#filter` here instead.
-- Removed `Array#flatten`. Use native `Array#flat` instead.
+- Removed `Array#flatten`. Use native `Array#flat` here instead.
+- Removed `Array.create`. Use native `Array.from` here instead.
 
 
 TODO:

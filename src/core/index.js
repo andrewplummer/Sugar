@@ -22,7 +22,7 @@ export const VERSION = 'edge';
  *
  * @returns {Function} SugarChainableConstructor
  */
-export function createNamespace(globalName) {
+export function createNamespace(globalName, factory) {
 
   if (!globalContext[globalName]) {
     throw new Error(`Built-in class ${globalName} does not exist`);
@@ -94,6 +94,14 @@ export function createNamespace(globalName) {
      */
     static defineInstanceAlias(str, fn) {
       defineAliases(globalName, defineInstance, str, fn);
+    }
+
+    constructor(...args) {
+      if (factory) {
+        super(factory(...args));
+      } else {
+        super(...args);
+      }
     }
 
   }

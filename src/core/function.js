@@ -1,6 +1,24 @@
 import { createNamespace } from '../core';
 
-export const Function = createNamespace('Function');
+/**
+ * Creates a new wrapped Function chainable.
+ *
+ * @param {Function} fn - The function to wrap. Will throw an error if not
+ *   provided.
+ *
+ * @returns {SugarChainable<Function>}
+ *
+ * @example
+ *
+ *   new Sugar.Function(() => {});
+ *
+ **/
+const Namespace = createNamespace('Function', (fn) => {
+  if (!fn) {
+    throw new Error('Function required');
+  }
+  return fn;
+});
 
 export const {
   extend,
@@ -8,4 +26,5 @@ export const {
   defineInstance,
   defineStaticAlias,
   defineInstanceAlias,
-} = Function;
+} = Namespace;
+export { Namespace as Function };
