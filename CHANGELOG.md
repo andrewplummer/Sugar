@@ -107,7 +107,9 @@ call `Function#lock` first in the chain to achieve the same effect.
 - Removed `all` flag from `Array#compact`. Use `Array#filter` here instead.
 - Removed `Array#flatten`. Use native `Array#flat` here instead.
 - Removed `Array.create`. Use native `Array.from` here instead.
-
+- Removed `Object.subtract`. For simple removal of keys use
+    `Object.reject(obj1, Object.keys(obj2)`. Otherwise use a matcher function
+    with `Object.reject` to reject if both keys and values match.
 
 TODO:
 

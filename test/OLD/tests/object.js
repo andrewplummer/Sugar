@@ -2052,28 +2052,4 @@ namespace('Object', function () {
     test(Object, [null, {foo:'bar'}], {}, 'object on null produces empty');
   });
 
-  method('subtract', function() {
-    test({foo:'bar',moo:'car'}, [{foo:'bar',moo:'mar'}], {moo:'car'}, 'One key');
-    test({foo:'bar',moo:'car'}, [{foo:'bar',moo:'car'}], {}, 'Both keys');
-    test({foo:'bar',moo:'car'}, [{foo:'zar',moo:'zar'}], {foo:'bar',moo:'car'}, 'No keys');
-    test({a:{foo:'bar'}}, [{a:{foo:'bar'}}], {}, 'Deep object matches');
-    test({a:{foo:'bar'}}, [{a:{}}], {a:{foo:'bar'}}, 'Empty deep object does not match');
-    test({a:{foo:'bar'}}, [{a:{foo:'bar',moo:'car'}}], {a:{foo:'bar'}}, 'Deep object with extra does not match');
-    test({}, [{}], {}, 'Two empty produce empty');
-    test({foo:'bar',moo:'car'}, [], {foo:'bar',moo:'car'}, 'No arguments produces original');
-    test(Object, [null, {foo:'bar'}], null, 'object on null produces null');
-
-    if (canTestPrimitiveScope) {
-      test('foo', [], 'foo', 'no argument on primitive produces original');
-      test('foo', ['str'], 'foo', 'primitive on primitive produces original');
-      test('foo', [null], 'foo', 'null on primitive produces original');
-      test('foo', [undefined], 'foo', 'undefined on primitive produces original');
-      test('foo', [{foo:'bar'}], 'foo', 'object on primitive produces empty');
-    }
-
-    var obj = {foo:'bar'};
-    var result = run(obj, 'subtract', []);
-    equal(result === obj, false, 'No arguments still produces new object');
-  });
-
 });
