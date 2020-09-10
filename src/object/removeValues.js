@@ -47,4 +47,3 @@ export default function removeValues(obj, match) {
   });
   return obj;
 }
-

@@ -6,10 +6,17 @@ import { forEachProperty } from '../util/helpers';
  * Returns a new object with keys not matching input.
  *
  * @param {Object} obj - The object.
- * @param {...string|RegExp|Array<string>} - The keys to be rejected. May be an array
- *   or a regex to test keys.
+ * @param {string|matchFn|RegExp|Array<string>} match - The key(s) to be
+ *   rejected. May be an array or a regex to test keys. When a function is
+ *   passed a truthy return value will match.
  *
  * @returns {Object}
+ *
+ * @callback matchFn
+ *
+ *   key  The key of the current entry.
+ *   val  The value of the current entry.
+ *   obj  A reference to the object.
  *
  * @example
  *
@@ -18,12 +25,12 @@ import { forEachProperty } from '../util/helpers';
  *   Object.rejectKeys({a:1,b:1}, ['a', 'b']) -> {}
  *
  **/
-export default function rejectKeys(obj, ...args) {
+export default function rejectKeys(obj, match) {
   assertObject(obj);
   const result = {};
-  const matcher = getKeyMatcher(args);
+  const matcher = getKeyMatcher(match);
   forEachProperty(obj, (key, val) => {
-    if (!matcher(key, obj)) {
+    if (!matcher(key, obj[key], obj)) {
       result[key] = val;
     }
   });

@@ -837,11 +837,11 @@ namespace('Object', function () {
 
   describeInstance('select,selectKeys', function(selectKeys) {
 
-    it('should select by enumerated arguments', function() {
+    it('should select by string argument', function() {
       assertObjectEqual(selectKeys({a:1,b:2}, 'a'), {a:1});
-      assertObjectEqual(selectKeys({a:1,b:2}, 'a', 'b'), {a:1,b:2});
-      assertObjectEqual(selectKeys({a:1,b:2}), {});
+      assertObjectEqual(selectKeys({a:1,b:2}, 'b'), {b:2});
       assertObjectEqual(selectKeys({a:1,b:2}, 'c'), {});
+      assertObjectEqual(selectKeys({a:1,b:2}, ''), {});
     });
 
     it('should select by array argument', function() {
@@ -849,6 +849,20 @@ namespace('Object', function () {
       assertObjectEqual(selectKeys({a:1,b:2}, ['a', 'b']), {a:1,b:2});
       assertObjectEqual(selectKeys({a:1,b:2}, []), {});
       assertObjectEqual(selectKeys({a:1,b:2}, ['c']), {});
+    });
+
+    it('should select by function', function() {
+      assertObjectEqual(selectKeys({a:1,b:2}, (key) => key === 'a'), {a:1});
+      assertObjectEqual(selectKeys({a:1,b:2}, (key) => key === 'b'), {b:2});
+      assertObjectEqual(selectKeys({a:1,b:2}, (key) => key === 'c'), {});
+    });
+
+    it('should pass correct arguments', function() {
+      selectKeys({a:1}, function (key, val, obj) {
+        assertEqual(key, 'a');
+        assertEqual(val, 1);
+        assertObjectEqual(obj, {a:1});
+      });
     });
 
     it('should select by regex', function() {
@@ -875,11 +889,11 @@ namespace('Object', function () {
 
   describeInstance('reject,rejectKeys', function(rejectKeys) {
 
-    it('should reject by enumerated arguments', function() {
+    it('should reject by string argument', function() {
       assertObjectEqual(rejectKeys({a:1,b:2}, 'a'), {b:2});
-      assertObjectEqual(rejectKeys({a:1,b:2}, 'a', 'b'), {});
-      assertObjectEqual(rejectKeys({a:1,b:2}), {a:1,b:2});
+      assertObjectEqual(rejectKeys({a:1,b:2}, 'b'), {a:1});
       assertObjectEqual(rejectKeys({a:1,b:2}, 'c'), {a:1,b:2});
+      assertObjectEqual(rejectKeys({a:1,b:2}, ''), {a:1,b:2});
     });
 
     it('should reject by array argument', function() {
@@ -887,6 +901,20 @@ namespace('Object', function () {
       assertObjectEqual(rejectKeys({a:1,b:2}, ['a', 'b']), {});
       assertObjectEqual(rejectKeys({a:1,b:2}, []), {a:1,b:2});
       assertObjectEqual(rejectKeys({a:1,b:2}, ['c']), {a:1,b:2});
+    });
+
+    it('should reject by function', function() {
+      assertObjectEqual(rejectKeys({a:1,b:2}, (key) => key === 'a'), {b:2});
+      assertObjectEqual(rejectKeys({a:1,b:2}, (key) => key === 'b'), {a:1});
+      assertObjectEqual(rejectKeys({a:1,b:2}, (key) => key === 'c'), {a:1,b:2});
+    });
+
+    it('should pass correct arguments', function() {
+      rejectKeys({a:1}, function (key, val, obj) {
+        assertEqual(key, 'a');
+        assertEqual(val, 1);
+        assertObjectEqual(obj, {a:1});
+      });
     });
 
     it('should reject by regex', function() {
@@ -913,11 +941,11 @@ namespace('Object', function () {
 
   describeInstance('remove,removeKeys', function(removeKeys) {
 
-    it('should remove by enumerated arguments', function() {
+    it('should remove by string argument', function() {
       assertObjectEqual(removeKeys({a:1,b:2}, 'a'), {b:2});
-      assertObjectEqual(removeKeys({a:1,b:2}, 'a', 'b'), {});
-      assertObjectEqual(removeKeys({a:1,b:2}), {a:1,b:2});
+      assertObjectEqual(removeKeys({a:1,b:2}, 'b'), {a:1});
       assertObjectEqual(removeKeys({a:1,b:2}, 'c'), {a:1,b:2});
+      assertObjectEqual(removeKeys({a:1,b:2}, ''), {a:1,b:2});
     });
 
     it('should remove by array argument', function() {
@@ -925,6 +953,20 @@ namespace('Object', function () {
       assertObjectEqual(removeKeys({a:1,b:2}, ['a', 'b']), {});
       assertObjectEqual(removeKeys({a:1,b:2}, []), {a:1,b:2});
       assertObjectEqual(removeKeys({a:1,b:2}, ['c']), {a:1,b:2});
+    });
+
+    it('should remove by function', function() {
+      assertObjectEqual(removeKeys({a:1,b:2}, (key) => key === 'a'), {b:2});
+      assertObjectEqual(removeKeys({a:1,b:2}, (key) => key === 'b'), {a:1});
+      assertObjectEqual(removeKeys({a:1,b:2}, (key) => key === 'c'), {a:1,b:2});
+    });
+
+    it('should pass correct arguments', function() {
+      removeKeys({a:1}, function (key, val, obj) {
+        assertEqual(key, 'a');
+        assertEqual(val, 1);
+        assertObjectEqual(obj, {a:1});
+      });
     });
 
     it('should remove by regex', function() {
