@@ -6,7 +6,7 @@ import { getMatcher } from '../util/matchers';
  * Counts properties in the object matching input.
  *
  * @param {Object} obj - The object.
- * @param {any|searchFn} match - A matcher to determine how values are counted.
+ * @param {any|matchFn} match - A matcher to determine how values are counted.
  * When a function is passed a truthy return value will match. Primitives will
  * directly match values. Can also be a Date object to match dates, a RegExp
  * which will test against strings, or a plain object which will perform a
@@ -14,6 +14,12 @@ import { getMatcher } from '../util/matchers';
  * the matcher types listed above.
  *
  * @returns {Object}
+ *
+ * @callback matchFn
+ *
+ *   key  The key of the current entry.
+ *   val  The value of the current entry.
+ *   obj  A reference to the object.
  *
  * @example
  *

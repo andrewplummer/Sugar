@@ -7,7 +7,7 @@ const nativeFn = Array.prototype.some;
  * Returns true if any element in the array matches input.
  *
  * @param {Array} arr - The array.
- * @param {any|searchFn} match - A matcher to determine how elements are
+ * @param {any|matchFn} match - A matcher to determine how elements are
  * checked. When a function is passed a truthy return value will match the
  * element. Primitives will directly match elements. Can also be a Date object
  * to match dates, a RegExp which will test against strings, or a plain object
@@ -17,6 +17,12 @@ const nativeFn = Array.prototype.some;
  * function.
  *
  * @returns {boolean}
+ *
+ * @callback matchFn
+ *
+ *   el   The element of the current iteration.
+ *   i    The index of the current iteration.
+ *   arr  A reference to the array.
  *
  * @example
  *

@@ -9,7 +9,7 @@ import { assertArray } from '../util/assertions';
  *        array in place.
  *
  * @param {Array} arr - The array.
- * @param {any|searchFn} match - A matcher to find the elements to exclude. When a
+ * @param {any|matchFn} match - A matcher to find the elements to exclude. When a
  * function is passed a truthy return value will match the element. Primitives
  * will directly match elements. Can also be a Date object to match dates, a
  * RegExp which will test against strings, or a plain object which will perform
@@ -20,7 +20,7 @@ import { assertArray } from '../util/assertions';
  *
  * @returns {Array}
  *
- * @callback searchFn
+ * @callback matchFn
  *
  *   el   The element of the current iteration.
  *   i    The index of the current iteration.
