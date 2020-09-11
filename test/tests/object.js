@@ -1,4 +1,5 @@
 'use strict';
+/* eslint-disable no-sparse-arrays */
 
 namespace('Object', function () {
 
@@ -1702,18 +1703,19 @@ namespace('Object', function () {
     });
 
     it('should handle cyclic references', function() {
-      const obj = {a:1};
-      obj.b = obj;
-      assertEqual(isEqual({a:obj,b:obj}, {a:obj,b:obj}), true);
-      assertEqual(isEqual({a:obj,b:obj}, {a:obj}), false);
-      assertEqual(isEqual({a:obj}, {a:obj,b:obj}), false);
+      const obj1 = {};
+      const obj2 = {};
+      obj1.a = obj1;
+      obj2.a = obj2;
+      assertEqual(isEqual({a:obj1}, {a:obj1}), true);
+      assertEqual(isEqual({a:obj1}, {a:obj2}), false);
 
-      const arr = [];
-      arr.push(arr);
-      assertEqual(isEqual(arr, arr), true);
-      assertEqual(isEqual([arr], [arr]), true);
-      assertEqual(isEqual([arr], [arr, arr]), false);
-      assertEqual(isEqual([arr, arr], [arr]), false);
+      const arr1 = [];
+      const arr2 = [];
+      arr1.push(arr1);
+      arr2.push(arr2);
+      assertEqual(isEqual([arr1], [arr1]), true);
+      assertEqual(isEqual([arr1], [arr2]), false);
     });
 
     it('should complex nested objects', function() {
@@ -1927,6 +1929,430 @@ namespace('Object', function () {
       }), false);
     });
 
+  });
+
+  describeInstance('intersect', function(intersect) {
+
+    it('should intersect with second value', function() {
+      assertObjectEqual(intersect({a:1}, {a:1}), {a:1});
+      assertObjectEqual(intersect({a:1}, {a:2}), {a:2});
+      assertObjectEqual(intersect({a:1}, {a:2,b:2}), {a:2});
+      assertObjectEqual(intersect({a:1,b:2}, {a:2}), {a:2});
+      assertObjectEqual(intersect({a:1,b:2}, {a:2,b:2}), {a:2,b:2});
+      assertObjectEqual(intersect({a:1}, {}), {});
+      assertObjectEqual(intersect({}, {a:1}), {});
+      assertObjectEqual(intersect({}, {}), {});
+    });
+
+    it('should intersect with resolver', function() {
+      function add(key, n1, n2) {
+        return n1 + n2;
+      }
+      assertObjectEqual(intersect({a:1}, {a:1}, add), {a:2});
+      assertObjectEqual(intersect({a:1,b:2}, {b:2,c:3}, add), {b:4});
+      assertObjectEqual(intersect({}, {}, add), {});
+    });
+
+    it('should pass correct arguments to resolver', function() {
+      intersect({a:1}, {a:2}, (key, val1, val2, obj1, obj2) => {
+        assertEqual(key, 'a');
+        assertEqual(val1, 1);
+        assertEqual(val2, 2);
+        assertObjectEqual(obj1, {a:1});
+        assertObjectEqual(obj2, {a:2});
+      });
+    });
+
+    it('should handle irregular input', function() {
+      assertError(() => {
+        intersect();
+      });
+      assertError(() => {
+        intersect({});
+      });
+      assertError(() => {
+        intersect(null, {});
+      });
+    });
+  });
+
+  describeInstance('subtract', function(subtract) {
+
+    it('should correctly subtract on primitive values', function() {
+      assertObjectEqual(subtract({a:1}, {a:1}), {});
+      assertObjectEqual(subtract({a:1}, {a:1,b:2}), {});
+      assertObjectEqual(subtract({a:1,b:2}, {a:1}), {b:2});
+      assertObjectEqual(subtract({a:1,b:2}, {a:1,b:2}), {});
+      assertObjectEqual(subtract({a:1}, {a:2}), {a:1});
+      assertObjectEqual(subtract({a:1}, {}), {a:1});
+      assertObjectEqual(subtract({}, {a:1}), {});
+      assertObjectEqual(subtract({}, {}), {});
+    });
+
+    it('should correctly subtract on nested objects', function() {
+      assertObjectEqual(subtract({a:{b:1}}, {a:{b:1}}), {});
+      assertObjectEqual(subtract({a:{b:1}}, {a:{b:2}}), {a:{b:1}});
+      assertObjectEqual(subtract({a:{b:2}}, {a:{b:1}}), {a:{b:2}});
+      assertObjectEqual(subtract({a:{b:1}}, {a:{b:1,c:1}}), {a:{b:1}});
+      assertObjectEqual(subtract({a:{b:1,c:1}}, {a:{b:1}}), {a:{b:1,c:1}});
+      assertObjectEqual(subtract({a:{b:1},c:{b:2}}, {a:{b:1}}), {c:{b:2}});
+    });
+
+    it('should correctly subtract on function references', function() {
+      const fn1 = () => {};
+      const fn2 = () => {};
+      assertObjectEqual(subtract({a:{b:fn1}}, {a:{b:fn1}}), {});
+      assertObjectEqual(subtract({a:{b:fn1}}, {a:{b:fn2}}), {a:{b:fn1}});
+      assertObjectEqual(subtract({a:{b:fn2}}, {a:{b:fn1}}), {a:{b:fn2}});
+    });
+
+    it('should distinguish non-equivalent values', function() {
+      assertObjectEqual(subtract({a:null}, {a:null}), {});
+      assertObjectEqual(subtract({a:null}, {a:undefined}), {a:null});
+      assertObjectEqual(subtract({a:undefined}, {a:null}), {a:undefined});
+      assertObjectEqual(subtract({a:0}, {a:'0'}), {a:0});
+      assertObjectEqual(subtract({a:0}, {a:null}), {a:0});
+      assertObjectEqual(subtract({a:0}, {a:false}), {a:0});
+      assertObjectEqual(subtract({a:0}, {a:undefined}), {a:0});
+      assertObjectEqual(subtract({a:0}, {a:''}), {a:0});
+      assertObjectEqual(subtract({a:''}, {a:null}), {a:''});
+      assertObjectEqual(subtract({a:''}, {a:false}), {a:''});
+      assertObjectEqual(subtract({a:''}, {a:undefined}), {a:''});
+    });
+
+    it('should handle irregular input', function() {
+      assertError(() => {
+        subtract();
+      });
+      assertError(() => {
+        subtract({});
+      });
+      assertError(() => {
+        subtract(null, {});
+      });
+    });
+  });
+
+  describeInstance('merge', function(merge) {
+
+    it('should merge with no collisions', function() {
+      assertObjectEqual(merge({a:1}, {b:2}), {a:1,b:2});
+      assertObjectEqual(merge({a:2}, {b:1}), {a:2,b:1});
+      assertObjectEqual(merge({a:1}, {}), {a:1});
+      assertObjectEqual(merge({}, {a:1}), {a:1});
+      assertObjectEqual(merge({}, {}), {});
+    });
+
+    it('should merge with collisions', function() {
+      assertObjectEqual(merge({a:1}, {a:1}), {a:1});
+      assertObjectEqual(merge({a:1}, {a:2}), {a:2});
+      assertObjectEqual(merge({a:1}, {a:1,b:2}), {a:1,b:2});
+      assertObjectEqual(merge({a:1,b:2}, {a:1}), {a:1,b:2});
+      assertObjectEqual(merge({a:1,b:2}, {a:1,b:2}), {a:1,b:2});
+      assertObjectEqual(merge({a:1}, {a:[1]}), {a:[1]});
+      assertObjectEqual(merge({a:1}, {a:{b:1}}), {a:{b:1}});
+    });
+
+    it('should deeply merge plain objects', function() {
+      assertObjectEqual(merge({a:{a:1}}, {a:{}}), {a:{a:1}});
+      assertObjectEqual(merge({a:{}}, {a:{a:1}}), {a:{a:1}});
+      assertObjectEqual(merge({a:{a:1}}, {a:{a:2}}), {a:{a:2}});
+      assertObjectEqual(merge({a:{a:1}}, {a:{b:2}}), {a:{a:1,b:2}});
+      assertObjectEqual(
+        merge({a:{a:{a:{a:1}}}}, {a:{a:{a:{b:2}}}}),
+        {a:{a:{a:{a:1,b:2}}}}
+      );
+    });
+
+    it('should not deeply merge arrays', function() {
+      assertObjectEqual(merge({a:[]}, {a:[1]}), {a:[1]});
+      assertObjectEqual(merge({a:[1,2,3]}, {a:[4,5,6]}), {a:[4,5,6]});
+    });
+
+    it('should not deeply merge known built-in types', function() {
+      assertObjectEqual(merge({a:/a/}, {a:/b/}), {a:/b/});
+      assertObjectEqual(
+        merge(
+          {a:new Date(2020, 9, 11)},
+          {a:new Date(2020, 9, 12)},
+        ),
+        {a:new Date(2020, 9, 12)},
+      );
+      assertObjectEqual(
+        merge(
+          {a:new Set([1,2,3])},
+          {a:new Set([1,2,4])},
+        ),
+        {a:new Set([1,2,4])},
+      );
+      assertObjectEqual(
+        merge(
+          {a:new Map([[1,2]])},
+          {a:new Map([[1,3]])},
+        ),
+        {a:new Map([[1,3]])},
+      );
+    });
+
+    it('should merge falsy values', function() {
+      assertObjectEqual(merge({a:1}, {a:null}), {a:null});
+      assertObjectEqual(merge({a:1}, {a:undefined}), {a:undefined});
+      assertObjectEqual(merge({a:1}, {a:0}), {a:0});
+      assertObjectEqual(merge({a:1}, {a:''}), {a:''});
+      assertObjectEqual(merge({a:1}, {a:false}), {a:false});
+    });
+
+    it('should modify the object', function() {
+      const obj = {a:1};
+      const result = merge(obj, {b:2});
+      assertObjectEqual(result, {a:1,b:2});
+      assertEqual(result, obj);
+    });
+
+    it('should modify deeply merged objects', function() {
+      const obj = {a:{a:1}};
+      const a = obj.a;
+      const result = merge(obj, {a:{b:2}});
+      assertObjectEqual(result, {a:{a:1,b:2}});
+      assertEqual(result.a, a);
+    });
+
+    it('should be able to merge from multiple sources', function() {
+      assertObjectEqual(merge({a:1},{b:2},{c:3},{d:4}), {a:1,b:2,c:3,d:4});
+    });
+
+    it('should be able to merge from multiple sources with a resolver', function() {
+      assertObjectEqual(merge({a:1},{a:2},{a:3},{a:4}, (key, n1, n2) => {
+        return n1 + n2;
+      }), {a:10});
+    });
+
+    it('should merge with resolver', function() {
+      function add(key, n1, n2) {
+        return n1 + n2;
+      }
+      assertObjectEqual(merge({a:1}, {a:1}, add), {a:2});
+      assertObjectEqual(merge({a:1,b:2}, {b:2,c:3}, add), {a:1,b:4,c:3});
+      assertObjectEqual(merge({}, {}, add), {});
+    });
+
+    it('should take resolver value and not continue deep merge', function() {
+      assertObjectEqual(merge({a:{a:1}}, {a:{a:2}}, () => {
+        return { a: 3 };
+      }), {a:{a:3}});
+    });
+
+    it('should handle normally when resolver returns undefined', function() {
+      assertObjectEqual(merge({a:{a:1}}, {a:{b:2}}, () => {}), {a:{a:1,b:2}});
+    });
+
+    it('should merge complex with resolver', function() {
+      assertObjectEqual(
+        merge({
+          likes: 9,
+          posts: [1,2,3],
+          profile: {
+            firstName: 'Bob',
+          }
+        }, {
+          likes: 3,
+          posts: [4,5,6],
+          profile: {
+            lastName: 'Johnson',
+          }
+        }, (key, a, b) => {
+          if (key === 'likes') {
+            return a + b;
+          } else if (key === 'posts') {
+            return a.concat(b);
+          }
+        }),
+        {
+          likes: 12,
+          posts: [1,2,3,4,5,6],
+          profile: {
+            firstName: 'Bob',
+            lastName: 'Johnson',
+          }
+        });
+    });
+
+    it('should pass correct arguments to resolver', function() {
+      merge({a:1}, {a:2}, (key, val1, val2, obj1, obj2) => {
+        assertEqual(key, 'a');
+        assertEqual(val1, 1);
+        assertEqual(val2, 2);
+        assertObjectEqual(obj1, {a:1});
+        assertObjectEqual(obj2, {a:2});
+      });
+    });
+
+    it('should merge objects with null prototypes', function() {
+      assertObjectEqual(
+        merge(
+          Object.create(null, {
+            a: {
+              value: 1,
+              enumerable: true,
+            }
+          }),
+          Object.create(null, {
+            b: {
+              value: 2,
+              enumerable: true,
+            }
+          }),
+        ),
+        {a:1, b:2}
+      );
+    });
+
+    it('should not merge non-enumerable properties', function() {
+      assertObjectEqual(
+        merge(
+          Object.create(null, {
+            a: {
+              value: 1,
+              enumerable: true,
+            }
+          }),
+          Object.create(null, {
+            b: {
+              value: 2,
+              enumerable: false,
+            }
+          }),
+        ),
+        {a:1}
+      );
+    });
+
+    it('should merge enumerable getters by value', function() {
+      const result = merge(
+        Object.create(null, {
+          a: {
+            value: 1,
+            enumerable: true,
+          }
+        }),
+        Object.create(null, {
+          b: {
+            get: () => {
+              return 2;
+            },
+            enumerable: true,
+          }
+        }),
+      );
+      assertObjectEqual(Object.getOwnPropertyDescriptor(result, 'b'), {
+        value: 2,
+        writable: true,
+        enumerable: true,
+        configurable: true,
+      });
+    });
+
+    it('should not merge inherited properties', function() {
+      const obj = Object.create({c:3}, {
+        b: {
+          enumerable: true,
+          value: 2,
+        }
+      });
+      const result = merge({a:1}, obj);
+      assertObjectEqual(result, {a:1,b:2});
+    });
+
+    it('should raise an error on arrays', function() {
+      assertError(() => {
+        merge({}, []);
+      }, TypeError);
+      assertError(() => {
+        merge([], {});
+      }, TypeError);
+    });
+
+    it('should raise an error for class instances', function() {
+      function Foo() {}
+      assertError(() => {
+        merge(new Foo, new Foo);
+      }, TypeError);
+      assertError(() => {
+        merge({}, new Foo);
+      }, TypeError);
+      assertError(() => {
+        merge(new Foo, {});
+      }, TypeError);
+    });
+
+    it('should merge enumerable symbols', function() {
+      const sym1 = Symbol(1);
+      const sym2 = Symbol(2);
+      const obj = {};
+      Object.defineProperty(obj, sym1, {
+        value: 1,
+        enumerable: true,
+      });
+      Object.defineProperty(obj, sym2, {
+        value: 2,
+        enumerable: false,
+      });
+      const result = merge({}, obj);
+      assertEqual(result[sym1], 1);
+      assertFalse(sym2 in result);
+    });
+
+    it('should raise an error for built-in objects', function() {
+      assertError(() => {
+        merge(/a/, /b/);
+      }, TypeError);
+      assertError(() => {
+        merge(new Date(), new Date());
+      }, TypeError);
+      assertError(() => {
+        merge(new Set(), new Set());
+      }, TypeError);
+      assertError(() => {
+        merge(new Map(), new Map());
+      }, TypeError);
+    });
+
+    it('should raise an error cyclic objects', function() {
+      assertError(() => {
+        const obj = {};
+        obj.a = obj;
+        merge(obj, obj);
+      }, TypeError);
+    });
+
+    it('should handle Issue #335', function() {
+      assertObjectEqual(merge({a:{b:1}}, {a:{b:2,c:3}}, (key, tVal) => {
+        if (key === 'b') {
+          return tVal;
+        }
+      }), {a:{b:1,c:3}});
+    });
+
+    it('should handle Issue #365', function() {
+      assertObjectEqual(merge({a:''}, {a:{b:1}}), {a:{b:1}});
+      assertObjectEqual(merge({a:'1'}, {a:{b:1}}), {a:{b:1}});
+    });
+
+    it('should handle irregular input', function() {
+      assertObjectEqual(merge({}), {});
+      assertError(() => {
+        merge();
+      });
+      assertError(() => {
+        merge(null, {});
+      });
+      assertError(() => {
+        merge(null, null);
+      });
+      assertError(() => {
+        merge(null, 5);
+      });
+    });
   });
 
 });

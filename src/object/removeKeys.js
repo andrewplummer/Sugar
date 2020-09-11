@@ -30,6 +30,9 @@ import { forEachProperty } from '../util/helpers';
  **/
 export default function removeKeys(obj, match) {
   assertObject(obj);
+  if (arguments.length === 1) {
+    throw new Error('Match parameter required');
+  }
   const matcher = getKeyMatcher(match);
   forEachProperty(obj, (key) => {
     if (matcher(key, obj[key], obj)) {

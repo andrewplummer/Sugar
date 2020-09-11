@@ -110,6 +110,19 @@ call `Function#lock` first in the chain to achieve the same effect.
 - Removed `Object.subtract`. For simple removal of keys use
     `Object.reject(obj1, Object.keys(obj2)`. Otherwise use a matcher function
     with `Object.reject` to reject if both keys and values match.
+- Changed `Object.merge` to no longer accept an options object. Deep merging is
+    now the default. Use `Object.assign` or spread syntax for a shallow merge.
+    The `resolve` option is now the third argument to `Object.merge` and must be
+    a function (no longer accepts a boolean argument). Returning `undefined` in
+    this function will now continue the merge as normal instead of aborting.
+    `hidden` and `descriptor` options are no longer supported.
+- Changed `Object.merge` to no longer accept non-object arguments. An error
+    will be thrown here instead.
+- Changed `Object.merge` to no longer treat undefined as a special value. If any
+    property exists in the source object (the second argument to merge) it will
+    always override the target.
+- Changed `Object.merge` to no longer merge arrays. Use a resolve function here
+    to handle this on a per-case basis.
 
 TODO:
 

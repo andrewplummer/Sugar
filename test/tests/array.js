@@ -1891,6 +1891,22 @@ namespace('Array', function() {
       assertArrayEqual(unique([{a:1},{a:1}]), [{a:1}]);
     });
 
+    it('should treat objects with reversed keys as unique', function() {
+      assertArrayEqual(unique([{a:1,b:2},{b:2,a:1}]), [{a:1,b:2}]);
+    });
+
+    it('should treat symbol keys as unique', function() {
+      const sym = Symbol();
+      const result = unique([{[sym]:1},{[sym]:2}]);
+      assertEqual(result.length, 2);
+    });
+
+    it('should treat objects with reversed symbol keys as unique', function() {
+      const sym1 = Symbol(1);
+      const sym2 = Symbol(2);
+      assertArrayEqual(unique([{[sym1]:1,[sym2]:2},{[sym2]:2,[sym1]:1}]), [{[sym1]:1,[sym2]:2}]);
+    });
+
     it('should handle deep properties', function() {
       assertArrayEqual(unique([
         { profile: { likes: 17 } },
@@ -1973,9 +1989,12 @@ namespace('Array', function() {
     });
 
     it('should handle cyclic structures', function() {
-      const foo = {};
-      foo.bar = foo;
-      assertArrayEqual(unique([{foo},{foo}]), [{foo}]);
+      const obj1 = {};
+      const obj2 = {};
+      obj1.a = obj1;
+      obj2.a = obj2;
+      assertArrayEqual(unique([obj1,obj1]), [obj1]);
+      assertArrayEqual(unique([obj1,obj2]), [obj1]);
     });
 
     it('should handle irregular input', function() {

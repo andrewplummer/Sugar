@@ -28,7 +28,7 @@ import { getMatcher } from '../util/matchers';
  *
  *   Object.removeValues({a:1,b:2}, 1) -> {b:2}
  *   Object.removeValues({a:1,b:1}, 3) -> {a:1,b:1}
- *   Object.removeValues({a:'a',b:'b'}, /[a-f]) -> {}
+ *   Object.removeValues({a:'a',b:'b'}, /[a-f]/) -> {}
  *   Object.removeValues(usersById, user => {
  *     return user.age > 30;
  *   }); -> an object with all users under 30

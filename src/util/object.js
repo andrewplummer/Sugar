@@ -6,18 +6,21 @@ import {
   isError,
   isNaN,
 } from './typeChecks';
-import { hasOwnProperty, forEachProperty } from './helpers';
+import { hasOwnProperty, forEachProperty, forEachSymbol } from './helpers';
 import { isClass, classToString } from './class';
-
-const objectProto = Object.prototype;
 
 export function isPlainObject(obj, classTag) {
   return (
-    isObject(obj) &&
-    isClass(obj, 'Object', classTag) &&
-    hasValidPlainObjectPrototype(obj) &&
-    hasOwnEnumeratedProperties(obj)
+    isObject(obj)
+    && isClass(obj, 'Object', classTag)
+    && hasValidPlainObjectPrototype(obj)
   );
+}
+
+export function assertPlainObject(obj) {
+  if (!isPlainObject(obj)) {
+    throw new TypeError('Plain object required');
+  }
 }
 
 // A function that will serialize objects holding an array of refs
@@ -41,9 +44,8 @@ export function isSerializable(obj, classTag) {
 // This method for checking for cyclic structures was egregiously stolen from
 // the ingenious method by @kitcambridge from the Underscore script:
 // https://github.com/documentcloud/underscore/issues/240
-export function iterateWithCyclicCheck(obj, sortedKeys, stack, fn) {
+export function iterateWithCyclicCheck(obj, stack, fn) {
   function next(key, val) {
-    let cyc = false;
 
     // Allowing a step into the structure before triggering this check to save
     // cycles on standard JSON structures and also to try as hard as possible to
@@ -52,33 +54,19 @@ export function iterateWithCyclicCheck(obj, sortedKeys, stack, fn) {
       let i = stack.length;
       while (i--) {
         if (stack[i] === val) {
-          cyc = true;
+          throw new TypeError('Cannot iterate cyclic structure');
         }
       }
     }
 
     stack.push(val);
-    const ret = fn(key, val, cyc, stack);
+    const ret = fn(key, val, stack);
     stack.pop();
     return ret;
   }
 
-  function iterateWithSortedKeys() {
-    // Sorted keys is required for serialization, where object order
-    // does not matter but stringified order does.
-    const keys = Object.keys(obj).sort();
-    for (let key of keys) {
-      if (next(key, obj[key]) === false) {
-        break;
-      }
-    }
-  }
-
-  if (sortedKeys) {
-    iterateWithSortedKeys();
-  } else {
-    forEachProperty(obj, next);
-  }
+  forEachProperty(obj, next);
+  forEachSymbol(obj, next);
 }
 
 // Serializes an object in a way that will provide a token unique
@@ -102,12 +90,7 @@ function serialize(obj, refs = [], stack = []) {
 
   let value = '';
   if (!isSerializable(obj, className)) {
-    let index = refs.indexOf(obj);
-    if (index === -1) {
-      index = refs.length;
-      refs.push(obj);
-    }
-    return index;
+    return serializeRef(obj, refs);
   } else if (isSet(obj) || isMap(obj)) {
     value = serialize(Array.from(obj), refs, stack);
   } else if (!isError(obj) && isObject(obj)) {
@@ -119,11 +102,40 @@ function serialize(obj, refs = [], stack = []) {
 }
 
 function serializeDeep(obj, refs, stack) {
-  let result = '';
-  iterateWithCyclicCheck(obj, true, stack, (key, val, cyc, stack) => {
-    result += cyc ? 'CYC' : key + serialize(val, refs, stack);
-  });
-  return result;
+  try {
+    // Sorted keys are required for serialization, where object order
+    // does not matter but stringified order does. Symbols need to be
+    // serialized first before sorting.
+    const entries = [];
+    iterateWithCyclicCheck(obj, stack, (key, val, stack) => {
+      entries.push([serializeKey(key, refs), serialize(val, refs, stack)]);
+    });
+    entries.sort((a, b) => {
+      return a[0] < b[0] ? -1 : 1;
+    });
+    return entries.map((entry) => {
+      return entry.join(':');
+    }).join(',');
+  } catch(err) {
+    return 'CYC';
+  }
+}
+
+function serializeKey(key, refs) {
+  if (typeof key === 'symbol') {
+    return 'sym' + serializeRef(key, refs);
+  } else {
+    return 'str' + key;
+  }
+}
+
+function serializeRef(obj, refs) {
+  let index = refs.indexOf(obj);
+  if (index === -1) {
+    index = refs.length;
+    refs.push(obj);
+  }
+  return `ref${index}`;
 }
 
 // Add core types as known so that they can be checked by value below,
@@ -174,17 +186,4 @@ function hasValidPlainObjectPrototype(obj) {
       !hasOwnProperty(obj, 'constructor') &&
       hasOwnProperty(obj.constructor.prototype, 'isPrototypeOf'))
   );
-}
-
-function hasOwnEnumeratedProperties(obj) {
-  // Plain objects are generally defined as having enumerated properties
-  // all their own, however in early IE environments without defineProperty,
-  // there may also be enumerated methods in the prototype chain, so check
-  // for both of these cases.
-  for (let key in obj) {
-    if (!hasOwnProperty(obj, key) && obj[key] !== objectProto[key]) {
-      return false;
-    }
-  }
-  return true;
 }

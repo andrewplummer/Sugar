@@ -47,13 +47,17 @@ function objectIsEqual(a, b, stack) {
     let count = 0;
     let propsEqual = true;
 
-    iterateWithCyclicCheck(a, false, stack, (key, val, cyc, stack) => {
-      if (!cyc && (!(key in b) || !isEqual(val, b[key], stack))) {
-        propsEqual = false;
-      }
-      count++;
-      return propsEqual;
-    });
+    try {
+      iterateWithCyclicCheck(a, stack, (key, val, stack) => {
+        if (!(key in b) || !isEqual(val, b[key], stack)) {
+          propsEqual = false;
+        }
+        count++;
+        return propsEqual;
+      });
+    } catch(err) {
+      propsEqual = false;
+    }
 
     if (!propsEqual || count !== Object.keys(b).length) {
       return false;

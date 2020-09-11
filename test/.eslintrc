@@ -45,6 +45,7 @@
     assertUndefined: true,
     assertDateEqual: true,
     assertArrayEqual: true,
+    assertRegExpEqual: true,
     assertObjectEqual: true,
     assertInstanceOf: true,
     withNumberFormatter: true,

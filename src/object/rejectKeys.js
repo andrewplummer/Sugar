@@ -27,6 +27,9 @@ import { forEachProperty } from '../util/helpers';
  **/
 export default function rejectKeys(obj, match) {
   assertObject(obj);
+  if (arguments.length === 1) {
+    throw new Error('Match parameter required');
+  }
   const result = {};
   const matcher = getKeyMatcher(match);
   forEachProperty(obj, (key, val) => {

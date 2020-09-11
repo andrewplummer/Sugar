@@ -25,7 +25,7 @@ import { getMatcher } from '../util/matchers';
  *
  *   Object.rejectValues({a:1,b:2}, 1) -> {b:2}
  *   Object.rejectValues({a:1,b:1}, 3) -> {a:1,b:1}
- *   Object.rejectValues({a:'a',b:'b'}, /[a-f]) -> {}
+ *   Object.rejectValues({a:'a',b:'b'}, /[a-f]/) -> {}
  *   Object.rejectValues(usersById, user => {
  *     return user.age > 30;
  *   }); -> an object with all users under 30
