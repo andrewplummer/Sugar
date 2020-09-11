@@ -2,7 +2,7 @@ import globalContext from './util/globalContext';
 import NamespaceStore from './util/NamespaceStore';
 import SugarChainableBase from './util/SugarChainableBase';
 import { extendNative, restoreNative } from './util/extend';
-import { hasOwnProperty, forEachProperty, arrayIncludes } from '../util/helpers';
+import { hasOwnProperty, forEachProperty } from '../util/helpers';
 import { isString, isFunction } from '../util/typeChecks';
 
 // --- Constants
@@ -238,11 +238,11 @@ function extendIsAllowed(name, opt) {
 }
 
 function extendOptionsInclude(name, opt) {
-  return opt && opt.include && arrayIncludes(opt.include, name);
+  return opt?.include?.includes(name);
 }
 
 function extendOptionsExclude(name, opt) {
-  return opt && opt.exclude && arrayIncludes(opt.exclude, name);
+  return opt?.exclude?.includes(name);
 }
 
 

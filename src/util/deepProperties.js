@@ -1,5 +1,5 @@
 import { isString, isObject } from './typeChecks';
-import { isDefined, hasOwnProperty } from './helpers';
+import { hasOwnProperty } from './helpers';
 import { assertArray, assertWritable } from './assertions';
 
 export function deepHasProperty(obj, key) {
@@ -34,7 +34,7 @@ function handleDeepProperty(obj, key, has, fill, fillLast, val) {
     bs = key.split('[');
   }
 
-  set = isDefined(val);
+  set = val !== undefined;
 
   for (var i = 0, blen = bs.length; i < blen; i++) {
     ps = bs[i];
@@ -116,7 +116,7 @@ function handleArrayIndexRange(obj, key, val) {
     return;
   }
 
-  set = isDefined(val);
+  set = val !== undefined;
   leading = match[1];
 
   if (leading) {
