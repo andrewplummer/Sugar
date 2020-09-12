@@ -5,6 +5,7 @@ import {
   isNumber,
   isFunction,
   isPrimitive,
+  isArrayOrTypedArray,
 } from './typeChecks';
 
 const MIN = 1e-6;
@@ -87,6 +88,12 @@ export function assertFunction(obj) {
 export function assertArray(obj) {
   if (!isArray(obj)) {
     throw new TypeError('Array required');
+  }
+}
+
+export function assertArrayOrTypedArray(obj) {
+  if (!isArrayOrTypedArray(obj)) {
+    throw new TypeError('Array or TypedArray required');
   }
 }
 

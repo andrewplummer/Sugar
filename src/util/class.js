@@ -4,13 +4,13 @@ const toString = Object.prototype.toString;
 // returning based on typeof works for primitives, but slows down object
 // types. Even === checks on null and undefined (no typeof) will end up
 // basically breaking even. This seems to be as fast as it can go.
-export function classToString(obj) {
+export function getClassTag(obj) {
   return toString.call(obj);
 }
 
 export function isClass(obj, className, classTag) {
   if (!classTag) {
-    classTag = classToString(obj);
+    classTag = getClassTag(obj);
   }
-  return classTag === '[object '+ className +']';
+  return classTag === `[object ${className}]`;
 }

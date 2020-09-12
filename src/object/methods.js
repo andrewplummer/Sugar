@@ -1,4 +1,5 @@
 export { default as average } from './average';
+export { default as clone } from './clone';
 export { default as count } from './count';
 export { default as every } from './every';
 export { default as findKey } from './findKey';

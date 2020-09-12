@@ -3060,6 +3060,14 @@ namespace('Array', function() {
       assertArrayEqual(clone([{a:1}]), [{a:1}]);
     });
 
+    it('should clone typed arrays', function() {
+      assertArrayEqual(clone(new Int8Array([1,2,3])), new Int8Array([1,2,3]));
+      assertArrayEqual(clone(new Int16Array([1,2,3])), new Int16Array([1,2,3]));
+      assertArrayEqual(clone(new Int32Array([1,2,3])), new Int32Array([1,2,3]));
+      assertArrayEqual(clone(new Float32Array([1,2,3])), new Float32Array([1,2,3]));
+      assertArrayEqual(clone(new Float64Array([1,2,3])), new Float64Array([1,2,3]));
+    });
+
     it('should be shallow', function() {
       const obj = {};
       assertEqual(clone([obj])[0], obj);

@@ -1,13 +1,12 @@
-import { isClass } from './class';
+import { isClass, getClassTag } from './class';
+import { TYPED_ARRAY_CLASS_TAGS } from './tags';
 
 export const isBoolean = buildPrimitiveClassCheck('Boolean');
-export const isNumber  = buildPrimitiveClassCheck('Number');
-export const isString  = buildPrimitiveClassCheck('String');
+export const isNumber = buildPrimitiveClassCheck('Number');
+export const isString = buildPrimitiveClassCheck('String');
 
-export const isDate   = buildClassCheck('Date');
+export const isDate = buildClassCheck('Date');
 export const isRegExp = buildClassCheck('RegExp');
-
-export const isError = buildClassCheck('Error');
 
 export const isArray = Array.isArray;
 export const isNaN = Number.isNaN;
@@ -28,7 +27,16 @@ export const isFunction = buildClassCheck('Function');
 
 export function isPrimitive(obj, type) {
   type = type || typeof obj;
-  return obj == null || type === 'string' || type === 'number' || type === 'boolean';
+  return (
+    obj == null || type === 'string' || type === 'number' || type === 'boolean'
+  );
+}
+
+export function isWrappedPrimitive(obj) {
+  return (
+    typeof obj === 'object' &&
+    (isString(obj) || isNumber(obj) || isBoolean(obj))
+  );
 }
 
 export function isObject(obj, type) {
@@ -36,16 +44,24 @@ export function isObject(obj, type) {
   return !!obj && (type || typeof obj) === 'object';
 }
 
-function buildPrimitiveClassCheck(className) {
-  const type = className.toLowerCase();
-  return function(obj) {
+export function isArrayOrTypedArray(obj) {
+  return isArray(obj) || isTypedArray(obj);
+}
+
+export function isTypedArray(obj) {
+  return TYPED_ARRAY_CLASS_TAGS.has(getClassTag(obj));
+}
+
+function buildPrimitiveClassCheck(classTag) {
+  const type = classTag.toLowerCase();
+  return function (obj) {
     const t = typeof obj;
-    return t === type || t === 'object' && isClass(obj, className);
+    return t === type || (t === 'object' && isClass(obj, classTag));
   };
 }
 
 function buildClassCheck(className, Constructor) {
-  if (Constructor && isClass(new Constructor, 'Object')) {
+  if (Constructor && isClass(new Constructor(), 'Object')) {
     // Map and Set may be [object Object] in IE 11.
     // In this case we need to perform a check using the constructor
     // instead of Object.prototype.toString.
@@ -56,15 +72,15 @@ function buildClassCheck(className, Constructor) {
 }
 
 function getToStringClassCheck(className) {
-  return function(obj, str) {
+  return function (obj, classTag) {
     // perf: Returning up front on instanceof appears to be slower.
-    return isClass(obj, className, str);
+    return isClass(obj, className, classTag);
   };
 }
 
 function getConstructorClassCheck(obj) {
   const ctorStr = String(obj);
-  return function(obj) {
+  return function (obj) {
     return String(obj.constructor) === ctorStr;
   };
 }

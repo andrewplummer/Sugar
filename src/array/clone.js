@@ -1,4 +1,5 @@
-import { assertArray } from '../util/assertions';
+import { assertArrayOrTypedArray } from '../util/assertions';
+import { cloneArray } from '../util/clone';
 
 /**
  * Returns a shallow copy of the array.
@@ -16,6 +17,6 @@ import { assertArray } from '../util/assertions';
  *
  **/
 export default function clone(arr) {
-  assertArray(arr);
-  return arr.concat();
+  assertArrayOrTypedArray(arr);
+  return cloneArray(arr);
 }

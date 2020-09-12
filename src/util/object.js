@@ -3,11 +3,11 @@ import {
   isObject,
   isSet,
   isMap,
-  isError,
   isNaN,
 } from './typeChecks';
+import { SERIALIZABLE_CLASS_TAGS } from './tags';
 import { hasOwnProperty, forEachProperty, forEachSymbol } from './helpers';
-import { isClass, classToString } from './class';
+import { isClass, getClassTag } from './class';
 
 export function isPlainObject(obj, classTag) {
   return (
@@ -38,7 +38,7 @@ export function isSerializable(obj, classTag) {
   // of classes. The latter can arguably be matched by value, but
   // distinguishing between these and host objects -- which should never be
   // compared by value -- is very tricky so not dealing with it here.
-  return isKnownClassTag(classTag) || isPlainObject(obj, classTag);
+  return isSerializableClassTag(classTag) || isPlainObject(obj, classTag);
 }
 
 // This method for checking for cyclic structures was egregiously stolen from
@@ -86,19 +86,19 @@ function serialize(obj, refs = [], stack = []) {
     return type + sign + obj;
   }
 
-  const className = classToString(obj);
+  const classTag = getClassTag(obj);
 
   let value = '';
-  if (!isSerializable(obj, className)) {
+  if (!isSerializable(obj, classTag)) {
     return serializeRef(obj, refs);
   } else if (isSet(obj) || isMap(obj)) {
     value = serialize(Array.from(obj), refs, stack);
-  } else if (!isError(obj) && isObject(obj)) {
+  } else if (isObject(obj)) {
     value = serializeDeep(obj, refs, stack) + obj.toString();
   } else if (obj.valueOf) {
     value = obj.valueOf();
   }
-  return type + className + sign + value;
+  return type + classTag + sign + value;
 }
 
 function serializeDeep(obj, refs, stack) {
@@ -138,35 +138,8 @@ function serializeRef(obj, refs) {
   return `ref${index}`;
 }
 
-// Add core types as known so that they can be checked by value below,
-// notably excluding Functions and adding Arguments and Error.
-const KNOWN_CLASS_TAGS = [
-  'Arguments',
-  'Boolean',
-  'Number',
-  'String',
-  'Date',
-  'RegExp',
-  'Error',
-  'Array',
-  'Set',
-  'Map',
-  'Int8Array',
-  'Uint8Array',
-  'Uint8ClampedArray',
-  'Int16Array',
-  'Uint16Array',
-  'Int32Array',
-  'Uint32Array',
-  'Float32Array',
-  'Float64Array',
-].reduce((tags, className) => {
-  tags[`[object ${className}]`] = true;
-  return tags;
-}, {});
-
-function isKnownClassTag(classTag) {
-  return !!KNOWN_CLASS_TAGS[classTag];
+function isSerializableClassTag(classTag) {
+  return SERIALIZABLE_CLASS_TAGS.has(classTag);
 }
 
 function hasValidPlainObjectPrototype(obj) {

@@ -2355,6 +2355,202 @@ namespace('Object', function () {
     });
   });
 
+  describeInstance('clone', function(clone) {
+
+    it('should create a copy of the object', function() {
+      const obj = {};
+      assertFalse(clone(obj) === obj);
+    });
+
+    it('should not create a deep copy of the object', function() {
+      const obj = {};
+      assertTrue(clone({a:obj}).a === obj);
+    });
+
+    it('should clone basic primitive properties', function() {
+      assertObjectEqual(clone({}), {});
+      assertObjectEqual(clone({a:1,b:0}), {a:1,b:0});
+      assertObjectEqual(clone({a:'a',b:''}), {a:'a',b:''});
+      assertObjectEqual(clone({a:true,b:false}), {a:true,b:false});
+    });
+
+    it('should clone falsy values', function() {
+      assertEqual(clone(null), null);
+      assertEqual(clone(undefined), undefined);
+      assertEqual(clone(NaN), NaN);
+    });
+
+    it('should clone nested falsy values', function() {
+      assertObjectEqual(clone({a:null}), {a:null});
+      assertObjectEqual(clone({a:undefined}), {a:undefined});
+      assertObjectEqual(clone({a:0}), {a:0});
+      assertObjectEqual(clone({a:''}), {a:''});
+      assertObjectEqual(clone({a:false}), {a:false});
+    });
+
+    it('should clone objects with null prototypes', function() {
+      assertObjectEqual(
+        clone(
+          Object.create(null, {
+            a: {
+              value: 1,
+              enumerable: true,
+            }
+          }),
+        ),
+        {a:1}
+      );
+    });
+
+    it('should clone non-enumerable properties', function() {
+      const result = clone(
+        Object.create(null, {
+          a: {
+            value: 1,
+            enumerable: false,
+          }
+        }),
+      );
+      assertEqual(result.a, 1);
+    });
+
+    it('should clone enumerable getters', function() {
+      const result = clone(
+        Object.create(null, {
+          a: {
+            get: () => {
+              return 1;
+            },
+            enumerable: true,
+          }
+        }),
+      );
+      assertEqual(result.a, 1);
+      assertTrue('get' in Object.getOwnPropertyDescriptor(result, 'a'));
+    });
+
+    it('should clone non-enumerable getters', function() {
+      const result = clone(
+        Object.create(null, {
+          a: {
+            get: () => {
+              return 1;
+            },
+            enumerable: false,
+          }
+        }),
+      );
+      assertEqual(result.a, 1);
+      assertTrue('get' in Object.getOwnPropertyDescriptor(result, 'a'));
+    });
+
+    it('should clone inherited properties', function() {
+      const obj = Object.create({b:2}, {
+        a: {
+          enumerable: true,
+          value: 1,
+        }
+      });
+      const result = clone(obj);
+      assertObjectEqual(result, {a:1});
+      assertTrue('b' in result);
+    });
+
+    it('should clone arrays', function() {
+      assertArrayEqual(clone([]), []);
+      assertArrayEqual(clone([1,2,3]), [1,2,3]);
+      assertArrayEqual(clone([null]), [null]);
+      assertArrayEqual(clone([undefined]), [undefined]);
+    });
+
+    it('should clone typed arrays', function() {
+      assertArrayEqual(clone(new Int8Array([1,2,3])), new Int8Array([1,2,3]));
+      assertArrayEqual(clone(new Int16Array([1,2,3])), new Int16Array([1,2,3]));
+      assertArrayEqual(clone(new Int32Array([1,2,3])), new Int32Array([1,2,3]));
+      assertArrayEqual(clone(new Float32Array([1,2,3])), new Float32Array([1,2,3]));
+      assertArrayEqual(clone(new Float64Array([1,2,3])), new Float64Array([1,2,3]));
+      assertArrayEqual(clone(new ArrayBuffer(8)), new ArrayBuffer(8));
+    });
+
+    it('should clone dates', function() {
+      assertDateEqual(clone(new Date(2020, 8, 13)), new Date(2020, 8, 13));
+      assertDateEqual(clone(new Date(NaN)), new Date(NaN));
+    });
+
+    it('should clone regexes', function() {
+      assertRegExpEqual(clone(/a/), /a/);
+      assertRegExpEqual(clone(/a/gi), /a/gi);
+    });
+
+    it('should clone sets', function() {
+      assertObjectEqual(clone(new Set()), new Set());
+      assertObjectEqual(clone(new Set([1,2])), new Set([1,2]));
+    });
+
+    it('should clone maps', function() {
+      assertObjectEqual(clone(new Map()), new Map());
+      assertObjectEqual(clone(new Map([[1,2]])), new Map([[1,2]]));
+    });
+
+    it('should clone wrapped primitives', function() {
+      assertObjectEqual(clone(new String('a')), new String('a'));
+      assertObjectEqual(clone(new Number(5)), new Number(5));
+      assertObjectEqual(clone(new Boolean(true)), new Boolean(true));
+    });
+
+    it('should throw an error on functions', function() {
+      assertError(() => {
+        clone(function() {});
+      });
+    });
+
+    it('should throw an error on Arguments', function() {
+      assertError(() => {
+        (function() {
+          clone(arguments);
+        })();
+      });
+    });
+
+    it('should throw an error on Symbol', function() {
+      assertError(() => {
+        clone(Symbol());
+      });
+    });
+
+    it('should throw an error on WeakSet', function() {
+      assertError(() => {
+        clone(new WeakSet());
+      });
+    });
+
+    it('should throw an error on WeakMap', function() {
+      assertError(() => {
+        clone(new WeakMap());
+      });
+    });
+
+    it('should throw an error on errors', function() {
+      assertError(() => {
+        clone(new Error);
+      });
+      assertError(() => {
+        clone(new TypeError);
+      });
+      assertError(() => {
+        clone(new RangeError);
+      });
+    });
+
+    it('should throw an error for class instances', function() {
+      function Foo() {}
+      assertError(() => {
+        clone(new Foo);
+      }, TypeError);
+    });
+
+  });
+
   describeInstance('has', function(has) {
 
     it('should find shallow properties with a string', () => {

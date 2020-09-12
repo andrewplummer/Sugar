@@ -1,6 +1,6 @@
 import { isObject, isSet, isMap } from './typeChecks';
 import { isSerializable, iterateWithCyclicCheck } from './object';
-import { classToString } from './class';
+import { getClassTag } from './class';
 
 export function isEqual(a, b, stack = []) {
 
@@ -11,8 +11,8 @@ export function isEqual(a, b, stack = []) {
   }
 
   if (isObject(a) && isObject(b)) {
-    const aTag = classToString(a);
-    const bTag = classToString(b);
+    const aTag = getClassTag(a);
+    const bTag = getClassTag(b);
 
     if (aTag !== bTag) {
       return false;
