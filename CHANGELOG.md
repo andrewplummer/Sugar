@@ -126,6 +126,9 @@ call `Function#lock` first in the chain to achieve the same effect.
 - Removed `Object.fromQueryString` and `Object.toQueryString`. Use
     `URLSearchParams` here instead. Mapping a query string to an object is
     use-case dependent as a query string may have multiple keys of the same name.
+- Removed `Object.tap`.
+- Removed `Object.defaults`. Use `Object.assign` or object spread syntax here
+    instead.
 
 TODO:
 

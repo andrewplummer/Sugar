@@ -395,72 +395,6 @@ namespace('Object', function () {
 
   });
 
-  method('defaults', function() {
-
-    function add(key, a, b) {
-      return a + b;
-    }
-
-    test({id:999}, [{views:0}], {id:999,views:0}, 'simple defaults');
-    test({id:999}, [{id:123}], {id:999}, 'does not overwrite');
-    test({id:999}, [{id:123,views:0}], {id:999,views:0}, 'multiple properties single object');
-    test({id:999}, [[{id:123},{views:0}]], {id:999,views:0}, 'single property multiple objects');
-
-    test({id:null}, [{id:123}], {id:null}, 'does not overwrite null values');
-    test({id:undefined}, [{id:123}], {id:123}, 'does overwrite undefined values');
-    test({}, [{constructor:'foo'}], {constructor:'foo'}, 'does overwrite shadowed properties');
-
-    test(['a'], [['b']], ['a'], 'array intepreted as multiple');
-    test(['a'], [[['c','b']]], ['a','b'], 'array defaulted in');
-
-    test('a', ['b'], 'a', 'strings');
-    test('a', [['b']], 'a', 'string in array');
-
-
-    var a = {foo:'bar'};
-    var obj = run({}, 'defaults', [{a:a}]);
-    equal(obj.a === a, true, 'not deep by default');
-
-    var a = {foo:'bar'};
-    var obj = run({}, 'defaults', [{a:a}, {deep:true}]);
-    equal(obj.a === a, false, 'can be made deep by options');
-
-    test({id:999}, [{id:123},{resolve:add}], {id:1122}, 'can override resolver');
-
-
-    var user = { name: 'Frank', likes: 552, profile: { foods: 'Carrots', books: 'Dr. Seuss' } };
-    var userData1 = { name: 'Anonymous', pic: 'default.jpg' };
-    var userData2 = { likes: 0, votes: 53 };
-    var userData3 = { profile: { foods: 'Hamburgers', movies: 'Mall Cop' } };
-
-    var expectedShallow = {
-      name: 'Frank',
-      pic: 'default.jpg',
-      likes: 552,
-      votes: 53,
-      profile: {
-        foods: 'Carrots',
-        books: 'Dr. Seuss'
-      }
-    };
-
-    var expectedDeep = {
-      name: 'Frank',
-      pic: 'default.jpg',
-      likes: 552,
-      votes: 53,
-      profile: {
-        foods: 'Carrots',
-        books: 'Dr. Seuss',
-        movies: 'Mall Cop'
-      }
-    };
-
-    test(testClone(user), [[userData1, userData2, userData3]], expectedShallow, 'complex | shallow');
-    test(testClone(user), [[userData1, userData2, userData3],{deep:true}], expectedDeep, 'complex | deep');
-
-  });
-
   method('clone', function() {
 
     test(new String('hardy'), [], new String('hardy'), 'clone on a string object');
@@ -579,32 +513,6 @@ namespace('Object', function () {
       equal(testIsUTC(date), true, 'utc flag is set');
       equal(testIsUTC(run(date, 'clone', [])), true, 'should preserve utc flag when set');
     }
-
-  });
-
-  method('tap', function() {
-
-    var fn = function(first) {
-      equal(this, [1,2,3,4,5], 'context is the object');
-      equal(first, [1,2,3,4,5], 'first argument is also the object');
-      this.pop();
-    }
-
-    var map = function(n) {
-      return n * 2;
-    }
-
-    var expected = [2,4,6,8];
-
-    equal(run([1,2,3,4,5], 'tap', [fn]).map(map), expected, 'pop the array');
-    equal(run([1,2,3,4,5], 'tap', ['pop']).map(map), expected, 'string shortcut | pop the array');
-    equal(run([1,2], 'tap', [function() { this.push(3, 4); }]).map(map), expected, 'push to the array');
-    equal(run([1,2], 'tap', ['push', 3, 4]).map(map), [2,4], 'string shortcut | not supported');
-    equal(run([1,2,3,4], 'tap', [function(){ if (this[this.length - 1] === 5) this.pop(); }]).map(map), expected, 'checking last');
-
-
-    var obj = { foo: 'bar' };
-    test(obj, [], obj, 'return value is strictly equal');
 
   });
 
