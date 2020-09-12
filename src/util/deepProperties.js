@@ -1,162 +1,205 @@
-import { isString, isObject } from './typeChecks';
+import { isArray, isObject } from './typeChecks';
 import { hasOwnProperty } from './helpers';
-import { assertArray, assertWritable } from './assertions';
 
-export function deepHasProperty(obj, key) {
-  return handleDeepProperty(obj, key, true);
+export function deepHasProperty(obj, path) {
+  const { has } = traverseNestedPath(obj, path);
+  return has;
 }
 
-export function deepGetProperty(obj, key) {
-  return handleDeepProperty(obj, key, false);
+export function deepGetProperty(obj, path) {
+  const { val } = traverseNestedPath(obj, path);
+  return val;
 }
 
-export function deepSetProperty(obj, key, val) {
-  handleDeepProperty(obj, key, false, true, false, val);
-  return obj;
+export function deepSetProperty(obj, path, val) {
+  traverseNestedPath(obj, path, (inner, key) => {
+    inner[key] = val;
+  });
 }
 
-// Matches 1..2 style ranges in properties.
-const PROPERTY_RANGE_REG = /^(.*?)\[([-\d]*)\.\.([-\d]*)\](.*)$/;
-
-function handleDeepProperty(obj, key, has, fill, fillLast, val) {
-  var ns, bs, ps, cbi, set, isLast, isPush, isIndex, nextIsIndex, exists;
-  ns = obj;
-  if (key == null) return;
-
-  if (isObject(key)) {
-    // Allow array and array-like accessors
-    bs = [key];
+function traverseNestedPath(obj, path, setter) {
+  if (isArray(path)) {
+    path = arrayToPath(path);
   } else {
-    key = String(key);
-    if (key.indexOf('..') !== -1) {
-      return handleArrayIndexRange(obj, key, val);
-    }
-    bs = key.split('[');
+    path = stringToPath(String(path));
   }
-
-  set = val !== undefined;
-
-  for (var i = 0, blen = bs.length; i < blen; i++) {
-    ps = bs[i];
-
-    if (isString(ps)) {
-      ps = ps.split('.');
-    }
-
-    for (var j = 0, plen = ps.length; j < plen; j++) {
-      key = ps[j];
-
-      // Is this the last key?
-      isLast = i === blen - 1 && j === plen - 1;
-
-      // Index of the closing ]
-      cbi = key.indexOf(']');
-
-      // Is the key an array index?
-      isIndex = cbi !== -1;
-
-      // Is this array push syntax "[]"?
-      isPush = set && cbi === 0;
-
-      // If the bracket split was successful and this is the last element
-      // in the dot split, then we know the next key will be an array index.
-      nextIsIndex = blen > 1 && j === plen - 1;
-
-      if (isPush) {
-        // Set the index to the end of the array
-        key = ns.length;
-      } else if (isIndex) {
-        // Remove the closing ]
-        key = key.slice(0, -1);
-      }
-
-      // If the array index is less than 0, then
-      // add its length to allow negative indexes.
-      if (isIndex && key < 0) {
-        key = +key + ns.length;
-      }
-
-      // Bracket keys may look like users[5] or just [5], so the leading
-      // characters are optional. We can enter the namespace if this is the
-      // 2nd part, if there is only 1 part, or if there is an explicit key.
-      if (i || key || blen === 1) {
-
-        exists = hasOwnProperty(ns, key);
-
-        // Non-existent namespaces are only filled if they are intermediate
-        // (not at the end) or explicitly filling the last.
-        if (fill && (!isLast || fillLast) && !exists) {
-          // For our purposes, last only needs to be an array.
-          ns = ns[key] = nextIsIndex || (fillLast && isLast) ? [] : {};
-          continue;
-        }
-
-        if (has) {
-          if (isLast || !exists) {
-            return exists;
+  let val;
+  let has = false;
+  if (obj) {
+    while (path.length) {
+      let { key, arr } = path.shift();
+      const split = key.split('..');
+      // Handle range syntax 0..1
+      if (split.length > 1) {
+        if (isArray(obj)) {
+          const start = Math.max(0, getArrayIndex(split[0] || 0, obj));
+          const end = getArrayIndex(split[1] || obj.length - 1, obj);
+          val = getArrayRange(obj, start, end);
+          has = true;
+          // If there is still a path to resolve then traverse into the slice
+          // of the array, mapping values. Otherwise, if attempting to set array
+          // elements then call the setter for index of the range.
+          if (path.length) {
+            val = val.map((el) => {
+              return traverseNestedPath(el, path, setter)?.val;
+            });
+          } else if (setter) {
+            return forEachInRange(obj, start, end, setter);
           }
-        } else if (set && isLast) {
-          assertWritable(ns);
-          ns[key] = val;
+          break;
+        } else {
+          throw new TypeError('Range syntax not valid for objects');
         }
-
-        ns = exists ? ns[key] : undefined;
       }
-
+      if (isArray(obj)) {
+        if (!isNaN(key)) {
+          if (key !== '') {
+            key = getArrayIndex(key, obj);
+          }
+          if (setter) {
+            // Ensure the index is valid when setting on an array.
+            // Default to the array length to allow pushing to the
+            // end of the array for empty bracket syntax. (arr[]);
+            key = Math.max(0, key === '' ? obj.length : key);
+          }
+        }
+      }
+      has = hasOwnProperty(obj, key);
+      val = has ? obj[key] : undefined;
+      if (!has) {
+        if (setter) {
+          const ns = arr ? [] : {};
+          val = obj[key] = ns;
+          has = true;
+        } else {
+          break;
+        }
+      }
+      if (path.length) {
+        obj = val;
+      } else if (setter) {
+        // Apply the setter if the edge of the path has been reached.
+        setter(obj, key);
+      }
     }
   }
-  return ns;
+  return {
+    val,
+    has,
+    inner: obj,
+  }
 }
 
-// Get object property with support for 0..1 style range notation.
-function handleArrayIndexRange(obj, key, val) {
-  var match, start, end, leading, trailing, arr, set;
-  match = key.match(PROPERTY_RANGE_REG);
-  if (!match) {
-    return;
+// Creates an array path from a string shortcut. Bracket syntax is identical
+// to dot syntax with the exception that it initializes namespaces as arrays
+// when they do not exist. Valid syntax includes:
+// 1. a.b.c.d
+// 2. a[b][c][d]
+// 3. a[1][2][3]
+// 4. a[0..1][-1..1]
+// 5. a[]
+function stringToPath(str) {
+  const path = [];
+
+  let key = '';
+  let arr = false;
+
+  function flush() {
+    path.push({
+      key,
+      arr,
+    });
+    key = '';
   }
 
-  set = val !== undefined;
-  leading = match[1];
-
-  if (leading) {
-    arr = handleDeepProperty(obj, leading, false, set ? true : false, true);
+  if (str === '') {
+    flush();
   } else {
-    arr = obj;
-  }
-
-  assertArray(arr);
-
-  trailing = match[4];
-  start    = match[2] ? +match[2] : 0;
-  end      = match[3] ? +match[3] : arr.length;
-
-  // A range of 0..1 is inclusive, so we need to add 1 to the end. If this
-  // pushes the index from -1 to 0, then set it to the full length of the
-  // array, otherwise it will return nothing.
-  end = end === -1 ? arr.length : end + 1;
-
-  if (set) {
-    for (var i = start; i < end; i++) {
-      handleDeepProperty(arr, i + trailing, false, true, false, val);
-    }
-  } else {
-    arr = arr.slice(start, end);
-
-    // If there are trailing properties, then they need to be mapped for each
-    // element in the array.
-    if (trailing) {
-      if (trailing.charAt(0) === '.') {
-        // Need to chomp the period if one is trailing after the range. We
-        // can't do this at the regex level because it will be required if
-        // we're setting the value as it needs to be concatentated together
-        // with the array index to be set.
-        trailing = trailing.slice(1);
+    for (let i = 0; i < str.length; i++) {
+      const char = str.charAt(i);
+      const next = str.charAt(i + 1);
+      if (char === '.') {
+        if (next === '.') {
+          key += '..';
+          i += 1;
+        } else {
+          arr = false;
+          flush();
+          if (i === str.length - 1) {
+            flush();
+          }
+        }
+      } else if (char === '[') {
+        arr = true;
+        if (key) {
+          flush();
+        }
+      } else if (char === ']') {
+        if (next === '.') {
+          arr = false;
+          i++;
+        }
+        flush();
+      } else {
+        key += char;
       }
-      return arr.map((el) => {
-        return handleDeepProperty(el, trailing);
-      });
+    }
+    if (key) {
+      flush();
     }
   }
-  return arr;
+  return path;
+}
+
+// Normalizes an array of keys to be compatible with
+// string shortcuts that retain references syntax types.
+// May be already normalized.
+function arrayToPath(arr) {
+  return arr.map((el) => {
+    if (!isObject(el)) {
+      el = {
+        key: String(el),
+        arr: false,
+      }
+    }
+    return el;
+  });
+}
+
+// Similar to arr.slice but uses inclusive indexes
+// [0..0] has one element, [0..1] has two, etc.
+// and wraps from beginning when spanning edges.
+function getArrayRange(arr, start, end) {
+  if (end >= 0 && end < start) {
+    return [...arr.slice(start), ...arr.slice(0, end + 1)];
+  } else {
+    return arr.slice(start, end + 1);
+  }
+}
+
+// Calls a function using inclusive range index,
+// wrapping from beginning when spanning edges.
+function forEachInRange(arr, start, end, fn) {
+  let loop = false;
+  if (end >= 0 && end < start) {
+    end += arr.length;
+    loop = true;
+  }
+  for (let i = start; i <= end; i++) {
+    let idx = i;
+    if (loop) {
+      idx %= arr.length;
+    }
+    fn(arr, idx);
+  }
+}
+
+// Ensures a valid array index > 0 while still
+// allowing for negative indexes.
+function getArrayIndex(str, arr) {
+  let idx = +str;
+  if (idx < 0) {
+    idx += arr.length;
+  }
+  return idx;
 }

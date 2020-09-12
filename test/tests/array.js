@@ -450,9 +450,9 @@ namespace('Array', function() {
     it('should handle irregular input', function() {
       assertArrayEqual(map([1,2,3], null), [1,2,3]);
       assertArrayEqual(map([1,2], '.'), [undefined, undefined]);
-      assertArrayEqual(map([1,2], '..'), [undefined, undefined]);
       assertArrayEqual(map([1,2], 4), [undefined, undefined]);
       assertError(function() { map(); });
+      assertError(function() { map('..'); });
       assertError(function() { map([]); });
       assertError(function() { map(null); });
       assertError(function() { map(1); });

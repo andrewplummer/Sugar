@@ -2355,4 +2355,637 @@ namespace('Object', function () {
     });
   });
 
+  describeInstance('has', function(has) {
+
+    it('should find shallow properties with a string', () => {
+      assertEqual(has({a:1}, 'a'), true);
+      assertEqual(has({a:1}, 'b'), false);
+      assertEqual(has({a:[1,2]}, 'a'), true);
+    });
+
+    it('should find deep properties with an array path', () => {
+      assertEqual(has({a:{b:1}}, ['a', 'b']), true);
+    });
+
+    it('should find deep properties with dot syntax', () => {
+      assertEqual(has({a:{b:1}}, 'a.b'), true);
+      assertEqual(has({a:{b:1}}, 'a.c'), false);
+      assertEqual(has({a:{b:1}}, '.'), false);
+    });
+
+    it('should find deep properties with bracket syntax', () => {
+      assertEqual(has({a:{b:1}}, 'a[b]'), true);
+      assertEqual(has({a:{b:1}}, 'a[c]'), false);
+    });
+
+    it('should find array elements with path', () => {
+      assertEqual(has([1,2,3], [0]), true);
+      assertEqual(has([1,2,3], ['0']), true);
+      assertEqual(has({a:[1,2,3]}, ['a','1']), true);
+      assertEqual(has({a:[1,2,3]}, ['a','5']), false);
+      assertEqual(has({a:[{a:2}]}, ['a','0','a']), true);
+      assertEqual(has({a:[{a:2}]}, ['a','5','a']), false);
+    });
+
+    it('should find array elements with dot syntax', () => {
+      assertEqual(has({a:[1,2,3]}, 'a.1'), true);
+      assertEqual(has({a:[1,2,3]}, 'a.5'), false);
+      assertEqual(has({a:[{a:2}]}, 'a.0.a'), true);
+      assertEqual(has({a:[{a:2}]}, 'a.5.a'), false);
+      assertEqual(has([[[1]]], '0.0.0'), true);
+    });
+
+    it('should find array elements with bracket syntax', () => {
+      assertEqual(has([1,2,3], '[0]'), true);
+      assertEqual(has([1,2,3], '[4]'), false);
+      assertEqual(has({a:[1,2,3]}, 'a[1]'), true);
+      assertEqual(has({a:[1,2,3]}, 'a[5]'), false);
+      assertEqual(has({a:[{a:2}]}, 'a[0].a'), true);
+      assertEqual(has({a:[{a:2}]}, 'a[0].b'), false);
+      assertEqual(has([[[1]]], '[0][0][0]'), true);
+      assertEqual(has([[[{a:1}]]], '[0][0][0].a'), true);
+      assertEqual(has([[[{a:1}]]], '0[0][0].a'), true);
+      assertEqual(has({a:[1,2]}, 'a[0]'), true);
+      assertEqual(has({a:[1,2]}, 'a[1]'), true);
+      assertEqual(has({a:[1,2]}, 'a[2]'), false);
+      assertEqual(has({a:[1,2]}, 'a[]'), false);
+      assertEqual(has([], '[0]'), false);
+    });
+
+    it('should get array elements with negative syntax', () => {
+      assertEqual(has([1,2,3], '[-1]'), true);
+      assertEqual(has([1,2,3], '[-2]'), true);
+      assertEqual(has([1,2,3], '[-3]'), true);
+      assertEqual(has([1,2,3], '[-4]'), false);
+      assertEqual(has([[1,2,3]], '[0][-1]'), true);
+      assertEqual(has([[[1,2,3]]], '[0][0][-1]'), true);
+      assertEqual(has([[[1,2,3]]], '0.0.-1'), true);
+      assertEqual(has({a:[1,2]}, 'a.-1'), true);
+      assertEqual(has({a:[1,2]}, 'a.-2'), true);
+      assertEqual(has({a:[1,2]}, 'a.-3'), false);
+      assertEqual(has({a:[1,2]}, 'a[-1]'), true);
+      assertEqual(has({a:[1,2]}, 'a[-2]'), true);
+      assertEqual(has({a:[1,2]}, 'a[-3]'), false);
+      assertEqual(has([[[{a:1}]]], '[-1][-1][-1].a'), true);
+    });
+
+    it('should return false when deep path does not exist', () => {
+      assertEqual(has({a:1}, ['a','b','c','d']), false);
+      assertEqual(has({a:1}, 'a.b.c.d'), false);
+      assertEqual(has({a:1}, 'a[b][c][d]'), false);
+    });
+
+    it('should prioritize deep path over key with matching syntax', () => {
+      assertEqual(has({a:{b:{c:1}},'a.b.c':2}, 'a.b.c'), true);
+    });
+
+    it('should still allow access to shadowed path', () => {
+      assertEqual(has({'a.b.c':1}, ['a.b.c']), true);
+    });
+
+    it('should recognize arrays with basic syntax', () => {
+      assertEqual(has([1,2,3], '[0..1]'), true);
+      assertEqual(has([1,2,3], '[0..-1]'), true);
+      assertEqual(has([1,2,3], '[-1..0]'), true);
+      assertEqual(has([1,2,3], '[0..]'), true);
+      assertEqual(has([1,2,3], '[..1]'), true);
+      assertEqual(has([1,2,3], '[..]'), true);
+      assertEqual(has([1,2,3], '..'), true);
+    });
+
+    it('should not find inherited properties', () => {
+      const obj = Object.create({a:1});
+      assertEqual(has(obj, 'a'), false);
+      assertEqual(has({a:obj}, ['a','a']), false);
+    });
+
+    it('should work as expected on class instances', () => {
+      function Foo() {
+        this.a = 'a';
+      }
+      Foo.prototype.b = 'b';
+      assertEqual(has(new Foo, 'a'), true);
+      assertEqual(has(new Foo, 'b'), false);
+    });
+
+    it('should function as expected with an empty string', () => {
+      assertEqual(has({'':1}, ''), true);
+      assertEqual(has({'':{'':2}}, '.'), true);
+    });
+
+    it('should not find built-in inherited methods', () => {
+      assertEqual(has([], 'forEach'), false);
+    });
+
+    it('should find a property by nested id', () => {
+      assertEqual(has({users:{993425:{name:'Harry'}}}, 'users.993425.name'), true);
+    });
+
+    it('should work with hasOwnProperty overridden', () => {
+      assertEqual(has({hasOwnProperty: true, a: 1}, 'a'), true);
+    });
+
+    it('should handle irregular input', () => {
+      assertEqual(has({null:1}, 'null'), true);
+      assertEqual(has({undefined:1}, 'undefined'), true);
+      assertEqual(has(), false);
+      assertEqual(has(null), false);
+      assertEqual(has(undefined), false);
+      assertEqual(has(null, 'a.b.c'), false);
+      assertEqual(has(undefined, 'a.b.c'), false);
+    });
+
+  });
+
+  describeInstance('get', function(get) {
+
+    it('should get shallow properties with a string', () => {
+      assertEqual(get({a:1}, 'a'), 1);
+      assertEqual(get({a:1}, 'b'), undefined);
+      assertArrayEqual(get({a:[1,2]}, 'a'), [1,2]);
+    });
+
+    it('should get deep properties with an array path', () => {
+      assertEqual(get({a:{b:1}}, ['a', 'b']), 1);
+    });
+
+    it('should get deep properties with dot syntax', () => {
+      assertEqual(get({a:{b:1}}, 'a.b'), 1);
+      assertEqual(get({a:{b:1}}, 'a.c'), undefined);
+      assertEqual(get({a:{b:1}}, '.'), undefined);
+    });
+
+    it('should get deep properties with bracket syntax', () => {
+      assertEqual(get({a:{b:1}}, 'a[b]'), 1);
+      assertEqual(get({a:{b:1}}, 'a[c]'), undefined);
+    });
+
+    it('should get array elements with path', () => {
+      assertEqual(get([1,2,3], [0]), 1);
+      assertEqual(get([1,2,3], ['0']), 1);
+      assertEqual(get({a:[1,2,3]}, ['a','1']), 2);
+      assertEqual(get({a:[1,2,3]}, ['a','5']), undefined);
+      assertEqual(get({a:[{a:2}]}, ['a','0','a']), 2);
+      assertEqual(get({a:[{a:2}]}, ['a','5','a']), undefined);
+    });
+
+    it('should get array elements with dot syntax', () => {
+      assertEqual(get({a:[1,2,3]}, 'a.1'), 2);
+      assertEqual(get({a:[1,2,3]}, 'a.5'), undefined);
+      assertEqual(get({a:[{a:2}]}, 'a.0.a'), 2);
+      assertEqual(get({a:[{a:2}]}, 'a.5.a'), undefined);
+      assertEqual(get([[[1]]], '0.0.0'), 1);
+    });
+
+    it('should get array elements with bracket syntax', () => {
+      assertEqual(get([1,2,3], '[0]'), 1);
+      assertEqual(get([1,2,3], '[4]'), undefined);
+      assertEqual(get({a:[1,2,3]}, 'a[1]'), 2);
+      assertEqual(get({a:[1,2,3]}, 'a[5]'), undefined);
+      assertEqual(get({a:[{a:2}]}, 'a[0].a'), 2);
+      assertEqual(get({a:[{a:2}]}, 'a[0].b'), undefined);
+      assertEqual(get([[[1]]], '[0][0][0]'), 1);
+      assertEqual(get([[[{a:1}]]], '[0][0][0].a'), 1);
+      assertEqual(get([[[{a:1}]]], '0[0][0].a'), 1);
+      assertEqual(get({a:[1,2]}, 'a[0]'), 1);
+      assertEqual(get({a:[1,2]}, 'a[1]'), 2);
+      assertEqual(get({a:[1,2]}, 'a[2]'), undefined);
+      assertEqual(get({a:[1,2]}, 'a[]'), undefined);
+      assertEqual(get([], '[0]'), undefined);
+    });
+
+    it('should get array elements with negative syntax', () => {
+      assertEqual(get([1,2,3], '[-1]'), 3);
+      assertEqual(get([1,2,3], '[-2]'), 2);
+      assertEqual(get([1,2,3], '[-3]'), 1);
+      assertEqual(get([1,2,3], '[-4]'), undefined);
+      assertEqual(get([[1,2,3]], '[0][-1]'), 3);
+      assertEqual(get([[[1,2,3]]], '[0][0][-1]'), 3);
+      assertEqual(get([[[1,2,3]]], '0.0.-1'), 3);
+      assertEqual(get({a:[1,2]}, 'a.-1'), 2);
+      assertEqual(get({a:[1,2]}, 'a.-2'), 1);
+      assertEqual(get({a:[1,2]}, 'a.-3'), undefined);
+      assertEqual(get({a:[1,2]}, 'a[-1]'), 2);
+      assertEqual(get({a:[1,2]}, 'a[-2]'), 1);
+      assertEqual(get({a:[1,2]}, 'a[-3]'), undefined);
+      assertEqual(get([[[{a:1}]]], '[-1][-1][-1].a'), 1);
+    });
+
+    it('should return undefined when deep path does not exist', () => {
+      assertEqual(get({a:1}, ['a','b','c','d']), undefined);
+      assertEqual(get({a:1}, 'a.b.c.d'), undefined);
+      assertEqual(get({a:1}, 'a[b][c][d]'), undefined);
+    });
+
+    it('should prioritize deep path over key with matching syntax', () => {
+      assertEqual(get({a:{b:{c:1}},'a.b.c':2}, 'a.b.c'), 1);
+    });
+
+    it('should still allow access to shadowed path', () => {
+      assertEqual(get({a:{b:{c:1}},'a.b.c':2}, ['a.b.c']), 2);
+    });
+
+    it('should allow array slices to be returned with range syntax', () => {
+      assertArrayEqual(get([1,2,3], '[0..1]'), [1,2]);
+      assertArrayEqual(get([1,2,3], '[1..2]'), [2,3]);
+      assertArrayEqual(get([1,2,3], '[1..3]'), [2,3]);
+      assertArrayEqual(get([1,2,3], '[0..0]'), [1]);
+      assertArrayEqual(get([1,2,3], '[0..-1]'), [1,2,3]);
+      assertArrayEqual(get([1,2,3], '[-1..0]'), [3,1]);
+      assertArrayEqual(get([1,2,3], '[-1..-1]'), [3]);
+      assertArrayEqual(get([1,2,3], '[-2..-1]'), [2,3]);
+      assertArrayEqual(get([1,2,3], '[-3..-1]'), [1,2,3]);
+      assertArrayEqual(get([1,2,3], '[-4..-1]'), [1,2,3]);
+      assertArrayEqual(get([1,2,3], '[-4..-3]'), [1]);
+      assertArrayEqual(get([1,2,3], '[-5..-4]'), []);
+      assertArrayEqual(get([1,2,3], '[0..]'), [1,2,3]);
+      assertArrayEqual(get([1,2,3], '[..1]'), [1,2]);
+      assertArrayEqual(get([1,2,3], '[..]'), [1,2,3]);
+      assertArrayEqual(get([1,2,3], '..'), [1,2,3]);
+      assertArrayEqual(get({a:[1,2,3]}, 'a[0..1]'), [1,2]);
+      assertArrayEqual(get({a:{b:[1,2,3]}}, 'a.b[0..1]'), [1,2]);
+      assertArrayEqual(get({a:{b:[{d:1},{d:2}]}}, 'a.b[0..1].d'), [1,2]);
+      assertArrayEqual(
+        get({
+          a: [
+            { b: [1,2,3] },
+            { b: [4,5,6] },
+            { b: [7,8,9] },
+            { b: [10,11,12] },
+          ]
+        }, 'a[1..2].b[0..1]'),
+        [[4,5],[7,8]]
+      );
+      assertArrayEqual(
+        get([
+            [
+              [{a:'a'},{a:'b'},{a:'c'}],
+              [{a:'d'},{a:'e'},{a:'f'}],
+              [{a:'g'},{a:'h'},{a:'i'}],
+            ]
+          ], '[0][0..1][0..1]'),
+        [[{a:'a'},{a:'b'}],[{a:'d'},{a:'e'}]],
+      );
+      assertArrayEqual(
+        get([
+            [
+              [{a:'a'},{a:'b'},{a:'c'}],
+              [{a:'d'},{a:'e'},{a:'f'}],
+              [{a:'g'},{a:'h'},{a:'i'}],
+            ]
+          ], '[0][0..1][0..1].a'),
+        [['a','b'],['d','e']],
+      );
+    });
+
+    it('should throw an error when range syntax used on an object', () => {
+      assertError(() => {
+        get({a:1}, '[0..1]');
+      }, TypeError);
+    });
+
+    it('should not get inherited properties', () => {
+      const obj = Object.create({a:1});
+      assertEqual(get(obj, 'a'), undefined);
+      assertEqual(get({a:obj}, ['a','a']), undefined);
+    });
+
+    it('should work as expected on class instances', () => {
+      function Foo() {
+        this.a = 'a';
+      }
+      Foo.prototype.b = 'b';
+      assertEqual(get(new Foo, 'a'), 'a');
+      assertEqual(get(new Foo, 'b'), undefined);
+    });
+
+    it('should function as expected with an empty string', () => {
+      assertEqual(get({'':1}, ''), 1);
+      assertEqual(get({'':{'':2}}, '.'), 2);
+    });
+
+    it('should not get built-in inherited methods', () => {
+      assertEqual(get([], 'forEach'), undefined);
+    });
+
+    it('should get a property by nested id', () => {
+      assertEqual(get({users:{993425:{name:'Harry'}}}, 'users.993425.name'), 'Harry');
+    });
+
+    it('should work with hasOwnProperty overridden', () => {
+      assertEqual(get({hasOwnProperty: true, a: 1}, 'a'), 1);
+    });
+
+    it('should handle irregular input', () => {
+      assertEqual(get({null:1}, 'null'), 1);
+      assertEqual(get({undefined:1}, 'undefined'), 1);
+      assertEqual(get(), undefined);
+      assertEqual(get(null), undefined);
+      assertEqual(get(undefined), undefined);
+      assertEqual(get(null, 'a.b.c'), undefined);
+      assertEqual(get(undefined, 'a.b.c'), undefined);
+    });
+
+  });
+
+  describeInstance('set', function(set) {
+
+    it('should set shallow properties with a string', () => {
+      assertObjectEqual(set({}, 'a', 1), {a:1});
+      assertObjectEqual(set({a:1}, 'b', 2), {a:1,b:2});
+    });
+
+    it('should set array element with a numeric index', () => {
+      assertArrayEqual(set([1,2], 2, 3), [1,2,3]);
+    });
+
+    it('should set deep properties with an array path', () => {
+      assertObjectEqual(set({a:{b:1}}, ['a', 'b'], 2), {a:{b:2}});
+    });
+
+    it('should set deep properties with dot syntax', () => {
+      assertObjectEqual(set({a:{b:1}}, 'a.b', 2), {a:{b:2}});
+      assertObjectEqual(set({a:{b:1}}, 'a.c', 2), {a:{b:1,c:2}});
+      assertObjectEqual(set({a:{b:1}}, '.', 2), {a:{b:1},'':{'':2}});
+    });
+
+    it('should set deep properties with bracket syntax', () => {
+      assertObjectEqual(set({a:{b:1}}, 'a[b]', 2), {a:{b:2}});
+      assertObjectEqual(set({a:{b:1}}, 'a[c]', 2), {a:{b:1,c:2}});
+    });
+
+    it('should set array elements with path', () => {
+      assertArrayEqual(set([1,2,3], [0], 2), [2,2,3]);
+      assertArrayEqual(set([1,2,3], ['0'], 2), [2,2,3]);
+      assertObjectEqual(set({a:[1,2,3]}, ['a','1'], 3), {a:[1,3,3]});
+      assertObjectEqual(set({a:[1,2,3]}, ['a','5'], 4), {a:[1,2,3,,,4]});
+      assertObjectEqual(set({a:[{a:2}]}, ['a','0','a'], 3), {a:[{a:3}]});
+      assertObjectEqual(set({a:[{a:2}]}, ['a','2','a'], 3), {a:[{a:2},,{a:3}]});
+    });
+
+    it('should set array elements with dot syntax', () => {
+      assertObjectEqual(set({a:[1,2,3]}, 'a.1', 3), {a:[1,3,3]});
+      assertObjectEqual(set({a:[1,2,3]}, 'a.5', 4), {a:[1,2,3,,,4]});
+      assertObjectEqual(set({a:[{a:2}]}, 'a.0.a', 3), {a:[{a:3}]});
+      assertObjectEqual(set({a:[{a:2}]}, 'a.2.a', 3), {a:[{a:2},,{a:3}]});
+      assertArrayEqual(set([[[1]]], '0.0.0', 2), [[[2]]]);
+    });
+
+    it('should set array elements with bracket syntax', () => {
+      assertArrayEqual(set([1,2,3], '[0]', 4), [4,2,3]);
+      assertArrayEqual(set([1,2,3], '[3]', 4), [1,2,3,4]);
+      assertObjectEqual(set({a:[1,2,3]}, 'a[1]', 3), {a:[1,3,3]});
+      assertObjectEqual(set({a:[1,2,3]}, 'a[4]', 4), {a:[1,2,3,,4]});
+      assertObjectEqual(set({a:[{a:2}]}, 'a[0].a', 3), {a:[{a:3}]});
+      assertObjectEqual(set({a:[{a:2}]}, 'a[0].b', 3), {a:[{a:2,b:3}]});
+      assertArrayEqual(set([[[1]]], '[0][0][0]', 2), [[[2]]]);
+      assertArrayEqual(set([[[{a:1}]]], '[0][0][0].a', 2), [[[{a:2}]]]);
+      assertArrayEqual(set([[[{a:1}]]], '0[0][0].a', 2), [[[{a:2}]]]);
+      assertObjectEqual(set({a:[1,2]}, 'a[0]', 2), {a:[2,2]});
+      assertObjectEqual(set({a:[1,2]}, 'a[1]', 3), {a:[1,3]});
+      assertObjectEqual(set({a:[1,2]}, 'a[2]', 3), {a:[1,2,3]});
+      assertArrayEqual(set([], '[0]', 1), [1]);
+    });
+
+    it('should push array elements with empty bracket syntax', () => {
+      assertArrayEqual(set([], '[]', 1), [1]);
+      assertArrayEqual(set([], '[]', 'foo'), ['foo']);
+      assertArrayEqual(set(['a'], '[]', 'foo'), ['a','foo']);
+      assertArrayEqual(set([], '[].x','foo'), [{x:'foo'}]);
+      assertArrayEqual(set([], '[].x.y','foo'), [{x:{y:'foo'}}]);
+      assertObjectEqual(set({a:[1,2]}, 'a[]', 3), {a:[1,2,3]});
+      assertObjectEqual(set({x:['a']}, 'x[]', 'foo'), {x:['a','foo']});
+      assertObjectEqual(set({x:{y:['a']}}, 'x.y[]', 'foo'), {x:{y:['a','foo']}});
+      assertObjectEqual(set({}, 'x[]', 'foo'), {x:['foo']});
+      assertObjectEqual(set({}, 'a[].x.y','foo'), {a:[{x:{y:'foo'}}]});
+    });
+
+    it('should initialize namespaces as arrays with bracket syntax', () => {
+      assertArrayEqual(set([], '[0][0]', 1), [[1]]);
+      assertArrayEqual(set([], '[0][0][0]', 1), [[[1]]]);
+      assertArrayEqual(set([], '[][][]', 1), [[[1]]]);
+    });
+
+    it('should initialize namespaces as objects with dot syntax', () => {
+      assertObjectEqual(set({}, '0.0', 1), {0:{0:1}});
+      assertObjectEqual(set({}, '0.0.0', 1), {0:{0:{0:1}}});
+      assertObjectEqual(set({}, 'users.123.name', 'Jim'), {users:{123:{name:'Jim'}}});
+    });
+
+    it('should initialize namespaces with mixed syntax', () => {
+      assertObjectEqual(set({}, 'users[0].name', 'Frank'), {
+        users: [
+          { name: 'Frank' },
+        ]
+      });
+      assertObjectEqual(set({}, 'users[0].posts[0].name', 'post'), {
+        users: [
+          { posts: [{name: 'post'}]},
+        ]
+      });
+    });
+
+    it('should set array elements with negative syntax', () => {
+      assertArrayEqual(set([1,2,3], '[-1]', 4), [1,2,4]);
+      assertArrayEqual(set([1,2,3], '[-2]', 4), [1,4,3]);
+      assertArrayEqual(set([1,2,3], '[-3]', 4), [4,2,3]);
+      assertArrayEqual(set([1,2,3], '[-4]', 4), [4,2,3]);
+      assertArrayEqual(set([[1,2,3]], '[0][-1]', 4), [[1,2,4]]);
+      assertArrayEqual(set([[[1,2,3]]], '[0][0][-1]', 4), [[[1,2,4]]]);
+      assertArrayEqual(set([[[1,2,3]]], '0.0.-1', 4), [[[1,2,4]]]);
+      assertObjectEqual(set({a:[1,2]}, 'a.-1', 4), {a:[1,4]});
+      assertObjectEqual(set({a:[1,2]}, 'a.-2', 4), {a:[4,2]});
+      assertObjectEqual(set({a:[1,2]}, 'a.-3', 4), {a:[4,2]});
+      assertObjectEqual(set({a:[1,2]}, 'a[-1]', 3), {a:[1,3]});
+      assertObjectEqual(set({a:[1,2]}, 'a[-2]', 3), {a:[3,2]});
+      assertObjectEqual(set({a:[1,2]}, 'a[-3]', 3), {a:[3,2]});
+      assertArrayEqual(set([[[{a:1}]]], '[-1][-1][-1].a', 2), [[[{a:2}]]]);
+    });
+
+    it('should create deep paths when they do not exist', () => {
+      assertObjectEqual(set({}, ['a','b','c','d'], 1), {a:{b:{c:{d:1}}}});
+    });
+
+    it('should throw an error when trying to traverse into a primitive', () => {
+      assertError(() => {
+        set({a:1}, ['a','b','c','d'], 2);
+      });
+      assertError(() => {
+        set({a:1}, 'a.b.c.d', 2);
+      });
+      assertError(() => {
+        set({a:1}, 'a[b][c][d]', 2);
+      });
+    });
+
+    it('should prioritize deep path over key with matching syntax', () => {
+      assertObjectEqual(set({a:{b:{c:1}},'a.b.c':2}, 'a.b.c', 3), {a:{b:{c:3}},'a.b.c':2});
+    });
+
+    it('should still allow access to shadowed path', () => {
+      assertObjectEqual(set({a:{b:{c:1}},'a.b.c':2}, ['a.b.c'], 3), {a:{b:{c:1}},'a.b.c':3});
+    });
+
+    it('should set array slice members a range syntax', () => {
+      assertArrayEqual(set([1,2,3], '[0..1]', 4), [4,4,3]);
+      assertArrayEqual(set([1,2,3], '[1..2]', 4), [1,4,4]);
+      assertArrayEqual(set([1,2,3], '[1..3]', 4), [1,4,4,4]);
+      assertArrayEqual(set([1,2,3], '[0..0]', 4), [4,2,3]);
+      assertArrayEqual(set([1,2,3], '[0..-1]', 4), [4,4,4]);
+      assertArrayEqual(set([1,2,3], '[-1..0]', 4), [4,2,4]);
+      assertArrayEqual(set([1,2,3], '[-1..-1]', 4), [1,2,4]);
+      assertArrayEqual(set([1,2,3], '[-2..-1]', 4), [1,4,4]);
+      assertArrayEqual(set([1,2,3], '[-3..-1]', 4), [4,4,4]);
+      assertArrayEqual(set([1,2,3], '[-4..-1]', 4), [4,4,4]);
+      assertArrayEqual(set([1,2,3], '[-4..-3]', 4), [4,2,3]);
+      assertArrayEqual(set([1,2,3], '[-5..-4]', 4), [1,2,3]);
+      assertArrayEqual(set([1,2,3], '[0..]', 4), [4,4,4]);
+      assertArrayEqual(set([1,2,3], '[..1]', 4), [4,4,3]);
+      assertArrayEqual(set([1,2,3], '[..]', 4), [4,4,4]);
+      assertArrayEqual(set([1,2,3], '..', 4), [4,4,4]);
+      assertObjectEqual(set({a:[1,2,3]}, 'a[0..1]', 4), {a:[4,4,3]});
+      assertObjectEqual(set({a:{b:[1,2,3]}}, 'a.b[0..1]', 4), {a:{b:[4,4,3]}});
+      assertObjectEqual(set({a:{b:[{d:1},{d:2}]}}, 'a.b[0..1].d', 4), {a:{b:[{d:4},{d:4}]}});
+      assertObjectEqual(
+        set({
+          a: [
+            { b: [1,2,3] },
+            { b: [4,5,6] },
+            { b: [7,8,9] },
+            { b: [10,11,12] },
+          ]
+        }, 'a[1..2].b[0..1]', 4),
+        {
+          a: [
+            { b: [1,2,3] },
+            { b: [4,4,6] },
+            { b: [4,4,9] },
+            { b: [10,11,12] },
+          ]
+        }
+      );
+      assertArrayEqual(
+        set([
+            [
+              [{a:'a'},{a:'b'},{a:'c'}],
+              [{a:'d'},{a:'e'},{a:'f'}],
+              [{a:'g'},{a:'h'},{a:'i'}],
+            ]
+          ], '[0][0..1][0..1]', 4),
+        [
+          [
+            [4,4,{a:'c'}],
+            [4,4,{a:'f'}],
+            [{a:'g'},{a:'h'},{a:'i'}],
+          ]
+        ],
+      );
+      assertArrayEqual(
+        set([
+            [
+              [{a:'a'},{a:'b'},{a:'c'}],
+              [{a:'d'},{a:'e'},{a:'f'}],
+              [{a:'g'},{a:'h'},{a:'i'}],
+            ]
+          ], '[0][0..1][0..1].a', 4),
+        [
+          [
+            [{a:4},{a:4},{a:'c'}],
+            [{a:4},{a:4},{a:'f'}],
+            [{a:'g'},{a:'h'},{a:'i'}],
+          ]
+        ]
+      );
+    });
+
+    it('should throw an error when range syntax used on an object', () => {
+      assertError(() => {
+        set({a:1}, '[0..1]', 4);
+      }, TypeError);
+    });
+
+    it('should work as expected on inherited properties', () => {
+      let obj;
+      obj = Object.create({a:1});
+      assertObjectEqual(set(obj, 'a', 4), {a:4});
+
+      obj = Object.create({a:1});
+      assertObjectEqual(set({a:obj}, ['a','a'], 4), {a:{a:4}});
+    });
+
+    it('should work as expected on class instances', () => {
+      function Foo() {
+        this.a = 'a';
+      }
+      Foo.prototype.b = 'b';
+      const foo = new Foo();
+      set(foo, 'c', 'c');
+      set(foo, 'd.e', 'e');
+      assertEqual(foo.a, 'a');
+      assertEqual(foo.b, 'b');
+      assertEqual(foo.c, 'c');
+      assertObjectEqual(foo.d, {e:'e'});
+    });
+
+    it('should function as expected with an empty string', () => {
+      assertObjectEqual(set({'':1}, '', 2), {'':2});
+      assertObjectEqual(set({'':{'':2}}, '.', 3), {'':{'':3}});
+    });
+
+    it('should shadow built-in inherited methods', () => {
+      const result = set([], 'forEach', 3)
+      assertEqual(result.forEach, 3);
+    });
+
+    it('should set a property by nested id', () => {
+      assertObjectEqual(
+        set({
+          users:{
+            993425: {
+              name: 'Harry'
+            }
+          }
+        }, 'users.993425.name', 'Barry'),
+        {
+          users: {
+            993425: {
+              name: 'Barry',
+            }
+          }
+        }
+      );
+    });
+
+    it('should work with hasOwnProperty overridden', () => {
+      assertObjectEqual(set({hasOwnProperty: true, a: 1}, 'a', 2), {
+        hasOwnProperty: true,
+        a: 2,
+      });
+    });
+
+    it('should handle irregular input', () => {
+      assertObjectEqual(set({null:1}, 'null', 2), {null:2});
+      assertObjectEqual(set({undefined:1}, 'undefined', 2), {undefined:2});
+      assertError(() => {
+        set();
+      });
+      assertError(() => {
+        set(null);
+      });
+      assertError(() => {
+        set(undefined);
+      });
+      assertError(() => {
+        set(null);
+      });
+      assertError(() => {
+        set(null, 'a.b.c');
+      });
+      assertError(() => {
+        set({}, 'a');
+      });
+    });
+
+  });
+
 });
