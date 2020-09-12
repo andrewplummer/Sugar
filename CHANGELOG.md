@@ -123,6 +123,9 @@ call `Function#lock` first in the chain to achieve the same effect.
     always override the target.
 - Changed `Object.merge` to no longer merge arrays. Use a resolve function here
     to handle this on a per-case basis.
+- Removed `Object.fromQueryString` and `Object.toQueryString`. Use
+    `URLSearchParams` here instead. Mapping a query string to an object is
+    use-case dependent as a query string may have multiple keys of the same name.
 
 TODO:
 
