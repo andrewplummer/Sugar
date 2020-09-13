@@ -1,4 +1,5 @@
 import {
+  isDate,
   isArray,
   isObject,
   isString,
@@ -100,6 +101,12 @@ export function assertArrayOrTypedArray(obj) {
 export function assertObject(obj) {
   if (!isObject(obj)) {
     throw new TypeError('Object required');
+  }
+}
+
+export function assertDate(obj) {
+  if (!isDate(obj)) {
+    throw new TypeError('Date required');
   }
 }
 

@@ -27,12 +27,15 @@
 
   function withMethod(typeTest, suiteFn) {
     return function(methodNames, suite) {
-      methodNames.split(',').forEach((methodName) => {
+      if (!Array.isArray(methodNames)) {
+        methodNames = methodNames.split(',');
+      }
+      methodNames.forEach((methodName, i) => {
         var method = currentNamespace[methodName];
         var protoFn = currentNamespace.prototype[methodName];
         suiteFn(methodName, function() {
           typeTest(protoFn);
-          suite(method);
+          suite(method, i);
         });
       });
     };

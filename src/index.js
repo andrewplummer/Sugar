@@ -1,8 +1,9 @@
 export * from './core';
 
 export { Array } from './array';
-export { String } from './string';
+export { Date } from './date';
+export { Function } from './function';
 export { Number } from './number';
 export { Object } from './object';
 export { RegExp } from './regexp';
-export { Function } from './function';
+export { String } from './string';

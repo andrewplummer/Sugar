@@ -13,9 +13,7 @@ namespace('Date', function () {
 
   method('isValid', function() {
 
-    test(new Date('a fridge too far'), false, 'new Date invalid');
-    test(new Date(), true, 'new Date valid');
-
+    // TODO: move these
     // Issue #219
 
     assertDateNotParsed('29:00');

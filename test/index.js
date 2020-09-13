@@ -30,4 +30,5 @@ require('./tests/object');
 require('./tests/string');
 require('./tests/regexp');
 require('./tests/function');
+require('./tests/date');
 require('./tests/modules');
