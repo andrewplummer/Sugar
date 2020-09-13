@@ -19,4 +19,12 @@
     fn(formatter);
   };
 
+  getIntlCollatedArray = function(locale, arr) {
+    const collator = new Intl.Collator(locale);
+    arr.sort((a, b) => {
+      return collator.compare(a, b);
+    });
+    return arr;
+  }
+
 })();

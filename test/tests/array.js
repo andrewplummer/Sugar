@@ -1681,7 +1681,7 @@ namespace('Array', function() {
         ], {
           collator: new Intl.Collator('fr')
         }),
-        [
+        getIntlCollatedArray('fr', [
           'adélaïde',
           'adelais',
           'adèle',
@@ -1689,7 +1689,7 @@ namespace('Array', function() {
           'adeline',
           'adelle',
           'adelphe',
-        ]
+        ])
       );
     });
 
@@ -1711,7 +1711,7 @@ namespace('Array', function() {
         ], {
           collator: new Intl.Collator('cs')
         }),
-        [
+        getIntlCollatedArray('cs', [
           'cweat',
           'cwect',
           'čweat',
@@ -1724,7 +1724,7 @@ namespace('Array', function() {
           'zwect',
           'žweat',
           'žweet'
-        ]
+        ])
       );
     });
 
@@ -1744,7 +1744,7 @@ namespace('Array', function() {
         ], {
           collator: new Intl.Collator('sv')
         }),
-        [
+        getIntlCollatedArray('sv', [
           'brinna',
           'bränna',
           'bygga',
@@ -1755,7 +1755,7 @@ namespace('Array', function() {
           'fånga',
           'fängsla',
           'fästa',
-        ]
+        ]),
       );
     });
 

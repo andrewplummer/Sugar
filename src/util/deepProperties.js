@@ -41,7 +41,8 @@ function traverseNestedPath(obj, path, setter) {
           // elements then call the setter for index of the range.
           if (path.length) {
             val = val.map((el) => {
-              return traverseNestedPath(el, path, setter)?.val;
+              const result =  traverseNestedPath(el, path, setter);
+              return result && result.val;
             });
           } else if (setter) {
             return forEachInRange(obj, start, end, setter);

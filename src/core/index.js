@@ -238,11 +238,11 @@ function extendIsAllowed(name, opt) {
 }
 
 function extendOptionsInclude(name, opt) {
-  return opt?.include?.includes(name);
+  return opt && opt.include && opt.include.includes(name);
 }
 
 function extendOptionsExclude(name, opt) {
-  return opt?.exclude?.includes(name);
+  return opt && opt.exclude && opt.exclude.includes(name);
 }
 
 

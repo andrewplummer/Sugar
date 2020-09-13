@@ -1,6 +1,5 @@
-
 ensureNamespaceNotInitialized = function(name, fn) {
-  var namespaceExisted = Sugar.hasOwnProperty(name);
+  var namespaceExisted = name in Sugar;
   var previousNamespace = Sugar[name];
   delete Sugar[name];
   fn();

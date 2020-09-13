@@ -49,6 +49,7 @@
     assertObjectEqual: true,
     assertInstanceOf: true,
     withNumberFormatter: true,
+    getIntlCollatedArray: true,
     ensureNamespaceNotInitialized: true,
     Sugar: true,
     Promise: true,
