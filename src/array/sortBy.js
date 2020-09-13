@@ -1,4 +1,4 @@
-import { isObject, isString } from '../util/typeChecks';
+import { isFunction, isString } from '../util/typeChecks';
 import { assertArray } from '../util/assertions';
 import { getMapper } from '../util/mappers';
 
@@ -57,7 +57,7 @@ export default function sortBy(arr, ...args) {
     args = [{}];
   }
   const opts = args.map((arg) => {
-    if (!isObject(arg)) {
+    if (isFunction(arg) || isString(arg)) {
       arg = {
         map: arg,
       };

@@ -3567,4 +3567,786 @@ namespace('Object', function () {
 
   });
 
+  describeInstance('isObject', function(isObject) {
+
+    it('should be true for plain objects', () => {
+      assertTrue(isObject({}));
+      assertTrue(isObject(new Object()));
+      assertTrue(isObject(Object.create(null)));
+    });
+
+    it('should be false for primitives', () => {
+      assertFalse(isObject(null));
+      assertFalse(isObject(undefined));
+      assertFalse(isObject(NaN));
+      assertFalse(isObject(0));
+      assertFalse(isObject(5));
+      assertFalse(isObject(''));
+      assertFalse(isObject('a'));
+      assertFalse(isObject(true));
+      assertFalse(isObject(false));
+    });
+
+    it('should be true for functions', () => {
+      assertTrue(isObject(function(){}));
+    });
+
+    it('should be true for wrapped primitives', () => {
+      assertTrue(isObject(new String('a')));
+      assertTrue(isObject(new Number(5)));
+      assertTrue(isObject(new Boolean(true)));
+    });
+
+    it('should be true for built-in object types', () => {
+      assertTrue(isObject([]));
+      assertTrue(isObject(new Date()));
+      assertTrue(isObject(new Uint8Array()));
+      assertTrue(isObject(new Map()));
+      assertTrue(isObject(new Set()));
+      assertTrue(isObject(new Error()));
+      assertTrue(isObject(/abc/));
+    });
+
+    it('should be true for class instances', () => {
+      function Foo() {}
+      assertTrue(isObject(new Foo));
+    });
+
+    it('should be true for arguments', () => {
+      assertTrue(isObject((function() { return arguments; })()));
+    });
+
+    it('should handle irregular input', () => {
+      assertFalse(isObject());
+    });
+
+  });
+
+  describeInstance('isPlainObject', function(isPlainObject) {
+
+    it('should be true for plain objects', () => {
+      assertTrue(isPlainObject({}));
+      assertTrue(isPlainObject(new Object()));
+      assertTrue(isPlainObject(Object.create(null)));
+    });
+
+    it('should be false for primitives', () => {
+      assertFalse(isPlainObject(null));
+      assertFalse(isPlainObject(undefined));
+      assertFalse(isPlainObject(NaN));
+      assertFalse(isPlainObject(0));
+      assertFalse(isPlainObject(5));
+      assertFalse(isPlainObject(''));
+      assertFalse(isPlainObject('a'));
+      assertFalse(isPlainObject(true));
+      assertFalse(isPlainObject(false));
+    });
+
+    it('should be false for wrapped primitives', () => {
+      assertFalse(isPlainObject(new String('a')));
+      assertFalse(isPlainObject(new Number(5)));
+      assertFalse(isPlainObject(new Boolean(true)));
+    });
+
+    it('should be false for built-in object types', () => {
+      assertFalse(isPlainObject([]));
+      assertFalse(isPlainObject(new Date()));
+      assertFalse(isPlainObject(new Uint8Array()));
+      assertFalse(isPlainObject(new Map()));
+      assertFalse(isPlainObject(new Set()));
+      assertFalse(isPlainObject(new Error()));
+      assertFalse(isPlainObject(/abc/));
+    });
+
+    it('should be false for functions', () => {
+      assertFalse(isPlainObject(function(){}));
+    });
+
+    it('should be false for class instances', () => {
+      function Foo() {}
+      assertFalse(isPlainObject(new Foo));
+    });
+
+    it('should be false for arguments', () => {
+      assertFalse(isPlainObject((function() { return arguments; })()));
+    });
+
+    it('should handle irregular input', () => {
+      assertFalse(isPlainObject());
+    });
+
+  });
+
+  describeInstance('isArray', function(isArray) {
+
+    it('should be false for plain objects', () => {
+      assertFalse(isArray({}));
+      assertFalse(isArray(new Object()));
+      assertFalse(isArray(Object.create(null)));
+    });
+
+    it('should be false for primitives', () => {
+      assertFalse(isArray(null));
+      assertFalse(isArray(undefined));
+      assertFalse(isArray(NaN));
+      assertFalse(isArray(0));
+      assertFalse(isArray(5));
+      assertFalse(isArray(''));
+      assertFalse(isArray('a'));
+      assertFalse(isArray(true));
+      assertFalse(isArray(false));
+    });
+
+    it('should be false for wrapped primitives', () => {
+      assertFalse(isArray(new String('a')));
+      assertFalse(isArray(new Number(5)));
+      assertFalse(isArray(new Boolean(true)));
+    });
+
+    it('should be true for plain arrays', () => {
+      assertTrue(isArray([]));
+      assertTrue(isArray([1,2,3]));
+      assertTrue(isArray(new Array()));
+    });
+
+    it('should be false for typed arrays and array buffer', () => {
+      assertFalse(isArray(new Int8Array()));
+      assertFalse(isArray(new Uint8Array()));
+      assertFalse(isArray(new Uint8ClampedArray()));
+      assertFalse(isArray(new Int16Array()));
+      assertFalse(isArray(new Uint16Array()));
+      assertFalse(isArray(new Int32Array()));
+      assertFalse(isArray(new Uint32Array()));
+      assertFalse(isArray(new Float32Array()));
+      assertFalse(isArray(new Float64Array()));
+      assertFalse(isArray(new ArrayBuffer()));
+    });
+
+    it('should be false for other built-in object types', () => {
+      assertFalse(isArray(new Date()));
+      assertFalse(isArray(new Map()));
+      assertFalse(isArray(new Set()));
+      assertFalse(isArray(new Error()));
+      assertFalse(isArray(/abc/));
+    });
+
+    it('should be false for functions', () => {
+      assertFalse(isArray(function(){}));
+    });
+
+    it('should be false for class instances', () => {
+      function Foo() {}
+      assertFalse(isArray(new Foo));
+    });
+
+    it('should be false for arguments', () => {
+      assertFalse(isArray((function() { return arguments; })()));
+    });
+
+    it('should handle irregular input', () => {
+      assertFalse(isArray());
+    });
+
+  });
+
+  describeInstance('isTypedArray', function(isTypedArray) {
+
+    it('should be false for plain objects', () => {
+      assertFalse(isTypedArray({}));
+      assertFalse(isTypedArray(new Object()));
+      assertFalse(isTypedArray(Object.create(null)));
+    });
+
+    it('should be false for primitives', () => {
+      assertFalse(isTypedArray(null));
+      assertFalse(isTypedArray(undefined));
+      assertFalse(isTypedArray(NaN));
+      assertFalse(isTypedArray(0));
+      assertFalse(isTypedArray(5));
+      assertFalse(isTypedArray(''));
+      assertFalse(isTypedArray('a'));
+      assertFalse(isTypedArray(true));
+      assertFalse(isTypedArray(false));
+    });
+
+    it('should be false for wrapped primitives', () => {
+      assertFalse(isTypedArray(new String('a')));
+      assertFalse(isTypedArray(new Number(5)));
+      assertFalse(isTypedArray(new Boolean(true)));
+    });
+
+    it('should be false for plain arrays', () => {
+      assertFalse(isTypedArray([]));
+      assertFalse(isTypedArray([1,2,3]));
+      assertFalse(isTypedArray(new Array()));
+    });
+
+    it('should be true for typed arrays and array buffer', () => {
+      assertTrue(isTypedArray(new Int8Array()));
+      assertTrue(isTypedArray(new Uint8Array()));
+      assertTrue(isTypedArray(new Uint8ClampedArray()));
+      assertTrue(isTypedArray(new Int16Array()));
+      assertTrue(isTypedArray(new Uint16Array()));
+      assertTrue(isTypedArray(new Int32Array()));
+      assertTrue(isTypedArray(new Uint32Array()));
+      assertTrue(isTypedArray(new Float32Array()));
+      assertTrue(isTypedArray(new Float64Array()));
+      assertTrue(isTypedArray(new ArrayBuffer()));
+    });
+
+    it('should be false for other built-in object types', () => {
+      assertFalse(isTypedArray(new Date()));
+      assertFalse(isTypedArray(new Map()));
+      assertFalse(isTypedArray(new Set()));
+      assertFalse(isTypedArray(new Error()));
+      assertFalse(isTypedArray(/abc/));
+    });
+
+    it('should be false for functions', () => {
+      assertFalse(isTypedArray(function(){}));
+    });
+
+    it('should be false for class instances', () => {
+      function Foo() {}
+      assertFalse(isTypedArray(new Foo));
+    });
+
+    it('should be false for arguments', () => {
+      assertFalse(isTypedArray((function() { return arguments; })()));
+    });
+
+    it('should handle irregular input', () => {
+      assertFalse(isTypedArray());
+    });
+
+  });
+
+  describeInstance('isString', function(isString) {
+
+    it('should be false for plain objects', () => {
+      assertFalse(isString({}));
+      assertFalse(isString(new Object()));
+      assertFalse(isString(Object.create(null)));
+    });
+
+    it('should be true for string primitives', () => {
+      assertTrue(isString(''));
+      assertTrue(isString('a'));
+    });
+
+    it('should be false for other primitives', () => {
+      assertFalse(isString(null));
+      assertFalse(isString(undefined));
+      assertFalse(isString(NaN));
+      assertFalse(isString(0));
+      assertFalse(isString(5));
+      assertFalse(isString(true));
+      assertFalse(isString(false));
+    });
+
+    it('should work as expected for wrapped primitives', () => {
+      assertTrue(isString(new String('a')));
+      assertFalse(isString(new Number(5)));
+      assertFalse(isString(new Boolean(true)));
+    });
+
+    it('should be false for built-in object types', () => {
+      assertFalse(isString([]));
+      assertFalse(isString(new Date()));
+      assertFalse(isString(new Uint8Array()));
+      assertFalse(isString(new Map()));
+      assertFalse(isString(new Set()));
+      assertFalse(isString(new Error()));
+      assertFalse(isString(/abc/));
+    });
+
+    it('should be false for functions', () => {
+      assertFalse(isString(function(){}));
+    });
+
+    it('should be false for class instances', () => {
+      function Foo() {}
+      assertFalse(isString(new Foo));
+    });
+
+    it('should be false for arguments', () => {
+      assertFalse(isString((function() { return arguments; })()));
+    });
+
+    it('should handle irregular input', () => {
+      assertFalse(isString());
+    });
+
+  });
+
+  describeInstance('isNumber', function(isNumber) {
+
+    it('should be false for plain objects', () => {
+      assertFalse(isNumber({}));
+      assertFalse(isNumber(new Object()));
+      assertFalse(isNumber(Object.create(null)));
+    });
+
+    it('should be true for number primitives', () => {
+      assertTrue(isNumber(NaN));
+      assertTrue(isNumber(0));
+      assertTrue(isNumber(-0));
+      assertTrue(isNumber(5));
+      assertTrue(isNumber(-Infinity));
+      assertTrue(isNumber(Infinity));
+    });
+
+    it('should be false for other primitives', () => {
+      assertFalse(isNumber(null));
+      assertFalse(isNumber(undefined));
+      assertFalse(isNumber(''));
+      assertFalse(isNumber('a'));
+      assertFalse(isNumber(true));
+      assertFalse(isNumber(false));
+    });
+
+    it('should work as expected for wrapped primitives', () => {
+      assertFalse(isNumber(new String('a')));
+      assertTrue(isNumber(new Number(5)));
+      assertFalse(isNumber(new Boolean(true)));
+    });
+
+    it('should be false for built-in object types', () => {
+      assertFalse(isNumber([]));
+      assertFalse(isNumber(new Date()));
+      assertFalse(isNumber(new Uint8Array()));
+      assertFalse(isNumber(new Map()));
+      assertFalse(isNumber(new Set()));
+      assertFalse(isNumber(new Error()));
+      assertFalse(isNumber(/abc/));
+    });
+
+    it('should be false for functions', () => {
+      assertFalse(isNumber(function(){}));
+    });
+
+    it('should be false for class instances', () => {
+      function Foo() {}
+      assertFalse(isNumber(new Foo));
+    });
+
+    it('should be false for arguments', () => {
+      assertFalse(isNumber((function() { return arguments; })()));
+    });
+
+    it('should handle irregular input', () => {
+      assertFalse(isNumber());
+    });
+
+  });
+
+  describeInstance('isBoolean', function(isBoolean) {
+
+    it('should be false for plain objects', () => {
+      assertFalse(isBoolean({}));
+      assertFalse(isBoolean(new Object()));
+      assertFalse(isBoolean(Object.create(null)));
+    });
+
+    it('should be true for boolean primitives', () => {
+      assertTrue(isBoolean(true));
+      assertTrue(isBoolean(false));
+    });
+
+    it('should be false for other primitives', () => {
+      assertFalse(isBoolean(null));
+      assertFalse(isBoolean(undefined));
+      assertFalse(isBoolean(NaN));
+      assertFalse(isBoolean(0));
+      assertFalse(isBoolean(5));
+      assertFalse(isBoolean(''));
+      assertFalse(isBoolean('a'));
+    });
+
+    it('should work as expected for wrapped primitives', () => {
+      assertFalse(isBoolean(new String('a')));
+      assertFalse(isBoolean(new Number(5)));
+      assertTrue(isBoolean(new Boolean(true)));
+    });
+
+    it('should be false for built-in object types', () => {
+      assertFalse(isBoolean([]));
+      assertFalse(isBoolean(new Date()));
+      assertFalse(isBoolean(new Uint8Array()));
+      assertFalse(isBoolean(new Map()));
+      assertFalse(isBoolean(new Set()));
+      assertFalse(isBoolean(new Error()));
+      assertFalse(isBoolean(/abc/));
+    });
+
+    it('should be false for functions', () => {
+      assertFalse(isBoolean(function(){}));
+    });
+
+    it('should be false for class instances', () => {
+      function Foo() {}
+      assertFalse(isBoolean(new Foo));
+    });
+
+    it('should be false for arguments', () => {
+      assertFalse(isBoolean((function() { return arguments; })()));
+    });
+
+    it('should handle irregular input', () => {
+      assertFalse(isBoolean());
+    });
+
+  });
+
+  describeInstance('isDate', function(isDate) {
+
+    it('should be false for plain objects', () => {
+      assertFalse(isDate({}));
+      assertFalse(isDate(new Object()));
+      assertFalse(isDate(Object.create(null)));
+    });
+
+    it('should be false for primitives', () => {
+      assertFalse(isDate(null));
+      assertFalse(isDate(undefined));
+      assertFalse(isDate(NaN));
+      assertFalse(isDate(0));
+      assertFalse(isDate(5));
+      assertFalse(isDate(''));
+      assertFalse(isDate('a'));
+      assertFalse(isDate(true));
+      assertFalse(isDate(false));
+    });
+
+    it('should be false for wrapped primitives', () => {
+      assertFalse(isDate(new String('a')));
+      assertFalse(isDate(new Number(5)));
+      assertFalse(isDate(new Boolean(true)));
+    });
+
+    it('should be true for dates', () => {
+      assertTrue(isDate(new Date()));
+      assertTrue(isDate(new Date('invalid')));
+    });
+
+    it('should be false for built-in object types', () => {
+      assertFalse(isDate([]));
+      assertFalse(isDate(new Uint8Array()));
+      assertFalse(isDate(new Map()));
+      assertFalse(isDate(new Set()));
+      assertFalse(isDate(new Error()));
+      assertFalse(isDate(/abc/));
+    });
+
+    it('should be false for functions', () => {
+      assertFalse(isDate(function(){}));
+    });
+
+    it('should be false for class instances', () => {
+      function Foo() {}
+      assertFalse(isDate(new Foo));
+    });
+
+    it('should be false for arguments', () => {
+      assertFalse(isDate((function() { return arguments; })()));
+    });
+
+    it('should handle irregular input', () => {
+      assertFalse(isDate());
+    });
+
+  });
+
+  describeInstance('isFunction', function(isFunction) {
+
+    it('should be false for plain objects', () => {
+      assertFalse(isFunction({}));
+      assertFalse(isFunction(new Object()));
+      assertFalse(isFunction(Object.create(null)));
+    });
+
+    it('should be false for primitives', () => {
+      assertFalse(isFunction(null));
+      assertFalse(isFunction(undefined));
+      assertFalse(isFunction(NaN));
+      assertFalse(isFunction(0));
+      assertFalse(isFunction(5));
+      assertFalse(isFunction(''));
+      assertFalse(isFunction('a'));
+      assertFalse(isFunction(true));
+      assertFalse(isFunction(false));
+    });
+
+    it('should be false for wrapped primitives', () => {
+      assertFalse(isFunction(new String('a')));
+      assertFalse(isFunction(new Number(5)));
+      assertFalse(isFunction(new Boolean(true)));
+    });
+
+    it('should be false for built-in object types', () => {
+      assertFalse(isFunction([]));
+      assertFalse(isFunction(new Date()));
+      assertFalse(isFunction(new Uint8Array()));
+      assertFalse(isFunction(new Map()));
+      assertFalse(isFunction(new Set()));
+      assertFalse(isFunction(new Error()));
+      assertFalse(isFunction(/abc/));
+    });
+
+    it('should be true for functions', () => {
+      assertTrue(isFunction(() => {}));
+      assertTrue(isFunction(function(){}));
+    });
+
+    it('should be false for class instances', () => {
+      function Foo() {}
+      assertFalse(isFunction(new Foo));
+    });
+
+    it('should be false for arguments', () => {
+      assertFalse(isFunction((function() { return arguments; })()));
+    });
+
+    it('should handle irregular input', () => {
+      assertFalse(isFunction());
+    });
+
+  });
+
+  describeInstance('isRegExp', function(isRegExp) {
+
+    it('should be false for plain objects', () => {
+      assertFalse(isRegExp({}));
+      assertFalse(isRegExp(new Object()));
+      assertFalse(isRegExp(Object.create(null)));
+    });
+
+    it('should be false for primitives', () => {
+      assertFalse(isRegExp(null));
+      assertFalse(isRegExp(undefined));
+      assertFalse(isRegExp(NaN));
+      assertFalse(isRegExp(0));
+      assertFalse(isRegExp(5));
+      assertFalse(isRegExp(''));
+      assertFalse(isRegExp('a'));
+      assertFalse(isRegExp(true));
+      assertFalse(isRegExp(false));
+    });
+
+    it('should be false for wrapped primitives', () => {
+      assertFalse(isRegExp(new String('a')));
+      assertFalse(isRegExp(new Number(5)));
+      assertFalse(isRegExp(new Boolean(true)));
+    });
+
+    it('should be true for regexes', () => {
+      assertTrue(isRegExp(/abc/));
+      assertTrue(isRegExp(RegExp('abc')));
+      assertTrue(isRegExp(RegExp('abc', 'gim')));
+    });
+
+    it('should be false for built-in object types', () => {
+      assertFalse(isRegExp([]));
+      assertFalse(isRegExp(new Date()));
+      assertFalse(isRegExp(new Uint8Array()));
+      assertFalse(isRegExp(new Map()));
+      assertFalse(isRegExp(new Set()));
+      assertFalse(isRegExp(new Error()));
+    });
+
+    it('should be false for functions', () => {
+      assertFalse(isRegExp(() => {}));
+      assertFalse(isRegExp(function(){}));
+    });
+
+    it('should be false for class instances', () => {
+      function Foo() {}
+      assertFalse(isRegExp(new Foo));
+    });
+
+    it('should be false for arguments', () => {
+      assertFalse(isRegExp((function() { return arguments; })()));
+    });
+
+    it('should handle irregular input', () => {
+      assertFalse(isRegExp());
+    });
+
+  });
+
+  describeInstance('isSet', function(isSet) {
+
+    it('should be false for plain objects', () => {
+      assertFalse(isSet({}));
+      assertFalse(isSet(new Object()));
+      assertFalse(isSet(Object.create(null)));
+    });
+
+    it('should be false for primitives', () => {
+      assertFalse(isSet(null));
+      assertFalse(isSet(undefined));
+      assertFalse(isSet(NaN));
+      assertFalse(isSet(0));
+      assertFalse(isSet(5));
+      assertFalse(isSet(''));
+      assertFalse(isSet('a'));
+      assertFalse(isSet(true));
+      assertFalse(isSet(false));
+    });
+
+    it('should be false for wrapped primitives', () => {
+      assertFalse(isSet(new String('a')));
+      assertFalse(isSet(new Number(5)));
+      assertFalse(isSet(new Boolean(true)));
+    });
+
+    it('should be true for sets', () => {
+      assertTrue(isSet(new Set()));
+      assertTrue(isSet(new Set([1,2,3])));
+    });
+
+    it('should be false for built-in object types', () => {
+      assertFalse(isSet([]));
+      assertFalse(isSet(new Date()));
+      assertFalse(isSet(new Uint8Array()));
+      assertFalse(isSet(new Map()));
+      assertFalse(isSet(new Error()));
+      assertFalse(isSet(/abc/));
+    });
+
+    it('should be false for functions', () => {
+      assertFalse(isSet(() => {}));
+      assertFalse(isSet(function(){}));
+    });
+
+    it('should be false for class instances', () => {
+      function Foo() {}
+      assertFalse(isSet(new Foo));
+    });
+
+    it('should be false for arguments', () => {
+      assertFalse(isSet((function() { return arguments; })()));
+    });
+
+    it('should handle irregular input', () => {
+      assertFalse(isSet());
+    });
+
+  });
+
+  describeInstance('isMap', function(isMap) {
+
+    it('should be false for plain objects', () => {
+      assertFalse(isMap({}));
+      assertFalse(isMap(new Object()));
+      assertFalse(isMap(Object.create(null)));
+    });
+
+    it('should be false for primitives', () => {
+      assertFalse(isMap(null));
+      assertFalse(isMap(undefined));
+      assertFalse(isMap(NaN));
+      assertFalse(isMap(0));
+      assertFalse(isMap(5));
+      assertFalse(isMap(''));
+      assertFalse(isMap('a'));
+      assertFalse(isMap(true));
+      assertFalse(isMap(false));
+    });
+
+    it('should be false for wrapped primitives', () => {
+      assertFalse(isMap(new String('a')));
+      assertFalse(isMap(new Number(5)));
+      assertFalse(isMap(new Boolean(true)));
+    });
+
+    it('should be true for maps', () => {
+      assertTrue(isMap(new Map()));
+      assertTrue(isMap(new Map([[1,2]])));
+    });
+
+    it('should be false for built-in object types', () => {
+      assertFalse(isMap([]));
+      assertFalse(isMap(new Date()));
+      assertFalse(isMap(new Uint8Array()));
+      assertFalse(isMap(new Set()));
+      assertFalse(isMap(new Error()));
+      assertFalse(isMap(/abc/));
+    });
+
+    it('should be false for functions', () => {
+      assertFalse(isMap(() => {}));
+      assertFalse(isMap(function(){}));
+    });
+
+    it('should be false for class instances', () => {
+      function Foo() {}
+      assertFalse(isMap(new Foo));
+    });
+
+    it('should be false for arguments', () => {
+      assertFalse(isMap((function() { return arguments; })()));
+    });
+
+    it('should handle irregular input', () => {
+      assertFalse(isMap());
+    });
+
+  });
+
+  describeInstance('isPrimitive', function(isPrimitive) {
+
+    it('should be false for plain objects', () => {
+      assertFalse(isPrimitive({}));
+      assertFalse(isPrimitive(new Object()));
+      assertFalse(isPrimitive(Object.create(null)));
+    });
+
+    it('should be false for primitives', () => {
+      assertTrue(isPrimitive(null));
+      assertTrue(isPrimitive(undefined));
+      assertTrue(isPrimitive(NaN));
+      assertTrue(isPrimitive(0));
+      assertTrue(isPrimitive(5));
+      assertTrue(isPrimitive(''));
+      assertTrue(isPrimitive('a'));
+      assertTrue(isPrimitive(true));
+      assertTrue(isPrimitive(false));
+    });
+
+    it('should be false for wrapped primitives', () => {
+      assertFalse(isPrimitive(new String('a')));
+      assertFalse(isPrimitive(new Number(5)));
+      assertFalse(isPrimitive(new Boolean(true)));
+    });
+
+    it('should be false for built-in object types', () => {
+      assertFalse(isPrimitive([]));
+      assertFalse(isPrimitive(new Date()));
+      assertFalse(isPrimitive(new Uint8Array()));
+      assertFalse(isPrimitive(new Map()));
+      assertFalse(isPrimitive(new Set()));
+      assertFalse(isPrimitive(new Error()));
+      assertFalse(isPrimitive(/abc/));
+    });
+
+    it('should be false for functions', () => {
+      assertFalse(isPrimitive(function(){}));
+    });
+
+    it('should be false for class instances', () => {
+      function Foo() {}
+      assertFalse(isPrimitive(new Foo));
+    });
+
+    it('should be false for arguments', () => {
+      assertFalse(isPrimitive((function() { return arguments; })()));
+    });
+
+    it('should handle irregular input', () => {
+      assertFalse(isPrimitive());
+    });
+
+  });
+
 });

@@ -40,8 +40,10 @@ export function isWrappedPrimitive(obj) {
 }
 
 export function isObject(obj, type) {
-  // Protect against null.
-  return !!obj && (type || typeof obj) === 'object';
+  type = type || typeof obj;
+  // Protect against null. Functions extend from Object and are
+  // considered objects here.
+  return !!obj && (type === 'object' || type === 'function');
 }
 
 export function isArrayOrTypedArray(obj) {

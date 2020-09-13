@@ -134,6 +134,8 @@ call `Function#lock` first in the chain to achieve the same effect.
 - Removed `Object.values`. Use native ES6 `Object.values` instead.
 - Changed `Object.invert` to not support `multi` second argument. `Object.reduce`
     can be used here for special use cases such as this.
+- Removed `Object.isArguments`.
+- Removed `Object.isError`.
 
 TODO:
 
