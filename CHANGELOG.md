@@ -131,6 +131,7 @@ call `Function#lock` first in the chain to achieve the same effect.
 - Removed `Object.tap`.
 - Removed `Object.defaults`. Use `Object.assign` or object spread syntax here
     instead.
+- Removed `Object.values`. Use native ES6 `Object.values` instead.
 
 TODO:
 

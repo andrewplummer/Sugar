@@ -20,23 +20,6 @@ namespace('Object', function () {
     equal(Object.isArray(['a']), true, 'Object.isArray was extended');
   });
 
-  method('values', function() {
-
-    test({foo:'bar'}, ['bar'], 'Values should be received');
-
-    var called = false;
-    var fn = function(val, o) {
-      equal(val, 'bar', 'First argument should be value');
-      equal(o, obj, 'Second argument should be the object');
-      called = true;
-    }
-
-    // Issue #525
-    var result = [{foo:'foo'},{bar:'bar'}].map(Sugar.Object.values);
-    equal(result, [['foo'],['bar']], 'non-function argument should not be called');
-
-  });
-
   method('invert', function() {
 
     test({foo:'bar'}, [], {bar:'foo'}, 'basic invert');
