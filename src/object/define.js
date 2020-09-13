@@ -11,6 +11,7 @@ defineInstance('forEach', methods.forEach);
 defineInstance('get', methods.get);
 defineInstance('has', methods.has);
 defineInstance('intersect', methods.intersect);
+defineInstance('invert', methods.invert);
 defineInstance('isEmpty', methods.isEmpty);
 defineInstance('isEqual', methods.isEqual);
 defineInstance('mapKeys', methods.mapKeys);

@@ -20,20 +20,6 @@ namespace('Object', function () {
     equal(Object.isArray(['a']), true, 'Object.isArray was extended');
   });
 
-  method('invert', function() {
-
-    test({foo:'bar'}, [], {bar:'foo'}, 'basic invert');
-    test({foo:{bar:'baz'}}, [], {'[object Object]':'foo'}, 'deep objects are simply stringified');
-    test({foo:['bar','baz']}, [], {'bar,baz':'foo'}, 'arrays are stringified');
-    test({foo:1,bar:1}, [], {1:'bar'}, 'collisions are overwritten by default');
-    test({length:15}, [], {15:'length'}, 'works with "length"');
-    test({foo:1,bar:1}, [true], {1:['foo','bar']}, 'collisions allow multi with flag');
-
-    var result = [{a:1},{b:2},{c:3}].map(Sugar.Object.invert);
-    equal(result, [{1:'a'},{2:'b'},{3:'c'}], 'can be iterated with map');
-
-  });
-
   method('isObject', function() {
     var Person = function() {};
     var p = new Person();

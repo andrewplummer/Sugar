@@ -3514,4 +3514,57 @@ namespace('Object', function () {
 
   });
 
+  describeInstance('invert', function(invert) {
+
+    it('should invert basic objects', () => {
+      assertObjectEqual(invert({}), {});
+      assertObjectEqual(invert({a:1}), {1:'a'});
+      assertObjectEqual(invert({a:1,b:2}), {1:'a',2:'b'});
+    });
+
+    it('should overwrite collisions', () => {
+      assertObjectEqual(invert({a:1,b:1,c:1}), {1:'c'});
+    });
+
+    it('should function as expected on nested objects', () => {
+      assertObjectEqual(invert({a:{a:1}}), {'[object Object]':'a'});
+    });
+
+    it('should function as expected on arrays', () => {
+      assertObjectEqual(invert({a:[1,2,3]}), {'1,2,3': 'a'});
+    });
+
+    it('should stringify keys using internal toString method', () => {
+      const obj = {
+        toString: () => {
+          return 'b';
+        }
+      };
+      assertObjectEqual(invert({a:obj}), {'b': 'a'});
+    });
+
+    it('should work with hasOwnProperty overwritten', () => {
+      assertObjectEqual(invert({hasOwnProperty:true,a:1}), {true:'hasOwnProperty',1:'a'});
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        invert();
+      });
+      assertError(() => {
+        invert(null);
+      });
+      assertError(() => {
+        invert(undefined);
+      });
+      assertError(() => {
+        invert('a');
+      });
+      assertError(() => {
+        invert(5);
+      });
+    });
+
+  });
+
 });

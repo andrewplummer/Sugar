@@ -8,6 +8,7 @@ export { default as forEach } from './forEach';
 export { default as get } from './get';
 export { default as has } from './has';
 export { default as intersect } from './intersect';
+export { default as invert } from './invert';
 export { default as isEmpty } from './isEmpty';
 export { default as isEqual } from './isEqual';
 export { default as mapKeys } from './mapKeys';
