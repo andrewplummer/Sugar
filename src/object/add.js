@@ -3,11 +3,11 @@ import { isFunction } from '../util/typeChecks';
 import { mergeDeep } from '../util/merge';
 
 /**
- * Performs a deep merge of properties from source object(s) into a target
- *   object.
+ * Creates a new object with deeply merged properties of all objects passed.
  *
- * @extra This method will modify the object! Use `add` for a non-destructive
- *   alias. Inherited and non-enumerable properties will not be merged.
+ * @extra This method will not modify objects passed. Use `merge` instead to
+ *   directly mutate a target object. Nested plain objects will also be a new
+ *   copy. Inherited and non-enumerable properties will not be merged.
  *   Enumerable getters will be merged by value only. An error will be thrown
  *   if any object passed is not "plain", created by either bracket syntax or
  *   `Object.create`. Cyclic objects will throw a TypeError.
@@ -15,7 +15,6 @@ import { mergeDeep } from '../util/merge';
  *   For a shallow merge use `Object.assign` or the
  *   [object spread syntax](https://mzl.la/2ZyFTyz) instead.
  *
- * @param {Object} target - The target object.
  * @param {...Object} - Source objects are enumerated as arguments here.
  * @param {resolverFn} [resolver] - A function to determine the value when a
  *   collision occurs. If this function is not provided or returns `undefined`,
@@ -35,13 +34,12 @@ import { mergeDeep } from '../util/merge';
  *
  * @example
  *
- *   Object.merge({a:1}, {a:1,b:2}) -> {a:1,b:2}
- *   Object.merge({a:1,b:2}, {a:2}) -> {a:1,b:2}
- *   Object.merge({a:1,b:2}, {a:2}, (key, n1, n2) => n1 + n2) -> {a:3,b:2}
+ *   Object.add({a:1}, {a:1,b:2}) -> {a:1,b:2}
+ *   Object.add({a:1,b:2}, {a:2}) -> {a:1,b:2}
+ *   Object.add({a:1,b:2}, {a:2}, (key, n1, n2) => n1 + n2) -> {a:3,b:2}
  *
  **/
-export default function merge(target, ...args) {
-  assertPlainObject(target);
+export default function add(...args) {
   let sources;
   let resolver;
   if (isFunction(args[args.length - 1])) {
@@ -50,9 +48,13 @@ export default function merge(target, ...args) {
   } else {
     sources = args;
   }
+  if (!sources.length) {
+    throw new TypeError('Source object must be provided');
+  }
+  const target = {};
   for (let source of sources) {
     assertPlainObject(source);
-    mergeDeep(target, source, resolver);
+    mergeDeep(target, source, resolver, true);
   }
   return target;
 }

@@ -60,7 +60,7 @@ export function iterateWithCyclicCheck(obj, stack, fn) {
     }
 
     stack.push(val);
-    const ret = fn(key, val, stack);
+    const ret = fn(key, val);
     stack.pop();
     return ret;
   }
@@ -107,7 +107,7 @@ function serializeDeep(obj, refs, stack) {
     // does not matter but stringified order does. Symbols need to be
     // serialized first before sorting.
     const entries = [];
-    iterateWithCyclicCheck(obj, stack, (key, val, stack) => {
+    iterateWithCyclicCheck(obj, stack, (key, val) => {
       entries.push([serializeKey(key, refs), serialize(val, refs, stack)]);
     });
     entries.sort((a, b) => {

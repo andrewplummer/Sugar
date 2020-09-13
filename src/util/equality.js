@@ -48,7 +48,7 @@ function objectIsEqual(a, b, stack) {
     let propsEqual = true;
 
     try {
-      iterateWithCyclicCheck(a, stack, (key, val, stack) => {
+      iterateWithCyclicCheck(a, stack, (key, val) => {
         if (!(key in b) || !isEqual(val, b[key], stack)) {
           propsEqual = false;
         }

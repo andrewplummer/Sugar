@@ -2098,6 +2098,8 @@ namespace('Object', function () {
       assertObjectEqual(merge({a:1}, {a:null}), {a:null});
       assertObjectEqual(merge({a:1}, {a:undefined}), {a:undefined});
       assertObjectEqual(merge({a:1}, {a:0}), {a:0});
+      assertObjectEqual(merge({a:1}, {a:NaN}), {a:NaN});
+      assertObjectEqual(merge({a:1}, {a:Infinity}), {a:Infinity});
       assertObjectEqual(merge({a:1}, {a:''}), {a:''});
       assertObjectEqual(merge({a:1}, {a:false}), {a:false});
     });
@@ -2110,11 +2112,14 @@ namespace('Object', function () {
     });
 
     it('should modify deeply merged objects', function() {
-      const obj = {a:{a:1}};
-      const a = obj.a;
-      const result = merge(obj, {a:{b:2}});
+      const obj1 = {a:{a:1}};
+      const obj2 = {a:{b:2}};
+      const a = obj1.a;
+      const result = merge(obj1, obj2);
       assertObjectEqual(result, {a:{a:1,b:2}});
-      assertEqual(result.a, a);
+      assertObjectEqual(obj1, {a:{a:1,b:2}});
+      assertObjectEqual(obj2, {a:{b:2}});
+      assertEqual(obj1.a, a);
     });
 
     it('should be able to merge from multiple sources', function() {
@@ -2128,12 +2133,12 @@ namespace('Object', function () {
     });
 
     it('should merge with resolver', function() {
-      function add(key, n1, n2) {
+      function fn(key, n1, n2) {
         return n1 + n2;
       }
-      assertObjectEqual(merge({a:1}, {a:1}, add), {a:2});
-      assertObjectEqual(merge({a:1,b:2}, {b:2,c:3}, add), {a:1,b:4,c:3});
-      assertObjectEqual(merge({}, {}, add), {});
+      assertObjectEqual(merge({a:1}, {a:1}, fn), {a:2});
+      assertObjectEqual(merge({a:1,b:2}, {b:2,c:3}, fn), {a:1,b:4,c:3});
+      assertObjectEqual(merge({}, {}, fn), {});
     });
 
     it('should take resolver value and not continue deep merge', function() {
@@ -2351,6 +2356,331 @@ namespace('Object', function () {
       });
       assertError(() => {
         merge(null, 5);
+      });
+    });
+  });
+
+  describeInstance('add', function(add) {
+
+    it('should add with no collisions', function() {
+      assertObjectEqual(add({a:1}, {b:2}), {a:1,b:2});
+      assertObjectEqual(add({a:2}, {b:1}), {a:2,b:1});
+      assertObjectEqual(add({a:1}, {}), {a:1});
+      assertObjectEqual(add({}, {a:1}), {a:1});
+      assertObjectEqual(add({}, {}), {});
+    });
+
+    it('should add with collisions', function() {
+      assertObjectEqual(add({a:1}, {a:1}), {a:1});
+      assertObjectEqual(add({a:1}, {a:2}), {a:2});
+      assertObjectEqual(add({a:1}, {a:1,b:2}), {a:1,b:2});
+      assertObjectEqual(add({a:1,b:2}, {a:1}), {a:1,b:2});
+      assertObjectEqual(add({a:1,b:2}, {a:1,b:2}), {a:1,b:2});
+      assertObjectEqual(add({a:1}, {a:[1]}), {a:[1]});
+      assertObjectEqual(add({a:1}, {a:{b:1}}), {a:{b:1}});
+    });
+
+    it('should deeply add plain objects', function() {
+      assertObjectEqual(add({a:{a:1}}, {a:{}}), {a:{a:1}});
+      assertObjectEqual(add({a:{}}, {a:{a:1}}), {a:{a:1}});
+      assertObjectEqual(add({a:{a:1}}, {a:{a:2}}), {a:{a:2}});
+      assertObjectEqual(add({a:{a:1}}, {a:{b:2}}), {a:{a:1,b:2}});
+      assertObjectEqual(
+        add({a:{a:{a:{a:1}}}}, {a:{a:{a:{b:2}}}}),
+        {a:{a:{a:{a:1,b:2}}}}
+      );
+    });
+
+    it('should not deeply add arrays', function() {
+      assertObjectEqual(add({a:[]}, {a:[1]}), {a:[1]});
+      assertObjectEqual(add({a:[1,2,3]}, {a:[4,5,6]}), {a:[4,5,6]});
+    });
+
+    it('should not deeply add known built-in types', function() {
+      assertObjectEqual(add({a:/a/}, {a:/b/}), {a:/b/});
+      assertObjectEqual(
+        add(
+          {a:new Date(2020, 9, 11)},
+          {a:new Date(2020, 9, 12)},
+        ),
+        {a:new Date(2020, 9, 12)},
+      );
+      assertObjectEqual(
+        add(
+          {a:new Set([1,2,3])},
+          {a:new Set([1,2,4])},
+        ),
+        {a:new Set([1,2,4])},
+      );
+      assertObjectEqual(
+        add(
+          {a:new Map([[1,2]])},
+          {a:new Map([[1,3]])},
+        ),
+        {a:new Map([[1,3]])},
+      );
+    });
+
+    it('should add falsy values', function() {
+      assertObjectEqual(add({a:1}, {a:null}), {a:null});
+      assertObjectEqual(add({a:1}, {a:undefined}), {a:undefined});
+      assertObjectEqual(add({a:1}, {a:0}), {a:0});
+      assertObjectEqual(add({a:1}, {a:NaN}), {a:NaN});
+      assertObjectEqual(add({a:1}, {a:Infinity}), {a:Infinity});
+      assertObjectEqual(add({a:1}, {a:''}), {a:''});
+      assertObjectEqual(add({a:1}, {a:false}), {a:false});
+    });
+
+    it('should not modify the object', function() {
+      const obj = {a:1};
+      const result = add(obj, {b:2});
+      assertObjectEqual(result, {a:1,b:2});
+      assertFalse(result === obj);
+    });
+
+    it('should not modify deeply added objects', function() {
+      const obj1 = {a:{a:1}};
+      const obj2 = {a:{b:2}};
+      const result = add(obj1, obj2);
+      assertObjectEqual(result, {a:{a:1,b:2}});
+      assertObjectEqual(obj1, {a:{a:1}});
+      assertObjectEqual(obj2, {a:{b:2}});
+    });
+
+    it('should be able to add from multiple sources', function() {
+      assertObjectEqual(add({a:1},{b:2},{c:3},{d:4}), {a:1,b:2,c:3,d:4});
+    });
+
+    it('should be able to add from multiple sources with a resolver', function() {
+      assertObjectEqual(add({a:1},{a:2},{a:3},{a:4}, (key, n1, n2) => {
+        return n1 + n2;
+      }), {a:10});
+    });
+
+    it('should add with resolver', function() {
+      function fn(key, n1, n2) {
+        return n1 + n2;
+      }
+      assertObjectEqual(add({a:1}, {a:1}, fn), {a:2});
+      assertObjectEqual(add({a:1,b:2}, {b:2,c:3}, fn), {a:1,b:4,c:3});
+      assertObjectEqual(add({}, {}, fn), {});
+    });
+
+    it('should take resolver value and not continue deep add', function() {
+      assertObjectEqual(add({a:{a:1}}, {a:{a:2}}, () => {
+        return { a: 3 };
+      }), {a:{a:3}});
+    });
+
+    it('should handle normally when resolver returns undefined', function() {
+      assertObjectEqual(add({a:{a:1}}, {a:{b:2}}, () => {}), {a:{a:1,b:2}});
+    });
+
+    it('should add complex with resolver', function() {
+      assertObjectEqual(
+        add({
+          likes: 9,
+          posts: [1,2,3],
+          profile: {
+            firstName: 'Bob',
+          }
+        }, {
+          likes: 3,
+          posts: [4,5,6],
+          profile: {
+            lastName: 'Johnson',
+          }
+        }, (key, a, b) => {
+          if (key === 'likes') {
+            return a + b;
+          } else if (key === 'posts') {
+            return a.concat(b);
+          }
+        }),
+        {
+          likes: 12,
+          posts: [1,2,3,4,5,6],
+          profile: {
+            firstName: 'Bob',
+            lastName: 'Johnson',
+          }
+        });
+    });
+
+    it('should pass correct arguments to resolver', function() {
+      add({a:1}, {a:2}, (key, val1, val2, obj1, obj2) => {
+        assertEqual(key, 'a');
+        assertEqual(val1, 1);
+        assertEqual(val2, 2);
+        assertObjectEqual(obj1, {a:1});
+        assertObjectEqual(obj2, {a:2});
+      });
+    });
+
+    it('should add objects with null prototypes', function() {
+      assertObjectEqual(
+        add(
+          Object.create(null, {
+            a: {
+              value: 1,
+              enumerable: true,
+            }
+          }),
+          Object.create(null, {
+            b: {
+              value: 2,
+              enumerable: true,
+            }
+          }),
+        ),
+        {a:1, b:2}
+      );
+    });
+
+    it('should not add non-enumerable properties', function() {
+      assertObjectEqual(
+        add(
+          Object.create(null, {
+            a: {
+              value: 1,
+              enumerable: true,
+            }
+          }),
+          Object.create(null, {
+            b: {
+              value: 2,
+              enumerable: false,
+            }
+          }),
+        ),
+        {a:1}
+      );
+    });
+
+    it('should add enumerable getters by value', function() {
+      const result = add(
+        Object.create(null, {
+          a: {
+            value: 1,
+            enumerable: true,
+          }
+        }),
+        Object.create(null, {
+          b: {
+            get: () => {
+              return 2;
+            },
+            enumerable: true,
+          }
+        }),
+      );
+      assertObjectEqual(Object.getOwnPropertyDescriptor(result, 'b'), {
+        value: 2,
+        writable: true,
+        enumerable: true,
+        configurable: true,
+      });
+    });
+
+    it('should not add inherited properties', function() {
+      const obj = Object.create({c:3}, {
+        b: {
+          enumerable: true,
+          value: 2,
+        }
+      });
+      const result = add({a:1}, obj);
+      assertObjectEqual(result, {a:1,b:2});
+    });
+
+    it('should raise an error on arrays', function() {
+      assertError(() => {
+        add({}, []);
+      }, TypeError);
+      assertError(() => {
+        add([], {});
+      }, TypeError);
+    });
+
+    it('should raise an error for class instances', function() {
+      function Foo() {}
+      assertError(() => {
+        add(new Foo, new Foo);
+      }, TypeError);
+      assertError(() => {
+        add({}, new Foo);
+      }, TypeError);
+      assertError(() => {
+        add(new Foo, {});
+      }, TypeError);
+    });
+
+    it('should add enumerable symbols', function() {
+      const sym1 = Symbol(1);
+      const sym2 = Symbol(2);
+      const obj = {};
+      Object.defineProperty(obj, sym1, {
+        value: 1,
+        enumerable: true,
+      });
+      Object.defineProperty(obj, sym2, {
+        value: 2,
+        enumerable: false,
+      });
+      const result = add({}, obj);
+      assertEqual(result[sym1], 1);
+      assertFalse(sym2 in result);
+    });
+
+    it('should raise an error for built-in objects', function() {
+      assertError(() => {
+        add(/a/, /b/);
+      }, TypeError);
+      assertError(() => {
+        add(new Date(), new Date());
+      }, TypeError);
+      assertError(() => {
+        add(new Set(), new Set());
+      }, TypeError);
+      assertError(() => {
+        add(new Map(), new Map());
+      }, TypeError);
+    });
+
+    it('should raise an error cyclic objects', function() {
+      assertError(() => {
+        const obj = {};
+        obj.a = obj;
+        add(obj, obj);
+      }, TypeError);
+    });
+
+    it('should handle Issue #335', function() {
+      assertObjectEqual(add({a:{b:1}}, {a:{b:2,c:3}}, (key, tVal) => {
+        if (key === 'b') {
+          return tVal;
+        }
+      }), {a:{b:1,c:3}});
+    });
+
+    it('should handle Issue #365', function() {
+      assertObjectEqual(add({a:''}, {a:{b:1}}), {a:{b:1}});
+      assertObjectEqual(add({a:'1'}, {a:{b:1}}), {a:{b:1}});
+    });
+
+    it('should handle irregular input', function() {
+      assertObjectEqual(add({}), {});
+      assertError(() => {
+        add();
+      });
+      assertError(() => {
+        add(null, {});
+      });
+      assertError(() => {
+        add(null, null);
+      });
+      assertError(() => {
+        add(null, 5);
       });
     });
   });

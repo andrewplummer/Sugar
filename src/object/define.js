@@ -1,6 +1,7 @@
 import { defineInstance } from '../core/object';
 import * as methods from './methods';
 
+defineInstance('add', methods.add);
 defineInstance('average', methods.average);
 defineInstance('clone', methods.clone);
 defineInstance('count', methods.count);
