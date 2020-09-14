@@ -1,6 +1,7 @@
 import { defineInstance } from '../core/date';
 import * as methods from './methods';
 
+defineInstance('advance', methods.advance);
 defineInstance('isFuture', methods.isFuture);
 defineInstance('isPast', methods.isPast);
 defineInstance('isValid', methods.isValid);

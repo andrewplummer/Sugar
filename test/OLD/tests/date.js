@@ -1609,92 +1609,6 @@ namespace('Date', function () {
 
   });
 
-  method('advance', function() {
-
-    var d = new Date('August 25, 2010 11:45:20');
-
-    run(d, 'advance', [1,-3,2,8,12,-2,44]);
-
-    equal(d.getFullYear(), 2011, 'year');
-    equal(d.getMonth(), 4, 'month');
-    equal(d.getDate(), 27, 'day');
-    equal(d.getHours(), 19, 'hours');
-    equal(d.getMinutes(), 57, 'minutes');
-    equal(d.getSeconds(), 18, 'seconds');
-    equal(d.getMilliseconds(), 44, 'milliseconds');
-
-
-    var d = new Date('August 25, 2010 11:45:20');
-    run(d, 'advance', [{ year: 1, month: -3, days: 2, hours: 8, minutes: 12, seconds: -2, milliseconds: 44 }]);
-
-    equal(d.getFullYear(), 2011, 'object | year');
-    equal(d.getMonth(), 4, 'object | month');
-    equal(d.getDate(), 27, 'object | day');
-    equal(d.getHours(), 19, 'object | hours');
-    equal(d.getMinutes(), 57, 'object | minutes');
-    equal(d.getSeconds(), 18, 'object | seconds');
-    equal(d.getMilliseconds(), 44, 'object | milliseconds');
-
-    var d = new Date('August 25, 2010 11:45:20');
-    run(d, 'advance', [{ week: 1}]);
-    equal(d, new Date(2010, 8, 1, 11, 45, 20), 'positive weeks supported');
-    run(d, 'advance', [{ week: -2}]);
-    equal(d, new Date(2010, 7, 18, 11, 45, 20), 'negative weeks supported');
-
-    equal(run(new Date(), 'advance', [{ years: 1 }]), testCreateDate('one year from now'), 'advancing 1 year');
-
-    test(new Date(2014, 3, 11), ['0 days'], new Date(2014, 3, 11), 'advancing 0 days should be a noop');
-    test(new Date(2014, 3, 11), ['-1 days'], new Date(2014, 3, 10), 'advancing -1 days');
-
-    var d = new Date();
-    var dayInMs = 24 * 60 * 60 * 1000;
-    test(d, [dayInMs], new Date(d.getTime() + dayInMs), 'can advance milliseconds');
-
-
-    // Advance also allows resetting.
-
-    var d = new Date(2011, 0, 31, 23, 40, 28, 500);
-    dateTest(d, [{ year: 1 }, true], new Date(2012, 0), 'with reset | year');
-    dateTest(d, [{ month: 1 }, true], new Date(2011, 1), 'with reset | month');
-    dateTest(d, [{ week: 1 }, true], new Date(2011, 1, 7), 'with reset | week');
-    dateTest(d, [{ date: 1 }, true], new Date(2011, 1, 1), 'with reset | date');
-    dateTest(d, [{ hour: 1 }, true], new Date(2011, 1, 1, 0), 'with reset | hour');
-    dateTest(d, [{ minute: 1 }, true], new Date(2011, 0, 31, 23, 41), 'with reset | minute');
-    dateTest(d, [{ second: 1 }, true], new Date(2011, 0, 31, 23, 40, 29), 'with reset | second');
-    dateTest(d, [{ millisecond: 1 }, true], new Date(2011, 0, 31, 23, 40, 28, 501), 'with reset | millisecond');
-
-    // Advance also allows string methods
-
-    var d = new Date(2011, 0, 31, 23, 40, 28, 500);
-    dateTest(d, ['3 years'], new Date(2014, 0, 31, 23, 40, 28, 500), 'string input | year');
-    dateTest(d, ['3 months'], new Date(2011, 3, 30, 23, 40, 28, 500), 'string input | month');
-    dateTest(d, ['3 weeks'], new Date(2011, 1, 21, 23, 40, 28, 500), 'string input | week');
-    dateTest(d, ['3 days'], new Date(2011, 1, 3, 23, 40, 28, 500), 'string input | date');
-    dateTest(d, ['3 hours'], new Date(2011, 1, 1, 2, 40, 28, 500), 'string input | hour');
-    dateTest(d, ['3 minutes'], new Date(2011, 0, 31, 23, 43, 28, 500), 'string input | minute');
-    dateTest(d, ['3 seconds'], new Date(2011, 0, 31, 23, 40, 31, 500), 'string input | second');
-    dateTest(d, ['3 milliseconds'], new Date(2011, 0, 31, 23, 40, 28, 503), 'string input | millisecond');
-
-    dateTest(d, ['day'], new Date(2011, 1, 1, 23, 40, 28, 500), 'string input | millisecond');
-
-    // Issue #549 - Fractions in string units
-
-    var d = new Date(2016, 0, 5, 12);
-    dateTest(d, ['10.33 minutes'], new Date(2016, 0, 5, 12, 10, 20), 'string | 10.333 minutes');
-
-    var d = new Date(2016, 0, 5, 12);
-    dateTest(d, ['2.25 hours'], new Date(2016, 0, 5, 14, 15), 'string | 2.25 hours');
-
-    var d = new Date(2016, 0, 5, 12);
-    dateTest(d, ['11.5 days'], new Date(2016, 0, 17), 'string | 11.5 days');
-
-    var d = new Date(2016, 0, 5, 12);
-    dateTest(d, ['-2.25 hours'], new Date(2016, 0, 5, 9, 45), 'string | -2.25 hours');
-
-    // Notably leaving off higher order units here to avoid ambiguity.
-
-  });
-
   method('rewind', function() {
     var d = new Date('August 25, 2010 11:45:20');
 
@@ -3424,8 +3338,6 @@ namespace('Date', function () {
 
     // If traversing into a new month don't reset the date if the date was also advanced
 
-    equal(run(new Date(2011, 0, 31), 'advance', [{ month: 1 }]), new Date(2011, 1, 28), 'advanced by month will land on last day if the day does not exist');
-    equal(run(new Date(2011, 0, 31), 'advance', [{ month: 1, day: 3 }]), new Date(2011, 2, 3), 'can still advance days after reset');
     equal(run(new Date(2011, 2, 31), 'rewind', [{ month: 1 }]), new Date(2011, 1, 28), 'rewind by month will land on last day if the day does not exist');
     equal(run(new Date(2011, 2, 31), 'rewind', [{ month: 1, day: 3 }]), new Date(2011, 1, 25), 'can still rewind days after reset');
   });

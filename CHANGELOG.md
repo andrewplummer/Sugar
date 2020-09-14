@@ -141,6 +141,8 @@ call `Function#lock` first in the chain to achieve the same effect.
     here instead.
 - Changed `Date#set` to no longer accept `week`. Directly use `setISOWeek`
     here instead.
+- Changed `Date#advance` and `Date#rewind` to no longer accept enumerated
+    arguments. Use object syntax here instead.
 
 TODO:
 
