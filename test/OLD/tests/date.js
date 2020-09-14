@@ -1493,147 +1493,6 @@ namespace('Date', function () {
     test(new Date(2017, 7, 14), ['Saturday', { past: true }], new Date(2017, 7, 12), 'Preference option should work');
   });
 
-  method('set', function() {
-
-    // Just the time
-    var d;
-
-    d = new Date('August 25, 2010 11:45:20');
-    run(d, 'set', [2008, 5, 18, 4, 25, 30, 400]);
-
-    equal(d.getFullYear(), 2008, 'year');
-    equal(d.getMonth(), 5, 'month');
-    equal(d.getDate(), 18, 'date');
-    equal(d.getHours(), 4, 'hours');
-    equal(d.getMinutes(), 25, 'minutes');
-    equal(d.getSeconds(), 30, 'seconds');
-    equal(d.getMilliseconds(), 400, 'milliseconds');
-
-    d = new Date('August 25, 2010 11:45:20');
-    run(d, 'set', [{ year: 2008, month: 5, date: 18, hour: 4, minute: 25, second: 30, millisecond: 400 }]);
-
-    equal(d.getFullYear(), 2008, 'object | year');
-    equal(d.getMonth(), 5, 'object | month');
-    equal(d.getDate(), 18, 'object | date');
-    equal(d.getHours(), 4, 'object | hours');
-    equal(d.getMinutes(), 25, 'object | minutes');
-    equal(d.getSeconds(), 30, 'object | seconds');
-    equal(d.getMilliseconds(), 400, 'object | milliseconds');
-
-    d = new Date('August 25, 2010 11:45:20');
-    run(d, 'set', [{ years: 2008, months: 5, date: 18, hours: 4, minutes: 25, seconds: 30, milliseconds: 400 }]);
-
-    equal(d.getFullYear(), 2008, 'object plural | year');
-    equal(d.getMonth(), 5, 'object plural | month');
-    equal(d.getDate(), 18, 'object plural | date');
-    equal(d.getHours(), 4, 'object plural | hours');
-    equal(d.getMinutes(), 25, 'object plural | minutes');
-    equal(d.getSeconds(), 30, 'object plural | seconds');
-    equal(d.getMilliseconds(), 400, 'object plural | milliseconds');
-
-    run(d, 'set', [{ weekday: 2 }]);
-    equal(d.getDate(), 17, 'object | weekday 2');
-    run(d, 'set', [{ weekday: 5 }]);
-    equal(d.getDate(), 20, 'object | weekday 5');
-
-
-    run(d, 'set', [{ weekday: 2 }, true]);
-    equal(d.getDate(), 17, 'object | reset time | weekday 2');
-    run(d, 'set', [{ weekday: 5 }, true]);
-    equal(d.getDate(), 20, 'object | reset time | weekday 5');
-
-
-    d = new Date('August 25, 2010 11:45:20');
-    run(d, 'set', [{ years: 2005, hours: 2 }]);
-
-    equal(d.getFullYear(), 2005, 'no reset | year');
-    equal(d.getMonth(), 7, 'no reset | month');
-    equal(d.getDate(), 25, 'no reset | date');
-    equal(d.getHours(), 2, 'no reset | hours');
-    equal(d.getMinutes(), 45, 'no reset | minutes');
-    equal(d.getSeconds(), 20, 'no reset | seconds');
-    equal(d.getMilliseconds(), 0, 'no reset | milliseconds');
-
-    d = new Date('August 25, 2010 11:45:20');
-    run(d, 'set', [{ years: 2008, hours: 4 }, true]);
-
-    equal(d.getFullYear(), 2008, 'reset | year');
-    equal(d.getMonth(), 7, 'reset | month');
-    equal(d.getDate(), 25, 'reset | date');
-    equal(d.getHours(), 4, 'reset | hours');
-    equal(d.getMinutes(), 0, 'reset | minutes');
-    equal(d.getSeconds(), 0, 'reset | seconds');
-    equal(d.getMilliseconds(), 0, 'reset | milliseconds');
-
-
-    d = run(new Date('August 25, 2010 11:45:20'), 'setUTC', [true]);
-    run(d, 'set', [{ years: 2008, hours: 4 }, true]);
-
-    equal(d.getFullYear(), 2008, 'utc | reset utc | year');
-    equal(d.getMonth(), 7, 'utc | reset utc | month');
-    equal(d.getDate(), d.getTimezoneOffset() > 240 ? 24 : 25, 'utc | reset utc | date');
-    equal(d.getHours(), testGetHours(4 - (d.getTimezoneOffset() / 60)), 'utc | reset utc | hours');
-    equal(d.getMinutes(), Math.abs(d.getTimezoneOffset() % 60), 'utc | reset utc | minutes');
-    equal(d.getSeconds(), 0, 'utc | reset utc | seconds');
-    equal(d.getMilliseconds(), 0, 'utc | reset utc | milliseconds');
-
-
-    d = run(new Date('August 25, 2010 11:45:20'), 'setUTC', [true]);
-    run(d, 'set', [{ years: 2005, hours: 2 }, false]);
-
-    equal(d.getFullYear(), 2005, 'utc | no reset utc | year');
-    equal(d.getMonth(), 7, 'utc | no reset utc | month');
-    equal(d.getDate(), d.getTimezoneOffset() >= 135 ? 24 : 25, 'utc | no reset utc | date');
-    equal(d.getHours(), testGetHours(2 - (d.getTimezoneOffset() / 60)), 'utc | no reset utc | hours');
-    equal(d.getMinutes(), 45, 'utc | no reset utc | minutes');
-    equal(d.getSeconds(), 20, 'utc | no reset utc | seconds');
-    equal(d.getMilliseconds(), 0, 'utc | no reset utc | milliseconds');
-
-
-    d = run(new Date('August 25, 2010 11:45:20'), 'setUTC', [true]);
-    run(d, 'set', [{ years: 2005, hours: 2 }, false]);
-
-    equal(d.getFullYear(), 2005, 'utc | no reset | year');
-    equal(d.getMonth(), 7, 'utc | no reset | month');
-    equal(d.getDate(), d.getTimezoneOffset() >= 135 ? 24 : 25, 'utc | no reset | date');
-    equal(d.getHours(), testGetHours(2 - (d.getTimezoneOffset() / 60)), 'utc | no reset | hours');
-    equal(d.getMinutes(), 45, 'utc | no reset | minutes');
-    equal(d.getSeconds(), 20, 'utc | no reset | seconds');
-    equal(d.getMilliseconds(), 0, 'utc | no reset | milliseconds');
-
-    d = new Date('August 5, 2010 13:45:02');
-    d.setMilliseconds(234);
-    run(d, 'set', [{ month: 3 }]);
-
-    equal(d.getFullYear(), 2010, 'does not reset year');
-    equal(d.getMonth(), 3, 'does reset month');
-    equal(d.getDate(), 5, 'does not reset date');
-    equal(d.getHours(), 13, 'does not reset hours');
-    equal(d.getMinutes(), 45, 'does not reset minutes');
-    equal(d.getSeconds(), 2, 'does not reset seconds');
-    equal(d.getMilliseconds(), 234, 'does not reset milliseconds');
-
-    d = new Date('August 5, 2010 13:45:02');
-    run(d, 'set', [{ month: 3 }, true]);
-
-    equal(d.getFullYear(), 2010, 'does not reset year');
-    equal(d.getMonth(), 3, 'does reset month');
-    equal(d.getDate(), 1, 'does reset date');
-    equal(d.getHours(), 0, 'does reset hours');
-    equal(d.getMinutes(), 0, 'does reset minutes');
-    equal(d.getSeconds(), 0, 'does reset seconds');
-    equal(d.getMilliseconds(), 0, 'does reset milliseconds');
-
-    equal(run(new Date, 'set', [0]), new Date(0), 'handles timestamps');
-
-    var obj = { year: 1998 };
-    var d = new Date();
-    run(d, 'set', [obj]);
-
-    equal(obj.year, 1998, 'Year should still be 1998');
-    equal(Object.keys(obj).length, 1, 'No other properties should be set');
-  });
-
   group('Get/Set Weekday', function() {
     var d;
 
@@ -3120,31 +2979,6 @@ namespace('Date', function () {
 
   });
 
-  group('isDateOfWeek', function() {
-
-    equal(run(new Date(2001, 11, 28), 'isSunday'), false, 'isSunday');
-    equal(run(new Date(2001, 11, 28), 'isMonday'), false, 'isMonday');
-    equal(run(new Date(2001, 11, 28), 'isTuesday'), false, 'isTuesday');
-    equal(run(new Date(2001, 11, 28), 'isWednesday'), false, 'isWednesday');
-    equal(run(new Date(2001, 11, 28), 'isThursday'), false, 'isThursday');
-    equal(run(new Date(2001, 11, 28), 'isFriday'), true, 'isFriday');
-    equal(run(new Date(2001, 11, 28), 'isSaturday'), false, 'isSaturday');
-
-    equal(run(new Date(2001, 11, 28), 'isJanuary'), false, 'isJanuary');
-    equal(run(new Date(2001, 11, 28), 'isFebruary'), false, 'isFebruary');
-    equal(run(new Date(2001, 11, 28), 'isMarch'), false, 'isMarch');
-    equal(run(new Date(2001, 11, 28), 'isApril'), false, 'isApril');
-    equal(run(new Date(2001, 11, 28), 'isMay'), false, 'isMay');
-    equal(run(new Date(2001, 11, 28), 'isJune'), false, 'isJune');
-    equal(run(new Date(2001, 11, 28), 'isJuly'), false, 'isJuly');
-    equal(run(new Date(2001, 11, 28), 'isAugust'), false, 'isAugust');
-    equal(run(new Date(2001, 11, 28), 'isSeptember'), false, 'isSeptember');
-    equal(run(new Date(2001, 11, 28), 'isOctober'), false, 'isOctober');
-    equal(run(new Date(2001, 11, 28), 'isNovember'), false, 'isNovember');
-    equal(run(new Date(2001, 11, 28), 'isDecember'), true, 'isDecember');
-
-  });
-
   method('isAfter', function() {
 
     dateTest(new Date(2001,1,23), [new Date(2000,1,23)], true, 'January 23, 2000');
@@ -3594,13 +3428,6 @@ namespace('Date', function () {
     equal(run(new Date(2011, 0, 31), 'advance', [{ month: 1, day: 3 }]), new Date(2011, 2, 3), 'can still advance days after reset');
     equal(run(new Date(2011, 2, 31), 'rewind', [{ month: 1 }]), new Date(2011, 1, 28), 'rewind by month will land on last day if the day does not exist');
     equal(run(new Date(2011, 2, 31), 'rewind', [{ month: 1, day: 3 }]), new Date(2011, 1, 25), 'can still rewind days after reset');
-    equal(run(new Date(2011, 0, 31), 'set', [{ month: 1 }]), new Date(2011, 1, 28), 'set does not cause month traversal');
-    equal(run(new Date(2011, 0, 31), 'set', [{ month: 1, day: 3 }]), new Date(2011, 1, 3), 'set with day does not cause month traversal');
-
-
-    var d = run(new Date(2010, 0, 31), 'set', [{ month: 1 }, true]);
-    equal(d, new Date(2010, 1), 'reset dates will not accidentally traverse into a different month');
-
   });
 
   group('DST Issues', function() {
@@ -3632,11 +3459,6 @@ namespace('Date', function () {
     var t1 = d1.getTimezoneOffset();
     var t2 = d2.getTimezoneOffset();
     equal(d2 - d1, (24 * 60 * 60 * 1000) + ((t2 - t1) * 60 * 1000), 'adding a day should be equal to 24 hours + whatever change in timezone offset that may have occurred');
-
-    // Catch for DST inequivalencies
-    // FAILS IN DAMASCUS IN XP!
-    var d = run(new Date(2010, 11, 9, 17), 'set', [{ year: 1998, month: 3, day: 3}, true]);
-    equal(d.getHours(), 0, 'handles DST properly');
 
   });
 

@@ -22,7 +22,7 @@ const DEFAULT_COLLATOR = new Intl.Collator();
  *   el   The array element.
  *   arr  A reference to the array.
  *
- * @typedef {Options} SortOptions
+ * @typedef {Object} SortOptions
  * @property {string|mapFn} [map] - A function to map values or a string serving
  *   as a shortcut. When null, the array element will be used as the value.
  *   Implements deep mapping.

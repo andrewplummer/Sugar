@@ -1,9 +1,10 @@
-import { defineStatic, defineInstance } from '../core/date';
+import { defineInstance } from '../core/date';
 import * as methods from './methods';
 
 defineInstance('isFuture', methods.isFuture);
 defineInstance('isPast', methods.isPast);
 defineInstance('isValid', methods.isValid);
+defineInstance('set', methods.set);
 
 defineInstance('isSunday', methods.isSunday);
 defineInstance('isMonday', methods.isMonday);

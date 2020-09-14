@@ -136,6 +136,11 @@ call `Function#lock` first in the chain to achieve the same effect.
     can be used here for special use cases such as this.
 - Removed `Object.isArguments`.
 - Removed `Object.isError`.
+- Changed `Date#set` to no longer accept enumerated arguments. Create a new date
+    with the same arguments here instead where applicable or use object syntax
+    here instead.
+- Changed `Date#set` to no longer accept `week`. Directly use `setISOWeek`
+    here instead.
 
 TODO:
 
