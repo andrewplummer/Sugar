@@ -130,7 +130,6 @@ namespace('Date', function () {
   );
 
   describeInstance('set', function (set) {
-
     it('should set the year', () => {
       assertDateEqual(
         set(new Date(2020, 0), { year: 2010 }),
@@ -147,18 +146,12 @@ namespace('Date', function () {
     });
 
     it('should set the month', () => {
-      assertDateEqual(
-        set(new Date(2020, 0), { month: 1 }),
-        new Date(2020, 1)
-      );
+      assertDateEqual(set(new Date(2020, 0), { month: 1 }), new Date(2020, 1));
       assertDateEqual(
         set(new Date(2020, 0), { month: 11 }),
         new Date(2020, 11)
       );
-      assertDateEqual(
-        set(new Date(2020, 0), { month: 21 }),
-        new Date(2021, 9)
-      );
+      assertDateEqual(set(new Date(2020, 0), { month: 21 }), new Date(2021, 9));
       assertDateEqual(
         set(new Date(2020, 0), { month: -1 }),
         new Date(2019, 11)
@@ -209,10 +202,7 @@ namespace('Date', function () {
         set(new Date(2020, 0), { day: -1 }),
         new Date(2019, 11, 28)
       );
-      assertDateEqual(
-        set(new Date(2020, 0), { day: 7 }),
-        new Date(2020, 0, 5)
-      );
+      assertDateEqual(set(new Date(2020, 0), { day: 7 }), new Date(2020, 0, 5));
       assertDateEqual(set(new Date(2020, 0), { day: 3 }), new Date(2020, 0, 1));
       assertDateEqual(set(new Date(2020, 0), { day: 4 }), new Date(2020, 0, 2));
       assertDateEqual(set(new Date(2020, 0), { day: 5 }), new Date(2020, 0, 3));
@@ -320,67 +310,35 @@ namespace('Date', function () {
 
     it('should reset the date by specificity', () => {
       assertDateEqual(
-        set(
-          new Date(2020, 2, 31, 11, 59, 59, 999),
-          { year: 2021 },
-          true
-        ),
+        set(new Date(2020, 2, 31, 11, 59, 59, 999), { year: 2021 }, true),
         new Date(2021, 0)
       );
       assertDateEqual(
-        set(
-          new Date(2020, 2, 31, 11, 59, 59, 999),
-          { month: 0 },
-          true
-        ),
+        set(new Date(2020, 2, 31, 11, 59, 59, 999), { month: 0 }, true),
         new Date(2020, 0)
       );
       assertDateEqual(
-        set(
-          new Date(2020, 2, 31, 11, 59, 59, 999),
-          { date: 1 },
-          true
-        ),
+        set(new Date(2020, 2, 31, 11, 59, 59, 999), { date: 1 }, true),
         new Date(2020, 2, 1)
       );
       assertDateEqual(
-        set(
-          new Date(2020, 2, 31, 11, 59, 59, 999),
-          { day: 5 },
-          true
-        ),
+        set(new Date(2020, 2, 31, 11, 59, 59, 999), { day: 5 }, true),
         new Date(2020, 3, 3)
       );
       assertDateEqual(
-        set(
-          new Date(2020, 2, 31, 11, 59, 59, 999),
-          { weekday: 5 },
-          true
-        ),
+        set(new Date(2020, 2, 31, 11, 59, 59, 999), { weekday: 5 }, true),
         new Date(2020, 3, 3)
       );
       assertDateEqual(
-        set(
-          new Date(2020, 2, 31, 11, 59, 59, 999),
-          { hours: 20 },
-          true
-        ),
+        set(new Date(2020, 2, 31, 11, 59, 59, 999), { hours: 20 }, true),
         new Date(2020, 2, 31, 20)
       );
       assertDateEqual(
-        set(
-          new Date(2020, 2, 31, 11, 59, 59, 999),
-          { minutes: 30 },
-          true
-        ),
+        set(new Date(2020, 2, 31, 11, 59, 59, 999), { minutes: 30 }, true),
         new Date(2020, 2, 31, 11, 30)
       );
       assertDateEqual(
-        set(
-          new Date(2020, 2, 31, 11, 59, 59, 999),
-          { seconds: 30 },
-          true
-        ),
+        set(new Date(2020, 2, 31, 11, 59, 59, 999), { seconds: 30 }, true),
         new Date(2020, 2, 31, 11, 59, 30)
       );
       assertDateEqual(
@@ -395,19 +353,11 @@ namespace('Date', function () {
 
     it('should ignore day when date is set', () => {
       assertDateEqual(
-        set(
-          new Date(2020, 0),
-          { date: 15, day: 1 },
-          true
-        ),
+        set(new Date(2020, 0), { date: 15, day: 1 }, true),
         new Date(2020, 0, 15)
       );
       assertDateEqual(
-        set(
-          new Date(2020, 0),
-          { day: 1, date: 15 },
-          true
-        ),
+        set(new Date(2020, 0), { day: 1, date: 15 }, true),
         new Date(2020, 0, 15)
       );
     });
@@ -428,10 +378,14 @@ namespace('Date', function () {
         new Date(2010, 11, 31, 23, 30, 59, 999)
       );
       assertDateEqual(
-        set(new Date(2020, 11, 31, 23, 59, 59, 999), {
-          year: 2010,
-          minutes: 30,
-        }, true),
+        set(
+          new Date(2020, 11, 31, 23, 59, 59, 999),
+          {
+            year: 2010,
+            minutes: 30,
+          },
+          true
+        ),
         new Date(2010, 11, 31, 23, 30)
       );
     });
@@ -485,10 +439,14 @@ namespace('Date', function () {
 
     it('should not accidentally traverse into different month on reset', () => {
       assertDateEqual(
-        set(new Date(2010, 0, 31), {
-          month: 1,
-        }, true),
-        new Date(2010, 1),
+        set(
+          new Date(2010, 0, 31),
+          {
+            month: 1,
+          },
+          true
+        ),
+        new Date(2010, 1)
       );
     });
 
@@ -510,11 +468,15 @@ namespace('Date', function () {
         new Date(2020, 1, 8, 2)
       );
       assertDateEqual(
-        set(new Date(2010, 11, 9, 17), {
-          year: 1998,
-          month: 3,
-          day: 3,
-        }, true),
+        set(
+          new Date(2010, 11, 9, 17),
+          {
+            year: 1998,
+            month: 3,
+            day: 3,
+          },
+          true
+        ),
         new Date(1998, 3, 8)
       );
     });
@@ -542,11 +504,9 @@ namespace('Date', function () {
         set(new Date(2020, 0), { year: 2020.5 });
       }, TypeError);
     });
-
   });
 
   describeInstance('advance', function (advance) {
-
     it('should advance the year', () => {
       assertDateEqual(
         advance(new Date(2020, 0), { year: 1 }),
@@ -827,67 +787,35 @@ namespace('Date', function () {
 
     it('should reset the date by specificity', () => {
       assertDateEqual(
-        advance(
-          new Date(2020, 2, 31, 11, 59, 59, 999),
-          { year: 1 },
-          true
-        ),
+        advance(new Date(2020, 2, 31, 11, 59, 59, 999), { year: 1 }, true),
         new Date(2021, 0)
       );
       assertDateEqual(
-        advance(
-          new Date(2020, 2, 31, 11, 59, 59, 999),
-          { month: 1 },
-          true
-        ),
+        advance(new Date(2020, 2, 31, 11, 59, 59, 999), { month: 1 }, true),
         new Date(2020, 3)
       );
       assertDateEqual(
-        advance(
-          new Date(2020, 2, 31, 11, 59, 59, 999),
-          { date: 1 },
-          true
-        ),
+        advance(new Date(2020, 2, 31, 11, 59, 59, 999), { date: 1 }, true),
         new Date(2020, 3, 1)
       );
       assertDateEqual(
-        advance(
-          new Date(2020, 2, 31, 11, 59, 59, 999),
-          { day: 5 },
-          true
-        ),
+        advance(new Date(2020, 2, 31, 11, 59, 59, 999), { day: 5 }, true),
         new Date(2020, 3, 5)
       );
       assertDateEqual(
-        advance(
-          new Date(2020, 2, 31, 11, 59, 59, 999),
-          { weekday: 5 },
-          true
-        ),
+        advance(new Date(2020, 2, 31, 11, 59, 59, 999), { weekday: 5 }, true),
         new Date(2020, 3, 5)
       );
       assertDateEqual(
-        advance(
-          new Date(2020, 2, 31, 11, 59, 59, 999),
-          { hours: 20 },
-          true
-        ),
+        advance(new Date(2020, 2, 31, 11, 59, 59, 999), { hours: 20 }, true),
         new Date(2020, 3, 1, 7)
       );
       assertDateEqual(
-        advance(
-          new Date(2020, 2, 31, 11, 59, 59, 999),
-          { minutes: 30 },
-          true
-        ),
+        advance(new Date(2020, 2, 31, 11, 59, 59, 999), { minutes: 30 }, true),
         new Date(2020, 2, 31, 12, 29)
       );
       assertDateEqual(
-        advance(
-          new Date(2020, 2, 31, 11, 59, 59, 999),
-          { seconds: 30 },
-          true
-        ),
+        advance(new Date(2020, 2, 31, 11, 59, 59, 999), { seconds: 30 }, true),
         new Date(2020, 2, 31, 12, 0, 29)
       );
       assertDateEqual(
@@ -902,19 +830,11 @@ namespace('Date', function () {
 
     it('should ignore day when date is set', () => {
       assertDateEqual(
-        advance(
-          new Date(2020, 0),
-          { date: 5, day: 7 },
-          true
-        ),
+        advance(new Date(2020, 0), { date: 5, day: 7 }, true),
         new Date(2020, 0, 6)
       );
       assertDateEqual(
-        advance(
-          new Date(2020, 0),
-          { day: 7, date: 5 },
-          true
-        ),
+        advance(new Date(2020, 0), { day: 7, date: 5 }, true),
         new Date(2020, 0, 6)
       );
     });
@@ -942,10 +862,14 @@ namespace('Date', function () {
         new Date(2023, 0, 1, 0, 29, 59, 999)
       );
       assertDateEqual(
-        advance(new Date(2020, 11, 31, 23, 59, 59, 999), {
-          year: 2,
-          minutes: 30,
-        }, true),
+        advance(
+          new Date(2020, 11, 31, 23, 59, 59, 999),
+          {
+            year: 2,
+            minutes: 30,
+          },
+          true
+        ),
         new Date(2023, 0, 1, 0, 29)
       );
     });
@@ -970,17 +894,14 @@ namespace('Date', function () {
           hours: 8,
           minutes: 12,
           seconds: -2,
-          milliseconds: 44
+          milliseconds: 44,
         }),
         new Date(2011, 4, 27, 19, 57, 18, 44)
       );
     });
 
     it('should allow a string shortcut', () => {
-      assertDateEqual(
-        advance(new Date(2020, 0), '3 years'),
-        new Date(2023, 0)
-      );
+      assertDateEqual(advance(new Date(2020, 0), '3 years'), new Date(2023, 0));
       assertDateEqual(
         advance(new Date(2020, 0), '3 months'),
         new Date(2020, 3)
@@ -1012,10 +933,7 @@ namespace('Date', function () {
     });
 
     it('should allow irregular string forms', () => {
-      assertDateEqual(
-        advance(new Date(2020, 0), '1 year'),
-        new Date(2021, 0)
-      );
+      assertDateEqual(advance(new Date(2020, 0), '1 year'), new Date(2021, 0));
       assertDateEqual(
         advance(new Date(2020, 0), '-3 years'),
         new Date(2017, 0)
@@ -1081,8 +999,14 @@ namespace('Date', function () {
     });
 
     it('should allow advancing from a numeric timestamp', () => {
-      assertDateEqual(advance(new Date(2020, 0), 24 * 60 * 60 * 1000), new Date(2020, 0, 2));
-      assertDateEqual(advance(new Date(2020, 0), 29 * 60 * 60 * 1000, true), new Date(2020, 0, 2, 5));
+      assertDateEqual(
+        advance(new Date(2020, 0), 24 * 60 * 60 * 1000),
+        new Date(2020, 0, 2)
+      );
+      assertDateEqual(
+        advance(new Date(2020, 0), 29 * 60 * 60 * 1000, true),
+        new Date(2020, 0, 2, 5)
+      );
     });
 
     it('should not traverse into different month when not enough days', () => {
@@ -1100,7 +1024,7 @@ namespace('Date', function () {
           month: 1,
           days: 3,
         }),
-        new Date(2011, 2, 3),
+        new Date(2011, 2, 3)
       );
     });
 
@@ -1125,10 +1049,14 @@ namespace('Date', function () {
 
     it('should not accidentally traverse into different month on reset', () => {
       assertDateEqual(
-        advance(new Date(2010, 0, 31), {
-          month: 1,
-        }, true),
-        new Date(2010, 1),
+        advance(
+          new Date(2010, 0, 31),
+          {
+            month: 1,
+          },
+          true
+        ),
+        new Date(2010, 1)
       );
     });
 
@@ -1150,12 +1078,16 @@ namespace('Date', function () {
         new Date(2020, 1, 8, 2)
       );
       assertDateEqual(
-        advance(new Date(2020, 11, 9, 17), {
-          year: 2,
-          month: 3,
-          day: 31,
-        }, true),
-        new Date(2023, 3, 8)
+        advance(
+          new Date(2020, 11, 9, 17),
+          {
+            year: 2,
+            month: 3,
+            day: 31,
+          },
+          true
+        ),
+        new Date(2023, 3, 9)
       );
     });
 
@@ -1184,6 +1116,617 @@ namespace('Date', function () {
       assertError(() => {
         advance(new Date(2020, 0), { week: null });
       }, TypeError);
+    });
+  });
+
+  describeInstance('rewind', function (rewind) {
+    it('should rewind the year', () => {
+      assertDateEqual(
+        rewind(new Date(2020, 0), { year: 1 }),
+        new Date(2019, 0)
+      );
+      assertDateEqual(
+        rewind(new Date(2020, 0), { year: 10 }),
+        new Date(2010, 0)
+      );
+      assertDateEqual(
+        rewind(new Date(2020, 0), { year: -5 }),
+        new Date(2025, 0)
+      );
+      assertDateEqual(
+        rewind(new Date(2020, 0), { year: 0 }),
+        new Date(2020, 0)
+      );
+    });
+
+    it('should rewind the month', () => {
+      assertDateEqual(
+        rewind(new Date(2020, 1), { month: 1 }),
+        new Date(2020, 0)
+      );
+      assertDateEqual(
+        rewind(new Date(2020, 1), { month: 11 }),
+        new Date(2019, 2)
+      );
+      assertDateEqual(
+        rewind(new Date(2020, 1), { month: 21 }),
+        new Date(2018, 4)
+      );
+      assertDateEqual(
+        rewind(new Date(2020, 1), { month: -1 }),
+        new Date(2020, 2)
+      );
+      assertDateEqual(
+        rewind(new Date(2020, 1), { month: -4 }),
+        new Date(2020, 5)
+      );
+      assertDateEqual(
+        rewind(new Date(2020, 1), { month: 0 }),
+        new Date(2020, 1)
+      );
+    });
+
+    it('should rewind the week', () => {
+      assertDateEqual(
+        rewind(new Date(2020, 0), { week: 1 }),
+        new Date(2019, 11, 25)
+      );
+      assertDateEqual(
+        rewind(new Date(2020, 0), { week: 2 }),
+        new Date(2019, 11, 18)
+      );
+      assertDateEqual(
+        rewind(new Date(2020, 0), { week: -1 }),
+        new Date(2020, 0, 8)
+      );
+      assertDateEqual(
+        rewind(new Date(2020, 0), { week: -2 }),
+        new Date(2020, 0, 15)
+      );
+      assertDateEqual(
+        rewind(new Date(2020, 0), { week: 0 }),
+        new Date(2020, 0)
+      );
+    });
+
+    it('should rewind the date', () => {
+      assertDateEqual(
+        rewind(new Date(2020, 0), { date: 2 }),
+        new Date(2019, 11, 30)
+      );
+      assertDateEqual(
+        rewind(new Date(2020, 0), { date: 14 }),
+        new Date(2019, 11, 18)
+      );
+      assertDateEqual(
+        rewind(new Date(2020, 0), { date: 31 }),
+        new Date(2019, 11, 1)
+      );
+      assertDateEqual(
+        rewind(new Date(2020, 0), { date: 37 }),
+        new Date(2019, 10, 25)
+      );
+      assertDateEqual(
+        rewind(new Date(2020, 0), { date: 0 }),
+        new Date(2020, 0)
+      );
+      assertDateEqual(
+        rewind(new Date(2020, 0), { date: -1 }),
+        new Date(2020, 0, 2)
+      );
+    });
+
+    it('should rewind by day as an alias for date', () => {
+      assertDateEqual(
+        rewind(new Date(2020, 0), { day: 2 }),
+        new Date(2019, 11, 30)
+      );
+      assertDateEqual(
+        rewind(new Date(2020, 0), { day: 14 }),
+        new Date(2019, 11, 18)
+      );
+      assertDateEqual(
+        rewind(new Date(2020, 0), { day: 31 }),
+        new Date(2019, 11, 1)
+      );
+      assertDateEqual(
+        rewind(new Date(2020, 0), { day: 37 }),
+        new Date(2019, 10, 25)
+      );
+      assertDateEqual(rewind(new Date(2020, 0), { day: 0 }), new Date(2020, 0));
+      assertDateEqual(
+        rewind(new Date(2020, 0), { day: -1 }),
+        new Date(2020, 0, 2)
+      );
+    });
+
+    it('should rewind the hours', () => {
+      assertDateEqual(
+        rewind(new Date(2020, 0, 1, 12), { hours: 5 }),
+        new Date(2020, 0, 1, 7)
+      );
+      assertDateEqual(
+        rewind(new Date(2020, 0, 1, 12), { hours: 12 }),
+        new Date(2020, 0, 1)
+      );
+      assertDateEqual(
+        rewind(new Date(2020, 0, 1, 12), { hours: 13 }),
+        new Date(2019, 11, 31, 23)
+      );
+      assertDateEqual(
+        rewind(new Date(2020, 0, 1, 12), { hours: 24 }),
+        new Date(2019, 11, 31, 12)
+      );
+      assertDateEqual(
+        rewind(new Date(2020, 0, 1, 12), { hours: 29 }),
+        new Date(2019, 11, 31, 7)
+      );
+      assertDateEqual(
+        rewind(new Date(2020, 0, 1, 12), { hours: -5 }),
+        new Date(2020, 0, 1, 17)
+      );
+      assertDateEqual(
+        rewind(new Date(2020, 0, 1, 12), { hours: -12 }),
+        new Date(2020, 0, 2)
+      );
+      assertDateEqual(
+        rewind(new Date(2020, 0, 1, 12), { hours: -24 }),
+        new Date(2020, 0, 2, 12)
+      );
+      assertDateEqual(
+        rewind(new Date(2020, 0, 1, 12), { hours: 0 }),
+        new Date(2020, 0, 1, 12)
+      );
+    });
+
+    it('should rewind the minutes', () => {
+      assertDateEqual(
+        rewind(new Date(2020, 0, 1, 12, 30), { minutes: 10 }),
+        new Date(2020, 0, 1, 12, 20)
+      );
+      assertDateEqual(
+        rewind(new Date(2020, 0, 1, 12, 30), { minutes: 30 }),
+        new Date(2020, 0, 1, 12)
+      );
+      assertDateEqual(
+        rewind(new Date(2020, 0, 1, 12, 30), { minutes: 90 }),
+        new Date(2020, 0, 1, 11)
+      );
+      assertDateEqual(
+        rewind(new Date(2020, 0, 1, 12, 30), { minutes: -30 }),
+        new Date(2020, 0, 1, 13)
+      );
+      assertDateEqual(
+        rewind(new Date(2020, 0, 1, 12, 30), { minutes: -90 }),
+        new Date(2020, 0, 1, 14)
+      );
+      assertDateEqual(
+        rewind(new Date(2020, 0, 1, 12, 30), { minutes: 0 }),
+        new Date(2020, 0, 1, 12, 30)
+      );
+    });
+
+    it('should rewind the seconds', () => {
+      assertDateEqual(
+        rewind(new Date(2020, 0, 1, 12, 30, 30), { seconds: 10 }),
+        new Date(2020, 0, 1, 12, 30, 20)
+      );
+      assertDateEqual(
+        rewind(new Date(2020, 0, 1, 12, 30, 30), { seconds: 30 }),
+        new Date(2020, 0, 1, 12, 30)
+      );
+      assertDateEqual(
+        rewind(new Date(2020, 0, 1, 12, 30, 30), { seconds: 90 }),
+        new Date(2020, 0, 1, 12, 29)
+      );
+      assertDateEqual(
+        rewind(new Date(2020, 0, 1, 12, 30, 30), { seconds: -30 }),
+        new Date(2020, 0, 1, 12, 31)
+      );
+      assertDateEqual(
+        rewind(new Date(2020, 0, 1, 12, 30, 30), { seconds: -90 }),
+        new Date(2020, 0, 1, 12, 32)
+      );
+      assertDateEqual(
+        rewind(new Date(2020, 0, 1, 12, 30, 30), { seconds: 0 }),
+        new Date(2020, 0, 1, 12, 30, 30)
+      );
+    });
+
+    it('should rewind the milliseconds', () => {
+      assertDateEqual(
+        rewind(new Date(2020, 0, 1, 12, 30, 30, 300), { milliseconds: 300 }),
+        new Date(2020, 0, 1, 12, 30, 30)
+      );
+      assertDateEqual(
+        rewind(new Date(2020, 0, 1, 12, 30, 30, 300), { milliseconds: 1200 }),
+        new Date(2020, 0, 1, 12, 30, 29, 100)
+      );
+      assertDateEqual(
+        rewind(new Date(2020, 0, 1, 12, 30, 30, 300), { milliseconds: -300 }),
+        new Date(2020, 0, 1, 12, 30, 30, 600)
+      );
+      assertDateEqual(
+        rewind(new Date(2020, 0, 1, 12, 30, 30, 300), { milliseconds: -1200 }),
+        new Date(2020, 0, 1, 12, 30, 31, 500)
+      );
+    });
+
+    it('should allow aliases', () => {
+      assertDateEqual(
+        rewind(new Date(2020, 0), { years: 1 }),
+        new Date(2019, 0)
+      );
+      assertDateEqual(
+        rewind(new Date(2020, 0), { months: 1 }),
+        new Date(2019, 11)
+      );
+      assertDateEqual(
+        rewind(new Date(2020, 0), { weeks: 1 }),
+        new Date(2019, 11, 25)
+      );
+      assertDateEqual(
+        rewind(new Date(2020, 0), { weekday: 1 }),
+        new Date(2019, 11, 31)
+      );
+      assertDateEqual(
+        rewind(new Date(2020, 0), { days: 1 }),
+        new Date(2019, 11, 31)
+      );
+      assertDateEqual(
+        rewind(new Date(2020, 0), { hour: 5 }),
+        new Date(2019, 11, 31, 19)
+      );
+      assertDateEqual(
+        rewind(new Date(2020, 0), { minute: 10 }),
+        new Date(2019, 11, 31, 23, 50)
+      );
+      assertDateEqual(
+        rewind(new Date(2020, 0), { second: 10 }),
+        new Date(2019, 11, 31, 23, 59, 50)
+      );
+      assertDateEqual(
+        rewind(new Date(2020, 0), { millisecond: 300 }),
+        new Date(2019, 11, 31, 23, 59, 59, 700)
+      );
+      assertDateEqual(
+        rewind(new Date(2020, 0), { ms: 300 }),
+        new Date(2019, 11, 31, 23, 59, 59, 700)
+      );
+    });
+
+    it('should reset the date by specificity', () => {
+      assertDateEqual(
+        rewind(new Date(2020, 2, 31, 11, 59, 59, 999), { year: 1 }, true),
+        new Date(2019, 0)
+      );
+      assertDateEqual(
+        rewind(new Date(2020, 2, 31, 11, 59, 59, 999), { month: 1 }, true),
+        new Date(2020, 1)
+      );
+      assertDateEqual(
+        rewind(new Date(2020, 2, 31, 11, 59, 59, 999), { date: 1 }, true),
+        new Date(2020, 2, 30)
+      );
+      assertDateEqual(
+        rewind(new Date(2020, 2, 31, 11, 59, 59, 999), { day: 5 }, true),
+        new Date(2020, 2, 26)
+      );
+      assertDateEqual(
+        rewind(new Date(2020, 2, 31, 11, 59, 59, 999), { weekday: 5 }, true),
+        new Date(2020, 2, 26)
+      );
+      assertDateEqual(
+        rewind(new Date(2020, 2, 31, 11, 59, 59, 999), { hours: 20 }, true),
+        new Date(2020, 2, 30, 15)
+      );
+      assertDateEqual(
+        rewind(new Date(2020, 2, 31, 11, 59, 59, 999), { minutes: 30 }, true),
+        new Date(2020, 2, 31, 11, 29)
+      );
+      assertDateEqual(
+        rewind(new Date(2020, 2, 31, 11, 59, 59, 999), { seconds: 30 }, true),
+        new Date(2020, 2, 31, 11, 59, 29)
+      );
+      assertDateEqual(
+        rewind(
+          new Date(2020, 2, 31, 11, 59, 59, 999),
+          { milliseconds: 300 },
+          true
+        ),
+        new Date(2020, 2, 31, 11, 59, 59, 699)
+      );
+    });
+
+    it('should ignore day when date is set', () => {
+      assertDateEqual(
+        rewind(new Date(2020, 0), { date: 5, day: 7 }, true),
+        new Date(2019, 11, 27)
+      );
+      assertDateEqual(
+        rewind(new Date(2020, 0), { day: 7, date: 5 }, true),
+        new Date(2019, 11, 27)
+      );
+    });
+
+    it('should handle non-contiguous units', () => {
+      assertDateEqual(
+        rewind(new Date(2020, 1), {
+          year: 2,
+          minutes: 30,
+        }),
+        new Date(2018, 0, 31, 23, 30)
+      );
+      assertDateEqual(
+        rewind(new Date(2020, 1), {
+          year: 2,
+          minutes: -30,
+        }),
+        new Date(2018, 1, 1, 0, 30)
+      );
+      assertDateEqual(
+        rewind(new Date(2020, 11, 31, 23, 59, 59, 999), {
+          year: 2,
+          minutes: 30,
+        }),
+        new Date(2018, 11, 31, 23, 29, 59, 999)
+      );
+      assertDateEqual(
+        rewind(
+          new Date(2020, 11, 31, 23, 59, 59, 999),
+          {
+            year: 2,
+            minutes: 30,
+          },
+          true
+        ),
+        new Date(2018, 11, 31, 23, 29)
+      );
+    });
+
+    it('should handle complex cases', () => {
+      assertDateEqual(
+        rewind(new Date(2020, 1), {
+          year: 2,
+          month: 7,
+          date: 5,
+          hours: 3,
+          minutes: 40,
+          seconds: 12,
+        }),
+        new Date(2017, 5, 25, 20, 19, 48)
+      );
+      assertDateEqual(
+        rewind(new Date(2010, 7, 25, 11, 45, 20), {
+          year: 1,
+          month: -3,
+          days: 2,
+          hours: 8,
+          minutes: 12,
+          seconds: -2,
+          milliseconds: 44,
+        }),
+        new Date(2009, 10, 23, 3, 33, 21, 956)
+      );
+    });
+
+    it('should allow a string shortcut', () => {
+      assertDateEqual(rewind(new Date(2020, 0), '3 years'), new Date(2017, 0));
+      assertDateEqual(rewind(new Date(2020, 0), '3 months'), new Date(2019, 9));
+      assertDateEqual(
+        rewind(new Date(2020, 0), '3 weeks'),
+        new Date(2019, 11, 11)
+      );
+      assertDateEqual(
+        rewind(new Date(2020, 0), '3 days'),
+        new Date(2019, 11, 29)
+      );
+      assertDateEqual(
+        rewind(new Date(2020, 0), '3 hours'),
+        new Date(2019, 11, 31, 21)
+      );
+      assertDateEqual(
+        rewind(new Date(2020, 0), '3 minutes'),
+        new Date(2019, 11, 31, 23, 57)
+      );
+      assertDateEqual(
+        rewind(new Date(2020, 0), '3 seconds'),
+        new Date(2019, 11, 31, 23, 59, 57)
+      );
+      assertDateEqual(
+        rewind(new Date(2020, 0), '3 milliseconds'),
+        new Date(2019, 11, 31, 23, 59, 59, 997)
+      );
+    });
+
+    it('should allow irregular string forms', () => {
+      assertDateEqual(rewind(new Date(2020, 0), '1 year'), new Date(2019, 0));
+      assertDateEqual(rewind(new Date(2020, 0), '-3 years'), new Date(2023, 0));
+    });
+
+    it('should error on invalid string forms', () => {
+      assertError(() => {
+        rewind(new Date(2020, 0), 'invalid');
+      });
+      assertError(() => {
+        rewind(new Date(2020, 0), '1year');
+      });
+      assertError(() => {
+        rewind(new Date(2020, 0), '3 yearz');
+      });
+      assertError(() => {
+        rewind(new Date(2020, 0), ' 3 years ');
+      });
+    });
+
+    it('should allow fractions in specific string forms', () => {
+      // Issue #549 - Fractions in string units
+      // Notably leaving off higher order units here to avoid ambiguity.
+      assertDateEqual(
+        rewind(new Date(2016, 0, 5, 12), '10.33 minutes'),
+        new Date(2016, 0, 5, 11, 49, 40)
+      );
+      assertDateEqual(
+        rewind(new Date(2016, 0, 5, 12), '2.25 hours'),
+        new Date(2016, 0, 5, 9, 45)
+      );
+      assertDateEqual(
+        rewind(new Date(2016, 0, 5, 12), '11.5 days'),
+        new Date(2015, 11, 25)
+      );
+      assertDateEqual(
+        rewind(new Date(2016, 0, 5, 12), '-2.25 hours'),
+        new Date(2016, 0, 5, 14, 15)
+      );
+    });
+
+    it('should not produce different results for different object order', () => {
+      // Intentionally avoid date/hours which have special handling
+      assertDateEqual(
+        rewind(new Date(2020, 1), {
+          year: 2,
+          month: 14,
+          minutes: 140,
+          seconds: 140,
+        }),
+        new Date(2016, 10, 30, 21, 37, 40)
+      );
+      assertDateEqual(
+        rewind(new Date(2020, 1), {
+          seconds: 140,
+          minutes: 140,
+          month: 14,
+          year: 2,
+        }),
+        new Date(2016, 10, 30, 21, 37, 40)
+      );
+    });
+
+    it('should allow advancing from a numeric timestamp', () => {
+      assertDateEqual(
+        rewind(new Date(2020, 0), 24 * 60 * 60 * 1000),
+        new Date(2019, 11, 31)
+      );
+      assertDateEqual(
+        rewind(new Date(2020, 0), 29 * 60 * 60 * 1000, true),
+        new Date(2019, 11, 30, 19)
+      );
+    });
+
+    it('should not traverse into different month when not enough days', () => {
+      assertDateEqual(
+        rewind(new Date(2011, 2, 31), {
+          month: 1,
+        }),
+        new Date(2011, 1, 28)
+      );
+    });
+
+    it('should still rewind days after month traversal prevented', () => {
+      assertDateEqual(
+        rewind(new Date(2011, 2, 31), {
+          month: 1,
+          days: 3,
+        }),
+        new Date(2011, 1, 25)
+      );
+    });
+
+    it('should not accidentally traverse into different month', () => {
+      assertDateEqual(
+        rewind(new Date(2011, 2, 15), { month: 1, date: 2 }),
+        new Date(2011, 1, 13)
+      );
+      assertDateEqual(
+        rewind(new Date(2011, 2, 15), { date: 2, month: 1 }),
+        new Date(2011, 1, 13)
+      );
+      assertDateEqual(
+        rewind(new Date(2020, 1, 28), { month: 0, date: 15 }),
+        new Date(2020, 1, 13)
+      );
+      assertDateEqual(
+        rewind(new Date(2020, 1, 28), { date: 15, month: 0 }),
+        new Date(2020, 1, 13)
+      );
+    });
+
+    it('should not accidentally traverse into different month on reset', () => {
+      assertDateEqual(
+        rewind(
+          new Date(2010, 2, 31),
+          {
+            month: 1,
+          },
+          true
+        ),
+        new Date(2010, 1)
+      );
+    });
+
+    it('should not accidentally traverse into a different time during DST shift', () => {
+      assertDateEqual(
+        rewind(new Date(2020, 2, 8, 4), { date: 1, hours: 2 }),
+        new Date(2020, 2, 7, 2)
+      );
+      assertDateEqual(
+        rewind(new Date(2020, 2, 8, 4), { hours: 2, date: 1 }),
+        new Date(2020, 2, 7, 2)
+      );
+      assertDateEqual(
+        rewind(new Date(2020, 2, 8, 4), { hours: 2, month: 1 }),
+        new Date(2020, 1, 8, 2)
+      );
+      assertDateEqual(
+        rewind(new Date(2020, 2, 8, 4), { month: 1, hours: 2 }),
+        new Date(2020, 1, 8, 2)
+      );
+      assertDateEqual(
+        rewind(
+          new Date(2020, 11, 9, 17),
+          {
+            year: 2,
+            month: 11,
+            day: 8,
+          },
+          true
+        ),
+        new Date(2018, 0)
+      );
+    });
+
+    it('should throw an error on unknown keys', () => {
+      assertError(() => {
+        rewind(new Date(2020, 0), { foo: 300 });
+      }, TypeError);
+    });
+
+    it('should throw an error on invalid values', () => {
+      assertError(() => {
+        rewind(new Date(2020, 0), { year: 'invalid' });
+      }, TypeError);
+      assertError(() => {
+        rewind(new Date(2020, 0), { year: NaN });
+      }, TypeError);
+      assertError(() => {
+        rewind(new Date(2020, 0), { year: null });
+      }, TypeError);
+      assertError(() => {
+        rewind(new Date(2020, 0), { year: '2020' });
+      }, TypeError);
+      assertError(() => {
+        rewind(new Date(2020, 0), { year: 2020.5 });
+      }, TypeError);
+      assertError(() => {
+        rewind(new Date(2020, 0), { week: null });
+      }, TypeError);
+    });
+
+    it('should handle issue #492', () => {
+      assertDateEqual(
+        rewind(new Date(2010, 7, 25, 11, 45, 20), { week: 1, day: 1 }),
+        new Date(2010, 7, 17, 11, 45, 20)
+      );
     });
 
   });

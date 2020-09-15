@@ -2,6 +2,7 @@ import { assertInteger } from '../../util/assertions';
 
 export function updateDate(date, props, reset) {
   const entries = Object.entries(props);
+
   if (reset) {
     // Reset first to prevent accidentally traversing into a new month as
     // described below.
@@ -16,20 +17,18 @@ export function updateDate(date, props, reset) {
   // on how date methods are applied. The first is when there are not enough
   // days in a month, shifting the date into the next month. The second is
   // DST shifts where an hour may not technically exist, for example 2am on
-  // March 8th in many North American timezones where the hour will shift to
-  // 3am. If a specific date or hour is intended then we need to prevent
-  // these shifts.
-  if ('date' in props || 'hour' in props || 'hours' in props) {
+  // March 8th in northern hemisphere timezones that follow DST, where the hour
+  // will shift to 3am. If a specific date or hour is intended then we need to
+  // prevent these shifts.
 
-    if ('date' in props) {
-      // Resetting the date will help prevent traversal into a different
-      // month, for example when setting { month: 1, date: 15 } on January 31.
-      // Note that DST shifts will not cause traversal into a new day, so we
-      // do not need to reset the hour here.
-      callDateSet(date, 'date', 1);
-    }
-
+  if ('date' in props) {
+    // Resetting the date will help prevent traversal into a different
+    // month, for example when setting { month: 1, date: 15 } on January 31.
+    // Note that DST shifts will not cause traversal into a new day, so we
+    // do not need to reset the hour here.
+    callDateSet(date, 'date', 1);
   }
+
   // The order of operations is important as setting { month: 0: date: 31 }
   // on February 1 will produce different results depending on whether the
   // month or date is set first. Likewise setting { date: 7, hour: 2 } on
@@ -76,7 +75,7 @@ const METHOD_NAMES = {
 };
 
 function callDateGet(date, unit) {
-  return date[`get${getMethodName(unit)}`]();
+  return date[`get${getMethodUnit(unit)}`]();
 }
 
 function callDateSet(date, unit, val, safe) {
@@ -85,7 +84,7 @@ function callDateSet(date, unit, val, safe) {
   // "Safe" denotes not setting the date if the value is the same as what is
   // currently set. In theory this should be a noop, however it will cause
   // timezone shifts when in the middle of a DST fallback. This is unavoidable
-  // as the notation itself is ambiguous (i.e. there are two "1:00ams" on
+  // as the notation itself is ambiguous (ie. there are two "1:00ams" on
   // November 1st, 2015 in northern hemisphere timezones that follow DST),
   // however when advancing or rewinding dates this can throw off calculations
   // so avoiding this unintentional shifting on an opt-in basis.
@@ -99,11 +98,11 @@ function callDateSet(date, unit, val, safe) {
     // target month.
     preventMonthTraversal(date, val);
   }
-  const methodName = getMethodName(unit);
-  if (methodName === 'Day') {
+  const methodUnit = getMethodUnit(unit);
+  if (methodUnit === 'Day') {
     setWeekday(date, val);
   } else {
-    date[`set${methodName}`](val);
+    date[`set${methodUnit}`](val);
   }
 }
 
@@ -111,12 +110,12 @@ function setWeekday(date, val) {
   date.setDate(date.getDate() + (val - date.getDay()));
 }
 
-function getMethodName(unit) {
-  const methodName = METHOD_NAMES[unit];
-  if (!methodName) {
+function getMethodUnit(unit) {
+  const methodUnit = METHOD_NAMES[unit];
+  if (!methodUnit) {
     throw new TypeError(`Unit "${unit}" is invalid`);
   }
-  return methodName;
+  return methodUnit;
 }
 
 function preventMonthTraversal(date, targetMonth) {
@@ -141,6 +140,10 @@ function getDaysInMonth(date, month) {
 
 function getPropsFromRelative(date, relProps, dir) {
   const props = {};
+  if ('day' in relProps) {
+    relProps.date = relProps.day;
+    delete relProps.day;
+  }
   if ('week' in relProps) {
     assertInteger(relProps.week);
     relProps.date = (relProps.week * 7) + (relProps.date || 0);
@@ -148,7 +151,20 @@ function getPropsFromRelative(date, relProps, dir) {
   }
   for (let [unit, val] of Object.entries(relProps)) {
     assertInteger(val);
-    props[unit] = callDateGet(date, unit) + val * dir;
+    const curVal = callDateGet(date, unit);
+    val = curVal + val * dir;
+    // Need to anticipate month traversal when not enough days and
+    // shift the target days by the amount they will be shifted.
+    // This is only required for relative as any other updates will
+    // be setting an explicit date.
+    if (unit === 'date' && 'month' in props) {
+      const targetYear = props.year || callDateGet(date, 'year');
+      const daysInMonth = getDaysInMonth(new Date(targetYear, props.month));
+      if (daysInMonth < curVal) {
+        val -= curVal - daysInMonth;
+      }
+    }
+    props[unit] = val;
   }
   return props;
 }

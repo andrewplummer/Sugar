@@ -5,6 +5,7 @@ defineInstance('advance', methods.advance);
 defineInstance('isFuture', methods.isFuture);
 defineInstance('isPast', methods.isPast);
 defineInstance('isValid', methods.isValid);
+defineInstance('rewind', methods.rewind);
 defineInstance('set', methods.set);
 
 defineInstance('isSunday', methods.isSunday);

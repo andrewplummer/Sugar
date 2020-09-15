@@ -1609,48 +1609,6 @@ namespace('Date', function () {
 
   });
 
-  method('rewind', function() {
-    var d = new Date('August 25, 2010 11:45:20');
-
-    run(d, 'rewind', [1,-3,2,8,12,-2,4]);
-
-    equal(d.getFullYear(), 2009, 'year');
-    equal(d.getMonth(), 10, 'month');
-    equal(d.getDate(), 23, 'day');
-    equal(d.getHours(), 3, 'hours');
-    equal(d.getMinutes(), 33, 'minutes');
-    equal(d.getSeconds(), 21, 'seconds');
-    equal(d.getMilliseconds(), 996, 'milliseconds');
-
-    d = new Date('August 25, 2010 11:45:20');
-    run(d, 'rewind', [{ year: 1, month: -3, days: 2, hours: 8, minutes: 12, seconds: -2, milliseconds: 4 }]);
-
-    equal(d.getFullYear(), 2009, 'object | year');
-    equal(d.getMonth(), 10, 'object | month');
-    equal(d.getDate(), 23, 'object | day');
-    equal(d.getHours(), 3, 'object | hours');
-    equal(d.getMinutes(), 33, 'object | minutes');
-    equal(d.getSeconds(), 21, 'object | seconds');
-    equal(d.getMilliseconds(), 996, 'object | milliseconds');
-
-    d = new Date('August 25, 2010 11:45:20');
-    run(d, 'rewind', [{ week: 1}]);
-    equal(d, new Date(2010, 7, 18, 11, 45, 20), 'positive weeks supported');
-    run(d, 'rewind', [{ week: -1}]);
-    equal(d, new Date(2010, 7, 25, 11, 45, 20), 'negative weeks supported');
-
-    equal(run(new Date(), 'rewind', [{ years: 1 }]), testCreateDate('one year ago'), 'rewinding 1 year');
-
-    var d = new Date();
-    var dayInMs = 24 * 60 * 60 * 1000;
-    test(d, [dayInMs], new Date(d.getTime() - dayInMs), 'can rewind milliseconds');
-
-    // Issue #492
-    d = new Date('August 25, 2010 11:45:20');
-    run(d, 'rewind', [{ week: 1, day: 1}]);
-    equal(d, new Date(2010, 7, 17, 11, 45, 20), 'negative weeks supported');
-  });
-
   method('daysInMonth', function() {
     var d = new Date('August 25, 2010 11:45:20');
 
