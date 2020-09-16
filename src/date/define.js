@@ -8,6 +8,15 @@ defineInstance('isValid', methods.isValid);
 defineInstance('rewind', methods.rewind);
 defineInstance('set', methods.set);
 
+defineInstance('addYears', methods.addYears);
+defineInstance('addMonths', methods.addMonths);
+defineInstance('addWeeks', methods.addWeeks);
+defineInstance('addDays', methods.addDays);
+defineInstance('addHours', methods.addHours);
+defineInstance('addMinutes', methods.addMinutes);
+defineInstance('addSeconds', methods.addSeconds);
+defineInstance('addMilliseconds', methods.addMilliseconds);
+
 defineInstance('isSunday', methods.isSunday);
 defineInstance('isMonday', methods.isMonday);
 defineInstance('isTuesday', methods.isTuesday);

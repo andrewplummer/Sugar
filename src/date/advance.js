@@ -6,7 +6,9 @@ import { normalizeProps, getPropsFromString } from './util/props';
 /**
  * Shifts the date forward by specific units or a timestamp.
  *
- * @extra This method will modify the date!
+ * @extra This method will modify the date! Note that when advancing the result
+ *   may fall on a date that doesn't exist (i.e. February 30). In this case the
+ *   date will be shifted to the last day of the month.
  *
  * @param {Date} date - The date.
  * @param {AdvanceProps|number|string} props - The units to advance. May be a

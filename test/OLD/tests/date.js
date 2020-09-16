@@ -2555,34 +2555,6 @@ namespace('Date', function () {
 
   });
 
-  group('addUnit', function() {
-
-    var d = new Date('February 29, 2012 22:15:42');
-
-    equal(dateRun(d, 'addMilliseconds', [12]), new Date(2012, 1, 29, 22, 15, 42, 12), 'addMilliseconds');
-    equal(dateRun(d, 'addSeconds', [12]), new Date(2012, 1, 29, 22, 15, 54), 'addSeconds');
-    equal(dateRun(d, 'addMinutes', [12]), new Date(2012, 1, 29, 22, 27, 42), 'addMinutes');
-    equal(dateRun(d, 'addHours', [12]), new Date(2012, 2, 1, 10, 15, 42), 'addHours');
-    equal(dateRun(d, 'addDays', [12]), new Date(2012, 2, 12, 22, 15, 42), 'addDays');
-    equal(dateRun(d, 'addWeeks', [12]), new Date(2012, 4, 23, 22, 15, 42), 'addWeeks');
-    equal(dateRun(d, 'addMonths', [12]), new Date(2013, 1, 28, 22, 15, 42), 'addMonths');
-    equal(dateRun(d, 'addYears', [12]), new Date(2024, 1, 29, 22, 15, 42), 'addYears');
-
-    equal(dateRun(d, 'addMilliseconds', [-12]), new Date(2012, 1, 29, 22, 15, 41, 988), 'addMilliseconds | negative');
-    equal(dateRun(d, 'addSeconds', [-12]), new Date(2012, 1, 29, 22, 15, 30), 'addSeconds | negative');
-    equal(dateRun(d, 'addMinutes', [-12]), new Date(2012, 1, 29, 22, 3, 42), 'addMinutes | negative');
-    equal(dateRun(d, 'addHours', [-12]), new Date(2012, 1, 29, 10, 15, 42), 'addHours | negative');
-    equal(dateRun(d, 'addDays', [-12]), new Date(2012, 1, 17, 22, 15, 42), 'addDays | negative');
-    equal(dateRun(d, 'addWeeks', [-12]), new Date(2011, 11, 7, 22, 15, 42), 'addWeeks | negative');
-    equal(dateRun(d, 'addMonths', [-12]), new Date(2011, 1, 28, 22, 15, 42), 'addMonths | negative');
-    equal(dateRun(d, 'addYears', [-12]), new Date(2000, 1, 29, 22, 15, 42), 'addYears | negative');
-
-    // Issue #221
-
-    equal(dateRun(new Date(2012, 0), 'addMonths', [-13]), new Date(2010, 11), 'Date#addMonths | Month traversal should not kick in when n < -12');
-
-  });
-
   method('reset', function() {
 
     var d = new Date('February 29, 2012 22:15:42');

@@ -1,3 +1,4 @@
+export * from './addUnits';
 export * from './isDay';
 export * from './isMonth';
 
