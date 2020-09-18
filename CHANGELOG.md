@@ -143,6 +143,7 @@ call `Function#lock` first in the chain to achieve the same effect.
     here instead.
 - Changed `Date#advance` and `Date#rewind` to no longer accept enumerated
     arguments. Use object syntax here instead.
+- Removed `Number#milliseconds` and `Number#millisecond` as it is redundant.
 
 TODO:
 

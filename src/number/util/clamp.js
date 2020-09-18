@@ -1,6 +1,5 @@
 import { isNumber } from '../../util/typeChecks';
 import { assertNumber } from '../../util/assertions';
-import coerce from './coerce';
 
 export default function(n, ...args) {
   const [min, max] = collectArgs(args);
@@ -26,4 +25,8 @@ function collectArgs(args) {
     max = args[0];
   }
   return [coerce(min), coerce(max)];
+}
+
+function coerce(n) {
+  return n != null ? +n : n;
 }
