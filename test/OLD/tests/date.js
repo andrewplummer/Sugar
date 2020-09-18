@@ -3317,26 +3317,12 @@ namespace('Number', function () {
     assertBeforeAfter(5, 'secondsAfter', [], 5000, 'secondsAfter | 5');
     assertBeforeAfter(10, 'minutesAfter', [], 600000, 'minutesAfter | 10');
 
-    assertBeforeAfter(1, 'secondFromNow', [], 1000, 'secondFromNow | 1');
-    assertBeforeAfter(5, 'secondsFromNow', [], 5000, 'secondsFromNow | 5');
-    assertBeforeAfter(10, 'minutesFromNow', [], 600000, 'minutesFromNow | 10');
-
-    assertBeforeAfter(1, 'secondAgo', [], -1000, 'secondAgo | 1');
-    assertBeforeAfter(5, 'secondsAgo', [], -5000, 'secondAgo | 5');
-    assertBeforeAfter(10, 'secondsAgo', [], -10000, 'secondAgo | 10');
-
     assertBeforeAfter(1, 'secondBefore', [], -1000, 'secondBefore | 1');
     assertBeforeAfter(5, 'secondsBefore', [], -5000, 'secondBefore | 5');
     assertBeforeAfter(10, 'secondsBefore', [], -10000, 'secondBefore | 10');
 
     assertBeforeAfter(5, 'minutesAfter', [run(5, 'minutesAgo')], 0, 'minutesAfter | 5 minutes after 5 minutes ago');
     assertBeforeAfter(10, 'minutesAfter', [run(5, 'minutesAgo')], 1000 * 60 * 5, 'minutesAfter | 10 minutes after 5 minutes ago');
-
-    assertBeforeAfter(5, 'minutesFromNow', [run(5, 'minutesAgo')], 0, 'minutesFromNow | 5 minutes from now 5 minutes ago');
-    assertBeforeAfter(10, 'minutesFromNow', [run(5, 'minutesAgo')], 1000 * 60 * 5, 'minutesFromNow | 10 minutes from now 5 minutes ago');
-
-    assertBeforeAfter(5, 'minutesAgo', [run(5, 'minutesFromNow')], 0, 'minutesAgo | 5 minutes ago 5 minutes from now');
-    assertBeforeAfter(10, 'minutesAgo', [run(5, 'minutesFromNow')], -(1000 * 60 * 5), 'minutesAgo | 10 minutes ago 5 minutes from now');
 
     assertBeforeAfter(5, 'minutesBefore', [run(5, 'minutesFromNow')], 0, 'minutesBefore | 5 minutes before 5 minutes from now');
     assertBeforeAfter(10, 'minutesBefore', [run(5, 'minutesFromNow')], -(1000 * 60 * 5), 'minutesBefore | 10 minutes before 5 minutes from now');

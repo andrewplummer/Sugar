@@ -1,6 +1,12 @@
 'use strict';
 
 namespace('Date', function () {
+
+  beforeAll(() => {
+    // Set system time to 2020-01-01
+    clock.setSystemTime(1577804400000);
+  });
+
   const WEEKDAYS = [
     'Sunday',
     'Monday',
@@ -1948,6 +1954,11 @@ namespace('Date', function () {
 
 namespace('Number', function () {
 
+  beforeAll(() => {
+    // Set system time to 2020-01-01
+    clock.setSystemTime(1577804400000);
+  });
+
   describeInstance('second,seconds', function (seconds) {
 
     it('should get the correct number of milliseconds for seconds', () => {
@@ -2077,6 +2088,358 @@ namespace('Number', function () {
       assertNaN(years({}));
       assertNaN(years(undefined));
       assertNaN(years());
+    });
+
+  });
+
+  describeInstance('yearAgo,yearsAgo', function (yearsAgo) {
+
+    it('should get the correct date', () => {
+      assertDateEqual(yearsAgo(0), new Date(2020, 0));
+      assertDateEqual(yearsAgo(1), new Date(2019, 0));
+      assertDateEqual(yearsAgo(-1), new Date(2021, 0));
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        yearsAgo();
+      });
+      assertError(() => {
+        yearsAgo(NaN);
+      });
+      assertError(() => {
+        yearsAgo(null);
+      });
+    });
+
+  });
+
+  describeInstance('monthAgo,monthsAgo', function (monthsAgo) {
+
+    it('should get the correct date', () => {
+      assertDateEqual(monthsAgo(0), new Date(2020, 0));
+      assertDateEqual(monthsAgo(1), new Date(2019, 11));
+      assertDateEqual(monthsAgo(-1), new Date(2020, 1));
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        monthsAgo();
+      });
+      assertError(() => {
+        monthsAgo(NaN);
+      });
+      assertError(() => {
+        monthsAgo(null);
+      });
+    });
+
+  });
+
+  describeInstance('weekAgo,weeksAgo', function (weeksAgo) {
+
+    it('should get the correct date', () => {
+      assertDateEqual(weeksAgo(0), new Date(2020, 0));
+      assertDateEqual(weeksAgo(1), new Date(2019, 11, 25));
+      assertDateEqual(weeksAgo(-1), new Date(2020, 0, 8));
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        weeksAgo();
+      });
+      assertError(() => {
+        weeksAgo(NaN);
+      });
+      assertError(() => {
+        weeksAgo(null);
+      });
+    });
+
+  });
+
+  describeInstance('dayAgo,daysAgo', function (daysAgo) {
+
+    it('should get the correct date', () => {
+      assertDateEqual(daysAgo(0), new Date(2020, 0));
+      assertDateEqual(daysAgo(1), new Date(2019, 11, 31));
+      assertDateEqual(daysAgo(-1), new Date(2020, 0, 2));
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        daysAgo();
+      });
+      assertError(() => {
+        daysAgo(NaN);
+      });
+      assertError(() => {
+        daysAgo(null);
+      });
+    });
+
+  });
+
+  describeInstance('hourAgo,hoursAgo', function (hoursAgo) {
+
+    it('should get the correct date', () => {
+      assertDateEqual(hoursAgo(0), new Date(2020, 0));
+      assertDateEqual(hoursAgo(1), new Date(2019, 11, 31, 23));
+      assertDateEqual(hoursAgo(-1), new Date(2020, 0, 1, 1));
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        hoursAgo();
+      });
+      assertError(() => {
+        hoursAgo(NaN);
+      });
+      assertError(() => {
+        hoursAgo(null);
+      });
+    });
+
+  });
+
+  describeInstance('minuteAgo,minutesAgo', function (minutesAgo) {
+
+    it('should get the correct date', () => {
+      assertDateEqual(minutesAgo(0), new Date(2020, 0));
+      assertDateEqual(minutesAgo(1), new Date(2019, 11, 31, 23, 59));
+      assertDateEqual(minutesAgo(-1), new Date(2020, 0, 1, 0, 1));
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        minutesAgo();
+      });
+      assertError(() => {
+        minutesAgo(NaN);
+      });
+      assertError(() => {
+        minutesAgo(null);
+      });
+    });
+
+  });
+
+  describeInstance('secondAgo,secondsAgo', function (secondsAgo) {
+
+    it('should get the correct date', () => {
+      assertDateEqual(secondsAgo(0), new Date(2020, 0));
+      assertDateEqual(secondsAgo(1), new Date(2019, 11, 31, 23, 59, 59));
+      assertDateEqual(secondsAgo(-1), new Date(2020, 0, 1, 0, 0, 1));
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        secondsAgo();
+      });
+      assertError(() => {
+        secondsAgo(NaN);
+      });
+      assertError(() => {
+        secondsAgo(null);
+      });
+    });
+
+  });
+
+  describeInstance('millisecondAgo,millisecondsAgo', function (millisecondsAgo) {
+
+    it('should get the correct date', () => {
+      assertDateEqual(millisecondsAgo(0), new Date(2020, 0));
+      assertDateEqual(millisecondsAgo(1), new Date(2019, 11, 31, 23, 59, 59, 999));
+      assertDateEqual(millisecondsAgo(-1), new Date(2020, 0, 1, 0, 0, 0, 1));
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        millisecondsAgo();
+      });
+      assertError(() => {
+        millisecondsAgo(NaN);
+      });
+      assertError(() => {
+        millisecondsAgo(null);
+      });
+    });
+
+  });
+
+  describeInstance('yearFromNow,yearsFromNow', function (yearsFromNow) {
+
+    it('should get the correct date', () => {
+      assertDateEqual(yearsFromNow(0), new Date(2020, 0));
+      assertDateEqual(yearsFromNow(1), new Date(2021, 0));
+      assertDateEqual(yearsFromNow(-1), new Date(2019, 0));
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        yearsFromNow();
+      });
+      assertError(() => {
+        yearsFromNow(NaN);
+      });
+      assertError(() => {
+        yearsFromNow(null);
+      });
+    });
+
+  });
+
+  describeInstance('monthFromNow,monthsFromNow', function (monthsFromNow) {
+
+    it('should get the correct date', () => {
+      assertDateEqual(monthsFromNow(0), new Date(2020, 0));
+      assertDateEqual(monthsFromNow(1), new Date(2020, 1));
+      assertDateEqual(monthsFromNow(-1), new Date(2019, 11));
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        monthsFromNow();
+      });
+      assertError(() => {
+        monthsFromNow(NaN);
+      });
+      assertError(() => {
+        monthsFromNow(null);
+      });
+    });
+
+  });
+
+  describeInstance('weekFromNow,weeksFromNow', function (weeksFromNow) {
+
+    it('should get the correct date', () => {
+      assertDateEqual(weeksFromNow(0), new Date(2020, 0));
+      assertDateEqual(weeksFromNow(1), new Date(2020, 0, 8));
+      assertDateEqual(weeksFromNow(-1), new Date(2019, 11, 25));
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        weeksFromNow();
+      });
+      assertError(() => {
+        weeksFromNow(NaN);
+      });
+      assertError(() => {
+        weeksFromNow(null);
+      });
+    });
+
+  });
+
+  describeInstance('dayFromNow,daysFromNow', function (daysFromNow) {
+
+    it('should get the correct date', () => {
+      assertDateEqual(daysFromNow(0), new Date(2020, 0));
+      assertDateEqual(daysFromNow(1), new Date(2020, 0, 2));
+      assertDateEqual(daysFromNow(-1), new Date(2019, 11, 31));
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        daysFromNow();
+      });
+      assertError(() => {
+        daysFromNow(NaN);
+      });
+      assertError(() => {
+        daysFromNow(null);
+      });
+    });
+
+  });
+
+  describeInstance('hourFromNow,hoursFromNow', function (hoursFromNow) {
+
+    it('should get the correct date', () => {
+      assertDateEqual(hoursFromNow(0), new Date(2020, 0));
+      assertDateEqual(hoursFromNow(1), new Date(2020, 0, 1, 1));
+      assertDateEqual(hoursFromNow(-1), new Date(2019, 11, 31, 23));
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        hoursFromNow();
+      });
+      assertError(() => {
+        hoursFromNow(NaN);
+      });
+      assertError(() => {
+        hoursFromNow(null);
+      });
+    });
+
+  });
+
+  describeInstance('minuteFromNow,minutesFromNow', function (minutesFromNow) {
+
+    it('should get the correct date', () => {
+      assertDateEqual(minutesFromNow(0), new Date(2020, 0));
+      assertDateEqual(minutesFromNow(1), new Date(2020, 0, 1, 0, 1));
+      assertDateEqual(minutesFromNow(-1), new Date(2019, 11, 31, 23, 59));
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        minutesFromNow();
+      });
+      assertError(() => {
+        minutesFromNow(NaN);
+      });
+      assertError(() => {
+        minutesFromNow(null);
+      });
+    });
+
+  });
+
+  describeInstance('secondFromNow,secondsFromNow', function (secondsFromNow) {
+
+    it('should get the correct date', () => {
+      assertDateEqual(secondsFromNow(0), new Date(2020, 0));
+      assertDateEqual(secondsFromNow(1), new Date(2020, 0, 1, 0, 0, 1));
+      assertDateEqual(secondsFromNow(-1), new Date(2019, 11, 31, 23, 59, 59));
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        secondsFromNow();
+      });
+      assertError(() => {
+        secondsFromNow(NaN);
+      });
+      assertError(() => {
+        secondsFromNow(null);
+      });
+    });
+
+  });
+
+  describeInstance('millisecondFromNow,millisecondsFromNow', function (millisecondsFromNow) {
+
+    it('should get the correct date', () => {
+      assertDateEqual(millisecondsFromNow(0), new Date(2020, 0));
+      assertDateEqual(millisecondsFromNow(1), new Date(2020, 0, 1, 0, 0, 0, 1));
+      assertDateEqual(millisecondsFromNow(-1), new Date(2019, 11, 31, 23, 59, 59, 999));
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        millisecondsFromNow();
+      });
+      assertError(() => {
+        millisecondsFromNow(NaN);
+      });
+      assertError(() => {
+        millisecondsFromNow(null);
+      });
     });
 
   });

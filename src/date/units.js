@@ -1,13 +1,13 @@
 const YEAR_AVG = 365.2425;
 
 const MULTIPLIERS = {
-  second: 1000,
-  minute: 60 * 1000,
-  hour: 60 * 60 * 1000,
-  day: 24 * 60 * 60 * 1000,
-  week: 7 * 24 * 60 * 60 * 1000,
-  month: YEAR_AVG / 12 * 24 * 60 * 60 * 1000,
   year: YEAR_AVG * 24 * 60 * 60 * 1000,
+  month: YEAR_AVG / 12 * 24 * 60 * 60 * 1000,
+  week: 7 * 24 * 60 * 60 * 1000,
+  day: 24 * 60 * 60 * 1000,
+  hours: 60 * 60 * 1000,
+  seconds: 1000,
+  minutes: 60 * 1000,
 };
 
 /**
@@ -52,32 +52,32 @@ const MULTIPLIERS = {
  * @method year
  * @method years
  **/
-export function seconds(n) {
-  return getInMilliseconds(n, 'second');
-}
-
-export function minutes(n) {
-  return getInMilliseconds(n, 'minute');
-}
-
-export function hours(n) {
-  return getInMilliseconds(n, 'hour');
-}
-
-export function days(n) {
-  return getInMilliseconds(n, 'day');
-}
-
-export function weeks(n) {
-  return getInMilliseconds(n, 'week');
+export function years(n) {
+  return getInMilliseconds(n, 'year');
 }
 
 export function months(n) {
   return getInMilliseconds(n, 'month');
 }
 
-export function years(n) {
-  return getInMilliseconds(n, 'year');
+export function weeks(n) {
+  return getInMilliseconds(n, 'week');
+}
+
+export function days(n) {
+  return getInMilliseconds(n, 'day');
+}
+
+export function hours(n) {
+  return getInMilliseconds(n, 'hours');
+}
+
+export function minutes(n) {
+  return getInMilliseconds(n, 'minutes');
+}
+
+export function seconds(n) {
+  return getInMilliseconds(n, 'seconds');
 }
 
 function getInMilliseconds(n, unit) {
