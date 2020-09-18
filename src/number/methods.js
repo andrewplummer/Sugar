@@ -1,5 +1,3 @@
-export * from './dateUnits';
-
 export { default as abbr } from './abbr';
 export { default as abs } from './abs';
 export { default as ceil } from './ceil';

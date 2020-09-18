@@ -1943,4 +1943,142 @@ namespace('Date', function () {
     });
 
   });
+
+});
+
+namespace('Number', function () {
+
+  describeInstance('second,seconds', function (seconds) {
+
+    it('should get the correct number of milliseconds for seconds', () => {
+      assertEqual(seconds(1), 1000);
+      assertEqual(seconds(-1), -1000);
+      assertEqual(seconds(60), 60000);
+      assertEqual(seconds(0), 0);
+    });
+
+    it('should handle irregular input', () => {
+      assertEqual(seconds(null), 0);
+      assertEqual(seconds('1'), 1000);
+      assertNaN(seconds({}));
+      assertNaN(seconds(undefined));
+      assertNaN(seconds());
+    });
+
+  });
+
+  describeInstance('minute,minutes', function (minutes) {
+
+    it('should get the correct number of milliseconds for minutes', () => {
+      assertEqual(minutes(1), 60 * 1000);
+      assertEqual(minutes(-1), -60 * 1000);
+      assertEqual(minutes(60), 60 * 60 * 1000);
+      assertEqual(minutes(0), 0);
+    });
+
+    it('should handle irregular input', () => {
+      assertEqual(minutes(null), 0);
+      assertEqual(minutes('1'), 60 * 1000);
+      assertNaN(minutes({}));
+      assertNaN(minutes(undefined));
+      assertNaN(minutes());
+    });
+
+  });
+
+  describeInstance('hour,hours', function (hours) {
+
+    it('should get the correct number of milliseconds for hours', () => {
+      assertEqual(hours(1), 60 * 60 * 1000);
+      assertEqual(hours(-1), -60 * 60 * 1000);
+      assertEqual(hours(24), 24 * 60 * 60 * 1000);
+      assertEqual(hours(0), 0);
+    });
+
+    it('should handle irregular input', () => {
+      assertEqual(hours(null), 0);
+      assertEqual(hours('24'), 24 * 60 * 60 * 1000);
+      assertNaN(hours({}));
+      assertNaN(hours(undefined));
+      assertNaN(hours());
+    });
+
+  });
+
+  describeInstance('day,days', function (days) {
+
+    it('should get the correct number of milliseconds for days', () => {
+      assertEqual(days(1), 24 * 60 * 60 * 1000);
+      assertEqual(days(-1), -24 * 60 * 60 * 1000);
+      assertEqual(days(14), 14 * 24 * 60 * 60 * 1000);
+      assertEqual(days(0), 0);
+    });
+
+    it('should handle irregular input', () => {
+      assertEqual(days(null), 0);
+      assertEqual(days('1'), 24 * 60 * 60 * 1000);
+      assertNaN(days({}));
+      assertNaN(days(undefined));
+      assertNaN(days());
+    });
+
+  });
+
+  describeInstance('week,weeks', function (weeks) {
+
+    it('should get the correct number of milliseconds for weeks', () => {
+      assertEqual(weeks(1), 7 * 24 * 60 * 60 * 1000);
+      assertEqual(weeks(-1), -7 * 24 * 60 * 60 * 1000);
+      assertEqual(weeks(4), 28 * 24 * 60 * 60 * 1000);
+      assertEqual(weeks(0), 0);
+    });
+
+    it('should handle irregular input', () => {
+      assertEqual(weeks(null), 0);
+      assertEqual(weeks('1'), 7 * 24 * 60 * 60 * 1000);
+      assertNaN(weeks({}));
+      assertNaN(weeks(undefined));
+      assertNaN(weeks());
+    });
+
+  });
+
+  describeInstance('month,months', function (months) {
+
+    it('should get the correct number of milliseconds for months', () => {
+      assertEqual(months(1), 2629746000);
+      assertEqual(months(-1), -2629746000);
+      assertEqual(months(10), 10 * 2629746000);
+      assertEqual(months(0), 0);
+    });
+
+    it('should handle irregular input', () => {
+      assertEqual(months(null), 0);
+      assertEqual(months('1'), 2629746000);
+      assertNaN(months({}));
+      assertNaN(months(undefined));
+      assertNaN(months());
+    });
+
+  });
+
+  describeInstance('year,years', function (years) {
+
+    it('should get the correct number of milliseconds for years', () => {
+      assertEqual(years(1), 31556952000);
+      assertEqual(years(-1), -31556952000);
+      assertEqual(years(5), 5 * 31556952000);
+      assertEqual(years(0), 0);
+    });
+
+    it('should handle irregular input', () => {
+      assertEqual(years(null), 0);
+      assertEqual(years('1'), 31556952000);
+      assertNaN(years({}));
+      assertNaN(years(undefined));
+      assertNaN(years());
+    });
+
+  });
+
 });

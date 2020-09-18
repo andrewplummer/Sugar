@@ -1,6 +1,7 @@
 export * from './addUnits';
 export * from './isDay';
 export * from './isMonth';
+export * from './units';
 
 export { default as advance } from './advance';
 export { default as isFuture } from './isFuture';
