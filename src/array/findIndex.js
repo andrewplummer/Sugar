@@ -1,6 +1,6 @@
 import { getMatcher } from '../util/matchers';
 import { assertArray } from '../util/assertions';
-import { forEachSparse } from '../util/array';
+import { forEachSparse } from './util/sparse';
 
 /**
  * Returns the index of the first element in the array that matches input.

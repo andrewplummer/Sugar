@@ -1,5 +1,5 @@
 import { assertArrayOrTypedArray } from '../util/assertions';
-import { cloneArray } from '../util/clone';
+import { cloneArray } from '../util/array';
 
 /**
  * Returns a shallow copy of the array.

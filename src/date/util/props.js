@@ -1,3 +1,5 @@
+// Handle normalization of input props for updating date.
+
 const ALIASES = {
   years: 'year',
   months: 'month',

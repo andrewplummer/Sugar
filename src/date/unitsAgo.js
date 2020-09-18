@@ -1,4 +1,4 @@
-import { rewindDate } from './util/helpers';
+import { rewindDate } from './util/shift';
 
 /**
  * Returns a date that is a number of units before the current date.

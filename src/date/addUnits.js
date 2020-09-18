@@ -1,5 +1,5 @@
 import { assertDate } from '../util/assertions';
-import { advanceDate } from './util/helpers';
+import { advanceDate } from './util/shift';
 
 /**
  * Aliases for `advance` by a specific unit.

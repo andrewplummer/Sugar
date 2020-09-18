@@ -1,5 +1,7 @@
 import { isPrimitive, isWrappedPrimitive, isDate, isSet, isMap, isRegExp, isArrayOrTypedArray } from './typeChecks';
 import { isPlainObject } from './object';
+import { cloneDate } from './date';
+import { cloneArray } from './array';
 
 export function clone(obj) {
   if (isPrimitive(obj)) {
@@ -23,27 +25,18 @@ export function clone(obj) {
   }
 }
 
-export function cloneArray(arr) {
-  // Slice will work on Array as well as typed arrays.
-  return arr.slice();
-}
-
-export function cloneDate(date) {
-  return new Date(date.getTime());
-}
-
-export function cloneSet(set) {
+function cloneSet(set) {
   return new Set(Array.from(set));
 }
 
-export function cloneMap(map) {
+function cloneMap(map) {
   return new Map(Array.from(map));
 }
 
-export function cloneRegExp(reg) {
+function cloneRegExp(reg) {
   return RegExp(reg.source, reg.flags);
 }
 
-export function cloneWrappedPrimitive(obj) {
+function cloneWrappedPrimitive(obj) {
   return new obj.constructor(obj.valueOf());
 }

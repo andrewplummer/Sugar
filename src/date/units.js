@@ -1,14 +1,4 @@
-const YEAR_AVG = 365.2425;
-
-const MULTIPLIERS = {
-  year: YEAR_AVG * 24 * 60 * 60 * 1000,
-  month: YEAR_AVG / 12 * 24 * 60 * 60 * 1000,
-  week: 7 * 24 * 60 * 60 * 1000,
-  day: 24 * 60 * 60 * 1000,
-  hours: 60 * 60 * 1000,
-  seconds: 1000,
-  minutes: 60 * 1000,
-};
+import { UNIT_MULTIPLIERS } from './util/units';
 
 /**
  * Takes a number as a unit and converts to milliseconds.
@@ -81,6 +71,6 @@ export function seconds(n) {
 }
 
 function getInMilliseconds(n, unit) {
-  const mult = MULTIPLIERS[unit];
+  const mult = UNIT_MULTIPLIERS[unit];
   return Math.round(n * mult);
 }

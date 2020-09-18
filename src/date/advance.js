@@ -1,6 +1,6 @@
 import { isNumber, isString } from '../util/typeChecks';
 import { assertDate } from '../util/assertions';
-import { advanceDate } from './util/helpers';
+import { advanceDate } from './util/shift';
 import { normalizeProps, getPropsFromString } from './util/props';
 
 /**

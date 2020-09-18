@@ -1950,6 +1950,75 @@ namespace('Date', function () {
 
   });
 
+  describeInstance('getISOWeek', function (getISOWeek) {
+
+    it('should provide the correct ISO week for 2020', () => {
+      assertEqual(getISOWeek(new Date(2019, 11, 29)), 52);
+      assertEqual(getISOWeek(new Date(2019, 11, 30)), 1);
+      assertEqual(getISOWeek(new Date(2019, 11, 31)), 1);
+      assertEqual(getISOWeek(new Date(2020, 0, 1)), 1);
+      assertEqual(getISOWeek(new Date(2020, 0, 2)), 1);
+      assertEqual(getISOWeek(new Date(2020, 0, 3)), 1);
+      assertEqual(getISOWeek(new Date(2020, 0, 4)), 1);
+      assertEqual(getISOWeek(new Date(2020, 0, 5)), 1);
+      assertEqual(getISOWeek(new Date(2020, 0, 6)), 2);
+      assertEqual(getISOWeek(new Date(2020, 1, 1)), 5);
+      assertEqual(getISOWeek(new Date(2020, 2, 1)), 9);
+      assertEqual(getISOWeek(new Date(2020, 3, 1)), 14);
+      assertEqual(getISOWeek(new Date(2020, 4, 1)), 18);
+      assertEqual(getISOWeek(new Date(2020, 5, 1)), 23);
+      assertEqual(getISOWeek(new Date(2020, 6, 1)), 27);
+      assertEqual(getISOWeek(new Date(2020, 7, 1)), 31);
+      assertEqual(getISOWeek(new Date(2020, 8, 1)), 36);
+      assertEqual(getISOWeek(new Date(2020, 9, 1)), 40);
+      assertEqual(getISOWeek(new Date(2020, 10, 1)), 44);
+      assertEqual(getISOWeek(new Date(2020, 11, 1)), 49);
+      assertEqual(getISOWeek(new Date(2021, 0, 1)), 53);
+      assertEqual(getISOWeek(new Date(2021, 0, 2)), 53);
+      assertEqual(getISOWeek(new Date(2021, 0, 3)), 53);
+      assertEqual(getISOWeek(new Date(2021, 0, 4)), 1);
+      assertEqual(getISOWeek(new Date(2021, 0, 5)), 1);
+      assertEqual(getISOWeek(new Date(2021, 0, 6)), 1);
+    });
+
+    it('should handle other edge cases', () => {
+      assertEqual(getISOWeek(new Date(2005, 0, 1)), 53);
+      assertEqual(getISOWeek(new Date(2005, 0, 2)), 53);
+      assertEqual(getISOWeek(new Date(2005, 11, 31)), 52);
+      assertEqual(getISOWeek(new Date(2006, 0, 1)), 52);
+      assertEqual(getISOWeek(new Date(2006, 0, 2)), 1);
+      assertEqual(getISOWeek(new Date(2006, 11, 31)), 52);
+      assertEqual(getISOWeek(new Date(2007, 0, 1)), 1);
+      assertEqual(getISOWeek(new Date(2007, 11, 30)), 52);
+      assertEqual(getISOWeek(new Date(2007, 11, 31)), 1);
+      assertEqual(getISOWeek(new Date(2008, 0, 1)), 1);
+      assertEqual(getISOWeek(new Date(2008, 11, 28)), 52);
+      assertEqual(getISOWeek(new Date(2008, 11, 29)), 1);
+      assertEqual(getISOWeek(new Date(2008, 11, 30)), 1);
+      assertEqual(getISOWeek(new Date(2008, 11, 31)), 1);
+      assertEqual(getISOWeek(new Date(2009, 0, 1)), 1);
+      assertEqual(getISOWeek(new Date(2009, 11, 31)), 53);
+      assertEqual(getISOWeek(new Date(2010, 0, 1)), 53);
+      assertEqual(getISOWeek(new Date(2010, 0, 2)), 53);
+      assertEqual(getISOWeek(new Date(2010, 0, 3)), 53);
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        getISOWeek();
+      });
+      assertError(() => {
+        getISOWeek(null);
+      });
+      assertError(() => {
+        getISOWeek(NaN);
+      });
+      assertError(() => {
+        getISOWeek(5);
+      });
+    });
+  });
+
 });
 
 namespace('Number', function () {

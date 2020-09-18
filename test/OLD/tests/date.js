@@ -3047,52 +3047,6 @@ namespace('Date', function () {
 
   });
 
-  method('getISOWeek', function() {
-
-    var d = new Date(2010,7,5,13,45,2,542);
-    test(d, 31, 'basic August 5th, 2010');
-    equal(d, new Date(2010,7,5,13,45,2,542), 'should not modify the date');
-
-    test(new Date(2011, 0, 1), 52, 'January 1, 2011');
-    test(new Date(2011, 0, 2), 52, 'January 2, 2011');
-    test(new Date(2011, 0, 3),  1, 'January 3, 2011');
-    test(new Date(2011, 0, 4),  1, 'January 4, 2011');
-
-    test(new Date(2011, 11, 25), 51, 'December 25, 2011');
-    test(new Date(2011, 11, 26), 52, 'December 26, 2011');
-    test(new Date(2011, 11, 27), 52, 'December 27, 2011');
-
-    test(new Date(2011, 11, 31), 52, 'December 31, 2011');
-    test(new Date(2012, 0, 1),   52, 'January 1, 2012');
-    test(new Date(2012, 0, 2),    1, 'January 2, 2012');
-
-    test(new Date(2013, 11, 28), 52, 'December 28, 2013');
-    test(new Date(2013, 11, 29), 52, 'December 29, 2013');
-    test(new Date(2013, 11, 30),  1, 'December 30, 2013');
-    test(new Date(2013, 11, 31),  1, 'December 31, 2013');
-    test(new Date(2014,  0,  1),  1, 'January 01, 2014');
-    test(new Date(2014,  0,  2),  1, 'January 02, 2014');
-    test(new Date(2014,  0,  5),  1, 'January 05, 2014');
-    test(new Date(2014,  0,  6),  2, 'January 06, 2014');
-
-    test(new Date(2010, 0, 1), 53, 'January 1st, 2010');
-    test(new Date(2010, 0, 6), 1, 'January 6th, 2010');
-    test(new Date(2010, 0, 7), 1, 'January 7th, 2010');
-    test(new Date(2010, 0, 7, 23, 59, 59, 999), 1, 'January 7th, 2010 h23:59:59.999');
-    test(new Date(2010, 0, 8), 1, 'January 8th, 2010');
-    test(new Date(2010, 3, 15), 15, 'April 15th, 2010');
-
-    var d = run(new Date(2010,7,5,13,45,2,542), 'setUTC', [true]);
-    test(d, d.getTimezoneOffset() > 615 ? 32 : 31, 'utc | basic');
-    test(new Date(2010, 0, 1), 53, 'utc | January 1st UTC is actually 2009');
-    test(new Date(2010, 0, 6), 1, 'utc | January 6th');
-    test(new Date(2010, 0, 7), 1, 'utc | January 7th');
-    test(new Date(2010, 0, 7, 23, 59, 59, 999), 1, 'utc | January 7th 23:59:59.999');
-    test(new Date(2010, 0, 8), 1, 'utc | January 8th');
-    test(new Date(2010, 3, 15), 15, 'utc | April 15th');
-
-  });
-
   method('iso', function() {
 
     var d = new Date('August 5, 2010 04:03:02');
