@@ -2733,6 +2733,7 @@ namespace('Date', function () {
     var expected = run(run(d, 'setUTC', [true]), 'format', ['ISO8601']);
     test(d, expected, 'Date#iso is an alias for the ISO8601 format in UTC');
 
+    // TODO: move these
     // Issue #146 - These tests were failing when system time was set to Friday, June 1, 2012 PDT
 
     test(testCreateDate('2010-01-20T20:00:00.000Z'), '2010-01-20T20:00:00.000Z');
@@ -2802,21 +2803,6 @@ namespace('Date', function () {
     Sugar.Date.removeLocale('bar');
     equal(Sugar.Date.getLocale('bar'), undefined, 'should have removed the locale');
     equal(Sugar.Date.getLocale() === Sugar.Date.getLocale('en'), true, 'current locale should be reset to English');
-
-  });
-
-  method('endOfISOWeek', function() {
-
-    test(new Date(2013, 6, 8),  new Date(2013, 6, 14, 23, 59, 59, 999), 'Mon');
-    test(new Date(2013, 6, 9),  new Date(2013, 6, 14, 23, 59, 59, 999), 'Tue');
-    test(new Date(2013, 6, 10), new Date(2013, 6, 14, 23, 59, 59, 999), 'Wed');
-    test(new Date(2013, 6, 11), new Date(2013, 6, 14, 23, 59, 59, 999), 'Thu');
-    test(new Date(2013, 6, 12), new Date(2013, 6, 14, 23, 59, 59, 999), 'Fri');
-    test(new Date(2013, 6, 13), new Date(2013, 6, 14, 23, 59, 59, 999), 'Sat');
-    test(new Date(2013, 6, 14), new Date(2013, 6, 14, 23, 59, 59, 999), 'Sun');
-    test(new Date(2013, 6, 15), new Date(2013, 6, 21, 23, 59, 59, 999), 'next Mon');
-
-    test(new Date(2013, 6, 12, 8, 30), new Date(2013, 6, 14, 23, 59, 59, 999), 'resets time');
 
   });
 
