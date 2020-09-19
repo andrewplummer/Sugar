@@ -58,15 +58,15 @@ export function endOfDay(date) {
 }
 
 export function endOfHour(date) {
-  return endOf(date, 'hours');
+  return endOf(date, 'hour');
 }
 
 export function endOfMinute(date) {
-  return endOf(date, 'minutes');
+  return endOf(date, 'minute');
 }
 
 export function endOfSecond(date) {
-  return endOf(date, 'seconds');
+  return endOf(date, 'second');
 }
 
 function endOf(date, unit) {

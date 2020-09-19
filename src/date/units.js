@@ -59,15 +59,15 @@ export function days(n) {
 }
 
 export function hours(n) {
-  return getInMilliseconds(n, 'hours');
+  return getInMilliseconds(n, 'hour');
 }
 
 export function minutes(n) {
-  return getInMilliseconds(n, 'minutes');
+  return getInMilliseconds(n, 'minute');
 }
 
 export function seconds(n) {
-  return getInMilliseconds(n, 'seconds');
+  return getInMilliseconds(n, 'second');
 }
 
 function getInMilliseconds(n, unit) {

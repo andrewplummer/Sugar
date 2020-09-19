@@ -49,19 +49,19 @@ export function addDays(date, num, reset) {
 }
 
 export function addHours(date, num, reset) {
-  return addUnit(date, 'hours', num, reset);
+  return addUnit(date, 'hour', num, reset);
 }
 
 export function addMinutes(date, num, reset) {
-  return addUnit(date, 'minutes', num, reset);
+  return addUnit(date, 'minute', num, reset);
 }
 
 export function addSeconds(date, num, reset) {
-  return addUnit(date, 'seconds', num, reset);
+  return addUnit(date, 'second', num, reset);
 }
 
 export function addMilliseconds(date, num, reset) {
-  return addUnit(date, 'milliseconds', num, reset);
+  return addUnit(date, 'millisecond', num, reset);
 }
 
 function addUnit(date, unit, num, reset) {

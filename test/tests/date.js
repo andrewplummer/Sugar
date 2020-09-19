@@ -3297,4 +3297,113 @@ namespace('Number', function () {
 
   });
 
+  describeInstance('duration', function (duration) {
+
+    it('should get the correct duration for milliseconds', async () => {
+      assertEqual(duration(0), '0 milliseconds');
+      assertEqual(duration(1), '1 millisecond');
+      assertEqual(duration(2), '2 milliseconds');
+      assertEqual(duration(100), '100 milliseconds');
+      assertEqual(duration(500), '500 milliseconds');
+      assertEqual(duration(950), '950 milliseconds');
+      assertEqual(duration(999), '999 milliseconds');
+    });
+
+    it('should get the correct duration for seconds', async () => {
+      assertEqual(duration(1000), '1 second');
+      assertEqual(duration(1999), '1 second');
+      assertEqual(duration(2000), '2 seconds');
+      assertEqual(duration(2999), '2 seconds');
+      assertEqual(duration(9999), '9 seconds');
+      assertEqual(duration(10000), '10 seconds');
+      assertEqual(duration(50000), '50 seconds');
+      assertEqual(duration(59000), '59 seconds');
+      assertEqual(duration(59999), '59 seconds');
+    });
+
+    it('should get the correct duration for minutes', async () => {
+      assertEqual(duration(60 * 1000), '1 minute');
+      assertEqual(duration(2 * 60 * 1000), '2 minutes');
+      assertEqual(duration(10 * 60 * 1000), '10 minutes');
+      assertEqual(duration(30 * 60 * 1000), '30 minutes');
+      assertEqual(duration(59 * 60 * 1000), '59 minutes');
+    });
+
+    it('should get the correct duration for hours', async () => {
+      assertEqual(duration(60 * 60 * 1000), '1 hour');
+      assertEqual(duration(2 * 60 * 60 * 1000), '2 hours');
+      assertEqual(duration(12 * 60 * 60 * 1000), '12 hours');
+      assertEqual(duration(23 * 60 * 60 * 1000), '23 hours');
+    });
+
+    it('should get the correct duration for days', async () => {
+      assertEqual(duration(24 * 60 * 60 * 1000), '1 day');
+      assertEqual(duration(2 * 24 * 60 * 60 * 1000), '2 days');
+      assertEqual(duration(5 * 24 * 60 * 60 * 1000), '5 days');
+      assertEqual(duration(6 * 24 * 60 * 60 * 1000), '6 days');
+    });
+
+    it('should get the correct duration for days', async () => {
+      assertEqual(duration(7 * 24 * 60 * 60 * 1000), '1 week');
+      assertEqual(duration(2 * 7 * 24 * 60 * 60 * 1000), '2 weeks');
+      assertEqual(duration(4 * 7 * 24 * 60 * 60 * 1000), '4 weeks');
+    });
+
+    it('should get the correct duration for days', async () => {
+      assertEqual(duration(31 * 24 * 60 * 60 * 1000), '1 month');
+      assertEqual(duration(2 * 31 * 24 * 60 * 60 * 1000), '2 months');
+      assertEqual(duration(11 * 31 * 24 * 60 * 60 * 1000), '11 months');
+    });
+
+    it('should get the correct duration for years', async () => {
+      assertEqual(duration(365.2425 * 24 * 60 * 60 * 1000), '1 year');
+      assertEqual(duration(2 * 365.2425 * 24 * 60 * 60 * 1000), '2 years');
+      assertEqual(duration(10 * 365.2425 * 24 * 60 * 60 * 1000), '10 years');
+      assertEqual(duration(100 * 365.2425 * 24 * 60 * 60 * 1000), '100 years');
+      assertEqual(duration(1000 * 365.2425 * 24 * 60 * 60 * 1000), '1,000 years');
+    });
+
+    it('should work for negative numbers', async () => {
+      assertEqual(duration(-999), '-999 milliseconds');
+      assertEqual(duration(-1000), '-1 second');
+      assertEqual(duration(-1999), '-1 second');
+      assertEqual(duration(-2000), '-2 seconds');
+      assertEqual(duration(-60 * 1000), '-1 minute');
+      assertEqual(duration(-60 * 60 * 1000), '-1 hour');
+      assertEqual(duration(-24 * 60 * 60 * 1000), '-1 day');
+      assertEqual(duration(-7 * 24 * 60 * 60 * 1000), '-1 week');
+      assertEqual(duration(-31 * 24 * 60 * 60 * 1000), '-1 month');
+      assertEqual(duration(-365.2425 * 24 * 60 * 60 * 1000), '-1 year');
+    });
+
+    it('should be able to pass a locale', async () => {
+      function assertFormatted(ms, val, unit) {
+        const formatter = new Intl.NumberFormat('ja', {
+          unit,
+          style: 'unit',
+          unitDisplay: 'long',
+        });
+        const expected = formatter.format(val);
+        assertEqual(duration(ms, 'ja'), expected);
+      }
+      assertFormatted(0, 0, 'millisecond');
+      assertFormatted(1, 1, 'millisecond');
+      assertFormatted(1000, 1, 'second');
+      assertFormatted(60 * 1000, 1, 'minute');
+      assertFormatted(60 * 60 * 1000, 1, 'hour');
+      assertFormatted(24 * 60 * 60 * 1000, 1, 'day');
+      assertFormatted(7 * 24 * 60 * 60 * 1000, 1, 'week');
+      assertFormatted(31 * 24 * 60 * 60 * 1000, 1, 'month');
+      assertFormatted(365.2425 * 24 * 60 * 60 * 1000, 1, 'year');
+    });
+
+    it('should handle irregular input', () => {
+      assertEqual(duration(NaN), 'NaN milliseconds');
+      assertError(() => {
+        duration();
+      });
+    });
+
+  });
+
 });

@@ -9,6 +9,7 @@ export * from './unitsFromNow';
 
 export { default as advance } from './advance';
 export { default as clone } from './clone';
+export { default as duration } from './duration';
 export { default as getDaysInMonth } from './getDaysInMonth';
 export { default as getISOWeek } from './getISOWeek';
 export { default as getWeekday } from './getWeekday';

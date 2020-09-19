@@ -8,7 +8,9 @@ export function resetByUnit(date, unit, end) {
 export function resetBySpecificity(date, specificity, end = false) {
   for (let i = specificity + 1; i < SPECIFICITY_INDEX.length; i++) {
     const unit = SPECIFICITY_INDEX[i];
-    const val = getUnitEdge(unit, end, date);
-    callDateSet(date, unit, val);
+    if (unit !== 'week') {
+      const val = getUnitEdge(unit, end, date);
+      callDateSet(date, unit, val);
+    }
   }
 }

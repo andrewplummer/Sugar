@@ -54,19 +54,19 @@ export function daysAgo(val) {
 }
 
 export function hoursAgo(val) {
-  return unitsAgo('hours', val);
+  return unitsAgo('hour', val);
 }
 
 export function minutesAgo(val) {
-  return unitsAgo('minutes', val);
+  return unitsAgo('minute', val);
 }
 
 export function secondsAgo(val) {
-  return unitsAgo('seconds', val);
+  return unitsAgo('second', val);
 }
 
 export function millisecondsAgo(val) {
-  return unitsAgo('milliseconds', val);
+  return unitsAgo('millisecond', val);
 }
 
 function unitsAgo(unit, val) {

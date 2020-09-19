@@ -39,5 +39,5 @@ export function getUnitDistance(date1, date2, unit) {
 // number of milliseconds in them during a day with a DST shift.
 function unitIsAmbiguous(unit) {
   const specificity = getUnitSpecificity(unit);
-  return specificity < getUnitSpecificity('hours');
+  return specificity < getUnitSpecificity('hour');
 }

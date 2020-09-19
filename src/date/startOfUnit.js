@@ -57,15 +57,15 @@ export function startOfDay(date) {
 }
 
 export function startOfHour(date) {
-  return startOf(date, 'hours');
+  return startOf(date, 'hour');
 }
 
 export function startOfMinute(date) {
-  return startOf(date, 'minutes');
+  return startOf(date, 'minute');
 }
 
 export function startOfSecond(date) {
-  return startOf(date, 'seconds');
+  return startOf(date, 'second');
 }
 
 function startOf(date, unit) {

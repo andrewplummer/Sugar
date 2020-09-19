@@ -8,10 +8,10 @@ const METHOD_NAMES = {
   month: 'Month',
   date: 'Date',
   day: 'Day',
-  hours: 'Hours',
-  minutes: 'Minutes',
-  seconds: 'Seconds',
-  milliseconds: 'Milliseconds',
+  hour: 'Hours',
+  minute: 'Minutes',
+  second: 'Seconds',
+  millisecond: 'Milliseconds',
 };
 
 export function callDateGet(date, unit) {

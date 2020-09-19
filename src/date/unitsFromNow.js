@@ -54,19 +54,19 @@ export function daysFromNow(val) {
 }
 
 export function hoursFromNow(val) {
-  return unitsFromNow('hours', val);
+  return unitsFromNow('hour', val);
 }
 
 export function minutesFromNow(val) {
-  return unitsFromNow('minutes', val);
+  return unitsFromNow('minute', val);
 }
 
 export function secondsFromNow(val) {
-  return unitsFromNow('seconds', val);
+  return unitsFromNow('second', val);
 }
 
 export function millisecondsFromNow(val) {
-  return unitsFromNow('milliseconds', val);
+  return unitsFromNow('millisecond', val);
 }
 
 function unitsFromNow(unit, val) {

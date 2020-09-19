@@ -6,11 +6,11 @@ const ALIASES = {
   weekday: 'day',
   weeks: 'week',
   days: 'day',
-  hour: 'hours',
-  minute: 'minutes',
-  second: 'seconds',
-  millisecond: 'milliseconds',
-  ms: 'milliseconds',
+  hours: 'hour',
+  minutes: 'minute',
+  seconds: 'second',
+  milliseconds: 'millisecond',
+  ms: 'millisecond',
 };
 
 const SHORTCUT_REG = /^(-?\d+(?:\.\d+)?) (year|month|week|day|hour|minute|(?:milli)?second)s?$/;

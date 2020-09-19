@@ -2880,63 +2880,6 @@ namespace('Number', function () {
 
   });
 
-  method('duration', function() {
-
-    testCreateFakeLocale('fo');
-
-    testSetLocale('en');
-
-    test(-3600000, '0 milliseconds', 'negative number should be 0');
-
-    test(0, '0 milliseconds', '1 milliseconds');
-    test(1, '1 millisecond', '1 millisecond');
-    test(2, '2 milliseconds', '2 milliseconds');
-    test(100, '100 milliseconds', '100 milliseconds');
-    test(500, '500 milliseconds', '500 milliseconds');
-    test(949, '949 milliseconds', '949 milliseconds');
-    test(950, '1 second', '950 milliseconds');
-    test(999, '1 second', '999 milliseconds');
-    test(1000, '1 second', '1 second');
-    test(1999, '2 seconds', '2 seconds');
-    test(5000, '5 seconds', '5 seconds');
-    test(55000, '55 seconds', '55 seconds');
-    test(56000, '56 seconds', '56 seconds');
-    test(57000, '1 minute', '57 seconds');
-    test(60000, '1 minute', '60 seconds');
-    test(3600000, '1 hour', '360000 seconds');
-
-    test(run(5, 'hours'), '5 hours', '5 hours');
-    test(run(22, 'hours'), '22 hours', '22 hours');
-    test(run(23, 'hours'), '1 day', '23 hours');
-    test(run(6, 'days'), '6 days', '6 days');
-    test(run(7, 'days'), '1 week', '1 week');
-    test(run(28, 'days'), '4 weeks', '30 days');
-    test(run(29, 'days'), '1 month', '1 months');
-    test(run(11, 'months'), '11 months', '11 months');
-    test(run(12, 'months'), '1 year', '1 year');
-    test(run(2, 'years'), '2 years', '2 years');
-    test(run(15, 'years'), '15 years', '15 years');
-    test(run(1500, 'years'), '1500 years', '1500 years');
-
-    testSetLocale('fo');
-
-    test(run(5, 'days'), '5somomoney', 'Fake locale | 5 days');
-    test(run(150, 'days'), '4timomoney', 'Fake locale | 150 days');
-    test(run(38000, 'seconds'), '10famomoney', 'Fake locale | 38000 seconds');
-    test(run(38000, 'minutes'), '3lamomoney', 'Fake locale | 38000 minutes');
-    test(run(38000, 'hours'), '4domomoney', 'Fake locale | 38000 hours');
-
-
-    // Duration without setting the locale code
-
-    test(run(5, 'days'), ['en'], '5 days', 'English | 5 days');
-    test(run(150, 'days'), ['en'], '4 months', 'English | 150 days');
-    test(run(38000, 'seconds'), ['en'], '10 hours', 'English | 38000 seconds');
-    test(run(38000, 'minutes'), ['en'], '3 weeks', 'English | 38000 minutes');
-    test(run(38000, 'hours'), ['en'], '4 years', 'English | 38000 hours');
-    testSetLocale('en');
-  });
-
   group('Date Locales', function() {
 
     // Issue #415 locale object properties should be exported.

@@ -6,11 +6,12 @@ const YEAR_AVG_DAYS = 365.2425;
 export const SPECIFICITY_INDEX = [
   'year',
   'month',
+  'week',
   'date',
-  'hours',
-  'minutes',
-  'seconds',
-  'milliseconds',
+  'hour',
+  'minute',
+  'second',
+  'millisecond',
 ];
 
 const UNIT_MULTIPLIERS = {
@@ -18,9 +19,9 @@ const UNIT_MULTIPLIERS = {
   month: YEAR_AVG_DAYS / 12 * 24 * 60 * 60 * 1000,
   week: 7 * 24 * 60 * 60 * 1000,
   date: 24 * 60 * 60 * 1000,
-  hours: 60 * 60 * 1000,
-  seconds: 1000,
-  minutes: 60 * 1000,
+  hour: 60 * 60 * 1000,
+  minute: 60 * 1000,
+  second: 1000,
 };
 
 const UNIT_EDGES = {
@@ -34,19 +35,19 @@ const UNIT_EDGES = {
       return getDaysInMonth(date);
     }
   },
-  hours: {
+  hour: {
     start: 0,
     end: 23,
   },
-  minutes: {
+  minute: {
     start: 0,
     end: 59,
   },
-  seconds: {
+  second: {
     start: 0,
     end: 59,
   },
-  milliseconds: {
+  millisecond: {
     start: 0,
     end: 999,
   },
@@ -67,6 +68,23 @@ export function getUnitEdge(unit, end, date) {
     val = val(date);
   }
   return val;
+}
+
+export function convertTimeToUnit(ms) {
+  let unit = 'millisecond';
+  let value = ms;
+  for (let i = SPECIFICITY_INDEX.length - 2; i >= 0; i--) {
+    const u = SPECIFICITY_INDEX[i];
+    const mult = UNIT_MULTIPLIERS[u];
+    if (Math.abs(ms) >= mult) {
+      unit = u;
+      value = Math.trunc(ms / mult);
+    }
+  }
+  return {
+    unit,
+    value,
+  }
 }
 
 function normalizeUnit(unit) {
