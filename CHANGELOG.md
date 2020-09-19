@@ -144,6 +144,8 @@ call `Function#lock` first in the chain to achieve the same effect.
 - Changed `Date#advance` and `Date#rewind` to no longer accept enumerated
     arguments. Use object syntax here instead.
 - Removed `Number#milliseconds` and `Number#millisecond` as it is redundant.
+- Renamed `Date#daysInMonth` to `Date#getDaysInMonth` to align with other API
+    methods.
 
 TODO:
 

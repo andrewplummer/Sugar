@@ -2075,6 +2075,31 @@ namespace('Date', function () {
 
   });
 
+  describeInstance('getDaysInMonth', function (getDaysInMonth) {
+
+    it('should get the correct days in the month', () => {
+      assertEqual(getDaysInMonth(new Date(2020, 0)), 31);
+      assertEqual(getDaysInMonth(new Date(2020, 1)), 29);
+      assertEqual(getDaysInMonth(new Date(2020, 2)), 31);
+      assertEqual(getDaysInMonth(new Date(2020, 3)), 30);
+      assertEqual(getDaysInMonth(new Date(2020, 4)), 31);
+      assertEqual(getDaysInMonth(new Date(2020, 5)), 30);
+      assertEqual(getDaysInMonth(new Date(2020, 6)), 31);
+      assertEqual(getDaysInMonth(new Date(2020, 7)), 31);
+      assertEqual(getDaysInMonth(new Date(2020, 8)), 30);
+      assertEqual(getDaysInMonth(new Date(2020, 9)), 31);
+      assertEqual(getDaysInMonth(new Date(2020, 10)), 30);
+      assertEqual(getDaysInMonth(new Date(2020, 11)), 31);
+    });
+
+    it('should handle irregular input', () => {
+      assertNaN(getDaysInMonth(new Date('invalid')));
+      assertError(() => {
+        getDaysInMonth();
+      });
+    });
+  });
+
 });
 
 namespace('Number', function () {

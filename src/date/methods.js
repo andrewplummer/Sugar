@@ -6,6 +6,7 @@ export * from './unitsAgo';
 export * from './unitsFromNow';
 
 export { default as advance } from './advance';
+export { default as getDaysInMonth } from './getDaysInMonth';
 export { default as getISOWeek } from './getISOWeek';
 export { default as getWeekday } from './getWeekday';
 export { default as isFuture } from './isFuture';

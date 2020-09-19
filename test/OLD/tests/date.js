@@ -1493,40 +1493,6 @@ namespace('Date', function () {
     test(new Date(2017, 7, 14), ['Saturday', { past: true }], new Date(2017, 7, 12), 'Preference option should work');
   });
 
-  method('daysInMonth', function() {
-    var d = new Date('August 25, 2010 11:45:20');
-
-    d.setMonth(0);
-    test(d, 31, 'jan');
-    d.setMonth(1);
-    test(d, 28, 'feb');
-    d.setMonth(2);
-    test(d, 31, 'mar');
-    // This test fails in Casablanca in Windows XP! Reason unknown.
-    d.setMonth(3);
-    test(d, 30, 'apr');
-    d.setMonth(4);
-    test(d, 31, 'may');
-    d.setMonth(5);
-    test(d, 30, 'jun');
-    d.setMonth(6);
-    test(d, 31, 'jul');
-    d.setMonth(7);
-    test(d, 31, 'aug');
-    d.setMonth(8);
-    test(d, 30, 'sep');
-    d.setMonth(9);
-    test(d, 31, 'oct');
-    d.setMonth(10);
-    test(d, 30, 'nov');
-    d.setMonth(11);
-    test(d, 31, 'dec');
-
-    d.setFullYear(2012);
-    d.setMonth(1);
-    test(d, 29, 'feb leap year');
-  });
-
   method('setISOWeek', function() {
     var d = new Date('August 25, 2010 11:45:20');
 
