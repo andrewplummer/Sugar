@@ -1317,8 +1317,6 @@ namespace('Date', function () {
 
     testCreateFakeLocale('fo');
 
-    equal(run(testCreateDate('my pants'), 'isPast'), undefined, 'isPast | invalid dates should return false');
-    equal(run(testCreateDate('my pants'), 'isFuture'), undefined, 'isFuture | invalid dates should return false');
     equal(run(testCreateDate('my pants'), 'isToday'), undefined, 'isToday | invalid dates should return false');
     equal(run(testCreateDate('my pants'), 'isTomorrow'), undefined, 'isTomorrow | invalid dates should return false');
     equal(run(testCreateDate('my pants'), 'is', ['today']), undefined, 'is | invalid dates should return false');
@@ -1336,8 +1334,6 @@ namespace('Date', function () {
     equal(run(testCreateDate('friday', 'en'), 'isFriday'), true, 'isFriday should always work regardless of locale');
     equal(run(testCreateDate('saturday', 'en'), 'isSaturday'), true, 'isSaturday should always work regardless of locale');
     equal(run(testCreateDate('sunday', 'en'), 'isSunday'), true, 'isSunday should always work regardless of locale');
-    equal(run(testCreateDate('1 day ago', 'en'), 'isPast'), true, 'isPast should always work regardless of locale');
-    equal(run(testCreateDate('1 day from now', 'en'), 'isFuture'), true, 'isFuture should always work regardless of locale');
     testSetLocale('en');
 
   });
@@ -1390,64 +1386,8 @@ namespace('Date', function () {
   });
 
 
-  method('isPast', function() {
-
-    // Issue #141 future/past preference
-
-    test(testCreatePastDate('Sunday'),    true, 'weekdays | Sunday');
-    test(testCreatePastDate('Monday'),    true, 'weekdays | Monday');
-    test(testCreatePastDate('Tuesday'),   true, 'weekdays | Tuesday');
-    test(testCreatePastDate('Wednesday'), true, 'weekdays | Wednesday');
-    test(testCreatePastDate('Thursday'),  true, 'weekdays | Thursday');
-    test(testCreatePastDate('Friday'),    true, 'weekdays | Friday');
-    test(testCreatePastDate('Saturday'),  true, 'weekdays | Saturday');
-
-    test(testCreatePastDate('January'),   true, 'months | January');
-    test(testCreatePastDate('February'),  true, 'months | February');
-    test(testCreatePastDate('March'),     true, 'months | March');
-    test(testCreatePastDate('April'),     true, 'months | April');
-    test(testCreatePastDate('May'),       true, 'months | May');
-    test(testCreatePastDate('June'),      true, 'months | June');
-    test(testCreatePastDate('July'),      true, 'months | July');
-    test(testCreatePastDate('August'),    true, 'months | August');
-    test(testCreatePastDate('September'), true, 'months | September');
-    test(testCreatePastDate('October'),   true, 'months | October');
-    test(testCreatePastDate('November'),  true, 'months | November');
-    test(testCreatePastDate('December'),  true, 'months | December');
-
-  });
-
-  method('isFuture', function() {
-
-    test(testCreateFutureDate('Sunday'),    true, 'weekdays | Sunday');
-    test(testCreateFutureDate('Monday'),    true, 'weekdays | Monday');
-    test(testCreateFutureDate('Tuesday'),   true, 'weekdays | Tuesday');
-    test(testCreateFutureDate('Wednesday'), true, 'weekdays | Wednesday');
-    test(testCreateFutureDate('Thursday'),  true, 'weekdays | Thursday');
-    test(testCreateFutureDate('Friday'),    true, 'weekdays | Friday');
-    test(testCreateFutureDate('Saturday'),  true, 'weekdays | Saturday');
-
-    test(testCreateFutureDate('January'),   true, 'months | January');
-    test(testCreateFutureDate('February'),  true, 'months | February');
-    test(testCreateFutureDate('March'),     true, 'months | March');
-    test(testCreateFutureDate('April'),     true, 'months | April');
-    test(testCreateFutureDate('May'),       true, 'months | May');
-    test(testCreateFutureDate('June'),      true, 'months | June');
-    test(testCreateFutureDate('July'),      true, 'months | July');
-    test(testCreateFutureDate('August'),    true, 'months | August');
-    test(testCreateFutureDate('September'), true, 'months | September');
-    test(testCreateFutureDate('October'),   true, 'months | October');
-    test(testCreateFutureDate('November'),  true, 'months | November');
-    test(testCreateFutureDate('December'),  true, 'months | December');
-
-
-    test(testCreateFutureDate('1:00am'), true, '1am should be the future');
-    test(testCreateFutureDate('11:00pm'), true, '11pm should be the future');
-
-    equal(testCreateFutureDate('1:00am') < testCreateDate('1 day from now'), true, '1am should be the future');
-    equal(testCreateFutureDate('11:00pm') < testCreateDate('1 day from now'), true, '11pm should be the future');
-
-  });
+  // TODO: handle this
+  // Issue #141 future/past preference
 
   method('get', function() {
     var d = new Date('August 25, 2010 11:45:20');
@@ -2287,24 +2227,18 @@ namespace('Date', function () {
     equal(run(now, 'isYesterday'), false, 'isYesterday');
     equal(run(now, 'isToday'), true, 'isToday');
     equal(run(now, 'isTomorrow'), false, 'isTomorrow');
-    equal(run(now, 'isFuture'), false, 'isFuture');
-    equal(run(now, 'isPast'), true, 'isPast');
 
     var d = new Date('February 29, 2008 22:15:42');
 
     equal(run(d, 'isYesterday'), false, 'isYesterday | February 29, 2008');
     equal(run(d, 'isToday'), false, 'isToday | February 29, 2008');
     equal(run(d, 'isTomorrow'), false, 'isTomorrow | February 29, 2008');
-    equal(run(d, 'isFuture'), false, 'isFuture | February 29, 2008');
-    equal(run(d, 'isPast'), true, 'isPast | February 29, 2008');
 
     d.setFullYear(thisYear + 2);
 
     equal(run(d, 'isYesterday'), false, 'isYesterday | 2 years from now');
     equal(run(d, 'isToday'), false, 'isToday | 2 years from now');
     equal(run(d, 'isTomorrow'), false, 'isTomorrow | 2 years from now');
-    equal(run(d, 'isFuture'), true, 'isFuture | 2 years from now');
-    equal(run(d, 'isPast'), false, 'isPast | 2 years from now');
 
     equal(run(now, 'isLastWeek'), false, 'isLastWeek | now');
     equal(run(now, 'isThisWeek'), true,  'isThisWeek | now');
@@ -2830,11 +2764,6 @@ namespace('Date', function () {
 
     equal(testCreatePastDate('4pm').getTime() < (new Date().getTime() + (-offset * 60 * 1000)), true, 'past repsects global offset');
     equal(testCreateFutureDate('4pm').getTime() > (new Date().getTime() + (-offset * 60 * 1000)), true, 'future repsects global offset');
-
-    var d = new Date;
-    d.setTime(d.getTime() + ((d.getTimezoneOffset() + 60) * 60 * 1000));
-    equal(run(d, 'isFuture'), true, 'should respect global offset');
-    equal(run(d, 'isPast'), false, 'should respect global offset');
 
     // Relative formatting with newDateInternal
 
