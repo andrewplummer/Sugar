@@ -2707,6 +2707,38 @@ namespace('Date', function () {
 
   });
 
+  describeInstance('clone', function (clone) {
+
+    it('should create a copy of the date', () => {
+      const date = new Date();
+      assertFalse(date === clone(date));
+    });
+
+    it('should clone the date', () => {
+      assertDateEqual(clone(new Date(2020, 0)), new Date(2020, 0));
+    });
+
+    it('should clone invalid dates', () => {
+      assertNaN(clone(new Date('invalid')).getTime());
+    });
+
+    it('should handle invalid input', () => {
+      assertError(() => {
+        clone();
+      });
+      assertError(() => {
+        clone(null);
+      });
+      assertError(() => {
+        clone(NaN);
+      });
+      assertError(() => {
+        clone(5);
+      });
+    });
+
+  });
+
 });
 
 namespace('Number', function () {

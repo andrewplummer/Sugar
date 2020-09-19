@@ -2771,22 +2771,6 @@ namespace('Date', function () {
 
   });
 
-  method('clone', function() {
-
-    var date1 = testCreateDate('July 4th, 1776');
-    var date2 = run(run(date1, 'clone'), 'beginningOfYear');
-
-    equal(date2.getMonth(), 0, 'Date#clone | cloned element is reset to January');
-    equal(date1.getMonth(), 6, 'Date#clone | source element is reset to unchanged');
-
-    var date1 = new Date('invalid');
-    var date2 = run(date1, 'clone');
-
-    equal(run(date1, 'isValid'), false, 'Date#clone | source element is invalid');
-    equal(run(date2, 'isValid'), false, 'Date#clone | cloned element is also invalid');
-
-  });
-
   group('Date Locales', function() {
 
     testCreateFakeLocale('fo');

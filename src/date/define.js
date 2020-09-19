@@ -2,6 +2,7 @@ import { defineInstance } from '../core/date';
 import * as methods from './methods';
 
 defineInstance('advance', methods.advance);
+defineInstance('clone', methods.clone);
 defineInstance('getDaysInMonth', methods.getDaysInMonth);
 defineInstance('getISOWeek', methods.getISOWeek);
 defineInstance('getWeekday', methods.getWeekday);
