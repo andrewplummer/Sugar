@@ -44,3 +44,21 @@ defineInstance('isSeptember', methods.isSeptember);
 defineInstance('isOctober', methods.isOctober);
 defineInstance('isNovember', methods.isNovember);
 defineInstance('isDecember', methods.isDecember);
+
+defineInstance('startOfYear', methods.startOfYear);
+defineInstance('startOfMonth', methods.startOfMonth);
+defineInstance('startOfWeek', methods.startOfWeek);
+defineInstance('startOfISOWeek', methods.startOfISOWeek);
+defineInstance('startOfDay', methods.startOfDay);
+defineInstance('startOfHour', methods.startOfHour);
+defineInstance('startOfMinute', methods.startOfMinute);
+defineInstance('startOfSecond', methods.startOfSecond);
+
+defineInstance('endOfYear', methods.endOfYear);
+defineInstance('endOfMonth', methods.endOfMonth);
+defineInstance('endOfWeek', methods.endOfWeek);
+defineInstance('endOfISOWeek', methods.endOfISOWeek);
+defineInstance('endOfDay', methods.endOfDay);
+defineInstance('endOfHour', methods.endOfHour);
+defineInstance('endOfMinute', methods.endOfMinute);
+defineInstance('endOfSecond', methods.endOfSecond);

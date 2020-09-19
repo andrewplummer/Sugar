@@ -20,6 +20,8 @@
     square: true,
     concatA: true,
     describe: true,
+    afterAll: true,
+    beforeAll: true,
     fdescribe: true,
     xdescribe: true,
     namespace: true,

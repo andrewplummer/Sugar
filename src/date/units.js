@@ -1,4 +1,4 @@
-import { UNIT_MULTIPLIERS } from './util/units';
+import { getUnitMultiplier } from './util/units';
 
 /**
  * Takes a number as a unit and converts to milliseconds.
@@ -71,6 +71,5 @@ export function seconds(n) {
 }
 
 function getInMilliseconds(n, unit) {
-  const mult = UNIT_MULTIPLIERS[unit];
-  return Math.round(n * mult);
+  return Math.round(n * getUnitMultiplier(unit));
 }

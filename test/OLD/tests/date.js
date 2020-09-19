@@ -2921,23 +2921,6 @@ namespace('Date', function () {
 
   });
 
-
-  // Issue #326 begining/endOfISOWeek
-
-  method('beginningOfISOWeek', function() {
-
-    test(new Date(2013, 6, 8),  new Date(2013, 6, 8), 'Mon');
-    test(new Date(2013, 6, 9),  new Date(2013, 6, 8), 'Tue');
-    test(new Date(2013, 6, 10), new Date(2013, 6, 8), 'Wed');
-    test(new Date(2013, 6, 11), new Date(2013, 6, 8), 'Thu');
-    test(new Date(2013, 6, 12), new Date(2013, 6, 8), 'Fri');
-    test(new Date(2013, 6, 13), new Date(2013, 6, 8), 'Sat');
-    test(new Date(2013, 6, 14), new Date(2013, 6, 8), 'Sun');
-    test(new Date(2013, 6, 15), new Date(2013, 6, 15), 'next Mon');
-
-    test(new Date(2013, 6, 10, 8, 30), new Date(2013, 6, 8), 'resets time');
-  });
-
   method('endOfISOWeek', function() {
 
     test(new Date(2013, 6, 8),  new Date(2013, 6, 14, 23, 59, 59, 999), 'Mon');

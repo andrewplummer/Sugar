@@ -2061,7 +2061,7 @@ namespace('Date', function () {
         setISOWeek(NaN);
       });
       assertError(() => {
-        getISOWeek(5);
+        setISOWeek(5);
       });
     });
 
@@ -2117,7 +2117,6 @@ namespace('Date', function () {
   describeInstance('getWeekday', function (getWeekday) {
 
     it('should be an alias for getDay', () => {
-      const date = new Date(2020, 0);
       assertEqual(getWeekday(new Date(2019, 11, 29)), 0);
       assertEqual(getWeekday(new Date(2019, 11, 30)), 1);
       assertEqual(getWeekday(new Date(2019, 11, 31)), 2);
@@ -2178,6 +2177,531 @@ namespace('Date', function () {
       });
       assertError(() => {
         isLeapYear(null);
+      });
+    });
+
+  });
+
+  describeInstance('startOfYear', function (startOfYear) {
+
+    it('should correctly reset the year', () => {
+      assertDateEqual(startOfYear(new Date(2020, 0)), new Date(2020, 0));
+      assertDateEqual(startOfYear(new Date(2020, 0, 2)), new Date(2020, 0));
+      assertDateEqual(startOfYear(new Date(2020, 1, 15)), new Date(2020, 0));
+      assertDateEqual(startOfYear(new Date(2020, 11, 31)), new Date(2020, 0));
+    });
+
+    it('should correctly reset lower units', () => {
+      assertDateEqual(startOfYear(new Date(2020, 3, 3, 23, 59, 59, 999)), new Date(2020, 0));
+    });
+
+    it('should modify the date', () => {
+      const date = new Date(2020, 0, 5);
+      startOfYear(date);
+      assertDateEqual(date, new Date(2020, 0));
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        startOfYear();
+      });
+      assertError(() => {
+        startOfYear(null);
+      });
+      assertError(() => {
+        startOfYear(5);
+      });
+    });
+
+  });
+
+  describeInstance('startOfMonth', function (startOfMonth) {
+
+    it('should correctly reset the month', () => {
+      assertDateEqual(startOfMonth(new Date(2020, 0)), new Date(2020, 0));
+      assertDateEqual(startOfMonth(new Date(2020, 1)), new Date(2020, 1));
+      assertDateEqual(startOfMonth(new Date(2020, 1, 15)), new Date(2020, 1));
+      assertDateEqual(startOfMonth(new Date(2020, 11, 31)), new Date(2020, 11));
+    });
+
+    it('should correctly reset lower units', () => {
+      assertDateEqual(startOfMonth(new Date(2020, 1, 3, 23, 59, 59, 999)), new Date(2020, 1));
+    });
+
+    it('should modify the date', () => {
+      const date = new Date(2020, 1, 5);
+      startOfMonth(date);
+      assertDateEqual(date, new Date(2020, 1));
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        startOfMonth();
+      });
+      assertError(() => {
+        startOfMonth(null);
+      });
+      assertError(() => {
+        startOfMonth(5);
+      });
+    });
+
+  });
+
+  describeInstance('startOfWeek', function (startOfWeek) {
+
+    it('should correctly reset the week to Sunday', () => {
+      assertDateEqual(startOfWeek(new Date(2019, 11, 30)), new Date(2019, 11, 29));
+      assertDateEqual(startOfWeek(new Date(2019, 11, 31)), new Date(2019, 11, 29));
+      assertDateEqual(startOfWeek(new Date(2020, 0, 1)), new Date(2019, 11, 29));
+      assertDateEqual(startOfWeek(new Date(2020, 0, 2)), new Date(2019, 11, 29));
+      assertDateEqual(startOfWeek(new Date(2020, 0, 3)), new Date(2019, 11, 29));
+      assertDateEqual(startOfWeek(new Date(2020, 0, 4)), new Date(2019, 11, 29));
+      assertDateEqual(startOfWeek(new Date(2020, 0, 5)), new Date(2020, 0, 5));
+    });
+
+    it('should correctly reset lower units', () => {
+      assertDateEqual(startOfWeek(new Date(2020, 0, 3, 23, 59, 59, 999)), new Date(2019, 11, 29));
+    });
+
+    it('should modify the date', () => {
+      const date = new Date(2020, 0, 3);
+      startOfWeek(date);
+      assertDateEqual(date, new Date(2019, 11, 29));
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        startOfWeek();
+      });
+      assertError(() => {
+        startOfWeek(null);
+      });
+      assertError(() => {
+        startOfWeek(5);
+      });
+    });
+
+  });
+
+  describeInstance('startOfISOWeek', function (startOfISOWeek) {
+
+    it('should correctly reset the week to Sunday', () => {
+      assertDateEqual(startOfISOWeek(new Date(2019, 11, 29)), new Date(2019, 11, 23));
+      assertDateEqual(startOfISOWeek(new Date(2019, 11, 30)), new Date(2019, 11, 30));
+      assertDateEqual(startOfISOWeek(new Date(2019, 11, 31)), new Date(2019, 11, 30));
+      assertDateEqual(startOfISOWeek(new Date(2020, 0, 1)), new Date(2019, 11, 30));
+      assertDateEqual(startOfISOWeek(new Date(2020, 0, 2)), new Date(2019, 11, 30));
+      assertDateEqual(startOfISOWeek(new Date(2020, 0, 3)), new Date(2019, 11, 30));
+      assertDateEqual(startOfISOWeek(new Date(2020, 0, 4)), new Date(2019, 11, 30));
+      assertDateEqual(startOfISOWeek(new Date(2020, 0, 5)), new Date(2019, 11, 30));
+      assertDateEqual(startOfISOWeek(new Date(2020, 0, 6)), new Date(2020, 0, 6));
+      assertDateEqual(startOfISOWeek(new Date(2020, 0, 7)), new Date(2020, 0, 6));
+    });
+
+    it('should correctly reset lower units', () => {
+      assertDateEqual(startOfISOWeek(new Date(2020, 0, 3, 23, 59, 59, 999)), new Date(2019, 11, 30));
+    });
+
+    it('should modify the date', () => {
+      const date = new Date(2020, 0, 3);
+      startOfISOWeek(date);
+      assertDateEqual(date, new Date(2019, 11, 30));
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        startOfISOWeek();
+      });
+      assertError(() => {
+        startOfISOWeek(null);
+      });
+      assertError(() => {
+        startOfISOWeek(5);
+      });
+    });
+
+    it('should handle issue #326', () => {
+      assertDateEqual(startOfISOWeek(new Date(2013, 6, 8)),  new Date(2013, 6, 8));
+      assertDateEqual(startOfISOWeek(new Date(2013, 6, 9)),  new Date(2013, 6, 8));
+      assertDateEqual(startOfISOWeek(new Date(2013, 6, 10)), new Date(2013, 6, 8));
+      assertDateEqual(startOfISOWeek(new Date(2013, 6, 11)), new Date(2013, 6, 8));
+      assertDateEqual(startOfISOWeek(new Date(2013, 6, 12)), new Date(2013, 6, 8));
+      assertDateEqual(startOfISOWeek(new Date(2013, 6, 13)), new Date(2013, 6, 8));
+      assertDateEqual(startOfISOWeek(new Date(2013, 6, 14)), new Date(2013, 6, 8));
+      assertDateEqual(startOfISOWeek(new Date(2013, 6, 15)), new Date(2013, 6, 15));
+      assertDateEqual(startOfISOWeek(new Date(2013, 6, 10, 8, 30)), new Date(2013, 6, 8));
+    });
+
+  });
+
+  describeInstance('startOfDay', function (startOfDay) {
+
+    it('should correctly reset the date', () => {
+      assertDateEqual(startOfDay(new Date(2020, 0)), new Date(2020, 0));
+      assertDateEqual(startOfDay(new Date(2020, 0, 1, 1)), new Date(2020, 0));
+      assertDateEqual(startOfDay(new Date(2020, 0, 1, 23)), new Date(2020, 0));
+    });
+
+    it('should correctly reset lower units', () => {
+      assertDateEqual(startOfDay(new Date(2020, 0, 1, 23, 59, 59, 999)), new Date(2020, 0, 1));
+    });
+
+    it('should modify the date', () => {
+      const date = new Date(2020, 0, 1, 12);
+      startOfDay(date);
+      assertDateEqual(date, new Date(2020, 0));
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        startOfDay();
+      });
+      assertError(() => {
+        startOfDay(null);
+      });
+      assertError(() => {
+        startOfDay(5);
+      });
+    });
+
+  });
+
+  describeInstance('startOfHour', function (startOfHour) {
+
+    it('should correctly reset the hour', () => {
+      assertDateEqual(startOfHour(new Date(2020, 0)), new Date(2020, 0));
+      assertDateEqual(startOfHour(new Date(2020, 0, 1, 0, 30)), new Date(2020, 0));
+      assertDateEqual(startOfHour(new Date(2020, 0, 1, 0, 59)), new Date(2020, 0));
+    });
+
+    it('should correctly reset lower units', () => {
+      assertDateEqual(startOfHour(new Date(2020, 0, 1, 23, 59, 59, 999)), new Date(2020, 0, 1, 23));
+    });
+
+    it('should modify the date', () => {
+      const date = new Date(2020, 0, 1, 12, 30);
+      startOfHour(date);
+      assertDateEqual(date, new Date(2020, 0, 1, 12));
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        startOfHour();
+      });
+      assertError(() => {
+        startOfHour(null);
+      });
+      assertError(() => {
+        startOfHour(5);
+      });
+    });
+
+  });
+
+  describeInstance('startOfMinute', function (startOfMinute) {
+
+    it('should correctly reset the minute', () => {
+      assertDateEqual(startOfMinute(new Date(2020, 0)), new Date(2020, 0));
+      assertDateEqual(startOfMinute(new Date(2020, 0, 1, 0, 0, 30)), new Date(2020, 0));
+      assertDateEqual(startOfMinute(new Date(2020, 0, 1, 0, 0, 59)), new Date(2020, 0));
+    });
+
+    it('should correctly reset lower units', () => {
+      assertDateEqual(startOfMinute(new Date(2020, 0, 1, 23, 59, 59, 999)), new Date(2020, 0, 1, 23, 59));
+    });
+
+    it('should modify the date', () => {
+      const date = new Date(2020, 0, 1, 0, 0, 30);
+      startOfMinute(date);
+      assertDateEqual(date, new Date(2020, 0));
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        startOfMinute();
+      });
+      assertError(() => {
+        startOfMinute(null);
+      });
+      assertError(() => {
+        startOfMinute(5);
+      });
+    });
+
+  });
+
+  describeInstance('startOfSecond', function (startOfSecond) {
+
+    it('should correctly reset the secon', () => {
+      assertDateEqual(startOfSecond(new Date(2020, 0)), new Date(2020, 0));
+      assertDateEqual(startOfSecond(new Date(2020, 0, 1, 0, 0, 0, 500)), new Date(2020, 0));
+      assertDateEqual(startOfSecond(new Date(2020, 0, 1, 0, 0, 0, 999)), new Date(2020, 0));
+    });
+
+    it('should correctly reset lower units', () => {
+      assertDateEqual(startOfSecond(new Date(2020, 0, 1, 23, 59, 59, 999)), new Date(2020, 0, 1, 23, 59, 59));
+    });
+
+    it('should modify the date', () => {
+      const date = new Date(2020, 0, 1, 0, 0, 0, 999);
+      startOfSecond(date);
+      assertDateEqual(date, new Date(2020, 0));
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        startOfSecond();
+      });
+      assertError(() => {
+        startOfSecond(null);
+      });
+      assertError(() => {
+        startOfSecond(5);
+      });
+    });
+
+  });
+
+  describeInstance('endOfYear', function (endOfYear) {
+
+    it('should correctly set to the end of the year', () => {
+      assertDateEqual(endOfYear(new Date(2020, 0)), new Date(2020, 11, 31, 23, 59, 59, 999));
+      assertDateEqual(endOfYear(new Date(2020, 5)), new Date(2020, 11, 31, 23, 59, 59, 999));
+      assertDateEqual(endOfYear(new Date(2021, 5)), new Date(2021, 11, 31, 23, 59, 59, 999));
+    });
+
+    it('should modify the date', () => {
+      const date = new Date(2020, 0, 5);
+      endOfYear(date);
+      assertDateEqual(date, new Date(2020, 11, 31, 23, 59, 59, 999));
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        endOfYear();
+      });
+      assertError(() => {
+        endOfYear(null);
+      });
+      assertError(() => {
+        endOfYear(5);
+      });
+    });
+
+  });
+
+  describeInstance('endOfMonth', function (endOfMonth) {
+
+    it('should correctly set to the end of the month', () => {
+      assertDateEqual(endOfMonth(new Date(2020, 0)), new Date(2020, 0, 31, 23, 59, 59, 999));
+      assertDateEqual(endOfMonth(new Date(2020, 1)), new Date(2020, 1, 29, 23, 59, 59, 999));
+      assertDateEqual(endOfMonth(new Date(2020, 1, 15)), new Date(2020, 1, 29, 23, 59, 59, 999));
+      assertDateEqual(endOfMonth(new Date(2020, 11, 12)), new Date(2020, 11, 31, 23, 59, 59, 999));
+    });
+
+    it('should modify the date', () => {
+      const date = new Date(2020, 1, 5);
+      endOfMonth(date);
+      assertDateEqual(date, new Date(2020, 1, 29, 23, 59, 59, 999));
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        endOfMonth();
+      });
+      assertError(() => {
+        endOfMonth(null);
+      });
+      assertError(() => {
+        endOfMonth(5);
+      });
+    });
+
+  });
+
+  describeInstance('endOfWeek', function (endOfWeek) {
+
+    it('should correctly set to end of Saturday', () => {
+      assertDateEqual(endOfWeek(new Date(2019, 11, 30)), new Date(2020, 0, 4, 23, 59, 59, 999));
+      assertDateEqual(endOfWeek(new Date(2019, 11, 31)), new Date(2020, 0, 4, 23, 59, 59, 999));
+      assertDateEqual(endOfWeek(new Date(2020, 0, 1)), new Date(2020, 0, 4, 23, 59, 59, 999));
+      assertDateEqual(endOfWeek(new Date(2020, 0, 2)), new Date(2020, 0, 4, 23, 59, 59, 999));
+      assertDateEqual(endOfWeek(new Date(2020, 0, 3)), new Date(2020, 0, 4, 23, 59, 59, 999));
+      assertDateEqual(endOfWeek(new Date(2020, 0, 4)), new Date(2020, 0, 4, 23, 59, 59, 999));
+      assertDateEqual(endOfWeek(new Date(2020, 0, 5)), new Date(2020, 0, 11, 23, 59, 59, 999));
+      assertDateEqual(endOfWeek(new Date(2020, 0, 6)), new Date(2020, 0, 11, 23, 59, 59, 999));
+      assertDateEqual(endOfWeek(new Date(2020, 0, 7)), new Date(2020, 0, 11, 23, 59, 59, 999));
+    });
+
+    it('should modify the date', () => {
+      const date = new Date(2020, 0, 3);
+      endOfWeek(date);
+      assertDateEqual(date, new Date(2020, 0, 4, 23, 59, 59, 999));
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        endOfWeek();
+      });
+      assertError(() => {
+        endOfWeek(null);
+      });
+      assertError(() => {
+        endOfWeek(5);
+      });
+    });
+
+  });
+
+  describeInstance('endOfISOWeek', function (endOfISOWeek) {
+
+    it('should correctly set end of Sunday', () => {
+      assertDateEqual(endOfISOWeek(new Date(2019, 11, 30)), new Date(2020, 0, 5, 23, 59, 59, 999));
+      assertDateEqual(endOfISOWeek(new Date(2019, 11, 31)), new Date(2020, 0, 5, 23, 59, 59, 999));
+      assertDateEqual(endOfISOWeek(new Date(2020, 0, 1)), new Date(2020, 0, 5, 23, 59, 59, 999));
+      assertDateEqual(endOfISOWeek(new Date(2020, 0, 2)), new Date(2020, 0, 5, 23, 59, 59, 999));
+      assertDateEqual(endOfISOWeek(new Date(2020, 0, 3)), new Date(2020, 0, 5, 23, 59, 59, 999));
+      assertDateEqual(endOfISOWeek(new Date(2020, 0, 4)), new Date(2020, 0, 5, 23, 59, 59, 999));
+      assertDateEqual(endOfISOWeek(new Date(2020, 0, 5)), new Date(2020, 0, 5, 23, 59, 59, 999));
+      assertDateEqual(endOfISOWeek(new Date(2020, 0, 6)), new Date(2020, 0, 12, 23, 59, 59, 999));
+      assertDateEqual(endOfISOWeek(new Date(2020, 0, 7)), new Date(2020, 0, 12, 23, 59, 59, 999));
+    });
+
+    it('should modify the date', () => {
+      const date = new Date(2020, 0, 3);
+      endOfISOWeek(date);
+      assertDateEqual(date, new Date(2020, 0, 5, 23, 59, 59, 999));
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        endOfISOWeek();
+      });
+      assertError(() => {
+        endOfISOWeek(null);
+      });
+      assertError(() => {
+        endOfISOWeek(5);
+      });
+    });
+
+  });
+
+  describeInstance('endOfDay', function (endOfDay) {
+
+    it('should correctly set to the end of the day', () => {
+      assertDateEqual(endOfDay(new Date(2020, 0)), new Date(2020, 0, 1, 23, 59, 59, 999));
+      assertDateEqual(endOfDay(new Date(2020, 0, 1, 1)), new Date(2020, 0, 1, 23, 59, 59, 999));
+      assertDateEqual(endOfDay(new Date(2020, 0, 1, 12)), new Date(2020, 0, 1, 23, 59, 59, 999));
+      assertDateEqual(endOfDay(new Date(2020, 0, 1, 23)), new Date(2020, 0, 1, 23, 59, 59, 999));
+    });
+
+    it('should modify the date', () => {
+      const date = new Date(2020, 0, 1, 12);
+      endOfDay(date);
+      assertDateEqual(date, new Date(2020, 0, 1, 23, 59, 59, 999));
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        endOfDay();
+      });
+      assertError(() => {
+        endOfDay(null);
+      });
+      assertError(() => {
+        endOfDay(5);
+      });
+    });
+
+  });
+
+  describeInstance('endOfHour', function (endOfHour) {
+
+    it('should correctly set to the end of the hour', () => {
+      assertDateEqual(endOfHour(new Date(2020, 0)), new Date(2020, 0, 1, 0, 59, 59, 999));
+      assertDateEqual(endOfHour(new Date(2020, 0, 1, 5)), new Date(2020, 0, 1, 5, 59, 59, 999));
+      assertDateEqual(endOfHour(new Date(2020, 0, 1, 5, 30)), new Date(2020, 0, 1, 5, 59, 59, 999));
+      assertDateEqual(endOfHour(new Date(2020, 0, 1, 23)), new Date(2020, 0, 1, 23, 59, 59, 999));
+      assertDateEqual(endOfHour(new Date(2020, 0, 1, 23, 30)), new Date(2020, 0, 1, 23, 59, 59, 999));
+    });
+
+    it('should modify the date', () => {
+      const date = new Date(2020, 0, 1, 12, 30);
+      endOfHour(date);
+      assertDateEqual(date, new Date(2020, 0, 1, 12, 59, 59, 999));
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        endOfHour();
+      });
+      assertError(() => {
+        endOfHour(null);
+      });
+      assertError(() => {
+        endOfHour(5);
+      });
+    });
+
+  });
+
+  describeInstance('endOfMinute', function (endOfMinute) {
+
+    it('should correctly set the minute', () => {
+      assertDateEqual(endOfMinute(new Date(2020, 0)), new Date(2020, 0, 1, 0, 0, 59, 999));
+      assertDateEqual(endOfMinute(new Date(2020, 0, 1, 12, 5)), new Date(2020, 0, 1, 12, 5, 59, 999));
+      assertDateEqual(endOfMinute(new Date(2020, 0, 1, 12, 5, 30)), new Date(2020, 0, 1, 12, 5, 59, 999));
+      assertDateEqual(endOfMinute(new Date(2020, 0, 1, 12, 30)), new Date(2020, 0, 1, 12, 30, 59, 999));
+      assertDateEqual(endOfMinute(new Date(2020, 0, 1, 12, 30, 30)), new Date(2020, 0, 1, 12, 30, 59, 999));
+    });
+
+    it('should modify the date', () => {
+      const date = new Date(2020, 0, 1, 0, 0, 30);
+      endOfMinute(date);
+      assertDateEqual(date, new Date(2020, 0, 1, 0, 0, 59, 999));
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        endOfMinute();
+      });
+      assertError(() => {
+        endOfMinute(null);
+      });
+      assertError(() => {
+        endOfMinute(5);
+      });
+    });
+
+  });
+
+  describeInstance('endOfSecond', function (endOfSecond) {
+
+    it('should correctly set the secon', () => {
+      assertDateEqual(endOfSecond(new Date(2020, 0)), new Date(2020, 0, 1, 0, 0, 0, 999));
+      assertDateEqual(endOfSecond(new Date(2020, 0, 1, 12, 30, 5)), new Date(2020, 0, 1, 12, 30, 5, 999));
+      assertDateEqual(endOfSecond(new Date(2020, 0, 1, 12, 30, 5, 30)), new Date(2020, 0, 1, 12, 30, 5, 999));
+      assertDateEqual(endOfSecond(new Date(2020, 0, 1, 12, 30, 30)), new Date(2020, 0, 1, 12, 30, 30, 999));
+      assertDateEqual(endOfSecond(new Date(2020, 0, 1, 12, 30, 30, 30)), new Date(2020, 0, 1, 12, 30, 30, 999));
+    });
+
+    it('should modify the date', () => {
+      const date = new Date(2020, 0);
+      endOfSecond(date);
+      assertDateEqual(date, new Date(2020, 0, 1, 0, 0, 0, 999));
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        endOfSecond();
+      });
+      assertError(() => {
+        endOfSecond(null);
+      });
+      assertError(() => {
+        endOfSecond(5);
       });
     });
 

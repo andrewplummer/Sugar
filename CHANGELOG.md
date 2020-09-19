@@ -146,6 +146,12 @@ call `Function#lock` first in the chain to achieve the same effect.
 - Removed `Number#milliseconds` and `Number#millisecond` as it is redundant.
 - Renamed `Date#daysInMonth` to `Date#getDaysInMonth` to align with other API
     methods.
+- Renamed `Date#beginningOfUnit` methods to `Date#startOfUnit` for consistency
+    and brevity.
+- Changed `Date#startOfWeek` (previously `Date#beginningOfWeek`) to no longer
+    accept a locale code. Use `Date#startOfISOWeek` to reset weekday to Monday.
+- Changed `Date#endOfWeek` to no longer accept a locale code. Use
+    `Date#endOfISOWeek` to reset weekday to Sunday.
 
 TODO:
 

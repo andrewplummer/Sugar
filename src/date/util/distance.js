@@ -1,6 +1,6 @@
 import { cloneDate } from '../../util/date';
 import { shiftDate } from './shift';
-import { UNIT_MULTIPLIERS, getUnitSpecificity } from './units';
+import { getUnitMultiplier, getUnitSpecificity } from './units';
 
 export function getUnitDistance(date1, date2, unit) {
   const fwd = date2 > date1;
@@ -9,7 +9,7 @@ export function getUnitDistance(date1, date2, unit) {
     date2  = date1;
     date1  = tmp;
   }
-  let num = Math.trunc((date2 - date1) / UNIT_MULTIPLIERS[unit]);
+  let num = Math.trunc((date2 - date1) / getUnitMultiplier(unit));
 
   // For units with potential ambiguity, use the numeric calculation as a
   // starting point, then iterate until we pass the target date. Decrement
