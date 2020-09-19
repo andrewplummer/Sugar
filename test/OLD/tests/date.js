@@ -2284,39 +2284,6 @@ namespace('Date', function () {
 
   });
 
-  method('reset', function() {
-
-    var d = new Date('February 29, 2012 22:15:42');
-
-    dateTest(d, [], new Date(2012, 1, 29), 'No args resets time');
-
-    dateTest(d, ['year'],        new Date(2012, 0), 'year');
-    dateTest(d, ['month'],       new Date(2012, 1, 1), 'month');
-    dateTest(d, ['day'],         new Date(2012, 1, 29), 'day');
-    dateTest(d, ['hour'],        new Date(2012, 1, 29, 22), 'hour');
-    dateTest(d, ['minute'],      new Date(2012, 1, 29, 22, 15), 'minute');
-    dateTest(d, ['second'],      new Date(2012, 1, 29, 22, 15, 42), 'second');
-    dateTest(d, ['millisecond'], new Date(2012, 1, 29, 22, 15, 42), 'millisecond does nothing');
-
-    dateTest(d, ['year'],         new Date(2012, 0), 'years');
-    dateTest(d, ['months'],       new Date(2012, 1, 1), 'months');
-    dateTest(d, ['days'],         new Date(2012, 1, 29), 'days');
-    dateTest(d, ['hours'],        new Date(2012, 1, 29, 22), 'hours');
-    dateTest(d, ['minutes'],      new Date(2012, 1, 29, 22, 15), 'minutes');
-    dateTest(d, ['seconds'],      new Date(2012, 1, 29, 22, 15, 42), 'seconds');
-    dateTest(d, ['milliseconds'], new Date(2012, 1, 29, 22, 15, 42), 'milliseconds does nothing');
-
-    dateTest(d, ['date'],  new Date(2012, 1, 29), 'date');
-    dateTest(d, ['flegh'], new Date(2012, 1, 29, 22, 15, 42), 'an unknown string will do nothing');
-
-    dateTest(d, ['weeks'], new Date(2012, 1, 26), 'reset week');
-    dateTest(d, ['week'],  new Date(2012, 1, 26), 'reset weeks');
-    dateTest(d, ['week', 'en-GB'],  new Date(2012, 1, 27), 'reset weeks | en-GB');
-
-    equal(dateRun(d, 'addDays', [5, true]), new Date(2012, 2, 5), 'can also reset the time');
-
-  });
-
   group('isMethods', function() {
 
     equal(run(now, 'isYesterday'), false, 'isYesterday');

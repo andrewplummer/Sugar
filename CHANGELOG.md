@@ -152,6 +152,7 @@ call `Function#lock` first in the chain to achieve the same effect.
     accept a locale code. Use `Date#startOfISOWeek` to reset weekday to Monday.
 - Changed `Date#endOfWeek` to no longer accept a locale code. Use
     `Date#endOfISOWeek` to reset weekday to Sunday.
+- Removed `Date#reset`. Use `Date#startOfUnit` here instead.
 
 TODO:
 
