@@ -2154,6 +2154,35 @@ namespace('Date', function () {
     });
   });
 
+  describeInstance('isLeapYear', function (isLeapYear) {
+
+    it('should correctly determine leap years', () => {
+      assertEqual(isLeapYear(new Date(2008, 0)), true);
+      assertEqual(isLeapYear(new Date(2009, 0)), false);
+      assertEqual(isLeapYear(new Date(2010, 0)), false);
+      assertEqual(isLeapYear(new Date(2011, 0)), false);
+      assertEqual(isLeapYear(new Date(2012, 0)), true);
+      assertEqual(isLeapYear(new Date(2016, 0)), true);
+      assertEqual(isLeapYear(new Date(2020, 0)), true);
+      assertEqual(isLeapYear(new Date(2021, 0)), false);
+      assertEqual(isLeapYear(new Date(1600, 0)), true);
+      assertEqual(isLeapYear(new Date(1700, 0)), false);
+      assertEqual(isLeapYear(new Date(1800, 0)), false);
+      assertEqual(isLeapYear(new Date(1900, 0)), false);
+      assertEqual(isLeapYear(new Date(2000, 0)), true);
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        isLeapYear();
+      });
+      assertError(() => {
+        isLeapYear(null);
+      });
+    });
+
+  });
+
 });
 
 namespace('Number', function () {

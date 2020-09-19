@@ -2132,22 +2132,6 @@ namespace('Date', function () {
 
   });
 
-  method('isLeapYear', function() {
-    test(testCreateDate('2008'), true, '2008');
-    test(testCreateDate('2009'), false, '2009');
-    test(testCreateDate('2010'), false, '2010');
-    test(testCreateDate('2011'), false, '2011');
-    test(testCreateDate('2012'), true, '2012');
-    test(testCreateDate('2016'), true, '2016');
-    test(testCreateDate('2020'), true, '2020');
-    test(testCreateDate('2021'), false, '2021');
-    test(testCreateDate('1600'), true, '1600');
-    test(testCreateDate('1700'), false, '1700');
-    test(testCreateDate('1800'), false, '1800');
-    test(testCreateDate('1900'), false, '1900');
-    test(testCreateDate('2000'), true, '2000');
-  });
-
   group('Since/Until', function() {
 
     var d = new Date(2010,7,5,13,45,2,542);

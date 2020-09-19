@@ -10,6 +10,7 @@ export { default as getDaysInMonth } from './getDaysInMonth';
 export { default as getISOWeek } from './getISOWeek';
 export { default as getWeekday } from './getWeekday';
 export { default as isFuture } from './isFuture';
+export { default as isLeapYear } from './isLeapYear';
 export { default as isPast } from './isPast';
 export { default as isValid } from './isValid';
 export { default as rewind } from './rewind';

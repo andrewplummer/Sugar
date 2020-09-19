@@ -6,6 +6,7 @@ defineInstance('getDaysInMonth', methods.getDaysInMonth);
 defineInstance('getISOWeek', methods.getISOWeek);
 defineInstance('getWeekday', methods.getWeekday);
 defineInstance('isFuture', methods.isFuture);
+defineInstance('isLeapYear', methods.isLeapYear);
 defineInstance('isPast', methods.isPast);
 defineInstance('isValid', methods.isValid);
 defineInstance('rewind', methods.rewind);
