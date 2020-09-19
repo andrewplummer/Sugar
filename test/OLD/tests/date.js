@@ -2655,46 +2655,8 @@ namespace('Date', function () {
 
   });
 
-  method('iso', function() {
-
-    var d = new Date('August 5, 2010 04:03:02');
-    var expected = run(run(d, 'setUTC', [true]), 'format', ['ISO8601']);
-    test(d, expected, 'Date#iso is an alias for the ISO8601 format in UTC');
-
-    // TODO: move these
-    // Issue #146 - These tests were failing when system time was set to Friday, June 1, 2012 PDT
-
-    test(testCreateDate('2010-01-20T20:00:00.000Z'), '2010-01-20T20:00:00.000Z');
-    test(testCreateDate('2010-02-20T20:00:00.000Z'), '2010-02-20T20:00:00.000Z');
-    test(testCreateDate('2010-03-20T20:00:00.000Z'), '2010-03-20T20:00:00.000Z');
-    test(testCreateDate('2010-04-20T20:00:00.000Z'), '2010-04-20T20:00:00.000Z');
-    test(testCreateDate('2010-05-20T20:00:00.000Z'), '2010-05-20T20:00:00.000Z');
-    test(testCreateDate('2010-05-20T20:00:00.000Z'), '2010-05-20T20:00:00.000Z');
-    test(testCreateDate('2010-06-20T20:00:00.000Z'), '2010-06-20T20:00:00.000Z');
-    test(testCreateDate('2010-07-20T20:00:00.000Z'), '2010-07-20T20:00:00.000Z');
-    test(testCreateDate('2010-08-20T20:00:00.000Z'), '2010-08-20T20:00:00.000Z');
-    test(testCreateDate('2010-09-20T20:00:00.000Z'), '2010-09-20T20:00:00.000Z');
-    test(testCreateDate('2010-10-20T20:00:00.000Z'), '2010-10-20T20:00:00.000Z');
-    test(testCreateDate('2010-11-20T20:00:00.000Z'), '2010-11-20T20:00:00.000Z');
-    test(testCreateDate('2010-12-20T20:00:00.000Z'), '2010-12-20T20:00:00.000Z');
-
-    test(testCreateDate('Jan 20 2010 12:00:00 GMT-0800 (PST)'), '2010-01-20T20:00:00.000Z');
-    test(testCreateDate('Feb 20 2010 12:00:00 GMT-0800 (PST)'), '2010-02-20T20:00:00.000Z');
-    test(testCreateDate('Mar 20 2010 12:00:00 GMT-0800 (PST)'), '2010-03-20T20:00:00.000Z');
-    test(testCreateDate('Apr 20 2010 12:00:00 GMT-0800 (PST)'), '2010-04-20T20:00:00.000Z');
-    test(testCreateDate('May 20 2010 12:00:00 GMT-0800 (PST)'), '2010-05-20T20:00:00.000Z');
-    test(testCreateDate('Jun 20 2010 12:00:00 GMT-0800 (PST)'), '2010-06-20T20:00:00.000Z');
-    test(testCreateDate('Jul 20 2010 12:00:00 GMT-0800 (PST)'), '2010-07-20T20:00:00.000Z');
-    test(testCreateDate('Aug 20 2010 12:00:00 GMT-0800 (PST)'), '2010-08-20T20:00:00.000Z');
-    test(testCreateDate('Sep 20 2010 12:00:00 GMT-0800 (PST)'), '2010-09-20T20:00:00.000Z');
-    test(testCreateDate('Oct 20 2010 12:00:00 GMT-0800 (PST)'), '2010-10-20T20:00:00.000Z');
-    test(testCreateDate('Nov 20 2010 12:00:00 GMT-0800 (PST)'), '2010-11-20T20:00:00.000Z');
-    test(testCreateDate('Dec 20 2010 12:00:00 GMT-0800 (PST)'), '2010-12-20T20:00:00.000Z');
-
-    var d = run(testCreateUTCDate('2001-06-15'), 'setUTC', [true]);
-    equal(run(d, 'iso'), '2001-06-15T00:00:00.000Z', 'will properly be output in UTC');
-
-  });
+  // TODO: handle this:
+  // Issue #146 - These tests were failing when system time was set to Friday, June 1, 2012 PDT
 
   method('getAllLocales', function() {
     var all = run(Date, 'getAllLocales');

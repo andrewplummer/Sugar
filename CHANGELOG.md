@@ -153,6 +153,7 @@ call `Function#lock` first in the chain to achieve the same effect.
 - Changed `Date#endOfWeek` to no longer accept a locale code. Use
     `Date#endOfISOWeek` to reset weekday to Sunday.
 - Removed `Date#reset`. Use `Date#startOfUnit` here instead.
+- Removed alias `Date#iso`. Use native `Date.toISOString` instead.
 
 TODO:
 
