@@ -2019,6 +2019,60 @@ namespace('Date', function () {
     });
   });
 
+  describeInstance('setISOWeek', function (setISOWeek) {
+
+    it('should provide the correct ISO week for 2020', () => {
+      const date = new Date(2020, 0);
+      setISOWeek(date, 1);
+      assertDateEqual(date, new Date(2020, 0));
+      setISOWeek(date, 2);
+      assertDateEqual(date, new Date(2020, 0, 8));
+      setISOWeek(date, 3);
+      assertDateEqual(date, new Date(2020, 0, 15));
+      setISOWeek(date, 30);
+      assertDateEqual(date, new Date(2020, 6, 22));
+      setISOWeek(date, 50);
+      assertDateEqual(date, new Date(2020, 11, 9));
+      setISOWeek(date, 52);
+      assertDateEqual(date, new Date(2020, 11, 23));
+      setISOWeek(date, 53);
+      assertDateEqual(date, new Date(2020, 11, 30));
+    });
+
+    it('should traverse into a new Gregorian year', () => {
+      const date = new Date(2020, 0, 5);
+      setISOWeek(date, 53);
+      assertDateEqual(date, new Date(2021, 0, 3));
+    });
+
+    it('should return a timestamp for the updated date', () => {
+      assertEqual(setISOWeek(new Date(2020, 0), 3), new Date(2020, 0, 15).getTime());
+    });
+
+    it('should handle irregular input', () => {
+      assertNaN(setISOWeek(new Date()));
+      assertError(() => {
+        setISOWeek();
+      });
+      assertError(() => {
+        setISOWeek(null);
+      });
+      assertError(() => {
+        setISOWeek(NaN);
+      });
+      assertError(() => {
+        getISOWeek(5);
+      });
+    });
+
+    it('should handle issue #251', () => {
+      const date = new Date(2013, 0, 6);
+      setISOWeek(date, 1);
+      assertDateEqual(date, new Date(2013, 0, 6));
+    });
+
+  });
+
   describeInstance('setDay,setWeekday', function (setWeekday) {
 
     it('should set the weekday', () => {

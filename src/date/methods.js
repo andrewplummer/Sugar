@@ -14,4 +14,5 @@ export { default as isPast } from './isPast';
 export { default as isValid } from './isValid';
 export { default as rewind } from './rewind';
 export { default as set } from './set';
+export { default as setISOWeek } from './setISOWeek';
 export { default as setWeekday } from './setWeekday';

@@ -6,7 +6,7 @@ import { getUnitDistance } from './distance';
 export function getISOWeek(date) {
   const year = date.getFullYear();
   const doy = getDateOfYear(year, date);
-  const dow = date.getDay() || 7;
+  const dow = getISOWeekday(date);
   const week = Math.trunc((doy - dow + 10) / 7);
   if (week < 1) {
     return getYearWeeks(year - 1);
@@ -15,6 +15,25 @@ export function getISOWeek(date) {
   } else {
     return week;
   }
+}
+
+export function setISOWeek(date, week) {
+  if (isNaN(week)) {
+    date.setTime(NaN);
+    return;
+  }
+  const year = date.getFullYear();
+  const dow = getISOWeekday(date);
+  const c = getISOWeekday(new Date(year, 0, 4)) + 3;
+  const doy = week * 7 + dow - c;
+  const offset = doy - getDateOfYear(year, date);
+  if (offset) {
+    date.setDate(date.getDate() + offset);
+  }
+}
+
+function getISOWeekday(date) {
+  return date.getDay() || 7;
 }
 
 function getDateOfYear(year, date) {

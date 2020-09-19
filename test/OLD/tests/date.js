@@ -1493,44 +1493,6 @@ namespace('Date', function () {
     test(new Date(2017, 7, 14), ['Saturday', { past: true }], new Date(2017, 7, 12), 'Preference option should work');
   });
 
-  method('setISOWeek', function() {
-    var d = new Date('August 25, 2010 11:45:20');
-
-    run(d, 'setISOWeek', [1]);
-    equal(d, new Date(2010,0,6,11,45,20), 'week 1');
-    run(d, 'setISOWeek', [15]);
-    equal(d, new Date(2010,3,14,11,45,20), 'week 15');
-    run(d, 'setISOWeek', [27]);
-    equal(d, new Date(2010,6,7,11,45,20), 'week 27');
-    run(d, 'setISOWeek', [52]);
-    equal(d, new Date(2010,11,29,11,45,20), 'week 52');
-    run(d, 'setISOWeek');
-    equal(d, new Date(2010,11,29,11,45,20), 'week stays set');
-
-    d = testCreateDate('August 25, 2010 11:45:20', 'en');
-    equal(run(d, 'setISOWeek', [1]), new Date(2010, 0, 6, 11, 45, 20).getTime(), 'returns a timestamp');
-
-    d = run(testCreateUTCDate('January 1, 2010 02:15:20'), 'setUTC', [true]);
-
-    run(d, 'setISOWeek', [15]);
-    equal(d, new Date(Date.UTC(2010,3,16,2,15,20)), 'utc | week 15');
-    run(d, 'setISOWeek', [27]);
-    equal(d, new Date(Date.UTC(2010,6,9,2,15,20)), 'utc | week 27');
-    run(d, 'setISOWeek', [52]);
-    equal(d, new Date(Date.UTC(2010,11,31,2,15,20)), 'utc | week 52');
-    run(d, 'setISOWeek');
-    equal(d, new Date(Date.UTC(2010,11,31,2,15,20)), 'utc | week stays set');
-
-    // Issue #251
-
-    test(new Date(2013, 0), [1], new Date(2013, 0, 1).getTime(), 'Should follow ISO-8601');
-    test(new Date(2013, 0, 6), [1], new Date(2013, 0, 6).getTime(), 'Sunday should remain at the end of the week as per ISO-8601 standard');
-    test(new Date(2013, 0, 13), [1], new Date(2013, 0, 6).getTime(), 'Sunday one week ahead');
-    test(new Date(2013, 0, 7), [1], new Date(2012, 11, 31).getTime(), 'Monday should remain at the beginning of the week as per ISO-8601 standard');
-    test(new Date(2013, 0, 14), [2], new Date(2013, 0, 7).getTime(), 'Monday one week ahead');
-
-  });
-
   method('format', function() {
 
     var d = new Date('August 5, 2010 13:45:02');

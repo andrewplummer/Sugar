@@ -11,6 +11,7 @@ defineInstance('isValid', methods.isValid);
 defineInstance('rewind', methods.rewind);
 defineInstance('set', methods.set);
 defineInstance('setDay', methods.setWeekday);
+defineInstance('setISOWeek', methods.setISOWeek);
 defineInstance('setWeekday', methods.setWeekday);
 
 defineInstance('addYears', methods.addYears);

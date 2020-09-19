@@ -2,8 +2,9 @@ import { assertDate } from '../util/assertions';
 import { getISOWeek as _getISOWeek } from './util/isoWeekDate';
 
 /**
- * Gets the date's week (of the year) as defined by the ISO8601 standard. Note
- *   that this standard places Sunday at the end of the week (day 7).
+ * Gets the date's week (of the year) as defined by the ISO8601 standard.
+ *
+ * @extra Note that this standard places Sunday at the end of the week (day 7).
  *
  * @param {Date} date - The date.
  *
