@@ -1,4 +1,5 @@
 import { assertInteger } from '../../util/assertions';
+import { setWeekday } from './weekdays';
 
 // Date method helpers
 
@@ -59,10 +60,6 @@ function getMethodUnit(unit) {
     throw new TypeError(`Unit "${unit}" is invalid`);
   }
   return methodUnit;
-}
-
-function setWeekday(date, val) {
-  date.setDate(date.getDate() + (val - date.getDay()));
 }
 
 function preventMonthTraversal(date, targetMonth) {

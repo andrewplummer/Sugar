@@ -3,11 +3,14 @@ import * as methods from './methods';
 
 defineInstance('advance', methods.advance);
 defineInstance('getISOWeek', methods.getISOWeek);
+defineInstance('getWeekday', methods.getWeekday);
 defineInstance('isFuture', methods.isFuture);
 defineInstance('isPast', methods.isPast);
 defineInstance('isValid', methods.isValid);
 defineInstance('rewind', methods.rewind);
 defineInstance('set', methods.set);
+defineInstance('setDay', methods.setWeekday);
+defineInstance('setWeekday', methods.setWeekday);
 
 defineInstance('addYears', methods.addYears);
 defineInstance('addMonths', methods.addMonths);

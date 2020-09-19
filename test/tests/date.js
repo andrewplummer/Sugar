@@ -2019,6 +2019,62 @@ namespace('Date', function () {
     });
   });
 
+  describeInstance('setDay,setWeekday', function (setWeekday) {
+
+    it('should set the weekday', () => {
+      const date = new Date(2020, 0);
+      setWeekday(date, 0);
+      assertDateEqual(date, new Date(2019, 11, 29));
+      setWeekday(date, 1);
+      assertDateEqual(date, new Date(2019, 11, 30));
+      setWeekday(date, 2);
+      assertDateEqual(date, new Date(2019, 11, 31));
+      setWeekday(date, 3);
+      assertDateEqual(date, new Date(2020, 0, 1));
+      setWeekday(date, 4);
+      assertDateEqual(date, new Date(2020, 0, 2));
+      setWeekday(date, 5);
+      assertDateEqual(date, new Date(2020, 0, 3));
+      setWeekday(date, 6);
+      assertDateEqual(date, new Date(2020, 0, 4));
+    });
+
+    it('should be able to overshoot boundaries', () => {
+      const date = new Date(2020, 0);
+      setWeekday(date, -1);
+      assertDateEqual(date, new Date(2019, 11, 28));
+      setWeekday(date, 14);
+      assertDateEqual(date, new Date(2020, 0, 5));
+    });
+
+    it('should return a timestamp', () => {
+      assertEqual(setWeekday(new Date(2020, 0), 6), new Date(2020, 0, 4).getTime());
+    });
+
+    it('should handle irregular input', () => {
+      assertNaN(setWeekday(new Date(2020, 0)));
+      assertError(() => {
+        setWeekday();
+      });
+    });
+
+  });
+
+  describeInstance('getWeekday', function (getWeekday) {
+
+    it('should be an alias for getDay', () => {
+      const date = new Date(2020, 0);
+      assertEqual(getWeekday(new Date(2019, 11, 29)), 0);
+      assertEqual(getWeekday(new Date(2019, 11, 30)), 1);
+      assertEqual(getWeekday(new Date(2019, 11, 31)), 2);
+      assertEqual(getWeekday(new Date(2020, 0, 1)), 3);
+      assertEqual(getWeekday(new Date(2020, 0, 2)), 4);
+      assertEqual(getWeekday(new Date(2020, 0, 3)), 5);
+      assertEqual(getWeekday(new Date(2020, 0, 4)), 6);
+    });
+
+  });
+
 });
 
 namespace('Number', function () {
