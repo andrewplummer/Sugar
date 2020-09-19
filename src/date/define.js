@@ -10,6 +10,8 @@ defineInstance('isFuture', methods.isFuture);
 defineInstance('isLeapYear', methods.isLeapYear);
 defineInstance('isPast', methods.isPast);
 defineInstance('isValid', methods.isValid);
+defineInstance('isWeekday', methods.isWeekday);
+defineInstance('isWeekend', methods.isWeekend);
 defineInstance('rewind', methods.rewind);
 defineInstance('set', methods.set);
 defineInstance('setDay', methods.setWeekday);

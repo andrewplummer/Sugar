@@ -2739,6 +2739,70 @@ namespace('Date', function () {
 
   });
 
+  describeInstance('isWeekday', function (isWeekday) {
+
+    it('should correctly identify weekdays', () => {
+      assertEqual(isWeekday(new Date(2020, 0, 1)), true);
+      assertEqual(isWeekday(new Date(2020, 0, 2)), true);
+      assertEqual(isWeekday(new Date(2020, 0, 3)), true);
+      assertEqual(isWeekday(new Date(2020, 0, 4)), false);
+      assertEqual(isWeekday(new Date(2020, 0, 5)), false);
+      assertEqual(isWeekday(new Date(2020, 0, 7)), true);
+      assertEqual(isWeekday(new Date(2020, 0, 8)), true);
+    });
+
+    it('should be false for invalid dates', () => {
+      assertFalse(isWeekday(new Date('invalid')));
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        isWeekday();
+      });
+      assertError(() => {
+        isWeekday(null);
+      });
+      assertError(() => {
+        isWeekday(NaN);
+      });
+      assertError(() => {
+        isWeekday(5);
+      });
+    });
+  });
+
+  describeInstance('isWeekend', function (isWeekend) {
+
+    it('should correctly identify weekdays', () => {
+      assertEqual(isWeekend(new Date(2020, 0, 1)), false);
+      assertEqual(isWeekend(new Date(2020, 0, 2)), false);
+      assertEqual(isWeekend(new Date(2020, 0, 3)), false);
+      assertEqual(isWeekend(new Date(2020, 0, 4)), true);
+      assertEqual(isWeekend(new Date(2020, 0, 5)), true);
+      assertEqual(isWeekend(new Date(2020, 0, 7)), false);
+      assertEqual(isWeekend(new Date(2020, 0, 8)), false);
+    });
+
+    it('should be false for invalid dates', () => {
+      assertFalse(isWeekend(new Date('invalid')));
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        isWeekend();
+      });
+      assertError(() => {
+        isWeekend(null);
+      });
+      assertError(() => {
+        isWeekend(NaN);
+      });
+      assertError(() => {
+        isWeekend(5);
+      });
+    });
+  });
+
 });
 
 namespace('Number', function () {

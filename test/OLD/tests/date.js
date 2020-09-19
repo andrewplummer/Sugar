@@ -1167,7 +1167,6 @@ namespace('Date', function () {
     var d = run(testCreateUTCDate('2000-02-18 11:00pm'), 'setUTC', [true]);
 
     equal(run(d, 'is', ['Friday']), true, 'is friday');
-    equal(run(d, 'isWeekday', []), true, 'friday isWeekday');
     equal(run(d, 'is', ['2000-02-18']), true, 'friday full date');
     equal(run(d, 'isAfter', [testCreateUTCDate('2000-02-18 10:00pm')]), true, 'isAfter');
     equal(dateRun(d, 'reset'), new Date(Date.UTC(2000, 1, 18)), 'resetting');
@@ -1183,7 +1182,6 @@ namespace('Date', function () {
     // UTC flag is now deprecated in comparison methods so instead we
     // need to run through Date#create.
     equal(run(d, 'is', ['Monday']), true, 'is monday');
-    equal(run(d, 'isWeekday', []), true, 'monday is a weekday');
     equal(run(d, 'is', ['2000-02-14']), true, 'monday full date');
 
     equal(run(testCreateUTCDate('1 minute ago'), 'relative'), '1 minute ago', 'relative dates are unaffected');
@@ -2289,8 +2287,6 @@ namespace('Date', function () {
     equal(run(now, 'isYesterday'), false, 'isYesterday');
     equal(run(now, 'isToday'), true, 'isToday');
     equal(run(now, 'isTomorrow'), false, 'isTomorrow');
-    equal(run(now, 'isWeekday'), now.getDay() !== 0 && now.getDay() !== 6, 'isWeekday');
-    equal(run(now, 'isWeekend'), now.getDay() === 0 || now.getDay() === 6, 'isWeekend');
     equal(run(now, 'isFuture'), false, 'isFuture');
     equal(run(now, 'isPast'), true, 'isPast');
 
@@ -2299,8 +2295,6 @@ namespace('Date', function () {
     equal(run(d, 'isYesterday'), false, 'isYesterday | February 29, 2008');
     equal(run(d, 'isToday'), false, 'isToday | February 29, 2008');
     equal(run(d, 'isTomorrow'), false, 'isTomorrow | February 29, 2008');
-    equal(run(d, 'isWeekday'), true, 'isWeekday | February 29, 2008');
-    equal(run(d, 'isWeekend'), false, 'isWeekend | February 29, 2008');
     equal(run(d, 'isFuture'), false, 'isFuture | February 29, 2008');
     equal(run(d, 'isPast'), true, 'isPast | February 29, 2008');
 

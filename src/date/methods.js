@@ -16,6 +16,8 @@ export { default as isFuture } from './isFuture';
 export { default as isLeapYear } from './isLeapYear';
 export { default as isPast } from './isPast';
 export { default as isValid } from './isValid';
+export { default as isWeekday } from './isWeekday';
+export { default as isWeekend } from './isWeekend';
 export { default as rewind } from './rewind';
 export { default as set } from './set';
 export { default as setISOWeek } from './setISOWeek';
