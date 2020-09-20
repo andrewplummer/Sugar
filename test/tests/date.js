@@ -33,6 +33,7 @@ namespace('Date', function () {
   ];
 
   describeInstance('isValid', function (isValid) {
+
     it('should be valid for valid dates', () => {
       assertTrue(isValid(new Date()));
     });
@@ -42,9 +43,7 @@ namespace('Date', function () {
     });
 
     it('should handle irregular input', () => {
-      assertError(() => {
-        isValid();
-      });
+      assertFalse(isValid());
     });
   });
 
@@ -2146,7 +2145,9 @@ namespace('Date', function () {
     });
 
     it('should handle irregular input', () => {
-      assertNaN(getDaysInMonth(new Date('invalid')));
+      assertError(() => {
+        getDaysInMonth(new Date('invalid'));
+      });
       assertError(() => {
         getDaysInMonth();
       });
@@ -2801,6 +2802,254 @@ namespace('Date', function () {
         isWeekend(5);
       });
     });
+  });
+
+  describeInstance('relative', function (relative) {
+
+    it('should format past relative dates', () => {
+      assertEqual(relative(new Date(2019, 11, 31, 23, 59, 59)), '1 second ago');
+      assertEqual(relative(new Date(2019, 11, 31, 23, 59, 58)), '2 seconds ago');
+      assertEqual(relative(new Date(2019, 11, 31, 23, 59)), '1 minute ago');
+      assertEqual(relative(new Date(2019, 11, 31, 23, 58)), '2 minutes ago');
+      assertEqual(relative(new Date(2019, 11, 31, 23)), '1 hour ago');
+      assertEqual(relative(new Date(2019, 11, 31, 22)), '2 hours ago');
+      assertEqual(relative(new Date(2019, 11, 31, 12)), '12 hours ago');
+      assertEqual(relative(new Date(2019, 11, 31)), '1 day ago');
+      assertEqual(relative(new Date(2019, 11, 30)), '2 days ago');
+      assertEqual(relative(new Date(2019, 11, 27)), '5 days ago');
+      assertEqual(relative(new Date(2019, 11, 25)), '1 week ago');
+      assertEqual(relative(new Date(2019, 11)), '1 month ago');
+      assertEqual(relative(new Date(2019, 6)), '6 months ago');
+      assertEqual(relative(new Date(2019, 0)), '1 year ago');
+    });
+
+    it('should format future relative dates', () => {
+      assertEqual(relative(new Date(2020, 0, 1, 0, 0, 1)), 'in 1 second');
+      assertEqual(relative(new Date(2020, 0, 1, 0, 0, 2)), 'in 2 seconds');
+      assertEqual(relative(new Date(2020, 0, 1, 0, 1)), 'in 1 minute');
+      assertEqual(relative(new Date(2020, 0, 1, 0, 2)), 'in 2 minutes');
+      assertEqual(relative(new Date(2020, 0, 1, 1)), 'in 1 hour');
+      assertEqual(relative(new Date(2020, 0, 1, 2)), 'in 2 hours');
+      assertEqual(relative(new Date(2020, 0, 1, 12)), 'in 12 hours');
+      assertEqual(relative(new Date(2020, 0, 2)), 'in 1 day');
+      assertEqual(relative(new Date(2020, 0, 3)), 'in 2 days');
+      assertEqual(relative(new Date(2020, 0, 6)), 'in 5 days');
+      assertEqual(relative(new Date(2020, 0, 8)), 'in 1 week');
+      assertEqual(relative(new Date(2020, 1, 1)), 'in 1 month');
+      assertEqual(relative(new Date(2020, 6, 1)), 'in 6 months');
+      assertEqual(relative(new Date(2021, 0)), 'in 1 year');
+    });
+
+    it('should format minimum unit as seconds', () => {
+      assertEqual(relative(new Date(2019, 11, 31, 23, 59, 59, 1)), '0 seconds ago');
+      assertEqual(relative(new Date(2019, 11, 31, 23, 59, 59, 500)), '0 seconds ago');
+      assertEqual(relative(new Date(2019, 11, 31, 23, 59, 59, 999)), '0 seconds ago');
+      assertEqual(relative(new Date(2020, 0, 1, 0, 0, 0, 1)), 'in 0 seconds');
+      assertEqual(relative(new Date(2020, 0, 1, 0, 0, 0, 500)), 'in 0 seconds');
+      assertEqual(relative(new Date(2020, 0, 1, 0, 0, 0, 999)), 'in 0 seconds');
+    });
+
+    it('should format maximum unit as years', () => {
+      assertEqual(relative(new Date(2015, 0)), '5 years ago');
+      assertEqual(relative(new Date(2010, 0)), '10 years ago');
+      assertEqual(relative(new Date(1920, 0)), '100 years ago');
+      assertEqual(relative(new Date(1020, 0)), '1,000 years ago');
+      assertEqual(relative(new Date(-7980, 0)), '10,000 years ago');
+      assertEqual(relative(new Date(2025, 0)), 'in 5 years');
+      assertEqual(relative(new Date(2030, 0)), 'in 10 years');
+      assertEqual(relative(new Date(2120, 0)), 'in 100 years');
+      assertEqual(relative(new Date(3020, 0)), 'in 1,000 years');
+      assertEqual(relative(new Date(12020, 0)), 'in 10,000 years');
+    });
+
+    it('should be able to pass a locale code to create a formatter', () => {
+      function getFormatted(value, unit) {
+        return new Intl.RelativeTimeFormat('ja').format(value, unit);
+      }
+      assertEqual(relative(new Date(2019, 11, 31, 23, 59, 59, 1), 'ja'), getFormatted(-0, 'second'));
+      assertEqual(relative(new Date(2019, 11, 31, 23, 59, 59), 'ja'), getFormatted(-1, 'second'));
+      assertEqual(relative(new Date(2019, 11, 31, 23, 59), 'ja'), getFormatted(-1, 'minute'));
+      assertEqual(relative(new Date(2019, 11, 31, 23), 'ja'), getFormatted(-1, 'hour'));
+      assertEqual(relative(new Date(2019, 11, 31), 'ja'), getFormatted(-1, 'day'));
+      assertEqual(relative(new Date(2019, 11, 25), 'ja'), getFormatted(-1, 'week'));
+      assertEqual(relative(new Date(2019, 11), 'ja'), getFormatted(-1, 'month'));
+      assertEqual(relative(new Date(2019, 6), 'ja'), getFormatted(-6, 'month'));
+      assertEqual(relative(new Date(2019, 0), 'ja'), getFormatted(-1, 'year'));
+      assertEqual(relative(new Date(2015, 0), 'ja'), getFormatted(-5, 'year'));
+      assertEqual(relative(new Date(2010, 0), 'ja'), getFormatted(-10, 'year'));
+      assertEqual(relative(new Date(1920, 0), 'ja'), getFormatted(-100, 'year'));
+      assertEqual(relative(new Date(1020, 0), 'ja'), getFormatted(-1000, 'year'));
+
+      assertEqual(relative(new Date(2020, 0, 1, 0, 0, 0, 1), 'ja'), getFormatted(0, 'second'));
+      assertEqual(relative(new Date(2020, 0, 1, 0, 0, 1), 'ja'), getFormatted(1, 'second'));
+      assertEqual(relative(new Date(2020, 0, 1, 0, 1), 'ja'), getFormatted(1, 'minute'));
+      assertEqual(relative(new Date(2020, 0, 1, 1), 'ja'), getFormatted(1, 'hour'));
+      assertEqual(relative(new Date(2020, 0, 2), 'ja'), getFormatted(1, 'day'));
+      assertEqual(relative(new Date(2020, 0, 8), 'ja'), getFormatted(1, 'week'));
+      assertEqual(relative(new Date(2020, 1, 1), 'ja'), getFormatted(1, 'month'));
+      assertEqual(relative(new Date(2021, 0), 'ja'), getFormatted(1, 'year'));
+      assertEqual(relative(new Date(2025, 0), 'ja'), getFormatted(5, 'year'));
+      assertEqual(relative(new Date(2030, 0), 'ja'), getFormatted(10, 'year'));
+      assertEqual(relative(new Date(2120, 0), 'ja'), getFormatted(100, 'year'));
+      assertEqual(relative(new Date(3020, 0), 'ja'), getFormatted(1000, 'year'));
+    });
+
+    it('should be able to pass a formatter', () => {
+      const formatter = new Intl.RelativeTimeFormat('en', {
+        numeric: 'auto',
+      });
+      assertEqual(relative(new Date(2019, 11, 31), formatter), 'yesterday');
+      assertEqual(relative(new Date(2020, 0, 2), formatter), 'tomorrow');
+    });
+
+    it('should be able to pass a date to change the relative format', () => {
+      assertEqual(relative(new Date(2020, 0), new Date(2020, 0)), '0 seconds');
+      assertEqual(relative(new Date(2020, 0), new Date(2021, 0)), '1 year');
+      assertEqual(relative(new Date(2020, 0), new Date(2019, 0)), '1 year');
+    });
+
+    it('should default to type numeric when compare option is passed', () => {
+      assertEqual(
+        relative(new Date(2015, 0), {
+          compare: new Date(2017, 0),
+        }),
+        '2 years'
+      );
+    });
+
+    it('should still be able to format as relative when explicitly set', () => {
+      assertEqual(
+        relative(new Date(2015, 0), {
+          type: 'relative',
+          compare: new Date(2017, 0),
+        }),
+        '2 years ago'
+      );
+    });
+
+    it('should be able to pass a resolver function', () => {
+      function resolve(value, unit, date) {
+        if (unit !== 'hour' && unit !== 'minute' && unit !== 'second') {
+          return date.toISOString();
+        }
+      }
+      assertEqual(relative(new Date(2019, 11, 31, 23), resolve), '1 hour ago');
+      assertEqual(relative(new Date(2019, 0), resolve), new Date(2019, 0).toISOString());
+    });
+
+    it('should pass correct arguments to the resolver function', () => {
+      relative(new Date(2019, 11), (value, unit, date, options) => {
+        assertEqual(value, -1);
+        assertEqual(unit, 'month');
+        assertDateEqual(date, new Date(2019, 11));
+        assertDateEqual(options.compare, new Date());
+        assertInstanceOf(options.formatter, Intl.RelativeTimeFormat);
+        assertInstanceOf(options.resolve, Function);
+      });
+      const locale = 'ja';
+      const compare = new Date(2019, 0);
+      const formatter = new Intl.RelativeTimeFormat();
+      const resolve = (value, unit, date, options) => {
+        assertEqual(value, 2);
+        assertEqual(unit, 'year');
+        assertDateEqual(date, new Date(2021, 0));
+        assertDateEqual(options.compare, new Date(2019, 0));
+        assertEqual(options.locale, 'ja');
+        assertEqual(options.resolve, resolve);
+        assertEqual(options.formatter, formatter);
+        return 'override';
+      };
+      const result = relative(new Date(2021, 0), {
+        locale,
+        compare,
+        formatter,
+        resolve,
+      });
+      assertEqual(result, 'override');
+    });
+
+    it('should allow empty strings to override the result', () => {
+      assertEqual(
+        relative(new Date(), {
+          resolve: () => '',
+        }),
+        ''
+      );
+    });
+
+    it('should allow complex options to override result', () => {
+      const options = {
+        compare: new Date(2021, 0, 1),
+        formatter: new Intl.RelativeTimeFormat('ja', {
+          style: 'narrow',
+          numeric: 'auto',
+        }),
+        resolve: (value, unit, date) => {
+          if (unit === 'month' || unit === 'year') {
+            return date.toISOString();
+          }
+        },
+      }
+      assertEqual(relative(new Date(2021, 0, 2), options), '明日');
+      assertEqual(relative(new Date(2021, 0, 15), options), '2週間後');
+      assertEqual(relative(new Date(2021, 3), options), new Date(2021, 3).toISOString());
+      assertEqual(relative(new Date(2022, 0), options), new Date(2022, 0).toISOString());
+    });
+
+    it('should allow a custom formatter object', () => {
+      const options = {
+        formatter: {
+          format: (value, unit) => {
+            return `${value} of your "${unit}s"`;
+          }
+        },
+      }
+      assertEqual(relative(new Date(2020, 0, 1, 0, 1), options), '1 of your "minutes"');
+      assertEqual(relative(new Date(2020, 0, 3), options), '2 of your "days"');
+      assertEqual(relative(new Date(2025, 0), options), '5 of your "years"');
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        relative();
+      });
+      assertError(() => {
+        relative(null);
+      });
+      assertError(() => {
+        relative(NaN);
+      });
+      assertError(() => {
+        relative(new Date('invalid'));
+      });
+      assertError(() => {
+        relative(new Date(), {
+          compare: new Date('invalid'),
+        });
+      });
+    });
+
+    it('should handle issue #474', () => {
+      assertEqual(
+        relative(new Date(2020, 1), {
+          compare: new Date(2020, 0),
+        }),
+        '1 month'
+      );
+      assertEqual(
+        relative(new Date(2020, 2), {
+          compare: new Date(2020, 1),
+        }),
+        '1 month'
+      );
+      assertEqual(
+        relative(new Date(2020, 1, 29), {
+          compare: new Date(2020, 1),
+        }),
+        '4 weeks'
+      );
+    });
+
   });
 
 });

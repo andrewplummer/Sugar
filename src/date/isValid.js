@@ -1,4 +1,4 @@
-import { assertDate } from '../util/assertions';
+import { assertValidDate } from '../util/assertions';
 
 /**
  * Returns `true` if the date is valid.
@@ -14,6 +14,10 @@ import { assertDate } from '../util/assertions';
  *
  **/
 export default function isValid(date) {
-  assertDate(date);
-  return !Number.isNaN(date.getTime());
+  try {
+    assertValidDate(date);
+    return true;
+  } catch(err) {
+    return false;
+  }
 }

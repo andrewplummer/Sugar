@@ -1,4 +1,4 @@
-import { assertDate } from '../util/assertions';
+import { assertValidDate } from '../util/assertions';
 import { getISOWeek as _getISOWeek } from './util/isoWeekDate';
 
 /**
@@ -17,6 +17,6 @@ import { getISOWeek as _getISOWeek } from './util/isoWeekDate';
  *
  **/
 export default function getISOWeek(date) {
-  assertDate(date);
+  assertValidDate(date);
   return _getISOWeek(date);
 }

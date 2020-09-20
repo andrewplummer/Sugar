@@ -2,26 +2,51 @@ import { isFunction } from '../../util/typeChecks';
 import { getDaysInMonth } from './helpers';
 
 const YEAR_AVG_DAYS = 365.2425;
+const HOUR_IN_MS = 60 * 60 * 1000;
+const DAY_IN_MS = 24 * HOUR_IN_MS;
 
 export const SPECIFICITY_INDEX = [
   'year',
   'month',
   'week',
-  'date',
+  'day',
   'hour',
   'minute',
   'second',
   'millisecond',
 ];
 
+// Note that years, months, weeks, and days may have 1 hour less in DST
+// timezones when a fallback shift occurs.
 const UNIT_MULTIPLIERS = {
-  year: YEAR_AVG_DAYS * 24 * 60 * 60 * 1000,
-  month: YEAR_AVG_DAYS / 12 * 24 * 60 * 60 * 1000,
-  week: 7 * 24 * 60 * 60 * 1000,
-  date: 24 * 60 * 60 * 1000,
-  hour: 60 * 60 * 1000,
-  minute: 60 * 1000,
-  second: 1000,
+  year: {
+    avg: YEAR_AVG_DAYS * 24 * 60 * 60 * 1000,
+    min: 365 * 24 * 60 * 60 * 1000 - HOUR_IN_MS,
+  },
+  month: {
+    avg: YEAR_AVG_DAYS / 12 * 24 * 60 * 60 * 1000,
+    min: 28 * DAY_IN_MS - HOUR_IN_MS,
+  },
+  week: {
+    avg: 7 * 24 * 60 * 60 * 1000,
+    min: 7 * DAY_IN_MS - HOUR_IN_MS,
+  },
+  day: {
+    avg: 24 * 60 * 60 * 1000,
+    min: DAY_IN_MS - HOUR_IN_MS,
+  },
+  hour: {
+    avg: HOUR_IN_MS,
+  },
+  minute: {
+    avg: 60 * 1000,
+  },
+  second: {
+    avg: 1000,
+  },
+  millisecond: {
+    avg: 1,
+  },
 };
 
 const UNIT_EDGES = {
@@ -53,16 +78,24 @@ const UNIT_EDGES = {
   },
 };
 
-export function getUnitMultiplier(unit) {
-  return UNIT_MULTIPLIERS[normalizeUnit(unit)];
+export function getUnitMultiplier(unit, min = false) {
+  const mult = UNIT_MULTIPLIERS[normalizeDate(unit)];
+  return mult[min ? 'min' : 'avg'] || mult['avg'];
 }
 
 export function getUnitSpecificity(unit) {
-  return SPECIFICITY_INDEX.indexOf(normalizeUnit(unit));
+  return SPECIFICITY_INDEX.indexOf(normalizeDate(unit));
+}
+
+export function getAdjacentUnit(unit, offset) {
+  let specificity = getUnitSpecificity(unit) + offset;
+  specificity = Math.max(specificity, 0);
+  specificity = Math.min(specificity, SPECIFICITY_INDEX.length - 1);
+  return SPECIFICITY_INDEX[specificity];
 }
 
 export function getUnitEdge(unit, end, date) {
-  const edge = UNIT_EDGES[normalizeUnit(unit)];
+  const edge = UNIT_EDGES[unit];
   let val = edge[end ? 'end' : 'start'];
   if (isFunction(val)) {
     val = val(date);
@@ -70,12 +103,12 @@ export function getUnitEdge(unit, end, date) {
   return val;
 }
 
-export function convertTimeToUnit(ms) {
+export function convertTimeToUnit(ms, min) {
   let unit = 'millisecond';
   let value = ms;
   for (let i = SPECIFICITY_INDEX.length - 2; i >= 0; i--) {
     const u = SPECIFICITY_INDEX[i];
-    const mult = UNIT_MULTIPLIERS[u];
+    const mult = getUnitMultiplier(u, min);
     if (Math.abs(ms) >= mult) {
       unit = u;
       value = Math.trunc(ms / mult);
@@ -87,6 +120,15 @@ export function convertTimeToUnit(ms) {
   }
 }
 
-function normalizeUnit(unit) {
-  return unit === 'day' ? 'date' : unit;
+export function formatForUnit(value, unit, locale) {
+  const formatter = new Intl.NumberFormat(locale, {
+    unit: normalizeDate(unit),
+    style: 'unit',
+    unitDisplay: 'long',
+  });
+  return formatter.format(value);
+}
+
+function normalizeDate(unit) {
+  return unit === 'date' ? 'day' : unit;
 }

@@ -1,5 +1,5 @@
 import { isNumber } from '../util/typeChecks';
-import { assertDate } from '../util/assertions';
+import { assertValidDate } from '../util/assertions';
 import { updateDate } from './util/update';
 import { normalizeProps } from './util/props';
 
@@ -40,7 +40,7 @@ import { normalizeProps } from './util/props';
  *
  **/
 export default function set(date, props = {}, reset = false) {
-  assertDate(date);
+  assertValidDate(date);
   if (isNumber(props)) {
     date.setTime(props);
   } else {

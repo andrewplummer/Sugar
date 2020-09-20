@@ -154,6 +154,24 @@ call `Function#lock` first in the chain to achieve the same effect.
     `Date#endOfISOWeek` to reset weekday to Sunday.
 - Removed `Date#reset`. Use `Date#startOfUnit` here instead.
 - Removed alias `Date#iso`. Use native `Date.toISOString` instead.
+- Refactored `Date#relative` significantly. Internally uses
+    `Intl.RelativeTimeFormat` which now produces forward English strings in the
+    format of "in 5 days" instead of "5 days from now". As this behavior is
+    standardized (although environment dependent), it will be the default,
+    however it is still possible to override using the resolver function. The
+    `locale` and `relativeFn` arguments are now rolled into a single `options`
+    argument, although passing a string shortcut for `locale` as well as a
+    function shortcut for `resolve` (taking the place of `relativeFn`) is still
+    supported. The `resolve` function now takes a different argument signature,
+    passing the date and resolved options instead of milliseconds and internal
+    locale. Also added support for passing a formatter including a custom one
+    that has a `format` method, and choosing between relative and numeric styles
+    (ie. "5 days ago" vs "5 days").
+- Removed `Date#relativeTo`. Functionality here can be achieved simply by
+    passing a date to `Date#relative`, or by using an options object.
+    `Date#relative` can now still use a relative format (ie. "5 days ago") when
+    passing a different date as the point for comparison, which was previously
+    not possible.
 
 TODO:
 

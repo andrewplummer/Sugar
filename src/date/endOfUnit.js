@@ -1,4 +1,4 @@
-import { assertDate } from '../util/assertions';
+import { assertValidDate } from '../util/assertions';
 import { resetByUnit } from './util/reset';
 import { setWeekday } from './util/weekdays';
 
@@ -38,14 +38,14 @@ export function endOfMonth(date) {
 }
 
 export function endOfWeek(date) {
-  assertDate(date);
+  assertValidDate(date);
   setWeekday(date, 6);
   endOfDay(date);
   return date;
 }
 
 export function endOfISOWeek(date) {
-  assertDate(date);
+  assertValidDate(date);
   if (date.getDay() !== 0) {
     setWeekday(date, 7);
   }
@@ -70,7 +70,7 @@ export function endOfSecond(date) {
 }
 
 function endOf(date, unit) {
-  assertDate(date);
+  assertValidDate(date);
   resetByUnit(date, unit, true);
   return date;
 }

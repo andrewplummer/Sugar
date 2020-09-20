@@ -1,4 +1,4 @@
-import { assertDate } from '../util/assertions';
+import { assertValidDate } from '../util/assertions';
 
 /**
  * Returns the day of the week according to local time, where 0 represents Sunday.
@@ -14,6 +14,6 @@ import { assertDate } from '../util/assertions';
  *
  **/
 export default function getWeekday(date) {
-  assertDate(date);
+  assertValidDate(date);
   return date.getDay();
 }

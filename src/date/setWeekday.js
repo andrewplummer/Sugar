@@ -1,4 +1,4 @@
-import { assertDate } from '../util/assertions';
+import { assertValidDate } from '../util/assertions';
 import { setWeekday as _setWeekday } from './util/weekdays';
 
 /**
@@ -22,7 +22,7 @@ import { setWeekday as _setWeekday } from './util/weekdays';
  * @alias setDay
  **/
 export default function setWeekday(date, val) {
-  assertDate(date);
+  assertValidDate(date);
   _setWeekday(date, val);
   return date.getTime();
 }

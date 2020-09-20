@@ -1,5 +1,5 @@
 import { assertNumber } from '../util/assertions';
-import { convertTimeToUnit } from './util/units';
+import { convertTimeToUnit, formatForUnit } from './util/units';
 
 /**
  * Takes the number as a timestamp and converts to a localized string in the
@@ -21,18 +21,6 @@ import { convertTimeToUnit } from './util/units';
  **/
 export default function duration(n, locale) {
   assertNumber(n);
-  const { unit, value } = convertTimeToUnit(n);
-  return formatForUnit(unit, value, locale);
-}
-
-function formatForUnit(unit, value, locale) {
-  if (unit === 'date') {
-    unit = 'day';
-  }
-  const formatter = new Intl.NumberFormat(locale, {
-    unit,
-    style: 'unit',
-    unitDisplay: 'long',
-  });
-  return formatter.format(value);
+  const { value, unit } = convertTimeToUnit(n);
+  return formatForUnit(value, unit, locale);
 }

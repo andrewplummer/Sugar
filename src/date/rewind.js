@@ -1,5 +1,5 @@
 import { isNumber, isString } from '../util/typeChecks';
-import { assertDate } from '../util/assertions';
+import { assertValidDate } from '../util/assertions';
 import { rewindDate } from './util/shift';
 import { normalizeProps, getPropsFromString } from './util/props';
 
@@ -49,7 +49,7 @@ import { normalizeProps, getPropsFromString } from './util/props';
  *
  **/
 export default function rewind(date, props = {}, reset = false) {
-  assertDate(date);
+  assertValidDate(date);
   if (isNumber(props)) {
     date.setTime(date.getTime() - props);
   } else {

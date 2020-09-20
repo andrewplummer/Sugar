@@ -1,5 +1,5 @@
 import { getDaysInMonth as _getDaysInMonth } from './util/helpers';
-import { assertDate } from '../util/assertions';
+import { assertValidDate } from '../util/assertions';
 
 /**
  * Returns the number of days in the date's month.
@@ -14,6 +14,6 @@ import { assertDate } from '../util/assertions';
  *
  **/
 export default function getDaysInMonth(date) {
-  assertDate(date);
+  assertValidDate(date);
   return _getDaysInMonth(date);
 }

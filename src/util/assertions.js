@@ -9,6 +9,8 @@ import {
   isArrayOrTypedArray,
 } from './typeChecks';
 
+import { isValidDate } from './date';
+
 const MIN = 1e-6;
 const MAX = 1e21;
 
@@ -107,6 +109,12 @@ export function assertObject(obj) {
 export function assertDate(obj) {
   if (!isDate(obj)) {
     throw new TypeError('Date required');
+  }
+}
+
+export function assertValidDate(obj) {
+  if (!isDate(obj) || !isValidDate(obj)) {
+    throw new TypeError('Valid date required');
   }
 }
 

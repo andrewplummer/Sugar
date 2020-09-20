@@ -1,4 +1,4 @@
-import { assertDate } from '../util/assertions';
+import { assertValidDate } from '../util/assertions';
 import { advanceDate } from './util/shift';
 
 /**
@@ -65,7 +65,7 @@ export function addMilliseconds(date, num, reset) {
 }
 
 function addUnit(date, unit, num, reset) {
-  assertDate(date);
+  assertValidDate(date);
   advanceDate(date, { [unit]: num }, reset);
   return date;
 }

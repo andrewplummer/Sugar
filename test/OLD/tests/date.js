@@ -1742,113 +1742,6 @@ namespace('Date', function () {
     test(d, [true], getExpectedTimezoneOffset(d, true), 'colon');
   });
 
-  method('relative', function() {
-
-    equal(run(testCreateDate(), 'relative'), '1 second ago', 'no args');
-
-    assertRelative('6234 milliseconds ago', '6 seconds ago');
-    assertRelative('6 seconds ago', '6 seconds ago');
-    assertRelative('360 seconds ago', '6 minutes ago');
-    assertRelative('360 minutes ago', '6 hours ago');
-    assertRelative('360 hours ago', '2 weeks ago');
-    assertRelative('340 days ago', '11 months ago');
-    assertRelative('360 days ago', '11 months ago');
-    assertRelative('360 weeks ago', '6 years ago');
-    assertRelative('360 months ago', '30 years ago');
-    assertRelative('360 years ago', '360 years ago');
-    assertRelative('12 months ago', '1 year ago');
-
-    assertRelative('6234 milliseconds from now', '6 seconds from now');
-    assertRelative('361 seconds from now', '6 minutes from now');
-    assertRelative('361 minutes from now', '6 hours from now');
-    assertRelative('360 hours from now', '2 weeks from now');
-    assertRelative('340 days from now', '11 months from now');
-    assertRelative('360 days from now', '11 months from now');
-    assertRelative('360 weeks from now', '6 years from now');
-    assertRelative('360 months from now', '30 years from now');
-    assertRelative('360 years from now', '360 years from now');
-    assertRelative('13 months from now', '1 year from now');
-
-
-    // Handling callback
-
-    var simpleDateFormat = '{Month} {date}, {year}';
-
-    var dyn = function(value, unit, ms, loc) {
-      // One year
-      if (ms < -(365 * 24 * 60 * 60 * 1000)) {
-        return simpleDateFormat;
-      }
-    }
-
-    var d = getRelativeDate(0, 0, 0, 0, -5);
-    var result = run(d, 'relative', [dyn]);
-    equal(result, '5 minutes ago', '5 minutes should stay relative');
-
-    var d = getRelativeDate(0, -13)
-    var result = run(d, 'relative', [dyn]);
-    var expected = run(d, 'format', [simpleDateFormat]);
-    equal(result, expected, 'higher reverts to absolute');
-
-    equal(run(testCreateDate('2002-02-17'), 'relative', [dyn]), 'February 17, 2002', 'function that returns a format uses that format');
-    equal(run(testCreateDate('45 days ago'), 'relative', [dyn]), '1 month ago', 'function that returns undefined uses relative format');
-
-    // globalize system with plurals
-
-    var strings = ['ミリ秒','秒','分','時間','日','週間','月','年'];
-
-    var dyn = function(value, unit, ms, loc) {
-      equal(value, 5, '5 minutes ago | value is the closest relevant value');
-      equal(unit, 2, '5 minutes ago | unit is the closest relevant unit');
-      equalWithMargin(ms, -300000, 20, '5 minutes ago | ms is the offset in ms');
-      equal(loc.code, 'en', '4 hours ago | 4th argument is the locale object');
-      return value + strings[unit] + (ms < 0 ? '前' : '後');
-    }
-    equal(run(testCreateDate('5 minutes ago'), 'relative', [dyn]), '5分前', '5 minutes ago');
-
-    var dyn = function(value, unit, ms, loc) {
-      equal(value, 1, '1 minute from now | value is the closest relevant value');
-      equal(unit, 2, '1 minute from now | unit is the closest relevant unit');
-      equalWithMargin(ms, 61000, 20, '1 minute from now | ms is the offset in ms');
-      equal(loc.code, 'en', '4 hours ago | 4th argument is the locale object');
-      return value + strings[unit] + (ms < 0 ? '前' : '後');
-    }
-    equal(run(testCreateDate('61 seconds from now'), 'relative', [dyn]), '1分後', '1 minute from now');
-
-    var dyn = function(value, unit, ms, loc) {
-      equal(value, 4, '4 hours ago | value is the closest relevant value');
-      equal(unit, 3, '4 hours ago | unit is the closest relevant unit');
-      equalWithMargin(ms, -14400000, 20, '4 hours ago | ms is the offset in ms');
-      equal(loc.code, 'en', '4 hours ago | 4th argument is the locale object');
-      return value + strings[unit] + (ms < 0 ? '前' : '後');
-    }
-    equal(run(testCreateDate('240 minutes ago'), 'relative', [dyn]), '4時間前', '4 hours ago');
-
-    run(testCreateDate('223 milliseconds ago'), 'relative', [function(value, unit) {
-      equalWithMargin(value, 223, 20, 'still passes < 1 second');
-      equal(unit, 0, 'still passes millisecond is zero');
-    }]);
-
-    // Handling locale code
-
-    testCreateFakeLocale('fo');
-
-    var dyn = function(value, unit, ms, loc) {
-      return loc.code;
-    }
-    equal(run(testCreateDate('5 minutes ago'), 'relative', ['fo']), 'the past!', 'lang code');
-    equal(run(testCreateDate('5 minutes ago'), 'relative', ['fo', dyn]), 'fo', 'lang code and callback');
-
-    raisesError(function(){ test(new Date(NaN)); }, 'Invalid date raises error', TypeError);
-
-    // Issue #474
-    // "1 month from now" can be forced back when there are not enough days in a month.
-    // In these cases "relative()" should return "4 weeks from now" instead of "1 month from now".
-    equal(run(testCreateDate('11/10/2014 21:00:00'), 'daysSince', ['7/1/2014']), 132, 'daysSince should be 132 at 9pm');
-    equal(run(testCreateDate('11/10/2014 22:00:00'), 'daysSince', ['7/1/2014']), 132, 'daysSince should be 132 at 10pm');
-
-  });
-
   method('relativeTo', function() {
 
     testCreateFakeLocale('fo');
@@ -2207,6 +2100,11 @@ namespace('Date', function () {
     var daysUntil10pm = run(new Date('11/10/2014 22:00:00'), 'daysSince', [new Date('7/1/2014')]);
     equal(daysUntil9pm, daysUntil10pm, 'daysSince should not traverse between 21:00 and 22:00');
 
+    // Issue #474
+    // "1 month from now" can be forced back when there are not enough days in a month.
+    // In these cases "relative()" should return "4 weeks from now" instead of "1 month from now".
+    equal(run(testCreateDate('11/10/2014 21:00:00'), 'daysSince', ['7/1/2014']), 132, 'daysSince should be 132 at 9pm');
+    equal(run(testCreateDate('11/10/2014 22:00:00'), 'daysSince', ['7/1/2014']), 132, 'daysSince should be 132 at 10pm');
 
     // Traversing over February
 
