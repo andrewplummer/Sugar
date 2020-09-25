@@ -11,6 +11,7 @@ namespace('Date | Finnish', function () {
 
   method('create', function() {
 
+    assertDateParsed('1.12.2019', new Date(2019, 11, 1));
     assertDateParsed('15. toukokuuta 2011', new Date(2011, 4, 15));
     assertDateParsed('torstai 5. tammikuuta 2012', new Date(2012, 0, 5));
     assertDateParsed('torstaina 5. tammikuuta 2012', new Date(2012, 0, 5));
