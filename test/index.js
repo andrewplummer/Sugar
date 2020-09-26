@@ -19,6 +19,7 @@ require('./helpers/namespace');
 require('./helpers/suite');
 require('./helpers/util');
 require('./helpers/intl');
+require('./helpers/date');
 
 // Tests
 require('./tests/core');

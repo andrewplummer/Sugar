@@ -3,6 +3,7 @@ import * as methods from './methods';
 
 defineInstance('advance', methods.advance);
 defineInstance('clone', methods.clone);
+defineInstance('format', methods.format);
 defineInstance('getDaysInMonth', methods.getDaysInMonth);
 defineInstance('getISOWeek', methods.getISOWeek);
 defineInstance('getWeekday', methods.getWeekday);

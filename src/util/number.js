@@ -1,6 +1,4 @@
-import { assertInteger } from '../../util/assertions';
-
-function getSuffix(n) {
+export function getOrdinalSuffix(n) {
   if (n >= 11 && n <= 13) {
     return 'th';
   }
@@ -10,9 +8,4 @@ function getSuffix(n) {
     case 3:  return 'rd';
     default: return 'th';
   }
-}
-
-export default function toOrdinal(n) {
-  assertInteger(n);
-  return n + getSuffix(n);
 }

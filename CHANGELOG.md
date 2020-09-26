@@ -172,6 +172,33 @@ call `Function#lock` first in the chain to achieve the same effect.
     `Date#relative` can now still use a relative format (ie. "5 days ago") when
     passing a different date as the point for comparison, which was previously
     not possible.
+- Refactored `Date#format` significantly. strftime tokens are no longer accepted
+    and LDML tokens have been updated to match the current specification
+    (https://www.unicode.org/reports/tr35/tr35-dates.html#dateTimeFormats),
+    including a number of tokens that were not previously supported. Tokens
+    inside the format string are no longer wrapped in braces, and escaping is
+    done through apostophes as per the spec. Shortcut tokens have been removed
+    and all tokens now conform to the LDML standard. The second `localeCode`
+    argument is no longer supported and is now an option when using an options
+    object. This method now internally uses `Intl.DateTimeFormat` for
+    localization and requires internal support or a polyfill. Additionally,
+    pre-defined formats can no longer be passed as a string and now must use
+    constants in the form `Sugar.Date.DATE_SHORT`, `Sugar.Date.TIME_SHORT`, etc.
+    A number of constants have been added and are now exported in the
+    `date/formats` module in addition to being defined on `Sugar.Date`.
+    Aliases `ISO8601`, `RFC1123`, and `RFC1036` have all been removed. For
+    ISO8601, simply use `toISOString` instead. For other formats use a custom
+    tokenized format string instead. Use of `Date#format` with any arguments
+    other than pre-defined formats should be for special use cases only. For
+    human-readable strings, use native `Date#toLocaleString` (pre-defined
+    formats are compatible options objects to this method and can be passed
+    here) or `Date#format` with a pre-defined format as the first argument
+    which will use the default system locale. Calling `Date#format` with no
+    arguments will produce use the default `DATETIME_LONG` format with the
+    default system locale. For computer-readable strings use `toISOString`.
+- Removed `Date#full`, `Date#long`, `Date#medium`, `Date#short`, and
+    `Date#stamp` methods. These should all go through `Date#format` or
+    `Date#toLocaleString` now instead.
 
 TODO:
 

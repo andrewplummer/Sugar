@@ -3009,6 +3009,12 @@ namespace('Date', function () {
       assertEqual(relative(new Date(2025, 0), options), '5 of your "years"');
     });
 
+    it('should not modify options object', () => {
+      const options = { locale: 'ja' };
+      relative(new Date(2020, 0), options);
+      assertObjectEqual(options, { locale: 'ja' });
+    });
+
     it('should handle irregular input', () => {
       assertError(() => {
         relative();
@@ -3049,6 +3055,1001 @@ namespace('Date', function () {
         '4 weeks'
       );
     });
+
+  });
+
+  describeInstance('format', function (format) {
+
+    it('should use datetime long format with no arguments', () => {
+      assertEqual(
+        format(new Date(2020, 0)),
+        'January 1, 2020, 12:00 AM'
+      );
+      assertEqual(
+        format(new Date(2020, 6, 11, 23, 30, 30)),
+        'July 11, 2020, 11:30 PM'
+      );
+    });
+
+    describe('formatting with built-in aliases', () => {
+
+      describe('date formats', () => {
+
+        it('should correctly apply full date format', () => {
+          assertEqual(
+            format(new Date(2020, 0), Sugar.Date.DATE_FULL),
+            'Wednesday, January 1, 2020'
+          );
+          assertEqual(
+            format(new Date(2020, 6, 11, 23, 30, 30), Sugar.Date.DATE_FULL),
+            'Saturday, July 11, 2020'
+          );
+        });
+
+        it('should correctly apply long date format', () => {
+          assertEqual(
+            format(new Date(2020, 0), Sugar.Date.DATE_LONG),
+            'January 1, 2020'
+          );
+          assertEqual(
+            format(new Date(2020, 6, 11, 23, 30, 30), Sugar.Date.DATE_LONG),
+            'July 11, 2020'
+          );
+        });
+
+        it('should correctly apply medium date format', () => {
+          assertEqual(
+            format(new Date(2020, 0), Sugar.Date.DATE_MEDIUM),
+            'Jan 1, 2020'
+          );
+          assertEqual(
+            format(new Date(2020, 6, 11, 23, 30, 30), Sugar.Date.DATE_MEDIUM),
+            'Jul 11, 2020'
+          );
+        });
+
+        it('should correctly apply short date format', () => {
+          assertEqual(
+            format(new Date(2020, 0), Sugar.Date.DATE_SHORT),
+            '1/1/2020'
+          );
+          assertEqual(
+            format(new Date(2020, 6, 11, 23, 30, 30), Sugar.Date.DATE_SHORT),
+            '7/11/2020'
+          );
+        });
+
+      });
+
+      describe('time formats', () => {
+
+        it('should correctly apply full time format', () => {
+          assertEqual(
+            format(new Date(2020, 0), Sugar.Date.TIME_FULL),
+            `12:00:00 AM ${getLocalTimeZoneName('long')}`
+          );
+          assertEqual(
+            format(new Date(2020, 0, 1, 13), Sugar.Date.TIME_FULL),
+            `1:00:00 PM ${getLocalTimeZoneName('long')}`
+          );
+        });
+
+        it('should correctly apply long time format', () => {
+          assertEqual(
+            format(new Date(2020, 0), Sugar.Date.TIME_LONG),
+            `12:00:00 AM ${getLocalTimeZoneName('short')}`
+          );
+          assertEqual(
+            format(new Date(2020, 0, 1, 13), Sugar.Date.TIME_LONG),
+            `1:00:00 PM ${getLocalTimeZoneName('short')}`
+          );
+        });
+
+        it('should correctly apply medium time format', () => {
+          assertEqual(
+            format(new Date(2020, 0), Sugar.Date.TIME_MEDIUM),
+            '12:00:00 AM',
+          );
+          assertEqual(
+            format(new Date(2020, 0, 1, 13), Sugar.Date.TIME_MEDIUM),
+            '1:00:00 PM',
+          );
+        });
+
+        it('should correctly apply short time format', () => {
+          assertEqual(
+            format(new Date(2020, 0), Sugar.Date.TIME_SHORT),
+            '12:00 AM',
+          );
+          assertEqual(
+            format(new Date(2020, 0, 1, 13), Sugar.Date.TIME_SHORT),
+            '1:00 PM',
+          );
+        });
+
+      });
+
+      describe('24 hour time formats', () => {
+
+        it('should correctly apply full time format', () => {
+          assertEqual(
+            format(new Date(2020, 0), Sugar.Date.TIME_24_FULL),
+            `00:00:00 ${getLocalTimeZoneName('long')}`
+          );
+          assertEqual(
+            format(new Date(2020, 0, 1, 13), Sugar.Date.TIME_24_FULL),
+            `13:00:00 ${getLocalTimeZoneName('long')}`
+          );
+        });
+
+        it('should correctly apply long time format', () => {
+          assertEqual(
+            format(new Date(2020, 0), Sugar.Date.TIME_24_LONG),
+            `00:00:00 ${getLocalTimeZoneName('short')}`
+          );
+          assertEqual(
+            format(new Date(2020, 0, 1, 13), Sugar.Date.TIME_24_LONG),
+            `13:00:00 ${getLocalTimeZoneName('short')}`
+          );
+        });
+
+        it('should correctly apply medium time format', () => {
+          assertEqual(
+            format(new Date(2020, 0), Sugar.Date.TIME_24_MEDIUM),
+            '00:00:00',
+          );
+          assertEqual(
+            format(new Date(2020, 0, 1, 13), Sugar.Date.TIME_24_MEDIUM),
+            '13:00:00',
+          );
+        });
+
+        it('should correctly apply short time format', () => {
+          assertEqual(
+            format(new Date(2020, 0), Sugar.Date.TIME_24_SHORT),
+            '00:00',
+          );
+          assertEqual(
+            format(new Date(2020, 0, 1, 13), Sugar.Date.TIME_24_SHORT),
+            '13:00',
+          );
+        });
+
+      });
+
+      describe('time with zone formats', () => {
+
+        it('should correctly apply time with zone format', () => {
+          assertEqual(
+            format(new Date(2020, 0), Sugar.Date.TIME_WITH_ZONE),
+            `12:00 AM ${getLocalTimeZoneName('short')}`
+          );
+          assertEqual(
+            format(new Date(2020, 0, 1, 13), Sugar.Date.TIME_WITH_ZONE),
+            `1:00 PM ${getLocalTimeZoneName('short')}`
+          );
+        });
+
+        it('should correctly apply time with long zone format', () => {
+          assertEqual(
+            format(new Date(2020, 0), Sugar.Date.TIME_WITH_LONG_ZONE),
+            `12:00 AM ${getLocalTimeZoneName('long')}`
+          );
+          assertEqual(
+            format(new Date(2020, 0, 1, 13), Sugar.Date.TIME_WITH_LONG_ZONE),
+            `1:00 PM ${getLocalTimeZoneName('long')}`
+          );
+        });
+
+        it('should correctly apply time with zone format', () => {
+          assertEqual(
+            format(new Date(2020, 0), Sugar.Date.TIME_24_WITH_ZONE),
+            `00:00 ${getLocalTimeZoneName('short')}`
+          );
+          assertEqual(
+            format(new Date(2020, 0, 1, 13), Sugar.Date.TIME_24_WITH_ZONE),
+            `13:00 ${getLocalTimeZoneName('short')}`
+          );
+        });
+
+        it('should correctly apply time with long zone format', () => {
+          assertEqual(
+            format(new Date(2020, 0), Sugar.Date.TIME_24_WITH_LONG_ZONE),
+            `00:00 ${getLocalTimeZoneName('long')}`
+          );
+          assertEqual(
+            format(new Date(2020, 0, 1, 13), Sugar.Date.TIME_24_WITH_LONG_ZONE),
+            `13:00 ${getLocalTimeZoneName('long')}`
+          );
+        });
+
+      });
+
+      describe('datetime formats', () => {
+
+        it('should correctly apply full time format', () => {
+          assertEqual(
+            format(new Date(2020, 0), Sugar.Date.DATETIME_FULL),
+            'Wednesday, January 1, 2020, 12:00 AM'
+          );
+          assertEqual(
+            format(new Date(2020, 6, 14, 13), Sugar.Date.DATETIME_FULL),
+            'Tuesday, July 14, 2020, 1:00 PM'
+          );
+        });
+
+        it('should correctly apply long time format', () => {
+          assertEqual(
+            format(new Date(2020, 0), Sugar.Date.DATETIME_LONG),
+            'January 1, 2020, 12:00 AM',
+          );
+          assertEqual(
+            format(new Date(2020, 6, 14, 13), Sugar.Date.DATETIME_LONG),
+            'July 14, 2020, 1:00 PM',
+          );
+        });
+
+        it('should correctly apply medium time format', () => {
+          assertEqual(
+            format(new Date(2020, 0), Sugar.Date.DATETIME_MEDIUM),
+            'Jan 1, 2020, 12:00 AM',
+          );
+          assertEqual(
+            format(new Date(2020, 6, 14, 13), Sugar.Date.DATETIME_MEDIUM),
+            'Jul 14, 2020, 1:00 PM',
+          );
+        });
+
+        it('should correctly apply short time format', () => {
+          assertEqual(
+            format(new Date(2020, 0), Sugar.Date.DATETIME_SHORT),
+            '1/1/2020, 12:00 AM',
+          );
+          assertEqual(
+            format(new Date(2020, 6, 14, 13), Sugar.Date.DATETIME_SHORT),
+            '7/14/2020, 1:00 PM',
+          );
+        });
+
+      });
+
+      describe('datetime 24-hour formats', () => {
+
+        it('should correctly apply full time format', () => {
+          assertEqual(
+            format(new Date(2020, 0), Sugar.Date.DATETIME_24_FULL),
+            'Wednesday, January 1, 2020, 00:00'
+          );
+          assertEqual(
+            format(new Date(2020, 6, 14, 13), Sugar.Date.DATETIME_24_FULL),
+            'Tuesday, July 14, 2020, 13:00'
+          );
+        });
+
+        it('should correctly apply long time format', () => {
+          assertEqual(
+            format(new Date(2020, 0), Sugar.Date.DATETIME_24_LONG),
+            'January 1, 2020, 00:00',
+          );
+          assertEqual(
+            format(new Date(2020, 6, 14, 13), Sugar.Date.DATETIME_24_LONG),
+            'July 14, 2020, 13:00',
+          );
+        });
+
+        it('should correctly apply medium time format', () => {
+          assertEqual(
+            format(new Date(2020, 0), Sugar.Date.DATETIME_24_MEDIUM),
+            'Jan 1, 2020, 00:00',
+          );
+          assertEqual(
+            format(new Date(2020, 6, 14, 13), Sugar.Date.DATETIME_24_MEDIUM),
+            'Jul 14, 2020, 13:00',
+          );
+        });
+
+        it('should correctly apply short time format', () => {
+          assertEqual(
+            format(new Date(2020, 0), Sugar.Date.DATETIME_24_SHORT),
+            '1/1/2020, 00:00',
+          );
+          assertEqual(
+            format(new Date(2020, 6, 14, 13), Sugar.Date.DATETIME_24_SHORT),
+            '7/14/2020, 13:00',
+          );
+        });
+
+      });
+
+      describe('datetime with zone', () => {
+
+        it('should correctly apply datetime with zone', () => {
+          assertEqual(
+            format(new Date(2020, 0), Sugar.Date.DATETIME_WITH_ZONE),
+            `January 1, 2020, 12:00 AM ${getLocalTimeZoneName('short')}`,
+          );
+          assertEqual(
+            format(new Date(2020, 6, 14, 13), Sugar.Date.DATETIME_WITH_ZONE),
+            `July 14, 2020, 1:00 PM ${getLocalTimeZoneName('short')}`,
+          );
+        });
+
+        it('should correctly apply datetime with long zone', () => {
+          assertEqual(
+            format(new Date(2020, 0), Sugar.Date.DATETIME_WITH_LONG_ZONE),
+            `January 1, 2020, 12:00 AM ${getLocalTimeZoneName('long')}`,
+          );
+          assertEqual(
+            format(new Date(2020, 6, 14, 13), Sugar.Date.DATETIME_WITH_LONG_ZONE),
+            `July 14, 2020, 1:00 PM ${getLocalTimeZoneName('long')}`,
+          );
+        });
+
+        it('should correctly apply 24-hour datetime with zone', () => {
+          assertEqual(
+            format(new Date(2020, 0), Sugar.Date.DATETIME_24_WITH_ZONE),
+            `January 1, 2020, 00:00 ${getLocalTimeZoneName('short')}`,
+          );
+          assertEqual(
+            format(new Date(2020, 6, 14, 13), Sugar.Date.DATETIME_24_WITH_ZONE),
+            `July 14, 2020, 13:00 ${getLocalTimeZoneName('short')}`,
+          );
+        });
+
+        it('should correctly apply 24-hour datetime with long zone', () => {
+          assertEqual(
+            format(new Date(2020, 0), Sugar.Date.DATETIME_24_WITH_LONG_ZONE),
+            `January 1, 2020, 00:00 ${getLocalTimeZoneName('long')}`,
+          );
+          assertEqual(
+            format(new Date(2020, 6, 14, 13), Sugar.Date.DATETIME_24_WITH_LONG_ZONE),
+            `July 14, 2020, 13:00 ${getLocalTimeZoneName('long')}`,
+          );
+        });
+
+      });
+
+    });
+
+    describe('formatting with a token string', () => {
+
+      it('should correctly format era token', () => {
+        assertEqual(format(new Date(2020, 0), 'G'), 'AD');
+        assertEqual(format(new Date(2020, 0), 'GG'), 'AD');
+        assertEqual(format(new Date(2020, 0), 'GGG'), 'AD');
+        assertEqual(format(new Date(2020, 0), 'GGGG'), 'Anno Domini');
+        assertEqual(format(new Date(2020, 0), 'GGGGG'), 'A');
+
+        assertEqual(format(new Date(-2020, 0), 'G'), 'BC');
+        assertEqual(format(new Date(-2020, 0), 'GG'), 'BC');
+        assertEqual(format(new Date(-2020, 0), 'GGG'), 'BC');
+        assertEqual(format(new Date(-2020, 0), 'GGGG'), 'Before Christ');
+        assertEqual(format(new Date(-2020, 0), 'GGGGG'), 'B');
+      });
+
+      it('should correctly format year token', () => {
+        assertEqual(format(new Date('0002-01-01'), 'y'), '2');
+        assertEqual(format(new Date('0020-01-01'), 'y'), '20');
+        assertEqual(format(new Date('0200-01-01'), 'y'), '200');
+        assertEqual(format(new Date('2000-01-01'), 'y'), '2000');
+
+        assertEqual(format(new Date('0002-01-01'), 'yy'), '02');
+        assertEqual(format(new Date('2020-01-01'), 'yy'), '20');
+        assertEqual(format(new Date('2050-01-01'), 'yy'), '50');
+        assertEqual(format(new Date('2099-01-01'), 'yy'), '99');
+        assertEqual(format(new Date('2100-01-01'), 'yy'), '00');
+
+        assertEqual(format(new Date('0002-01-01'), 'yyy'), '002');
+        assertEqual(format(new Date('0020-01-01'), 'yyy'), '020');
+        assertEqual(format(new Date('0200-01-01'), 'yyy'), '200');
+        assertEqual(format(new Date('2000-01-01'), 'yyy'), '2000');
+
+        assertEqual(format(new Date('0002-01-01'), 'yyyy'), '0002');
+        assertEqual(format(new Date('0020-01-01'), 'yyyy'), '0020');
+        assertEqual(format(new Date('0200-01-01'), 'yyyy'), '0200');
+        assertEqual(format(new Date('2000-01-01'), 'yyyy'), '2000');
+
+        assertEqual(format(new Date('0002-01-01'), 'yyyyy'), '00002');
+        assertEqual(format(new Date('0020-01-01'), 'yyyyy'), '00020');
+        assertEqual(format(new Date('0200-01-01'), 'yyyyy'), '00200');
+        assertEqual(format(new Date('2000-01-01'), 'yyyyy'), '02000');
+      });
+
+      it('should correctly format ISO week-numbering year token', () => {
+        assertEqual(format(new Date('0001-01-01'), 'Y'), '0');
+        assertEqual(format(new Date('2005-12-31'), 'Y'), '2005');
+        assertEqual(format(new Date('2006-01-01'), 'Y'), '2005');
+        assertEqual(format(new Date('2019-12-31'), 'Y'), '2020');
+        assertEqual(format(new Date('2020-01-01'), 'Y'), '2020');
+
+        assertEqual(format(new Date('0001-01-01'), 'YY'), '00');
+        assertEqual(format(new Date('2005-12-31'), 'YY'), '05');
+        assertEqual(format(new Date('2006-01-01'), 'YY'), '05');
+        assertEqual(format(new Date('2019-12-31'), 'YY'), '20');
+        assertEqual(format(new Date('2020-01-01'), 'YY'), '20');
+
+        assertEqual(format(new Date('0001-01-01'), 'YYY'), '000');
+        assertEqual(format(new Date('2005-12-31'), 'YYY'), '2005');
+        assertEqual(format(new Date('2006-01-01'), 'YYY'), '2005');
+        assertEqual(format(new Date('2019-12-31'), 'YYY'), '2020');
+        assertEqual(format(new Date('2020-01-01'), 'YYY'), '2020');
+
+        assertEqual(format(new Date('0001-01-01'), 'YYYY'), '0000');
+        assertEqual(format(new Date('2005-12-31'), 'YYYY'), '2005');
+        assertEqual(format(new Date('2006-01-01'), 'YYYY'), '2005');
+        assertEqual(format(new Date('2019-12-31'), 'YYYY'), '2020');
+        assertEqual(format(new Date('2020-01-01'), 'YYYY'), '2020');
+
+        assertEqual(format(new Date('0001-01-01'), 'YYYYY'), '00000');
+        assertEqual(format(new Date('2005-12-31'), 'YYYYY'), '02005');
+        assertEqual(format(new Date('2006-01-01'), 'YYYYY'), '02005');
+        assertEqual(format(new Date('2019-12-31'), 'YYYYY'), '02020');
+        assertEqual(format(new Date('2020-01-01'), 'YYYYY'), '02020');
+      });
+
+      it('should correctly format quarter token', () => {
+        assertEqual(format(new Date(2020, 0, 1), 'Q'), '1');
+        assertEqual(format(new Date(2020, 3, 1), 'Q'), '2');
+        assertEqual(format(new Date(2020, 6, 1), 'Q'), '3');
+        assertEqual(format(new Date(2020, 9, 1), 'Q'), '4');
+
+        assertEqual(format(new Date(2020, 0, 1), 'QQ'), '01');
+        assertEqual(format(new Date(2020, 3, 1), 'QQ'), '02');
+        assertEqual(format(new Date(2020, 6, 1), 'QQ'), '03');
+        assertEqual(format(new Date(2020, 9, 1), 'QQ'), '04');
+
+        assertEqual(format(new Date(2020, 0, 1), 'QQQ'), 'Q1');
+        assertEqual(format(new Date(2020, 3, 1), 'QQQ'), 'Q2');
+        assertEqual(format(new Date(2020, 6, 1), 'QQQ'), 'Q3');
+        assertEqual(format(new Date(2020, 9, 1), 'QQQ'), 'Q4');
+
+        assertEqual(format(new Date(2020, 0, 1), 'QQQQ'), '1st quarter');
+        assertEqual(format(new Date(2020, 3, 1), 'QQQQ'), '2nd quarter');
+        assertEqual(format(new Date(2020, 6, 1), 'QQQQ'), '3rd quarter');
+        assertEqual(format(new Date(2020, 9, 1), 'QQQQ'), '4th quarter');
+
+        assertEqual(format(new Date(2020, 0, 1), 'QQQQQ'), '1');
+        assertEqual(format(new Date(2020, 3, 1), 'QQQQQ'), '2');
+        assertEqual(format(new Date(2020, 6, 1), 'QQQQQ'), '3');
+        assertEqual(format(new Date(2020, 9, 1), 'QQQQQ'), '4');
+      });
+
+      it('should correctly format stand-alone quarter token', () => {
+        assertEqual(format(new Date(2020, 0, 1), 'q'), '1');
+        assertEqual(format(new Date(2020, 3, 1), 'q'), '2');
+        assertEqual(format(new Date(2020, 6, 1), 'q'), '3');
+        assertEqual(format(new Date(2020, 9, 1), 'q'), '4');
+
+        assertEqual(format(new Date(2020, 0, 1), 'qq'), '01');
+        assertEqual(format(new Date(2020, 3, 1), 'qq'), '02');
+        assertEqual(format(new Date(2020, 6, 1), 'qq'), '03');
+        assertEqual(format(new Date(2020, 9, 1), 'qq'), '04');
+
+        assertEqual(format(new Date(2020, 0, 1), 'qqq'), 'Q1');
+        assertEqual(format(new Date(2020, 3, 1), 'qqq'), 'Q2');
+        assertEqual(format(new Date(2020, 6, 1), 'qqq'), 'Q3');
+        assertEqual(format(new Date(2020, 9, 1), 'qqq'), 'Q4');
+
+        assertEqual(format(new Date(2020, 0, 1), 'qqqq'), '1st quarter');
+        assertEqual(format(new Date(2020, 3, 1), 'qqqq'), '2nd quarter');
+        assertEqual(format(new Date(2020, 6, 1), 'qqqq'), '3rd quarter');
+        assertEqual(format(new Date(2020, 9, 1), 'qqqq'), '4th quarter');
+
+        assertEqual(format(new Date(2020, 0, 1), 'qqqqq'), '1');
+        assertEqual(format(new Date(2020, 3, 1), 'qqqqq'), '2');
+        assertEqual(format(new Date(2020, 6, 1), 'qqqqq'), '3');
+        assertEqual(format(new Date(2020, 9, 1), 'qqqqq'), '4');
+      });
+
+      it('should correctly format format-style month token', () => {
+        assertEqual(format(new Date(2020, 8, 1), 'M'), '9');
+        assertEqual(format(new Date(2020, 11, 1), 'M'), '12');
+
+        assertEqual(format(new Date(2020, 8, 1), 'MM'), '09');
+        assertEqual(format(new Date(2020, 11, 1), 'MM'), '12');
+
+        assertEqual(format(new Date(2020, 8, 1), 'MMM'), 'Sep');
+        assertEqual(format(new Date(2020, 11, 1), 'MMM'), 'Dec');
+
+        assertEqual(format(new Date(2020, 8, 1), 'MMMM'), 'September');
+        assertEqual(format(new Date(2020, 11, 1), 'MMMM'), 'December');
+
+        assertEqual(format(new Date(2020, 8, 1), 'MMMMM'), 'S');
+        assertEqual(format(new Date(2020, 11, 1), 'MMMMM'), 'D');
+
+        assertEqual(format(new Date(2020, 7), {
+          format: 'MMMM',
+          locale: 'ru',
+        }), 'августа');
+
+        assertEqual(format(new Date(2020, 7), {
+          format: 'MMMM月',
+          locale: 'ja',
+        }), '8月');
+
+      });
+
+      it('should correctly format standalone month token', () => {
+        assertEqual(format(new Date(2020, 8, 1), 'L'), '9');
+        assertEqual(format(new Date(2020, 11, 1), 'L'), '12');
+
+        assertEqual(format(new Date(2020, 8, 1), 'LL'), '09');
+        assertEqual(format(new Date(2020, 11, 1), 'LL'), '12');
+
+        assertEqual(format(new Date(2020, 8, 1), 'LLL'), 'Sep');
+        assertEqual(format(new Date(2020, 11, 1), 'LLL'), 'Dec');
+
+        assertEqual(format(new Date(2020, 8, 1), 'LLLL'), 'September');
+        assertEqual(format(new Date(2020, 11, 1), 'LLLL'), 'December');
+
+        assertEqual(format(new Date(2020, 8, 1), 'LLLLL'), 'S');
+        assertEqual(format(new Date(2020, 11, 1), 'LLLLL'), 'D');
+
+        assertEqual(format(new Date(2020, 7), {
+          format: 'LLLL',
+          locale: 'ru',
+        }), 'август');
+
+        assertEqual(format(new Date(2020, 7), {
+          format: 'LLLL月',
+          locale: 'ja',
+        }), '8月');
+
+        assertEqual(format(new Date(2020, 7), {
+          format: 'LLLLL',
+          locale: 'ko',
+        }), '8월');
+      });
+
+      it('should correctly format ISO week-numbering week token', () => {
+        assertEqual(format(new Date('2005-12-31'), 'w'), '52');
+        assertEqual(format(new Date('2006-01-01'), 'w'), '52');
+        assertEqual(format(new Date('2020-12-31'), 'w'), '53');
+        assertEqual(format(new Date('2019-12-31'), 'w'), '1');
+        assertEqual(format(new Date('2020-01-01'), 'w'), '1');
+
+        assertEqual(format(new Date('2005-12-31'), 'ww'), '52');
+        assertEqual(format(new Date('2006-01-01'), 'ww'), '52');
+        assertEqual(format(new Date('2020-12-31'), 'ww'), '53');
+        assertEqual(format(new Date('2019-12-31'), 'ww'), '01');
+        assertEqual(format(new Date('2020-01-01'), 'ww'), '01');
+      });
+
+      it('should correctly format day of month token', () => {
+        assertEqual(format(new Date(2020, 0, 1), 'd'), '1');
+        assertEqual(format(new Date(2020, 0, 15), 'd'), '15');
+        assertEqual(format(new Date(2020, 0, 30), 'd'), '30');
+
+        assertEqual(format(new Date(2020, 0, 1), 'dd'), '01');
+        assertEqual(format(new Date(2020, 0, 15), 'dd'), '15');
+        assertEqual(format(new Date(2020, 0, 30), 'dd'), '30');
+      });
+
+      it('should correctly format day of year token', () => {
+        assertEqual(format(new Date(2020, 0, 1), 'D'), '1');
+        assertEqual(format(new Date(2020, 0, 10), 'D'), '10');
+        assertEqual(format(new Date(2020, 7, 31), 'D'), '244');
+        assertEqual(format(new Date(2020, 11, 31), 'D'), '366');
+
+        assertEqual(format(new Date(2020, 0, 1), 'DD'), '01');
+        assertEqual(format(new Date(2020, 0, 10), 'DD'), '10');
+        assertEqual(format(new Date(2020, 7, 31), 'DD'), '244');
+        assertEqual(format(new Date(2020, 11, 31), 'DD'), '366');
+
+        assertEqual(format(new Date(2020, 0, 1), 'DDD'), '001');
+        assertEqual(format(new Date(2020, 0, 10), 'DDD'), '010');
+        assertEqual(format(new Date(2020, 7, 31), 'DDD'), '244');
+        assertEqual(format(new Date(2020, 11, 31), 'DDD'), '366');
+      });
+
+      it('should correctly format day of week token', () => {
+        assertEqual(format(new Date(2020, 0, 1), 'E'), 'Wed');
+        assertEqual(format(new Date(2020, 0, 2), 'E'), 'Thu');
+        assertEqual(format(new Date(2020, 0, 3), 'E'), 'Fri');
+
+        assertEqual(format(new Date(2020, 0, 1), 'EE'), 'Wed');
+        assertEqual(format(new Date(2020, 0, 2), 'EE'), 'Thu');
+        assertEqual(format(new Date(2020, 0, 3), 'EE'), 'Fri');
+
+        assertEqual(format(new Date(2020, 0, 1), 'EEE'), 'Wed');
+        assertEqual(format(new Date(2020, 0, 2), 'EEE'), 'Thu');
+        assertEqual(format(new Date(2020, 0, 3), 'EEE'), 'Fri');
+
+        assertEqual(format(new Date(2020, 0, 1), 'EEEE'), 'Wednesday');
+        assertEqual(format(new Date(2020, 0, 2), 'EEEE'), 'Thursday');
+        assertEqual(format(new Date(2020, 0, 3), 'EEEE'), 'Friday');
+
+        assertEqual(format(new Date(2020, 0, 1), 'EEEEE'), 'W');
+        assertEqual(format(new Date(2020, 0, 2), 'EEEEE'), 'T');
+        assertEqual(format(new Date(2020, 0, 3), 'EEEEE'), 'F');
+
+        assertEqual(format(new Date(2020, 0), {
+          format: 'EEEE',
+          locale: 'fi',
+        }), 'keskiviikkona');
+
+      });
+
+      it('should correctly format standalone day of week token', () => {
+        assertEqual(format(new Date(2020, 0, 1), 'c'), 'Wed');
+        assertEqual(format(new Date(2020, 0, 2), 'c'), 'Thu');
+        assertEqual(format(new Date(2020, 0, 3), 'c'), 'Fri');
+
+        assertEqual(format(new Date(2020, 0, 1), 'cc'), 'Wed');
+        assertEqual(format(new Date(2020, 0, 2), 'cc'), 'Thu');
+        assertEqual(format(new Date(2020, 0, 3), 'cc'), 'Fri');
+
+        assertEqual(format(new Date(2020, 0, 1), 'ccc'), 'Wed');
+        assertEqual(format(new Date(2020, 0, 2), 'ccc'), 'Thu');
+        assertEqual(format(new Date(2020, 0, 3), 'ccc'), 'Fri');
+
+        assertEqual(format(new Date(2020, 0, 1), 'cccc'), 'Wednesday');
+        assertEqual(format(new Date(2020, 0, 2), 'cccc'), 'Thursday');
+        assertEqual(format(new Date(2020, 0, 3), 'cccc'), 'Friday');
+
+        assertEqual(format(new Date(2020, 0, 1), 'ccccc'), 'W');
+        assertEqual(format(new Date(2020, 0, 2), 'ccccc'), 'T');
+        assertEqual(format(new Date(2020, 0, 3), 'ccccc'), 'F');
+
+        assertEqual(format(new Date(2020, 0), {
+          format: 'cccc',
+          locale: 'fi',
+        }), 'keskiviikko');
+
+      });
+
+      it('should correctly format day period token', () => {
+        assertEqual(format(new Date(2020, 0), 'a'), 'AM');
+        assertEqual(format(new Date(2020, 0), 'aa'), 'am');
+        assertEqual(format(new Date(2020, 0), 'aaa'), 'AM');
+        assertEqual(format(new Date(2020, 0), 'aaaa'), 'AM');
+        assertEqual(format(new Date(2020, 0), 'aaaaa'), 'A');
+        assertEqual(format(new Date(2020, 0), 'aaaaaa'), 'a');
+        assertEqual(format(new Date(2020, 0, 1, 12), 'a'), 'PM');
+        assertEqual(format(new Date(2020, 0, 1, 12), 'aa'), 'pm');
+        assertEqual(format(new Date(2020, 0, 1, 12), 'aaa'), 'PM');
+        assertEqual(format(new Date(2020, 0, 1, 12), 'aaaa'), 'PM');
+        assertEqual(format(new Date(2020, 0, 1, 12), 'aaaaa'), 'P');
+        assertEqual(format(new Date(2020, 0, 1, 12), 'aaaaaa'), 'p');
+      });
+
+      it('should correctly format 12-hour token', () => {
+        assertEqual(format(new Date(2020, 0, 1, 0), 'h'), '12');
+        assertEqual(format(new Date(2020, 0, 1, 1), 'h'), '1');
+        assertEqual(format(new Date(2020, 0, 1, 15), 'h'), '3');
+
+        assertEqual(format(new Date(2020, 0, 1, 0), 'hh'), '12');
+        assertEqual(format(new Date(2020, 0, 1, 1), 'hh'), '01');
+        assertEqual(format(new Date(2020, 0, 1, 15), 'hh'), '03');
+      });
+
+      it('should correctly format 23-hour token', () => {
+        assertEqual(format(new Date(2020, 0, 1, 0), 'H'), '0');
+        assertEqual(format(new Date(2020, 0, 1, 1), 'H'), '1');
+        assertEqual(format(new Date(2020, 0, 1, 15), 'H'), '15');
+
+        assertEqual(format(new Date(2020, 0, 1, 0), 'HH'), '00');
+        assertEqual(format(new Date(2020, 0, 1, 1), 'HH'), '01');
+        assertEqual(format(new Date(2020, 0, 1, 15), 'HH'), '15');
+      });
+
+      it('should correctly format 24-hour token', () => {
+        assertEqual(format(new Date(2020, 0, 1, 0), 'k'), '24');
+        assertEqual(format(new Date(2020, 0, 1, 1), 'k'), '1');
+        assertEqual(format(new Date(2020, 0, 1, 15), 'k'), '15');
+
+        assertEqual(format(new Date(2020, 0, 1, 0), 'kk'), '24');
+        assertEqual(format(new Date(2020, 0, 1, 1), 'kk'), '01');
+        assertEqual(format(new Date(2020, 0, 1, 15), 'kk'), '15');
+      });
+
+      it('should correctly format 11-hour token', () => {
+        assertEqual(format(new Date(2020, 0, 1, 0), 'K'), '0');
+        assertEqual(format(new Date(2020, 0, 1, 1), 'K'), '1');
+        assertEqual(format(new Date(2020, 0, 1, 15), 'K'), '3');
+
+        assertEqual(format(new Date(2020, 0, 1, 0), 'KK'), '00');
+        assertEqual(format(new Date(2020, 0, 1, 1), 'KK'), '01');
+        assertEqual(format(new Date(2020, 0, 1, 15), 'KK'), '03');
+      });
+
+      it('should correctly format minutes token', () => {
+        assertEqual(format(new Date(2020, 0, 1, 0, 0), 'm'), '0');
+        assertEqual(format(new Date(2020, 0, 1, 0, 1), 'm'), '1');
+        assertEqual(format(new Date(2020, 0, 1, 0, 59), 'm'), '59');
+
+        assertEqual(format(new Date(2020, 0, 1, 0, 0), 'mm'), '0');
+        assertEqual(format(new Date(2020, 0, 1, 0, 1), 'mm'), '1');
+        assertEqual(format(new Date(2020, 0, 1, 0, 59), 'mm'), '59');
+      });
+
+      it('should correctly format seconds token', () => {
+        assertEqual(format(new Date(2020, 0, 1, 0, 0, 0), 's'), '0');
+        assertEqual(format(new Date(2020, 0, 1, 0, 0, 1), 's'), '1');
+        assertEqual(format(new Date(2020, 0, 1, 0, 0, 59), 's'), '59');
+
+        assertEqual(format(new Date(2020, 0, 1, 0, 0, 0), 'ss'), '00');
+        assertEqual(format(new Date(2020, 0, 1, 0, 0, 1), 'ss'), '01');
+        assertEqual(format(new Date(2020, 0, 1, 0, 0, 59), 'ss'), '59');
+      });
+
+      it('should correctly format fractional seconds token', () => {
+        assertEqual(format(new Date(2020, 0, 1, 0, 0, 0, 0), 'S'), '0');
+        assertEqual(format(new Date(2020, 0, 1, 0, 0, 0, 1), 'S'), '1');
+        assertEqual(format(new Date(2020, 0, 1, 0, 0, 0, 999), 'S'), '999');
+
+        assertEqual(format(new Date(2020, 0, 1, 0, 0, 0, 0), 'SS'), '00');
+        assertEqual(format(new Date(2020, 0, 1, 0, 0, 0, 1), 'SS'), '01');
+        assertEqual(format(new Date(2020, 0, 1, 0, 0, 0, 999), 'SS'), '999');
+
+        assertEqual(format(new Date(2020, 0, 1, 0, 0, 0, 0), 'SSS'), '000');
+        assertEqual(format(new Date(2020, 0, 1, 0, 0, 0, 1), 'SSS'), '001');
+        assertEqual(format(new Date(2020, 0, 1, 0, 0, 0, 999), 'SSS'), '999');
+      });
+
+      describe('timezone name tokens', () => {
+
+        afterAll(() => {
+          releaseTimeZoneName();
+        });
+
+        it('should correctly format timezone name token for EDT', () => {
+          mockTimeZoneName({
+            long: 'Eastern Daylight Time',
+            short: 'EDT',
+          });
+          assertEqual(format(new Date(2020, 0), 'z'), 'EDT');
+          assertEqual(format(new Date(2020, 0), 'zz'), 'EDT');
+          assertEqual(format(new Date(2020, 0), 'zzz'), 'EDT');
+          assertEqual(format(new Date(2020, 0), 'zzzz'), 'Eastern Daylight Time');
+        });
+
+        it('should correctly format timezone name token for JST', () => {
+          mockTimeZoneName({
+            long: 'Japan Standard Time',
+            short: 'GMT+9',
+          });
+          assertEqual(format(new Date(2020, 0), 'z'), 'GMT+9');
+          assertEqual(format(new Date(2020, 0), 'zz'), 'GMT+9');
+          assertEqual(format(new Date(2020, 0), 'zzz'), 'GMT+9');
+          assertEqual(format(new Date(2020, 0), 'zzzz'), 'Japan Standard Time');
+        });
+
+      });
+
+      describe('timezone offset tokens', () => {
+
+        afterAll(() => {
+          releaseTimeZoneOffset();
+        });
+
+        it('should correctly format timezone offset token for EST', () => {
+          mockTimeZoneOffset(240);
+          assertEqual(format(new Date(2020, 0), 'Z'), '-0400');
+          assertEqual(format(new Date(2020, 0), 'ZZ'), '-0400');
+          assertEqual(format(new Date(2020, 0), 'ZZZ'), '-0400');
+          assertEqual(format(new Date(2020, 0), 'ZZZZ'), 'GMT-04:00');
+          assertEqual(format(new Date(2020, 0), 'ZZZZZ'), '-04:00');
+          assertEqual(format(new Date(2020, 0), 'O'), 'GMT-4');
+          assertEqual(format(new Date(2020, 0), 'OO'), 'OO');
+          assertEqual(format(new Date(2020, 0), 'OOO'), 'OOO');
+          assertEqual(format(new Date(2020, 0), 'OOOO'), 'GMT-04:00');
+        });
+
+        it('should correctly format timezone offset token for IST', () => {
+          mockTimeZoneOffset(-330);
+          assertEqual(format(new Date(2020, 0), 'Z'), '+0530');
+          assertEqual(format(new Date(2020, 0), 'ZZ'), '+0530');
+          assertEqual(format(new Date(2020, 0), 'ZZZ'), '+0530');
+          assertEqual(format(new Date(2020, 0), 'ZZZZ'), 'GMT+05:30');
+          assertEqual(format(new Date(2020, 0), 'ZZZZZ'), '+05:30');
+          assertEqual(format(new Date(2020, 0), 'O'), 'GMT+5:30');
+          assertEqual(format(new Date(2020, 0), 'OO'), 'OO');
+          assertEqual(format(new Date(2020, 0), 'OOO'), 'OOO');
+          assertEqual(format(new Date(2020, 0), 'OOOO'), 'GMT+05:30');
+        });
+
+        it('should correctly format timezone offset token for NPT', () => {
+          mockTimeZoneOffset(-345);
+          assertEqual(format(new Date(2020, 0), 'Z'), '+0545');
+          assertEqual(format(new Date(2020, 0), 'ZZ'), '+0545');
+          assertEqual(format(new Date(2020, 0), 'ZZZ'), '+0545');
+          assertEqual(format(new Date(2020, 0), 'ZZZZ'), 'GMT+05:45');
+          assertEqual(format(new Date(2020, 0), 'ZZZZZ'), '+05:45');
+          assertEqual(format(new Date(2020, 0), 'O'), 'GMT+5:45');
+          assertEqual(format(new Date(2020, 0), 'OO'), 'OO');
+          assertEqual(format(new Date(2020, 0), 'OOO'), 'OOO');
+          assertEqual(format(new Date(2020, 0), 'OOOO'), 'GMT+05:45');
+        });
+
+        it('should correctly format timezone offset token for JST', () => {
+          mockTimeZoneOffset(-540);
+          assertEqual(format(new Date(2020, 0), 'Z'), '+0900');
+          assertEqual(format(new Date(2020, 0), 'ZZ'), '+0900');
+          assertEqual(format(new Date(2020, 0), 'ZZZ'), '+0900');
+          assertEqual(format(new Date(2020, 0), 'ZZZZ'), 'GMT+09:00');
+          assertEqual(format(new Date(2020, 0), 'ZZZZZ'), '+09:00');
+          assertEqual(format(new Date(2020, 0), 'O'), 'GMT+9');
+          assertEqual(format(new Date(2020, 0), 'OO'), 'OO');
+          assertEqual(format(new Date(2020, 0), 'OOO'), 'OOO');
+          assertEqual(format(new Date(2020, 0), 'OOOO'), 'GMT+09:00');
+        });
+
+        it('should correctly format timezone offset token for GMT', () => {
+          mockTimeZoneOffset(-0);
+          assertEqual(format(new Date(2020, 0), 'Z'), '+0000');
+          assertEqual(format(new Date(2020, 0), 'ZZ'), '+0000');
+          assertEqual(format(new Date(2020, 0), 'ZZZ'), '+0000');
+          assertEqual(format(new Date(2020, 0), 'ZZZZ'), 'GMT+00:00');
+          assertEqual(format(new Date(2020, 0), 'ZZZZZ'), 'Z');
+          assertEqual(format(new Date(2020, 0), 'O'), 'GMT+0');
+          assertEqual(format(new Date(2020, 0), 'OO'), 'OO');
+          assertEqual(format(new Date(2020, 0), 'OOO'), 'OOO');
+          assertEqual(format(new Date(2020, 0), 'OOOO'), 'GMT+00:00');
+        });
+
+      });
+
+      it('should be able to escape strings', () => {
+        assertEqual(
+          format(new Date(2020, 0, 1, 15, 30), "HH 'hours and' mm 'minutes'"),
+          '15 hours and 30 minutes'
+        );
+        assertEqual(
+          format(new Date(2020, 0, 1, 15, 30), "yyyy.MM.dd 'at' HH:mm:ss"),
+          '2020.01.01 at 15:30:00'
+        );
+        assertEqual(
+          format(new Date(2020, 0, 1, 15, 30), "EEE, MMM d, ''yy"),
+          "Wed, Jan 1, '20"
+        );
+        assertEqual(
+          format(new Date(2020, 0, 1, 15, 30), "h 'o''clock' a"),
+          "3 o'clock PM"
+        );
+      });
+
+      it('should work with multiple token formats', () => {
+        assertEqual(format(new Date(2020, 0), 'd MMMM, yyyy'), '1 January, 2020');
+        assertEqual(format(new Date(2020, 0), 'MMMM d, yyyy'), 'January 1, 2020');
+        assertEqual(format(new Date(2020, 0), 'dd-MM-yyyy'), '01-01-2020');
+        assertEqual(format(new Date(2020, 0), 'MMMMyyyy'), 'January2020');
+      });
+
+    });
+
+    describe('complex formatting with an options object', () => {
+
+      it('should accept a locale option', () => {
+        assertEqual(
+          format(new Date(2020, 0), {
+            locale: 'ja'
+          }),
+          new Intl.DateTimeFormat('ja').format(new Date(2020, 0)),
+        );
+      });
+
+      it('should accept a formatOptions object', () => {
+        assertEqual(
+          format(new Date(2020, 0), {
+            formatOptions: {
+              year: 'numeric',
+              month: 'long'
+            }
+          }),
+          'January 2020',
+        );
+      });
+
+      it('should accept locale and formatOptions together', () => {
+        assertEqual(
+          format(new Date(2020, 0), {
+            locale: 'ja',
+            formatOptions: {
+              year: 'numeric',
+              month: 'long'
+            }
+          }),
+          '2020年1月',
+        );
+      });
+
+      it('should accept a formatter option', () => {
+        assertEqual(
+          format(new Date(2020, 0), {
+            formatter: new Intl.DateTimeFormat('en', {
+              weekday: 'long',
+              hour: 'numeric',
+            }),
+          }),
+          'Wednesday, 12 AM',
+        );
+      });
+
+      it('should accept format shorcuts with an overriding locale', () => {
+        assertEqual(
+          format(new Date(2020, 0), {
+            locale: 'ja',
+            formatOptions: Sugar.Date.DATE_FULL,
+          }),
+          '2020年1月1日水曜日',
+        );
+      });
+
+      it('should be equivalent to toLocaleString with locale and shortcut', () => {
+        assertEqual(
+          format(new Date(2020, 0), {
+            locale: 'ja',
+            formatOptions: Sugar.Date.DATE_FULL,
+          }),
+          new Date(2020, 0).toLocaleString('ja', Sugar.Date.DATE_FULL),
+        );
+      });
+
+      it('should be able to tokenize with an overriding locale', () => {
+        assertEqual(
+          format(new Date(2020, 0), {
+            locale: 'ja',
+            format: 'MMMM月',
+          }),
+          '1月',
+        );
+      });
+
+      it('should allow a custom formatter to customize tokens further', () => {
+        assertEqual(
+          format(new Date(2020, 0), {
+            format: 'MMMM月',
+            formatter: new Intl.DateTimeFormat('ja', {
+              numberingSystem: 'fullwide',
+            }),
+          }),
+          '１月',
+        );
+        assertEqual(
+          format(new Date(2020, 0), {
+            format: 'MMMM月',
+            formatter: new Intl.DateTimeFormat('ja', {
+              numberingSystem: 'hanidec',
+            }),
+          }),
+          '一月',
+        );
+      });
+
+      it('should throw an error when attempting to tokenize without a DateTimeFormat', () => {
+        assertError(() => {
+          format(new Date(2020, 0), {
+            format: 'yyyy',
+            formatter: {
+              format: () => {
+                return 'foo';
+              }
+            }
+          });
+        }, TypeError);
+      });
+
+    });
+
+    it('should not modify options object', () => {
+      const options = {
+        format: 'abc',
+        locale: 'ja',
+      };
+      format(new Date(2020, 0), options);
+      assertObjectEqual(options, {
+        format: 'abc',
+        locale: 'ja',
+      });
+    });
+
+    it('should error on invalid dates', () => {
+      assertError(() => {
+        format(new Date('invalid'), 'yyyy');
+      });
+    });
+
 
   });
 

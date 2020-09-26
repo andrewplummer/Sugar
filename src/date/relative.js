@@ -115,6 +115,8 @@ function resolveOptions(opt = {}) {
     opt = { resolve: opt };
   } else if (opt instanceof Intl.RelativeTimeFormat) {
     opt = { formatter: opt };
+  } else {
+    opt = { ...opt };
   }
   if (!opt.type) {
     opt.type = opt.compare ? 'numeric' : 'relative';
