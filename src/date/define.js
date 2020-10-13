@@ -1,5 +1,7 @@
-import { defineInstance } from '../core/date';
+import { defineStatic, defineInstance } from '../core/date';
 import * as methods from './methods';
+
+defineStatic('create', methods.create);
 
 defineInstance('advance', methods.advance);
 defineInstance('clone', methods.clone);

@@ -199,6 +199,14 @@ call `Function#lock` first in the chain to achieve the same effect.
 - Removed `Date#full`, `Date#long`, `Date#medium`, `Date#short`, and
     `Date#stamp` methods. These should all go through `Date#format` or
     `Date#toLocaleString` now instead.
+- Changed `Date.create` to accept options object in place of string instead
+    of following the string as the second argument. The string is now a param
+    called `input` on the options object.
+- Removed `clone` option from `Date.create`. Input dates will now always be
+    cloned.
+- Removed `params` option from `Date.create`. Instead use the `explain` option
+    which will return a `ParseResult` object containing `absProps` and
+    `relProps`. See `https://sugarjs.com/docs/Date/create` for more.
 
 TODO:
 

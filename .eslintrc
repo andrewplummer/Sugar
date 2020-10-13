@@ -2,15 +2,17 @@
   "env": {
     "es6": true,
     "node": true,
-    "browser": true,
+    "browser": true
   },
   "parserOptions": {
     "ecmaVersion": 2020,
     "sourceType": "module"
   },
-  "extends": "eslint:recommended",
+  "extends": [
+    "eslint:recommended"
+  ],
   "rules": {
     "comma-dangle": ["error", "only-multiline"],
-    "no-control-regex": "off",
+    "no-control-regex": "off"
   }
 }

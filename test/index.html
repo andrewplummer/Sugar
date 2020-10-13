@@ -8,16 +8,17 @@
   </head>
   <body>
     <script src="../node_modules/ready-test/ready-test.js"></script>
-    <script src="../node_modules/sinon/pkg/sinon.js"></script>
+    <script src="../node_modules/@sinonjs/fake-timers/fake-timers.js"></script>
     <script>
-      clock = sinon.useFakeTimers();
+      clock = FakeTimers.install();
     </script>
+    <script src="mocks/intl.js"></script>
+    <script src="mocks/date.js"></script>
     <script src="../dist/sugar.js"></script>
     <script src="helpers/namespace.js"></script>
     <script src="helpers/suite.js"></script>
-    <script src="helpers/util.js"></script>
     <script src="helpers/intl.js"></script>
-    <script src="helpers/date.js"></script>
+    <script src="helpers/util.js"></script>
     <script src="tests/core.js"></script>
     <script src="tests/chainable.js"></script>
     <script src="tests/extended.js"></script>

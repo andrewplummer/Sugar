@@ -8,19 +8,21 @@ export function shiftDate(date, unit, val, reset) {
 }
 
 export function advanceDate(date, props, reset) {
-  props = getPropsFromRelative(date, props, 1);
+  props = getAbsoluteProps(date, props, 1);
   updateDate(date, props, reset);
 }
 
 export function rewindDate(date, props, reset) {
-  props = getPropsFromRelative(date, props, -1);
+  props = getAbsoluteProps(date, props, -1);
   updateDate(date, props, reset);
 }
 
-function getPropsFromRelative(date, relProps, dir) {
-  const props = {};
+function getAbsoluteProps(date, relProps, dir) {
+  relProps = { ...relProps };
   if ('day' in relProps) {
-    relProps.date = relProps.day;
+    if (!('date' in relProps)) {
+      relProps.date = relProps.day;
+    }
     delete relProps.day;
   }
   if ('week' in relProps) {
@@ -28,6 +30,7 @@ function getPropsFromRelative(date, relProps, dir) {
     relProps.date = (relProps.week * 7) + (relProps.date || 0);
     delete relProps.week;
   }
+  const absProps = {};
   for (let [unit, val] of Object.entries(relProps)) {
     assertInteger(val);
     const curVal = callDateGet(date, unit);
@@ -36,14 +39,14 @@ function getPropsFromRelative(date, relProps, dir) {
     // shift the target days by the amount they will be shifted.
     // This is only required for relative as any other updates will
     // be setting an explicit date.
-    if (unit === 'date' && 'month' in props) {
-      const targetYear = props.year || callDateGet(date, 'year');
-      const daysInMonth = getDaysInMonth(new Date(targetYear, props.month));
+    if (unit === 'date' && 'month' in absProps) {
+      const targetYear = absProps.year || callDateGet(date, 'year');
+      const daysInMonth = getDaysInMonth(new Date(targetYear, absProps.month));
       if (daysInMonth < curVal) {
         val -= curVal - daysInMonth;
       }
     }
-    props[unit] = val;
+    absProps[unit] = val;
   }
-  return props;
+  return absProps;
 }

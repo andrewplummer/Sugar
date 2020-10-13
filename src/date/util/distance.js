@@ -1,6 +1,6 @@
 import { cloneDate } from '../../util/date';
 import { shiftDate } from './shift';
-import { getUnitMultiplier, getUnitSpecificity } from './units';
+import { getUnitMultiplier, getUnitIndex } from './units';
 
 export function getUnitDistance(date1, date2, unit) {
   const fwd = date2 > date1;
@@ -38,6 +38,5 @@ export function getUnitDistance(date1, date2, unit) {
 // any unit with specificity lower than "hours" as even days do not have a fixed
 // number of milliseconds in them during a day with a DST shift.
 function unitIsAmbiguous(unit) {
-  const specificity = getUnitSpecificity(unit);
-  return specificity < getUnitSpecificity('hour');
+  return getUnitIndex(unit) < getUnitIndex('hour');
 }

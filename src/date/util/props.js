@@ -40,10 +40,6 @@ export function normalizeProps(props) {
     unit = getNormalizedUnit(unit);
     normalized[unit] = val;
   }
-  // Prioritize "date" over "day" when there is a conflict.
-  if (normalized.date && normalized.day) {
-    delete normalized.day;
-  }
   return normalized;
 }
 

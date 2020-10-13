@@ -92,6 +92,7 @@ export default function relative(date, opt) {
   }
   if (shift) {
     unit = getAdjacentUnit(unit, shift);
+    // TODO: teset if unit not exists
     value = getUnitDistance(date, compare, unit);
   }
 

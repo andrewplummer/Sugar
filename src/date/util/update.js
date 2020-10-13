@@ -1,18 +1,23 @@
-import { getUnitSpecificity } from './units';
-import { resetBySpecificity } from './reset';
+import { getUnitIndex, getPropsSpecificity } from './units';
+import { resetByIndex } from './reset';
 import { callDateSet } from './helpers';
 
 export function updateDate(date, props, reset) {
+
+  // Prioritize "date" over "day" when there is a conflict.
+  if ('day' in props && 'date' in props) {
+    delete props.day;
+  }
+
   const entries = Object.entries(props);
 
   if (reset) {
-    // Reset first to prevent accidentally traversing into a new month as
-    // described below.
-    let specificity = 0;
-    for (let [unit] of entries) {
-      specificity = Math.max(specificity, getUnitSpecificity(unit));
+    // Reset first to prevent accidentally
+    // traversing into a new month as described below.
+    const { index } = getPropsSpecificity(props);
+    if (index >= 0) {
+      resetByIndex(date, index);
     }
-    resetBySpecificity(date, specificity);
   }
 
   // The order of operations is important as setting { month: 0: date: 31 }
@@ -27,7 +32,7 @@ export function updateDate(date, props, reset) {
   // will cause shifts, for example { year: 2020, month: 36 }. For this reason
   // we need to sort in all cases from least specific -> most specific.
   entries.sort((a, b) => {
-    return getUnitSpecificity(a[0]) - getUnitSpecificity(b[0]);
+    return getUnitIndex(a[0]) - getUnitIndex(b[0]);
   });
 
   for (let [unit, val] of entries) {
@@ -36,4 +41,3 @@ export function updateDate(date, props, reset) {
 
   return date;
 }
-

@@ -1,15 +1,15 @@
-import { SPECIFICITY_INDEX, getUnitSpecificity, getUnitEdge } from './units';
+import { UNITS, getUnitIndex, getUnitEdge } from './units';
 import { callDateSet } from './helpers';
 
 export function resetByUnit(date, unit, end) {
-  return resetBySpecificity(date, getUnitSpecificity(unit), end);
+  return resetByIndex(date, getUnitIndex(unit), end);
 }
 
-export function resetBySpecificity(date, specificity, end = false) {
-  for (let i = specificity + 1; i < SPECIFICITY_INDEX.length; i++) {
-    let unit = SPECIFICITY_INDEX[i];
-    // When resetting by specificity always ignore weeks and reset
-    // the calendar date instead.
+export function resetByIndex(date, index, end = false) {
+  for (let i = index + 1; i < UNITS.length; i++) {
+    let unit = UNITS[i];
+    // When resetting by index always ignore
+    // weeks and reset the calendar date instead.
     if (unit === 'week') {
       continue;
     } else if (unit === 'day') {

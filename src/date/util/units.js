@@ -5,7 +5,7 @@ const YEAR_AVG_DAYS = 365.2425;
 const HOUR_IN_MS = 60 * 60 * 1000;
 const DAY_IN_MS = 24 * HOUR_IN_MS;
 
-export const SPECIFICITY_INDEX = [
+export const UNITS = [
   'year',
   'month',
   'week',
@@ -83,15 +83,33 @@ export function getUnitMultiplier(unit, min = false) {
   return mult[min ? 'min' : 'avg'] || mult['avg'];
 }
 
-export function getUnitSpecificity(unit) {
-  return SPECIFICITY_INDEX.indexOf(normalizeDate(unit));
+export function getUnitIndex(unit) {
+  if (!unit) {
+    throw new Error('Unit is required');
+  }
+  return UNITS.indexOf(normalizeDate(unit));
+}
+
+// Note: this function needs to handle "date"
+// as well as "day" as a specific unit.
+export function getPropsSpecificity(props) {
+  let unit;
+  let index = -1;
+  for (let key of Object.keys(props)) {
+    const i = getUnitIndex(key);
+    if (i > index) {
+      index = i;
+      unit = key;
+    }
+  }
+  return {
+    unit,
+    index,
+  };
 }
 
 export function getAdjacentUnit(unit, offset) {
-  let specificity = getUnitSpecificity(unit) + offset;
-  specificity = Math.max(specificity, 0);
-  specificity = Math.min(specificity, SPECIFICITY_INDEX.length - 1);
-  return SPECIFICITY_INDEX[specificity];
+  return UNITS[getUnitIndex(unit) + offset];
 }
 
 export function getUnitEdge(unit, end, date) {
@@ -106,8 +124,8 @@ export function getUnitEdge(unit, end, date) {
 export function convertTimeToUnit(ms, min) {
   let unit = 'millisecond';
   let value = ms;
-  for (let i = SPECIFICITY_INDEX.length - 2; i >= 0; i--) {
-    const u = SPECIFICITY_INDEX[i];
+  for (let i = UNITS.length - 2; i >= 0; i--) {
+    const u = UNITS[i];
     const mult = getUnitMultiplier(u, min);
     if (Math.abs(ms) >= mult) {
       unit = u;
