@@ -1,4 +1,4 @@
-import { defineInstance } from '../core/number';
+import { defineInstance } from '../number/namespace';
 import * as methods from './methods';
 
 defineInstance('duration', methods.duration);

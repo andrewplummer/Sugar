@@ -1,5 +1,5 @@
 import { createNamespace } from '../../../src/core';
-import { defineInstance } from '../../../src/core/string';
+import { defineInstance } from '../../../src/string/namespace';
 
 const Boolean = createNamespace('Boolean');
 

@@ -1,11 +1,11 @@
-import { defineInstance } from '../../../src/core/number';
+import { defineInstance } from '../../../src/number/namespace';
 import { abs, abbr } from '../../../src/number/methods';
 
 defineInstance('abs', abs);
 defineInstance('abbr', abbr);
 // TODO
 //import 'sugar/string/capitalize/define';
-import { Number } from '../../../src/core/number';
+import { Number } from '../../../src/number/namespace';
 
 describe('Customized Module', function() {
 

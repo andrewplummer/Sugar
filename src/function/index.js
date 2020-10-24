@@ -1,3 +1,3 @@
-export * from '../core/function';
+export * from './namespace';
 export * from './methods';
 import './define';

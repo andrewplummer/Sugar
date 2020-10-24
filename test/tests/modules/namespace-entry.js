@@ -1,4 +1,4 @@
-import { Number } from '../../../src/core/number';
+import { Number } from '../../../src/number/namespace';
 import * as Exports from '../../../src/number';
 
 describe('Namespace Entry Module', function() {

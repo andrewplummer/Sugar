@@ -1,4 +1,4 @@
-import { defineStatic } from '../core/date';
+import { defineStatic } from './namespace';
 
 const DATE = {
   year: 'numeric',

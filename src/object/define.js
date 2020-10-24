@@ -1,4 +1,4 @@
-import { defineInstance } from '../core/object';
+import { defineInstance } from './namespace';
 import * as methods from './methods';
 
 defineInstance('add', methods.add);

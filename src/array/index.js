@@ -1,3 +1,3 @@
-export * from '../core/array';
+export * from './namespace';
 export * from './methods';
 import './define';

@@ -1,4 +1,4 @@
-import { defineInstance } from '../core/function';
+import { defineInstance } from './namespace';
 import * as methods from './methods';
 
 defineInstance('callAfter', methods.callAfter);

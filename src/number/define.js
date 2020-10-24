@@ -1,4 +1,4 @@
-import { defineStatic, defineInstance } from '../core/number';
+import { defineStatic, defineInstance } from './namespace';
 import * as methods from './methods';
 
 defineStatic('range', methods.range);

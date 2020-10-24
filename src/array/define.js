@@ -1,4 +1,4 @@
-import { defineStatic, defineInstance } from '../core/array';
+import { defineStatic, defineInstance } from './namespace';
 import * as methods from './methods';
 
 defineStatic('construct', methods.construct);

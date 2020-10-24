@@ -1,3 +1,3 @@
-export * from '../core/regexp';
+export * from './namespace';
 export * from './methods';
 import './define';

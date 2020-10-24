@@ -35,6 +35,25 @@ namespace('Date', function () {
     'December',
   ];
 
+  describe('Enhanced Chainable', () => {
+
+    it('should enhance chainable with date parsing', () => {
+      assertDateEqual(new Sugar.Date('tomorrow').raw, new Date(2020, 0, 2));
+    });
+
+    it('should be able to create from timestamp', () => {
+      assertDateEqual(new Sugar.Date(Date.now()).raw, new Date(2020, 0));
+    });
+
+    it('should be able to create from enumerated arguments', () => {
+      assertDateEqual(
+        new Sugar.Date(2019, 1, 5, 23, 59, 59, 999).raw,
+        new Date(2019, 1, 5, 23, 59, 59, 999)
+      );
+    });
+
+  });
+
   describeStatic('create', function (create) {
 
     describe('Numeric Formats', () => {

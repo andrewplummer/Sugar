@@ -1,4 +1,4 @@
-export * from '../core/date';
+export * from './namespace';
 export * from './methods';
 export * from './formats';
 import './define';
