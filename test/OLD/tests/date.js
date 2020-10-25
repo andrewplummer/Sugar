@@ -11,52 +11,6 @@ namespace('Date', function () {
 
   });
 
-  group('Create | Chainables', function() {
-    equal(new Sugar.Date().raw, new Date(), 'No argument produces current date');
-    equal(new Sugar.Date(undefined).raw, new Date(), 'Undefined is the same as no argument');
-    equal(new Sugar.Date(null).raw, new Date(0), 'Null is the same as 0');
-    equal(new Sugar.Date(1455030000000).raw, new Date(1455030000000), 'Integer is used as unix timestamp');
-    equal(new Sugar.Date('tomorrow').raw, testCreateDate('tomorrow'), 'Chainable constructor should go through create');
-    equal(new Sugar.Date('8/10/50', { locale: 'en-GB'}).raw, new Date(1950, 9, 8), 'Chainable constructor accepts options');
-    equal(new Sugar.Date('8/10/50', 'en-GB').raw, new Date(1950, 9, 8), 'Chainable constructor accepts a locale code');
-    equal(Sugar.Date('8/10/50', 'en-GB').raw, new Date(1950, 9, 8), 'Chainable as factory accepts a locale code');
-    equal(testIsUTC(new Sugar.Date(new Date(), { setUTC: true }).raw), true, 'Date object should be sent to create');
-  });
-
-  group('Create | Objects', function() {
-
-    assertDateParsed({year:1998 }, new Date(1998, 0));
-    assertDateParsed({year:1998,month:1}, new Date(1998,1));
-    assertDateParsed({year:1998,month:1,day:23}, new Date(1998,1,23));
-    assertDateParsed({year:1998,month:1,day:23,hour:11}, new Date(1998,1,23,11));
-    assertDateParsed({year:1998,month:1,day:23,hour:11,minutes:54}, new Date(1998,1,23,11,54));
-    assertDateParsed({year:1998,month:1,day:23,hour:11,minutes:54,seconds:32}, new Date(1998,1,23,11,54,32));
-    assertDateParsed({year:1998,month:1,day:23,hour:11,minutes:54,seconds:32,milliseconds:454}, new Date(1998,1,23,11,54,32,454));
-
-    var obj = { year: 1998 };
-    testCreateDate(obj);
-
-    equal(obj.year, 1998, 'Year should still be 1998');
-    equal(Object.keys(obj).length, 1, 'No other properties should be set');
-
-    // Should handle fractions, ms should be truncated
-    assertDateParsed({days:20.5},    testDateSet(getRelativeDateReset(0,0), {date:20,hour:12}));
-    assertDateParsed({hours:2.5},    testDateSet(getRelativeDateReset(0,0,0), {hour:2,minute:30}));
-    assertDateParsed({minutes:15.5}, testDateSet(getRelativeDateReset(0,0,0,0), {minute:15,second:30}));
-    assertDateParsed({seconds:42.5}, testDateSet(getRelativeDateReset(0,0,0,0,0), {second:42,millisecond:500}));
-    assertDateParsed({milliseconds:999.99999}, testDateSet(getRelativeDateReset(0,0,0,0,0,0), {millisecond:999}));
-
-  });
-
-  group('Create | Timestamps', function() {
-    var timestamp = 1294012800000;
-    var d = testCreateDate(timestamp); // 2011-01-03 00:00:00 
-    equal(d.getFullYear(), 2011, '2011')
-    equal(d.getMonth(), 0, 'is January');
-    equal(d.getDate(), Math.floor(3 - (d.getTimezoneOffset() / 60 / 24)), 'is the 3rd');
-    equal(d.getTime(), timestamp, 'is exact');
-  });
-
   group('Create | Options', function() {
 
     // setUTC option
@@ -78,20 +32,6 @@ namespace('Date', function () {
     // Empty/unrecgonized params should be allowed
     assertDateParsed({}, new Date());
     assertDateParsed({ fromUTC: true }, new Date());
-
-    // Issue #545 Allowing "set" option
-    var params = {};
-    testCreateDate('January 13th, 2016', { params: params });
-    equal(params.year, 2016, 'Set object should expose year');
-    equal(params.month, 0, 'Set object should expose month');
-    equal(params.date, 13, 'Set object should expose date');
-
-    // Issue #572 No disambiguation of separated units
-    assertDateParsed('this week tuesday at 5pm', { future: true }, testGetWeekday(2, 0, 17));
-    assertDateParsed('today at 5pm', { future: true }, new Date(now.getFullYear(), now.getMonth(), now.getDate(), 17));
-
-    // Issue #582 "now" with "fromUTC"
-    assertDateParsed('now', { fromUTC: true }, new Date(), 'now with fromUTC');
 
     // Issue #569 Incorrect specificity and missing time
     var params = {};

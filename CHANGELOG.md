@@ -207,6 +207,10 @@ call `Function#lock` first in the chain to achieve the same effect.
 - Removed `params` option from `Date.create`. Instead use the `explain` option
     which will return a `ParseResult` object containing `absProps` and
     `relProps`. See `https://sugarjs.com/docs/Date/create` for more.
+- Removed UTC related options from `Date.create` including `setUTC` and
+    `fromUTC`. To parse a date as UTC, now use the option `timezone: 'UTC'`.
+    Note that as before explicit timezone offsets in the format will override
+    this option, for example the `Z` token in ISO-8601 dates and `GMT+09`, etc.
 
 TODO:
 

@@ -21,8 +21,9 @@ require('./mocks/intl');
 // Helpers
 require('./helpers/namespace');
 require('./helpers/suite');
-require('./helpers/util');
 require('./helpers/intl');
+require('./helpers/time');
+require('./helpers/util');
 
 // Tests
 require('./tests/core');

@@ -1,13 +1,16 @@
 'use strict';
 
-const SYSTEM_TIME = new Date(2020, 0).getTime();
-
 namespace('Date', function () {
 
   beforeAll(() => {
     // Set system time to 2020-01-01
-    clock.setSystemTime(SYSTEM_TIME);
+    setSystemTime(new Date(2020, 0));
     Intl.DateTimeFormat.mockDefaultLocale('en-US');
+  });
+
+  afterEach(() => {
+    resetTimeZone();
+    resetSystemTime();
   });
 
   const WEEKDAYS = [
@@ -37,8 +40,14 @@ namespace('Date', function () {
 
   describe('Enhanced Chainable', () => {
 
-    it('should enhance chainable with date parsing', () => {
-      assertDateEqual(new Sugar.Date('tomorrow').raw, new Date(2020, 0, 2));
+    it('should default to current date', () => {
+      assertDateEqual(new Sugar.Date().raw, new Date());
+    });
+
+    it('should pass irregular input to constructor', () => {
+      assertDateEqual(new Sugar.Date(null).raw, new Date(null));
+      assertDateEqual(new Sugar.Date(undefined).raw, new Date(undefined));
+      assertDateEqual(new Sugar.Date(NaN).raw, new Date(NaN));
     });
 
     it('should be able to create from timestamp', () => {
@@ -52,11 +61,20 @@ namespace('Date', function () {
       );
     });
 
+    it('should enhance chainable with date parsing', () => {
+      assertDateEqual(new Sugar.Date('tomorrow').raw, new Date(2020, 0, 2));
+    });
+
+    it('should be able to pass a locale code', () => {
+      assertDateEqual(new Sugar.Date('8/10', 'en-US').raw, new Date(2020, 7, 10));
+      assertDateEqual(new Sugar.Date('8/10', 'en-GB').raw, new Date(2020, 9, 8));
+    });
+
   });
 
   describeStatic('create', function (create) {
 
-    describe('Numeric Formats', () => {
+    describe('Numeric formats', () => {
 
       describe('ISO-8601', () => {
 
@@ -81,13 +99,13 @@ namespace('Date', function () {
 
         it('should parse with timezone offset', () => {
 
-          Date.mockTimezoneOffset(-540); // GMT+09:00
+          mockTimeZone(-540); // GMT+09:00
           assertDateEqual(create('2011-10-10T14:48:00+09:00'), new Date(2011, 9, 10, 14, 48));
           assertDateEqual(create('2011-10-10T14:48:00+02:00'), new Date(2011, 9, 10, 21, 48));
           assertDateEqual(create('2011-10-10T14:48:00+00:00'), new Date(2011, 9, 10, 23, 48));
           assertDateEqual(create('2011-10-10T14:48:00-05:00'), new Date(2011, 9, 11, 4, 48));
 
-          Date.mockTimezoneOffset(300); // GMT-05:00
+          mockTimeZone(300); // GMT-05:00
           assertDateEqual(create('2011-10-10T14:48:00+09:00'), new Date(2011, 9, 10, 0, 48));
           assertDateEqual(create('2011-10-10T14:48:00+02:00'), new Date(2011, 9, 10, 7, 48));
           assertDateEqual(create('2011-10-10T14:48:00+00:00'), new Date(2011, 9, 10, 9, 48));
@@ -105,18 +123,18 @@ namespace('Date', function () {
         });
 
         it('should parse with hour only timezone offset', () => {
-          Date.mockTimezoneOffset(300); // GMT-05:00
+          mockTimeZone(300); // GMT-05:00
           assertDateEqual(create('2001-04-03T22:30+04'), new Date(2001, 3, 3, 13, 30));
           assertDateEqual(create('2001-04-03T22+04'), new Date(2001, 3, 3, 13));
         });
 
         it('should parse ISO8601 format with zulu offset', () => {
-          Date.mockTimezoneOffset(-540); // GMT+09:00
+          mockTimeZone(-540); // GMT+09:00
           assertDateEqual(create('2000-01-02T12:34:56Z'), new Date(2000, 0, 2, 21, 34, 56));
           assertDateEqual(create('2000-01-02T12:34:56.789Z'), new Date(2000, 0, 2, 21, 34, 56, 789));
           assertDateEqual(create('2000-01-02T12:34:56.789012Z'), new Date(2000, 0, 2, 21, 34, 56, 789));
 
-          Date.mockTimezoneOffset(300); // GMT-05:00
+          mockTimeZone(300); // GMT-05:00
           assertDateEqual(create('2000-01-02T12:34:56Z'), new Date(2000, 0, 2, 7, 34, 56));
           assertDateEqual(create('2000-01-02T12:34:56.789Z'), new Date(2000, 0, 2, 7, 34, 56, 789));
           assertDateEqual(create('2000-01-02T12:34:56.789012Z'), new Date(2000, 0, 2, 7, 34, 56, 789));
@@ -143,7 +161,7 @@ namespace('Date', function () {
           assertDateEqual(create('17760523T024508'), new Date(1776, 4, 23, 2, 45, 8));
           assertDateEqual(create('20101122'), new Date(2010, 10, 22));
 
-          Date.mockTimezoneOffset(300); // GMT-05:00
+          mockTimeZone(300); // GMT-05:00
           assertDateEqual(create('17760523T024508+0830'), new Date(1776, 4, 22, 13, 15, 8));
           assertDateEqual(create('1776-05-23T02:45:08-0830'), new Date(1776, 4, 23, 5, 15, 8));
           assertDateEqual(create('1776-05-23T02:45:08+0830'), new Date(1776, 4, 22, 13, 15, 8));
@@ -151,12 +169,12 @@ namespace('Date', function () {
         });
 
         it('should handle U+2212 MINUS SIGN for offset', () => {
-          Date.mockTimezoneOffset(300); // GMT-05:00
+          mockTimeZone(300); // GMT-05:00
           assertDateEqual(create('1994-11-05T08:15:30−05:00'), new Date(1994, 10, 5, 8, 15, 30));
         });
 
         it('should allow up to 6 decimal points in fractional seconds', () => {
-          Date.mockTimezoneOffset(300); // GMT-05:00
+          mockTimeZone(300); // GMT-05:00
           assertDateEqual(create('1997-07-16T19:20:30.4+01:00'), new Date(1997, 6, 16, 13, 20, 30, 400));
           assertDateEqual(create('1997-07-16T19:20:30.46+01:00'), new Date(1997, 6, 16, 13, 20, 30, 460));
           assertDateEqual(create('1997-07-16T19:20:30.462+01:00'), new Date(1997, 6, 16, 13, 20, 30, 462));
@@ -178,7 +196,7 @@ namespace('Date', function () {
         });
 
         it('should handle .NET format', () => {
-          Date.mockTimezoneOffset(300); // GMT-05:00
+          mockTimeZone(300); // GMT-05:00
           assertDateEqual(create('2012-04-23T07:58:42.7940000z'), new Date(2012, 3, 23, 2, 58, 42, 794));
         });
 
@@ -195,7 +213,7 @@ namespace('Date', function () {
         });
 
         it('should parse 24 hours', () => {
-          Date.mockTimezoneOffset(300); // GMT-05:00
+          mockTimeZone(300); // GMT-05:00
           assertDateEqual(create('2012-05-03T24:00:00Z'), new Date(2012, 4, 3, 19));
         });
 
@@ -203,7 +221,7 @@ namespace('Date', function () {
           // The ISO-8601 spec allows for leap seconds, however ECMAScript does not.
           // However, date set methods are still allowed to overshoot, so allow this
           // format to be parsed.
-          Date.mockTimezoneOffset(0);
+          mockTimeZone(0); // GMT+00:00
           assertDateEqual(create('1998-12-31T23:59:60Z'), new Date(1999, 0));
         });
 
@@ -300,7 +318,7 @@ namespace('Date', function () {
       });
 
       it('should parse ISO8601 format regardless of locale', () => {
-        Date.mockTimezoneOffset(300); // GMT-05:00
+        mockTimeZone(300); // GMT-05:00
         assertDateEqual(create('2020-01-01T00:00:00', 'ja-JP'), new Date(2020, 0, 1));
         assertDateEqual(create('2020-01-01T00:00:00Z', 'ja-JP'), new Date(2019, 11, 31, 19));
         assertDateEqual(create('2020-01-01T00:00:00-10:00', 'ja-JP'), new Date(2020, 0, 1, 5));
@@ -318,12 +336,13 @@ namespace('Date', function () {
 
     });
 
-    describe('DateTime Formats', () => {
+    describe('DateTime formats', () => {
 
       it('should parse basic date with time', () => {
         assertDateEqual(create('June 1, 2020 10:00 AM'), new Date(2020, 5, 1, 10));
         assertDateEqual(create('June 1, 2020 8:00pm'), new Date(2020, 5, 1, 20));
         assertDateEqual(create('May 23 2020 16:00'), new Date(2020, 4, 23, 16));
+        assertDateEqual(create('January 13th, 2016'), new Date(2016, 0, 13));
       });
 
       it('should parse time with hours only', () => {
@@ -493,7 +512,7 @@ namespace('Date', function () {
 
     });
 
-    describe('Parsing Preferences', () => {
+    describe('Preference', () => {
 
       function createPast(input) {
         return create({
@@ -530,7 +549,7 @@ namespace('Date', function () {
       });
 
       it('should parse ambiguous month with past preference', () => {
-        clock.setSystemTime(new Date(2020, 5).getTime());
+        clock.setSystemTime(new Date(2020, 5));
         assertDateEqual(createPast('January'), new Date(2020, 0));
         assertDateEqual(createPast('February'), new Date(2020, 1));
         assertDateEqual(createPast('March'), new Date(2020, 2));
@@ -543,11 +562,10 @@ namespace('Date', function () {
         assertDateEqual(createPast('October'), new Date(2019, 9));
         assertDateEqual(createPast('November'), new Date(2019, 10));
         assertDateEqual(createPast('December'), new Date(2019, 11));
-        clock.setSystemTime(SYSTEM_TIME);
       });
 
       it('should parse ambiguous month with future preference', () => {
-        clock.setSystemTime(new Date(2020, 5).getTime());
+        clock.setSystemTime(new Date(2020, 5));
         assertDateEqual(createFuture('January'), new Date(2021, 0));
         assertDateEqual(createFuture('February'), new Date(2021, 1));
         assertDateEqual(createFuture('March'), new Date(2021, 2));
@@ -560,55 +578,48 @@ namespace('Date', function () {
         assertDateEqual(createFuture('October'), new Date(2020, 9));
         assertDateEqual(createFuture('November'), new Date(2020, 10));
         assertDateEqual(createFuture('December'), new Date(2020, 11));
-        clock.setSystemTime(SYSTEM_TIME);
       });
 
       it('should parse ambiguous date with past preference', () => {
         assertDateEqual(createPast('the 15th'), new Date(2019, 11, 15));
-        clock.setSystemTime(new Date(2020, 0, 15).getTime());
+        clock.setSystemTime(new Date(2020, 0, 15));
         assertDateEqual(createPast('the 15th'), new Date(2019, 11, 15));
-        clock.setSystemTime(new Date(2020, 0, 16).getTime());
+        clock.setSystemTime(new Date(2020, 0, 16));
         assertDateEqual(createPast('the 15th'), new Date(2020, 0, 15));
-        clock.setSystemTime(SYSTEM_TIME);
       });
 
       it('should parse ambiguous date with future preference', () => {
         assertDateEqual(createFuture('the 15th'), new Date(2020, 0, 15));
-        clock.setSystemTime(new Date(2020, 0, 15).getTime());
+        clock.setSystemTime(new Date(2020, 0, 15));
         assertDateEqual(createFuture('the 15th'), new Date(2020, 1, 15));
-        clock.setSystemTime(new Date(2020, 0, 16).getTime());
+        clock.setSystemTime(new Date(2020, 0, 16));
         assertDateEqual(createFuture('the 15th'), new Date(2020, 1, 15));
-        clock.setSystemTime(SYSTEM_TIME);
       });
 
       it('should parse ambiguous month and date with past preference', () => {
-        clock.setSystemTime(new Date(2020, 5).getTime());
+        clock.setSystemTime(new Date(2020, 5));
         assertDateEqual(createPast('March 15th'), new Date(2020, 2, 15));
         assertDateEqual(createPast('July 15th'), new Date(2019, 6, 15));
-        clock.setSystemTime(SYSTEM_TIME);
       });
 
       it('should parse ambiguous month and date with future preference', () => {
-        clock.setSystemTime(new Date(2020, 5).getTime());
+        clock.setSystemTime(new Date(2020, 5));
         assertDateEqual(createFuture('March 15th'), new Date(2021, 2, 15));
         assertDateEqual(createFuture('July 15th'), new Date(2020, 6, 15));
-        clock.setSystemTime(SYSTEM_TIME);
       });
 
       it('should parse ambiguous time with past preference', () => {
-        clock.setSystemTime(new Date(2020, 0, 1, 12).getTime());
+        clock.setSystemTime(new Date(2020, 0, 1, 12));
         assertDateEqual(createPast('11am'), new Date(2020, 0, 1, 11));
         assertDateEqual(createPast('12pm'), new Date(2019, 11, 31, 12));
         assertDateEqual(createPast('1pm'), new Date(2019, 11, 31, 13));
-        clock.setSystemTime(SYSTEM_TIME);
       });
 
       it('should parse ambiguous time with future preference', () => {
-        clock.setSystemTime(new Date(2020, 0, 1, 12).getTime());
+        clock.setSystemTime(new Date(2020, 0, 1, 12));
         assertDateEqual(createFuture('11am'), new Date(2020, 0, 2, 11));
         assertDateEqual(createFuture('12pm'), new Date(2020, 0, 2, 12));
         assertDateEqual(createFuture('1pm'), new Date(2020, 0, 1, 13));
-        clock.setSystemTime(SYSTEM_TIME);
       });
 
       it('should not apply preferences to date and relative month', () => {
@@ -639,9 +650,14 @@ namespace('Date', function () {
         assertDateEqual(createPast('2021'), new Date(2021, 0));
       });
 
+      it('should handle Issue #572', () => {
+        assertDateEqual(createFuture('this week tuesday at 5pm'), new Date(2019, 11, 31, 17));
+        assertDateEqual(createFuture('today at 5pm'), new Date(2020, 0, 1, 17));
+      });
+
     });
 
-    describe('Locale Alternates', () => {
+    describe('Locales', () => {
 
       it('should parse alternate formats correctly for en-GB', () => {
         assertDateEqual(create('15 Oct. 2020', 'en-GB'), new Date(2020, 9, 15));
@@ -709,7 +725,7 @@ namespace('Date', function () {
 
     });
 
-    describe('Relative Formats', () => {
+    describe('Relative formats', () => {
 
       it('should parse relative year and month', () => {
         assertDateEqual(create('January of last year'), new Date(2019, 0));
@@ -891,6 +907,11 @@ namespace('Date', function () {
         assertDateEqual(create('5 days from now at 3:00pm'), new Date(2020, 0, 6, 15));
       });
 
+      it('should parse relative week with weekday', () => {
+        assertDateEqual(create('this week tuesday'), new Date(2019, 11, 31));
+        assertDateEqual(create('this week tuesday at 5pm'), new Date(2019, 11, 31, 17));
+      });
+
       it('should parse non-numeric relative formats', () => {
         assertDateEqual(create('last week Sunday'), new Date(2019, 11, 22));
       });
@@ -923,14 +944,10 @@ namespace('Date', function () {
 
     });
 
-    describe('Time Zones', () => {
-
-      afterAll(() => {
-        Intl.DateTimeFormat.mockTimeZoneOffset(null);
-      });
+    describe('Time zones', () => {
 
       it('should be able to parse a basic date as UTC', () => {
-        Intl.DateTimeFormat.mockTimeZoneOffset(-540); // GMT+09:00
+        mockTimeZone(-540); // GMT+09:00
         assertDateEqual(
           create({
             input: '2020-01-01',
@@ -941,7 +958,7 @@ namespace('Date', function () {
       });
 
       it('should be able to parse a basic date as UTC', () => {
-        Intl.DateTimeFormat.mockTimeZoneOffset(300); // GMT-05:00
+        mockTimeZone(300); // GMT-05:00
         assertDateEqual(
           create({
             input: '2020-01-01',
@@ -952,7 +969,7 @@ namespace('Date', function () {
       });
 
       it('should ignore timeZone when ISO-8601 zulu offset is set', () => {
-        Date.mockTimezoneOffset(300); // GMT-05:00
+        mockTimeZone(300); // GMT-05:00
         assertDateEqual(
           create({
             input: '2020-01-01Z',
@@ -962,9 +979,21 @@ namespace('Date', function () {
         );
       });
 
+      it('should handle Issue #582', () => {
+        mockTimeZone(300); // GMT-05:00
+        clock.setSystemTime(new Date(2020, 5, 15, 23, 59, 59, 999));
+        assertDateEqual(
+          create({
+            input: 'now',
+            timeZone: 'UTC',
+          }),
+          new Date(2020, 5, 15, 18, 59, 59, 999)
+        );
+      });
+
     });
 
-    describe('Adding Custom DateTime Formats', () => {
+    describe('Adding custom DateTime formats', () => {
 
       it('should be able to add basic parts', () => {
         assertDateEqual(
@@ -1054,7 +1083,7 @@ namespace('Date', function () {
       });
 
       it('should be able to add a timeZoneName part', () => {
-        Date.mockTimezoneOffset(300); // GMT-05:00
+        mockTimeZone(300); // GMT-05:00
         assertDateEqual(
           create({
             cache: false,
@@ -1108,7 +1137,7 @@ namespace('Date', function () {
 
     });
 
-    describe('Adding Custom Relative Formats', () => {
+    describe('Adding custom Relative formats', () => {
 
       it('should be able to add a numeric relative format', () => {
         assertDateEqual(
@@ -1151,7 +1180,7 @@ namespace('Date', function () {
 
     });
 
-    describe('explain', () => {
+    describe('Explain', () => {
 
       it('should return a parsing result when explain flag is set', () => {
         const { format, parser, ...rest } = create({
@@ -1264,12 +1293,128 @@ namespace('Date', function () {
         }));
       });
 
+      it('should handle Issue #545', () => {
+        const { absProps } = create({
+          cache: false,
+          explain: true,
+          input: 'January 13th, 2016',
+        });
+        assertObjectEqual(absProps, {
+          year: 2016,
+          month: 0,
+          date: 13,
+        });
+      });
+
+    });
+
+    describe('Creation with DateProps', () => {
+
+      it('should be able to create a date from unit props', () => {
+        assertDateEqual(
+          create({
+            year: 1998,
+          }),
+          new Date(1998, 0)
+        );
+        assertDateEqual(
+          create({
+            year: 1998,
+            month: 1,
+          }),
+          new Date(1998, 1)
+        );
+        assertDateEqual(
+          create({
+            year: 1998,
+            month: 1,
+            date: 23,
+          }),
+          new Date(1998, 1, 23)
+        );
+        assertDateEqual(
+          create({
+            year: 1998,
+            month: 1,
+            date: 23,
+            hour: 11,
+          }),
+          new Date(1998, 1, 23, 11)
+        );
+        assertDateEqual(
+          create({
+            year: 1998,
+            month: 1,
+            date: 23,
+            hour: 11,
+            minutes: 54,
+          }),
+          new Date(1998, 1, 23, 11, 54)
+        );
+        assertDateEqual(
+          create({
+            year: 1998,
+            month: 1,
+            date: 23,
+            hour: 11,
+            minutes: 54,
+            seconds: 32,
+          }),
+          new Date(1998, 1, 23, 11, 54, 32)
+        );
+        assertDateEqual(
+          create({
+            year: 1998,
+            month: 1,
+            date: 23,
+            hour: 11,
+            minutes: 54,
+            seconds: 32,
+            milliseconds: 454,
+          }),
+          new Date(1998, 1, 23, 11, 54, 32, 454)
+        );
+      });
+
+      it('should not modify passed date props', () => {
+        const props = { year: 1998 };
+        create(props);
+        assertObjectEqual(props, { year: 1998 });
+      });
+
+      it('should allow fractions in lower units', () => {
+        assertDateEqual(create({ day: 5.5 }), new Date(2020, 0, 3, 12));
+        assertDateEqual(create({ date: 5.5 }), new Date(2020, 0, 5, 12));
+        assertDateEqual(create({ hours: 20.5 }), new Date(2020, 0, 1, 20, 30));
+        assertDateEqual(create({ minutes: 20.5 }), new Date(2020, 0, 1, 0, 20, 30));
+        assertDateEqual(create({ seconds: 20.5 }), new Date(2020, 0, 1, 0, 0, 20, 500));
+      });
+
+      it('should round fractions in milliseconds', () => {
+        assertDateEqual(create({ milliseconds: 300.5 }), new Date(2020, 0, 1, 0, 0, 0, 301));
+      });
+
+      it('should error on fractions in higher units', () => {
+        assertError(() => {
+          create({ month: 5.5 });
+        });
+        assertError(() => {
+          create({ year: 5.5 });
+        });
+      });
+
     });
 
     describe('Other', () => {
 
+      it('should handle now token', () => {
+        clock.setSystemTime(new Date(2020, 5, 15, 23, 59, 59, 999));
+        assertDateEqual(create('now'), new Date(2020, 5, 15, 23, 59, 59, 999));
+      });
+
       it('should create a date from a timestamp', () => {
         assertDateEqual(create(Date.now()), new Date());
+        assertDateEqual(create(1293980400000), new Date(1293980400000));
       });
 
       it('should clone a date when passed', () => {
@@ -5089,7 +5234,7 @@ namespace('Date', function () {
       describe('timezone offset tokens', () => {
 
         it('should correctly format timezone offset token for EST', () => {
-          Date.mockTimezoneOffset(240);
+          mockTimeZone(240); // GMT-04:00
           assertEqual(format(new Date(2020, 0), 'Z'), '-0400');
           assertEqual(format(new Date(2020, 0), 'ZZ'), '-0400');
           assertEqual(format(new Date(2020, 0), 'ZZZ'), '-0400');
@@ -5102,7 +5247,7 @@ namespace('Date', function () {
         });
 
         it('should correctly format timezone offset token for IST', () => {
-          Date.mockTimezoneOffset(-330);
+          mockTimeZone(-330); // GMT+05:30
           assertEqual(format(new Date(2020, 0), 'Z'), '+0530');
           assertEqual(format(new Date(2020, 0), 'ZZ'), '+0530');
           assertEqual(format(new Date(2020, 0), 'ZZZ'), '+0530');
@@ -5115,7 +5260,7 @@ namespace('Date', function () {
         });
 
         it('should correctly format timezone offset token for NPT', () => {
-          Date.mockTimezoneOffset(-345);
+          mockTimeZone(-345); // GMT+05:45
           assertEqual(format(new Date(2020, 0), 'Z'), '+0545');
           assertEqual(format(new Date(2020, 0), 'ZZ'), '+0545');
           assertEqual(format(new Date(2020, 0), 'ZZZ'), '+0545');
@@ -5128,7 +5273,7 @@ namespace('Date', function () {
         });
 
         it('should correctly format timezone offset token for JST', () => {
-          Date.mockTimezoneOffset(-540);
+          mockTimeZone(-540); // GMT+09:00
           assertEqual(format(new Date(2020, 0), 'Z'), '+0900');
           assertEqual(format(new Date(2020, 0), 'ZZ'), '+0900');
           assertEqual(format(new Date(2020, 0), 'ZZZ'), '+0900');
@@ -5141,7 +5286,7 @@ namespace('Date', function () {
         });
 
         it('should correctly format timezone offset token for GMT', () => {
-          Date.mockTimezoneOffset(-0);
+          mockTimeZone(0); // GMT+00:00
           assertEqual(format(new Date(2020, 0), 'Z'), '+0000');
           assertEqual(format(new Date(2020, 0), 'ZZ'), '+0000');
           assertEqual(format(new Date(2020, 0), 'ZZZ'), '+0000');

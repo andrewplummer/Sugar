@@ -1,15 +1,18 @@
 import { isString, isNumber, isDate } from '../util/typeChecks';
+import { normalizeProps } from './util/props';
+import { updateDate } from './util/update';
 import { parseDate } from './util/parsing';
 import { cloneDate } from '../util/date';
 
 /**
  * Creates a new date from a variety of input including string formats.
  *
- * @param {string|number|Date|ParseOptions} input - The input used to create the
- *   date. Passing a number or Date will simply create a new date from a
- *   timestamp or clone the date accordingly. When a string is passed it serves
- *   as a shortcut for `input` on the `ParseOptions` object, which will parse
- *   the date from a variety of formats.
+ * @param {string|number|Date|DateProps|ParseOptions} input - The input used to
+ *   create the date. Passing a number or Date will simply create a new date
+ *   from a timestamp or clone the date accordingly. When a string is passed it
+ *   serves as a shortcut for `input` on the `ParseOptions` object, which will
+ *   parse the date from a variety of formats. Objects passed with an `input`
+ *   property it will be taken as `ParseOptions`, otherwise as `DateProps`.
  * @param {string} [locale] - When a string is passed as the first argument,
  *   a second string may be passed here as a shortcut for the `locale` option.
  *
@@ -134,6 +137,23 @@ import { cloneDate } from '../util/date';
  * @property {Object} parser - The parser used to parse the date. Useful for
  *   debugging.
  *
+ * @typedef {Object} DateProps
+ *
+ * @property {number} [year]         - The year to set.
+ * @property {number} [month]        - The month to set (0 indexed).
+ * @property {number} [date]         - The date to set.
+ * @property {number} [day]          - The day of the week to set.
+ * @property {number} [hours]        - The hours to set.
+ * @property {number} [minutes]      - The minutes to set.
+ * @property {number} [seconds]      - The seconds to set.
+ * @property {number} [milliseconds] - The milliseconds to set.
+ * @property {number} [weekday]      - Alias for `day`.
+ * @property {number} [hour]         - Alias for `hours`.
+ * @property {number} [minute]       - Alias for `minutes`.
+ * @property {number} [second]       - Alias for `seconds`.
+ * @property {number} [millisecond]  - Alias for `milliseconds`.
+ * @property {number} [ms]           - Alias for `milliseconds`.
+ *
  * @example
  *
  *   Date.create('January 1, 2020')
@@ -158,6 +178,13 @@ export default function create(arg1, arg2) {
     } else {
       options = arg1;
     }
-    return parseDate(options);
+    if ('input' in options) {
+      return parseDate(options);
+    } else {
+      const date = new Date();
+      const props = normalizeProps(options);
+      updateDate(date, props, true);
+      return date;
+    }
   }
 }

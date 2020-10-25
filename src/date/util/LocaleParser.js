@@ -28,8 +28,9 @@ const REG_SEC = `(?:${REG_SEC_NUMERIC})(?:[.,]\\d+)?`;
 // Timezone suffix like "Z" in ISO-8601 or "GMT+09:00"
 const REG_ZONE = `Z|(?:GMT)?[+−-]\\d{1,2}(?::?${REG_MIN})?`;
 
-// Matches 1st, 2nd, 3rd, 4th, 24th, etc.
-const REG_ORDINAL = '\\d?(?:1st|2nd|3rd|[04-9]th|\\d\\b)';
+// Matches 1-2 digits with optional ordinal suffix like
+// 1st, 2nd, 3rd, 4th, 24th, etc. up to 100.
+const REG_ORDINAL = '[^1]?(?:1st|2nd|3rd|[04-9]th)|1[0-9]th|\\d{1,2}';
 
 const TIME_TYPES = ['hour', 'minute', 'second', 'dayPeriod'];
 
@@ -775,8 +776,8 @@ export default class LocaleParser {
         if (preference) {
           const delta = date - origin;
           if (preference !== delta / Math.abs(delta)) {
-            const unit = getAmbiguousUnit(absProps);
-            if (unit && !(unit in relProps)) {
+            const unit = getAmbiguousUnit(absProps, relProps);
+            if (unit) {
               advanceDate(date, {
                 [unit]: preference,
               });
@@ -807,19 +808,23 @@ function findPart(parts, type) {
   return parts.find((part) => part.type === type);
 }
 
-function getAmbiguousUnit(props) {
-  let { unit } = getPropsSpecificity(props);
-  while (unit && propsUnitExists(props, unit)) {
-    unit = getHigherUnit(unit);
+function getAmbiguousUnit(absProps, relProps) {
+  let { unit } = getPropsSpecificity(absProps);
+  while (unit) {
+    if (propsUnitExists(relProps, unit)) {
+      return null;
+    } else if (!propsUnitExists(absProps, unit)) {
+      break;
+    }
+    unit = getHigherUnit(unit, absProps);
   }
   return unit;
 }
 
-function getHigherUnit(unit) {
+function getHigherUnit(unit, props) {
   if (unit === 'hour') {
-    // For the purpose of updating a date with props, the upper unit
-    // of "hours" should be "date" instead of "day".
-    return 'date';
+    // Return "day" if it exists in the props, otherwise return "date"
+    return 'day' in props ? 'day' : 'date';
   } else if (unit === 'day') {
     // "day" is relative to "week"
     return 'week';
@@ -1044,7 +1049,7 @@ const ALTERNATE_DATETIME_FORMATS = {
   default: [
     '<relative day> <time>',
     '<time> <relative day>',
-    '<relative week> <weekday>',
+    '<relative week> <weekday><time?>',
     // All locales should parse an unambiguous numeric DateTime with
     // "-" or "/" as separators. Unambiguous here means year first and no
     // 2-digit years allowed.

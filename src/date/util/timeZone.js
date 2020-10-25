@@ -12,6 +12,7 @@ export function setIANATimeZone(date, timeZone) {
     hour: '2-digit',
     minute: '2-digit',
     second: '2-digit',
+    fractionalSecondDigits: 3,
     hourCycle: 'h23',
     timeZone,
   });
@@ -22,7 +23,7 @@ export function setIANATimeZone(date, timeZone) {
     }
     return props;
   }, {});
-  const { year, month, day, hour, minute, second } = props;
-  const str = `${year}-${month}-${day}T${hour}:${minute}:${second}`;
+  const { year, month, day, hour, minute, second, fractionalSecond: ms } = props;
+  const str = `${year}-${month}-${day}T${hour}:${minute}:${second}.${ms}`;
   date.setTime(date.getTime() * 2 - new Date(str).getTime());
 }

@@ -23,9 +23,8 @@ import create from './create';
  *
  **/
 const Namespace = createNamespace('Date', (...args) => {
-  const [first] = args;
-  if (isString(first)) {
-    return create(first);
+  if (isString(args[0])) {
+    return create(...args);
   } else {
     return new Date(...args);
   }
