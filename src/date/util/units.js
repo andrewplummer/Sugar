@@ -139,12 +139,19 @@ export function convertTimeToUnit(ms, min) {
 }
 
 export function formatForUnit(value, unit, locale) {
-  const formatter = new Intl.NumberFormat(locale, {
+  return getUnitFormatter(unit, locale).format(value);
+}
+
+export function formatPartsForUnit(value, unit, locale) {
+  return getUnitFormatter(unit, locale).formatToParts(value);
+}
+
+function getUnitFormatter(unit, locale) {
+  return new Intl.NumberFormat(locale, {
     unit: normalizeDate(unit),
     style: 'unit',
     unitDisplay: 'long',
   });
-  return formatter.format(value);
 }
 
 function normalizeDate(unit) {

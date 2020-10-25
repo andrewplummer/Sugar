@@ -1,4 +1,18 @@
 
+export const ENGLISH_NUMERALS = [
+  'zero',
+  'one',
+  'two',
+  'three',
+  'four',
+  'five',
+  'six',
+  'seven',
+  'eight',
+  'nine',
+  'ten',
+];
+
 const fullwide = buildNumeralMapper('fullwide');
 
 // Note that unit tokens in formats like 三百 etc, are not handled
@@ -6,7 +20,11 @@ const fullwide = buildNumeralMapper('fullwide');
 // for the purposes of date parsing.
 const hanidec = buildNumeralMapper('hanidec');
 
+// Parsing out English tokens one, two, three, etc as a special exception.
+const english = buildEnglishMapper();
+
 const LANGUAGES = {
+  'en': [english],
   'ja': [hanidec, fullwide],
   'zh': [hanidec],
 };
@@ -34,5 +52,15 @@ function buildNumeralMapper(numberingSystem) {
       result += map[char] || char;
     }
     return result;
+  };
+}
+
+function buildEnglishMapper() {
+  const map = {};
+  for (let i = 0; i < ENGLISH_NUMERALS.length; i++) {
+    map[ENGLISH_NUMERALS[i]] = String(i);
+  }
+  return (str) => {
+    return map[str] || str;
   };
 }

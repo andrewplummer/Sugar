@@ -5,7 +5,8 @@ import { setTimeZoneOffset, setIANATimeZone } from './timeZone';
 //import { parseLocaleNumber } from './numbering';
 import { isNaN } from '../../util/typeChecks';
 import { cloneDate } from '../../util/date';
-import { UNITS, getPropsSpecificity, getAdjacentUnit } from './units';
+import { UNITS, getPropsSpecificity, getAdjacentUnit, formatPartsForUnit } from './units';
+import { ENGLISH_NUMERALS, parseLocaleNumber } from './numbering';
 
 const NUM_TOKEN = 'NUM';
 const ENGLISH = 'en';
@@ -21,12 +22,15 @@ const REG_MIN = '[0-5]\\d';
 // for leap seconds in ISO-8601 spec.
 const REG_SEC_NUMERIC = `${REG_MIN}|60`;
 
+// Parses decimal fractions with period or comma separator.
+const REG_DEC = '(?:[.,]\\d+)?';
+
 // Milliseconds are not part of Intl spec,
 // so most seconds are parsed as fractional.
-const REG_SEC = `(?:${REG_SEC_NUMERIC})(?:[.,]\\d+)?`;
+const REG_SEC = `(?:${REG_SEC_NUMERIC})${REG_DEC}`;
 
-// Timezone suffix like "Z" in ISO-8601 or "GMT+09:00"
-const REG_ZONE = `Z|(?:GMT)?[+−-]\\d{1,2}(?::?${REG_MIN})?`;
+// Timezone suffix like "Z" in ISO-8601, "GMT+09:00", or just "GMT"
+const REG_ZONE = `Z|GMT|(?:GMT)?[+−-]\\d{1,2}(?::?${REG_MIN})?(?:\\s\\(.+\\))?`;
 
 // Matches 1-2 digits with optional ordinal suffix like
 // 1st, 2nd, 3rd, 4th, 24th, etc. up to 100.
@@ -48,7 +52,6 @@ export default class LocaleParser {
 
     this.formats = [];
     this.tokens = {};
-    this.units = {};
 
     this.setup();
     this.buildFormats();
@@ -56,11 +59,12 @@ export default class LocaleParser {
 
   setup() {
     this.buildEras();
-    this.buildMonths();
-    this.buildWeekdays();
+    this.buildUnits();
     this.buildDayPeriods();
     this.buildTimeComponent();
     this.buildRelativePhrases();
+    this.buildMonths();
+    this.buildWeekdays();
   }
 
   buildFormats() {
@@ -75,12 +79,14 @@ export default class LocaleParser {
     this.months = this.buildTokenSet('month', 0, 11, (date, val) => {
       date.setMonth(val);
     });
+    this.buildRelativeUnitPhrases('year', 'month', this.months.long);
   }
 
   buildWeekdays() {
     this.weekdays = this.buildTokenSet('weekday', 5, 11, (date, val) => {
       date.setDate(val);
     });
+    this.buildRelativeUnitPhrases('week', 'day', this.weekdays.long);
   }
 
   buildDayPeriods() {
@@ -104,15 +110,15 @@ export default class LocaleParser {
   }
 
   buildTokenSet(type, min, max, fn) {
-    let tokens = this.getTokensForStyle('long', type, min, max, fn);
+    let long = this.getTokensForStyle('long', type, min, max, fn);
     let short = this.getTokensForStyle('short', type, min, max, fn);
-    if (tokens[0] !== short[0]) {
-      tokens = [...tokens, ...short];
+    let tokens = [...long];
+    if (long[0] !== short[0]) {
+      tokens = [...long, ...short];
     }
     const source = [];
     const normalized = [];
     for (let token of tokens) {
-      token = token.toLowerCase();
 
       // Force am/pm abbreviations for locales
       // that do not include them in formatToParts.
@@ -124,6 +130,8 @@ export default class LocaleParser {
       normalized.push(token.replace(/\./g, ''));
     }
     return {
+      long,
+      short,
       source,
       normalized,
     };
@@ -144,7 +152,7 @@ export default class LocaleParser {
       const part = parts.find((p) => {
         return p.type === type;
       });
-      result.push(part.value);
+      result.push(part.value.toLowerCase());
     }
     return result;
   }
@@ -178,16 +186,27 @@ export default class LocaleParser {
       month: 'numeric',
       day: 'numeric',
     });
-    this.buildIntlFormat({
-      month: 'numeric',
-      day: 'numeric',
-    });
 
     this.buildIntlFormat({
       year: 'numeric',
+      month: 'numeric',
+    });
+
+    // Format 8/10 is "August 12th" in en-US and "October 10" in en-GB,
+    // however it is ambiguous in "en-CA" so should not be parseable here.
+    if (!dayMonthIsAmbiguous(this.locale)) {
+      this.buildIntlFormat({
+        month: 'numeric',
+        day: 'numeric',
+      });
+    }
+
+    this.buildIntlFormat({
+      day: 'numeric',
+      year: 'numeric',
       month: 'long',
       weekday: 'long',
-      day: 'numeric',
+      timeZoneName: 'long',
     });
     this.buildIntlFormat({
       year: 'numeric',
@@ -270,7 +289,7 @@ export default class LocaleParser {
     let src = '';
     let groups = [];
     for (let part of parts) {
-      let { type, value, optional = false, relative = false } = part;
+      let { type, value, optional = false, fixed = false, relative = false } = part;
       if (type === 'literal') {
         value = value.replace(/[.,\s]+/, '[.,\\s]*');
         value = value.replace(/[-/]+/, '[-./]+');
@@ -278,22 +297,27 @@ export default class LocaleParser {
       } else if (type === 'source') {
         src += value;
       } else if (type === 'time') {
-        const { src: timeSrc, groups: timeGroups } = this.getTimeComponent(
-          parts.indexOf(part),
-          parts.length
-        );
+        const { src: timeSrc, groups: timeGroups } = this.getTimeComponent(part, parts);
         src += timeSrc;
         groups = [...groups, ...timeGroups];
       } else {
         let resolver;
         if (relative) {
           resolver = this.resolveRelativePhrase;
-          src += this.getRelativePhraseSource(type);
+          src += `(${this.getRelativePhraseSource(type, fixed)})`;
         } else {
-          if (type === 'year' || type === 'yyyy') {
-            const apos = `'${type === 'year' ? '?' : ''}`;
-            type = 'year';
+          if (type === 'year') {
+            // Generic year token may be allowed to be 2-digits without an
+            // apostrophe only if both day and month tokens are also specified.
+            const dayPart = findPart(parts, 'day');
+            const monthPart = findPart(parts, 'month');
+            const apos = dayPart && monthPart ? "'?" : "'";
             src += `(\\d{4,6}|${apos}\\d{2})`;
+            resolver = resolveYear;
+          } else if (type === 'yyyy') {
+            // A yyyy token is required to be between 4 and 6 digits.
+            type = 'year';
+            src += `(\\d{4,6})`;
             resolver = resolveYear;
           } else if (type === 'month') {
             if (this.isNumericPart(part)) {
@@ -309,6 +333,15 @@ export default class LocaleParser {
             // the 1st Sunday of next month
             src += `((?:${REG_ORDINAL}) (?:${this.getWeekdaySource()}))`;
             resolver = this.resolveOffsetWeekday;
+          } else if (type === 'offset') {
+            // English only: "the day after tomorrow" etc.
+            // The tokens "before", "after", "from" cannot be derived from Intl
+            // which makes multi-lingual support for this too difficult for now.
+            const nums = `\\d+|the|${ENGLISH_NUMERALS.join('|')}`;
+            const units = `days?|weeks?|months?|years?`;
+            const dirs = 'before|after|from';
+            src += `((?:${nums}) (?:${units}) (?:${dirs}))`;
+            resolver = this.resolveOffsetUnit;
           } else if (type === 'day') {
             type = 'date';
             resolver = resolveInteger;
@@ -335,11 +368,14 @@ export default class LocaleParser {
             src += `\\s?(${this.dayPeriods.source.join('|')})\\s?`;
             resolver = this.resolveDayPeriod;
           } else if (type === 'timeZoneName') {
-            src += `(${REG_ZONE})`;
+            src += `(${REG_ZONE})?`;
             resolver = resolveTimeZoneName;
           } else if (type === 'era') {
             src += `\\s?(${this.eras.source.join('|')})\\s?`;
             resolver = this.resolveEra;
+          } else if (type === 'timestamp') {
+            src += '(\\d+)';
+            resolver = resolveTimestamp;
           } else {
             throw new Error(`Unknown type "${type}"`);
           }
@@ -350,7 +386,6 @@ export default class LocaleParser {
         groups.push({
           type,
           resolver,
-          relative,
         });
       }
     }
@@ -409,7 +444,7 @@ export default class LocaleParser {
     let src;
     let groups;
     if (this.partOrderMatches('hour', 'dayPeriod')) {
-      src = `(${REG_HOUR})(?:\\s?(${dp})|(?::(${REG_MIN})(?::(${REG_SEC}))?\\s?(${dp})?))`;
+      src = `(${REG_HOUR})(?:\\s?(${dp})|(?::(${REG_MIN})?(?::(${REG_SEC}))?\\s?(${dp})?))`;
       groups = [
         hourGroup,
         dayPeriodGroup,
@@ -418,7 +453,7 @@ export default class LocaleParser {
         dayPeriodGroup,
       ];
     } else {
-      src = `(${dp})?(${REG_HOUR}):(${REG_MIN})(?::(${REG_SEC}))?|(${dp})(${REG_HOUR})`;
+      src = `(${dp})?(${REG_HOUR}):(${REG_MIN})?(?::(${REG_SEC}))?|(${dp})(${REG_HOUR})`;
       groups = [
         dayPeriodGroup,
         hourGroup,
@@ -434,17 +469,28 @@ export default class LocaleParser {
     };
   }
 
-  getTimeComponent(idx, len) {
+  getTimeComponent(part, parts) {
     // Greedily accept any non-digit separator between time boundaries
     // that Intl does not provide access to, for example:
     //
     // - "tomorrow at 10:00 AM"
     // - "mañana a las 10:00 AM"
-    const sep = '\\D*';
-    const s1 = idx === 0 ? '' : sep;
-    const s2 = idx === len - 1 ? '' : sep;
+    //
+    // To do this we need to find adjacent non-literal parts that are
+    // of either type "day" or "weekday'.
+    parts = parts.filter((part) => {
+      return part.type !== 'literal' && part.type !== 'source';
+    });
+    const index = parts.indexOf(part);
+    const lastIsDay = this.isDayPart(parts[index - 1]);
+    const nextIsDay = this.isDayPart(parts[index + 1]);
+
+    const words = '\\D*';
+    const space = '\\s*';
+    const sep1 = lastIsDay ? words : space;
+    const sep2 = nextIsDay ? words : space;
     let { src, groups } = this.timeComponent;
-    src = `(?:${s1}${src}${s2})?`;
+    src = `(?:${sep1}${src}${sep2})?`;
     return {
       src,
       groups,
@@ -501,6 +547,14 @@ export default class LocaleParser {
     return style === 'numeric' || style === '2-digit';
   }
 
+  isDayPart(part) {
+    if (!part) {
+      return false;
+    }
+    const { type } = part;
+    return type === 'day' || type === 'weekday';
+  }
+
   buildRelativePhrases() {
     const formatters = this.getRelativeFormatters();
     const phrases = {};
@@ -538,12 +592,44 @@ export default class LocaleParser {
     this.relativePhrases = phrases;
   }
 
+  buildUnits() {
+    const units = {};
+    for (let unit of UNITS) {
+      if (unit !== 'millisecond') {
+        for (let num = -5; num < 5; num++) {
+          const parts = formatPartsForUnit(num, unit, this.locale);
+          const part = parts.find((part) => part.type === 'unit');
+          if (part) {
+            units[part.value] = unit;
+          }
+        }
+      }
+    }
+    this.units = units;
+  }
+
   buildRelativeFormats() {
     this.buildRelativePhraseFormat();
   }
 
   buildRelativePhraseFormat() {
     this.buildFormat(this.getRelativePhraseComponent());
+  }
+
+  buildRelativeUnitPhrases(relUnit, absUnit, arr) {
+    const reg = RegExp(this.getUnits(relUnit).join('|'));
+    for (let phrase of this.getRelativePhrases(relUnit, true)) {
+      const { unit, value } = this.relativePhrases[phrase];
+      for (let i = 0; i < arr.length; i++) {
+        const key = phrase.replace(reg, arr[i]);
+        this.relativePhrases[key] = {
+          unit,
+          value,
+          absUnit,
+          absValue: i
+        };
+      }
+    }
   }
 
   buildRegExp(src) {
@@ -607,9 +693,9 @@ export default class LocaleParser {
     return [...arr, ...alternates];
   }
 
-  getRelativePhraseComponent(unit) {
+  getRelativePhraseComponent() {
     return {
-      src: this.getRelativePhraseSource(unit),
+      src: `(${this.getRelativePhraseSource()})`,
       groups: [
         {
           resolver: this.resolveRelativePhrase,
@@ -619,32 +705,55 @@ export default class LocaleParser {
     };
   }
 
-  getRelativePhraseSource(unit) {
-    let keys = Object.keys(this.relativePhrases);
-    if (unit) {
-      keys = keys.filter((key) => {
-        return this.relativePhrases[key].unit === unit;
+  getRelativePhraseSource(unit, fixed) {
+    let src = compileRegExpAlternates(this.getRelativePhrases(unit, fixed));
+    return src.replace(/NUM/g, this.getArticles() ? '\\w+' : '\\d+');
+  }
+
+  getRelativePhrases(type, fixed) {
+    let phrases = Object.keys(this.relativePhrases);
+    if (type) {
+      phrases = phrases.filter((key) => {
+        const { unit, absUnit } = this.relativePhrases[key];
+        return unit === type || absUnit === type;
       });
     }
-    let src = compileRegExpAlternates(keys);
-    src = src.replace(/NUM/g, '\\d+');
-    src = `(${src})`;
-    return src;
+    if (fixed) {
+      phrases = phrases.filter((key) => {
+        return 'value' in this.relativePhrases[key];
+      });
+    }
+    return phrases;
   }
 
-  resolveMonth(str, props, type) {
-    resolveInteger(str, props, type);
-    if (!('month' in props)) {
+  getUnits(type) {
+    let units = Object.keys(this.units);
+    if (type) {
+      units = units.filter((key) => {
+        return this.units[key] === type;
+      });
+    }
+    return units;
+  }
+
+  getArticles() {
+    return ARTICLES[this.language];
+  }
+
+  resolveMonth(str, opt) {
+    const { absProps } = opt;
+    resolveInteger(str, opt);
+    if (!('month' in absProps)) {
       str = str.replace(/\./g, '');
       str = this.resolveShortAlternate(str, SHORT_MONTH_ALTERNATES);
-      props.month = this.months.normalized.indexOf(str) % 12;
+      absProps.month = this.months.normalized.indexOf(str) % 12;
     }
   }
 
-  resolveWeekday(str, props) {
+  resolveWeekday(str, { absProps }) {
     str = str.replace(/\./g, '');
     str = this.resolveShortAlternate(str, SHORT_WEEKDAY_ALTERNATES);
-    props.day = this.weekdays.normalized.indexOf(str) % 7;
+    absProps.day = this.weekdays.normalized.indexOf(str) % 7;
   }
 
   resolveShortAlternate(str, obj) {
@@ -674,7 +783,21 @@ export default class LocaleParser {
     };
   }
 
-  resolveDayPeriod(str) {
+  // English only
+  resolveOffsetUnit(str) {
+    return (date, absProps, relProps) => {
+      let [num, unit, dir] = str.split(' ');
+      num = parseLocaleNumber(num, this.language) || 1;
+      unit = unit.replace(/s$/, '');
+      num *= dir === 'before' ? -1 : 1;
+      advanceDate(date, {
+        [unit]: num,
+      });
+      relProps[unit] = (relProps[unit] || 0) + num;
+    };
+  }
+
+  resolveDayPeriod(str, { absProps }) {
     // The day period (am/pm) may appear before or after the hour, so need to
     // allow all resolvers to be called first, then advance the absolute hour
     // if it is set.
@@ -682,9 +805,11 @@ export default class LocaleParser {
       str = str.replace(/\./g, '');
       const index = this.dayPeriods.normalized.indexOf(str);
       const pm = index % 2 === 1;
-      const hours = date.getHours();
-      if (pm && hours > 0 && hours < 12) {
-        date.setHours(hours + 12);
+      let hour = date.getHours();
+      if (pm && hour > 0 && hour < 12) {
+        hour += 12;
+        absProps.hour = hour;
+        date.setHours(hour);
       }
     };
   }
@@ -702,7 +827,7 @@ export default class LocaleParser {
     };
   }
 
-  resolveRelativePhrase(str, props) {
+  resolveRelativePhrase(str, { relProps, absProps }) {
     let value;
     let phrase = this.relativePhrases[str];
     if (phrase) {
@@ -713,14 +838,37 @@ export default class LocaleParser {
       // Non-fixed phrases such as "5 days from now", etc. require normalizing
       // the phrase and parsing the value from the matched string, then applying
       // the implied direction, such as -1 for "ago", etc.
+      // in an hour replace
+      // in a week
+      // a week ago
       str = str.replace(/\d+/, (match) => {
         value = parseInt(match, 10);
         return NUM_TOKEN;
       });
       phrase = this.relativePhrases[str];
-      value *= phrase.dir;
+      if (!phrase) {
+        // Attempt to replace articles as a fallback as we don't want
+        // to replace them in a string that already has a numeric format.
+        const articles = this.getArticles();
+        if (articles) {
+          str = str.replace(RegExp(articles), () => {
+            value = 1;
+            return NUM_TOKEN;
+          });
+          phrase = this.relativePhrases[str];
+        }
+      }
     }
-    props[phrase.unit] = value;
+    if (phrase) {
+      const { unit, dir, absUnit, absValue } = phrase;
+      if (dir != null) {
+        value *= phrase.dir;
+      }
+      relProps[unit] = value;
+      if (absUnit) {
+        absProps[absUnit] = absValue;
+      }
+    }
   }
 
   parse(str, options) {
@@ -740,14 +888,17 @@ export default class LocaleParser {
         const post = [];
 
         for (let i = 0; i < groups.length; i++) {
-          const { type, relative, resolver } = groups[i];
-          const props = relative ? relProps : absProps;
+          const { type, resolver } = groups[i];
           const str = match[i + 1];
           if (str) {
             // TRACK: https://github.com/tc39/proposal-class-fields
             // Use public class field instead of .call here when this
             // proposal lands.
-            const fn = resolver.call(this, str, props, type, date);
+            const fn = resolver.call(this, str, {
+              type,
+              absProps,
+              relProps,
+            });
             if (fn) {
               post.push(fn);
             }
@@ -764,10 +915,11 @@ export default class LocaleParser {
         // before they can resolve, so push them into an array
         // above and call them here.
         for (let fn of post) {
-          fn(date);
+          fn(date, absProps, relProps);
         }
 
-        // TODO: document
+        // If no timeZoneOffset was derived from the parsing and
+        // an override was set, then set it here.
         if (timeZone && !('timeZoneOffset' in absProps)) {
           setIANATimeZone(date, timeZone);
         }
@@ -847,9 +999,8 @@ function propsUnitExists(props, unit) {
 }
 
 function buildNumericComponent() {
-  const dec = '(?:[.,]\\d+)?';
   const date = `(\\d{4}|[+-]\\d{4,6})(?:[-/.]?(\\d{1,2})(?:[-/.]?(\\d{1,2}))?)?`;
-  const time = `(${REG_HOUR}${dec})(?::?(${REG_MIN}${dec}))?(?::?(${REG_SEC}))?`;
+  const time = `(${REG_HOUR}${REG_DEC})(?::?(${REG_MIN}${REG_DEC}))?(?::?(${REG_SEC}))?`;
   const src = `${date}(?:[T\\s]${time})?(${REG_ZONE})?`;
   const types = [
     'year',
@@ -886,6 +1037,7 @@ function compilePartsFromFormat(str) {
       if (isToken) {
         let type = buffer;
         let style = 'numeric';
+        let fixed = false;
         let relative = false;
         let optional = false;
         type = type.replace(/^[A-Z]/, (str) => {
@@ -897,6 +1049,11 @@ function compilePartsFromFormat(str) {
           relative = true;
           return '';
         });
+        type = type.replace(/^fixed /, () => {
+          style = 'long';
+          fixed = true;
+          return '';
+        });
         type = type.replace(/\?$/, () => {
           optional = true;
           return '';
@@ -904,6 +1061,7 @@ function compilePartsFromFormat(str) {
         parts.push({
           type,
           style,
+          fixed,
           relative,
           optional,
         });
@@ -936,20 +1094,21 @@ function compilePartsFromFormat(str) {
   return parts;
 }
 
-function resolveYear(str, props, type, date) {
+function resolveYear(str, opt) {
   str = str.replace(/^'/, '');
-  resolveInteger(str, props, type);
+  resolveInteger(str, opt);
   if (str.length === 2) {
-    props.year = getTwoDigitYear(props.year, date);
+    const { date, absProps } = opt;
+    absProps.year = getTwoDigitYear(absProps.year, date);
   }
 }
 
-function resolveTimeZoneName(str, props) {
+function resolveTimeZoneName(str, { absProps }) {
   // Need to resolve time zone after other
   // resolvers like minute and dayPeriod.
   return (date) => {
     let offset;
-    if (str === 'z') {
+    if (str === 'z' || str === 'gmt') {
       offset = 0;
     } else {
       // Handle U+2212 MINUS SIGN as well as
@@ -964,16 +1123,24 @@ function resolveTimeZoneName(str, props) {
       }
     }
     if (offset != null) {
-      props.timeZoneOffset = offset;
+      absProps.timeZoneOffset = offset;
       setTimeZoneOffset(date, offset);
     }
   };
 }
 
-function resolveDecimalTime(str, props, type) {
+function resolveTimestamp(str, { absProps }) {
+  return (date) => {
+    const timestamp = parseInt(str, 10);
+    absProps.timestamp = timestamp;
+    date.setTime(timestamp);
+  };
+}
+
+function resolveDecimalTime(str, { type, absProps }) {
   str = str.replace(',', '.');
   const num = parseFloat(str);
-  props[type] = Math.trunc(num);
+  absProps[type] = Math.trunc(num);
 
   // Allow setting zero as this will
   // resolve the specificity later.
@@ -990,17 +1157,17 @@ function resolveDecimalTime(str, props, type) {
       unit = 'millisecond';
       dec *= 1000;
     }
-    props[unit] = Math.round(dec);
+    absProps[unit] = Math.round(dec);
   }
 }
 
-function resolveInteger(str, props, type) {
+function resolveInteger(str, { type, absProps }) {
   let num = parseInt(str, 10);
   if (!isNaN(num)) {
     if (type === 'month') {
       num -= 1;
     }
-    props[type] = num;
+    absProps[type] = num;
   }
 }
 
@@ -1047,6 +1214,8 @@ const ALTERNATE_RELATIVE_FORMATS = {
 
 const ALTERNATE_DATETIME_FORMATS = {
   default: [
+    '<weekday><time?>',
+    '<time?><weekday>',
     '<relative day> <time>',
     '<time> <relative day>',
     '<relative week> <weekday><time?>',
@@ -1054,6 +1223,8 @@ const ALTERNATE_DATETIME_FORMATS = {
     // "-" or "/" as separators. Unambiguous here means year first and no
     // 2-digit years allowed.
     '<year>[-/]<month>[-/]<day> <time?>',
+    // .NET Alternate JSON Date format. Yes, this looks ridiculous.
+    '\\\\\\/Date\\(<timestamp>(?:[-+]\\d{4})?\\)\\\\\\/',
   ],
   [ENGLISH]: [
     // English locales should not force ambiguous numeric format (8/10 vs 10/8),
@@ -1076,6 +1247,10 @@ const ALTERNATE_DATETIME_FORMATS = {
     '<Month>(?: of)? <relative year>',
     'the <day>(?: of (?:<relative month>|<Month>|the month))?',
     'the <offset weekday> of <relative month>',
+    '<offset> <relative fixed day>',
+    '<offset> <weekday>',
+    '<Weekday>(?: of)? <relative week>',
+    '<Weekday>,? <day> <Month> <yyyy>(?:<time>(?:<timeZoneName>)?)?', // IETF
   ],
 };
 
@@ -1090,6 +1265,18 @@ const SHORT_WEEKDAY_ALTERNATES = {
     tues: 'tue',
     thurs: 'thu',
   },
+};
+
+const ARTICLES = {
+  [ENGLISH]: 'an?|the',
+};
+
+function dayMonthIsAmbiguous(locale) {
+  return DAY_MONTH_AMBIGUOUS_LOCALES[locale] || false;
+}
+
+const DAY_MONTH_AMBIGUOUS_LOCALES = {
+  'en-CA': true,
 };
 
 // Compiles optimized regex alternates from an array.

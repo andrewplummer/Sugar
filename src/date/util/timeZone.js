@@ -6,21 +6,18 @@ export function setTimeZoneOffset(date, val) {
 
 export function setIANATimeZone(date, timeZone) {
   const formatter = new Intl.DateTimeFormat('en', {
+    timeZone,
     year: 'numeric',
     month: '2-digit',
     day: '2-digit',
     hour: '2-digit',
     minute: '2-digit',
     second: '2-digit',
-    fractionalSecondDigits: 3,
     hourCycle: 'h23',
-    timeZone,
+    fractionalSecondDigits: 3,
   });
   const props = formatter.formatToParts(date).reduce((props, part) => {
-    const { type, value } = part;
-    if (type !== 'literal') {
-      props[type] = value;
-    }
+    props[part.type] = part.value;
     return props;
   }, {});
   const { year, month, day, hour, minute, second, fractionalSecond: ms } = props;

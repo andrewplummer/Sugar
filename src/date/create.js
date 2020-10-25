@@ -1,4 +1,5 @@
 import { isString, isNumber, isDate } from '../util/typeChecks';
+import { setIANATimeZone } from './util/timeZone';
 import { normalizeProps } from './util/props';
 import { updateDate } from './util/update';
 import { parseDate } from './util/parsing';
@@ -181,9 +182,13 @@ export default function create(arg1, arg2) {
     if ('input' in options) {
       return parseDate(options);
     } else {
+      let { timeZone, ...props } = options;
       const date = new Date();
-      const props = normalizeProps(options);
+      props = normalizeProps(props);
       updateDate(date, props, true);
+      if (timeZone) {
+        setIANATimeZone(date, timeZone);
+      }
       return date;
     }
   }
