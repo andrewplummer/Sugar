@@ -44,13 +44,16 @@
   namespace  = withNamespace(describe);
   fnamespace = withNamespace(fdescribe);
   xnamespace = withNamespace(xdescribe);
+  pnamespace  = withNamespace(fpdescribe);
 
   describeStatic  = withMethod(staticTest, describe);
   fdescribeStatic = withMethod(staticTest, fdescribe);
   xdescribeStatic = withMethod(staticTest, xdescribe);
+  pdescribeStatic = withMethod(staticTest, fpdescribe);
 
   describeInstance  = withMethod(instanceTest, describe);
   fdescribeInstance = withMethod(instanceTest, fdescribe);
   xdescribeInstance = withMethod(instanceTest, xdescribe);
+  pdescribeInstance = withMethod(instanceTest, fpdescribe);
 
 })();

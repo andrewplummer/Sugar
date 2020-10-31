@@ -60,6 +60,10 @@ const UNIT_EDGES = {
       return getDaysInMonth(date);
     }
   },
+  day: {
+    start: 0,
+    end: 6,
+  },
   hour: {
     start: 0,
     end: 23,

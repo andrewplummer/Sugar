@@ -29,12 +29,12 @@ const LANGUAGES = {
   'zh': [hanidec],
 };
 
-export function parseLocaleNumber(str, language) {
+export function replaceLocaleNumerals(str, language) {
   const mappers = LANGUAGES[language] || [];
   for (let mapper of mappers) {
     str = mapper(str);
   }
-  return parseInt(str, 10);
+  return str;
 }
 
 function buildNumeralMapper(numberingSystem) {
@@ -61,6 +61,8 @@ function buildEnglishMapper() {
     map[ENGLISH_NUMERALS[i]] = String(i);
   }
   return (str) => {
-    return map[str] || str;
+    return str.split(' ').map((word) => {
+      return map[word] || word;
+    }).join(' ');
   };
 }

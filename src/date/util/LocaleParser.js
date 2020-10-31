@@ -2,11 +2,12 @@ import { updateDate } from './update';
 import { advanceDate } from './shift';
 import { setWeekday } from './weekdays';
 import { setTimeZoneOffset, setIANATimeZone } from './timeZone';
-//import { parseLocaleNumber } from './numbering';
+import { resetByIndex, resetByUnit } from './reset';
 import { isNaN } from '../../util/typeChecks';
 import { cloneDate } from '../../util/date';
 import { UNITS, getPropsSpecificity, getAdjacentUnit, formatPartsForUnit } from './units';
-import { ENGLISH_NUMERALS, parseLocaleNumber } from './numbering';
+import { replaceLocaleNumerals } from './numerals';
+import { compileRegExpAlternates } from './regex';
 
 const NUM_TOKEN = 'NUM';
 const ENGLISH = 'en';
@@ -36,9 +37,26 @@ const REG_ZONE = `Z|GMT|(?:GMT)?[+−-]\\d{1,2}(?::?${REG_MIN})?(?:\\s\\(.+\\))?
 // 1st, 2nd, 3rd, 4th, 24th, etc. up to 100.
 const REG_ORDINAL = '[^1]?(?:1st|2nd|3rd|[04-9]th)|1[0-9]th|\\d{1,2}';
 
+// Matches time separators like whitespace, a comma, or unknown
+// token that Intl does not provide access to like "at", "on" etc.
+// Note that only a single token as a separator is possible as greedily
+// accepting any number of tokens will interfere with other formats.
+// Negate character class here to match anything that isn't a space or
+// numeral, including accented characters like "à".
+// TODO: how to handle spanish?
+const REG_TIME_SEP = '(?:,?\\s|\\s[^\\d\\s]+\\s)?';
+
 const TIME_TYPES = ['hour', 'minute', 'second', 'dayPeriod'];
 
+const UNIT_SHORTCUTS = {
+  upper: ['year', 'month', 'week'],
+  lower: ['hour', 'minute', 'second'],
+};
+
 const REF_DATE = new Date(2020, 0);
+
+const PHRASE_TYPE_FIXED = 'fixed';
+const PHRASE_TYPE_NUMERIC = 'numeric';
 
 // Numeric components apply to all locales
 const NUMERIC_COMPONENT = buildNumericComponent();
@@ -57,120 +75,270 @@ export default class LocaleParser {
     this.buildFormats();
   }
 
+  // --- Build
+
   setup() {
     this.buildEras();
     this.buildUnits();
+    this.buildMonths();
+    this.buildWeekdays();
     this.buildDayPeriods();
     this.buildTimeComponent();
     this.buildRelativePhrases();
-    this.buildMonths();
-    this.buildWeekdays();
+    this.buildAlternatePhrases();
   }
 
   buildFormats() {
+    this.buildTimeFormat();
+    this.buildNumericFormat();
     this.buildIntlFormats();
-    this.buildTimeFormats();
-    this.buildNumericFormats();
-    this.buildRelativeFormats();
     this.buildAlternateFormats();
   }
 
   buildMonths() {
-    this.months = this.buildTokenSet('month', 0, 11, (date, val) => {
+    this.months = this.buildIntlTokenSet('month', 11, (date, val) => {
       date.setMonth(val);
     });
-    this.buildRelativeUnitPhrases('year', 'month', this.months.long);
   }
 
   buildWeekdays() {
-    this.weekdays = this.buildTokenSet('weekday', 5, 11, (date, val) => {
-      date.setDate(val);
+    this.weekdays = this.buildIntlTokenSet('weekday', 6, (date, val) => {
+      date.setDate(val + 5);
     });
-    this.buildRelativeUnitPhrases('week', 'day', this.weekdays.long);
   }
 
   buildDayPeriods() {
-    this.dayPeriods = this.buildTokenSet('dayPeriod', 0, 1, (date, val) => {
-      date.setHours(val ? 12 : 0);
+    // Spec for dayPeriod is still in flux but seems to be landing on output
+    // of localized tokens for "in the morning", "at night", etc. when explicit
+    // and "am/pm" when not. However most modern implemenations still return
+    // "am/pm" when explicit. According to CLDR rules (https://bit.ly/3e5g0wn)
+    // the "am/pm" tokens should be parsed regardless of locale, so normalize
+    // by building up sets of both explicit and implied tokens, then override
+    // "am/pm" as fixed tokens. Manually ensure newer tokens for English as a
+    // special case.
+    //
+    // TRACK: https://github.com/tc39/ecma402/pull/346
+    //
+    // Examples:
+    //
+    // English (current):
+    //
+    // - Explicit -> {am,pm} (type "long")
+    // - Implied -> {am,pm} (type "implied")
+    // - Fixed -> {am,pm} (type "fixed")
+    // - Patch -> {at night,...} (type "long")
+    // - Merged -> {
+    //     am: "fixed",
+    //     pm: "fixed",
+    //     at night: "long",
+    //     ...
+    //   }
+    //
+    // English (updated):
+    //
+    // - Explicit -> {at night,...} (type "long")
+    // - Implied -> {am,pm} (type "implied")
+    // - Fixed -> {am,pm} (type "fixed")
+    // - Merged -> {
+    //     am: "fixed",
+    //     pm: "fixed",
+    //     at night: "long",
+    //     ...
+    //   }
+    //
+    // Japanese (current):
+    //
+    // - Explicit -> {午前,午後} (type "long")
+    // - Implied -> {午前,午後} (type "implied")
+    // - Fixed -> {am,pm} (type "fixed")
+    // - Merged -> {
+    //     am: "fixed",
+    //     pm: "fixed",
+    //     午前: "implied",
+    //     午後: "implied",
+    //   }
+    //
+    // Japanese (updated):
+    //
+    // - Explicit -> {夜中,...} (type "long")
+    // - Implied -> {午前,午後} (type "implied")
+    // - Fixed -> {am,pm} (type "fixed")
+    // - Merged -> {
+    //     am: "fixed",
+    //     pm: "fixed",
+    //     午前: "implied",
+    //     午後: "implied",
+    //     夜中: "long",
+    //     ...
+    //   }
+    //
+    // The new Intl implemenations have 5 possible explicit dayPeriod variants:
+    // "Midnight" is notably still absent here as an ambiguous format.
+    //
+    // - "in the morning" (06:00 - 11:59)
+    // - "noon" (12:00 - 12:59)
+    // - "in the afternoon" (13:00 - 17:59)
+    // - "in the evening" (18:00 - 20:59)
+    // - "at night" (20:00 - 05:59)
+    //
+    const explicitHours = [6, 12, 13, 18, 20];
+    const explicit = this.buildIntlTokenSet('dayPeriod', 4, (date, val) => {
+      const hour = explicitHours[val];
+      date.setHours(hour);
+      return hour;
     });
-  }
-
-  getDayPeriodSource() {
-    return this.getAbbreviatedTokenSource(this.dayPeriods);
-  }
-
-  getEraSource() {
-    return this.getAbbreviatedTokenSource(this.eras);
+    const implied = this.buildIntlTokenSet('impliedDayPeriod', 1, (date, val) => {
+      const hour =  val ? 12 : 0;
+      date.setHours(hour);
+      return hour;
+    });
+    this.dayPeriods = {
+      ...explicit,
+      ...implied,
+      ...DAY_PERIODS['default'],
+      ...DAY_PERIODS[this.language] || {},
+    };
   }
 
   buildEras() {
-    this.eras = this.buildTokenSet('era', 0, 1, (date, val) => {
+    this.eras = this.buildIntlTokenSet('era', 1, (date, val) => {
       date.setFullYear(val ? 1 : -1);
     });
   }
 
-  buildTokenSet(type, min, max, fn) {
-    let long = this.getTokensForStyle('long', type, min, max, fn);
-    let short = this.getTokensForStyle('short', type, min, max, fn);
-    let tokens = [...long];
-    if (long[0] !== short[0]) {
-      tokens = [...long, ...short];
-    }
-    const source = [];
-    const normalized = [];
-    for (let token of tokens) {
+  // Tokens
 
-      // Force am/pm abbreviations for locales
-      // that do not include them in formatToParts.
-      if (token === 'am' || token === 'pm') {
-        token = `${token.charAt(0)}.${token.charAt(1)}.`;
-      }
-
-      source.push(token.replace(/\./g, '\\.?'));
-      normalized.push(token.replace(/\./g, ''));
+  getTokenSource(set, type, map) {
+    let tokens = this.getTokens(set, type);
+    if (map) {
+      tokens = tokens.map(map);
     }
-    return {
-      long,
-      short,
-      source,
-      normalized,
-    };
+    return tokens.join('|');
   }
 
-  getTokensForStyle(style, type, min, max, fn) {
-    const date = cloneDate(REF_DATE);
-    const formatter = new Intl.DateTimeFormat(this.locale, {
-      hour: 'numeric',
-      minute: 'numeric',
-      hourCycle: 'h12',
-      [type]: style,
-    });
-    const result = [];
-    for (let i = min; i <= max; i++) {
-      fn(date, i);
-      const parts = formatter.formatToParts(date);
-      const part = parts.find((p) => {
-        return p.type === type;
+  getTokens(set, type) {
+    let tokens = Object.keys(set);
+    if (type) {
+      tokens = tokens.filter((token) => {
+        return set[token].type === type;
       });
-      result.push(part.value.toLowerCase());
     }
-    return result;
+    return tokens;
   }
+
+  // Intl Tokens
+
+  buildIntlTokenSet(type, max, fn) {
+    const set = {};
+    this.buildIntlTokens(set, type, max, fn);
+
+    const aliases = TOKEN_ALIASES[this.language] || {};
+    for (let [key, val] of Object.entries(aliases)) {
+      if (val in set) {
+        set[key] = set[val]
+      }
+    }
+    return set;
+  }
+
+  buildIntlTokens(set, type, max, fn) {
+    let styles;
+    if (type === 'impliedDayPeriod') {
+      // An "implied day period" does not pass an explicit dayPeriod option,
+      // but returns "am/pm" tokens for the dayPeriod when hourCycle is h12.
+      // Current implementations will return this for an explicit day period
+      // as well, but going forward this will change (see below). For most
+      // Western locales this is redundant as "am/pm" will be added for all
+      // locales according to CLDR rules (https://bit.ly/3e5g0wn), however
+      // CJK languages may differ ("午後/午前") so this needs to be checked.
+      type = 'dayPeriod';
+      styles = ['implied'];
+    } else if (type === 'era') {
+      // Only take "BC, AD", not "Anno Domini, Before Christ".
+      styles = ['short'];
+    } else if (type === 'dayPeriod') {
+      // When formatting an explicit dayPeriod, only use the long format.
+      // Current implementations return "am/pm" tokens for both "short" and
+      // "long". Going forward this will become "in the morning/at night/etc".
+      // Most locales are the same for both "short" and "long" here, but some
+      // use abbreviations for "short", which we want to avoid, so take "long".
+      styles = ['long'];
+    } else {
+      // Otherwise take both, for "Wednesday/Wed" and "January/Jan".
+      styles = ['short', 'long'];
+    }
+    const variants = styles.map((style) => {
+      const formatter = new Intl.DateTimeFormat(this.locale, {
+        hour: 'numeric',
+        minute: 'numeric',
+        hourCycle: 'h12',
+        ...(style !== 'implied' && {
+          [type]: style
+        }),
+      });
+      return {
+        style,
+        formatter,
+      };
+    });
+
+    const date = cloneDate(REF_DATE);
+    for (let i = 0; i <= max; i++) {
+      const ret = fn(date, i);
+      const value = ret != null ? ret : i;
+      for (let { style, formatter } of variants) {
+        const parts = formatter.formatToParts(date);
+        let token = findPart(parts, type).value;
+
+        // Normalize the token by downcasing and removing periods.
+        token = token.toLowerCase();
+        token = token.replace(/\./g, '');
+
+        set[token] = {
+          type: style,
+          value,
+        };
+      }
+    }
+  }
+
+  // Formats
 
   buildIntlFormats() {
+    // - 2020
+    // - 2020 BC
+    // - 2020年
+    this.buildIntlFormat({
+      year: 'numeric',
+    });
+
+    // - October 2020
+    // - October 2020 BC
+    // - 2020年10月
     this.buildIntlFormat({
       year: 'numeric',
       month: 'long',
     });
+
+    // - October 8, 2020
+    // - October 8, 2020 BC
+    // - 8 October, 2020
+    // - 8 October, 2020
+    // - 2020年10月8日
     this.buildIntlFormat({
       year: 'numeric',
       month: 'long',
       day: 'numeric',
     });
+
+    // - October 8
+    // - 8 October
+    // - 10月8日
     this.buildIntlFormat({
       month: 'long',
       day: 'numeric',
     });
+
     // Note that even though this is a fully numeric format, the order of tokens
     // is locale dependent, and can vary:
     //
@@ -187,20 +355,34 @@ export default class LocaleParser {
       day: 'numeric',
     });
 
+    // - 10/2020
+    // - 10-2020
+    // - 2020-10
     this.buildIntlFormat({
       year: 'numeric',
       month: 'numeric',
     });
 
-    // Format 8/10 is "August 12th" in en-US and "October 10" in en-GB,
-    // however it is ambiguous in "en-CA" so should not be parseable here.
-    if (!dayMonthIsAmbiguous(this.locale)) {
+    // - 8/10 (en-US)
+    // - 10/8 (en-GB)
+    // - ???? (en-CA)
+    //
+    // Both forms of the day/month variants are used in Canada so
+    // they should not be parseable here (https://bit.ly/3kMZ14j)
+    if (!DAY_MONTH_AMBIGUOUS_LOCALES[this.locale]) {
       this.buildIntlFormat({
         month: 'numeric',
         day: 'numeric',
       });
     }
 
+    // - Thursday October 8th 2020 (GMT+05:00)
+    // - Thursday October 8th 2020
+    // - Thu October 8, 2020
+    // - Thu Oct 8, 2020
+    // - 2020年10月8日日曜日 日本標準時
+    //
+    // Note that the timeZoneName part becomes optional.
     this.buildIntlFormat({
       day: 'numeric',
       year: 'numeric',
@@ -208,42 +390,44 @@ export default class LocaleParser {
       weekday: 'long',
       timeZoneName: 'long',
     });
-    this.buildIntlFormat({
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      era: 'short',
-    });
+
+    // - October
+    // - Oct
+    // - 10月
     this.buildIntlFormat({
       month: 'long',
     });
+
+    // - Thursday
+    // - Thu
+    // - 木曜日
     this.buildIntlFormat({
       weekday: 'long',
     });
-  }
-
-  buildTimeFormats() {
-    this.buildFormat(this.timeComponent);
   }
 
   buildIntlFormat(options) {
     this.buildFormat(this.getIntlComponent(this.locale, options));
   }
 
-  buildNumericFormats() {
+  buildTimeFormat() {
+    this.buildFormat(this.timeComponent);
+  }
+
+  buildNumericFormat() {
     this.buildFormat(NUMERIC_COMPONENT);
   }
 
   buildFormat(format) {
     const { src, groups } = format;
-    const reg = this.buildRegExp(src);
+    const reg = RegExp(`^${src}$`, 'i');
     const exists = this.formats.some((f) => {
       return f.reg.source === reg.source;
     });
 
     // Only push the format if an identical one does not exist. This may occur
     // with alternate formats that ensure both versions of locale variants can
-    // be correctly parsed, for example "October 12th" vs "12 October".
+    // be correctly parsed, for example "October 12" vs "12 October".
     if (!exists) {
       this.formats.push({
         reg,
@@ -257,22 +441,38 @@ export default class LocaleParser {
   }
 
   getIntlParts(locale, options) {
+    // If a day is specified in the format then add "hour" which will be
+    // collapsed into an optional time format in the resulting component.
     if ('day' in options || 'weekday' in options) {
-      // If a day is specified in the format then add "hour" which will be
-      // replaced with an optional time format in the resulting component.
       options = {
         ...options,
         hour: 'numeric',
+        minute: 'numeric',
+      };
+    }
+    // Add era component ("bc/ad") when there is no month (ie. 2000 BC) or
+    // if the month is long. Numeric formats should not allow this.
+    if ('year' in options && options.month !== 'numeric') {
+      options = {
+        ...options,
+        era: 'long',
       };
     }
     const formatter = new Intl.DateTimeFormat(locale, options);
     return formatter.formatToParts().map((part) => {
       const { type, value } = part;
       const style = options[type];
+
+      // The era can be optional only if a month exists. It must be required
+      // in the standalone year format as it can interfere with numeric formats
+      // like ISO-8601 short format where numbers can run together (202001).
+      let optional = type === 'era' && options.month;
+
       return {
         type,
-        value,
         style,
+        value,
+        optional,
       };
     });
   }
@@ -288,13 +488,30 @@ export default class LocaleParser {
 
     let src = '';
     let groups = [];
+
     for (let part of parts) {
-      let { type, value, optional = false, fixed = false, relative = false } = part;
+
+      let { type, value, optional = false, relative = false } = part;
+
       if (type === 'literal') {
-        value = value.replace(/[.,\s]+/, '[.,\\s]*');
-        value = value.replace(/[-/]+/, '[-./]+');
+
+        // Strip regex tokens. Although these aren't likely to occur,
+        // ja-JP may for example return "2:04 (土曜日)".
+        value = value.replace(/[()|?]/g, '');
+
+        // Intl literal parts may be made optional as the result of collapsing
+        // the time parts, otherwise they should be required as to not interfere
+        // with meaningful whitespace in other parts.
+        // Punctuation should also be optional and may compound ie. "Dec., 2008"
+        value = value.replace(/[.,\s]+/, `[,.\\s]${optional ? '*' : '+'}`);
+
+        // Allow variants with hyphens, slashes, or periods.
+        value = value.replace(/[-/]/g, '[-./]');
+
         src += value;
       } else if (type === 'source') {
+        // TODO: really want to remove this
+        value = value.replace(/^\s+|\s+$/g, '[.,\\s]*');
         src += value;
       } else if (type === 'time') {
         const { src: timeSrc, groups: timeGroups } = this.getTimeComponent(part, parts);
@@ -303,8 +520,9 @@ export default class LocaleParser {
       } else {
         let resolver;
         if (relative) {
+          const { phraseType } = part;
           resolver = this.resolveRelativePhrase;
-          src += `(${this.getRelativePhraseSource(type, fixed)})`;
+          src += `(${this.getRelativePhraseSource(type, phraseType)})`;
         } else {
           if (type === 'year') {
             // Generic year token may be allowed to be 2-digits without an
@@ -329,24 +547,12 @@ export default class LocaleParser {
           } else if (type === 'weekday') {
             src += `(${this.getWeekdaySource()})`;
             resolver = this.resolveWeekday;
-          } else if (type === 'offset weekday') {
-            // the 1st Sunday of next month
-            src += `((?:${REG_ORDINAL}) (?:${this.getWeekdaySource()}))`;
-            resolver = this.resolveOffsetWeekday;
-          } else if (type === 'offset') {
-            // English only: "the day after tomorrow" etc.
-            // The tokens "before", "after", "from" cannot be derived from Intl
-            // which makes multi-lingual support for this too difficult for now.
-            const nums = `\\d+|the|${ENGLISH_NUMERALS.join('|')}`;
-            const units = `days?|weeks?|months?|years?`;
-            const dirs = 'before|after|from';
-            src += `((?:${nums}) (?:${units}) (?:${dirs}))`;
-            resolver = this.resolveOffsetUnit;
           } else if (type === 'day') {
             type = 'date';
             resolver = resolveInteger;
             const monthPart = findPart(parts, 'month');
             if (this.language === ENGLISH && !this.isNumericPart(monthPart)) {
+              // English only: "1st", "2nd", etc.
               src += `(${REG_ORDINAL})`;
             } else {
               src += '(\\d{1,2})';
@@ -363,19 +569,39 @@ export default class LocaleParser {
           } else if (type === 'fractionalSecond') {
             type = 'second';
             src += `(${REG_SEC})`;
-            resolver = resolveDecimalTime;
+            resolver = resolveFractionalTime;
           } else if (type === 'dayPeriod') {
-            src += `\\s?(${this.dayPeriods.source.join('|')})\\s?`;
+            src += `(${this.getDayPeriodSource()})`;
             resolver = this.resolveDayPeriod;
           } else if (type === 'timeZoneName') {
             src += `(${REG_ZONE})?`;
             resolver = resolveTimeZoneName;
           } else if (type === 'era') {
-            src += `\\s?(${this.eras.source.join('|')})\\s?`;
+            src += `(${this.getEraSource()})`;
             resolver = this.resolveEra;
           } else if (type === 'timestamp') {
             src += '(\\d+)';
             resolver = resolveTimestamp;
+          } else if (type === 'offset weekday') {
+            // English only: "the 1st Sunday of next month", etc.
+            src += `((?:${REG_ORDINAL}) (?:${this.getWeekdaySource()}))`;
+            resolver = this.resolveOffsetWeekday;
+          } else if (type === 'offset unit') {
+            // English only: "the day after tomorrow" etc.
+            // The tokens "before", "after", "from" cannot be derived from Intl
+            // which makes multilingual support for this too difficult for now.
+            const nums = `\\w+|the`;
+            const units = `days?|weeks?|months?|years?`;
+            const dirs = 'before|after|from';
+            src += `((?:${nums}) (?:${units}) (?:${dirs}))`;
+            resolver = this.resolveOffsetUnit;
+          } else if (type === 'edge') {
+            // English only: "the end of the month", etc.
+            src += '(?:the )?(beginning|end|first day|last day) of';
+            resolver = this.resolveEdge;
+          } else if (type === 'unit') {
+            src += `(${this.getUnitSource()})`;
+            resolver = this.resolveRelativeUnit;
           } else {
             throw new Error(`Unknown type "${type}"`);
           }
@@ -398,32 +624,32 @@ export default class LocaleParser {
   buildTimeComponent() {
     // Time component needs to resolve a number of different formats with
     // optional minute, second, and dayPeriod. To avoid collision with other
-    // formats we must avoid parsing a single integer. Approach here is to
-    // create alternate groups that make the day period required when no minutes
-    // are specified, otherwise allow optional seconds and trailing dayPeriod
-    // when last. Potential formats include:
+    // formats we must avoid parsing a single integer.
     //
     // When day period is last:
     //
-    // - 12pm
-    // - 12:00pm
-    // - 12:00:00pm
-    // - 12:00:00.000pm
-    // - 12:00
-    // - 12:00:00
-    // - 12:00:00.000
+    // - 10pm
+    // - 10:30
+    // - 10:30pm
+    // - 10:30:45
+    // - 10:30:45pm
+    // - 10:30:45.500
+    // - 10:30:45.500pm
+    // - 10:30 at night
+    // - 10:30pm at night
+    // - noon
     //
     // When day period is first:
     //
-    // - 午後12時
-    // - 午後12時0分
-    // - 午後12:00
-    // - 午後12:00:00
-    // - 午後12:00:00.000
-    // - 12:00
-    // - 12:00:00
-    // - 12:00:00.000
-    //
+    // - 午後10時
+    // - 午後10時0分
+    // - 午後10:30
+    // - 午後10:30:45
+    // - 午後10:30:45.500
+    // - 10:30
+    // - 10:30:45
+    // - 10:30:45.500
+
     const hourGroup = {
       type: 'hour',
       resolver: resolveInteger,
@@ -434,33 +660,34 @@ export default class LocaleParser {
     };
     const secondGroup = {
       type: 'second',
-      resolver: resolveDecimalTime,
+      resolver: resolveFractionalTime,
     };
     const dayPeriodGroup = {
       type: 'dayPeriod',
       resolver: this.resolveDayPeriod,
     };
-    let dp = this.dayPeriods.source.join('|');
     let src;
-    let groups;
+    let groups = [
+      hourGroup,
+      minuteGroup,
+      secondGroup,
+    ];
     if (this.partOrderMatches('hour', 'dayPeriod')) {
-      src = `(${REG_HOUR})(?:\\s?(${dp})|(?::(${REG_MIN})?(?::(${REG_SEC}))?\\s?(${dp})?))`;
+      const dpf = this.getDayPeriodSource('fixed');
+      const dpl = this.getDayPeriodSource('long');
+      const dp = `(?:\\s?(${dpf}))?(?:\\s?(${dpl}))?`;
+      src = `(?!\\s)(${REG_HOUR}(?!$))?(?::(${REG_MIN})?)?(?::(${REG_SEC}))?${dp}`;
       groups = [
-        hourGroup,
+        ...groups,
         dayPeriodGroup,
-        minuteGroup,
-        secondGroup,
         dayPeriodGroup,
       ];
     } else {
-      src = `(${dp})?(${REG_HOUR}):(${REG_MIN})?(?::(${REG_SEC}))?|(${dp})(${REG_HOUR})`;
+      const dp = this.getDayPeriodSource();
+      src = `(${dp})?(${REG_HOUR})(?::(${REG_MIN}))?(?::(${REG_SEC}))?`;
       groups = [
         dayPeriodGroup,
-        hourGroup,
-        minuteGroup,
-        secondGroup,
-        dayPeriodGroup,
-        hourGroup,
+        ...groups,
       ];
     }
     this.timeComponent = {
@@ -470,25 +697,11 @@ export default class LocaleParser {
   }
 
   getTimeComponent(part, parts) {
-    // Greedily accept any non-digit separator between time boundaries
-    // that Intl does not provide access to, for example:
-    //
-    // - "tomorrow at 10:00 AM"
-    // - "mañana a las 10:00 AM"
-    //
-    // To do this we need to find adjacent non-literal parts that are
-    // of either type "day" or "weekday'.
-    parts = parts.filter((part) => {
-      return part.type !== 'literal' && part.type !== 'source';
-    });
+    // Allow a time separator either before or
+    // after the time depending on its position.
     const index = parts.indexOf(part);
-    const lastIsDay = this.isDayPart(parts[index - 1]);
-    const nextIsDay = this.isDayPart(parts[index + 1]);
-
-    const words = '\\D*';
-    const space = '\\s*';
-    const sep1 = lastIsDay ? words : space;
-    const sep2 = nextIsDay ? words : space;
+    const sep1 = parts[index - 1] ? REG_TIME_SEP : '';
+    const sep2 = parts[index + 1] ? REG_TIME_SEP : '';
     let { src, groups } = this.timeComponent;
     src = `(?:${sep1}${src}${sep2})?`;
     return {
@@ -498,8 +711,6 @@ export default class LocaleParser {
   }
 
   partOrderMatches(type1, type2) {
-    // TODO: document
-    // Time components assume....
     const formatter = new Intl.DateTimeFormat(this.locale, {
       year: 'numeric',
       month: 'long',
@@ -516,27 +727,37 @@ export default class LocaleParser {
   }
 
   collapseTimeParts(parts) {
-    const collapsed = [];
-    let isTime = false;
-    for (let part of parts) {
-      const { type } = part;
-      if (TIME_TYPES.includes(type)) {
-        if (!isTime) {
-          collapsed.push({
-            type: 'time',
-          });
-          isTime = true;
+    // Collapse "hour", "minute", "second", and "dayPeriod" parts here into
+    // a single "time" part to allow complex matching of any time with any date
+    // as otherwise the formats become permutational. Literals between time
+    // components must be removed as well.
+    const startIndex = parts.findIndex(this.isTimePart);
+    if (startIndex !== -1) {
+      let endIndex = startIndex;
+      for (let part of parts.slice(startIndex + 1)) {
+        if (this.isLiteralPart(part) || this.isTimePart(part)) {
+          endIndex += 1;
+        } else {
+          break;
         }
-      } else if (type === 'literal') {
-        if (!isTime) {
-          collapsed.push(part);
-        }
-      } else {
-        collapsed.push(part);
-        isTime = false;
       }
+      parts = [
+        ...parts.slice(0, startIndex),
+        { type: 'time', optional: true },
+        ...parts.slice(endIndex + 1),
+      ];
     }
-    return collapsed;
+    // Also make literals surrounding optional parts optional themselves.
+    parts.forEach((part, i) => {
+      if (this.isLiteralPart(part)) {
+        const last = parts[i - 1];
+        const next = parts[i + 1];
+        if (this.isOptionalPart(last) || this.isOptionalPart(next)) {
+          part.optional = true;
+        }
+      }
+    });
+    return parts;
   }
 
   isNumericPart(part) {
@@ -547,41 +768,58 @@ export default class LocaleParser {
     return style === 'numeric' || style === '2-digit';
   }
 
-  isDayPart(part) {
-    if (!part) {
-      return false;
-    }
-    const { type } = part;
-    return type === 'day' || type === 'weekday';
+  isTimePart(part) {
+    return part && TIME_TYPES.includes(part.type);
+  }
+
+  isOptionalPart(part) {
+    return part && part.optional;
+  }
+
+  isLiteralPart(part) {
+    return part && part.type === 'literal';
   }
 
   buildRelativePhrases() {
-    const formatters = this.getRelativeFormatters();
+    const formats = this.getRelativeFormats();
     const phrases = {};
-    for (let unit of UNITS) {
-      if (unit !== 'millisecond') {
-        for (let formatter of formatters) {
+    for (let { type: formatType, formatter } of formats) {
+      for (let unit of UNITS) {
+        if (unit !== 'millisecond') {
           for (let num = -5; num < 5; num++) {
+
+            if (num === 0 && (unit === 'hour' || unit === 'minute')) {
+              // Intl.RelativeTimeFormat with "auto" yields the following:
+              //
+              //  0 month  -> "this month"
+              //  1 month  -> "next month"
+              //  0 hour   -> "this hour"
+              //  1 hour   -> "in an hour"
+              //  ...etc
+              //
+              // The phrase "this hour" and "this minute" are not particularly
+              // helpful and makes it difficult to optimize the regex later due
+              // to the discrepancy with "last" and "next", so skipping them.
+              continue;
+            }
+
             let str = formatter.format(num, unit);
             if (str) {
-              let isFixed = true;
+              let type = formatType;
               str = str.replace(/\d+/, () => {
-                isFixed = false;
+                // Override type here if the format contains a digit to be
+                // "numeric" as "auto" format may still return numbers.
+                type = PHRASE_TYPE_NUMERIC;
                 return NUM_TOKEN;
               });
-
-              let phrase;
-              if (isFixed) {
-                phrase = {
-                  unit,
-                  value: num,
-                };
+              const phrase = {
+                type,
+                unit,
+              };
+              if (type === PHRASE_TYPE_FIXED) {
+                phrase.value = num;
               } else {
-                const dir = Math.max(-1, Math.min(1, num));
-                phrase = {
-                  dir,
-                  unit,
-                };
+                phrase.dir = Math.max(-1, Math.min(1, num));
               }
               phrases[str] = phrase;
             }
@@ -592,13 +830,18 @@ export default class LocaleParser {
     this.relativePhrases = phrases;
   }
 
+  buildAlternatePhrases() {
+    this.buildRelativeUnitPhrases(this.months, 'month', 'year');
+    this.buildRelativeUnitPhrases(this.weekdays, 'day', 'week');
+  }
+
   buildUnits() {
     const units = {};
     for (let unit of UNITS) {
       if (unit !== 'millisecond') {
         for (let num = -5; num < 5; num++) {
           const parts = formatPartsForUnit(num, unit, this.locale);
-          const part = parts.find((part) => part.type === 'unit');
+          const part = findPart(parts, 'unit');
           if (part) {
             units[part.value] = unit;
           }
@@ -608,32 +851,31 @@ export default class LocaleParser {
     this.units = units;
   }
 
-  buildRelativeFormats() {
-    this.buildRelativePhraseFormat();
-  }
-
-  buildRelativePhraseFormat() {
-    this.buildFormat(this.getRelativePhraseComponent());
-  }
-
-  buildRelativeUnitPhrases(relUnit, absUnit, arr) {
+  buildRelativeUnitPhrases(set, unit, relUnit) {
+    const type = PHRASE_TYPE_FIXED;
     const reg = RegExp(this.getUnits(relUnit).join('|'));
-    for (let phrase of this.getRelativePhrases(relUnit, true)) {
-      const { unit, value } = this.relativePhrases[phrase];
-      for (let i = 0; i < arr.length; i++) {
-        const key = phrase.replace(reg, arr[i]);
-        this.relativePhrases[key] = {
-          unit,
-          value,
-          absUnit,
-          absValue: i
-        };
+    for (let phrase of this.getRelativePhrases(relUnit, PHRASE_TYPE_FIXED)) {
+      const { value: relValue } = this.relativePhrases[phrase];
+      const arr = this.getTokens(set, 'long');
+      for (let value = 0; value < arr.length; value++) {
+        const token = arr[value];
+        // CJK locales have numeric months like 1月, where a phrase like
+        // "来1月" is meaningless, so filter them here.
+        if (!token.match(/\d/)) {
+          const key = phrase.replace(reg, token);
+          // Don't override existing phrases.
+          if (key !== phrase) {
+            this.relativePhrases[key] = {
+              type,
+              unit,
+              value,
+              relUnit,
+              relValue,
+            };
+          }
+        }
       }
     }
-  }
-
-  buildRegExp(src) {
-    return RegExp(`^${src}$`, 'i');
   }
 
   buildAlternateFormats() {
@@ -650,80 +892,88 @@ export default class LocaleParser {
     }
   }
 
-  getRelativeFormatters() {
+  getRelativeFormats() {
     return [
-      new Intl.RelativeTimeFormat(this.locale, {
-        numeric: 'auto',
-      }),
-      new Intl.RelativeTimeFormat(this.locale, {
-        numeric: 'always',
-      }),
-      ...(this.options.relativeFormats || []),
-      ...this.getAlternateRelativeFormats(),
+      ...this.getRelativeIntlFormats(),
+      ...this.getRelativeCustomFormats(),
     ];
   }
 
-  getAlternateRelativeFormats() {
-    const formats = [
-      ...(ALTERNATE_RELATIVE_FORMATS[this.locale] || []),
-      ...(ALTERNATE_RELATIVE_FORMATS[this.language] || []),
-    ];
-    return formats.map((fn) => {
-      return { format: fn };
+  getRelativeIntlFormats() {
+    return [PHRASE_TYPE_NUMERIC, PHRASE_TYPE_FIXED].map((type) => {
+      const formatter = new Intl.RelativeTimeFormat(this.locale, {
+        numeric: type === PHRASE_TYPE_NUMERIC ? 'always' : 'auto',
+      });
+      return {
+        type,
+        formatter,
+      };
     });
   }
 
-  getMonthSource() {
-    return this.getTokensWithAlternates(
-      this.months.source,
-      SHORT_MONTH_ALTERNATES
-    ).join('|');
+  getRelativeCustomFormats() {
+    return [
+      ...this.getInternalCustomFormatters(),
+      ...(this.options.relativeFormats || []),
+    ].map((formatter) => {
+      return { type: PHRASE_TYPE_FIXED, formatter };
+    });
   }
 
-  getWeekdaySource() {
-    return this.getTokensWithAlternates(
-      this.weekdays.source,
-      SHORT_WEEKDAY_ALTERNATES
-    ).join('|');
+  getInternalCustomFormatters() {
+    return [
+      ...(ALTERNATE_RELATIVE_FORMATS[this.locale] || []),
+      ...(ALTERNATE_RELATIVE_FORMATS[this.language] || []),
+    ].map((resolver) => {
+      return { format: resolver };
+    });
   }
 
-  getTokensWithAlternates(arr, obj) {
-    const alt = obj[this.language];
-    const alternates = alt ? Object.keys(alt) : [];
-    return [...arr, ...alternates];
+  getMonthSource(type) {
+    return this.getTokenSource(this.months, type);
   }
 
-  getRelativePhraseComponent() {
-    return {
-      src: `(${this.getRelativePhraseSource()})`,
-      groups: [
-        {
-          resolver: this.resolveRelativePhrase,
-          relative: true,
-        },
-      ],
-    };
+  getWeekdaySource(type) {
+    return this.getTokenSource(this.weekdays, type);
   }
 
-  getRelativePhraseSource(unit, fixed) {
-    let src = compileRegExpAlternates(this.getRelativePhrases(unit, fixed));
-    return src.replace(/NUM/g, this.getArticles() ? '\\w+' : '\\d+');
+  getDayPeriodSource(type) {
+    return this.getTokenSource(this.dayPeriods, type, (token) => {
+      // Normalize "am/pm" to accept optional periods. These are
+      // added as fixed tokens and apply to all locales.
+      return token.replace(/^([ap])m$/, '$1\\.?(?:m\\.?)?');
+    });
   }
 
-  getRelativePhrases(type, fixed) {
+  getEraSource(type) {
+    return this.getTokenSource(this.eras, type);
+  }
+
+  getRelativePhraseSource(unit, type) {
+    let src = compileRegExpAlternates(this.getRelativePhrases(unit, type));
+    return src.replace(/NUM/g, '-?\\w+');
+  }
+
+  getRelativePhrases(unit, type) {
     let phrases = Object.keys(this.relativePhrases);
-    if (type) {
+    if (unit) {
+      const units = UNIT_SHORTCUTS[unit] || [unit];
       phrases = phrases.filter((key) => {
-        const { unit, absUnit } = this.relativePhrases[key];
-        return unit === type || absUnit === type;
+        const { unit } = this.relativePhrases[key];
+        return units.includes(unit);
       });
     }
-    if (fixed) {
+    if (type) {
       phrases = phrases.filter((key) => {
-        return 'value' in this.relativePhrases[key];
+        const phrase = this.relativePhrases[key];
+        return phrase.type === type;
       });
     }
     return phrases;
+  }
+
+  getUnitSource(type) {
+    return compileRegExpAlternates(this.getUnits(type));
   }
 
   getUnits(type) {
@@ -736,58 +986,54 @@ export default class LocaleParser {
     return units;
   }
 
-  getArticles() {
-    return ARTICLES[this.language];
-  }
+  // --- Resolvers
 
   resolveMonth(str, opt) {
     const { absProps } = opt;
     resolveInteger(str, opt);
     if (!('month' in absProps)) {
-      str = str.replace(/\./g, '');
-      str = this.resolveShortAlternate(str, SHORT_MONTH_ALTERNATES);
-      absProps.month = this.months.normalized.indexOf(str) % 12;
+      const token = this.months[str];
+      if (token) {
+        absProps.month = token.value;
+      }
     }
   }
 
   resolveWeekday(str, { absProps }) {
-    str = str.replace(/\./g, '');
-    str = this.resolveShortAlternate(str, SHORT_WEEKDAY_ALTERNATES);
-    absProps.day = this.weekdays.normalized.indexOf(str) % 7;
+    const token = this.weekdays[str];
+    if (token) {
+      absProps.day = token.value;
+    }
   }
 
-  resolveShortAlternate(str, obj) {
-    const alt = obj[this.language];
-    if (alt && alt[str]) {
-      str = alt[str];
-    }
-    return str;
-  }
+  // --- English only resolvers
 
   resolveOffsetWeekday(str) {
     // An offset weekday such as "the 2nd Wednesday of February" implies a
     // weekday relative to the resolved month, so return a function here to
     // allow other units to be resolved before checking against the current
     // day and setting accordingly.
-    return (date) => {
+    return (date, absProps) => {
       const [ordinal, weekday] = str.split(' ');
       const mult = parseInt(ordinal, 10) - 1;
-      let day = this.weekdays.normalized.indexOf(weekday) % 7;
-      if (day < date.getDay()) {
-        day += 7;
+      const token = this.weekdays[weekday];
+      if (token) {
+        let day = token.value;
+        if (mult) {
+          day += 7 * mult;
+        }
+        setOffsetWeekday(date, day);
+        absProps.offsetWeekday = day;
       }
-      if (mult) {
-        day += 7 * mult;
-      }
-      setWeekday(date, day);
     };
   }
 
-  // English only
   resolveOffsetUnit(str) {
+    // Offset units such as "the day after tomorrow", etc.
     return (date, absProps, relProps) => {
       let [num, unit, dir] = str.split(' ');
-      num = parseLocaleNumber(num, this.language) || 1;
+      num = replaceLocaleNumerals(num, this.language);
+      num = parseInt(num) || 1;
       unit = unit.replace(/s$/, '');
       num *= dir === 'before' ? -1 : 1;
       advanceDate(date, {
@@ -797,32 +1043,61 @@ export default class LocaleParser {
     };
   }
 
+  resolveEdge(str) {
+    // Edge phrases like "the beginning of January", etc.
+    return (date, absProps, relProps) => {
+      const isEnd = str === 'end' || str === 'last day';
+      const { index } = getPropsSpecificity({
+        ...relProps,
+        ...absProps,
+      });
+      resetByIndex(date, index, isEnd, absProps);
+      if (str === 'first day' || str === 'last day') {
+        resetByUnit(date, 'day', false, absProps);
+      }
+    };
+  }
+
   resolveDayPeriod(str, { absProps }) {
     // The day period (am/pm) may appear before or after the hour, so need to
     // allow all resolvers to be called first, then advance the absolute hour
     // if it is set.
     return (date) => {
       str = str.replace(/\./g, '');
-      const index = this.dayPeriods.normalized.indexOf(str);
-      const pm = index % 2 === 1;
-      let hour = date.getHours();
-      if (pm && hour > 0 && hour < 12) {
-        hour += 12;
-        absProps.hour = hour;
-        date.setHours(hour);
+      str = str.replace(/^([ap])$/, '$1m');
+      const token = this.dayPeriods[str];
+      if (token) {
+        const { value } = token;
+        let targetHour;
+        if ('hour' in absProps) {
+          let hour = absProps.hour;
+          if (value >= 12 && hour > 0 && hour < 12) {
+            targetHour = hour + 12;
+          }
+        } else {
+          targetHour = value;
+        }
+        if (targetHour != null) {
+          date.setHours(targetHour);
+          absProps.hour = targetHour;
+        }
       }
     };
   }
 
   resolveEra(str) {
     // Era requires that the year first be set so return a post resolver here.
-    return (date) => {
+    return (date, absProps) => {
       str = str.replace(/\./g, '');
-      const index = this.eras.normalized.indexOf(str);
-      const bc = index % 2 === 0;
-      const year = date.getFullYear();
-      if (bc && year > 0) {
-        date.setFullYear(-year);
+      const token = this.eras[str];
+      if (token) {
+        const bc = token.value === 0;
+        let year = date.getFullYear();
+        if (bc && year > 0) {
+          year = -year;
+          date.setFullYear(year);
+          absProps.year = year;
+        }
       }
     };
   }
@@ -831,57 +1106,64 @@ export default class LocaleParser {
     let value;
     let phrase = this.relativePhrases[str];
     if (phrase) {
-      // Fixed phrases such as "tomorrow", etc. have an associated
-      // fixed value so simply set it here.
+      // Fixed phrases such as "tomorrow", etc. have an
+      // associated fixed value so simply set it here.
       value = phrase.value;
     } else {
-      // Non-fixed phrases such as "5 days from now", etc. require normalizing
+      // Non-fixed phrases such as "5 days from now" require normalizing
       // the phrase and parsing the value from the matched string, then applying
       // the implied direction, such as -1 for "ago", etc.
-      // in an hour replace
-      // in a week
-      // a week ago
-      str = str.replace(/\d+/, (match) => {
+      str = replaceLocaleNumerals(str, this.language);
+      str = str.replace(/-?\d+/, (match) => {
         value = parseInt(match, 10);
         return NUM_TOKEN;
       });
       phrase = this.relativePhrases[str];
       if (!phrase) {
-        // Attempt to replace articles as a fallback as we don't want
-        // to replace them in a string that already has a numeric format.
-        const articles = this.getArticles();
-        if (articles) {
-          str = str.replace(RegExp(articles), () => {
-            value = 1;
-            return NUM_TOKEN;
-          });
-          phrase = this.relativePhrases[str];
-        }
+        // Attempt to replace articles in relative phrases such as
+        // "an hour ago", "hace una hora", etc. as a fallback.
+        str = str.replace(/^\w+/, 'NUM');
+        phrase = this.relativePhrases[str];
+        // Set the value here for brevity. If the phrase
+        // was not matched it will not proceed below.
+        value = 1;
       }
     }
     if (phrase) {
-      const { unit, dir, absUnit, absValue } = phrase;
+      const { unit, dir, relUnit, relValue } = phrase;
       if (dir != null) {
         value *= phrase.dir;
       }
-      relProps[unit] = value;
-      if (absUnit) {
-        absProps[absUnit] = absValue;
+      if (relUnit) {
+        relProps[relUnit] = relValue;
+        absProps[unit] = value;
+      } else {
+        relProps[unit] = value;
       }
     }
   }
 
+  resolveRelativeUnit(str, { relProps }) {
+    // Out of context a unit for the most part has no meaning, so this on its
+    // own does not affect the date, however it provides an anchor point for
+    // resolving edges to allow formats like "the end of the day".
+    const unit = this.units[str];
+    relProps[unit] = 0;
+  }
+
   parse(str, options) {
-    // Parsing is case insensitive so normalize string
-    // to lowercase so that tokens are correctly matched.
+
+    // Parsing is case insensitive so downcase the
+    // string so that tokens are correctly matched.
     str = str.trim().toLowerCase();
+
     for (let format of this.formats) {
       const { reg, groups } = format;
       const match = str.match(reg);
       if (match) {
+        const date = new Date();
         const { past = false, future = false, explain = false, timeZone } = options;
         const preference = (-past + future);
-        const date = new Date();
         const origin = cloneDate(date);
         const absProps = {};
         const relProps = {};
@@ -910,6 +1192,7 @@ export default class LocaleParser {
         if (Object.keys(absProps).length > 0) {
           updateDate(date, absProps, true);
         }
+        //console.info(reg, match, absProps, relProps);
 
         // Some resolvers may require the date to be updated
         // before they can resolve, so push them into an array
@@ -933,9 +1216,20 @@ export default class LocaleParser {
               advanceDate(date, {
                 [unit]: preference,
               });
+              // If an offset weekday has been set (ie. "the 2nd Friday of
+              // November"), then advancing the date to accomodate a preference
+              // may change it as it will advance/rewind the year, so check and
+              // reset here if this is the case.
+              const { offsetWeekday } = absProps;
+              if (offsetWeekday != null && offsetWeekday % 7 !== date.getDay()) {
+                setOffsetWeekday(date, offsetWeekday);
+              }
             }
           }
         }
+
+        this.cacheFormat(format);
+
         if (explain) {
           return {
             date,
@@ -954,6 +1248,26 @@ export default class LocaleParser {
       }
     }
   }
+
+  cacheFormat(format) {
+    // If the format was matched then move it to the front of the array. In
+    // addition to matching repeated patterns much faster, this will naturally
+    // keep common patterns higher resulting in better overall performance.
+    const { formats } = this;
+    if (formats.indexOf(format) !== 0) {
+      const index = formats.indexOf(format);
+      formats.unshift(formats.splice(index, 1)[0]);
+    }
+  }
+
+}
+
+function setOffsetWeekday(date, day) {
+  date.setDate(1);
+  if (day % 7 < date.getDay()) {
+    day += 7;
+  }
+  setWeekday(date, day);
 }
 
 function findPart(parts, type) {
@@ -1016,7 +1330,7 @@ function buildNumericComponent() {
     if (type === 'timeZone') {
       resolver = resolveTimeZoneName;
     } else if (type === 'hour' || type === 'minute' || type === 'second') {
-      resolver = resolveDecimalTime;
+      resolver = resolveFractionalTime;
     } else {
       resolver = resolveInteger;
     }
@@ -1037,33 +1351,30 @@ function compilePartsFromFormat(str) {
       if (isToken) {
         let type = buffer;
         let style = 'numeric';
-        let fixed = false;
+        let phraseType;
         let relative = false;
         let optional = false;
-        type = type.replace(/^[A-Z]/, (str) => {
+        type = type.replace(/\b[A-Z]/g, (str) => {
           style = 'long';
           return str.toLowerCase();
         });
-        type = type.replace(/^relative /, () => {
-          style = 'long';
+        type = type.replace(/(any )?relative (.+)/, (str, any, unit) => {
+          phraseType = any ? null : 'fixed';
           relative = true;
-          return '';
-        });
-        type = type.replace(/^fixed /, () => {
           style = 'long';
-          fixed = true;
-          return '';
+          return unit === 'unit' ? '' : unit;
         });
         type = type.replace(/\?$/, () => {
           optional = true;
           return '';
         });
+        type = type.trim();
         parts.push({
           type,
           style,
-          fixed,
-          relative,
           optional,
+          relative,
+          phraseType,
         });
       } else {
         parts.push({
@@ -1137,7 +1448,7 @@ function resolveTimestamp(str, { absProps }) {
   };
 }
 
-function resolveDecimalTime(str, { type, absProps }) {
+function resolveFractionalTime(str, { type, absProps }) {
   str = str.replace(',', '.');
   const num = parseFloat(str);
   absProps[type] = Math.trunc(num);
@@ -1214,15 +1525,22 @@ const ALTERNATE_RELATIVE_FORMATS = {
 
 const ALTERNATE_DATETIME_FORMATS = {
   default: [
-    '<weekday><time?>',
-    '<time?><weekday>',
-    '<relative day> <time>',
-    '<time> <relative day>',
-    '<relative week> <weekday><time?>',
+    // TODO: go through formats and check they're matching what we think they should
+    '<weekday> <time?>',
+    '<time?> <weekday>',
+    // "last year", "this month", "next week" etc.
+    // "now", "1 minute ago", etc.
+    '<any relative unit>',
+    // "10am tomorrow", "10:30pm in 5 days", etc.
+    '<time?> <any relative day>',
+    // "today at 10am"
+    '<any relative day> <time?>',
+    // "next week Friday at 10:30pm" etc.
+    '<relative week> <weekday> <time?>',
     // All locales should parse an unambiguous numeric DateTime with
     // "-" or "/" as separators. Unambiguous here means year first and no
     // 2-digit years allowed.
-    '<year>[-/]<month>[-/]<day> <time?>',
+    '<yyyy>[-/]<month>[-/]<day> <time?>',
     // .NET Alternate JSON Date format. Yes, this looks ridiculous.
     '\\\\\\/Date\\(<timestamp>(?:[-+]\\d{4})?\\)\\\\\\/',
   ],
@@ -1241,155 +1559,70 @@ const ALTERNATE_DATETIME_FORMATS = {
     // - 2020-Jan-02 (2020-01-02)
     // - Jan-02      (yyyy-01-02)
     // - 02-Jan      (yyyy-01-02)
-    '(?:<yyyy>-)?<Month>[-\\s]<day><time?>',
-    '<day>-<Month>(?:-<year>)?<time?>',
-    '<day> <Month>[.,]* <year><time?>',
-    '<Month>(?: of)? <relative year>',
-    'the <day>(?: of (?:<relative month>|<Month>|the month))?',
-    'the <offset weekday> of <relative month>',
-    '<offset> <relative fixed day>',
-    '<offset> <weekday>',
-    '<Weekday>(?: of)? <relative week>',
-    '<Weekday>,? <day> <Month> <yyyy>(?:<time>(?:<timeZoneName>)?)?', // IETF
+    '(?:<yyyy>-)?<Month>[-\\s]<day> <time?>',
+    '<day>-<Month>(?:-<year>)? <time?>',
+    '<day> <Month> <year> <time?>',
+    '<Month>(?: <day>)?(?: of)? <relative year>',
+    'the <day>(?: of (?:<relative month>|<Month>|the month))? <time?>',
+    'the <offset weekday> of (?:<relative month>|<Month>)(?:,? <year>)?',
+    '<edge> (?:<relative upper>|<relative day>|the <unit>|<year>)',
+    '<edge>(?: day)? <Weekday>',
+    '<edge> <Month>(?:,? <year>)?',
+    '<offset unit> (?:<relative day>|<weekday>) <time?>',
+    '<Weekday>(?: of)? <relative week><time?>',
+    '<Weekday>,? <day> <Month> <yyyy> <time> <timeZoneName>', // IETF
   ],
 };
 
-const SHORT_MONTH_ALTERNATES = {
-  [ENGLISH]: {
-    sept: 'sep',
+const DAY_PERIODS = {
+  default: {
+    am: {
+      value: 0,
+      type: 'fixed',
+    },
+    pm: {
+      value: 12,
+      type: 'fixed',
+    },
   },
+  // These will no longer be required when explicit dayPeriod format
+  // lands. TRACK: https://github.com/tc39/ecma402/pull/346
+  [ENGLISH]: {
+    'noon': {
+      value: 12,
+      type: 'long',
+    },
+    'midnight': {
+      value: 24,
+      type: 'long',
+    },
+    'in the morning': {
+      value: 6,
+      type: 'long',
+    },
+    'in the evening': {
+      value: 18,
+      type: 'long',
+    },
+    'in the afternoon': {
+      value: 13,
+      type: 'long',
+    },
+    'at night': {
+      value: 20,
+      type: 'long',
+    }
+  }
 };
 
-const SHORT_WEEKDAY_ALTERNATES = {
+const TOKEN_ALIASES = {
   [ENGLISH]: {
+    sept: 'sep',
     tues: 'tue',
     thurs: 'thu',
   },
 };
 
-const ARTICLES = {
-  [ENGLISH]: 'an?|the',
-};
-
-function dayMonthIsAmbiguous(locale) {
-  return DAY_MONTH_AMBIGUOUS_LOCALES[locale] || false;
-}
-
 const DAY_MONTH_AMBIGUOUS_LOCALES = {
   'en-CA': true,
 };
-
-// Compiles optimized regex alternates from an array.
-// Expected input is relatively well structured, for example:
-//
-// 1. "NUM days ago", "NUM months from now", "in NUM weeks", etc.
-// 2. "NUM 日前", "NUM ヶ月後", "NUM 週前", etc.
-//
-// Basic approach:
-//
-// - Group by length of space-split token array.
-// - Build a simple trie of tokens for each group of the same length.
-// - Traverse once into the trie to take top-level branches as separate.
-// - Traverse further until there is a divergence.
-// - At the first divergence begin walking the trie building up unique
-//   token sets for every level.
-// - Push all sub-level token sets as non-capturing groups.
-//
-// Notes:
-//
-// - Grouping by length avoids complexity of dealing with non-required
-//   groups. This could be optimized further but works well for this data
-//   set and produces an easily readable regex.
-//
-// - Traversing once into the trie at the top level produces better results
-//   for this data set as past/future formats usually diverge at the first token
-//   but not after that until the unit is encountered.
-//
-// - Assuming sub-level tokens apply to all branches at the point of divergence
-//   may result in false positive matches, however this is acceptable for the
-//   purpose of greedy date parsing here.
-//
-// - CJK languages like Japanese and Chinese do not benefit as much as they do
-//   not use spaces but tend to be more structured anyway, so this method still
-//   works well.
-//
-// - Further optimization may be possible by recursive grouping on common
-//   prefixes/suffixes from both ends, however it adds significant complexity
-//   and could potentially result in incorrectly slicing non-BMP tokens. Using
-//   spaces as a separator splits the difference and produces generally good
-//   results for date formats.
-function compileRegExpAlternates(arr) {
-  return Object.values(groupTokensByLength(arr))
-    .map((group) => {
-      const trie = buildTokenTrie(group);
-      return Object.entries(trie)
-        .map(([key, branch]) => {
-          const tokens = [key];
-          let keys = Object.keys(branch);
-          while (keys.length === 1) {
-            tokens.push(keys[0]);
-            branch = branch[keys[0]];
-            keys = Object.keys(branch);
-          }
-          if (keys.length > 1) {
-            const sets = [];
-            walkTrie(branch, (key, level) => {
-              let set = sets[level];
-              if (!set) {
-                set = sets[level] = new Set();
-              }
-              set.add(key);
-            });
-            for (let set of sets) {
-              tokens.push(getNonCapturingGroup(Array.from(set)));
-            }
-          }
-          return tokens.join(' ');
-        })
-        .join('|');
-    })
-    .join('|');
-}
-
-function groupTokensByLength(arr) {
-  const groups = {};
-  for (let str of arr) {
-    const tokens = str.split(' ');
-    const len = tokens.length;
-    let group = groups[len];
-    if (!group) {
-      group = groups[len] = [];
-    }
-    group.push(tokens);
-  }
-  return groups;
-}
-
-function buildTokenTrie(arr) {
-  const trie = {};
-  for (let tokens of arr) {
-    let branch = trie;
-    for (let token of tokens) {
-      if (!branch[token]) {
-        branch[token] = {};
-      }
-      branch = branch[token];
-    }
-  }
-  return trie;
-}
-
-function walkTrie(trie, fn, level = 0) {
-  for (let [key, branch] of Object.entries(trie)) {
-    fn(key, level);
-    walkTrie(branch, fn, level + 1);
-  }
-}
-
-function getNonCapturingGroup(arr) {
-  let src = arr.join('|');
-  if (arr.length > 1) {
-    src = `(?:${src})`;
-  }
-  return src;
-}
