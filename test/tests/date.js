@@ -91,6 +91,8 @@ namespace('Date', function () {
           assertDateEqual(create('2001-01-1'),   new Date(2001, 0, 1));
           assertDateEqual(create('2001-01-01'),  new Date(2001, 0, 1));
           assertDateEqual(create('2010-11-22'),  new Date(2010, 10, 22));
+
+          assertDateEqual(create('2012-05-31'), new Date(2012, 4, 31));
         });
 
         it('should parse without timezone offset', () => {
@@ -150,6 +152,9 @@ namespace('Date', function () {
 
           assertDateEqual(create('1994-11-05T13:15:30Z'), new Date(1994, 10, 5, 8, 15, 30));
           assertDateEqual(create('2001-04-03T18:30Z'), new Date(2001, 3, 3, 13, 30));
+
+          assertDateEqual(create('1994-11-05T13:15:30Z'), new Date(1994, 10, 5, 8, 15, 30));
+
         });
 
         it('should parse basic format', () => {
@@ -302,6 +307,9 @@ namespace('Date', function () {
           assertDateEqual(create('08-25-1978 11:42am'), new Date(1978, 7, 25, 11, 42));
           assertDateEqual(create('08-25-1978 11:42:32am'), new Date(1978, 7, 25, 11, 42, 32));
           assertDateEqual(create('08-25-1978 11:42:32.488am'), new Date(1978, 7, 25, 11, 42, 32, 488));
+
+          assertDateEqual(create('1998-02-23 11:54:32'), new Date(1998,1,23,11,54,32));
+          assertDateEqual(create('08-25-1978 11:42:32.488am'), new Date(1978, 7, 25, 11, 42, 32, 488));
         });
 
         it('should parse slash format', () => {
@@ -359,6 +367,11 @@ namespace('Date', function () {
           assertUndefined(create('139:00'));
         });
 
+        it('should handle Issue #98', () => {
+          mockTimeZone(300); // GMT-05:00
+          assertDateEqual(create('2011-09-01T05:00:00Z'), new Date(2011, 8, 1));
+        });
+
       });
 
     });
@@ -407,6 +420,7 @@ namespace('Date', function () {
         assertDateEqual(create('Thu. July 3rd, 2008'), new Date(2008, 6, 3));
       });
 
+
       it('should parse short weekday with long month and year', () => {
         assertDateEqual(create('Mon January 16, 2012'),   new Date(2012, 0, 16));
         assertDateEqual(create('Mon. January 16, 2012'),   new Date(2012, 0, 16));
@@ -418,6 +432,7 @@ namespace('Date', function () {
         assertDateEqual(create('1 Dec., 2008'),   new Date(2008, 11, 1));
         assertDateEqual(create('1 Dec, 2008'),    new Date(2008, 11, 1));
         assertDateEqual(create('June 1st, 2008 12:04'), new Date(2008, 5, 1, 12, 4));
+        assertDateEqual(create('February 29, 2012 22:15:42'), new Date(2012, 1, 29, 22, 15, 42));
       });
 
       it('should parse short weekday with short month and year', () => {
@@ -775,9 +790,27 @@ namespace('Date', function () {
         assertDateEqual(create('1 January 3:45pm'), new Date(2020, 0, 1, 15, 45));
 
         assertDateEqual(create("'87"), new Date(1987, 0));
-        //assertDateEqual(create("May '87"), new Date(1987, 4));
-        //assertDateEqual(create("14 May '87"), new Date(1987, 4, 14));
+        assertDateEqual(create("May '87"), new Date(1987, 4));
+        assertDateEqual(create("14 May '87"), new Date(1987, 4, 14));
 
+      });
+
+      it('should handle Issue #144', () => {
+        assertDateEqual(create('6/30/2012 3:00 PM'), new Date(2012, 5, 30, 15));
+        assertDateEqual(create('Thursday at 3:00 PM'), new Date(2020, 0, 2, 15));
+        assertDateEqual(create('Thursday at 3:00PM'), new Date(2020, 0, 2, 15));
+      });
+
+      it('should handle Issue #152', () => {
+        assertDateEqual(create('3:45 2012-3-15'), new Date(2012, 2, 15, 3, 45));
+        assertDateEqual(create('3:45pm 2012-3-15'), new Date(2012, 2, 15, 15, 45));
+        assertDateEqual(create('3:45pm 3/15/2012'), new Date(2012, 2, 15, 15, 45));
+        assertDateEqual(create('3:45pm 3/4/2012', 'en-GB'), new Date(2012, 3, 3, 15, 45));
+      });
+
+      it('should handle Issue #244', () => {
+        assertDateEqual(create('0999'), new Date(999, 0));
+        assertDateEqual(create('0123'), new Date(123, 0));
       });
 
     });
@@ -792,6 +825,11 @@ namespace('Date', function () {
         assertDateEqual(create('10am'), new Date(2020, 0, 1, 10));
         assertDateEqual(create('10pm'), new Date(2020, 0, 1, 22));
         assertDateEqual(create('1pm'), new Date(2020, 0, 1, 13));
+      });
+
+      it('should parse 12:00am correctly', () => {
+        assertDateEqual(create('12:00am'), new Date(2020, 0));
+        assertDateEqual(create('12am'), new Date(2020, 0));
       });
 
       it('should parse 24-hour time with minutes', () => {
@@ -1071,11 +1109,30 @@ namespace('Date', function () {
         assertDateEqual(create('5 days from now at 3:00pm'), new Date(2020, 0, 6, 15));
       });
 
-      it('should parse basic explicit dayPeriod', () => {
+      it('should parse explicit dayPeriod', () => {
         assertDateEqual(create('midnight'), new Date(2020, 0, 2));
         assertDateEqual(create('tomorrow at midnight'), new Date(2020, 0, 3));
         assertDateEqual(create('midnight Tuesday'), new Date(2020, 0));
         assertDateEqual(create('midnight on Tuesday'), new Date(2020, 0));
+        assertDateEqual(create('10am in the morning'), new Date(2020, 0, 1, 10));
+      });
+
+      it('should shift the hours when an implied dayPeriod is not supplied', () => {
+        assertDateEqual(create('10 in the morning'), new Date(2020, 0, 1, 10));
+        assertDateEqual(create('10 in the evening'), new Date(2020, 0, 1, 22));
+        assertDateEqual(create('10 at night'), new Date(2020, 0, 1, 22));
+        assertDateEqual(create('11 at night'), new Date(2020, 0, 1, 23));
+        assertDateEqual(create('12 in the morning'), new Date(2020, 0, 1));
+        assertDateEqual(create('12 in the evening'), new Date(2020, 0, 1));
+        assertDateEqual(create('3 in the afternoon'), new Date(2020, 0, 1, 15));
+        assertDateEqual(create('4 in the evening'), new Date(2020, 0, 1, 16));
+      });
+
+      it('should not override the implied dayPeriod', () => {
+        // This is unavoidable as when dealing with compound dayPeriods the last
+        // one must win, otherwise a state machine is required to determine which
+        // was set first. This format is ambiguous at best so refusing to override.
+        assertDateEqual(create('10am in the evening'), new Date(2020, 0, 1, 22));
       });
 
       it('should parse relative week with weekday', () => {

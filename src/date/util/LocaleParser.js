@@ -370,7 +370,7 @@ export default class LocaleParser {
     //
     // Both forms of the day/month variants are used in Canada so
     // they should not be parseable here (https://bit.ly/3kMZ14j)
-    if (!DAY_MONTH_AMBIGUOUS_LOCALES[this.locale]) {
+    if (!this.dayMonthIsAmbiguous()) {
       this.buildIntlFormat({
         month: 'numeric',
         day: 'numeric',
@@ -677,7 +677,7 @@ export default class LocaleParser {
       secondGroup,
     ];
     if (this.partOrderMatches('hour', 'dayPeriod')) {
-      const dpf = this.getDayPeriodSource('fixed');
+      const dpf = this.getDayPeriodSource('implied');
       const dpl = this.getDayPeriodSource('long');
       const dp = `(?:\\s?(${dpf}))?(?:\\s?(${dpl}))?`;
       src = `(?!\\s)(${REG_HOUR}(?!$))?(?::(${REG_MIN})?)?(?::(${REG_SEC}))?${dp}`;
@@ -911,7 +911,7 @@ export default class LocaleParser {
       ...(this.options.dateTimeFormats || []),
     ];
     for (let format of formats) {
-      const parts = compilePartsFromFormat(format);
+      const parts = this.compilePartsFromFormat(format);
       const component = this.getComponentFromParts(parts);
       this.buildFormat(component);
     }
@@ -1101,14 +1101,57 @@ export default class LocaleParser {
       str = str.replace(/^([ap])$/, '$1m');
       const token = this.dayPeriods[str];
       if (token) {
-        const { value } = token;
+        const { type, value } = token;
         let targetHour;
         if ('hour' in absProps) {
+          // When an hour is set then a dayPeriod may result in a shift:
+          //
+          // "10:00pm" -> "22:00"
+          // "12:00am" -> "00:00"
+          // "10 in the evening" -> "22:00"
+          // "12 in the morning" -> "00:00"
+          // "10 at night" -> "22:00"
+          //
+          // Note that many of these formats are
+          // best-effort as ambiguity exists:
+          //
+          // "12 in the evening" => "00:00" (???)
+          // "4 in the evening"  => "16:00" (???)
+          // "4 at night"        => "04:00" (???)
+
           let hour = absProps.hour;
-          if (value >= 12 && hour > 0 && hour < 12) {
-            targetHour = hour + 12;
+          if (type === 'implied') {
+
+            // An "implied" type of "am/pm" should simply set the hour
+            // ahead if the "pm" token exists and the hour is before 12,
+            // or shift back if the hour is 12 and the "am" token exists.
+
+            if (hour > 0 && hour < 12 && value === 12) {
+              targetHour = hour + 12;
+            } else if (hour === 12 && value === 0) {
+              targetHour = hour - 12;
+            }
+          } else {
+
+            // An "explicit" type such as "in the evening" needs to so
+            // something a bit more subtle as these forms are ambiguous.
+
+            if (hour < 12 && value >= 12) {
+              targetHour = hour + 12;
+            } else if (hour === 12 && (value <= 6 || value >= 18)) {
+              targetHour = hour - 12;
+            }
           }
         } else {
+          // When the hour has not been set then an explicit dayPeriod may set
+          // it. Note that implied dayPeriods "am/pm" should not be allowed
+          // without the hour, so they should never make it this far. Examples:
+          //
+          // "in the evening" -> "18:00"
+          // "at night" -> "20:00"
+          // "noon" -> "12:00"
+          // "midnight" -> "24:00" (advances the day)
+
           targetHour = value;
         }
         if (targetHour != null) {
@@ -1189,6 +1232,86 @@ export default class LocaleParser {
     // resolving edges to allow formats like "the end of the day".
     const unit = this.units[str];
     relProps[unit] = 0;
+  }
+
+  compilePartsFromFormat(str) {
+
+    str = this.runFormatExpansions(str);
+
+    function flush() {
+      if (buffer) {
+        if (isToken) {
+          let type = buffer;
+          let style = 'numeric';
+          let phraseType;
+          let relative = false;
+          let optional = false;
+          type = type.replace(/\b[A-Z]/g, (str) => {
+            style = 'long';
+            return str.toLowerCase();
+          });
+          type = type.replace(/(any )?relative (.+)/, (str, any, unit) => {
+            phraseType = any ? null : 'fixed';
+            relative = true;
+            style = 'long';
+            return unit === 'unit' ? '' : unit;
+          });
+          type = type.replace(/\?$/, () => {
+            optional = true;
+            return '';
+          });
+          type = type.trim();
+          parts.push({
+            type,
+            style,
+            optional,
+            relative,
+            phraseType,
+          });
+        } else {
+          parts.push({
+            type: 'source',
+            value: buffer,
+          });
+        }
+      }
+      buffer = '';
+    }
+
+    let buffer = '';
+    let isToken = false;
+    const parts = [];
+
+    for (let char of str) {
+      if (char === '<') {
+        flush();
+        isToken = true;
+      } else if (char === '>') {
+        flush();
+        isToken = false;
+      } else {
+        buffer += char;
+      }
+    }
+    flush();
+    return parts;
+  }
+
+  dayMonthIsAmbiguous() {
+    return DAY_MONTH_AMBIGUOUS_LOCALES[this.locale];
+  }
+
+  runFormatExpansions(str) {
+    str = str.replace(/<dayMonth>/, () => {
+      if (this.dayMonthIsAmbiguous()) {
+        return '';
+      } else if (this.partOrderMatches('day', 'month')) {
+        return '<day>[-/]<month>';
+      } else {
+        return '<month>[-/]<day>';
+      }
+    });
+    return str;
   }
 
   parse(str, options) {
@@ -1389,66 +1512,6 @@ function buildNumericComponent() {
   };
 }
 
-function compilePartsFromFormat(str) {
-  function flush() {
-    if (buffer) {
-      if (isToken) {
-        let type = buffer;
-        let style = 'numeric';
-        let phraseType;
-        let relative = false;
-        let optional = false;
-        type = type.replace(/\b[A-Z]/g, (str) => {
-          style = 'long';
-          return str.toLowerCase();
-        });
-        type = type.replace(/(any )?relative (.+)/, (str, any, unit) => {
-          phraseType = any ? null : 'fixed';
-          relative = true;
-          style = 'long';
-          return unit === 'unit' ? '' : unit;
-        });
-        type = type.replace(/\?$/, () => {
-          optional = true;
-          return '';
-        });
-        type = type.trim();
-        parts.push({
-          type,
-          style,
-          optional,
-          relative,
-          phraseType,
-        });
-      } else {
-        parts.push({
-          type: 'source',
-          value: buffer,
-        });
-      }
-    }
-    buffer = '';
-  }
-
-  let buffer = '';
-  let isToken = false;
-  const parts = [];
-
-  for (let char of str) {
-    if (char === '<') {
-      flush();
-      isToken = true;
-    } else if (char === '>') {
-      flush();
-      isToken = false;
-    } else {
-      buffer += char;
-    }
-  }
-  flush();
-  return parts;
-}
-
 function resolveYear(str, opt) {
   str = str.replace(/^'/, '');
   resolveInteger(str, opt);
@@ -1635,6 +1698,8 @@ const ALTERNATE_DATETIME_FORMATS = {
     // - 02-Jan      (yyyy-01-02)
     '(?:<yyyy>-)?<Month>[-\\s]<day><time?>',
     '<day>-<Month>(?:-<year>)?<time?>',
+    '<time?><yyyy>[-/]<month>[-/]<day>',
+    '<time?><dayMonth>[-/]<yyyy>',
     '<day> <Month>(?: <year>)?<time?>',
     '<Month>(?: <day>)?(?: of)? <relative year>',
     'the <day>(?: of (?:<relative month>|<Month>|the month))?<time?>',
@@ -1652,11 +1717,11 @@ const DAY_PERIODS = {
   default: {
     am: {
       value: 0,
-      type: 'fixed',
+      type: 'implied',
     },
     pm: {
       value: 12,
-      type: 'fixed',
+      type: 'implied',
     },
   },
   // These will no longer be required when explicit dayPeriod format lands
