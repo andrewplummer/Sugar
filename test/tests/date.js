@@ -813,6 +813,52 @@ namespace('Date', function () {
         assertDateEqual(create('0123'), new Date(123, 0));
       });
 
+      it('should handle Issue #636', () => {
+
+        // Dates are absolutely allowed to overshoot for
+        // their given locale, as this mirrors the Date API.
+
+        assertDateEqual(create('19/6/2018'), new Date(2019, 6, 6));
+        assertDateEqual(create('13/6/2018'), new Date(2019, 0, 6));
+        assertDateEqual(create('0/6/2018'),  new Date(2017, 11, 6));
+
+        assertDateEqual(create('1/0/2018'),  new Date(2017, 11, 31));
+        assertDateEqual(create('1/32/2018'), new Date(2018, 1));
+        assertDateEqual(create('1/0/2018'),  new Date(2017, 11, 31));
+        assertDateEqual(create('1/00/2018'), new Date(2017, 11, 31));
+
+        // Years up to 6 digits should be parsed.
+
+        assertDateEqual(create('1/1/10000'),  new Date(10000, 0, 1));
+        assertDateEqual(create('1/1/100000'), new Date(100000, 0, 1));
+        assertUndefined(create('1/1/1000000'));
+
+        // Hours from 24-29 may be locale dependent and are allowed.
+        assertDateEqual(create('25:00'), new Date(2020, 0, 2, 1));
+        assertDateEqual(create('29:59'), new Date(2020, 0, 2, 5, 59));
+        assertUndefined(create('30:00'));
+
+        // Unreasonable hours are not allowed.
+        assertUndefined(create('125:00'));
+        assertUndefined(create('00:00:125.999'));
+
+        // To allow for app-specific logic you can use the "explain" option
+        // to discover the parsed month. If it is greater than 11 perform
+        // error handling, etc.
+
+        const { absProps } = create({
+          cache: false,
+          explain: true,
+          input: '19/6/2018',
+        });
+
+        assertObjectEqual(absProps, {
+          month: 18,
+          date: 6,
+          year: 2018,
+        });
+      });
+
     });
 
     describe('Time Formats', () => {
@@ -1621,6 +1667,15 @@ namespace('Date', function () {
       it('should handle Issue #572', () => {
         assertDateEqual(createFuture('this week tuesday at 5pm'), new Date(2019, 11, 31, 17));
         assertDateEqual(createFuture('today at 5pm'), new Date(2020, 0, 1, 17));
+      });
+
+      it('should handle Issue #210', () => {
+        assertDateEqual(createFuture('Sunday at 3:00'), new Date(2020, 0, 5, 3));
+      });
+
+      it('should handle Issue #383', () => {
+        assertDateEqual(createPast('12/20/30'), new Date(1930, 11, 20));
+        assertDateEqual(createFuture('12/20/98'), new Date(2098, 11, 20));
       });
 
     });

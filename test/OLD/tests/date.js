@@ -14,26 +14,6 @@ namespace('Date', function () {
 
   });
 
-  group('Create | Future Dates', function() {
-
-    // Ensure that dates don't traverse TOO far into the past/future
-    equal(run(testCreateFutureDate('January'), 'monthsFromNow') > 12, false, 'no more than 12 months from now');
-    equal(run(testCreateFutureDate('December'), 'monthsFromNow') > 12, false, 'no more than 12 months from now');
-
-    // Issue #210
-
-    equal(testCreateFutureDate('Sunday at 3:00').getDay(), 0, 'Date.future | weekday should never be ambiguous');
-
-  });
-
-  group('Create | 2-digit years', function() {
-
-    // Issue #383 Date.past in 2-digit years
-    equal(testCreatePastDate('12/20/30'), new Date(1930,11,20), 'Date.past | 1923-12-20');
-    equal(testCreateFutureDate('12/20/98'), new Date(2098,11,20), 'Date.future | 2098-12-20');
-
-  });
-
   group('Create | Invalid Dates', function() {
 
     testCreateFakeLocale('fo');
@@ -56,53 +36,6 @@ namespace('Date', function () {
     equal(run(testCreateDate('saturday', 'en'), 'isSaturday'), true, 'isSaturday should always work regardless of locale');
     equal(run(testCreateDate('sunday', 'en'), 'isSunday'), true, 'isSunday should always work regardless of locale');
     testSetLocale('en');
-
-  });
-
-  group('Create | Out of bounds', function() {
-    // TODO: Note out of bounds dates here should no longer
-    // parse after native fallback is removed.
-
-    // Issue #636 - Months
-    // Note that formats like 2/30/2018 are intentionally
-    // NOT considered out of bounds to simplify logic as well
-    // as retain parity with most browser vendors.
-    assertDateParsed('19/6/2018', new Date('19/6/2018'));
-    assertDateParsed('13/6/2018', new Date('13/6/2018'));
-    assertDateParsed('0/6/2018',  new Date('0/6/2018'));
-
-    // Years
-    assertDateParsed('1/1/10000',  new Date(10000, 0, 1));
-    assertDateParsed('1/1/100000', new Date(100000, 0, 1));
-
-    // Note that spec indicates valid dates are 8.64E15 ms on
-    // either side of the unix epoch. This translates to the
-    // year 275760, however for simplicity parsing allows any
-    // year between 4-6 digits.
-    assertDateNotParsed('1/1/1000000');
-
-    // Dates
-    assertDateParsed('1/0/2018',  new Date('1/0/2018'));
-    assertDateParsed('1/32/2018', new Date('1/32/2018'));
-    assertDateParsed('1/0/2018',  new Date('1/0/2018'));
-    assertDateParsed('1/00/2018', new Date('1/00/2018'));
-
-    // Hours
-    assertDateNotParsed('25:00');
-    assertDateNotParsed('30:00');
-    assertDateNotParsed('125:00');
-
-    // Chrome seems to (mistakenly?) parse minutes and seconds here as years.
-    // Can add this back when native fallbacks are turned off.
-
-    // Minutes
-    //assertDateNotParsed('00:60');
-    //assertDateNotParsed('00:125');
-
-    // Seconds
-    //assertDateNotParsed('00:00:60');
-    //assertDateNotParsed('00:00:125');
-    assertDateNotParsed('00:00:125.999');
 
   });
 

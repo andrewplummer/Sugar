@@ -18,7 +18,7 @@ const ENGLISH = 'en';
 
 // Parses positive or negative 4 digit years. Note that years
 // with greater digits are only parseable in ISO-8601 format.
-const REG_YEAR = '[+-]?\\d{4}';
+const REG_YEAR = '[+-]?\\d{4,6}';
 
 // Hour 0-29 parseable to support some
 // locales that allow hours to overshoot.
@@ -680,7 +680,7 @@ export default class LocaleParser {
       const dpf = this.getDayPeriodSource('implied');
       const dpl = this.getDayPeriodSource('long');
       const dp = `(?:\\s?(${dpf}))?(?:\\s?(${dpl}))?`;
-      src = `(?!\\s)(${REG_HOUR}(?!$))?(?::(${REG_MIN})?)?(?::(${REG_SEC}))?${dp}`;
+      src = `(?!\\s)(${REG_HOUR}(?=\\D))?(?::(${REG_MIN})?)?(?::(${REG_SEC}))?${dp}`;
       groups = [
         ...groups,
         dayPeriodGroup,
@@ -1041,7 +1041,7 @@ export default class LocaleParser {
     // weekday relative to the resolved month, so return a function here to
     // allow other units to be resolved before checking against the current
     // day and setting accordingly.
-    return (date, absProps) => {
+    return (date, { absProps }) => {
       let [ordinal, weekday] = str.split(' ');
       ordinal = replaceOrdinals(ordinal);
       const token = this.weekdays[weekday];
@@ -1064,7 +1064,7 @@ export default class LocaleParser {
 
   resolveOffsetUnit(str) {
     // Offset units such as "the day after tomorrow", etc.
-    return (date, absProps, relProps) => {
+    return (date, { relProps }) => {
       let [num, unit, dir] = str.split(' ');
       num = replaceLocaleNumerals(num, this.language);
       num = parseFloat(num) || 1;
@@ -1079,7 +1079,7 @@ export default class LocaleParser {
 
   resolveEdge(str) {
     // Edge phrases like "the beginning of January", etc.
-    return (date, absProps, relProps) => {
+    return (date, { absProps, relProps }) => {
       const isEnd = str === 'end' || str === 'last day';
       const { index } = getPropsSpecificity({
         ...relProps,
@@ -1164,7 +1164,7 @@ export default class LocaleParser {
 
   resolveEra(str) {
     // Era requires that the year first be set so return a post resolver here.
-    return (date, absProps) => {
+    return (date, { absProps }) => {
       str = str.replace(/\./g, '');
       const token = this.eras[str];
       if (token) {
@@ -1340,9 +1340,11 @@ export default class LocaleParser {
             // Use public class field instead of .call here when this
             // proposal lands.
             const fn = resolver.call(this, str, {
+              date,
               type,
               absProps,
               relProps,
+              preference,
             });
             if (fn) {
               post.push(fn);
@@ -1360,7 +1362,11 @@ export default class LocaleParser {
         // before they can resolve, so push them into an array
         // above and call them here.
         for (let fn of post) {
-          fn(date, absProps, relProps);
+          fn(date, {
+            absProps,
+            relProps,
+            preference,
+          });
         }
 
         //console.info(reg, match, absProps, relProps);
@@ -1512,12 +1518,12 @@ function buildNumericComponent() {
   };
 }
 
-function resolveYear(str, opt) {
+function resolveYear(str, options) {
   str = str.replace(/^'/, '');
-  resolveInteger(str, opt);
+  resolveInteger(str, options);
   if (str.length === 2) {
-    const { date, absProps } = opt;
-    absProps.year = getTwoDigitYear(absProps.year, date);
+    const { date, absProps, preference } = options;
+    absProps.year = getTwoDigitYear(absProps.year, date, preference);
   }
 }
 
@@ -1636,15 +1642,15 @@ function ensureLocale(locale) {
   return locale;
 }
 
-function getTwoDigitYear(year, date, prefer) {
+function getTwoDigitYear(year, date, preference) {
   // Following IETF here, adding 1900 or 2000 depending on the last two digits.
   // Note that this makes no accordance for what should happen after 2050, but
   // intentionally ignoring this for now. https://www.ietf.org/rfc/rfc2822.txt
   year += year < 50 ? 2000 : 1900;
-  if (prefer) {
+  if (preference) {
     const delta = year - date.getFullYear();
-    if (delta / Math.abs(delta) !== prefer) {
-      year += prefer * 100;
+    if (delta / Math.abs(delta) !== preference) {
+      year += preference * 100;
     }
   }
   return year;
