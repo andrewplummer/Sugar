@@ -4,7 +4,7 @@ import { setWeekday } from './weekdays';
 import { setTimeZoneOffset, setIANATimeZone } from './timeZone';
 import { resetByIndex, resetByUnit } from './reset';
 import { isNaN, isString } from '../../util/typeChecks';
-import { cloneDate } from '../../util/date';
+import { cloneDate } from '../../util/clone';
 import { UNITS, getPropsSpecificity, getAdjacentUnit, formatPartsForUnit, getUnitMultiplier } from './units';
 import { replaceLocaleNumerals } from './numerals';
 import { REG_NUMERIC_ORDINALS, REG_FULL_ORDINALS, replaceOrdinals } from './ordinals';

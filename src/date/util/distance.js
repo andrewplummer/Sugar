@@ -1,4 +1,4 @@
-import { cloneDate } from '../../util/date';
+import { cloneDate } from '../../util/clone';
 import { shiftDate } from './shift';
 import { getUnitMultiplier, getUnitIndex } from './units';
 

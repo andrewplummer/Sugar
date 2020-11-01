@@ -3,7 +3,7 @@ import { setIANATimeZone } from './util/timeZone';
 import { normalizeProps } from './util/props';
 import { updateDate } from './util/update';
 import { parseDate } from './util/parsing';
-import { cloneDate } from '../util/date';
+import { cloneDate } from '../util/clone';
 
 /**
  * Creates a new date from a variety of input including string formats.

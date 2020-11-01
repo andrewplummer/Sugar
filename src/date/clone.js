@@ -1,5 +1,5 @@
 import { assertDate } from '../util/assertions';
-import { cloneDate } from '../util/date';
+import { cloneDate } from '../util/clone';
 
 /**
  * Returns a copy of the date.
