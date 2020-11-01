@@ -5230,6 +5230,10 @@ namespace('Date', function () {
       assertEqual(relative(new Date(2025, 0), options), '5 of your "years"');
     });
 
+    it('should format correctly for negative years', () => {
+      assertEqual(relative(new Date(-1980, 0)), '4,000 years ago');
+    });
+
     it('should not modify options object', () => {
       const options = { locale: 'ja' };
       relative(new Date(2020, 0), options);
