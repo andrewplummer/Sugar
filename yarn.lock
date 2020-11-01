@@ -1886,10 +1886,10 @@ escape-string-regexp@^2.0.0:
   resolved "https://registry.yarnpkg.com/escape-string-regexp/-/escape-string-regexp-2.0.0.tgz#a30304e99daa32e23b2fd20f51babd07cffca344"
   integrity sha512-UpzcLCXolUWcNu5HtVMHYdXJjArjsF9C0aNnquZYY4uW/Vu0miy5YoWvbV345HauVvcAUnpRuhMMcqTcGOY2+w==
 
-eslint-config-ready-test@^1.0.40:
-  version "1.0.40"
-  resolved "https://registry.yarnpkg.com/eslint-config-ready-test/-/eslint-config-ready-test-1.0.40.tgz#084552b58a10a10c076956006cb4bf4f5dd986ba"
-  integrity sha512-WxdRCmGzeg2T3gIgEQz40FFc2pr7ZjFTAjW6uHc2hhWIAjRu83Cyz4UzLbSXBqBB9GNrdtyimOskRstfwYfyDA==
+eslint-config-ready-test@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/eslint-config-ready-test/-/eslint-config-ready-test-1.1.0.tgz#2ff20f905c2ca410269f18d0719ebb93445abe89"
+  integrity sha512-p6vkJZqGrUTgfVohNw9IHzW5RKCXjDF5W91HM9GtM5uMPjPvAQZGgVVE9NmVjvHDCnyzACcwau3JHNEBeFzH+g==
 
 eslint-scope@^4.0.3:
   version "4.0.3"
@@ -3451,10 +3451,10 @@ readdirp@~3.4.0:
   dependencies:
     picomatch "^2.2.1"
 
-ready-test@^1.0.42:
-  version "1.0.42"
-  resolved "https://registry.yarnpkg.com/ready-test/-/ready-test-1.0.42.tgz#6e7840f09ea1e4cac2f57708163d63c4d46e5eb0"
-  integrity sha512-/P/UvsKijzFGLqcDhUc5PFk6zcm7FGNE6FnPLp84wsTYmG+y24FBSaRP66Sa+kfaxnNLWu87syrGBO/pwup0ag==
+ready-test@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/ready-test/-/ready-test-1.1.0.tgz#ae5bcfe7e085be9c6deea5192df5623e97b376e3"
+  integrity sha512-QBceS+bdUWTktwNPA6B593ubNyDWQOQ8BxPPe79483eel0JKIIIzUGUZtcDatUkBCZwgPQ6f0stUsPQUIdE+Sg==
   dependencies:
     argv "^0.0.2"
     chalk "^4.1.0"
