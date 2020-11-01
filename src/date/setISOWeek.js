@@ -20,6 +20,10 @@ import { setISOWeek as _setISOWeek } from './util/iso';
  **/
 export default function setISOWeek(date, week) {
   assertValidDate(date);
-  _setISOWeek(date, week);
+  if (isNaN(week)) {
+    date.setTime(NaN);
+  } else {
+    _setISOWeek(date, week);
+  }
   return date.getTime();
 }

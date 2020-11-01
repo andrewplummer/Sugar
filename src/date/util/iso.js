@@ -20,7 +20,7 @@ export function getISOWeek(date) {
 export function getISOWeekYear(date) {
   let year = date.getFullYear();
   const month = date.getMonth();
-  const week = getISOWeek(date)
+  const week = getISOWeek(date);
   if (month === 0 && week > 51) {
     year -= 1;
   } else if (month === 11 && week === 1) {
@@ -30,11 +30,6 @@ export function getISOWeekYear(date) {
 }
 
 export function setISOWeek(date, week) {
-  // TODO: handle this as input
-  if (isNaN(week)) {
-    date.setTime(NaN);
-    return;
-  }
   const year = date.getFullYear();
   const dow = getISOWeekday(date);
   const c = getISOWeekday(new Date(year, 0, 4)) + 3;
@@ -66,5 +61,7 @@ function isLongYear(year) {
 }
 
 function py(y) {
-  return (y + Math.floor(y / 4) - Math.floor(y / 100) + Math.floor(y / 400)) % 7;
+  return (
+    (y + Math.floor(y / 4) - Math.floor(y / 100) + Math.floor(y / 400)) % 7
+  );
 }
