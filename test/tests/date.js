@@ -6844,24 +6844,14 @@ namespace('Number', function () {
     });
 
     it('should be able to pass a locale', async () => {
-      function assertFormatted(ms, val, unit) {
-        const formatter = new Intl.NumberFormat('ja', {
-          unit,
-          style: 'unit',
-          unitDisplay: 'long',
-        });
-        const expected = formatter.format(val);
-        assertEqual(duration(ms, 'ja'), expected);
-      }
-      assertFormatted(0, 0, 'millisecond');
-      assertFormatted(1, 1, 'millisecond');
-      assertFormatted(1000, 1, 'second');
-      assertFormatted(60 * 1000, 1, 'minute');
-      assertFormatted(60 * 60 * 1000, 1, 'hour');
-      assertFormatted(24 * 60 * 60 * 1000, 1, 'day');
-      assertFormatted(7 * 24 * 60 * 60 * 1000, 1, 'week');
-      assertFormatted(31 * 24 * 60 * 60 * 1000, 1, 'month');
-      assertFormatted(365.2425 * 24 * 60 * 60 * 1000, 1, 'year');
+      assertEqual(duration(0, 'ja'), '0 ミリ秒');
+      assertEqual(duration(1000, 'ja'), '1 秒');
+      assertEqual(duration(60 * 1000, 'ja'), '1 分');
+      assertEqual(duration(60 * 60 * 1000, 'ja'), '1 時間');
+      assertEqual(duration(24 * 60 * 60 * 1000, 'ja'), '1 日');
+      assertEqual(duration(7 * 24 * 60 * 60 * 1000, 'ja'), '1 週間');
+      assertEqual(duration(31 * 24 * 60 * 60 * 1000, 'ja'), '1 か月');
+      assertEqual(duration(365.2425 * 24 * 60 * 60 * 1000, 'ja'), '1 年');
     });
 
     it('should handle irregular input', () => {

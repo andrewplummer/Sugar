@@ -93,7 +93,7 @@ const UNIT_EDGES = {
 };
 
 export function getUnitMultiplier(unit, type = 'avg') {
-  const mult = UNIT_MULTIPLIERS[normalizeDate(unit)];
+  const mult = UNIT_MULTIPLIERS[normalizeUnit(unit)];
   // Return the multiplier for the type, falling back to the average.
   return mult[type] || mult['avg'];
 }
@@ -102,7 +102,7 @@ export function getUnitIndex(unit) {
   if (!unit) {
     throw new Error('Unit is required');
   }
-  return UNITS.indexOf(normalizeDate(unit));
+  return UNITS.indexOf(normalizeUnit(unit));
 }
 
 // Note: this function needs to handle "date"
@@ -167,12 +167,12 @@ export function formatPartsForUnit(value, unit, locale) {
 
 function getUnitFormatter(unit, locale) {
   return new Intl.NumberFormat(locale, {
-    unit: normalizeDate(unit),
+    unit: normalizeUnit(unit),
     style: 'unit',
     unitDisplay: 'long',
   });
 }
 
-function normalizeDate(unit) {
+function normalizeUnit(unit) {
   return unit === 'date' ? 'day' : unit;
 }
