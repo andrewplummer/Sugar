@@ -6,6 +6,7 @@ import {
   isFunction,
   isPrimitive,
 } from './typeChecks';
+import { memoize } from './caching';
 import { forEachProperty } from './helpers';
 
 export function getMatcher(arg, context) {
@@ -55,16 +56,18 @@ function getDefaultMatcher(obj) {
   };
 }
 
-function getFuzzyMatcher(matcher) {
-  const matchers = new Map();
+function getFuzzyMatcher(fuzzy) {
+  const getMatcherForKey = memoize((key, val) => {
+    return getMatcher(val);
+  });
   return (val, key, obj) => {
     if (!isObject(val)) {
       return false;
     }
     let matched = true;
-    forEachProperty(matcher, (mKey, mVal) => {
-      matchers[mKey] = matchers[mKey] || getMatcher(mVal);
-      if (matchers[mKey](val[mKey], mKey, obj) === false) {
+    forEachProperty(fuzzy, (mKey, mVal) => {
+      const matcher = getMatcherForKey(mKey, mVal);
+      if (matcher(val[mKey], mKey, obj) === false) {
         matched = false;
       }
       return matched;

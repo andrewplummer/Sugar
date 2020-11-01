@@ -1,3 +1,5 @@
+import { memoize as _memoize } from '../util/caching';
+
 /**
  * Creates a function that will memoize results for unique calls.
  *
@@ -31,22 +33,5 @@
  *
  */
 export default function memoize(fn, hashFn) {
-  const cache = new Map();
-  hashFn = hashFn || defaultHashFn;
-  const memoizedFn = function memoized() {
-    const key = hashFn.apply(this, arguments);
-    if (cache.has(key)) {
-      return cache.get(key);
-    } else {
-      const val = fn.apply(this, arguments);
-      cache.set(key, val);
-      return val;
-    }
-  };
-  memoizedFn.cache = cache;
-  return memoizedFn;
-}
-
-function defaultHashFn(arg) {
-  return arg;
+  return _memoize(fn, hashFn);
 }

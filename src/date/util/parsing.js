@@ -1,10 +1,25 @@
 import LocaleParser from './LocaleParser';
-
-const parsers = new Map();
+import { memoize } from '../../util/caching';
 
 export function parseDate(options) {
-  const { input, past, future, explain, timeZone, ...parserOptions } = options;
-  const parser = getParser(parserOptions);
+  const {
+    input,
+    locale,
+    past,
+    future,
+    explain,
+    timeZone,
+    cache = true,
+    ...parserOptions
+  } = options;
+
+  let parser;
+  if (cache) {
+    parser = getCachedParser(locale, parserOptions);
+  } else {
+    parser = getParser(locale, parserOptions);
+  }
+
   return parser.parse(input, {
     past,
     future,
@@ -13,16 +28,8 @@ export function parseDate(options) {
   });
 }
 
-function getParser(options) {
-  // TODO: memoize??
-  const { locale, cache = true, ...rest } = options;
-  let parser;
-  if (cache) {
-    parser = parsers.get(locale);
-  }
-  if (!parser) {
-    parser = new LocaleParser(locale, rest);
-    parsers.set(locale, parser);
-  }
-  return parser;
+function getParser(locale, options) {
+  return new LocaleParser(locale, options);
 }
+
+const getCachedParser = memoize(getParser);
