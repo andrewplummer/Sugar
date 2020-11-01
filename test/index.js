@@ -36,4 +36,7 @@ require('./tests/string');
 require('./tests/regexp');
 require('./tests/function');
 require('./tests/date');
+require('./tests/locales/en-US');
+require('./tests/locales/en-GB');
+require('./tests/locales/en-CA');
 require('./tests/modules');
