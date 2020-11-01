@@ -680,7 +680,7 @@ export default class LocaleParser {
       const dpf = this.getDayPeriodSource('implied');
       const dpl = this.getDayPeriodSource('long');
       const dp = `(?:\\s?(${dpf}))?(?:\\s?(${dpl}))?`;
-      src = `(?!\\s)(${REG_HOUR}(?=\\D))?(?::(${REG_MIN})?)?(?::(${REG_SEC}))?${dp}`;
+      src = `(?!$)(${REG_HOUR}(?=\\D))?(?::(${REG_MIN})?)?(?::(${REG_SEC}))?${dp}`;
       groups = [
         ...groups,
         dayPeriodGroup,

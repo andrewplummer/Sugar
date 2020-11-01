@@ -2429,6 +2429,12 @@ namespace('Date', function () {
         assertError(() => {
           create();
         }, TypeError);
+        assertError(() => {
+          create(null);
+        });
+        assertError(() => {
+          create(undefined);
+        });
       });
 
       it('should cache formats', () => {
@@ -2457,6 +2463,16 @@ namespace('Date', function () {
         assertCached('Next week');
 
         String.prototype.match = nativeMatch;
+      });
+
+      it('should handle Issue #224', () => {
+        assertUndefined(create(''));
+      });
+
+      it('should handle Issue #387', () => {
+        assertError(() => {
+          create(null);
+        });
       });
 
     });

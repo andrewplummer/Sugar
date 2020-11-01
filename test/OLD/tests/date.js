@@ -4,16 +4,6 @@ namespace('Date', function () {
   var now = new Date();
   var thisYear = now.getFullYear();
 
-  group('Create | Other', function() {
-
-    // Issue #224
-    equal(run(testCreateDate(''), 'isValid'), false, 'empty strings are not valid');
-
-    // Issue #387 null in date constructor
-    equal(new Date(null), testCreateDate(null), 'null');
-
-  });
-
   group('Create | Invalid Dates', function() {
 
     testCreateFakeLocale('fo');

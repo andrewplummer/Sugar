@@ -163,7 +163,7 @@ import { cloneDate } from '../util/clone';
  *
  **/
 export default function create(arg1, arg2) {
-  if (arguments.length === 0) {
+  if (arguments[0] == null) {
     throw new TypeError('First argument must be either a string or object');
   } else if (isNumber(arg1)) {
     return new Date(arg1);
@@ -177,7 +177,7 @@ export default function create(arg1, arg2) {
         locale: arg2,
       };
     } else {
-      options = arg1;
+      options = arg1 || {};
     }
     if ('input' in options) {
       return parseDate(options);
