@@ -6,7 +6,7 @@ function buildEnglishOrdinals() {
     ...'first|second|third'.split('|'),
     ...ENGLISH_NUMERALS.slice(4).map((str) => {
       str = str.replace(/ve$/, 'f');
-      str = str.replace(/t$/, '');
+      str = str.replace(/[et]$/, '');
       return str + 'th';
     }),
   ];
@@ -29,7 +29,7 @@ export const ENGLISH_ORDINALS = buildEnglishOrdinals();
 export const REG_TOKEN_ORDINALS = buildTokenOrdinalReg();
 
 // Regex source matching both numeric and tokenized ordinals
-export const REG_FULL_ORDINALS = `(?:${REG_NUMERIC_ORDINALS})|(?:${REG_TOKEN_ORDINALS})`;
+export const REG_ORDINALS = `(?:${REG_NUMERIC_ORDINALS})|(?:${REG_TOKEN_ORDINALS})`;
 
 export function replaceOrdinals(str) {
   return str.split(' ').map((token) => {

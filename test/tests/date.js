@@ -690,7 +690,41 @@ namespace('Date', function () {
       });
 
       it('should not parse tokenized ordinals in date', () => {
-        assertUndefined(create('the second of January'));
+        assertDateEqual(create('the second of January'), new Date(2020, 0, 2));
+        assertDateEqual(create('the first of January'), new Date(2020, 0, 1));
+        assertDateEqual(create('the second of January'), new Date(2020, 0, 2));
+        assertDateEqual(create('the third of January'), new Date(2020, 0, 3));
+        assertDateEqual(create('the fourth of January'), new Date(2020, 0, 4));
+        assertDateEqual(create('the fifth of January'), new Date(2020, 0, 5));
+        assertDateEqual(create('the sixth of January'), new Date(2020, 0, 6));
+        assertDateEqual(create('the seventh of January'), new Date(2020, 0, 7));
+        assertDateEqual(create('the eighth of January'), new Date(2020, 0, 8));
+        assertDateEqual(create('the ninth of January'), new Date(2020, 0, 9));
+        assertDateEqual(create('the tenth of January'), new Date(2020, 0, 10));
+
+        assertDateEqual(create('the fifth of January'), new Date(2020, 0, 5));
+        assertDateEqual(create('the fifth of February'), new Date(2020, 1, 5));
+        assertDateEqual(create('the fifth of March'), new Date(2020, 2, 5));
+        assertDateEqual(create('the fifth of April'), new Date(2020, 3, 5));
+        assertDateEqual(create('the fifth of May'), new Date(2020, 4, 5));
+        assertDateEqual(create('the fifth of June'), new Date(2020, 5, 5));
+        assertDateEqual(create('the fifth of July'), new Date(2020, 6, 5));
+        assertDateEqual(create('the fifth of August'), new Date(2020, 7, 5));
+        assertDateEqual(create('the fifth of September'), new Date(2020, 8, 5));
+        assertDateEqual(create('the fifth of October'), new Date(2020, 9, 5));
+        assertDateEqual(create('the fifth of November'), new Date(2020, 10, 5));
+        assertDateEqual(create('the fifth of December'), new Date(2020, 11, 5));
+
+        assertDateEqual(create('the first of June'), new Date(2020, 5, 1));
+        assertDateEqual(create('the second of June'), new Date(2020, 5, 2));
+        assertDateEqual(create('the third of June'), new Date(2020, 5, 3));
+        assertDateEqual(create('the fourth of June'), new Date(2020, 5, 4));
+        assertDateEqual(create('the fifth of June'), new Date(2020, 5, 5));
+        assertDateEqual(create('the sixth of June'), new Date(2020, 5, 6));
+        assertDateEqual(create('the seventh of June'), new Date(2020, 5, 7));
+        assertDateEqual(create('the eighth of June'), new Date(2020, 5, 8));
+        assertDateEqual(create('the ninth of June'), new Date(2020, 5, 9));
+        assertDateEqual(create('the tenth of June'), new Date(2020, 5, 10));
       });
 
       it('should handle Issue #630', () => {
@@ -704,6 +738,46 @@ namespace('Date', function () {
         assertDateEqual(create('Sept 2015'), new Date(2015, 8));
         assertDateEqual(create('tues'), new Date(2019, 11, 31));
         assertDateEqual(create('thurs'), new Date(2020, 0, 2));
+      });
+
+      it('should handle Issue #227', () => {
+
+        assertDateEqual(create('0 January'), new Date(2019, 11, 31));
+        assertDateEqual(create('1 January'), new Date(2020, 0, 1));
+        assertDateEqual(create('01 January'), new Date(2020, 0, 1));
+        assertDateEqual(create('15 January'), new Date(2020, 0, 15));
+        assertDateEqual(create('31 January'), new Date(2020, 0, 31));
+
+        assertDateEqual(create('1 Jan'), new Date(2020, 0, 1));
+        assertDateEqual(create('01 Jan'), new Date(2020, 0, 1));
+        assertDateEqual(create('15 Jan'), new Date(2020, 0, 15));
+        assertDateEqual(create('31 Jan'), new Date(2020, 0, 31));
+
+        assertDateEqual(create('0 July'), new Date(2020, 5, 30));
+        assertDateEqual(create('1 July'), new Date(2020, 6, 1));
+        assertDateEqual(create('01 July'), new Date(2020, 6, 1));
+        assertDateEqual(create('15 July'), new Date(2020, 6, 15));
+        assertDateEqual(create('31 July'), new Date(2020, 6, 31));
+        assertDateEqual(create('32 July'), new Date(2020, 7, 1));
+
+        assertDateEqual(create('1 Dec'), new Date(2020, 11, 1));
+        assertDateEqual(create('01 Dec'), new Date(2020, 11, 1));
+        assertDateEqual(create('15 Dec'), new Date(2020, 11, 15));
+        assertDateEqual(create('31 Dec'), new Date(2020, 11, 31));
+
+        assertDateEqual(create('1 December'), new Date(2020, 11, 1));
+        assertDateEqual(create('01 December'), new Date(2020, 11, 1));
+        assertDateEqual(create('15 December'), new Date(2020, 11, 15));
+        assertDateEqual(create('31 December'), new Date(2020, 11, 31));
+        assertDateEqual(create('32 December'), new Date(2020 + 1, 0, 1));
+
+        assertDateEqual(create('1 January 3pm'), new Date(2020, 0, 1, 15));
+        assertDateEqual(create('1 January 3:45pm'), new Date(2020, 0, 1, 15, 45));
+
+        assertDateEqual(create("'87"), new Date(1987, 0));
+        //assertDateEqual(create("May '87"), new Date(1987, 4));
+        //assertDateEqual(create("14 May '87"), new Date(1987, 4, 14));
+
       });
 
     });
@@ -791,7 +865,7 @@ namespace('Date', function () {
         assertDateEqual(create('the 15th of last month at 2:30pm'), new Date(2019, 11, 15, 14, 30));
       });
 
-      it('should parse past date', () => {
+      it('should parse units ago', () => {
         assertDateEqual(create('1 year ago'), new Date(2019, 0));
         assertDateEqual(create('2 years ago'), new Date(2018, 0));
         assertDateEqual(create('5 years ago'), new Date(2015, 0));
@@ -826,6 +900,30 @@ namespace('Date', function () {
         assertDateEqual(create('2 seconds ago'), new Date(2019, 11, 31, 23, 59, 58));
         assertDateEqual(create('5 seconds ago'), new Date(2019, 11, 31, 23, 59, 55));
         assertDateEqual(create('0 seconds ago'), new Date(2020, 0));
+      });
+
+      it('should parse token numerals in relative format', () => {
+        assertDateEqual(create('one day ago'), new Date(2019, 11, 31));
+        assertDateEqual(create('two days ago'), new Date(2019, 11, 30));
+        assertDateEqual(create('three days ago'), new Date(2019, 11, 29));
+        assertDateEqual(create('four days ago'), new Date(2019, 11, 28));
+        assertDateEqual(create('five days ago'), new Date(2019, 11, 27));
+        assertDateEqual(create('six days ago'), new Date(2019, 11, 26));
+        assertDateEqual(create('seven days ago'), new Date(2019, 11, 25));
+        assertDateEqual(create('eight days ago'), new Date(2019, 11, 24));
+        assertDateEqual(create('nine days ago'), new Date(2019, 11, 23));
+        assertDateEqual(create('ten days ago'), new Date(2019, 11, 22));
+
+        assertDateEqual(create('one day from now'), new Date(2020, 0, 2));
+        assertDateEqual(create('two days from now'), new Date(2020, 0, 3));
+        assertDateEqual(create('three days from now'), new Date(2020, 0, 4));
+        assertDateEqual(create('four days from now'), new Date(2020, 0, 5));
+        assertDateEqual(create('five days from now'), new Date(2020, 0, 6));
+        assertDateEqual(create('six days from now'), new Date(2020, 0, 7));
+        assertDateEqual(create('seven days from now'), new Date(2020, 0, 8));
+        assertDateEqual(create('eight days from now'), new Date(2020, 0, 9));
+        assertDateEqual(create('nine days from now'), new Date(2020, 0, 10));
+        assertDateEqual(create('ten days from now'), new Date(2020, 0, 11));
       });
 
       it('should handle articles', () => {

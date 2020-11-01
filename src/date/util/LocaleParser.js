@@ -7,7 +7,7 @@ import { isNaN, isString } from '../../util/typeChecks';
 import { cloneDate } from '../../util/clone';
 import { UNITS, getPropsSpecificity, getAdjacentUnit, formatPartsForUnit, getUnitMultiplier } from './units';
 import { replaceLocaleNumerals } from './numerals';
-import { REG_NUMERIC_ORDINALS, REG_FULL_ORDINALS, replaceOrdinals } from './ordinals';
+import { REG_ORDINALS, replaceOrdinals } from './ordinals';
 import { compileRegExpAlternates } from './regex';
 import { getWeekdaysInMonth } from './helpers';
 
@@ -16,8 +16,9 @@ import { getWeekdaysInMonth } from './helpers';
 const NUM_TOKEN = 'NUM';
 const ENGLISH = 'en';
 
-// Parses positive or negative years from 4-6 digits.
-const REG_YEAR = '[+-]?\\d{4,6}';
+// Parses positive or negative 4 digit years. Note that years
+// with greater digits are only parseable in ISO-8601 format.
+const REG_YEAR = '[+-]?\\d{4}';
 
 // Hour 0-29 parseable to support some
 // locales that allow hours to overshoot.
@@ -466,7 +467,7 @@ export default class LocaleParser {
       // The era can be optional only if a month exists. It must be required
       // in the standalone year format as it can interfere with numeric formats
       // like ISO-8601 short format where numbers can run together (202001).
-      let optional = type === 'era' && options.month;
+      let optional = type === 'era';
 
       return {
         type,
@@ -549,13 +550,14 @@ export default class LocaleParser {
             resolver = this.resolveWeekday;
           } else if (type === 'day') {
             type = 'date';
-            resolver = resolveInteger;
             const monthPart = findPart(parts, 'month');
             if (this.language === ENGLISH && !this.isNumericPart(monthPart)) {
               // English only: "1st", "2nd", etc.
-              src += `(\\d{1,2}|(?:${REG_NUMERIC_ORDINALS}))`;
+              src += `(\\d{1,2}|(?:${REG_ORDINALS}))`;
+              resolver = resolveOrdinal;
             } else {
               src += '(\\d{1,2})';
+              resolver = resolveInteger;
             }
           } else if (type === 'hour') {
             src += `(${REG_HOUR})`;
@@ -584,7 +586,7 @@ export default class LocaleParser {
             resolver = resolveTimestamp;
           } else if (type === 'offset weekday') {
             // English only: "the 1st Sunday of next month", etc.
-            const anchors = `(?:${REG_FULL_ORDINALS}|last)`;
+            const anchors = `(?:${REG_ORDINALS}|last)`;
             const weekdays = `(?:${this.getWeekdaySource('long|custom')})`;
             src += `(${anchors} ${weekdays})`;
             resolver = this.resolveOffsetWeekday;
@@ -1500,6 +1502,11 @@ function resolveInteger(str, { type, absProps }) {
   }
 }
 
+function resolveOrdinal(str, options) {
+  str = replaceOrdinals(str);
+  resolveInteger(str, options);
+}
+
 function resolveFraction(arg, { type: unit, props, absProps }) {
 
   // Allow resolver to be called
@@ -1626,11 +1633,11 @@ const ALTERNATE_DATETIME_FORMATS = {
     // - 2020-Jan-02 (2020-01-02)
     // - Jan-02      (yyyy-01-02)
     // - 02-Jan      (yyyy-01-02)
-    '(?:<yyyy>-)?<Month>[-\\s]<day> <time?>',
-    '<day>-<Month>(?:-<year>)? <time?>',
-    '<day> <Month> <year> <time?>',
+    '(?:<yyyy>-)?<Month>[-\\s]<day><time?>',
+    '<day>-<Month>(?:-<year>)?<time?>',
+    '<day> <Month>(?: <year>)?<time?>',
     '<Month>(?: <day>)?(?: of)? <relative year>',
-    'the <day>(?: of (?:<relative month>|<Month>|the month))? <time?>',
+    'the <day>(?: of (?:<relative month>|<Month>|the month))?<time?>',
     'the <offset weekday> (?:of|in) (?:<relative month>|<Month>)(?:,? <year>)?',
     '<edge> (?:<relative upper>|<relative day>|the <unit>|<year>)',
     '<edge>(?: day)? <Weekday>',

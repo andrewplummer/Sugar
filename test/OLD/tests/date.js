@@ -4,56 +4,6 @@ namespace('Date', function () {
   var now = new Date();
   var thisYear = now.getFullYear();
 
-  group('Create | Numerals', function() {
-
-    assertDateParsed('the first of January',   new Date(now.getFullYear(), 0, 1));
-    assertDateParsed('the second of January',  new Date(now.getFullYear(), 0, 2));
-    assertDateParsed('the third of January',   new Date(now.getFullYear(), 0, 3));
-    assertDateParsed('the fourth of January',  new Date(now.getFullYear(), 0, 4));
-    assertDateParsed('the fifth of January',   new Date(now.getFullYear(), 0, 5));
-    assertDateParsed('the sixth of January',   new Date(now.getFullYear(), 0, 6));
-    assertDateParsed('the seventh of January', new Date(now.getFullYear(), 0, 7));
-    assertDateParsed('the eighth of January',  new Date(now.getFullYear(), 0, 8));
-    assertDateParsed('the ninth of January',   new Date(now.getFullYear(), 0, 9));
-    assertDateParsed('the tenth of January',   new Date(now.getFullYear(), 0, 10));
-
-    assertDateParsed('the fifth of January',   new Date(now.getFullYear(), 0,  5));
-    assertDateParsed('the fifth of February',  new Date(now.getFullYear(), 1,  5));
-    assertDateParsed('the fifth of March',     new Date(now.getFullYear(), 2,  5));
-    assertDateParsed('the fifth of April',     new Date(now.getFullYear(), 3,  5));
-    assertDateParsed('the fifth of May',       new Date(now.getFullYear(), 4,  5));
-    assertDateParsed('the fifth of June',      new Date(now.getFullYear(), 5,  5));
-    assertDateParsed('the fifth of July',      new Date(now.getFullYear(), 6,  5));
-    assertDateParsed('the fifth of August',    new Date(now.getFullYear(), 7,  5));
-    assertDateParsed('the fifth of September', new Date(now.getFullYear(), 8,  5));
-    assertDateParsed('the fifth of October',   new Date(now.getFullYear(), 9,  5));
-    assertDateParsed('the fifth of November',  new Date(now.getFullYear(), 10, 5));
-    assertDateParsed('the fifth of December',  new Date(now.getFullYear(), 11, 5));
-
-    assertDateParsed('one day ago',    getRelativeDate(0, 0,-1));
-    assertDateParsed('two days ago',   getRelativeDate(0, 0,-2));
-    assertDateParsed('three days ago', getRelativeDate(0, 0,-3));
-    assertDateParsed('four days ago',  getRelativeDate(0, 0,-4));
-    assertDateParsed('five days ago',  getRelativeDate(0, 0,-5));
-    assertDateParsed('six days ago',   getRelativeDate(0, 0,-6));
-    assertDateParsed('seven days ago', getRelativeDate(0, 0,-7));
-    assertDateParsed('eight days ago', getRelativeDate(0, 0,-8));
-    assertDateParsed('nine days ago',  getRelativeDate(0, 0,-9));
-    assertDateParsed('ten days ago',   getRelativeDate(0, 0,-10));
-
-    assertDateParsed('one day from now',    getRelativeDate(0, 0, 1));
-    assertDateParsed('two days from now',   getRelativeDate(0, 0, 2));
-    assertDateParsed('three days from now', getRelativeDate(0, 0, 3));
-    assertDateParsed('four days from now',  getRelativeDate(0, 0, 4));
-    assertDateParsed('five days from now',  getRelativeDate(0, 0, 5));
-    assertDateParsed('six days from now',   getRelativeDate(0, 0, 6));
-    assertDateParsed('seven days from now', getRelativeDate(0, 0, 7));
-    assertDateParsed('eight days from now', getRelativeDate(0, 0, 8));
-    assertDateParsed('nine days from now',  getRelativeDate(0, 0, 9));
-    assertDateParsed('ten days from now',   getRelativeDate(0, 0, 10));
-
-  });
-
   group('Create | UTC', function() {
 
     equal(testCreateUTCDate('February 29, 2012 22:15:42'), new Date(Date.UTC(2012, 1, 29, 22, 15, 42)), 'full text');
@@ -194,44 +144,6 @@ namespace('Date', function () {
 
     equal(testCreateDate('12:00am').getHours(), 0, '12:00am hours should be 0');
     equal(testCreateDate('12am').getHours(), 0, '12am hours should be 0');
-
-    // Issue #227
-
-    assertDateParsed('0 January', new Date(now.getFullYear() - 1, 11, 31));
-    assertDateParsed('1 January', new Date(now.getFullYear(), 0, 1));
-    assertDateParsed('01 January', new Date(now.getFullYear(), 0, 1));
-    assertDateParsed('15 January', new Date(now.getFullYear(), 0, 15));
-    assertDateParsed('31 January', new Date(now.getFullYear(), 0, 31));
-
-    assertDateParsed('1 Jan', new Date(now.getFullYear(), 0, 1));
-    assertDateParsed('01 Jan', new Date(now.getFullYear(), 0, 1));
-    assertDateParsed('15 Jan', new Date(now.getFullYear(), 0, 15));
-    assertDateParsed('31 Jan', new Date(now.getFullYear(), 0, 31));
-
-    assertDateParsed('0 July', new Date(now.getFullYear(), 5, 30));
-    assertDateParsed('1 July', new Date(now.getFullYear(), 6, 1));
-    assertDateParsed('01 July', new Date(now.getFullYear(), 6, 1));
-    assertDateParsed('15 July', new Date(now.getFullYear(), 6, 15));
-    assertDateParsed('31 July', new Date(now.getFullYear(), 6, 31));
-    assertDateParsed('32 July', new Date(now.getFullYear(), 7, 1));
-
-    assertDateParsed('1 Dec', new Date(now.getFullYear(), 11, 1));
-    assertDateParsed('01 Dec', new Date(now.getFullYear(), 11, 1));
-    assertDateParsed('15 Dec', new Date(now.getFullYear(), 11, 15));
-    assertDateParsed('31 Dec', new Date(now.getFullYear(), 11, 31));
-
-    assertDateParsed('1 December', new Date(now.getFullYear(), 11, 1));
-    assertDateParsed('01 December', new Date(now.getFullYear(), 11, 1));
-    assertDateParsed('15 December', new Date(now.getFullYear(), 11, 15));
-    assertDateParsed('31 December', new Date(now.getFullYear(), 11, 31));
-    assertDateParsed('32 December', new Date(now.getFullYear() + 1, 0, 1));
-
-    assertDateParsed('1 January 3pm', new Date(now.getFullYear(), 0, 1, 15));
-    assertDateParsed('1 January 3:45pm', new Date(now.getFullYear(), 0, 1, 15, 45));
-
-    assertDateParsed("'87", new Date(1987, 0));
-    assertDateParsed("May '87", new Date(1987, 4));
-    assertDateParsed("14 May '87", new Date(1987, 4, 14));
 
     // Issue #224
     equal(run(testCreateDate(''), 'isValid'), false, 'empty strings are not valid');
