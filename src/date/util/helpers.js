@@ -46,9 +46,6 @@ export function callDateSet(date, unit, val) {
   date[`set${getMethodUnit(unit)}`](val);
 }
 
-// TODO: go through to check calls to date methods like date.getFullYear
-// should we use callDateGet here or not????
-
 export function getDaysInMonth(...args) {
   const [year, month] = collectYearMonth(args);
   return 32 - new Date(year, month, 32).getDate();
@@ -65,10 +62,7 @@ export function getWeekdaysInMonth(date, weekday) {
 
 function collectYearMonth(args) {
   if (isDate(args[0])) {
-    args = [
-      callDateGet(args[0], 'year'),
-      callDateGet(args[0], 'month'),
-    ];
+    args = [args[0].getFullYear(), args[0].getMonth()];
   }
   return args;
 }
@@ -82,7 +76,7 @@ function getMethodUnit(unit) {
 }
 
 function preventMonthTraversal(date, targetMonth) {
-  const dateVal = callDateGet(date, 'date');
+  const dateVal = date.getDate();
   if (dateVal > 28) {
     const daysInTargetMonth = getDaysInMonth(date.getFullYear(), targetMonth);
     if (daysInTargetMonth < dateVal) {

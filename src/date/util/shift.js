@@ -40,7 +40,7 @@ function getAbsoluteProps(date, relProps, dir) {
     // This is only required for relative as any other updates will
     // be setting an explicit date.
     if (unit === 'date' && 'month' in absProps) {
-      const targetYear = absProps.year || callDateGet(date, 'year');
+      const targetYear = absProps.year || date.getFullYear();
       const daysInMonth = getDaysInMonth(targetYear, absProps.month);
       if (daysInMonth < curVal) {
         val -= curVal - daysInMonth;
