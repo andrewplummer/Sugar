@@ -76,7 +76,7 @@ export default function relative(date, opt) {
   const { compare, formatter, resolve } = options;
 
   // First get the unit numerically as a starting point.
-  let { unit } = convertTimeToUnit(date.getTime() - compare.getTime(), true);
+  let { unit } = convertTimeToUnit(date.getTime() - compare.getTime(), 'min');
 
   // Then use that unit to traverse the date using getter methods.
   let value = getUnitDistance(date, compare, unit);

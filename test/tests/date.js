@@ -72,7 +72,7 @@ namespace('Date', function () {
 
   });
 
-  fdescribeStatic('create', function (create) {
+  describeStatic('create', function (create) {
 
     describe('Numeric formats', () => {
 
@@ -363,13 +363,74 @@ namespace('Date', function () {
 
     });
 
-    describe('DateTime formats', () => {
+    describe('DateTime Formats', () => {
 
       it('should parse basic date with time', () => {
         assertDateEqual(create('June 1, 2020 10:00 AM'), new Date(2020, 5, 1, 10));
         assertDateEqual(create('June 1, 2020 8:00pm'), new Date(2020, 5, 1, 20));
         assertDateEqual(create('May 23 2020 16:00'), new Date(2020, 4, 23, 16));
-        assertDateEqual(create('January 13th, 2016'), new Date(2016, 0, 13));
+      });
+
+      it('should parse long month with date and year', () => {
+        assertDateEqual(create('June 1, 2020'), new Date(2020, 5));
+      });
+
+      it('should parse long month with initial date and year', () => {
+        assertDateEqual(create('15 July, 2008'),   new Date(2008, 6, 15));
+        assertDateEqual(create('15 July 2008'),    new Date(2008, 6, 15));
+      });
+
+      it('should parse date with English ordinal suffix', () => {
+        assertDateEqual(create('June 1st, 2008'),  new Date(2008, 5, 1));
+        assertDateEqual(create('June 2nd, 2008'),  new Date(2008, 5, 2));
+        assertDateEqual(create('June 3rd, 2008'),  new Date(2008, 5, 3));
+        assertDateEqual(create('June 4th, 2008'),  new Date(2008, 5, 4));
+        assertDateEqual(create('June 15th, 2008'), new Date(2008, 5, 15));
+        assertDateEqual(create('June 1st 2008'),   new Date(2008, 5, 1));
+        assertDateEqual(create('June 2nd 2008'),   new Date(2008, 5, 2));
+        assertDateEqual(create('June 3rd 2008'),   new Date(2008, 5, 3));
+        assertDateEqual(create('June 4th 2008'),   new Date(2008, 5, 4));
+        assertDateEqual(create('June 15, 2008'),   new Date(2008, 5, 15));
+        assertDateEqual(create('June 15 2008'),    new Date(2008, 5, 15));
+      });
+
+      it('should parse weekday with date and English ordinal suffix', () => {
+        assertDateEqual(create('Monday January 16th 2012'),   new Date(2012, 0, 16));
+        assertDateEqual(create('Monday, January 16th 2012'),  new Date(2012, 0, 16));
+        assertDateEqual(create('Monday, January, 16th 2012'), new Date(2012, 0, 16));
+        assertDateEqual(create('Monday January, 16th 2012'),  new Date(2012, 0, 16));
+        assertDateEqual(create('Monday January 16th, 2012'),   new Date(2012, 0, 16));
+        assertDateEqual(create('Monday January, 16th, 2012'),  new Date(2012, 0, 16));
+        assertDateEqual(create('Monday, January, 16th, 2012'), new Date(2012, 0, 16));
+        assertDateEqual(create('Thursday July 3rd, 2008'), new Date(2008, 6, 3));
+        assertDateEqual(create('Thu July 3rd, 2008'), new Date(2008, 6, 3));
+        assertDateEqual(create('Thu. July 3rd, 2008'), new Date(2008, 6, 3));
+      });
+
+      it('should parse short weekday with long month and year', () => {
+        assertDateEqual(create('Mon January 16, 2012'),   new Date(2012, 0, 16));
+        assertDateEqual(create('Mon. January 16, 2012'),   new Date(2012, 0, 16));
+        assertDateEqual(create('Mon. January, 16, 2012'),  new Date(2012, 0, 16));
+        assertDateEqual(create('Mon., January, 16, 2012'), new Date(2012, 0, 16));
+        assertDateEqual(create('Dec 1st, 2008'),  new Date(2008, 11, 1));
+        assertDateEqual(create('Dec. 1st, 2008'), new Date(2008, 11, 1));
+        assertDateEqual(create('1 Dec. 2008'),    new Date(2008, 11, 1));
+        assertDateEqual(create('1 Dec., 2008'),   new Date(2008, 11, 1));
+        assertDateEqual(create('1 Dec, 2008'),    new Date(2008, 11, 1));
+        assertDateEqual(create('June 1st, 2008 12:04'), new Date(2008, 5, 1, 12, 4));
+      });
+
+      it('should parse short weekday with short month and year', () => {
+        assertDateEqual(create('Mon Jan 16, 2012'),   new Date(2012, 0, 16));
+        assertDateEqual(create('Mon. Jan. 16, 2012'),   new Date(2012, 0, 16));
+        assertDateEqual(create('Mon. Jan., 16, 2012'),  new Date(2012, 0, 16));
+        assertDateEqual(create('Mon., Jan., 16, 2012'), new Date(2012, 0, 16));
+      });
+
+      it('should parse hyphenated with text month', () => {
+        assertDateEqual(create('09-May-78'), new Date(1978, 4, 9));
+        assertDateEqual(create('09-May-1978'), new Date(1978, 4, 9));
+        assertDateEqual(create('09-May-1978 3:45pm'), new Date(1978, 4, 9, 15, 45));
       });
 
       it('should parse standalone year', () => {
@@ -377,8 +438,277 @@ namespace('Date', function () {
       });
 
       it('should parse standalone year with era', () => {
-        assertDateEqual(create('1999 bc'), new Date(-1999, 0));
+        assertDateEqual(create('1999 BC'), new Date(-1999, 0));
       });
+
+      it('should parse long month and year', () => {
+        assertDateEqual(create('June 2008'), new Date(2008, 5));
+        assertDateEqual(create('February, 1998'),  new Date(1998, 1));
+      });
+
+      it('should parse a standalone date', () => {
+        assertDateEqual(create('the 15th'), new Date(2020, 0, 15));
+        assertDateEqual(create('the 15th of the month'), new Date(2020, 0, 15));
+      });
+
+      it('should parse long weekday', () => {
+        assertDateEqual(create('Sunday'), new Date(2019, 11, 29));
+        assertDateEqual(create('Monday'), new Date(2019, 11, 30));
+        assertDateEqual(create('Tuesday'), new Date(2019, 11, 31));
+        assertDateEqual(create('Wednesday'), new Date(2020, 0, 1));
+        assertDateEqual(create('Thursday'), new Date(2020, 0, 2));
+        assertDateEqual(create('Friday'), new Date(2020, 0, 3));
+        assertDateEqual(create('Saturday'), new Date(2020, 0, 4));
+      });
+
+      it('should parse long month', () => {
+        assertDateEqual(create('January'), new Date(2020, 0));
+        assertDateEqual(create('February'), new Date(2020, 1));
+        assertDateEqual(create('March'), new Date(2020, 2));
+        assertDateEqual(create('April'), new Date(2020, 3));
+        assertDateEqual(create('May'), new Date(2020, 4));
+        assertDateEqual(create('June'), new Date(2020, 5));
+        assertDateEqual(create('July'), new Date(2020, 6));
+        assertDateEqual(create('August'), new Date(2020, 7));
+        assertDateEqual(create('September'), new Date(2020, 8));
+        assertDateEqual(create('October'), new Date(2020, 9));
+        assertDateEqual(create('November'), new Date(2020, 10));
+        assertDateEqual(create('December'), new Date(2020, 11));
+      });
+
+      it('should parse long month and date', () => {
+        assertDateEqual(create('January 15'), new Date(2020, 0, 15));
+        assertDateEqual(create('February 15'), new Date(2020, 1, 15));
+        assertDateEqual(create('March 15'), new Date(2020, 2, 15));
+        assertDateEqual(create('April 15'), new Date(2020, 3, 15));
+        assertDateEqual(create('May 15'), new Date(2020, 4, 15));
+        assertDateEqual(create('June 15'), new Date(2020, 5, 15));
+        assertDateEqual(create('July 15'), new Date(2020, 6, 15));
+        assertDateEqual(create('August 15'), new Date(2020, 7, 15));
+        assertDateEqual(create('September 15'), new Date(2020, 8, 15));
+        assertDateEqual(create('October 15'), new Date(2020, 9, 15));
+        assertDateEqual(create('November 15'), new Date(2020, 10, 15));
+        assertDateEqual(create('December 15'), new Date(2020, 11, 15));
+      });
+
+      it('should parse long month and date with ordinal', () => {
+        assertDateEqual(create('January 5th'), new Date(2020, 0, 5));
+        assertDateEqual(create('February 10th'), new Date(2020, 1, 10));
+        assertDateEqual(create('March 11th'), new Date(2020, 2, 11));
+        assertDateEqual(create('April 12th'), new Date(2020, 3, 12));
+        assertDateEqual(create('May 13th'), new Date(2020, 4, 13));
+        assertDateEqual(create('June 14th'), new Date(2020, 5, 14));
+        assertDateEqual(create('July 15th'), new Date(2020, 6, 15));
+        assertDateEqual(create('August 21st'), new Date(2020, 7, 21));
+        assertDateEqual(create('September 22nd'), new Date(2020, 8, 22));
+        assertDateEqual(create('October 23rd'), new Date(2020, 9, 23));
+        assertDateEqual(create('November 24th'), new Date(2020, 10, 24));
+        assertDateEqual(create('December 30th'), new Date(2020, 11, 30));
+      });
+
+      it('should parse long month, ordinal date, and year', () => {
+        assertDateEqual(create('January 1st, 2016'), new Date(2016, 0, 1));
+        assertDateEqual(create('January 2nd, 2016'), new Date(2016, 0, 2));
+        assertDateEqual(create('January 3rd, 2016'), new Date(2016, 0, 3));
+        assertDateEqual(create('January 4th, 2016'), new Date(2016, 0, 4));
+        assertDateEqual(create('January 5th, 2016'), new Date(2016, 0, 5));
+        assertDateEqual(create('January 6th, 2016'), new Date(2016, 0, 6));
+        assertDateEqual(create('January 7th, 2016'), new Date(2016, 0, 7));
+        assertDateEqual(create('January 8th, 2016'), new Date(2016, 0, 8));
+        assertDateEqual(create('January 9th, 2016'), new Date(2016, 0, 9));
+        assertDateEqual(create('January 10th, 2016'), new Date(2016, 0, 10));
+        assertDateEqual(create('January 11th, 2016'), new Date(2016, 0, 11));
+        assertDateEqual(create('January 12th, 2016'), new Date(2016, 0, 12));
+        assertDateEqual(create('January 13th, 2016'), new Date(2016, 0, 13));
+        assertDateEqual(create('January 14th, 2016'), new Date(2016, 0, 14));
+        assertDateEqual(create('January 15th, 2016'), new Date(2016, 0, 15));
+        assertDateEqual(create('January 16th, 2016'), new Date(2016, 0, 16));
+        assertDateEqual(create('January 17th, 2016'), new Date(2016, 0, 17));
+        assertDateEqual(create('January 18th, 2016'), new Date(2016, 0, 18));
+        assertDateEqual(create('January 19th, 2016'), new Date(2016, 0, 19));
+        assertDateEqual(create('January 20th, 2016'), new Date(2016, 0, 20));
+        assertDateEqual(create('January 21st, 2016'), new Date(2016, 0, 21));
+        assertDateEqual(create('January 22nd, 2016'), new Date(2016, 0, 22));
+        assertDateEqual(create('January 23rd, 2016'), new Date(2016, 0, 23));
+        assertDateEqual(create('January 24th, 2016'), new Date(2016, 0, 24));
+        assertDateEqual(create('January 25th, 2016'), new Date(2016, 0, 25));
+        assertDateEqual(create('January 26th, 2016'), new Date(2016, 0, 26));
+        assertDateEqual(create('January 27th, 2016'), new Date(2016, 0, 27));
+        assertDateEqual(create('January 28th, 2016'), new Date(2016, 0, 28));
+        assertDateEqual(create('January 29th, 2016'), new Date(2016, 0, 29));
+        assertDateEqual(create('January 30th, 2016'), new Date(2016, 0, 30));
+        assertDateEqual(create('January 31st, 2016'), new Date(2016, 0, 31));
+      });
+
+      it('should not parse ordinal out of range', () => {
+        assertUndefined(create('January 32nd, 2016'));
+        assertUndefined(create('January 40th, 2016'));
+      });
+
+      it('should not parse invalid ordinals', () => {
+        assertUndefined(create('January 1nd, 2016'));
+        assertUndefined(create('January 1rd, 2016'));
+        assertUndefined(create('January 1th, 2016'));
+
+        assertUndefined(create('January 2st, 2016'));
+        assertUndefined(create('January 2rd, 2016'));
+        assertUndefined(create('January 2th, 2016'));
+
+        assertUndefined(create('January 3st, 2016'));
+        assertUndefined(create('January 3nd, 2016'));
+        assertUndefined(create('January 3th, 2016'));
+
+        assertUndefined(create('January 4st, 2016'));
+        assertUndefined(create('January 4nd, 2016'));
+        assertUndefined(create('January 4rd, 2016'));
+
+        assertUndefined(create('January 5st, 2016'));
+        assertUndefined(create('January 5nd, 2016'));
+        assertUndefined(create('January 5rd, 2016'));
+
+        assertUndefined(create('January 10st, 2016'));
+        assertUndefined(create('January 10nd, 2016'));
+        assertUndefined(create('January 10rd, 2016'));
+
+        assertUndefined(create('January 11st, 2016'));
+        assertUndefined(create('January 11nd, 2016'));
+        assertUndefined(create('January 11rd, 2016'));
+
+        assertUndefined(create('January 12st, 2016'));
+        assertUndefined(create('January 12nd, 2016'));
+        assertUndefined(create('January 12rd, 2016'));
+
+      });
+
+      it('should parse long weekday with time', () => {
+        assertDateEqual(create('Saturday 8am'),  new Date(2020, 0, 4, 8));
+        assertDateEqual(create('Saturday at 8am'), new Date(2020, 0, 4, 8));
+        assertDateEqual(create('8am Saturday'),  new Date(2020, 0, 4, 8));
+        assertDateEqual(create('8am on Saturday'), new Date(2020, 0, 4, 8));
+      });
+
+      it('should parse relative date and time', () => {
+        assertDateEqual(create('Monday at noon'), new Date(2019, 11, 30, 12));
+        assertDateEqual(create('next Saturday at noon'), new Date(2020, 0, 11, 12));
+        assertDateEqual(create('last Tuesday at noon'), new Date(2019, 11, 24, 12));
+        assertDateEqual(create('Monday at midnight'), new Date(2019, 11, 31));
+        assertDateEqual(create('next Saturday at midnight'), new Date(2020, 0, 12));
+        assertDateEqual(create('last Tuesday at midnight'), new Date(2019, 11, 25));
+      });
+
+      it('should parse offset weekday and month', () => {
+        assertDateEqual(create('the 1st Tuesday of June'), new Date(2020, 5, 2));
+        assertDateEqual(create('the 3rd Friday of November'), new Date(2020, 10, 20));
+        assertDateEqual(create('the 1st Friday of February'), new Date(2020, 1, 7));
+      });
+
+      it('should parse offset weekday month, and year', () => {
+        assertDateEqual(create('the 1st Tuesday of June, 2012'), new Date(2012, 5, 5));
+        assertDateEqual(create('the 2nd Tuesday of June, 2012'), new Date(2012, 5, 12));
+
+        assertDateEqual(create('the 1st Tuesday of November, 2012'), new Date(2012, 10, 6));
+        assertDateEqual(create('the 2nd Tuesday of November, 2012'), new Date(2012, 10, 13));
+        assertDateEqual(create('the 3rd Tuesday of November, 2012'), new Date(2012, 10, 20));
+        assertDateEqual(create('the 4th Tuesday of November, 2012'), new Date(2012, 10, 27));
+        assertDateEqual(create('the 5th Tuesday of November, 2012'), new Date(2012, 11, 4));
+        assertDateEqual(create('the 6th Tuesday of November, 2012'), new Date(2012, 11, 11));
+
+        assertDateEqual(create('the 1st Friday of February, 2012'), new Date(2012, 1, 3));
+        assertDateEqual(create('the 2nd Friday of February, 2012'), new Date(2012, 1, 10));
+        assertDateEqual(create('the 3rd Friday of February, 2012'), new Date(2012, 1, 17));
+        assertDateEqual(create('the 4th Friday of February, 2012'), new Date(2012, 1, 24));
+        assertDateEqual(create('the 5th Friday of February, 2012'), new Date(2012, 2, 2));
+        assertDateEqual(create('the 6th Friday of February, 2012'), new Date(2012, 2, 9));
+      });
+
+      it('should parse edge tokens for current unit', () => {
+        setSystemTime(new Date(2020, 0, 15, 8, 55, 30));
+
+        assertDateEqual(create('the beginning of the year'), new Date(2020, 0));
+        assertDateEqual(create('the beginning of this year'), new Date(2020, 0));
+        assertDateEqual(create('beginning of this year'), new Date(2020, 0));
+        assertDateEqual(create('the end of the year'), new Date(2020, 11, 31, 23, 59, 59, 999));
+        assertDateEqual(create('the end of this year'), new Date(2020, 11, 31, 23, 59, 59, 999));
+        assertDateEqual(create('end of this year'), new Date(2020, 11, 31, 23, 59, 59, 999));
+
+        assertDateEqual(create('the beginning of the month'), new Date(2020, 0));
+        assertDateEqual(create('the beginning of this month'), new Date(2020, 0));
+        assertDateEqual(create('beginning of this month'), new Date(2020, 0));
+        assertDateEqual(create('the end of the month'), new Date(2020, 0, 31, 23, 59, 59, 999));
+        assertDateEqual(create('the end of this month'), new Date(2020, 0, 31, 23, 59, 59, 999));
+        assertDateEqual(create('end of this month'), new Date(2020, 0, 31, 23, 59, 59, 999));
+
+        assertDateEqual(create('the beginning of the week'), new Date(2020, 0, 12));
+        assertDateEqual(create('the beginning of this week'), new Date(2020, 0, 12));
+        assertDateEqual(create('beginning of this week'), new Date(2020, 0, 12));
+        assertDateEqual(create('the end of the week'), new Date(2020, 0, 18, 23, 59, 59, 999));
+        assertDateEqual(create('the end of this week'), new Date(2020, 0, 18, 23, 59, 59, 999));
+        assertDateEqual(create('end of this week'), new Date(2020, 0, 18, 23, 59, 59, 999));
+
+        assertDateEqual(create('the beginning of the day'), new Date(2020, 0, 15));
+        assertDateEqual(create('beginning of the day'), new Date(2020, 0, 15));
+        assertDateEqual(create('the end of the day'), new Date(2020, 0, 15, 23, 59, 59, 999));
+        assertDateEqual(create('end of the day'), new Date(2020, 0, 15, 23, 59, 59, 999));
+
+        assertUndefined(create('the end of -5 days ago'));
+      });
+
+      it('should parse edge tokens for adjacent units', () => {
+        setSystemTime(new Date(2020, 0, 15, 8, 55, 30));
+
+        assertDateEqual(create('the beginning of last year'), new Date(2019, 0));
+        assertDateEqual(create('the end of last year'), new Date(2019, 11, 31, 23, 59, 59, 999));
+        assertDateEqual(create('the beginning of next year'), new Date(2021, 0));
+        assertDateEqual(create('the end of next year'), new Date(2021, 11, 31, 23, 59, 59, 999));
+
+        assertDateEqual(create('the beginning of last month'), new Date(2019, 11));
+        assertDateEqual(create('the end of last month'), new Date(2019, 11, 31, 23, 59, 59, 999));
+        assertDateEqual(create('the beginning of next month'), new Date(2020, 1));
+        assertDateEqual(create('the end of next month'), new Date(2020, 1, 29, 23, 59, 59, 999));
+
+        assertDateEqual(create('the beginning of last week'), new Date(2020, 0, 5));
+        assertDateEqual(create('the end of last week'), new Date(2020, 0, 11, 23, 59, 59, 999));
+        assertDateEqual(create('the beginning of next week'), new Date(2020, 0, 19));
+        assertDateEqual(create('the end of next week'), new Date(2020, 0, 25, 23, 59, 59, 999));
+      });
+
+      it('should parse short year with apostrophe', () => {
+        assertDateEqual(create("May '78"), new Date(1978, 4));
+      });
+
+      it('should parse year first hyphen with text month', () => {
+        assertDateEqual(create('1978-May-09'), new Date(1978, 4, 9));
+        assertDateEqual(create('1978-May-09 3:45pm'), new Date(1978, 4, 9, 15, 45));
+      });
+
+      it('should parse year with era', () => {
+        assertDateEqual(create('February 1, 1000 BC'), new Date(-1000, 1));
+      });
+
+      it('should override an incorrect weekday', () => {
+        assertDateEqual(create('Sunday July 3rd, 2008'), new Date(2008, 6, 3));
+      });
+
+      it('should not parse tokenized ordinals in date', () => {
+        assertUndefined(create('the second of January'));
+      });
+
+      it('should handle Issue #630', () => {
+        assertDateEqual(create('Mar-03'), new Date(2020, 2, 3));
+        assertDateEqual(create('Mar-3'), new Date(2020, 2, 3));
+        assertDateEqual(create('03-Mar'), new Date(2020, 2, 3));
+        assertDateEqual(create('3-Mar'), new Date(2020, 2, 3));
+      });
+
+      it('should handle Issue #507', () => {
+        assertDateEqual(create('Sept 2015'), new Date(2015, 8));
+        assertDateEqual(create('tues'), new Date(2019, 11, 31));
+        assertDateEqual(create('thurs'), new Date(2020, 0, 2));
+      });
+
+    });
+
+    describe('Time Formats', () => {
 
       it('should parse time with hours only', () => {
         assertDateEqual(create('10 AM'), new Date(2020, 0, 1, 10));
@@ -431,505 +761,12 @@ namespace('Date', function () {
         assertDateEqual(create('10:00p.'), new Date(2020, 0, 1, 22));
       });
 
-      it('should parse long month', () => {
-        assertDateEqual(create('January'), new Date(2020, 0));
-        assertDateEqual(create('February'), new Date(2020, 1));
-        assertDateEqual(create('March'), new Date(2020, 2));
-        assertDateEqual(create('April'), new Date(2020, 3));
-        assertDateEqual(create('May'), new Date(2020, 4));
-        assertDateEqual(create('June'), new Date(2020, 5));
-        assertDateEqual(create('July'), new Date(2020, 6));
-        assertDateEqual(create('August'), new Date(2020, 7));
-        assertDateEqual(create('September'), new Date(2020, 8));
-        assertDateEqual(create('October'), new Date(2020, 9));
-        assertDateEqual(create('November'), new Date(2020, 10));
-        assertDateEqual(create('December'), new Date(2020, 11));
-      });
-
-      it('should parse long month and date', () => {
-        assertDateEqual(create('January 15'), new Date(2020, 0, 15));
-        assertDateEqual(create('February 15'), new Date(2020, 1, 15));
-        assertDateEqual(create('March 15'), new Date(2020, 2, 15));
-        assertDateEqual(create('April 15'), new Date(2020, 3, 15));
-        assertDateEqual(create('May 15'), new Date(2020, 4, 15));
-        assertDateEqual(create('June 15'), new Date(2020, 5, 15));
-        assertDateEqual(create('July 15'), new Date(2020, 6, 15));
-        assertDateEqual(create('August 15'), new Date(2020, 7, 15));
-        assertDateEqual(create('September 15'), new Date(2020, 8, 15));
-        assertDateEqual(create('October 15'), new Date(2020, 9, 15));
-        assertDateEqual(create('November 15'), new Date(2020, 10, 15));
-        assertDateEqual(create('December 15'), new Date(2020, 11, 15));
-      });
-
-      it('should parse long month and date with ordinal', () => {
-        assertDateEqual(create('January 5th'), new Date(2020, 0, 5));
-        assertDateEqual(create('February 10th'), new Date(2020, 1, 10));
-        assertDateEqual(create('March 11th'), new Date(2020, 2, 11));
-        assertDateEqual(create('April 12th'), new Date(2020, 3, 12));
-        assertDateEqual(create('May 13th'), new Date(2020, 4, 13));
-        assertDateEqual(create('June 14th'), new Date(2020, 5, 14));
-        assertDateEqual(create('July 15th'), new Date(2020, 6, 15));
-        assertDateEqual(create('August 21st'), new Date(2020, 7, 21));
-        assertDateEqual(create('September 22nd'), new Date(2020, 8, 22));
-        assertDateEqual(create('October 23rd'), new Date(2020, 9, 23));
-        assertDateEqual(create('November 24th'), new Date(2020, 10, 24));
-        assertDateEqual(create('December 30th'), new Date(2020, 11, 30));
-      });
-
-      it('should parse long weekday', () => {
-        assertDateEqual(create('Sunday'), new Date(2019, 11, 29));
-        assertDateEqual(create('Monday'), new Date(2019, 11, 30));
-        assertDateEqual(create('Tuesday'), new Date(2019, 11, 31));
-        assertDateEqual(create('Wednesday'), new Date(2020, 0, 1));
-        assertDateEqual(create('Thursday'), new Date(2020, 0, 2));
-        assertDateEqual(create('Friday'), new Date(2020, 0, 3));
-        assertDateEqual(create('Saturday'), new Date(2020, 0, 4));
-      });
-
-      it('should parse long weekday with time', () => {
-        assertDateEqual(create('Saturday 8am'),  new Date(2020, 0, 4, 8));
-        assertDateEqual(create('Saturday at 8am'), new Date(2020, 0, 4, 8));
-        assertDateEqual(create('8am Saturday'),  new Date(2020, 0, 4, 8));
-        assertDateEqual(create('8am on Saturday'), new Date(2020, 0, 4, 8));
-      });
-
-      it('should parse a standalone date', () => {
-        assertDateEqual(create('the 15th'), new Date(2020, 0, 15));
-        assertDateEqual(create('the 15th of the month'), new Date(2020, 0, 15));
-      });
-
-      it('should parse long month and year', () => {
-        assertDateEqual(create('June 2008'), new Date(2008, 5));
-        assertDateEqual(create('February, 1998'),  new Date(1998, 1));
-      });
-
-      it('should parse long month with date and year', () => {
-        assertDateEqual(create('June 1, 2020'), new Date(2020, 5));
-      });
-
-      it('should parse long month with initial date and year', () => {
-        assertDateEqual(create('15 July, 2008'),   new Date(2008, 6, 15));
-        assertDateEqual(create('15 July 2008'),    new Date(2008, 6, 15));
-      });
-
-      it('should parse date with English ordinal suffix', () => {
-        assertDateEqual(create('June 1st, 2008'),  new Date(2008, 5, 1));
-        assertDateEqual(create('June 2nd, 2008'),  new Date(2008, 5, 2));
-        assertDateEqual(create('June 3rd, 2008'),  new Date(2008, 5, 3));
-        assertDateEqual(create('June 4th, 2008'),  new Date(2008, 5, 4));
-        assertDateEqual(create('June 15th, 2008'), new Date(2008, 5, 15));
-        assertDateEqual(create('June 1st 2008'),   new Date(2008, 5, 1));
-        assertDateEqual(create('June 2nd 2008'),   new Date(2008, 5, 2));
-        assertDateEqual(create('June 3rd 2008'),   new Date(2008, 5, 3));
-        assertDateEqual(create('June 4th 2008'),   new Date(2008, 5, 4));
-        assertDateEqual(create('June 15, 2008'),   new Date(2008, 5, 15));
-        assertDateEqual(create('June 15 2008'),    new Date(2008, 5, 15));
-      });
-
-      it('should parse weekday with date and English ordinal suffix', () => {
-        assertDateEqual(create('Monday January 16th 2012'),   new Date(2012, 0, 16));
-        assertDateEqual(create('Monday, January 16th 2012'),  new Date(2012, 0, 16));
-        assertDateEqual(create('Monday, January, 16th 2012'), new Date(2012, 0, 16));
-        assertDateEqual(create('Monday January, 16th 2012'),  new Date(2012, 0, 16));
-        assertDateEqual(create('Monday January 16th, 2012'),   new Date(2012, 0, 16));
-        assertDateEqual(create('Monday January, 16th, 2012'),  new Date(2012, 0, 16));
-        assertDateEqual(create('Monday, January, 16th, 2012'), new Date(2012, 0, 16));
-        assertDateEqual(create('Thursday July 3rd, 2008'), new Date(2008, 6, 3));
-        assertDateEqual(create('Thu July 3rd, 2008'), new Date(2008, 6, 3));
-        assertDateEqual(create('Thu. July 3rd, 2008'), new Date(2008, 6, 3));
-      });
-
-      it('should override an incorrect weekday', () => {
-        assertDateEqual(create('Sunday July 3rd, 2008'), new Date(2008, 6, 3));
-      });
-
-      it('should parse short weekday with long month and year', () => {
-        assertDateEqual(create('Mon January 16, 2012'),   new Date(2012, 0, 16));
-        assertDateEqual(create('Mon. January 16, 2012'),   new Date(2012, 0, 16));
-        assertDateEqual(create('Mon. January, 16, 2012'),  new Date(2012, 0, 16));
-        assertDateEqual(create('Mon., January, 16, 2012'), new Date(2012, 0, 16));
-        assertDateEqual(create('Dec 1st, 2008'),  new Date(2008, 11, 1));
-        assertDateEqual(create('Dec. 1st, 2008'), new Date(2008, 11, 1));
-        assertDateEqual(create('1 Dec. 2008'),    new Date(2008, 11, 1));
-        assertDateEqual(create('1 Dec., 2008'),   new Date(2008, 11, 1));
-        assertDateEqual(create('1 Dec, 2008'),    new Date(2008, 11, 1));
-        assertDateEqual(create('June 1st, 2008 12:04'), new Date(2008, 5, 1, 12, 4));
-      });
-
-      it('should parse short weekday with short month and year', () => {
-        assertDateEqual(create('Mon Jan 16, 2012'),   new Date(2012, 0, 16));
-        assertDateEqual(create('Mon. Jan. 16, 2012'),   new Date(2012, 0, 16));
-        assertDateEqual(create('Mon. Jan., 16, 2012'),  new Date(2012, 0, 16));
-        assertDateEqual(create('Mon., Jan., 16, 2012'), new Date(2012, 0, 16));
-      });
-
-      it('should parse hyphenated with text month', () => {
-        assertDateEqual(create('09-May-78'), new Date(1978, 4, 9));
-        assertDateEqual(create('09-May-1978'), new Date(1978, 4, 9));
-        assertDateEqual(create('09-May-1978 3:45pm'), new Date(1978, 4, 9, 15, 45));
-      });
-
-      it('should parse short year with apostrophe', () => {
-        assertDateEqual(create("May '78"), new Date(1978, 4));
-      });
-
-      it('should parse year first hyphen with text month', () => {
-        assertDateEqual(create('1978-May-09'), new Date(1978, 4, 9));
-        assertDateEqual(create('1978-May-09 3:45pm'), new Date(1978, 4, 9, 15, 45));
-      });
-
-      it('should parse year with era', () => {
-        assertDateEqual(create('February 1, 1000 BC'), new Date(-1000, 1));
-      });
-
       it('should not parse a standalone integer', () => {
         assertUndefined(create('10'));
       });
 
-      it('should handle Issue #630', () => {
-        assertDateEqual(create('Mar-03'), new Date(2020, 2, 3));
-        assertDateEqual(create('Mar-3'), new Date(2020, 2, 3));
-        assertDateEqual(create('03-Mar'), new Date(2020, 2, 3));
-        assertDateEqual(create('3-Mar'), new Date(2020, 2, 3));
-      });
-
-      it('should handle Issue #507', () => {
-        assertDateEqual(create('Sept 2015'), new Date(2015, 8));
-        assertDateEqual(create('tues'), new Date(2019, 11, 31));
-        assertDateEqual(create('thurs'), new Date(2020, 0, 2));
-      });
-
       it('should handle Issue #634', () => {
         assertDateEqual(create('10:'), new Date(2020, 0, 1, 10));
-      });
-
-    });
-
-    describe('Preference', () => {
-
-      function createPast(input) {
-        return create({
-          past: true,
-          input,
-        });
-      }
-
-      function createFuture(input) {
-        return create({
-          future: true,
-          input,
-        });
-      }
-
-      it('should parse ambiguous weekday with past preference', () => {
-        assertDateEqual(createPast('Sunday'), new Date(2019, 11, 29));
-        assertDateEqual(createPast('Monday'), new Date(2019, 11, 30));
-        assertDateEqual(createPast('Tuesday'), new Date(2019, 11, 31));
-        assertDateEqual(createPast('Wednesday'), new Date(2019, 11, 25));
-        assertDateEqual(createPast('Thursday'), new Date(2019, 11, 26));
-        assertDateEqual(createPast('Friday'), new Date(2019, 11, 27));
-        assertDateEqual(createPast('Saturday'), new Date(2019, 11, 28));
-      });
-
-      it('should parse ambiguous weekday with future preference', () => {
-        assertDateEqual(createFuture('Sunday'), new Date(2020, 0, 5));
-        assertDateEqual(createFuture('Monday'), new Date(2020, 0, 6));
-        assertDateEqual(createFuture('Tuesday'), new Date(2020, 0, 7));
-        assertDateEqual(createFuture('Wednesday'), new Date(2020, 0, 8));
-        assertDateEqual(createFuture('Thursday'), new Date(2020, 0, 2));
-        assertDateEqual(createFuture('Friday'), new Date(2020, 0, 3));
-        assertDateEqual(createFuture('Saturday'), new Date(2020, 0, 4));
-      });
-
-      it('should parse ambiguous month with past preference', () => {
-        setSystemTime(new Date(2020, 5));
-        assertDateEqual(createPast('January'), new Date(2020, 0));
-        assertDateEqual(createPast('February'), new Date(2020, 1));
-        assertDateEqual(createPast('March'), new Date(2020, 2));
-        assertDateEqual(createPast('April'), new Date(2020, 3));
-        assertDateEqual(createPast('May'), new Date(2020, 4));
-        assertDateEqual(createPast('June'), new Date(2019, 5));
-        assertDateEqual(createPast('July'), new Date(2019, 6));
-        assertDateEqual(createPast('August'), new Date(2019, 7));
-        assertDateEqual(createPast('September'), new Date(2019, 8));
-        assertDateEqual(createPast('October'), new Date(2019, 9));
-        assertDateEqual(createPast('November'), new Date(2019, 10));
-        assertDateEqual(createPast('December'), new Date(2019, 11));
-      });
-
-      it('should parse ambiguous month with future preference', () => {
-        setSystemTime(new Date(2020, 5));
-        assertDateEqual(createFuture('January'), new Date(2021, 0));
-        assertDateEqual(createFuture('February'), new Date(2021, 1));
-        assertDateEqual(createFuture('March'), new Date(2021, 2));
-        assertDateEqual(createFuture('April'), new Date(2021, 3));
-        assertDateEqual(createFuture('May'), new Date(2021, 4));
-        assertDateEqual(createFuture('June'), new Date(2021, 5));
-        assertDateEqual(createFuture('July'), new Date(2020, 6));
-        assertDateEqual(createFuture('August'), new Date(2020, 7));
-        assertDateEqual(createFuture('September'), new Date(2020, 8));
-        assertDateEqual(createFuture('October'), new Date(2020, 9));
-        assertDateEqual(createFuture('November'), new Date(2020, 10));
-        assertDateEqual(createFuture('December'), new Date(2020, 11));
-      });
-
-      it('should parse ambiguous date with past preference', () => {
-        assertDateEqual(createPast('the 15th'), new Date(2019, 11, 15));
-        setSystemTime(new Date(2020, 0, 15));
-        assertDateEqual(createPast('the 15th'), new Date(2019, 11, 15));
-        setSystemTime(new Date(2020, 0, 16));
-        assertDateEqual(createPast('the 15th'), new Date(2020, 0, 15));
-      });
-
-      it('should parse ambiguous date with future preference', () => {
-        assertDateEqual(createFuture('the 15th'), new Date(2020, 0, 15));
-        setSystemTime(new Date(2020, 0, 15));
-        assertDateEqual(createFuture('the 15th'), new Date(2020, 1, 15));
-        setSystemTime(new Date(2020, 0, 16));
-        assertDateEqual(createFuture('the 15th'), new Date(2020, 1, 15));
-      });
-
-      it('should parse ambiguous month and date with past preference', () => {
-        setSystemTime(new Date(2020, 5));
-        assertDateEqual(createPast('March 15th'), new Date(2020, 2, 15));
-        assertDateEqual(createPast('July 15th'), new Date(2019, 6, 15));
-      });
-
-      it('should parse ambiguous month and date with future preference', () => {
-        setSystemTime(new Date(2020, 5));
-        assertDateEqual(createFuture('March 15th'), new Date(2021, 2, 15));
-        assertDateEqual(createFuture('July 15th'), new Date(2020, 6, 15));
-      });
-
-      it('should parse ambiguous time with past preference', () => {
-        setSystemTime(new Date(2020, 0, 1, 12));
-        assertDateEqual(createPast('11am'), new Date(2020, 0, 1, 11));
-        assertDateEqual(createPast('12pm'), new Date(2019, 11, 31, 12));
-        assertDateEqual(createPast('1pm'), new Date(2019, 11, 31, 13));
-      });
-
-      it('should parse ambiguous time with future preference', () => {
-        setSystemTime(new Date(2020, 0, 1, 12));
-        assertDateEqual(createFuture('11am'), new Date(2020, 0, 2, 11));
-        assertDateEqual(createFuture('12pm'), new Date(2020, 0, 2, 12));
-        assertDateEqual(createFuture('1pm'), new Date(2020, 0, 1, 13));
-      });
-
-      it('should parse ambiguous year with offset weekday', () => {
-        setSystemTime(new Date(2020, 5, 2));
-        assertDateEqual(createPast('the 2nd Friday of February'), new Date(2020, 1, 14));
-        assertDateEqual(createPast('the 2nd Friday of October'), new Date(2019, 9, 11));
-        assertDateEqual(createFuture('the 2nd Friday of February'), new Date(2021, 1, 12));
-        assertDateEqual(createFuture('the 2nd Friday of October'), new Date(2020, 9, 9));
-      });
-
-      it('should not apply preferences to date and relative month', () => {
-        assertDateEqual(createPast('the 15th of next month'), new Date(2020, 1, 15));
-      });
-
-      it('should not apply preference to weekday with relative week', () => {
-        assertDateEqual(createPast('this week Sunday'), new Date(2019, 11, 29));
-        assertDateEqual(createPast('next week Sunday'), new Date(2020, 0, 5));
-        assertDateEqual(createPast('this week Wednesday'), new Date(2020, 0, 1));
-        assertDateEqual(createPast('next week Wednesday'), new Date(2020, 0, 8));
-        assertDateEqual(createPast('this week Friday'), new Date(2020, 0, 3));
-        assertDateEqual(createPast('next week Friday'), new Date(2020, 0, 10));
-      });
-
-      it('should not apply preference to month with relative year', () => {
-        assertDateEqual(createPast('January of next year'), new Date(2021, 0));
-        assertDateEqual(createFuture('April last year'), new Date(2019, 3));
-      });
-
-      it('should not apply preference to relative weeks', () => {
-        assertDateEqual(createPast('last week'), new Date(2019, 11, 25));
-        assertDateEqual(createPast('this week'), new Date(2020, 0, 1));
-        assertDateEqual(createPast('next week'), new Date(2020, 0, 8));
-      });
-
-      it('should not apply preference to years', () => {
-        assertDateEqual(createPast('2021'), new Date(2021, 0));
-        assertDateEqual(createPast('1998-12-25'), new Date(1998, 11, 25));
-      });
-
-      it('should handle Issue #572', () => {
-        assertDateEqual(createFuture('this week tuesday at 5pm'), new Date(2019, 11, 31, 17));
-        assertDateEqual(createFuture('today at 5pm'), new Date(2020, 0, 1, 17));
-      });
-
-    });
-
-    describe('Locales', () => {
-
-      describe('en-US', () => {
-
-        it('should parse slashes as month first', () => {
-          assertDateEqual(create('08/25', 'en-US'), new Date(2020, 7, 25));
-          assertDateEqual(create('8/25', 'en-US'), new Date(2020, 7, 25));
-          assertDateEqual(create('08/25/1978', 'en-US'), new Date(1978, 7, 25));
-          assertDateEqual(create('8/25/1978', 'en-US'), new Date(1978, 7, 25));
-          assertDateEqual(create('8/25/78', 'en-US'), new Date(1978, 7, 25));
-          assertDateEqual(create('08/25/78', 'en-US'), new Date(1978, 7, 25));
-          assertDateEqual(create('8/25/01', 'en-US'), new Date(2001, 7, 25));
-          assertDateEqual(create('8/25/49', 'en-US'), new Date(2049, 7, 25));
-          assertDateEqual(create('8/25/50', 'en-US'), new Date(1950, 7, 25));
-          assertDateEqual(create('01/02/03', 'en-US'), new Date(2003, 0, 2));
-          assertDateEqual(create('08/25/0001', 'en-US'), new Date('0001-08-25T00:00:00'));
-        });
-
-        it('should parse 2-digit last format', () => {
-          // yy-mm-dd is NOT a valid ISO 8601 representation as of 2004, hence this format will
-          // revert to a little endian representation, where year truncation is allowed. See:
-          // http://en.wikipedia.org/wiki/ISO_8601#Truncated_representations
-          assertDateEqual(create('08-05-05'), new Date(2005, 7, 5));
-        });
-
-        it('should parse numeric month and year', () => {
-          assertDateEqual(create('06-2008'), new Date(2008, 5));
-          assertDateEqual(create('6-2008'), new Date(2008, 5));
-        });
-
-        it('should parse year last dash format', () => {
-          assertDateEqual(create('08-25-1978'), new Date(1978, 7, 25));
-          assertDateEqual(create('8-25-1978'), new Date(1978, 7, 25));
-        });
-
-        it('should parse dot format', () => {
-          assertDateEqual(create('08.25.1978'), new Date(1978, 7, 25));
-          assertDateEqual(create('8.25.1978'), new Date(1978, 7, 25));
-        });
-
-      });
-
-      describe('en-GB', () => {
-
-        it('should parse slashes as day first', () => {
-          assertDateEqual(create('8/10/1978', 'en-GB'), new Date(1978, 9, 8));
-          assertDateEqual(create('08/10/1978', 'en-GB'), new Date(1978, 9, 8));
-          assertDateEqual(create('8/10/78', 'en-GB'), new Date(1978, 9, 8));
-          assertDateEqual(create('08/10/78', 'en-GB'), new Date(1978, 9, 8));
-          assertDateEqual(create('8/10/01', 'en-GB'), new Date(2001, 9, 8));
-          assertDateEqual(create('8/10/49', 'en-GB'), new Date(2049, 9, 8));
-          assertDateEqual(create('8/10/50', 'en-GB'), new Date(1950, 9, 8));
-          assertDateEqual(create('15/10/2020', 'en-GB'), new Date(2020, 9, 15));
-          assertDateEqual(create('15/10/2020 5:15pm', 'en-GB'), new Date(2020, 9, 15, 17, 15));
-          assertDateEqual(create('08/10', 'en-GB'), new Date(2020, 9, 8));
-          assertDateEqual(create('8/10', 'en-GB'), new Date(2020, 9, 8));
-          assertDateEqual(create('08/10/0001', 'en-GB'), new Date('0001-10-08T00:00:00'));
-          assertDateEqual(create('01/02/03', 'en-GB'), new Date(2003, 1, 1));
-          assertDateEqual(create('8/10/50', 'en-GB'), new Date(1950, 9, 8));
-          assertDateEqual(create('08/25', 'en-GB'), new Date(2022, 0, 8));
-        });
-
-        it('should parse dot format', () => {
-          assertDateEqual(create('08.10.1978', 'en-GB'), new Date(1978, 9, 8));
-          assertDateEqual(create('8.10.1978',  'en-GB'), new Date(1978, 9, 8));
-          assertDateEqual(create('1978.8.10',  'en-GB'), new Date(1978, 7, 10));
-          assertDateEqual(create('10.1978',    'en-GB'), new Date(1978, 9, 1));
-          assertDateEqual(create('8.10',       'en-GB'), new Date(2020, 9, 8));
-        });
-
-        it('should parse date first dash format', () => {
-          assertDateEqual(create('15-10-2020', 'en-GB'), new Date(2020, 9, 15));
-          assertDateEqual(create('15-10-2020 5:15pm', 'en-GB'), new Date(2020, 9, 15, 17, 15));
-          assertDateEqual(create('01-02-03', 'en-GB'), new Date(2003, 1, 1));
-          assertDateEqual(create('08-05-05', 'en-GB'), new Date(2005, 4, 8));
-          assertDateEqual(create('15-Oct-2020', 'en-GB'), new Date(2020, 9, 15));
-          assertDateEqual(create('08-10-1978', 'en-GB'), new Date(1978, 9, 8));
-          assertDateEqual(create('15-Oct-2020 5:15pm', 'en-GB'), new Date(2020, 9, 15, 17, 15));
-        });
-
-        it('should parse long month format', () => {
-          assertDateEqual(create('15 Oct. 2020', 'en-GB'), new Date(2020, 9, 15));
-          assertDateEqual(create('15 October, 2020', 'en-GB'), new Date(2020, 9, 15));
-          assertDateEqual(create('15 October, 2020', 'en-GB'), new Date(2020, 9, 15));
-          assertDateEqual(create('15 July, 2008', 'en-GB'), new Date(2008, 6, 15));
-          assertDateEqual(create('15 July 2008', 'en-GB'), new Date(2008, 6, 15));
-          assertDateEqual(create('March 15th', 'en-GB'), new Date(2020, 2, 15));
-          assertDateEqual(create('the 15th of March', 'en-GB'), new Date(2020, 2, 15));
-        });
-
-        it('should parse all year first formats', () => {
-          assertDateEqual(create('2020/10/15', 'en-GB'), new Date(2020, 9, 15));
-          assertDateEqual(create('2020/10/15 5:15pm', 'en-GB'), new Date(2020, 9, 15, 17, 15));
-          assertDateEqual(create('2020-10-15', 'en-GB'), new Date(2020, 9, 15));
-          assertDateEqual(create('2020-10-15 5:15pm', 'en-GB'), new Date(2020, 9, 15, 17, 15));
-          assertDateEqual(create('2020-Oct-15', 'en-GB'), new Date(2020, 9, 15));
-          assertDateEqual(create('2020-Oct-15 5:15pm', 'en-GB'), new Date(2020, 9, 15, 17, 15));
-        });
-
-        it('should parse unambiguous long month formats', () => {
-          assertDateEqual(create('Mar-03', 'en-GB'), new Date(2020, 2, 3));
-          assertDateEqual(create('Mar-3', 'en-GB'), new Date(2020, 2, 3));
-          assertDateEqual(create('03-Mar', 'en-GB'), new Date(2020, 2, 3));
-          assertDateEqual(create('3-Mar', 'en-GB'), new Date(2020, 2, 3));
-          assertDateEqual(create('09-May-78', 'en-GB'), new Date(1978, 4, 9));
-          assertDateEqual(create('09-May-1978', 'en-GB'), new Date(1978, 4, 9));
-          assertDateEqual(create('09-May-1978 3:45pm', 'en-GB'), new Date(1978, 4, 9, 15, 45));
-        });
-
-        it('should numeric month and year', () => {
-          assertDateEqual(create('06-2008'), new Date(2008, 5));
-          assertDateEqual(create('6-2008'), new Date(2008, 5));
-        });
-
-      });
-
-      describe('en-CA', () => {
-
-        it('should not parse ambiguous year last format', () => {
-          // Format is ambiguous in Canada where UK style and
-          // American style are mixed, so these should not be parseable.
-          assertUndefined(create('01/01/2020', 'en-CA'));
-          assertUndefined(create('01-01-2020', 'en-CA'));
-        });
-
-        it('should not parse ambiguous day month format', () => {
-          // This should technically not be parseable as above, however unfortunately
-          // American style are mixed, so these should not be parseable.
-          assertUndefined(create('8/10', 'en-CA'), new Date(2020, 7, 10));
-          assertUndefined(create('8-10', 'en-CA'), new Date(2020, 7, 10));
-        });
-
-        it('should parse date first dash format', () => {
-          assertDateEqual(create('15-Oct-2020', 'en-CA'), new Date(2020, 9, 15));
-          assertDateEqual(create('15-Oct-2020 5:15pm', 'en-CA'), new Date(2020, 9, 15, 17, 15));
-        });
-
-        it('should parse long month format', () => {
-          assertDateEqual(create('15 Oct. 2020', 'en-CA'), new Date(2020, 9, 15));
-          assertDateEqual(create('15 October, 2020', 'en-CA'), new Date(2020, 9, 15));
-          assertDateEqual(create('15 October, 2020', 'en-CA'), new Date(2020, 9, 15));
-          assertDateEqual(create('15 July, 2008', 'en-CA'), new Date(2008, 6, 15));
-          assertDateEqual(create('15 July 2008', 'en-CA'), new Date(2008, 6, 15));
-          assertDateEqual(create('March 15th', 'en-CA'), new Date(2020, 2, 15));
-          assertDateEqual(create('the 15th of March', 'en-CA'), new Date(2020, 2, 15));
-        });
-
-        it('should parse all year first formats', () => {
-          assertDateEqual(create('2020/10/15', 'en-CA'), new Date(2020, 9, 15));
-          assertDateEqual(create('2020/10/15 5:15pm', 'en-CA'), new Date(2020, 9, 15, 17, 15));
-          assertDateEqual(create('2020-10-15', 'en-CA'), new Date(2020, 9, 15));
-          assertDateEqual(create('2020-10-15 5:15pm', 'en-CA'), new Date(2020, 9, 15, 17, 15));
-          assertDateEqual(create('2020-Oct-15', 'en-CA'), new Date(2020, 9, 15));
-          assertDateEqual(create('2020-Oct-15 5:15pm', 'en-CA'), new Date(2020, 9, 15, 17, 15));
-        });
-
-        it('should parse unambiguous long month formats', () => {
-          assertDateEqual(create('Mar-03', 'en-CA'), new Date(2020, 2, 3));
-          assertDateEqual(create('Mar-3', 'en-CA'), new Date(2020, 2, 3));
-          assertDateEqual(create('03-Mar', 'en-CA'), new Date(2020, 2, 3));
-          assertDateEqual(create('3-Mar', 'en-CA'), new Date(2020, 2, 3));
-          assertDateEqual(create('09-May-78', 'en-CA'), new Date(1978, 4, 9));
-          assertDateEqual(create('09-May-1978', 'en-CA'), new Date(1978, 4, 9));
-          assertDateEqual(create('09-May-1978 3:45pm', 'en-CA'), new Date(1978, 4, 9, 15, 45));
-        });
-
-        it('should numeric month and year', () => {
-          assertDateEqual(create('06-2008'), new Date(2008, 5));
-          assertDateEqual(create('6-2008'), new Date(2008, 5));
-        });
-
       });
 
     });
@@ -1116,104 +953,6 @@ namespace('Date', function () {
         assertDateEqual(create('3:00pm 5 days from now'), new Date(2020, 0, 6, 15));
       });
 
-  //group('Create | Fuzzy Dates', function() {
-
-    //assertDateParsed('Monday at noon',            testGetWeekday(1, 0, 12));
-    //assertDateParsed('next Saturday at noon',     testGetWeekday(6, 1, 12));
-    //assertDateParsed('last Tuesday at noon',      testGetWeekday(2, -1, 12));
-    //assertDateParsed('Monday at midnight',        testGetWeekday(2, 0));
-    //assertDateParsed('next Saturday at midnight', testGetWeekday(7, 1));
-    //assertDateParsed('last Tuesday at midnight',  testGetWeekday(3, -1));
-
-    //assertDateParsed('midnight', getRelativeDateReset(0, 0, 1));
-    //assertDateParsed('midnight tonight', getRelativeDateReset(0, 0, 1));
-    //assertDateParsed('tomorrow at midnight', getRelativeDateReset(0, 0, 2));
-
-    //assertDateParsed('midnight Tuesday', testGetWeekday(3, 0));
-    //assertDateParsed('midnight on Tuesday', testGetWeekday(3, 0));
-
-    //// Issue #455
-    //assertDateParsed('a week from Tuesday', testGetWeekday(2, 1));
-    //assertDateParsed('week from Tuesday', testGetWeekday(2, 1));
-    //assertDateParsed('first of the month', new Date(now.getFullYear(), now.getMonth()));
-
-    //assertDateParsed('the first Friday of February, 2012',  new Date(2012, 1, 3));
-    //assertDateParsed('the second Friday of February, 2012', new Date(2012, 1, 10));
-    //assertDateParsed('the third Friday of February, 2012',  new Date(2012, 1, 17));
-    //assertDateParsed('the fourth Friday of February, 2012', new Date(2012, 1, 24));
-    //assertDateParsed('the fifth Friday of February, 2012',  new Date(2012, 2, 2));
-    //assertDateParsed('the sixth Friday of February, 2012',  new Date(2012, 2, 9));
-
-    //assertDateParsed('the 3rd Tuesday in November, 2012', new Date(2012, 10, 20));
-
-    //assertDateParsed('the second Sunday in June, 2016',    new Date(2016, 5, 12));
-    //assertDateParsed('the second Monday in June, 2016',    new Date(2016, 5, 13));
-    //assertDateParsed('the second Tuesday in June, 2016',   new Date(2016, 5, 14));
-    //assertDateParsed('the second Wednesday in June, 2016', new Date(2016, 5, 8));
-    //assertDateParsed('the second Thursday in June, 2016',  new Date(2016, 5, 9));
-    //assertDateParsed('the second Friday in June, 2016',    new Date(2016, 5, 10));
-    //assertDateParsed('the second Saturday in June, 2016',  new Date(2016, 5, 11));
-
-    //assertDateParsed('the last Sunday in November, 2012',    new Date(2012, 10, 25));
-    //assertDateParsed('the last Monday in November, 2012',    new Date(2012, 10, 26));
-    //assertDateParsed('the last Tuesday in November, 2012',   new Date(2012, 10, 27));
-    //assertDateParsed('the last Wednesday in November, 2012', new Date(2012, 10, 28));
-    //assertDateParsed('the last Thursday in November, 2012',  new Date(2012, 10, 29));
-    //assertDateParsed('the last Friday in November, 2012',    new Date(2012, 10, 30));
-    //assertDateParsed('the last Saturday in November, 2012',  new Date(2012, 10, 24));
-
-    //assertDateParsed('next weekend', testGetWeekday(6, 1));
-    //assertDateParsed('the second weekend of August, 2011', new Date(2011, 7, 13));
-    //assertDateParsed('the last weekend of January, 1985', new Date(1985, 0, 26));
-
-    //// Issue #455 Allowing "half" for hours years, and days
-
-    //assertDateParsed('half hour ago', getRelativeDate(0, 0, 0, 0, -30));
-    //assertDateParsed('half an hour ago', getRelativeDate(0, 0, 0, 0, -30));
-    //assertDateParsed('a half hour ago', getRelativeDate(0, 0, 0, 0, -30));
-
-    //assertDateParsed('half hour from now', getRelativeDate(0, 0, 0, 0, 30));
-    //assertDateParsed('half an hour from now', getRelativeDate(0, 0, 0, 0, 30));
-    //assertDateParsed('a half hour from now', getRelativeDate(0, 0, 0, 0, 30));
-
-    //assertDateParsed('in half an hour', getRelativeDate(0, 0, 0, 0, 30));
-    //assertDateParsed('in a half hour', getRelativeDate(0, 0, 0, 0, 30));
-
-    //assertDateParsed('half year ago', getRelativeDate(0, -6));
-    //assertDateParsed('half a year ago', getRelativeDate(0, -6));
-
-    //assertDateParsed('half a day ago', getRelativeDate(0, 0, 0, -12));
-
-    //assertDateNotParsed('half a week ago');
-    //assertDateNotParsed('half a month ago');
-
-  //});
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
       it('should parse relative date and time', () => {
         assertDateEqual(create('today at 9pm'), new Date(2020, 0, 1, 21));
         assertDateEqual(create('tomorrow at 10am'), new Date(2020, 0, 2, 10));
@@ -1232,6 +971,13 @@ namespace('Date', function () {
         assertDateEqual(create('5 days ago at 3:00pm'), new Date(2019, 11, 27, 15));
         assertDateEqual(create('in 5 days at 3:00pm'), new Date(2020, 0, 6, 15));
         assertDateEqual(create('5 days from now at 3:00pm'), new Date(2020, 0, 6, 15));
+      });
+
+      it('should parse basic explicit dayPeriod', () => {
+        assertDateEqual(create('midnight'), new Date(2020, 0, 2));
+        assertDateEqual(create('tomorrow at midnight'), new Date(2020, 0, 3));
+        assertDateEqual(create('midnight Tuesday'), new Date(2020, 0));
+        assertDateEqual(create('midnight on Tuesday'), new Date(2020, 0));
       });
 
       it('should parse relative week with weekday', () => {
@@ -1307,31 +1053,6 @@ namespace('Date', function () {
         assertDateEqual(create('the 4th Friday of next month'), new Date(2020, 1, 28));
       });
 
-      it('should parse offset weekday and month', () => {
-        assertDateEqual(create('the 1st Tuesday of June'), new Date(2020, 5, 2));
-        assertDateEqual(create('the 3rd Friday of November'), new Date(2020, 10, 20));
-        assertDateEqual(create('the 1st Friday of February'), new Date(2020, 1, 7));
-      });
-
-      it('should parse offset weekday month, and year', () => {
-        assertDateEqual(create('the 1st Tuesday of June, 2012'), new Date(2012, 5, 5));
-        assertDateEqual(create('the 2nd Tuesday of June, 2012'), new Date(2012, 5, 12));
-
-        assertDateEqual(create('the 1st Tuesday of November, 2012'), new Date(2012, 10, 6));
-        assertDateEqual(create('the 2nd Tuesday of November, 2012'), new Date(2012, 10, 13));
-        assertDateEqual(create('the 3rd Tuesday of November, 2012'), new Date(2012, 10, 20));
-        assertDateEqual(create('the 4th Tuesday of November, 2012'), new Date(2012, 10, 27));
-        assertDateEqual(create('the 5th Tuesday of November, 2012'), new Date(2012, 11, 4));
-        assertDateEqual(create('the 6th Tuesday of November, 2012'), new Date(2012, 11, 11));
-
-        assertDateEqual(create('the 1st Friday of February, 2012'), new Date(2012, 1, 3));
-        assertDateEqual(create('the 2nd Friday of February, 2012'), new Date(2012, 1, 10));
-        assertDateEqual(create('the 3rd Friday of February, 2012'), new Date(2012, 1, 17));
-        assertDateEqual(create('the 4th Friday of February, 2012'), new Date(2012, 1, 24));
-        assertDateEqual(create('the 5th Friday of February, 2012'), new Date(2012, 2, 2));
-        assertDateEqual(create('the 6th Friday of February, 2012'), new Date(2012, 2, 9));
-      });
-
       it('should parse relative day with day offset', () => {
         assertDateEqual(create('Two days before yesterday'), new Date(2019, 11, 29));
         assertDateEqual(create('Two days before today'),     new Date(2019, 11, 30));
@@ -1363,57 +1084,6 @@ namespace('Date', function () {
 
       it('should parse weekday with day offset', () => {
         assertDateEqual(create('Two weeks before today'), new Date(2019, 11, 18));
-      });
-
-      it('should parse edge tokens for current unit', () => {
-        setSystemTime(new Date(2020, 0, 15, 8, 55, 30));
-
-        assertDateEqual(create('the beginning of the year'), new Date(2020, 0));
-        assertDateEqual(create('the beginning of this year'), new Date(2020, 0));
-        assertDateEqual(create('beginning of this year'), new Date(2020, 0));
-        assertDateEqual(create('the end of the year'), new Date(2020, 11, 31, 23, 59, 59, 999));
-        assertDateEqual(create('the end of this year'), new Date(2020, 11, 31, 23, 59, 59, 999));
-        assertDateEqual(create('end of this year'), new Date(2020, 11, 31, 23, 59, 59, 999));
-
-        assertDateEqual(create('the beginning of the month'), new Date(2020, 0));
-        assertDateEqual(create('the beginning of this month'), new Date(2020, 0));
-        assertDateEqual(create('beginning of this month'), new Date(2020, 0));
-        assertDateEqual(create('the end of the month'), new Date(2020, 0, 31, 23, 59, 59, 999));
-        assertDateEqual(create('the end of this month'), new Date(2020, 0, 31, 23, 59, 59, 999));
-        assertDateEqual(create('end of this month'), new Date(2020, 0, 31, 23, 59, 59, 999));
-
-        assertDateEqual(create('the beginning of the week'), new Date(2020, 0, 12));
-        assertDateEqual(create('the beginning of this week'), new Date(2020, 0, 12));
-        assertDateEqual(create('beginning of this week'), new Date(2020, 0, 12));
-        assertDateEqual(create('the end of the week'), new Date(2020, 0, 18, 23, 59, 59, 999));
-        assertDateEqual(create('the end of this week'), new Date(2020, 0, 18, 23, 59, 59, 999));
-        assertDateEqual(create('end of this week'), new Date(2020, 0, 18, 23, 59, 59, 999));
-
-        assertDateEqual(create('the beginning of the day'), new Date(2020, 0, 15));
-        assertDateEqual(create('beginning of the day'), new Date(2020, 0, 15));
-        assertDateEqual(create('the end of the day'), new Date(2020, 0, 15, 23, 59, 59, 999));
-        assertDateEqual(create('end of the day'), new Date(2020, 0, 15, 23, 59, 59, 999));
-
-        assertUndefined(create('the end of -5 days ago'));
-      });
-
-      it('should parse edge tokens for adjacent units', () => {
-        setSystemTime(new Date(2020, 0, 15, 8, 55, 30));
-
-        assertDateEqual(create('the beginning of last year'), new Date(2019, 0));
-        assertDateEqual(create('the end of last year'), new Date(2019, 11, 31, 23, 59, 59, 999));
-        assertDateEqual(create('the beginning of next year'), new Date(2021, 0));
-        assertDateEqual(create('the end of next year'), new Date(2021, 11, 31, 23, 59, 59, 999));
-
-        assertDateEqual(create('the beginning of last month'), new Date(2019, 11));
-        assertDateEqual(create('the end of last month'), new Date(2019, 11, 31, 23, 59, 59, 999));
-        assertDateEqual(create('the beginning of next month'), new Date(2020, 1));
-        assertDateEqual(create('the end of next month'), new Date(2020, 1, 29, 23, 59, 59, 999));
-
-        assertDateEqual(create('the beginning of last week'), new Date(2020, 0, 5));
-        assertDateEqual(create('the end of last week'), new Date(2020, 0, 11, 23, 59, 59, 999));
-        assertDateEqual(create('the beginning of next week'), new Date(2020, 0, 19));
-        assertDateEqual(create('the end of next week'), new Date(2020, 0, 25, 23, 59, 59, 999));
       });
 
       it('should parse edge tokens with shifted months', () => {
@@ -1465,6 +1135,12 @@ namespace('Date', function () {
         assertDateEqual(create('the last day of 1998'), new Date(1998, 11, 31));
       });
 
+      it('should parse odd fractions in relative units', () => {
+        assertDateEqual(create('.25 years ago'), new Date(2019, 9));
+        assertDateEqual(create('.75 years ago'), new Date(2019, 3));
+        assertDateEqual(create('.333 years ago'), new Date(2019, 8, 3, 2, 41, 16, 800));
+      });
+
       it('should not correctly set the end of a year with leap seconds', () => {
         // ECMAScript does not allow for leap seconds, so ensure
         // that parsed year edge is not overshooting the date.
@@ -1473,6 +1149,11 @@ namespace('Date', function () {
 
       it('should not parse irregular input', () => {
         assertUndefined(create('foo of next week'));
+      });
+
+      it('should handle now token', () => {
+        setSystemTime(new Date(2020, 5, 15, 23, 59, 59, 999));
+        assertDateEqual(create('now'), new Date(2020, 5, 15, 23, 59, 59, 999));
       });
 
       it('should handle Issue #203', () => {
@@ -1542,6 +1223,11 @@ namespace('Date', function () {
         assertDateEqual(create('yesterday at 3:00a'), new Date(2019, 11, 31, 3));
       });
 
+      it('should handle Issue #453', () => {
+        assertDateEqual(create('noon'), new Date(2020, 0, 1, 12));
+        assertDateEqual(create('tomorrow at noon'), new Date(2020, 0, 2, 12));
+      });
+
       it('should handle Issue #455', () => {
         assertDateEqual(create('3a.m.'), new Date(2020, 0, 1, 3));
         assertDateEqual(create('3p.m.'), new Date(2020, 0, 1, 15));
@@ -1549,9 +1235,414 @@ namespace('Date', function () {
         assertDateEqual(create('3 p.m.'), new Date(2020, 0, 1, 15));
       });
 
-      it('should handle Issue #453', () => {
-        assertDateEqual(create('noon'), new Date(2020, 0, 1, 12));
-        assertDateEqual(create('tomorrow at noon'), new Date(2020, 0, 2, 12));
+      it('should handle Issue #455', () => {
+        assertDateEqual(create('a week from Tuesday'), new Date(2020, 0, 7));
+
+        assertDateEqual(create('first of the month'), new Date(2020, 0));
+        assertDateEqual(create('the first of the month'), new Date(2020, 0));
+
+        assertDateEqual(create('the first Friday of February, 2012'),  new Date(2012, 1, 3));
+        assertDateEqual(create('the second Friday of February, 2012'), new Date(2012, 1, 10));
+        assertDateEqual(create('the third Friday of February, 2012'),  new Date(2012, 1, 17));
+        assertDateEqual(create('the fourth Friday of February, 2012'), new Date(2012, 1, 24));
+        assertDateEqual(create('the fifth Friday of February, 2012'),  new Date(2012, 2, 2));
+        assertDateEqual(create('the sixth Friday of February, 2012'),  new Date(2012, 2, 9));
+
+        assertDateEqual(create('the 3rd Tuesday in November, 2012'), new Date(2012, 10, 20));
+
+        assertDateEqual(create('the second Sunday in June, 2016'),    new Date(2016, 5, 12));
+        assertDateEqual(create('the second Monday in June, 2016'),    new Date(2016, 5, 13));
+        assertDateEqual(create('the second Tuesday in June, 2016'),   new Date(2016, 5, 14));
+        assertDateEqual(create('the second Wednesday in June, 2016'), new Date(2016, 5, 8));
+        assertDateEqual(create('the second Thursday in June, 2016'),  new Date(2016, 5, 9));
+        assertDateEqual(create('the second Friday in June, 2016'),    new Date(2016, 5, 10));
+        assertDateEqual(create('the second Saturday in June, 2016'),  new Date(2016, 5, 11));
+
+        assertDateEqual(create('the last Sunday in November, 2012'),    new Date(2012, 10, 25));
+        assertDateEqual(create('the last Monday in November, 2012'),    new Date(2012, 10, 26));
+        assertDateEqual(create('the last Tuesday in November, 2012'),   new Date(2012, 10, 27));
+        assertDateEqual(create('the last Wednesday in November, 2012'), new Date(2012, 10, 28));
+        assertDateEqual(create('the last Thursday in November, 2012'),  new Date(2012, 10, 29));
+        assertDateEqual(create('the last Friday in November, 2012'),    new Date(2012, 10, 30));
+        assertDateEqual(create('the last Saturday in November, 2012'),  new Date(2012, 10, 24));
+
+        assertDateEqual(create('next weekend'), new Date(2020, 0, 11));
+        assertDateEqual(create('the second weekend of August, 2011'), new Date(2011, 7, 13));
+        assertDateEqual(create('the last weekend of January, 1985'), new Date(1985, 0, 26));
+
+        // Not parsing this as a non-grammatical format
+        assertUndefined(create('week from Tuesday'));
+      });
+
+      it('should handle half in Issue #455', () => {
+
+        assertDateEqual(create('half hour ago'), new Date(2019, 11, 31, 23, 30));
+        assertDateEqual(create('half an hour ago'), new Date(2019, 11, 31, 23, 30));
+        assertDateEqual(create('a half hour ago'), new Date(2019, 11, 31, 23, 30));
+
+        assertDateEqual(create('half hour from now'), new Date(2020, 0, 1, 0, 30));
+        assertDateEqual(create('half an hour from now'), new Date(2020, 0, 1, 0, 30));
+        assertDateEqual(create('a half hour from now'), new Date(2020, 0, 1, 0, 30));
+
+        assertDateEqual(create('in half an hour'), new Date(2020, 0, 1, 0, 30));
+        assertDateEqual(create('in a half hour'), new Date(2020, 0, 1, 0, 30));
+
+        assertDateEqual(create('half a day ago'), new Date(2019, 11, 31, 12));
+
+        assertDateEqual(create('half a week ago'), new Date(2019, 11, 28, 12));
+        assertDateEqual(create('half a week from now'), new Date(2020, 0, 4, 12));
+
+        assertDateEqual(create('half a month ago'), new Date(2019, 11, 18));
+
+        assertDateEqual(create('half year ago'), new Date(2019, 6));
+        assertDateEqual(create('half a year ago'), new Date(2019, 6));
+
+      });
+
+      it('should correctly explain half parsing in Issue #455', () => {
+        const { absProps, relProps } = create({
+          cache: false,
+          explain: true,
+          input: 'half a week ago',
+        });
+        assertObjectEqual(absProps, {});
+        assertObjectEqual(relProps, {
+          week: -0,
+          day: -3,
+          hour: -12,
+        });
+
+      });
+
+    });
+
+    describe('Preferences', () => {
+
+      function createPast(input) {
+        return create({
+          past: true,
+          input,
+        });
+      }
+
+      function createFuture(input) {
+        return create({
+          future: true,
+          input,
+        });
+      }
+
+      it('should parse ambiguous weekday with past preference', () => {
+        assertDateEqual(createPast('Sunday'), new Date(2019, 11, 29));
+        assertDateEqual(createPast('Monday'), new Date(2019, 11, 30));
+        assertDateEqual(createPast('Tuesday'), new Date(2019, 11, 31));
+        assertDateEqual(createPast('Wednesday'), new Date(2019, 11, 25));
+        assertDateEqual(createPast('Thursday'), new Date(2019, 11, 26));
+        assertDateEqual(createPast('Friday'), new Date(2019, 11, 27));
+        assertDateEqual(createPast('Saturday'), new Date(2019, 11, 28));
+      });
+
+      it('should parse ambiguous weekday with future preference', () => {
+        assertDateEqual(createFuture('Sunday'), new Date(2020, 0, 5));
+        assertDateEqual(createFuture('Monday'), new Date(2020, 0, 6));
+        assertDateEqual(createFuture('Tuesday'), new Date(2020, 0, 7));
+        assertDateEqual(createFuture('Wednesday'), new Date(2020, 0, 8));
+        assertDateEqual(createFuture('Thursday'), new Date(2020, 0, 2));
+        assertDateEqual(createFuture('Friday'), new Date(2020, 0, 3));
+        assertDateEqual(createFuture('Saturday'), new Date(2020, 0, 4));
+      });
+
+      it('should parse ambiguous month with past preference', () => {
+        setSystemTime(new Date(2020, 5));
+        assertDateEqual(createPast('January'), new Date(2020, 0));
+        assertDateEqual(createPast('February'), new Date(2020, 1));
+        assertDateEqual(createPast('March'), new Date(2020, 2));
+        assertDateEqual(createPast('April'), new Date(2020, 3));
+        assertDateEqual(createPast('May'), new Date(2020, 4));
+        assertDateEqual(createPast('June'), new Date(2019, 5));
+        assertDateEqual(createPast('July'), new Date(2019, 6));
+        assertDateEqual(createPast('August'), new Date(2019, 7));
+        assertDateEqual(createPast('September'), new Date(2019, 8));
+        assertDateEqual(createPast('October'), new Date(2019, 9));
+        assertDateEqual(createPast('November'), new Date(2019, 10));
+        assertDateEqual(createPast('December'), new Date(2019, 11));
+      });
+
+      it('should parse ambiguous month with future preference', () => {
+        setSystemTime(new Date(2020, 5));
+        assertDateEqual(createFuture('January'), new Date(2021, 0));
+        assertDateEqual(createFuture('February'), new Date(2021, 1));
+        assertDateEqual(createFuture('March'), new Date(2021, 2));
+        assertDateEqual(createFuture('April'), new Date(2021, 3));
+        assertDateEqual(createFuture('May'), new Date(2021, 4));
+        assertDateEqual(createFuture('June'), new Date(2021, 5));
+        assertDateEqual(createFuture('July'), new Date(2020, 6));
+        assertDateEqual(createFuture('August'), new Date(2020, 7));
+        assertDateEqual(createFuture('September'), new Date(2020, 8));
+        assertDateEqual(createFuture('October'), new Date(2020, 9));
+        assertDateEqual(createFuture('November'), new Date(2020, 10));
+        assertDateEqual(createFuture('December'), new Date(2020, 11));
+      });
+
+      it('should parse ambiguous date with past preference', () => {
+        assertDateEqual(createPast('the 15th'), new Date(2019, 11, 15));
+        setSystemTime(new Date(2020, 0, 15));
+        assertDateEqual(createPast('the 15th'), new Date(2019, 11, 15));
+        setSystemTime(new Date(2020, 0, 16));
+        assertDateEqual(createPast('the 15th'), new Date(2020, 0, 15));
+      });
+
+      it('should parse ambiguous date with future preference', () => {
+        assertDateEqual(createFuture('the 15th'), new Date(2020, 0, 15));
+        setSystemTime(new Date(2020, 0, 15));
+        assertDateEqual(createFuture('the 15th'), new Date(2020, 1, 15));
+        setSystemTime(new Date(2020, 0, 16));
+        assertDateEqual(createFuture('the 15th'), new Date(2020, 1, 15));
+      });
+
+      it('should parse ambiguous month and date with past preference', () => {
+        setSystemTime(new Date(2020, 5));
+        assertDateEqual(createPast('March 15th'), new Date(2020, 2, 15));
+        assertDateEqual(createPast('July 15th'), new Date(2019, 6, 15));
+      });
+
+      it('should parse ambiguous month and date with future preference', () => {
+        setSystemTime(new Date(2020, 5));
+        assertDateEqual(createFuture('March 15th'), new Date(2021, 2, 15));
+        assertDateEqual(createFuture('July 15th'), new Date(2020, 6, 15));
+      });
+
+      it('should parse ambiguous time with past preference', () => {
+        setSystemTime(new Date(2020, 0, 1, 12));
+        assertDateEqual(createPast('11am'), new Date(2020, 0, 1, 11));
+        assertDateEqual(createPast('12pm'), new Date(2019, 11, 31, 12));
+        assertDateEqual(createPast('1pm'), new Date(2019, 11, 31, 13));
+      });
+
+      it('should parse ambiguous time with future preference', () => {
+        setSystemTime(new Date(2020, 0, 1, 12));
+        assertDateEqual(createFuture('11am'), new Date(2020, 0, 2, 11));
+        assertDateEqual(createFuture('12pm'), new Date(2020, 0, 2, 12));
+        assertDateEqual(createFuture('1pm'), new Date(2020, 0, 1, 13));
+      });
+
+      it('should parse ambiguous year with offset weekday', () => {
+        setSystemTime(new Date(2020, 5, 2));
+        assertDateEqual(createPast('the 2nd Friday of February'), new Date(2020, 1, 14));
+        assertDateEqual(createPast('the 2nd Friday of October'), new Date(2019, 9, 11));
+        assertDateEqual(createFuture('the 2nd Friday of February'), new Date(2021, 1, 12));
+        assertDateEqual(createFuture('the 2nd Friday of October'), new Date(2020, 9, 9));
+      });
+
+      it('should not apply preferences to date and relative month', () => {
+        assertDateEqual(createPast('the 15th of next month'), new Date(2020, 1, 15));
+      });
+
+      it('should not apply preference to weekday with relative week', () => {
+        assertDateEqual(createPast('this week Sunday'), new Date(2019, 11, 29));
+        assertDateEqual(createPast('next week Sunday'), new Date(2020, 0, 5));
+        assertDateEqual(createPast('this week Wednesday'), new Date(2020, 0, 1));
+        assertDateEqual(createPast('next week Wednesday'), new Date(2020, 0, 8));
+        assertDateEqual(createPast('this week Friday'), new Date(2020, 0, 3));
+        assertDateEqual(createPast('next week Friday'), new Date(2020, 0, 10));
+      });
+
+      it('should not apply preference to month with relative year', () => {
+        assertDateEqual(createPast('January of next year'), new Date(2021, 0));
+        assertDateEqual(createFuture('April last year'), new Date(2019, 3));
+      });
+
+      it('should not apply preference to relative weeks', () => {
+        assertDateEqual(createPast('last week'), new Date(2019, 11, 25));
+        assertDateEqual(createPast('this week'), new Date(2020, 0, 1));
+        assertDateEqual(createPast('next week'), new Date(2020, 0, 8));
+      });
+
+      it('should not apply preference to years', () => {
+        assertDateEqual(createPast('2021'), new Date(2021, 0));
+        assertDateEqual(createPast('1998-12-25'), new Date(1998, 11, 25));
+      });
+
+      it('should handle Issue #572', () => {
+        assertDateEqual(createFuture('this week tuesday at 5pm'), new Date(2019, 11, 31, 17));
+        assertDateEqual(createFuture('today at 5pm'), new Date(2020, 0, 1, 17));
+      });
+
+    });
+
+    describe('Locales', () => {
+
+      // TODO: move to own files
+
+      describe('en-US', () => {
+
+        it('should parse slashes as month first', () => {
+          assertDateEqual(create('08/25', 'en-US'), new Date(2020, 7, 25));
+          assertDateEqual(create('8/25', 'en-US'), new Date(2020, 7, 25));
+          assertDateEqual(create('08/25/1978', 'en-US'), new Date(1978, 7, 25));
+          assertDateEqual(create('8/25/1978', 'en-US'), new Date(1978, 7, 25));
+          assertDateEqual(create('8/25/78', 'en-US'), new Date(1978, 7, 25));
+          assertDateEqual(create('08/25/78', 'en-US'), new Date(1978, 7, 25));
+          assertDateEqual(create('8/25/01', 'en-US'), new Date(2001, 7, 25));
+          assertDateEqual(create('8/25/49', 'en-US'), new Date(2049, 7, 25));
+          assertDateEqual(create('8/25/50', 'en-US'), new Date(1950, 7, 25));
+          assertDateEqual(create('01/02/03', 'en-US'), new Date(2003, 0, 2));
+          assertDateEqual(create('08/25/0001', 'en-US'), new Date('0001-08-25T00:00:00'));
+        });
+
+        it('should parse 2-digit last format', () => {
+          // yy-mm-dd is NOT a valid ISO 8601 representation as of 2004, hence this format will
+          // revert to a little endian representation, where year truncation is allowed. See:
+          // http://en.wikipedia.org/wiki/ISO_8601#Truncated_representations
+          assertDateEqual(create('08-05-05'), new Date(2005, 7, 5));
+        });
+
+        it('should parse numeric month and year', () => {
+          assertDateEqual(create('06-2008'), new Date(2008, 5));
+          assertDateEqual(create('6-2008'), new Date(2008, 5));
+        });
+
+        it('should parse year last dash format', () => {
+          assertDateEqual(create('08-25-1978'), new Date(1978, 7, 25));
+          assertDateEqual(create('8-25-1978'), new Date(1978, 7, 25));
+        });
+
+        it('should parse dot format', () => {
+          assertDateEqual(create('08.25.1978'), new Date(1978, 7, 25));
+          assertDateEqual(create('8.25.1978'), new Date(1978, 7, 25));
+        });
+
+      });
+
+      describe('en-GB', () => {
+
+        it('should parse slashes as day first', () => {
+          assertDateEqual(create('8/10/1978', 'en-GB'), new Date(1978, 9, 8));
+          assertDateEqual(create('08/10/1978', 'en-GB'), new Date(1978, 9, 8));
+          assertDateEqual(create('8/10/78', 'en-GB'), new Date(1978, 9, 8));
+          assertDateEqual(create('08/10/78', 'en-GB'), new Date(1978, 9, 8));
+          assertDateEqual(create('8/10/01', 'en-GB'), new Date(2001, 9, 8));
+          assertDateEqual(create('8/10/49', 'en-GB'), new Date(2049, 9, 8));
+          assertDateEqual(create('8/10/50', 'en-GB'), new Date(1950, 9, 8));
+          assertDateEqual(create('15/10/2020', 'en-GB'), new Date(2020, 9, 15));
+          assertDateEqual(create('15/10/2020 5:15pm', 'en-GB'), new Date(2020, 9, 15, 17, 15));
+          assertDateEqual(create('08/10', 'en-GB'), new Date(2020, 9, 8));
+          assertDateEqual(create('8/10', 'en-GB'), new Date(2020, 9, 8));
+          assertDateEqual(create('08/10/0001', 'en-GB'), new Date('0001-10-08T00:00:00'));
+          assertDateEqual(create('01/02/03', 'en-GB'), new Date(2003, 1, 1));
+          assertDateEqual(create('8/10/50', 'en-GB'), new Date(1950, 9, 8));
+          assertDateEqual(create('08/25', 'en-GB'), new Date(2022, 0, 8));
+        });
+
+        it('should parse dot format', () => {
+          assertDateEqual(create('08.10.1978', 'en-GB'), new Date(1978, 9, 8));
+          assertDateEqual(create('8.10.1978',  'en-GB'), new Date(1978, 9, 8));
+          assertDateEqual(create('1978.8.10',  'en-GB'), new Date(1978, 7, 10));
+          assertDateEqual(create('10.1978',    'en-GB'), new Date(1978, 9, 1));
+          assertDateEqual(create('8.10',       'en-GB'), new Date(2020, 9, 8));
+        });
+
+        it('should parse date first dash format', () => {
+          assertDateEqual(create('15-10-2020', 'en-GB'), new Date(2020, 9, 15));
+          assertDateEqual(create('15-10-2020 5:15pm', 'en-GB'), new Date(2020, 9, 15, 17, 15));
+          assertDateEqual(create('01-02-03', 'en-GB'), new Date(2003, 1, 1));
+          assertDateEqual(create('08-05-05', 'en-GB'), new Date(2005, 4, 8));
+          assertDateEqual(create('15-Oct-2020', 'en-GB'), new Date(2020, 9, 15));
+          assertDateEqual(create('08-10-1978', 'en-GB'), new Date(1978, 9, 8));
+          assertDateEqual(create('15-Oct-2020 5:15pm', 'en-GB'), new Date(2020, 9, 15, 17, 15));
+        });
+
+        it('should parse long month format', () => {
+          assertDateEqual(create('15 Oct. 2020', 'en-GB'), new Date(2020, 9, 15));
+          assertDateEqual(create('15 October, 2020', 'en-GB'), new Date(2020, 9, 15));
+          assertDateEqual(create('15 October, 2020', 'en-GB'), new Date(2020, 9, 15));
+          assertDateEqual(create('15 July, 2008', 'en-GB'), new Date(2008, 6, 15));
+          assertDateEqual(create('15 July 2008', 'en-GB'), new Date(2008, 6, 15));
+          assertDateEqual(create('March 15th', 'en-GB'), new Date(2020, 2, 15));
+          assertDateEqual(create('the 15th of March', 'en-GB'), new Date(2020, 2, 15));
+        });
+
+        it('should parse all year first formats', () => {
+          assertDateEqual(create('2020/10/15', 'en-GB'), new Date(2020, 9, 15));
+          assertDateEqual(create('2020/10/15 5:15pm', 'en-GB'), new Date(2020, 9, 15, 17, 15));
+          assertDateEqual(create('2020-10-15', 'en-GB'), new Date(2020, 9, 15));
+          assertDateEqual(create('2020-10-15 5:15pm', 'en-GB'), new Date(2020, 9, 15, 17, 15));
+          assertDateEqual(create('2020-Oct-15', 'en-GB'), new Date(2020, 9, 15));
+          assertDateEqual(create('2020-Oct-15 5:15pm', 'en-GB'), new Date(2020, 9, 15, 17, 15));
+        });
+
+        it('should parse unambiguous long month formats', () => {
+          assertDateEqual(create('Mar-03', 'en-GB'), new Date(2020, 2, 3));
+          assertDateEqual(create('Mar-3', 'en-GB'), new Date(2020, 2, 3));
+          assertDateEqual(create('03-Mar', 'en-GB'), new Date(2020, 2, 3));
+          assertDateEqual(create('3-Mar', 'en-GB'), new Date(2020, 2, 3));
+          assertDateEqual(create('09-May-78', 'en-GB'), new Date(1978, 4, 9));
+          assertDateEqual(create('09-May-1978', 'en-GB'), new Date(1978, 4, 9));
+          assertDateEqual(create('09-May-1978 3:45pm', 'en-GB'), new Date(1978, 4, 9, 15, 45));
+        });
+
+        it('should numeric month and year', () => {
+          assertDateEqual(create('06-2008'), new Date(2008, 5));
+          assertDateEqual(create('6-2008'), new Date(2008, 5));
+        });
+
+      });
+
+      describe('en-CA', () => {
+
+        it('should not parse ambiguous year last format', () => {
+          // Format is ambiguous in Canada where UK style and
+          // American style are mixed, so these should not be parseable.
+          assertUndefined(create('01/01/2020', 'en-CA'));
+          assertUndefined(create('01-01-2020', 'en-CA'));
+        });
+
+        it('should not parse ambiguous day month format', () => {
+          // This should technically not be parseable as above, however unfortunately
+          // American style are mixed, so these should not be parseable.
+          assertUndefined(create('8/10', 'en-CA'), new Date(2020, 7, 10));
+          assertUndefined(create('8-10', 'en-CA'), new Date(2020, 7, 10));
+        });
+
+        it('should parse date first dash format', () => {
+          assertDateEqual(create('15-Oct-2020', 'en-CA'), new Date(2020, 9, 15));
+          assertDateEqual(create('15-Oct-2020 5:15pm', 'en-CA'), new Date(2020, 9, 15, 17, 15));
+        });
+
+        it('should parse long month format', () => {
+          assertDateEqual(create('15 Oct. 2020', 'en-CA'), new Date(2020, 9, 15));
+          assertDateEqual(create('15 October, 2020', 'en-CA'), new Date(2020, 9, 15));
+          assertDateEqual(create('15 October, 2020', 'en-CA'), new Date(2020, 9, 15));
+          assertDateEqual(create('15 July, 2008', 'en-CA'), new Date(2008, 6, 15));
+          assertDateEqual(create('15 July 2008', 'en-CA'), new Date(2008, 6, 15));
+          assertDateEqual(create('March 15th', 'en-CA'), new Date(2020, 2, 15));
+          assertDateEqual(create('the 15th of March', 'en-CA'), new Date(2020, 2, 15));
+        });
+
+        it('should parse all year first formats', () => {
+          assertDateEqual(create('2020/10/15', 'en-CA'), new Date(2020, 9, 15));
+          assertDateEqual(create('2020/10/15 5:15pm', 'en-CA'), new Date(2020, 9, 15, 17, 15));
+          assertDateEqual(create('2020-10-15', 'en-CA'), new Date(2020, 9, 15));
+          assertDateEqual(create('2020-10-15 5:15pm', 'en-CA'), new Date(2020, 9, 15, 17, 15));
+          assertDateEqual(create('2020-Oct-15', 'en-CA'), new Date(2020, 9, 15));
+          assertDateEqual(create('2020-Oct-15 5:15pm', 'en-CA'), new Date(2020, 9, 15, 17, 15));
+        });
+
+        it('should parse unambiguous long month formats', () => {
+          assertDateEqual(create('Mar-03', 'en-CA'), new Date(2020, 2, 3));
+          assertDateEqual(create('Mar-3', 'en-CA'), new Date(2020, 2, 3));
+          assertDateEqual(create('03-Mar', 'en-CA'), new Date(2020, 2, 3));
+          assertDateEqual(create('3-Mar', 'en-CA'), new Date(2020, 2, 3));
+          assertDateEqual(create('09-May-78', 'en-CA'), new Date(1978, 4, 9));
+          assertDateEqual(create('09-May-1978', 'en-CA'), new Date(1978, 4, 9));
+          assertDateEqual(create('09-May-1978 3:45pm', 'en-CA'), new Date(1978, 4, 9, 15, 45));
+        });
+
+        it('should numeric month and year', () => {
+          assertDateEqual(create('06-2008'), new Date(2008, 5));
+          assertDateEqual(create('6-2008'), new Date(2008, 5));
+        });
+
       });
 
     });
@@ -1605,7 +1696,7 @@ namespace('Date', function () {
 
     });
 
-    describe('Adding custom DateTime formats', () => {
+    describe('Custom DateTime Formats', () => {
 
       it('should be able to add basic parts', () => {
         assertDateEqual(
@@ -1749,7 +1840,7 @@ namespace('Date', function () {
 
     });
 
-    describe('Adding custom Relative formats', () => {
+    describe('Custom Relative Formats', () => {
 
       it('should be able to add a numeric relative format', () => {
         assertDateEqual(
@@ -1792,7 +1883,7 @@ namespace('Date', function () {
 
     });
 
-    describe('Explain', () => {
+    describe('Explaining', () => {
 
       it('should return a parsing result when explain flag is set', () => {
         const { format, parser, ...rest } = create({
@@ -1939,6 +2030,19 @@ namespace('Date', function () {
         assertObjectEqual(relProps, {});
       });
 
+      it('should correctly explain hours in explicit dayPeriod', () => {
+        const { absProps, relProps } = create({
+          cache: false,
+          explain: true,
+          input: 'monday at noon'
+        })
+        assertObjectEqual(absProps, {
+          day: 1,
+          hour: 12,
+        });
+        assertObjectEqual(relProps, {});
+      });
+
       it('should handle Issue #545', () => {
         const { absProps } = create({
           cache: false,
@@ -1973,7 +2077,7 @@ namespace('Date', function () {
 
     });
 
-    describe('Creation with DateProps', () => {
+    describe('From Object', () => {
 
       it('should be able to create a date from unit props', () => {
         assertDateEqual(
@@ -2072,11 +2176,6 @@ namespace('Date', function () {
 
     describe('Other', () => {
 
-      it('should handle now token', () => {
-        setSystemTime(new Date(2020, 5, 15, 23, 59, 59, 999));
-        assertDateEqual(create('now'), new Date(2020, 5, 15, 23, 59, 59, 999));
-      });
-
       it('should create a date from a timestamp', () => {
         assertDateEqual(create(Date.now()), new Date());
         assertDateEqual(create(1293980400000), new Date(1293980400000));
@@ -2117,7 +2216,6 @@ namespace('Date', function () {
 
       it('should handle irregular input', () => {
         assertDateEqual(create({}), new Date(2020, 0));
-
         assertError(() => {
           create();
         }, TypeError);

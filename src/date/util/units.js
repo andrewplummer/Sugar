@@ -17,29 +17,39 @@ export const UNITS = [
 ];
 
 // Note that years, months, weeks, and days may have 1 hour less in DST
-// timezones when a fallback shift occurs.
+// timezones when a fallback shift occurs. "rel" designates the multiplier
+// relative to it's lower unit, and is generally used in colloquial forms
+// like "half a year ago" where precision isn't expected. "half a month"
+// is fairly ambiguous, so keeping things simple and saying "4 weeks".
+
 const UNIT_MULTIPLIERS = {
   year: {
-    avg: YEAR_AVG_DAYS * 24 * 60 * 60 * 1000,
-    min: 365 * 24 * 60 * 60 * 1000 - HOUR_IN_MS,
+    avg: YEAR_AVG_DAYS * DAY_IN_MS,
+    min: 365 * DAY_IN_MS - HOUR_IN_MS,
+    rel: 12,
   },
   month: {
-    avg: YEAR_AVG_DAYS / 12 * 24 * 60 * 60 * 1000,
+    avg: YEAR_AVG_DAYS / 12 * DAY_IN_MS,
     min: 28 * DAY_IN_MS - HOUR_IN_MS,
+    rel: 4,
   },
   week: {
-    avg: 7 * 24 * 60 * 60 * 1000,
+    avg: 7 * DAY_IN_MS,
     min: 7 * DAY_IN_MS - HOUR_IN_MS,
+    rel: 7,
   },
   day: {
-    avg: 24 * 60 * 60 * 1000,
+    avg: DAY_IN_MS,
     min: DAY_IN_MS - HOUR_IN_MS,
+    rel: 24,
   },
   hour: {
     avg: HOUR_IN_MS,
+    rel: 60,
   },
   minute: {
     avg: 60 * 1000,
+    rel: 60,
   },
   second: {
     avg: 1000,
@@ -82,9 +92,10 @@ const UNIT_EDGES = {
   },
 };
 
-export function getUnitMultiplier(unit, min = false) {
+export function getUnitMultiplier(unit, type = 'avg') {
   const mult = UNIT_MULTIPLIERS[normalizeDate(unit)];
-  return mult[min ? 'min' : 'avg'] || mult['avg'];
+  // Return the multiplier for the type, falling back to the average.
+  return mult[type] || mult['avg'];
 }
 
 export function getUnitIndex(unit) {
@@ -125,12 +136,16 @@ export function getUnitEdge(unit, end, date) {
   return val;
 }
 
-export function convertTimeToUnit(ms, min) {
+export function convertTimeToUnit(ms, type) {
   let unit = 'millisecond';
+
+  // Round the tim to avoid floating point errors.
+  ms = Math.round(ms);
+
   let value = ms;
   for (let i = UNITS.length - 2; i >= 0; i--) {
     const u = UNITS[i];
-    const mult = getUnitMultiplier(u, min);
+    const mult = getUnitMultiplier(u, type);
     if (Math.abs(ms) >= mult) {
       unit = u;
       value = Math.trunc(ms / mult);

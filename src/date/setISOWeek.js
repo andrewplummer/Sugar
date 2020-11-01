@@ -1,5 +1,5 @@
 import { assertValidDate } from '../util/assertions';
-import { setISOWeek as _setISOWeek } from './util/isoWeekDate';
+import { setISOWeek as _setISOWeek } from './util/iso';
 
 /**
  * Sets the date's week (of the year) as defined by the ISO8601 standard.

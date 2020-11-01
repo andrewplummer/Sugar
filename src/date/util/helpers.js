@@ -1,4 +1,5 @@
 import { assertInteger } from '../../util/assertions';
+import { isDate } from '../../util/typeChecks';
 import { setWeekday } from './weekdays';
 
 // Date method helpers
@@ -45,12 +46,31 @@ export function callDateSet(date, unit, val) {
   date[`set${getMethodUnit(unit)}`](val);
 }
 
-export function getDaysInMonth(date, month) {
-  const year = callDateGet(date, 'year');
-  if (month == null) {
-    month = callDateGet(date, 'month');
+// TODO: go through to check calls to date methods like date.getFullYear
+// should we use callDateGet here or not????
+
+export function getDaysInMonth(...args) {
+  const [year, month] = collectYearMonth(args);
+  return 32 - new Date(year, month, 32).getDate();
+}
+
+// Gets the number of weekdays in a given month. For example in January 2020
+// there there are 5 Saturdays and 4 Mondays. The offset is that of the next
+// target weekday from the weekday at the first of the month. Assumes a date
+// that is already reset to the first of the month.
+export function getWeekdaysInMonth(date, weekday) {
+  const offset = (7 - date.getDay() + weekday) % 7;
+  return Math.ceil((getDaysInMonth(date) - offset) / 7);
+}
+
+function collectYearMonth(args) {
+  if (isDate(args[0])) {
+    args = [
+      callDateGet(args[0], 'year'),
+      callDateGet(args[0], 'month'),
+    ];
   }
-  return 32 - callDateGet(new Date(year, month, 32), 'date');
+  return args;
 }
 
 function getMethodUnit(unit) {
@@ -64,7 +84,7 @@ function getMethodUnit(unit) {
 function preventMonthTraversal(date, targetMonth) {
   const dateVal = callDateGet(date, 'date');
   if (dateVal > 28) {
-    const daysInTargetMonth = getDaysInMonth(date, targetMonth);
+    const daysInTargetMonth = getDaysInMonth(date.getFullYear(), targetMonth);
     if (daysInTargetMonth < dateVal) {
       callDateSet(date, 'date', daysInTargetMonth);
     }

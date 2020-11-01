@@ -1,7 +1,6 @@
-import { getISOWeek, getISOWeekYear } from './isoWeekDate';
-import { getOrdinalSuffix } from '../../util/number';
+import { getOrdinalSuffix } from '../../util/ordinals';
+import { getISOWeek, getISOWeekYear, getDayOfYear } from './iso';
 import { getFormattedOffset } from './timezoneOffsets';
-import { getDayOfYear } from './ordinal';
 import { getQuarter } from './quarter';
 
 export function getTokenFormatter(formatter, format) {

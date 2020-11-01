@@ -1,4 +1,4 @@
-import { getDayOfYear } from './ordinal';
+import { getUnitDistance } from './distance';
 
 // As defined here:
 // https://en.wikipedia.org/wiki/ISO_week_date
@@ -30,6 +30,7 @@ export function getISOWeekYear(date) {
 }
 
 export function setISOWeek(date, week) {
+  // TODO: handle this as input
   if (isNaN(week)) {
     date.setTime(NaN);
     return;
@@ -42,6 +43,14 @@ export function setISOWeek(date, week) {
   if (offset) {
     date.setDate(date.getDate() + offset);
   }
+}
+
+export function getDayOfYear(date, year) {
+  if (!year) {
+    year = date.getFullYear();
+  }
+  const jan1 = new Date(year, 0);
+  return getUnitDistance(date, jan1, 'day') + 1;
 }
 
 function getISOWeekday(date) {

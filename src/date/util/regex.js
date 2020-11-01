@@ -40,10 +40,10 @@
 //   however the result will not match the other string, in which case a normal
 //   alternation with a "|" character will be returned.
 
-export function compileRegExpAlternates(arr) {
+export function compileRegExpAlternates(arr, sep) {
   const trie = buildTokenTrie(arr);
   return reduceTrie(trie, (branch) => {
-    return reduceBranch(branch);
+    return reduceBranch(branch, sep);
   });
 }
 
@@ -69,13 +69,13 @@ function reduceTrie(trie, fn) {
   return fn(trie);
 }
 
-function reduceBranch(branch) {
+function reduceBranch(branch, sep) {
   const keys = Object.keys(branch);
   if (keys.length === 0) {
     return '';
   } else if (keys.length === 1) {
     const [token] = keys;
-    return joinTokenSource(token, branch[token]);
+    return joinTokenSource(token, branch[token], sep);
   } else {
     let changed = false;
     for (let key1 of keys) {
@@ -93,12 +93,11 @@ function reduceBranch(branch) {
       }
     }
     if (changed) {
-      return reduceBranch(branch);
+      return reduceBranch(branch, sep);
     } else {
-      const alternates = keys.map((key) => {
-        return joinTokenSource(key, branch[key]);
-      });
-      return getNonCapturingGroup(alternates);
+      return keys.map((key) => {
+        return joinTokenSource(key, branch[key], sep);
+      }).join('|');
     }
   }
 }
@@ -125,13 +124,13 @@ function reduceBranch(branch) {
 //
 //   "one|two" + "(?:days?|years?) (?:ago|from now)"
 // = "(?:one|two) (?:day|year) (?:ago|from now)"
-function joinTokenSource(str1, str2) {
+function joinTokenSource(str1, str2, separator = ' ') {
   if (!str1 || !str2) {
     return str1 || str2;
   }
   str1 = getNonCapturingGroup(str1);
   str2 = getNonCapturingGroup(str2);
-  return [str1, str2].join(' ');
+  return [str1, str2].join(separator);
 }
 
 // Join regex tokens in a way that will alternate the phrases.

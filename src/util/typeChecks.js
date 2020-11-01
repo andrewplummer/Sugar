@@ -1,6 +1,8 @@
 import { isClass, getClassTag } from './class';
 import { TYPED_ARRAY_CLASS_TAGS } from './tags';
 
+// TODO: rename to types.js??
+
 export const isBoolean = buildPrimitiveClassCheck('Boolean');
 export const isNumber = buildPrimitiveClassCheck('Number');
 export const isString = buildPrimitiveClassCheck('String');

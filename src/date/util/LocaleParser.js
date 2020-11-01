@@ -3,14 +3,21 @@ import { advanceDate } from './shift';
 import { setWeekday } from './weekdays';
 import { setTimeZoneOffset, setIANATimeZone } from './timeZone';
 import { resetByIndex, resetByUnit } from './reset';
-import { isNaN } from '../../util/typeChecks';
+import { isNaN, isString } from '../../util/typeChecks';
 import { cloneDate } from '../../util/date';
-import { UNITS, getPropsSpecificity, getAdjacentUnit, formatPartsForUnit } from './units';
+import { UNITS, getPropsSpecificity, getAdjacentUnit, formatPartsForUnit, getUnitMultiplier } from './units';
 import { replaceLocaleNumerals } from './numerals';
+import { REG_NUMERIC_ORDINALS, REG_FULL_ORDINALS, replaceOrdinals } from './ordinals';
 import { compileRegExpAlternates } from './regex';
+import { getWeekdaysInMonth } from './helpers';
+
+// TODO: move methods back into class
 
 const NUM_TOKEN = 'NUM';
 const ENGLISH = 'en';
+
+// Parses positive or negative years from 4-6 digits.
+const REG_YEAR = '[+-]?\\d{4,6}';
 
 // Hour 0-29 parseable to support some
 // locales that allow hours to overshoot.
@@ -19,12 +26,12 @@ const REG_HOUR = '[012]?[0-9]';
 // Minutes 0-59 parseable.
 const REG_MIN = '[0-5]\\d';
 
+// Parses decimal fractions with period or comma separator.
+const REG_DEC = '(?:[.,]\\d+)?';
+
 // Seconds 0-60 parseable to allow
 // for leap seconds in ISO-8601 spec.
 const REG_SEC_NUMERIC = `${REG_MIN}|60`;
-
-// Parses decimal fractions with period or comma separator.
-const REG_DEC = '(?:[.,]\\d+)?';
 
 // Milliseconds are not part of Intl spec,
 // so most seconds are parsed as fractional.
@@ -32,10 +39,6 @@ const REG_SEC = `(?:${REG_SEC_NUMERIC})${REG_DEC}`;
 
 // Timezone suffix like "Z" in ISO-8601, "GMT+09:00", or just "GMT"
 const REG_ZONE = `Z|GMT|(?:GMT)?[+−-]\\d{1,2}(?::?${REG_MIN})?(?:\\s\\(.+\\))?`;
-
-// Matches 1-2 digits with optional ordinal suffix like
-// 1st, 2nd, 3rd, 4th, 24th, etc. up to 100.
-const REG_ORDINAL = '[^1]?(?:1st|2nd|3rd|[04-9]th)|1[0-9]th|\\d{1,2}';
 
 // Matches time separators like whitespace, a comma, or unknown
 // token that Intl does not provide access to like "at", "on" etc.
@@ -46,6 +49,9 @@ const REG_ORDINAL = '[^1]?(?:1st|2nd|3rd|[04-9]th)|1[0-9]th|\\d{1,2}';
 // TODO: how to handle spanish?
 const REG_TIME_SEP = '(?:,?\\s|\\s[^\\d\\s]+\\s)?';
 
+// Matches any floating point number, negative or positive.
+const REG_FLOAT = '[+-]?(?:\\d*\\.)?\\d+';
+
 const TIME_TYPES = ['hour', 'minute', 'second', 'dayPeriod'];
 
 const UNIT_SHORTCUTS = {
@@ -54,6 +60,9 @@ const UNIT_SHORTCUTS = {
 };
 
 const REF_DATE = new Date(2020, 0);
+
+const MATCH_INTEGER = /[+-]?\d+/;
+const MATCH_FLOAT = RegExp(REG_FLOAT);
 
 const PHRASE_TYPE_FIXED = 'fixed';
 const PHRASE_TYPE_NUMERIC = 'numeric';
@@ -67,9 +76,7 @@ export default class LocaleParser {
     this.locale = ensureLocale(locale);
     this.language = getLanguage(locale);
     this.options = options;
-
     this.formats = [];
-    this.tokens = {};
 
     this.setup();
     this.buildFormats();
@@ -96,13 +103,13 @@ export default class LocaleParser {
   }
 
   buildMonths() {
-    this.months = this.buildIntlTokenSet('month', 11, (date, val) => {
+    this.months = this.buildIntlTokens('month', 11, (date, val) => {
       date.setMonth(val);
     });
   }
 
   buildWeekdays() {
-    this.weekdays = this.buildIntlTokenSet('weekday', 6, (date, val) => {
+    this.weekdays = this.buildIntlTokens('weekday', 6, (date, val) => {
       date.setDate(val + 5);
     });
   }
@@ -182,12 +189,12 @@ export default class LocaleParser {
     // - "at night" (20:00 - 05:59)
     //
     const explicitHours = [6, 12, 13, 18, 20];
-    const explicit = this.buildIntlTokenSet('dayPeriod', 4, (date, val) => {
+    const explicit = this.buildIntlTokens('dayPeriod', 4, (date, val) => {
       const hour = explicitHours[val];
       date.setHours(hour);
       return hour;
     });
-    const implied = this.buildIntlTokenSet('impliedDayPeriod', 1, (date, val) => {
+    const implied = this.buildIntlTokens('impliedDayPeriod', 1, (date, val) => {
       const hour =  val ? 12 : 0;
       date.setHours(hour);
       return hour;
@@ -201,7 +208,7 @@ export default class LocaleParser {
   }
 
   buildEras() {
-    this.eras = this.buildIntlTokenSet('era', 1, (date, val) => {
+    this.eras = this.buildIntlTokens('era', 1, (date, val) => {
       date.setFullYear(val ? 1 : -1);
     });
   }
@@ -216,11 +223,12 @@ export default class LocaleParser {
     return tokens.join('|');
   }
 
-  getTokens(set, type) {
+  getTokens(set, types = 'short|long') {
     let tokens = Object.keys(set);
-    if (type) {
+    if (types) {
+      types = types.split('|');
       tokens = tokens.filter((token) => {
-        return set[token].type === type;
+        return types.includes(set[token].type);
       });
     }
     return tokens;
@@ -228,20 +236,9 @@ export default class LocaleParser {
 
   // Intl Tokens
 
-  buildIntlTokenSet(type, max, fn) {
+  buildIntlTokens(type, max, fn) {
     const set = {};
-    this.buildIntlTokens(set, type, max, fn);
 
-    const aliases = TOKEN_ALIASES[this.language] || {};
-    for (let [key, val] of Object.entries(aliases)) {
-      if (val in set) {
-        set[key] = set[val]
-      }
-    }
-    return set;
-  }
-
-  buildIntlTokens(set, type, max, fn) {
     let styles;
     if (type === 'impliedDayPeriod') {
       // An "implied day period" does not pass an explicit dayPeriod option,
@@ -267,6 +264,7 @@ export default class LocaleParser {
       // Otherwise take both, for "Wednesday/Wed" and "January/Jan".
       styles = ['short', 'long'];
     }
+
     const variants = styles.map((style) => {
       const formatter = new Intl.DateTimeFormat(this.locale, {
         hour: 'numeric',
@@ -300,6 +298,8 @@ export default class LocaleParser {
         };
       }
     }
+
+    return set;
   }
 
   // Formats
@@ -530,12 +530,12 @@ export default class LocaleParser {
             const dayPart = findPart(parts, 'day');
             const monthPart = findPart(parts, 'month');
             const apos = dayPart && monthPart ? "'?" : "'";
-            src += `(\\d{4,6}|${apos}\\d{2})`;
+            src += `(${REG_YEAR}|${apos}\\d{2})`;
             resolver = resolveYear;
           } else if (type === 'yyyy') {
             // A yyyy token is required to be between 4 and 6 digits.
             type = 'year';
-            src += `(\\d{4,6})`;
+            src += `(${REG_YEAR})`;
             resolver = resolveYear;
           } else if (type === 'month') {
             if (this.isNumericPart(part)) {
@@ -553,7 +553,7 @@ export default class LocaleParser {
             const monthPart = findPart(parts, 'month');
             if (this.language === ENGLISH && !this.isNumericPart(monthPart)) {
               // English only: "1st", "2nd", etc.
-              src += `(${REG_ORDINAL})`;
+              src += `(\\d{1,2}|(?:${REG_NUMERIC_ORDINALS}))`;
             } else {
               src += '(\\d{1,2})';
             }
@@ -569,7 +569,7 @@ export default class LocaleParser {
           } else if (type === 'fractionalSecond') {
             type = 'second';
             src += `(${REG_SEC})`;
-            resolver = resolveFractionalTime;
+            resolver = resolveFraction;
           } else if (type === 'dayPeriod') {
             src += `(${this.getDayPeriodSource()})`;
             resolver = this.resolveDayPeriod;
@@ -584,20 +584,22 @@ export default class LocaleParser {
             resolver = resolveTimestamp;
           } else if (type === 'offset weekday') {
             // English only: "the 1st Sunday of next month", etc.
-            src += `((?:${REG_ORDINAL}) (?:${this.getWeekdaySource()}))`;
+            const anchors = `(?:${REG_FULL_ORDINALS}|last)`;
+            const weekdays = `(?:${this.getWeekdaySource('long|custom')})`;
+            src += `(${anchors} ${weekdays})`;
             resolver = this.resolveOffsetWeekday;
           } else if (type === 'offset unit') {
             // English only: "the day after tomorrow" etc.
             // The tokens "before", "after", "from" cannot be derived from Intl
             // which makes multilingual support for this too difficult for now.
-            const nums = `\\w+|the`;
+            const nums = `\\w+|a|the`;
             const units = `days?|weeks?|months?|years?`;
             const dirs = 'before|after|from';
             src += `((?:${nums}) (?:${units}) (?:${dirs}))`;
             resolver = this.resolveOffsetUnit;
           } else if (type === 'edge') {
             // English only: "the end of the month", etc.
-            src += '(?:the )?(beginning|end|first day|last day) of';
+            src += '(?:the )?(beginning|end|(?:first|last)(?: day)?) of';
             resolver = this.resolveEdge;
           } else if (type === 'unit') {
             src += `(${this.getUnitSource()})`;
@@ -660,7 +662,7 @@ export default class LocaleParser {
     };
     const secondGroup = {
       type: 'second',
-      resolver: resolveFractionalTime,
+      resolver: resolveFraction,
     };
     const dayPeriodGroup = {
       type: 'dayPeriod',
@@ -806,7 +808,7 @@ export default class LocaleParser {
             let str = formatter.format(num, unit);
             if (str) {
               let type = formatType;
-              str = str.replace(/\d+/, () => {
+              str = str.replace(MATCH_INTEGER, () => {
                 // Override type here if the format contains a digit to be
                 // "numeric" as "auto" format may still return numbers.
                 type = PHRASE_TYPE_NUMERIC;
@@ -831,8 +833,30 @@ export default class LocaleParser {
   }
 
   buildAlternatePhrases() {
+    this.buildAliases();
     this.buildRelativeUnitPhrases(this.months, 'month', 'year');
     this.buildRelativeUnitPhrases(this.weekdays, 'day', 'week');
+  }
+
+  buildAliases() {
+    const { months, weekdays, relativePhrases } = this;
+    const aliases = TOKEN_ALIASES[this.language] || {};
+    for (let [token, alias] of Object.entries(aliases)) {
+      //weekend: 'saturday|custom',
+      const [name, type] = alias.split('|');
+      for (let set of [months, weekdays, relativePhrases]) {
+        if (name in set) {
+          if (type) {
+            set[token] = {
+              ...set[name],
+              type,
+            };
+          } else {
+            set[token] = set[name];
+          }
+        }
+      }
+    }
   }
 
   buildUnits() {
@@ -856,12 +880,11 @@ export default class LocaleParser {
     const reg = RegExp(this.getUnits(relUnit).join('|'));
     for (let phrase of this.getRelativePhrases(relUnit, PHRASE_TYPE_FIXED)) {
       const { value: relValue } = this.relativePhrases[phrase];
-      const arr = this.getTokens(set, 'long');
-      for (let value = 0; value < arr.length; value++) {
-        const token = arr[value];
+      for (let token of this.getTokens(set, 'long|custom')) {
+        const { value } = set[token];
         // CJK locales have numeric months like 1月, where a phrase like
         // "来1月" is meaningless, so filter them here.
-        if (!token.match(/\d/)) {
+        if (!token.match(MATCH_INTEGER)) {
           const key = phrase.replace(reg, token);
           // Don't override existing phrases.
           if (key !== phrase) {
@@ -951,7 +974,10 @@ export default class LocaleParser {
 
   getRelativePhraseSource(unit, type) {
     let src = compileRegExpAlternates(this.getRelativePhrases(unit, type));
-    return src.replace(/NUM/g, '-?\\w+');
+    // Fixed phrases like "tomorrow" or "next week" will not have a token in
+    // them so will match exactly. Phrases like "NUM days ago" will need to
+    // match any floating point number.
+    return src.replace(RegExp(NUM_TOKEN, 'g'), `(?:${REG_FLOAT}|[\\w\\s]+)`);
   }
 
   getRelativePhrases(unit, type) {
@@ -1014,11 +1040,17 @@ export default class LocaleParser {
     // allow other units to be resolved before checking against the current
     // day and setting accordingly.
     return (date, absProps) => {
-      const [ordinal, weekday] = str.split(' ');
-      const mult = parseInt(ordinal, 10) - 1;
+      let [ordinal, weekday] = str.split(' ');
+      ordinal = replaceOrdinals(ordinal);
       const token = this.weekdays[weekday];
       if (token) {
         let day = token.value;
+        let mult;
+        if (ordinal === 'last') {
+          mult = getWeekdaysInMonth(date, day) - 1;
+        } else {
+          mult = parseInt(ordinal, 10) - 1;
+        }
         if (mult) {
           day += 7 * mult;
         }
@@ -1033,7 +1065,7 @@ export default class LocaleParser {
     return (date, absProps, relProps) => {
       let [num, unit, dir] = str.split(' ');
       num = replaceLocaleNumerals(num, this.language);
-      num = parseInt(num) || 1;
+      num = parseFloat(num) || 1;
       unit = unit.replace(/s$/, '');
       num *= dir === 'before' ? -1 : 1;
       advanceDate(date, {
@@ -1114,15 +1146,15 @@ export default class LocaleParser {
       // the phrase and parsing the value from the matched string, then applying
       // the implied direction, such as -1 for "ago", etc.
       str = replaceLocaleNumerals(str, this.language);
-      str = str.replace(/-?\d+/, (match) => {
-        value = parseInt(match, 10);
+      str = str.replace(MATCH_FLOAT, (match) => {
+        value = match;
         return NUM_TOKEN;
       });
       phrase = this.relativePhrases[str];
       if (!phrase) {
         // Attempt to replace articles in relative phrases such as
         // "an hour ago", "hace una hora", etc. as a fallback.
-        str = str.replace(/^\w+/, 'NUM');
+        str = str.replace(/^\w+/, NUM_TOKEN);
         phrase = this.relativePhrases[str];
         // Set the value here for brevity. If the phrase
         // was not matched it will not proceed below.
@@ -1130,16 +1162,22 @@ export default class LocaleParser {
       }
     }
     if (phrase) {
-      const { unit, dir, relUnit, relValue } = phrase;
+      let { unit: type, dir, relUnit, relValue } = phrase;
       if (dir != null) {
         value *= phrase.dir;
       }
+
+      let props;
       if (relUnit) {
         relProps[relUnit] = relValue;
-        absProps[unit] = value;
+        props = absProps;
       } else {
-        relProps[unit] = value;
+        props = relProps;
       }
+      resolveFraction(value, {
+        type,
+        props,
+      });
     }
   }
 
@@ -1192,7 +1230,6 @@ export default class LocaleParser {
         if (Object.keys(absProps).length > 0) {
           updateDate(date, absProps, true);
         }
-        //console.info(reg, match, absProps, relProps);
 
         // Some resolvers may require the date to be updated
         // before they can resolve, so push them into an array
@@ -1200,6 +1237,8 @@ export default class LocaleParser {
         for (let fn of post) {
           fn(date, absProps, relProps);
         }
+
+        //console.info(reg, match, absProps, relProps);
 
         // If no timeZoneOffset was derived from the parsing and
         // an override was set, then set it here.
@@ -1313,6 +1352,9 @@ function propsUnitExists(props, unit) {
 }
 
 function buildNumericComponent() {
+  // Note that ISO-8601 required a "basic" format where digits run together,
+  // so much stricter parsing must be followed. The year MUST be either 4 digits
+  // or include a sign before or after to be allowed.
   const date = `(\\d{4}|[+-]\\d{4,6})(?:[-/.]?(\\d{1,2})(?:[-/.]?(\\d{1,2}))?)?`;
   const time = `(${REG_HOUR}${REG_DEC})(?::?(${REG_MIN}${REG_DEC}))?(?::?(${REG_SEC}))?`;
   const src = `${date}(?:[T\\s]${time})?(${REG_ZONE})?`;
@@ -1330,7 +1372,7 @@ function buildNumericComponent() {
     if (type === 'timeZone') {
       resolver = resolveTimeZoneName;
     } else if (type === 'hour' || type === 'minute' || type === 'second') {
-      resolver = resolveFractionalTime;
+      resolver = resolveFraction;
     } else {
       resolver = resolveInteger;
     }
@@ -1448,30 +1490,6 @@ function resolveTimestamp(str, { absProps }) {
   };
 }
 
-function resolveFractionalTime(str, { type, absProps }) {
-  str = str.replace(',', '.');
-  const num = parseFloat(str);
-  absProps[type] = Math.trunc(num);
-
-  // Allow setting zero as this will
-  // resolve the specificity later.
-  if (str.includes('.')) {
-    let dec = num % 1;
-    let unit;
-    if (type === 'hour') {
-      unit = 'minute';
-      dec *= 60;
-    } else if (type === 'minute') {
-      unit = 'second';
-      dec *= 60;
-    } else if (type === 'second') {
-      unit = 'millisecond';
-      dec *= 1000;
-    }
-    absProps[unit] = Math.round(dec);
-  }
-}
-
 function resolveInteger(str, { type, absProps }) {
   let num = parseInt(str, 10);
   if (!isNaN(num)) {
@@ -1479,6 +1497,56 @@ function resolveInteger(str, { type, absProps }) {
       num -= 1;
     }
     absProps[type] = num;
+  }
+}
+
+function resolveFraction(arg, { type: unit, props, absProps }) {
+
+  // Allow resolver to be called
+  // from another with any props.
+  props = props || absProps;
+
+  let str;
+  if (isString(arg)) {
+    // Allow European style decimal comma.
+    str = arg.replace(',', '.');
+  } else {
+    // Input may be a number.
+    str = String(arg);
+  }
+
+  let val = parseFloat(str);
+
+  props[unit] = Math.trunc(val);
+
+  // A string of "0.0" provides insight into its specificity, even if the
+  // parsed values do not affect the date, so continue on if a decimal
+  // separator has been found.
+  if (str.includes('.')) {
+
+    // If a lower unit exists, then set its value as the fraction in the lower
+    // unit. For example: "half a minute" -> .5 * 60 = 30 seconds. Recursively
+    // resolve the fraction until all units are resolved.
+    const lower = getAdjacentUnit(unit, 1);
+
+    if (lower) {
+
+      // Floating point errors are not acceptable here as they
+      // will result smaller units being recursively set,
+      // so round to 3 places here.
+      val = Math.round(val % 1 * 1000) / 1000;
+
+      // Note that we are taking the "relative" unit multiplier
+      // as this is appropriate for colloquial forms. For example
+      // "half a year ago" is generally accepted to mean 6 months ago,
+      // even though this does not take into account leap years, etc.
+      val *= getUnitMultiplier(unit, 'rel');
+
+      resolveFraction(val, {
+        props,
+        type: lower,
+      });
+    }
   }
 }
 
@@ -1526,21 +1594,20 @@ const ALTERNATE_RELATIVE_FORMATS = {
 const ALTERNATE_DATETIME_FORMATS = {
   default: [
     // TODO: go through formats and check they're matching what we think they should
-    '<weekday> <time?>',
-    '<time?> <weekday>',
-    // "last year", "this month", "next week" etc.
-    // "now", "1 minute ago", etc.
+    '<weekday><time?>',
+    '<time?><weekday>',
+    // "last year", "this month", "next week", "1 minute ago", "now", etc.
     '<any relative unit>',
     // "10am tomorrow", "10:30pm in 5 days", etc.
-    '<time?> <any relative day>',
+    '<time?><any relative day>',
     // "today at 10am"
-    '<any relative day> <time?>',
+    '<any relative day><time?>',
     // "next week Friday at 10:30pm" etc.
-    '<relative week> <weekday> <time?>',
+    '<relative week> <weekday><time?>',
     // All locales should parse an unambiguous numeric DateTime with
     // "-" or "/" as separators. Unambiguous here means year first and no
     // 2-digit years allowed.
-    '<yyyy>[-/]<month>[-/]<day> <time?>',
+    '<yyyy>[-/]<month>[-/]<day><time?>',
     // .NET Alternate JSON Date format. Yes, this looks ridiculous.
     '\\\\\\/Date\\(<timestamp>(?:[-+]\\d{4})?\\)\\\\\\/',
   ],
@@ -1564,13 +1631,13 @@ const ALTERNATE_DATETIME_FORMATS = {
     '<day> <Month> <year> <time?>',
     '<Month>(?: <day>)?(?: of)? <relative year>',
     'the <day>(?: of (?:<relative month>|<Month>|the month))? <time?>',
-    'the <offset weekday> of (?:<relative month>|<Month>)(?:,? <year>)?',
+    'the <offset weekday> (?:of|in) (?:<relative month>|<Month>)(?:,? <year>)?',
     '<edge> (?:<relative upper>|<relative day>|the <unit>|<year>)',
     '<edge>(?: day)? <Weekday>',
     '<edge> <Month>(?:,? <year>)?',
     '<offset unit> (?:<relative day>|<weekday>) <time?>',
     '<Weekday>(?: of)? <relative week><time?>',
-    '<Weekday>,? <day> <Month> <yyyy> <time> <timeZoneName>', // IETF
+    '<Weekday>,? <day> <Month> <yyyy> <time> <timeZoneName>',
   ],
 };
 
@@ -1585,8 +1652,9 @@ const DAY_PERIODS = {
       type: 'fixed',
     },
   },
-  // These will no longer be required when explicit dayPeriod format
-  // lands. TRACK: https://github.com/tc39/ecma402/pull/346
+  // These will no longer be required when explicit dayPeriod format lands
+  // with the exception of "midnight" which is still not handled as an
+  // explicit dayPeriod. TRACK: https://github.com/tc39/ecma402/pull/346
   [ENGLISH]: {
     'noon': {
       value: 12,
@@ -1620,6 +1688,7 @@ const TOKEN_ALIASES = {
     sept: 'sep',
     tues: 'tue',
     thurs: 'thu',
+    weekend: 'saturday|custom',
   },
 };
 

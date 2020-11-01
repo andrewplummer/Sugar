@@ -1,4 +1,3 @@
-
 export const ENGLISH_NUMERALS = [
   'zero',
   'one',
@@ -13,20 +12,19 @@ export const ENGLISH_NUMERALS = [
   'ten',
 ];
 
-const fullwide = buildNumeralMapper('fullwide');
+const ENGLISH_HALF_REG = /(?:a )?half(?: an?)?/;
+
+const FULLWIDE = buildFormatMapper('fullwide');
 
 // Note that unit tokens in formats like 三百 etc, are not handled
 // here or accessible via Intl.NumberFormat, however this is acceptable
 // for the purposes of date parsing.
-const hanidec = buildNumeralMapper('hanidec');
-
-// Parsing out English tokens one, two, three, etc as a special exception.
-const english = buildEnglishMapper();
+const HANIDEC = buildFormatMapper('hanidec');
 
 const LANGUAGES = {
-  'en': [english],
-  'ja': [hanidec, fullwide],
-  'zh': [hanidec],
+  'en': [mapEnglishNumerals, mapEnglishHalf],
+  'ja': [HANIDEC, FULLWIDE],
+  'zh': [HANIDEC],
 };
 
 export function replaceLocaleNumerals(str, language) {
@@ -37,7 +35,7 @@ export function replaceLocaleNumerals(str, language) {
   return str;
 }
 
-function buildNumeralMapper(numberingSystem) {
+function buildFormatMapper(numberingSystem) {
   const map = {};
   // Passed locale will not affect output.
   const formatter = new Intl.NumberFormat('en', {
@@ -55,14 +53,13 @@ function buildNumeralMapper(numberingSystem) {
   };
 }
 
-function buildEnglishMapper() {
-  const map = {};
-  for (let i = 0; i < ENGLISH_NUMERALS.length; i++) {
-    map[ENGLISH_NUMERALS[i]] = String(i);
-  }
-  return (str) => {
-    return str.split(' ').map((word) => {
-      return map[word] || word;
-    }).join(' ');
-  };
+function mapEnglishNumerals(str) {
+  return str.split(' ').map((token) => {
+    const index = ENGLISH_NUMERALS.indexOf(token);
+    return index !== -1 ? String(index) : token;
+  }).join(' ');
+}
+
+function mapEnglishHalf(str) {
+  return str.replace(ENGLISH_HALF_REG, '.5');
 }
