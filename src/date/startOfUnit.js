@@ -3,15 +3,16 @@ import { resetByUnit } from './util/reset';
 import { setWeekday } from './util/weekdays';
 
 /**
- * Resets the date to the beginning of the unit. All lower units will also be
- *   reset.
+ * Resets the date to the start of the unit. Lower units will also be reset.
  *
- * @extra This method modifies the date! Note that `startOfWeek` resets to
- *   Sunday, and `startOfISOWeek` resets to Monday. Locales are not considered
- *   in `startOfWeek` as this cannot be reliably determined with current native
- *   APIs.
+ * @extra For week methods, the start of the week is Sunday by convention. An
+ *   extra argument may be passed here to override this. Although this is often
+ *   locale dependent, there is currently no reliable way to retrieve this
+ *   information given a locale code. This method modifies the date!
  *
  * @param {Date} date - The date.
+ * @param {number} [dow = 0] - A number that denotes the weekday that begins the
+ *   week. Use `1` for Monday or `6` for Saturday. Only applies to "week" methods.
  *
  * @returns {Date}
  *
@@ -38,11 +39,8 @@ export function startOfMonth(date) {
   return startOf(date, 'month');
 }
 
-export function startOfWeek(date) {
-  assertValidDate(date);
-  setWeekday(date, 0);
-  startOfDay(date);
-  return date;
+export function startOfWeek(date, dow) {
+  return startOf(date, 'week', dow);
 }
 
 export function startOfISOWeek(date) {
@@ -68,8 +66,10 @@ export function startOfSecond(date) {
   return startOf(date, 'second');
 }
 
-function startOf(date, unit) {
+function startOf(date, unit, dow) {
   assertValidDate(date);
-  resetByUnit(date, unit);
+  resetByUnit(date, unit, {
+    dow,
+  });
   return date;
 }

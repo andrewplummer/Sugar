@@ -5982,6 +5982,17 @@ namespace('Date', () => {
       );
     });
 
+    it('should be able to specify a different start of the week', () => {
+      assertDateEqual(
+        startOfWeek(new Date(2020, 0), 1),
+        new Date(2019, 11, 30)
+      );
+      assertDateEqual(
+        startOfWeek(new Date(2020, 0), 6),
+        new Date(2019, 11, 28)
+      );
+    });
+
     it('should modify the date', () => {
       const date = new Date(2020, 0, 3);
       startOfWeek(date);
@@ -6379,6 +6390,17 @@ namespace('Date', () => {
       assertDateEqual(
         endOfWeek(new Date(2020, 0, 7)),
         new Date(2020, 0, 11, 23, 59, 59, 999)
+      );
+    });
+
+    it('should be able to specify a different end of the week', () => {
+      assertDateEqual(
+        endOfWeek(new Date(2020, 0), 1),
+        new Date(2020, 0, 5, 23, 59, 59, 999)
+      );
+      assertDateEqual(
+        endOfWeek(new Date(2020, 0), 6),
+        new Date(2020, 0, 3, 23, 59, 59, 999)
       );
     });
 

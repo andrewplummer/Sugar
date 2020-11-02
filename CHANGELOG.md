@@ -149,9 +149,11 @@ call `Function#lock` first in the chain to achieve the same effect.
 - Renamed `Date#beginningOfUnit` methods to `Date#startOfUnit` for consistency
     and brevity.
 - Changed `Date#startOfWeek` (previously `Date#beginningOfWeek`) to no longer
-    accept a locale code. Use `Date#startOfISOWeek` to reset weekday to Monday.
-- Changed `Date#endOfWeek` to no longer accept a locale code. Use
-    `Date#endOfISOWeek` to reset weekday to Sunday.
+    accept a locale code. A number denoting the start of the week may instead
+    be passed here. Use `Date#startOfISOWeek` to reset weekday to Monday.
+- Changed `Date#endOfWeek` to no longer accept a locale code. A number denoting
+    the start of the week may instead be passed here. Use `Date#endOfISOWeek` to
+    reset weekday to Sunday.
 - Removed `Date#reset`. Use `Date#startOfUnit` here instead.
 - Removed alias `Date#iso`. Use native `Date.toISOString` instead.
 - Refactored `Date#relative` significantly. Internally uses
