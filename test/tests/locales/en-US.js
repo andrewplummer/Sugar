@@ -2,9 +2,9 @@
 
 describe('en-US', () => {
 
-  namespace('Date', function () {
+  namespace('Date', () => {
 
-    describeStatic('create', function (create) {
+    describeStatic('create', (create) => {
 
       it('should parse slashes as month first', () => {
         assertDateEqual(create('08/25', 'en-US'), new Date(2020, 7, 25));

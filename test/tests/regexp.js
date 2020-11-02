@@ -1,10 +1,10 @@
 'use strict';
 
-namespace('RegExp', function() {
+namespace('RegExp', () => {
 
-  describeStatic('escape', function(escape) {
+  describeStatic('escape', (escape) => {
 
-    it('should escape regex tokens', function() {
+    it('should escape regex tokens', () => {
       assertEqual(escape('foo'), 'foo');
       assertEqual(escape('f|oo'), 'f\\|oo');
       assertEqual(escape('f(oo)'), 'f\\(oo\\)');

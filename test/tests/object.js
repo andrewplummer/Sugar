@@ -202,9 +202,9 @@ namespace('Object', function () {
     });
   });
 
-  describeInstance('some', function(some) {
+  describeInstance('some', (some) => {
 
-    it('should match by primitive matchers', function() {
+    it('should match by primitive matchers', () => {
       assertEqual(some({a:'a',b:'b'}, 'a'), true);
       assertEqual(some({a:'a',b:'b'}, 'd'), false);
       assertEqual(some({a:1,b:2}, 7), false);
@@ -212,33 +212,33 @@ namespace('Object', function () {
       assertEqual(some({a:false,b:false}, true), false);
     });
 
-    it('should match by regex', function() {
+    it('should match by regex', () => {
       assertEqual(some({a:'a',b:'b'}, /[ac]/), true);
       assertEqual(some({a:'a',b:'b'}, /[AC]/), false);
     });
 
-    it('should match by date', function() {
+    it('should match by date', () => {
       var d1 = new Date(2020, 7, 28);
       var d2 = new Date(2020, 7, 29);
       assertEqual(some({a:d1,b:d2}, new Date(2020, 7, 28)), true);
       assertEqual(some({a:d1,b:d2}, new Date(2020, 7, 30)), false);
     });
 
-    it('should match by function', function() {
+    it('should match by function', () => {
       assertEqual(some({a:1,b:2}, (key, n) => n % 2 === 0), true);
       assertEqual(some({a:2,b:4}, (key, n) => n % 2 === 1), false);
       assertEqual(some({a:1,b:2}, (key, n) => n > 5), false);
       assertEqual(some({a:1,b:2}, (key, n) => n > 1), true);
     });
 
-    it('should match by function when strictly equal', function() {
+    it('should match by function when strictly equal', () => {
       var fn1 = function(){};
       var fn2 = function(){};
       assertEqual(some({a:fn1, b:fn2}, fn2), true);
       assertEqual(some({a:fn1}, fn2), false);
     });
 
-    it('should match by fuzzy matching', function() {
+    it('should match by fuzzy matching', () => {
       assertEqual(
         some({
           1:{ name:'Frank'},
@@ -268,7 +268,7 @@ namespace('Object', function () {
       );
     });
 
-    it('should pass correct arguments', function() {
+    it('should pass correct arguments', () => {
       some({a:1}, function (key, val, obj) {
         assertEqual(key, 'a');
         assertEqual(val, 1);
@@ -276,20 +276,20 @@ namespace('Object', function () {
       });
     });
 
-    it('should handle irregular input', function() {
+    it('should handle irregular input', () => {
       assertEqual(some({a:1}, null), false);
       assertEqual(some({a:1}, NaN), false);
-      assertError(function() { some({}); });
-      assertError(function() { some(null); });
-      assertError(function() { some('a'); });
-      assertError(function() { some(1); });
+      assertError(() => { some({}); });
+      assertError(() => { some(null); });
+      assertError(() => { some('a'); });
+      assertError(() => { some(1); });
     });
 
   });
 
-  describeInstance('every', function(every) {
+  describeInstance('every', (every) => {
 
-    it('should match by primitive matchers', function() {
+    it('should match by primitive matchers', () => {
       assertEqual(every({a:'a',b:'b'}, 'c'), false);
       assertEqual(every({a:'a',b:'b'}, 'a'), false);
       assertEqual(every({a:'a',b:'a'}, 'a'), true);
@@ -300,33 +300,33 @@ namespace('Object', function () {
       assertEqual(every({a:true,b:true}, true), true);
     });
 
-    it('should match by regex', function() {
+    it('should match by regex', () => {
       assertEqual(every({a:'a',b:'b'}, /[ac]/), false);
       assertEqual(every({a:'a',b:'b'}, /[a-c]/), true);
     });
 
-    it('should match by date', function() {
+    it('should match by date', () => {
       var d1 = new Date(2020, 7, 28);
       var d2 = new Date(2020, 7, 29);
       assertEqual(every({a:d1,b:d2}, new Date(2020, 7, 28)), false);
       assertEqual(every({a:d1,b:d1}, new Date(2020, 7, 28)), true);
     });
 
-    it('should match by function', function() {
+    it('should match by function', () => {
       assertEqual(every({a:1,b:2}, (key, n) => n % 2 === 0), false);
       assertEqual(every({a:2,b:4}, (key, n) => n % 2 === 0), true);
       assertEqual(every({a:1,b:2}, (key, n) => n > 5), false);
       assertEqual(every({a:1,b:2}, (key, n) => n > 0), true);
     });
 
-    it('should match by function when strictly equal', function() {
+    it('should match by function when strictly equal', () => {
       var fn1 = function(){};
       var fn2 = function(){};
       assertEqual(every({a:fn1, b:fn2}, fn2), false);
       assertEqual(every({a:fn1, b:fn1}, fn1), true);
     });
 
-    it('should match by fuzzy matching', function() {
+    it('should match by fuzzy matching', () => {
       assertEqual(
         every({
           1:{ name:'Frank'},
@@ -356,7 +356,7 @@ namespace('Object', function () {
       );
     });
 
-    it('should pass correct arguments', function() {
+    it('should pass correct arguments', () => {
       every({a:1}, function (key, val, obj) {
         assertEqual(key, 'a');
         assertEqual(val, 1);
@@ -364,20 +364,20 @@ namespace('Object', function () {
       });
     });
 
-    it('should handle irregular input', function() {
+    it('should handle irregular input', () => {
       assertEqual(every({a:1}, null), false);
       assertEqual(every({a:1}, NaN), false);
-      assertError(function() { every({}); });
-      assertError(function() { every(null); });
-      assertError(function() { every('a'); });
-      assertError(function() { every(1); });
+      assertError(() => { every({}); });
+      assertError(() => { every(null); });
+      assertError(() => { every('a'); });
+      assertError(() => { every(1); });
     });
 
   });
 
-  describeInstance('none', function(none) {
+  describeInstance('none', (none) => {
 
-    it('should match by primitive matchers', function() {
+    it('should match by primitive matchers', () => {
       assertEqual(none({a:'a',b:'b'}, 'a'), false);
       assertEqual(none({a:'a',b:'b'}, 'd'), true);
       assertEqual(none({a:1,b:2}, 7), true);
@@ -385,33 +385,33 @@ namespace('Object', function () {
       assertEqual(none({a:false,b:false}, true), true);
     });
 
-    it('should match by regex', function() {
+    it('should match by regex', () => {
       assertEqual(none({a:'a',b:'b'}, /[ac]/), false);
       assertEqual(none({a:'a',b:'b'}, /[AC]/), true);
     });
 
-    it('should match by date', function() {
+    it('should match by date', () => {
       var d1 = new Date(2020, 7, 28);
       var d2 = new Date(2020, 7, 29);
       assertEqual(none({a:d1,b:d2}, new Date(2020, 7, 28)), false);
       assertEqual(none({a:d1,b:d2}, new Date(2020, 7, 30)), true);
     });
 
-    it('should match by function', function() {
+    it('should match by function', () => {
       assertEqual(none({a:1,b:2}, (key, n) => n % 2 === 0), false);
       assertEqual(none({a:2,b:4}, (key, n) => n % 2 === 1), true);
       assertEqual(none({a:1,b:2}, (key, n) => n > 5), true);
       assertEqual(none({a:1,b:2}, (key, n) => n > 1), false);
     });
 
-    it('should match by function when strictly equal', function() {
+    it('should match by function when strictly equal', () => {
       var fn1 = function(){};
       var fn2 = function(){};
       assertEqual(none({a:fn1, b:fn2}, fn2), false);
       assertEqual(none({a:fn1}, fn2), true);
     });
 
-    it('should match by fuzzy matching', function() {
+    it('should match by fuzzy matching', () => {
       assertEqual(
         none({
           1:{ name:'Frank'},
@@ -441,7 +441,7 @@ namespace('Object', function () {
       );
     });
 
-    it('should pass correct arguments', function() {
+    it('should pass correct arguments', () => {
       none({a:1}, function (key, val, obj) {
         assertEqual(key, 'a');
         assertEqual(val, 1);
@@ -449,20 +449,20 @@ namespace('Object', function () {
       });
     });
 
-    it('should handle irregular input', function() {
+    it('should handle irregular input', () => {
       assertEqual(none({a:1}, null), true);
       assertEqual(none({a:1}, NaN), true);
-      assertError(function() { none({}); });
-      assertError(function() { none(null); });
-      assertError(function() { none('a'); });
-      assertError(function() { none(1); });
+      assertError(() => { none({}); });
+      assertError(() => { none(null); });
+      assertError(() => { none('a'); });
+      assertError(() => { none(1); });
     });
 
   });
 
-  describeInstance('findKey', function(findKey) {
+  describeInstance('findKey', (findKey) => {
 
-    it('should match by primitive matchers', function() {
+    it('should match by primitive matchers', () => {
       assertEqual(findKey({a:'a',b:'b'}, 'a'), 'a');
       assertEqual(findKey({a:'a',b:'b'}, 'c'), undefined);
       assertEqual(findKey({a:1,b:2}, 2), 'b');
@@ -471,33 +471,33 @@ namespace('Object', function () {
       assertEqual(findKey({a:true,b:true}, false), undefined);
     });
 
-    it('should match by regex', function() {
+    it('should match by regex', () => {
       assertEqual(findKey({a:'a',b:'b'}, /[a-c]/), 'a');
       assertEqual(findKey({a:'a',b:'b'}, /[c-z]/), undefined);
     });
 
-    it('should match by date', function() {
+    it('should match by date', () => {
       var d1 = new Date(2020, 7, 28);
       var d2 = new Date(2020, 7, 29);
       assertEqual(findKey({a:d1,b:d2}, new Date(2020, 7, 28)), 'a');
       assertEqual(findKey({a:d1,b:d1}, new Date(2020, 7, 29)), undefined);
     });
 
-    it('should match by function', function() {
+    it('should match by function', () => {
       assertEqual(findKey({a:1,b:2}, (key, n) => n % 2 === 0), 'b');
       assertEqual(findKey({a:1,b:3}, (key, n) => n % 2 === 0), undefined);
       assertEqual(findKey({a:1,b:2}, (key, n) => n > 5), undefined);
       assertEqual(findKey({a:1,b:2}, (key, n) => n > 0), 'a');
     });
 
-    it('should match by function when strictly equal', function() {
+    it('should match by function when strictly equal', () => {
       var fn1 = function(){};
       var fn2 = function(){};
       assertEqual(findKey({a:fn1, b:fn2}, fn2), 'b');
       assertEqual(findKey({a:fn1, b:fn1}, fn2), undefined);
     });
 
-    it('should match by fuzzy matching', function() {
+    it('should match by fuzzy matching', () => {
       assertEqual(
         findKey({
           1:{ name:'Frank'},
@@ -527,7 +527,7 @@ namespace('Object', function () {
       );
     });
 
-    it('should pass correct arguments', function() {
+    it('should pass correct arguments', () => {
       findKey({a:1}, function (key, val, obj) {
         assertEqual(key, 'a');
         assertEqual(val, 1);
@@ -535,20 +535,20 @@ namespace('Object', function () {
       });
     });
 
-    it('should handle irregular input', function() {
+    it('should handle irregular input', () => {
       assertEqual(findKey({a:1}, null), undefined);
       assertEqual(findKey({a:1}, NaN), undefined);
-      assertError(function() { findKey({}); });
-      assertError(function() { findKey(null); });
-      assertError(function() { findKey('a'); });
-      assertError(function() { findKey(1); });
+      assertError(() => { findKey({}); });
+      assertError(() => { findKey(null); });
+      assertError(() => { findKey('a'); });
+      assertError(() => { findKey(1); });
     });
 
   });
 
-  describeInstance('selectValues', function(selectValues) {
+  describeInstance('selectValues', (selectValues) => {
 
-    it('should match by primitive matchers', function() {
+    it('should match by primitive matchers', () => {
       assertObjectEqual(selectValues({a:'a',b:'b'}, 'a'), {a:'a'});
       assertObjectEqual(selectValues({a:'a',b:'b'}, 'c'), {});
       assertObjectEqual(selectValues({a:1,b:2}, 2), {b:2});
@@ -557,33 +557,33 @@ namespace('Object', function () {
       assertObjectEqual(selectValues({a:true,b:true}, false), {});
     });
 
-    it('should match by regex', function() {
+    it('should match by regex', () => {
       assertObjectEqual(selectValues({a:'a',b:'b'}, /[a-c]/), {a:'a',b:'b'});
       assertObjectEqual(selectValues({a:'a',b:'b'}, /[c-z]/), {});
     });
 
-    it('should match by date', function() {
+    it('should match by date', () => {
       var d1 = new Date(2020, 7, 28);
       var d2 = new Date(2020, 7, 29);
       assertObjectEqual(selectValues({a:d1,b:d2}, new Date(2020, 7, 28)), {a:d1});
       assertObjectEqual(selectValues({a:d1,b:d1}, new Date(2020, 7, 29)), {});
     });
 
-    it('should match by function', function() {
+    it('should match by function', () => {
       assertObjectEqual(selectValues({a:1,b:2}, (key, n) => n % 2 === 0), {b:2});
       assertObjectEqual(selectValues({a:1,b:3}, (key, n) => n % 2 === 0), {});
       assertObjectEqual(selectValues({a:1,b:2}, (key, n) => n > 5), {});
       assertObjectEqual(selectValues({a:1,b:2}, (key, n) => n > 0), {a:1,b:2});
     });
 
-    it('should match by function when strictly equal', function() {
+    it('should match by function when strictly equal', () => {
       var fn1 = function(){};
       var fn2 = function(){};
       assertObjectEqual(selectValues({a:fn1, b:fn2}, fn2), {b:fn2});
       assertObjectEqual(selectValues({a:fn1, b:fn1}, fn2), {});
     });
 
-    it('should match by fuzzy matching', function() {
+    it('should match by fuzzy matching', () => {
       assertObjectEqual(
         selectValues({
           1:{ name:'Frank'},
@@ -616,7 +616,7 @@ namespace('Object', function () {
       );
     });
 
-    it('should pass correct arguments', function() {
+    it('should pass correct arguments', () => {
       selectValues({a:1}, function (key, val, obj) {
         assertEqual(key, 'a');
         assertEqual(val, 1);
@@ -624,25 +624,25 @@ namespace('Object', function () {
       });
     });
 
-    it('should not modify the object', function() {
+    it('should not modify the object', () => {
       const obj = {};
       assertEqual(obj === selectValues(obj, 1), false);
     });
 
-    it('should handle irregular input', function() {
+    it('should handle irregular input', () => {
       assertObjectEqual(selectValues({a:1}, null), {});
       assertObjectEqual(selectValues({a:1}, NaN), {});
-      assertError(function() { selectValues({}); });
-      assertError(function() { selectValues(null); });
-      assertError(function() { selectValues('a'); });
-      assertError(function() { selectValues(1); });
+      assertError(() => { selectValues({}); });
+      assertError(() => { selectValues(null); });
+      assertError(() => { selectValues('a'); });
+      assertError(() => { selectValues(1); });
     });
 
   });
 
-  describeInstance('rejectValues', function(rejectValues) {
+  describeInstance('rejectValues', (rejectValues) => {
 
-    it('should match by primitive matchers', function() {
+    it('should match by primitive matchers', () => {
       assertObjectEqual(rejectValues({a:'a',b:'b'}, 'a'), {b:'b'});
       assertObjectEqual(rejectValues({a:'a',b:'b'}, 'c'), {a:'a',b:'b'});
       assertObjectEqual(rejectValues({a:1,b:2}, 2), {a:1});
@@ -651,33 +651,33 @@ namespace('Object', function () {
       assertObjectEqual(rejectValues({a:true,b:true}, false), {a:true,b:true});
     });
 
-    it('should match by regex', function() {
+    it('should match by regex', () => {
       assertObjectEqual(rejectValues({a:'a',b:'b'}, /[a-c]/), {});
       assertObjectEqual(rejectValues({a:'a',b:'b'}, /[c-z]/), {a:'a',b:'b'});
     });
 
-    it('should match by date', function() {
+    it('should match by date', () => {
       var d1 = new Date(2020, 7, 28);
       var d2 = new Date(2020, 7, 29);
       assertObjectEqual(rejectValues({a:d1,b:d2}, new Date(2020, 7, 28)), {b:d2});
       assertObjectEqual(rejectValues({a:d1,b:d1}, new Date(2020, 7, 29)), {a:d1,b:d1});
     });
 
-    it('should match by function', function() {
+    it('should match by function', () => {
       assertObjectEqual(rejectValues({a:1,b:2}, (key, n) => n % 2 === 0), {a:1});
       assertObjectEqual(rejectValues({a:1,b:3}, (key, n) => n % 2 === 0), {a:1,b:3});
       assertObjectEqual(rejectValues({a:1,b:2}, (key, n) => n > 5), {a:1,b:2});
       assertObjectEqual(rejectValues({a:1,b:2}, (key, n) => n > 0), {});
     });
 
-    it('should match by function when strictly equal', function() {
+    it('should match by function when strictly equal', () => {
       var fn1 = function(){};
       var fn2 = function(){};
       assertObjectEqual(rejectValues({a:fn1, b:fn2}, fn2), {a:fn1});
       assertObjectEqual(rejectValues({a:fn1, b:fn1}, fn2), {a:fn1,b:fn1});
     });
 
-    it('should match by fuzzy matching', function() {
+    it('should match by fuzzy matching', () => {
       assertObjectEqual(
         rejectValues({
           1:{ name:'Frank'},
@@ -713,7 +713,7 @@ namespace('Object', function () {
       );
     });
 
-    it('should pass correct arguments', function() {
+    it('should pass correct arguments', () => {
       rejectValues({a:1}, function (key, val, obj) {
         assertEqual(key, 'a');
         assertEqual(val, 1);
@@ -721,25 +721,25 @@ namespace('Object', function () {
       });
     });
 
-    it('should not modify the object', function() {
+    it('should not modify the object', () => {
       const obj = {};
       assertEqual(obj === rejectValues(obj, 1), false);
     });
 
-    it('should handle irregular input', function() {
+    it('should handle irregular input', () => {
       assertObjectEqual(rejectValues({a:1}, null), {a:1});
       assertObjectEqual(rejectValues({a:1}, NaN), {a:1});
-      assertError(function() { rejectValues({}); });
-      assertError(function() { rejectValues(null); });
-      assertError(function() { rejectValues('a'); });
-      assertError(function() { rejectValues(1); });
+      assertError(() => { rejectValues({}); });
+      assertError(() => { rejectValues(null); });
+      assertError(() => { rejectValues('a'); });
+      assertError(() => { rejectValues(1); });
     });
 
   });
 
-  describeInstance('removeValues', function(removeValues) {
+  describeInstance('removeValues', (removeValues) => {
 
-    it('should match by primitive matchers', function() {
+    it('should match by primitive matchers', () => {
       assertObjectEqual(removeValues({a:'a',b:'b'}, 'a'), {b:'b'});
       assertObjectEqual(removeValues({a:'a',b:'b'}, 'c'), {a:'a',b:'b'});
       assertObjectEqual(removeValues({a:1,b:2}, 2), {a:1});
@@ -748,33 +748,33 @@ namespace('Object', function () {
       assertObjectEqual(removeValues({a:true,b:true}, false), {a:true,b:true});
     });
 
-    it('should match by regex', function() {
+    it('should match by regex', () => {
       assertObjectEqual(removeValues({a:'a',b:'b'}, /[a-c]/), {});
       assertObjectEqual(removeValues({a:'a',b:'b'}, /[c-z]/), {a:'a',b:'b'});
     });
 
-    it('should match by date', function() {
+    it('should match by date', () => {
       var d1 = new Date(2020, 7, 28);
       var d2 = new Date(2020, 7, 29);
       assertObjectEqual(removeValues({a:d1,b:d2}, new Date(2020, 7, 28)), {b:d2});
       assertObjectEqual(removeValues({a:d1,b:d1}, new Date(2020, 7, 29)), {a:d1,b:d1});
     });
 
-    it('should match by function', function() {
+    it('should match by function', () => {
       assertObjectEqual(removeValues({a:1,b:2}, (key, n) => n % 2 === 0), {a:1});
       assertObjectEqual(removeValues({a:1,b:3}, (key, n) => n % 2 === 0), {a:1,b:3});
       assertObjectEqual(removeValues({a:1,b:2}, (key, n) => n > 5), {a:1,b:2});
       assertObjectEqual(removeValues({a:1,b:2}, (key, n) => n > 0), {});
     });
 
-    it('should match by function when strictly equal', function() {
+    it('should match by function when strictly equal', () => {
       var fn1 = function(){};
       var fn2 = function(){};
       assertObjectEqual(removeValues({a:fn1, b:fn2}, fn2), {a:fn1});
       assertObjectEqual(removeValues({a:fn1, b:fn1}, fn2), {a:fn1,b:fn1});
     });
 
-    it('should match by fuzzy matching', function() {
+    it('should match by fuzzy matching', () => {
       assertObjectEqual(
         removeValues({
           1:{ name:'Frank'},
@@ -810,7 +810,7 @@ namespace('Object', function () {
       );
     });
 
-    it('should pass correct arguments', function() {
+    it('should pass correct arguments', () => {
       removeValues({a:1}, function (key, val, obj) {
         assertEqual(key, 'a');
         assertEqual(val, 1);
@@ -818,47 +818,47 @@ namespace('Object', function () {
       });
     });
 
-    it('should modify the object', function() {
+    it('should modify the object', () => {
       const obj1 = {a:1};
       const obj2 = removeValues(obj1, 1);
       assertEqual(obj1, obj2);
       assertObjectEqual(obj1, {});
     });
 
-    it('should handle irregular input', function() {
+    it('should handle irregular input', () => {
       assertObjectEqual(removeValues({a:1}, null), {a:1});
       assertObjectEqual(removeValues({a:1}, NaN), {a:1});
-      assertError(function() { removeValues({}); });
-      assertError(function() { removeValues(null); });
-      assertError(function() { removeValues('a'); });
-      assertError(function() { removeValues(1); });
+      assertError(() => { removeValues({}); });
+      assertError(() => { removeValues(null); });
+      assertError(() => { removeValues('a'); });
+      assertError(() => { removeValues(1); });
     });
 
   });
 
-  describeInstance('select,selectKeys', function(selectKeys) {
+  describeInstance('select,selectKeys', (selectKeys) => {
 
-    it('should select by string argument', function() {
+    it('should select by string argument', () => {
       assertObjectEqual(selectKeys({a:1,b:2}, 'a'), {a:1});
       assertObjectEqual(selectKeys({a:1,b:2}, 'b'), {b:2});
       assertObjectEqual(selectKeys({a:1,b:2}, 'c'), {});
       assertObjectEqual(selectKeys({a:1,b:2}, ''), {});
     });
 
-    it('should select by array argument', function() {
+    it('should select by array argument', () => {
       assertObjectEqual(selectKeys({a:1,b:2}, ['a']), {a:1});
       assertObjectEqual(selectKeys({a:1,b:2}, ['a', 'b']), {a:1,b:2});
       assertObjectEqual(selectKeys({a:1,b:2}, []), {});
       assertObjectEqual(selectKeys({a:1,b:2}, ['c']), {});
     });
 
-    it('should select by function', function() {
+    it('should select by function', () => {
       assertObjectEqual(selectKeys({a:1,b:2}, (key) => key === 'a'), {a:1});
       assertObjectEqual(selectKeys({a:1,b:2}, (key) => key === 'b'), {b:2});
       assertObjectEqual(selectKeys({a:1,b:2}, (key) => key === 'c'), {});
     });
 
-    it('should pass correct arguments', function() {
+    it('should pass correct arguments', () => {
       selectKeys({a:1}, function (key, val, obj) {
         assertEqual(key, 'a');
         assertEqual(val, 1);
@@ -866,51 +866,51 @@ namespace('Object', function () {
       });
     });
 
-    it('should select by regex', function() {
+    it('should select by regex', () => {
       assertObjectEqual(selectKeys({a:1,b:2}, /a/), {a:1});
       assertObjectEqual(selectKeys({a:1,b:2}, /[ab]/), {a:1,b:2});
       assertObjectEqual(selectKeys({a:1,b:2}, /c/), {});
     });
 
-    it('should not modify the object', function() {
+    it('should not modify the object', () => {
       const obj1 = {a:1};
       const obj2 = selectKeys(obj1, 1);
       assertFalse(obj1 === obj2);
     });
 
-    it('should handle irregular input', function() {
+    it('should handle irregular input', () => {
       assertObjectEqual(selectKeys({a:1}, null), {});
       assertObjectEqual(selectKeys({a:1}, NaN), {});
-      assertError(function() { selectKeys(null); });
-      assertError(function() { selectKeys('a'); });
-      assertError(function() { selectKeys(1); });
+      assertError(() => { selectKeys(null); });
+      assertError(() => { selectKeys('a'); });
+      assertError(() => { selectKeys(1); });
     });
 
   });
 
-  describeInstance('reject,rejectKeys', function(rejectKeys) {
+  describeInstance('reject,rejectKeys', (rejectKeys) => {
 
-    it('should reject by string argument', function() {
+    it('should reject by string argument', () => {
       assertObjectEqual(rejectKeys({a:1,b:2}, 'a'), {b:2});
       assertObjectEqual(rejectKeys({a:1,b:2}, 'b'), {a:1});
       assertObjectEqual(rejectKeys({a:1,b:2}, 'c'), {a:1,b:2});
       assertObjectEqual(rejectKeys({a:1,b:2}, ''), {a:1,b:2});
     });
 
-    it('should reject by array argument', function() {
+    it('should reject by array argument', () => {
       assertObjectEqual(rejectKeys({a:1,b:2}, ['a']), {b:2});
       assertObjectEqual(rejectKeys({a:1,b:2}, ['a', 'b']), {});
       assertObjectEqual(rejectKeys({a:1,b:2}, []), {a:1,b:2});
       assertObjectEqual(rejectKeys({a:1,b:2}, ['c']), {a:1,b:2});
     });
 
-    it('should reject by function', function() {
+    it('should reject by function', () => {
       assertObjectEqual(rejectKeys({a:1,b:2}, (key) => key === 'a'), {b:2});
       assertObjectEqual(rejectKeys({a:1,b:2}, (key) => key === 'b'), {a:1});
       assertObjectEqual(rejectKeys({a:1,b:2}, (key) => key === 'c'), {a:1,b:2});
     });
 
-    it('should pass correct arguments', function() {
+    it('should pass correct arguments', () => {
       rejectKeys({a:1}, function (key, val, obj) {
         assertEqual(key, 'a');
         assertEqual(val, 1);
@@ -918,51 +918,51 @@ namespace('Object', function () {
       });
     });
 
-    it('should reject by regex', function() {
+    it('should reject by regex', () => {
       assertObjectEqual(rejectKeys({a:1,b:2}, /a/), {b:2});
       assertObjectEqual(rejectKeys({a:1,b:2}, /[ab]/), {});
       assertObjectEqual(rejectKeys({a:1,b:2}, /c/), {a:1,b:2});
     });
 
-    it('should not modify the object', function() {
+    it('should not modify the object', () => {
       const obj1 = {a:1};
       const obj2 = rejectKeys(obj1, 1);
       assertFalse(obj1 === obj2);
     });
 
-    it('should handle irregular input', function() {
+    it('should handle irregular input', () => {
       assertObjectEqual(rejectKeys({a:1}, null), {a:1});
       assertObjectEqual(rejectKeys({a:1}, NaN), {a:1});
-      assertError(function() { rejectKeys(null); });
-      assertError(function() { rejectKeys('a'); });
-      assertError(function() { rejectKeys(1); });
+      assertError(() => { rejectKeys(null); });
+      assertError(() => { rejectKeys('a'); });
+      assertError(() => { rejectKeys(1); });
     });
 
   });
 
-  describeInstance('remove,removeKeys', function(removeKeys) {
+  describeInstance('remove,removeKeys', (removeKeys) => {
 
-    it('should remove by string argument', function() {
+    it('should remove by string argument', () => {
       assertObjectEqual(removeKeys({a:1,b:2}, 'a'), {b:2});
       assertObjectEqual(removeKeys({a:1,b:2}, 'b'), {a:1});
       assertObjectEqual(removeKeys({a:1,b:2}, 'c'), {a:1,b:2});
       assertObjectEqual(removeKeys({a:1,b:2}, ''), {a:1,b:2});
     });
 
-    it('should remove by array argument', function() {
+    it('should remove by array argument', () => {
       assertObjectEqual(removeKeys({a:1,b:2}, ['a']), {b:2});
       assertObjectEqual(removeKeys({a:1,b:2}, ['a', 'b']), {});
       assertObjectEqual(removeKeys({a:1,b:2}, []), {a:1,b:2});
       assertObjectEqual(removeKeys({a:1,b:2}, ['c']), {a:1,b:2});
     });
 
-    it('should remove by function', function() {
+    it('should remove by function', () => {
       assertObjectEqual(removeKeys({a:1,b:2}, (key) => key === 'a'), {b:2});
       assertObjectEqual(removeKeys({a:1,b:2}, (key) => key === 'b'), {a:1});
       assertObjectEqual(removeKeys({a:1,b:2}, (key) => key === 'c'), {a:1,b:2});
     });
 
-    it('should pass correct arguments', function() {
+    it('should pass correct arguments', () => {
       removeKeys({a:1}, function (key, val, obj) {
         assertEqual(key, 'a');
         assertEqual(val, 1);
@@ -970,31 +970,31 @@ namespace('Object', function () {
       });
     });
 
-    it('should remove by regex', function() {
+    it('should remove by regex', () => {
       assertObjectEqual(removeKeys({a:1,b:2}, /a/), {b:2});
       assertObjectEqual(removeKeys({a:1,b:2}, /[ab]/), {});
       assertObjectEqual(removeKeys({a:1,b:2}, /c/), {a:1,b:2});
     });
 
-    it('should modify the object', function() {
+    it('should modify the object', () => {
       const obj1 = {a:1};
       const obj2 = removeKeys(obj1, 1);
       assertTrue(obj1 === obj2);
     });
 
-    it('should handle irregular input', function() {
+    it('should handle irregular input', () => {
       assertObjectEqual(removeKeys({a:1}, null), {a:1});
       assertObjectEqual(removeKeys({a:1}, NaN), {a:1});
-      assertError(function() { removeKeys(null); });
-      assertError(function() { removeKeys('a'); });
-      assertError(function() { removeKeys(1); });
+      assertError(() => { removeKeys(null); });
+      assertError(() => { removeKeys('a'); });
+      assertError(() => { removeKeys(1); });
     });
 
   });
 
-  describeInstance('count', function(count) {
+  describeInstance('count', (count) => {
 
-    it('should match by primitive matchers', function() {
+    it('should match by primitive matchers', () => {
       assertEqual(count({a:'a',b:'b'}, 'a'), 1);
       assertEqual(count({a:'a',b:'b'}, 'c'), 0);
       assertEqual(count({a:1,b:2}, 2), 1);
@@ -1003,33 +1003,33 @@ namespace('Object', function () {
       assertEqual(count({a:true,b:true}, false), 0);
     });
 
-    it('should match by regex', function() {
+    it('should match by regex', () => {
       assertEqual(count({a:'a',b:'b'}, /[a-c]/), 2);
       assertEqual(count({a:'a',b:'b'}, /[c-z]/), 0);
     });
 
-    it('should match by date', function() {
+    it('should match by date', () => {
       var d1 = new Date(2020, 7, 28);
       var d2 = new Date(2020, 7, 29);
       assertEqual(count({a:d1,b:d2}, new Date(2020, 7, 28)), 1);
       assertEqual(count({a:d1,b:d1}, new Date(2020, 7, 29)), 0);
     });
 
-    it('should match by function', function() {
+    it('should match by function', () => {
       assertEqual(count({a:1,b:2}, (key, n) => n % 2 === 0), 1);
       assertEqual(count({a:1,b:3}, (key, n) => n % 2 === 0), 0);
       assertEqual(count({a:1,b:2}, (key, n) => n > 5), 0);
       assertEqual(count({a:1,b:2}, (key, n) => n > 0), 2);
     });
 
-    it('should match by function when strictly equal', function() {
+    it('should match by function when strictly equal', () => {
       var fn1 = function(){};
       var fn2 = function(){};
       assertEqual(count({a:fn1, b:fn2}, fn2), 1);
       assertEqual(count({a:fn1, b:fn1}, fn2), 0);
     });
 
-    it('should match by fuzzy matching', function() {
+    it('should match by fuzzy matching', () => {
       assertEqual(
         count({
           1:{ name:'Frank'},
@@ -1059,7 +1059,7 @@ namespace('Object', function () {
       );
     });
 
-    it('should pass correct arguments', function() {
+    it('should pass correct arguments', () => {
       count({a:1}, function (key, val, obj) {
         assertEqual(key, 'a');
         assertEqual(val, 1);
@@ -1067,39 +1067,39 @@ namespace('Object', function () {
       });
     });
 
-    it('should handle irregular input', function() {
+    it('should handle irregular input', () => {
       assertEqual(count({a:1}, null), 0);
       assertEqual(count({a:1}, NaN), 0);
-      assertError(function() { count({}); });
-      assertError(function() { count(null); });
-      assertError(function() { count('a'); });
-      assertError(function() { count(1); });
+      assertError(() => { count({}); });
+      assertError(() => { count(null); });
+      assertError(() => { count('a'); });
+      assertError(() => { count(1); });
     });
 
   });
 
-  describeInstance('sum', function(sum) {
+  describeInstance('sum', (sum) => {
 
-    it('should sum all values with no arguments', function() {
+    it('should sum all values with no arguments', () => {
       assertEqual(sum({a:1,b:2}), 3);
       assertEqual(sum({a:0,b:0}), 0);
       assertEqual(sum({a:1}), 1);
       assertEqual(sum({}), 0);
     });
 
-    it('should sum with function mapper', function() {
+    it('should sum with function mapper', () => {
       assertEqual(sum({a:1,b:2}, (key, n) => n * 2), 6);
       assertEqual(sum({a:1,b:2}, (key, n) => n % 2 === 0 ? n : 0), 2);
       assertEqual(sum({a:1,b:2}, (key, n) => n > 5 ? n : 0), 0);
       assertEqual(sum({a:1,b:2}, (key, n) => n > 1 ? n : 0), 2);
     });
 
-    it('should sum with string mapper', function() {
+    it('should sum with string mapper', () => {
       assertEqual(sum({1:{age:2},2:{age:5}}, 'age'), 7);
       assertNaN(sum({1:{age:2},2:{age:5}}, 'height'));
     });
 
-    it('should handle deep properties', function() {
+    it('should handle deep properties', () => {
       assertEqual(sum({
         1: { profile: { likes: 20 } },
         2: { profile: { likes: 17 } },
@@ -1117,7 +1117,7 @@ namespace('Object', function () {
       }, 'posts.0.views'), 189);
     });
 
-    it('should pass correct arguments', function() {
+    it('should pass correct arguments', () => {
       sum({a:1}, function (key, val, obj) {
         assertEqual(key, 'a');
         assertEqual(val, 1);
@@ -1125,37 +1125,37 @@ namespace('Object', function () {
       });
     });
 
-    it('should handle irregular input', function() {
+    it('should handle irregular input', () => {
       assertEqual(sum({a:null,b:false}), 0);
-      assertError(function() { sum(); });
-      assertError(function() { sum(null); });
-      assertError(function() { sum(1); });
-      assertError(function() { sum('a'); });
+      assertError(() => { sum(); });
+      assertError(() => { sum(null); });
+      assertError(() => { sum(1); });
+      assertError(() => { sum('a'); });
     });
 
   });
 
-  describeInstance('average', function(average) {
+  describeInstance('average', (average) => {
 
-    it('should average all values with no arguments', function() {
+    it('should average all values with no arguments', () => {
       assertEqual(average({a:1,b:2,c:3}), 2);
       assertEqual(average({a:0,b:0,c:0}), 0);
       assertEqual(average({}), 0);
     });
 
-    it('should average with function mapper', function() {
+    it('should average with function mapper', () => {
       assertEqual(average({a:1,b:2,c:3,d:4}, (key, n) => n * 2), 5);
       assertEqual(average({a:1,b:2,c:3,d:4}, (key, n) => n % 2 === 0 ? n : 0), 1.5);
       assertEqual(average({a:1,b:2,c:3,d:4}, (key, n) => n > 5 ? n : 0), 0);
       assertEqual(average({a:1,b:2,c:3,d:4}, (key, n) => n > 2 ? n : 0), 1.75);
     });
 
-    it('should average with string mapper', function() {
+    it('should average with string mapper', () => {
       assertEqual(average({1:{age:2},2:{age:5}}, 'age'), 3.5);
       assertNaN(average({1:{age:2},2:{age:5}}, 'height'));
     });
 
-    it('should handle deep properties', function() {
+    it('should handle deep properties', () => {
       assertEqual(average({
         1: { profile: { likes: 20 } },
         2: { profile: { likes: 17 } },
@@ -1173,20 +1173,20 @@ namespace('Object', function () {
       }, 'posts.0.views'), 63);
     });
 
-    it('should handle irregular input', function() {
+    it('should handle irregular input', () => {
       assertEqual(average({a:null,b:false}), 0);
       assertNaN(average({a:NaN,b:NaN}));
-      assertError(function() { average(); });
-      assertError(function() { average(null); });
-      assertError(function() { average(1); });
-      assertError(function() { average('a'); });
+      assertError(() => { average(); });
+      assertError(() => { average(null); });
+      assertError(() => { average(1); });
+      assertError(() => { average('a'); });
     });
 
   });
 
-  describeInstance('median', function(median) {
+  describeInstance('median', (median) => {
 
-    it('should median average all values with no arguments', function() {
+    it('should median average all values with no arguments', () => {
       assertEqual(median({a:1,b:5,c:7}), 5);
       assertEqual(median({a:1,b:5,c:6,d:8}), 5.5);
       assertEqual(median({a:8,b:6,c:5,d:1}), 5.5);
@@ -1196,19 +1196,19 @@ namespace('Object', function () {
       assertEqual(median({}), 0);
     });
 
-    it('should median average with function mapper', function() {
+    it('should median average with function mapper', () => {
       assertEqual(median({a:1,b:2,c:3,d:4}, (key, n) => n * 2), 5);
       assertEqual(median({a:1,b:2,c:3,d:4}, (key, n) => n % 2 === 0 ? n : 0), 1);
       assertEqual(median({a:1,b:2,c:3,d:4}, (key, n) => n > 5 ? n : 0), 0);
       assertEqual(median({a:1,b:2,c:3,d:4}, (key, n) => n > 2 ? n : 0), 1.5);
     });
 
-    it('should average with string mapper', function() {
+    it('should average with string mapper', () => {
       assertEqual(median({1:{age:2},2:{age:5}}, 'age'), 3.5);
       assertNaN(median({1:{age:2},2:{age:5}}, 'height'));
     });
 
-    it('should handle deep properties', function() {
+    it('should handle deep properties', () => {
       assertEqual(median({
         1: { profile: { likes: 10 } },
         2: { profile: { likes: 17 } },
@@ -1228,34 +1228,34 @@ namespace('Object', function () {
       }, 'posts.0.views'), 50);
     });
 
-    it('should handle irregular input', function() {
+    it('should handle irregular input', () => {
       assertEqual(median({a:null,b:false}), 0);
       assertNaN(median({a:NaN,b:NaN}));
-      assertError(function() { median(); });
-      assertError(function() { median(null); });
-      assertError(function() { median(1); });
-      assertError(function() { median('a'); });
+      assertError(() => { median(); });
+      assertError(() => { median(null); });
+      assertError(() => { median(1); });
+      assertError(() => { median('a'); });
     });
 
   });
 
-  describeInstance('minKey', function(minKey) {
+  describeInstance('minKey', (minKey) => {
 
-    it('should work with no arguments', function() {
+    it('should work with no arguments', () => {
       assertEqual(minKey({a:1,b:2,c:3}), 'a');
       assertEqual(minKey({a:0,b:0,c:0}), 'a');
     });
 
-    it('should allow a function mapper', function() {
+    it('should allow a function mapper', () => {
       assertEqual(minKey({a:1,b:2,c:3,d:4}, (key, n) => 1 / n), 'd');
     });
 
-    it('should allow a string mapper', function() {
+    it('should allow a string mapper', () => {
       assertEqual(minKey({1:{age:5},2:{age:2}}, 'age'), '2');
       assertEqual(minKey({1:{age:2},2:{age:5}}, 'height'), '1');
     });
 
-    it('should handle deep properties', function() {
+    it('should handle deep properties', () => {
       assertEqual(minKey({
         1: { profile: { likes: 20 } },
         2: { profile: { likes: 17 } },
@@ -1273,12 +1273,12 @@ namespace('Object', function () {
       }, 'posts.0.views'), '3');
     });
 
-    it('should handle infinite values', function() {
+    it('should handle infinite values', () => {
       assertEqual(minKey({a:Infinity}), 'a');
       assertEqual(minKey({a:-Infinity}), 'a');
     });
 
-    it('should pass correct arguments', function() {
+    it('should pass correct arguments', () => {
       minKey({a:1}, function (key, val, obj) {
         assertEqual(key, 'a');
         assertEqual(val, 1);
@@ -1286,36 +1286,36 @@ namespace('Object', function () {
       });
     });
 
-    it('should handle irregular input', function() {
+    it('should handle irregular input', () => {
       assertEqual(minKey({}), undefined);
       assertEqual(minKey({a:'a',b:'b',c:'c'}), 'a');
       assertEqual(minKey({a:null, b:false}), 'a');
-      assertError(function() { minKey(); });
-      assertError(function() { minKey(null); });
-      assertError(function() { minKey(1); });
-      assertError(function() { minKey('a'); });
+      assertError(() => { minKey(); });
+      assertError(() => { minKey(null); });
+      assertError(() => { minKey(1); });
+      assertError(() => { minKey('a'); });
     });
 
   });
 
-  describeInstance('minKeys', function(minKeys) {
+  describeInstance('minKeys', (minKeys) => {
 
-    it('should work with no arguments', function() {
+    it('should work with no arguments', () => {
       assertArrayEqual(minKeys({a:1,b:2,c:3}), ['a']);
       assertArrayEqual(minKeys({a:1,b:1,c:3}), ['a','b']);
       assertArrayEqual(minKeys({a:0,b:0,c:0}), ['a','b','c']);
     });
 
-    it('should allow a function mapper', function() {
+    it('should allow a function mapper', () => {
       assertArrayEqual(minKeys({a:1,b:2,c:3,d:4}, (key, n) => 1 / n), ['d']);
     });
 
-    it('should allow a string mapper', function() {
+    it('should allow a string mapper', () => {
       assertArrayEqual(minKeys({1:{age:5},2:{age:2}}, 'age'), ['2']);
       assertArrayEqual(minKeys({1:{age:2},2:{age:5}}, 'height'), ['1', '2']);
     });
 
-    it('should handle deep properties', function() {
+    it('should handle deep properties', () => {
       assertArrayEqual(minKeys({
         1: { profile: { likes: 20 } },
         2: { profile: { likes: 17 } },
@@ -1333,12 +1333,12 @@ namespace('Object', function () {
       }, 'posts.0.views'), ['3']);
     });
 
-    it('should handle infinite values', function() {
+    it('should handle infinite values', () => {
       assertArrayEqual(minKeys({a:Infinity}), ['a']);
       assertArrayEqual(minKeys({a:-Infinity}), ['a']);
     });
 
-    it('should pass correct arguments', function() {
+    it('should pass correct arguments', () => {
       minKeys({a:1}, function (key, val, obj) {
         assertEqual(key, 'a');
         assertEqual(val, 1);
@@ -1346,35 +1346,35 @@ namespace('Object', function () {
       });
     });
 
-    it('should handle irregular input', function() {
+    it('should handle irregular input', () => {
       assertArrayEqual(minKeys({}), []);
       assertArrayEqual(minKeys({a:'a',b:'b',c:'c'}), ['a']);
       assertArrayEqual(minKeys({a:null, b:false}), ['a']);
-      assertError(function() { minKeys(); });
-      assertError(function() { minKeys(null); });
-      assertError(function() { minKeys(1); });
-      assertError(function() { minKeys('a'); });
+      assertError(() => { minKeys(); });
+      assertError(() => { minKeys(null); });
+      assertError(() => { minKeys(1); });
+      assertError(() => { minKeys('a'); });
     });
 
   });
 
-  describeInstance('maxKey', function(maxKey) {
+  describeInstance('maxKey', (maxKey) => {
 
-    it('should work with no arguments', function() {
+    it('should work with no arguments', () => {
       assertEqual(maxKey({a:1,b:2,c:3}), 'c');
       assertEqual(maxKey({a:0,b:0,c:0}), 'a');
     });
 
-    it('should allow a function mapper', function() {
+    it('should allow a function mapper', () => {
       assertEqual(maxKey({a:1,b:2,c:3,d:4}, (key, n) => 1 / n), 'a');
     });
 
-    it('should allow a string mapper', function() {
+    it('should allow a string mapper', () => {
       assertEqual(maxKey({1:{age:5},2:{age:2}}, 'age'), '1');
       assertEqual(maxKey({1:{age:2},2:{age:5}}, 'height'), '1');
     });
 
-    it('should handle deep properties', function() {
+    it('should handle deep properties', () => {
       assertEqual(maxKey({
         1: { profile: { likes: 20 } },
         2: { profile: { likes: 17 } },
@@ -1392,12 +1392,12 @@ namespace('Object', function () {
       }, 'posts.0.views'), '2');
     });
 
-    it('should handle infinite values', function() {
+    it('should handle infinite values', () => {
       assertEqual(maxKey({a:Infinity}), 'a');
       assertEqual(maxKey({a:-Infinity}), 'a');
     });
 
-    it('should pass correct arguments', function() {
+    it('should pass correct arguments', () => {
       maxKey({a:1}, function (key, val, obj) {
         assertEqual(key, 'a');
         assertEqual(val, 1);
@@ -1405,36 +1405,36 @@ namespace('Object', function () {
       });
     });
 
-    it('should handle irregular input', function() {
+    it('should handle irregular input', () => {
       assertEqual(maxKey({}), undefined);
       assertEqual(maxKey({a:'a',b:'b',c:'c'}), 'c');
       assertEqual(maxKey({a:null, b:false}), 'a');
-      assertError(function() { maxKey(); });
-      assertError(function() { maxKey(null); });
-      assertError(function() { maxKey(1); });
-      assertError(function() { maxKey('a'); });
+      assertError(() => { maxKey(); });
+      assertError(() => { maxKey(null); });
+      assertError(() => { maxKey(1); });
+      assertError(() => { maxKey('a'); });
     });
 
   });
 
-  describeInstance('maxKeys', function(maxKeys) {
+  describeInstance('maxKeys', (maxKeys) => {
 
-    it('should work with no arguments', function() {
+    it('should work with no arguments', () => {
       assertArrayEqual(maxKeys({a:1,b:2,c:3}), ['c']);
       assertArrayEqual(maxKeys({a:1,b:3,c:3}), ['b','c']);
       assertArrayEqual(maxKeys({a:0,b:0,c:0}), ['a','b','c']);
     });
 
-    it('should allow a function mapper', function() {
+    it('should allow a function mapper', () => {
       assertArrayEqual(maxKeys({a:1,b:2,c:3,d:4}, (key, n) => 1 / n), ['a']);
     });
 
-    it('should allow a string mapper', function() {
+    it('should allow a string mapper', () => {
       assertArrayEqual(maxKeys({1:{age:5},2:{age:2}}, 'age'), ['1']);
       assertArrayEqual(maxKeys({1:{age:2},2:{age:5}}, 'height'), ['1', '2']);
     });
 
-    it('should handle deep properties', function() {
+    it('should handle deep properties', () => {
       assertArrayEqual(maxKeys({
         1: { profile: { likes: 20 } },
         2: { profile: { likes: 17 } },
@@ -1452,12 +1452,12 @@ namespace('Object', function () {
       }, 'posts.0.views'), ['2']);
     });
 
-    it('should handle infinite values', function() {
+    it('should handle infinite values', () => {
       assertArrayEqual(maxKeys({a:Infinity}), ['a']);
       assertArrayEqual(maxKeys({a:-Infinity}), ['a']);
     });
 
-    it('should pass correct arguments', function() {
+    it('should pass correct arguments', () => {
       maxKeys({a:1}, function (key, val, obj) {
         assertEqual(key, 'a');
         assertEqual(val, 1);
@@ -1465,31 +1465,31 @@ namespace('Object', function () {
       });
     });
 
-    it('should handle irregular input', function() {
+    it('should handle irregular input', () => {
       assertArrayEqual(maxKeys({}), []);
       assertArrayEqual(maxKeys({a:'a',b:'b',c:'c'}), ['c']);
       assertArrayEqual(maxKeys({a:null, b:false}), ['a']);
-      assertError(function() { maxKeys(); });
-      assertError(function() { maxKeys(null); });
-      assertError(function() { maxKeys(1); });
-      assertError(function() { maxKeys('a'); });
+      assertError(() => { maxKeys(); });
+      assertError(() => { maxKeys(null); });
+      assertError(() => { maxKeys(1); });
+      assertError(() => { maxKeys('a'); });
     });
 
   });
 
-  describeInstance('reduce', function(reduce) {
+  describeInstance('reduce', (reduce) => {
 
-    it('should accumulate the result of the passed function', function() {
+    it('should accumulate the result of the passed function', () => {
       assertEqual(reduce({a:1}, () => 1), 1);
       assertEqual(reduce({a:1,b:2,c:3}, () => 1), 1);
     });
 
-    it('should be able to perform basic sum', function() {
+    it('should be able to perform basic sum', () => {
       assertEqual(reduce({a:1,b:2,c:3}, (acc, key, val) => acc + val), 6);
       assertEqual(reduce({a:1,b:2,c:3}, (acc, key, val) => acc + val, 0), 6);
     });
 
-    it('should have correct arguments when no initial value passed', function() {
+    it('should have correct arguments when no initial value passed', () => {
       reduce({a:1,b:2}, (acc, key, val, obj) => {
         assertEqual(acc, 1);
         assertEqual(key, 'b');
@@ -1504,7 +1504,7 @@ namespace('Object', function () {
       });
     });
 
-    it('should have correct arguments when initial value passed', function() {
+    it('should have correct arguments when initial value passed', () => {
       reduce({a:1}, (acc, key, val, obj) => {
         assertEqual(acc, 2);
         assertEqual(key, 'a');
@@ -1519,30 +1519,30 @@ namespace('Object', function () {
       }, {name:'Frank'});
     });
 
-    it('should correctly iterate when initial value is undefined', function() {
+    it('should correctly iterate when initial value is undefined', () => {
       reduce({a:1}, (acc) => {
         assertEqual(acc, undefined);
       }, undefined);
     });
 
-    it('should error when object empty and no initial value', function() {
+    it('should error when object empty and no initial value', () => {
       assertError(() => { reduce({}, () => {}) }, TypeError);
     });
   });
 
-  describeInstance('isEmpty', function(isEmpty) {
+  describeInstance('isEmpty', (isEmpty) => {
 
-    it('should report true for empty objects', function() {
+    it('should report true for empty objects', () => {
       assertTrue(isEmpty({}));
     });
 
-    it('should report false for non-empty objects', function() {
+    it('should report false for non-empty objects', () => {
       assertFalse(isEmpty({a:1}));
       assertFalse(isEmpty({a:null}));
       assertFalse(isEmpty({a:undefined}));
     });
 
-    it('should work correctly on class instances', function() {
+    it('should work correctly on class instances', () => {
       function Foo(a) {
         if (a) {
           this.a = a;
@@ -1552,7 +1552,7 @@ namespace('Object', function () {
       assertFalse(isEmpty(new Foo(1)));
     });
 
-    it('should handle irregular input', function() {
+    it('should handle irregular input', () => {
       assertError(() => { isEmpty(null); });
       assertError(() => { isEmpty('8'); });
       assertError(() => { isEmpty(8); });
@@ -1560,9 +1560,9 @@ namespace('Object', function () {
 
   });
 
-  describeInstance('size', function(size) {
+  describeInstance('size', (size) => {
 
-    it('should report correct size of objects', function() {
+    it('should report correct size of objects', () => {
       assertEqual(size({}), 0);
       assertEqual(size({a:1}), 1);
       assertEqual(size({a:1,b:2,c:3}), 3);
@@ -1570,7 +1570,7 @@ namespace('Object', function () {
       assertEqual(size({a:undefined}), 1);
     });
 
-    it('should work correctly on class instances', function() {
+    it('should work correctly on class instances', () => {
       function Foo(a) {
         if (a) {
           this.a = a;
@@ -1580,7 +1580,7 @@ namespace('Object', function () {
       assertEqual(size(new Foo(1)), 1);
     });
 
-    it('should handle irregular input', function() {
+    it('should handle irregular input', () => {
       assertError(() => { size(null); });
       assertError(() => { size('8'); });
       assertError(() => { size(8); });
@@ -1588,9 +1588,9 @@ namespace('Object', function () {
 
   });
 
-  describeInstance('isEqual', function(isEqual) {
+  describeInstance('isEqual', (isEqual) => {
 
-    it('should handle primitives', function() {
+    it('should handle primitives', () => {
       assertEqual(isEqual(1, 1), true);
       assertEqual(isEqual(1, 2), false);
       assertEqual(isEqual(2, 1), false);
@@ -1602,7 +1602,7 @@ namespace('Object', function () {
       assertEqual(isEqual(false, true), false);
     });
 
-    it('should handle irregular primitive cases', function() {
+    it('should handle irregular primitive cases', () => {
       assertEqual(isEqual(0, 0), true);
       assertEqual(isEqual(-0, -0), true);
       assertEqual(isEqual(-0, 0), false);
@@ -1620,7 +1620,7 @@ namespace('Object', function () {
       assertEqual(isEqual(undefined, undefined), true);
     });
 
-    it('should function as expected with insufficient arguments', function() {
+    it('should function as expected with insufficient arguments', () => {
       assertEqual(isEqual(), true);
       assertEqual(isEqual(undefined), true);
       assertEqual(isEqual(null), false);
@@ -1629,7 +1629,7 @@ namespace('Object', function () {
       assertEqual(isEqual(0), false);
     });
 
-    it('should distinguish primitives from wrapped counterparts', function() {
+    it('should distinguish primitives from wrapped counterparts', () => {
       assertEqual(isEqual(new String('a'), new String('a')), true);
       assertEqual(isEqual('a', new String('a')), false);
       assertEqual(isEqual(new String('a'), 'a'), false);
@@ -1648,7 +1648,7 @@ namespace('Object', function () {
       assertEqual(isEqual(new Boolean(true), new Boolean(false)), false);
     });
 
-    it('should distinguish common type coercions', function() {
+    it('should distinguish common type coercions', () => {
       assertEqual(isEqual('1', 1), false);
       assertEqual(isEqual(1, '1'), false);
       assertEqual(isEqual(new Number(1), new String(1)), false);
@@ -1665,7 +1665,7 @@ namespace('Object', function () {
       assertEqual(isEqual(new Date(1599470036490), 1599470036490), false);
     });
 
-    it('should handle plain objects', function() {
+    it('should handle plain objects', () => {
       assertEqual(isEqual({}, {}), true);
       assertEqual(isEqual({a:1}, {a:1}), true);
       assertEqual(isEqual({a:1}, {a:2}), false);
@@ -1674,12 +1674,12 @@ namespace('Object', function () {
       assertEqual(isEqual({b:2}, {a:1,b:2}), false);
     });
 
-    it('should distinguish missing keys', function() {
+    it('should distinguish missing keys', () => {
       assertEqual(isEqual({a:undefined}, {}), false);
       assertEqual(isEqual({}, {a:undefined}), false);
     });
 
-    it('should distinguish object types', function() {
+    it('should distinguish object types', () => {
       assertEqual(isEqual([], {}), false);
       assertEqual(isEqual({}, []), false);
       assertEqual(isEqual([{}], [{}]), true);
@@ -1692,7 +1692,7 @@ namespace('Object', function () {
       assertEqual(isEqual([], {length:0}), false);
     });
 
-    it('should handle object references', function() {
+    it('should handle object references', () => {
       const obj1 = {a:1};
       const obj2 = {a:1};
       assertEqual(isEqual({a:obj1,b:obj1}, {a:obj1,b:obj1}), true);
@@ -1702,7 +1702,7 @@ namespace('Object', function () {
       assertEqual(isEqual({a:obj1,b:obj1}, {a:obj1,b:obj2}), true);
     });
 
-    it('should handle cyclic references', function() {
+    it('should handle cyclic references', () => {
       const obj1 = {};
       const obj2 = {};
       obj1.a = obj1;
@@ -1718,7 +1718,7 @@ namespace('Object', function () {
       assertEqual(isEqual([arr1], [arr2]), false);
     });
 
-    it('should complex nested objects', function() {
+    it('should complex nested objects', () => {
       assertEqual(isEqual({
         obj: {
           a: 'a',
@@ -1797,7 +1797,7 @@ namespace('Object', function () {
       }), false);
     });
 
-    it('should function as expected for arrays', function() {
+    it('should function as expected for arrays', () => {
       assertEqual(isEqual([], []), true);
       assertEqual(isEqual([], [1]), false);
       assertEqual(isEqual([1], []), false);
@@ -1812,7 +1812,7 @@ namespace('Object', function () {
       assertEqual(isEqual([1,'a',{a:1}], [1,'b',{a:1}]), false);
     });
 
-    it('should handle object references inside arrays', function() {
+    it('should handle object references inside arrays', () => {
       const obj1 = {a:1};
       const obj2 = {a:2};
       assertEqual(isEqual([obj1, obj2], [obj1, obj2]), true);
@@ -1821,11 +1821,11 @@ namespace('Object', function () {
       assertEqual(isEqual([obj1], [obj1, obj2]), false);
     });
 
-    it('should distinguish arrays and arguments', function() {
-      const args1 = (function() {
+    it('should distinguish arrays and arguments', () => {
+      const args1 = (() => {
         return arguments;
       })('a','b','c');
-      const args2 = (function() {
+      const args2 = (() => {
         return arguments;
       })('a','b','c');
       assertEqual(isEqual(args1, args2), true);
@@ -1833,7 +1833,7 @@ namespace('Object', function () {
       assertEqual(isEqual(args1, ['a','b','c']), false);
     });
 
-    it('should handle irregular array cases', function() {
+    it('should handle irregular array cases', () => {
       assertEqual(isEqual([], {}), false);
       assertEqual(isEqual([0], [0]), true);
       assertEqual(isEqual([undefined], [undefined]), true);
@@ -1841,14 +1841,14 @@ namespace('Object', function () {
       assertEqual(isEqual([NaN], [NaN]), true);
     });
 
-    it('should distinguish sparse and dense arrays', function() {
+    it('should distinguish sparse and dense arrays', () => {
       assertEqual(isEqual(new Array(3), new Array(3)), true);
       assertEqual(isEqual(new Array(3), new Array(6)), false);
       assertEqual(isEqual(new Array(6), new Array(3)), false);
       assertEqual(isEqual([,1], [undefined,1]), false);
     });
 
-    it('should function as expected for dates', function() {
+    it('should function as expected for dates', () => {
       assertEqual(isEqual(new Date(2020, 8, 7), new Date(2020, 8, 7)), true);
       assertEqual(isEqual(new Date(2020, 8, 7), new Date(2020, 8, 8)), false);
       assertEqual(isEqual(new Date(2020, 8, 7), new Date(2020, 8, 7, 0, 0, 0, 1)), false);
@@ -1857,7 +1857,7 @@ namespace('Object', function () {
       assertEqual(isEqual(new Date('Invalid'), new Date('Invalid')), true);
     });
 
-    it('should function as expected for functions', function() {
+    it('should function as expected for functions', () => {
       const fn1 = () => {};
       const fn2 = () => {};
       assertEqual(isEqual(fn1, fn1), true);
@@ -1865,7 +1865,7 @@ namespace('Object', function () {
       assertEqual(isEqual(fn2, fn1), false);
     });
 
-    it('should function as expected for regexes', function() {
+    it('should function as expected for regexes', () => {
       assertEqual(isEqual(/a/, /a/), true);
       assertEqual(isEqual(/a/, /a/i), false);
       assertEqual(isEqual(/a/i, /a/), false);
@@ -1874,7 +1874,7 @@ namespace('Object', function () {
       assertEqual(isEqual(/b/gim, /a/gim), false);
     });
 
-    it('should function as expected for class instances', function() {
+    it('should function as expected for class instances', () => {
       function Foo(val) {
         this.value = val;
       }
@@ -1883,19 +1883,19 @@ namespace('Object', function () {
       assertEqual(isEqual(new Foo(1), {value: 1}), false);
     });
 
-    it('should function as expected for sets', function() {
+    it('should function as expected for sets', () => {
       assertEqual(isEqual(new Set([1]), new Set([1])), true);
       assertEqual(isEqual(new Set([1]), new Set([2])), false);
       assertEqual(isEqual(new Set([2]), new Set([1])), false);
     });
 
-    it('should function as expected for maps', function() {
+    it('should function as expected for maps', () => {
       assertEqual(isEqual(new Map([[1,1]]), new Map([[1,1]])), true);
       assertEqual(isEqual(new Map([[1,1]]), new Map([[1,2]])), false);
       assertEqual(isEqual(new Map([[1,2]]), new Map([[1,1]])), false);
     });
 
-    it('should function as expected for typed arrays', function() {
+    it('should function as expected for typed arrays', () => {
       assertEqual(isEqual([1], Uint8Array.from(1)), false);
       assertEqual(isEqual(Uint8Array.from(1), [1]), false);
       assertEqual(isEqual(Int8Array.from(1), Int8Array.from(1)), true);
@@ -1907,7 +1907,7 @@ namespace('Object', function () {
       assertEqual(isEqual(Float64Array.from(1), Float32Array.from(1)), false);
     });
 
-    it('should only return true for symbols by reference', function() {
+    it('should only return true for symbols by reference', () => {
       const sym = Symbol('a');
       assertEqual(isEqual(sym, sym), true);
       assertEqual(isEqual(Symbol('a'), Symbol('a')), false);
@@ -1915,7 +1915,7 @@ namespace('Object', function () {
       assertEqual(isEqual(Object(sym), Object(sym)), false);
     });
 
-    it('should function as expected for errors', function() {
+    it('should function as expected for errors', () => {
       assertEqual(isEqual(new Error, new Error), true);
       assertEqual(isEqual(new Error('a'), new Error('a')), true);
       assertEqual(isEqual(new TypeError('a'), new TypeError('a')), true);
@@ -1923,7 +1923,7 @@ namespace('Object', function () {
       assertEqual(isEqual(new TypeError, new Error), false);
     });
 
-    it('should function as expected with overwritten isEqual', function() {
+    it('should function as expected with overwritten isEqual', () => {
       assertEqual(isEqual({}, {
         isEqual: () => true,
       }), false);
@@ -1931,9 +1931,9 @@ namespace('Object', function () {
 
   });
 
-  describeInstance('intersect', function(intersect) {
+  describeInstance('intersect', (intersect) => {
 
-    it('should intersect with second value', function() {
+    it('should intersect with second value', () => {
       assertObjectEqual(intersect({a:1}, {a:1}), {a:1});
       assertObjectEqual(intersect({a:1}, {a:2}), {a:2});
       assertObjectEqual(intersect({a:1}, {a:2,b:2}), {a:2});
@@ -1944,7 +1944,7 @@ namespace('Object', function () {
       assertObjectEqual(intersect({}, {}), {});
     });
 
-    it('should intersect with resolver', function() {
+    it('should intersect with resolver', () => {
       function add(key, n1, n2) {
         return n1 + n2;
       }
@@ -1953,7 +1953,7 @@ namespace('Object', function () {
       assertObjectEqual(intersect({}, {}, add), {});
     });
 
-    it('should pass correct arguments to resolver', function() {
+    it('should pass correct arguments to resolver', () => {
       intersect({a:1}, {a:2}, (key, val1, val2, obj1, obj2) => {
         assertEqual(key, 'a');
         assertEqual(val1, 1);
@@ -1963,7 +1963,7 @@ namespace('Object', function () {
       });
     });
 
-    it('should handle irregular input', function() {
+    it('should handle irregular input', () => {
       assertError(() => {
         intersect();
       });
@@ -1976,9 +1976,9 @@ namespace('Object', function () {
     });
   });
 
-  describeInstance('subtract', function(subtract) {
+  describeInstance('subtract', (subtract) => {
 
-    it('should correctly subtract on primitive values', function() {
+    it('should correctly subtract on primitive values', () => {
       assertObjectEqual(subtract({a:1}, {a:1}), {});
       assertObjectEqual(subtract({a:1}, {a:1,b:2}), {});
       assertObjectEqual(subtract({a:1,b:2}, {a:1}), {b:2});
@@ -1989,7 +1989,7 @@ namespace('Object', function () {
       assertObjectEqual(subtract({}, {}), {});
     });
 
-    it('should correctly subtract on nested objects', function() {
+    it('should correctly subtract on nested objects', () => {
       assertObjectEqual(subtract({a:{b:1}}, {a:{b:1}}), {});
       assertObjectEqual(subtract({a:{b:1}}, {a:{b:2}}), {a:{b:1}});
       assertObjectEqual(subtract({a:{b:2}}, {a:{b:1}}), {a:{b:2}});
@@ -1998,7 +1998,7 @@ namespace('Object', function () {
       assertObjectEqual(subtract({a:{b:1},c:{b:2}}, {a:{b:1}}), {c:{b:2}});
     });
 
-    it('should correctly subtract on function references', function() {
+    it('should correctly subtract on function references', () => {
       const fn1 = () => {};
       const fn2 = () => {};
       assertObjectEqual(subtract({a:{b:fn1}}, {a:{b:fn1}}), {});
@@ -2006,7 +2006,7 @@ namespace('Object', function () {
       assertObjectEqual(subtract({a:{b:fn2}}, {a:{b:fn1}}), {a:{b:fn2}});
     });
 
-    it('should distinguish non-equivalent values', function() {
+    it('should distinguish non-equivalent values', () => {
       assertObjectEqual(subtract({a:null}, {a:null}), {});
       assertObjectEqual(subtract({a:null}, {a:undefined}), {a:null});
       assertObjectEqual(subtract({a:undefined}, {a:null}), {a:undefined});
@@ -2020,7 +2020,7 @@ namespace('Object', function () {
       assertObjectEqual(subtract({a:''}, {a:undefined}), {a:''});
     });
 
-    it('should handle irregular input', function() {
+    it('should handle irregular input', () => {
       assertError(() => {
         subtract();
       });
@@ -2033,9 +2033,9 @@ namespace('Object', function () {
     });
   });
 
-  describeInstance('merge', function(merge) {
+  describeInstance('merge', (merge) => {
 
-    it('should merge with no collisions', function() {
+    it('should merge with no collisions', () => {
       assertObjectEqual(merge({a:1}, {b:2}), {a:1,b:2});
       assertObjectEqual(merge({a:2}, {b:1}), {a:2,b:1});
       assertObjectEqual(merge({a:1}, {}), {a:1});
@@ -2043,7 +2043,7 @@ namespace('Object', function () {
       assertObjectEqual(merge({}, {}), {});
     });
 
-    it('should merge with collisions', function() {
+    it('should merge with collisions', () => {
       assertObjectEqual(merge({a:1}, {a:1}), {a:1});
       assertObjectEqual(merge({a:1}, {a:2}), {a:2});
       assertObjectEqual(merge({a:1}, {a:1,b:2}), {a:1,b:2});
@@ -2053,7 +2053,7 @@ namespace('Object', function () {
       assertObjectEqual(merge({a:1}, {a:{b:1}}), {a:{b:1}});
     });
 
-    it('should deeply merge plain objects', function() {
+    it('should deeply merge plain objects', () => {
       assertObjectEqual(merge({a:{a:1}}, {a:{}}), {a:{a:1}});
       assertObjectEqual(merge({a:{}}, {a:{a:1}}), {a:{a:1}});
       assertObjectEqual(merge({a:{a:1}}, {a:{a:2}}), {a:{a:2}});
@@ -2064,12 +2064,12 @@ namespace('Object', function () {
       );
     });
 
-    it('should not deeply merge arrays', function() {
+    it('should not deeply merge arrays', () => {
       assertObjectEqual(merge({a:[]}, {a:[1]}), {a:[1]});
       assertObjectEqual(merge({a:[1,2,3]}, {a:[4,5,6]}), {a:[4,5,6]});
     });
 
-    it('should not deeply merge known built-in types', function() {
+    it('should not deeply merge known built-in types', () => {
       assertObjectEqual(merge({a:/a/}, {a:/b/}), {a:/b/});
       assertObjectEqual(
         merge(
@@ -2094,7 +2094,7 @@ namespace('Object', function () {
       );
     });
 
-    it('should merge falsy values', function() {
+    it('should merge falsy values', () => {
       assertObjectEqual(merge({a:1}, {a:null}), {a:null});
       assertObjectEqual(merge({a:1}, {a:undefined}), {a:undefined});
       assertObjectEqual(merge({a:1}, {a:0}), {a:0});
@@ -2104,14 +2104,14 @@ namespace('Object', function () {
       assertObjectEqual(merge({a:1}, {a:false}), {a:false});
     });
 
-    it('should modify the object', function() {
+    it('should modify the object', () => {
       const obj = {a:1};
       const result = merge(obj, {b:2});
       assertObjectEqual(result, {a:1,b:2});
       assertEqual(result, obj);
     });
 
-    it('should modify deeply merged objects', function() {
+    it('should modify deeply merged objects', () => {
       const obj1 = {a:{a:1}};
       const obj2 = {a:{b:2}};
       const a = obj1.a;
@@ -2122,17 +2122,17 @@ namespace('Object', function () {
       assertEqual(obj1.a, a);
     });
 
-    it('should be able to merge from multiple sources', function() {
+    it('should be able to merge from multiple sources', () => {
       assertObjectEqual(merge({a:1},{b:2},{c:3},{d:4}), {a:1,b:2,c:3,d:4});
     });
 
-    it('should be able to merge from multiple sources with a resolver', function() {
+    it('should be able to merge from multiple sources with a resolver', () => {
       assertObjectEqual(merge({a:1},{a:2},{a:3},{a:4}, (key, n1, n2) => {
         return n1 + n2;
       }), {a:10});
     });
 
-    it('should merge with resolver', function() {
+    it('should merge with resolver', () => {
       function fn(key, n1, n2) {
         return n1 + n2;
       }
@@ -2141,17 +2141,17 @@ namespace('Object', function () {
       assertObjectEqual(merge({}, {}, fn), {});
     });
 
-    it('should take resolver value and not continue deep merge', function() {
+    it('should take resolver value and not continue deep merge', () => {
       assertObjectEqual(merge({a:{a:1}}, {a:{a:2}}, () => {
         return { a: 3 };
       }), {a:{a:3}});
     });
 
-    it('should handle normally when resolver returns undefined', function() {
+    it('should handle normally when resolver returns undefined', () => {
       assertObjectEqual(merge({a:{a:1}}, {a:{b:2}}, () => {}), {a:{a:1,b:2}});
     });
 
-    it('should merge complex with resolver', function() {
+    it('should merge complex with resolver', () => {
       assertObjectEqual(
         merge({
           likes: 9,
@@ -2182,7 +2182,7 @@ namespace('Object', function () {
         });
     });
 
-    it('should pass correct arguments to resolver', function() {
+    it('should pass correct arguments to resolver', () => {
       merge({a:1}, {a:2}, (key, val1, val2, obj1, obj2) => {
         assertEqual(key, 'a');
         assertEqual(val1, 1);
@@ -2192,7 +2192,7 @@ namespace('Object', function () {
       });
     });
 
-    it('should merge objects with null prototypes', function() {
+    it('should merge objects with null prototypes', () => {
       assertObjectEqual(
         merge(
           Object.create(null, {
@@ -2212,7 +2212,7 @@ namespace('Object', function () {
       );
     });
 
-    it('should not merge non-enumerable properties', function() {
+    it('should not merge non-enumerable properties', () => {
       assertObjectEqual(
         merge(
           Object.create(null, {
@@ -2232,7 +2232,7 @@ namespace('Object', function () {
       );
     });
 
-    it('should merge enumerable getters by value', function() {
+    it('should merge enumerable getters by value', () => {
       const result = merge(
         Object.create(null, {
           a: {
@@ -2257,7 +2257,7 @@ namespace('Object', function () {
       });
     });
 
-    it('should not merge inherited properties', function() {
+    it('should not merge inherited properties', () => {
       const obj = Object.create({c:3}, {
         b: {
           enumerable: true,
@@ -2268,7 +2268,7 @@ namespace('Object', function () {
       assertObjectEqual(result, {a:1,b:2});
     });
 
-    it('should raise an error on arrays', function() {
+    it('should raise an error on arrays', () => {
       assertError(() => {
         merge({}, []);
       }, TypeError);
@@ -2277,7 +2277,7 @@ namespace('Object', function () {
       }, TypeError);
     });
 
-    it('should raise an error for class instances', function() {
+    it('should raise an error for class instances', () => {
       function Foo() {}
       assertError(() => {
         merge(new Foo, new Foo);
@@ -2290,7 +2290,7 @@ namespace('Object', function () {
       }, TypeError);
     });
 
-    it('should merge enumerable symbols', function() {
+    it('should merge enumerable symbols', () => {
       const sym1 = Symbol(1);
       const sym2 = Symbol(2);
       const obj = {};
@@ -2307,7 +2307,7 @@ namespace('Object', function () {
       assertFalse(sym2 in result);
     });
 
-    it('should raise an error for built-in objects', function() {
+    it('should raise an error for built-in objects', () => {
       assertError(() => {
         merge(/a/, /b/);
       }, TypeError);
@@ -2322,7 +2322,7 @@ namespace('Object', function () {
       }, TypeError);
     });
 
-    it('should raise an error cyclic objects', function() {
+    it('should raise an error cyclic objects', () => {
       assertError(() => {
         const obj = {};
         obj.a = obj;
@@ -2330,7 +2330,7 @@ namespace('Object', function () {
       }, TypeError);
     });
 
-    it('should handle Issue #335', function() {
+    it('should handle Issue #335', () => {
       assertObjectEqual(merge({a:{b:1}}, {a:{b:2,c:3}}, (key, tVal) => {
         if (key === 'b') {
           return tVal;
@@ -2338,12 +2338,12 @@ namespace('Object', function () {
       }), {a:{b:1,c:3}});
     });
 
-    it('should handle Issue #365', function() {
+    it('should handle Issue #365', () => {
       assertObjectEqual(merge({a:''}, {a:{b:1}}), {a:{b:1}});
       assertObjectEqual(merge({a:'1'}, {a:{b:1}}), {a:{b:1}});
     });
 
-    it('should handle irregular input', function() {
+    it('should handle irregular input', () => {
       assertObjectEqual(merge({}), {});
       assertError(() => {
         merge();
@@ -2360,9 +2360,9 @@ namespace('Object', function () {
     });
   });
 
-  describeInstance('add', function(add) {
+  describeInstance('add', (add) => {
 
-    it('should add with no collisions', function() {
+    it('should add with no collisions', () => {
       assertObjectEqual(add({a:1}, {b:2}), {a:1,b:2});
       assertObjectEqual(add({a:2}, {b:1}), {a:2,b:1});
       assertObjectEqual(add({a:1}, {}), {a:1});
@@ -2370,7 +2370,7 @@ namespace('Object', function () {
       assertObjectEqual(add({}, {}), {});
     });
 
-    it('should add with collisions', function() {
+    it('should add with collisions', () => {
       assertObjectEqual(add({a:1}, {a:1}), {a:1});
       assertObjectEqual(add({a:1}, {a:2}), {a:2});
       assertObjectEqual(add({a:1}, {a:1,b:2}), {a:1,b:2});
@@ -2380,7 +2380,7 @@ namespace('Object', function () {
       assertObjectEqual(add({a:1}, {a:{b:1}}), {a:{b:1}});
     });
 
-    it('should deeply add plain objects', function() {
+    it('should deeply add plain objects', () => {
       assertObjectEqual(add({a:{a:1}}, {a:{}}), {a:{a:1}});
       assertObjectEqual(add({a:{}}, {a:{a:1}}), {a:{a:1}});
       assertObjectEqual(add({a:{a:1}}, {a:{a:2}}), {a:{a:2}});
@@ -2391,12 +2391,12 @@ namespace('Object', function () {
       );
     });
 
-    it('should not deeply add arrays', function() {
+    it('should not deeply add arrays', () => {
       assertObjectEqual(add({a:[]}, {a:[1]}), {a:[1]});
       assertObjectEqual(add({a:[1,2,3]}, {a:[4,5,6]}), {a:[4,5,6]});
     });
 
-    it('should not deeply add known built-in types', function() {
+    it('should not deeply add known built-in types', () => {
       assertObjectEqual(add({a:/a/}, {a:/b/}), {a:/b/});
       assertObjectEqual(
         add(
@@ -2421,7 +2421,7 @@ namespace('Object', function () {
       );
     });
 
-    it('should add falsy values', function() {
+    it('should add falsy values', () => {
       assertObjectEqual(add({a:1}, {a:null}), {a:null});
       assertObjectEqual(add({a:1}, {a:undefined}), {a:undefined});
       assertObjectEqual(add({a:1}, {a:0}), {a:0});
@@ -2431,14 +2431,14 @@ namespace('Object', function () {
       assertObjectEqual(add({a:1}, {a:false}), {a:false});
     });
 
-    it('should not modify the object', function() {
+    it('should not modify the object', () => {
       const obj = {a:1};
       const result = add(obj, {b:2});
       assertObjectEqual(result, {a:1,b:2});
       assertFalse(result === obj);
     });
 
-    it('should not modify deeply added objects', function() {
+    it('should not modify deeply added objects', () => {
       const obj1 = {a:{a:1}};
       const obj2 = {a:{b:2}};
       const result = add(obj1, obj2);
@@ -2447,17 +2447,17 @@ namespace('Object', function () {
       assertObjectEqual(obj2, {a:{b:2}});
     });
 
-    it('should be able to add from multiple sources', function() {
+    it('should be able to add from multiple sources', () => {
       assertObjectEqual(add({a:1},{b:2},{c:3},{d:4}), {a:1,b:2,c:3,d:4});
     });
 
-    it('should be able to add from multiple sources with a resolver', function() {
+    it('should be able to add from multiple sources with a resolver', () => {
       assertObjectEqual(add({a:1},{a:2},{a:3},{a:4}, (key, n1, n2) => {
         return n1 + n2;
       }), {a:10});
     });
 
-    it('should add with resolver', function() {
+    it('should add with resolver', () => {
       function fn(key, n1, n2) {
         return n1 + n2;
       }
@@ -2466,17 +2466,17 @@ namespace('Object', function () {
       assertObjectEqual(add({}, {}, fn), {});
     });
 
-    it('should take resolver value and not continue deep add', function() {
+    it('should take resolver value and not continue deep add', () => {
       assertObjectEqual(add({a:{a:1}}, {a:{a:2}}, () => {
         return { a: 3 };
       }), {a:{a:3}});
     });
 
-    it('should handle normally when resolver returns undefined', function() {
+    it('should handle normally when resolver returns undefined', () => {
       assertObjectEqual(add({a:{a:1}}, {a:{b:2}}, () => {}), {a:{a:1,b:2}});
     });
 
-    it('should add complex with resolver', function() {
+    it('should add complex with resolver', () => {
       assertObjectEqual(
         add({
           likes: 9,
@@ -2507,7 +2507,7 @@ namespace('Object', function () {
         });
     });
 
-    it('should pass correct arguments to resolver', function() {
+    it('should pass correct arguments to resolver', () => {
       add({a:1}, {a:2}, (key, val1, val2, obj1, obj2) => {
         assertEqual(key, 'a');
         assertEqual(val1, 1);
@@ -2517,7 +2517,7 @@ namespace('Object', function () {
       });
     });
 
-    it('should add objects with null prototypes', function() {
+    it('should add objects with null prototypes', () => {
       assertObjectEqual(
         add(
           Object.create(null, {
@@ -2537,7 +2537,7 @@ namespace('Object', function () {
       );
     });
 
-    it('should not add non-enumerable properties', function() {
+    it('should not add non-enumerable properties', () => {
       assertObjectEqual(
         add(
           Object.create(null, {
@@ -2557,7 +2557,7 @@ namespace('Object', function () {
       );
     });
 
-    it('should add enumerable getters by value', function() {
+    it('should add enumerable getters by value', () => {
       const result = add(
         Object.create(null, {
           a: {
@@ -2582,7 +2582,7 @@ namespace('Object', function () {
       });
     });
 
-    it('should not add inherited properties', function() {
+    it('should not add inherited properties', () => {
       const obj = Object.create({c:3}, {
         b: {
           enumerable: true,
@@ -2593,7 +2593,7 @@ namespace('Object', function () {
       assertObjectEqual(result, {a:1,b:2});
     });
 
-    it('should raise an error on arrays', function() {
+    it('should raise an error on arrays', () => {
       assertError(() => {
         add({}, []);
       }, TypeError);
@@ -2602,7 +2602,7 @@ namespace('Object', function () {
       }, TypeError);
     });
 
-    it('should raise an error for class instances', function() {
+    it('should raise an error for class instances', () => {
       function Foo() {}
       assertError(() => {
         add(new Foo, new Foo);
@@ -2615,7 +2615,7 @@ namespace('Object', function () {
       }, TypeError);
     });
 
-    it('should add enumerable symbols', function() {
+    it('should add enumerable symbols', () => {
       const sym1 = Symbol(1);
       const sym2 = Symbol(2);
       const obj = {};
@@ -2632,7 +2632,7 @@ namespace('Object', function () {
       assertFalse(sym2 in result);
     });
 
-    it('should raise an error for built-in objects', function() {
+    it('should raise an error for built-in objects', () => {
       assertError(() => {
         add(/a/, /b/);
       }, TypeError);
@@ -2647,7 +2647,7 @@ namespace('Object', function () {
       }, TypeError);
     });
 
-    it('should raise an error cyclic objects', function() {
+    it('should raise an error cyclic objects', () => {
       assertError(() => {
         const obj = {};
         obj.a = obj;
@@ -2655,7 +2655,7 @@ namespace('Object', function () {
       }, TypeError);
     });
 
-    it('should handle Issue #335', function() {
+    it('should handle Issue #335', () => {
       assertObjectEqual(add({a:{b:1}}, {a:{b:2,c:3}}, (key, tVal) => {
         if (key === 'b') {
           return tVal;
@@ -2663,12 +2663,12 @@ namespace('Object', function () {
       }), {a:{b:1,c:3}});
     });
 
-    it('should handle Issue #365', function() {
+    it('should handle Issue #365', () => {
       assertObjectEqual(add({a:''}, {a:{b:1}}), {a:{b:1}});
       assertObjectEqual(add({a:'1'}, {a:{b:1}}), {a:{b:1}});
     });
 
-    it('should handle irregular input', function() {
+    it('should handle irregular input', () => {
       assertObjectEqual(add({}), {});
       assertError(() => {
         add();
@@ -2685,32 +2685,32 @@ namespace('Object', function () {
     });
   });
 
-  describeInstance('clone', function(clone) {
+  describeInstance('clone', (clone) => {
 
-    it('should create a copy of the object', function() {
+    it('should create a copy of the object', () => {
       const obj = {};
       assertFalse(clone(obj) === obj);
     });
 
-    it('should not create a deep copy of the object', function() {
+    it('should not create a deep copy of the object', () => {
       const obj = {};
       assertTrue(clone({a:obj}).a === obj);
     });
 
-    it('should clone basic primitive properties', function() {
+    it('should clone basic primitive properties', () => {
       assertObjectEqual(clone({}), {});
       assertObjectEqual(clone({a:1,b:0}), {a:1,b:0});
       assertObjectEqual(clone({a:'a',b:''}), {a:'a',b:''});
       assertObjectEqual(clone({a:true,b:false}), {a:true,b:false});
     });
 
-    it('should clone falsy values', function() {
+    it('should clone falsy values', () => {
       assertEqual(clone(null), null);
       assertEqual(clone(undefined), undefined);
       assertEqual(clone(NaN), NaN);
     });
 
-    it('should clone nested falsy values', function() {
+    it('should clone nested falsy values', () => {
       assertObjectEqual(clone({a:null}), {a:null});
       assertObjectEqual(clone({a:undefined}), {a:undefined});
       assertObjectEqual(clone({a:0}), {a:0});
@@ -2718,7 +2718,7 @@ namespace('Object', function () {
       assertObjectEqual(clone({a:false}), {a:false});
     });
 
-    it('should clone objects with null prototypes', function() {
+    it('should clone objects with null prototypes', () => {
       assertObjectEqual(
         clone(
           Object.create(null, {
@@ -2732,7 +2732,7 @@ namespace('Object', function () {
       );
     });
 
-    it('should clone non-enumerable properties', function() {
+    it('should clone non-enumerable properties', () => {
       const result = clone(
         Object.create(null, {
           a: {
@@ -2744,7 +2744,7 @@ namespace('Object', function () {
       assertEqual(result.a, 1);
     });
 
-    it('should clone enumerable getters', function() {
+    it('should clone enumerable getters', () => {
       const result = clone(
         Object.create(null, {
           a: {
@@ -2759,7 +2759,7 @@ namespace('Object', function () {
       assertTrue('get' in Object.getOwnPropertyDescriptor(result, 'a'));
     });
 
-    it('should clone non-enumerable getters', function() {
+    it('should clone non-enumerable getters', () => {
       const result = clone(
         Object.create(null, {
           a: {
@@ -2774,7 +2774,7 @@ namespace('Object', function () {
       assertTrue('get' in Object.getOwnPropertyDescriptor(result, 'a'));
     });
 
-    it('should clone inherited properties', function() {
+    it('should clone inherited properties', () => {
       const obj = Object.create({b:2}, {
         a: {
           enumerable: true,
@@ -2786,14 +2786,14 @@ namespace('Object', function () {
       assertTrue('b' in result);
     });
 
-    it('should clone arrays', function() {
+    it('should clone arrays', () => {
       assertArrayEqual(clone([]), []);
       assertArrayEqual(clone([1,2,3]), [1,2,3]);
       assertArrayEqual(clone([null]), [null]);
       assertArrayEqual(clone([undefined]), [undefined]);
     });
 
-    it('should clone typed arrays', function() {
+    it('should clone typed arrays', () => {
       assertArrayEqual(clone(new Int8Array([1,2,3])), new Int8Array([1,2,3]));
       assertArrayEqual(clone(new Int16Array([1,2,3])), new Int16Array([1,2,3]));
       assertArrayEqual(clone(new Int32Array([1,2,3])), new Int32Array([1,2,3]));
@@ -2802,65 +2802,65 @@ namespace('Object', function () {
       assertArrayEqual(clone(new ArrayBuffer(8)), new ArrayBuffer(8));
     });
 
-    it('should clone dates', function() {
+    it('should clone dates', () => {
       assertDateEqual(clone(new Date(2020, 8, 13)), new Date(2020, 8, 13));
       assertDateEqual(clone(new Date(NaN)), new Date(NaN));
     });
 
-    it('should clone regexes', function() {
+    it('should clone regexes', () => {
       assertRegExpEqual(clone(/a/), /a/);
       assertRegExpEqual(clone(/a/gi), /a/gi);
     });
 
-    it('should clone sets', function() {
+    it('should clone sets', () => {
       assertObjectEqual(clone(new Set()), new Set());
       assertObjectEqual(clone(new Set([1,2])), new Set([1,2]));
     });
 
-    it('should clone maps', function() {
+    it('should clone maps', () => {
       assertObjectEqual(clone(new Map()), new Map());
       assertObjectEqual(clone(new Map([[1,2]])), new Map([[1,2]]));
     });
 
-    it('should clone wrapped primitives', function() {
+    it('should clone wrapped primitives', () => {
       assertObjectEqual(clone(new String('a')), new String('a'));
       assertObjectEqual(clone(new Number(5)), new Number(5));
       assertObjectEqual(clone(new Boolean(true)), new Boolean(true));
     });
 
-    it('should throw an error on functions', function() {
+    it('should throw an error on functions', () => {
       assertError(() => {
-        clone(function() {});
+        clone(() => {});
       });
     });
 
-    it('should throw an error on Arguments', function() {
+    it('should throw an error on Arguments', () => {
       assertError(() => {
-        (function() {
+        (() => {
           clone(arguments);
         })();
       });
     });
 
-    it('should throw an error on Symbol', function() {
+    it('should throw an error on Symbol', () => {
       assertError(() => {
         clone(Symbol());
       });
     });
 
-    it('should throw an error on WeakSet', function() {
+    it('should throw an error on WeakSet', () => {
       assertError(() => {
         clone(new WeakSet());
       });
     });
 
-    it('should throw an error on WeakMap', function() {
+    it('should throw an error on WeakMap', () => {
       assertError(() => {
         clone(new WeakMap());
       });
     });
 
-    it('should throw an error on errors', function() {
+    it('should throw an error on errors', () => {
       assertError(() => {
         clone(new Error);
       });
@@ -2872,7 +2872,7 @@ namespace('Object', function () {
       });
     });
 
-    it('should throw an error for class instances', function() {
+    it('should throw an error for class instances', () => {
       function Foo() {}
       assertError(() => {
         clone(new Foo);
@@ -2881,7 +2881,7 @@ namespace('Object', function () {
 
   });
 
-  describeInstance('has', function(has) {
+  describeInstance('has', (has) => {
 
     it('should find shallow properties with a string', () => {
       assertEqual(has({a:1}, 'a'), true);
@@ -3023,7 +3023,7 @@ namespace('Object', function () {
 
   });
 
-  describeInstance('get', function(get) {
+  describeInstance('get', (get) => {
 
     it('should get shallow properties with a string', () => {
       assertEqual(get({a:1}, 'a'), 1);
@@ -3214,7 +3214,7 @@ namespace('Object', function () {
 
   });
 
-  describeInstance('set', function(set) {
+  describeInstance('set', (set) => {
 
     it('should set shallow properties with a string', () => {
       assertObjectEqual(set({}, 'a', 1), {a:1});
@@ -3514,7 +3514,7 @@ namespace('Object', function () {
 
   });
 
-  describeInstance('invert', function(invert) {
+  describeInstance('invert', (invert) => {
 
     it('should invert basic objects', () => {
       assertObjectEqual(invert({}), {});
@@ -3567,7 +3567,7 @@ namespace('Object', function () {
 
   });
 
-  describeInstance('isObject', function(isObject) {
+  describeInstance('isObject', (isObject) => {
 
     it('should be true for plain objects', () => {
       assertTrue(isObject({}));
@@ -3613,7 +3613,7 @@ namespace('Object', function () {
     });
 
     it('should be true for arguments', () => {
-      assertTrue(isObject((function() { return arguments; })()));
+      assertTrue(isObject((() => { return arguments; })()));
     });
 
     it('should handle irregular input', () => {
@@ -3622,7 +3622,7 @@ namespace('Object', function () {
 
   });
 
-  describeInstance('isPlainObject', function(isPlainObject) {
+  describeInstance('isPlainObject', (isPlainObject) => {
 
     it('should be true for plain objects', () => {
       assertTrue(isPlainObject({}));
@@ -3668,7 +3668,7 @@ namespace('Object', function () {
     });
 
     it('should be false for arguments', () => {
-      assertFalse(isPlainObject((function() { return arguments; })()));
+      assertFalse(isPlainObject((() => { return arguments; })()));
     });
 
     it('should handle irregular input', () => {
@@ -3677,7 +3677,7 @@ namespace('Object', function () {
 
   });
 
-  describeInstance('isArray', function(isArray) {
+  describeInstance('isArray', (isArray) => {
 
     it('should be false for plain objects', () => {
       assertFalse(isArray({}));
@@ -3740,7 +3740,7 @@ namespace('Object', function () {
     });
 
     it('should be false for arguments', () => {
-      assertFalse(isArray((function() { return arguments; })()));
+      assertFalse(isArray((() => { return arguments; })()));
     });
 
     it('should handle irregular input', () => {
@@ -3749,7 +3749,7 @@ namespace('Object', function () {
 
   });
 
-  describeInstance('isTypedArray', function(isTypedArray) {
+  describeInstance('isTypedArray', (isTypedArray) => {
 
     it('should be false for plain objects', () => {
       assertFalse(isTypedArray({}));
@@ -3812,7 +3812,7 @@ namespace('Object', function () {
     });
 
     it('should be false for arguments', () => {
-      assertFalse(isTypedArray((function() { return arguments; })()));
+      assertFalse(isTypedArray((() => { return arguments; })()));
     });
 
     it('should handle irregular input', () => {
@@ -3821,7 +3821,7 @@ namespace('Object', function () {
 
   });
 
-  describeInstance('isString', function(isString) {
+  describeInstance('isString', (isString) => {
 
     it('should be false for plain objects', () => {
       assertFalse(isString({}));
@@ -3870,7 +3870,7 @@ namespace('Object', function () {
     });
 
     it('should be false for arguments', () => {
-      assertFalse(isString((function() { return arguments; })()));
+      assertFalse(isString((() => { return arguments; })()));
     });
 
     it('should handle irregular input', () => {
@@ -3879,7 +3879,7 @@ namespace('Object', function () {
 
   });
 
-  describeInstance('isNumber', function(isNumber) {
+  describeInstance('isNumber', (isNumber) => {
 
     it('should be false for plain objects', () => {
       assertFalse(isNumber({}));
@@ -3931,7 +3931,7 @@ namespace('Object', function () {
     });
 
     it('should be false for arguments', () => {
-      assertFalse(isNumber((function() { return arguments; })()));
+      assertFalse(isNumber((() => { return arguments; })()));
     });
 
     it('should handle irregular input', () => {
@@ -3940,7 +3940,7 @@ namespace('Object', function () {
 
   });
 
-  describeInstance('isBoolean', function(isBoolean) {
+  describeInstance('isBoolean', (isBoolean) => {
 
     it('should be false for plain objects', () => {
       assertFalse(isBoolean({}));
@@ -3989,7 +3989,7 @@ namespace('Object', function () {
     });
 
     it('should be false for arguments', () => {
-      assertFalse(isBoolean((function() { return arguments; })()));
+      assertFalse(isBoolean((() => { return arguments; })()));
     });
 
     it('should handle irregular input', () => {
@@ -3998,7 +3998,7 @@ namespace('Object', function () {
 
   });
 
-  describeInstance('isDate', function(isDate) {
+  describeInstance('isDate', (isDate) => {
 
     it('should be false for plain objects', () => {
       assertFalse(isDate({}));
@@ -4048,7 +4048,7 @@ namespace('Object', function () {
     });
 
     it('should be false for arguments', () => {
-      assertFalse(isDate((function() { return arguments; })()));
+      assertFalse(isDate((() => { return arguments; })()));
     });
 
     it('should handle irregular input', () => {
@@ -4057,7 +4057,7 @@ namespace('Object', function () {
 
   });
 
-  describeInstance('isFunction', function(isFunction) {
+  describeInstance('isFunction', (isFunction) => {
 
     it('should be false for plain objects', () => {
       assertFalse(isFunction({}));
@@ -4113,7 +4113,7 @@ namespace('Object', function () {
 
   });
 
-  describeInstance('isRegExp', function(isRegExp) {
+  describeInstance('isRegExp', (isRegExp) => {
 
     it('should be false for plain objects', () => {
       assertFalse(isRegExp({}));
@@ -4165,7 +4165,7 @@ namespace('Object', function () {
     });
 
     it('should be false for arguments', () => {
-      assertFalse(isRegExp((function() { return arguments; })()));
+      assertFalse(isRegExp((() => { return arguments; })()));
     });
 
     it('should handle irregular input', () => {
@@ -4174,7 +4174,7 @@ namespace('Object', function () {
 
   });
 
-  describeInstance('isSet', function(isSet) {
+  describeInstance('isSet', (isSet) => {
 
     it('should be false for plain objects', () => {
       assertFalse(isSet({}));
@@ -4225,7 +4225,7 @@ namespace('Object', function () {
     });
 
     it('should be false for arguments', () => {
-      assertFalse(isSet((function() { return arguments; })()));
+      assertFalse(isSet((() => { return arguments; })()));
     });
 
     it('should handle irregular input', () => {
@@ -4234,7 +4234,7 @@ namespace('Object', function () {
 
   });
 
-  describeInstance('isMap', function(isMap) {
+  describeInstance('isMap', (isMap) => {
 
     it('should be false for plain objects', () => {
       assertFalse(isMap({}));
@@ -4285,7 +4285,7 @@ namespace('Object', function () {
     });
 
     it('should be false for arguments', () => {
-      assertFalse(isMap((function() { return arguments; })()));
+      assertFalse(isMap((() => { return arguments; })()));
     });
 
     it('should handle irregular input', () => {
@@ -4294,7 +4294,7 @@ namespace('Object', function () {
 
   });
 
-  describeInstance('isPrimitive', function(isPrimitive) {
+  describeInstance('isPrimitive', (isPrimitive) => {
 
     it('should be false for plain objects', () => {
       assertFalse(isPrimitive({}));
@@ -4340,7 +4340,7 @@ namespace('Object', function () {
     });
 
     it('should be false for arguments', () => {
-      assertFalse(isPrimitive((function() { return arguments; })()));
+      assertFalse(isPrimitive((() => { return arguments; })()));
     });
 
     it('should handle irregular input', () => {

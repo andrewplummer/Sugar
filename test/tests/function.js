@@ -1,6 +1,6 @@
 'use strict';
 
-namespace('Function', function() {
+namespace('Function', () => {
 
   var args;
 
@@ -10,26 +10,26 @@ namespace('Function', function() {
     return arr;
   }
 
-  beforeEach(function() {
+  beforeEach(() => {
     args = [];
     clock.reset();
   });
 
-  afterEach(function() {
+  afterEach(() => {
     args = null;
   });
 
-  describeInstance('memoize', function(memoize) {
+  describeInstance('memoize', (memoize) => {
 
-    it('should perform basic caching', function() {
+    it('should perform basic caching', () => {
       var fn = memoize(captureArgs);
       assertArrayEqual(fn('a'), ['a']);
       assertArrayEqual(fn('a', 'b'), ['a']);
       assertArrayEqual(args, [['a']]);
     });
 
-    it('should use hash function as the cache key', function() {
-      var fn = memoize(captureArgs, function(i) {
+    it('should use hash function as the cache key', () => {
+      var fn = memoize(captureArgs, (i) => {
         return i % 2 === 0;
       });
       assertArrayEqual(fn(1), [1]);
@@ -39,14 +39,14 @@ namespace('Function', function() {
       assertArrayEqual(args, [[1],[2]]);
     });
 
-    it('should receive same args and context', function() {
+    it('should receive same args and context', () => {
       memoize(function(a, b, c) {
         assertArrayEqual([this, a, b, c], [1,2,3,4]);
       }).call(1,2,3,4);
     });
 
-    it('should be able to clear the cache', function() {
-      var fn = memoize(captureArgs, function() { return true; });
+    it('should be able to clear the cache', () => {
+      var fn = memoize(captureArgs, () => { return true; });
       assertArrayEqual(fn('a'), ['a']);
       assertArrayEqual(fn('b'), ['a']);
       fn.cache.clear();
@@ -54,7 +54,7 @@ namespace('Function', function() {
       assertArrayEqual(fn('c'), ['b']);
     });
 
-    it('should pass same args and context to the hash function', function() {
+    it('should pass same args and context to the hash function', () => {
       memoize(noop, function(a, b, c) {
         assertArrayEqual([this, a, b, c], [1,2,3,4]);
       }).call(1,2,3,4);
@@ -62,16 +62,16 @@ namespace('Function', function() {
 
   });
 
-  describeInstance('once', function(once) {
+  describeInstance('once', (once) => {
 
-    it('should only run once', function() {
+    it('should only run once', () => {
       var fn = once(captureArgs);
       assertArrayEqual(fn('a'), ['a']);
       assertArrayEqual(fn('a', 'b'), ['a']);
       assertArrayEqual(args, [['a']]);
     });
 
-    it('should receive same args and context', function() {
+    it('should receive same args and context', () => {
       once(function(a, b, c) {
         assertArrayEqual([this, a, b, c], [1,2,3,4]);
       }).call(1,2,3,4);
@@ -79,9 +79,9 @@ namespace('Function', function() {
 
   });
 
-  describeInstance('debounce', function(debounce) {
+  describeInstance('debounce', (debounce) => {
 
-    it('should perform basic debounce', function() {
+    it('should perform basic debounce', () => {
       var fn = debounce(captureArgs, 200);
       fn('a');
       fn('b');
@@ -94,7 +94,7 @@ namespace('Function', function() {
       assertArrayEqual(args, [['d']]);
     });
 
-    it('should be able to cancel', function() {
+    it('should be able to cancel', () => {
       var fn = debounce(captureArgs, 200);
       fn('a');
       fn('b');
@@ -104,7 +104,7 @@ namespace('Function', function() {
       assertArrayEqual(args, []);
     });
 
-    it('should be able to cancel after first execution', function() {
+    it('should be able to cancel after first execution', () => {
       var fn = debounce(captureArgs, 200);
       fn('a');
       clock.tick(200);
@@ -115,7 +115,7 @@ namespace('Function', function() {
       assertArrayEqual(args, [['a']]);
     });
 
-    it('should retain the last return value when not immediate', function() {
+    it('should retain the last return value when not immediate', () => {
       // Note this differs from throttle with limit 1
       var fn = debounce(captureArgs, 200);
       assertNull(fn('a'));
@@ -127,14 +127,14 @@ namespace('Function', function() {
       assertArrayEqual(args, [['c'],['d']]);
     });
 
-    it('should default to 1ms', function() {
+    it('should default to 1ms', () => {
       var fn = debounce(captureArgs);
       fn('a');
       clock.tick(1);
       assertArrayEqual(args, [['a']]);
     });
 
-    it('should allow immediate execution of the function', function() {
+    it('should allow immediate execution of the function', () => {
       var fn = debounce(captureArgs, 200, true);
       fn('a');
       fn('b');
@@ -148,7 +148,7 @@ namespace('Function', function() {
       assertArrayEqual(args, [['a'], ['c'], ['d']]);
     });
 
-    it('should retain the last return value when immediate', function() {
+    it('should retain the last return value when immediate', () => {
       var fn = debounce(captureArgs, 200, true);
       assertArrayEqual(fn('a'), ['a']);
       assertArrayEqual(fn('b'), ['a']);
@@ -158,21 +158,21 @@ namespace('Function', function() {
       assertArrayEqual(fn('e'), ['d']);
     });
 
-    it('should handle irregular input', function() {
-      assertError(function() { debounce() });
-      assertError(function() { debounce(captureArgs, 0) });
-      assertError(function() { debounce(captureArgs, 'str') });
-      assertError(function() { debounce(captureArgs, null) });
-      assertError(function() { debounce(captureArgs, NaN) });
+    it('should handle irregular input', () => {
+      assertError(() => { debounce() });
+      assertError(() => { debounce(captureArgs, 0) });
+      assertError(() => { debounce(captureArgs, 'str') });
+      assertError(() => { debounce(captureArgs, null) });
+      assertError(() => { debounce(captureArgs, NaN) });
     });
 
   });
 
-  describeInstance('throttle', function(throttle) {
+  describeInstance('throttle', (throttle) => {
 
-    describe('no args', function() {
+    describe('no args', () => {
 
-      it('should default to 1ms', function() {
+      it('should default to 1ms', () => {
         var fn = throttle(captureArgs);
         fn('a');
         fn('b');
@@ -181,7 +181,7 @@ namespace('Function', function() {
         assertArrayEqual(args, [['a'], ['b']]);
       });
 
-      it('should queue execution with default arguments', function() {
+      it('should queue execution with default arguments', () => {
         var fn = throttle(captureArgs, 200);
         fn('a');
         fn('b');
@@ -193,7 +193,7 @@ namespace('Function', function() {
         assertArrayEqual(args, [['a'], ['b'], ['c']]);
       });
 
-      it('should remain locked white executions still queued', function() {
+      it('should remain locked white executions still queued', () => {
         var fn = throttle(captureArgs, 200);
         fn('a');
         fn('b');
@@ -206,7 +206,7 @@ namespace('Function', function() {
         assertArrayEqual(args, [['a'], ['b'], ['c']]);
       });
 
-      it('should return value from last completed execution', function() {
+      it('should return value from last completed execution', () => {
         var fn = throttle(captureArgs, 200);
         assertArrayEqual(fn('a'), ['a']);
         assertArrayEqual(fn('b'), ['a']);
@@ -216,7 +216,7 @@ namespace('Function', function() {
         assertArrayEqual(fn('d'), ['c']);
       });
 
-      it('should pass all arguments to execution', function() {
+      it('should pass all arguments to execution', () => {
         var fn = throttle(captureArgs, 200);
         fn('a','b','c');
         clock.tick(200);
@@ -225,9 +225,9 @@ namespace('Function', function() {
 
     });
 
-    describe('limit', function() {
+    describe('limit', () => {
 
-      it('should not queue beyond limit', function() {
+      it('should not queue beyond limit', () => {
         var fn = throttle(captureArgs, 200, {
           limit: 2
         });
@@ -244,7 +244,7 @@ namespace('Function', function() {
         assertArrayEqual(args, [['a'],['b']]);
       });
 
-      it('should retain the first value when called repeatedly', function() {
+      it('should retain the first value when called repeatedly', () => {
         // Note this differs from debounce
         var fn = throttle(captureArgs, 200, {
           limit: 1
@@ -262,9 +262,9 @@ namespace('Function', function() {
 
     });
 
-    describe('immediate', function() {
+    describe('immediate', () => {
 
-      it('should be immediate by default', function() {
+      it('should be immediate by default', () => {
         var fn = throttle(captureArgs, 200);
         assertArrayEqual(args, []);
         fn('a');
@@ -279,7 +279,7 @@ namespace('Function', function() {
         assertArrayEqual(args, [['a'], ['b'], ['c']]);
       });
 
-      it('should continue firing immediately after timeout', function() {
+      it('should continue firing immediately after timeout', () => {
         var fn = throttle(captureArgs, 200);
         fn('a');
         assertArrayEqual(args, [['a']]);
@@ -288,7 +288,7 @@ namespace('Function', function() {
         assertArrayEqual(args, [['a'], ['b']]);
       });
 
-      it('should queue functions after first release', function() {
+      it('should queue functions after first release', () => {
         var fn = throttle(captureArgs, 200);
         fn('a');
         assertArrayEqual(args, [['a']]);
@@ -301,7 +301,7 @@ namespace('Function', function() {
         assertArrayEqual(args, [['a'], ['b'], ['c']]);
       });
 
-      it('should lock an immediate function with limit of 1', function() {
+      it('should lock an immediate function with limit of 1', () => {
         var fn = throttle(captureArgs, 200, {
           limit: 1,
         });
@@ -315,7 +315,7 @@ namespace('Function', function() {
         assertArrayEqual(args, [['a']]);
       });
 
-      it('should be able to defer execution', function() {
+      it('should be able to defer execution', () => {
         var fn = throttle(captureArgs, 200, {
           immediate: false
         });
@@ -329,7 +329,7 @@ namespace('Function', function() {
         assertArrayEqual(args, [['a'],['b']]);
       });
 
-      it('should lock a deferred function with limit of 1', function() {
+      it('should lock a deferred function with limit of 1', () => {
         var fn = throttle(captureArgs, 200, {
           limit: 1,
           immediate: false,
@@ -346,9 +346,9 @@ namespace('Function', function() {
 
     });
 
-    describe('canceling', function() {
+    describe('canceling', () => {
 
-      it('should cancel second execution of an immediate function', function() {
+      it('should cancel second execution of an immediate function', () => {
         var fn = throttle(captureArgs, 200);
         fn('a');
         fn.cancel();
@@ -357,7 +357,7 @@ namespace('Function', function() {
         assertArrayEqual(args, [['a']]);
       });
 
-      it('should cancel first execution of deferred function', function() {
+      it('should cancel first execution of deferred function', () => {
         var fn = throttle(captureArgs, 200, {
           immediate: false,
         });
@@ -367,7 +367,7 @@ namespace('Function', function() {
         assertArrayEqual(args, []);
       });
 
-      it('should cancel immediate function after being queued', function() {
+      it('should cancel immediate function after being queued', () => {
         var fn = throttle(captureArgs, 200);
         fn('a');
         fn('b');
@@ -376,7 +376,7 @@ namespace('Function', function() {
         assertArrayEqual(args, [['a']]);
       });
 
-      it('should cancel deferred function after being queued', function() {
+      it('should cancel deferred function after being queued', () => {
         var fn = throttle(captureArgs, 200, {
           immediate: false,
         });
@@ -390,38 +390,38 @@ namespace('Function', function() {
 
     });
 
-    describe('Invalid input', function() {
+    describe('Invalid input', () => {
 
-      it('should error on invalid duration', function() {
-        assertError(function() { throttle(captureArgs, 0); });
-        assertError(function() { throttle(captureArgs, -1); });
-        assertError(function() { throttle(captureArgs, '5'); });
-        assertError(function() { throttle(captureArgs, 1.5); });
-        assertError(function() { throttle(captureArgs, NaN); });
+      it('should error on invalid duration', () => {
+        assertError(() => { throttle(captureArgs, 0); });
+        assertError(() => { throttle(captureArgs, -1); });
+        assertError(() => { throttle(captureArgs, '5'); });
+        assertError(() => { throttle(captureArgs, 1.5); });
+        assertError(() => { throttle(captureArgs, NaN); });
       });
 
-      it('should error on invalid limit', function() {
-        assertError(function() { throttle(captureArgs, 200, { limit: 0 } ); });
-        assertError(function() { throttle(captureArgs, 200, { limit: -1 } ); });
-        assertError(function() { throttle(captureArgs, 200, { limit: '5' } ); });
-        assertError(function() { throttle(captureArgs, 200, { limit: 1.5 } ); });
-        assertError(function() { throttle(captureArgs, 200, { limit: NaN } ); });
+      it('should error on invalid limit', () => {
+        assertError(() => { throttle(captureArgs, 200, { limit: 0 } ); });
+        assertError(() => { throttle(captureArgs, 200, { limit: -1 } ); });
+        assertError(() => { throttle(captureArgs, 200, { limit: '5' } ); });
+        assertError(() => { throttle(captureArgs, 200, { limit: 1.5 } ); });
+        assertError(() => { throttle(captureArgs, 200, { limit: NaN } ); });
       });
 
     });
 
-    it('should handle irregular input', function() {
-      assertError(function() { throttle() });
-      assertError(function() { throttle(captureArgs, 'str') });
-      assertError(function() { throttle(captureArgs, null) });
-      assertError(function() { throttle(captureArgs, NaN) });
+    it('should handle irregular input', () => {
+      assertError(() => { throttle() });
+      assertError(() => { throttle(captureArgs, 'str') });
+      assertError(() => { throttle(captureArgs, null) });
+      assertError(() => { throttle(captureArgs, NaN) });
     });
 
   });
 
-  describeInstance('setTimeout', function(setTimeout) {
+  describeInstance('setTimeout', (setTimeout) => {
 
-    it('should set a timeout of 1 second', function() {
+    it('should set a timeout of 1 second', () => {
       setTimeout(captureArgs, 1000, 'a');
       assertArrayEqual(args, []);
       clock.tick(1000);
@@ -430,14 +430,14 @@ namespace('Function', function() {
       assertArrayEqual(args, [['a']]);
     });
 
-    it('should default to 0ms with no args', function() {
+    it('should default to 0ms with no args', () => {
       setTimeout(captureArgs);
       assertArrayEqual(args, []);
       clock.tick(0);
       assertArrayEqual(args, [[]]);
     });
 
-    it('should be cancelable', function() {
+    it('should be cancelable', () => {
       var promise = setTimeout(captureArgs, 1000, 'a');
       assertArrayEqual(args, []);
       promise.cancel();
@@ -445,15 +445,15 @@ namespace('Function', function() {
       assertArrayEqual(args, []);
     });
 
-    describe('promise behavior', function() {
+    describe('promise behavior', () => {
 
-      it('should return a promise', function() {
+      it('should return a promise', () => {
         assertInstanceOf(setTimeout(captureArgs, 1000), Promise);
       });
 
-      it('should resolve the promise after execution', function() {
-        return new Promise(function(resolve) {
-          setTimeout(function() {}, 1000).then(function() {
+      it('should resolve the promise after execution', () => {
+        return new Promise((resolve) => {
+          setTimeout(() => {}, 1000).then(() => {
             assertTrue(true);
             resolve();
           });
@@ -461,11 +461,11 @@ namespace('Function', function() {
         });
       });
 
-      it('should reject the promise on error', function() {
-        return new Promise(function(resolve) {
-          setTimeout(function() {
+      it('should reject the promise on error', () => {
+        return new Promise((resolve) => {
+          setTimeout(() => {
             throw Error();
-          }, 1000).catch(function() {
+          }, 1000).catch(() => {
             assertTrue(true);
             resolve();
           });
@@ -473,10 +473,10 @@ namespace('Function', function() {
         });
       });
 
-      it('should resolve the promise when canceled', function() {
-        return new Promise(function(resolve) {
-          var promise = setTimeout(function() {}, 1000);
-          promise.then(function() {
+      it('should resolve the promise when canceled', () => {
+        return new Promise((resolve) => {
+          var promise = setTimeout(() => {}, 1000);
+          promise.then(() => {
             assertTrue(true);
             resolve();
           });
@@ -484,15 +484,15 @@ namespace('Function', function() {
         });
       });
 
-      it('should set canceled property of false by default', function() {
-        var promise = setTimeout(function() {}, 1000);
+      it('should set canceled property of false by default', () => {
+        var promise = setTimeout(() => {}, 1000);
         assertFalse(promise.canceled);
       });
 
-      it('should set canceled property to true when canceled', function() {
-        return new Promise(function(resolve) {
-          var promise = setTimeout(function() {}, 1000);
-          promise.then(function() {
+      it('should set canceled property to true when canceled', () => {
+        return new Promise((resolve) => {
+          var promise = setTimeout(() => {}, 1000);
+          promise.then(() => {
             assertTrue(promise.canceled);
             resolve();
           });
@@ -500,10 +500,10 @@ namespace('Function', function() {
         });
       });
 
-      it('should not set canceled property to true when resolved', function() {
-        return new Promise(function(resolve) {
-          var promise = setTimeout(function() {}, 1000);
-          promise.then(function() {
+      it('should not set canceled property to true when resolved', () => {
+        return new Promise((resolve) => {
+          var promise = setTimeout(() => {}, 1000);
+          promise.then(() => {
             assertFalse(promise.canceled);
             resolve();
           });
@@ -511,12 +511,12 @@ namespace('Function', function() {
         });
       });
 
-      it('should not set canceled property to true when rejected', function() {
-        return new Promise(function(resolve) {
-          var promise = setTimeout(function() {
+      it('should not set canceled property to true when rejected', () => {
+        return new Promise((resolve) => {
+          var promise = setTimeout(() => {
             throw new Error();
           }, 1000);
-          promise.catch(function() {
+          promise.catch(() => {
             assertFalse(promise.canceled);
             resolve();
           });
@@ -526,18 +526,18 @@ namespace('Function', function() {
 
     });
 
-    it('should handle irregular input', function() {
-      assertError(function() { setTimeout() });
-      assertError(function() { setTimeout(captureArgs, 'str') });
-      assertError(function() { setTimeout(captureArgs, null) });
-      assertError(function() { setTimeout(captureArgs, NaN) });
+    it('should handle irregular input', () => {
+      assertError(() => { setTimeout() });
+      assertError(() => { setTimeout(captureArgs, 'str') });
+      assertError(() => { setTimeout(captureArgs, null) });
+      assertError(() => { setTimeout(captureArgs, NaN) });
     });
 
   });
 
-  describeInstance('setInterval', function(setInterval) {
+  describeInstance('setInterval', (setInterval) => {
 
-    it('should set an interval of 1 second', function() {
+    it('should set an interval of 1 second', () => {
       setInterval(captureArgs, 1000, 'a');
       assertArrayEqual(args, []);
       clock.tick(1000);
@@ -548,14 +548,14 @@ namespace('Function', function() {
       assertArrayEqual(args, [['a'], ['a'], ['a']]);
     });
 
-    it('should default to 0ms with no args', function() {
+    it('should default to 0ms with no args', () => {
       setInterval(captureArgs);
       assertArrayEqual(args, []);
       clock.tick(0);
       assertArrayEqual(args, [[]]);
     });
 
-    it('should be cancelable', function() {
+    it('should be cancelable', () => {
       var promise = setInterval(captureArgs, 1000, 'a');
       assertArrayEqual(args, []);
       clock.tick(1000);
@@ -567,32 +567,32 @@ namespace('Function', function() {
       assertArrayEqual(args, [['a']]);
     });
 
-    describe('promise behavior', function() {
+    describe('promise behavior', () => {
 
-      it('should return a promise', function() {
+      it('should return a promise', () => {
         assertInstanceOf(setInterval(captureArgs, 1000), Promise);
       });
 
-      it('should resolve the promise after execution', function() {
-        return new Promise(function(resolve) {
+      it('should resolve the promise after execution', () => {
+        return new Promise((resolve) => {
           var resolved = false;
-          setInterval(function() {}, 1000).then(function() {
+          setInterval(() => {}, 1000).then(() => {
             resolved = true;
           });
           // Need to use tickAsync here as .then is always
           // async and we're not expecting it to be called;
-          clock.tickAsync(1000).then(function() {
+          clock.tickAsync(1000).then(() => {
             assertFalse(resolved);
             resolve();
           });
         });
       });
 
-      it('should reject the promise on error', function() {
-        return new Promise(function(resolve) {
-          setInterval(function() {
+      it('should reject the promise on error', () => {
+        return new Promise((resolve) => {
+          setInterval(() => {
             throw Error();
-          }, 1000).catch(function() {
+          }, 1000).catch(() => {
             assertTrue(true);
             resolve();
           });
@@ -600,10 +600,10 @@ namespace('Function', function() {
         });
       });
 
-      it('should resolve the promise when canceled', function() {
-        return new Promise(function(resolve) {
-          var promise = setInterval(function() {}, 1000);
-          promise.then(function() {
+      it('should resolve the promise when canceled', () => {
+        return new Promise((resolve) => {
+          var promise = setInterval(() => {}, 1000);
+          promise.then(() => {
             assertTrue(true);
             resolve();
           });
@@ -611,15 +611,15 @@ namespace('Function', function() {
         });
       });
 
-      it('should set canceled property of false by default', function() {
-        var promise = setInterval(function() {}, 1000);
+      it('should set canceled property of false by default', () => {
+        var promise = setInterval(() => {}, 1000);
         assertFalse(promise.canceled);
       });
 
-      it('should set canceled property to true when canceled', function() {
-        return new Promise(function(resolve) {
-          var promise = setInterval(function() {}, 1000);
-          promise.then(function() {
+      it('should set canceled property to true when canceled', () => {
+        return new Promise((resolve) => {
+          var promise = setInterval(() => {}, 1000);
+          promise.then(() => {
             assertTrue(promise.canceled);
             resolve();
           });
@@ -627,12 +627,12 @@ namespace('Function', function() {
         });
       });
 
-      it('should not set canceled property to true when rejected', function() {
-        return new Promise(function(resolve) {
-          var promise = setInterval(function() {
+      it('should not set canceled property to true when rejected', () => {
+        return new Promise((resolve) => {
+          var promise = setInterval(() => {
             throw new Error();
           }, 1000);
-          promise.catch(function() {
+          promise.catch(() => {
             assertFalse(promise.canceled);
             resolve();
           });
@@ -642,16 +642,16 @@ namespace('Function', function() {
 
     });
 
-    it('should handle irregular input', function() {
-      assertError(function() { setInterval() });
-      assertError(function() { setInterval(captureArgs, 'str') });
-      assertError(function() { setInterval(captureArgs, null) });
-      assertError(function() { setInterval(captureArgs, NaN) });
+    it('should handle irregular input', () => {
+      assertError(() => { setInterval() });
+      assertError(() => { setInterval(captureArgs, 'str') });
+      assertError(() => { setInterval(captureArgs, null) });
+      assertError(() => { setInterval(captureArgs, NaN) });
     });
 
-    it('should handle issue #488', function() {
+    it('should handle issue #488', () => {
       var i = 0;
-      var promise = setInterval(function() {
+      var promise = setInterval(() => {
         if(++i >= 3) {
           promise.cancel();
         }
@@ -662,7 +662,7 @@ namespace('Function', function() {
 
   });
 
-  describeInstance('partial', function(partial) {
+  describeInstance('partial', (partial) => {
 
     var _ = partial.replace;
 
@@ -708,9 +708,9 @@ namespace('Function', function() {
     });
 
     it('should error on invalid input', () => {
-      assertError(function() { partial(); });
-      assertError(function() { partial(null); });
-      assertError(function() { partial(undefined); });
+      assertError(() => { partial(); });
+      assertError(() => { partial(null); });
+      assertError(() => { partial(undefined); });
     });
 
     describe('ported tests', () => {
@@ -845,16 +845,14 @@ namespace('Function', function() {
 
         assertEqual(partial(identity, 'a')(), 'a');
 
-        fn = function(a, b) {
+        fn = (a, b) => {
           return [a, b];
         };
 
         // creates a function that can be invoked with additional arguments
         assertArrayEqual(partial(fn, 'a')('b'), ['a', 'b']);
 
-        fn = function() {
-          return arguments.length;
-        };
+        fn = function() { return arguments.length; };
         // works when there are no partially applied arguments and the created function is invoked without additional arguments
         assertEqual(partial(fn)(), 0);
 
@@ -872,7 +870,7 @@ namespace('Function', function() {
 
 
         /* eslint no-unused-vars: "off" */
-        fn = function(a, b, c) {};
+        fn = (a, b, c) => {};
 
         // creates a function with a length of 0
         assertEqual(partial(fn, 'a').length, 0);
@@ -943,7 +941,7 @@ namespace('Function', function() {
 
   });
 
-  describeInstance('lock', function(lock) {
+  describeInstance('lock', (lock) => {
 
     describe('returns undefined', () => {
 
@@ -1079,9 +1077,9 @@ namespace('Function', function() {
 
   });
 
-  describeInstance('filter', function(filter) {
+  describeInstance('filter', (filter) => {
 
-    var captureFiltered = filter(captureArgs, function(n) {
+    var captureFiltered = filter(captureArgs, (n) => {
       return n > 3;
     });
 
@@ -1103,25 +1101,25 @@ namespace('Function', function() {
     });
 
     it('should filter when falsy', () => {
-      filter(captureArgs, function() {
+      filter(captureArgs, () => {
         return null;
       })(1);
-      filter(captureArgs, function() {
+      filter(captureArgs, () => {
         return undefined;
       })(2);
-      filter(captureArgs, function() {
+      filter(captureArgs, () => {
         return '';
       })(3);
-      filter(captureArgs, function() {
+      filter(captureArgs, () => {
         return NaN;
       })(4);
-      filter(captureArgs, function() {
+      filter(captureArgs, () => {
         return 'a';
       })(5);
-      filter(captureArgs, function() {
+      filter(captureArgs, () => {
         return 8;
       })(6);
-      filter(captureArgs, function() {
+      filter(captureArgs, () => {
         return [];
       })(7);
       assertArrayEqual(args, [[5], [6], [7]]);
@@ -1133,7 +1131,7 @@ namespace('Function', function() {
     });
 
     it('should pass all args to filter function', () => {
-      (filter(captureArgs, function(a, b, c, d) {
+      (filter(captureArgs, (a, b, c, d) => {
         assertArrayEqual([a,b,c,d], ['a','b','c','d']);
       }))('a','b','c','d');
     });
@@ -1141,7 +1139,7 @@ namespace('Function', function() {
     it('should pass context to the function', () => {
       filter(function() {
         assertEqual(this, 'a');
-      }, function() {
+      }, () => {
         return true;
       }).call('a');
     });
@@ -1153,7 +1151,7 @@ namespace('Function', function() {
     });
 
     it('should work when typeof number', () => {
-      var fn = filter(captureArgs, function(n) {
+      var fn = filter(captureArgs, (n) => {
         return typeof n === 'number';
       });
       fn(0)
@@ -1179,18 +1177,18 @@ namespace('Function', function() {
     });
 
     it('should error on invalid input', () => {
-      assertError(function() { filter() });
-      assertError(function() { filter(null) });
-      assertError(function() { filter(captureArgs) });
-      assertError(function() { filter(captureArgs, null) });
+      assertError(() => { filter() });
+      assertError(() => { filter(null) });
+      assertError(() => { filter(captureArgs) });
+      assertError(() => { filter(captureArgs, null) });
     });
 
   });
 
-  describeInstance('callAfter', function(callAfter) {
+  describeInstance('callAfter', (callAfter) => {
 
     it('should capture after returning true', () => {
-      var fn = callAfter(captureArgs, function(arg) {
+      var fn = callAfter(captureArgs, (arg) => {
         return arg === true;
       });
       fn(false, 1);
@@ -1202,7 +1200,7 @@ namespace('Function', function() {
     });
 
     it('should return values only after locked', () => {
-      var fn = callAfter(captureArgs, function(arg) {
+      var fn = callAfter(captureArgs, (arg) => {
         return arg === true;
       });
       assertUndefined(fn(false, 1));
@@ -1222,7 +1220,7 @@ namespace('Function', function() {
     });
 
     it('should pass all args to the function', () => {
-      var fn = callAfter(captureArgs, function(arg) {
+      var fn = callAfter(captureArgs, (arg) => {
         return arg === true;
       });
       assertArrayEqual(fn(true, 1, 2, 3, 4, 5), [true, 1, 2, 3, 4, 5]);
@@ -1231,13 +1229,13 @@ namespace('Function', function() {
     it('should pass context to the function', () => {
       var fn = callAfter(function() {
         assertEqual(this, 'a');
-      }, function(arg) {
+      }, (arg) => {
         return true;
       }).call('a');
     });
 
     it('should pass all args to the filter function', () => {
-      (callAfter(captureArgs, function(a, b, c, d) {
+      (callAfter(captureArgs, (a, b, c, d) => {
         assertArrayEqual([a,b,c,d], ['a','b','c','d']);
       }))('a','b','c','d');
     });
@@ -1249,22 +1247,22 @@ namespace('Function', function() {
     });
 
     it('should error on invalid input', () => {
-      assertError(function() { callAfter() });
-      assertError(function() { callAfter(null) });
-      assertError(function() { callAfter(captureArgs) });
-      assertError(function() { callAfter(captureArgs, null) });
-      assertError(function() { callAfter(captureArgs, '1') });
-      assertError(function() { callAfter(captureArgs, -1) });
-      assertError(function() { callAfter(captureArgs, Infinity) });
-      assertError(function() { callAfter(captureArgs, -Infinity) });
+      assertError(() => { callAfter() });
+      assertError(() => { callAfter(null) });
+      assertError(() => { callAfter(captureArgs) });
+      assertError(() => { callAfter(captureArgs, null) });
+      assertError(() => { callAfter(captureArgs, '1') });
+      assertError(() => { callAfter(captureArgs, -1) });
+      assertError(() => { callAfter(captureArgs, Infinity) });
+      assertError(() => { callAfter(captureArgs, -Infinity) });
     });
 
   });
 
-  describeInstance('callUntil', function(callUntil) {
+  describeInstance('callUntil', (callUntil) => {
 
     it('should capture until returning true', () => {
-      var fn = callUntil(captureArgs, function(arg) {
+      var fn = callUntil(captureArgs, (arg) => {
         return arg === true;
       });
       fn(false, 1);
@@ -1276,7 +1274,7 @@ namespace('Function', function() {
     });
 
     it('should return values only until locked', () => {
-      var fn = callUntil(captureArgs, function(arg) {
+      var fn = callUntil(captureArgs, (arg) => {
         return arg === true;
       });
       assertArrayEqual(fn(false, 1), [false, 1]);
@@ -1296,7 +1294,7 @@ namespace('Function', function() {
     });
 
     it('should pass all args to the function', () => {
-      var fn = callUntil(captureArgs, function(arg) {
+      var fn = callUntil(captureArgs, (arg) => {
         return arg === false;
       });
       assertArrayEqual(fn(true, 1, 2, 3, 4, 5), [true, 1, 2, 3, 4, 5]);
@@ -1305,13 +1303,13 @@ namespace('Function', function() {
     it('should pass context to the function', () => {
       var fn = callUntil(function() {
         assertEqual(this, 'a');
-      }, function(arg) {
+      }, (arg) => {
         return false;
       }).call('a');
     });
 
     it('should pass all args to the filter function', () => {
-      (callUntil(captureArgs, function(a, b, c, d) {
+      (callUntil(captureArgs, (a, b, c, d) => {
         assertArrayEqual([a,b,c,d], ['a','b','c','d']);
       }))('a','b','c','d');
     });
@@ -1323,14 +1321,14 @@ namespace('Function', function() {
     });
 
     it('should error on invalid input', () => {
-      assertError(function() { callUntil() });
-      assertError(function() { callUntil(null) });
-      assertError(function() { callUntil(captureArgs) });
-      assertError(function() { callUntil(captureArgs, null) });
-      assertError(function() { callUntil(captureArgs, '1') });
-      assertError(function() { callUntil(captureArgs, -1) });
-      assertError(function() { callUntil(captureArgs, Infinity) });
-      assertError(function() { callUntil(captureArgs, -Infinity) });
+      assertError(() => { callUntil() });
+      assertError(() => { callUntil(null) });
+      assertError(() => { callUntil(captureArgs) });
+      assertError(() => { callUntil(captureArgs, null) });
+      assertError(() => { callUntil(captureArgs, '1') });
+      assertError(() => { callUntil(captureArgs, -1) });
+      assertError(() => { callUntil(captureArgs, Infinity) });
+      assertError(() => { callUntil(captureArgs, -Infinity) });
     });
 
   });

@@ -1,27 +1,27 @@
 'use strict';
 
-describe('Core', function() {
+describe('Core', () => {
 
-  describe('Global', function() {
+  describe('Global', () => {
 
-    it('should have a version', function() {
+    it('should have a version', () => {
       assertMatch(Sugar.VERSION, /^(\d+\.\d+\.\d+|edge)$/);
     });
 
   });
 
-  describe('Namespace', function() {
+  describe('Namespace', () => {
 
-    it('should be able to create a new namespace', function() {
-      ensureNamespaceNotInitialized('Array', function() {
+    it('should be able to create a new namespace', () => {
+      ensureNamespaceNotInitialized('Array', () => {
         Sugar.createNamespace('Array');
         assertInstanceOf(Sugar.Array, Function);
         assertInstanceOf(Sugar.Array.defineInstance, Function);
       });
     });
 
-    it('should not overwrite a created namespace', function() {
-      ensureNamespaceNotInitialized('Array', function() {
+    it('should not overwrite a created namespace', () => {
+      ensureNamespaceNotInitialized('Array', () => {
         Sugar.createNamespace('Array');
         var oldNamespace = Sugar.Array;
         Sugar.createNamespace('Array');
@@ -29,7 +29,7 @@ describe('Core', function() {
       });
     });
 
-    it('should error when namespace is not a built-in', function() {
+    it('should error when namespace is not a built-in', () => {
       assertError(function createUnknownNamespace() {
         Sugar.createNamespace('Foo');
       });
@@ -37,63 +37,63 @@ describe('Core', function() {
 
   });
 
-  describe('Defining', function() {
+  describe('Defining', () => {
 
-    describe('Basic', function() {
+    describe('Basic', () => {
 
-      afterEach(function() {
+      afterEach(() => {
         delete Sugar.Number.add;
       });
 
-      it('should be able to define static methods', function() {
+      it('should be able to define static methods', () => {
         Sugar.Number.defineStatic('add', add);
         assertEqual(Sugar.Number.add(1, 2), 3);
       });
 
-      it('should be able to define instance methods as static', function() {
+      it('should be able to define instance methods as static', () => {
         Sugar.Number.defineInstance('add', add);
         assertEqual(Sugar.Number.add(1, 2), 3);
       });
 
-      it('should be able to define static with object', function() {
+      it('should be able to define static with object', () => {
         Sugar.Number.defineStatic({ add: add });
         assertEqual(Sugar.Number.add(1, 2), 3);
       });
 
-      it('should be able to define instance with object', function() {
+      it('should be able to define instance with object', () => {
         Sugar.Number.defineInstance({ add: add });
         assertEqual(Sugar.Number.add(1, 2), 3);
       });
 
     });
 
-    describe('Aliases', function() {
+    describe('Aliases', () => {
 
       function alias(name) {
         var add = Number(name.charAt(3));
-        return function(n) {
+        return (n) => {
           return n + add;
         };
       }
 
-      afterEach(function() {
+      afterEach(() => {
         delete Sugar.Number.add1;
         delete Sugar.Number.add2;
       });
 
-      it('should be able to define static aliases', function() {
+      it('should be able to define static aliases', () => {
         Sugar.Number.defineStaticAlias('add1 add2', alias);
         assertEqual(Sugar.Number.add1(1), 2);
         assertEqual(Sugar.Number.add2(1), 3);
       });
 
-      it('should be able to define instance aliases', function() {
+      it('should be able to define instance aliases', () => {
         Sugar.Number.defineInstanceAlias('add1 add2', alias);
         assertEqual(Sugar.Number.add1(1), 2);
         assertEqual(Sugar.Number.add2(1), 3);
       });
 
-      it('should be able to define aliases with a comma as well', function() {
+      it('should be able to define aliases with a comma as well', () => {
         Sugar.Number.defineInstanceAlias('add1,add2', alias);
         assertEqual(Sugar.Number.add1(1), 2);
         assertEqual(Sugar.Number.add2(1), 3);

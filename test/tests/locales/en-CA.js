@@ -2,9 +2,9 @@
 
 describe('en-CA', () => {
 
-  namespace('Date', function () {
+  namespace('Date', () => {
 
-    describeStatic('create', function (create) {
+    describeStatic('create', (create) => {
 
       it('should not parse ambiguous year last format', () => {
         // Format is ambiguous in Canada where UK style and

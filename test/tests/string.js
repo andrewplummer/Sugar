@@ -1,15 +1,15 @@
 'use strict';
 
-namespace('String', function() {
+namespace('String', () => {
 
-  describeStatic('range', function(range) {
+  describeStatic('range', (range) => {
 
-    it('#toString', function() {
+    it('#toString', () => {
       assertEqual(range('a', 'z').toString(), 'a..z');
       assertEqual(range('a', null).toString(), 'Invalid Range');
     });
 
-    it('#isValid', function() {
+    it('#isValid', () => {
       assertTrue(range('a', 'z').isValid());
       assertTrue(range('z', 'a').isValid());
       assertTrue(range('a', 'a').isValid());
@@ -24,32 +24,32 @@ namespace('String', function() {
       assertFalse(range('a', 'yz').isValid());
     });
 
-    it('#span', function() {
+    it('#span', () => {
       assertEqual(range('a', 'z').span(), 26);
       assertEqual(range('z', 'a').span(), 26);
       assertEqual(range('a', 'a').span(), 1);
       assertNaN(range('', '').span());
     });
 
-    it('#toArray', function() {
+    it('#toArray', () => {
       assertArrayEqual(range('a', 'd').toArray(), ['a','b','c','d']);
       assertArrayEqual(range('d', 'a').toArray(), ['d','c','b','a']);
       assertArrayEqual(range('', 'd').toArray(), []);
       assertArrayEqual(range('d', '').toArray(), []);
     });
 
-    it('#clone', function() {
+    it('#clone', () => {
       assertEqual(range('a','z').clone().toString(), 'a..z');
     });
 
-    it('#clamp', function() {
+    it('#clamp', () => {
       assertEqual(range('c','d').clamp('z'), 'd');
       assertEqual(range('c','d').clamp('a'), 'c');
       assertEqual(range('d','c').clamp('z'), 'd');
       assertEqual(range('d','c').clamp('a'), 'c');
     });
 
-    it('#contains', function() {
+    it('#contains', () => {
       assertTrue(range('b', 'f').contains(range('b', 'd')));
       assertTrue(range('b', 'f').contains(range('b', 'b')));
       assertTrue(range('b', 'f').contains(range('f', 'f')));
@@ -63,14 +63,14 @@ namespace('String', function() {
       assertFalse(range('b', 'f').contains(range('a', 'g')));
     });
 
-    it('#every', function() {
+    it('#every', () => {
       assertArrayEqual(range('a', 'd').every(1), ['a','b','c','d']);
       assertArrayEqual(range('a', 'd').every(2), ['a','c']);
       assertArrayEqual(range('a', 'd').every(2, concatA), ['aA','cA']);
       assertArrayEqual(range('a', 'b').every(1, args), [['a',0], ['b',1]]);
     });
 
-    it('#intersect', function() {
+    it('#intersect', () => {
       assertEqual(range('b','d').intersect(range('c','g')).toString(), 'c..d');
       assertEqual(range('b','d').intersect(range('g','c')).toString(), 'c..d');
       assertEqual(range('b','d').intersect(range('a','c')).toString(), 'b..c');
@@ -85,7 +85,7 @@ namespace('String', function() {
       assertEqual(range('','').intersect(range('d','f')).toString(), 'Invalid Range');
     });
 
-    it('#union', function() {
+    it('#union', () => {
       assertEqual(range('b','d').union(range('c','f')).toString(), 'b..f');
       assertEqual(range('b','d').union(range('f','c')).toString(), 'b..f');
       assertEqual(range('b','d').union(range('a','c')).toString(), 'a..d');
@@ -101,9 +101,9 @@ namespace('String', function() {
 
   });
 
-  describeInstance('capitalize', function(capitalize) {
+  describeInstance('capitalize', (capitalize) => {
 
-    it('should capitalize basic latin characters', function() {
+    it('should capitalize basic latin characters', () => {
       assertEqual(capitalize('wasabi'), 'Wasabi');
       assertEqual(capitalize('Wasabi'), 'Wasabi');
       assertEqual(capitalize('WASABI'), 'WASABI');
@@ -114,7 +114,7 @@ namespace('String', function() {
       assertEqual(capitalize(''), '');
     });
 
-    it('should force lower case', function() {
+    it('should force lower case', () => {
       assertEqual(capitalize('wasabi', true), 'Wasabi');
       assertEqual(capitalize('Wasabi', true), 'Wasabi');
       assertEqual(capitalize('WASABI', true), 'Wasabi');
@@ -127,7 +127,7 @@ namespace('String', function() {
       assertEqual(capitalize('фыва йцук', true), 'Фыва йцук');
     });
 
-    it('should work on all words', function() {
+    it('should work on all words', () => {
       assertEqual(capitalize('wasabi', false, true), 'Wasabi');
       assertEqual(capitalize('Wasabi', false, true), 'Wasabi');
       assertEqual(capitalize('WASABI', false, true), 'WASABI');
@@ -138,7 +138,7 @@ namespace('String', function() {
       assertEqual(capitalize("'you' and 'me'", false, true), "'You' And 'Me'");
     });
 
-    it('should downcase with all words', function() {
+    it('should downcase with all words', () => {
       assertEqual(capitalize('wasabi', true, true), 'Wasabi');
       assertEqual(capitalize('Wasabi', true, true), 'Wasabi');
       assertEqual(capitalize('WASABI', true, true), 'Wasabi');
@@ -169,9 +169,9 @@ namespace('String', function() {
 
   });
 
-  describeInstance('pad', function(pad) {
+  describeInstance('pad', (pad) => {
 
-    it('should pad even length string to exact length', function() {
+    it('should pad even length string to exact length', () => {
       assertEqual(pad('wasabi', 0), 'wasabi');
       assertEqual(pad('wasabi', 1), 'wasabi');
       assertEqual(pad('wasabi', 2), 'wasabi');
@@ -187,7 +187,7 @@ namespace('String', function() {
       assertEqual(pad('wasabi', 20), '       wasabi       ');
     });
 
-    it('should pad odd length string to target length + 1', function() {
+    it('should pad odd length string to target length + 1', () => {
       assertEqual(pad('hello', 0), 'hello');
       assertEqual(pad('hello', 1), 'hello');
       assertEqual(pad('hello', 2), 'hello');
@@ -203,7 +203,7 @@ namespace('String', function() {
       assertEqual(pad('hello', 20), '       hello       ');
     });
 
-    it('should pad with custom string', function() {
+    it('should pad with custom string', () => {
       assertEqual(pad('wasabi', 8, '"'), '"wasabi"');
       assertEqual(pad('wasabi', 8, ''), 'wasabi');
       assertEqual(pad('wasabi', 8, 's'), 'swasabis');
@@ -212,7 +212,7 @@ namespace('String', function() {
       assertEqual(pad('hello', 12, '-'), '---hello---');
     });
 
-    it('should pad with non-standard arguments', function() {
+    it('should pad with non-standard arguments', () => {
       assertEqual(pad('wasabi'), 'wasabi');
       assertEqual(pad('wasabi', undefined), 'wasabi');
       assertEqual(pad('wasabi', null), 'wasabi');
@@ -222,7 +222,7 @@ namespace('String', function() {
       assertEqual(pad('', true), '');
     });
 
-    it('should not throw equivalent errors to padStart/padEnd', function() {
+    it('should not throw equivalent errors to padStart/padEnd', () => {
       assertNoError(function(){ pad('wasabi', -1); });
       assertNoError(function(){ pad('wasabi', -Infinity); });
       assertError(function(){ pad('wasabi',  Infinity); });
@@ -230,10 +230,10 @@ namespace('String', function() {
 
   });
 
-  describeInstance('truncate', function(truncate) {
+  describeInstance('truncate', (truncate) => {
     var str = 'Gotta be an entire sentence.';
 
-    it('should truncate to a specific length', function() {
+    it('should truncate to a specific length', () => {
       assertEqual(truncate(str, 29), 'Gotta be an entire sentence.');
       assertEqual(truncate(str, 28), 'Gotta be an entire sentence.');
       assertEqual(truncate(str, 21), 'Gotta be an entire se...');
@@ -249,7 +249,7 @@ namespace('String', function() {
       assertEqual(truncate(str, 0), '...');
     });
 
-    it('should truncate from the left', function() {
+    it('should truncate from the left', () => {
       assertEqual(truncate(str, 21, 'left'), '...e an entire sentence.');
       assertEqual(truncate(str, 11, 'left'), '...e sentence.');
       assertEqual(truncate(str, 9, 'left'), '...sentence.');
@@ -260,7 +260,7 @@ namespace('String', function() {
       assertEqual(truncate(str, -100, 'left'), '...');
     });
 
-    it('should truncate from the middle', function() {
+    it('should truncate from the middle', () => {
       assertEqual(truncate(str, 21, 'middle'), 'Gotta be an... sentence.');
       assertEqual(truncate(str, 11, 'middle'), 'Gotta ...ence.');
       assertEqual(truncate(str, 4, 'middle'), 'Go...e.');
@@ -270,7 +270,7 @@ namespace('String', function() {
       assertEqual(truncate(str, -100, 'middle'), '...');
     });
 
-    it('should allow a custom ellipsis', function() {
+    it('should allow a custom ellipsis', () => {
       assertEqual(truncate('string to truncate', 10, 'right', '|'), 'string to |');
       assertEqual(truncate('string to truncate', 10, 'right', 0), 'string to 0');
       assertEqual(truncate(str, 28, 'left', '>>> '), 'Gotta be an entire sentence.');
@@ -283,7 +283,7 @@ namespace('String', function() {
       assertEqual(truncate('123456', 2), '12...');
     });
 
-    it('should handle irregular input', function() {
+    it('should handle irregular input', () => {
       assertEqual(truncate(500, 2), '50...');
       assertEqual(truncate('short sentence', -1), '...');
       assertEqual(truncate('short sentence', 8, 'bad input'), 'short se...');
@@ -296,10 +296,10 @@ namespace('String', function() {
 
   });
 
-  describeInstance('truncateOnWord', function(truncateOnWord) {
+  describeInstance('truncateOnWord', (truncateOnWord) => {
     var str = 'Gotta be an entire sentence.';
 
-    it('should truncate to a specific length', function() {
+    it('should truncate to a specific length', () => {
       assertEqual(truncateOnWord(str, 100), 'Gotta be an entire sentence.');
       assertEqual(truncateOnWord(str, 28), 'Gotta be an entire sentence.');
       assertEqual(truncateOnWord(str, 27), 'Gotta be an entire...');
@@ -319,7 +319,7 @@ namespace('String', function() {
       assertEqual(truncateOnWord(str,  0), '...');
     });
 
-    it('should truncate from left', function() {
+    it('should truncate from left', () => {
       assertEqual(truncateOnWord(str, 21, 'left'), '...an entire sentence.');
       assertEqual(truncateOnWord(str, 20, 'left'), '...an entire sentence.');
       assertEqual(truncateOnWord(str, 19, 'left'), '...an entire sentence.');
@@ -338,7 +338,7 @@ namespace('String', function() {
       assertEqual(truncateOnWord(str,  0, 'left'), '...');
     });
 
-    it('should truncate from the middle', function() {
+    it('should truncate from the middle', () => {
       assertEqual(truncateOnWord(str, 21, 'middle'), 'Gotta be...sentence.');
       assertEqual(truncateOnWord(str, 20, 'middle'), 'Gotta be...sentence.');
       assertEqual(truncateOnWord(str, 19, 'middle'), 'Gotta be...sentence.');
@@ -357,7 +357,7 @@ namespace('String', function() {
       assertEqual(truncateOnWord(str, 0, 'middle'), '...');
     });
 
-    it('should break on non-space punctuation', function() {
+    it('should break on non-space punctuation', () => {
       assertEqual(truncateOnWord('a,short,string', 8), 'a,short...');
       assertEqual(truncateOnWord('a|short|string', 8), 'a|short...');
       assertEqual(truncateOnWord('a?short?string', 8), 'a?short...');
@@ -365,21 +365,21 @@ namespace('String', function() {
       assertEqual(truncateOnWord('a¿short¿string', 8), 'a¿short...');
     });
 
-    it('should break on non-standard whitespace', function() {
+    it('should break on non-standard whitespace', () => {
       assertEqual(truncateOnWord('a　short　string', 8), 'a　short...');
     });
 
-    it('should handle special cases', function() {
+    it('should handle special cases', () => {
       assertEqual(truncateOnWord('GOTTA BE AN ENTIRE SENTENCE.', 21), 'GOTTA BE AN ENTIRE...');
       assertEqual(truncateOnWord('gotta. be. an. entire. sentence.', 17), 'gotta. be. an....');
     });
 
-    it('should handle non-latin scripts', function() {
+    it('should handle non-latin scripts', () => {
       assertEqual(truncateOnWord('한국어 도 이렇게 할 수 있어요?', 9), '한국어 도 이렇게...');
       assertEqual(truncateOnWord('文字列　の　全角　スペース', 12), '文字列　の　全角...');
     });
 
-    it('should handle irregular input', function() {
+    it('should handle irregular input', () => {
       assertEqual(truncateOnWord(500, 2), '50...');
       assertEqual(truncateOnWord('short sentence', -1), '...');
       assertEqual(truncateOnWord('short sentence', 8, 'bad input'), 'short...');
@@ -390,16 +390,16 @@ namespace('String', function() {
       assertError(function(){ truncateOnWord('word', '8'); });
     });
 
-    it('should handle issues', function() {
+    it('should handle issues', () => {
       // #311
       assertEqual(truncateOnWord('Alpha Beta Gamma Delta Epsilon', 20, 'middle', ''), 'Alpha BetaEpsilon');
     });
 
   });
 
-  describeInstance('underscore', function(underscore) {
+  describeInstance('underscore', (underscore) => {
 
-    it('should handle basic input', function() {
+    it('should handle basic input', () => {
       assertEqual(underscore('hopOnPop'), 'hop_on_pop');
       assertEqual(underscore('HopOnPop'), 'hop_on_pop');
       assertEqual(underscore('HOPONPOP'), 'hoponpop');
@@ -411,11 +411,11 @@ namespace('String', function() {
       assertEqual(underscore('waTch me su-cCeed'), 'wa_tch_me_su_c_ceed');
     });
 
-    it('should not affect existing underscores', function() {
+    it('should not affect existing underscores', () => {
       assertEqual(underscore('_hop_on_pop_'), '_hop_on_pop_');
     });
 
-    it('should handle irregular input', function() {
+    it('should handle irregular input', () => {
       assertEqual(underscore(''), '');
       assertEqual(underscore(null), 'null');
       assertEqual(underscore(800), '800');
@@ -423,9 +423,9 @@ namespace('String', function() {
 
   });
 
-  describeInstance('camelize', function(camelize) {
+  describeInstance('camelize', (camelize) => {
 
-    it('should handle basic input', function() {
+    it('should handle basic input', () => {
       assertEqual(camelize('hop-on-pop'), 'HopOnPop');
       assertEqual(camelize('HOP-ON-POP'), 'HopOnPop');
       assertEqual(camelize('hop_on_pop'), 'HopOnPop');
@@ -435,7 +435,7 @@ namespace('String', function() {
       assertEqual(camelize('waTch me su-cCeed'), 'WaTchMeSuCCeed');
     });
 
-    it('should downcase first letter', function() {
+    it('should downcase first letter', () => {
       assertEqual(camelize('hop-on-pop', false), 'hopOnPop');
       assertEqual(camelize('HOP-ON-POP', false), 'hopOnPop');
       assertEqual(camelize('hop_on_pop', false), 'hopOnPop');
@@ -444,7 +444,7 @@ namespace('String', function() {
       assertEqual(camelize('waTch me su-cCeed', false), 'waTchMeSuCCeed');
     });
 
-    it('should handle irregular input', function() {
+    it('should handle irregular input', () => {
       assertEqual(camelize(''), '');
       assertEqual(camelize(null), 'Null');
       assertEqual(camelize(800), '800');
@@ -452,9 +452,9 @@ namespace('String', function() {
 
   });
 
-  describeInstance('dasherize', function(dasherize) {
+  describeInstance('dasherize', (dasherize) => {
 
-    it('should handle basic input', function() {
+    it('should handle basic input', () => {
       assertEqual(dasherize('hop_on_pop'), 'hop-on-pop');
       assertEqual(dasherize('HOP_ON_POP'), 'hop-on-pop');
       assertEqual(dasherize('hopOnPop'), 'hop-on-pop');
@@ -467,7 +467,7 @@ namespace('String', function() {
       assertEqual(dasherize('person_street_address'), 'person-street-address');
     });
 
-    it('should handle irregular input', function() {
+    it('should handle irregular input', () => {
       assertEqual(dasherize(''), '');
       assertEqual(dasherize(null), 'null');
       assertEqual(dasherize(800), '800');
@@ -475,9 +475,9 @@ namespace('String', function() {
 
   });
 
-  describeInstance('titleize', function(titleize) {
+  describeInstance('titleize', (titleize) => {
 
-    it('should handle basic input', function() {
+    it('should handle basic input', () => {
       assertEqual(titleize('active_record'), 'Active Record');
       assertEqual(titleize('ActiveRecord'), 'Active Record');
       assertEqual(titleize('action web service'), 'Action Web Service');
@@ -499,14 +499,14 @@ namespace('String', function() {
       assertEqual(titleize('raiders_of_the_lost_ark'), 'Raiders of the Lost Ark');
     });
 
-    it('should handle non-titleized words', function() {
+    it('should handle non-titleized words', () => {
       assertEqual(titleize('the day of the jackal'), 'The Day of the Jackal');
       assertEqual(titleize('what color is your parachute?'), 'What Color Is Your Parachute?');
       assertEqual(titleize('a tale of two cities'), 'A Tale of Two Cities');
       assertEqual(titleize('where am i going to'), 'Where Am I Going To');
     });
 
-    it('should handle irregular input', function() {
+    it('should handle irregular input', () => {
       assertEqual(titleize(''), '');
       assertEqual(titleize(null), 'Null');
       assertEqual(titleize(800), '800');
@@ -514,9 +514,9 @@ namespace('String', function() {
 
   });
 
-  describeInstance('spacify', function(spacify) {
+  describeInstance('spacify', (spacify) => {
 
-    it('should handle basic input', function() {
+    it('should handle basic input', () => {
       assertEqual(spacify('hopOnPop'), 'hop on pop');
       assertEqual(spacify('HopOnPop'), 'hop on pop');
       assertEqual(spacify('HOPONPOP'), 'hoponpop');
@@ -527,16 +527,16 @@ namespace('String', function() {
       assertEqual(spacify('waTch me su-cCeed'), 'wa tch me su c ceed');
     });
 
-    it('should handle irregular input', function() {
+    it('should handle irregular input', () => {
       assertEqual(spacify(''), '');
       assertEqual(spacify(null), 'null');
       assertEqual(spacify(800), '800');
     });
   });
 
-  describeInstance('parameterize', function(parameterize) {
+  describeInstance('parameterize', (parameterize) => {
 
-    it('should handle basic input', function() {
+    it('should handle basic input', () => {
       assertEqual(parameterize('Donald E. Knuth'), 'donald-e-knuth');
       assertEqual(parameterize('Random text with *(bad)* characters'), 'random-text-with-bad-characters');
       assertEqual(parameterize('Allow_Under_Scores'), 'allow_under_scores');
@@ -546,7 +546,7 @@ namespace('String', function() {
       assertEqual(parameterize('Test with + sign'), 'test-with-sign');
     });
 
-    it('should allow a custom separator', function() {
+    it('should allow a custom separator', () => {
       assertEqual(parameterize('Donald E. Knuth', '_'), 'donald_e_knuth');
       assertEqual(parameterize('Random text with *(bad)* characters', '_'), 'random_text_with_bad_characters');
       assertEqual(parameterize('With-some-dashes', '_'), 'with-some-dashes');
@@ -557,7 +557,7 @@ namespace('String', function() {
       assertEqual(parameterize('Test with + sign', '_'), 'test_with_sign');
     });
 
-    it('should handle irregular input', function() {
+    it('should handle irregular input', () => {
       assertEqual(parameterize(''), '');
       assertEqual(parameterize(null), 'null');
       assertEqual(parameterize(800), '800');
@@ -566,9 +566,9 @@ namespace('String', function() {
     });
   });
 
-  describeInstance('at', function(at) {
+  describeInstance('at', (at) => {
 
-    it('should find basic character at positition', function() {
+    it('should find basic character at positition', () => {
       assertEqual(at('foop', 0), 'f');
       assertEqual(at('foop', 1), 'o');
       assertEqual(at('foop', 2), 'o');
@@ -583,7 +583,7 @@ namespace('String', function() {
       assertEqual(at('foop', -1224), '');
     });
 
-    it('should allow looping from the start', function() {
+    it('should allow looping from the start', () => {
       assertEqual(at('foop', 0, true), 'f');
       assertEqual(at('foop', 1, true), 'o');
       assertEqual(at('foop', 2, true), 'o');
@@ -599,13 +599,13 @@ namespace('String', function() {
       assertEqual(at('foop', -1224, true), 'f');
     });
 
-    it('should accept an array', function() {
+    it('should accept an array', () => {
       assertArrayEqual(at('wowzers', [0,2,4,6,18]), ['w','w','e','s','']);
       assertArrayEqual(at('wowzers', [0,2,4,6], true), ['w','w','e','s']);
       assertArrayEqual(at('wowzers', [0,2,4,6,18], true), ['w','w','e','s','e']);
     });
 
-    it('should handle irregular input', function() {
+    it('should handle irregular input', () => {
       assertEqual(at('', 3), '');
       assertEqual(at(null, 0), 'n');
       assertEqual(at(8, 0), '8');
@@ -618,9 +618,9 @@ namespace('String', function() {
 
   });
 
-  describeInstance('first', function(first) {
+  describeInstance('first', (first) => {
 
-    it('should handle basic input', function() {
+    it('should handle basic input', () => {
       assertEqual(first('quack'), 'q');
       assertEqual(first('quack', 2), 'qu');
       assertEqual(first('quack', 3), 'qua');
@@ -632,7 +632,7 @@ namespace('String', function() {
       assertEqual(first('quack', -10), '');
     });
 
-    it('should handle irregular input', function() {
+    it('should handle irregular input', () => {
       assertEqual(first('', 3), '');
       assertEqual(first(null, 2), 'nu');
       assertEqual(first(800, 2), '80');
@@ -645,9 +645,9 @@ namespace('String', function() {
 
   });
 
-  describeInstance('last', function(last) {
+  describeInstance('last', (last) => {
 
-    it('should handle basic input', function() {
+    it('should handle basic input', () => {
       assertEqual(last('quack'), 'k');
       assertEqual(last('quack', 2), 'ck');
       assertEqual(last('quack', 3), 'ack');
@@ -658,7 +658,7 @@ namespace('String', function() {
       assertEqual(last('quack', -10), '');
     });
 
-    it('should handle irregular input', function() {
+    it('should handle irregular input', () => {
       assertEqual(last('', 3), '');
       assertEqual(last(null, 2), 'll');
       assertEqual(last(800, 2), '00');
@@ -670,9 +670,9 @@ namespace('String', function() {
     });
   });
 
-  describeInstance('from', function(from) {
+  describeInstance('from', (from) => {
 
-    it('should handle basic input', function() {
+    it('should handle basic input', () => {
       assertEqual(from('quack'), 'quack');
       assertEqual(from('quack', 0), 'quack');
       assertEqual(from('quack', 2), 'ack');
@@ -690,7 +690,7 @@ namespace('String', function() {
       assertEqual(from('quack', 'quack'), 'quack');
     });
 
-    it('should handle irregular input', function() {
+    it('should handle irregular input', () => {
       assertEqual(from('', 3), '');
       assertEqual(from(null, 2), 'll');
       assertEqual(from(800, 2), '0');
@@ -701,9 +701,9 @@ namespace('String', function() {
     });
   });
 
-  describeInstance('to', function(to) {
+  describeInstance('to', (to) => {
 
-    it('should handle basic input', function() {
+    it('should handle basic input', () => {
       assertEqual(to('quack'), 'quack');
       assertEqual(to('quack', 0), '');
       assertEqual(to('quack', 1), 'q');
@@ -722,7 +722,7 @@ namespace('String', function() {
       assertEqual(to('quack', 'quack'), '');
     });
 
-    it('should handle irregular input', function() {
+    it('should handle irregular input', () => {
       assertEqual(to('', 3), '');
       assertEqual(to(null, 2), 'nu');
       assertEqual(to(800, 2), '80');
@@ -733,9 +733,9 @@ namespace('String', function() {
     });
   });
 
-  describeInstance('isEmpty', function(isEmpty) {
+  describeInstance('isEmpty', (isEmpty) => {
 
-    it('should handle basic input', function() {
+    it('should handle basic input', () => {
       assertEqual(isEmpty(''), true);
       assertEqual(isEmpty('0'), false);
       assertEqual(isEmpty(' '), false);
@@ -744,7 +744,7 @@ namespace('String', function() {
       assertEqual(isEmpty('\n'), false);
     });
 
-    it('should handle irregular input', function() {
+    it('should handle irregular input', () => {
       assertEqual(isEmpty(null), false);
       assertEqual(isEmpty(undefined), false);
       assertEqual(isEmpty(8), false);
@@ -752,9 +752,9 @@ namespace('String', function() {
 
   });
 
-  describeInstance('isBlank', function(isBlank) {
+  describeInstance('isBlank', (isBlank) => {
 
-    it('should handle basic input', function() {
+    it('should handle basic input', () => {
       assertEqual(isBlank(''), true);
       assertEqual(isBlank('0'), false);
       assertEqual(isBlank('            '), true);
@@ -764,7 +764,7 @@ namespace('String', function() {
       assertEqual(isBlank('mayonnaise'), false);
     });
 
-    it('should handle irregular input', function() {
+    it('should handle irregular input', () => {
       assertEqual(isBlank(null), false);
       assertEqual(isBlank(undefined), false);
       assertEqual(isBlank(8), false);
@@ -772,9 +772,9 @@ namespace('String', function() {
 
   });
 
-  describeInstance('compact', function(compact) {
+  describeInstance('compact', (compact) => {
 
-    it('should handle basic input', function() {
+    it('should handle basic input', () => {
       assertEqual(compact('the rain in     spain    falls mainly   on     the        plain'), 'the rain in spain falls mainly on the plain');
       assertEqual(compact('\n\n\nthe \n\n\nrain in     spain    falls mainly   on     the        plain\n\n'), 'the rain in spain falls mainly on the plain');
       assertEqual(compact('\n\n\n\n           \t\t\t\t          \n\n      \t'), '');
@@ -783,29 +783,29 @@ namespace('String', function() {
       assertEqual(compact('moo \t moo'), 'moo moo', 'moo moo space tab space');
     });
 
-    it('should handle full-width spaces', function() {
+    it('should handle full-width spaces', () => {
       assertEqual(compact('　　　全角　　　スペース　　　　も　'), '全角　スペース　も');
       assertEqual(compact('全角　スペース　も'), '全角　スペース　も');
       assertEqual(compact('　全角　スペース　も　'), '全角　スペース　も');
     });
 
-    it('should handle irregular input', function() {
+    it('should handle irregular input', () => {
       assertEqual(compact(null), 'null');
       assertEqual(compact(undefined), 'undefined');
       assertEqual(compact(800), '800');
     });
   });
 
-  describeInstance('toNumber', function(toNumber) {
+  describeInstance('toNumber', (toNumber) => {
 
-    it('should handle integers', function() {
+    it('should handle integers', () => {
       assertEqual(toNumber('10'), 10);
       assertEqual(toNumber('10,000'), 10000);
       assertEqual(toNumber('5,322,144,444'), 5322144444);
       assertEqual(toNumber('22.5'), 22.5);
     });
 
-    it('should handle decimals', function() {
+    it('should handle decimals', () => {
       assertEqual(toNumber('10.532'), 10.532);
       assertEqual(toNumber('10.848'), 10.848);
       assertEqual(toNumber('95.25%'), 95.25);
@@ -814,41 +814,41 @@ namespace('String', function() {
       assertEqual(toNumber('.3'), 0.3);
     });
 
-    it('should handle trailing characters', function() {
+    it('should handle trailing characters', () => {
       assertEqual(toNumber('4em'), 4);
       assertEqual(toNumber('10px'), 10);
       assertEqual(toNumber('1234blue'), 1234);
     });
 
-    it('should not convert octals', function() {
+    it('should not convert octals', () => {
       assertEqual(toNumber('010'), 10);
       assertEqual(toNumber('0908'), 908);
       assertEqual(toNumber('077.3'), 77.3);
     });
 
-    it('should throw away redundant decimals', function() {
+    it('should throw away redundant decimals', () => {
       assertEqual(toNumber('22.34.5'), 22.34);
     });
 
-    it('should handle hex strings', function() {
+    it('should handle hex strings', () => {
       assertEqual(toNumber('0xFF'), 255);
     });
 
-    it('should handle a different base', function() {
+    it('should handle a different base', () => {
       assertEqual(toNumber('FF', 16), 255);
     });
 
-    it('should handle scientific notation', function() {
+    it('should handle scientific notation', () => {
       assertEqual(toNumber('1e6'), 1000000);
       assertEqual(toNumber('0.1e6'), 100000);
     });
 
-    it('should handle full-width characters', function() {
+    it('should handle full-width characters', () => {
       assertEqual(toNumber('２００'), 200);
       assertEqual(toNumber('５．２３４５'), 5.2345);
     });
 
-    it('should handle irregular input', function() {
+    it('should handle irregular input', () => {
       assertEqual(toNumber(8), 8);
       assertNaN(toNumber(null));
       assertNaN(toNumber(NaN));
@@ -862,16 +862,16 @@ namespace('String', function() {
 
   });
 
-  describeInstance('reverse', function(reverse) {
+  describeInstance('reverse', (reverse) => {
 
-    it('should handle basic input', function() {
+    it('should handle basic input', () => {
       assertEqual(reverse('spoon'), 'noops');
       assertEqual(reverse('amanaplanacanalpanama'), 'amanaplanacanalpanama');
       assertEqual(reverse(''), '');
       assertEqual(reverse('wasabi'), 'ibasaw');
     });
 
-    it('should handle irregular input', function() {
+    it('should handle irregular input', () => {
       assertEqual(reverse(null), 'llun');
       assertEqual(reverse(undefined), 'denifednu');
       assertEqual(reverse(NaN), 'NaN');
@@ -880,15 +880,15 @@ namespace('String', function() {
 
   });
 
-  describeInstance('encodeBase64', function(encodeBase64) {
+  describeInstance('encodeBase64', (encodeBase64) => {
 
-    it('should handle ascii input', function() {
+    it('should handle ascii input', () => {
       assertEqual(encodeBase64(''), '');
       assertEqual(encodeBase64('foo'), 'Zm9v');
       assertEqual(encodeBase64('This webpage is not available'), 'VGhpcyB3ZWJwYWdlIGlzIG5vdCBhdmFpbGFibGU=');
     });
 
-    it('should handle non-ascii input', function() {
+    it('should handle non-ascii input', () => {
       assertEqual(encodeBase64('✓ à la mode'), '4pyTIMOgIGxhIG1vZGU=');
       assertEqual(encodeBase64('räksmörgås'), 'csOka3Ntw7ZyZ8Olcw==');
       assertEqual(encodeBase64('rÃ¤ksmÃ¶rgÃ¥s'), 'csODwqRrc23Dg8K2cmfDg8Klcw==');
@@ -898,7 +898,7 @@ namespace('String', function() {
       assertEqual(encodeBase64('한국어'), '7ZWc6rWt7Ja0');
     });
 
-    it('should handle irregular input', function() {
+    it('should handle irregular input', () => {
       assertEqual(encodeBase64('\n'), 'Cg==');
       assertEqual(encodeBase64(null), 'bnVsbA==');
       assertEqual(encodeBase64(NaN), 'TmFO');
@@ -907,16 +907,16 @@ namespace('String', function() {
 
   });
 
-  describeInstance('decodeBase64', function(decodeBase64) {
+  describeInstance('decodeBase64', (decodeBase64) => {
 
-    it('should handle ascii input', function() {
+    it('should handle ascii input', () => {
       assertEqual(decodeBase64(''), '');
       assertEqual(decodeBase64('Zm9v'), 'foo');
       assertEqual(decodeBase64('VGhpcyB3ZWJwYWdlIGlzIG5vdCBhdmFpbGFibGU='), 'This webpage is not available');
       assertEqual(decodeBase64('L2hvd2FyZHNmaXJld29ya3MvYXBpL29yZGVyLzc1TU0lMjBNSVg='), '/howardsfireworks/api/order/75MM%20MIX')
     });
 
-    it('should handle non-ascii input', function() {
+    it('should handle non-ascii input', () => {
       assertEqual(decodeBase64('4pyTIMOgIGxhIG1vZGU='), '✓ à la mode');
       assertEqual(decodeBase64('csOka3Ntw7ZyZ8Olcw=='), 'räksmörgås');
       assertEqual(decodeBase64('csODwqRrc23Dg8K2cmfDg8Klcw=='), 'rÃ¤ksmÃ¶rgÃ¥s');
@@ -926,7 +926,7 @@ namespace('String', function() {
       assertEqual(decodeBase64('7ZWc6rWt7Ja0'), '한국어');
     });
 
-    it('should handle irregular input', function() {
+    it('should handle irregular input', () => {
       assertError(function(){ decodeBase64(null); });
       assertError(function(){ decodeBase64(NaN); });
       assertError(function(){ decodeBase64(8); });
@@ -935,43 +935,43 @@ namespace('String', function() {
 
   });
 
-  describeInstance('stripTags', function(stripTags) {
+  describeInstance('stripTags', (stripTags) => {
 
-    it('should work on basic tags', function() {
+    it('should work on basic tags', () => {
       assertEqual(stripTags('<p>text</p>'), 'text');
       assertEqual(stripTags('<span>text</span>'), 'text');
       assertEqual(stripTags('<button>text</button>'), 'text');
     });
 
-    it('should preserve empty space', function() {
+    it('should preserve empty space', () => {
       assertEqual(stripTags(' <p>text</p> '), ' text ');
       assertEqual(stripTags(' <p> text </p> '), '  text  ');
       assertEqual(stripTags('\n<p>\ntext\n</p>\n'), '\n\ntext\n\n');
     });
 
-    it('should handle self-closing tags', function() {
+    it('should handle self-closing tags', () => {
       assertEqual(stripTags('<img src="src" />'), '');
       assertEqual(stripTags('foo<img src="src" />bar'), 'foobar');
     });
 
-    it('should handle emtpy tags', function() {
+    it('should handle emtpy tags', () => {
       assertEqual(stripTags('<meta charset="utf-8">'), '');
       assertEqual(stripTags('foo<meta charset="utf-8">bar'), 'foobar');
       assertEqual(stripTags('<input type="text" />'), '');
     });
 
-    it('should handle attributes', function() {
+    it('should handle attributes', () => {
       assertEqual(stripTags('<p id="id">'), '');
       assertEqual(stripTags('foo<p id="id">bar'), 'foobar');
       assertEqual(stripTags('<img data-name="name" />'), '');
     });
 
-    it('should not work on malformed html without brackets', function() {
+    it('should not work on malformed html without brackets', () => {
       assertEqual(stripTags('<p id="id" foobar'), '<p id="id" foobar');
       assertEqual(stripTags('p id="id" foobar>'), 'p id="id" foobar>');
     });
 
-    it('should work on malformed html with brackets', function() {
+    it('should work on malformed html with brackets', () => {
       assertEqual(stripTags('< p>'), '');
       assertEqual(stripTags('</p />'), '');
       assertEqual(stripTags('< / p / >'), '');
@@ -980,33 +980,33 @@ namespace('String', function() {
       assertEqual(stripTags('</foo  >>'), '>');
     });
 
-    it('should ignore entities', function() {
+    it('should ignore entities', () => {
       assertEqual(stripTags('&quot;'), '&quot;');
       assertEqual(stripTags('<p>&quot;</p>'), '&quot;');
     });
 
-    it('should handle namespaced xml tags', function() {
+    it('should handle namespaced xml tags', () => {
       assertEqual(stripTags('<xsl:template>text</xsl:template>'), 'text');
       assertEqual(stripTags('<xsl/template>text</xsl/template>'), 'text');
     });
 
-    it('should handle nested html', function() {
+    it('should handle nested html', () => {
       assertEqual(stripTags('<p><span>text</span></p>'), 'text');
       assertEqual(stripTags('<p>one <span>two</span> three</p>'), 'one two three');
       assertEqual(stripTags('<div>1 <p>2</p> <p>3</p> 4'), '1 2 3 4');
     });
 
-    it('should handle slashes in attributes', function() {
+    it('should handle slashes in attributes', () => {
       assertEqual(stripTags('<a href="http://foobar.com/">links</a>'), 'links');
       assertEqual(stripTags('<img src="http://foobar.com/" />'), '');
     });
 
-    it('should handle upper case', function() {
+    it('should handle upper case', () => {
       assertEqual(stripTags('<P>text</P>'), 'text');
       assertEqual(stripTags('<SPAN>text</SPAN>'), 'text');
     });
 
-    it('should replace with string argument', function() {
+    it('should replace with string argument', () => {
       assertEqual(stripTags('<p>text</p>', '|'), '|text|');
       assertEqual(stripTags(' <p>text</p> ', '|'), ' |text| ');
       assertEqual(stripTags('<p><span>text</span></p>', '|'), '||text||');
@@ -1014,14 +1014,14 @@ namespace('String', function() {
       assertEqual(stripTags('<meta charset="utf-8">', 'hi'), 'hi');
     });
 
-    it('should replace with function argument', function() {
+    it('should replace with function argument', () => {
       assertEqual(stripTags('<p>text</p>', (tag) => tag.toUpperCase()), 'PtextP');
       assertEqual(stripTags('<p><span>text</span></p>', (tag) => {
         return tag === 'span' ? '*' : '\n';
       }), '\n*text*\n');
     });
 
-    it('should have correct arguments in replace function', function() {
+    it('should have correct arguments in replace function', () => {
       stripTags('<p id="id" class="class">', (tag, html, type, attr) => {
         assertEqual(tag, 'p');
         assertEqual(html, '<p id="id" class="class">');
@@ -1060,7 +1060,7 @@ namespace('String', function() {
       });
     });
 
-    it('should handle complicated nested html', function() {
+    it('should handle complicated nested html', () => {
       const html = [
         '<form action="foo.php" method="post">',
         '  <p>',
@@ -1085,49 +1085,49 @@ namespace('String', function() {
     });
 
 
-    it('should work on irregular input', function() {
+    it('should work on irregular input', () => {
       assertEqual(stripTags(), 'undefined');
       assertEqual(stripTags(''), '');
       assertEqual(stripTags(null), 'null');
       assertEqual(stripTags(8), '8');
     });
 
-    it('should handle raised issues', function() {
+    it('should handle raised issues', () => {
 
       // Issue #410 - replacing stripped tags
-      assertEqual(stripTags('<span>text</span>', function() {
+      assertEqual(stripTags('<span>text</span>', () => {
         return ' ';
       }), ' text ');
 
       // Issue #467 - targeting i vs img
-      assertEqual(stripTags('<img src="src">', function(tag, html) {
+      assertEqual(stripTags('<img src="src">', (tag, html) => {
         return tag === 'i' ? '' : html;
       }), '<img src="src">');
     });
 
   });
 
-  describeInstance('remove', function(remove) {
+  describeInstance('remove', (remove) => {
 
-    it('should remove with a string', function() {
+    it('should remove with a string', () => {
       assertEqual(remove('schfifty five', 'fi'), 'schfty five');
       assertEqual(remove('schfifty five', 'five'), 'schfifty ');
       assertEqual(remove('?', '?'), '');
       assertEqual(remove('?(', '?('), '');
     });
 
-    it('should remove with a regex', function() {
+    it('should remove with a regex', () => {
       assertEqual(remove('schfifty five', /five/), 'schfifty ');
       assertEqual(remove('schfifty five', /f/), 'schifty five');
       assertEqual(remove('schfifty five', /f/g), 'schity ive');
       assertEqual(remove('schfifty five', /[a-f]/g), 'shity iv');
     });
 
-    it('should be case sensitive', function() {
+    it('should be case sensitive', () => {
       assertEqual(remove('schfifty five', 'F'), 'schfifty five');
     });
 
-    it('should handle irregular input', function() {
+    it('should handle irregular input', () => {
       assertEqual(remove('schfifty five'), 'schfifty five');
       assertEqual(remove('schfifty five', null), 'schfifty five');
       assertEqual(remove('schfifty five', 800), 'schfifty five');
@@ -1135,43 +1135,43 @@ namespace('String', function() {
 
   });
 
-  describeInstance('replaceWith', function(replaceWith) {
+  describeInstance('replaceWith', (replaceWith) => {
 
-    it('should handle basic input', function() {
+    it('should handle basic input', () => {
       assertEqual(replaceWith('-x -y -z', '-', 1, 2, 3), '1x 2y 3z');
       assertEqual(replaceWith('-x -y -z', '-', 1, 0, 3), '1x 0y 3z');
       assertEqual(replaceWith('-x -y -z', '-', 'a', 'b', 'c'), 'ax by cz');
     });
 
-    it('should handle regex input', function() {
+    it('should handle regex input', () => {
       assertEqual(replaceWith('a', /a/, 'hi'), 'hi');
       assertEqual(replaceWith('aaa', /a/g, 'b', 'c', 'd'), 'bcd');
       assertEqual(replaceWith('a1 b2', /a|b/g, 'x', 'y'), 'x1 y2');
     });
 
-    it('should not replace regexp with global flag', function() {
+    it('should not replace regexp with global flag', () => {
       assertEqual(replaceWith('aaa', /a/, 'b', 'c', 'd'), 'baa');
     });
 
-    it('should use last argument when not enough', function() {
+    it('should use last argument when not enough', () => {
       assertEqual(replaceWith('-x -y -z', '-', 1), '1x 1y 1z');
       assertEqual(replaceWith('-x -y -z', '-', 1, 2), '1x 2y 2z');
     });
 
-    it('should not use arguments when too many', function() {
+    it('should not use arguments when too many', () => {
       assertEqual(replaceWith('-x -y -z', '-', 1, 2, 3, 4), '1x 2y 3z');
     });
 
-    it('should allow regex tokens', function() {
+    it('should allow regex tokens', () => {
       assertEqual(replaceWith('?x ?y ?z', '?', 1), '1x 1y 1z');
       assertEqual(replaceWith('-x -y -z', '-', '?'), '?x ?y ?z');
     });
 
-    it('should be case sensitive', function() {
+    it('should be case sensitive', () => {
       assertEqual(replaceWith('a', 'A', 'b'), 'a');
     });
 
-    it('should handle irregular input', function() {
+    it('should handle irregular input', () => {
       assertEqual(replaceWith('-x -y -z'), '-x -y -z');
       assertEqual(replaceWith('-x -y -z', null), '-x -y -z');
       assertEqual(replaceWith('-x -y -z', 8), '-x -y -z');
@@ -1183,9 +1183,9 @@ namespace('String', function() {
 
   });
 
-  describeInstance('insert', function(insert) {
+  describeInstance('insert', (insert) => {
 
-    it('should handle basic input', function() {
+    it('should handle basic input', () => {
       assertEqual(insert('schfifty', ' five'), 'schfifty five');
       assertEqual(insert('dopamine', 'e', 3), 'dopeamine');
       assertEqual(insert('five', 'schfifty', 4), 'fiveschfifty');
@@ -1196,27 +1196,27 @@ namespace('String', function() {
       assertEqual(insert('abcd', 'X', -2), 'abXcd');
     });
 
-    it('should handle negative indexes', function() {
+    it('should handle negative indexes', () => {
       assertEqual(insert('spelling eror', 'r', -3), 'spelling error');
     });
 
-    it('should handle 0 and -0', function() {
+    it('should handle 0 and -0', () => {
       assertEqual(insert('abcd', 'X', 0), 'Xabcd');
       assertEqual(insert('abcd', 'X', -0), 'Xabcd');
     });
 
-    it('should not go past string edges', function() {
+    it('should not go past string edges', () => {
       assertEqual(insert('five', 'schfifty', 20), 'fiveschfifty');
       assertEqual(insert('five', 'schfifty', -20), 'schfiftyfive');
     });
 
-    it('should handle empty and short strings', function() {
+    it('should handle empty and short strings', () => {
       assertEqual(insert('', '-', 0), '-');
       assertEqual(insert('b', '--', 0), '--b');
       assertEqual(insert('b', '--', 1), 'b--');
     });
 
-    it('should handle irregular input', function() {
+    it('should handle irregular input', () => {
       assertEqual(insert(null, '-'), 'null-');
       assertEqual(insert(NaN, '-'), 'NaN-');
       assertEqual(insert(8, '-'), '8-');
@@ -1226,30 +1226,30 @@ namespace('String', function() {
 
   });
 
-  describeInstance('escapeHtml', function(escapeHtml) {
+  describeInstance('escapeHtml', (escapeHtml) => {
 
-    it('should escape basic input', function() {
+    it('should escape basic input', () => {
       assertEqual(escapeHtml('1 > 2'), '1 &gt; 2');
       assertEqual(escapeHtml('<foo>'), '&lt;foo&gt;');
       assertEqual(escapeHtml('<p>some text</p>'), '&lt;p&gt;some text&lt;/p&gt;');
       assertEqual(escapeHtml('<img src="src" />'), '&lt;img src="src" /&gt;');
     });
 
-    it('should escape entities', function() {
+    it('should escape entities', () => {
       assertEqual(escapeHtml('war & peace & food'), 'war &amp; peace &amp; food');
     });
 
-    it('should not escape apostrophes or quotes', function() {
+    it('should not escape apostrophes or quotes', () => {
       assertEqual(escapeHtml('"foo"'), '"foo"');
       assertEqual(escapeHtml("'foo'"), "'foo'");
     });
 
-    it('should have expected results when already escaped', function() {
+    it('should have expected results when already escaped', () => {
       assertEqual(escapeHtml('&amp;'), '&amp;amp;');
       assertEqual(escapeHtml('&lt;span&gt;escaped&lt;/span&gt;'), '&amp;lt;span&amp;gt;escaped&amp;lt;/span&amp;gt;');
     });
 
-    it('should handle irregular input', function() {
+    it('should handle irregular input', () => {
       assertEqual(escapeHtml(null), 'null');
       assertEqual(escapeHtml(NaN), 'NaN');
       assertEqual(escapeHtml(8), '8');
@@ -1258,55 +1258,55 @@ namespace('String', function() {
 
   });
 
-  describeInstance('unescapeHtml', function(unescapeHtml) {
+  describeInstance('unescapeHtml', (unescapeHtml) => {
 
-    it('should unescape basic input', function() {
+    it('should unescape basic input', () => {
       assertEqual(unescapeHtml('1 &gt; 2'), '1 > 2');
       assertEqual(unescapeHtml('&lt;foo&gt;'), '<foo>');
       assertEqual(unescapeHtml('&lt;p&gt;some text&lt;/p&gt;'), '<p>some text</p>');
       assertEqual(unescapeHtml('&lt;img src="src" /&gt;'), '<img src="src" />');
     });
 
-    it('should unescape special entities', function() {
+    it('should unescape special entities', () => {
       assertEqual(unescapeHtml('war &amp; peace'), 'war & peace');
       assertEqual(unescapeHtml('it&apos;s'), "it's");
       assertEqual(unescapeHtml('&quot;foo&quot;'), '"foo"');
       assertEqual(unescapeHtml('&nbsp;'), ' ');
     });
 
-    it('should unescape ascii decimal entities', function() {
+    it('should unescape ascii decimal entities', () => {
       assertEqual(unescapeHtml('&#32;'), ' ');
       assertEqual(unescapeHtml('&#33;'), '!');
     });
 
-    it('should unescape ascii hex entities', function() {
+    it('should unescape ascii hex entities', () => {
       assertEqual(unescapeHtml('&#x20;'), ' ');
       assertEqual(unescapeHtml('&#x21;'), '!');
       assertEqual(unescapeHtml('&#x2f;'), '/');
     });
 
-    it('should unescape non-ascii decimal entities', function() {
+    it('should unescape non-ascii decimal entities', () => {
       assertEqual(unescapeHtml('&#192;'), 'À');
       assertEqual(unescapeHtml('&#64257;'), 'ﬁ');
       assertEqual(unescapeHtml('&#12354;'), 'あ');
     });
 
-    it('should unescape non-ascii hex entities', function() {
+    it('should unescape non-ascii hex entities', () => {
       assertEqual(unescapeHtml('&#xC0;'), 'À');
       assertEqual(unescapeHtml('&#x2b;'), '+');
       assertEqual(unescapeHtml('&#x2B;'), '+');
       assertEqual(unescapeHtml('&#x3042;'), 'あ');
     });
 
-    it('should only escape once', function() {
+    it('should only escape once', () => {
       assertEqual(unescapeHtml('&amp;lt;'), '&lt;');
     });
 
-    it('should do nothing to plain html', function() {
+    it('should do nothing to plain html', () => {
       assertEqual(unescapeHtml('<span>escaped</span>'), '<span>escaped</span>');
     });
 
-    it('should handle irregular input', function() {
+    it('should handle irregular input', () => {
       assertEqual(unescapeHtml(null), 'null');
       assertEqual(unescapeHtml(NaN), 'NaN');
       assertEqual(unescapeHtml(8), '8');
@@ -1315,21 +1315,21 @@ namespace('String', function() {
 
   });
 
-  describeInstance('toCodes', function(toCodes) {
+  describeInstance('toCodes', (toCodes) => {
 
-    it('should handle basic input', function() {
+    it('should handle basic input', () => {
       assertArrayEqual(toCodes(''), []);
       assertArrayEqual(toCodes('foo'), [102, 111, 111]);
       assertArrayEqual(toCodes('foo bar'), [102, 111, 111, 32, 98, 97, 114]);
       assertArrayEqual(toCodes('foo\nbar'), [102, 111, 111, 10, 98, 97, 114]);
     });
 
-    it('should handle non-ascii input', function() {
+    it('should handle non-ascii input', () => {
       assertArrayEqual(toCodes('今日'), [20170, 26085]);
       assertArrayEqual(toCodes('오늘'), [50724, 45720]);
     });
 
-    it('should handle multi-byte', function() {
+    it('should handle multi-byte', () => {
       assertArrayEqual(toCodes('🍺'), [127866]);
       assertArrayEqual(toCodes('🍺🍺'), [127866, 127866]);
       assertArrayEqual(toCodes('ab🍺🍺cd'), [97, 98, 127866, 127866, 99, 100]);
@@ -1338,7 +1338,7 @@ namespace('String', function() {
       ), [0x10FFFF, 0x10FFFF]);
     });
 
-    it('should handle irregular input', function() {
+    it('should handle irregular input', () => {
       assertArrayEqual(toCodes(), []);
       assertArrayEqual(toCodes(null), [110, 117, 108, 108]);
       assertArrayEqual(toCodes(NaN), [78, 97, 78]);
@@ -1347,15 +1347,15 @@ namespace('String', function() {
 
   });
 
-  describeInstance('encodeUrl', function(encodeUrl) {
+  describeInstance('encodeUrl', (encodeUrl) => {
 
-    it('should handle basic input', function() {
+    it('should handle basic input', () => {
       assertEqual(encodeUrl(';,/?:@&=+$#'), ';,/?:@&=+$#');
       assertEqual(encodeUrl("-_.!~*'()"), "-_.!~*'()");
       assertEqual(encodeUrl('ABC abc 123'), 'ABC%20abc%20123');
     });
 
-    it('should handle irregular input', function() {
+    it('should handle irregular input', () => {
       assertEqual(encodeUrl(), '');
       assertEqual(encodeUrl(null), 'null');
       assertEqual(encodeUrl(NaN), 'NaN');
@@ -1364,15 +1364,15 @@ namespace('String', function() {
 
   });
 
-  describeInstance('encodeUrlParam', function(encodeUrlParam) {
+  describeInstance('encodeUrlParam', (encodeUrlParam) => {
 
-    it('should handle basic input', function() {
+    it('should handle basic input', () => {
       assertEqual(encodeUrlParam(';,/?:@&=+$#'), '%3B%2C%2F%3F%3A%40%26%3D%2B%24%23');
       assertEqual(encodeUrlParam("-_.!~*'()"), "-_.!~*'()");
       assertEqual(encodeUrlParam('ABC abc 123'), 'ABC%20abc%20123');
     });
 
-    it('should handle irregular input', function() {
+    it('should handle irregular input', () => {
       assertEqual(encodeUrlParam(), '');
       assertEqual(encodeUrlParam(null), 'null');
       assertEqual(encodeUrlParam(NaN), 'NaN');
@@ -1381,19 +1381,19 @@ namespace('String', function() {
 
   });
 
-  describeInstance('decodeUrl', function(decodeUrl) {
+  describeInstance('decodeUrl', (decodeUrl) => {
 
-    it('should handle basic input', function() {
+    it('should handle basic input', () => {
       assertEqual(decodeUrl(';,/?:@&=+$#'), ';,/?:@&=+$#');
       assertEqual(decodeUrl( "-_.!~*'()"), "-_.!~*'()");
       assertEqual(decodeUrl( 'ABC%20abc%20123'), 'ABC abc 123');
     });
 
-    it('should error on malformed urls', function() {
+    it('should error on malformed urls', () => {
       assertError(function () { decodeUrl('% 23'); });
     });
 
-    it('should handle irregular input', function() {
+    it('should handle irregular input', () => {
       assertEqual(decodeUrl(), '');
       assertEqual(decodeUrl(null), 'null');
       assertEqual(decodeUrl(NaN), 'NaN');
@@ -1402,19 +1402,19 @@ namespace('String', function() {
 
   });
 
-  describeInstance('decodeUrlParam', function(decodeUrlParam) {
+  describeInstance('decodeUrlParam', (decodeUrlParam) => {
 
-    it('should handle basic input', function() {
+    it('should handle basic input', () => {
       assertEqual(decodeUrlParam('%3B%2C%2F%3F%3A%40%26%3D%2B%24%23'), ';,/?:@&=+$#');
       assertEqual(decodeUrlParam("-_.!~*'()"), "-_.!~*'()");
       assertEqual(decodeUrlParam('ABC%20abc%20123'), 'ABC abc 123');
     });
 
-    it('should error on malformed urls', function() {
+    it('should error on malformed urls', () => {
       assertError(function () { decodeUrlParam('% 23'); });
     });
 
-    it('should handle irregular input', function() {
+    it('should handle irregular input', () => {
       assertEqual(decodeUrlParam(), '');
       assertEqual(decodeUrlParam(null), 'null');
       assertEqual(decodeUrlParam(NaN), 'NaN');

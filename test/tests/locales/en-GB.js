@@ -2,9 +2,9 @@
 
 describe('en-GB', () => {
 
-  namespace('Date', function () {
+  namespace('Date', () => {
 
-    describeStatic('create', function (create) {
+    describeStatic('create', (create) => {
 
       it('should parse slashes as day first', () => {
         assertDateEqual(create('8/10/1978', 'en-GB'), new Date(1978, 9, 8));

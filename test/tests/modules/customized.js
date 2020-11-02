@@ -7,18 +7,18 @@ defineInstance('abbr', abbr);
 //import 'sugar/string/capitalize/define';
 import { Number } from '../../../src/number/namespace';
 
-describe('Customized Module', function() {
+describe('Customized Module', () => {
 
-  it('should have defined static', function() {
+  it('should have defined static', () => {
     assertEqual(Number.abbr(5000), '5k');
     assertEqual(Number.abs(-5), 5);
   });
 
-  it('should have defined instance', function() {
+  it('should have defined instance', () => {
     assertEqual(new Number(-5000).abs().abbr().raw, '5k');
   });
 
-  it('should not have defined other methods', function() {
+  it('should not have defined other methods', () => {
     assertUndefined(Number.pow);
     assertUndefined(Number.prototype.pow);
   });
