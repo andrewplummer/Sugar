@@ -2,7 +2,7 @@ import { assertDate } from '../util/assertions';
 import { cloneDate } from '../util/clone';
 
 /**
- * Returns a copy of the date.
+ * Returns a clone of the date.
  *
  * @param {Date} date - The date.
  *
@@ -10,7 +10,7 @@ import { cloneDate } from '../util/clone';
  *
  * @example
  *
- *   new Date().clone() -> creates a copy of the date
+ *   new Date().clone() -> new date
  *
  **/
 export default function clone(date) {

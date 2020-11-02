@@ -4,19 +4,6 @@ namespace('Date', function () {
   var now = new Date();
   var thisYear = now.getFullYear();
 
-  group('Create | Invalid Dates', function() {
-
-    testCreateFakeLocale('fo');
-
-    equal(run(testCreateDate('my pants'), 'isTomorrow'), undefined, 'isTomorrow | invalid dates should return false');
-    equal(run(testCreateDate('my pants'), 'is', ['today']), undefined, 'is | invalid dates should return false');
-
-  });
-
-
-  // TODO: handle this
-  // Issue #141 future/past preference
-
   method('get', function() {
     var d = new Date('August 25, 2010 11:45:20');
 
@@ -63,54 +50,6 @@ namespace('Date', function () {
     var d = new Date('August 5, 2010 04:03:02');
     test(d, getExpectedTimezoneOffset(d), 'no colon');
     test(d, [true], getExpectedTimezoneOffset(d, true), 'colon');
-  });
-
-  method('relativeTo', function() {
-
-    testCreateFakeLocale('fo');
-
-    var d = new Date(2016,3,14,22,47,52,500);
-
-    assertRelativeTo(d, [new Date(2015,3,14,22,47,52,500)], '1 year');
-    assertRelativeTo(d, [new Date(2016,2,14,22,47,52,500)], '1 month');
-    assertRelativeTo(d, [new Date(2016,3,13,22,47,52,500)], '1 day');
-    assertRelativeTo(d, [new Date(2016,3,14,21,47,52,500)], '1 hour');
-    assertRelativeTo(d, [new Date(2016,3,14,22,46,52,500)], '1 minute');
-    assertRelativeTo(d, [new Date(2016,3,14,22,47,51,500)], '1 second');
-    assertRelativeTo(d, [new Date(2016,3,14,22,47,51,499)], '1 second');
-
-    assertRelativeTo(d, [new Date(2017,3,14,22,47,52,500)], '1 year');
-    assertRelativeTo(d, [new Date(2016,4,14,22,47,52,500)], '1 month');
-    assertRelativeTo(d, [new Date(2016,3,15,22,47,52,500)], '1 day');
-    assertRelativeTo(d, [new Date(2016,3,14,23,47,52,500)], '1 hour');
-    assertRelativeTo(d, [new Date(2016,3,14,22,48,52,500)], '1 minute');
-    assertRelativeTo(d, [new Date(2016,3,14,22,47,53,500)], '1 second');
-    assertRelativeTo(d, [new Date(2016,3,14,22,47,51,501)], '1 second');
-
-    assertRelativeTo(d, [new Date(2017,0)], '8 months');
-    assertRelativeTo(d, [new Date(2000,0)], '16 years');
-
-    assertRelativeTo(d, [new Date(2017,3,14,22,47,52,500), 'fo'], '1domomoney');
-    assertRelativeTo(d, [new Date(2016,4,14,22,47,52,500), 'fo'], '1timomoney');
-    assertRelativeTo(d, [new Date(2016,3,15,22,47,52,500), 'fo'], '1somomoney');
-    assertRelativeTo(d, [new Date(2016,3,14,23,47,52,500), 'fo'], '1famomoney');
-    assertRelativeTo(d, [new Date(2016,3,14,22,48,52,500), 'fo'], '1mimomoney');
-    assertRelativeTo(d, [new Date(2016,3,14,22,47,53,500), 'fo'], '1remomoney');
-    assertRelativeTo(d, [new Date(2016,3,14,22,47,51,501), 'fo'], '1remomoney');
-
-    assertRelativeTo(new Date(2010,0,18), ['The first day of January, 2010'], '2 weeks');
-    assertRelativeTo(new Date(2010,0),    ['August 10, 2010'], '7 months');
-
-    assertRelativeTo(new Date(), ['last week'],  '1 week',  true);
-    assertRelativeTo(new Date(), ['last month'], '1 month', true);
-    assertRelativeTo(new Date(), ['last year'],  '1 year',  true);
-
-    assertRelativeTo(new Date(), ['next week'],  '1 week');
-    assertRelativeTo(new Date(), ['next month'], '1 month');
-    assertRelativeTo(new Date(), ['next year'],  '1 year');
-
-    raisesError(function(){ test(new Date(NaN)); }, 'Invalid date raises error', TypeError);
-
   });
 
   method('is', function() {
@@ -440,29 +379,6 @@ namespace('Date', function () {
     equal(run(new Date(2015, 0, 31), 'monthsSince', [new Date(2015, 2, 31)]), -2, 'Jan 31st is -2 months since Mar 31st');
     equal(run(new Date(2015, 2, 31), 'monthsUntil', [new Date(2015, 0, 31)]), -2, 'Mar 31st is -2 months until Jan 31st');
     equal(run(new Date(2015, 2, 31), 'monthsSince', [new Date(2015, 0, 31)]),  2, 'Mar 31st is  2 months since Jan 31st');
-
-  });
-
-  group('isMethods', function() {
-
-    equal(run(run(new Date, 'beginningOfWeek'), 'isLastWeek'), false, 'the beginning of this week is not last week');
-
-    // en-GB defines Monday as the beginning of the week. This means however that
-    // depending on what day it is, "Sunday" could be last week or it could be this week.
-
-    var isSunday = new Date().getDay() === 0;
-
-    equal(run(testGetWeekday(0), 'isLastWeek', ['en-GB']), isSunday ? false : true,  'en-GB | sunday could be last week');
-    equal(run(testGetWeekday(0), 'isThisWeek', ['en-GB']), isSunday ? true : false, 'en-GB | sunday could be this week');
-    equal(run(testGetWeekday(0), 'isNextWeek', ['en-GB']), false, 'en-GB | sunday is not next week');
-
-    equal(run(testGetWeekday(0,-1), 'isLastWeek', ['en-GB']), isSunday ? true : false, 'en-GB | last sunday could be last week');
-    equal(run(testGetWeekday(0,-1), 'isThisWeek', ['en-GB']), false, 'en-GB | last sunday is not this week');
-    equal(run(testGetWeekday(0,-1), 'isNextWeek', ['en-GB']), false, 'en-GB | last sunday is not next week');
-
-    equal(run(testGetWeekday(0, 1), 'isLastWeek', ['en-GB']), false, 'en-GB | next sunday is not last week');
-    equal(run(testGetWeekday(0, 1), 'isThisWeek', ['en-GB']), isSunday ? false : true,  'en-GB | next sunday could be this week');
-    equal(run(testGetWeekday(0, 1), 'isNextWeek', ['en-GB']), isSunday ? true : false, 'en-GB | next sunday could be next week');
 
   });
 

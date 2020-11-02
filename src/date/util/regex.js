@@ -108,6 +108,9 @@ function reduceBranch(branch, sep) {
 //
 // Examples:
 //
+//   "" + ""
+// = ""
+//
 //   "" + "day"
 // = "day"
 //

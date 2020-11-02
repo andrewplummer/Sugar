@@ -1332,7 +1332,7 @@ export default class LocaleParser {
       if (match) {
         const date = new Date();
         const { past = false, future = false, explain = false, timeZone } = options;
-        const preference = (-past + future);
+        const prefer = (-past + future);
         const origin = cloneDate(date);
         const absProps = {};
         const relProps = {};
@@ -1343,14 +1343,14 @@ export default class LocaleParser {
           const str = match[i + 1];
           if (str) {
             // TRACK: https://github.com/tc39/proposal-class-fields
-            // Use public class field instead of .call here when this
+            // Use public class fields instead of .call here when this
             // proposal lands.
             const fn = resolver.call(this, str, {
               date,
               type,
               absProps,
               relProps,
-              preference,
+              prefer,
             });
             if (fn) {
               post.push(fn);
@@ -1371,7 +1371,7 @@ export default class LocaleParser {
           fn(date, {
             absProps,
             relProps,
-            preference,
+            prefer,
           });
         }
 
@@ -1384,13 +1384,13 @@ export default class LocaleParser {
         }
 
         // Allow date to resolve before applying preference.
-        if (preference) {
+        if (prefer) {
           const delta = date - origin;
-          if (preference !== delta / Math.abs(delta)) {
+          if (prefer !== delta / Math.abs(delta)) {
             const unit = getAmbiguousUnit(absProps, relProps);
             if (unit) {
               advanceDate(date, {
-                [unit]: preference,
+                [unit]: prefer,
               });
               // If an offset weekday has been set (ie. "the 2nd Friday of
               // November"), then advancing the date to accomodate a preference
@@ -1528,8 +1528,8 @@ function resolveYear(str, options) {
   str = str.replace(/^'/, '');
   resolveInteger(str, options);
   if (str.length === 2) {
-    const { date, absProps, preference } = options;
-    absProps.year = getTwoDigitYear(absProps.year, date, preference);
+    const { date, absProps, prefer } = options;
+    absProps.year = getTwoDigitYear(absProps.year, date, prefer);
   }
 }
 
@@ -1648,15 +1648,15 @@ function ensureLocale(locale) {
   return locale;
 }
 
-function getTwoDigitYear(year, date, preference) {
+function getTwoDigitYear(year, date, prefer) {
   // Following IETF here, adding 1900 or 2000 depending on the last two digits.
   // Note that this makes no accordance for what should happen after 2050, but
   // intentionally ignoring this for now. https://www.ietf.org/rfc/rfc2822.txt
   year += year < 50 ? 2000 : 1900;
-  if (preference) {
+  if (prefer) {
     const delta = year - date.getFullYear();
-    if (delta / Math.abs(delta) !== preference) {
-      year += preference * 100;
+    if (delta / Math.abs(delta) !== prefer) {
+      year += prefer * 100;
     }
   }
   return year;
