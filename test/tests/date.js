@@ -76,8 +76,11 @@ namespace('Date', () => {
   });
 
   describeStatic('create', (create) => {
+
     describe('Numeric formats', () => {
+
       describe('ISO-8601', () => {
+
         it('should parse various levels of specificity', () => {
           assertDateEqual(create('2010'), new Date(2010, 0));
           assertDateEqual(create('2010-11'), new Date(2010, 10));
@@ -392,6 +395,7 @@ namespace('Date', () => {
       });
 
       describe('Year First', () => {
+
         it('should parse hyphen format', () => {
           assertDateEqual(create('2009-7-12'), new Date(2009, 6, 12));
           assertDateEqual(create('2009-07-12'), new Date(2009, 6, 12));
@@ -441,6 +445,7 @@ namespace('Date', () => {
       });
 
       describe('Year Last', () => {
+
         it('should parse hyphen format', () => {
           assertDateEqual(create('1-1-2012'), new Date(2012, 0, 1));
           assertDateEqual(create('1-1-12'), new Date(2012, 0, 1));
@@ -589,6 +594,7 @@ namespace('Date', () => {
       });
 
       describe('Other', () => {
+
         it('should parse IETF format', () => {
           // Most browsers will parse this format
           mockTimeZone(300); // GMT-05:00
@@ -664,6 +670,7 @@ namespace('Date', () => {
     });
 
     describe('DateTime Formats', () => {
+
       it('should parse basic date with time', () => {
         assertDateEqual(
           create('June 1, 2020 10:00 AM'),
@@ -1358,6 +1365,7 @@ namespace('Date', () => {
     });
 
     describe('Time Formats', () => {
+
       it('should parse time with hours only', () => {
         assertDateEqual(create('10 AM'), new Date(2020, 0, 1, 10));
         assertDateEqual(create('10 PM'), new Date(2020, 0, 1, 22));
@@ -1430,6 +1438,7 @@ namespace('Date', () => {
     });
 
     describe('Relative formats', () => {
+
       it('should parse relative year and month', () => {
         assertDateEqual(create('January of last year'), new Date(2019, 0));
         assertDateEqual(create('February of last year'), new Date(2019, 1));
@@ -2445,6 +2454,7 @@ namespace('Date', () => {
     });
 
     describe('Preferences', () => {
+
       function createPast(input) {
         return create({
           past: true,
@@ -2633,6 +2643,7 @@ namespace('Date', () => {
     });
 
     describe('Time zones', () => {
+
       it('should be able to parse a basic date as UTC', () => {
         mockTimeZone(-540); // GMT+09:00
         assertDateEqual(
@@ -2680,6 +2691,7 @@ namespace('Date', () => {
     });
 
     describe('Custom DateTime Formats', () => {
+
       it('should be able to add basic parts', () => {
         assertDateEqual(
           create({
@@ -2800,6 +2812,7 @@ namespace('Date', () => {
     });
 
     describe('Custom Relative Formats', () => {
+
       it('should be able to add a numeric relative format', () => {
         assertDateEqual(
           create({
@@ -2841,6 +2854,7 @@ namespace('Date', () => {
     });
 
     describe('Explaining', () => {
+
       it('should return a parsing result when explain flag is set', () => {
         const { format, parser, ...rest } = create({
           cache: false,
@@ -3033,6 +3047,7 @@ namespace('Date', () => {
     });
 
     describe('From Object', () => {
+
       it('should be able to create a date from unit props', () => {
         assertDateEqual(
           create({
@@ -3137,6 +3152,7 @@ namespace('Date', () => {
     });
 
     describe('Other', () => {
+
       it('should create a date from a timestamp', () => {
         assertDateEqual(create(Date.now()), new Date());
         assertDateEqual(create(1293980400000), new Date(1293980400000));
@@ -3236,6 +3252,7 @@ namespace('Date', () => {
   });
 
   describeInstance('isValid', (isValid) => {
+
     it('should be valid for valid dates', () => {
       assertTrue(isValid(new Date()));
     });
@@ -3249,7 +3266,547 @@ namespace('Date', () => {
     });
   });
 
+  describeInstance('isYesterday', (isYesterday) => {
+
+    it('should be false for the day before yesterday', () => {
+      assertFalse(isYesterday(new Date(2019, 11, 30)));
+      assertFalse(isYesterday(new Date(2019, 11, 30, 1)));
+      assertFalse(isYesterday(new Date(2019, 11, 30, 23, 59, 59, 999)));
+    });
+
+    it('should be true for yesterday', () => {
+      assertTrue(isYesterday(new Date(2019, 11, 31, 0)));
+      assertTrue(isYesterday(new Date(2019, 11, 31, 1)));
+      assertTrue(isYesterday(new Date(2019, 11, 31, 12)));
+      assertTrue(isYesterday(new Date(2019, 11, 31, 22)));
+      assertTrue(isYesterday(new Date(2019, 11, 31, 23, 59, 59, 999)));
+    });
+
+    it('should be false for today', () => {
+      assertFalse(isYesterday(new Date(2020, 0, 1)));
+      assertFalse(isYesterday(new Date(2020, 0, 1, 1)));
+      assertFalse(isYesterday(new Date(2020, 0, 1, 23, 59, 59, 999)));
+    });
+
+    it('should handle irregular input', () => {
+      assertFalse(isYesterday(new Date('invalid')));
+      assertError(() => {
+        isYesterday();
+      });
+      assertError(() => {
+        isYesterday(null);
+      });
+      assertError(() => {
+        isYesterday(0);
+      });
+    });
+  });
+
+  describeInstance('isToday', (isToday) => {
+
+    it('should be false for yesterday', () => {
+      assertFalse(isToday(new Date(2019, 11, 31)));
+      assertFalse(isToday(new Date(2019, 11, 31, 1)));
+      assertFalse(isToday(new Date(2019, 11, 31, 23, 59, 59, 999)));
+    });
+
+    it('should be true for today', () => {
+      assertTrue(isToday(new Date(2020, 0, 1, 0)));
+      assertTrue(isToday(new Date(2020, 0, 1, 1)));
+      assertTrue(isToday(new Date(2020, 0, 1, 12)));
+      assertTrue(isToday(new Date(2020, 0, 1, 22)));
+      assertTrue(isToday(new Date(2020, 0, 1, 23, 59, 59, 999)));
+    });
+
+    it('should be false for tomorrow', () => {
+      assertFalse(isToday(new Date(2020, 0, 2)));
+      assertFalse(isToday(new Date(2020, 0, 2, 1)));
+      assertFalse(isToday(new Date(2020, 0, 2, 23, 59, 59, 999)));
+    });
+
+    it('should handle irregular input', () => {
+      assertFalse(isToday(new Date('invalid')));
+      assertError(() => {
+        isToday();
+      });
+      assertError(() => {
+        isToday(null);
+      });
+      assertError(() => {
+        isToday(0);
+      });
+    });
+  });
+
+  describeInstance('isTomorrow', (isTomorrow) => {
+
+    it('should be false for today', () => {
+      assertFalse(isTomorrow(new Date(2020, 0, 1)));
+      assertFalse(isTomorrow(new Date(2020, 0, 1, 1)));
+      assertFalse(isTomorrow(new Date(2020, 0, 1, 23, 59, 59, 999)));
+    });
+
+    it('should be true for tomorrow', () => {
+      assertTrue(isTomorrow(new Date(2020, 0, 2, 0)));
+      assertTrue(isTomorrow(new Date(2020, 0, 2, 1)));
+      assertTrue(isTomorrow(new Date(2020, 0, 2, 12)));
+      assertTrue(isTomorrow(new Date(2020, 0, 2, 22)));
+      assertTrue(isTomorrow(new Date(2020, 0, 2, 23, 59, 59, 999)));
+    });
+
+    it('should be false for the day after tomorrow', () => {
+      assertFalse(isTomorrow(new Date(2020, 0, 3)));
+      assertFalse(isTomorrow(new Date(2020, 0, 3, 1)));
+      assertFalse(isTomorrow(new Date(2020, 0, 3, 23, 59, 59, 999)));
+    });
+
+    it('should handle irregular input', () => {
+      assertFalse(isTomorrow(new Date('invalid')));
+      assertError(() => {
+        isTomorrow();
+      });
+      assertError(() => {
+        isTomorrow(null);
+      });
+      assertError(() => {
+        isTomorrow(0);
+      });
+    });
+  });
+
+  describeInstance('isLastWeek', (isLastWeek) => {
+
+    it('should be false for the week before last', () => {
+      assertFalse(isLastWeek(new Date(2019, 11, 15)));
+      assertFalse(isLastWeek(new Date(2019, 11, 18)));
+      assertFalse(isLastWeek(new Date(2019, 11, 21, 23, 59, 59, 999)));
+    });
+
+    it('should be true for last week', () => {
+      assertTrue(isLastWeek(new Date(2019, 11, 22)));
+      assertTrue(isLastWeek(new Date(2019, 11, 25)));
+      assertTrue(isLastWeek(new Date(2019, 11, 28, 23, 59, 59, 999)));
+    });
+
+    it('should be false for this week', () => {
+      assertFalse(isLastWeek(new Date(2019, 11, 29)));
+      assertFalse(isLastWeek(new Date(2020, 0, 1)));
+      assertFalse(isLastWeek(new Date(2020, 0, 4, 23, 59, 59, 999)));
+    });
+
+    it('should be correct when first day is Monday', () => {
+      assertFalse(isLastWeek(new Date(2019, 11, 22), 1));
+      assertTrue(isLastWeek(new Date(2019, 11, 23), 1));
+      assertTrue(isLastWeek(new Date(2019, 11, 29), 1));
+      assertFalse(isLastWeek(new Date(2019, 11, 30), 1));
+    });
+
+    it('should be correct when first day is Saturday', () => {
+      assertFalse(isLastWeek(new Date(2019, 11, 20), 6));
+      assertTrue(isLastWeek(new Date(2019, 11, 21), 6));
+      assertTrue(isLastWeek(new Date(2019, 11, 27), 6));
+      assertFalse(isLastWeek(new Date(2019, 11, 28), 6));
+    });
+
+    it('should be correct for unlikely use cases', () => {
+      assertTrue(isLastWeek(new Date(2019, 11, 22), 0));
+      assertFalse(isLastWeek(new Date(2019, 11, 22), 1));
+      assertFalse(isLastWeek(new Date(2019, 11, 22), 2));
+      assertFalse(isLastWeek(new Date(2019, 11, 22), 3));
+      assertTrue(isLastWeek(new Date(2019, 11, 22), 4));
+      assertTrue(isLastWeek(new Date(2019, 11, 22), 5));
+      assertTrue(isLastWeek(new Date(2019, 11, 22), 6));
+      assertTrue(isLastWeek(new Date(2019, 11, 22), 7));
+      assertFalse(isLastWeek(new Date(2019, 11, 22), 8));
+    });
+
+    it('should handle irregular input', () => {
+      assertFalse(isLastWeek(new Date('invalid')));
+      assertError(() => {
+        isLastWeek();
+      });
+      assertError(() => {
+        isLastWeek(null);
+      });
+      assertError(() => {
+        isLastWeek(0);
+      });
+    });
+  });
+
+  describeInstance('isThisWeek', (isThisWeek) => {
+
+    it('should be false for last week', () => {
+      assertFalse(isThisWeek(new Date(2019, 11, 22)));
+      assertFalse(isThisWeek(new Date(2019, 11, 25)));
+      assertFalse(isThisWeek(new Date(2019, 11, 28, 23, 59, 59, 999)));
+    });
+
+    it('should be true for this week', () => {
+      assertTrue(isThisWeek(new Date(2019, 11, 29)));
+      assertTrue(isThisWeek(new Date(2020, 0, 1)));
+      assertTrue(isThisWeek(new Date(2020, 0, 4, 23, 59, 59, 999)));
+    });
+
+    it('should be false for next week', () => {
+      assertFalse(isThisWeek(new Date(2020, 0, 5)));
+      assertFalse(isThisWeek(new Date(2020, 0, 8)));
+      assertFalse(isThisWeek(new Date(2020, 0, 11, 23, 59, 59, 999)));
+    });
+
+    it('should be correct when first day is Monday', () => {
+      assertFalse(isThisWeek(new Date(2019, 11, 29), 1));
+      assertTrue(isThisWeek(new Date(2019, 11, 30), 1));
+      assertTrue(isThisWeek(new Date(2020, 0, 5), 1));
+      assertFalse(isThisWeek(new Date(2020, 0, 6), 1));
+    });
+
+    it('should be correct when first day is Saturday', () => {
+      assertFalse(isThisWeek(new Date(2019, 11, 27), 6));
+      assertTrue(isThisWeek(new Date(2019, 11, 28), 6));
+      assertTrue(isThisWeek(new Date(2020, 0, 3), 6));
+      assertFalse(isThisWeek(new Date(2020, 0, 4), 6));
+    });
+
+    it('should be correct for unlikely use cases', () => {
+      assertTrue(isThisWeek(new Date(2019, 11, 29), 0));
+      assertFalse(isThisWeek(new Date(2019, 11, 29), 1));
+      assertFalse(isThisWeek(new Date(2019, 11, 29), 2));
+      assertFalse(isThisWeek(new Date(2019, 11, 29), 3));
+      assertTrue(isThisWeek(new Date(2019, 11, 29), 4));
+      assertTrue(isThisWeek(new Date(2019, 11, 29), 5));
+      assertTrue(isThisWeek(new Date(2019, 11, 29), 6));
+      assertTrue(isThisWeek(new Date(2019, 11, 29), 7));
+      assertFalse(isThisWeek(new Date(2019, 11, 29), 8));
+    });
+
+    it('should handle irregular input', () => {
+      assertFalse(isThisWeek(new Date('invalid')));
+      assertError(() => {
+        isThisWeek();
+      });
+      assertError(() => {
+        isThisWeek(null);
+      });
+      assertError(() => {
+        isThisWeek(0);
+      });
+    });
+  });
+
+  describeInstance('isNextWeek', (isNextWeek) => {
+
+    it('should be false for this week', () => {
+      assertFalse(isNextWeek(new Date(2019, 11, 29)));
+      assertFalse(isNextWeek(new Date(2020, 0, 1)));
+      assertFalse(isNextWeek(new Date(2020, 0, 4, 23, 59, 59, 999)));
+    });
+
+    it('should be true for next week', () => {
+      assertTrue(isNextWeek(new Date(2020, 0, 5)));
+      assertTrue(isNextWeek(new Date(2020, 0, 8)));
+      assertTrue(isNextWeek(new Date(2020, 0, 11, 23, 59, 59, 999)));
+    });
+
+    it('should be false for the week after next', () => {
+      assertFalse(isNextWeek(new Date(2020, 0, 12)));
+      assertFalse(isNextWeek(new Date(2020, 0, 15)));
+      assertFalse(isNextWeek(new Date(2020, 0, 18, 23, 59, 59, 999)));
+    });
+
+    it('should be correct when first day is Monday', () => {
+      assertFalse(isNextWeek(new Date(2020, 0, 5), 1));
+      assertTrue(isNextWeek(new Date(2020, 0, 6), 1));
+      assertTrue(isNextWeek(new Date(2020, 0, 12), 1));
+      assertFalse(isNextWeek(new Date(2020, 0, 13), 1));
+    });
+
+    it('should be correct when first day is Saturday', () => {
+      assertFalse(isNextWeek(new Date(2020, 0, 3), 6));
+      assertTrue(isNextWeek(new Date(2020, 0, 4), 6));
+      assertTrue(isNextWeek(new Date(2020, 0, 10), 6));
+      assertFalse(isNextWeek(new Date(2020, 0, 11), 6));
+    });
+
+    it('should be correct for unlikely use cases', () => {
+      assertTrue(isNextWeek(new Date(2020, 0, 5), 0));
+      assertFalse(isNextWeek(new Date(2020, 0, 5), 1));
+      assertFalse(isNextWeek(new Date(2020, 0, 5), 2));
+      assertFalse(isNextWeek(new Date(2020, 0, 5), 3));
+      assertTrue(isNextWeek(new Date(2020, 0, 5), 4));
+      assertTrue(isNextWeek(new Date(2020, 0, 5), 5));
+      assertTrue(isNextWeek(new Date(2020, 0, 5), 6));
+      assertTrue(isNextWeek(new Date(2020, 0, 5), 7));
+      assertFalse(isNextWeek(new Date(2020, 0, 5), 8));
+    });
+
+    it('should handle irregular input', () => {
+      assertFalse(isNextWeek(new Date('invalid')));
+      assertError(() => {
+        isNextWeek();
+      });
+      assertError(() => {
+        isNextWeek(null);
+      });
+      assertError(() => {
+        isNextWeek(0);
+      });
+    });
+  });
+
+  describeInstance('isLastMonth', (isLastMonth) => {
+
+    it('should be false for the month before last', () => {
+      assertFalse(isLastMonth(new Date(2019, 10)));
+      assertFalse(isLastMonth(new Date(2019, 10, 15)));
+      assertFalse(isLastMonth(new Date(2019, 10, 30, 23, 59, 59, 999)));
+    });
+
+    it('should be true for last month', () => {
+      assertTrue(isLastMonth(new Date(2019, 11)));
+      assertTrue(isLastMonth(new Date(2019, 11, 15)));
+      assertTrue(isLastMonth(new Date(2019, 11, 31, 23, 59, 59, 999)));
+    });
+
+    it('should be false for this month', () => {
+      assertFalse(isLastMonth(new Date(2020, 0)));
+      assertFalse(isLastMonth(new Date(2020, 0, 15)));
+      assertFalse(isLastMonth(new Date(2020, 0, 31, 23, 59, 59, 999)));
+    });
+
+    it('should report correctly when current time is in February', () => {
+      setSystemTime(new Date(2020, 1, 15));
+      assertFalse(isLastMonth(new Date(2019, 11, 31, 23, 59, 59, 999)));
+      assertTrue(isLastMonth(new Date(2020, 0)));
+      assertTrue(isLastMonth(new Date(2020, 0, 31, 23, 59, 59, 999)));
+      assertFalse(isLastMonth(new Date(2020, 1)));
+    });
+
+    it('should report correctly when the last month is in February', () => {
+      setSystemTime(new Date(2020, 2, 15));
+      assertFalse(isLastMonth(new Date(2020, 0, 31, 23, 59, 59, 999)));
+      assertTrue(isLastMonth(new Date(2020, 1)));
+      assertTrue(isLastMonth(new Date(2020, 1, 29, 23, 59, 59, 999)));
+      assertFalse(isLastMonth(new Date(2020, 2)));
+    });
+
+    it('should not shift when in the last moment of March', () => {
+      setSystemTime(new Date(2020, 2, 31, 23, 59, 59, 999));
+      assertFalse(isLastMonth(new Date(2020, 0, 31, 23, 59, 59, 999)));
+      assertTrue(isLastMonth(new Date(2020, 1)));
+      assertTrue(isLastMonth(new Date(2020, 1, 29, 23, 59, 59, 999)));
+      assertFalse(isLastMonth(new Date(2020, 2)));
+    });
+
+    it('should handle irregular input', () => {
+      assertFalse(isLastMonth(new Date('invalid')));
+      assertError(() => {
+        isLastMonth();
+      });
+      assertError(() => {
+        isLastMonth(null);
+      });
+      assertError(() => {
+        isLastMonth(0);
+      });
+    });
+  });
+
+  describeInstance('isThisMonth', (isThisMonth) => {
+
+    it('should be false for last month', () => {
+      assertFalse(isThisMonth(new Date(2019, 11)));
+      assertFalse(isThisMonth(new Date(2019, 11, 15)));
+      assertFalse(isThisMonth(new Date(2019, 11, 31, 23, 59, 59, 999)));
+    });
+
+    it('should be true for this month', () => {
+      assertTrue(isThisMonth(new Date(2020, 0)));
+      assertTrue(isThisMonth(new Date(2020, 0, 15)));
+      assertTrue(isThisMonth(new Date(2020, 0, 31, 23, 59, 59, 999)));
+    });
+
+    it('should be false for next month', () => {
+      assertFalse(isThisMonth(new Date(2020, 1)));
+      assertFalse(isThisMonth(new Date(2020, 1, 15)));
+      assertFalse(isThisMonth(new Date(2020, 1, 29, 23, 59, 59, 999)));
+    });
+
+    it('should report correctly when current time is in February', () => {
+      setSystemTime(new Date(2020, 1, 15));
+      assertFalse(isThisMonth(new Date(2020, 0, 31, 23, 59, 59, 999)));
+      assertTrue(isThisMonth(new Date(2020, 1)));
+      assertTrue(isThisMonth(new Date(2020, 1, 29, 23, 59, 59, 999)));
+      assertFalse(isThisMonth(new Date(2020, 2)));
+    });
+
+    it('should handle irregular input', () => {
+      assertFalse(isThisMonth(new Date('invalid')));
+      assertError(() => {
+        isThisMonth();
+      });
+      assertError(() => {
+        isThisMonth(null);
+      });
+      assertError(() => {
+        isThisMonth(0);
+      });
+    });
+  });
+
+  describeInstance('isNextMonth', (isNextMonth) => {
+
+    it('should be false this month', () => {
+      assertFalse(isNextMonth(new Date(2020, 0)));
+      assertFalse(isNextMonth(new Date(2020, 0, 15)));
+      assertFalse(isNextMonth(new Date(2020, 0, 31, 23, 59, 59, 999)));
+    });
+
+    it('should be true for next month', () => {
+      assertTrue(isNextMonth(new Date(2020, 1)));
+      assertTrue(isNextMonth(new Date(2020, 1, 15)));
+      assertTrue(isNextMonth(new Date(2020, 1, 29, 23, 59, 59, 999)));
+    });
+
+    it('should be false for the month after next', () => {
+      assertFalse(isNextMonth(new Date(2020, 2)));
+      assertFalse(isNextMonth(new Date(2020, 2, 15)));
+      assertFalse(isNextMonth(new Date(2020, 2, 31, 23, 59, 59, 999)));
+    });
+
+    it('should report correctly when current time is in February', () => {
+      setSystemTime(new Date(2020, 1, 15));
+      assertFalse(isNextMonth(new Date(2020, 1, 29, 23, 59, 59, 999)));
+      assertTrue(isNextMonth(new Date(2020, 2)));
+      assertTrue(isNextMonth(new Date(2020, 2, 31, 23, 59, 59, 999)));
+      assertFalse(isNextMonth(new Date(2020, 3)));
+    });
+
+    it('should not shift when in the last moment of January', () => {
+      setSystemTime(new Date(2020, 0, 31, 23, 59, 59, 999));
+      assertFalse(isNextMonth(new Date(2020, 0, 31, 23, 59, 59, 999)));
+      assertTrue(isNextMonth(new Date(2020, 1)));
+      assertTrue(isNextMonth(new Date(2020, 1, 29, 23, 59, 59, 999)));
+      assertFalse(isNextMonth(new Date(2020, 2)));
+    });
+
+    it('should handle irregular input', () => {
+      assertFalse(isNextMonth(new Date('invalid')));
+      assertError(() => {
+        isNextMonth();
+      });
+      assertError(() => {
+        isNextMonth(null);
+      });
+      assertError(() => {
+        isNextMonth(0);
+      });
+    });
+  });
+
+  describeInstance('isLastYear', (isLastYear) => {
+
+    it('should be false for year before last', () => {
+      assertFalse(isLastYear(new Date(2018, 0)));
+      assertFalse(isLastYear(new Date(2018, 6)));
+      assertFalse(isLastYear(new Date(2018, 11, 31, 23, 59, 59, 999)));
+    });
+
+    it('should be true for last year', () => {
+      assertTrue(isLastYear(new Date(2019, 1)));
+      assertTrue(isLastYear(new Date(2019, 6)));
+      assertTrue(isLastYear(new Date(2019, 11, 31, 23, 59, 59, 999)));
+    });
+
+    it('should be false for this year', () => {
+      assertFalse(isLastYear(new Date(2020, 0)));
+      assertFalse(isLastYear(new Date(2020, 6, 15)));
+      assertFalse(isLastYear(new Date(2020, 11, 31, 23, 59, 59, 999)));
+    });
+
+    it('should handle irregular input', () => {
+      assertFalse(isLastYear(new Date('invalid')));
+      assertError(() => {
+        isLastYear();
+      });
+      assertError(() => {
+        isLastYear(null);
+      });
+      assertError(() => {
+        isLastYear(0);
+      });
+    });
+  });
+
+  describeInstance('isThisYear', (isThisYear) => {
+
+    it('should be false for last year', () => {
+      assertFalse(isThisYear(new Date(2019, 0)));
+      assertFalse(isThisYear(new Date(2019, 6)));
+      assertFalse(isThisYear(new Date(2019, 11, 31, 23, 59, 59, 999)));
+    });
+
+    it('should be true for this year', () => {
+      assertTrue(isThisYear(new Date(2020, 1)));
+      assertTrue(isThisYear(new Date(2020, 6)));
+      assertTrue(isThisYear(new Date(2020, 11, 31, 23, 59, 59, 999)));
+    });
+
+    it('should be false for next year', () => {
+      assertFalse(isThisYear(new Date(2021, 0)));
+      assertFalse(isThisYear(new Date(2021, 6, 15)));
+      assertFalse(isThisYear(new Date(2021, 11, 31, 23, 59, 59, 999)));
+    });
+
+    it('should handle irregular input', () => {
+      assertFalse(isThisYear(new Date('invalid')));
+      assertError(() => {
+        isThisYear();
+      });
+      assertError(() => {
+        isThisYear(null);
+      });
+      assertError(() => {
+        isThisYear(0);
+      });
+    });
+  });
+
+  describeInstance('isNextYear', (isNextYear) => {
+
+    it('should be false for this year', () => {
+      assertFalse(isNextYear(new Date(2020, 0)));
+      assertFalse(isNextYear(new Date(2020, 6)));
+      assertFalse(isNextYear(new Date(2020, 11, 31, 23, 59, 59, 999)));
+    });
+
+    it('should be true for next year', () => {
+      assertTrue(isNextYear(new Date(2021, 1)));
+      assertTrue(isNextYear(new Date(2021, 6)));
+      assertTrue(isNextYear(new Date(2021, 11, 31, 23, 59, 59, 999)));
+    });
+
+    it('should be false for the year after next', () => {
+      assertFalse(isNextYear(new Date(2022, 0)));
+      assertFalse(isNextYear(new Date(2022, 6, 15)));
+      assertFalse(isNextYear(new Date(2022, 11, 31, 23, 59, 59, 999)));
+    });
+
+    it('should handle irregular input', () => {
+      assertFalse(isNextYear(new Date('invalid')));
+      assertError(() => {
+        isNextYear();
+      });
+      assertError(() => {
+        isNextYear(null);
+      });
+      assertError(() => {
+        isNextYear(0);
+      });
+    });
+  });
   describeInstance('isFuture', (isFuture) => {
+
     it('should be true for dates in the future', () => {
       assertTrue(isFuture(new Date(Date.now() + 1000)));
     });
@@ -3270,6 +3827,7 @@ namespace('Date', () => {
   });
 
   describeInstance('isPast', (isPast) => {
+
     it('should be false for dates in the future', () => {
       assertFalse(isPast(new Date(Date.now() + 1000)));
     });
@@ -3337,6 +3895,7 @@ namespace('Date', () => {
   );
 
   describeInstance('set', (set) => {
+
     it('should set the year', () => {
       assertDateEqual(
         set(new Date(2020, 0), { year: 2010 }),
@@ -3714,6 +4273,7 @@ namespace('Date', () => {
   });
 
   describeInstance('advance', (advance) => {
+
     it('should advance the year', () => {
       assertDateEqual(
         advance(new Date(2020, 0), { years: 1 }),
@@ -4300,6 +4860,7 @@ namespace('Date', () => {
   });
 
   describeInstance('rewind', (rewind) => {
+
     it('should rewind the year', () => {
       assertDateEqual(
         rewind(new Date(2020, 0), { years: 1 }),
@@ -4887,6 +5448,7 @@ namespace('Date', () => {
   });
 
   describeInstance('addYears', (addYears) => {
+
     it('should function as an alias for advance', () => {
       assertDateEqual(addYears(new Date(2020, 0), 1), new Date(2021, 0));
       assertDateEqual(addYears(new Date(2020, 0), 10), new Date(2030, 0));
@@ -4905,6 +5467,7 @@ namespace('Date', () => {
   });
 
   describeInstance('addMonths', (addMonths) => {
+
     it('should function as an alias for advance', () => {
       assertDateEqual(addMonths(new Date(2020, 0), 1), new Date(2020, 1));
       assertDateEqual(addMonths(new Date(2020, 0), 10), new Date(2020, 10));
@@ -4930,6 +5493,7 @@ namespace('Date', () => {
   });
 
   describeInstance('addWeeks', (addWeeks) => {
+
     it('should function as an alias for advance', () => {
       assertDateEqual(addWeeks(new Date(2020, 0), 1), new Date(2020, 0, 8));
       assertDateEqual(addWeeks(new Date(2020, 0), 10), new Date(2020, 2, 11));
@@ -4948,6 +5512,7 @@ namespace('Date', () => {
   });
 
   describeInstance('addDays', (addDays) => {
+
     it('should function as an alias for advance', () => {
       assertDateEqual(addDays(new Date(2020, 0), 1), new Date(2020, 0, 2));
       assertDateEqual(addDays(new Date(2020, 0), 10), new Date(2020, 0, 11));
@@ -4966,6 +5531,7 @@ namespace('Date', () => {
   });
 
   describeInstance('addHours', (addHours) => {
+
     it('should function as an alias for advance', () => {
       assertDateEqual(addHours(new Date(2020, 0), 1), new Date(2020, 0, 1, 1));
       assertDateEqual(
@@ -4990,6 +5556,7 @@ namespace('Date', () => {
   });
 
   describeInstance('addMinutes', (addMinutes) => {
+
     it('should function as an alias for advance', () => {
       assertDateEqual(
         addMinutes(new Date(2020, 0), 1),
@@ -5017,6 +5584,7 @@ namespace('Date', () => {
   });
 
   describeInstance('addSeconds', (addSeconds) => {
+
     it('should function as an alias for advance', () => {
       assertDateEqual(
         addSeconds(new Date(2020, 0), 1),
@@ -5044,6 +5612,7 @@ namespace('Date', () => {
   });
 
   describeInstance('addMilliseconds', (addMilliseconds) => {
+
     it('should function as an alias for advance', () => {
       assertDateEqual(
         addMilliseconds(new Date(2020, 0), 1),
@@ -5071,6 +5640,7 @@ namespace('Date', () => {
   });
 
   describeInstance('getISOWeek', (getISOWeek) => {
+
     it('should provide the correct ISO week for 2020', () => {
       assertEqual(getISOWeek(new Date(2019, 11, 29)), 52);
       assertEqual(getISOWeek(new Date(2019, 11, 30)), 1);
@@ -5139,6 +5709,7 @@ namespace('Date', () => {
   });
 
   describeInstance('setISOWeek', (setISOWeek) => {
+
     it('should provide the correct ISO week for 2020', () => {
       const date = new Date(2020, 0);
       setISOWeek(date, 1);
@@ -5194,6 +5765,7 @@ namespace('Date', () => {
   });
 
   describeInstance('setDay,setWeekday', (setWeekday) => {
+
     it('should set the weekday', () => {
       const date = new Date(2020, 0);
       setWeekday(date, 0);
@@ -5236,6 +5808,7 @@ namespace('Date', () => {
   });
 
   describeInstance('getWeekday', (getWeekday) => {
+
     it('should be an alias for getDay', () => {
       assertEqual(getWeekday(new Date(2019, 11, 29)), 0);
       assertEqual(getWeekday(new Date(2019, 11, 30)), 1);
@@ -5248,6 +5821,7 @@ namespace('Date', () => {
   });
 
   describeInstance('getDaysInMonth', (getDaysInMonth) => {
+
     it('should get the correct days in the month', () => {
       assertEqual(getDaysInMonth(new Date(2020, 0)), 31);
       assertEqual(getDaysInMonth(new Date(2020, 1)), 29);
@@ -5274,6 +5848,7 @@ namespace('Date', () => {
   });
 
   describeInstance('isLeapYear', (isLeapYear) => {
+
     it('should correctly determine leap years', () => {
       assertEqual(isLeapYear(new Date(2008, 0)), true);
       assertEqual(isLeapYear(new Date(2009, 0)), false);
@@ -5301,6 +5876,7 @@ namespace('Date', () => {
   });
 
   describeInstance('startOfYear', (startOfYear) => {
+
     it('should correctly reset the year', () => {
       assertDateEqual(startOfYear(new Date(2020, 0)), new Date(2020, 0));
       assertDateEqual(startOfYear(new Date(2020, 0, 2)), new Date(2020, 0));
@@ -5335,6 +5911,7 @@ namespace('Date', () => {
   });
 
   describeInstance('startOfMonth', (startOfMonth) => {
+
     it('should correctly reset the month', () => {
       assertDateEqual(startOfMonth(new Date(2020, 0)), new Date(2020, 0));
       assertDateEqual(startOfMonth(new Date(2020, 1)), new Date(2020, 1));
@@ -5369,6 +5946,7 @@ namespace('Date', () => {
   });
 
   describeInstance('startOfWeek', (startOfWeek) => {
+
     it('should correctly reset the week to Sunday', () => {
       assertDateEqual(
         startOfWeek(new Date(2019, 11, 30)),
@@ -5424,6 +6002,7 @@ namespace('Date', () => {
   });
 
   describeInstance('startOfISOWeek', (startOfISOWeek) => {
+
     it('should correctly reset the week to Sunday', () => {
       assertDateEqual(
         startOfISOWeek(new Date(2019, 11, 29)),
@@ -5533,6 +6112,7 @@ namespace('Date', () => {
   });
 
   describeInstance('startOfDay', (startOfDay) => {
+
     it('should correctly reset the date', () => {
       assertDateEqual(startOfDay(new Date(2020, 0)), new Date(2020, 0));
       assertDateEqual(startOfDay(new Date(2020, 0, 1, 1)), new Date(2020, 0));
@@ -5566,6 +6146,7 @@ namespace('Date', () => {
   });
 
   describeInstance('startOfHour', (startOfHour) => {
+
     it('should correctly reset the hour', () => {
       assertDateEqual(startOfHour(new Date(2020, 0)), new Date(2020, 0));
       assertDateEqual(
@@ -5605,6 +6186,7 @@ namespace('Date', () => {
   });
 
   describeInstance('startOfMinute', (startOfMinute) => {
+
     it('should correctly reset the minute', () => {
       assertDateEqual(startOfMinute(new Date(2020, 0)), new Date(2020, 0));
       assertDateEqual(
@@ -5644,6 +6226,7 @@ namespace('Date', () => {
   });
 
   describeInstance('startOfSecond', (startOfSecond) => {
+
     it('should correctly reset the secon', () => {
       assertDateEqual(startOfSecond(new Date(2020, 0)), new Date(2020, 0));
       assertDateEqual(
@@ -5683,6 +6266,7 @@ namespace('Date', () => {
   });
 
   describeInstance('endOfYear', (endOfYear) => {
+
     it('should correctly set to the end of the year', () => {
       assertDateEqual(
         endOfYear(new Date(2020, 0)),
@@ -5718,6 +6302,7 @@ namespace('Date', () => {
   });
 
   describeInstance('endOfMonth', (endOfMonth) => {
+
     it('should correctly set to the end of the month', () => {
       assertDateEqual(
         endOfMonth(new Date(2020, 0)),
@@ -5757,6 +6342,7 @@ namespace('Date', () => {
   });
 
   describeInstance('endOfWeek', (endOfWeek) => {
+
     it('should correctly set to end of Saturday', () => {
       assertDateEqual(
         endOfWeek(new Date(2019, 11, 30)),
@@ -5816,6 +6402,7 @@ namespace('Date', () => {
   });
 
   describeInstance('endOfISOWeek', (endOfISOWeek) => {
+
     it('should correctly set end of Sunday', () => {
       assertDateEqual(
         endOfISOWeek(new Date(2019, 11, 30)),
@@ -5875,6 +6462,7 @@ namespace('Date', () => {
   });
 
   describeInstance('endOfDay', (endOfDay) => {
+
     it('should correctly set to the end of the day', () => {
       assertDateEqual(
         endOfDay(new Date(2020, 0)),
@@ -5914,6 +6502,7 @@ namespace('Date', () => {
   });
 
   describeInstance('endOfHour', (endOfHour) => {
+
     it('should correctly set to the end of the hour', () => {
       assertDateEqual(
         endOfHour(new Date(2020, 0)),
@@ -5957,6 +6546,7 @@ namespace('Date', () => {
   });
 
   describeInstance('endOfMinute', (endOfMinute) => {
+
     it('should correctly set the minute', () => {
       assertDateEqual(
         endOfMinute(new Date(2020, 0)),
@@ -6000,6 +6590,7 @@ namespace('Date', () => {
   });
 
   describeInstance('endOfSecond', (endOfSecond) => {
+
     it('should correctly set the secon', () => {
       assertDateEqual(
         endOfSecond(new Date(2020, 0)),
@@ -6043,6 +6634,7 @@ namespace('Date', () => {
   });
 
   describeInstance('clone', (clone) => {
+
     it('should create a copy of the date', () => {
       const date = new Date();
       assertFalse(date === clone(date));
@@ -6073,6 +6665,7 @@ namespace('Date', () => {
   });
 
   describeInstance('isWeekday', (isWeekday) => {
+
     it('should correctly identify weekdays', () => {
       assertEqual(isWeekday(new Date(2020, 0, 1)), true);
       assertEqual(isWeekday(new Date(2020, 0, 2)), true);
@@ -6104,6 +6697,7 @@ namespace('Date', () => {
   });
 
   describeInstance('isWeekend', (isWeekend) => {
+
     it('should correctly identify weekdays', () => {
       assertEqual(isWeekend(new Date(2020, 0, 1)), false);
       assertEqual(isWeekend(new Date(2020, 0, 2)), false);
@@ -6135,6 +6729,7 @@ namespace('Date', () => {
   });
 
   describeInstance('relative', (relative) => {
+
     it('should format past relative dates', () => {
       assertEqual(relative(new Date(2019, 11, 31, 23, 59, 59)), '1 second ago');
       assertEqual(
@@ -6464,6 +7059,7 @@ namespace('Date', () => {
   });
 
   describeInstance('format', (format) => {
+
     it('should use datetime long format with no arguments', () => {
       assertEqual(format(new Date(2020, 0)), 'January 1, 2020, 12:00 AM');
       assertEqual(
@@ -6473,7 +7069,9 @@ namespace('Date', () => {
     });
 
     describe('formatting with built-in aliases', () => {
+
       describe('date formats', () => {
+
         it('should correctly apply full date format', () => {
           assertEqual(
             format(new Date(2020, 0), Sugar.Date.DATE_FULL),
@@ -6520,6 +7118,7 @@ namespace('Date', () => {
       });
 
       describe('time formats', () => {
+
         it('should correctly apply full time format', () => {
           assertEqual(
             format(new Date(2020, 0), Sugar.Date.TIME_FULL),
@@ -6566,6 +7165,7 @@ namespace('Date', () => {
       });
 
       describe('24 hour time formats', () => {
+
         it('should correctly apply full time format', () => {
           assertEqual(
             format(new Date(2020, 0), Sugar.Date.TIME_24_FULL),
@@ -6612,6 +7212,7 @@ namespace('Date', () => {
       });
 
       describe('time with zone formats', () => {
+
         it('should correctly apply time with zone format', () => {
           assertEqual(
             format(new Date(2020, 0), Sugar.Date.TIME_WITH_ZONE),
@@ -6658,6 +7259,7 @@ namespace('Date', () => {
       });
 
       describe('datetime formats', () => {
+
         it('should correctly apply full time format', () => {
           assertEqual(
             format(new Date(2020, 0), Sugar.Date.DATETIME_FULL),
@@ -6704,6 +7306,7 @@ namespace('Date', () => {
       });
 
       describe('datetime 24-hour formats', () => {
+
         it('should correctly apply full time format', () => {
           assertEqual(
             format(new Date(2020, 0), Sugar.Date.DATETIME_24_FULL),
@@ -6750,6 +7353,7 @@ namespace('Date', () => {
       });
 
       describe('datetime with zone', () => {
+
         it('should correctly apply datetime with zone', () => {
           assertEqual(
             format(new Date(2020, 0), Sugar.Date.DATETIME_WITH_ZONE),
@@ -6803,6 +7407,7 @@ namespace('Date', () => {
     });
 
     describe('formatting with a token string', () => {
+
       it('should correctly format era token', () => {
         assertEqual(format(new Date(2020, 0), 'G'), 'AD');
         assertEqual(format(new Date(2020, 0), 'GG'), 'AD');
@@ -7196,6 +7801,7 @@ namespace('Date', () => {
       });
 
       describe('timezone name tokens', () => {
+
         it('should correctly format timezone name token for EDT', () => {
           Intl.DateTimeFormat.mockTimeZoneNames({
             long: 'Eastern Daylight Time',
@@ -7223,6 +7829,7 @@ namespace('Date', () => {
       });
 
       describe('timezone offset tokens', () => {
+
         it('should correctly format timezone offset token for EST', () => {
           mockTimeZone(240); // GMT-04:00
           assertEqual(format(new Date(2020, 0), 'Z'), '-0400');
@@ -7323,6 +7930,7 @@ namespace('Date', () => {
     });
 
     describe('complex formatting with an options object', () => {
+
       it('should accept a locale option', () => {
         assertEqual(
           format(new Date(2020, 0), {
@@ -7461,6 +8069,7 @@ namespace('Number', () => {
   });
 
   describeInstance('second,seconds', (seconds) => {
+
     it('should get the correct number of milliseconds for seconds', () => {
       assertEqual(seconds(1), 1000);
       assertEqual(seconds(-1), -1000);
@@ -7478,6 +8087,7 @@ namespace('Number', () => {
   });
 
   describeInstance('minute,minutes', (minutes) => {
+
     it('should get the correct number of milliseconds for minutes', () => {
       assertEqual(minutes(1), 60 * 1000);
       assertEqual(minutes(-1), -60 * 1000);
@@ -7495,6 +8105,7 @@ namespace('Number', () => {
   });
 
   describeInstance('hour,hours', (hours) => {
+
     it('should get the correct number of milliseconds for hours', () => {
       assertEqual(hours(1), 60 * 60 * 1000);
       assertEqual(hours(-1), -60 * 60 * 1000);
@@ -7512,6 +8123,7 @@ namespace('Number', () => {
   });
 
   describeInstance('day,days', (days) => {
+
     it('should get the correct number of milliseconds for days', () => {
       assertEqual(days(1), 24 * 60 * 60 * 1000);
       assertEqual(days(-1), -24 * 60 * 60 * 1000);
@@ -7529,6 +8141,7 @@ namespace('Number', () => {
   });
 
   describeInstance('week,weeks', (weeks) => {
+
     it('should get the correct number of milliseconds for weeks', () => {
       assertEqual(weeks(1), 7 * 24 * 60 * 60 * 1000);
       assertEqual(weeks(-1), -7 * 24 * 60 * 60 * 1000);
@@ -7546,6 +8159,7 @@ namespace('Number', () => {
   });
 
   describeInstance('month,months', (months) => {
+
     it('should get the correct number of milliseconds for months', () => {
       assertEqual(months(1), 2629746000);
       assertEqual(months(-1), -2629746000);
@@ -7563,6 +8177,7 @@ namespace('Number', () => {
   });
 
   describeInstance('year,years', (years) => {
+
     it('should get the correct number of milliseconds for years', () => {
       assertEqual(years(1), 31556952000);
       assertEqual(years(-1), -31556952000);
@@ -7580,6 +8195,7 @@ namespace('Number', () => {
   });
 
   describeInstance('yearAgo,yearsAgo', (yearsAgo) => {
+
     it('should get the correct date', () => {
       assertDateEqual(yearsAgo(0), new Date(2020, 0));
       assertDateEqual(yearsAgo(1), new Date(2019, 0));
@@ -7600,6 +8216,7 @@ namespace('Number', () => {
   });
 
   describeInstance('monthAgo', (monthsAgo) => {
+
     it('should get the correct date', () => {
       assertDateEqual(monthsAgo(0), new Date(2020, 0));
       assertDateEqual(monthsAgo(1), new Date(2019, 11));
@@ -7620,6 +8237,7 @@ namespace('Number', () => {
   });
 
   describeInstance('weekAgo,weeksAgo', (weeksAgo) => {
+
     it('should get the correct date', () => {
       assertDateEqual(weeksAgo(0), new Date(2020, 0));
       assertDateEqual(weeksAgo(1), new Date(2019, 11, 25));
@@ -7640,6 +8258,7 @@ namespace('Number', () => {
   });
 
   describeInstance('dayAgo,daysAgo', (daysAgo) => {
+
     it('should get the correct date', () => {
       assertDateEqual(daysAgo(0), new Date(2020, 0));
       assertDateEqual(daysAgo(1), new Date(2019, 11, 31));
@@ -7660,6 +8279,7 @@ namespace('Number', () => {
   });
 
   describeInstance('hourAgo,hoursAgo', (hoursAgo) => {
+
     it('should get the correct date', () => {
       assertDateEqual(hoursAgo(0), new Date(2020, 0));
       assertDateEqual(hoursAgo(1), new Date(2019, 11, 31, 23));
@@ -7680,6 +8300,7 @@ namespace('Number', () => {
   });
 
   describeInstance('minuteAgo,minutesAgo', (minutesAgo) => {
+
     it('should get the correct date', () => {
       assertDateEqual(minutesAgo(0), new Date(2020, 0));
       assertDateEqual(minutesAgo(1), new Date(2019, 11, 31, 23, 59));
@@ -7700,6 +8321,7 @@ namespace('Number', () => {
   });
 
   describeInstance('secondAgo,secondsAgo', (secondsAgo) => {
+
     it('should get the correct date', () => {
       assertDateEqual(secondsAgo(0), new Date(2020, 0));
       assertDateEqual(secondsAgo(1), new Date(2019, 11, 31, 23, 59, 59));
@@ -7720,6 +8342,7 @@ namespace('Number', () => {
   });
 
   describeInstance('millisecondAgo,millisecondsAgo', (millisecondsAgo) => {
+
     it('should get the correct date', () => {
       assertDateEqual(millisecondsAgo(0), new Date(2020, 0));
       assertDateEqual(
@@ -7743,6 +8366,7 @@ namespace('Number', () => {
   });
 
   describeInstance('yearFromNow,yearsFromNow', (yearsFromNow) => {
+
     it('should get the correct date', () => {
       assertDateEqual(yearsFromNow(0), new Date(2020, 0));
       assertDateEqual(yearsFromNow(1), new Date(2021, 0));
@@ -7763,6 +8387,7 @@ namespace('Number', () => {
   });
 
   describeInstance('monthFromNow,monthsFromNow', (monthsFromNow) => {
+
     it('should get the correct date', () => {
       assertDateEqual(monthsFromNow(0), new Date(2020, 0));
       assertDateEqual(monthsFromNow(1), new Date(2020, 1));
@@ -7783,6 +8408,7 @@ namespace('Number', () => {
   });
 
   describeInstance('weekFromNow,weeksFromNow', (weeksFromNow) => {
+
     it('should get the correct date', () => {
       assertDateEqual(weeksFromNow(0), new Date(2020, 0));
       assertDateEqual(weeksFromNow(1), new Date(2020, 0, 8));
@@ -7803,6 +8429,7 @@ namespace('Number', () => {
   });
 
   describeInstance('dayFromNow,daysFromNow', (daysFromNow) => {
+
     it('should get the correct date', () => {
       assertDateEqual(daysFromNow(0), new Date(2020, 0));
       assertDateEqual(daysFromNow(1), new Date(2020, 0, 2));
@@ -7823,6 +8450,7 @@ namespace('Number', () => {
   });
 
   describeInstance('hourFromNow,hoursFromNow', (hoursFromNow) => {
+
     it('should get the correct date', () => {
       assertDateEqual(hoursFromNow(0), new Date(2020, 0));
       assertDateEqual(hoursFromNow(1), new Date(2020, 0, 1, 1));
@@ -7843,6 +8471,7 @@ namespace('Number', () => {
   });
 
   describeInstance('minuteFromNow,minutesFromNow', (minutesFromNow) => {
+
     it('should get the correct date', () => {
       assertDateEqual(minutesFromNow(0), new Date(2020, 0));
       assertDateEqual(minutesFromNow(1), new Date(2020, 0, 1, 0, 1));
@@ -7863,6 +8492,7 @@ namespace('Number', () => {
   });
 
   describeInstance('secondFromNow,secondsFromNow', (secondsFromNow) => {
+
     it('should get the correct date', () => {
       assertDateEqual(secondsFromNow(0), new Date(2020, 0));
       assertDateEqual(secondsFromNow(1), new Date(2020, 0, 1, 0, 0, 1));
@@ -7882,36 +8512,36 @@ namespace('Number', () => {
     });
   });
 
-  describeInstance(
-    'millisecondFromNow,millisecondsFromNow',
-    (millisecondsFromNow) => {
+  describeInstance('millisecondFromNow,millisecondsFromNow', (msFromNow) => {
+
       it('should get the correct date', () => {
-        assertDateEqual(millisecondsFromNow(0), new Date(2020, 0));
+        assertDateEqual(msFromNow(0), new Date(2020, 0));
         assertDateEqual(
-          millisecondsFromNow(1),
+          msFromNow(1),
           new Date(2020, 0, 1, 0, 0, 0, 1)
         );
         assertDateEqual(
-          millisecondsFromNow(-1),
+          msFromNow(-1),
           new Date(2019, 11, 31, 23, 59, 59, 999)
         );
       });
 
       it('should handle irregular input', () => {
         assertError(() => {
-          millisecondsFromNow();
+          msFromNow();
         });
         assertError(() => {
-          millisecondsFromNow(NaN);
+          msFromNow(NaN);
         });
         assertError(() => {
-          millisecondsFromNow(null);
+          msFromNow(null);
         });
       });
     }
   );
 
   describeInstance('duration', (duration) => {
+
     it('should get the correct duration for milliseconds', async () => {
       assertEqual(duration(0), '0 milliseconds');
       assertEqual(duration(1), '1 millisecond');

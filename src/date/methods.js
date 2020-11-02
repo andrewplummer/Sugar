@@ -1,6 +1,7 @@
 export * from './addUnits';
 export * from './isDay';
 export * from './isMonth';
+export * from './isUnit';
 export * from './startOfUnit';
 export * from './endOfUnit';
 export * from './units';

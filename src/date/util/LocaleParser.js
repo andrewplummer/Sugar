@@ -1080,14 +1080,20 @@ export default class LocaleParser {
   resolveEdge(str) {
     // Edge phrases like "the beginning of January", etc.
     return (date, { absProps, relProps }) => {
-      const isEnd = str === 'end' || str === 'last day';
+      const end = str === 'end' || str === 'last day';
+      const props = absProps;
       const { index } = getPropsSpecificity({
         ...relProps,
         ...absProps,
       });
-      resetByIndex(date, index, isEnd, absProps);
+      resetByIndex(date, index, {
+        end,
+        props,
+      });
       if (str === 'first day' || str === 'last day') {
-        resetByUnit(date, 'day', false, absProps);
+        resetByUnit(date, 'day', {
+          props,
+        });
       }
     };
   }

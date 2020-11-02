@@ -52,6 +52,19 @@ defineInstance('isOctober', methods.isOctober);
 defineInstance('isNovember', methods.isNovember);
 defineInstance('isDecember', methods.isDecember);
 
+defineInstance('isToday', methods.isToday);
+defineInstance('isYesterday', methods.isYesterday);
+defineInstance('isTomorrow', methods.isTomorrow);
+defineInstance('isLastWeek', methods.isLastWeek);
+defineInstance('isThisWeek', methods.isThisWeek);
+defineInstance('isNextWeek', methods.isNextWeek);
+defineInstance('isLastMonth', methods.isLastMonth);
+defineInstance('isThisMonth', methods.isThisMonth);
+defineInstance('isNextMonth', methods.isNextMonth);
+defineInstance('isLastYear', methods.isLastYear);
+defineInstance('isThisYear', methods.isThisYear);
+defineInstance('isNextYear', methods.isNextYear);
+
 defineInstance('startOfYear', methods.startOfYear);
 defineInstance('startOfMonth', methods.startOfMonth);
 defineInstance('startOfWeek', methods.startOfWeek);

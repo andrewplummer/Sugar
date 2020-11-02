@@ -71,6 +71,6 @@ export function endOfSecond(date) {
 
 function endOf(date, unit) {
   assertValidDate(date);
-  resetByUnit(date, unit, true);
+  resetByUnit(date, unit, { end: true });
   return date;
 }

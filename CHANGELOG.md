@@ -211,6 +211,9 @@ call `Function#lock` first in the chain to achieve the same effect.
     `fromUTC`. To parse a date as UTC, now use the option `timezone: 'UTC'`.
     Note that as before explicit timezone offsets in the format will override
     this option, for example the `Z` token in ISO-8601 dates and `GMT+09`, etc.
+- Changed `Date#isLastWeek`, `Date#isThisWeek`, and `Date#isNextWeek` to no
+    longer accept a locale code. Instead it accepts an integer representing the
+    weekday that starts the week, typically `1` for Monday or `6` for Saturday.
 
 TODO:
 

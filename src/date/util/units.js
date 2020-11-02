@@ -16,31 +16,32 @@ export const UNITS = [
   'millisecond',
 ];
 
-// Note that years, months, weeks, and days may have 1 hour less in DST
-// timezones when a fallback shift occurs. "rel" designates the multiplier
-// relative to it's lower unit, and is generally used in colloquial forms
-// like "half a year ago" where precision isn't expected. "half a month"
-// is fairly ambiguous, so keeping things simple and saying "4 weeks".
+// "min" here denotes the minimum possible value for the unit and is used in
+// relative time formats where we want to greedily assume the upper unit
+// without caring too much for accuracy.
+//
+// "rel" similarly denotes the multiplier relative to it's lower unit for
+// formats like "half a year ago" that colloquially refer to a fraction of the
+// lower unit where precision is also not expected. "half a month" is ambiguous,
+// so keeping things simple and saying "4 weeks".
 
 const UNIT_MULTIPLIERS = {
   year: {
     avg: YEAR_AVG_DAYS * DAY_IN_MS,
-    min: 365 * DAY_IN_MS - HOUR_IN_MS,
+    min: 365 * DAY_IN_MS,
     rel: 12,
   },
   month: {
     avg: YEAR_AVG_DAYS / 12 * DAY_IN_MS,
-    min: 28 * DAY_IN_MS - HOUR_IN_MS,
+    min: 28 * DAY_IN_MS,
     rel: 4,
   },
   week: {
     avg: 7 * DAY_IN_MS,
-    min: 7 * DAY_IN_MS - HOUR_IN_MS,
     rel: 7,
   },
   day: {
     avg: DAY_IN_MS,
-    min: DAY_IN_MS - HOUR_IN_MS,
     rel: 24,
   },
   hour: {
@@ -127,7 +128,7 @@ export function getAdjacentUnit(unit, offset) {
   return UNITS[getUnitIndex(unit) + offset];
 }
 
-export function getUnitEdge(unit, end, date) {
+export function getUnitEdge(unit, date, end) {
   const edge = UNIT_EDGES[unit];
   let val = edge[end ? 'end' : 'start'];
   if (isFunction(val)) {
@@ -139,7 +140,7 @@ export function getUnitEdge(unit, end, date) {
 export function convertTimeToUnit(ms, type) {
   let unit = 'millisecond';
 
-  // Round the tim to avoid floating point errors.
+  // Round the time to avoid floating point errors.
   ms = Math.round(ms);
 
   let value = ms;

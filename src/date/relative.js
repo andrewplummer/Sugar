@@ -58,16 +58,16 @@ import { getUnitDistance } from './util/distance';
  *   new Date(Date.now() - 1000).relative() -> "1 second ago"
  *   new Date(Date.now() + 1000).relative() -> "1 second from now"
  *   new Date(Date.now() + 1000).relative('ja') -> "1 秒前"
- *   new Date(Date.now() - 24 * 60 * 60 * 1000).relative(
- *     new Intl.RelativeTimeFormat('en', {
- *       numeric: 'auto',
- *     })
- *   ) -> "yesterday"
  *   date.relative((value, unit) => {
  *     if (unit !== 'second' && unit !== 'minute') {
  *       return date.toISOString();
  *     }
  *   }) -> relative or absolute format depending on the date
+ *   new Date(Date.now() - 24 * 60 * 60 * 1000).relative(
+ *     new Intl.RelativeTimeFormat('en', {
+ *       numeric: 'auto',
+ *     })
+ *   ) -> "yesterday"
  *
  **/
 export default function relative(date, opt) {
@@ -95,8 +95,8 @@ export default function relative(date, opt) {
     value = getUnitDistance(date, compare, unit);
   }
 
-  // If a resolve function was passed, call it and return the resulting value
-  // if it exists.
+  // If a resolve function was passed, call it
+  // and return the resulting value if it exists.
   if (resolve) {
     const resolved = resolve(value, unit, date, options);
     if (resolved != null) {
