@@ -9,23 +9,24 @@
 //
 // - Build a simple trie of tokens from each space-split string in the array.
 //
-// - Traverse the trie from the leaf nodes, reducing each branch into a string:
+// - Traverse the trie from the leaf nodes, reducing each branch into a string
+//   using the following steps:
 //
-//   - If there are no nodes in the branch then return an empty string.
+//   1. If there are no nodes in the branch then return an empty string.
 //
-//   - If there is one node in the branch, then return the "join" of it's key
-//     and value where a "join" is a string that will match the exact phrase
+//   2. If there is one node in the branch, then return the "join" of it's key
+//      and value where a "join" is a string that will match the exact phrase
 //     when used inside a regex without causing alternation.
 //
-//   - Otherwise, check each node for duplicates and remove them from the trie,
-//     joining both keys as an "alternation" which will match either token. If
-//     the branch has changed as a result of this operation, then recursively
-//     check it to continue removing duplicates.
+//   3. Otherwise, check each node for duplicates and remove them from the trie,
+//      joining both keys as an "alternation" which will match either token. If
+//      the branch has changed as a result of this operation, then recursively
+//      check it to continue removing duplicates.
 //
-//   - When no more optimization is possible, take all nodes, "join" their keys
-//     and values together, and take the entire result as a non-capturing group.
+//   4. When no more optimization is possible, take all nodes, "join" their keys
+//      and values together, and take the entire result as alternates.
 //
-//   - Return the entire reduced value as the regex source.
+//   5. Return the entire reduced value as the regex source.
 //
 // Notes:
 //
@@ -182,8 +183,7 @@ function alternateTokenSource(str1, str2) {
   return [str1, str2].join('|');
 }
 
-function getNonCapturingGroup(arg) {
-  let str = Array.isArray(arg) ? arg.join('|') : arg;
+function getNonCapturingGroup(str) {
   if (str.includes('|')) {
     str = `(?:${str})`;
   }
