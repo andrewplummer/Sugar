@@ -2,8 +2,6 @@ import { assertInteger } from '../../util/assertions';
 import { isDate } from '../../util/typeChecks';
 import { setWeekday } from './weekdays';
 
-// Date method helpers
-
 const METHOD_NAMES = {
   year: 'FullYear',
   month: 'Month',
@@ -22,16 +20,6 @@ export function callDateGet(date, unit) {
 export function callDateSet(date, unit, val) {
   assertInteger(val);
 
-  // Do not proceed if the value is the same as what will be set. In theory
-  // this should be a noop, however it will cause timezone shifts when in the
-  // middle of a DST fallback. This is unavoidable as the notation itself is
-  // ambiguous (ie. "1:00am" happens twice on November 1st, 2015 in northern
-  // hemisphere timezones that follow DST), however when advancing or rewinding
-  // dates this can throw off calculations so avoid this unintentional shift.
-  if (val === callDateGet(date, unit)) {
-    return;
-  }
-
   if (unit === 'day') {
     // "setDay" does not exist, so set by date offset and return.
     setWeekday(date, val);
@@ -43,6 +31,7 @@ export function callDateSet(date, unit, val) {
     // target month.
     preventMonthTraversal(date, val);
   }
+
   date[`set${getMethodUnit(unit)}`](val);
 }
 
@@ -76,10 +65,10 @@ function getMethodUnit(unit) {
 }
 
 function preventMonthTraversal(date, targetMonth) {
-  const dateVal = date.getDate();
-  if (dateVal > 28) {
+  const val = date.getDate();
+  if (val > 28) {
     const daysInTargetMonth = getDaysInMonth(date.getFullYear(), targetMonth);
-    if (daysInTargetMonth < dateVal) {
+    if (daysInTargetMonth < val) {
       callDateSet(date, 'date', daysInTargetMonth);
     }
   }

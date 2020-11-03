@@ -1,12 +1,19 @@
-import { UNITS, getUnitIndex, getUnitEdge } from './units';
+import { UNITS, getUnitIndex, getUnitEdge, getPropsSpecificity } from './units';
 import { callDateSet } from './helpers';
 
 export function resetByUnit(date, unit, options) {
   return resetByIndex(date, getUnitIndex(unit), options);
 }
 
-export function resetByIndex(date, index, options = {}) {
-  const { end = false, props, dow } = options;
+export function resetByProps(date, props, options) {
+  const { index } = getPropsSpecificity(props);
+  if (index >= 0) {
+    resetByIndex(date, index, options);
+  }
+}
+
+function resetByIndex(date, index, options = {}) {
+  const { end = false, setProps, dow } = options;
   let last = UNITS[index];
   for (let i = index + 1; i < UNITS.length; i++) {
     let unit = UNITS[i];
@@ -31,8 +38,8 @@ export function resetByIndex(date, index, options = {}) {
       val += (dow + 3) % 7 - 3;
     }
     callDateSet(date, unit, val);
-    if (props) {
-      props[unit] = val;
+    if (setProps) {
+      setProps[unit] = val;
     }
     last = unit;
   }

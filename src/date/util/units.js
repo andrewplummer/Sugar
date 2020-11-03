@@ -106,6 +106,10 @@ export function getUnitIndex(unit) {
   return UNITS.indexOf(normalizeUnit(unit));
 }
 
+export function isTimeUnit(unit) {
+  return getUnitIndex(unit) >= 4;
+}
+
 // Note: this function needs to handle "date"
 // as well as "day" as a specific unit.
 export function getPropsSpecificity(props) {

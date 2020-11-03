@@ -1,4 +1,5 @@
 import { rewindDate } from './util/shift';
+import { assertInteger } from '../util/assertions';
 
 /**
  * Returns a date that is a number of units before the current date.
@@ -70,8 +71,8 @@ export function millisecondsAgo(val) {
 }
 
 function unitsAgo(unit, val) {
+  assertInteger(val);
   const date = new Date();
   const props = { [unit]: val };
-  rewindDate(date, props, true);
-  return date;
+  return rewindDate(date, props, true);
 }

@@ -2,7 +2,7 @@ import { updateDate } from './update';
 import { advanceDate } from './shift';
 import { setWeekday } from './weekdays';
 import { setTimeZoneOffset, setIANATimeZone } from './timeZone';
-import { resetByIndex, resetByUnit } from './reset';
+import { resetByProps, resetByUnit } from './reset';
 import { isNaN, isString } from '../../util/typeChecks';
 import { cloneDate } from '../../util/clone';
 import { UNITS, getPropsSpecificity, getAdjacentUnit, formatPartsForUnit, getUnitMultiplier } from './units';
@@ -601,7 +601,7 @@ export default class LocaleParser {
             resolver = this.resolveOffsetUnit;
           } else if (type === 'edge') {
             // English only: "the end of the month", etc.
-            src += '(?:the )?(beginning|end|(?:first|last)(?: day)?) of';
+            src += '(?:the )?(beginning|start|end|(?:first|last)(?: day)?) of';
             resolver = this.resolveEdge;
           } else if (type === 'unit') {
             src += `(${this.getUnitSource()})`;
@@ -1081,18 +1081,18 @@ export default class LocaleParser {
     // Edge phrases like "the beginning of January", etc.
     return (date, { absProps, relProps }) => {
       const end = str === 'end' || str === 'last day';
-      const props = absProps;
-      const { index } = getPropsSpecificity({
+      const setProps = absProps;
+      const props = {
         ...relProps,
         ...absProps,
-      });
-      resetByIndex(date, index, {
+      };
+      resetByProps(date, props, {
         end,
-        props,
+        setProps,
       });
       if (str === 'first day' || str === 'last day') {
         resetByUnit(date, 'day', {
-          props,
+          setProps,
         });
       }
     };

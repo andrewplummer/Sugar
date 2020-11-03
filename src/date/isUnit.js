@@ -1,6 +1,6 @@
 import { assertDate } from '../util/assertions';
 import { isValidDate } from '../util/date';
-import { shiftDate } from'./util/shift';
+import { shiftDateByUnit } from'./util/shift';
 import { compareDatesByUnit } from './util/comparison';
 
 /**
@@ -96,7 +96,7 @@ function compareToNow(d1, unit, offset, dow) {
   }
   const d2 = new Date();
   if (offset !== 0) {
-    shiftDate(d2, unit, offset);
+    shiftDateByUnit(d2, unit, offset);
   }
   return compareDatesByUnit(d1, d2, unit, dow);
 }

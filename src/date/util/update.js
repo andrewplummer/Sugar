@@ -1,5 +1,5 @@
 import { getUnitIndex, getPropsSpecificity } from './units';
-import { resetByIndex } from './reset';
+import { resetByProps } from './reset';
 import { callDateSet } from './helpers';
 
 export function updateDate(date, props, reset) {
@@ -14,10 +14,7 @@ export function updateDate(date, props, reset) {
   if (reset) {
     // Reset first to prevent accidentally
     // traversing into a new month as described below.
-    const { index } = getPropsSpecificity(props);
-    if (index >= 0) {
-      resetByIndex(date, index);
-    }
+    resetByProps(date, props);
   }
 
   // The order of operations is important as setting { month: 0: date: 31 }

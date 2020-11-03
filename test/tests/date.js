@@ -1,6 +1,7 @@
 'use strict';
 
 namespace('Date', () => {
+
   beforeAll(() => {
     // Set system time to 2020-01-01
     setSystemTime(new Date(2020, 0));
@@ -2976,7 +2977,7 @@ namespace('Date', () => {
         assertObjectEqual(relProps, { day: -3 });
       });
 
-      it('should correctly explain props when using an offset with weekday', () => {
+      it('should correctly explain props when using parsing an offset weekday', () => {
         const { absProps, relProps } = create({
           cache: false,
           explain: true,
@@ -2984,6 +2985,60 @@ namespace('Date', () => {
         });
         assertObjectEqual(absProps, { day: 1 });
         assertObjectEqual(relProps, { day: -2 });
+      });
+
+      it('should correctly explain props when parsing an ending edge', () => {
+        const { absProps, relProps } = create({
+          cache: false,
+          explain: true,
+          input: 'the start of the week',
+        });
+        assertObjectEqual(absProps, {
+          day: 0,
+          hour: 0,
+          minute: 0,
+          second: 0,
+          millisecond: 0,
+        });
+        assertObjectEqual(relProps, {
+          week: 0,
+        });
+      });
+
+      it('should correctly explain props when parsing an ending edge', () => {
+        const { absProps, relProps } = create({
+          cache: false,
+          explain: true,
+          input: 'the end of next week',
+        });
+        assertObjectEqual(absProps, {
+          day: 6,
+          hour: 23,
+          minute: 59,
+          second: 59,
+          millisecond: 999,
+        });
+        assertObjectEqual(relProps, {
+          week: 1,
+        });
+      });
+
+      it('should correctly explain props when parsing an edge with last day', () => {
+        const { absProps, relProps } = create({
+          cache: false,
+          explain: true,
+          input: 'the last day of next month',
+        });
+        assertObjectEqual(absProps, {
+          date: 29,
+          hour: 0,
+          minute: 0,
+          second: 0,
+          millisecond: 0,
+        });
+        assertObjectEqual(relProps, {
+          month: 1,
+        });
       });
 
       it('should correctly explain negative years when parsing an era', () => {
@@ -4205,13 +4260,7 @@ namespace('Date', () => {
 
     it('should not accidentally traverse into different month on reset', () => {
       assertDateEqual(
-        set(
-          new Date(2010, 0, 31),
-          {
-            month: 1,
-          },
-          true
-        ),
+        set(new Date(2010, 0, 31), { month: 1, }, true),
         new Date(2010, 1)
       );
     });
@@ -4800,35 +4849,31 @@ namespace('Date', () => {
       );
     });
 
-    it('should not accidentally traverse into a different time during DST shift', () => {
+    it('handle DST issues', () => {
       assertDateEqual(
-        advance(new Date(2020, 2, 8), { days: -1, hours: 2 }),
-        new Date(2020, 2, 7, 2)
+        advance(new Date(2015, 2, 8, 1), { hours: 1 }),
+        new Date(2015, 2, 8, 2)
       );
       assertDateEqual(
-        advance(new Date(2020, 2, 8), { hours: 2, days: -1 }),
-        new Date(2020, 2, 7, 2)
+        advance(new Date(2015, 2, 8, 2), { hours: -1 }),
+        new Date(2015, 2, 8, 1)
       );
-      assertDateEqual(
-        advance(new Date(2020, 2, 8), { hours: 2, months: -1 }),
-        new Date(2020, 1, 8, 2)
-      );
-      assertDateEqual(
-        advance(new Date(2020, 2, 8), { months: -1, hours: 2 }),
-        new Date(2020, 1, 8, 2)
-      );
-      assertDateEqual(
-        advance(
-          new Date(2020, 11, 9, 17),
-          {
-            years: 2,
-            months: 3,
-            days: 31,
-          },
-          true
-        ),
-        new Date(2023, 3, 9)
-      );
+
+      // The following two dates cannot be created with a normal
+      // date constructor as two points in time marked 2:00am exist
+      // in timezones following DST, so assert the time value instead.
+      let date, expected;
+
+      date = new Date(2015, 10, 1, 1, 45);
+      expected = date.getTime() + 1 * 60 * 60 * 1000;
+      advance(date, { hours: 1 });
+      assertEqual(date.getTime(), expected);
+
+      date = new Date(2015, 10, 1, 1, 45);
+      expected = date.getTime() - 1 * 60 * 60 * 1000;
+      advance(date, { hours: -1 });
+      assertEqual(date.getTime(), expected);
+
     });
 
     it('should throw an error on unknown keys', () => {
@@ -5381,35 +5426,31 @@ namespace('Date', () => {
       );
     });
 
-    it('should not accidentally traverse into a different time during DST shift', () => {
+    it('should handle DST issues', () => {
       assertDateEqual(
-        rewind(new Date(2020, 2, 8, 4), { days: 1, hours: 2 }),
-        new Date(2020, 2, 7, 2)
+        rewind(new Date(2015, 2, 8, 2), { hours: 1 }),
+        new Date(2015, 2, 8, 1)
       );
       assertDateEqual(
-        rewind(new Date(2020, 2, 8, 4), { hours: 2, days: 1 }),
-        new Date(2020, 2, 7, 2)
+        rewind(new Date(2015, 2, 8, 1), { hours: -1 }),
+        new Date(2015, 2, 8, 2)
       );
-      assertDateEqual(
-        rewind(new Date(2020, 2, 8, 4), { hours: 2, months: 1 }),
-        new Date(2020, 1, 8, 2)
-      );
-      assertDateEqual(
-        rewind(new Date(2020, 2, 8, 4), { months: 1, hours: 2 }),
-        new Date(2020, 1, 8, 2)
-      );
-      assertDateEqual(
-        rewind(
-          new Date(2020, 11, 9, 17),
-          {
-            years: 2,
-            months: 11,
-            days: 8,
-          },
-          true
-        ),
-        new Date(2018, 0)
-      );
+
+      // The following two dates cannot be created with a normal
+      // date constructor as two points in time marked 2:00am exist
+      // in timezones following DST, so assert the time value instead.
+      let date, expected;
+
+      date = new Date(2015, 10, 1, 1, 45);
+      expected = date.getTime() - 1 * 60 * 60 * 1000;
+      rewind(date, { hours: 1 });
+      assertEqual(date.getTime(), expected);
+
+      date = new Date(2015, 10, 1, 1, 45);
+      expected = date.getTime() + 1 * 60 * 60 * 1000;
+      rewind(date, { hours: -1 });
+      assertEqual(date.getTime(), expected);
+
     });
 
     it('should throw an error on unknown keys', () => {
@@ -5520,6 +5561,19 @@ namespace('Date', () => {
       assertDateEqual(addDays(new Date(2020, 0), 0), new Date(2020, 0));
     });
 
+    it('should have expected numeric offset during a DST jump forward', () => {
+      const d1 = new Date(2020, 2, 8);
+      const d2 = addDays(new Date(2020, 2, 8), 1);
+
+      const t1 = d1.getTime();
+      const t2 = d2.getTime();
+
+      const o1 = d1.getTimezoneOffset() * 60 * 1000;
+      const o2 = d2.getTimezoneOffset() * 60 * 1000;
+
+      assertEqual(t2 - t1, (24 * 60 * 60 * 1000) + (o2 - o1));
+    });
+
     it('should handle irregular input', () => {
       assertError(() => {
         addDays(new Date(2020, 0));
@@ -5528,12 +5582,16 @@ namespace('Date', () => {
         addDays();
       }, TypeError);
     });
+
   });
 
   describeInstance('addHours', (addHours) => {
 
     it('should function as an alias for advance', () => {
-      assertDateEqual(addHours(new Date(2020, 0), 1), new Date(2020, 0, 1, 1));
+      assertDateEqual(
+        addHours(new Date(2020, 0), 1),
+        new Date(2020, 0, 1, 1)
+      );
       assertDateEqual(
         addHours(new Date(2020, 0), 10),
         new Date(2020, 0, 1, 10)
@@ -5542,7 +5600,37 @@ namespace('Date', () => {
         addHours(new Date(2020, 0), -5),
         new Date(2019, 11, 31, 19)
       );
-      assertDateEqual(addHours(new Date(2020, 0), 0), new Date(2020, 0));
+      assertDateEqual(
+        addHours(new Date(2020, 0), 0),
+        new Date(2020, 0)
+      );
+    });
+
+    it('should handle DST issues', () => {
+      assertDateEqual(
+        addHours(new Date(2015, 2, 8, 1, 45), 1),
+        new Date(2015, 2, 8, 2, 45)
+      );
+      assertDateEqual(
+        addHours(new Date(2015, 2, 8, 2), -1),
+        new Date(2015, 2, 8, 1)
+      );
+
+      // The following two dates cannot be created with a normal
+      // date constructor as two points in time marked 2:00am exist
+      // in timezones following DST, so assert the time value instead.
+      let date, expected;
+
+      date = new Date(2015, 10, 1, 1, 45);
+      expected = date.getTime() + 1 * 60 * 60 * 1000;
+      addHours(date, 1);
+      assertEqual(date.getTime(), expected);
+
+      date = new Date(2015, 10, 1, 1, 45);
+      expected = date.getTime() - 1 * 60 * 60 * 1000;
+      addHours(date, -1);
+      assertEqual(date.getTime(), expected);
+
     });
 
     it('should handle irregular input', () => {
@@ -5573,6 +5661,33 @@ namespace('Date', () => {
       assertDateEqual(addMinutes(new Date(2020, 0), 0), new Date(2020, 0));
     });
 
+    it('should handle DST issues', () => {
+      assertDateEqual(
+        addMinutes(new Date(2015, 2, 8, 1, 45), 15),
+        new Date(2015, 2, 8, 2)
+      );
+      assertDateEqual(
+        addMinutes(new Date(2015, 2, 8, 2), -15),
+        new Date(2015, 2, 8, 1, 45)
+      );
+
+      // The following two dates cannot be created with a normal
+      // date constructor as two points in time marked 2:00am exist
+      // in timezones following DST, so assert the time value instead.
+      let date, expected;
+
+      date = new Date(2015, 10, 1, 1, 45);
+      expected = date.getTime() + 15 * 60 * 1000;
+      addMinutes(date, 15);
+
+      assertEqual(date.getTime(), expected);
+      date = new Date(2015, 10, 1, 1, 45);
+      expected = date.getTime() - 15 * 60 * 1000;
+      addMinutes(date, -15);
+      assertEqual(date.getTime(), expected);
+
+    });
+
     it('should handle irregular input', () => {
       assertError(() => {
         addMinutes(new Date(2020, 0));
@@ -5601,6 +5716,32 @@ namespace('Date', () => {
       assertDateEqual(addSeconds(new Date(2020, 0), 0), new Date(2020, 0));
     });
 
+    it('should handle DST issues', () => {
+      assertDateEqual(
+        addSeconds(new Date(2015, 2, 8, 1, 59, 30), 30),
+        new Date(2015, 2, 8, 2)
+      );
+      assertDateEqual(
+        addSeconds(new Date(2015, 2, 8, 2), -30),
+        new Date(2015, 2, 8, 1, 59, 30)
+      );
+
+      // The following two dates cannot be created with a normal
+      // date constructor as two points in time marked 2:00am exist
+      // in timezones following DST, so assert the time value instead.
+      let date, expected;
+
+      date = new Date(2015, 10, 1, 1, 59, 30);
+      expected = date.getTime() + 30 * 1000;
+      addSeconds(date, 30);
+      assertEqual(date.getTime(), expected);
+
+      date = new Date(2015, 10, 1, 1, 59, 30);
+      expected = date.getTime() - 30 * 1000;
+      addSeconds(date, -30);
+      assertEqual(date.getTime(), expected);
+    });
+
     it('should handle irregular input', () => {
       assertError(() => {
         addSeconds(new Date(2020, 0));
@@ -5627,6 +5768,32 @@ namespace('Date', () => {
         new Date(2019, 11, 31, 23, 59, 59, 995)
       );
       assertDateEqual(addMilliseconds(new Date(2020, 0), 0), new Date(2020, 0));
+    });
+
+    it('should handle DST issues', () => {
+      assertDateEqual(
+        addMilliseconds(new Date(2015, 2, 8, 1, 59, 59, 500), 500),
+        new Date(2015, 2, 8, 2)
+      );
+      assertDateEqual(
+        addMilliseconds(new Date(2015, 2, 8, 2), -500),
+        new Date(2015, 2, 8, 1, 59, 59, 500)
+      );
+
+      // The following two dates cannot be created with a normal
+      // date constructor as two points in time marked 2:00am exist
+      // in timezones following DST, so assert the time value instead.
+      let date, expected;
+
+      date = new Date(2015, 10, 1, 1, 59, 59, 500);
+      expected = date.getTime() + 500;
+      addMilliseconds(date, 500);
+      assertEqual(date.getTime(), expected);
+
+      date = new Date(2015, 10, 1, 1, 59, 50, 500);
+      expected = date.getTime() - 500;
+      addMilliseconds(date, -500);
+      assertEqual(date.getTime(), expected);
     });
 
     it('should handle irregular input', () => {
@@ -7383,7 +7550,7 @@ namespace('Date', () => {
           );
           assertEqual(
             format(new Date(2020, 6, 14, 13), Sugar.Date.DATETIME_WITH_ZONE),
-            `July 14, 2020, 1:00 PM ${getLocalTimeZoneName('short')}`
+            `July 14, 2020, 1:00 PM ${getLocalTimeZoneName('short', true)}`
           );
         });
 
@@ -7397,7 +7564,7 @@ namespace('Date', () => {
               new Date(2020, 6, 14, 13),
               Sugar.Date.DATETIME_WITH_LONG_ZONE
             ),
-            `July 14, 2020, 1:00 PM ${getLocalTimeZoneName('long')}`
+            `July 14, 2020, 1:00 PM ${getLocalTimeZoneName('long', true)}`
           );
         });
 
@@ -7408,7 +7575,7 @@ namespace('Date', () => {
           );
           assertEqual(
             format(new Date(2020, 6, 14, 13), Sugar.Date.DATETIME_24_WITH_ZONE),
-            `July 14, 2020, 13:00 ${getLocalTimeZoneName('short')}`
+            `July 14, 2020, 13:00 ${getLocalTimeZoneName('short', true)}`
           );
         });
 
@@ -7422,13 +7589,20 @@ namespace('Date', () => {
               new Date(2020, 6, 14, 13),
               Sugar.Date.DATETIME_24_WITH_LONG_ZONE
             ),
-            `July 14, 2020, 13:00 ${getLocalTimeZoneName('long')}`
+            `July 14, 2020, 13:00 ${getLocalTimeZoneName('long', true)}`
           );
         });
       });
+
     });
 
     describe('formatting with a token string', () => {
+
+      function getDateForYear(year) {
+        const date = new Date(2020, 0);
+        date.setFullYear(year);
+        return date;
+      }
 
       it('should correctly format era token', () => {
         assertEqual(format(new Date(2020, 0), 'G'), 'AD');
@@ -7445,63 +7619,64 @@ namespace('Date', () => {
       });
 
       it('should correctly format year token', () => {
-        assertEqual(format(new Date('0002-01-01'), 'y'), '2');
-        assertEqual(format(new Date('0020-01-01'), 'y'), '20');
-        assertEqual(format(new Date('0200-01-01'), 'y'), '200');
-        assertEqual(format(new Date('2000-01-01'), 'y'), '2000');
+        assertEqual(format(getDateForYear(2), 'y'), '2');
+        assertEqual(format(getDateForYear(20), 'y'), '20');
+        assertEqual(format(getDateForYear(200), 'y'), '200');
+        assertEqual(format(getDateForYear(2000), 'y'), '2000');
 
-        assertEqual(format(new Date('0002-01-01'), 'yy'), '02');
-        assertEqual(format(new Date('2020-01-01'), 'yy'), '20');
-        assertEqual(format(new Date('2050-01-01'), 'yy'), '50');
-        assertEqual(format(new Date('2099-01-01'), 'yy'), '99');
-        assertEqual(format(new Date('2100-01-01'), 'yy'), '00');
+        assertEqual(format(getDateForYear(2),    'yy'), '02');
+        assertEqual(format(getDateForYear(2020), 'yy'), '20');
+        assertEqual(format(getDateForYear(2050), 'yy'), '50');
+        assertEqual(format(getDateForYear(2099), 'yy'), '99');
+        assertEqual(format(getDateForYear(2100), 'yy'), '00');
 
-        assertEqual(format(new Date('0002-01-01'), 'yyy'), '002');
-        assertEqual(format(new Date('0020-01-01'), 'yyy'), '020');
-        assertEqual(format(new Date('0200-01-01'), 'yyy'), '200');
-        assertEqual(format(new Date('2000-01-01'), 'yyy'), '2000');
+        assertEqual(format(getDateForYear(2), 'yyy'), '002');
+        assertEqual(format(getDateForYear(20), 'yyy'), '020');
+        assertEqual(format(getDateForYear(200), 'yyy'), '200');
+        assertEqual(format(getDateForYear(2000), 'yyy'), '2000');
 
-        assertEqual(format(new Date('0002-01-01'), 'yyyy'), '0002');
-        assertEqual(format(new Date('0020-01-01'), 'yyyy'), '0020');
-        assertEqual(format(new Date('0200-01-01'), 'yyyy'), '0200');
-        assertEqual(format(new Date('2000-01-01'), 'yyyy'), '2000');
+        assertEqual(format(getDateForYear(2), 'yyyy'), '0002');
+        assertEqual(format(getDateForYear(20), 'yyyy'), '0020');
+        assertEqual(format(getDateForYear(200), 'yyyy'), '0200');
+        assertEqual(format(getDateForYear(2000), 'yyyy'), '2000');
 
-        assertEqual(format(new Date('0002-01-01'), 'yyyyy'), '00002');
-        assertEqual(format(new Date('0020-01-01'), 'yyyyy'), '00020');
-        assertEqual(format(new Date('0200-01-01'), 'yyyyy'), '00200');
-        assertEqual(format(new Date('2000-01-01'), 'yyyyy'), '02000');
+        assertEqual(format(getDateForYear(2), 'yyyyy'), '00002');
+        assertEqual(format(getDateForYear(20), 'yyyyy'), '00020');
+        assertEqual(format(getDateForYear(200), 'yyyyy'), '00200');
+        assertEqual(format(getDateForYear(2000), 'yyyyy'), '02000');
       });
 
       it('should correctly format ISO week-numbering year token', () => {
-        assertEqual(format(new Date('0001-01-01'), 'Y'), '0');
-        assertEqual(format(new Date('2005-12-31'), 'Y'), '2005');
-        assertEqual(format(new Date('2006-01-01'), 'Y'), '2005');
-        assertEqual(format(new Date('2019-12-31'), 'Y'), '2020');
-        assertEqual(format(new Date('2020-01-01'), 'Y'), '2020');
+        assertEqual(format(new Date(2005, 11, 31), 'Y'), '2005');
+        assertEqual(format(new Date(2006, 0, 1),   'Y'), '2005');
+        assertEqual(format(new Date(2019, 11, 31), 'Y'), '2020');
+        assertEqual(format(new Date(2020, 0, 1),   'Y'), '2020');
 
-        assertEqual(format(new Date('0001-01-01'), 'YY'), '00');
-        assertEqual(format(new Date('2005-12-31'), 'YY'), '05');
-        assertEqual(format(new Date('2006-01-01'), 'YY'), '05');
-        assertEqual(format(new Date('2019-12-31'), 'YY'), '20');
-        assertEqual(format(new Date('2020-01-01'), 'YY'), '20');
+        assertEqual(format(new Date(2005, 11, 31), 'YY'), '05');
+        assertEqual(format(new Date(2006, 0, 1),   'YY'), '05');
+        assertEqual(format(new Date(2019, 11, 31), 'YY'), '20');
+        assertEqual(format(new Date(2020, 0, 1),   'YY'), '20');
 
-        assertEqual(format(new Date('0001-01-01'), 'YYY'), '000');
-        assertEqual(format(new Date('2005-12-31'), 'YYY'), '2005');
-        assertEqual(format(new Date('2006-01-01'), 'YYY'), '2005');
-        assertEqual(format(new Date('2019-12-31'), 'YYY'), '2020');
-        assertEqual(format(new Date('2020-01-01'), 'YYY'), '2020');
+        assertEqual(format(new Date(2005, 11, 31), 'YYY'), '2005');
+        assertEqual(format(new Date(2006, 0, 1),   'YYY'), '2005');
+        assertEqual(format(new Date(2019, 11, 31), 'YYY'), '2020');
+        assertEqual(format(new Date(2020, 0, 1),   'YYY'), '2020');
 
-        assertEqual(format(new Date('0001-01-01'), 'YYYY'), '0000');
-        assertEqual(format(new Date('2005-12-31'), 'YYYY'), '2005');
-        assertEqual(format(new Date('2006-01-01'), 'YYYY'), '2005');
-        assertEqual(format(new Date('2019-12-31'), 'YYYY'), '2020');
-        assertEqual(format(new Date('2020-01-01'), 'YYYY'), '2020');
+        assertEqual(format(new Date(2005, 11, 31), 'YYYY'), '2005');
+        assertEqual(format(new Date(2006, 0, 1),   'YYYY'), '2005');
+        assertEqual(format(new Date(2019, 11, 31), 'YYYY'), '2020');
+        assertEqual(format(new Date(2020, 0, 1),   'YYYY'), '2020');
 
-        assertEqual(format(new Date('0001-01-01'), 'YYYYY'), '00000');
-        assertEqual(format(new Date('2005-12-31'), 'YYYYY'), '02005');
-        assertEqual(format(new Date('2006-01-01'), 'YYYYY'), '02005');
-        assertEqual(format(new Date('2019-12-31'), 'YYYYY'), '02020');
-        assertEqual(format(new Date('2020-01-01'), 'YYYYY'), '02020');
+        assertEqual(format(new Date(2005, 11, 31), 'YYYYY'), '02005');
+        assertEqual(format(new Date(2006, 0, 1),   'YYYYY'), '02005');
+        assertEqual(format(new Date(2019, 11, 31), 'YYYYY'), '02020');
+        assertEqual(format(new Date(2020, 0, 1),   'YYYYY'), '02020');
+
+        assertEqual(format(getDateForYear(1), 'Y'), '0');
+        assertEqual(format(getDateForYear(1), 'YY'), '00');
+        assertEqual(format(getDateForYear(1), 'YYY'), '000');
+        assertEqual(format(getDateForYear(1), 'YYYY'), '0000');
+        assertEqual(format(getDateForYear(1), 'YYYYY'), '00000');
       });
 
       it('should correctly format quarter token', () => {
@@ -7633,17 +7808,17 @@ namespace('Date', () => {
       });
 
       it('should correctly format ISO week-numbering week token', () => {
-        assertEqual(format(new Date('2005-12-31'), 'w'), '52');
-        assertEqual(format(new Date('2006-01-01'), 'w'), '52');
-        assertEqual(format(new Date('2020-12-31'), 'w'), '53');
-        assertEqual(format(new Date('2019-12-31'), 'w'), '1');
-        assertEqual(format(new Date('2020-01-01'), 'w'), '1');
+        assertEqual(format(new Date(2005, 11, 31), 'w'), '52');
+        assertEqual(format(new Date(2006, 0, 1),   'w'), '52');
+        assertEqual(format(new Date(2020, 11, 31), 'w'), '53');
+        assertEqual(format(new Date(2019, 11, 31), 'w'), '1');
+        assertEqual(format(new Date(2020, 0, 1),   'w'), '1');
 
-        assertEqual(format(new Date('2005-12-31'), 'ww'), '52');
-        assertEqual(format(new Date('2006-01-01'), 'ww'), '52');
-        assertEqual(format(new Date('2020-12-31'), 'ww'), '53');
-        assertEqual(format(new Date('2019-12-31'), 'ww'), '01');
-        assertEqual(format(new Date('2020-01-01'), 'ww'), '01');
+        assertEqual(format(new Date(2005, 11, 31), 'ww'), '52');
+        assertEqual(format(new Date(2006, 0, 1),   'ww'), '52');
+        assertEqual(format(new Date(2020, 11, 31), 'ww'), '53');
+        assertEqual(format(new Date(2019, 11, 31), 'ww'), '01');
+        assertEqual(format(new Date(2020, 0, 1),   'ww'), '01');
       });
 
       it('should correctly format day of month token', () => {
@@ -8085,6 +8260,7 @@ namespace('Date', () => {
 });
 
 namespace('Number', () => {
+
   beforeAll(() => {
     // Set system time to 2020-01-01
     setSystemTime(new Date(2020, 0));

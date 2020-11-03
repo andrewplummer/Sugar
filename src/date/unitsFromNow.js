@@ -1,4 +1,5 @@
 import { advanceDate } from './util/shift';
+import { assertInteger } from '../util/assertions';
 
 /**
  * Returns a date that is a number of units after the current date.
@@ -70,8 +71,8 @@ export function millisecondsFromNow(val) {
 }
 
 function unitsFromNow(unit, val) {
+  assertInteger(val);
   const date = new Date();
   const props = { [unit]: val };
-  advanceDate(date, props, true);
-  return date;
+  return advanceDate(date, props, true);
 }

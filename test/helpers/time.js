@@ -2,13 +2,14 @@ let defaultTime;
 
 mockTimeZone = (offset) => {
   // Mock both Intl.DateTimeFormat#format and Date#getTimezoneOffset
-  Intl.DateTimeFormat.mockTimeZoneOffset(offset);
   Date.mockTimezoneOffset(offset);
+  Intl.DateTimeFormat.mockTimeZoneOffset(offset);
 };
 
 resetTimeZone = () => {
-  Intl.DateTimeFormat.mockTimeZoneOffset(null);
   Date.mockTimezoneOffset(null);
+  Intl.DateTimeFormat.mockTimeZoneOffset(null);
+  Intl.DateTimeFormat.mockTimeZoneNames(null);
 };
 
 setSystemTime = (date) => {

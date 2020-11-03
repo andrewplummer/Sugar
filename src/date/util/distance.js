@@ -1,5 +1,5 @@
 import { cloneDate } from '../../util/clone';
-import { shiftDate } from './shift';
+import { shiftDateByUnit } from './shift';
 import { getUnitMultiplier, getUnitIndex } from './units';
 
 export function getUnitDistance(date1, date2, unit) {
@@ -19,10 +19,10 @@ export function getUnitDistance(date1, date2, unit) {
     date1 = cloneDate(date1);
     if (num) {
       num -= 1;
-      shiftDate(date1, unit, num);
+      shiftDateByUnit(date1, unit, num);
     }
     while (date1 < date2) {
-      shiftDate(date1, unit, 1);
+      shiftDateByUnit(date1, unit, 1);
       if (date1 > date2) {
         break;
       }

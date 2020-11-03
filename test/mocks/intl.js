@@ -8,7 +8,24 @@
     let mockTimeZoneNames;
 
     // Get and hold the internal offset in case it is mocked later.
-    const internalOffset = new Date().getTimezoneOffset();
+    const stOffset = new Date(2020, 0).getTimezoneOffset();
+    const dtOffset = new Date(2020, 6).getTimezoneOffset();
+
+    function getInternalOffset(d) {
+      d = d || new Date();
+      const month = d.getMonth();
+      const date = d.getDate();
+      const hour = d.getHours();
+      if (month > 2 && month < 10) {
+        return dtOffset;
+      } else if (month === 2) {
+        return date > 8 || (date === 8 && hour >= 2) ? dtOffset : stOffset;
+      } else if (month === 10) {
+        return hour < 1 ? dtOffset : stOffset;
+      } else {
+        return stOffset;
+      }
+    }
 
     class MockDateTimeFormat extends DateTimeFormat {
 
@@ -32,7 +49,7 @@
         const options = this.resolvedOptions();
         if ('timeZone' in options && mockTimeZoneOffset != null) {
           let time = date ? date.getTime() : Date.now();
-          time -= (internalOffset - mockTimeZoneOffset) * 60 * 1000;
+          time -= (getInternalOffset(date) - mockTimeZoneOffset) * 60 * 1000;
           date = new Date(time);
         }
         let parts = super.formatToParts(date);
