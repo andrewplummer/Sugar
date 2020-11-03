@@ -2,6 +2,12 @@
 
 describe('en-US', () => {
 
+  beforeAll(() => {
+    // Set system time to 2020-01-01
+    setSystemTime(new Date(2020, 0));
+    Intl.DateTimeFormat.mockDefaultLocale('en-US');
+  });
+
   namespace('Date', () => {
 
     describeStatic('create', (create) => {

@@ -8,35 +8,38 @@ import { cloneDate } from '../util/clone';
 /**
  * Creates a new date from a variety of input including string formats.
  *
- * @param {string|number|Date|DateProps|ParseOptions} input - The input used to
- *   create the date. Passing a number or Date will simply create a new date
- *   from a timestamp or clone the date accordingly. When a string is passed it
- *   serves as a shortcut for `input` on the `ParseOptions` object, which will
- *   parse the date from a variety of formats. Objects passed with an `input`
- *   property it will be taken as `ParseOptions`, otherwise as `DateProps`.
- * @param {string} [locale] - When a string is passed as the first argument,
- *   a second string may be passed here as a shortcut for the `locale` option.
+ * @param {string|DateProps|number|Date} input - The input used to create the
+ *   date. Passing a number or Date will simply create a new date from a
+ *   timestamp or clone the date accordingly. Passing a string will parse it
+ *   from a variety of formats. A `DateProps` object may also be passed which
+ *   will create the date from an object. Note tha only `from` and `timeZone`
+ *   options will apply when passing `DateProps`.
+ * @param {InputOptions|string} [options] - An options object that determines
+ *   the output. A string may be passed here as a shortcut for `locale`.
  *
- * @returns {Date|ParseResult} - If the `explain` option is enabled, an object
- *   will be returned with details of the properties derived from parsing,
- *   otherwise the parsed date will be returned.
+ * @returns {Date|ParseResult|null} - If a string is passed and the `explain`
+ *   option is `true`, a `ParseResult` object will be returned with details of
+ *   the properties derived from parsing, otherwise the parsed date or `null`
+ *   will be returned.
  *
- * @typedef {Object} ParseOptions
+ * @typedef {Object} InputOptions
  *
- * @property {string} input - The string to parse. An error will be thrown if
- *   not passed.
  * @property {string} [locale] - A [language tag](https://bit.ly/33NA8hX) that
  *   will be used to create the parser. If not passed, the default locale will
- *   be used. Note that the resulting parser will be cached.
+ *   be used. Note that the resulting parser will be cached by default.
  * @property {boolean} [future] - When passed, ambiguous dates will prefer the
  *   future. For example if the current day is Friday, "Thursday" will be next
  *   week. If both `past` and `future` are `true` no preference will be applied.
  * @property {boolean} [past] - When passed, ambiguous dates will prefer the
  *   past. For example if the current day is Wednesday, "Thursday" will be last
  *   week. If both `past` and `future` are `true` no preference will be applied.
- * @property {boolean} [explain] - When passed, the return value will be of type
- *   `ParseResult`. This allows inspection of useful properties that were
- *   derived from the parsing. Default is false.
+ * @property {Date} [from] - When passed, serves as a reference date from which
+ *   the parsing will happen. This is useful when parsing relative formats, for
+ *   example "next week" relative to a different point in time. If not passed,
+ *   the current date will be used.
+ * @property {boolean} [explain] - When passed a `ParseResults will be returned
+ *   that allows inspection of properties that were derived from the parsing.
+ *   Default is `false`.
  * @property {Array<DateTimeFormat>} [dateTimeFormats] - Additional datetime
  *   formats to be used when parsing. These will be added to the parser which is
  *   then cached by default.
@@ -44,14 +47,13 @@ import { cloneDate } from '../util/clone';
  *   formats to be used when parsing. These will be added to the parser which is
  *   then cached by default.
  * @property {boolean} [cache] - Whether or not to cache the resulting parser
- *   for the provided locale. Building the parse can be expensive, so typically
- *   this should be left on. Default is true.
+ *   for the provided locale. Default is `true`.
  *
- * @typedef {DateTimeShortcut|Object} DateTimeFormat - Additional datetime
- *   formats are passed as objects that mirror `Intl.DateTimeFormat`. They must
- *   implement a `formatToParts` method that accepts a single date argument and
- *   return an array of `DateTimeExtendedPart`. A string shortcut of
- *   `DateTimeShortcut` may also be passed here to help create this object.
+ * @typedef {DateTimeShortcut|Intl.DateTimeFormat|Object} DateTimeFormat -
+ *   Additional datetime formats are passed as either 1) instances of
+ *   Intl.DateTimeFormat, 2) objects that have a `formatToParts` property wct
+ *   accepts a single date argument and returns an array of `DateTimeExtendedPart`,
+ *   or 3) a string short that will help create this object.
  *
  * @typedef {string} DateTimeShortcut - A string shortcut to help construct a
  *   `DateTimeFormat` in the format `<relative day>, <Month>\\s*<time?>`. Tokens
@@ -69,7 +71,7 @@ import { cloneDate } from '../util/clone';
  *   unique enough to not conflict with existing formats for that locale. For
  *   example `<minute>/<hour>` would parse two digits separated by a slash,
  *   which would conflict with `<month>/<day>` as an internal format for English
- *   based locales. Make sure to have enough required tokens in the format to
+ *   based locales. Be careful to have enough required tokens in the format to
  *   avoid conflicts. If optional tokens result in collisions it is often
  *   simpler to add alternates as separate formats. When debugging collisions
  *   you can use the `explain` option to determine the format that is causing
@@ -85,26 +87,36 @@ import { cloneDate } from '../util/clone';
  *   dayPeriod, timeZoneName, era, and literal. Note that relatedYear and
  *   yearName are not supported. In addition, two other types are supported
  *   for the purposes of parsing. The `source` type will allow a RegExp source
- *   string to conditionally match literals. Note that `literal` will also
- *   greedily match whitespace, periods, and commas. The `time` type serves as a
- *   shortcut for time related tokens. It will match either an hour and
- *   dayPeriod taken together, or an hour and minute with optional fractional
- *   seconds. Note that it also greedily matches optional whitespace and throws
+ *   string to conditionally match literals. `literal` will greedily match
+ *   whitespace, periods, and commas. `time` serves as a shortcut for time
+ *   related tokens. It will match either an hour and dayPeriod taken together,
+ *   or an hour, minute, and optional fractional seconds separated by a colon.
+ *   Note that it also greedily matches optional whitespace and throws
  *   away indeterminate boundaries, so will also match "at", "a las", etc.
  * @property {string} value - The value of the part. For parsing purposes, this
  *   will only apply to types `literal` and `source`.
  * @property {boolean} optional - When true, the part will be considered
- *   optional.
+ *   optional. This can be flagged with `?` in the shortcut string.
  * @property {boolean} relative - When true, the part will match relative
  *   phrases for the passed unit, which are derived from
  *   `Intl.RelativeTimeFormat`. For example, if the type is `year` and this flag
- *   is true, this part will match `last year`, `next year`, `5 years ago`, etc.
- *   Alternate relative formats may also be passed in the `ParseOptions` object.
- *   Note that this flag only applies to basic unit types: year, month, week,
- *   day, hour, minute, second.
+ *   is `true`, this part will match `last year`, `next year`, etc. In addition
+ *   to basic units, `upper` and `lower` will match `year`, `month`, `week`, and
+ *   `hour`, `minute`, `second`, respectively. An additional `any` token can be
+ *   placed in front of `relative` to match numeric formats like `in 5 days` or
+ *   `5 days ago`. Altenate relative formats passed into the parser will also be
+ *   available here. Examples using the shortcut format:
+ *
+ *   - `<relative day>` - "today", "tomorrow", etc
+ *   - `<relative year>` - "this year", "next year", etc.
+ *   - `<relative upper>` - "this year", last week", etc.
+ *   - `<relative lower>` - "in an hour", "this hour", etc.
+ *   - `<any relative upper>`
+ *   TODO: document this better
+ *
  * @property {string} style - A formatting style in the same format as options
  *   passed to `Intl.DateTimeFormat`. This is generally only required for type
- *   `month` to help differentiate numeric vs. long months.
+ *   `month` to help differentiate `numeric` vs. `long` months.
  *
  * @typedef {Object} RelativeTimeFormat - Additional relative formats are passed
  *   as objects that mirror `Intl.RelativeTimeFormat`. They must implement a
@@ -117,79 +129,77 @@ import { cloneDate } from '../util/clone';
  * @typedef {Object} ParseResult - An object explaining properties derived from
  *   parsing.
  *
- * @property {Date} date - The parsed date. May be undefined if no date could
- *   be parsed.
- * @property {string} unit - The most specific unit derived from parsing. One of
- *   `year`, `month`, `week`, `date`, `day`, `hour`, `minute`, `second`, or
- *   `millisecond`. Note that `date` implies a day of the month and `day`
- *   implies a weekday. If both were parsed the result will be `date`. May be
- *   undefined if no date could be parsed.
- * @property {string} index - The index of the most specific unit derived from
- *   parsing. Values are in range `0`-`8` equivalent to `year`-`millisecond`.
- *   May be undefined if no date could be parsed.
- * @property {Object} absUnits - The absolute units derived from parsing.
- *   May be undefined if no date could be parsed.
- * @property {Object} relUnits - The relative units derived from parsing.
- *   May be undefined if no date could be parsed.
+ * @property {Date} date - The parsed date.
+ * @property {Object} absProps - The absolute props derived from parsing.
+ * @property {Object} relProps - The relative props derived from parsing.
+ * @property {Object} specificity - An object with `unit` and `index` properties
+ *   denoting the specificity of the units derived from the parse. `index` may
+ *   range from `0` for `year` to `7` for `millisecond`.
  * @property {Object} format - The format matched when parsing the date. Useful
  *   for debugging. Has `reg` and `groups` properties to describe the RegExp
- *   used and capturing group resolvers. May be undefined if no date could be
- *   parsed.
- * @property {Object} parser - The parser used to parse the date. Useful for
- *   debugging.
+ *   used and capturing group resolvers.
+ * @property {Object} parser - The parser used to parse the date.
  *
  * @typedef {Object} DateProps
  *
- * @property {number} [year]         - The year to set.
- * @property {number} [month]        - The month to set (0 indexed).
- * @property {number} [date]         - The date to set.
- * @property {number} [day]          - The day of the week to set.
- * @property {number} [hours]        - The hours to set.
- * @property {number} [minutes]      - The minutes to set.
- * @property {number} [seconds]      - The seconds to set.
- * @property {number} [milliseconds] - The milliseconds to set.
- * @property {number} [weekday]      - Alias for `day`.
- * @property {number} [hour]         - Alias for `hours`.
- * @property {number} [minute]       - Alias for `minutes`.
- * @property {number} [second]       - Alias for `seconds`.
- * @property {number} [millisecond]  - Alias for `milliseconds`.
- * @property {number} [ms]           - Alias for `milliseconds`.
+ * @property {number} [year]        - The year to set. Also accepts `years`.
+ * @property {number} [month]       - The month to set. Also accepts `months`.
+ * @property {number} [date]        - The date of the month to set.
+ * @property {number} [day]         - The day of the week to set. Also accepts `weekday`.
+ * @property {number} [hour]        - The hour to set. Also accepts `hours`.
+ * @property {number} [minute]      - The minute to set. Also accepts `minutes`.
+ * @property {number} [second]      - The second to set. Also accepts `seconds`.
+ * @property {number} [millisecond] - The millisecond to set. Also accepts `milliseconds` or `ms`.
  *
  * @example
  *
  *   Date.create('January 1, 2020')
  *   Date.create('January 1, 2020', 'ja')
+ *   TODO: MORE
  *   ...
  *
  **/
-export default function create(arg1, arg2) {
-  if (arguments[0] == null) {
-    throw new TypeError('First argument must be either a string or object');
-  } else if (isNumber(arg1)) {
-    return new Date(arg1);
-  } else if (isDate(arg1)) {
-    return cloneDate(arg1);
-  } else {
-    let options;
-    if (isString(arg1)) {
-      options = {
-        input: arg1,
-        locale: arg2,
-      };
-    } else {
-      options = arg1 || {};
-    }
-    if ('input' in options) {
-      return parseDate(options);
-    } else {
-      let { timeZone, ...props } = options;
-      const date = new Date();
-      props = normalizeProps(props);
-      updateDate(date, props, true);
-      if (timeZone) {
-        setIANATimeZone(date, timeZone);
-      }
-      return date;
-    }
+export default function create(input, opt) {
+
+  if (arguments.length === 0) {
+    throw new TypeError('First argument is required.');
+  } else if (input == null && !opt) {
+    throw new TypeError('Null input requires a second argument.');
+  } else if (isNumber(input)) {
+    return new Date(input);
+  } else if (isDate(input)) {
+    return cloneDate(input);
   }
+
+  const options = getOptions(opt);
+  const { from, timeZone } = options;
+
+  const date = from ? cloneDate(from) : new Date();
+
+  let retVal;
+  let hasZone;
+
+  if (input == null) {
+    retVal = date;
+  } else if (isString(input)) {
+    const result = parseDate(input, date, options);
+    if (result) {
+      retVal = options.explain ? result : date;
+      hasZone = 'timeZoneOffset' in result.absProps;
+    }
+  } else {
+    const props = normalizeProps(input);
+    updateDate(date, props, true);
+    retVal = date;
+  }
+
+  if (!hasZone && timeZone) {
+    setIANATimeZone(date, timeZone);
+  }
+
+  return retVal || null;
+}
+
+function getOptions(obj) {
+  return isString(obj) ? { locale: obj } : obj || {};
 }

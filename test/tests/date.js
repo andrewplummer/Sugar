@@ -39,6 +39,7 @@ namespace('Date', () => {
   ];
 
   describe('Enhanced Chainable', () => {
+
     it('should default to current date', () => {
       assertDateEqual(new Sugar.Date().raw, new Date());
     });
@@ -659,8 +660,8 @@ namespace('Date', () => {
           assertDateEqual(create('25:00'), new Date(2020, 0, 2, 1));
           assertDateEqual(create('29:00'), new Date(2020, 0, 2, 5));
           assertDateEqual(create('05:59:59'), new Date(2020, 0, 1, 5, 59, 59));
-          assertUndefined(create('30:00'));
-          assertUndefined(create('139:00'));
+          assertNull(create('30:00'));
+          assertNull(create('139:00'));
         });
 
         it('should handle Issue #98', () => {
@@ -894,42 +895,42 @@ namespace('Date', () => {
       });
 
       it('should not parse ordinal out of range', () => {
-        assertUndefined(create('January 32nd, 2016'));
-        assertUndefined(create('January 40th, 2016'));
+        assertNull(create('January 32nd, 2016'));
+        assertNull(create('January 40th, 2016'));
       });
 
       it('should not parse invalid ordinals', () => {
-        assertUndefined(create('January 1nd, 2016'));
-        assertUndefined(create('January 1rd, 2016'));
-        assertUndefined(create('January 1th, 2016'));
+        assertNull(create('January 1nd, 2016'));
+        assertNull(create('January 1rd, 2016'));
+        assertNull(create('January 1th, 2016'));
 
-        assertUndefined(create('January 2st, 2016'));
-        assertUndefined(create('January 2rd, 2016'));
-        assertUndefined(create('January 2th, 2016'));
+        assertNull(create('January 2st, 2016'));
+        assertNull(create('January 2rd, 2016'));
+        assertNull(create('January 2th, 2016'));
 
-        assertUndefined(create('January 3st, 2016'));
-        assertUndefined(create('January 3nd, 2016'));
-        assertUndefined(create('January 3th, 2016'));
+        assertNull(create('January 3st, 2016'));
+        assertNull(create('January 3nd, 2016'));
+        assertNull(create('January 3th, 2016'));
 
-        assertUndefined(create('January 4st, 2016'));
-        assertUndefined(create('January 4nd, 2016'));
-        assertUndefined(create('January 4rd, 2016'));
+        assertNull(create('January 4st, 2016'));
+        assertNull(create('January 4nd, 2016'));
+        assertNull(create('January 4rd, 2016'));
 
-        assertUndefined(create('January 5st, 2016'));
-        assertUndefined(create('January 5nd, 2016'));
-        assertUndefined(create('January 5rd, 2016'));
+        assertNull(create('January 5st, 2016'));
+        assertNull(create('January 5nd, 2016'));
+        assertNull(create('January 5rd, 2016'));
 
-        assertUndefined(create('January 10st, 2016'));
-        assertUndefined(create('January 10nd, 2016'));
-        assertUndefined(create('January 10rd, 2016'));
+        assertNull(create('January 10st, 2016'));
+        assertNull(create('January 10nd, 2016'));
+        assertNull(create('January 10rd, 2016'));
 
-        assertUndefined(create('January 11st, 2016'));
-        assertUndefined(create('January 11nd, 2016'));
-        assertUndefined(create('January 11rd, 2016'));
+        assertNull(create('January 11st, 2016'));
+        assertNull(create('January 11nd, 2016'));
+        assertNull(create('January 11rd, 2016'));
 
-        assertUndefined(create('January 12st, 2016'));
-        assertUndefined(create('January 12nd, 2016'));
-        assertUndefined(create('January 12rd, 2016'));
+        assertNull(create('January 12st, 2016'));
+        assertNull(create('January 12nd, 2016'));
+        assertNull(create('January 12rd, 2016'));
       });
 
       it('should parse long weekday with time', () => {
@@ -1119,7 +1120,7 @@ namespace('Date', () => {
           new Date(2020, 0, 15, 23, 59, 59, 999)
         );
 
-        assertUndefined(create('the end of -5 days ago'));
+        assertNull(create('the end of -5 days ago'));
       });
 
       it('should parse edge tokens for adjacent units', () => {
@@ -1336,25 +1337,24 @@ namespace('Date', () => {
 
         assertDateEqual(create('1/1/10000'), new Date(10000, 0, 1));
         assertDateEqual(create('1/1/100000'), new Date(100000, 0, 1));
-        assertUndefined(create('1/1/1000000'));
+        assertNull(create('1/1/1000000'));
 
         // Hours from 24-29 may be locale dependent and are allowed.
         assertDateEqual(create('25:00'), new Date(2020, 0, 2, 1));
         assertDateEqual(create('29:59'), new Date(2020, 0, 2, 5, 59));
-        assertUndefined(create('30:00'));
+        assertNull(create('30:00'));
 
         // Unreasonable hours are not allowed.
-        assertUndefined(create('125:00'));
-        assertUndefined(create('00:00:125.999'));
+        assertNull(create('125:00'));
+        assertNull(create('00:00:125.999'));
 
         // To allow for app-specific logic you can use the "explain" option
         // to discover the parsed month. If it is greater than 11 perform
         // error handling, etc.
 
-        const { absProps } = create({
+        const { absProps } = create('19/6/2018', {
           cache: false,
           explain: true,
-          input: '19/6/2018',
         });
 
         assertObjectEqual(absProps, {
@@ -1430,7 +1430,7 @@ namespace('Date', () => {
       });
 
       it('should not parse a standalone integer', () => {
-        assertUndefined(create('10'));
+        assertNull(create('10'));
       });
 
       it('should handle Issue #634', () => {
@@ -2125,7 +2125,7 @@ namespace('Date', () => {
       });
 
       it('should not parse irregular input', () => {
-        assertUndefined(create('foo of next week'));
+        assertNull(create('foo of next week'));
       });
 
       it('should handle now token', () => {
@@ -2215,19 +2215,19 @@ namespace('Date', () => {
       });
 
       it('should not handle Issue #203 time with no date', () => {
-        assertUndefined(create('next week 3pm'));
-        assertUndefined(create('next week at 3pm'));
-        assertUndefined(create('next week 3:45pm'));
-        assertUndefined(create('next week at 3:45pm'));
+        assertNull(create('next week 3pm'));
+        assertNull(create('next week at 3pm'));
+        assertNull(create('next week 3:45pm'));
+        assertNull(create('next week at 3:45pm'));
       });
 
       it('should not handle Issue #203 time with no date', () => {
-        assertUndefined(create('21:00 in 2 weeks'));
-        assertUndefined(create('5:00am in a month'));
-        assertUndefined(create('5am in a month'));
-        assertUndefined(create('5:01am in a month'));
-        assertUndefined(create('5:30am in an hour'));
-        assertUndefined(create('5am in a minute'));
+        assertNull(create('21:00 in 2 weeks'));
+        assertNull(create('5:00am in a month'));
+        assertNull(create('5am in a month'));
+        assertNull(create('5:01am in a month'));
+        assertNull(create('5:30am in an hour'));
+        assertNull(create('5am in a minute'));
       });
 
       it('should handle Issue #375', () => {
@@ -2392,7 +2392,7 @@ namespace('Date', () => {
         );
 
         // Not parsing this as a non-grammatical format
-        assertUndefined(create('week from Tuesday'));
+        assertNull(create('week from Tuesday'));
       });
 
       it('should handle half in Issue #455', () => {
@@ -2440,10 +2440,9 @@ namespace('Date', () => {
       });
 
       it('should correctly explain half parsing in Issue #455', () => {
-        const { absProps, relProps } = create({
+        const { absProps, relProps } = create('half a week ago', {
           cache: false,
           explain: true,
-          input: 'half a week ago',
         });
         assertObjectEqual(absProps, {});
         assertObjectEqual(relProps, {
@@ -2457,16 +2456,14 @@ namespace('Date', () => {
     describe('Preferences', () => {
 
       function createPast(input) {
-        return create({
+        return create(input, {
           past: true,
-          input,
         });
       }
 
       function createFuture(input) {
-        return create({
+        return create(input, {
           future: true,
-          input,
         });
       }
 
@@ -2648,8 +2645,7 @@ namespace('Date', () => {
       it('should be able to parse a basic date as UTC', () => {
         mockTimeZone(-540); // GMT+09:00
         assertDateEqual(
-          create({
-            input: '2020-01-01',
+          create('2020-01-01', {
             timeZone: 'America/New_York',
           }),
           new Date(2020, 0, 1, 14)
@@ -2659,8 +2655,7 @@ namespace('Date', () => {
       it('should be able to parse a basic date as UTC', () => {
         mockTimeZone(300); // GMT-05:00
         assertDateEqual(
-          create({
-            input: '2020-01-01',
+          create('2020-01-01', {
             timeZone: 'America/New_York',
           }),
           new Date(2020, 0)
@@ -2670,8 +2665,7 @@ namespace('Date', () => {
       it('should ignore timeZone when ISO-8601 zulu offset is set', () => {
         mockTimeZone(300); // GMT-05:00
         assertDateEqual(
-          create({
-            input: '2020-01-01Z',
+          create('2020-01-01Z', {
             timeZone: 'America/New_York',
           }),
           new Date(2019, 11, 31, 19)
@@ -2682,8 +2676,7 @@ namespace('Date', () => {
         mockTimeZone(300); // GMT-05:00
         setSystemTime(new Date(2020, 5, 15, 23, 59, 59, 999));
         assertDateEqual(
-          create({
-            input: 'now',
+          create('now', {
             timeZone: 'UTC',
           }),
           new Date(2020, 5, 15, 18, 59, 59, 999)
@@ -2695,9 +2688,8 @@ namespace('Date', () => {
 
       it('should be able to add basic parts', () => {
         assertDateEqual(
-          create({
+          create('2020x05x23', {
             cache: false,
-            input: '2020x05x23',
             dateTimeFormats: ['<year>x<month>x<day>'],
           }),
           new Date(2020, 4, 23)
@@ -2706,17 +2698,15 @@ namespace('Date', () => {
 
       it('should be able to add optional parts', () => {
         assertDateEqual(
-          create({
+          create('2020x05x23', {
             cache: false,
-            input: '2020x05x23',
             dateTimeFormats: ['<year>x<month>x?<day?>'],
           }),
           new Date(2020, 4, 23)
         );
         assertDateEqual(
-          create({
+          create('2020x05', {
             cache: false,
-            input: '2020x05',
             dateTimeFormats: ['<year>x<month>x?<day?>'],
           }),
           new Date(2020, 4)
@@ -2725,9 +2715,8 @@ namespace('Date', () => {
 
       it('should be able to add long components with a capital', () => {
         assertDateEqual(
-          create({
+          create('2020xAugxTuex25', {
             cache: false,
-            input: '2020xAugxTuex25',
             dateTimeFormats: ['<year>x<Month>x<Weekday>x<day>'],
           }),
           new Date(2020, 7, 25)
@@ -2736,9 +2725,8 @@ namespace('Date', () => {
 
       it('should be able to add time part', () => {
         assertDateEqual(
-          create({
+          create('2020x05x12:25', {
             cache: false,
-            input: '2020x05x12:25',
             dateTimeFormats: ['<year>x<month>x<time>'],
           }),
           new Date(2020, 4, 1, 12, 25)
@@ -2747,9 +2735,8 @@ namespace('Date', () => {
 
       it('should throw an error when unknown part is passed', () => {
         assertError(() => {
-          create({
+          create('foo', {
             cache: false,
-            input: 'foo',
             dateTimeFormats: ['<date>'],
           });
         });
@@ -2757,9 +2744,8 @@ namespace('Date', () => {
 
       it('should be able to add a fractionalSecond part', () => {
         assertDateEqual(
-          create({
+          create('foo:12.400', {
             cache: false,
-            input: 'foo:12.400',
             dateTimeFormats: ['foo:<fractionalSecond>'],
           }),
           new Date(2020, 0, 1, 0, 0, 12, 400)
@@ -2769,9 +2755,8 @@ namespace('Date', () => {
       it('should be able to add a timeZoneName part', () => {
         mockTimeZone(300); // GMT-05:00
         assertDateEqual(
-          create({
+          create('foo:GMT+9', {
             cache: false,
-            input: 'foo:GMT+9',
             dateTimeFormats: ['foo:<timeZoneName>'],
           }),
           new Date(2019, 11, 31, 10)
@@ -2780,9 +2765,8 @@ namespace('Date', () => {
 
       it('should be able to add an era part', () => {
         assertDateEqual(
-          create({
+          create('5000xBC', {
             cache: false,
-            input: '5000xBC',
             dateTimeFormats: ['<year>x<era>'],
           }),
           new Date(-5000, 0)
@@ -2791,9 +2775,8 @@ namespace('Date', () => {
 
       it('should allow hour, minute, and second parts', () => {
         assertDateEqual(
-          create({
+          create('12x12x12', {
             cache: false,
-            input: '12x12x12',
             dateTimeFormats: ['<second>x<minute>x<hour>'],
           }),
           new Date(2020, 0, 1, 12, 12, 12)
@@ -2802,9 +2785,8 @@ namespace('Date', () => {
 
       it('should support non-BMP characters', () => {
         assertDateEqual(
-          create({
+          create('2010🙂05🙂23', {
             cache: false,
-            input: '2010🙂05🙂23',
             dateTimeFormats: ['<year>🙂<month>🙂<day>'],
           }),
           new Date(2010, 4, 23)
@@ -2816,9 +2798,8 @@ namespace('Date', () => {
 
       it('should be able to add a numeric relative format', () => {
         assertDateEqual(
-          create({
+          create('5 days into the future!', {
             cache: false,
-            input: '5 days into the future!',
             relativeFormats: [
               {
                 format: (value, unit) => {
@@ -2836,9 +2817,8 @@ namespace('Date', () => {
 
       it('should be able to add a non-numeric relative format', () => {
         assertDateEqual(
-          create({
+          create('the day before yesterday', {
             cache: false,
-            input: 'the day before yesterday',
             relativeFormats: [
               {
                 format: (value, unit) => {
@@ -2857,10 +2837,9 @@ namespace('Date', () => {
     describe('Explaining', () => {
 
       it('should return a parsing result when explain flag is set', () => {
-        const { format, parser, ...rest } = create({
+        const { format, parser, ...rest } = create('January 1, 2020', {
           cache: false,
           explain: true,
-          input: 'January 1, 2020',
         });
         assertEqual(parser.locale, 'en-US');
         assertInstanceOf(format.reg, RegExp);
@@ -2882,10 +2861,9 @@ namespace('Date', () => {
 
       it('should have correct specificity for parsed date', () => {
         function assertParsedSpecificity(input, obj) {
-          const { specificity } = create({
+          const { specificity } = create(input, {
             cache: false,
             explain: true,
-            input,
           });
           assertObjectEqual(specificity, obj);
         }
@@ -2942,10 +2920,9 @@ namespace('Date', () => {
       });
 
       it('should have timeZoneOffset on absProps when offset is parsed', () => {
-        const { absProps } = create({
+        const { absProps } = create('2020-01-01T00:00+05:00', {
           cache: false,
           explain: true,
-          input: '2020-01-01T00:00+05:00',
         });
         assertObjectEqual(absProps, {
           year: 2020,
@@ -2958,40 +2935,36 @@ namespace('Date', () => {
       });
 
       it('should not return a parsing result when date cannot be parsed', () => {
-        assertUndefined(
-          create({
+        assertNull(
+          create('bad date', {
             cache: false,
             explain: true,
-            input: 'bad date',
           })
         );
       });
 
       it('should correctly explain props when using an offset with relative day', () => {
-        const { absProps, relProps } = create({
+        const { absProps, relProps } = create('two days before yesterday', {
           cache: false,
           explain: true,
-          input: 'two days before yesterday',
         });
         assertObjectEqual(absProps, {});
         assertObjectEqual(relProps, { day: -3 });
       });
 
       it('should correctly explain props when using parsing an offset weekday', () => {
-        const { absProps, relProps } = create({
+        const { absProps, relProps } = create('two days before Monday', {
           cache: false,
           explain: true,
-          input: 'two days before Monday',
         });
         assertObjectEqual(absProps, { day: 1 });
         assertObjectEqual(relProps, { day: -2 });
       });
 
       it('should correctly explain props when parsing an ending edge', () => {
-        const { absProps, relProps } = create({
+        const { absProps, relProps } = create('the start of the week', {
           cache: false,
           explain: true,
-          input: 'the start of the week',
         });
         assertObjectEqual(absProps, {
           day: 0,
@@ -3006,10 +2979,9 @@ namespace('Date', () => {
       });
 
       it('should correctly explain props when parsing an ending edge', () => {
-        const { absProps, relProps } = create({
+        const { absProps, relProps } = create('the end of next week', {
           cache: false,
           explain: true,
-          input: 'the end of next week',
         });
         assertObjectEqual(absProps, {
           day: 6,
@@ -3024,10 +2996,9 @@ namespace('Date', () => {
       });
 
       it('should correctly explain props when parsing an edge with last day', () => {
-        const { absProps, relProps } = create({
+        const { absProps, relProps } = create('the last day of next month', {
           cache: false,
           explain: true,
-          input: 'the last day of next month',
         });
         assertObjectEqual(absProps, {
           date: 29,
@@ -3042,10 +3013,9 @@ namespace('Date', () => {
       });
 
       it('should correctly explain negative years when parsing an era', () => {
-        const { absProps, relProps } = create({
+        const { absProps, relProps } = create('January 1st, 2000 bc', {
           cache: false,
           explain: true,
-          input: 'January 1st, 2000 bc',
         });
         assertObjectEqual(absProps, {
           year: -2000,
@@ -3056,10 +3026,9 @@ namespace('Date', () => {
       });
 
       it('should correctly explain hours in explicit dayPeriod', () => {
-        const { absProps, relProps } = create({
+        const { absProps, relProps } = create('Monday at noon', {
           cache: false,
           explain: true,
-          input: 'monday at noon',
         });
         assertObjectEqual(absProps, {
           day: 1,
@@ -3069,10 +3038,9 @@ namespace('Date', () => {
       });
 
       it('should handle Issue #545', () => {
-        const { absProps } = create({
+        const { absProps } = create('January 13th, 2016', {
           cache: false,
           explain: true,
-          input: 'January 13th, 2016',
         });
         assertObjectEqual(absProps, {
           year: 2016,
@@ -3082,10 +3050,9 @@ namespace('Date', () => {
       });
 
       it('should handle Issue #569', () => {
-        const { absProps, relProps, specificity } = create({
+        const { absProps, relProps, specificity } = create('yesterday at 2:30pm', {
           cache: false,
           explain: true,
-          input: 'yesterday at 2:30pm',
         });
         assertObjectEqual(absProps, {
           hour: 14,
@@ -3204,6 +3171,30 @@ namespace('Date', () => {
           create({ year: 5.5 });
         });
       });
+
+      it('should be able to pass a reference date', () => {
+        assertDateEqual(
+          create({
+            month: 6,
+          }, {
+            from: new Date(2025, 0),
+          }),
+          new Date(2025, 6),
+        );
+      });
+
+      it('should be able to pass a timeZone to modify an object', () => {
+        mockTimeZone(240); // GMT-04:00
+        assertDateEqual(
+          create({
+            month: 6,
+          }, {
+            timeZone: 'America/New_York',
+          }),
+          new Date(2020, 6, 1),
+        );
+      });
+
     });
 
     describe('Other', () => {
@@ -3220,15 +3211,13 @@ namespace('Date', () => {
         assertDateEqual(date1, date2);
       });
 
-      it('should ignore passed locale when using options object', () => {
-        const date = create(
-          {
-            input: 'next week',
-            locale: 'en-US',
-          },
-          'ja'
+      it('should be able to pass a reference date', () => {
+        assertDateEqual(
+          create('next week Friday', {
+            from: new Date(2025, 0),
+          }),
+          new Date(2025, 0, 10),
         );
-        assertDateEqual(date, new Date(2020, 0, 8));
       });
 
       it('should trim whitespace', () => {
@@ -3239,10 +3228,10 @@ namespace('Date', () => {
         assertDateEqual(create('juNe 1St 2008'), new Date(2008, 5));
       });
 
-      it('should handle setting the timezone without any other props', () => {
+      it('should be able to create a date in a time zone with no other props', () => {
         mockTimeZone(300); // GMT-05:00
         assertDateEqual(
-          create({
+          create(null, {
             timeZone: 'UTC',
           }),
           new Date(2019, 11, 31, 19)
@@ -3250,17 +3239,18 @@ namespace('Date', () => {
       });
 
       it('should handle irregular input', () => {
-        assertDateEqual(create({}), new Date(2020, 0));
+        assertDateEqual(create({}), new Date());
+
         assertError(() => {
           create();
         }, TypeError);
         assertError(() => {
           create(null);
-        });
+        }, TypeError);
         assertError(() => {
           create(undefined);
-        });
-        assertUndefined(create('blah'));
+        }, TypeError);
+        assertNull(create('blah'));
         assertError(() => {
           create('today', '1234');
         }, RangeError);
@@ -3295,7 +3285,7 @@ namespace('Date', () => {
       });
 
       it('should handle Issue #224', () => {
-        assertUndefined(create(''));
+        assertNull(create(''));
       });
 
       it('should handle Issue #387', () => {
@@ -4260,7 +4250,7 @@ namespace('Date', () => {
 
     it('should not accidentally traverse into different month on reset', () => {
       assertDateEqual(
-        set(new Date(2010, 0, 31), { month: 1, }, true),
+        set(new Date(2010, 0, 31), { month: 1 }, true),
         new Date(2010, 1)
       );
     });

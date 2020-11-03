@@ -1,7 +1,7 @@
 import { updateDate } from './update';
 import { advanceDate } from './shift';
 import { setWeekday } from './weekdays';
-import { setTimeZoneOffset, setIANATimeZone } from './timeZone';
+import { setTimeZoneOffset } from './timeZone';
 import { resetByProps, resetByUnit } from './reset';
 import { isNaN, isString } from '../../util/typeChecks';
 import { cloneDate } from '../../util/clone';
@@ -55,6 +55,7 @@ const REG_FLOAT = '[+-]?(?:\\d*\\.)?\\d+';
 
 const TIME_TYPES = ['hour', 'minute', 'second', 'dayPeriod'];
 
+// TODO: change these to upper and time or something?
 const UNIT_SHORTCUTS = {
   upper: ['year', 'month', 'week'],
   lower: ['hour', 'minute', 'second'],
@@ -1320,7 +1321,7 @@ export default class LocaleParser {
     return str;
   }
 
-  parse(str, options) {
+  parse(str, date, options) {
 
     // Parsing is case insensitive so downcase the
     // string so that tokens are correctly matched.
@@ -1330,8 +1331,7 @@ export default class LocaleParser {
       const { reg, groups } = format;
       const match = str.match(reg);
       if (match) {
-        const date = new Date();
-        const { past = false, future = false, explain = false, timeZone } = options;
+        const { past = false, future = false } = options;
         const prefer = (-past + future);
         const origin = cloneDate(date);
         const absProps = {};
@@ -1377,12 +1377,6 @@ export default class LocaleParser {
 
         //console.info(reg, match, absProps, relProps);
 
-        // If no timeZoneOffset was derived from the parsing and
-        // an override was set, then set it here.
-        if (timeZone && !('timeZoneOffset' in absProps)) {
-          setIANATimeZone(date, timeZone);
-        }
-
         // Allow date to resolve before applying preference.
         if (prefer) {
           const delta = date - origin;
@@ -1406,21 +1400,17 @@ export default class LocaleParser {
 
         this.cacheFormat(format);
 
-        if (explain) {
-          return {
-            date,
-            absProps,
-            relProps,
-            specificity: getPropsSpecificity({
-              ...relProps,
-              ...absProps,
-            }),
-            format,
-            parser: this,
-          };
-        } else {
-          return date;
-        }
+        return {
+          date,
+          absProps,
+          relProps,
+          specificity: getPropsSpecificity({
+            ...relProps,
+            ...absProps,
+          }),
+          format,
+          parser: this,
+        };
       }
     }
   }

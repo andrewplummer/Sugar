@@ -1,30 +1,19 @@
-import LocaleParser from './LocaleParser';
-import { memoize } from '../../util/caching';
+import LocaleParser from "./LocaleParser";
+import { memoize } from "../../util/caching";
 
-export function parseDate(options) {
-  const {
-    input,
-    locale,
-    past,
-    future,
-    explain,
-    timeZone,
-    cache = true,
-    ...parserOptions
-  } = options;
+export function parseDate(input, date, options) {
+  const { locale, past, future, cache = true, ...parserOpt } = options;
 
   let parser;
   if (cache) {
-    parser = getCachedParser(locale, parserOptions);
+    parser = getCachedParser(locale, parserOpt);
   } else {
-    parser = getParser(locale, parserOptions);
+    parser = getParser(locale, parserOpt);
   }
 
-  return parser.parse(input, {
+  return parser.parse(input, date, {
     past,
     future,
-    explain,
-    timeZone,
   });
 }
 

@@ -46,12 +46,6 @@ namespace('Date', function () {
     test(new Date(2017, 7, 14), ['Saturday', { past: true }], new Date(2017, 7, 12), 'Preference option should work');
   });
 
-  method('getUTCOffset', function() {
-    var d = new Date('August 5, 2010 04:03:02');
-    test(d, getExpectedTimezoneOffset(d), 'no colon');
-    test(d, [true], getExpectedTimezoneOffset(d, true), 'colon');
-  });
-
   method('is', function() {
 
     var d = new Date(2010,7,5,13,45,2,542);

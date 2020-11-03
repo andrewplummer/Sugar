@@ -2,6 +2,12 @@
 
 describe('en-CA', () => {
 
+  beforeAll(() => {
+    // Set system time to 2020-01-01
+    setSystemTime(new Date(2020, 0));
+    Intl.DateTimeFormat.mockDefaultLocale('en-US');
+  });
+
   namespace('Date', () => {
 
     describeStatic('create', (create) => {
@@ -9,15 +15,15 @@ describe('en-CA', () => {
       it('should not parse ambiguous year last format', () => {
         // Format is ambiguous in Canada where UK style and
         // American style are mixed, so these should not be parseable.
-        assertUndefined(create('01/01/2020', 'en-CA'));
-        assertUndefined(create('01-01-2020', 'en-CA'));
+        assertNull(create('01/01/2020', 'en-CA'));
+        assertNull(create('01-01-2020', 'en-CA'));
       });
 
       it('should not parse ambiguous day month format', () => {
         // This should technically not be parseable as above, however unfortunately
         // American style are mixed, so these should not be parseable.
-        assertUndefined(create('8/10', 'en-CA'), new Date(2020, 7, 10));
-        assertUndefined(create('8-10', 'en-CA'), new Date(2020, 7, 10));
+        assertNull(create('8/10', 'en-CA'), new Date(2020, 7, 10));
+        assertNull(create('8-10', 'en-CA'), new Date(2020, 7, 10));
       });
 
       it('should parse date first dash format', () => {
