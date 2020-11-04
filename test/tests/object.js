@@ -1,6 +1,6 @@
 'use strict';
-/* eslint-disable no-sparse-arrays */
 
+/* eslint-disable no-sparse-arrays */
 namespace('Object', function () {
 
   describeInstance('mapKeys', function (mapKeys) {

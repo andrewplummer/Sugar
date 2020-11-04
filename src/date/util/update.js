@@ -1,4 +1,4 @@
-import { getUnitIndex, getPropsSpecificity } from './units';
+import { getUnitIndex } from './units';
 import { resetByProps } from './reset';
 import { callDateSet } from './helpers';
 

@@ -1,6 +1,6 @@
-"use strict";
-/* eslint-disable no-sparse-arrays */
+'use strict';
 
+/* eslint-disable no-sparse-arrays */
 namespace("Array", () => {
 
   describeStatic("construct", (construct) => {
