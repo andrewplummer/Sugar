@@ -2,14 +2,12 @@
 
 describe('Chainable', () => {
 
-  Sugar.createNamespace('Number');
-  Sugar.createNamespace('String');
-  Sugar.createNamespace('Object');
-  Sugar.createNamespace('Array');
-  Sugar.createNamespace('RegExp');
-  Sugar.createNamespace('Function');
+  function arg(a, b) {
+    return b;
+  }
 
   describe('Constructor', () => {
+
     it('should instantiate with new keyword', () => {
       assertEqual(new Sugar.Number(1).raw, 1);
     });
@@ -42,12 +40,23 @@ describe('Chainable', () => {
 
     it('should correctly construct arrays', () => {
       assertArrayEqual(new Sugar.Array().raw, []);
-      assertArrayEqual(new Sugar.Array(null).raw, []);
-      assertArrayEqual(new Sugar.Array(undefined).raw, []);
       assertArrayEqual(new Sugar.Array('abc').raw, ['a', 'b', 'c']);
       assertArrayEqual(new Sugar.Array({ a: 1 }).raw, []);
       assertArrayEqual(new Sugar.Array(new Set([1, 2, 3])).raw, [1, 2, 3]);
       assertArrayEqual(new Sugar.Array(new Map([[1, 2]])).raw, [[1, 2]]);
+    });
+
+    it('should be able to construct arrays from enumerated arguments', () => {
+      assertArrayEqual(new Sugar.Array('a', 'b', 'c').raw, ['a', 'b', 'c']);
+    });
+
+    it('should have error parity with Array.from', () => {
+      assertError(() => {
+        new Sugar.Array(null);
+      });
+      assertError(() => {
+        new Sugar.Array(undefined);
+      });
     });
 
     it('should correctly construct objects', () => {
@@ -88,6 +97,7 @@ describe('Chainable', () => {
   });
 
   describe('Instance Methods', () => {
+
     it('should be able to define instance methods', () => {
       Sugar.Number.defineInstance('add', add);
       assertEqual(new Sugar.Number(5).add(5).raw, 10);
@@ -127,8 +137,8 @@ describe('Chainable', () => {
     it('should allow chaining across namespaces', () => {
       // Note that Object is being used here as a safeguard as
       // it's behavior differs slightly when extending.
-      Sugar.Number.defineInstance('argObject', arg2);
-      Sugar.Object.defineInstance('argNumber', arg2);
+      Sugar.Number.defineInstance('argObject', arg);
+      Sugar.Object.defineInstance('argNumber', arg);
       assertEqual(new Sugar.Number().argObject({}).argNumber(1).raw, 1);
       delete Sugar.Number.argObject;
       delete Sugar.Object.argNumber;
@@ -136,8 +146,9 @@ describe('Chainable', () => {
   });
 
   describe('Wrapping Behavior', () => {
+
     beforeEach(() => {
-      Sugar.Number.defineInstance('arg', arg2);
+      Sugar.Number.defineInstance('arg', arg);
     });
 
     afterEach(() => {
@@ -170,22 +181,26 @@ describe('Chainable', () => {
     });
 
     it('should wrap object result and initialize namespace', () => {
-      ensureNamespaceNotInitialized('Object', () => {
+      withResetNamespaces(() => {
         var obj = {};
+        Sugar.createNamespace('Number');
+        Sugar.Number.defineInstance('arg', arg);
         assertEqual(new Sugar.Number(1).arg(obj).raw, obj);
-        assertTrue(!!Sugar.Object);
+        assertTruthy(Sugar.Object);
       });
     });
 
     it('should not initialize namespace for custom classes', () => {
       function Foo() {}
       new Sugar.Number(1).arg(new Foo());
-      assertTrue(!Sugar.Foo);
+      assertUndefined(Sugar.Foo);
     });
 
     it('should not initialize namespace for custom classes with same name as built-ins', () => {
-      ensureNamespaceNotInitialized('Array', () => {
+      withResetNamespaces(() => {
         function Array() {}
+        Sugar.createNamespace('Number');
+        Sugar.Number.defineInstance('arg', arg);
         new Sugar.Number(1).arg(new Array());
         assertTrue(!Sugar.Array);
       });
@@ -200,6 +215,7 @@ describe('Chainable', () => {
   });
 
   describe('Native Mapping', () => {
+
     it('should map native methods to chainable prototype', () => {
       assertEqual(new Sugar.Number(5).toFixed(2).raw, '5.00');
     });
@@ -289,17 +305,18 @@ describe('Chainable', () => {
   });
 
   describe('toString', () => {
+
     it('should return a chainable', () => {
-      assertEqual(new Sugar.Number(1).toString().raw, '1');
+      assertEqual(new Sugar.Number(1).toString(), '1');
     });
 
     it('should match its built-in class', () => {
-      assertEqual(new Sugar.Array([1, 2, 3]).toString().raw, '1,2,3');
+      assertEqual(new Sugar.Array([1, 2, 3]).toString(), '1,2,3');
     });
 
     it('should be equivalent to calling prototype.toString', () => {
       assertEqual(
-        new Sugar.Object({}).toString().raw,
+        new Sugar.Object({}).toString(),
         Object.prototype.toString.call({})
       );
     });

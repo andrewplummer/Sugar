@@ -16,12 +16,11 @@ import { createNamespace } from '../core';
  *   new Sugar.Array('abc');
  *
  **/
-const Namespace = createNamespace('Array', (arg) => {
-  if (arg && !Array.isArray(arg)) {
-    return Array.from(arg);
-  } else {
-    return arg || [];
+const Namespace = createNamespace('Array', (...args) => {
+  if (args.length) {
+    return Array.from(args.length > 1 ? args : args[0]);
   }
+  return [];
 });
 
 export const {

@@ -1,4 +1,5 @@
 export * from './core';
+export { default } from './core';
 
 export { Array } from './array';
 export { Date } from './date';

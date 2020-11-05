@@ -1,10 +1,5 @@
 
-const hasOwn = Object.prototype.hasOwnProperty;
 const propertyIsEnumerable = Object.prototype.propertyIsEnumerable;
-
-export function hasOwnProperty(obj, prop) {
-  return !!obj && hasOwn.call(obj, prop);
-}
 
 export function forEachProperty(obj, fn) {
   for (let key in obj) {

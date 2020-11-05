@@ -1,9 +1,5 @@
 noop = function() {};
 
-arg2 = function() {
-  return arguments[1];
-};
-
 add = function(n1, n2) {
   return n1 + n2;
 };

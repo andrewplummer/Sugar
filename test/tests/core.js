@@ -2,103 +2,74 @@
 
 describe('Core', () => {
 
-  describe('Global', () => {
-
-    it('should have a version', () => {
-      assertMatch(Sugar.VERSION, /^(\d+\.\d+\.\d+|edge)$/);
-    });
-
-  });
-
-  describe('Namespace', () => {
+  describe('Creating Namespaces', () => {
 
     it('should be able to create a new namespace', () => {
-      ensureNamespaceNotInitialized('Array', () => {
-        Sugar.createNamespace('Array');
-        assertInstanceOf(Sugar.Array, Function);
-        assertInstanceOf(Sugar.Array.defineInstance, Function);
+      withResetNamespaces(() => {
+        const Array = Sugar.createNamespace('Array');
+        assertInstanceOf(Array, Function);
+        assertInstanceOf(Array.defineInstance, Function);
       });
     });
 
-    it('should not overwrite a created namespace', () => {
-      ensureNamespaceNotInitialized('Array', () => {
+    it('should be able to initialize Map', () => {
+      withResetNamespaces(() => {
+        const Map = Sugar.createNamespace('Map');
+        assertInstanceOf(Map, Function);
+        assertInstanceOf(Map.defineInstance, Function);
+      });
+    });
+
+    it('should error when attempting to overwrite a namespace', () => {
+      withResetNamespaces(() => {
         Sugar.createNamespace('Array');
-        var oldNamespace = Sugar.Array;
-        Sugar.createNamespace('Array');
-        assertEqual(oldNamespace, Sugar.Array);
+        assertEqual(Sugar.createNamespace('Array'), Sugar.Array);
       });
     });
 
     it('should error when namespace is not a built-in', () => {
-      assertError(function createUnknownNamespace() {
+      assertError(() => {
         Sugar.createNamespace('Foo');
       });
     });
 
   });
 
-  describe('Defining', () => {
+  describe('Defining Methods', () => {
 
-    describe('Basic', () => {
-
-      afterEach(() => {
-        delete Sugar.Number.add;
-      });
-
-      it('should be able to define static methods', () => {
-        Sugar.Number.defineStatic('add', add);
-        assertEqual(Sugar.Number.add(1, 2), 3);
-      });
-
-      it('should be able to define instance methods as static', () => {
-        Sugar.Number.defineInstance('add', add);
-        assertEqual(Sugar.Number.add(1, 2), 3);
-      });
-
-      it('should be able to define static with object', () => {
-        Sugar.Number.defineStatic({ add: add });
-        assertEqual(Sugar.Number.add(1, 2), 3);
-      });
-
-      it('should be able to define instance with object', () => {
-        Sugar.Number.defineInstance({ add: add });
-        assertEqual(Sugar.Number.add(1, 2), 3);
-      });
-
+    afterEach(() => {
+      delete Sugar.Number.add;
     });
 
-    describe('Aliases', () => {
+    it('should be able to define static methods', () => {
+      Sugar.Number.defineStatic('add', add);
+      assertEqual(Sugar.Number.add(1, 2), 3);
+    });
 
-      function alias(name) {
-        var add = Number(name.charAt(3));
-        return (n) => {
-          return n + add;
-        };
-      }
+    it('should be able to define instance methods as static', () => {
+      Sugar.Number.defineInstance('add', add);
+      assertEqual(Sugar.Number.add(1, 2), 3);
+    });
 
-      afterEach(() => {
-        delete Sugar.Number.add1;
-        delete Sugar.Number.add2;
+    it('should be able to define static with object', () => {
+      Sugar.Number.defineStatic({ add });
+      assertEqual(Sugar.Number.add(1, 2), 3);
+    });
+
+    it('should be able to define instance with object', () => {
+      Sugar.Number.defineInstance({ add });
+      assertEqual(Sugar.Number.add(1, 2), 3);
+    });
+
+    it('should be able to define static properties', () => {
+      Sugar.Number.defineStatic('add', 'const');
+      assertEqual(Sugar.Number.add, 'const');
+    });
+
+    it('should not be able to define properties as instance', () => {
+      assertError(() => {
+        Sugar.Number.defineInstance('add', 'const');
       });
-
-      it('should be able to define static aliases', () => {
-        Sugar.Number.defineStaticAlias('add1 add2', alias);
-        assertEqual(Sugar.Number.add1(1), 2);
-        assertEqual(Sugar.Number.add2(1), 3);
-      });
-
-      it('should be able to define instance aliases', () => {
-        Sugar.Number.defineInstanceAlias('add1 add2', alias);
-        assertEqual(Sugar.Number.add1(1), 2);
-        assertEqual(Sugar.Number.add2(1), 3);
-      });
-
-      it('should be able to define aliases with a comma as well', () => {
-        Sugar.Number.defineInstanceAlias('add1,add2', alias);
-        assertEqual(Sugar.Number.add1(1), 2);
-        assertEqual(Sugar.Number.add2(1), 3);
-      });
-
     });
 
   });

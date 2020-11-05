@@ -1,26 +1,29 @@
 import globalContext from './util/globalContext';
-import NamespaceStore from './util/NamespaceStore';
-import SugarChainableBase from './util/SugarChainableBase';
+import ChainableBase from './util/ChainableBase';
+import MethodStore from './util/MethodStore';
 import { extendNative, restoreNative } from './util/extend';
-import { hasOwnProperty, forEachProperty } from '../util/helpers';
-import { isString, isFunction } from '../util/typeChecks';
-
-// --- Constants
-
-/** @const {string} */
-export const VERSION = 'edge';
-
-// --- Setup
+import { hasOwnProperty } from './util/helpers';
 
 /**
  * Creates a new Sugar namespace. This will be exposed on the Sugar object via
- * `globalName`, as well as on the global namespace when extend functionality
- * is enabled.
+ * `globalName`. The namespace also functions as the chainable constructor whose
+ * prototype has methods that forwards the chainable value to native methods of
+ * the same type. After creation, a namespace can go on to define new methods
+ * via `defineStatic` or `defineInstance`.
  *
  * @param {string} globalName - The name of the namespace to be created. This
- * must match the name on the global context.
+ * must match the name on the global context, for example `"Number"`.
  *
- * @returns {Function} SugarChainableConstructor
+ * @returns {Chainable}
+ *
+ * @example
+ *
+ *   Sugar.createNamespace('Number');
+ *
+ *   -> new Sugar.Number(2).toFixed(2); // Returns "2.00"
+ *   -> Sugar.Number.defineInstance('add', (a, b) => a + b);
+ *   -> new Sugar.Number(2).add(3); // Returns 5
+ *
  */
 export function createNamespace(globalName, factory) {
 
@@ -32,12 +35,59 @@ export function createNamespace(globalName, factory) {
     return Sugar[globalName];
   }
 
-  /**
-   * A chainable object.
-   *
-   * @param {*} obj - The object to be wrapped by the chainable.
-   */
-  class SugarChainable extends SugarChainableBase {
+  class Chainable extends ChainableBase {
+
+    /**
+     * Defines static methods or properties. Effectively this simply assigns the
+     * function or property onto the namespace.
+     *
+     * @param {string|Object} arg - Name of the static method or property to be
+     *   to be defined or an object mapping multiple properties.
+     * @param {any} [val] - Function or property to be added when the first
+     *   argument is a string.
+     *
+     * @example
+     *
+     * Sugar.Number.defineStatic('add', (a, b) => a + b); // With 2 arguments
+     * Sugar.Number.defineStatic({
+     *   add: (a, b) => a + b,
+     * }); // With an object
+     *
+     * -> Sugar.Number.add(1, 2) // returns 3;
+     *
+     */
+    static defineStatic(...args) {
+      defineWithArgs(globalName, defineStatic, args);
+    }
+
+    /**
+     * Defines instance methods. Accepts static function(s) that will be defined
+     * on the namespace as in `defineStatic`. Additionally, an instance method
+     * will be defined on the chainable prototype that forwards the chainable
+     * value to the static function as the first argument, allowing it to
+     * operate with chainables.
+     *
+     * @param {string|Object} arg - Name of the method to be defined or an object
+     *   mapping multiple methods.
+     * @param {Function} [staticFn] - The static function to be added. This
+     *   function must accept at least one argument of a type corresponding to
+     *   the namespace, allowing it to work with chainables. For example when
+     *   calling `Sugar.Number.defineInstance`, `staticFn` must expect its first
+     *   argument to be of type `number`.
+     *
+     * @example
+     *
+     * Sugar.Number.defineInstance('add', (a, b) => a + b); // With 2 arguments
+     * Sugar.Number.defineInstance({
+     *   add: (a, b) => a + b,
+     * }); // With an object
+     *
+     * -> new Sugar.Number(1).add(2) // returns 3;
+     *
+     */
+    static defineInstance(...args) {
+      defineWithArgs(globalName, defineInstance, args);
+    }
 
     /**
      * Extends Sugar defined methods onto built-in objects for this type.
@@ -60,42 +110,6 @@ export function createNamespace(globalName, factory) {
       extendNamespace(globalName, opt);
     }
 
-    /**
-     * defineStatic
-     *
-     * @param {string} name - Name of the static method to be defined.
-     * @param {Function} fn - Function to be added as a static method.
-     */
-    static defineStatic(...args) {
-      defineWithArgs(globalName, defineStatic, args);
-    }
-
-    /**
-     * defineInstance
-     *
-     * @param {string} name - Name of the instance method to be defined.
-     * @param {Function} fn - Function to be added as a chainable instance method.
-     */
-    static defineInstance(...args) {
-      defineWithArgs(globalName, defineInstance, args);
-    }
-
-    // TODO: aliases needed???
-
-    /**
-     * defineStaticAlias
-     */
-    static defineStaticAlias(str, fn) {
-      defineAliases(globalName, defineStatic, str, fn);
-    }
-
-    /**
-     * defineInstanceAlias
-     */
-    static defineInstanceAlias(str, fn) {
-      defineAliases(globalName, defineInstance, str, fn);
-    }
-
     constructor(...args) {
       if (factory) {
         super(factory(...args));
@@ -103,69 +117,73 @@ export function createNamespace(globalName, factory) {
         super(...args);
       }
     }
-
   }
 
-  mapNativeToChainable(globalName, SugarChainable);
+  mapNativeToChainable(globalName, Chainable);
 
-  Sugar[globalName] = SugarChainable;
+  Sugar[globalName] = Chainable;
 
-  return SugarChainable;
+  return Chainable;
 }
-
 
 // --- Defining methods
 
-const instanceMethods = new NamespaceStore();
+const instanceMethods = new MethodStore();
 
-function defineWithArgs(globalName, defineMethod, args) {
-  if (isString(args[0])) {
-    defineMethod(globalName, args[0], args[1]);
+function defineWithArgs(globalName, defineFn, args) {
+  if (args.length === 1) {
+    for (let [key, val] of Object.entries(args[0])) {
+      defineFn(globalName, key, val);
+    }
   } else {
-    forEachProperty(args[0], (methodName, fn) => {
-      defineMethod(globalName, methodName, fn);
-    });
+    defineFn(globalName, args[0], args[1]);
   }
 }
 
-function defineAliases(globalName, defineMethod, str, fn) {
-  str.split(/[ ,]/).forEach(methodName => {
-    defineMethod(globalName, methodName, fn(methodName));
-  });
-}
-
 function defineStatic(globalName, methodName, staticFn) {
-  const SugarChainable = Sugar[globalName];
-  assertMethodDoesNotExist(SugarChainable, methodName);
-  // Clear an instance method that previously exists.
-  // Sugar will error when redefining methods, so this
-  // is mostly for the test suite.
-  instanceMethods.remove(globalName, methodName, true);
-  SugarChainable[methodName] = staticFn;
+  const namespace = Sugar[globalName];
+
+  assertMethodName(methodName);
+  assertMethodDoesNotExist(namespace, methodName);
+
+  namespace[methodName] = staticFn;
 }
 
 function defineInstance(globalName, methodName, staticFn) {
-  const SugarChainable = Sugar[globalName];
-  assertMethodDoesNotExist(SugarChainable, methodName);
-  const instanceFn = wrapStaticMethodAsInstance(SugarChainable, staticFn);
-  instanceMethods.set(globalName, methodName, instanceFn, true);
-  SugarChainable.prototype[methodName] = wrapReturnWithChainable(instanceFn);
-  SugarChainable[methodName] = staticFn;
+  assertFunction(staticFn);
+
+  defineStatic(globalName, methodName, staticFn);
+
+  const namespace = Sugar[globalName];
+  const instanceFn = wrapStaticMethodAsInstance(namespace, staticFn);
+  instanceMethods.set(globalName, methodName, instanceFn);
+  namespace.prototype[methodName] = wrapReturnWithChainable(instanceFn);
 }
 
-function assertMethodDoesNotExist(SugarChainable, methodName) {
-  if (SugarChainable[methodName]) {
+function assertMethodName(methodName) {
+  if (typeof methodName !== 'string') {
+    throw new Error('Method name must be a string');
+  }
+}
+
+function assertFunction(fn) {
+  if (typeof fn !== 'function') {
+    throw new Error('Argument must be a function');
+  }
+}
+
+function assertMethodDoesNotExist(namespace, methodName) {
+  if (namespace[methodName]) {
     throw new Error(`Method ${methodName} is already defined`);
   }
 }
 
-function wrapStaticMethodAsInstance(SugarChainable, fn) {
-  return function(...args) {
+function wrapStaticMethodAsInstance(namespace, fn) {
+  return function (...args) {
     args.unshift(this);
-    return fn.apply(SugarChainable, args);
+    return fn.apply(namespace, args);
   };
 }
-
 
 // --- Extending
 
@@ -189,10 +207,10 @@ function wrapStaticMethodAsInstance(SugarChainable, fn) {
 export function extend(opt) {
   try {
     opt = collectExtendOptions(opt);
-    forEachNamespace(globalName => {
+    forEachNamespace((globalName) => {
       if (extendIsAllowed(globalName, opt)) {
         extendNamespace(globalName, {
-          existing: opt && opt.existing
+          existing: opt && opt.existing,
         });
       }
     });
@@ -216,11 +234,11 @@ export function restore() {
 }
 
 function forEachNamespace(fn) {
-  forEachProperty(Sugar, (key, val) => {
-    if (val.prototype instanceof SugarChainableBase) {
+  for (let [key, val] of Object.entries(Sugar)) {
+    if (val.prototype instanceof ChainableBase) {
       fn(key);
     }
-  });
+  }
 }
 
 function collectExtendOptions(opt) {
@@ -244,7 +262,6 @@ function extendOptionsInclude(name, opt) {
 function extendOptionsExclude(name, opt) {
   return opt && opt.exclude && opt.exclude.includes(name);
 }
-
 
 // --- Extending via namespace
 
@@ -270,14 +287,15 @@ function restoreNamespace(globalName) {
 
 function forEachNamespaceMethod(globalName, fn) {
   const native = globalContext[globalName];
-  forEachProperty(Sugar[globalName], (methodName, staticFn) => {
-    const instanceFn = instanceMethods.get(globalName, methodName, true);
+  const namespace = Sugar[globalName];
+  for (let [methodName, staticFn] of Object.entries(namespace)) {
+    const instanceFn = instanceMethods.get(globalName, methodName);
     if (instanceFn) {
       fn(native.prototype, methodName, instanceFn, true);
     } else {
       fn(native, methodName, staticFn, false);
     }
-  });
+  }
 }
 
 function canExtendMethod(methodName, native, opt) {
@@ -297,7 +315,6 @@ function isDisallowedEnhancement(methodName, native, opt) {
 function extendOptionsDisallowExisting(opt) {
   return opt && opt.existing === false;
 }
-
 
 // --- Chainables
 
@@ -323,47 +340,74 @@ function canWrapChainable(obj) {
   return obj != null && obj !== true && obj !== false;
 }
 
-function mapNativeToChainable(globalName, SugarChainable) {
+function mapNativeToChainable(globalName, Chainable) {
+  const native = globalContext[globalName];
 
-  const proto = globalContext[globalName].prototype;
+  // Object is a special case.as it has deprecated methods:
+  // TODO: figure this out:
+  // __defineGetter__ Object
+  // __defineSetter__ Object
+  // __lookupGetter__ Object
+  // __lookupSetter__ Object
+  // hasOwnProperty Object
+  // isPrototypeOf Object
+  // propertyIsEnumerable Object
 
-  Object.getOwnPropertyNames(proto).forEach(methodName => {
-    var fn;
-    if (nativeMethodProhibitedOnChainable(methodName)) {
-      return;
-    }
+  if (native === Object) {
+    return;
+  }
+
+  const nativeProto = native.prototype;
+  const chainableProto = Chainable.prototype;
+
+  for (let name of Object.getOwnPropertyNames(nativeProto)) {
     try {
-      fn = proto[methodName];
-      if (!isFunction(fn)) {
-        // Bail on anything not a function.
-        return;
+      if (!isProhibitedMethod(name) && typeof nativeProto[name] === 'function') {
+        const fn = nativeProto[name];
+        // TODO: revisit this!
+        chainableProto[name] = wrapReturnWithChainable(fn);
       }
     } catch {
-      // Function.prototype has properties that
-      // will throw errors when accessed.
-      return;
+      // Do nothing
     }
-    return SugarChainable.prototype[methodName] = wrapReturnWithChainable(fn);
-  });
+  }
 }
 
-function nativeMethodProhibitedOnChainable(methodName) {
+// Sugar chainables have their own constructors as well as "valueOf"
+// methods, so exclude them here. The __proto__ argument should be
+// trapped by the function check, however simply accessing this property
+// on Object.prototype causes QML to segfault, so pre-emptively excluding
+// it. Note we're intentionally allowing toString through to allow
+// it to be wrapped as a chainable.
+const PROHIBITED_METHODS = [
+  'constructor',
+  'arguments',
+  'toString',
+  'valueOf',
+  'caller',
+  //'toString',
+  //'valueOf',
+  //'valueOf',
+];
+
+function isProhibitedMethod(name) {
   // Sugar chainables have their own constructors as well as "valueOf"
   // methods, so exclude them here. The __proto__ argument should be
   // trapped by the function check, however simply accessing this property
   // on Object.prototype causes QML to segfault, so pre-emptively excluding
   // it. Note we're intentionally allowing toString through to allow
   // it to be wrapped as a chainable.
-  return methodName === 'constructor'
-         || methodName === 'valueOf'
-         || methodName === '__proto__';
+  return PROHIBITED_METHODS.includes(name);
 }
 
-// --- Main Export
+// --- Default Export
 
-export const Sugar = {
+const Sugar = {
+  /* eslint-disable-next-line no-undef */
   VERSION,
   extend,
   restore,
-  createNamespace
+  createNamespace,
 };
+
+export default Sugar;

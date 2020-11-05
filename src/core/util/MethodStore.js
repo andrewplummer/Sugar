@@ -1,6 +1,6 @@
-import { hasOwnProperty } from '../../util/helpers';
+import { hasOwnProperty } from './helpers';
 
-export default class NamespaceStore {
+export default class MethodStore {
 
   constructor() {
     this.store = {};

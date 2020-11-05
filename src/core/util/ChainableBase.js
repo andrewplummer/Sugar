@@ -5,8 +5,12 @@ export default class ChainableBase {
     this.raw = raw;
   }
 
+  toString() {
+    return this.raw.toString();
+  }
+
   valueOf() {
-    return this.raw;
+    return this.raw.valueOf();
   }
 
 }

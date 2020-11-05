@@ -2,17 +2,17 @@
 
 describe('Extended', function() {
 
-  Sugar.createNamespace('Number');
-  Sugar.createNamespace('String');
-  Sugar.createNamespace('Object');
+  function arg(a, b) {
+    return b;
+  }
 
   beforeEach(function() {
     Sugar.Number.defineStatic('addStatic', add);
-    Sugar.Object.defineStatic('argStatic', arg2);
+    Sugar.Object.defineStatic('argStatic', arg);
     Sugar.Number.defineInstance('add', add);
     Sugar.Number.defineInstance('mult', mult);
     Sugar.String.defineInstance('add', add);
-    Sugar.Object.defineInstance('arg', arg2);
+    Sugar.Object.defineInstance('arg', arg);
   });
 
   afterEach(function() {
