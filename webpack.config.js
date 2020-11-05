@@ -1,19 +1,18 @@
-const path = require('path');
-const VERSION = require('./package.json').version;
+const webpack = require('webpack');
 const CircularDependencyPlugin = require('circular-dependency-plugin');
+const { version } = require('./package.json');
+
+const { NODE_ENV = 'development' } = process.env;
+const PROD = NODE_ENV === 'production';
 
 module.exports = {
-  mode: 'development',
-  devtool: 'cheap-module-eval-source-map',
+  mode: NODE_ENV,
+  devtool: PROD ? 'source-map' : 'eval-cheap-module-source-map',
   output: {
     filename: 'sugar.js',
     library: 'Sugar',
-    libraryExport: 'Sugar',
+    libraryExport: 'default',
   },
-  optimization: {
-    usedExports: true
-  },
-  // This can't be an array: https://webpack.js.org/guides/author-libraries/
   entry: './src/index',
   module: {
     rules: [
@@ -21,14 +20,6 @@ module.exports = {
         test: /\.js$/,
         exclude: /node_modules/,
         loader: 'babel-loader'
-      },
-      {
-        test: path.resolve(__dirname, './src/core/index.js'),
-        loader: 'string-replace-loader',
-        options: {
-          search: "'edge'",
-          replace: JSON.stringify(VERSION)
-        }
       }
     ]
   },
@@ -37,6 +28,9 @@ module.exports = {
       exclude: /node_modules/,
       failOnError: true,
       cwd: process.cwd(),
+    }),
+    new webpack.DefinePlugin({
+      VERSION: JSON.stringify(PROD ? version : 'edge'),
     }),
   ],
 };
