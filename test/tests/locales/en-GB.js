@@ -8,7 +8,7 @@ describe('en-GB', () => {
     Intl.DateTimeFormat.mockDefaultLocale('en-US');
   });
 
-  namespace('Date', () => {
+  describeNamespace('Date', () => {
 
     describeStatic('create', (create) => {
 

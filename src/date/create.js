@@ -1,8 +1,5 @@
 import { isString, isNumber, isDate } from '../util/typeChecks';
-import { setIANATimeZone } from './util/timeZone';
-import { normalizeProps } from './util/props';
-import { updateDate } from './util/update';
-import { parseDate } from './util/parsing';
+import { createDate } from './util/creation';
 import { cloneDate } from '../util/clone';
 
 /**
@@ -160,7 +157,6 @@ import { cloneDate } from '../util/clone';
  *
  **/
 export default function create(input, opt) {
-
   if (arguments.length === 0) {
     throw new TypeError('First argument is required.');
   } else if (input == null && !opt) {
@@ -169,37 +165,7 @@ export default function create(input, opt) {
     return new Date(input);
   } else if (isDate(input)) {
     return cloneDate(input);
-  }
-
-  const options = getOptions(opt);
-  const { from, timeZone } = options;
-
-  const date = from ? cloneDate(from) : new Date();
-
-  let retVal;
-  let hasZone;
-
-  if (input == null) {
-    retVal = date;
-  } else if (isString(input)) {
-    const result = parseDate(input, date, options);
-    if (result) {
-      retVal = options.explain ? result : date;
-      hasZone = 'timeZoneOffset' in result.absProps;
-    }
   } else {
-    const props = normalizeProps(input);
-    updateDate(date, props, true);
-    retVal = date;
+    return createDate(input, opt);
   }
-
-  if (!hasZone && timeZone) {
-    setIANATimeZone(date, timeZone);
-  }
-
-  return retVal || null;
-}
-
-function getOptions(obj) {
-  return isString(obj) ? { locale: obj } : obj || {};
 }

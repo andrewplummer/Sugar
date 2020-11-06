@@ -1,4 +1,4 @@
-import { Sugar } from '../../../src/core';
+import Sugar from '../../../src/core';
 import * as Exports from '../../../src';
 
 describe('Entry Module', () => {
@@ -16,7 +16,6 @@ describe('Entry Module', () => {
   });
 
   it('should have named exports equal to those of the core', () => {
-    assertEqual(Exports.VERSION, Sugar.VERSION);
     assertEqual(Exports.extend, Sugar.extend);
     assertEqual(Exports.restore, Sugar.restore);
     assertEqual(Exports.createNamespace, Sugar.createNamespace);

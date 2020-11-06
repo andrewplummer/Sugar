@@ -1,3 +1,6 @@
+// TODO: revisit this
+export * from '../core/util/helpers';
+import { hasOwnProperty } from '../core/util/helpers';
 
 const propertyIsEnumerable = Object.prototype.propertyIsEnumerable;
 

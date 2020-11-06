@@ -1,6 +1,6 @@
 'use strict';
 
-namespace('Number', () => {
+describeNamespace('Number', () => {
 
   describeStatic('random', (random) => {
 

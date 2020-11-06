@@ -1,5 +1,6 @@
-import LocaleParser from "./LocaleParser";
-import { memoize } from "../../util/caching";
+import LocaleParser from './LocaleParser';
+import { memoize } from '../../util/caching';
+import { isString } from '../../util/typeChecks';
 
 export function parseDate(input, date, options) {
   const { locale, past, future, cache = true, ...parserOpt } = options;

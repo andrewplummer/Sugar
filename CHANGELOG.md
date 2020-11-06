@@ -216,6 +216,10 @@ call `Function#lock` first in the chain to achieve the same effect.
 - Changed `Date#isLastWeek`, `Date#isThisWeek`, and `Date#isNextWeek` to no
     longer accept a locale code. Instead it accepts an integer representing the
     weekday that starts the week, typically `1` for Monday or `6` for Saturday.
+- Removed Date weekday aliases like `Date#isSunday`. These methods provide very
+    little benefit for their overhead. Simply use `date.getDay() === 0` instead.
+- Removed `margin` argument from `Date#isBefore` and `Date#isAfter`. For special
+    comparison cases, use `Date.create` and run a manual comparison.
 
 TODO:
 

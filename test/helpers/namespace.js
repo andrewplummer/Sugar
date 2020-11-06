@@ -4,7 +4,7 @@
 
   function forEachNamespace(obj, fn) {
     for (let [key, val] of Object.entries(obj)) {
-      if (key.match(/^[A-Z]/) && typeof val === 'function') {
+      if (key.match(/^[A-Z]/)) {
         fn(key, val);
       }
     }
@@ -17,6 +17,7 @@
       delete Sugar[key];
     });
   }
+
   function restoreNamespaces() {
     forEachNamespace(Sugar, (key) => {
       delete Sugar[key];

@@ -1,5 +1,6 @@
 import { isClass, getClassTag } from './class';
 import { TYPED_ARRAY_CLASS_TAGS } from './tags';
+import ChainableBase from '../core/util/ChainableBase';
 
 // TODO: rename to types.js??
 
@@ -35,10 +36,8 @@ export function isPrimitive(obj, type) {
 }
 
 export function isWrappedPrimitive(obj) {
-  return (
-    typeof obj === 'object' &&
-    (isString(obj) || isNumber(obj) || isBoolean(obj))
-  );
+  return typeof obj === 'object'
+      && (isString(obj) || isNumber(obj) || isBoolean(obj));
 }
 
 export function isObject(obj, type) {
@@ -56,11 +55,12 @@ export function isTypedArray(obj) {
   return TYPED_ARRAY_CLASS_TAGS.has(getClassTag(obj));
 }
 
-function buildPrimitiveClassCheck(classTag) {
-  const type = classTag.toLowerCase();
-  return function (obj) {
+function buildPrimitiveClassCheck(className) {
+  const type = className.toLowerCase();
+  return (obj) => {
+    obj = unwrapChainable(obj, className);
     const t = typeof obj;
-    return t === type || (t === 'object' && isClass(obj, classTag));
+    return t === type || (t === 'object' && isClass(obj, className));
   };
 }
 
@@ -69,22 +69,27 @@ function buildClassCheck(className, Constructor) {
     // Map and Set may be [object Object] in IE 11.
     // In this case we need to perform a check using the constructor
     // instead of Object.prototype.toString.
-    return getConstructorClassCheck(Constructor);
+    return buildConstructorCheck(Constructor);
   } else {
-    return getToStringClassCheck(className);
+    return buildClassNameCheck(className);
   }
 }
 
-function getToStringClassCheck(className) {
-  return function (obj, classTag) {
+function buildClassNameCheck(className) {
+  return (obj) => {
+    obj = unwrapChainable(obj, className);
     // perf: Returning up front on instanceof appears to be slower.
-    return isClass(obj, className, classTag);
+    return isClass(obj, className);
   };
 }
 
-function getConstructorClassCheck(obj) {
-  const ctorStr = String(obj);
-  return function (obj) {
+function buildConstructorCheck(Constructor) {
+  const ctorStr = String(Constructor);
+  return (obj) => {
     return String(obj.constructor) === ctorStr;
   };
+}
+
+function unwrapChainable(obj) {
+  return obj instanceof ChainableBase ? obj.raw : obj;
 }

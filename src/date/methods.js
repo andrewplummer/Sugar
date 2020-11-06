@@ -1,6 +1,4 @@
 export * from './addUnits';
-export * from './isDay';
-export * from './isMonth';
 export * from './isUnit';
 export * from './startOfUnit';
 export * from './endOfUnit';
@@ -16,6 +14,7 @@ export { default as format } from './format';
 export { default as getDaysInMonth } from './getDaysInMonth';
 export { default as getISOWeek } from './getISOWeek';
 export { default as getWeekday } from './getWeekday';
+export { default as isBefore } from './isBefore';
 export { default as isFuture } from './isFuture';
 export { default as isLeapYear } from './isLeapYear';
 export { default as isPast } from './isPast';

@@ -1,14 +1,13 @@
+import Sugar from '../../../src';
 import { createNamespace } from '../../../src/core';
 import { defineInstance } from '../../../src/string/namespace';
+import { String } from '../../../src/string';
 
 const Boolean = createNamespace('Boolean');
 
 Boolean.defineInstance('maybe', () => {
   return 0.5;
 });
-
-import { Sugar } from '../../../src';
-import { String } from '../../../src/string';
 
 defineInstance('hi', (str) => {
   return 'hi ' + str;

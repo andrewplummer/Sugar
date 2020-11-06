@@ -1,59 +1,77 @@
 (function() {
-  /* eslint-disable no-undef */
 
-  var currentNamespace;
+  let currentNamespace;
 
-  function staticTest(protoFn) {
-    it('should be a static method', function() {
-      assertUndefined(protoFn);
-    });
-  }
+  withNamespace = (name, fn) => {
+    const last = withMethod;
+    currentNamespace = Sugar[name];
+    fn();
+    currentNamespace = last;
+  };
 
-  function instanceTest(protoFn) {
-    it('should be an instance method', function() {
-      assertInstanceOf(protoFn, Function);
-    });
-  }
+  withMethod = (str, fn) => {
+    const ns = currentNamespace;
+    if (!ns) {
+      throw new Error('withMethod cannot be called outside a namespace context');
+    }
+    const methodNames = str.split(',');
+    for (let i = 0; i < methodNames.length; i++) {
+      const methodName = methodNames[i];
+      const method = ns[methodName];
+      const proto = ns.prototype[methodName];
+      fn(method, proto, i);
+    }
+  };
 
-  function withNamespace(describeFn) {
-    return function(namespace, suite) {
-      describeFn(namespace, function() {
-        currentNamespace = Sugar[namespace];
-        suite();
-        currentNamespace = null;
-      });
-    };
-  }
-
-  function withMethod(typeTest, suiteFn) {
-    return function(methodNames, suite) {
-      if (!Array.isArray(methodNames)) {
-        methodNames = methodNames.split(',');
-      }
-      methodNames.forEach((methodName, i) => {
-        var method = currentNamespace[methodName];
-        var protoFn = currentNamespace.prototype[methodName];
-        suiteFn(methodName, function() {
-          typeTest(protoFn);
-          suite(method, i);
+  function chainNamespace(suiteFn) {
+    return (name, fn) => {
+        suiteFn(name, () => {
+          withNamespace(name, (namespace) => {
+          fn(namespace);
         });
       });
     };
   }
 
-  namespace  = withNamespace(describe);
-  fnamespace = withNamespace(fdescribe);
-  xnamespace = withNamespace(xdescribe);
-  pnamespace  = withNamespace(fpdescribe);
+  function chainStatic(suiteFn) {
+    return (name, fn) => {
+      withMethod(name, (method, proto, i) => {
+        suiteFn(name, () => {
+          it('should be a static method', function() {
+            assertUndefined(proto);
+          });
+          fn(method, i);
+        });
+      });
+    };
+  }
 
-  describeStatic  = withMethod(staticTest, describe);
-  fdescribeStatic = withMethod(staticTest, fdescribe);
-  xdescribeStatic = withMethod(staticTest, xdescribe);
-  pdescribeStatic = withMethod(staticTest, fpdescribe);
+  function chainInstance(suiteFn) {
+    return (name, fn) => {
+      withMethod(name, (method, proto, i) => {
+        suiteFn(name, () => {
+          it('should be an instance method', function() {
+            assertInstanceOf(proto, Function);
+          });
+          fn(method, i);
+        });
+      });
+    };
+  }
 
-  describeInstance  = withMethod(instanceTest, describe);
-  fdescribeInstance = withMethod(instanceTest, fdescribe);
-  xdescribeInstance = withMethod(instanceTest, xdescribe);
-  pdescribeInstance = withMethod(instanceTest, fpdescribe);
+  describeNamespace  = chainNamespace(describe);
+  fdescribeNamespace = chainNamespace(fdescribe);
+  xdescribeNamespace = chainNamespace(xdescribe);
+  pdescribeNamespace = chainNamespace(fpdescribe);
+
+  describeStatic  = chainStatic(describe);
+  fdescribeStatic = chainStatic(fdescribe);
+  xdescribeStatic = chainStatic(xdescribe);
+  pdescribeStatic = chainStatic(fpdescribe);
+
+  describeInstance  = chainInstance(describe);
+  fdescribeInstance = chainInstance(fdescribe);
+  xdescribeInstance = chainInstance(xdescribe);
+  pdescribeInstance = chainInstance(fpdescribe);
 
 })();

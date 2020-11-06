@@ -4,7 +4,7 @@
 const FakeTimers = require('@sinonjs/fake-timers');
 global.clock = FakeTimers.install();
 
-const { Sugar } = require('../src');
+const Sugar = require('../src');
 
 // TODO: test browserify
 // TODO: test broccoli

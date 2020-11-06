@@ -424,60 +424,6 @@ namespace('Date', function () {
 
   });
 
-  method('isBefore', function() {
-
-    dateTest(new Date(2001,1,23), [new Date(2000,1,23)], false, 'January 23, 2000');
-    dateTest(new Date(2001,1,23), [new Date(2002,1,23)], true, 'January 23, 2002');
-
-    dateTest(new Date(1999,0), [new Date(1998)], false, '1999');
-    dateTest(new Date(1998,2), [new Date(1998,1)], false, 'March, 1998');
-    dateTest(new Date(1998,1,24), [new Date(1998,1,23)], false, 'February 24, 1998');
-    dateTest(new Date(1998,1,23,12), [new Date(1998,1,23,11)], false, 'February 23, 1998 12pm');
-    dateTest(new Date(1998,1,23,11,55), [new Date(1998,1,23,11,54)], false, 'February 23, 1998 11:55am');
-    dateTest(new Date(1998,1,23,11,54,33), [new Date(1998,1,23,11,54,34)], true, 'February 23, 1998 11:54:34am');
-    dateTest(new Date(1998,1,23,11,54,32,455), [new Date(1998,1,23,11,54,32,454)], false, 'February 23, 1998 11:54:32.455am');
-
-    dateTest(new Date(1999,1), [{ year: 1998 }], false, 'object | 1999');
-    dateTest(new Date(1998,2), [{ year: 1998, month: 1 }], false, 'object | March, 1998');
-    dateTest(new Date(1998,1,24), [{ year: 1998, month: 1, day: 23 }], false, 'object | February 24, 1998');
-    dateTest(new Date(1998,1,23,12), [{ year: 1998, month: 1, day: 23, hour: 11 }], false, 'object | February 23, 1998 12pm');
-    dateTest(new Date(1998,1,23,11,55), [{ year: 1998, month: 1, day: 23, hour: 11, minutes: 54 }], false, 'object | February 23, 1998 11:55am');
-    dateTest(new Date(1998,1,23,11,54,33), [{ year: 1998, month: 1, day: 23, hour: 11, minutes: 54, seconds: 32 }], false, 'object | February 23, 1998 11:54:33am');
-    dateTest(new Date(1998,1,23,11,54,32,455), [{ year: 1998, month: 1, day: 23, hour: 11, minutes: 54, seconds: 32, milliseconds: 454 }], false, 'object | February 23, 1998 11:54:32.455am');
-
-    dateTest(new Date(1997,11,31,23,59,59,999), [{ year: 1998 }], true, 'object | 1999');
-    dateTest(new Date(1998,0), [{ year: 1998, month: 1 }], true, 'object | March, 1998');
-    dateTest(new Date(1998,1,22), [{ year: 1998, month: 1, day: 23 }], true, 'object | February 24, 1998');
-    dateTest(new Date(1998,1,23,10), [{ year: 1998, month: 1, day: 23, hour: 11 }], true, 'object | February 23, 1998 12pm');
-    dateTest(new Date(1998,1,23,11,53), [{ year: 1998, month: 1, day: 23, hour: 11, minutes: 54 }], true, 'object | February 23, 1998 11:55am');
-    dateTest(new Date(1998,1,23,11,54,31), [{ year: 1998, month: 1, day: 23, hour: 11, minutes: 54, seconds: 32 }], true, 'object | February 23, 1998 11:54:33am');
-    dateTest(new Date(1998,1,23,11,54,32,453), [{ year: 1998, month: 1, day: 23, hour: 11, minutes: 54, seconds: 32, milliseconds: 454 }], true, 'object | February 23, 1998 11:54:32.455am');
-
-    dateTest(new Date(1999,1), ['1998'], false, 'string | 1998');
-    dateTest(new Date(1998,2), ['February, 1998'], false, 'string | February, 1998');
-    dateTest(new Date(1998,1,24), ['February 23, 1998'], false, 'string | February 23, 1998');
-    dateTest(new Date(1998,1,23,12), ['February 23, 1998 11am'], false, 'string | February 23, 1998 11pm');
-    dateTest(new Date(1998,1,23,11,55), ['February 23, 1998 11:54am'], false, 'string | February 23, 1998 11:54am');
-    dateTest(new Date(1998,1,23,11,54,33), ['February 23, 1998 11:54:32am'], false, 'string | February 23, 1998 11:54:32am');
-    dateTest(new Date(1998,1,23,11,54,32,455), ['February 23, 1998 11:54:32.454am'], false, 'string | February 23, 1998 11:54:32.454am');
-
-    dateTest(new Date(1999,5), ['1999'], false, 'June 1999 is not after 1999 in general');
-    dateTest(getRelativeDate(1), ['tomorrow'], false, 'relative | next year');
-    dateTest(getRelativeDate(0, 1), ['tomorrow'], false, 'relative | next month');
-    dateTest(getRelativeDate(0, 0, 1), ['tomorrow'], false, 'relative | tomorrow');
-
-    dateTest(testGetWeekday(0),    ['monday'], true, 'relative | sunday');
-    dateTest(testGetWeekday(2),    ['monday'], false, 'relative | tuesday');
-    dateTest(testGetWeekday(0, 1), ['monday'], false, 'relative | next week sunday');
-    dateTest(testGetWeekday(0,-1), ['monday'], true, 'relative | last week sunday');
-    dateTest(testGetWeekday(0),    ['the beginning of this week'], false, 'relative | the beginning of this week');
-    dateTest(testGetWeekday(0),    ['the beginning of last week'], false, 'relative | the beginning of last week');
-    dateTest(testGetWeekday(0),    ['the end of this week'], true, 'relative | the end of this week');
-
-    dateTest(new Date(2001,1,25), [new Date(2001,1,24), 48 * 60 * 60 * 1000], true, 'buffers work');
-
-  });
-
   method('isBetween', function() {
 
     dateTest(new Date(2001,1,23), [new Date(2000,1,23), new Date(2002,1,23)], true, 'January 23, 2001 is between January 23, 2000 and January 23, 2002');

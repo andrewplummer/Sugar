@@ -1,3 +1,4 @@
+// TODO: rename to memoize??
 export function memoize(fn, hashFn) {
   const cache = new Map();
   hashFn = hashFn || defaultHashFn;

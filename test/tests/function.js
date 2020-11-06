@@ -1,6 +1,6 @@
 'use strict';
 
-namespace('Function', () => {
+describeNamespace('Function', () => {
 
   var args;
 

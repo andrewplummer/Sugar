@@ -1,6 +1,6 @@
 'use strict';
 
-namespace('String', () => {
+describeNamespace('String', () => {
 
   describeStatic('range', (range) => {
 

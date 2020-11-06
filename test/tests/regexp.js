@@ -1,6 +1,6 @@
 'use strict';
 
-namespace('RegExp', () => {
+describeNamespace('RegExp', () => {
 
   describeStatic('escape', (escape) => {
 

@@ -1,6 +1,6 @@
 'use strict';
 
-namespace('Date', () => {
+describeNamespace('Date', () => {
 
   beforeAll(() => {
     // Set system time to 2020-01-01
@@ -12,31 +12,6 @@ namespace('Date', () => {
     resetTimeZone();
     resetSystemTime();
   });
-
-  const WEEKDAYS = [
-    'Sunday',
-    'Monday',
-    'Tuesday',
-    'Wednesday',
-    'Thursday',
-    'Friday',
-    'Saturday',
-  ];
-
-  const MONTHS = [
-    'January',
-    'February',
-    'March',
-    'April',
-    'May',
-    'June',
-    'July',
-    'August',
-    'September',
-    'October',
-    'November',
-    'December',
-  ];
 
   describe('Enhanced Chainable', () => {
 
@@ -61,6 +36,13 @@ namespace('Date', () => {
       );
     });
 
+    it('should be able to create from DateProps object', () => {
+      assertDateEqual(
+        new Sugar.Date({ year: 2022, month: 6 }).raw,
+        new Date(2022, 6)
+      );
+    });
+
     it('should enhance chainable with date parsing', () => {
       assertDateEqual(new Sugar.Date('tomorrow').raw, new Date(2020, 0, 2));
     });
@@ -75,6 +57,7 @@ namespace('Date', () => {
         new Date(2020, 9, 8)
       );
     });
+
   });
 
   describeStatic('create', (create) => {
@@ -3891,53 +3874,6 @@ namespace('Date', () => {
       });
     });
   });
-
-  describeInstance(
-    WEEKDAYS.map((day) => `is${day}`),
-    (isDay, i) => {
-      it('should be true for the correct day', () => {
-        assertEqual(isDay(new Date(2020, 0, 5)), i === 0);
-        assertEqual(isDay(new Date(2020, 0, 6)), i === 1);
-        assertEqual(isDay(new Date(2020, 0, 7)), i === 2);
-        assertEqual(isDay(new Date(2020, 0, 8)), i === 3);
-        assertEqual(isDay(new Date(2020, 0, 9)), i === 4);
-        assertEqual(isDay(new Date(2020, 0, 10)), i === 5);
-        assertEqual(isDay(new Date(2020, 0, 11)), i === 6);
-      });
-
-      it('should handle irregular input', () => {
-        assertError(() => {
-          isDay();
-        });
-      });
-    }
-  );
-
-  describeInstance(
-    MONTHS.map((month) => `is${month}`),
-    (isMonth, i) => {
-      it('should be true for the correct month', () => {
-        assertEqual(isMonth(new Date(2020, 0)), i === 0);
-        assertEqual(isMonth(new Date(2020, 1)), i === 1);
-        assertEqual(isMonth(new Date(2020, 2)), i === 2);
-        assertEqual(isMonth(new Date(2020, 3)), i === 3);
-        assertEqual(isMonth(new Date(2020, 4)), i === 4);
-        assertEqual(isMonth(new Date(2020, 5)), i === 5);
-        assertEqual(isMonth(new Date(2020, 6)), i === 6);
-        assertEqual(isMonth(new Date(2020, 7)), i === 7);
-        assertEqual(isMonth(new Date(2020, 8)), i === 8);
-        assertEqual(isMonth(new Date(2020, 9)), i === 9);
-        assertEqual(isMonth(new Date(2020, 10)), i === 10);
-        assertEqual(isMonth(new Date(2020, 11)), i === 11);
-      });
-
-      it('should handle irregular input', () => {
-        assertError(() => {
-          isMonth();
-        });
-      });
-    }
-  );
 
   describeInstance('set', (set) => {
 
@@ -8247,9 +8183,78 @@ namespace('Date', () => {
       });
     });
   });
+
+  describeInstance('isBefore', (isBefore) => {
+
+    it('should test by timestamp when passing a date', () => {
+      assertTrue(isBefore(new Date(2020, 0), new Date(2021, 0)));
+      assertFalse(isBefore(new Date(2020, 0), new Date(2019, 0)));
+    });
+
+    it('should not be true when dates are equal', () => {
+      assertFalse(isBefore(new Date(2020, 0), new Date(2020, 0)));
+    });
+
+    it('should not be true for invalid dates', () => {
+      assertFalse(isBefore(new Date('invalid'), new Date('invalid')));
+    });
+
+    it('should accept a string to parse the date for comparison', () => {
+      assertTrue(isBefore(new Date(2020, 0), 'January 15th'));
+      assertTrue(isBefore(new Date(2020, 0), 'tomorrow'));
+      assertTrue(isBefore(new Date(2020, 0), 'the end of the week'));
+      assertFalse(isBefore(new Date(2020, 0), 'today'));
+    });
+
+    it('should accept a DateProps object', () => {
+      assertTrue(isBefore(new Date(2020, 0), { year: 2021 }));
+      assertFalse(isBefore(new Date(2020, 0), { year: 2019 }));
+    });
+
+    it('should accept a rolled up date create object', () => {
+      assertTrue(isBefore(
+        new Date(2020, 0), {
+          input: 'Monday',
+          future: true,
+        }
+      ));
+      assertFalse(isBefore(
+        new Date(2020, 0), {
+          input: 'Monday',
+          past: true,
+        }
+      ));
+    });
+
+    it('should throw an error when explain option passed', () => {
+      assertError(() => {
+        isBefore(new Date(2020, 0), { input: 'tomorrow', explain: true });
+      });
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        isBefore();
+      });
+      assertError(() => {
+        isBefore(null);
+      });
+      assertError(() => {
+        isBefore(1);
+      });
+      assertError(() => {
+        isBefore(new Date());
+      });
+      assertError(() => {
+        isBefore(new Date(), null);
+      });
+    });
+
+  });
+
 });
 
-namespace('Number', () => {
+describeNamespace('Number', () => {
 
   beforeAll(() => {
     // Set system time to 2020-01-01
@@ -8828,4 +8833,15 @@ namespace('Number', () => {
       });
     });
   });
+
+});
+
+describe('Interop', () => {
+
+  it('should be able to pass a chainable into isBefore', () => {
+    const d1 = new Sugar.Date(2020, 0);
+    const d2 = new Sugar.Date(2020, 1);
+    assertTrue(d1.isBefore(d2));
+  })
+
 });
