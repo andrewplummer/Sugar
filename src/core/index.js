@@ -214,9 +214,9 @@ export function extend(opt) {
         });
       }
     });
-  } catch (e) {
+  } catch (err) {
     restore();
-    throw e;
+    throw err;
   }
 }
 
@@ -273,9 +273,9 @@ function extendNamespace(globalName, opt) {
         extendNative(native, globalName, methodName, fn, isInstance);
       }
     });
-  } catch (e) {
+  } catch (err) {
     restoreNamespace(globalName);
-    throw e;
+    throw err;
   }
 }
 
@@ -403,8 +403,6 @@ function isProhibitedMethod(name) {
 // --- Default Export
 
 const Sugar = {
-  /* eslint-disable-next-line no-undef */
-  VERSION,
   extend,
   restore,
   createNamespace,
