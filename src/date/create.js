@@ -45,6 +45,12 @@ import { cloneDate } from '../util/clone';
  *   then cached by default.
  * @property {boolean} [cache] - Whether or not to cache the resulting parser
  *   for the provided locale. Default is `true`.
+ * @property {string} [input] - The input string rolled up into the options
+ *   object. This does not apply to `Date.create` where input is passed
+ *   separately, however other methods like `Date#isAfter` allow alternate
+ *   input, for example `isAfter('today', 'tomorrow')`. For such methods, input
+ *   can be rolled up so as to be passed as a single argument for complex
+ *   scenarios, for example `isAfter({ input: '10/8', locale: 'en-GB' })`.
  *
  * @typedef {DateTimeShortcut|Intl.DateTimeFormat|Object} DateTimeFormat -
  *   Additional datetime formats are passed as either 1) instances of

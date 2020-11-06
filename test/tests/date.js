@@ -8206,6 +8206,11 @@ describeNamespace('Date', () => {
       assertFalse(isBefore(new Date(2020, 0), 'today'));
     });
 
+    it('should strings for both arguments', () => {
+      assertTrue(isBefore('today', 'tomorrow'));
+      assertFalse(isBefore('tomorrow', 'today'));
+    });
+
     it('should accept a DateProps object', () => {
       assertTrue(isBefore(new Date(2020, 0), { year: 2021 }));
       assertFalse(isBefore(new Date(2020, 0), { year: 2019 }));
@@ -8247,6 +8252,223 @@ describeNamespace('Date', () => {
       });
       assertError(() => {
         isBefore(new Date(), null);
+      });
+    });
+
+  });
+
+  describeInstance('isAfter', (isAfter) => {
+
+    it('should test by timestamp when passing a date', () => {
+      assertFalse(isAfter(new Date(2020, 0), new Date(2021, 0)));
+      assertTrue(isAfter(new Date(2020, 0), new Date(2019, 0)));
+    });
+
+    it('should not be true when dates are equal', () => {
+      assertFalse(isAfter(new Date(2020, 0), new Date(2020, 0)));
+    });
+
+    it('should not be true for invalid dates', () => {
+      assertFalse(isAfter(new Date('invalid'), new Date('invalid')));
+    });
+
+    it('should accept a string to parse the date for comparison', () => {
+      assertTrue(isAfter(new Date(2020, 5), 'January 15th'));
+      assertTrue(isAfter(new Date(2020, 0), 'yesterday'));
+      assertTrue(isAfter(new Date(2020, 0), 'the end of last week'));
+      assertFalse(isAfter(new Date(2020, 0), 'tomorrow'));
+      assertFalse(isAfter(new Date(2020, 0), 'today'));
+    });
+
+    it('should strings for both arguments', () => {
+      assertFalse(isAfter('today', 'tomorrow'));
+      assertTrue(isAfter('tomorrow', 'today'));
+    });
+
+    it('should accept a DateProps object', () => {
+      assertFalse(isAfter(new Date(2020, 0), { year: 2021 }));
+      assertTrue(isAfter(new Date(2020, 0), { year: 2019 }));
+    });
+
+    it('should accept a rolled up date create object', () => {
+      assertFalse(isAfter(
+        new Date(2020, 0), {
+          input: 'Monday',
+          future: true,
+        }
+      ));
+      assertTrue(isAfter(
+        new Date(2020, 0), {
+          input: 'Monday',
+          past: true,
+        }
+      ));
+    });
+
+    it('should throw an error when explain option passed', () => {
+      assertError(() => {
+        isAfter(new Date(2020, 0), { input: 'tomorrow', explain: true });
+      });
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        isAfter();
+      });
+      assertError(() => {
+        isAfter(null);
+      });
+      assertError(() => {
+        isAfter(1);
+      });
+      assertError(() => {
+        isAfter(new Date());
+      });
+      assertError(() => {
+        isAfter(new Date(), null);
+      });
+    });
+
+  });
+
+  describeInstance('isBetween', (isBetween) => {
+
+    it('should test by timestamp when passing a date', () => {
+      assertFalse(isBetween(
+        new Date(2020, 0),
+        new Date(2021, 0),
+        new Date(2022, 0)
+      ));
+      assertTrue(isBetween(
+        new Date(2020, 0),
+        new Date(2019, 0),
+        new Date(2021, 0)
+      ));
+    });
+
+    it('should be true when date is on the edge', () => {
+      assertTrue(isBetween(
+        new Date(2020, 0),
+        new Date(2020, 0),
+        new Date(2021, 0)
+      ));
+      assertTrue(isBetween(
+        new Date(2021, 0),
+        new Date(2020, 0),
+        new Date(2021, 0)
+      ));
+    });
+
+    it('should be true when order is reversed', () => {
+      assertTrue(isBetween(
+        new Date(2020, 0),
+        new Date(2019, 0),
+        new Date(2021, 0)
+      ));
+      assertTrue(isBetween(
+        new Date(2020, 0),
+        new Date(2021, 0),
+        new Date(2020, 0)
+      ));
+    });
+
+    it('should not be true for invalid dates', () => {
+      assertFalse(isBetween(
+        new Date('invalid'),
+        new Date(2021, 0),
+        new Date(2020, 0),
+      ));
+      assertFalse(isBetween(
+        new Date(2020, 0),
+        new Date('invalid'),
+        new Date(2020, 0)
+      ));
+      assertFalse(isBetween(
+        new Date(2020, 0),
+        new Date(2021, 0),
+        new Date('invalid'),
+      ));
+      assertFalse(isBetween(
+        new Date('invalid'),
+        new Date('invalid'),
+        new Date('invalid'),
+      ));
+    });
+
+    it('should accept a string to parse the date for comparison', () => {
+      assertTrue(isBetween(new Date(2020, 0), 'yesterday', 'tomorrow'));
+      assertFalse(isBetween(new Date(2020, 0), 'February', 'July'));
+      assertTrue(isBetween(new Date(2020, 0), '2019', '2021'));
+    });
+
+    it('should report weekdays correctly', () => {
+      assertFalse(isBetween(new Date(2019, 11, 29), 'monday', 'friday'));
+      assertTrue(isBetween(new Date(2019, 11, 30), 'monday', 'friday'));
+      assertTrue(isBetween(new Date(2019, 11, 31), 'monday', 'friday'));
+      assertTrue(isBetween(new Date(2020, 0, 1), 'monday', 'friday'));
+      assertTrue(isBetween(new Date(2020, 0, 2), 'monday', 'friday'));
+      assertTrue(isBetween(new Date(2020, 0, 3), 'monday', 'friday'));
+      assertFalse(isBetween(new Date(2020, 0, 4), 'monday', 'friday'));
+    });
+
+    it('should report edges correctly', () => {
+      assertTrue(isBetween(
+        new Date(2020, 0),
+        'the beginning of the week',
+        'the end of the week',
+      ));
+    });
+
+    it('should accept a DateProps object', () => {
+      assertFalse(isBetween(
+        { year: 2020, month: 0 },
+        { year: 2021, month: 0 },
+        { year: 2022, month: 0 },
+      ));
+      assertTrue(isBetween(
+        { year: 2020, month: 0 },
+        { year: 2019, month: 0 },
+        { year: 2021, month: 0 },
+      ));
+    });
+
+    it('should accept a rolled up date create object', () => {
+      assertTrue(isBetween(
+        new Date(2020, 0), {
+          input: 'Monday',
+          past: true,
+        }, {
+          input: 'Monday',
+          future: true,
+        }
+      ));
+    });
+
+    it('should throw an error when explain option passed', () => {
+      assertError(() => {
+        isBetween(
+          new Date(2020, 0),
+          { input: 'yesterday', explain: true },
+          { input: 'tomorrow', explain: true },
+        );
+      });
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        isBetween();
+      });
+      assertError(() => {
+        isBetween(null);
+      });
+      assertError(() => {
+        isBetween(1);
+      });
+      assertError(() => {
+        isBetween(new Date());
+      });
+      assertError(() => {
+        isBetween(new Date(), null);
       });
     });
 

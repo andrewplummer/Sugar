@@ -3,7 +3,8 @@ import { normalizeProps } from './props';
 import { updateDate } from './update';
 import { parseDate } from './parsing';
 import { cloneDate } from '../../util/clone';
-import { isString, isObject } from '../../util/typeChecks';
+import { assertDate } from '../../util/assertions';
+import { isString, isDate } from '../../util/typeChecks';
 
 export function createDate(arg1, arg2) {
   const { input, options } = collectArgs(arg1, arg2);
@@ -33,6 +34,14 @@ export function createDate(arg1, arg2) {
   }
 
   return retVal || null;
+}
+
+export function assertOrCreateDate(date) {
+  if (!isDate(date)) {
+    date = createDate(date)
+  }
+  assertDate(date);
+  return date;
 }
 
 function collectArgs(arg1, arg2) {
