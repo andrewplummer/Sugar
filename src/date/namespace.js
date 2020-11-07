@@ -1,6 +1,6 @@
 import { createNamespace } from '../core';
 import { isString, isObject } from '../util/typeChecks';
-import { createDate } from './util/creation';
+import { createDateFromArgs } from './util/creation';
 
 /**
  * Creates a new wrapped Date chainable.
@@ -25,7 +25,7 @@ import { createDate } from './util/creation';
 const Namespace = createNamespace('Date', (...args) => {
   const [input, options] = args;
   if (isString(input) || isObject(input)) {
-    return createDate(input, options);
+    return createDateFromArgs(input, options);
   } else {
     return new Date(...args);
   }

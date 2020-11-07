@@ -4,48 +4,6 @@ namespace('Date', function () {
   var now = new Date();
   var thisYear = now.getFullYear();
 
-  method('get', function() {
-    var d = new Date('August 25, 2010 11:45:20');
-
-    test(d, ['next week'], new Date('September 1, 2010 11:45:20'), 'next week');
-    test(d, ['next monday'], new Date('August 30, 2010'), 'next monday');
-
-    test(d, ['5 milliseconds ago'], new Date(2010, 7, 25, 11, 45, 19, 995), '5 milliseconds ago');
-    test(d, ['5 seconds ago'], new Date('August 25, 2010 11:45:15'), '5 seconds ago');
-    test(d, ['5 minutes ago'], new Date('August 25, 2010 11:40:20'), '5 minutes ago');
-    test(d, ['5 hours ago'], new Date('August 25, 2010 6:45:20'), '5 hours ago');
-    test(d, ['5 days ago'], new Date('August 20, 2010 11:45:20'), '5 days ago');
-    test(d, ['5 weeks ago'], new Date('July 21, 2010 11:45:20'), '5 weeks ago');
-    test(d, ['5 months ago'], new Date('March 25, 2010 11:45:20'), '5 months ago');
-    test(d, ['5 years ago'], new Date('August 25, 2005 11:45:20'), '5 years ago');
-    test(d, ['5 years before'], new Date('August 25, 2005 11:45:20'), '5 years before');
-
-    test(d, ['5 milliseconds from now'], new Date(2010, 7, 25, 11, 45, 20, 5), '5 milliseconds from now');
-    test(d, ['5 seconds from now'], new Date('August 25, 2010 11:45:25'), '5 seconds from now');
-    test(d, ['5 minutes from now'], new Date('August 25, 2010 11:50:20'), '5 minutes from now');
-    test(d, ['5 hours from now'], new Date('August 25, 2010 16:45:20'), '5 hours from now');
-    test(d, ['5 days from now'], new Date('August 30, 2010 11:45:20'), '5 days from now');
-    test(d, ['5 weeks from now'], new Date('September 29, 2010 11:45:20'), '5 weeks from now');
-    test(d, ['5 months from now'], new Date('January 25, 2011 11:45:20'), '5 months from now');
-    test(d, ['5 years from now'], new Date('August 25, 2015 11:45:20'), '5 years from now');
-    test(d, ['5 years after'], new Date('August 25, 2015 11:45:20'), '5 years after');
-
-    var d1 = run(new Date(Date.UTC(2010, 7, 25)), 'setUTC', [true]);
-    var d2 = run(d1, 'get', ['tomorrow']);
-    equal(d2, new Date(Date.UTC(2010, 7, 26)), 'date should be taken as UTC');
-    equal(testIsUTC(d2), true, 'utc flag should be preserved');
-
-    var d1 = run(new Date(Date.UTC(2010, 7, 25)), 'setUTC', [true]);
-    var d2 = run(d1, 'get', ['tomorrow', { fromUTC: false, setUTC: false }]);
-    // d1 may be Aug 24th or Aug 25th depending on the timezone.
-    equal(d2, new Date(2010, 7, d1.getDate() + 1), 'fromUTC can override utc preservation');
-    equal(testIsUTC(d2), false, 'setUTC can override utc preservation');
-
-    // Issue #620 - Get with preference
-    test(new Date(1833, 11, 1), ['December', { past: true }], new Date(1832, 11, 1), 'Preference option should work');
-    test(new Date(2017, 7, 14), ['Saturday', { past: true }], new Date(2017, 7, 12), 'Preference option should work');
-  });
-
   group('Since/Until', function() {
 
     var d = new Date(2010,7,5,13,45,2,542);

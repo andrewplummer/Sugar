@@ -1,4 +1,5 @@
-import { assertOrCreateDate } from './util/creation';
+import { assertDate } from '../util/assertions';
+import { createDateFromRollup } from './util/creation';
 
 /**
  * Returns `true` if the date is after the specified date.
@@ -7,8 +8,9 @@ import { assertOrCreateDate } from './util/creation';
  *   that will derive the date. Most notably this includes a string that will
  *   be parsed. For more see `Date.create.`
  *
- * @param {Date|string|Object} d1 - The input date.
- * @param {Date|string|Object} d2 - The date to compare against.
+ * @param {Date} date - The input date.
+ * @param {Date|string|Object} d2 - The date to compare against. Can be any
+ *   input accepted by `Date.create`.
  *
  * @returns {boolean}
  *
@@ -20,8 +22,8 @@ import { assertOrCreateDate } from './util/creation';
  *   new Date().isAfter('yesterday') -> true
  *
  **/
-export default function isAfter(d1, d2) {
-  d1 = assertOrCreateDate(d1);
-  d2 = assertOrCreateDate(d2);
-  return d1 > d2;
+export default function isAfter(date, d2) {
+  assertDate(date);
+  d2 = createDateFromRollup(d2);
+  return date > d2;
 }

@@ -11,6 +11,7 @@ export { default as clone } from './clone';
 export { default as create } from './create';
 export { default as duration } from './duration';
 export { default as format } from './format';
+export { default as get } from './get';
 export { default as getDaysInMonth } from './getDaysInMonth';
 export { default as getISOWeek } from './getISOWeek';
 export { default as getWeekday } from './getWeekday';

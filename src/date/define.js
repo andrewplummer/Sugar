@@ -6,6 +6,7 @@ defineStatic('create', methods.create);
 defineInstance('advance', methods.advance);
 defineInstance('clone', methods.clone);
 defineInstance('format', methods.format);
+defineInstance('get', methods.get);
 defineInstance('getDaysInMonth', methods.getDaysInMonth);
 defineInstance('getISOWeek', methods.getISOWeek);
 defineInstance('getWeekday', methods.getWeekday);
@@ -15,6 +16,19 @@ defineInstance('set', methods.set);
 defineInstance('setDay', methods.setWeekday);
 defineInstance('setISOWeek', methods.setISOWeek);
 defineInstance('setWeekday', methods.setWeekday);
+
+defineInstance('isToday', methods.isToday);
+defineInstance('isYesterday', methods.isYesterday);
+defineInstance('isTomorrow', methods.isTomorrow);
+defineInstance('isLastWeek', methods.isLastWeek);
+defineInstance('isThisWeek', methods.isThisWeek);
+defineInstance('isNextWeek', methods.isNextWeek);
+defineInstance('isLastMonth', methods.isLastMonth);
+defineInstance('isThisMonth', methods.isThisMonth);
+defineInstance('isNextMonth', methods.isNextMonth);
+defineInstance('isLastYear', methods.isLastYear);
+defineInstance('isThisYear', methods.isThisYear);
+defineInstance('isNextYear', methods.isNextYear);
 
 defineInstance('is', methods.is);
 defineInstance('isAfter', methods.isAfter);
@@ -35,19 +49,6 @@ defineInstance('addHours', methods.addHours);
 defineInstance('addMinutes', methods.addMinutes);
 defineInstance('addSeconds', methods.addSeconds);
 defineInstance('addMilliseconds', methods.addMilliseconds);
-
-defineInstance('isToday', methods.isToday);
-defineInstance('isYesterday', methods.isYesterday);
-defineInstance('isTomorrow', methods.isTomorrow);
-defineInstance('isLastWeek', methods.isLastWeek);
-defineInstance('isThisWeek', methods.isThisWeek);
-defineInstance('isNextWeek', methods.isNextWeek);
-defineInstance('isLastMonth', methods.isLastMonth);
-defineInstance('isThisMonth', methods.isThisMonth);
-defineInstance('isNextMonth', methods.isNextMonth);
-defineInstance('isLastYear', methods.isLastYear);
-defineInstance('isThisYear', methods.isThisYear);
-defineInstance('isNextYear', methods.isNextYear);
 
 defineInstance('startOfYear', methods.startOfYear);
 defineInstance('startOfMonth', methods.startOfMonth);

@@ -1,16 +1,13 @@
-import { isString, isDate } from '../../util/typeChecks';
+import { isString, isDate, isObject } from '../../util/typeChecks';
 import { assertDate } from '../../util/assertions';
 import { cloneDate } from '../../util/clone';
-
 import { setIANATimeZone } from './timeZone';
 import { normalizeProps } from './props';
 import { updateDate } from './update';
 import { parseDate } from './parsing';
 import { getPropsSpecificity } from './units';
 
-export function createDate(arg1, arg2, forceExplain) {
-  const { input, options } = collectArgs(arg1, arg2, forceExplain);
-
+export function createDate(input, options = {}) {
   const { from, timeZone, explain } = options;
   const date = from ? cloneDate(from) : new Date();
 
@@ -47,46 +44,40 @@ export function createDate(arg1, arg2, forceExplain) {
   return retVal || null;
 }
 
-export function explainDateCreate(arg) {
-  return createDate(arg, null, true);
+export function createDateFromArgs(input, options) {
+  if (isString(options)) {
+    options = {
+      locale: options,
+    };
+  }
+  return createDate(input, options);
 }
 
-export function assertOrCreateDate(arg) {
+export function createDateFromRollup(dateArg) {
   let date;
-  if (isDate(arg)) {
-    date = arg;
-  } else {
-    date = createDate(arg);
+  if (isDate(dateArg)) {
+    date = dateArg;
+  } else if (dateArg) {
+    const { input, options } = collectRollupInput(dateArg);
+    date = createDate(input, options);
   }
   assertDate(date);
   return date;
 }
 
-function collectArgs(arg1, arg2, forceExplain) {
+export function collectRollupInput(dateArg) {
   let input, options;
-  if (isString(arg1)) {
-    input = arg1;
-    if (isString(arg2)) {
-      options = { locale: arg2 };
-    } else {
-      options = arg2;
-    }
-  } else if (arg2) {
-    input = arg1;
-    options = arg2;
-  } else {
+  if (isString(dateArg)) {
+    input = dateArg;
+  } else if (isObject(dateArg)) {
     // Unwrap rolled up object.
-    const { input: i, ...rest } = arg1;
+    const { input: i, ...rest } = dateArg;
     if (i) {
       input = i;
       options = rest;
     } else {
       input = rest;
     }
-  }
-  options = options || {};
-  if (forceExplain) {
-    options.explain = true;
   }
   return {
     input,

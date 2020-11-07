@@ -8206,9 +8206,10 @@ describeNamespace('Date', () => {
       assertFalse(isBefore(new Date(2020, 0), 'today'));
     });
 
-    it('should strings for both arguments', () => {
-      assertTrue(isBefore('today', 'tomorrow'));
-      assertFalse(isBefore('tomorrow', 'today'));
+    it('should throw an error for input that cannot be parsed', () => {
+      assertError(() => {
+        isBefore(new Date(2020, 0), 'invalid');
+      });
     });
 
     it('should accept a DateProps object', () => {
@@ -8280,9 +8281,10 @@ describeNamespace('Date', () => {
       assertFalse(isAfter(new Date(2020, 0), 'today'));
     });
 
-    it('should strings for both arguments', () => {
-      assertFalse(isAfter('today', 'tomorrow'));
-      assertTrue(isAfter('tomorrow', 'today'));
+    it('should throw an error for input that cannot be parsed', () => {
+      assertError(() => {
+        isAfter(new Date(2020, 0), 'invalid');
+      });
     });
 
     it('should accept a DateProps object', () => {
@@ -8428,14 +8430,14 @@ describeNamespace('Date', () => {
       ));
     });
 
-    it('should accept a DateProps object', () => {
+    it('should accept DateProps objects', () => {
       assertFalse(isBetween(
-        { year: 2020, month: 0 },
+        new Date(2020, 0),
         { year: 2021, month: 0 },
         { year: 2022, month: 0 },
       ));
       assertTrue(isBetween(
-        { year: 2020, month: 0 },
+        new Date(2020, 0),
         { year: 2019, month: 0 },
         { year: 2021, month: 0 },
       ));
@@ -8568,8 +8570,72 @@ describeNamespace('Date', () => {
     });
 
     it('should handle Issue #160', () => {
-      assertFalse(is('12/01/2013', 'November 2013'));
-      assertTrue(is('11/01/2013', 'November 2013'));
+      assertFalse(is(new Date(2013, 11), 'November 2013'));
+      assertTrue(is(new Date(2013, 10), 'November 2013'));
+    });
+
+  });
+
+  describeInstance('get', (get) => {
+
+    it('should be able to get a date relative to another', () => {
+      assertDateEqual(get(new Date(2020, 6), 'Monday'), new Date(2020, 5, 29));
+      assertDateEqual(get(new Date(2020, 0), 'December'), new Date(2020, 11));
+      assertDateEqual(get(new Date(2020, 1), 'next Tuesday'), new Date(2020, 1, 4));
+      assertDateEqual(get(new Date(2020, 9), '2 weeks ago'), new Date(2020, 8, 17));
+      assertDateEqual(get(new Date(2020, 0), '2 hours ago'), new Date(2019, 11, 31, 22));
+      assertDateEqual(get(new Date(2020, 0), '2 minutes ago'), new Date(2019, 11, 31, 23, 58));
+      assertDateEqual(get(new Date(2020, 0), '2 seconds ago'), new Date(2019, 11, 31, 23, 59, 58));
+    });
+
+    it('should return null if input could not be parsed', () => {
+      assertNull(get(new Date(2020, 0), 'invalid'));
+    });
+
+    it('should return a second date if passed directly', () => {
+      assertDateEqual(get(new Date(2020, 6), new Date(2021, 9)), new Date(2021, 9));
+    });
+
+    it('should return a second date if passed directly', () => {
+      assertDateEqual(get(new Date(2020, 6), new Date(2021, 9)), new Date(2021, 9));
+    });
+
+    it('should return reference date if no second argument', () => {
+      assertDateEqual(get(new Date(2020, 0)), new Date(2020, 0));
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        get();
+      });
+      assertError(() => {
+        get(null);
+      });
+    });
+
+    it('should handle Issue #620', () => {
+      assertDateEqual(get(
+        new Date(1833, 0), 'December'),
+        new Date(1833, 11),
+      );
+      assertDateEqual(get(
+        new Date(1833, 0), {
+          input: 'December',
+          past: true,
+        }),
+        new Date(1832, 11),
+      );
+      assertDateEqual(get(
+        new Date(1833, 0), 'Saturday'),
+        new Date(1833, 0, 5),
+      );
+      assertDateEqual(get(
+        new Date(1833, 0), {
+          input: 'Saturday',
+          past: true,
+        }),
+        new Date(1832, 11, 29),
+      );
     });
 
   });

@@ -1,5 +1,5 @@
-import { isString, isNumber, isDate } from '../util/typeChecks';
-import { createDate } from './util/creation';
+import { isNumber, isDate } from '../util/typeChecks';
+import { createDateFromArgs } from './util/creation';
 import { cloneDate } from '../util/clone';
 
 /**
@@ -162,16 +162,16 @@ import { cloneDate } from '../util/clone';
  *   ...
  *
  **/
-export default function create(input, opt) {
+export default function create(input, options) {
   if (arguments.length === 0) {
     throw new TypeError('First argument is required.');
-  } else if (input == null && !opt) {
+  } else if (input == null && !options) {
     throw new TypeError('Null input requires a second argument.');
   } else if (isNumber(input)) {
     return new Date(input);
   } else if (isDate(input)) {
     return cloneDate(input);
   } else {
-    return createDate(input, opt);
+    return createDateFromArgs(input, options);
   }
 }

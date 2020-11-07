@@ -1,4 +1,5 @@
-import { assertOrCreateDate } from './util/creation';
+import { assertDate } from '../util/assertions';
+import { createDateFromRollup } from './util/creation';
 
 /**
  * Returns `true` if the date is between the provided dates.
@@ -7,12 +8,13 @@ import { assertOrCreateDate } from './util/creation';
  *   that will derive the date. Most notably this includes a string that will
  *   be parsed. For more see `Date.create.`
  *
- * @param {Date|string|Object} date - The input date.
+ * @param {Date} date - The input date.
  * @param {Date|string|Object} d1 - A date that is either the start or end of
  *   the range to compare.
  * @param {Date|string|Object} d2 - A date that is either the start or end of
  *   the range to compare.
  * @param {number} [margin] - A number in ms representing a margin of error.
+ *   Default is `0`.
  *
  * @returns {boolean}
  *
@@ -26,9 +28,9 @@ import { assertOrCreateDate } from './util/creation';
  *
  **/
 export default function isBetween(date, d1, d2, margin = 0) {
-  date = assertOrCreateDate(date);
-  d1 = assertOrCreateDate(d1);
-  d2 = assertOrCreateDate(d2);
+  assertDate(date);
+  d1 = createDateFromRollup(d1);
+  d2 = createDateFromRollup(d2);
   const [start, end] = d1 > d2 ? [d2, d1] : [d1, d2];
   const ts = start.getTime() - margin;
   const te = end.getTime() + margin;
