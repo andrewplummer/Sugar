@@ -8411,6 +8411,15 @@ describeNamespace('Date', () => {
       assertFalse(isBetween(new Date(2020, 0, 4), 'monday', 'friday'));
     });
 
+    it('should accept a margin of error', () => {
+      assertTrue(isBetween(
+        new Date(2020, 0),
+        '1 hour from now',
+        '5 hours from now',
+        60 * 60 * 1000,
+      ));
+    });
+
     it('should report edges correctly', () => {
       assertTrue(isBetween(
         new Date(2020, 0),
@@ -8470,6 +8479,97 @@ describeNamespace('Date', () => {
       assertError(() => {
         isBetween(new Date(), null);
       });
+    });
+
+  });
+
+  describeInstance('is', (is) => {
+
+    it('should compare two dates', () => {
+      assertTrue(is(new Date(), new Date()));
+    });
+
+    it('should compare date to a number', () => {
+      assertTrue(is(new Date(), new Date().getTime()));
+    });
+
+    it('should compare date to parsed input', () => {
+      assertTrue(is(new Date(), 'now'));
+      assertTrue(is(new Date(), 'today'));
+      assertFalse(is(new Date(), 'tomorrow'));
+      assertFalse(is(new Date(2020, 5), 'July'));
+      assertTrue(is(new Date(2020, 6), 'July'));
+      assertFalse(is(new Date(2020, 7), 'July'));
+      assertTrue(is(new Date(2020, 1, 29), 'the last day of February'));
+    });
+
+    it('should compare relative times', () => {
+      assertFalse(is(new Date(2020, 0, 1, 0, 4, 59), '5 minutes from now'));
+      assertTrue(is(new Date(2020, 0, 1, 0, 5), '5 minutes from now'));
+      assertTrue(is(new Date(2020, 0, 1, 0, 5, 59), '5 minutes from now'));
+      assertFalse(is(new Date(2020, 0, 1, 0, 6), '5 minutes from now'));
+    });
+
+    it('should allow an optional margin of error', () => {
+      assertTrue(is(new Date(2020, 5, 30, 23), 'July', 60 * 60 * 1000));
+      assertFalse(is(new Date(2020, 5, 30, 22), 'July', 60 * 60 * 1000));
+      assertTrue(is(new Date(2020, 7), 'July', 1000));
+      assertTrue(is(new Date(2020, 7, 1, 0, 0, 0, 999), 'July', 1000));
+      assertFalse(is(new Date(2020, 7, 1, 0, 0, 1), 'July', 1000));
+    });
+
+    it('should allow a DateProps object', () => {
+      assertTrue(is(
+        new Date(2020, 0),
+        { year: 2020 },
+      ));
+      assertTrue(is(
+        new Date(2020, 11, 31, 23, 59, 59, 999),
+        { year: 2020 },
+      ));
+      assertTrue(is(
+        new Date(2020, 11, 31, 23, 59, 59, 999),
+        { year: 2020, month: 11 },
+      ));
+      assertFalse(is(
+        new Date(2020, 11, 31, 23, 59, 59, 999),
+        { year: 2020, month: 10 },
+      ));
+    });
+
+    it('should allow a rolled up options object', () => {
+      assertTrue(is(
+        new Date(2020, 7, 10),
+        { input: '10/8', locale: 'en-GB' },
+      ));
+      assertTrue(is(
+        new Date(2020, 7, 10, 23, 59, 59, 999),
+        { input: '10/8', locale: 'en-GB' },
+      ));
+      assertFalse(is(
+        new Date(2020, 7, 11),
+        { input: '10/8', locale: 'en-GB' },
+      ));
+    });
+
+    it('should handle irregular input', () => {
+      assertFalse(is(new Date('invalid'), new Date('invalid')));
+      assertFalse(is(new Date(2020, 0), new Date('invalid')));
+      assertFalse(is(new Date('invalid'), new Date(2020, 0)));
+      assertError(() => {
+        is(new Date());
+      });
+      assertError(() => {
+        is();
+      });
+      assertError(() => {
+        is(null);
+      });
+    });
+
+    it('should handle Issue #160', () => {
+      assertFalse(is('12/01/2013', 'November 2013'));
+      assertTrue(is('11/01/2013', 'November 2013'));
     });
 
   });

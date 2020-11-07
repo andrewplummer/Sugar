@@ -16,6 +16,7 @@ defineInstance('setDay', methods.setWeekday);
 defineInstance('setISOWeek', methods.setISOWeek);
 defineInstance('setWeekday', methods.setWeekday);
 
+defineInstance('is', methods.is);
 defineInstance('isAfter', methods.isAfter);
 defineInstance('isBefore', methods.isBefore);
 defineInstance('isBetween', methods.isBetween);

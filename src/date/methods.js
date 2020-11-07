@@ -20,6 +20,7 @@ export { default as set } from './set';
 export { default as setISOWeek } from './setISOWeek';
 export { default as setWeekday } from './setWeekday';
 
+export { default as is } from './is';
 export { default as isAfter } from './isAfter';
 export { default as isBefore } from './isBefore';
 export { default as isBetween } from './isBetween';

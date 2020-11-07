@@ -98,5 +98,7 @@ function compareToNow(d1, unit, offset, dow) {
   if (offset !== 0) {
     shiftDateByUnit(d2, unit, offset);
   }
-  return compareDatesByUnit(d1, d2, unit, dow);
+  return compareDatesByUnit(d1, d2, unit, {
+    dow,
+  });
 }

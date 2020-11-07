@@ -1,15 +1,17 @@
+import { isString, isDate } from '../../util/typeChecks';
+import { assertDate } from '../../util/assertions';
+import { cloneDate } from '../../util/clone';
+
 import { setIANATimeZone } from './timeZone';
 import { normalizeProps } from './props';
 import { updateDate } from './update';
 import { parseDate } from './parsing';
-import { cloneDate } from '../../util/clone';
-import { assertDate } from '../../util/assertions';
-import { isString, isDate } from '../../util/typeChecks';
+import { getPropsSpecificity } from './units';
 
-export function createDate(arg1, arg2) {
-  const { input, options } = collectArgs(arg1, arg2);
+export function createDate(arg1, arg2, forceExplain) {
+  const { input, options } = collectArgs(arg1, arg2, forceExplain);
 
-  const { from, timeZone } = options;
+  const { from, timeZone, explain } = options;
   const date = from ? cloneDate(from) : new Date();
 
   let retVal;
@@ -20,13 +22,22 @@ export function createDate(arg1, arg2) {
   } else if (isString(input)) {
     const result = parseDate(input, date, options);
     if (result) {
-      retVal = options.explain ? result : date;
+      retVal = explain ? result : date;
       hasZone = 'timeZoneOffset' in result.absProps;
     }
   } else {
     const props = normalizeProps(input);
     updateDate(date, props, true);
-    retVal = date;
+    if (explain) {
+      const absProps = props;
+      retVal = {
+        date,
+        absProps,
+        specificity: getPropsSpecificity(absProps),
+      };
+    } else {
+      retVal = date;
+    }
   }
 
   if (!hasZone && timeZone) {
@@ -36,15 +47,22 @@ export function createDate(arg1, arg2) {
   return retVal || null;
 }
 
-export function assertOrCreateDate(date) {
-  if (!isDate(date)) {
-    date = createDate(date)
+export function explainDateCreate(arg) {
+  return createDate(arg, null, true);
+}
+
+export function assertOrCreateDate(arg) {
+  let date;
+  if (isDate(arg)) {
+    date = arg;
+  } else {
+    date = createDate(arg);
   }
   assertDate(date);
   return date;
 }
 
-function collectArgs(arg1, arg2) {
+function collectArgs(arg1, arg2, forceExplain) {
   let input, options;
   if (isString(arg1)) {
     input = arg1;
@@ -67,6 +85,9 @@ function collectArgs(arg1, arg2) {
     }
   }
   options = options || {};
+  if (forceExplain) {
+    options.explain = true;
+  }
   return {
     input,
     options,
