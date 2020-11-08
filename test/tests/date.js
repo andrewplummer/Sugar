@@ -2655,6 +2655,16 @@ describeNamespace('Date', () => {
         );
       });
 
+      it('should set a UTC timezone from a relative time', () => {
+        mockTimeZone(300); // GMT-05:00
+        assertDateEqual(
+          create('tomorrow', {
+            timeZone: 'UTC',
+          }),
+          new Date(2020, 0, 1, 19)
+        );
+      });
+
       it('should handle Issue #582', () => {
         mockTimeZone(300); // GMT-05:00
         setSystemTime(new Date(2020, 5, 15, 23, 59, 59, 999));
@@ -5406,7 +5416,7 @@ describeNamespace('Date', () => {
       }, TypeError);
     });
 
-    it('should handle issue #492', () => {
+    it('should handle Issue #492', () => {
       assertDateEqual(
         rewind(new Date(2010, 7, 25, 11, 45, 20), { weeks: 1, days: 1 }),
         new Date(2010, 7, 17, 11, 45, 20)
@@ -5451,7 +5461,7 @@ describeNamespace('Date', () => {
       }, TypeError);
     });
 
-    it('should handle issue #221', () => {
+    it('should handle Issue #221', () => {
       assertDateEqual(
         addMonths(new Date(2012, 0), -13),
         addMonths(addMonths(new Date(2012, 0), -10), -3)
@@ -5732,6 +5742,730 @@ describeNamespace('Date', () => {
     });
   });
 
+  describeInstance('yearsAgo', (yearsAgo) => {
+
+    it('should return basic offset', () => {
+      assertEqual(yearsAgo(new Date(2019, 0)), 1);
+      assertEqual(yearsAgo(new Date(2015, 0)), 5);
+      assertEqual(yearsAgo(new Date(2020, 0)), 0);
+      assertEqual(yearsAgo(new Date(2021, 0)), -1);
+    });
+
+    it('should not count until threshold crossed', () => {
+      assertEqual(yearsAgo(new Date(2019, 0, 2)), 0);
+      assertEqual(yearsAgo(new Date(2020, 11, 31)), 0);
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        yearsAgo();
+      }, TypeError);
+    });
+
+  });
+
+  describeInstance('monthsAgo', (monthsAgo) => {
+
+    it('should return basic offset', () => {
+      assertEqual(monthsAgo(new Date(2019, 11)), 1);
+      assertEqual(monthsAgo(new Date(2020, 1)), -1);
+    });
+
+    it('should not count until threshold crossed', () => {
+      assertEqual(monthsAgo(new Date(2019, 11, 2)), 0);
+      assertEqual(monthsAgo(new Date(2020, 0, 31)), 0);
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        monthsAgo();
+      }, TypeError);
+    });
+  });
+
+  describeInstance('weeksAgo', (weeksAgo) => {
+
+    it('should return basic offset', () => {
+      assertEqual(weeksAgo(new Date(2019, 11, 18)), 2);
+      assertEqual(weeksAgo(new Date(2019, 11, 25)), 1);
+      assertEqual(weeksAgo(new Date(2020, 0, 1)), 0);
+      assertEqual(weeksAgo(new Date(2020, 0, 8)), -1);
+      assertEqual(weeksAgo(new Date(2020, 0, 15)), -2);
+    });
+
+    it('should not count until threshold crossed', () => {
+      assertEqual(weeksAgo(new Date(2019, 11, 25)), 1);
+      assertEqual(weeksAgo(new Date(2019, 11, 26)), 0);
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        weeksAgo();
+      }, TypeError);
+    });
+  });
+
+  describeInstance('daysAgo', (daysAgo) => {
+
+    it('should return basic offset', () => {
+      assertEqual(daysAgo(new Date(2019, 11, 30)), 2);
+      assertEqual(daysAgo(new Date(2019, 11, 31)), 1);
+      assertEqual(daysAgo(new Date(2020, 0, 1)), 0);
+      assertEqual(daysAgo(new Date(2020, 0, 2)), -1);
+      assertEqual(daysAgo(new Date(2020, 0, 3)), -2);
+    });
+
+    it('should not count until threshold crossed', () => {
+      assertEqual(daysAgo(new Date(2019, 11, 31, 1)), 0);
+      assertEqual(daysAgo(new Date(2020, 0, 1, 23)), 0);
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        daysAgo();
+      }, TypeError);
+    });
+
+  });
+
+  describeInstance('hoursAgo', (hoursAgo) => {
+
+    it('should return basic offset', () => {
+      assertEqual(hoursAgo(new Date(2019, 11, 31, 22)), 2);
+      assertEqual(hoursAgo(new Date(2019, 11, 31, 23)), 1);
+      assertEqual(hoursAgo(new Date(2020, 0, 1)), 0);
+      assertEqual(hoursAgo(new Date(2020, 0, 1, 1)), -1);
+      assertEqual(hoursAgo(new Date(2020, 0, 1, 2)), -2);
+    });
+
+    it('should not count until threshold crossed', () => {
+      assertEqual(hoursAgo(new Date(2019, 11, 31, 23, 1)), 0);
+      assertEqual(hoursAgo(new Date(2020, 0, 1, 0, 59)), 0);
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        hoursAgo();
+      }, TypeError);
+    });
+
+  });
+
+  describeInstance('minutesAgo', (minutesAgo) => {
+
+    it('should return basic offset', () => {
+      assertEqual(minutesAgo(new Date(2019, 11, 31, 23, 58)), 2);
+      assertEqual(minutesAgo(new Date(2019, 11, 31, 23, 59)), 1);
+      assertEqual(minutesAgo(new Date(2020, 0, 1)), 0);
+      assertEqual(minutesAgo(new Date(2020, 0, 1, 0, 1)), -1);
+      assertEqual(minutesAgo(new Date(2020, 0, 1, 0, 2)), -2);
+    });
+
+    it('should not count until threshold crossed', () => {
+      assertEqual(minutesAgo(new Date(2019, 11, 31, 23, 59, 1)), 0);
+      assertEqual(minutesAgo(new Date(2020, 0, 1, 0, 0, 59)), 0);
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        minutesAgo();
+      }, TypeError);
+    });
+
+  });
+
+  describeInstance('secondsAgo', (secondsAgo) => {
+
+    it('should return basic offset', () => {
+      assertEqual(secondsAgo(new Date(2019, 11, 31, 23, 59, 58)), 2);
+      assertEqual(secondsAgo(new Date(2019, 11, 31, 23, 59, 59)), 1);
+      assertEqual(secondsAgo(new Date(2020, 0, 1)), 0);
+      assertEqual(secondsAgo(new Date(2020, 0, 1, 0, 0, 1)), -1);
+      assertEqual(secondsAgo(new Date(2020, 0, 1, 0, 0, 2)), -2);
+    });
+
+    it('should not count until threshold crossed', () => {
+      assertEqual(secondsAgo(new Date(2019, 11, 31, 23, 59, 59, 1)), 0);
+      assertEqual(secondsAgo(new Date(2020, 0, 1, 0, 0, 0, 999)), 0);
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        secondsAgo();
+      }, TypeError);
+    });
+
+  });
+
+  describeInstance('millisecondsAgo', (millisecondsAgo) => {
+
+    it('should return basic offset', () => {
+      assertEqual(millisecondsAgo(new Date(2019, 11, 31, 23, 59, 59, 995)), 5);
+      assertEqual(millisecondsAgo(new Date(2019, 11, 31, 23, 59, 59, 999)), 1);
+      assertEqual(millisecondsAgo(new Date(2020, 0, 1)), 0);
+      assertEqual(millisecondsAgo(new Date(2020, 0, 1, 0, 0, 0, 1)), -1);
+      assertEqual(millisecondsAgo(new Date(2020, 0, 1, 0, 0, 0, 5)), -5);
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        millisecondsAgo();
+      }, TypeError);
+    });
+
+  });
+
+  describeInstance('yearsFromNow', (yearsFromNow) => {
+
+    it('should return basic offset', () => {
+      assertEqual(yearsFromNow(new Date(2019, 0)), -1);
+      assertEqual(yearsFromNow(new Date(2015, 0)), -5);
+      assertEqual(yearsFromNow(new Date(2020, 0)), 0);
+      assertEqual(yearsFromNow(new Date(2021, 0)), 1);
+    });
+
+    it('should not count until threshold crossed', () => {
+      assertEqual(yearsFromNow(new Date(2019, 0, 2)), 0);
+      assertEqual(yearsFromNow(new Date(2020, 11, 31)), 0);
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        yearsFromNow();
+      }, TypeError);
+    });
+  });
+
+  describeInstance('monthsFromNow', (monthsFromNow) => {
+
+    it('should return basic offset', () => {
+      assertEqual(monthsFromNow(new Date(2019, 11)), -1);
+      assertEqual(monthsFromNow(new Date(2020, 1)), 1);
+    });
+
+    it('should not count until threshold crossed', () => {
+      assertEqual(monthsFromNow(new Date(2019, 11, 2)), 0);
+      assertEqual(monthsFromNow(new Date(2020, 0, 31)), 0);
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        monthsFromNow();
+      }, TypeError);
+    });
+  });
+
+  describeInstance('weeksFromNow', (weeksFromNow) => {
+
+    it('should return basic offset', () => {
+      assertEqual(weeksFromNow(new Date(2019, 11, 18)), -2);
+      assertEqual(weeksFromNow(new Date(2019, 11, 25)), -1);
+      assertEqual(weeksFromNow(new Date(2020, 0, 1)), 0);
+      assertEqual(weeksFromNow(new Date(2020, 0, 8)), 1);
+      assertEqual(weeksFromNow(new Date(2020, 0, 15)), 2);
+    });
+
+    it('should not count until threshold crossed', () => {
+      assertEqual(weeksFromNow(new Date(2019, 11, 25)), -1);
+      assertEqual(weeksFromNow(new Date(2019, 11, 26)), 0);
+      assertEqual(weeksFromNow(new Date(2020, 0, 8)), 1);
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        weeksFromNow();
+      }, TypeError);
+    });
+  });
+
+  describeInstance('daysFromNow', (daysFromNow) => {
+
+    it('should return basic offset', () => {
+      assertEqual(daysFromNow(new Date(2019, 11, 30)), -2);
+      assertEqual(daysFromNow(new Date(2019, 11, 31)), -1);
+      assertEqual(daysFromNow(new Date(2020, 0, 1)), 0);
+      assertEqual(daysFromNow(new Date(2020, 0, 2)), 1);
+      assertEqual(daysFromNow(new Date(2020, 0, 3)), 2);
+    });
+
+    it('should not count until threshold crossed', () => {
+      assertEqual(daysFromNow(new Date(2019, 11, 31, 1)), 0);
+      assertEqual(daysFromNow(new Date(2020, 0, 1, 23)), 0);
+    });
+
+    it('should handle Issue #236', () => {
+      setSystemTime(new Date(2012, 10, 12, 2, 29, 20));
+      assertEqual(daysFromNow(new Date(2012, 10, 12, 23, 50)), 0);
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        daysFromNow();
+      }, TypeError);
+    });
+
+  });
+
+  describeInstance('hoursFromNow', (hoursFromNow) => {
+
+    it('should return basic offset', () => {
+      assertEqual(hoursFromNow(new Date(2019, 11, 31, 22)), -2);
+      assertEqual(hoursFromNow(new Date(2019, 11, 31, 23)), -1);
+      assertEqual(hoursFromNow(new Date(2020, 0, 1)), 0);
+      assertEqual(hoursFromNow(new Date(2020, 0, 1, 1)), 1);
+      assertEqual(hoursFromNow(new Date(2020, 0, 1, 2)), 2);
+    });
+
+    it('should not count until threshold crossed', () => {
+      assertEqual(hoursFromNow(new Date(2019, 11, 31, 23, 1)), 0);
+      assertEqual(hoursFromNow(new Date(2020, 0, 1, 0, 59)), 0);
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        hoursFromNow();
+      }, TypeError);
+    });
+
+  });
+
+  describeInstance('minutesFromNow', (minutesFromNow) => {
+
+    it('should return basic offset', () => {
+      assertEqual(minutesFromNow(new Date(2019, 11, 31, 23, 58)), -2);
+      assertEqual(minutesFromNow(new Date(2019, 11, 31, 23, 59)), -1);
+      assertEqual(minutesFromNow(new Date(2020, 0, 1)), 0);
+      assertEqual(minutesFromNow(new Date(2020, 0, 1, 0, 1)), 1);
+      assertEqual(minutesFromNow(new Date(2020, 0, 1, 0, 2)), 2);
+    });
+
+    it('should not count until threshold crossed', () => {
+      assertEqual(minutesFromNow(new Date(2019, 11, 31, 23, 59, 1)), 0);
+      assertEqual(minutesFromNow(new Date(2020, 0, 1, 0, 0, 59)), 0);
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        minutesFromNow();
+      }, TypeError);
+    });
+
+  });
+
+  describeInstance('secondsFromNow', (secondsFromNow) => {
+
+    it('should return basic offset', () => {
+      assertEqual(secondsFromNow(new Date(2019, 11, 31, 23, 59, 58)), -2);
+      assertEqual(secondsFromNow(new Date(2019, 11, 31, 23, 59, 59)), -1);
+      assertEqual(secondsFromNow(new Date(2020, 0, 1)), 0);
+      assertEqual(secondsFromNow(new Date(2020, 0, 1, 0, 0, 1)), 1);
+      assertEqual(secondsFromNow(new Date(2020, 0, 1, 0, 0, 2)), 2);
+    });
+
+    it('should not count until threshold crossed', () => {
+      assertEqual(secondsFromNow(new Date(2019, 11, 31, 23, 59, 59, 1)), 0);
+      assertEqual(secondsFromNow(new Date(2020, 0, 1, 0, 0, 0, 999)), 0);
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        secondsFromNow();
+      }, TypeError);
+    });
+
+  });
+
+  describeInstance('millisecondsFromNow', (millisecondsFromNow) => {
+
+    it('should return basic offset', () => {
+      assertEqual(millisecondsFromNow(new Date(2019, 11, 31, 23, 59, 59, 995)), -5);
+      assertEqual(millisecondsFromNow(new Date(2019, 11, 31, 23, 59, 59, 999)), -1);
+      assertEqual(millisecondsFromNow(new Date(2020, 0, 1)), 0);
+      assertEqual(millisecondsFromNow(new Date(2020, 0, 1, 0, 0, 0, 1)), 1);
+      assertEqual(millisecondsFromNow(new Date(2020, 0, 1, 0, 0, 0, 5)), 5);
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        millisecondsFromNow();
+      }, TypeError);
+    });
+
+  });
+
+  describeInstance('yearsBefore', (yearsBefore) => {
+
+    it('should return basic offset', () => {
+      assertEqual(yearsBefore(new Date(2019, 0), new Date(2020, 0)), 1);
+      assertEqual(yearsBefore(new Date(2015, 0), new Date(2020, 0)), 5);
+      assertEqual(yearsBefore(new Date(2020, 0), new Date(2020, 0)), 0);
+      assertEqual(yearsBefore(new Date(2021, 0), new Date(2020, 0)), -1);
+    });
+
+    it('should not count until threshold crossed', () => {
+      assertEqual(yearsBefore(new Date(2019, 0, 2), new Date(2020, 0)), 0);
+      assertEqual(yearsBefore(new Date(2020, 11, 31), new Date(2020, 0)), 0);
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        yearsBefore();
+      }, TypeError);
+    });
+
+  });
+
+  describeInstance('monthsBefore', (monthsBefore) => {
+
+    it('should return basic offset', () => {
+      assertEqual(monthsBefore(new Date(2019, 11), new Date(2020, 0)), 1);
+      assertEqual(monthsBefore(new Date(2020, 1), new Date(2020, 0)), -1);
+    });
+
+    it('should not count until threshold crossed', () => {
+      assertEqual(monthsBefore(new Date(2019, 11, 2), new Date(2020, 0)), 0);
+      assertEqual(monthsBefore(new Date(2020, 0, 31), new Date(2020, 0)), 0);
+    });
+
+    it('should traverse over February by month', () => {
+      assertEqual(monthsBefore(new Date(2015, 0, 31), new Date(2015, 1, 28)),  1);
+      assertEqual(monthsBefore(new Date(2015, 0, 31), new Date(2015, 2, 31)),  2);
+      assertEqual(monthsBefore(new Date(2015, 2, 31), new Date(2015, 0, 31)),  -2);
+      assertEqual(monthsBefore(new Date(2015, 1, 28), new Date(2015, 0, 31)),  -1);
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        monthsBefore();
+      }, TypeError);
+    });
+
+  });
+
+  describeInstance('weeksBefore', (weeksBefore) => {
+
+    it('should return basic offset', () => {
+      assertEqual(weeksBefore(new Date(2019, 11, 18), new Date(2020, 0)), 2);
+      assertEqual(weeksBefore(new Date(2019, 11, 25), new Date(2020, 0)), 1);
+      assertEqual(weeksBefore(new Date(2020, 0, 1), new Date(2020, 0)), 0);
+      assertEqual(weeksBefore(new Date(2020, 0, 8), new Date(2020, 0)), -1);
+      assertEqual(weeksBefore(new Date(2020, 0, 15), new Date(2020, 0)), -2);
+    });
+
+    it('should not count until threshold crossed', () => {
+      assertEqual(weeksBefore(new Date(2019, 11, 25), new Date(2020, 0)), 1);
+      assertEqual(weeksBefore(new Date(2019, 11, 26), new Date(2020, 0)), 0);
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        weeksBefore();
+      }, TypeError);
+    });
+  });
+
+  describeInstance('daysBefore', (daysBefore) => {
+
+    it('should return basic offset', () => {
+      assertEqual(daysBefore(new Date(2019, 11, 30), new Date(2020, 0)), 2);
+      assertEqual(daysBefore(new Date(2019, 11, 31), new Date(2020, 0)), 1);
+      assertEqual(daysBefore(new Date(2020, 0, 1), new Date(2020, 0)), 0);
+      assertEqual(daysBefore(new Date(2020, 0, 2), new Date(2020, 0)), -1);
+      assertEqual(daysBefore(new Date(2020, 0, 3), new Date(2020, 0)), -2);
+    });
+
+    it('should not count until threshold crossed', () => {
+      assertEqual(daysBefore(new Date(2019, 11, 31, 1), new Date(2020, 0)), 0);
+      assertEqual(daysBefore(new Date(2020, 0, 1, 23), new Date(2020, 0)), 0);
+    });
+
+    it('should handle Issue #267', () => {
+      assertEqual(daysBefore(new Date(2013, 2), new Date(2013, 2, 28)), 27);
+      assertEqual(daysBefore(new Date(2013, 2, 10), new Date(2013, 2, 11)), 1);
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        daysBefore();
+      }, TypeError);
+    });
+
+  });
+
+  describeInstance('hoursBefore', (hoursBefore) => {
+
+    it('should return basic offset', () => {
+      assertEqual(hoursBefore(new Date(2019, 11, 31, 22), new Date(2020, 0)), 2);
+      assertEqual(hoursBefore(new Date(2019, 11, 31, 23), new Date(2020, 0)), 1);
+      assertEqual(hoursBefore(new Date(2020, 0, 1), new Date(2020, 0)), 0);
+      assertEqual(hoursBefore(new Date(2020, 0, 1, 1), new Date(2020, 0)), -1);
+      assertEqual(hoursBefore(new Date(2020, 0, 1, 2), new Date(2020, 0)), -2);
+    });
+
+    it('should not count until threshold crossed', () => {
+      assertEqual(hoursBefore(new Date(2019, 11, 31, 23, 1), new Date(2020, 0)), 0);
+      assertEqual(hoursBefore(new Date(2020, 0, 1, 0, 59), new Date(2020, 0)), 0);
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        hoursBefore();
+      }, TypeError);
+    });
+
+  });
+
+  describeInstance('minutesBefore', (minutesBefore) => {
+
+    it('should return basic offset', () => {
+      assertEqual(minutesBefore(new Date(2019, 11, 31, 23, 58), new Date(2020, 0)), 2);
+      assertEqual(minutesBefore(new Date(2019, 11, 31, 23, 59), new Date(2020, 0)), 1);
+      assertEqual(minutesBefore(new Date(2020, 0, 1), new Date(2020, 0)), 0);
+      assertEqual(minutesBefore(new Date(2020, 0, 1, 0, 1), new Date(2020, 0)), -1);
+      assertEqual(minutesBefore(new Date(2020, 0, 1, 0, 2), new Date(2020, 0)), -2);
+    });
+
+    it('should not count until threshold crossed', () => {
+      assertEqual(minutesBefore(new Date(2019, 11, 31, 23, 59, 1), new Date(2020, 0)), 0);
+      assertEqual(minutesBefore(new Date(2020, 0, 1, 0, 0, 59), new Date(2020, 0)), 0);
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        minutesBefore();
+      }, TypeError);
+    });
+
+  });
+
+  describeInstance('secondsBefore', (secondsBefore) => {
+
+    it('should return basic offset', () => {
+      assertEqual(secondsBefore(new Date(2019, 11, 31, 23, 59, 58), new Date(2020, 0)), 2);
+      assertEqual(secondsBefore(new Date(2019, 11, 31, 23, 59, 59), new Date(2020, 0)), 1);
+      assertEqual(secondsBefore(new Date(2020, 0, 1), new Date(2020, 0)), 0);
+      assertEqual(secondsBefore(new Date(2020, 0, 1, 0, 0, 1), new Date(2020, 0)), -1);
+      assertEqual(secondsBefore(new Date(2020, 0, 1, 0, 0, 2), new Date(2020, 0)), -2);
+    });
+
+    it('should not count until threshold crossed', () => {
+      assertEqual(secondsBefore(new Date(2019, 11, 31, 23, 59, 59, 1), new Date(2020, 0)), 0);
+      assertEqual(secondsBefore(new Date(2020, 0, 1, 0, 0, 0, 999), new Date(2020, 0)), 0);
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        secondsBefore();
+      }, TypeError);
+    });
+
+  });
+
+  describeInstance('millisecondsBefore', (millisecondsBefore) => {
+
+    it('should return basic offset', () => {
+      assertEqual(millisecondsBefore(new Date(2019, 11, 31, 23, 59, 59, 995), new Date(2020, 0)), 5);
+      assertEqual(millisecondsBefore(new Date(2019, 11, 31, 23, 59, 59, 999), new Date(2020, 0)), 1);
+      assertEqual(millisecondsBefore(new Date(2020, 0, 1), new Date(2020, 0)), 0);
+      assertEqual(millisecondsBefore(new Date(2020, 0, 1, 0, 0, 0, 1), new Date(2020, 0)), -1);
+      assertEqual(millisecondsBefore(new Date(2020, 0, 1, 0, 0, 0, 5), new Date(2020, 0)), -5);
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        millisecondsBefore();
+      }, TypeError);
+    });
+
+  });
+
+  describeInstance('yearsAfter', (yearsAfter) => {
+
+    it('should return basic offset', () => {
+      assertEqual(yearsAfter(new Date(2019, 0), new Date(2020, 0)), -1);
+      assertEqual(yearsAfter(new Date(2015, 0), new Date(2020, 0)), -5);
+      assertEqual(yearsAfter(new Date(2020, 0), new Date(2020, 0)), 0);
+      assertEqual(yearsAfter(new Date(2021, 0), new Date(2020, 0)), 1);
+    });
+
+    it('should not count until threshold crossed', () => {
+      assertEqual(yearsAfter(new Date(2019, 0, 2), new Date(2020, 0)), 0);
+      assertEqual(yearsAfter(new Date(2020, 11, 31), new Date(2020, 0)), 0);
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        yearsAfter();
+      }, TypeError);
+    });
+  });
+
+  describeInstance('monthsAfter', (monthsAfter) => {
+
+    it('should return basic offset', () => {
+      assertEqual(monthsAfter(new Date(2019, 11), new Date(2020, 0)), -1);
+      assertEqual(monthsAfter(new Date(2020, 1), new Date(2020, 0)), 1);
+    });
+
+    it('should not count until threshold crossed', () => {
+      assertEqual(monthsAfter(new Date(2019, 11, 2), new Date(2020, 0)), 0);
+      assertEqual(monthsAfter(new Date(2020, 0, 31), new Date(2020, 0)), 0);
+    });
+
+    it('should traverse over February by month', () => {
+      assertEqual(monthsAfter(new Date(2015, 0, 31), new Date(2015, 1, 28)), -1);
+      assertEqual(monthsAfter(new Date(2015, 1, 28), new Date(2015, 0, 31)),  1);
+      assertEqual(monthsAfter(new Date(2015, 0, 31), new Date(2015, 2, 31)), -2);
+      assertEqual(monthsAfter(new Date(2015, 2, 31), new Date(2015, 0, 31)),  2);
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        monthsAfter();
+      }, TypeError);
+    });
+  });
+
+  describeInstance('weeksAfter', (weeksAfter) => {
+
+    it('should return basic offset', () => {
+      assertEqual(weeksAfter(new Date(2019, 11, 18), new Date(2020, 0)), -2);
+      assertEqual(weeksAfter(new Date(2019, 11, 25), new Date(2020, 0)), -1);
+      assertEqual(weeksAfter(new Date(2020, 0, 1), new Date(2020, 0)), 0);
+      assertEqual(weeksAfter(new Date(2020, 0, 8), new Date(2020, 0)), 1);
+      assertEqual(weeksAfter(new Date(2020, 0, 15), new Date(2020, 0)), 2);
+    });
+
+    it('should not count until threshold crossed', () => {
+      assertEqual(weeksAfter(new Date(2019, 11, 25), new Date(2020, 0)), -1);
+      assertEqual(weeksAfter(new Date(2019, 11, 26), new Date(2020, 0)), 0);
+      assertEqual(weeksAfter(new Date(2020, 0, 8), new Date(2020, 0)), 1);
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        weeksAfter();
+      }, TypeError);
+    });
+  });
+
+  describeInstance('daysAfter', (daysAfter) => {
+
+    it('should return basic offset', () => {
+      assertEqual(daysAfter(new Date(2019, 11, 30), new Date(2020, 0)), -2);
+      assertEqual(daysAfter(new Date(2019, 11, 31), new Date(2020, 0)), -1);
+      assertEqual(daysAfter(new Date(2020, 0, 1), new Date(2020, 0)), 0);
+      assertEqual(daysAfter(new Date(2020, 0, 2), new Date(2020, 0)), 1);
+      assertEqual(daysAfter(new Date(2020, 0, 3), new Date(2020, 0)), 2);
+    });
+
+    it('should not count until threshold crossed', () => {
+      assertEqual(daysAfter(new Date(2019, 11, 31, 1), new Date(2020, 0)), 0);
+      assertEqual(daysAfter(new Date(2020, 0, 1, 23), new Date(2020, 0)), 0);
+    });
+
+    it('should handle Issue #474', () => {
+      assertEqual(
+        daysAfter(new Date(2014, 10, 10, 21), new Date(2014, 6)),
+        daysAfter(new Date(2014, 10, 10, 22), new Date(2014, 6)),
+      );
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        daysAfter();
+      }, TypeError);
+    });
+
+  });
+
+  describeInstance('hoursAfter', (hoursAfter) => {
+
+    it('should return basic offset', () => {
+      assertEqual(hoursAfter(new Date(2019, 11, 31, 22), new Date(2020, 0)), -2);
+      assertEqual(hoursAfter(new Date(2019, 11, 31, 23), new Date(2020, 0)), -1);
+      assertEqual(hoursAfter(new Date(2020, 0, 1), new Date(2020, 0)), 0);
+      assertEqual(hoursAfter(new Date(2020, 0, 1, 1), new Date(2020, 0)), 1);
+      assertEqual(hoursAfter(new Date(2020, 0, 1, 2), new Date(2020, 0)), 2);
+    });
+
+    it('should not count until threshold crossed', () => {
+      assertEqual(hoursAfter(new Date(2019, 11, 31, 23, 1), new Date(2020, 0)), 0);
+      assertEqual(hoursAfter(new Date(2020, 0, 1, 0, 59), new Date(2020, 0)), 0);
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        hoursAfter();
+      }, TypeError);
+    });
+
+  });
+
+  describeInstance('minutesAfter', (minutesAfter) => {
+
+    it('should return basic offset', () => {
+      assertEqual(minutesAfter(new Date(2019, 11, 31, 23, 58), new Date(2020, 0)), -2);
+      assertEqual(minutesAfter(new Date(2019, 11, 31, 23, 59), new Date(2020, 0)), -1);
+      assertEqual(minutesAfter(new Date(2020, 0, 1), new Date(2020, 0)), 0);
+      assertEqual(minutesAfter(new Date(2020, 0, 1, 0, 1), new Date(2020, 0)), 1);
+      assertEqual(minutesAfter(new Date(2020, 0, 1, 0, 2), new Date(2020, 0)), 2);
+    });
+
+    it('should not count until threshold crossed', () => {
+      assertEqual(minutesAfter(new Date(2019, 11, 31, 23, 59, 1), new Date(2020, 0)), 0);
+      assertEqual(minutesAfter(new Date(2020, 0, 1, 0, 0, 59), new Date(2020, 0)), 0);
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        minutesAfter();
+      }, TypeError);
+    });
+
+  });
+
+  describeInstance('secondsAfter', (secondsAfter) => {
+
+    it('should return basic offset', () => {
+      assertEqual(secondsAfter(new Date(2019, 11, 31, 23, 59, 58), new Date(2020, 0)), -2);
+      assertEqual(secondsAfter(new Date(2019, 11, 31, 23, 59, 59), new Date(2020, 0)), -1);
+      assertEqual(secondsAfter(new Date(2020, 0, 1), new Date(2020, 0)), 0);
+      assertEqual(secondsAfter(new Date(2020, 0, 1, 0, 0, 1), new Date(2020, 0)), 1);
+      assertEqual(secondsAfter(new Date(2020, 0, 1, 0, 0, 2), new Date(2020, 0)), 2);
+    });
+
+    it('should not count until threshold crossed', () => {
+      assertEqual(secondsAfter(new Date(2019, 11, 31, 23, 59, 59, 1), new Date(2020, 0)), 0);
+      assertEqual(secondsAfter(new Date(2020, 0, 1, 0, 0, 0, 999), new Date(2020, 0)), 0);
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        secondsAfter();
+      }, TypeError);
+    });
+
+  });
+
+  describeInstance('millisecondsAfter', (millisecondsAfter) => {
+
+    it('should return basic offset', () => {
+      assertEqual(millisecondsAfter(new Date(2019, 11, 31, 23, 59, 59, 995), new Date(2020, 0)), -5);
+      assertEqual(millisecondsAfter(new Date(2019, 11, 31, 23, 59, 59, 999), new Date(2020, 0)), -1);
+      assertEqual(millisecondsAfter(new Date(2020, 0, 1), new Date(2020, 0)), 0);
+      assertEqual(millisecondsAfter(new Date(2020, 0, 1, 0, 0, 0, 1), new Date(2020, 0)), 1);
+      assertEqual(millisecondsAfter(new Date(2020, 0, 1, 0, 0, 0, 5), new Date(2020, 0)), 5);
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        millisecondsAfter();
+      }, TypeError);
+    });
+
+  });
+
   describeInstance('getISOWeek', (getISOWeek) => {
 
     it('should provide the correct ISO week for 2020', () => {
@@ -5850,7 +6584,7 @@ describeNamespace('Date', () => {
       });
     });
 
-    it('should handle issue #251', () => {
+    it('should handle Issue #251', () => {
       const date = new Date(2013, 0, 6);
       setISOWeek(date, 1);
       assertDateEqual(date, new Date(2013, 0, 6));
@@ -6175,7 +6909,7 @@ describeNamespace('Date', () => {
       });
     });
 
-    it('should handle issue #326', () => {
+    it('should handle Issue #326', () => {
       assertDateEqual(
         startOfISOWeek(new Date(2013, 6, 8)),
         new Date(2013, 6, 8)
@@ -7151,7 +7885,7 @@ describeNamespace('Date', () => {
       });
     });
 
-    it('should handle issue #474', () => {
+    it('should handle Issue #474', () => {
       assertEqual(
         relative(new Date(2020, 1), {
           compare: new Date(2020, 0),
@@ -8649,93 +9383,25 @@ describeNamespace('Number', () => {
     setSystemTime(new Date(2020, 0));
   });
 
-  describeInstance('second,seconds', (seconds) => {
+  describeInstance('year,years', (years) => {
 
-    it('should get the correct number of milliseconds for seconds', () => {
-      assertEqual(seconds(1), 1000);
-      assertEqual(seconds(-1), -1000);
-      assertEqual(seconds(60), 60000);
-      assertEqual(seconds(0), 0);
+    it('should get the correct number of milliseconds for years', () => {
+      assertEqual(years(1), 31556952000);
+      assertEqual(years(-1), -31556952000);
+      assertEqual(years(5), 5 * 31556952000);
+      assertEqual(years(0), 0);
+    });
+
+    it('should have singular alias', () => {
+      assertEqual(Sugar.Number.year(1), 31556952000);
     });
 
     it('should handle irregular input', () => {
-      assertEqual(seconds(null), 0);
-      assertEqual(seconds('1'), 1000);
-      assertNaN(seconds({}));
-      assertNaN(seconds(undefined));
-      assertNaN(seconds());
-    });
-  });
-
-  describeInstance('minute,minutes', (minutes) => {
-
-    it('should get the correct number of milliseconds for minutes', () => {
-      assertEqual(minutes(1), 60 * 1000);
-      assertEqual(minutes(-1), -60 * 1000);
-      assertEqual(minutes(60), 60 * 60 * 1000);
-      assertEqual(minutes(0), 0);
-    });
-
-    it('should handle irregular input', () => {
-      assertEqual(minutes(null), 0);
-      assertEqual(minutes('1'), 60 * 1000);
-      assertNaN(minutes({}));
-      assertNaN(minutes(undefined));
-      assertNaN(minutes());
-    });
-  });
-
-  describeInstance('hour,hours', (hours) => {
-
-    it('should get the correct number of milliseconds for hours', () => {
-      assertEqual(hours(1), 60 * 60 * 1000);
-      assertEqual(hours(-1), -60 * 60 * 1000);
-      assertEqual(hours(24), 24 * 60 * 60 * 1000);
-      assertEqual(hours(0), 0);
-    });
-
-    it('should handle irregular input', () => {
-      assertEqual(hours(null), 0);
-      assertEqual(hours('24'), 24 * 60 * 60 * 1000);
-      assertNaN(hours({}));
-      assertNaN(hours(undefined));
-      assertNaN(hours());
-    });
-  });
-
-  describeInstance('day,days', (days) => {
-
-    it('should get the correct number of milliseconds for days', () => {
-      assertEqual(days(1), 24 * 60 * 60 * 1000);
-      assertEqual(days(-1), -24 * 60 * 60 * 1000);
-      assertEqual(days(14), 14 * 24 * 60 * 60 * 1000);
-      assertEqual(days(0), 0);
-    });
-
-    it('should handle irregular input', () => {
-      assertEqual(days(null), 0);
-      assertEqual(days('1'), 24 * 60 * 60 * 1000);
-      assertNaN(days({}));
-      assertNaN(days(undefined));
-      assertNaN(days());
-    });
-  });
-
-  describeInstance('week,weeks', (weeks) => {
-
-    it('should get the correct number of milliseconds for weeks', () => {
-      assertEqual(weeks(1), 7 * 24 * 60 * 60 * 1000);
-      assertEqual(weeks(-1), -7 * 24 * 60 * 60 * 1000);
-      assertEqual(weeks(4), 28 * 24 * 60 * 60 * 1000);
-      assertEqual(weeks(0), 0);
-    });
-
-    it('should handle irregular input', () => {
-      assertEqual(weeks(null), 0);
-      assertEqual(weeks('1'), 7 * 24 * 60 * 60 * 1000);
-      assertNaN(weeks({}));
-      assertNaN(weeks(undefined));
-      assertNaN(weeks());
+      assertEqual(years(null), 0);
+      assertEqual(years('1'), 31556952000);
+      assertNaN(years({}));
+      assertNaN(years(undefined));
+      assertNaN(years());
     });
   });
 
@@ -8757,21 +9423,93 @@ describeNamespace('Number', () => {
     });
   });
 
-  describeInstance('year,years', (years) => {
+  describeInstance('week,weeks', (weeks) => {
 
-    it('should get the correct number of milliseconds for years', () => {
-      assertEqual(years(1), 31556952000);
-      assertEqual(years(-1), -31556952000);
-      assertEqual(years(5), 5 * 31556952000);
-      assertEqual(years(0), 0);
+    it('should get the correct number of milliseconds for weeks', () => {
+      assertEqual(weeks(1), 7 * 24 * 60 * 60 * 1000);
+      assertEqual(weeks(-1), -7 * 24 * 60 * 60 * 1000);
+      assertEqual(weeks(4), 28 * 24 * 60 * 60 * 1000);
+      assertEqual(weeks(0), 0);
     });
 
     it('should handle irregular input', () => {
-      assertEqual(years(null), 0);
-      assertEqual(years('1'), 31556952000);
-      assertNaN(years({}));
-      assertNaN(years(undefined));
-      assertNaN(years());
+      assertEqual(weeks(null), 0);
+      assertEqual(weeks('1'), 7 * 24 * 60 * 60 * 1000);
+      assertNaN(weeks({}));
+      assertNaN(weeks(undefined));
+      assertNaN(weeks());
+    });
+  });
+
+  describeInstance('day,days', (days) => {
+
+    it('should get the correct number of milliseconds for days', () => {
+      assertEqual(days(1), 24 * 60 * 60 * 1000);
+      assertEqual(days(-1), -24 * 60 * 60 * 1000);
+      assertEqual(days(14), 14 * 24 * 60 * 60 * 1000);
+      assertEqual(days(0), 0);
+    });
+
+    it('should handle irregular input', () => {
+      assertEqual(days(null), 0);
+      assertEqual(days('1'), 24 * 60 * 60 * 1000);
+      assertNaN(days({}));
+      assertNaN(days(undefined));
+      assertNaN(days());
+    });
+  });
+
+  describeInstance('hour,hours', (hours) => {
+
+    it('should get the correct number of milliseconds for hours', () => {
+      assertEqual(hours(1), 60 * 60 * 1000);
+      assertEqual(hours(-1), -60 * 60 * 1000);
+      assertEqual(hours(24), 24 * 60 * 60 * 1000);
+      assertEqual(hours(0), 0);
+    });
+
+    it('should handle irregular input', () => {
+      assertEqual(hours(null), 0);
+      assertEqual(hours('24'), 24 * 60 * 60 * 1000);
+      assertNaN(hours({}));
+      assertNaN(hours(undefined));
+      assertNaN(hours());
+    });
+  });
+
+  describeInstance('minute,minutes', (minutes) => {
+
+    it('should get the correct number of milliseconds for minutes', () => {
+      assertEqual(minutes(1), 60 * 1000);
+      assertEqual(minutes(-1), -60 * 1000);
+      assertEqual(minutes(60), 60 * 60 * 1000);
+      assertEqual(minutes(0), 0);
+    });
+
+    it('should handle irregular input', () => {
+      assertEqual(minutes(null), 0);
+      assertEqual(minutes('1'), 60 * 1000);
+      assertNaN(minutes({}));
+      assertNaN(minutes(undefined));
+      assertNaN(minutes());
+    });
+  });
+
+  describeInstance('second,seconds', (seconds) => {
+
+    it('should get the correct number of milliseconds for seconds', () => {
+      assertEqual(seconds(1), 1000);
+      assertEqual(seconds(-1), -1000);
+      assertEqual(seconds(60), 60000);
+      assertEqual(seconds(0), 0);
+    });
+
+    it('should handle irregular input', () => {
+      assertEqual(seconds(null), 0);
+      assertEqual(seconds('1'), 1000);
+      assertNaN(seconds({}));
+      assertNaN(seconds(undefined));
+      assertNaN(seconds());
     });
   });
 
@@ -8796,7 +9534,7 @@ describeNamespace('Number', () => {
     });
   });
 
-  describeInstance('monthAgo', (monthsAgo) => {
+  describeInstance('monthAgo,monthsAgo', (monthsAgo) => {
 
     it('should get the correct date', () => {
       assertDateEqual(monthsAgo(0), new Date(2020, 0));
@@ -9116,6 +9854,364 @@ describeNamespace('Number', () => {
         });
         assertError(() => {
           msFromNow(null);
+        });
+      });
+    }
+  );
+
+  describeInstance('yearBefore,yearsBefore', (yearsBefore) => {
+
+    it('should get the correct date', () => {
+      assertDateEqual(yearsBefore(0, new Date(2020, 0)), new Date(2020, 0));
+      assertDateEqual(yearsBefore(1, new Date(2020, 0)), new Date(2019, 0));
+      assertDateEqual(yearsBefore(-1, new Date(2020, 0)), new Date(2021, 0));
+    });
+
+    it('should not modify the input date', () => {
+      const date = new Date(2020, 0);
+      yearsBefore(5, date);
+      assertDateEqual(date, new Date(2020, 0));
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        yearsBefore();
+      });
+      assertError(() => {
+        yearsBefore(NaN);
+      });
+      assertError(() => {
+        yearsBefore(null);
+      });
+    });
+  });
+
+  describeInstance('monthBefore,monthsBefore', (monthsBefore) => {
+
+    it('should get the correct date', () => {
+      assertDateEqual(monthsBefore(0, new Date(2020, 0)), new Date(2020, 0));
+      assertDateEqual(monthsBefore(1, new Date(2020, 0)), new Date(2019, 11));
+      assertDateEqual(monthsBefore(-1, new Date(2020, 0)), new Date(2020, 1));
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        monthsBefore();
+      });
+      assertError(() => {
+        monthsBefore(NaN);
+      });
+      assertError(() => {
+        monthsBefore(null);
+      });
+    });
+  });
+
+  describeInstance('weekBefore,weeksBefore', (weeksBefore) => {
+
+    it('should get the correct date', () => {
+      assertDateEqual(weeksBefore(0, new Date(2020, 0)), new Date(2020, 0));
+      assertDateEqual(weeksBefore(1, new Date(2020, 0)), new Date(2019, 11, 25));
+      assertDateEqual(weeksBefore(-1, new Date(2020, 0)), new Date(2020, 0, 8));
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        weeksBefore();
+      });
+      assertError(() => {
+        weeksBefore(NaN);
+      });
+      assertError(() => {
+        weeksBefore(null);
+      });
+    });
+  });
+
+  describeInstance('dayBefore,daysBefore', (daysBefore) => {
+
+    it('should get the correct date', () => {
+      assertDateEqual(daysBefore(0, new Date(2020, 0)), new Date(2020, 0));
+      assertDateEqual(daysBefore(1, new Date(2020, 0)), new Date(2019, 11, 31));
+      assertDateEqual(daysBefore(-1, new Date(2020, 0)), new Date(2020, 0, 2));
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        daysBefore();
+      });
+      assertError(() => {
+        daysBefore(NaN);
+      });
+      assertError(() => {
+        daysBefore(null);
+      });
+    });
+  });
+
+  describeInstance('hourBefore,hoursBefore', (hoursBefore) => {
+
+    it('should get the correct date', () => {
+      assertDateEqual(hoursBefore(0, new Date(2020, 0)), new Date(2020, 0));
+      assertDateEqual(hoursBefore(1, new Date(2020, 0)), new Date(2019, 11, 31, 23));
+      assertDateEqual(hoursBefore(-1, new Date(2020, 0)), new Date(2020, 0, 1, 1));
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        hoursBefore();
+      });
+      assertError(() => {
+        hoursBefore(NaN);
+      });
+      assertError(() => {
+        hoursBefore(null);
+      });
+    });
+  });
+
+  describeInstance('minuteBefore,minutesBefore', (minutesBefore) => {
+
+    it('should get the correct date', () => {
+      assertDateEqual(minutesBefore(0, new Date(2020, 0)), new Date(2020, 0));
+      assertDateEqual(minutesBefore(1, new Date(2020, 0)), new Date(2019, 11, 31, 23, 59));
+      assertDateEqual(minutesBefore(-1, new Date(2020, 0)), new Date(2020, 0, 1, 0, 1));
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        minutesBefore();
+      });
+      assertError(() => {
+        minutesBefore(NaN);
+      });
+      assertError(() => {
+        minutesBefore(null);
+      });
+    });
+  });
+
+  describeInstance('secondBefore,secondsBefore', (secondsBefore) => {
+
+    it('should get the correct date', () => {
+      assertDateEqual(secondsBefore(0, new Date(2020, 0)), new Date(2020, 0));
+      assertDateEqual(secondsBefore(1, new Date(2020, 0)), new Date(2019, 11, 31, 23, 59, 59));
+      assertDateEqual(secondsBefore(-1, new Date(2020, 0)), new Date(2020, 0, 1, 0, 0, 1));
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        secondsBefore();
+      });
+      assertError(() => {
+        secondsBefore(NaN);
+      });
+      assertError(() => {
+        secondsBefore(null);
+      });
+    });
+  });
+
+  describeInstance('millisecondBefore,millisecondsBefore', (millisecondsBefore) => {
+
+    it('should get the correct date', () => {
+      assertDateEqual(millisecondsBefore(0, new Date(2020, 0)), new Date(2020, 0));
+      assertDateEqual(
+        millisecondsBefore(1, new Date(2020, 0)),
+        new Date(2019, 11, 31, 23, 59, 59, 999)
+      );
+      assertDateEqual(millisecondsBefore(-1, new Date(2020, 0)), new Date(2020, 0, 1, 0, 0, 0, 1));
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        millisecondsBefore();
+      });
+      assertError(() => {
+        millisecondsBefore(NaN);
+      });
+      assertError(() => {
+        millisecondsBefore(null);
+      });
+    });
+  });
+
+  describeInstance('yearAfter,yearsAfter', (yearsAfter) => {
+
+    it('should get the correct date', () => {
+      assertDateEqual(yearsAfter(0, new Date(2020, 0)), new Date(2020, 0));
+      assertDateEqual(yearsAfter(1, new Date(2020, 0)), new Date(2021, 0));
+      assertDateEqual(yearsAfter(-1, new Date(2020, 0)), new Date(2019, 0));
+    });
+
+    it('should not modify the input date', () => {
+      const date = new Date(2020, 0);
+      yearsAfter(5, date);
+      assertDateEqual(date, new Date(2020, 0));
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        yearsAfter();
+      });
+      assertError(() => {
+        yearsAfter(NaN);
+      });
+      assertError(() => {
+        yearsAfter(null);
+      });
+    });
+  });
+
+  describeInstance('monthAfter,monthsAfter', (monthsAfter) => {
+
+    it('should get the correct date', () => {
+      assertDateEqual(monthsAfter(0, new Date(2020, 0)), new Date(2020, 0));
+      assertDateEqual(monthsAfter(1, new Date(2020, 0)), new Date(2020, 1));
+      assertDateEqual(monthsAfter(-1, new Date(2020, 0)), new Date(2019, 11));
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        monthsAfter();
+      });
+      assertError(() => {
+        monthsAfter(NaN);
+      });
+      assertError(() => {
+        monthsAfter(null);
+      });
+    });
+  });
+
+  describeInstance('weekAfter,weeksAfter', (weeksAfter) => {
+
+    it('should get the correct date', () => {
+      assertDateEqual(weeksAfter(0, new Date(2020, 0)), new Date(2020, 0));
+      assertDateEqual(weeksAfter(1, new Date(2020, 0)), new Date(2020, 0, 8));
+      assertDateEqual(weeksAfter(-1, new Date(2020, 0)), new Date(2019, 11, 25));
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        weeksAfter();
+      });
+      assertError(() => {
+        weeksAfter(NaN);
+      });
+      assertError(() => {
+        weeksAfter(null);
+      });
+    });
+  });
+
+  describeInstance('dayAfter,daysAfter', (daysAfter) => {
+
+    it('should get the correct date', () => {
+      assertDateEqual(daysAfter(0, new Date(2020, 0)), new Date(2020, 0));
+      assertDateEqual(daysAfter(1, new Date(2020, 0)), new Date(2020, 0, 2));
+      assertDateEqual(daysAfter(-1, new Date(2020, 0)), new Date(2019, 11, 31));
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        daysAfter();
+      });
+      assertError(() => {
+        daysAfter(NaN);
+      });
+      assertError(() => {
+        daysAfter(null);
+      });
+    });
+  });
+
+  describeInstance('hourAfter,hoursAfter', (hoursAfter) => {
+
+    it('should get the correct date', () => {
+      assertDateEqual(hoursAfter(0, new Date(2020, 0)), new Date(2020, 0));
+      assertDateEqual(hoursAfter(1, new Date(2020, 0)), new Date(2020, 0, 1, 1));
+      assertDateEqual(hoursAfter(-1, new Date(2020, 0)), new Date(2019, 11, 31, 23));
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        hoursAfter();
+      });
+      assertError(() => {
+        hoursAfter(NaN);
+      });
+      assertError(() => {
+        hoursAfter(null);
+      });
+    });
+  });
+
+  describeInstance('minuteAfter,minutesAfter', (minutesAfter) => {
+
+    it('should get the correct date', () => {
+      assertDateEqual(minutesAfter(0, new Date(2020, 0)), new Date(2020, 0));
+      assertDateEqual(minutesAfter(1, new Date(2020, 0)), new Date(2020, 0, 1, 0, 1));
+      assertDateEqual(minutesAfter(-1, new Date(2020, 0)), new Date(2019, 11, 31, 23, 59));
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        minutesAfter();
+      });
+      assertError(() => {
+        minutesAfter(NaN);
+      });
+      assertError(() => {
+        minutesAfter(null);
+      });
+    });
+  });
+
+  describeInstance('secondAfter,secondsAfter', (secondsAfter) => {
+
+    it('should get the correct date', () => {
+      assertDateEqual(secondsAfter(0, new Date(2020, 0)), new Date(2020, 0));
+      assertDateEqual(secondsAfter(1, new Date(2020, 0)), new Date(2020, 0, 1, 0, 0, 1));
+      assertDateEqual(secondsAfter(-1, new Date(2020, 0)), new Date(2019, 11, 31, 23, 59, 59));
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        secondsAfter();
+      });
+      assertError(() => {
+        secondsAfter(NaN);
+      });
+      assertError(() => {
+        secondsAfter(null);
+      });
+    });
+  });
+
+  describeInstance('millisecondAfter,millisecondsAfter', (msAfter) => {
+
+      it('should get the correct date', () => {
+        assertDateEqual(msAfter(0, new Date(2020, 0)), new Date(2020, 0));
+        assertDateEqual(
+          msAfter(1, new Date(2020, 0)),
+          new Date(2020, 0, 1, 0, 0, 0, 1)
+        );
+        assertDateEqual(
+          msAfter(-1, new Date(2020, 0)),
+          new Date(2019, 11, 31, 23, 59, 59, 999)
+        );
+      });
+
+      it('should handle irregular input', () => {
+        assertError(() => {
+          msAfter();
+        });
+        assertError(() => {
+          msAfter(NaN);
+        });
+        assertError(() => {
+          msAfter(null);
         });
       });
     }

@@ -23,46 +23,46 @@ import { unitAfter } from './util/distance';
  *
  * @example
  *
- *   (5).secondsFromNow() -> current date + 5 seconds
- *   (5).daysFromNow() -> current date + 5 days
- *   new Date(2020, 0).monthsFromNow() -> number of months from the current date
+ *   (5).secondsAfter() -> current date + 5 seconds
+ *   (5).daysAfter() -> current date + 5 days
+ *   new Date(2020, 0).monthsAfter() -> number of months from the current date
  *
- * @method secondsFromNow
- * @method minutesFromNow
- * @method hoursFromNow
- * @method daysFromNow
- * @method weeksFromNow
- * @method monthsFromNow
- * @method yearsFromNow
+ * @method secondsAfter
+ * @method minutesAfter
+ * @method hoursAfter
+ * @method daysAfter
+ * @method weeksAfter
+ * @method monthsAfter
+ * @method yearsAfter
  **/
-export function yearsFromNow(val) {
-  return unitAfter('year', val);
+export function yearsAfter(val, date) {
+  return unitAfter('year', val, date);
 }
 
-export function monthsFromNow(val) {
-  return unitAfter('month', val);
+export function monthsAfter(val, date) {
+  return unitAfter('month', val, date);
 }
 
-export function weeksFromNow(val) {
-  return unitAfter('week', val);
+export function weeksAfter(val, date) {
+  return unitAfter('week', val, date);
 }
 
-export function daysFromNow(val) {
-  return unitAfter('day', val);
+export function daysAfter(val, date) {
+  return unitAfter('day', val, date);
 }
 
-export function hoursFromNow(val) {
-  return unitAfter('hour', val);
+export function hoursAfter(val, date) {
+  return unitAfter('hour', val, date);
 }
 
-export function minutesFromNow(val) {
-  return unitAfter('minute', val);
+export function minutesAfter(val, date) {
+  return unitAfter('minute', val, date);
 }
 
-export function secondsFromNow(val) {
-  return unitAfter('second', val);
+export function secondsAfter(val, date) {
+  return unitAfter('second', val, date);
 }
 
-export function millisecondsFromNow(val) {
-  return unitAfter('millisecond', val);
+export function millisecondsAfter(val, date) {
+  return unitAfter('millisecond', val, date);
 }

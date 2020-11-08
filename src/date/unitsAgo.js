@@ -1,8 +1,8 @@
-import { rewindDate } from './util/shift';
-import { assertInteger } from '../util/assertions';
+import { unitBefore } from './util/distance';
 
 /**
- * Returns a date that is a number of units before the current date.
+ * Returns either a date or a number that represents the offset from the current
+ *   date.
  *
  * @extra This method uses native `set` methods under the hood. If the target
  *   date falls on a day that does not exist (i.e. February 31), the date will
@@ -14,65 +14,55 @@ import { assertInteger } from '../util/assertions';
  *   Singular methods are also provided as a readable alias when using
  *   chainables.
  *
- * @param {number} val - The value in the relevant unit.
+ * @param {number|Date} val - Either a number in the relevant unit or a date. If
+ *   a number is passed, a date representing a point in time that many units ago
+ *   will be returned. If a date is passed, a number representing the offset in
+ *   the relevant unit will be returned.
  *
- * @returns {Date}
+ * @returns {number|Date}
  *
  * @example
  *
  *   (5).secondsAgo() -> current date - 5 seconds
  *   (5).daysAgo() -> current date - 5 days
+ *   new Date(2020, 0).monthsAgo() -> number of months from the current date
  *
- * @method secondAgo
  * @method secondsAgo
- * @method minuteAgo
  * @method minutesAgo
- * @method hourAgo
  * @method hoursAgo
- * @method dayAgo
  * @method daysAgo
- * @method weekAgo
  * @method weeksAgo
- * @method monthAgo
  * @method monthsAgo
- * @method yearAgo
  * @method yearsAgo
  **/
 export function yearsAgo(val) {
-  return unitsAgo('year', val);
+  return unitBefore('year', val);
 }
 
 export function monthsAgo(val) {
-  return unitsAgo('month', val);
+  return unitBefore('month', val);
 }
 
 export function weeksAgo(val) {
-  return unitsAgo('week', val);
+  return unitBefore('week', val);
 }
 
 export function daysAgo(val) {
-  return unitsAgo('day', val);
+  return unitBefore('day', val);
 }
 
 export function hoursAgo(val) {
-  return unitsAgo('hour', val);
+  return unitBefore('hour', val);
 }
 
 export function minutesAgo(val) {
-  return unitsAgo('minute', val);
+  return unitBefore('minute', val);
 }
 
 export function secondsAgo(val) {
-  return unitsAgo('second', val);
+  return unitBefore('second', val);
 }
 
 export function millisecondsAgo(val) {
-  return unitsAgo('millisecond', val);
-}
-
-function unitsAgo(unit, val) {
-  assertInteger(val);
-  const date = new Date();
-  const props = { [unit]: val };
-  return rewindDate(date, props, true);
+  return unitBefore('millisecond', val);
 }

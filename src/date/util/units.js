@@ -1,20 +1,10 @@
 import { isFunction } from '../../util/typeChecks';
 import { getDaysInMonth } from './helpers';
+import { UNITS } from './const';
 
 const YEAR_AVG_DAYS = 365.2425;
 const HOUR_IN_MS = 60 * 60 * 1000;
 const DAY_IN_MS = 24 * HOUR_IN_MS;
-
-export const UNITS = [
-  'year',
-  'month',
-  'week',
-  'day',
-  'hour',
-  'minute',
-  'second',
-  'millisecond',
-];
 
 // "min" here denotes the minimum possible value for the unit and is used in
 // relative time formats where we want to greedily assume the upper unit

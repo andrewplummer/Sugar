@@ -19,7 +19,7 @@
       const methodName = methodNames[i];
       const method = ns[methodName];
       const proto = ns.prototype[methodName];
-      fn(method, proto, i);
+      fn(method, proto, methodName);
     }
   };
 
@@ -35,12 +35,12 @@
 
   function chainStatic(suiteFn) {
     return (name, fn) => {
-      withMethod(name, (method, proto, i) => {
-        suiteFn(name, () => {
+      withMethod(name, (method, proto, methodName) => {
+        suiteFn(methodName, () => {
           it('should be a static method', function() {
             assertUndefined(proto);
           });
-          fn(method, i);
+          fn(method);
         });
       });
     };
@@ -48,12 +48,12 @@
 
   function chainInstance(suiteFn) {
     return (name, fn) => {
-      withMethod(name, (method, proto, i) => {
-        suiteFn(name, () => {
+      withMethod(name, (method, proto, methodName) => {
+        suiteFn(methodName, () => {
           it('should be an instance method', function() {
             assertInstanceOf(proto, Function);
           });
-          fn(method, i);
+          fn(method);
         });
       });
     };

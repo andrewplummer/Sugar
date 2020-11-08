@@ -5,7 +5,7 @@ import { resetByProps } from './reset';
 import { updateDate } from './update';
 
 export function shiftDateByUnit(date, unit, val) {
-  shiftDateByProps(date, { [unit]: val });
+  return shiftDateByProps(date, { [unit]: val });
 }
 
 export function advanceDate(date, relProps, reset) {

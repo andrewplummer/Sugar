@@ -79,7 +79,7 @@ export default function relative(date, opt) {
   let { unit } = convertTimeToUnit(date.getTime() - compare.getTime(), 'min');
 
   // Then use that unit to traverse the date using getter methods.
-  let value = getUnitDistance(date, compare, unit);
+  let value = getUnitDistance(unit, date, compare);
 
   // If we have overshot the correct unit (ie. "0 days ago"), then shift down
   // one unit. "millisecond" is not a valid unit for an instance of
@@ -92,7 +92,7 @@ export default function relative(date, opt) {
   }
   if (shift) {
     unit = getAdjacentUnit(unit, shift);
-    value = getUnitDistance(date, compare, unit);
+    value = getUnitDistance(unit, date, compare);
   }
 
   // If a resolve function was passed, call it

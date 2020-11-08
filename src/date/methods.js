@@ -4,6 +4,8 @@ export * from './startOfUnit';
 export * from './endOfUnit';
 export * from './units';
 export * from './unitsAgo';
+export * from './unitsAfter';
+export * from './unitsBefore';
 export * from './unitsFromNow';
 
 export { default as advance } from './advance';

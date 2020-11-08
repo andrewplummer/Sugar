@@ -23,23 +23,17 @@ import { getUnitMultiplier } from './util/units';
  *
  *   (5).seconds() -> 5 * 1000
  *   (5).minutes() -> 5 * 60000
- *   (5).days() -> 5 * 86400000
+ *   (1).day() -> 86400000
+ *   (5).days() -> 432000000
  *   (5).years() -> 157784760000
  *   (5).days() -> 86400000
  *
- * @method second
  * @method seconds
- * @method minute
  * @method minutes
- * @method hour
  * @method hours
- * @method day
  * @method days
- * @method week
  * @method weeks
- * @method month
  * @method months
- * @method year
  * @method years
  **/
 export function years(n) {

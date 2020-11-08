@@ -1,29 +1,48 @@
 import { cloneDate } from '../../util/clone';
-import { shiftDateByUnit } from './shift';
+import { isNumber, isDate } from '../../util/typeChecks';
+import { advanceDate, shiftDateByUnit } from './shift';
 import { getUnitMultiplier, getUnitIndex } from './units';
 
-export function getUnitDistance(date1, date2, unit) {
-  const fwd = date2 > date1;
-  if (!fwd) {
-    let tmp = date2;
-    date2  = date1;
-    date1  = tmp;
+export function unitBefore(unit, input, date) {
+  return getUnitDistanceOrDate(unit, input, date, -1);
+}
+
+export function unitAfter(unit, input, date) {
+  return getUnitDistanceOrDate(unit, input, date, 1);
+}
+
+export function getUnitDistanceOrDate(unit, input, date, dir) {
+  if (isNumber(input)) {
+    const props = { [unit]: input * dir };
+    date = date ? cloneDate(date) : new Date();
+    return advanceDate(date, props, true);
+  } else if (isDate(input)) {
+    date = date || new Date();
+    const [start, end] = dir > 0 ? [input, date] : [date, input];
+    return getUnitDistance(unit, start, end);
+  } else {
+    throw new TypeError('Requires a number or a date');
   }
-  let num = Math.trunc((date2 - date1) / getUnitMultiplier(unit));
+}
+
+export function getUnitDistance(unit, d1, d2) {
+  const fwd = d2 > d1;
+  let [start, end] = fwd ? [d1, d2] : [d2, d1];
+  let num = Math.trunc((end - start) / getUnitMultiplier(unit));
 
   // For units with potential ambiguity, use the numeric calculation as a
   // starting point, then iterate until we pass the target date. Decrement
   // starting point by 1 to prevent overshooting the date due to inconsistencies
   // in ambiguous units.
   if (unitIsAmbiguous(unit)) {
-    date1 = cloneDate(date1);
+    const date = cloneDate(start);
     if (num) {
       num -= 1;
-      shiftDateByUnit(date1, unit, num);
+      shiftDateByUnit(date, unit, num);
     }
-    while (date1 < date2) {
-      shiftDateByUnit(date1, unit, 1);
-      if (date1 > date2) {
+    while (date < end) {
+      shiftDateByUnit(date, unit, 1);
+      if (date > end) {
         break;
       }
       num += 1;
@@ -33,7 +52,7 @@ export function getUnitDistance(date1, date2, unit) {
 }
 
 // Ambiguous units cannot use getTime to determine the distance between them
-// in that unit. For example, months cannot use (date2 - date1) / MS_PER_UNIT,
+// in that unit. For example, months cannot use (end - start) / MS_PER_UNIT,
 // as there is not a number of fixed milliseconds in months. This is true for
 // any unit with specificity lower than "hours" as even days do not have a fixed
 // number of milliseconds in them during a day with a DST shift.

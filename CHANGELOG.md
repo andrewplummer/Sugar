@@ -220,6 +220,9 @@ call `Function#lock` first in the chain to achieve the same effect.
     little benefit for their overhead. Simply use `date.getDay() === 0` instead.
 - Removed `margin` argument from `Date#isBefore` and `Date#isAfter`. For special
     comparison cases, use `Date.create` and run a manual comparison.
+- Changed unit aliases like `Date#yearsSince` and `Date#yearsUntil` to be
+    `Date#yearsBefore` and `Date#yearsAfter` for better comprehension and parity
+    with number aliases of the same name.
 
 TODO:
 

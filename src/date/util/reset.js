@@ -1,4 +1,5 @@
-import { UNITS, getUnitIndex, getUnitEdge, getPropsSpecificity } from './units';
+import { UNITS } from './const';
+import { getUnitIndex, getUnitEdge, getPropsSpecificity } from './units';
 import { callDateSet } from './helpers';
 
 export function resetByUnit(date, unit, options) {

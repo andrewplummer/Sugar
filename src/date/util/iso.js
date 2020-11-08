@@ -45,7 +45,7 @@ export function getDayOfYear(date, year) {
     year = date.getFullYear();
   }
   const jan1 = new Date(year, 0);
-  return getUnitDistance(date, jan1, 'day') + 1;
+  return getUnitDistance('day', date, jan1) + 1;
 }
 
 function getISOWeekday(date) {
