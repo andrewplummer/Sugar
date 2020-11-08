@@ -66,7 +66,7 @@ describeNamespace('Date', () => {
 
       describe('ISO-8601', () => {
 
-        it('should parse various levels of specificity', () => {
+        it('should parse various levels of precision', () => {
           assertDateEqual(create('2010'), new Date(2010, 0));
           assertDateEqual(create('2010-11'), new Date(2010, 10));
           assertDateEqual(create('2010-11-22'), new Date(2010, 10, 22));
@@ -2923,7 +2923,7 @@ describeNamespace('Date', () => {
         assertInstanceOf(format.groups, Array);
         assertObjectEqual(rest, {
           date: new Date(2020, 0),
-          specificity: {
+          precision: {
             unit: 'date',
             index: 3,
           },
@@ -2936,61 +2936,61 @@ describeNamespace('Date', () => {
         });
       });
 
-      it('should have correct specificity for parsed date', () => {
-        function assertParsedSpecificity(input, obj) {
-          const { specificity } = create(input, {
+      it('should have correct precision for parsed date', () => {
+        function assertParsedPrecision(input, obj) {
+          const { precision } = create(input, {
             cache: false,
             explain: true,
           });
-          assertObjectEqual(specificity, obj);
+          assertObjectEqual(precision, obj);
         }
 
-        assertParsedSpecificity('2020', {
+        assertParsedPrecision('2020', {
           unit: 'year',
           index: 0,
         });
 
-        assertParsedSpecificity('January', {
+        assertParsedPrecision('January', {
           unit: 'month',
           index: 1,
         });
 
-        assertParsedSpecificity('next week', {
+        assertParsedPrecision('next week', {
           unit: 'week',
           index: 2,
         });
 
-        assertParsedSpecificity('Wednesday January 1, 2020', {
+        assertParsedPrecision('Wednesday January 1, 2020', {
           unit: 'date',
           index: 3,
         });
 
-        assertParsedSpecificity('January 1st', {
+        assertParsedPrecision('January 1st', {
           unit: 'date',
           index: 3,
         });
 
-        assertParsedSpecificity('Wednesday', {
+        assertParsedPrecision('Wednesday', {
           unit: 'day',
           index: 3,
         });
 
-        assertParsedSpecificity('January 1st at 10pm', {
+        assertParsedPrecision('January 1st at 10pm', {
           unit: 'hour',
           index: 4,
         });
 
-        assertParsedSpecificity('January 1st at 10:00pm', {
+        assertParsedPrecision('January 1st at 10:00pm', {
           unit: 'minute',
           index: 5,
         });
 
-        assertParsedSpecificity('January 1st at 10:00:00pm', {
+        assertParsedPrecision('January 1st at 10:00:00pm', {
           unit: 'second',
           index: 6,
         });
 
-        assertParsedSpecificity('January 1st at 10:00:00.000pm', {
+        assertParsedPrecision('January 1st at 10:00:00.000pm', {
           unit: 'millisecond',
           index: 7,
         });
@@ -3121,7 +3121,7 @@ describeNamespace('Date', () => {
           cache: false,
           explain: true,
         });
-        assertObjectEqual(result.specificity, {
+        assertObjectEqual(result.precision, {
           unit: 'minute',
           index: 5,
         });
@@ -3130,7 +3130,7 @@ describeNamespace('Date', () => {
           cache: false,
           explain: true,
         });
-        assertObjectEqual(result.specificity, {
+        assertObjectEqual(result.precision, {
           unit: 'hour',
           index: 4,
         });
@@ -3139,7 +3139,7 @@ describeNamespace('Date', () => {
           cache: false,
           explain: true,
         });
-        assertObjectEqual(result.specificity, {
+        assertObjectEqual(result.precision, {
           unit: 'millisecond',
           index: 7,
         });
@@ -3158,7 +3158,7 @@ describeNamespace('Date', () => {
       });
 
       it('should handle Issue #569', () => {
-        const { absProps, relProps, specificity } = create('yesterday at 2:30pm', {
+        const { absProps, relProps, precision } = create('yesterday at 2:30pm', {
           cache: false,
           explain: true,
         });
@@ -3169,7 +3169,7 @@ describeNamespace('Date', () => {
         assertObjectEqual(relProps, {
           day: -1,
         });
-        assertObjectEqual(specificity, {
+        assertObjectEqual(precision, {
           unit: 'minute',
           index: 5,
         });
@@ -4195,7 +4195,7 @@ describeNamespace('Date', () => {
       );
     });
 
-    it('should reset the date by specificity', () => {
+    it('should reset the date by precision', () => {
       assertDateEqual(
         set(new Date(2020, 2, 31, 11, 59, 59, 999), { year: 2021 }, true),
         new Date(2021, 0)
@@ -4644,7 +4644,7 @@ describeNamespace('Date', () => {
       );
     });
 
-    it('should reset the date by specificity', () => {
+    it('should reset the date by precision', () => {
       assertDateEqual(
         advance(new Date(2020, 2, 31, 11, 59, 59, 999), { years: 1 }, true),
         new Date(2021, 0)
@@ -5227,7 +5227,7 @@ describeNamespace('Date', () => {
       );
     });
 
-    it('should reset the date by specificity', () => {
+    it('should reset the date by precision', () => {
       assertDateEqual(
         rewind(new Date(2020, 2, 31, 11, 59, 59, 999), { years: 1 }, true),
         new Date(2019, 0)

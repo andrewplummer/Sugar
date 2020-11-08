@@ -6,7 +6,7 @@ import { setTimeZoneOffset } from './timeZone';
 import { resetByProps, resetByUnit } from './reset';
 import { isNaN, isString } from '../../util/typeChecks';
 import { cloneDate } from '../../util/clone';
-import { getPropsSpecificity, getAdjacentUnit, formatPartsForUnit, getUnitMultiplier } from './units';
+import { getPropsPrecision, getAdjacentUnit, formatPartsForUnit, getUnitMultiplier } from './units';
 import { UNITS } from './const';
 import { replaceLocaleNumerals } from './numerals';
 import { REG_ORDINALS, replaceOrdinals } from './ordinals';
@@ -1413,7 +1413,7 @@ export default class LocaleParser {
           date,
           absProps,
           relProps,
-          specificity: getPropsSpecificity({
+          precision: getPropsPrecision({
             ...relProps,
             ...absProps,
           }),
@@ -1450,7 +1450,7 @@ function findPart(parts, type) {
 }
 
 function getAmbiguousUnit(absProps, relProps) {
-  let { unit } = getPropsSpecificity(absProps);
+  let { unit } = getPropsPrecision(absProps);
   while (unit) {
     if (propsUnitExists(relProps, unit)) {
       return null;
@@ -1600,7 +1600,7 @@ function resolveFraction(arg, { type: unit, props, absProps }) {
 
   props[unit] = Math.trunc(val);
 
-  // A string of "0.0" provides insight into its specificity, even if the
+  // A string of "0.0" provides insight into its precision, even if the
   // parsed values do not affect the date, so continue on if a decimal
   // separator has been found.
   if (str.includes('.')) {

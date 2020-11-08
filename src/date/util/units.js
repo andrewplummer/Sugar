@@ -102,7 +102,7 @@ export function isTimeUnit(unit) {
 
 // Note: this function needs to handle "date"
 // as well as "day" as a specific unit.
-export function getPropsSpecificity(props) {
+export function getPropsPrecision(props) {
   let unit;
   let index = -1;
   for (let key of Object.keys(props)) {

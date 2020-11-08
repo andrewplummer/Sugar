@@ -1,5 +1,5 @@
 import { UNITS } from './const';
-import { getUnitIndex, getUnitEdge, getPropsSpecificity } from './units';
+import { getUnitIndex, getUnitEdge, getPropsPrecision } from './units';
 import { callDateSet } from './helpers';
 
 export function resetByUnit(date, unit, options) {
@@ -7,7 +7,7 @@ export function resetByUnit(date, unit, options) {
 }
 
 export function resetByProps(date, props, options) {
-  const { index } = getPropsSpecificity(props);
+  const { index } = getPropsPrecision(props);
   if (index >= 0) {
     resetByIndex(date, index, options);
   }

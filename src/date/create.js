@@ -135,8 +135,8 @@ import { cloneDate } from '../util/clone';
  * @property {Date} date - The parsed date.
  * @property {Object} absProps - The absolute props derived from parsing.
  * @property {Object} relProps - The relative props derived from parsing.
- * @property {Object} specificity - An object with `unit` and `index` properties
- *   denoting the specificity of the units derived from the parse. `index` may
+ * @property {Object} precision - An object with `unit` and `index` properties
+ *   denoting the precision of the units derived from the parse. `index` may
  *   range from `0` for `year` to `7` for `millisecond`.
  * @property {Object} format - The format matched when parsing the date. Useful
  *   for debugging. Has `reg` and `groups` properties to describe the RegExp

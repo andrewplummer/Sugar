@@ -41,11 +41,11 @@ export default function is(date, d2, margin) {
     return compareTimes(date.getTime(), d2, margin);
   } else {
     const { input, options } = collectRollupInput(d2);
-    const { date: parsedDate, specificity } = createDate(input, {
+    const { date: parsedDate, precision } = createDate(input, {
       ...options,
       explain: true,
     });
-    const { unit } = specificity;
+    const { unit } = precision;
     return compareDatesByUnit(date, parsedDate, unit, {
       margin,
     });

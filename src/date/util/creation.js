@@ -5,7 +5,7 @@ import { setIANATimeZone } from './timeZone';
 import { normalizeProps } from './props';
 import { updateDate } from './update';
 import { parseDate } from './parsing';
-import { getPropsSpecificity } from './units';
+import { getPropsPrecision } from './units';
 
 export function createDate(input, options = {}) {
   const { from, explain, timeZone } = options;
@@ -32,7 +32,7 @@ export function createDate(input, options = {}) {
       retVal = {
         date,
         absProps,
-        specificity: getPropsSpecificity(absProps),
+        precision: getPropsPrecision(absProps),
       };
     } else {
       retVal = date;

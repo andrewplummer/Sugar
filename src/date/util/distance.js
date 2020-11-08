@@ -54,7 +54,7 @@ export function getUnitDistance(unit, d1, d2) {
 // Ambiguous units cannot use getTime to determine the distance between them
 // in that unit. For example, months cannot use (end - start) / MS_PER_UNIT,
 // as there is not a number of fixed milliseconds in months. This is true for
-// any unit with specificity lower than "hours" as even days do not have a fixed
+// any unit with precision lower than "hours" as even days do not have a fixed
 // number of milliseconds in them during a day with a DST shift.
 function unitIsAmbiguous(unit) {
   return getUnitIndex(unit) < getUnitIndex('hour');
