@@ -50,7 +50,6 @@ export default function is(date, d2, margin) {
       margin,
     });
   }
-  return false;
 }
 
 function compareTimes(t1, t2, margin = 0) {

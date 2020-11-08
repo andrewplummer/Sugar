@@ -1,6 +1,7 @@
 import { cloneDate } from '../../util/clone';
 import { isNumber, isDate } from '../../util/typeChecks';
 import { advanceDate, shiftDateByUnit } from './shift';
+import { createDateFromRollup } from './creation';
 import { getUnitMultiplier, getUnitIndex } from './units';
 
 export function unitBefore(unit, input, date) {
@@ -11,13 +12,12 @@ export function unitAfter(unit, input, date) {
   return getUnitDistanceOrDate(unit, input, date, 1);
 }
 
-export function getUnitDistanceOrDate(unit, input, date, dir) {
+export function getUnitDistanceOrDate(unit, input, dateArg, dir) {
+  const date = createDateFromRollup(dateArg || new Date());
   if (isNumber(input)) {
     const props = { [unit]: input * dir };
-    date = date ? cloneDate(date) : new Date();
-    return advanceDate(date, props, true);
+    return advanceDate(date, props);
   } else if (isDate(input)) {
-    date = date || new Date();
     const [start, end] = dir > 0 ? [input, date] : [date, input];
     return getUnitDistance(unit, start, end);
   } else {

@@ -49,6 +49,8 @@
         const options = this.resolvedOptions();
         if ('timeZone' in options && mockTimeZoneOffset != null) {
           let time = date ? date.getTime() : Date.now();
+          // Remove the internal offset and further
+          // add the offset of the mocked time zone.
           time -= (getInternalOffset(date) - mockTimeZoneOffset) * 60 * 1000;
           date = new Date(time);
         }

@@ -8,23 +8,25 @@ import { parseDate } from './parsing';
 import { getPropsSpecificity } from './units';
 
 export function createDate(input, options = {}) {
-  const { from, timeZone, explain } = options;
+  const { from, explain, timeZone } = options;
   const date = from ? cloneDate(from) : new Date();
 
   let retVal;
-  let hasZone;
 
-  if (input == null) {
-    retVal = date;
-  } else if (isString(input)) {
+  if (isString(input)) {
     const result = parseDate(input, date, options);
     if (result) {
       retVal = explain ? result : date;
-      hasZone = 'timeZoneOffset' in result.absProps;
     }
   } else {
-    const props = normalizeProps(input);
+    const props = normalizeProps(input || {});
     updateDate(date, props, true);
+    if (timeZone) {
+      // Note that when parsing a string, time zone resolution needs to
+      // happen inside the parser as a number of other options contribute
+      // to the final result, so need to handle this separately here.
+      setIANATimeZone(date, timeZone);
+    }
     if (explain) {
       const absProps = props;
       retVal = {
@@ -35,10 +37,6 @@ export function createDate(input, options = {}) {
     } else {
       retVal = date;
     }
-  }
-
-  if (!hasZone && timeZone) {
-    setIANATimeZone(date, timeZone);
   }
 
   return retVal || null;
@@ -56,7 +54,7 @@ export function createDateFromArgs(input, options) {
 export function createDateFromRollup(dateArg) {
   let date;
   if (isDate(dateArg)) {
-    date = dateArg;
+    date = cloneDate(dateArg);
   } else if (dateArg) {
     const { input, options } = collectRollupInput(dateArg);
     date = createDate(input, options);

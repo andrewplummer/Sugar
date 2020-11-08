@@ -377,6 +377,15 @@ describeNamespace('Date', () => {
           mockTimeZone(0); // GMT+00:00
           assertDateEqual(create('1998-12-31T23:59:60Z'), new Date(1999, 0));
         });
+
+        it('should handle Issue #146', () => {
+          mockTimeZone(0); // GMT+00:00
+          assertDateEqual(create('2010-01-20T20:00:00.000Z'), new Date(2010, 0, 20, 20));
+          assertDateEqual(create('2010-02-20T20:00:00.000Z'), new Date(2010, 1, 20, 20));
+          assertDateEqual(create('2010-03-20T20:00:00.000Z'), new Date(2010, 2, 20, 20));
+          assertDateEqual(create('2010-12-20T20:00:00.000Z'), new Date(2010, 11, 20, 20));
+        });
+
       });
 
       describe('Year First', () => {
@@ -2434,6 +2443,12 @@ describeNamespace('Date', () => {
           hour: -12,
         });
       });
+
+      it('should handle Issue #342', () => {
+        setSystemTime(new Date(2020, 2, 15));
+        assertDateEqual(create('2 weeks ago'), new Date(2020, 2, 1));
+      });
+
     });
 
     describe('Preferences', () => {
@@ -2625,7 +2640,7 @@ describeNamespace('Date', () => {
 
     describe('Time zones', () => {
 
-      it('should be able to parse a basic date as UTC', () => {
+      it('should be able to parse as another time zone', () => {
         mockTimeZone(-540); // GMT+09:00
         assertDateEqual(
           create('2020-01-01', {
@@ -2675,6 +2690,52 @@ describeNamespace('Date', () => {
           new Date(2020, 5, 15, 18, 59, 59, 999)
         );
       });
+
+      it('should handle Issue #342', () => {
+        mockTimeZone(300); // GMT-05:00
+        assertDateEqual(
+          create('4pm', {
+            timeZone: 'Pacific/Honolulu',
+          }),
+          new Date(2020, 0, 1, 21),
+        );
+        assertDateEqual(
+          create('4pm', {
+            past: true,
+            timeZone: 'Pacific/Honolulu',
+          }),
+          new Date(2019, 11, 31, 21),
+        );
+        assertDateEqual(
+          create('4pm', {
+            future: true,
+            timeZone: 'Pacific/Honolulu',
+          }),
+          new Date(2020, 0, 1, 21),
+        );
+        mockTimeZone(-540); // GMT+09:00
+        assertDateEqual(
+          create('4pm', {
+            timeZone: 'Pacific/Honolulu',
+          }),
+          new Date(2020, 0, 2, 11),
+        );
+        assertDateEqual(
+          create('4pm', {
+            past: true,
+            timeZone: 'Pacific/Honolulu',
+          }),
+          new Date(2019, 11, 31, 11),
+        );
+        assertDateEqual(
+          create('4pm', {
+            future: true,
+            timeZone: 'Pacific/Honolulu',
+          }),
+          new Date(2020, 0, 2, 11),
+        );
+      });
+
     });
 
     describe('Custom DateTime Formats', () => {
@@ -2766,6 +2827,16 @@ describeNamespace('Date', () => {
         );
       });
 
+      it('should allow special characters with long month and year', () => {
+        assertDateEqual(
+          create('!March!2015!', {
+            cache: false,
+            dateTimeFormats: ['!<Month>!<year>!'],
+          }),
+          new Date(2015, 2)
+        );
+      });
+
       it('should allow hour, minute, and second parts', () => {
         assertDateEqual(
           create('12x12x12', {
@@ -2785,6 +2856,19 @@ describeNamespace('Date', () => {
           new Date(2010, 4, 23)
         );
       });
+
+      it('should not handle Issue #119', () => {
+        // This format is incompatible as without distinguishable
+        // tokens it collides with a full 4 digit year.
+        assertDateEqual(
+          create('0615', {
+            cache: false,
+            dateTimeFormats: ['<hour><minute>'],
+          }),
+          new Date(615, 0),
+        );
+      });
+
     });
 
     describe('Custom Relative Formats', () => {
@@ -3030,6 +3114,37 @@ describeNamespace('Date', () => {
         assertObjectEqual(relProps, {});
       });
 
+      it('should provide insight to parsing precision', () => {
+        let result;
+
+        result = create('tomorrow at 8:00pm', {
+          cache: false,
+          explain: true,
+        });
+        assertObjectEqual(result.specificity, {
+          unit: 'minute',
+          index: 5,
+        });
+
+        result = create('tomorrow at noon', {
+          cache: false,
+          explain: true,
+        });
+        assertObjectEqual(result.specificity, {
+          unit: 'hour',
+          index: 4,
+        });
+
+        result = create('the end of february', {
+          cache: false,
+          explain: true,
+        });
+        assertObjectEqual(result.specificity, {
+          unit: 'millisecond',
+          index: 7,
+        });
+      });
+
       it('should handle Issue #545', () => {
         const { absProps } = create('January 13th, 2016', {
           cache: false,
@@ -3059,6 +3174,7 @@ describeNamespace('Date', () => {
           index: 5,
         });
       });
+
     });
 
     describe('From Object', () => {
@@ -3185,6 +3301,20 @@ describeNamespace('Date', () => {
             timeZone: 'America/New_York',
           }),
           new Date(2020, 6, 1),
+        );
+      });
+
+      it('should be able to pass the timezone', () => {
+        mockTimeZone(300); // GMT-05:00
+        assertDateEqual(
+          create({
+            year: 2020,
+            month: 0,
+            date: 1,
+          }, {
+            timeZone: 'UTC',
+          }),
+          new Date(2019, 11, 31, 19)
         );
       });
 
@@ -9867,6 +9997,10 @@ describeNamespace('Number', () => {
       assertDateEqual(yearsBefore(-1, new Date(2020, 0)), new Date(2021, 0));
     });
 
+    it('should parse a string', () => {
+      assertDateEqual(yearsBefore(5, '2008'), new Date(2003, 0));
+    });
+
     it('should not modify the input date', () => {
       const date = new Date(2020, 0);
       yearsBefore(5, date);
@@ -9894,6 +10028,11 @@ describeNamespace('Number', () => {
       assertDateEqual(monthsBefore(-1, new Date(2020, 0)), new Date(2020, 1));
     });
 
+    it('should parse a string', () => {
+      assertDateEqual(monthsBefore(3, 'June'), new Date(2020, 2));
+      assertDateEqual(monthsBefore(5, 'today'), new Date(2019, 7, 1));
+    });
+
     it('should handle irregular input', () => {
       assertError(() => {
         monthsBefore();
@@ -9913,6 +10052,11 @@ describeNamespace('Number', () => {
       assertDateEqual(weeksBefore(0, new Date(2020, 0)), new Date(2020, 0));
       assertDateEqual(weeksBefore(1, new Date(2020, 0)), new Date(2019, 11, 25));
       assertDateEqual(weeksBefore(-1, new Date(2020, 0)), new Date(2020, 0, 8));
+    });
+
+    it('should parse a string', () => {
+      assertDateEqual(weeksBefore(2, 'Monday'), new Date(2019, 11, 16));
+      assertDateEqual(weeksBefore(5, 'today'), new Date(2019, 10, 27));
     });
 
     it('should handle irregular input', () => {
@@ -9936,6 +10080,11 @@ describeNamespace('Number', () => {
       assertDateEqual(daysBefore(-1, new Date(2020, 0)), new Date(2020, 0, 2));
     });
 
+    it('should parse a string', () => {
+      assertDateEqual(daysBefore(2, 'Monday'), new Date(2019, 11, 28));
+      assertDateEqual(daysBefore(5, 'last week monday'), new Date(2019, 11, 18));
+    });
+
     it('should handle irregular input', () => {
       assertError(() => {
         daysBefore();
@@ -9955,6 +10104,11 @@ describeNamespace('Number', () => {
       assertDateEqual(hoursBefore(0, new Date(2020, 0)), new Date(2020, 0));
       assertDateEqual(hoursBefore(1, new Date(2020, 0)), new Date(2019, 11, 31, 23));
       assertDateEqual(hoursBefore(-1, new Date(2020, 0)), new Date(2020, 0, 1, 1));
+    });
+
+    it('should parse a string', () => {
+      assertDateEqual(hoursBefore(2, 'Monday'), new Date(2019, 11, 29, 22));
+      assertDateEqual(hoursBefore(5, 'the first day of 2005'), new Date(2004, 11, 31, 19));
     });
 
     it('should handle irregular input', () => {
@@ -9978,6 +10132,11 @@ describeNamespace('Number', () => {
       assertDateEqual(minutesBefore(-1, new Date(2020, 0)), new Date(2020, 0, 1, 0, 1));
     });
 
+    it('should parse a string', () => {
+      assertDateEqual(minutesBefore(2, 'Monday'), new Date(2019, 11, 29, 23, 58));
+      assertDateEqual(minutesBefore(5, 'April 2nd, 1998'), new Date(1998, 3, 1, 23, 55));
+    });
+
     it('should handle irregular input', () => {
       assertError(() => {
         minutesBefore();
@@ -9997,6 +10156,10 @@ describeNamespace('Number', () => {
       assertDateEqual(secondsBefore(0, new Date(2020, 0)), new Date(2020, 0));
       assertDateEqual(secondsBefore(1, new Date(2020, 0)), new Date(2019, 11, 31, 23, 59, 59));
       assertDateEqual(secondsBefore(-1, new Date(2020, 0)), new Date(2020, 0, 1, 0, 0, 1));
+    });
+
+    it('should parse a string', () => {
+      assertDateEqual(secondsBefore(2, 'Monday'), new Date(2019, 11, 29, 23, 59, 58));
     });
 
     it('should handle irregular input', () => {
@@ -10023,6 +10186,10 @@ describeNamespace('Number', () => {
       assertDateEqual(millisecondsBefore(-1, new Date(2020, 0)), new Date(2020, 0, 1, 0, 0, 0, 1));
     });
 
+    it('should parse a string', () => {
+      assertDateEqual(millisecondsBefore(2, 'Monday'), new Date(2019, 11, 29, 23, 59, 59, 998));
+    });
+
     it('should handle irregular input', () => {
       assertError(() => {
         millisecondsBefore();
@@ -10042,6 +10209,10 @@ describeNamespace('Number', () => {
       assertDateEqual(yearsAfter(0, new Date(2020, 0)), new Date(2020, 0));
       assertDateEqual(yearsAfter(1, new Date(2020, 0)), new Date(2021, 0));
       assertDateEqual(yearsAfter(-1, new Date(2020, 0)), new Date(2019, 0));
+    });
+
+    it('should parse a string', () => {
+      assertDateEqual(yearsAfter(2, '2008'), new Date(2010, 0));
     });
 
     it('should not modify the input date', () => {
@@ -10071,6 +10242,11 @@ describeNamespace('Number', () => {
       assertDateEqual(monthsAfter(-1, new Date(2020, 0)), new Date(2019, 11));
     });
 
+    it('should parse a string', () => {
+      assertDateEqual(monthsAfter(2, 'June'), new Date(2020, 7));
+      assertDateEqual(monthsAfter(5, 'now'), new Date(2020, 5));
+    });
+
     it('should handle irregular input', () => {
       assertError(() => {
         monthsAfter();
@@ -10090,6 +10266,10 @@ describeNamespace('Number', () => {
       assertDateEqual(weeksAfter(0, new Date(2020, 0)), new Date(2020, 0));
       assertDateEqual(weeksAfter(1, new Date(2020, 0)), new Date(2020, 0, 8));
       assertDateEqual(weeksAfter(-1, new Date(2020, 0)), new Date(2019, 11, 25));
+    });
+
+    it('should parse a string', () => {
+      assertDateEqual(weeksAfter(5, 'now'), new Date(2020, 1, 5));
     });
 
     it('should handle irregular input', () => {
@@ -10113,6 +10293,11 @@ describeNamespace('Number', () => {
       assertDateEqual(daysAfter(-1, new Date(2020, 0)), new Date(2019, 11, 31));
     });
 
+    it('should parse a string', () => {
+      assertDateEqual(daysAfter(2, 'Friday'), new Date(2020, 0, 5));
+      assertDateEqual(daysAfter(5, 'next tuesday'), new Date(2020, 0, 12));
+    });
+
     it('should handle irregular input', () => {
       assertError(() => {
         daysAfter();
@@ -10132,6 +10317,12 @@ describeNamespace('Number', () => {
       assertDateEqual(hoursAfter(0, new Date(2020, 0)), new Date(2020, 0));
       assertDateEqual(hoursAfter(1, new Date(2020, 0)), new Date(2020, 0, 1, 1));
       assertDateEqual(hoursAfter(-1, new Date(2020, 0)), new Date(2019, 11, 31, 23));
+    });
+
+    it('should parse a string', () => {
+      assertDateEqual(hoursAfter(2, 'Friday'), new Date(2020, 0, 3, 2));
+      assertDateEqual(hoursAfter(5, 'the last day of 2006'), new Date(2006, 11, 31, 5));
+      assertDateEqual(hoursAfter(5, 'the end of 2006'), new Date(2007, 0, 1, 4, 59, 59, 999));
     });
 
     it('should handle irregular input', () => {
@@ -10155,6 +10346,11 @@ describeNamespace('Number', () => {
       assertDateEqual(minutesAfter(-1, new Date(2020, 0)), new Date(2019, 11, 31, 23, 59));
     });
 
+    it('should parse a string', () => {
+      assertDateEqual(minutesAfter(2, 'Friday'), new Date(2020, 0, 3, 0, 2));
+      assertDateEqual(minutesAfter(5, 'January 2nd, 2005'), new Date(2005, 0, 2, 0, 5));
+    });
+
     it('should handle irregular input', () => {
       assertError(() => {
         minutesAfter();
@@ -10176,6 +10372,10 @@ describeNamespace('Number', () => {
       assertDateEqual(secondsAfter(-1, new Date(2020, 0)), new Date(2019, 11, 31, 23, 59, 59));
     });
 
+    it('should parse a string', () => {
+      assertDateEqual(secondsAfter(2, 'Friday'), new Date(2020, 0, 3, 0, 0, 2));
+    });
+
     it('should handle irregular input', () => {
       assertError(() => {
         secondsAfter();
@@ -10191,31 +10391,35 @@ describeNamespace('Number', () => {
 
   describeInstance('millisecondAfter,millisecondsAfter', (msAfter) => {
 
-      it('should get the correct date', () => {
-        assertDateEqual(msAfter(0, new Date(2020, 0)), new Date(2020, 0));
-        assertDateEqual(
-          msAfter(1, new Date(2020, 0)),
-          new Date(2020, 0, 1, 0, 0, 0, 1)
-        );
-        assertDateEqual(
-          msAfter(-1, new Date(2020, 0)),
-          new Date(2019, 11, 31, 23, 59, 59, 999)
-        );
-      });
+    it('should get the correct date', () => {
+      assertDateEqual(msAfter(0, new Date(2020, 0)), new Date(2020, 0));
+      assertDateEqual(
+        msAfter(1, new Date(2020, 0)),
+        new Date(2020, 0, 1, 0, 0, 0, 1)
+      );
+      assertDateEqual(
+        msAfter(-1, new Date(2020, 0)),
+        new Date(2019, 11, 31, 23, 59, 59, 999)
+      );
+    });
 
-      it('should handle irregular input', () => {
-        assertError(() => {
-          msAfter();
-        });
-        assertError(() => {
-          msAfter(NaN);
-        });
-        assertError(() => {
-          msAfter(null);
-        });
+    it('should parse a string', () => {
+      assertDateEqual(msAfter(2, 'Friday'), new Date(2020, 0, 3, 0, 0, 0, 2));
+    });
+
+    it('should handle irregular input', () => {
+      assertError(() => {
+        msAfter();
       });
-    }
-  );
+      assertError(() => {
+        msAfter(NaN);
+      });
+      assertError(() => {
+        msAfter(null);
+      });
+    });
+
+  });
 
   describeInstance('duration', (duration) => {
 

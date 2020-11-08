@@ -1,6 +1,7 @@
 import { updateDate } from './update';
 import { advanceDate } from './shift';
 import { setWeekday } from './weekdays';
+import { setIANATimeZone } from './timeZone';
 import { setTimeZoneOffset } from './timeZone';
 import { resetByProps, resetByUnit } from './reset';
 import { isNaN, isString } from '../../util/typeChecks';
@@ -1332,7 +1333,7 @@ export default class LocaleParser {
       const { reg, groups } = format;
       const match = str.match(reg);
       if (match) {
-        const { past = false, future = false } = options;
+        const { past = false, future = false, timeZone } = options;
         const prefer = (-past + future);
         const origin = cloneDate(date);
         const absProps = {};
@@ -1378,14 +1379,21 @@ export default class LocaleParser {
 
         //console.info(reg, match, absProps, relProps);
 
+        if (timeZone) {
+          // Note that the time zone needs to be resolved here before applying
+          // a preference, as it needs to apply to the final result.
+          setIANATimeZone(date, timeZone);
+        }
+
         // Allow date to resolve before applying preference.
         if (prefer) {
           const delta = date - origin;
           if (prefer !== delta / Math.abs(delta)) {
             const unit = getAmbiguousUnit(absProps, relProps);
             if (unit) {
+              const mult = (Math.ceil(delta / getUnitMultiplier(unit)) || 1) * prefer;
               advanceDate(date, {
-                [unit]: prefer,
+                [unit]: mult,
               });
               // If an offset weekday has been set (ie. "the 2nd Friday of
               // November"), then advancing the date to accomodate a preference
