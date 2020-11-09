@@ -29,6 +29,29 @@ describe('ja-JP', () => {
         assertDateEqual(create('午後10時', 'ja'), new Date(2020, 0, 1, 22));
       });
 
+      it('should handle kabuki-cho', () => {
+        assertDateEqual(create('29時', 'ja'), new Date(2020, 0, 2, 5));
+      });
+
+      it('should handle hanidec months ', () => {
+        assertDateEqual(create('一月', 'ja'), new Date(2020, 0));
+        assertDateEqual(create('二月', 'ja'), new Date(2020, 1));
+        assertDateEqual(create('三月', 'ja'), new Date(2020, 2));
+        assertDateEqual(create('四月', 'ja'), new Date(2020, 3));
+        assertDateEqual(create('五月', 'ja'), new Date(2020, 4));
+        assertDateEqual(create('六月', 'ja'), new Date(2020, 5));
+        assertDateEqual(create('七月', 'ja'), new Date(2020, 6));
+        assertDateEqual(create('八月', 'ja'), new Date(2020, 7));
+        assertDateEqual(create('九月', 'ja'), new Date(2020, 8));
+        assertDateEqual(create('十月', 'ja'), new Date(2020, 9));
+        assertDateEqual(create('十一月', 'ja'), new Date(2020, 10));
+        assertDateEqual(create('十二月', 'ja'), new Date(2020, 11));
+      });
+
+      it('should handle hanidec dates', () => {
+        assertDateEqual(create('二十五日', 'ja'), new Date(2020, 0, 25));
+      });
+
     });
 
   });

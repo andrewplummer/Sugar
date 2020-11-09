@@ -1,3 +1,4 @@
+import { EN, UNITS } from './const';
 import { updateDate } from './update';
 import { advanceDate } from './shift';
 import { setWeekday } from './weekdays';
@@ -7,7 +8,6 @@ import { resetByProps, resetByUnit } from './reset';
 import { isNaN, isString } from '../../util/typeChecks';
 import { cloneDate } from '../../util/clone';
 import { getPropsPrecision, getAdjacentUnit, formatPartsForUnit, getUnitMultiplier } from './units';
-import { UNITS, EN } from './const';
 import { replaceLocaleNumerals } from './numerals';
 import { REG_ORDINALS, replaceOrdinals } from './ordinals';
 import { compileRegExpAlternates } from './regex';

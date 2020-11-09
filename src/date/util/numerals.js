@@ -1,3 +1,5 @@
+import { mapHanidec } from './cjk';
+
 export const ENGLISH_NUMERALS = [
   'zero',
   'one',
@@ -14,17 +16,16 @@ export const ENGLISH_NUMERALS = [
 
 const ENGLISH_HALF_REG = /(?:a )?half(?: an?)?/;
 
-const FULLWIDE = buildFormatMapper('fullwide');
+const mapFullWide = buildFormatMapper('fullwide');
 
-// Note that unit tokens in formats like 三百 etc, are not handled
-// here or accessible via Intl.NumberFormat, however this is acceptable
-// for the purposes of date parsing.
-const HANIDEC = buildFormatMapper('hanidec');
+// Note that although Intl provides access to hanidec tokens it
+// maps them in a very naive way (no unit placeholders like 十),
+// so need to use something more advanced here.
 
 const LANGUAGES = {
   'en': [mapEnglishNumerals, mapEnglishHalf],
-  'ja': [HANIDEC, FULLWIDE],
-  'zh': [HANIDEC],
+  'ja': [mapHanidec, mapFullWide],
+  'zh': [mapHanidec],
 };
 
 export function replaceLocaleNumerals(str, language) {

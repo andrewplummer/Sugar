@@ -11,35 +11,6 @@ namespace('Date | Japanese', function () {
 
   method('create', function() {
 
-    assertDateParsed('2011年5月15日', new Date(2011, 4, 15));
-    assertDateParsed('2016年2月02日', new Date(2016, 1, 2));
-    assertDateParsed('2011年5月', new Date(2011, 4));
-    assertDateParsed('5月15日', new Date(now.getFullYear(), 4, 15));
-    assertDateParsed('2011年', new Date(2011, 0));
-    assertDateParsed('2011年度', new Date(2011, 0));
-    assertDateParsed('5月', new Date(now.getFullYear(), 4));
-    assertDateParsed('15日', new Date(now.getFullYear(), now.getMonth(), 15));
-    assertDateParsed('月曜日', testGetWeekday(1));
-    assertDateParsed('月曜', testGetWeekday(1));
-    assertDateParsed('3時45分', new Date(now.getFullYear(), now.getMonth(), now.getDate(), 3, 45));
-    assertDateParsed('月曜日3時45分', testGetWeekday(1,0,3,45));
-
-    // Sorry Kabukicho
-    assertDateNotParsed('29時');
-
-    assertDateParsed('一月',   new Date(now.getFullYear(), 0));
-    assertDateParsed('二月',   new Date(now.getFullYear(), 1));
-    assertDateParsed('三月',   new Date(now.getFullYear(), 2));
-    assertDateParsed('四月',   new Date(now.getFullYear(), 3));
-    assertDateParsed('五月',   new Date(now.getFullYear(), 4));
-    assertDateParsed('六月',   new Date(now.getFullYear(), 5));
-    assertDateParsed('七月',   new Date(now.getFullYear(), 6));
-    assertDateParsed('八月',   new Date(now.getFullYear(), 7));
-    assertDateParsed('九月',   new Date(now.getFullYear(), 8));
-    assertDateParsed('十月',   new Date(now.getFullYear(), 9));
-    assertDateParsed('十一月', new Date(now.getFullYear(), 10));
-    assertDateParsed('十二月', new Date(now.getFullYear(), 11));
-
     assertDateParsed('千九百三十七年', new Date(1937, 0));
     assertDateParsed('二千十三年', new Date(2013, 0));
     assertDateParsed('一九九五年', new Date(1995, 0));
