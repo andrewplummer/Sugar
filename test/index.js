@@ -39,4 +39,5 @@ require('./tests/date');
 require('./tests/locales/en-US');
 require('./tests/locales/en-GB');
 require('./tests/locales/en-CA');
+require('./tests/locales/ja-JP');
 require('./tests/modules');

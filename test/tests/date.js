@@ -1428,6 +1428,7 @@ describeNamespace('Date', () => {
       it('should handle Issue #634', () => {
         assertDateEqual(create('10:'), new Date(2020, 0, 1, 10));
       });
+
     });
 
     describe('Relative formats', () => {

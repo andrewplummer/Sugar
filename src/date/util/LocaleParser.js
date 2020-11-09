@@ -7,16 +7,16 @@ import { resetByProps, resetByUnit } from './reset';
 import { isNaN, isString } from '../../util/typeChecks';
 import { cloneDate } from '../../util/clone';
 import { getPropsPrecision, getAdjacentUnit, formatPartsForUnit, getUnitMultiplier } from './units';
-import { UNITS } from './const';
+import { UNITS, EN } from './const';
 import { replaceLocaleNumerals } from './numerals';
 import { REG_ORDINALS, replaceOrdinals } from './ordinals';
 import { compileRegExpAlternates } from './regex';
 import { getWeekdaysInMonth } from './helpers';
+import { isCJK, getTimeMarker } from './cjk';
 
 // TODO: move methods back into class
 
 const NUM_TOKEN = 'NUM';
-const ENGLISH = 'en';
 
 // Parses positive or negative 4 digit years. Note that years
 // with greater digits are only parseable in ISO-8601 format.
@@ -136,11 +136,11 @@ export default class LocaleParser {
     //
     // - Explicit -> {am,pm} (type "long")
     // - Implied -> {am,pm} (type "implied")
-    // - Fixed -> {am,pm} (type "fixed")
+    // - Fixed -> {am,pm} (type "implied")
     // - Patch -> {at night,...} (type "long")
     // - Merged -> {
-    //     am: "fixed",
-    //     pm: "fixed",
+    //     am: "implied",
+    //     pm: "implied",
     //     at night: "long",
     //     ...
     //   }
@@ -149,10 +149,10 @@ export default class LocaleParser {
     //
     // - Explicit -> {at night,...} (type "long")
     // - Implied -> {am,pm} (type "implied")
-    // - Fixed -> {am,pm} (type "fixed")
+    // - Fixed -> {am,pm} (type "implied")
     // - Merged -> {
-    //     am: "fixed",
-    //     pm: "fixed",
+    //     am: "implied",
+    //     pm: "implied",
     //     at night: "long",
     //     ...
     //   }
@@ -161,10 +161,10 @@ export default class LocaleParser {
     //
     // - Explicit -> {午前,午後} (type "long")
     // - Implied -> {午前,午後} (type "implied")
-    // - Fixed -> {am,pm} (type "fixed")
+    // - Fixed -> {am,pm} (type "implied")
     // - Merged -> {
-    //     am: "fixed",
-    //     pm: "fixed",
+    //     am: "implied",
+    //     pm: "implied",
     //     午前: "implied",
     //     午後: "implied",
     //   }
@@ -173,10 +173,10 @@ export default class LocaleParser {
     //
     // - Explicit -> {夜中,...} (type "long")
     // - Implied -> {午前,午後} (type "implied")
-    // - Fixed -> {am,pm} (type "fixed")
+    // - Fixed -> {am,pm} (type "implied")
     // - Merged -> {
-    //     am: "fixed",
-    //     pm: "fixed",
+    //     am: "implied",
+    //     pm: "implied",
     //     午前: "implied",
     //     午後: "implied",
     //     夜中: "long",
@@ -380,6 +380,18 @@ export default class LocaleParser {
       });
     }
 
+    // - 15日 (ja-JP)
+    // - 15일 (ko-KR)
+    //
+    // CJK locales allow a day marker that can identify a standalone
+    // date, otherwise this will resolve to a single digit which should
+    // not be allowed.
+    if (isCJK(this.language)) {
+      this.buildIntlFormat({
+        day: 'numeric',
+      });
+    }
+
     // - Thursday October 8th 2020 (GMT+05:00)
     // - Thursday October 8th 2020
     // - Thu October 8, 2020
@@ -554,7 +566,7 @@ export default class LocaleParser {
           } else if (type === 'day') {
             type = 'date';
             const monthPart = findPart(parts, 'month');
-            if (this.language === ENGLISH && !this.isNumericPart(monthPart)) {
+            if (this.language === EN && !this.isNumericPart(monthPart)) {
               // English only: "1st", "2nd", etc.
               src += `(\\d{1,2}|(?:${REG_ORDINALS}))`;
               resolver = resolveOrdinal;
@@ -576,7 +588,7 @@ export default class LocaleParser {
             src += `(${REG_SEC})`;
             resolver = resolveFraction;
           } else if (type === 'dayPeriod') {
-            src += `(${this.getDayPeriodSource()})`;
+            src += `(${this.getDayPeriodSource('implied|long')})`;
             resolver = this.resolveDayPeriod;
           } else if (type === 'timeZoneName') {
             src += `(${REG_ZONE})?`;
@@ -673,25 +685,60 @@ export default class LocaleParser {
       type: 'dayPeriod',
       resolver: this.resolveDayPeriod,
     };
-    let src;
     let groups = [
       hourGroup,
       minuteGroup,
       secondGroup,
     ];
+
+    // Begin by looking ahead to ensure the string
+    // doesn't end to avoid matching an empty string.
+    let src = '(?!$)';
+
     if (this.partOrderMatches('hour', 'dayPeriod')) {
-      const dpf = this.getDayPeriodSource('implied');
+
+      // Day period last means that "10pm" or "10:00" may match
+      // with optional minutes and seconds. To match a standalone
+      // long dayPeriod like "noon", all parts must be optional,
+      // however to avoid matching a single integer, lookahead to
+      // ensure a non-digit.
+
+      // "implied" day period "am/pm".
+      const dpi = this.getDayPeriodSource('implied');
+
+      // "long" day period "noon", etc. May occur after an implied
+      // day period. These are not guaranteed to exist depending on
+      // on the environment.
       const dpl = this.getDayPeriodSource('long');
-      const dp = `(?:\\s?(${dpf}))?(?:\\s?(${dpl}))?`;
-      src = `(?!$)(${REG_HOUR}(?=\\D))?(?::(${REG_MIN})?)?(?::(${REG_SEC}))?${dp}`;
+
+      src += `(?:(${REG_HOUR})(?=\\D))?`;
+      src += `(?::(${REG_MIN})?)?`;
+      src += `(?::(${REG_SEC}))?`;
+      src += `\\s?(${dpi})?`;
+      src += dpl ? `\\s?(${dpl})?` : '';
+
       groups = [
         ...groups,
         dayPeriodGroup,
-        dayPeriodGroup,
+        ...dpl ? [dayPeriodGroup] : [],
       ];
     } else {
-      const dp = this.getDayPeriodSource();
-      src = `(${dp})?(${REG_HOUR})(?::(${REG_MIN}))?(?::(${REG_SEC}))?`;
+
+      // Day period first must match either implied or long day periods
+      // first such as 午後10時 or 夜10時.
+
+      // "implied" day period "am/pm" or "long" day period "noon" etc.
+      const dp = this.getDayPeriodSource('implied|long');
+
+      const hourMarker = this.getTimeMarker('hour');
+      const minMarker = this.getTimeMarker('minute');
+      const secMarker = this.getTimeMarker('second');
+
+      src += `(${dp})?`;
+      src += `(${REG_HOUR})[${hourMarker}:]`;
+      src += `(?:(${REG_MIN})[${minMarker}:]?)?`;
+      src += `(?:(${REG_SEC})[${secMarker}]?)?`;
+
       groups = [
         dayPeriodGroup,
         ...groups,
@@ -731,6 +778,10 @@ export default class LocaleParser {
     const part1 = findPart(parts, type1);
     const part2 = findPart(parts, type2);
     return parts.indexOf(part1) < parts.indexOf(part2);
+  }
+
+  getTimeMarker(unit) {
+    return getTimeMarker(unit, this.language, this.locale);
   }
 
   collapseTimeParts(parts) {
@@ -1069,7 +1120,6 @@ export default class LocaleParser {
     // Offset units such as "the day after tomorrow", etc.
     return (date, { relProps }) => {
       let [num, unit, dir] = str.split(' ');
-      num = replaceLocaleNumerals(num, this.language);
       num = parseFloat(num) || 1;
       unit = unit.replace(/s$/, '');
       num *= dir === 'before' ? -1 : 1;
@@ -1199,7 +1249,6 @@ export default class LocaleParser {
       // Non-fixed phrases such as "5 days from now" require normalizing
       // the phrase and parsing the value from the matched string, then applying
       // the implied direction, such as -1 for "ago", etc.
-      str = replaceLocaleNumerals(str, this.language);
       str = str.replace(MATCH_FLOAT, (match) => {
         value = match;
         return NUM_TOKEN;
@@ -1329,6 +1378,11 @@ export default class LocaleParser {
     // string so that tokens are correctly matched.
     str = str.trim().toLowerCase();
 
+    // Normalize locale based numerals such as "一二三",
+    // full width numerals, or "one, two" etc in English
+    // as a special case.
+    str = replaceLocaleNumerals(str, this.language);
+
     for (let format of this.formats) {
       const { reg, groups } = format;
       const match = str.match(reg);
@@ -1377,7 +1431,7 @@ export default class LocaleParser {
           });
         }
 
-        //console.info(reg, match, absProps, relProps);
+        //console.info(reg, match, groups, absProps, relProps);
 
         if (timeZone) {
           // Note that the time zone needs to be resolved here before applying
@@ -1662,7 +1716,7 @@ function getTwoDigitYear(year, date, prefer) {
 }
 
 const ALTERNATE_RELATIVE_FORMATS = {
-  [ENGLISH]: [
+  [EN]: [
     (value, unit) => {
       if (value >= 0) {
         const s = value !== 1 ? 's' : '';
@@ -1692,7 +1746,7 @@ const ALTERNATE_DATETIME_FORMATS = {
     // .NET Alternate JSON Date format. Yes, this looks ridiculous.
     '\\\\\\/Date\\(<timestamp>(?:[-+]\\d{4})?\\)\\\\\\/',
   ],
-  [ENGLISH]: [
+  [EN]: [
     // English locales should not force ambiguous numeric format (8/10 vs 10/8),
     // however they should be able to disambiguate the month when it is
     // non-numeric. Ambiguous formats will be handled individually by Intl
@@ -1738,7 +1792,7 @@ const DAY_PERIODS = {
   // These will no longer be required when explicit dayPeriod format lands
   // with the exception of "midnight" which is still not handled as an
   // explicit dayPeriod. TRACK: https://github.com/tc39/ecma402/pull/346
-  [ENGLISH]: {
+  [EN]: {
     'noon': {
       value: 12,
       type: 'long',
@@ -1767,7 +1821,7 @@ const DAY_PERIODS = {
 };
 
 const TOKEN_ALIASES = {
-  [ENGLISH]: {
+  [EN]: {
     sept: 'sep',
     tues: 'tue',
     thurs: 'thu',
