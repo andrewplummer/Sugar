@@ -37,20 +37,33 @@ export function mapHanidec(str) {
   return str.replace(HANIDEC_REG, (num) => {
     let sum = 0;
     let place = 1;
+    let hold;
     for (let i = num.length - 1; i >= 0; i--) {
       const char = num.charAt(i);
-      const val = HANIDEC_MAP[char];
+      let val = HANIDEC_MAP[char];
       if (val > 0 && val % 10 === 0) {
-        place = val;
-        sum += place;
-      } else if (place > 1) {
-        sum += (val - 1) * place;
-      } else {
         sum += val;
+        place = val;
+        hold = true;
+      } else {
+        sum += (val - (hold ? 1 : 0)) * place;
+        place *= 10;
+        hold = false;
       }
     }
     return String(sum);
   });
+}
+
+export function mapNormalize(str) {
+
+  // Normalize "ヶ月" and "ヵ月" to "か月" to match Intl.
+  str = str.replace(/[ヶヵ]/g, 'か');
+
+  // Normalize no space before relative unit to fix RelativeTimeFormat bug.
+  str = str.replace(/(\d+)(秒|分|時間|日|週間|か月|年)(前|後)/g, '$1 $2$3');
+
+  return str;
 }
 
 // CJK time markers are not reliably accessible through Intl,

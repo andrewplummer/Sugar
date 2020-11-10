@@ -11,45 +11,6 @@ namespace('Date | Japanese', function () {
 
   method('create', function() {
 
-    assertDateParsed('千九百三十七年', new Date(1937, 0));
-    assertDateParsed('二千十三年', new Date(2013, 0));
-    assertDateParsed('一九九五年', new Date(1995, 0));
-    assertDateParsed('二千三年', new Date(2003, 0));
-    assertDateParsed('二千年', new Date(2000, 0));
-
-    assertDateParsed('一日',     new Date(now.getFullYear(), now.getMonth(), 1));
-    assertDateParsed('二日',     new Date(now.getFullYear(), now.getMonth(), 2));
-    assertDateParsed('三日',     new Date(now.getFullYear(), now.getMonth(), 3));
-    assertDateParsed('四日',     new Date(now.getFullYear(), now.getMonth(), 4));
-    assertDateParsed('五日',     new Date(now.getFullYear(), now.getMonth(), 5));
-    assertDateParsed('六日',     new Date(now.getFullYear(), now.getMonth(), 6));
-    assertDateParsed('七日',     new Date(now.getFullYear(), now.getMonth(), 7));
-    assertDateParsed('八日',     new Date(now.getFullYear(), now.getMonth(), 8));
-    assertDateParsed('九日',     new Date(now.getFullYear(), now.getMonth(), 9));
-    assertDateParsed('十日',     new Date(now.getFullYear(), now.getMonth(), 10));
-    assertDateParsed('十五日',   new Date(now.getFullYear(), now.getMonth(), 15));
-    assertDateParsed('二十五日', new Date(now.getFullYear(), now.getMonth(), 25));
-
-    assertDateParsed('一ミリ秒前', getRelativeDate(0,0,0,0,0,0,-1));
-    assertDateParsed('一秒前',     getRelativeDate(0,0,0,0,0,-1));
-    assertDateParsed('一分前',     getRelativeDate(0,0,0,0,-1));
-    assertDateParsed('一時間前',   getRelativeDate(0,0,0,-1));
-    assertDateParsed('一日前',     getRelativeDate(0,0,-1));
-    assertDateParsed('一週間前',   getRelativeDate(0,0,-7));
-    assertDateParsed('一ヶ月前',   getRelativeDate(0,-1));
-    assertDateParsed('一ヵ月前',   getRelativeDate(0,-1));
-    assertDateParsed('一年前',     getRelativeDate(-1));
-
-    assertDateParsed('2ミリ秒前', getRelativeDate(0,0,0,0,0,0,-2));
-    assertDateParsed('2秒前',     getRelativeDate(0,0,0,0,0,-2));
-    assertDateParsed('2分前',     getRelativeDate(0,0,0,0,-2));
-    assertDateParsed('2時間前',   getRelativeDate(0,0,0,-2));
-    assertDateParsed('2日前',     getRelativeDate(0,0,-2));
-    assertDateParsed('2週間前',   getRelativeDate(0,0,-14));
-    assertDateParsed('2ヶ月前',   getRelativeDate(0,-2));
-    assertDateParsed('2ヵ月前',   getRelativeDate(0,-2));
-    assertDateParsed('2年前',     getRelativeDate(-2));
-
     assertDateParsed('5ミリ秒後', getRelativeDate(0,0,0,0,0,0,5));
     assertDateParsed('5秒後',     getRelativeDate(0,0,0,0,0,5));
     assertDateParsed('5分後',     getRelativeDate(0,0,0,0,5));
