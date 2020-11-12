@@ -24,7 +24,7 @@ const mapFullWide = buildFormatMapper('fullwide');
 
 const LANGUAGES = {
   'en': [mapEnglishNumerals, mapEnglishHalf],
-  'ja': [mapHanidec, mapNormalize, mapFullWide],
+  'ja': [mapHanidec, mapFullWide, mapNormalize],
   'zh': [mapHanidec],
 };
 

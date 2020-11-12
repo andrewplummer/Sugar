@@ -103,6 +103,7 @@ export default class LocaleParser {
     this.buildTimeFormat();
     this.buildNumericFormat();
     this.buildIntlFormats();
+    this.buildRelativeFormats();
     this.buildAlternateFormats();
   }
 
@@ -313,6 +314,7 @@ export default class LocaleParser {
     // - 2020 BC
     // - 2020年
     this.buildIntlFormat({
+      era: 'long',
       year: 'numeric',
     });
 
@@ -320,6 +322,7 @@ export default class LocaleParser {
     // - October 2020 BC
     // - 2020年10月
     this.buildIntlFormat({
+      era: 'long',
       year: 'numeric',
       month: 'long',
     });
@@ -330,6 +333,7 @@ export default class LocaleParser {
     // - 8 October, 2020
     // - 2020年10月8日
     this.buildIntlFormat({
+      era: 'long',
       year: 'numeric',
       month: 'long',
       day: 'numeric',
@@ -422,8 +426,47 @@ export default class LocaleParser {
     });
   }
 
+  buildRelativeFormats() {
+    this.buildIntlRelativeFormat({
+      month: 'long'
+    }, {
+      day: 'numeric'
+    });
+    this.buildIntlRelativeFormat({
+      year: 'numeric'
+    }, {
+      month: 'long'
+    });
+    this.buildIntlRelativeFormat({
+      year: 'numeric'
+    }, {
+      month: 'long',
+      day: 'numeric',
+    });
+  }
+
+  buildIntlRelativeFormat(relOptions, absOptions) {
+    const parts = this.getIntlParts({
+      ...relOptions,
+      ...absOptions,
+    });
+    let lastRel;
+    for (let part of parts) {
+      const { type } = part;
+      if (type in relOptions) {
+        part.relative = true;
+        part.style = PHRASE_TYPE_FIXED;
+        lastRel = true;
+      } else if (lastRel && type === 'literal') {
+        part.value = part.value.replace(/\S+/, '');
+        lastRel = false;
+      }
+    }
+    this.buildFormat(this.getComponentFromParts(parts));
+  }
+
   buildIntlFormat(options) {
-    this.buildFormat(this.getIntlComponent(this.locale, options));
+    this.buildFormat(this.getIntlComponent(options));
   }
 
   buildTimeFormat() {
@@ -452,11 +495,11 @@ export default class LocaleParser {
     }
   }
 
-  getIntlComponent(locale, options) {
-    return this.getComponentFromParts(this.getIntlParts(locale, options), true);
+  getIntlComponent(options) {
+    return this.getComponentFromParts(this.getIntlParts(options));
   }
 
-  getIntlParts(locale, options) {
+  getIntlParts(options) {
     // If a day is specified in the format then add "hour" which will be
     // collapsed into an optional time format in the resulting component.
     if ('day' in options || 'weekday' in options) {
@@ -466,16 +509,12 @@ export default class LocaleParser {
         minute: 'numeric',
       };
     }
-    // Add era component ("bc/ad") when there is no month (ie. 2000 BC) or
-    // if the month is long. Numeric formats should not allow this.
-    if ('year' in options && options.month !== 'numeric') {
-      options = {
-        ...options,
-        era: 'long',
-      };
-    }
-    const formatter = new Intl.DateTimeFormat(locale, options);
-    return formatter.formatToParts().map((part) => {
+
+    const formatter = new Intl.DateTimeFormat(this.locale, options);
+
+    let parts = formatter.formatToParts();
+
+    parts = parts.map((part) => {
       const { type, value } = part;
       const style = options[type];
 
@@ -491,16 +530,17 @@ export default class LocaleParser {
         optional,
       };
     });
+
+    // Native Intl formats should collapse time parts to allow parsing a
+    // variety of times ("10pm", "10:30pm", "10:30", etc.). Custom formats are
+    // instead provided a <time> token, so do not collapse as they may be
+    // intentionally trying to match time components here.
+    parts = this.collapseTimeParts(parts);
+
+    return parts;
   }
 
-  getComponentFromParts(parts, collapse) {
-    if (collapse) {
-      // Native Intl formats should collapse time parts to allow parsing a
-      // variety of times ("10pm", "10:30pm", "10:30", etc.). Custom formats are
-      // instead provided a <time> token, so do not collapse as they may be
-      // intentionally trying to match time components here.
-      parts = this.collapseTimeParts(parts);
-    }
+  getComponentFromParts(parts) {
 
     let src = '';
     let groups = [];
@@ -536,9 +576,9 @@ export default class LocaleParser {
       } else {
         let resolver;
         if (relative) {
-          const { phraseType } = part;
+          const { style } = part;
           resolver = this.resolveRelativePhrase;
-          src += `(${this.getRelativePhraseSource(type, phraseType)})`;
+          src += `(${this.getRelativePhraseSource(type, style)})`;
         } else {
           if (type === 'year') {
             // Generic year token may be allowed to be 2-digits without an
@@ -805,7 +845,9 @@ export default class LocaleParser {
         ...parts.slice(endIndex + 1),
       ];
     }
-    // Also make literals surrounding optional parts optional themselves.
+
+    // Make whitespace optional in literal
+    // parts adjacent to optional parts.
     parts.forEach((part, i) => {
       if (this.isLiteralPart(part)) {
         const last = parts[i - 1];
@@ -934,7 +976,7 @@ export default class LocaleParser {
   buildRelativeUnitPhrases(set, unit, relUnit) {
     const type = PHRASE_TYPE_FIXED;
     const reg = RegExp(this.getUnits(relUnit).join('|'));
-    for (let phrase of this.getRelativePhrases(relUnit, PHRASE_TYPE_FIXED)) {
+    for (let phrase of this.getRelativePhrases(relUnit, type)) {
       const { value: relValue } = this.relativePhrases[phrase];
       for (let token of this.getTokens(set, 'long|custom')) {
         const { value } = set[token];
@@ -1301,17 +1343,19 @@ export default class LocaleParser {
         if (isToken) {
           let type = buffer;
           let style = 'numeric';
-          let phraseType;
           let relative = false;
           let optional = false;
           type = type.replace(/\b[A-Z]/g, (str) => {
             style = 'long';
             return str.toLowerCase();
           });
-          type = type.replace(/(any )?relative (.+)/, (str, any, unit) => {
-            phraseType = any ? null : 'fixed';
+          type = type.replace(/(\w+)?\s?relative (.+)/, (str, type, unit) => {
             relative = true;
-            style = 'long';
+            if (type === 'any') {
+              style = null;
+            } else {
+              style = type || PHRASE_TYPE_FIXED;
+            }
             return unit === 'unit' ? '' : unit;
           });
           type = type.replace(/\?$/, () => {
@@ -1324,7 +1368,6 @@ export default class LocaleParser {
             style,
             optional,
             relative,
-            phraseType,
           });
         } else {
           parts.push({
@@ -1729,14 +1772,12 @@ const ALTERNATE_RELATIVE_FORMATS = {
 const ALTERNATE_DATETIME_FORMATS = {
   default: [
     // TODO: go through formats and check they're matching what we think they should
-    '<weekday><time?>',
-    '<time?><weekday>',
     // "last year", "this month", "next week", "1 minute ago", "now", etc.
     '<any relative unit>',
     // "10am tomorrow", "10:30pm in 5 days", etc.
-    '<time?><any relative day>',
+    '(?:<weekday>|<any relative day>)<time?>',
     // "today at 10am"
-    '<any relative day><time?>',
+    '<time?>(?:<weekday>|<any relative day>)',
     // "next week Friday at 10:30pm" etc.
     '<relative week> <weekday><time?>',
     // All locales should parse an unambiguous numeric DateTime with

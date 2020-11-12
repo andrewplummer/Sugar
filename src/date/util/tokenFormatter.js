@@ -152,7 +152,7 @@ const TOKEN_RESOLVERS = {
       return value;
     },
     resolveOptions: () => {
-      return { hour: 'numeric' };
+      return { hour: 'numeric', hourCycle: 'h12' };
     },
   }),
   ...getIntlResolvers('hh,HH,kk,KK', {

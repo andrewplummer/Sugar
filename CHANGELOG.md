@@ -223,6 +223,8 @@ call `Function#lock` first in the chain to achieve the same effect.
 - Changed unit aliases like `Date#yearsSince` and `Date#yearsUntil` to be
     `Date#yearsBefore` and `Date#yearsAfter` for better comprehension and parity
     with number aliases of the same name.
+- Date parsing now only handles edge tokens ("end of January" etc) for English as
+    a special case as these tokens are not exposed via Intl.
 
 TODO:
 

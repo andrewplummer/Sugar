@@ -31,7 +31,7 @@ const HANIDEC_MAP = {
   '千': 1000,
 };
 
-const HANIDEC_REG = /[零一二三四五六七八九十百千]+/g;
+const HANIDEC_REG = /[零一二三四五六七八九十百千]+(?!昨)/g;
 
 export function mapHanidec(str) {
   return str.replace(HANIDEC_REG, (num) => {
@@ -66,8 +66,8 @@ export function mapNormalize(str) {
   return str;
 }
 
-// CJK time markers are not reliably accessible through Intl,
-// so manually providing them here.
+// CJK time markers are not reliably accessible
+// through Intl, so manually providing them here.
 export function getTimeMarker(unit, language, locale) {
   const markers = TIME_MARKERS[locale] || TIME_MARKERS[language];
   if (markers) {

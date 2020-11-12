@@ -8040,11 +8040,11 @@ describeNamespace('Date', () => {
 
   describeInstance('format', (format) => {
 
-    it('should use datetime long format with no arguments', () => {
-      assertEqual(format(new Date(2020, 0)), 'January 1, 2020, 12:00 AM');
+    it('should use same default format as Intl with no arguments', () => {
+      assertEqual(format(new Date(2020, 0)), '1/1/2020');
       assertEqual(
         format(new Date(2020, 6, 11, 23, 30, 30)),
-        'July 11, 2020, 11:30 PM'
+        '7/11/2020'
       );
     });
 
@@ -8541,18 +8541,12 @@ describeNamespace('Date', () => {
         assertEqual(format(new Date(2020, 11, 1), 'MMMMM'), 'D');
 
         assertEqual(
-          format(new Date(2020, 7), {
-            format: 'MMMM',
-            locale: 'ru',
-          }),
+          format(new Date(2020, 7), 'MMMM', 'ru'),
           'августа'
         );
 
         assertEqual(
-          format(new Date(2020, 7), {
-            format: 'MMMM月',
-            locale: 'ja',
-          }),
+          format(new Date(2020, 7), 'MMMM月', 'ja'),
           '8月'
         );
       });
@@ -8574,26 +8568,17 @@ describeNamespace('Date', () => {
         assertEqual(format(new Date(2020, 11, 1), 'LLLLL'), 'D');
 
         assertEqual(
-          format(new Date(2020, 7), {
-            format: 'LLLL',
-            locale: 'ru',
-          }),
+          format(new Date(2020, 7), 'LLLL', 'ru'),
           'август'
         );
 
         assertEqual(
-          format(new Date(2020, 7), {
-            format: 'LLLL月',
-            locale: 'ja',
-          }),
+          format(new Date(2020, 7), 'LLLL月', 'ja'),
           '8月'
         );
 
         assertEqual(
-          format(new Date(2020, 7), {
-            format: 'LLLLL',
-            locale: 'ko',
-          }),
+          format(new Date(2020, 7), 'LLLLL', 'ko'),
           '8월'
         );
       });
@@ -8661,10 +8646,7 @@ describeNamespace('Date', () => {
         assertEqual(format(new Date(2020, 0, 3), 'EEEEE'), 'F');
 
         assertEqual(
-          format(new Date(2020, 0), {
-            format: 'EEEE',
-            locale: 'fi',
-          }),
+          format(new Date(2020, 0), 'EEEE', 'fi'),
           'keskiviikkona'
         );
       });
@@ -8691,10 +8673,7 @@ describeNamespace('Date', () => {
         assertEqual(format(new Date(2020, 0, 3), 'ccccc'), 'F');
 
         assertEqual(
-          format(new Date(2020, 0), {
-            format: 'cccc',
-            locale: 'fi',
-          }),
+          format(new Date(2020, 0), 'cccc', 'fi'),
           'keskiviikko'
         );
       });
@@ -8919,79 +8898,63 @@ describeNamespace('Date', () => {
 
     describe('complex formatting with an options object', () => {
 
-      it('should accept a locale option', () => {
+      it('should accept an alias and locale together', () => {
         assertEqual(
-          format(new Date(2020, 0), {
-            locale: 'ja',
-          }),
-          new Intl.DateTimeFormat('ja').format(new Date(2020, 0))
+          format(new Date(2020, 0), Sugar.Date.DATE_FULL, 'ja'),
+          '2020年1月1日水曜日'
         );
       });
 
-      it('should accept a formatOptions object', () => {
+      it('should accept a format options object', () => {
         assertEqual(
           format(new Date(2020, 0), {
-            formatOptions: {
               year: 'numeric',
               month: 'long',
-            },
           }),
           'January 2020'
         );
       });
 
-      it('should accept locale and formatOptions together', () => {
+      it('should accept a format options and locale together', () => {
         assertEqual(
           format(new Date(2020, 0), {
-            locale: 'ja',
-            formatOptions: {
-              year: 'numeric',
-              month: 'long',
-            },
-          }),
+            year: 'numeric',
+            month: 'long',
+          }, 'ja'),
           '2020年1月'
         );
       });
 
-      it('should accept a formatter option', () => {
+      it('should accept a formatter', () => {
         assertEqual(
-          format(new Date(2020, 0), {
-            formatter: new Intl.DateTimeFormat('en', {
+          format(new Date(2020, 0),
+            new Intl.DateTimeFormat('en', {
               weekday: 'long',
               hour: 'numeric',
             }),
-          }),
+          ),
           'Wednesday, 12 AM'
-        );
-      });
-
-      it('should accept format shorcuts with an overriding locale', () => {
-        assertEqual(
-          format(new Date(2020, 0), {
-            locale: 'ja',
-            formatOptions: Sugar.Date.DATE_FULL,
-          }),
-          '2020年1月1日水曜日'
         );
       });
 
       it('should be equivalent to toLocaleString with locale and shortcut', () => {
         assertEqual(
-          format(new Date(2020, 0), {
-            locale: 'ja',
-            formatOptions: Sugar.Date.DATE_FULL,
-          }),
+          format(new Date(2020, 0), Sugar.Date.DATE_FULL, 'ja'),
           new Date(2020, 0).toLocaleString('ja', Sugar.Date.DATE_FULL)
         );
       });
 
       it('should be able to tokenize with an overriding locale', () => {
         assertEqual(
-          format(new Date(2020, 0), {
-            locale: 'ja',
-            format: 'MMMM月',
-          }),
+          format(new Date(2020, 0), 'MMMM月', 'ja'),
           '1月'
+        );
+      });
+
+      it('should accept a locale option with no options', () => {
+        assertEqual(
+          format(new Date(2020, 0), null, 'ja'),
+          '2020/1/1'
         );
       });
 
