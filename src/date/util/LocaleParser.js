@@ -8,7 +8,7 @@ import { resetByProps, resetByUnit } from './reset';
 import { isNaN, isString } from '../../util/typeChecks';
 import { cloneDate } from '../../util/clone';
 import { getPropsPrecision, getAdjacentUnit, formatPartsForUnit, getUnitMultiplier } from './units';
-import { replaceLocaleNumerals } from './numerals';
+import { localeNormalize } from './normalization';
 import { REG_ORDINALS, replaceOrdinals } from './ordinals';
 import { compileRegExpAlternates } from './regex';
 import { getWeekdaysInMonth } from './helpers';
@@ -906,6 +906,7 @@ export default class LocaleParser {
             let str = formatter.format(num, unit);
             if (str) {
               let type = formatType;
+              str = localeNormalize(str, this.language);
               str = str.replace(MATCH_INTEGER, () => {
                 // Override type here if the format contains a digit to be
                 // "numeric" as "auto" format may still return numbers.
@@ -1424,7 +1425,7 @@ export default class LocaleParser {
     // Normalize locale based numerals such as "一二三",
     // full width numerals, or "one, two" etc in English
     // as a special case.
-    str = replaceLocaleNumerals(str, this.language);
+    str = localeNormalize(str, this.language);
 
     for (let format of this.formats) {
       const { reg, groups } = format;

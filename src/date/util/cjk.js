@@ -11,10 +11,6 @@ const TIME_MARKERS = {
   [KO]: '시분초',
 };
 
-export function isCJK(language) {
-  return CJK_LANGUAGES.includes(language);
-}
-
 const HANIDEC_MAP = {
   '零': 0,
   '一': 1,
@@ -32,6 +28,10 @@ const HANIDEC_MAP = {
 };
 
 const HANIDEC_REG = /[零一二三四五六七八九十百千]+(?!昨)/g;
+
+export function isCJK(language) {
+  return CJK_LANGUAGES.includes(language);
+}
 
 export function mapHanidec(str) {
   return str.replace(HANIDEC_REG, (num) => {
@@ -55,14 +55,19 @@ export function mapHanidec(str) {
   });
 }
 
-export function mapNormalize(str) {
-
+export function jaNormalize(str) {
   // Normalize "ヶ月" and "ヵ月" to "か月" to match Intl.
   str = str.replace(/[ヶヵ]/g, 'か');
 
   // Normalize no space before relative unit to fix RelativeTimeFormat bug.
   str = str.replace(/(\d+)(秒|分|時間|日|週間|か月|年)(前|後)/g, '$1 $2$3');
 
+  return str;
+}
+
+export function koNormalize(str) {
+  // Normalize as spacing mistakes are common here.
+  str = str.replace(/(이번|다움|지난)(\S)/g, '$1 $2');
   return str;
 }
 

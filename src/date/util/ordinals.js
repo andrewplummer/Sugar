@@ -1,5 +1,5 @@
 import { compileRegExpAlternates } from './regex';
-import { ENGLISH_NUMERALS } from './numerals';
+import { ENGLISH_NUMERALS } from './normalization';
 
 function buildEnglishOrdinals() {
   return [

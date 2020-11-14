@@ -37,6 +37,16 @@ describe('ja-JP', () => {
         assertDateEqual(create('5月15日 3:45:59', 'ja'), new Date(2020, 4, 15, 3, 45, 59));
       });
 
+      it('should parse weekdays', () => {
+        assertDateEqual(create('日曜日', 'ja'), new Date(2019, 11, 29));
+        assertDateEqual(create('月曜日', 'ja'), new Date(2019, 11, 30));
+        assertDateEqual(create('火曜日', 'ja'), new Date(2019, 11, 31));
+        assertDateEqual(create('水曜日', 'ja'), new Date(2020, 0, 1));
+        assertDateEqual(create('木曜日', 'ja'), new Date(2020, 0, 2));
+        assertDateEqual(create('金曜日', 'ja'), new Date(2020, 0, 3));
+        assertDateEqual(create('土曜日', 'ja'), new Date(2020, 0, 4));
+      });
+
       it('should parse standalone units', () => {
         assertDateEqual(create('2011年', 'ja'), new Date(2011, 0));
         assertDateEqual(create('15日', 'ja'), new Date(2020, 0, 15));

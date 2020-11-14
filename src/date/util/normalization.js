@@ -1,4 +1,4 @@
-import { mapHanidec, mapNormalize } from './cjk';
+import { mapHanidec, jaNormalize, koNormalize } from './cjk';
 
 export const ENGLISH_NUMERALS = [
   'zero',
@@ -24,11 +24,12 @@ const mapFullWide = buildFormatMapper('fullwide');
 
 const LANGUAGES = {
   'en': [mapEnglishNumerals, mapEnglishHalf],
-  'ja': [mapHanidec, mapFullWide, mapNormalize],
+  'ja': [mapHanidec, mapFullWide, jaNormalize],
   'zh': [mapHanidec],
+  'ko': [koNormalize],
 };
 
-export function replaceLocaleNumerals(str, language) {
+export function localeNormalize(str, language) {
   const mappers = LANGUAGES[language] || [];
   for (let mapper of mappers) {
     str = mapper(str);
