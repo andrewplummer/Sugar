@@ -136,7 +136,8 @@ declare namespace sugarjs {
       findIndex<T>(instance: T[], search: T|searchFn<T>, context?: any): number;
       findIndexFromIndex<T>(instance: T[], startIndex: number, loop?: boolean, ...args: any[]): T;
       findIndexFromIndex<T>(instance: T[], startIndex: number, ...args: any[]): T;
-      first<T>(instance: T[], num?: number): T;
+      first<T>(instance: T[]): T;
+      first<T>(instance: T[], num: number): T[];
       flatten<T>(instance: T[], limit?: number): T[];
       forEachFromIndex<T>(instance: T[], startIndex: number, loop?: boolean, ...args: any[]): T;
       forEachFromIndex<T>(instance: T[], startIndex: number, ...args: any[]): T;
@@ -148,7 +149,8 @@ declare namespace sugarjs {
       intersect<T>(instance: T[], arr: T[]): T[];
       isEmpty<T>(instance: T[]): boolean;
       isEqual<T>(instance: T[], arr: T[]): boolean;
-      last<T>(instance: T[], num?: number): T;
+      last<T>(instance: T[]): T;
+      last<T>(instance: T[], num: number): T[];
       least<T, U>(instance: T[], all?: boolean, map?: string|mapFn<T, U>): T[];
       least<T, U>(instance: T[], map?: string|mapFn<T, U>): T[];
       map<T, U>(instance: T[], map: string|mapFn<T, U>, context?: any): U[];
