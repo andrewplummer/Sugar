@@ -167,6 +167,7 @@ the Date module. Currently available locales are:
 - [Finnish (fi)](lib/locales/fi.js)
 - [French (fr)](lib/locales/fr.js)
 - [German (de)](lib/locales/de.js)
+- [Hungarian (hu)](lib/locales/hu.js)
 - [Italian (it)](lib/locales/it.js)
 - [Japanese (ja)](lib/locales/ja.js)
 - [Korean (ko)](lib/locales/ko.js)
