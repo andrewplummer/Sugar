@@ -142,58 +142,117 @@ describe('ko-KR', () => {
 
       it('should correctly format date with built-in aliases', () => {
         assertEqual(
-          format(new Date(2020, 0), Sugar.Date.DATE_FULL, 'ko'),
-          '2020년 1월 1일 수요일'
+          format(new Date(), Sugar.Date.DATE_FULL, 'ko'),
+          new Intl.DateTimeFormat('ko', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            weekday: 'long',
+          }).format(new Date()),
         );
         assertEqual(
-          format(new Date(2020, 0), Sugar.Date.DATE_LONG, 'ko'),
-          '2020년 1월 1일'
+          format(new Date(), Sugar.Date.DATE_LONG, 'ko'),
+          new Intl.DateTimeFormat('ko', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+          }).format(new Date()),
         );
         assertEqual(
-          format(new Date(2020, 0), Sugar.Date.DATE_MEDIUM, 'ko'),
-          '2020년 1월 1일'
+          format(new Date(), Sugar.Date.DATE_MEDIUM, 'ko'),
+          new Intl.DateTimeFormat('ko', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+          }).format(new Date()),
         );
         assertEqual(
-          format(new Date(2020, 0), Sugar.Date.DATE_SHORT, 'ko'),
-          '2020. 1. 1.'
+          format(new Date(), Sugar.Date.DATE_SHORT, 'ko'),
+          new Intl.DateTimeFormat('ko', {
+            year: 'numeric',
+            month: 'numeric',
+            day: 'numeric',
+          }).format(new Date()),
         );
       });
 
       it('should correctly format time with built-in aliases', () => {
         assertEqual(
-          format(new Date(2020, 0), Sugar.Date.TIME_FULL, 'ko'),
-          '오전 12시 0분 0초 일본 표준시'
+          format(new Date(), Sugar.Date.TIME_FULL, 'ko'),
+          new Intl.DateTimeFormat('ko', {
+            hour: 'numeric',
+            minute: 'numeric',
+            second: 'numeric',
+            timeZoneName: 'long',
+          }).format(new Date()),
         );
         assertEqual(
-          format(new Date(2020, 0), Sugar.Date.TIME_LONG, 'ko'),
-          '오전 12시 0분 0초 GMT+9'
+          format(new Date(), Sugar.Date.TIME_LONG, 'ko'),
+          new Intl.DateTimeFormat('ko', {
+            hour: 'numeric',
+            minute: 'numeric',
+            second: 'numeric',
+            timeZoneName: 'short',
+          }).format(new Date()),
         );
         assertEqual(
-          format(new Date(2020, 0), Sugar.Date.TIME_MEDIUM, 'ko'),
-          '오전 12:00:00'
+          format(new Date(), Sugar.Date.TIME_MEDIUM, 'ko'),
+          new Intl.DateTimeFormat('ko', {
+            hour: 'numeric',
+            minute: 'numeric',
+            second: 'numeric',
+          }).format(new Date()),
         );
         assertEqual(
-          format(new Date(2020, 0), Sugar.Date.TIME_SHORT, 'ko'),
-          '오전 12:00'
+          format(new Date(), Sugar.Date.TIME_SHORT, 'ko'),
+          new Intl.DateTimeFormat('ko', {
+            hour: 'numeric',
+            minute: 'numeric',
+          }).format(new Date()),
         );
       });
 
       it('should correctly format datetime with built-in aliases', () => {
         assertEqual(
-          format(new Date(2020, 0), Sugar.Date.DATETIME_FULL, 'ko'),
-          '2020년 1월 1일 수요일 오전 12:00'
+          format(new Date(), Sugar.Date.DATETIME_FULL, 'ko'),
+          new Intl.DateTimeFormat('ko', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: 'numeric',
+            minute: 'numeric',
+            weekday: 'long',
+          }).format(new Date()),
         );
         assertEqual(
-          format(new Date(2020, 0), Sugar.Date.DATETIME_LONG, 'ko'),
-          '2020년 1월 1일 오전 12:00'
+          format(new Date(), Sugar.Date.DATETIME_LONG, 'ko'),
+          new Intl.DateTimeFormat('ko', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: 'numeric',
+            minute: 'numeric',
+          }).format(new Date()),
         );
         assertEqual(
-          format(new Date(2020, 0), Sugar.Date.DATETIME_MEDIUM, 'ko'),
-          '2020년 1월 1일 오전 12:00'
+          format(new Date(), Sugar.Date.DATETIME_MEDIUM, 'ko'),
+          new Intl.DateTimeFormat('ko', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: 'numeric',
+            minute: 'numeric',
+          }).format(new Date()),
         );
         assertEqual(
-          format(new Date(2020, 0), Sugar.Date.DATETIME_SHORT, 'ko'),
-          '2020. 1. 1. 오전 12:00'
+          format(new Date(), Sugar.Date.DATETIME_SHORT, 'ko'),
+          new Intl.DateTimeFormat('ko', {
+            year: 'numeric',
+            month: 'numeric',
+            day: 'numeric',
+            hour: 'numeric',
+            minute: 'numeric',
+          }).format(new Date()),
         );
       });
 

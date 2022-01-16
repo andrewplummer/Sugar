@@ -9,6 +9,7 @@ import { isNaN, isString } from '../../util/typeChecks';
 import { cloneDate } from '../../util/clone';
 import { getPropsPrecision, getAdjacentUnit, formatPartsForUnit, getUnitMultiplier } from './units';
 import { localeNormalize } from './normalization';
+import { getIntlFormatter, ensureLocale, getLanguage, findPart } from './intl';
 import { REG_ORDINALS, replaceOrdinals } from './ordinals';
 import { compileRegExpAlternates } from './regex';
 import { getWeekdaysInMonth } from './helpers';
@@ -84,6 +85,7 @@ export default class LocaleParser {
 
     this.setup();
     this.buildFormats();
+    console.info(this);
   }
 
   // --- Build
@@ -271,7 +273,7 @@ export default class LocaleParser {
     }
 
     const variants = styles.map((style) => {
-      const formatter = new Intl.DateTimeFormat(this.locale, {
+      const formatter = getIntlFormatter(this.locale, {
         hour: 'numeric',
         minute: 'numeric',
         hourCycle: 'h12',
@@ -293,7 +295,6 @@ export default class LocaleParser {
         const parts = formatter.formatToParts(date);
         let token = findPart(parts, type).value;
 
-        // Normalize the token by downcasing and removing periods.
         token = token.toLowerCase();
         token = token.replace(/\./g, '');
 
@@ -450,6 +451,7 @@ export default class LocaleParser {
       ...relOptions,
       ...absOptions,
     });
+
     let lastRel;
     for (let part of parts) {
       const { type } = part;
@@ -458,7 +460,13 @@ export default class LocaleParser {
         part.style = PHRASE_TYPE_FIXED;
         lastRel = true;
       } else if (lastRel && type === 'literal') {
+        // Remove potential fixed literals in CJK formats that are
+        // included in the relative phrase. For example 2020年 will
+        // return "年" as a literal, however it will become part of
+        // the relative phrase making it match twice, so strip it here.
         part.value = part.value.replace(/\S+/, '');
+        lastRel = false;
+      } else {
         lastRel = false;
       }
     }
@@ -510,7 +518,7 @@ export default class LocaleParser {
       };
     }
 
-    const formatter = new Intl.DateTimeFormat(this.locale, options);
+    const formatter = getIntlFormatter(this.locale, options);
 
     let parts = formatter.formatToParts();
 
@@ -805,7 +813,7 @@ export default class LocaleParser {
   }
 
   partOrderMatches(type1, type2) {
-    const formatter = new Intl.DateTimeFormat(this.locale, {
+    const formatter = getIntlFormatter(this.locale, {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
@@ -1543,10 +1551,6 @@ function setOffsetWeekday(date, day) {
   setWeekday(date, day);
 }
 
-function findPart(parts, type) {
-  return parts.find((part) => part.type === type);
-}
-
 function getAmbiguousUnit(absProps, relProps) {
   let { unit } = getPropsPrecision(absProps);
   while (unit) {
@@ -1727,22 +1731,6 @@ function resolveFraction(arg, { type: unit, props, absProps }) {
       });
     }
   }
-}
-
-function getLanguage(locale) {
-  locale = ensureLocale(locale);
-  return locale.slice(0, 2);
-}
-
-// If no locale is provided then need to fall back to
-// browser default. This can be done by creating a new format
-// object and checking its resolvedOptions.
-function ensureLocale(locale) {
-  if (!locale) {
-    const formatter = new Intl.DateTimeFormat();
-    locale = formatter.resolvedOptions().locale;
-  }
-  return locale;
 }
 
 function getTwoDigitYear(year, date, prefer) {

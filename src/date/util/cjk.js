@@ -27,32 +27,37 @@ const HANIDEC_MAP = {
   '千': 1000,
 };
 
-const HANIDEC_REG = /[零一二三四五六七八九十百千]+(?!昨)/g;
+// This regex must avoid matching fixed phrases "一昨日", "星期一", etc.
+const HANIDEC_REG = /[零一二三四五六七八九十百千]+/g;
+const HANIDEC_DISALLOW_REG = /星期|昨日/;
 
 export function isCJK(language) {
   return CJK_LANGUAGES.includes(language);
 }
 
 export function mapHanidec(str) {
-  return str.replace(HANIDEC_REG, (num) => {
-    let sum = 0;
-    let place = 1;
-    let hold;
-    for (let i = num.length - 1; i >= 0; i--) {
-      const char = num.charAt(i);
-      let val = HANIDEC_MAP[char];
-      if (val > 0 && val % 10 === 0) {
-        sum += val;
-        place = val;
-        hold = true;
-      } else {
-        sum += (val - (hold ? 1 : 0)) * place;
-        place *= 10;
-        hold = false;
+  if (!HANIDEC_DISALLOW_REG.test(str)) {
+    str = str.replace(HANIDEC_REG, (num) => {
+      let sum = 0;
+      let place = 1;
+      let hold;
+      for (let i = num.length - 1; i >= 0; i--) {
+        const char = num.charAt(i);
+        let val = HANIDEC_MAP[char];
+        if (val > 0 && val % 10 === 0) {
+          sum += val;
+          place = val;
+          hold = true;
+        } else {
+          sum += (val - (hold ? 1 : 0)) * place;
+          place *= 10;
+          hold = false;
+        }
       }
-    }
-    return String(sum);
-  });
+      return String(sum);
+    });
+  }
+  return str;
 }
 
 export function jaNormalize(str) {
@@ -62,6 +67,12 @@ export function jaNormalize(str) {
   // Normalize no space before relative unit to fix RelativeTimeFormat bug.
   str = str.replace(/(\d+)(秒|分|時間|日|週間|か月|年)(前|後)/g, '$1 $2$3');
 
+  return str;
+}
+
+export function zhNormalize(str) {
+  // Normalize no space before relative unit to fix RelativeTimeFormat bug.
+  str = str.replace(/(\d+)(秒|分|時間|日|週間|か月|年)(前|後)/g, '$1 $2$3');
   return str;
 }
 

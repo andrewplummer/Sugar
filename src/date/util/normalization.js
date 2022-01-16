@@ -1,4 +1,4 @@
-import { mapHanidec, jaNormalize, koNormalize } from './cjk';
+import { mapHanidec, jaNormalize, zhNormalize, koNormalize } from './cjk';
 
 export const ENGLISH_NUMERALS = [
   'zero',
@@ -25,7 +25,7 @@ const mapFullWide = buildFormatMapper('fullwide');
 const LANGUAGES = {
   'en': [mapEnglishNumerals, mapEnglishHalf],
   'ja': [mapHanidec, mapFullWide, jaNormalize],
-  'zh': [mapHanidec],
+  'zh': [mapHanidec, zhNormalize],
   'ko': [koNormalize],
 };
 

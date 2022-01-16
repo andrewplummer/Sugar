@@ -199,17 +199,6 @@ namespace('Date | Simplified Chinese', function () {
     assertDateParsed('二三二一年', new Date(2321, 0));
     assertDateParsed('四三二一年', new Date(4321, 0));
 
-    // Issue #148 various Chinese dates
-
-    assertDateParsed('星期日 下午2:00', testGetWeekday(0,0,14));
-    assertDateParsed('下星期六 3点12分', testGetWeekday(6, 1, 3, 12));
-
-    assertDateParsed('上午3点12分', testDateSet(getRelativeDateReset(0,0,0), {hour:3,minute:12}));
-    assertDateParsed('上午3点', testDateSet(getRelativeDateReset(0,0,0), {hour:3}));
-
-    assertDateParsed('上午3时12分', testDateSet(getRelativeDateReset(0,0,0), {hour:3,minute:12}));
-    assertDateParsed('上午3时', testDateSet(getRelativeDateReset(0,0,0), {hour:3}));;
-
   });
 
   method('beginning/end', function() {

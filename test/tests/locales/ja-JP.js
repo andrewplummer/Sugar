@@ -221,58 +221,117 @@ describe('ja-JP', () => {
 
       it('should correctly format date with built-in aliases', () => {
         assertEqual(
-          format(new Date(2020, 0), Sugar.Date.DATE_FULL, 'ja'),
-          '2020年1月1日水曜日'
+          format(new Date(), Sugar.Date.DATE_FULL, 'ja'),
+          new Intl.DateTimeFormat('ja', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            weekday: 'long',
+          }).format(new Date()),
         );
         assertEqual(
-          format(new Date(2020, 0), Sugar.Date.DATE_LONG, 'ja'),
-          '2020年1月1日'
+          format(new Date(), Sugar.Date.DATE_LONG, 'ja'),
+          new Intl.DateTimeFormat('ja', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+          }).format(new Date()),
         );
         assertEqual(
-          format(new Date(2020, 0), Sugar.Date.DATE_MEDIUM, 'ja'),
-          '2020年1月1日'
+          format(new Date(), Sugar.Date.DATE_MEDIUM, 'ja'),
+          new Intl.DateTimeFormat('ja', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+          }).format(new Date()),
         );
         assertEqual(
-          format(new Date(2020, 0), Sugar.Date.DATE_SHORT, 'ja'),
-          '2020/1/1'
+          format(new Date(), Sugar.Date.DATE_SHORT, 'ja'),
+          new Intl.DateTimeFormat('ja', {
+            year: 'numeric',
+            month: 'numeric',
+            day: 'numeric',
+          }).format(new Date()),
         );
       });
 
       it('should correctly format time with built-in aliases', () => {
         assertEqual(
-          format(new Date(2020, 0), Sugar.Date.TIME_FULL, 'ja'),
-          '0時00分00秒 日本標準時'
+          format(new Date(), Sugar.Date.TIME_FULL, 'ja'),
+          new Intl.DateTimeFormat('ja', {
+            hour: 'numeric',
+            minute: 'numeric',
+            second: 'numeric',
+            timeZoneName: 'long',
+          }).format(new Date()),
         );
         assertEqual(
-          format(new Date(2020, 0), Sugar.Date.TIME_LONG, 'ja'),
-          '0:00:00 JST'
+          format(new Date(), Sugar.Date.TIME_LONG, 'ja'),
+          new Intl.DateTimeFormat('ja', {
+            hour: 'numeric',
+            minute: 'numeric',
+            second: 'numeric',
+            timeZoneName: 'short',
+          }).format(new Date()),
         );
         assertEqual(
-          format(new Date(2020, 0), Sugar.Date.TIME_MEDIUM, 'ja'),
-          '0:00:00'
+          format(new Date(), Sugar.Date.TIME_MEDIUM, 'ja'),
+          new Intl.DateTimeFormat('ja', {
+            hour: 'numeric',
+            minute: 'numeric',
+            second: 'numeric',
+          }).format(new Date()),
         );
         assertEqual(
-          format(new Date(2020, 0), Sugar.Date.TIME_SHORT, 'ja'),
-          '0:00'
+          format(new Date(), Sugar.Date.TIME_SHORT, 'ja'),
+          new Intl.DateTimeFormat('ja', {
+            hour: 'numeric',
+            minute: 'numeric',
+          }).format(new Date()),
         );
       });
 
       it('should correctly format datetime with built-in aliases', () => {
         assertEqual(
-          format(new Date(2020, 0), Sugar.Date.DATETIME_FULL, 'ja'),
-          '2020年1月1日水曜日 0:00'
+          format(new Date(), Sugar.Date.DATETIME_FULL, 'ja'),
+          new Intl.DateTimeFormat('ja', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: 'numeric',
+            minute: 'numeric',
+            weekday: 'long',
+          }).format(new Date()),
         );
         assertEqual(
-          format(new Date(2020, 0), Sugar.Date.DATETIME_LONG, 'ja'),
-          '2020年1月1日 0:00'
+          format(new Date(), Sugar.Date.DATETIME_LONG, 'ja'),
+          new Intl.DateTimeFormat('ja', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: 'numeric',
+            minute: 'numeric',
+          }).format(new Date()),
         );
         assertEqual(
-          format(new Date(2020, 0), Sugar.Date.DATETIME_MEDIUM, 'ja'),
-          '2020年1月1日 0:00'
+          format(new Date(), Sugar.Date.DATETIME_MEDIUM, 'ja'),
+          new Intl.DateTimeFormat('ja', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: 'numeric',
+            minute: 'numeric',
+          }).format(new Date()),
         );
         assertEqual(
-          format(new Date(2020, 0), Sugar.Date.DATETIME_SHORT, 'ja'),
-          '2020/1/1 0:00'
+          format(new Date(), Sugar.Date.DATETIME_SHORT, 'ja'),
+          new Intl.DateTimeFormat('ja', {
+            year: 'numeric',
+            month: 'numeric',
+            day: 'numeric',
+            hour: 'numeric',
+            minute: 'numeric',
+          }).format(new Date()),
         );
       });
 

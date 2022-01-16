@@ -8546,7 +8546,7 @@ describeNamespace('Date', () => {
         );
 
         assertEqual(
-          format(new Date(2020, 7), 'MMMM月', 'ja'),
+          format(new Date(2020, 7), 'MMMM', 'ja'),
           '8月'
         );
       });
@@ -8573,7 +8573,7 @@ describeNamespace('Date', () => {
         );
 
         assertEqual(
-          format(new Date(2020, 7), 'LLLL月', 'ja'),
+          format(new Date(2020, 7), 'LLLL', 'ja'),
           '8月'
         );
 
@@ -8946,7 +8946,7 @@ describeNamespace('Date', () => {
 
       it('should be able to tokenize with an overriding locale', () => {
         assertEqual(
-          format(new Date(2020, 0), 'MMMM月', 'ja'),
+          format(new Date(2020, 0), 'MMMM', 'ja'),
           '1月'
         );
       });
@@ -8961,7 +8961,7 @@ describeNamespace('Date', () => {
       it('should allow a custom formatter to customize tokens further', () => {
         assertEqual(
           format(new Date(2020, 0), {
-            format: 'MMMM月',
+            format: 'MMMM',
             formatter: new Intl.DateTimeFormat('ja', {
               numberingSystem: 'fullwide',
             }),
@@ -8970,7 +8970,7 @@ describeNamespace('Date', () => {
         );
         assertEqual(
           format(new Date(2020, 0), {
-            format: 'MMMM月',
+            format: 'MMMM',
             formatter: new Intl.DateTimeFormat('ja', {
               numberingSystem: 'hanidec',
             }),

@@ -1,6 +1,7 @@
 import { getOrdinalSuffix } from '../../util/ordinals';
 import { getISOWeek, getISOWeekYear, getDayOfYear } from './iso';
 import { getFormattedOffset } from './timezoneOffsets';
+import { getIntlFormatter } from './intl';
 import { getQuarter } from './quarter';
 
 export function getTokenFormatter(formatter, format) {
@@ -239,7 +240,7 @@ const TOKEN_RESOLVERS = {
 function getIntlResolvers(str, opt) {
   const { type, resolveType, resolveValue, resolveOptions, ...rest } = opt;
   const resolve = (date, token, locale, contextOptions) => {
-    const formatter = new Intl.DateTimeFormat(locale, {
+    const formatter = getIntlFormatter(locale, {
       ...contextOptions,
       ...(resolveOptions && resolveOptions(token)),
       [type]: resolveType(token),

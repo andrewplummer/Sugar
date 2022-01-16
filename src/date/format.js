@@ -1,6 +1,7 @@
 import { isString } from '../util/typeChecks';
 import { assertValidDate } from '../util/assertions';
 import { getTokenFormatter } from './util/tokenFormatter';
+import { getIntlFormatter } from './util/intl';
 
 /**
  * Returns the date as a string in a variety of formats.
@@ -67,7 +68,7 @@ function resolveFormatter(opt, loc) {
   let { format, formatter, locale = loc, ...rest } = options;
 
   if (!formatter) {
-    formatter = new Intl.DateTimeFormat(locale, rest);
+    formatter = getIntlFormatter(locale, rest);
   }
 
   if (format) {

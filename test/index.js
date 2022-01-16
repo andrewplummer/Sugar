@@ -41,4 +41,6 @@ require('./tests/locales/en-GB');
 require('./tests/locales/en-CA');
 require('./tests/locales/ja-JP');
 require('./tests/locales/ko-KR');
+require('./tests/locales/zh-Hans');
+require('./tests/locales/zh-Hant');
 require('./tests/modules');
