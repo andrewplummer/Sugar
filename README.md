@@ -173,6 +173,7 @@ the Date module. Currently available locales are:
 - [Norwegian (no)](lib/locales/no.js)
 - [Polish (pl)](lib/locales/pl.js)
 - [Portuguese (pt)](lib/locales/pt.js)
+- [Romanian (ro)](lib/locales/ro.js)
 - [Russian (ru)](lib/locales/ru.js)
 - [Spanish (es)](lib/locales/es.js)
 - [Swedish (sv)](lib/locales/sv.js)
