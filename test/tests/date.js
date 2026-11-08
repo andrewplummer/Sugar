@@ -166,9 +166,31 @@ namespace('Date', function () {
     // Testing native fallback parsing.
     if (new Date('10 06 2014').getTime() > 0) {
       var d1 = testCreateDate('10 06 2014', { fromUTC: true });
-      var d2 = new Date(2014, 9, 6);
-      equal(d1 - d2, d1.getTimezoneOffset() * 60 * 1000, 'native fallback will still honor fromUTC flag');
+      equal(d1.getTime(), Date.UTC(2014, 9, 6), 'native fallback will still honor fromUTC flag');
     }
+
+    // Issue #679 Reversed fromUTC fallback logic.
+    [
+      ['01 20 2021 08:00', Date.UTC(2021, 0, 20, 8)],
+      ['07 20 2021 08:00', Date.UTC(2021, 6, 20, 8)],
+      ['10 20 2021 08:00', Date.UTC(2021, 9, 20, 8)]
+    ].forEach(function(test) {
+      var str = test[0];
+      var nativeDate = new Date(str);
+      var utcDate = testCreateDate(str, { fromUTC: true });
+      if (!isNaN(nativeDate.getTime())) {
+        equal(utcDate.getTime(), test[1], 'native fallback parses wall time as UTC | ' + str);
+        equal(testCreateDate(str).getTime(), nativeDate.getTime(), 'native fallback defaults to local time | ' + str);
+        equal(testCreateDate(str, { fromUTC: false }).getTime(), nativeDate.getTime(), 'native fallback allows local time | ' + str);
+      } else {
+        equal(isNaN(utcDate.getTime()), true, 'native fallback preserves invalid dates | ' + str);
+      }
+    });
+
+    assertDateParsed('10.20.2021 08:00', { fromUTC: true }, new Date(Date.UTC(2021, 9, 20, 8)));
+    assertDateParsed('2021-10-20T08:00:00+04:00', { fromUTC: true }, new Date(Date.UTC(2021, 9, 20, 4)));
+    assertDateParsed('2021-10-20T08:00:00-04:00', { fromUTC: true }, new Date(Date.UTC(2021, 9, 20, 12)));
+    equal(isNaN(testCreateDate('not a date', { fromUTC: true }).getTime()), true, 'fromUTC preserves invalid dates');
 
     // setUTC option
 
